@@ -1,19 +1,20 @@
-// ConfirmationPage.tsx
 import React from "react";
 
-const ConfirmationPage = ({ result }: { result: string }) => {
-   // Example: splitting a comma-separated string into an array
-   const dataParts = result.split(","); // Adjust this split based on the structure of your text.
-
+const ConfirmationPage = ({ result }: { result: Record<string, string> }) => {
    return (
-      <div className="confirmation-page">
-         <h1>Scan Successful!</h1>
-         <h3>Data:</h3>
+      <div className="confirmation-page flex flex-col items-center p-6">
+         <h1 className="text-xl font-bold">Scan Successful!</h1>
+         <h3 className="text-lg mt-2">Data:</h3>
 
-         {/* Render each part of the split string */}
-         <ul>
-            {dataParts.map((part, index) => (
-               <li key={index}>{part.trim()}</li> // `trim()` removes leading/trailing whitespace
+         <ul className="mt-2">
+            {/* List to display the scanned data */}
+            {/* Iterating over the `result` object, treating each entry as a key-value pair */}
+            {/* Display each entry in a list item, with some padding for visual separation */}
+            {/* Show the key as bold, followed by its corresponding value */}
+            {Object.entries(result).map(([key, value], index) => (
+               <li key={index} className="py-1">
+                  <strong>{key}:</strong> {value}
+               </li>
             ))}
          </ul>
       </div>
