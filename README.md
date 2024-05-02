@@ -3,15 +3,10 @@
 This is the readme for the streamline precision timecard app
 
 # Installation instructions
-We will be using react.js with next.js for our stack and will have a mySQL database to store data. 
 
-To begin our project we need to install nextjs app and install other dependdecies to run it on our computer. 
+Today is a new day and i discovered an easy to use qrcode walkthrough, it it linked [Here](https://medium.com/readytowork-org/implementing-a-qr-code-scanner-in-react-4c8f4e3c6f2e)
 
-The installations are the follow:
-- npm install qrcode.react dayjs (qrcode library and dayjs is a lightweight library for handling time)
-- additional the library is needed but needs to be installed through legacy due to it being used in older react code:  
-npm i react-qr-reader --legacy-peer-deps
-
-An alternative to check out is here we can compare and see what is better. 
-
-- an alternative to the rcode scanning: npm i react-zxing check the library https://www.npmjs.com/package/react-zxing
+- all the new code written today was from there and now, i am moving towards altering the sample to make it better. 
+you need to just use one extension
+- npm i qr-scanner
+- You will need to use typescript, src/path, tailwind, and app routing
