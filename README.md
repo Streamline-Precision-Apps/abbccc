@@ -2,7 +2,6 @@
 
 This is the readme for the streamline precision timecard app
 
-<<<<<<< Devun's-Branch
 # QR Installation instructions
 
 QR Simple QR code Reader walkthrough: 
@@ -37,7 +36,4 @@ These two modules make it easier to make Timestamps and axios for database inter
 
 looking currently for an npm for hashing services to help create QR codes then decode them for an increase of difficulty in accessing them. The Idea is that we hash the code on creation and dehash it when scanning on the software. 
 
-After Talking to McKenzie, She confirmed that all employee would need to clock in with the jobsite that they are clock into, so having a QR generator in the app is a great Idea. 
-=======
-TESSSTTTTINGG
->>>>>>> main
+
