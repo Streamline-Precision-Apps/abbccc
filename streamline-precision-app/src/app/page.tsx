@@ -1,5 +1,5 @@
 "use client"; // Ensure this directive is at the top
-
+import Signture from "../components/signaturePad";
 import { useState } from "react";
 import QrReader from "../components/barcodeScanner";
 
@@ -17,7 +17,7 @@ export default function Home() {
          >
             QR Scanner {openQr ? "Cancel" : "Clock-in"}
          </button>
-
+         < Signture />
          {openQr && <QrReader user={user} />} {/* Pass the user prop */}
       </div>
    );
