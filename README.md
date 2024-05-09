@@ -90,5 +90,10 @@ To make a migration we write the command:
     "typescript": "^5"
   }
 }
-
 ```
+then we need to create a seed file under the prisma folder
+
+- we run npx prisma generate to update the building of the db structure.
+- finally to create a db seed we run this command
+- npx prisma db seed
+- Other things to be aware of is the db that you choose. 
