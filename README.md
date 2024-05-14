@@ -97,3 +97,29 @@ then we need to create a seed file under the prisma folder
 - finally to create a db seed we run this command
 - npx prisma db seed
 - Other things to be aware of is the db that you choose. 
+
+
+in prisma to make a data model you build the model into the schema.prisma file that is in your folder labeled prisma
+there you need to set up your database source and also create those tables: here is an example: 
+```
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+}
+
+model User{
+  id Int @id @default(autoincrement())
+  email String @unique
+  password String
+  name String?
+}
+```
+
+
+
+
