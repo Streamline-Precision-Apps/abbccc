@@ -12,6 +12,9 @@ Imports and why i am using them with our app:
 In this section, you'll see how we can internationalize the new app directory with the use of i18next, react-i18next and i18next-resources-to-backend.
 npm install i18next react-i18next i18next-resources-to-backend
 https://locize.com/blog/next-app-dir-i18n/
+https://www.youtube.com/watch?v=fKaJYydim3Q
+
 
 
 New day: picking up where I left off 5/22/24
+
