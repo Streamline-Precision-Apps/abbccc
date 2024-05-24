@@ -1,5 +1,17 @@
 {
-    "Index":{
-        "title": "La Pagina Principal de Shift Scan"
+    "login-page": {
+        "title": "portal de inicio de sesión",
+        "emp-id": "identificación de empleado",
+        "password": "Contraseña",
+        "submit": "Iniciar sesión",
+        "forgot-password": "olvidaste tu contraseña",
+        "error": "usuario o contraseña invalido",
+        "copyright": "Copyright © 2024. Todos los derechos reservados."
+    },
+    "page-1": {
+        "title": "pagina 1"
+    },
+    "page-2": {
+        "title": "pagina 2"
     }
 }
