@@ -34,3 +34,11 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+
+https://next-intl-docs.vercel.app/docs/getting-started/app-router/with-i18n-routing  
+this is the method you must take in order to get internationalization up on next js... just follow these steps and copy and paste. 
+```
+npm install next-intl
+```
+be sure to install the package too

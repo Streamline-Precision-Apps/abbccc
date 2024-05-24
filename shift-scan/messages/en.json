@@ -1,5 +1,17 @@
 {
-    "Index":{
-        "title": "Shift Scan honePage"
+    "login-page": {
+        "title": "Portal Login",
+        "emp-id": "Employee ID",
+        "password": "Password",
+        "submit": "login in",
+        "forgot-password": "Forgot password?",
+        "error": "Invalid username or password",
+        "copyright": "Copyright © 2024. All rights reserved."
+    },
+    "page-1": {
+        "title": "Page 1"
+    },
+    "page-2": {
+        "title": "Page 2"
     }
 }
