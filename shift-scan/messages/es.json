@@ -4,8 +4,7 @@
         "EmpId": "ID de Empleado",
         "Password": "Contraseña",
         "Submit": "Iniciar sesión",
-        "Language": "Habla Español?",
-        "IsDisabled": "false",
+        "Language": "Uncheck to use English",
         "ForgotPassword": "¿Olvidó su contraseña?",
         "Error": "Usuario o contraseña inválidos",
         "Copyright": "Copyright © 2024. Todos los derechos reservados."

@@ -5,18 +5,19 @@
         "Password": "Password",
         "Submit": "Sign in",
         "Language": "Habla Espanol?",
-        "IsDisabled": "true",
         "ForgotPassword": "Forgot Password?",
         "Error": "Invalid username or password",
         "Copyright": "Copyright © 2024. All rights reserved."
     },
     "PreClocked": {
+        "Settings": "Settings >>",
         "Banner": "Welcome Back!",
         "Name": "{firstName} {lastName}",
         "Date": "{date}",
         "HoursCard": "Total Hours:",
-        "Total-hours": "{hours}",
+        "Total-hours": "{payPeriodHours}",
         "Clock-btn": "Clock In",
+        "Error":"Invalid username or password",
         "Copyright": "Copyright © 2024. All rights reserved."
 
     },
