@@ -1,24 +1,27 @@
 import {NextIntlClientProvider} from 'next-intl';
-import {getMessages} from 'next-intl/server';
+import {getLocale, getMessages} from 'next-intl/server';
+import { LocaleProvider } from '../../components/localeContext';
 
-export default async function LocaleLayout({
-    children,
-    params: {locale}
+export default async function RootLayout({
+  children
 }: {
-    children: React.ReactNode;
-    params: {locale: string};
+  children: React.ReactNode;
 }) {
+  let locale  = "es";
+
   // Providing all messages to the client
   // side is the easiest way to get started
-    const messages = await getMessages();
+  const messages = await getMessages();
 
-return (
+  return (
     <html lang={locale}>
-        <body>
-            <NextIntlClientProvider messages={messages}>
-            {children}
-            </NextIntlClientProvider>
-        </body>
+      <body>
+        <NextIntlClientProvider messages={messages}>
+          <LocaleProvider>
+          {children}
+          </LocaleProvider>
+        </NextIntlClientProvider>
+      </body>
     </html>
-);
+  );
 }

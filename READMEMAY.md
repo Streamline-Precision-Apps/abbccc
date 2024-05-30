@@ -18,3 +18,15 @@ https://www.youtube.com/watch?v=fKaJYydim3Q
 
 New day: picking up where I left off 5/22/24
 
+npm install --save next react react-dom
+
+npm install --save-dev typescript @types/react @types/node
+
+npm install --save-dev eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-config-next
+
+npm install --save-dev eslint-plugin-next
+
+i then uninstalled node and reinstalled it and fix the error with next/babel that i was having.
+
+I got it working, now i am making a button switch component
+npm install nookies
