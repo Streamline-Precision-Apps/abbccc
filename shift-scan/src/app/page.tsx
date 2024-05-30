@@ -1,20 +1,35 @@
+"use client";
+import React, {useState, useEffect} from 'react';
 import {useTranslations} from 'next-intl';
-import Link from 'next/link';
 import './globals.css';
 
+
 export default function Index() {
-    const t = useTranslations('Index');
-    return <div className='flex flex-col items-center'>
-        <h1>{t('title')}</h1>
-        <h2 className="text-red-500 mb-4 ">Pre-Clocked In page</h2>
-        <div className="bg-blue-500 p-2 flex-box  justify-center w-1/2 mb-8">
-            <Link className='flex justify-center p-5 border' href="/settings">Settings</Link>
+    const t = useTranslations('PortalLogin');
+
+    const handleLanguageSwitch = () => {
+        document.cookie = `locale=${'es'};`; 
+        window.location.reload();
+    }
+
+    return (
+
+        <div> 
+            <h1>{t('Title')}</h1>
+            <h2>{t('EmpId')}</h2>
+            <h2>{t('Password')}</h2>
+            <h2>{t('Submit')}</h2>
+            <h2>{t('Language')}</h2>
+            <span>
+            <input
+                type="checkbox"
+                onChange={() => handleLanguageSwitch()}
+                />
+            </span>
+            <h2>{t('ForgotPassword')}</h2>
+            <h2>{t('Error')}</h2>
+            <h2>{t('Copyright')}</h2>
         </div>
-        <div className="bg-blue-500 p-2 flex-box  justify-center w-1/2 mb-8">
-            <button className='justify-center p-5 w-full border'>Total Hours</button>
-        </div>
-        <div className="bg-blue-500 p-2 flex-box  justify-center w-1/2 mb-8">
-        <Link className='flex justify-center p-5 border' href='/qrReader'>Clock In</Link>
-        </div>
-    </div>
+
+    )
 }

@@ -1,20 +1,79 @@
 {
-    "Index": {
-        "title": "Spanish"
+    "PortalLogin": {
+        "Title": "Inicio de Sesión en el Portal",
+        "EmpId": "ID de Empleado",
+        "Password": "Contraseña",
+        "Submit": "Iniciar sesión",
+        "Language": "Habla Español?",
+        "IsDisabled": "false",
+        "ForgotPassword": "¿Olvidó su contraseña?",
+        "Error": "Usuario o contraseña inválidos",
+        "Copyright": "Copyright © 2024. Todos los derechos reservados."
     },
-    "login-page": {
-        "title": "portal de inicio de sesión",
-        "emp-id": "identificación de empleado",
-        "password": "Contraseña",
-        "submit": "Iniciar sesión",
-        "forgot-password": "olvidaste tu contraseña",
-        "error": "usuario o contraseña invalido",
-        "copyright": "Copyright © 2024. Todos los derechos reservados."
+    "PreClocked": {
+        "Banner": "¡Bienvenido de nuevo!",
+        "Name": "{firstName} {lastName}",
+        "Date": "{date}",
+        "HoursCard": "Horas Totales:",
+        "Total-hours": "{hours}",
+        "Clock-btn": "Registrar Entrada",
+        "Copyright": "Copyright © 2024. Todos los derechos reservados."
     },
-    "page-1": {
-        "title": "pagina 1"
+    "Settings": {
+        "Inbox": {
+            "Title": "Solicitudes",
+            "Tab-1": "Enviadas",
+            "Tab-2": "Recibidas",
+            "SentBox": [],
+            "RecBox": [],
+            "Copyright": "Copyright © 2024. Todos los derechos reservados."
+        },
+        "Profile": {
+            "Name": "{firstName} {lastName}",
+            "EmpId": "ID de Empleado",
+            "EmpIdValue": "{empId}",
+            "ContactE": "Correo Electrónico de Contacto",
+            "ContactEValue": "{empEmail}",
+            "ContactP": "Teléfono de Contacto",
+            "ContactPValue": "{empPhone}",
+            "Safety": "Estado de la Formación en Seguridad",
+            "SafetyValue": [],
+            "SignOut": "Cerrar Sesión",
+            "Copyright": "Copyright © 2024. Todos los derechos reservados."
+        },
+        "Settings": {
+            "Title": "Configuraciones",
+            "Heading": "Notificaciones",
+            "Notifications": {
+                "AprovedRequest": "Solicitudes Aprobadas",
+                "TimeOffRequest": "Solicitudes de Tiempo Libre",
+                "GeneralReminders": "Recordatorios Generales"
+            },
+            "Permisions": {
+                "Biometric": "Biométrico",
+                "CameraAccess": "Acceso a la Cámara",
+                "LocationAccess": "Acceso a la Ubicación"
+            },
+            "ChangePassword": "Cambiar Contraseña",
+            "Copyright": "Copyright © 2024. Todos los derechos reservados."
+        }
     },
-    "page-2": {
-        "title": "pagina 2"
+    "Employee": {
+        "QRScanner": {
+            "Title": "Registrar Entrada"
+        },
+        "QRRead": {
+            "Title": "Registrar Entrada",
+            "JobSite": "Número del Sitio de Trabajo",
+            "JobSiteValue": "{qrRead}",
+            "CostCode": "Código de Costo",
+            "CostCodeValue": "{costCode}"
+        },
+        "Confirmation": {
+            "Title": "Registrar Entrada",
+            "Name": "{firstName} {lastName}",
+            "JobSite": "Número del Sitio de Trabajo",
+            "JobSiteValue": "{qrRead}"
+        }
     }
 }
