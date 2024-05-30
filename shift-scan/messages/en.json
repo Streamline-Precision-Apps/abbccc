@@ -1,20 +1,84 @@
 {
-    "Index": {
-        "title": "Streamline Precision Timecard"
+    "PortalLogin": {
+        "Title": "Portal Login",
+        "EmpId": "Employee ID",
+        "Password": "Password",
+        "Submit": "Sign in",
+        "Language": "Habla Espanol?",
+        "IsDisabled": "true",
+        "ForgotPassword": "Forgot Password?",
+        "Error": "Invalid username or password",
+        "Copyright": "Copyright © 2024. All rights reserved."
     },
-    "login-page": {
-        "title": "Portal Login",
-        "emp-id": "Employee ID",
-        "password": "Password",
-        "submit": "login in",
-        "forgot-password": "Forgot password?",
-        "error": "Invalid username or password",
-        "copyright": "Copyright © 2024. All rights reserved."
+    "PreClocked": {
+        "Banner": "Welcome Back!",
+        "Name": "{firstName} {lastName}",
+        "Date": "{date}",
+        "HoursCard": "Total Hours:",
+        "Total-hours": "{hours}",
+        "Clock-btn": "Clock In",
+        "Copyright": "Copyright © 2024. All rights reserved."
+
     },
-    "page-1": {
-        "title": "Page 1"
+    "Settings": {
+        "Inbox": {
+            "Title": "Requests",
+            "Tab-1": "Sent",
+            "Tab-2": "Received",
+            "SentBox": [],
+            "RecBox": [],
+            "Copyright": "Copyright © 2024. All rights reserved."
+        },
+        "Profile": {
+            "Name": "{firstName} {lastName}",
+            "EmpId": "Employee ID",
+            "EmpIdValue": "{empId}",
+            "ContactE": "Contact Email",
+            "ContactEValue": "{empEmail}",
+            "ContactP": "Contact Phone",
+            "ContactPValue": "{empPhone}",
+            "Safety": "Safety Training Status",
+            "SafetyValue": [],
+            "SignOut": "Sign Out",
+            "Copyright": "Copyright © 2024. All rights reserved."
+        },
+        "Settings": {
+            "Title": "Settings",
+            "Heading": "Notifications",
+            "Notifications": {
+                "AprovedRequest": "Approved Requests",
+                "TimeOffRequest": "Time Off Requests",
+                "GeneralReminders": "General Reminders"
+            },
+            "Permisions": {
+                "Biometric": "Biometric",
+                "CameraAccess": "Camera Access",
+                "LocationAccess": "Location Access"
+            },
+            "ChangePassword": "Change Password",
+            "Copyright": "Copyright © 2024. All rights reserved."
+        }
     },
-    "page-2": {
-        "title": "Page 2"
+
+    "Employee": {
+        "QRScanner": {
+            "Title": "Clock In"
+
+        },
+
+        "QRRead": {
+            "Title": "Clock In",
+            "JobSite": "Job Site Number",
+            "JobSiteValue": "{qrRead}",
+            "CostCode": "Cost Code",
+            "CostCodeValue": "{costCode}"
+        },
+
+        "Confirmation": {
+            "Title": "Clock In",
+            "Name": "{firstName} {lastName}",
+            "JobSite": "Job Site Number",
+            "JobSiteValue": "{qrRead}"
+        }
     }
 }
