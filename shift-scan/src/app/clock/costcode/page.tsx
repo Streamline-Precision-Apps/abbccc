@@ -47,7 +47,7 @@ return (
     </ul>
     </div>
     <div className='flex-box bg-blue-400 p-5 justify-center'>
-        <Link href={'/dashboard'}>{t('test')}</Link>
+        <Link href={'/clock/verify'}>{t('test')}</Link>
     </div>
     </div>
     );

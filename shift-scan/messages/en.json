@@ -1,4 +1,4 @@
-{
+{   
     "PortalLogin": {
         "Title": "Portal Login",
         "EmpId": "Employee ID",
@@ -36,8 +36,10 @@
     },
     "costCodes": {
         "title": "Select Cost Codes",
+        "clock": "Clock In",
         "subtitle": "Please select a cost code",
         "test": "to the next page",
+        "confirm" : "punch in now",
         "recentlyUsed": { 
             "item1": "Cost Code #1",
             "item2": "Cost Code #2",
