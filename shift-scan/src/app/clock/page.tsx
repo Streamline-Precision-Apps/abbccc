@@ -1,33 +1,36 @@
 "use client";
 import React, {useEffect, useState} from 'react';
-import {NextIntlClientProvider, useTranslations} from 'next-intl';
+import { useTranslations} from 'next-intl';
 import '../globals.css';
 import Link from 'next/link';
-import UseModal from '../../../components/UI/modal';
+
 
 export default function Index() {
     const t = useTranslations('ScanPage');
+    const [today] = useState(new Date());
 
-    const [user, setUser] = useState<any>({
-        title: ' '
-    });
     useEffect(() => {
-        // simulating an api call here
+
         const fetchData = async () => {
+
             const userData = {
-                title: 'Clock In'
+                positionId: 123,
+                firstName: 'Devun',
+                lastName: 'Durst',
+                EmpId: 'durs320'
             }
-            setUser(userData);
         }
+
         fetchData();
+
     }, []);
 
     return (
         <div>
-        <h1>{t('title')}</h1>
-        <h1>QR Scanner on this page</h1>
-        <button>
-            <Link href={'/dashboard'}>{t('title')}</Link>
+        <h1 className="text-align-center text-2xl mb-4">{t('title')}</h1>
+        <h2>{t('subtitle')}</h2>
+        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            <Link href={"/clock/costcode"}>{t('test')}</Link>
         </button>
         </div>
     );

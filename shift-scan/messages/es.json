@@ -14,10 +14,25 @@
         "Name": "{firstName} {lastName}",
         "Date": "{date}",
         "HoursCard": "Horas Totales:",
-        "Total-hours": "{hours}",
+        "Total-hours": "{payPeriodHours}",
         "Clock-btn": "Registrar Entrada",
         "Copyright": "Copyright © 2024. Todos los derechos reservados."
     },
+    "Dashboard": {
+        "Settings": "Configuraciones >>",
+        "Banner": "¡Listo para empezar un dia increíble!",
+        "Name": "{firstName} {lastName}",
+        "Date": "{date}",
+        "ClockOut-btn": "Cerrar sesión",
+        "Copyright": "Derechos de Streamline Precision © 2024. Todos los derechos reservados."
+    },
+    "ScanPage": { 
+        "title" :"Ficharse",
+        "test": "simular escaneo",
+        "subtitle" : "la application tiene un  scanner de qr code aqui",
+        "manualEntry": "Ingresar manualmente"
+    },
+
     "Settings": {
         "Inbox": {
             "Title": "Solicitudes",
@@ -74,5 +89,13 @@
             "JobSite": "Número del Sitio de Trabajo",
             "JobSiteValue": "{qrRead}"
         }
+    },
+    "EmployeeCards": {
+        "SwitchJobs": "Cambiar el Sitio",
+        "Equipment": "Equipo de Trabajo",
+        "ClockOut": "Salir de la Sesion",
+        "Forms" : "Formas de Trabajo",
+        "QrGenerator": "Generador de Códigos",
+        "MyTeam": "Mi Equipo"
     }
 }
