@@ -17,8 +17,7 @@
         "HoursCard": "Total Hours:",
         "Total-hours": "{payPeriodHours}",
         "Clock-btn": "Clock In",
-        "Error":"Invalid username or password",
-        "Copyright": "Copyright © 2024. All rights reserved."
+        "Copyright": "Copyright © 2024.Streamline Precision LLC. All rights reserved."
 
     },
     "Dashboard": {
@@ -30,7 +29,20 @@
         "Copyright": "Copyright © 2024. All rights reserved."
     },
     "ScanPage": { 
-        "title" :"Clock In"
+        "title" :"Clock In",
+        "subtitle": "Please scan the QR code",
+        "test": "simulate scan",
+        "manualEntry": "or manually enter the job site number"
+    },
+    "costCodes": {
+        "title": "Select Cost Codes",
+        "subtitle": "Please select a cost code",
+        "test": "to the next page",
+        "recentlyUsed": { 
+            "item1": "Cost Code #1",
+            "item2": "Cost Code #2",
+            "item3": "Cost Code #3" 
+        }
     },
 
     "Settings": {
@@ -99,6 +111,8 @@
         "SwitchJobs": "Switch Job",
         "Equipment": "Equipment",
         "ClockOut": "Clock Out",
-        "Forms" : "Work Forms"
+        "Forms" : "Work Forms",
+        "QrGenerator": "QR Generator",
+        "MyTeam": "My Team"
     }
 }

@@ -1,11 +1,10 @@
 "use client";
 import React, {useEffect, useState} from 'react';
 import { useTranslations} from 'next-intl';
-
 import '../../globals.css';
 import Link from 'next/link';
 import UseModal from '../../../../components/UI/modal';
-import EmployeeButtons from '../../../../components/UI/employee_buttons';
+import EmployeeCardDisplay from '../../../../components/employeeCardDisplay';
 
 
 export default function Index() {
@@ -24,6 +23,7 @@ export default function Index() {
             firstName: 'Devun',
             lastName: 'Durst',
             date: '05-03-2024',
+            role: "Manager",
             }
             setUser(userData);
         }
@@ -37,13 +37,7 @@ export default function Index() {
                 <h2>{t('Name', { firstName: user.firstName, lastName: user.lastName })}</h2>
                 <h2>{t('Date', { date: user.date })}</h2>
                 <br />
-                <EmployeeButtons />
-                <button 
-                className='bg-blue-500 hover:bg-blue-700 text-white w-1/2 font-bold p-5 rounded'>
-                    <Link href="/clock">
-                    {t('ClockOut-btn')}
-                    </Link>
-                </button>
+                <EmployeeCardDisplay role={user.role}/>
                 <h2>{t('Copyright')}</h2>
             </div>
     );
