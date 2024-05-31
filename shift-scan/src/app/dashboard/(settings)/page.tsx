@@ -1,7 +1,7 @@
 "use client";
 import React, {useEffect, useState} from 'react';
-import {NextIntlClientProvider, useTranslations} from 'next-intl';
-import { useLocale } from '../../../../components/localeContext';
+import { useTranslations} from 'next-intl';
+
 import '../../globals.css';
 import Link from 'next/link';
 import UseModal from '../../../../components/UI/modal';
@@ -9,7 +9,7 @@ import EmployeeButtons from '../../../../components/UI/employee_buttons';
 
 
 export default function Index() {
-    const locale  = useLocale();
+
     const t = useTranslations('Dashboard');
 
     const [user, setUser] = useState<any>({
@@ -31,13 +31,11 @@ export default function Index() {
     }, []);
 
     return (
-        <NextIntlClientProvider locale={locale}>
             <div className='flex flex-col items-center space-y-4 '> 
                 <UseModal />
                 <h1>{t('Banner')}</h1>
                 <h2>{t('Name', { firstName: user.firstName, lastName: user.lastName })}</h2>
                 <h2>{t('Date', { date: user.date })}</h2>
-                
                 <br />
                 <EmployeeButtons />
                 <button 
@@ -48,6 +46,5 @@ export default function Index() {
                 </button>
                 <h2>{t('Copyright')}</h2>
             </div>
-            </NextIntlClientProvider>
     );
 };

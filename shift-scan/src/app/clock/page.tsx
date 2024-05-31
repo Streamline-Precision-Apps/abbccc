@@ -1,13 +1,11 @@
 "use client";
 import React, {useEffect, useState} from 'react';
 import {NextIntlClientProvider, useTranslations} from 'next-intl';
-import { useLocale } from '../../../components/localeContext';
 import '../globals.css';
 import Link from 'next/link';
 import UseModal from '../../../components/UI/modal';
 
 export default function Index() {
-    const locale  = useLocale();
     const t = useTranslations('ScanPage');
 
     const [user, setUser] = useState<any>({
@@ -25,12 +23,12 @@ export default function Index() {
     }, []);
 
     return (
-    <NextIntlClientProvider locale={locale}>
+        <div>
         <h1>{t('title')}</h1>
         <h1>QR Scanner on this page</h1>
         <button>
             <Link href={'/dashboard'}>{t('title')}</Link>
         </button>
-    </NextIntlClientProvider>
+        </div>
     );
 };
