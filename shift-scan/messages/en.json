@@ -21,6 +21,18 @@
         "Copyright": "Copyright © 2024. All rights reserved."
 
     },
+    "Dashboard": {
+        "Settings": "Settings >>",
+        "Banner": "Ready to start an amazing shift!",
+        "Name": "{firstName} {lastName}",
+        "Date": "{date}",
+        "ClockOut-btn": "Clock Out",
+        "Copyright": "Copyright © 2024. All rights reserved."
+    },
+    "ScanPage": { 
+        "title" :"Clock In"
+    },
+
     "Settings": {
         "Inbox": {
             "Title": "Requests",
@@ -81,5 +93,12 @@
             "JobSite": "Job Site Number",
             "JobSiteValue": "{qrRead}"
         }
+    },
+    
+    "EmployeeCards": {
+        "SwitchJobs": "Switch Job",
+        "Equipment": "Equipment",
+        "ClockOut": "Clock Out",
+        "Forms" : "Work Forms"
     }
 }

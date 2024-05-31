@@ -18,7 +18,7 @@ export default function Index() {
             <h2>{t('EmpId')}</h2>
             <h2>{t('Password')}</h2>
             <button>
-                <Link href={'/account'}>{t('Submit')}</Link>
+                <Link href={'/home'}>{t('Submit')}</Link>
             </button>
             <h2>{t('Language')}</h2>
             <span>

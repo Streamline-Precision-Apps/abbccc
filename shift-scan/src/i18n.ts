@@ -1,4 +1,3 @@
-import { NextIntlClientProvider } from 'next-intl';
 import { getRequestConfig } from 'next-intl/server';
 import { cookies } from 'next/headers';
 
