@@ -1,13 +1,12 @@
 "use client";
 import React, {useEffect, useState} from 'react';
-import {NextIntlClientProvider, useTranslations} from 'next-intl';
-import { useLocale } from '../../../components/localeContext';
+import { useTranslations} from 'next-intl';
 import '../globals.css';
 import Link from 'next/link';
 import UseModal from '../../../components/UI/modal';
 
 export default function Index() {
-    const locale  = useLocale();
+
     const t = useTranslations('PreClocked');
 
     const [user, setUser] = useState<any>({
@@ -31,7 +30,7 @@ export default function Index() {
     }, []);
 
     return (
-    <NextIntlClientProvider locale={locale}>
+
         <div className='flex flex-col items-center space-y-4 '> 
             
             <UseModal />
@@ -52,6 +51,6 @@ export default function Index() {
             
             <h2>{t('Copyright')}</h2>
         </div>
-        </NextIntlClientProvider>
+
     );
 };
