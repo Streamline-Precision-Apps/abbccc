@@ -7,7 +7,7 @@ import UseModal from '../../components/UI/modal';
 
 export default function Index() {
 
-    const t = useTranslations('PreClocked');
+    const t = useTranslations('page1');
 
     const [user, setUser] = useState<any>({
         firstName: '',
@@ -38,18 +38,18 @@ export default function Index() {
             <h2>{t('Name', { firstName: user.firstName, lastName: user.lastName })}</h2>
             <h2>{t('Date', { date: user.date })}</h2>
             <button className='flex justify-center p-5 border w-1/2 gap-2 bg-green-400 rounded'>
-            <h2>{t('HoursCard')}</h2>
-            <h2>{t('Total-hours', { payPeriodHours: user.payPeriodHours })}</h2>
+            <h2>{t('lN1')}</h2>
+            <h2>{t('lN2', { payPeriodHours: user.payPeriodHours })}</h2>
             </button>
             <br />
             <button 
             className='bg-blue-500 hover:bg-blue-700 text-white w-1/2 font-bold p-5 rounded'>
                 <Link href="/clock">
-                {t('Clock-btn')}
+                {t('lN3')}
                 </Link>
             </button>
             
-            <h2>{t('Copyright')}</h2>
+            <h2>{t('lN4')}</h2>
         </div>
 
     );
