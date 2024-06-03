@@ -1,78 +1,85 @@
 {
     "PortalLogin": {
         "Title": "Inicio de Sesión en el Portal",
-        "EmpId": "ID de Empleado",
-        "Password": "Contraseña",
-        "Submit": "Iniciar sesión",
-        "Language": "Uncheck to use English",
-        "ForgotPassword": "¿Olvidó su contraseña?",
+        "lN1": "ID de Empleado",
+        "lN2": "Contraseña",
+        "btn-signIn": "Iniciar sesión",
+        "lN3": "Uncheck to use English",
+        "btn-forgot": "¿Olvidó su contraseña?",
         "Error": "Usuario o contraseña inválidos",
-        "Copyright": "Copyright © 2024. Todos los derechos reservados."
+        "lN4": "Copyright © 2024. Todos los derechos reservados."
     },
-    "PreClocked": {
+    "modal-settings": {
+        "Settings" : "Configuraciones",
+        "btn-inbox" : "Bandeja de entrada",
+        "btn-profile" : "Perfil",
+        "btn-notifications" : "Notificaciones"
+    },
+
+    "page1": {
         "Banner": "¡Bienvenido de nuevo!",
         "Name": "{firstName} {lastName}",
         "Date": "{date}",
-        "HoursCard": "Horas Totales:",
-        "Total-hours": "{hours}",
-        "Clock-btn": "Registrar Entrada",
+        "lN1": "Horas Totales:",
+        "lN2": "{payPeriodHours}",
+        "lN3": "Registrar Entrada",
+        "lN4": "Copyright © 2024. Todos los derechos reservados."
+    },
+    "page2": { 
+        "title" :"Ficharse",
+        "subtitle": "Por favor, escanee el Código QR",
+        "btn-scan": "Simular Escaneo",
+        "btn-entry": "Ingresar manualmente"
+    },    
+    "page3": {
+        "title": "Cost Codes",
+        "lN1": "Trabajo encountrado: ",
+        "lN2": "seleccione un cost code:",
+        "btn-next": "Siguiente",
+        "used-codes": { 
+            "item1": "Cost Code #1",
+            "item2": "Cost Code #2",
+            "item3": "Cost Code #3" 
+        }
+    }, 
+    "page4": {
+        "lN1": "Ficharse",
+        "lN2" : "Trabajo encountrado:",
+        "lN3" : "Cost Code:",
+        "lN4" : "Inciciar un turno!"
+    },
+
+    "page5": {
+        "lN1": "Ficharse",
+        "lN2" : "Trabajo encountrado:",
+        "lN3" : "Cost Code:",
+        "lN4" : "Ficharse exitosamente!",
+        "lN5" : "siguiente pagina"
+    },
+    
+    "page6": {
+        "": "ya listo para comenzar un turno increíble!",
+        "Name": "{firstName} {lastName}",
+        "Date": "{date}",
+        "ClockOut-btn": "Cerrar sesión",
         "Copyright": "Copyright © 2024. Todos los derechos reservados."
     },
-    "Settings": {
-        "Inbox": {
-            "Title": "Solicitudes",
-            "Tab-1": "Enviadas",
-            "Tab-2": "Recibidas",
-            "SentBox": [],
-            "RecBox": [],
-            "Copyright": "Copyright © 2024. Todos los derechos reservados."
-        },
-        "Profile": {
-            "Name": "{firstName} {lastName}",
-            "EmpId": "ID de Empleado",
-            "EmpIdValue": "{empId}",
-            "ContactE": "Correo Electrónico de Contacto",
-            "ContactEValue": "{empEmail}",
-            "ContactP": "Teléfono de Contacto",
-            "ContactPValue": "{empPhone}",
-            "Safety": "Estado de la Formación en Seguridad",
-            "SafetyValue": [],
-            "SignOut": "Cerrar Sesión",
-            "Copyright": "Copyright © 2024. Todos los derechos reservados."
-        },
-        "Settings": {
-            "Title": "Configuraciones",
-            "Heading": "Notificaciones",
-            "Notifications": {
-                "AprovedRequest": "Solicitudes Aprobadas",
-                "TimeOffRequest": "Solicitudes de Tiempo Libre",
-                "GeneralReminders": "Recordatorios Generales"
-            },
-            "Permisions": {
-                "Biometric": "Biométrico",
-                "CameraAccess": "Acceso a la Cámara",
-                "LocationAccess": "Acceso a la Ubicación"
-            },
-            "ChangePassword": "Cambiar Contraseña",
-            "Copyright": "Copyright © 2024. Todos los derechos reservados."
-        }
+
+    "EmployeeCards": {
+        "SwitchJobs": "Cambiar el Sitio",
+        "Equipment": "Equipo de Trabajo",
+        "ClockOut": "Salir de la Sesion",
+        "Forms" : "Formas de Trabajo",
+        "QrGenerator": "Generador de Códigos",
+        "MyTeam": "Mi Equipo"
     },
-    "Employee": {
-        "QRScanner": {
-            "Title": "Registrar Entrada"
-        },
-        "QRRead": {
-            "Title": "Registrar Entrada",
-            "JobSite": "Número del Sitio de Trabajo",
-            "JobSiteValue": "{qrRead}",
-            "CostCode": "Código de Costo",
-            "CostCodeValue": "{costCode}"
-        },
-        "Confirmation": {
-            "Title": "Registrar Entrada",
-            "Name": "{firstName} {lastName}",
-            "JobSite": "Número del Sitio de Trabajo",
-            "JobSiteValue": "{qrRead}"
-        }
+
+    "dashboard": {
+        "Banner": "¡Listo para empezar un dia increíble!",
+        "Name": "{firstName} {lastName}",
+        "Date": "{date}",
+        "lN1": "Derechos de Streamline Precision © 2024. Todos los derechos reservados."
     }
+
 }
+
