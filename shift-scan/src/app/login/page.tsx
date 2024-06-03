@@ -13,18 +13,16 @@ export default function Index() {
     return (
         <div> 
             <h1>{t('Title')}</h1>
-            <h2>{t('EmpId')}</h2>
-            <h2>{t('Password')}</h2>
-            <button>
-                <Link href={'/'}>{t('Submit')}</Link>
+            <h2>{t('lN1')}</h2>
+            <h2>{t('lN2')}</h2>
+            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                <Link href={'/'}>{t('btn-signIn')}</Link>
             </button>
-            <h2>{t('Language')}</h2>
             <span>
                 <LocaleCheckBox />
             </span>
-            <h2>{t('ForgotPassword')}</h2>
-            <h2>{t('Error')}</h2>
-            <h2>{t('Copyright')}</h2>
+            <h2>{t('btn-forgot')}</h2>
+            <h2>{t('lN4')}</h2>
         </div>
     );
 };

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Cookies from "js-cookie";
+import { useTranslations } from 'next-intl';
 
 const changeLocale = (newLocale) => {
     Cookies.set('locale', newLocale, { expires: 365 });
@@ -7,6 +8,7 @@ const changeLocale = (newLocale) => {
 };
 
 const LocaleCheckBox = () => {
+    const t = useTranslations('PortalLogin');
     const [locale, setLocale] = useState("en");
 
     useEffect(() => {
@@ -24,12 +26,12 @@ const LocaleCheckBox = () => {
     return (
         <div>
             <label>
+                <span>{t('lN3')}  </span>
                 <input
                     type="checkbox"
                     onChange={handleChange}
                     checked={locale === "es"}
                 />
-                Español
             </label>
         </div>
     );

@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 
 export default function Index() {
-    const t = useTranslations('ScanPage');
+    const t = useTranslations('page2');
     const [today] = useState(new Date());
 
     useEffect(() => {
@@ -30,7 +30,7 @@ export default function Index() {
         <h1 className="text-align-center text-2xl mb-4">{t('title')}</h1>
         <h2>{t('subtitle')}</h2>
         <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-            <Link href={"/clock/costcode"}>{t('test')}</Link>
+            <Link href={"/clock/costcode"}>{t('btn-scan')}</Link>
         </button>
         </div>
     );

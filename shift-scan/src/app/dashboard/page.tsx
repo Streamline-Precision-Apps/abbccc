@@ -1,15 +1,15 @@
 "use client";
 import React, {useEffect, useState} from 'react';
 import { useTranslations} from 'next-intl';
-import '../../globals.css';
+import '../globals.css';
 import Link from 'next/link';
-import UseModal from '../../../../components/UI/modal';
-import EmployeeCardDisplay from '../../../../components/employeeCardDisplay';
+import UseModal from '../../../components/UI/modal';
+import EmployeeCardDisplay from '../../../components/employeeCardDisplay';
 
 
 export default function Index() {
 
-    const t = useTranslations('Dashboard');
+    const t = useTranslations('dashboard');
 
     const [user, setUser] = useState<any>({
         firstName: '',
@@ -38,7 +38,7 @@ export default function Index() {
                 <h2>{t('Date', { date: user.date })}</h2>
                 <br />
                 <EmployeeCardDisplay role={user.role}/>
-                <h2>{t('Copyright')}</h2>
+                <h2>{t('lN1')}</h2>
             </div>
     );
 };
