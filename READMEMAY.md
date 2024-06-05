@@ -32,11 +32,7 @@ I got it working, now i am making a button switch component
 npm install nookies
 
 
-<<<<<<< Devun's-Branch
 
-account-info prisma db
-![prisma](image.png)
-=======
 All of the packages I have installed as of 5/30/24: 
 
 shift-scan@0.1.0 C:\Users\19362\Streamline-Precision-Timecard\shift-scan
@@ -60,4 +56,4 @@ shift-scan@0.1.0 C:\Users\19362\Streamline-Precision-Timecard\shift-scan
 ├── react@18.3.1
 ├── tailwindcss@3.4.3
 └── typescript@5.4.5
->>>>>>> main
+
