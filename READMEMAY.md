@@ -32,6 +32,38 @@ I got it working, now i am making a button switch component
 npm install nookies
 
 
+<<<<<<< Devun's-Branch
 
 account-info prisma db
 ![prisma](image.png)
+=======
+<<<<<<< Devun's-Branch
+
+account-info prisma db
+![prisma](image.png)
+=======
+All of the packages I have installed as of 5/30/24: 
+
+shift-scan@0.1.0 C:\Users\19362\Streamline-Precision-Timecard\shift-scan
+├── @types/cookie@0.6.0
+├── @types/js-cookie@3.0.6
+├── @types/node@20.12.12
+├── @types/react-dom@18.3.0
+├── @types/react@18.3.3
+├── @typescript-eslint/eslint-plugin@7.10.0
+├── @typescript-eslint/parser@7.10.0
+├── autoprefixer@10.4.19
+├── eslint-config-next@14.2.3
+├── eslint-plugin-next@0.0.0
+├── eslint@8.57.0
+├── js-cookie@3.0.5
+├── next-intl@3.14.1
+├── next@14.2.3
+├── nookies@2.5.2
+├── postcss@8.4.38
+├── react-dom@18.3.1
+├── react@18.3.1
+├── tailwindcss@3.4.3
+└── typescript@5.4.5
+>>>>>>> main
+>>>>>>> main
