@@ -11,7 +11,7 @@ const recentlyUsedKeys = ['item1', 'item2', 'item3'];
 
 
 const [today] = useState(new Date());
-const [jobSite] = useState('C137383'); 
+const [jobSite] = useState('C135000'); 
 // by using usestate we can change the value of the variable later
 useEffect(() => {
     const fetchData = async () => {

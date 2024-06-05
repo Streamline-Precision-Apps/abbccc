@@ -26,7 +26,7 @@ export default function Index() {
     }, []);
 
     return (
-        <div>
+        <div className='flex flex-col items-center'>
         <h1 className="text-align-center text-2xl mb-4">{t('title')}</h1>
         <h2>{t('subtitle')}</h2>
         <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
