@@ -30,3 +30,8 @@ i then uninstalled node and reinstalled it and fix the error with next/babel tha
 
 I got it working, now i am making a button switch component
 npm install nookies
+
+
+
+account-info prisma db
+![prisma](image.png)

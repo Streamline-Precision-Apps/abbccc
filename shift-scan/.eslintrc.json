@@ -10,5 +10,23 @@
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "project": "./tsconfig.json"
+  },
+  "rules": {
+    "camelcase": ["error", { "properties": "always" }],
+    "@typescript-eslint/naming-convention": [
+      "error",
+      {
+        "selector": "variableLike",
+        "format": ["camelCase"]
+      },
+      {
+        "selector": "variable",
+        "format": ["camelCase"],
+        "leadingUnderscore": "forbid"
+      }
+    ],
+    "quotes": ["error", "double", { "avoidEscape": true }],
+    "no-console": ["error", { "allow": ["warn", "error"] }]
   }
 }
+

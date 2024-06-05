@@ -1,0 +1,362 @@
+// Need these to function with client and db
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+//-------------------------------------------------------------------------------------------------//
+//-------------------------------------------------------------------------------------------------//
+// employee account permission provide the correct view of the product!
+// this enum represents all the role levels in order to maintain a hiearchy of 
+// employee -> floorman -> siteManger -> SuperManager -> Admin -> SuperAdmin
+//-------------------------------------------------------------------------------------------------//
+// USER: Base level operation to the app can only Read, and write over files 
+// but can not edit stored data
+//-------------------------------------------------------------------------------------------------//
+// MANAGERS: given to trustworthy individuals that lead teams. They have access
+// to team submitted records and can alter them before submitting them to the office,
+// they also have access to QR generation to clock in and get team clocked in if a 
+//  qrcode was missing. 
+// Provides the answer to the question what do I do If I have no QR code on me?
+//-------------------------------------------------------------------------------------------------//
+// ADMIN: Given to people that need full access to certain items but not sensitive data
+// can view the app as a dashboard, see all projects underneath their supervision and lastly 
+// they can use also export data via CSV files
+// Later developments: include Looking at desired staticstics and creation and modification of forms 
+//-------------------------------------------------------------------------------------------------//
+
+//SUPER ADMIN: Given All privelages and rights to change data and update things in the database. 
+//-------------------------------------------------------------------------------------------------//
+//-------------------------------------------------------------------------------------------------//
+enum permission {
+  USER
+  MANAGER
+  ADMIN
+  SUPERADMIN
+}
+
+//-------------------------------------------------------------------------------------------------//
+// Truck You see a Truck Manger widget
+// Tasco sees Tasco manager widget
+// Base sees general widgets
+//-------------------------------------------------------------------------------------------------//
+enum views {
+  TRUCK
+  TASCO
+  BASE
+}
+
+enum formStatus {
+  PENDING
+  APPROVED
+  DENIED
+}
+
+//-------------------------------------------------------------------------------------------------//
+// Account holds the privelage levels of the users Admin can super admin can update the employee priv
+// this gets checked when they sign in allong with EmployeeView
+model EmployeeAccount {
+  account_id               Int            @id @default(autoincrement())
+  employee_id              Int            @unique
+  employee_username        String
+  employee_password        String
+  employee_truck_view      Boolean?
+  employee_tasco_view      Boolean?
+  employee_labor_view      Boolean?
+  employee_privilege_level permission     @default(USER)
+  createdAt                DateTime       @default(now())
+  updatedAt                DateTime       @updatedAt
+  employee                 Employee       @relation(fields: [employee_id], references: [employee_id])
+}
+
+//-------------------------------------------------------------------------------------------------//
+// employee model of what data/information he would hold
+model Employee {
+  employee_id               Int                    @id @default(autoincrement())
+  employee_first_name       String
+  employee_middle_name      String?
+  employee_last_name        String
+  employee_last_name_2      String?
+  employee_dob              DateTime
+  employee_start_date       DateTime? //set null for people who dont remeber start date
+  employee_termination_date DateTime?
+  employee_availability     String
+  createdAt                 DateTime               @default(now())
+  updatedAt                 DateTime               @updatedAt
+  crewMembers               CrewMember[]
+  timeRequestForms          FormData[]
+  timeSheet                 TimeSheet[]
+  employeeEquipmentLogs     EmployeeEquipmentLog[]
+  employeePositions         EmployeePosition[]
+  contacts                  ContactJoin[]
+  addresses                 AddressPeople[]
+  employeeAccount           EmployeeAccount?
+}
+
+//----------------------------------------------------------------------------------------------------------------------//
+// Jobbsite section
+//----------------------------------------------------------------------------------------------------------------------//
+model Jobsite {
+  jobsite_id       Int               @id @default(autoincrement())
+  jobsite_name     String
+  jobsite_active   Boolean           @default(true)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  costCodeJobsites CostCodeJobsite[]
+  addresses        AddressJobsite[]
+  crew             Crew[]
+}
+
+//----------------------------------------------------------------------------------------------------------------------//
+model TimeSheet {
+  submit_date           DateTime @default(now())
+  form_id               Int      @id @default(autoincrement())
+  employee_id           Int
+  date                  DateTime @default(now())
+  jobsite_id            Int
+  costcode              String
+  vehicle_id            Int?
+  start_time            DateTime
+  end_time              DateTime
+  total_break_time      Float?
+  duration              Float
+  starting_mileage      Int?
+  ending_mileage        Int?
+  left_idaho            Boolean  @default(false)
+  equipment_hauled      String?
+  materials_hauled      String?
+  hauled_loads_quantity Int?
+  refueling_gallons     Int?
+  timesheet_comments    String
+  app_comment           String
+  employee              Employee @relation(fields: [employee_id], references: [employee_id])
+}
+
+//----------------------------------------------------------------------------------------------------------------------//
+model Vehicle {
+  vehicle_id      Int      @id @default(autoincrement())
+  name            String
+  vehicle_mileage Int
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+//----------------------------------------------------------------------------------------------------------------------//
+model Trailer {
+  trailer_id      Int      @id @default(autoincrement())
+  name            String
+  vehicle_mileage Int
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+//----------------------------------------------------------------------------------------------------------------------//
+model EmployeeEquipmentLog {
+  employee_equipment_log_id Int       @id @default(autoincrement())
+  equipment_id              Int
+  employee_id               Int
+  log_start_time            DateTime
+  log_end_time              DateTime
+  equipment_notes           String
+  equipment_Status          String    @default("Operational")
+  createdAt                 DateTime  @default(now())
+  updatedAt                 DateTime  @updatedAt
+  equipment                 Equipment @relation(fields: [equipment_id], references: [equipment_id])
+  employee                  Employee  @relation(fields: [employee_id], references: [employee_id])
+}
+
+//----------------------------------------------------------------------------------------------------------------------//
+//must have a unique QR for equipment status to be applied
+//do we need to limit scanned equipment?  equipmentStatus 
+// designed to help filter equipment by page rendering -> equipment_tag
+//----------------------------------------------------------------------------------------------------------------------//
+model Equipment {
+  equipment_id          Int                    @id @default(autoincrement())
+  equipment_name        String
+  equipment_description String
+  equipment_status      Boolean
+  equipment_tag         String
+  last_inspection       DateTime
+  last_repair           DateTime?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  employeeEquipmentLogs EmployeeEquipmentLog[]
+  jobsiteEquipmentLog   JobsiteEquipmentLog[]
+}
+
+model JobsiteEquipmentLog {
+  jobsite_equipment_log_id Int       @id @default(autoincrement())
+  jobsite_id               Int
+  equipment_id             Int
+  start_time               DateTime
+  end_time                 DateTime
+  createdAt                DateTime  @default(now())
+  updatedAt                DateTime  @updatedAt
+  equipment                Equipment @relation(fields: [equipment_id], references: [equipment_id])
+}
+
+//----------------------------------------------------------------------------------------------------------------------//
+
+model CostCodeJobsite {
+  cost_code_jobsite_id Int      @id @default(autoincrement())
+  jobsite_id           Int
+  cost_code_id         Int
+  log_start_time       DateTime
+  log_end_time         DateTime
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  jobsite              Jobsite  @relation(fields: [jobsite_id], references: [jobsite_id])
+  costCode             CostCode @relation(fields: [cost_code_id], references: [cost_code_id])
+}
+
+model CostCode {
+  cost_code_id          Int               @id @default(autoincrement())
+  cost_code             String
+  cost_code_description String
+  cost_code_type        String
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+  CostCodeJobsite       CostCodeJobsite[]
+}
+
+//----------------------------------------------------------------------------------------------------------------------//
+// crew data for seeing the entire crew and enabling site linking
+model CrewMember {
+  crew_member_id Int      @id @default(autoincrement())
+  employee_id    Int
+  crew_id        Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  employee       Employee @relation(fields: [employee_id], references: [employee_id])
+  crew           Crew     @relation(fields: [crew_id], references: [crew_id])
+}
+
+model Crew {
+  crew_id          Int          @id @default(autoincrement())
+  crew_name        String
+  crew_description String
+  jobsite_id       Int
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  crewMembers      CrewMember[]
+  jobsite          Jobsite      @relation(fields: [jobsite_id], references: [jobsite_id])
+}
+
+//----------------------------------------------------------------------------------------------------------------------//
+// employee positions
+model EmployeePosition {
+  employee_positions_id Int      @id @default(autoincrement())
+  employee_id           Int
+  position_id           Int
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  employee              Employee @relation(fields: [employee_id], references: [employee_id])
+  role                  Position @relation(fields: [position_id], references: [position_id])
+}
+
+model Position {
+  position_id       Int                @id @default(autoincrement())
+  position_name     views
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  employeePositions EmployeePosition[]
+}
+
+//----------------------------------------------------------------------------------------------------------------------//
+
+//----------------------------------------------------------------------------------------------------------------------//
+//phone number models
+
+model Contact {
+  contact_id           Int           @id @default(autoincrement())
+  phone_number         String?
+  email                String
+  emergency_contact    String
+  emergency_contact_no String
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+  contactJoin          ContactJoin[]
+}
+
+model ContactJoin {
+  contact_join_id Int      @id @default(autoincrement())
+  contact_id      Int
+  employee_id     Int
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  contact         Contact  @relation(fields: [contact_id], references: [contact_id])
+  employee        Employee @relation(fields: [employee_id], references: [employee_id])
+}
+
+//----------------------------------------------------------------------------------------------------------------------//
+// Address models
+
+model AddressPeople {
+  address_assigner_id Int      @id @default(autoincrement())
+  address_id          Int
+  employee_id         Int
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  address             Address  @relation(fields: [address_id], references: [address_id])
+  employee            Employee @relation(fields: [employee_id], references: [employee_id])
+}
+
+model Address {
+  address_id  Int             @id @default(autoincrement())
+  street_no   Int
+  street_name String
+  city        String
+  state       String
+  zipcode     Int
+  country     String
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  addresses   AddressPeople[]
+}
+
+//----------------------------------------------------------------------------------------------------------------------//
+// holds all jobsite
+model AddressJobsite {
+  address_assigner_id Int         @id @default(autoincrement())
+  address_id          Int
+  jobsite_id          Int
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+  address             JobLocation @relation(fields: [address_id], references: [address_id])
+  jobsite             Jobsite     @relation(fields: [jobsite_id], references: [jobsite_id])
+}
+
+model JobLocation {
+  address_id  Int              @id @default(autoincrement())
+  street_no   Int
+  street_name String
+  city        String
+  state       String
+  zipcode     Int
+  country     String
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  addresses   AddressJobsite[]
+}
+
+//----------------------------------------------------------------------------------------------------------------------//
+// one form in our db part of settings
+model FormData {
+  form_id               Int        @id @default(autoincrement())
+  form_type             String
+  form_name             String
+  employee_id           Int
+  start_date_requested  DateTime
+  end_date_requested    DateTime
+  time_request_type     String
+  time_request_comments String
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
+  status                formStatus @default(PENDING)
+  employee              Employee   @relation(fields: [employee_id], references: [employee_id])
+}
