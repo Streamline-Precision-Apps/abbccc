@@ -20,7 +20,6 @@
         "Name": "{firstName} {lastName}",
         "Date": "{date}",
         "lN1": "Total Hours:",
-        "lN2": "{payPeriodHours}",
         "lN3": "Clock In",
         "lN4": "Copyright © 2024.Streamline Precision LLC. All rights reserved."
     },

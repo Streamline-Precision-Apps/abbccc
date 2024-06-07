@@ -14,8 +14,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 const response = {
                     firstName: employee.employee_first_name,
                     lastName: employee.employee_last_name,
-                    payPeriodHours: "40.00",
-                    date: "05-03-2024",
+                    payPeriodHours: 40.00,
+                    date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }), // this may be its own component
                 };
                 res.status(200).json(response);
             } else {
