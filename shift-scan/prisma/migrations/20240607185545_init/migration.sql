@@ -2,10 +2,10 @@
 CREATE TYPE "permission" AS ENUM ('USER', 'MANAGER', 'ADMIN', 'SUPERADMIN');
 
 -- CreateEnum
-CREATE TYPE "views" AS ENUM ('TRUCK', 'TASCO', 'BASE');
+CREATE TYPE "formStatus" AS ENUM ('PENDING', 'APPROVED', 'DENIED');
 
 -- CreateEnum
-CREATE TYPE "formStatus" AS ENUM ('PENDING', 'APPROVED', 'DENIED');
+CREATE TYPE "tags" AS ENUM ('Truck', 'Trailer', 'Equipment');
 
 -- CreateTable
 CREATE TABLE "EmployeeAccount" (
@@ -13,6 +13,9 @@ CREATE TABLE "EmployeeAccount" (
     "employee_id" INTEGER NOT NULL,
     "employee_username" TEXT NOT NULL,
     "employee_password" TEXT NOT NULL,
+    "employee_truck_view" BOOLEAN,
+    "employee_tasco_view" BOOLEAN,
+    "employee_labor_view" BOOLEAN,
     "employee_privilege_level" "permission" NOT NULL DEFAULT 'USER',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -40,6 +43,7 @@ CREATE TABLE "Employee" (
 -- CreateTable
 CREATE TABLE "Jobsite" (
     "jobsite_id" SERIAL NOT NULL,
+    "qr_id" TEXT NOT NULL,
     "jobsite_name" TEXT NOT NULL,
     "jobsite_active" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -56,6 +60,8 @@ CREATE TABLE "TimeSheet" (
     "date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "jobsite_id" INTEGER NOT NULL,
     "costcode" TEXT NOT NULL,
+    "nu" TEXT,
+    "Fp" TEXT,
     "vehicle_id" INTEGER,
     "start_time" TIMESTAMP(3) NOT NULL,
     "end_time" TIMESTAMP(3) NOT NULL,
@@ -63,48 +69,27 @@ CREATE TABLE "TimeSheet" (
     "duration" DOUBLE PRECISION NOT NULL,
     "starting_mileage" INTEGER,
     "ending_mileage" INTEGER,
-    "left_idaho" BOOLEAN NOT NULL DEFAULT false,
+    "left_idaho" BOOLEAN DEFAULT false,
     "equipment_hauled" TEXT,
     "materials_hauled" TEXT,
     "hauled_loads_quantity" INTEGER,
     "refueling_gallons" INTEGER,
-    "timesheet_comments" TEXT NOT NULL,
-    "app_comment" TEXT NOT NULL,
+    "timesheet_comments" TEXT,
+    "app_comment" TEXT,
 
     CONSTRAINT "TimeSheet_pkey" PRIMARY KEY ("form_id")
-);
-
--- CreateTable
-CREATE TABLE "Vehicle" (
-    "vehicle_id" SERIAL NOT NULL,
-    "name" TEXT NOT NULL,
-    "vehicle_mileage" INTEGER NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "Vehicle_pkey" PRIMARY KEY ("vehicle_id")
-);
-
--- CreateTable
-CREATE TABLE "Trailer" (
-    "trailer_id" SERIAL NOT NULL,
-    "name" TEXT NOT NULL,
-    "vehicle_mileage" INTEGER NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "Trailer_pkey" PRIMARY KEY ("trailer_id")
 );
 
 -- CreateTable
 CREATE TABLE "EmployeeEquipmentLog" (
     "employee_equipment_log_id" SERIAL NOT NULL,
     "equipment_id" INTEGER NOT NULL,
+    "jobsite_id" INTEGER NOT NULL,
     "employee_id" INTEGER NOT NULL,
-    "log_start_time" TIMESTAMP(3) NOT NULL,
-    "log_end_time" TIMESTAMP(3) NOT NULL,
+    "start_time" TIMESTAMP(3) NOT NULL,
+    "end_time" TIMESTAMP(3) NOT NULL,
     "equipment_notes" TEXT NOT NULL,
-    "equipment_Status" TEXT NOT NULL DEFAULT 'Operational',
+    "equipment_status" TEXT NOT NULL DEFAULT 'Operational',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -114,29 +99,26 @@ CREATE TABLE "EmployeeEquipmentLog" (
 -- CreateTable
 CREATE TABLE "Equipment" (
     "equipment_id" SERIAL NOT NULL,
-    "equipment_name" TEXT NOT NULL,
-    "equipment_description" TEXT NOT NULL,
-    "equipment_status" BOOLEAN NOT NULL,
-    "equipment_tag" TEXT NOT NULL,
-    "last_inspection" TIMESTAMP(3) NOT NULL,
+    "is_vehicle" BOOLEAN NOT NULL,
+    "is_trailer" BOOLEAN NOT NULL,
+    "qr_id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+    "status" BOOLEAN NOT NULL,
+    "equipment_tag" "tags" NOT NULL,
+    "last_inspection" TIMESTAMP(3),
     "last_repair" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "make" TEXT,
+    "model" TEXT,
+    "year" TEXT,
+    "license_plate" TEXT,
+    "is_registered" TIMESTAMP(3),
+    "mileage" INTEGER,
+    "is_active" BOOLEAN NOT NULL DEFAULT true,
 
     CONSTRAINT "Equipment_pkey" PRIMARY KEY ("equipment_id")
-);
-
--- CreateTable
-CREATE TABLE "JobsiteEquipmentLog" (
-    "jobsite_equipment_log_id" SERIAL NOT NULL,
-    "jobsite_id" INTEGER NOT NULL,
-    "equipment_id" INTEGER NOT NULL,
-    "start_time" TIMESTAMP(3) NOT NULL,
-    "end_time" TIMESTAMP(3) NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "JobsiteEquipmentLog_pkey" PRIMARY KEY ("jobsite_equipment_log_id")
 );
 
 -- CreateTable
@@ -144,8 +126,9 @@ CREATE TABLE "CostCodeJobsite" (
     "cost_code_jobsite_id" SERIAL NOT NULL,
     "jobsite_id" INTEGER NOT NULL,
     "cost_code_id" INTEGER NOT NULL,
-    "log_start_time" TIMESTAMP(3) NOT NULL,
-    "log_end_time" TIMESTAMP(3) NOT NULL,
+    "employee_id" INTEGER NOT NULL,
+    "start_time" TIMESTAMP(3) NOT NULL,
+    "end_time" TIMESTAMP(3) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -159,7 +142,7 @@ CREATE TABLE "CostCode" (
     "cost_code_description" TEXT NOT NULL,
     "cost_code_type" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "CostCode_pkey" PRIMARY KEY ("cost_code_id")
 );
@@ -180,11 +163,21 @@ CREATE TABLE "Crew" (
     "crew_id" SERIAL NOT NULL,
     "crew_name" TEXT NOT NULL,
     "crew_description" TEXT NOT NULL,
-    "jobsite_id" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Crew_pkey" PRIMARY KEY ("crew_id")
+);
+
+-- CreateTable
+CREATE TABLE "CrewJobsite" (
+    "crewJobsite_id" SERIAL NOT NULL,
+    "crew_id" INTEGER NOT NULL,
+    "jobsite_id" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "CrewJobsite_pkey" PRIMARY KEY ("crewJobsite_id")
 );
 
 -- CreateTable
@@ -201,32 +194,11 @@ CREATE TABLE "EmployeePosition" (
 -- CreateTable
 CREATE TABLE "Position" (
     "position_id" SERIAL NOT NULL,
-    "position_name" "views" NOT NULL,
+    "position_name" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Position_pkey" PRIMARY KEY ("position_id")
-);
-
--- CreateTable
-CREATE TABLE "EmployeeView" (
-    "employee_View_id" SERIAL NOT NULL,
-    "employee_id" INTEGER NOT NULL,
-    "view_id" INTEGER NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "EmployeeView_pkey" PRIMARY KEY ("employee_View_id")
-);
-
--- CreateTable
-CREATE TABLE "View" (
-    "view_id" SERIAL NOT NULL,
-    "view_name" "views" NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "View_pkey" PRIMARY KEY ("view_id")
 );
 
 -- CreateTable
@@ -254,14 +226,15 @@ CREATE TABLE "ContactJoin" (
 );
 
 -- CreateTable
-CREATE TABLE "AddressPeople" (
+CREATE TABLE "AddressAssigner" (
     "address_assigner_id" SERIAL NOT NULL,
     "address_id" INTEGER NOT NULL,
-    "employee_id" INTEGER NOT NULL,
+    "employee_id" INTEGER,
+    "jobsite_id" INTEGER,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "AddressPeople_pkey" PRIMARY KEY ("address_assigner_id")
+    CONSTRAINT "AddressAssigner_pkey" PRIMARY KEY ("address_assigner_id")
 );
 
 -- CreateTable
@@ -277,32 +250,6 @@ CREATE TABLE "Address" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Address_pkey" PRIMARY KEY ("address_id")
-);
-
--- CreateTable
-CREATE TABLE "AddressJobsite" (
-    "address_assigner_id" SERIAL NOT NULL,
-    "address_id" INTEGER NOT NULL,
-    "jobsite_id" INTEGER NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "AddressJobsite_pkey" PRIMARY KEY ("address_assigner_id")
-);
-
--- CreateTable
-CREATE TABLE "JobLocation" (
-    "address_id" SERIAL NOT NULL,
-    "street_no" INTEGER NOT NULL,
-    "street_name" TEXT NOT NULL,
-    "city" TEXT NOT NULL,
-    "state" TEXT NOT NULL,
-    "zipcode" INTEGER NOT NULL,
-    "country" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "JobLocation_pkey" PRIMARY KEY ("address_id")
 );
 
 -- CreateTable
@@ -325,6 +272,24 @@ CREATE TABLE "FormData" (
 -- CreateIndex
 CREATE UNIQUE INDEX "EmployeeAccount_employee_id_key" ON "EmployeeAccount"("employee_id");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "Jobsite_qr_id_key" ON "Jobsite"("qr_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Equipment_qr_id_key" ON "Equipment"("qr_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "CrewJobsite_crew_id_jobsite_id_key" ON "CrewJobsite"("crew_id", "jobsite_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "EmployeePosition_position_id_employee_id_key" ON "EmployeePosition"("position_id", "employee_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Position_position_name_key" ON "Position"("position_name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "AddressAssigner_employee_id_jobsite_id_key" ON "AddressAssigner"("employee_id", "jobsite_id");
+
 -- AddForeignKey
 ALTER TABLE "EmployeeAccount" ADD CONSTRAINT "EmployeeAccount_employee_id_fkey" FOREIGN KEY ("employee_id") REFERENCES "Employee"("employee_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -332,13 +297,16 @@ ALTER TABLE "EmployeeAccount" ADD CONSTRAINT "EmployeeAccount_employee_id_fkey" 
 ALTER TABLE "TimeSheet" ADD CONSTRAINT "TimeSheet_employee_id_fkey" FOREIGN KEY ("employee_id") REFERENCES "Employee"("employee_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "EmployeeEquipmentLog" ADD CONSTRAINT "EmployeeEquipmentLog_equipment_id_fkey" FOREIGN KEY ("equipment_id") REFERENCES "Equipment"("equipment_id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "EmployeeEquipmentLog" ADD CONSTRAINT "EmployeeEquipmentLog_employee_id_fkey" FOREIGN KEY ("employee_id") REFERENCES "Employee"("employee_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "JobsiteEquipmentLog" ADD CONSTRAINT "JobsiteEquipmentLog_equipment_id_fkey" FOREIGN KEY ("equipment_id") REFERENCES "Equipment"("equipment_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "EmployeeEquipmentLog" ADD CONSTRAINT "EmployeeEquipmentLog_jobsite_id_fkey" FOREIGN KEY ("jobsite_id") REFERENCES "Jobsite"("jobsite_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "EmployeeEquipmentLog" ADD CONSTRAINT "EmployeeEquipmentLog_equipment_id_fkey" FOREIGN KEY ("equipment_id") REFERENCES "Equipment"("equipment_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "CostCodeJobsite" ADD CONSTRAINT "CostCodeJobsite_employee_id_fkey" FOREIGN KEY ("employee_id") REFERENCES "Employee"("employee_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "CostCodeJobsite" ADD CONSTRAINT "CostCodeJobsite_jobsite_id_fkey" FOREIGN KEY ("jobsite_id") REFERENCES "Jobsite"("jobsite_id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -353,7 +321,10 @@ ALTER TABLE "CrewMember" ADD CONSTRAINT "CrewMember_employee_id_fkey" FOREIGN KE
 ALTER TABLE "CrewMember" ADD CONSTRAINT "CrewMember_crew_id_fkey" FOREIGN KEY ("crew_id") REFERENCES "Crew"("crew_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Crew" ADD CONSTRAINT "Crew_jobsite_id_fkey" FOREIGN KEY ("jobsite_id") REFERENCES "Jobsite"("jobsite_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "CrewJobsite" ADD CONSTRAINT "CrewJobsite_crew_id_fkey" FOREIGN KEY ("crew_id") REFERENCES "Crew"("crew_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "CrewJobsite" ADD CONSTRAINT "CrewJobsite_jobsite_id_fkey" FOREIGN KEY ("jobsite_id") REFERENCES "Jobsite"("jobsite_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "EmployeePosition" ADD CONSTRAINT "EmployeePosition_employee_id_fkey" FOREIGN KEY ("employee_id") REFERENCES "Employee"("employee_id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -362,28 +333,19 @@ ALTER TABLE "EmployeePosition" ADD CONSTRAINT "EmployeePosition_employee_id_fkey
 ALTER TABLE "EmployeePosition" ADD CONSTRAINT "EmployeePosition_position_id_fkey" FOREIGN KEY ("position_id") REFERENCES "Position"("position_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "EmployeeView" ADD CONSTRAINT "EmployeeView_view_id_fkey" FOREIGN KEY ("view_id") REFERENCES "View"("view_id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "EmployeeView" ADD CONSTRAINT "EmployeeView_employee_id_fkey" FOREIGN KEY ("employee_id") REFERENCES "EmployeeAccount"("employee_id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "ContactJoin" ADD CONSTRAINT "ContactJoin_contact_id_fkey" FOREIGN KEY ("contact_id") REFERENCES "Contact"("contact_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ContactJoin" ADD CONSTRAINT "ContactJoin_employee_id_fkey" FOREIGN KEY ("employee_id") REFERENCES "Employee"("employee_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "AddressPeople" ADD CONSTRAINT "AddressPeople_address_id_fkey" FOREIGN KEY ("address_id") REFERENCES "Address"("address_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "AddressAssigner" ADD CONSTRAINT "AddressAssigner_address_id_fkey" FOREIGN KEY ("address_id") REFERENCES "Address"("address_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "AddressPeople" ADD CONSTRAINT "AddressPeople_employee_id_fkey" FOREIGN KEY ("employee_id") REFERENCES "Employee"("employee_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "AddressAssigner" ADD CONSTRAINT "AddressAssigner_employee_id_fkey" FOREIGN KEY ("employee_id") REFERENCES "Employee"("employee_id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "AddressJobsite" ADD CONSTRAINT "AddressJobsite_address_id_fkey" FOREIGN KEY ("address_id") REFERENCES "JobLocation"("address_id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "AddressJobsite" ADD CONSTRAINT "AddressJobsite_jobsite_id_fkey" FOREIGN KEY ("jobsite_id") REFERENCES "Jobsite"("jobsite_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "AddressAssigner" ADD CONSTRAINT "AddressAssigner_jobsite_id_fkey" FOREIGN KEY ("jobsite_id") REFERENCES "Jobsite"("jobsite_id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "FormData" ADD CONSTRAINT "FormData_employee_id_fkey" FOREIGN KEY ("employee_id") REFERENCES "Employee"("employee_id") ON DELETE RESTRICT ON UPDATE CASCADE;

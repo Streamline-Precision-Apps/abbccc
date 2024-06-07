@@ -5,6 +5,8 @@ import '@/app/globals.css';
 import Link from 'next/link';
 import UseModal from '../../components/UI/modal';
 import { PrismaClient } from '@prisma/client';
+import Banner from '../../components/app/banner';
+import HoursButton from '../../components/app/hoursButton';
 
 const prisma = new PrismaClient();
 
@@ -15,7 +17,7 @@ export default function Index() {
     const [user, setUser] = useState({
         firstName: 'retrieving...',
         lastName: '',
-        payPeriodHours: 'retrieving...',
+        payPeriodHours: 0,
         date: 'retrieving...',
     });
 
@@ -40,13 +42,10 @@ export default function Index() {
     return (
         <div className='flex flex-col items-center space-y-4'>
             <UseModal />
-            <h1>{t('Banner')}</h1>
+            <Banner />
             <h2>{t('Name', { firstName: user.firstName, lastName: user.lastName})}</h2>
             <h2>{t('Date', { date: user.date })}</h2>
-            <button className='flex justify-center p-5 border w-1/2 gap-2 bg-green-400 rounded'>
-                <h2>{t('lN1')}</h2>
-                <h2>{t('lN2', { payPeriodHours: user.payPeriodHours })}</h2>
-            </button>
+            <HoursButton payPeriodHours={Number(user.payPeriodHours)}/>
             <br />
             <button className='bg-blue-500 hover:bg-blue-700 text-white w-1/2 font-bold p-5 rounded'>
                 <Link href="/clock">
