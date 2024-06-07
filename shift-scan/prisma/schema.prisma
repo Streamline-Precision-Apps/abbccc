@@ -45,37 +45,42 @@ enum permission {
 // Tasco sees Tasco manager widget
 // Base sees general widgets
 //-------------------------------------------------------------------------------------------------//
-enum views {
-  TRUCK
-  TASCO
-  BASE
-}
-
 enum formStatus {
   PENDING
   APPROVED
   DENIED
 }
 
+
+enum tags{
+  Truck
+  Trailer
+  Equipment
+}
+
 //-------------------------------------------------------------------------------------------------//
 // Account holds the privelage levels of the users Admin can super admin can update the employee priv
 // this gets checked when they sign in allong with EmployeeView
 model EmployeeAccount {
-  account_id               Int            @id @default(autoincrement())
-  employee_id              Int            @unique
+  account_id               Int        @id @default(autoincrement())
+  employee_id              Int        @unique
   employee_username        String
   employee_password        String
   employee_truck_view      Boolean?
   employee_tasco_view      Boolean?
   employee_labor_view      Boolean?
-  employee_privilege_level permission     @default(USER)
-  createdAt                DateTime       @default(now())
-  updatedAt                DateTime       @updatedAt
-  employee                 Employee       @relation(fields: [employee_id], references: [employee_id])
+  employee_privilege_level permission @default(USER)
+  createdAt                DateTime   @default(now())
+  updatedAt                DateTime   @updatedAt
+  employee                 Employee   @relation(fields: [employee_id], references: [employee_id])
 }
 
 //-------------------------------------------------------------------------------------------------//
 // employee model of what data/information he would hold
+// why is this needed for the app/ it is needed as the central information hub of the relational database
+// the employee is link to what crew they are apart of, their time card, their account, the equipment they log
+// the position title they have in a company and their contact information, and address to send check to
+// with out this table the app wouldnt work.
 model Employee {
   employee_id               Int                    @id @default(autoincrement())
   employee_first_name       String
@@ -83,7 +88,7 @@ model Employee {
   employee_last_name        String
   employee_last_name_2      String?
   employee_dob              DateTime
-  employee_start_date       DateTime? //set null for people who dont remeber start date
+  employee_start_date       DateTime? //set null for people who dont remember start date
   employee_termination_date DateTime?
   employee_availability     String
   createdAt                 DateTime               @default(now())
@@ -94,32 +99,50 @@ model Employee {
   employeeEquipmentLogs     EmployeeEquipmentLog[]
   employeePositions         EmployeePosition[]
   contacts                  ContactJoin[]
-  addresses                 AddressPeople[]
+  addresses                 AddressAssigner[]
   employeeAccount           EmployeeAccount?
+  costcodeJobsite           CostCodeJobsite[]
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
 // Jobbsite section
+// What problem does this solve?
+// This table creates or allows creations of jobsite, allows the company to pair costcodes with jobsites
+// to lower the amount of effort it tkes to find each costcode. tells the company when they started / created
+// created the project and enables a way to save an address to a site, and assign a team to a jobsite. A
+// project manager will be able to view everyone that is assigned to his site rather then a personal team. 
 //----------------------------------------------------------------------------------------------------------------------//
 model Jobsite {
   jobsite_id       Int               @id @default(autoincrement())
+  qr_id            String           @unique
   jobsite_name     String
   jobsite_active   Boolean           @default(true)
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
   costCodeJobsites CostCodeJobsite[]
-  addresses        AddressJobsite[]
-  crew             Crew[]
+  addresses        AddressAssigner[]
+  employeeEquipmentLogs EmployeeEquipmentLog[]
+  jobsites         CrewJobsite[]
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
+// the app would need a function a prisma call to call all timesheets by employee_id, 
+// filtering down by pay period, and then buy day for that pay period
+//
+// this database then will be exported and is designed to be almost one to one with the accounting software. 
+// accounting software is 
+// |submitDate | Form Id | empl ID| Date| ProfitID(jobsite)|
+// | CostCode| NU | FP| Start Time| END Time| Job Description | Duration |
+
 model TimeSheet {
   submit_date           DateTime @default(now())
-  form_id               Int      @id @default(autoincrement())
+  form_id               Int      @id @default(autoincrement()) //in viewpoint this tracks the time form to come in, driver, tasco, and regular
   employee_id           Int
   date                  DateTime @default(now())
   jobsite_id            Int
   costcode              String
+  nu                    String?
+  Fp                    String?
   vehicle_id            Int?
   start_time            DateTime
   end_time              DateTime
@@ -127,105 +150,105 @@ model TimeSheet {
   duration              Float
   starting_mileage      Int?
   ending_mileage        Int?
-  left_idaho            Boolean  @default(false)
+  left_idaho            Boolean? @default(false)
   equipment_hauled      String?
   materials_hauled      String?
   hauled_loads_quantity Int?
   refueling_gallons     Int?
-  timesheet_comments    String
-  app_comment           String
+  timesheet_comments    String?
+  app_comment           String? //this is a backend ai we want to develope to do filtered comments
   employee              Employee @relation(fields: [employee_id], references: [employee_id])
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
-model Vehicle {
-  vehicle_id      Int      @id @default(autoincrement())
-  name            String
-  vehicle_mileage Int
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-}
-
-//----------------------------------------------------------------------------------------------------------------------//
-model Trailer {
-  trailer_id      Int      @id @default(autoincrement())
-  name            String
-  vehicle_mileage Int
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-}
-
+// what does having a seperate vehicle table do? It allows us as a compny to make a vehicle QrID unique for the qrcode to scan
+// it provides a way to log a vehicle under equipment log
+// in this log we enable the employee to record what there equipment is doing and how well it is.
+// eventually we want the employee to be able to update the status of the equipment or rather report a 
+// broken asset  that will be submitted via a form to the office to handle the fixing procedure. 
+// this also share with jobsite the equipment and the time it was used 
 //----------------------------------------------------------------------------------------------------------------------//
 model EmployeeEquipmentLog {
-  employee_equipment_log_id Int       @id @default(autoincrement())
+  employee_equipment_log_id Int      @id @default(autoincrement())
   equipment_id              Int
+  jobsite_id                Int
   employee_id               Int
-  log_start_time            DateTime
-  log_end_time              DateTime
+  start_time            DateTime
+  end_time              DateTime
   equipment_notes           String
-  equipment_Status          String    @default("Operational")
-  createdAt                 DateTime  @default(now())
-  updatedAt                 DateTime  @updatedAt
-  equipment                 Equipment @relation(fields: [equipment_id], references: [equipment_id])
-  employee                  Employee  @relation(fields: [employee_id], references: [employee_id])
+  equipment_status          String   @default("Operational")
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+  employee                  Employee   @relation(fields: [employee_id], references: [employee_id])
+  Job                       Jobsite @relation(fields: [jobsite_id], references: [jobsite_id] )
+  Equipment                 Equipment? @relation(fields: [equipment_id], references: [equipment_id])
+  
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
 //must have a unique QR for equipment status to be applied
 //do we need to limit scanned equipment?  equipmentStatus 
 // designed to help filter equipment by page rendering -> equipment_tag
+// isvehicle and is trailer will allow the qrcode to work
+// added a tag section to prevent creation of a new category so the tags above have that equipment
+// included ways to monitor equipment and in the future we can work towards notifications on when to service them
+// and when something will expire to keep up to date on our equipment
 //----------------------------------------------------------------------------------------------------------------------//
 model Equipment {
   equipment_id          Int                    @id @default(autoincrement())
-  equipment_name        String
-  equipment_description String
-  equipment_status      Boolean
-  equipment_tag         String
-  last_inspection       DateTime
+  is_vehicle            Boolean
+  is_trailer            Boolean
+  qr_id                 String                  @unique
+  name                  String
+  description           String
+  status                Boolean
+  equipment_tag         tags
+  last_inspection       DateTime?
   last_repair           DateTime?
   createdAt             DateTime               @default(now())
   updatedAt             DateTime               @updatedAt
+  make                  String?
+  model                 String?
+  year                  String?
+  license_plate         String?
+  is_registered         DateTime?
+  mileage               Int?
+  is_active             Boolean                @default(true)
   employeeEquipmentLogs EmployeeEquipmentLog[]
-  jobsiteEquipmentLog   JobsiteEquipmentLog[]
-}
-
-model JobsiteEquipmentLog {
-  jobsite_equipment_log_id Int       @id @default(autoincrement())
-  jobsite_id               Int
-  equipment_id             Int
-  start_time               DateTime
-  end_time                 DateTime
-  createdAt                DateTime  @default(now())
-  updatedAt                DateTime  @updatedAt
-  equipment                Equipment @relation(fields: [equipment_id], references: [equipment_id])
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
-
+// this sections links with the site and will ultimately export all its site data to the time card app
+//provides a relationship with jobsites and costcodes cost codes to a jobsite are one to one due to the method we will use of 
+//jobsites however have many costcodes
 model CostCodeJobsite {
-  cost_code_jobsite_id Int      @id @default(autoincrement())
-  jobsite_id           Int
-  cost_code_id         Int
-  log_start_time       DateTime
-  log_end_time         DateTime
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
-  jobsite              Jobsite  @relation(fields: [jobsite_id], references: [jobsite_id])
-  costCode             CostCode @relation(fields: [cost_code_id], references: [cost_code_id])
-}
+  cost_code_jobsite_id  Int      @id @default(autoincrement())
+  jobsite_id            Int
+  cost_code_id          Int
+  employee_id           Int
+  start_time            DateTime
+  end_time              DateTime
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 
+  employee              Employee @relation(fields: [employee_id], references:[employee_id])
+  jobsite               Jobsite  @relation(fields: [jobsite_id], references: [jobsite_id])
+  costCode              CostCode @relation(fields: [cost_code_id], references: [cost_code_id])
+
+}
+// provide a seperate method to record a cost code and eventually assign it to a jobsite
 model CostCode {
   cost_code_id          Int               @id @default(autoincrement())
   cost_code             String
   cost_code_description String
   cost_code_type        String
   createdAt             DateTime          @default(now())
-  updatedAt             DateTime          @updatedAt
+  updatedAt             DateTime          @default(now()) @updatedAt
   CostCodeJobsite       CostCodeJobsite[]
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
-// crew data for seeing the entire crew and enabling site linking
+// crew data for seeing the entire crew and enabling site linking it also has direct access to the employeed time cards, and some desire profile settings
 model CrewMember {
   crew_member_id Int      @id @default(autoincrement())
   employee_id    Int
@@ -235,17 +258,31 @@ model CrewMember {
   employee       Employee @relation(fields: [employee_id], references: [employee_id])
   crew           Crew     @relation(fields: [crew_id], references: [crew_id])
 }
-
+// the crew model assigns member to a crew, it also reports  
 model Crew {
   crew_id          Int          @id @default(autoincrement())
   crew_name        String
   crew_description String
-  jobsite_id       Int
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
   crewMembers      CrewMember[]
-  jobsite          Jobsite      @relation(fields: [jobsite_id], references: [jobsite_id])
+  jobsites         CrewJobsite[]
 }
+// provides a unique many to many relationship to the crew and jobsites they also can only have one unique connection vis the 
+// @unique variable preventing duplication
+// we want this relation ship so that project managers can see the full teams of people for his site. 
+model CrewJobsite{
+  crewJobsite_id   Int      @id @default(autoincrement())
+  crew_id          Int
+  jobsite_id       Int
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  crew             Crew     @relation(fields: [crew_id], references: [crew_id])
+  jobsite          Jobsite  @relation(fields: [jobsite_id], references: [jobsite_id])
+
+  @@unique([crew_id, jobsite_id])
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------//
 // employee positions
@@ -257,11 +294,12 @@ model EmployeePosition {
   updatedAt             DateTime @updatedAt
   employee              Employee @relation(fields: [employee_id], references: [employee_id])
   role                  Position @relation(fields: [position_id], references: [position_id])
+  @@unique([position_id, employee_id])
 }
 
 model Position {
   position_id       Int                @id @default(autoincrement())
-  position_name     views
+  position_name     String             @unique
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
   employeePositions EmployeePosition[]
@@ -294,55 +332,36 @@ model ContactJoin {
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
-// Address models
+// Address Assigner makes a many to many relation ship from employees to there address
 
-model AddressPeople {
+model AddressAssigner {
   address_assigner_id Int      @id @default(autoincrement())
   address_id          Int
-  employee_id         Int
+  employee_id         Int?
+  jobsite_id          Int?
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
-  address             Address  @relation(fields: [address_id], references: [address_id])
-  employee            Employee @relation(fields: [employee_id], references: [employee_id])
+  address  Address   @relation(fields: [address_id], references: [address_id])
+  employee Employee? @relation(fields: [employee_id], references: [employee_id])  
+  jobsite  Jobsite?  @relation(fields: [jobsite_id], references: [jobsite_id])
+  @@unique([employee_id, jobsite_id]) 
 }
-
+// the purpose of the address table is to hold all addresses of sites, employees, and other data necessary for app,
+// potetially using geolocation to access sites down the line. 
 model Address {
-  address_id  Int             @id @default(autoincrement())
+  address_id  Int               @id @default(autoincrement())
   street_no   Int
   street_name String
   city        String
   state       String
   zipcode     Int
   country     String
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
-  addresses   AddressPeople[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  addresses   AddressAssigner[]
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
-// holds all jobsite
-model AddressJobsite {
-  address_assigner_id Int         @id @default(autoincrement())
-  address_id          Int
-  jobsite_id          Int
-  createdAt           DateTime    @default(now())
-  updatedAt           DateTime    @updatedAt
-  address             JobLocation @relation(fields: [address_id], references: [address_id])
-  jobsite             Jobsite     @relation(fields: [jobsite_id], references: [jobsite_id])
-}
-
-model JobLocation {
-  address_id  Int              @id @default(autoincrement())
-  street_no   Int
-  street_name String
-  city        String
-  state       String
-  zipcode     Int
-  country     String
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-  addresses   AddressJobsite[]
-}
 
 //----------------------------------------------------------------------------------------------------------------------//
 // one form in our db part of settings

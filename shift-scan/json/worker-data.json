@@ -1,0 +1,25 @@
+[
+    {
+        "employee_first_name": "Rogger",
+        "employee_last_name": "Rabbit",
+        "employee_id": 2,
+        "employee_last_name_2": "Bunny",
+        "employee_dob": "1990-01-01T00:00:00.000Z",
+        "employee_availability": "MTWRF 6am - 10pm",
+        "employee_start_date": "2022-01-01T00:00:00.000Z",
+        "createdAt": "2022-01-01T00:00:00.000Z",
+        "updatedAt": "2022-01-01T00:00:00.000Z"
+    },
+    {
+        "employee_first_name": "Buggs",
+        "employee_last_name": "Bunny",
+        "employee_id": 3,
+        "employee_last_name_2": "",
+        "employee_dob": "1985-05-15T00:00:00.000Z",
+        "employee_availability": "MTWRF 8am - 5pm",
+        "employee_start_date": "2023-02-01T00:00:00.000Z",
+        "createdAt": "2023-02-01T00:00:00.000Z",
+        "updatedAt": "2023-02-01T00:00:00.000Z"
+    }
+
+]

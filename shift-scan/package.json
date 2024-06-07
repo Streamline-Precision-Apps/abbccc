@@ -10,7 +10,8 @@
     "seed": "ts-node ./prisma/seed.ts"
   },
   "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts",
+    "fetch": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/export-db.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.15.0",
