@@ -141,8 +141,8 @@ model TimeSheet {
   date                  DateTime @default(now())
   jobsite_id            Int
   costcode              String
-  nu                    String?
-  Fp                    String?
+  nu                    String @default("nu") // non union {} default
+  Fp                    String? @default("fp") // field personal
   vehicle_id            Int?
   start_time            DateTime
   end_time              DateTime

@@ -1,4 +1,5 @@
 /** @type {import('tailwindcss').Config} */
+const colors = require('tailwindcss/colors')
 module.exports = {
   content: [
     './app/**/*.{js,ts,jsx,tsx,mdx}', // Note the addition of the `app` directory.
@@ -10,6 +11,13 @@ module.exports = {
   ],
   theme: {
     extend: {},
+  },
+  colors: {
+    'customBlue': '#57BDE9',
+    'customDarkBlue': '#233861',
+    'customGreen': '#74E957',
+    'customRed': '#FC3939',
+    'customOrange': '#FC8F2B',
   },
   plugins: [],
 }
