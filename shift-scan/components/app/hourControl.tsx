@@ -2,15 +2,16 @@ interface ControlComponentProps {
     scrollLeft: () => void;
     scrollRight: () => void;
     returnToMain: () => void;
+    currentDate: Date;
 }
 
-const ControlComponent: React.FC<ControlComponentProps> = ({ scrollLeft, scrollRight, returnToMain }) => {
-    const Weekday = new Date().toLocaleDateString('en-US', { weekday: 'long' });
-    const datetoday = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+const ControlComponent: React.FC<ControlComponentProps> = ({ scrollLeft, scrollRight, returnToMain, currentDate }) => {
+    const Weekday = currentDate.toLocaleDateString('en-US', { weekday: 'long' });
+    const datetoday = currentDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
     return (
-        <div>
-            <div className="flex justify-between w-1/2 mt-4">
+        <div className="w-full">
+            <div className="flex justify-between w-full  flex flex-row items-center">
                 <button onClick={scrollLeft} className="bg-blue-500 text-white p-2 rounded">Scroll Left</button>
                 <button onClick={returnToMain} className="bg-red-500 text-white p-2 rounded">Return</button>
                 <button onClick={scrollRight} className="bg-blue-500 text-white p-2 rounded">Scroll Right</button>
