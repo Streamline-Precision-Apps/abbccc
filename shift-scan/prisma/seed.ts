@@ -39,7 +39,7 @@ async function upsertWorkerData(worker: any) {
     },
     create: employee,
   });
-
+  // i changed the employeeAccount to user and account for prisma next auth to function.
   await prisma.employeeAccount.upsert({
     where: { account_id: employeeAccount.account_id },
     update: {

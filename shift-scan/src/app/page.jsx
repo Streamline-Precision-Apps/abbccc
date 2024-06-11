@@ -7,12 +7,13 @@ import UseModal from '../../components/UI/modal';
 import { PrismaClient } from '@prisma/client';
 import Banner from '../../components/app/banner';
 import HoursButton from '../../components/app/hoursButton';
-
+import { useSession, signIn, signOut } from "next-auth/react";
 
 const prisma = new PrismaClient();
 
 
 export default function Index() {
+    const { data: session } = useSession();
     const t = useTranslations('page1');
 
     const [user, setUser] = useState({
@@ -40,6 +41,8 @@ export default function Index() {
         fetchData()   ;
     }, []);
 
+
+    if (session) {
     return (
         <div className='flex flex-col items-center space-y-4'>
             <UseModal />
@@ -50,4 +53,12 @@ export default function Index() {
             <h2>{t('lN4')}</h2>
         </div>
     );
+} else {
+    return (
+        <div>
+        <p>You are not logged in.</p>
+        <button onClick={() => signIn()}>Sign in</button>
+        </div>
+    );
+    }
 }
