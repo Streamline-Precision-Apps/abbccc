@@ -1,6 +1,6 @@
 import {NextIntlClientProvider} from 'next-intl';
 import {getLocale, getMessages} from 'next-intl/server';
-import { ScanDataProvider } from '../../../components/context/ScannedJobSIte';
+import { Providers } from '../providers';
 
 
 export default async function RootLayout({
@@ -17,11 +17,11 @@ export default async function RootLayout({
     return (
     <html lang={locale}>
     <body>
+        <Providers>
         <NextIntlClientProvider messages={messages}>
-            <ScanDataProvider>
             {children}
-            </ScanDataProvider>
         </NextIntlClientProvider>
+        </Providers>
     </body>
 </html>
 );
