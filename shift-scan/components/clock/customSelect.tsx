@@ -1,73 +1,46 @@
-'use client';
 import React from 'react';
+import "../../src/app/globals.css";
+// allows us to use the search bar and the dropdown together like modern design
 
 interface Option {
   value: string;
   label: string;
 }
-
+// CustomSelectProps holds all the option passed in from CostCodeFinder
+// along with other dropdown properties
 interface CustomSelectProps {
   options: Option[];
   placeholder: string;
   onOptionSelect: (option: Option) => void;
-  isDropdownOpen: boolean;
-  toggleDropdown: () => void;
   selectedOption: Option | null;
 }
-
+// passed the variables from the CostCodeFinder here
 const CustomSelect: React.FC<CustomSelectProps> = ({
   options,
   placeholder,
   onOptionSelect,
-  isDropdownOpen,
-  toggleDropdown,
   selectedOption,
 }) => {
+  // the ui of the dropdown and has the toggle method here to toggle the dropdown
+  // it also map out all the elements in the drop down list. 
+  // provide a key with the name as option value  becuase it is unique
+  // if the costcodes need to be bilingual i would need to make a josn file for them. 
   return (
     <div className="custom-select-container">
-      <div className="custom-select" onClick={toggleDropdown}>
+      <div className="custom-select bg-green-500 ">
         {selectedOption ? selectedOption.label : placeholder}
       </div>
-      {isDropdownOpen && (
         <div className="custom-select-dropdown">
           {options.map((option) => (
             <div
               key={option.value}
-              className="custom-select-option"
+              className="text-3xl"
               onClick={() => onOptionSelect(option)}
             >
               {option.label}
             </div>
           ))}
         </div>
-      )}
-      <style jsx>{`
-        .custom-select-container {
-          position: relative;
-          width: 200px;
-        }
-        .custom-select {
-          padding: 8px;
-          border: 1px solid #ccc;
-          cursor: pointer;
-        }
-        .custom-select-dropdown {
-          position: absolute;
-          top: 100%;
-          left: 0;
-          right: 0;
-          border: 1px solid #ccc;
-          background: white;
-          z-index: 10;
-        }
-        .custom-select-option {
-          padding: 8px;
-          cursor: pointer;
-        }
-        .custom-select-option:hover {
-          background: #f0f0f0;
-        }
-      `}</style>
     </div>
   );
 };

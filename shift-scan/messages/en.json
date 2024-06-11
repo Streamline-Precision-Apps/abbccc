@@ -42,10 +42,11 @@
         }
     },
     "page4": {
-        "lN1": "Clock In",
-        "lN2" : "Job Found:",
-        "lN3" : "Cost Code:",
-        "lN4" : "Start shift"
+        "title": "Select Cost Code:",
+        "lN1": "Type Here",
+        "lN2" : "Recently used:",
+        "submit": "Continue"
+        
     },
 
     "page5": {
@@ -53,7 +54,7 @@
         "lN2" : "Job Found:",
         "lN3" : "Cost Code:",
         "lN4" : "Successfully Clocked In!",
-        "lN5" : "next page"
+        "lN5" : "Start Shift!"
     },
     
     "page6": {
