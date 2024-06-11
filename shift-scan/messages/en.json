@@ -54,7 +54,8 @@
         "lN2" : "Job Found:",
         "lN3" : "Cost Code:",
         "lN4" : "Successfully Clocked In!",
-        "lN5" : "Start Shift!"
+        "lN5" : "Start Shift!",
+        "lN6" : "You have unsaved changes. Are you sure you want to leave?"
     },
     
     "page6": {
