@@ -20,13 +20,12 @@
         "Name": "{firstName} {lastName}",
         "Date": "{date}",
         "lN1": "Total Hours:",
-        "lN2": "{payPeriodHours}",
         "lN3": "Clock In",
         "lN4": "Copyright © 2024.Streamline Precision LLC. All rights reserved."
     },
 
     "page2": { 
-        "title" :"Clock In",
+        "title" :"Scan Job Site",
         "subtitle": "Please scan the QR code",
         "btn-scan": "simulate scan",
         "btn-entry": "qr code working ? "
@@ -43,10 +42,11 @@
         }
     },
     "page4": {
-        "lN1": "Clock In",
-        "lN2" : "Job Found:",
-        "lN3" : "Cost Code:",
-        "lN4" : "Start shift"
+        "title": "Select Cost Code:",
+        "lN1": "Type Here",
+        "lN2" : "Recently used:",
+        "submit": "Continue"
+        
     },
 
     "page5": {
@@ -54,7 +54,7 @@
         "lN2" : "Job Found:",
         "lN3" : "Cost Code:",
         "lN4" : "Successfully Clocked In!",
-        "lN5" : "next page"
+        "lN5" : "Start Shift!"
     },
     
     "page6": {

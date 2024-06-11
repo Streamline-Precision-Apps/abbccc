@@ -1,45 +1,31 @@
 "use client";
-
 import {useTranslations} from 'next-intl';
-import Link from 'next/link';
+import { useRouter} from 'next/navigation';
 import { useEffect, useState } from 'react';
 import '../../globals.css';
-import { Clock } from "../../../../components/clock";
+import { useScanData } from '../../../../components/context/ScannedJobSIte';
+import { useSavedCostCode } from '../../../../components/context/SavedCostCode';
+import RedirectAfterDelay from '../../../../components/clock/redirectAfterDelay';
 
 export default function verify() {
+// this page will be used when the user has successfully clocked in
+// it appears for a few seconds and then redirects to the dashboard
 const t = useTranslations('page5'); 
-
- const firstName = 'Devun';
-const lastName = 'Durst';
+const router = useRouter();
 const [today] = useState(new Date());
-const [jobSite] = useState('C137383'); 
-const [costCode] = useState('1.02 - wood');
-// by using usestate we can change the value of the variable later
-useEffect(() => {
-    const fetchData = async () => {
-
-        const userData = {
-            positionId: 123,
-            firstName: 'Devun',
-            lastName: 'Durst',
-            date: today ,
-            EmpId: 'durs320'
-        }
-    }
-
-    fetchData();
-
-}, []);
-
+const { scanResult} = useScanData();
+const { savedCostCode} = useSavedCostCode();
 const now = new Date();
+
+// to have a delay of 5 seconds uncomment the line below
 
 return (
     <div className='flex flex-col items-center '>
-        <h1> {firstName} {lastName} </h1>
-        <h2>{t('lN2')} {jobSite}</h2>
-        <h2>{t('lN3')} {costCode}</h2>
+        <h1> {} </h1>
+        <h2>{t('lN2')} {scanResult?.data}</h2>
+        <h2>{t('lN3')} {savedCostCode}</h2>
         <p>{t('lN4')}</p>
-        <Link href={'/dashboard'} className='flex justify-center p-5 border bg-blue-500'>{t('lN5')}</Link>
+        {/* <RedirectAfterDelay delay={5000} to="/dashboard" /> */}
     </div>
     );
 }

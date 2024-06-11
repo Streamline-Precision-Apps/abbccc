@@ -1,45 +1,34 @@
-"use client";
+'use client';
 
 import {useTranslations} from 'next-intl';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import '../../globals.css';
 import { Clock } from "../../../../components/clock";
+import { useScanData } from '../../../../components/context/ScannedJobSIte';
+import { useSavedCostCode } from '../../../../components/context/SavedCostCode';
 
 export default function verify() {
-const t = useTranslations('page4'); 
-
-
+// preclocked in page confirmation to send data to api route
+const t = useTranslations('page5'); 
 const [today] = useState(new Date());
-const [jobSite] = useState('C137383'); 
-const [costCode] = useState('1.02 - wood');
+const { scanResult} = useScanData();
+const { savedCostCode} = useSavedCostCode();
 // by using usestate we can change the value of the variable later
-useEffect(() => {
-    const fetchData = async () => {
-
-        const userData = {
-            positionId: 123,
-            firstName: 'Devun',
-            lastName: 'Durst',
-            date: today ,
-            EmpId: 'durs320'
-        }
-    }
-
-    fetchData();
-
-}, [today]);
 
 const now = new Date();
-
+// this is for the live clock page
+// provide the data such as job found and costcode
+// eventually you will not beable to access this page unless you are logged in and have been 
+// throught the costcode finder and scanned in.
 return (
     <div className='flex flex-col items-center '>
         <h1>{t('lN1')}</h1>
-        <h2>{t('lN2')} {jobSite}</h2>
-        <h2>{t('lN3')} {costCode}</h2>
+        <h2>{t('lN2')} {scanResult?.data}</h2>
+        <h2>{t('lN3')} {savedCostCode}</h2>
         <Clock time={now.getTime()} />
     <div className='flex-box bg-blue-400 p-5 justify-center'>
-        <Link href={'/clock/success'}>{t('lN4')}</Link>
+        <Link href={'/clock/success'}>{t('lN5')}</Link>
     </div>
     </div>
     );
