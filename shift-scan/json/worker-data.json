@@ -1,11 +1,25 @@
 {
 "workers" :[   
     {
+        "user": {
+        "id": "1",
+        "firstName": "Jessica",
+        "lastName": "Rabbit",
+        "username": "jessicarabbit",
+        "password": "securepassword",
+        "truck_view": true,
+        "tasco_view": false,
+        "labor_view": true,
+        "mechanic_view": false,
+        "email": "jessicarabbit@example.com",
+        "emailVerified": "2022-01-01T00:00:00.000Z",
+        "phone": "123-456-7890",
+        "image": "https://example.com/image.jpg"
+    },
     "employee": {
     "employee_first_name": "Jessica",
     "employee_last_name": "Rabbit",
     "employee_id": 1,
-    "employee_last_name_2": "Bunny",
     "employee_dob": "1990-01-01T00:00:00.000Z",
     "employee_availability": "MTWRF 6am - 10pm",
     "employee_start_date": "2022-01-01T00:00:00.000Z",
@@ -73,12 +87,26 @@
     "updatedAt": "2022-01-01T00:00:00.000Z"
     }
     },
-    {
+    {  
+        "user": {
+        "id": "2",
+        "firstName": "John",
+        "lastName": "Doe",
+        "username": "johndoe",
+        "password": "securepassword",
+        "truck_view": true,
+        "tasco_view": true,
+        "labor_view": false,
+        "mechanic_view": false,
+        "email": "johndoe@example.com",
+        "emailVerified": "2021-06-01T00:00:00.000Z",
+        "phone": "987-654-3210",
+        "image": "https://example.com/image.jpg"
+    },
     "employee": {
         "employee_first_name": "John",
         "employee_last_name": "Doe",
         "employee_id": 2,
-        "employee_last_name_2": "Smith",
         "employee_dob": "1985-05-15T00:00:00.000Z",
         "employee_availability": "MTWRF 7am - 6pm",
         "employee_start_date": "2021-06-01T00:00:00.000Z",

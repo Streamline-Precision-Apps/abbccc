@@ -1,9 +1,39 @@
 import { PrismaClient, permission } from "@prisma/client";
 import workerData from "../json/worker-data.json";
+import { hash } from "bcryptjs";
 
 const prisma = new PrismaClient();
 
 async function upsertWorkerData(worker: any) {
+
+  const {
+    user,
+    account,
+    session,
+    verificationToken
+  } = worker;
+
+  const hashedUserPassword = await hash(user.password, 10);
+  await prisma.user.upsert({
+    where: { id: user.id },
+    update: {},
+    create: {
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      username: user.username,
+      password: hashedUserPassword,
+      truck_view: user.truck_view,
+      tasco_view: user.tasco_view,
+      labor_view: user.labor_view,
+      mechanic_view: user.mechanic_view,
+      email: user.email,
+      emailVerified: user.emailVerified,
+      phone: user.phone,
+      image: user.image,
+    },
+  });
+  
   const {
     employee,
     employeeAccount,
@@ -30,7 +60,6 @@ async function upsertWorkerData(worker: any) {
     update: {
       employee_first_name: employee.employee_first_name,
       employee_last_name: employee.employee_last_name,
-      employee_last_name_2: employee.employee_last_name_2,
       employee_dob: employee.employee_dob,
       employee_availability: employee.employee_availability,
       employee_start_date: employee.employee_start_date,
@@ -39,13 +68,13 @@ async function upsertWorkerData(worker: any) {
     },
     create: employee,
   });
-
+const hashedEmployeePassword = await hash(employeeAccount.employee_password, 10);
   await prisma.employeeAccount.upsert({
     where: { account_id: employeeAccount.account_id },
     update: {
       employee_id: employeeAccount.employee_id,
       employee_username: employeeAccount.employee_username,
-      employee_password: employeeAccount.employee_password,
+      employee_password: hashedEmployeePassword,
       employee_truck_view: employeeAccount.employee_truck_view,
       employee_tasco_view: employeeAccount.employee_tasco_view,
       employee_labor_view: employeeAccount.employee_labor_view,
@@ -127,6 +156,7 @@ async function main() {
     const { workers } = workerData;
     
     for (const worker of workers) {
+      
         await upsertWorkerData(worker);
     }
 
