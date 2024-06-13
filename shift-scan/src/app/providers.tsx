@@ -12,6 +12,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
             <ScanDataProvider>
             <SessionProvider>
                 {children}
+            </SessionProvider>
             </ScanDataProvider>
             </SavedCostCodeProvider>
             
