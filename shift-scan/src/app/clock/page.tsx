@@ -6,6 +6,7 @@ import Link from 'next/link';
 import QrReader from '../../../components/clock/qrReader';
 
 
+
 export default function Index() {
     const t = useTranslations('page2');
 
