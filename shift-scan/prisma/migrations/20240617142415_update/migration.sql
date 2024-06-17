@@ -8,19 +8,61 @@ CREATE TYPE "formStatus" AS ENUM ('PENDING', 'APPROVED', 'DENIED');
 CREATE TYPE "tags" AS ENUM ('Truck', 'Trailer', 'Equipment');
 
 -- CreateTable
-CREATE TABLE "EmployeeAccount" (
-    "account_id" SERIAL NOT NULL,
+CREATE TABLE "users" (
+    "id" TEXT NOT NULL,
+    "firstName" TEXT NOT NULL,
+    "lastName" TEXT NOT NULL,
+    "username" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "truck_view" BOOLEAN,
+    "tasco_view" BOOLEAN,
+    "labor_view" BOOLEAN,
+    "mechanic_view" BOOLEAN,
+    "email" TEXT NOT NULL,
+    "email_verified" TIMESTAMP(3),
+    "phone" TEXT NOT NULL,
+    "image" TEXT,
+    "employee_id" INTEGER,
+
+    CONSTRAINT "users_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Account" (
+    "userId" TEXT NOT NULL,
     "employee_id" INTEGER NOT NULL,
-    "employee_username" TEXT NOT NULL,
-    "employee_password" TEXT NOT NULL,
-    "employee_truck_view" BOOLEAN,
-    "employee_tasco_view" BOOLEAN,
-    "employee_labor_view" BOOLEAN,
-    "employee_privilege_level" "permission" NOT NULL DEFAULT 'USER',
+    "type" TEXT NOT NULL,
+    "provider" TEXT NOT NULL,
+    "providerAccountId" TEXT NOT NULL,
+    "refresh_token" TEXT,
+    "access_token" TEXT,
+    "expires_at" INTEGER,
+    "token_type" TEXT,
+    "scope" TEXT,
+    "id_token" TEXT,
+    "session_state" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "EmployeeAccount_pkey" PRIMARY KEY ("account_id")
+    CONSTRAINT "Account_pkey" PRIMARY KEY ("provider","providerAccountId")
+);
+
+-- CreateTable
+CREATE TABLE "Session" (
+    "sessionToken" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "expires" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "VerificationToken" (
+    "identifier" TEXT NOT NULL,
+    "token" TEXT NOT NULL,
+    "expires" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "VerificationToken_pkey" PRIMARY KEY ("identifier","token")
 );
 
 -- CreateTable
@@ -29,7 +71,6 @@ CREATE TABLE "Employee" (
     "employee_first_name" TEXT NOT NULL,
     "employee_middle_name" TEXT,
     "employee_last_name" TEXT NOT NULL,
-    "employee_last_name_2" TEXT,
     "employee_dob" TIMESTAMP(3) NOT NULL,
     "employee_start_date" TIMESTAMP(3),
     "employee_termination_date" TIMESTAMP(3),
@@ -270,7 +311,16 @@ CREATE TABLE "FormData" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "EmployeeAccount_employee_id_key" ON "EmployeeAccount"("employee_id");
+CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Account_employee_id_key" ON "Account"("employee_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Session_sessionToken_key" ON "Session"("sessionToken");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Jobsite_qr_id_key" ON "Jobsite"("qr_id");
@@ -291,7 +341,16 @@ CREATE UNIQUE INDEX "Position_position_name_key" ON "Position"("position_name");
 CREATE UNIQUE INDEX "AddressAssigner_employee_id_jobsite_id_key" ON "AddressAssigner"("employee_id", "jobsite_id");
 
 -- AddForeignKey
-ALTER TABLE "EmployeeAccount" ADD CONSTRAINT "EmployeeAccount_employee_id_fkey" FOREIGN KEY ("employee_id") REFERENCES "Employee"("employee_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "users" ADD CONSTRAINT "users_employee_id_fkey" FOREIGN KEY ("employee_id") REFERENCES "Employee"("employee_id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Account" ADD CONSTRAINT "Account_employee_id_fkey" FOREIGN KEY ("employee_id") REFERENCES "Employee"("employee_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "TimeSheet" ADD CONSTRAINT "TimeSheet_employee_id_fkey" FOREIGN KEY ("employee_id") REFERENCES "Employee"("employee_id") ON DELETE RESTRICT ON UPDATE CASCADE;
