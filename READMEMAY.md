@@ -32,28 +32,40 @@ I got it working, now i am making a button switch component
 npm install nookies
 
 
+Updated as of 6/17/24
 
-All of the packages I have installed as of 5/30/24: 
-
+PS C:\Users\19362\Streamline-Precision-Timecard\shift-scan> npm list
 shift-scan@0.1.0 C:\Users\19362\Streamline-Precision-Timecard\shift-scan
+├── @auth/prisma-adapter@2.2.0
+├── @prisma/client@5.15.0
+├── @types/bcryptjs@2.4.6
 ├── @types/cookie@0.6.0
 ├── @types/js-cookie@3.0.6
-├── @types/node@20.12.12
+├── @types/jsonwebtoken@9.0.6
+├── @types/node@20.14.2
 ├── @types/react-dom@18.3.0
+├── @types/react-modal@3.16.3
 ├── @types/react@18.3.3
-├── @typescript-eslint/eslint-plugin@7.10.0
-├── @typescript-eslint/parser@7.10.0
+├── @typescript-eslint/eslint-plugin@7.13.0
+├── @typescript-eslint/parser@7.13.0
 ├── autoprefixer@10.4.19
-├── eslint-config-next@14.2.3
+├── bcryptjs@2.4.3
+├── eslint-config-next@14.2.4
 ├── eslint-plugin-next@0.0.0
 ├── eslint@8.57.0
 ├── js-cookie@3.0.5
-├── next-intl@3.14.1
-├── next@14.2.3
+├── jsonwebtoken@9.0.2
+├── next-auth@4.24.7
+├── next-intl@3.15.0
+├── next@14.2.4
 ├── nookies@2.5.2
 ├── postcss@8.4.38
+├── prisma@5.15.0
+├── qr-scanner@1.4.2
 ├── react-dom@18.3.1
+├── react-modal@3.16.1
 ├── react@18.3.1
-├── tailwindcss@3.4.3
+├── tailwindcss@3.4.4
+├── ts-node@10.9.2
 └── typescript@5.4.5
 
