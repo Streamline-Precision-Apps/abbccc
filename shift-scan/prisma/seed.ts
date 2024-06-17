@@ -18,6 +18,7 @@ async function upsertWorkerData(worker: any) {
       lastName: user.lastName,
       username: user.username,
       password: hashedUserPassword,
+      permission: user.permission,
       truck_view: user.truck_view,
       tasco_view: user.tasco_view,
       labor_view: user.labor_view,
