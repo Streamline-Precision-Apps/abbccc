@@ -1,18 +1,13 @@
-import { PrismaClient, permission } from "@prisma/client";
+import { PrismaClient} from "@prisma/client";
 import workerData from "../json/worker-data.json";
 import { hash } from "bcryptjs";
 
 const prisma = new PrismaClient();
 
 async function upsertWorkerData(worker: any) {
+  const { user, employee, employeeAccount, employeePosition, position, contact, contactJoin, address, addressAssigner } = worker;
 
-  const {
-    user,
-    account,
-    session,
-    verificationToken
-  } = worker;
-
+  // Hash user password
   const hashedUserPassword = await hash(user.password, 10);
   await prisma.user.upsert({
     where: { id: user.id },
@@ -28,77 +23,76 @@ async function upsertWorkerData(worker: any) {
       labor_view: user.labor_view,
       mechanic_view: user.mechanic_view,
       email: user.email,
-      emailVerified: user.emailVerified,
+      emailVerified: user.emailVerified ? new Date(user.emailVerified) : null,
       phone: user.phone,
       image: user.image,
     },
   });
-  
-  const {
-    employee,
-    employeeAccount,
-    employeePosition,
-    position,
-    contact,
-    contactJoin,
-    address,
-    addressAssigner
-  } = worker;
 
+  // Upsert position
   await prisma.position.upsert({
     where: { position_id: position.position_id },
     update: {
       position_name: position.position_name,
-      createdAt: position.createdAt,
-      updatedAt: position.updatedAt,
+      createdAt: new Date(position.createdAt),
+      updatedAt: new Date(position.updatedAt),
     },
-    create: position,
+    create: {
+      position_id: position.position_id,
+      position_name: position.position_name,
+      createdAt: new Date(position.createdAt),
+      updatedAt: new Date(position.updatedAt),
+    },
   });
 
+  // Upsert employee
   await prisma.employee.upsert({
     where: { employee_id: employee.employee_id },
     update: {
       employee_first_name: employee.employee_first_name,
+      employee_middle_name: employee.employee_middle_name || null,
       employee_last_name: employee.employee_last_name,
-      employee_dob: employee.employee_dob,
+      employee_dob: new Date(employee.employee_dob),
       employee_availability: employee.employee_availability,
-      employee_start_date: employee.employee_start_date,
-      createdAt: employee.createdAt,
-      updatedAt: employee.updatedAt,
-    },
-    create: employee,
-  });
-const hashedEmployeePassword = await hash(employeeAccount.employee_password, 10);
-  await prisma.employeeAccount.upsert({
-    where: { account_id: employeeAccount.account_id },
-    update: {
-      employee_id: employeeAccount.employee_id,
-      employee_username: employeeAccount.employee_username,
-      employee_password: hashedEmployeePassword,
-      employee_truck_view: employeeAccount.employee_truck_view,
-      employee_tasco_view: employeeAccount.employee_tasco_view,
-      employee_labor_view: employeeAccount.employee_labor_view,
-      employee_privilege_level: permission[employeeAccount.employee_privilege_level as keyof typeof permission],
-      createdAt: employeeAccount.createdAt,
-      updatedAt: employeeAccount.updatedAt,
+      employee_start_date: new Date(employee.employee_start_date),
+      employee_termination_date: employee.employee_termination_date ? new Date(employee.employee_termination_date) : null,
+      createdAt: new Date(employee.createdAt),
+      updatedAt: new Date(employee.updatedAt),
     },
     create: {
-      ...employeeAccount,
-      employee_privilege_level: permission[employeeAccount.employee_privilege_level as keyof typeof permission],
+      employee_id: employee.employee_id,
+      employee_first_name: employee.employee_first_name,
+      employee_middle_name: employee.employee_middle_name || null,
+      employee_last_name: employee.employee_last_name,
+      employee_dob: new Date(employee.employee_dob),
+      employee_availability: employee.employee_availability,
+      employee_start_date: new Date(employee.employee_start_date),
+      employee_termination_date: employee.employee_termination_date ? new Date(employee.employee_termination_date) : null,
+      createdAt: new Date(employee.createdAt),
+      updatedAt: new Date(employee.updatedAt),
     },
   });
 
+
+  // Upsert employee position
   await prisma.employeePosition.upsert({
     where: { employee_positions_id: employeePosition.employee_positions_id },
     update: {
       employee_id: employeePosition.employee_id,
       position_id: employeePosition.position_id,
-      createdAt: employeePosition.createdAt,
-      updatedAt: employeePosition.updatedAt,
+      createdAt: new Date(employeePosition.createdAt),
+      updatedAt: new Date(employeePosition.updatedAt),
     },
-    create: employeePosition,
+    create: {
+      employee_positions_id: employeePosition.employee_positions_id,
+      employee_id: employeePosition.employee_id,
+      position_id: employeePosition.position_id,
+      createdAt: new Date(employeePosition.createdAt),
+      updatedAt: new Date(employeePosition.updatedAt),
+    },
   });
 
+  // Upsert contact
   await prisma.contact.upsert({
     where: { contact_id: contact.contact_id },
     update: {
@@ -106,23 +100,39 @@ const hashedEmployeePassword = await hash(employeeAccount.employee_password, 10)
       email: contact.email,
       emergency_contact: contact.emergency_contact,
       emergency_contact_no: contact.emergency_contact_no,
-      createdAt: contact.createdAt,
-      updatedAt: contact.updatedAt,
+      createdAt: new Date(contact.createdAt),
+      updatedAt: new Date(contact.updatedAt),
     },
-    create: contact,
+    create: {
+      contact_id: contact.contact_id,
+      phone_number: contact.phone_number,
+      email: contact.email,
+      emergency_contact: contact.emergency_contact,
+      emergency_contact_no: contact.emergency_contact_no,
+      createdAt: new Date(contact.createdAt),
+      updatedAt: new Date(contact.updatedAt),
+    },
   });
 
+  // Upsert contact join
   await prisma.contactJoin.upsert({
     where: { contact_join_id: contactJoin.contact_join_id },
     update: {
       contact_id: contactJoin.contact_id,
       employee_id: contactJoin.employee_id,
-      createdAt: contactJoin.createdAt,
-      updatedAt: contactJoin.updatedAt,
+      createdAt: new Date(contactJoin.createdAt),
+      updatedAt: new Date(contactJoin.updatedAt),
     },
-    create: contactJoin,
+    create: {
+      contact_join_id: contactJoin.contact_join_id,
+      contact_id: contactJoin.contact_id,
+      employee_id: contactJoin.employee_id,
+      createdAt: new Date(contactJoin.createdAt),
+      updatedAt: new Date(contactJoin.updatedAt),
+    },
   });
 
+  // Upsert address
   await prisma.address.upsert({
     where: { address_id: address.address_id },
     update: {
@@ -132,44 +142,59 @@ const hashedEmployeePassword = await hash(employeeAccount.employee_password, 10)
       state: address.state,
       zipcode: address.zipcode,
       country: address.country,
-      createdAt: address.createdAt,
-      updatedAt: address.updatedAt,
+      createdAt: new Date(address.createdAt),
+      updatedAt: new Date(address.updatedAt),
     },
-    create: address,
+    create: {
+      address_id: address.address_id,
+      street_no: address.street_no,
+      street_name: address.street_name,
+      city: address.city,
+      state: address.state,
+      zipcode: address.zipcode,
+      country: address.country,
+      createdAt: new Date(address.createdAt),
+      updatedAt: new Date(address.updatedAt),
+    },
   });
 
+  // Upsert address assigner
   await prisma.addressAssigner.upsert({
     where: { address_assigner_id: addressAssigner.address_assigner_id },
     update: {
       address_id: addressAssigner.address_id,
       employee_id: addressAssigner.employee_id,
       jobsite_id: addressAssigner.jobsite_id,
-      createdAt: addressAssigner.createdAt,
-      updatedAt: addressAssigner.updatedAt,
+      createdAt: new Date(addressAssigner.createdAt),
+      updatedAt: new Date(addressAssigner.updatedAt),
     },
-    create: addressAssigner,
+    create: {
+      address_assigner_id: addressAssigner.address_assigner_id,
+      address_id: addressAssigner.address_id,
+      employee_id: addressAssigner.employee_id,
+      jobsite_id: addressAssigner.jobsite_id,
+      createdAt: new Date(addressAssigner.createdAt),
+      updatedAt: new Date(addressAssigner.updatedAt),
+    },
   });
-
 }
 
 async function main() {
-    const { workers } = workerData;
-    
-    for (const worker of workers) {
-      
-        await upsertWorkerData(worker);
-    }
+  const { workers } = workerData;
 
-    console.log('Sample data upserted successfully!');
+  for (const worker of workers) {
+    await upsertWorkerData(worker);
+  }
+
+  console.log('Sample data upserted successfully!');
 }
 
-
 main()
-    .then(async () => {
+  .then(async () => {
     await prisma.$disconnect();
-})
-    .catch(async (e) => {
+  })
+  .catch(async (e) => {
     console.error(e);
     await prisma.$disconnect();
     process.exit(1);
-});
+  });

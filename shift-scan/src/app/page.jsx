@@ -42,7 +42,6 @@ export default function Index() {
     }, []);
 
 
-    if (session) {
     return (
         <div className='flex flex-col items-center space-y-4'>
             <UseModal />
@@ -57,12 +56,4 @@ export default function Index() {
             <h2>{t('lN4')}</h2>
         </div>
     );
-} else {
-    return (
-        <div>
-        <p>You are not logged in.</p>
-        <button onClick={() => signIn()}>Sign in</button>
-        </div>
-    );
-    }
-}
+} 

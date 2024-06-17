@@ -57,84 +57,27 @@ enum tags {
   Equipment
 }
 
-model Account {
-  id                 String  @id @default(cuid())
-  userId             String  @map("user_id")
-  type               String
-  provider           String
-  providerAccountId  String  @map("provider_account_id")
-  refresh_token      String? @db.Text
-  access_token       String? @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String? @db.Text
-  session_state      String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
-  @@map("accounts")
-}
-
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique @map("session_token")
-  userId       String   @map("user_id")
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("sessions")
-}
-
+//-------------------------------------------------------------------------------------------------//
 model User {
-  id            String    @id @default(cuid())
-  firstName     String
-  lastName      String
-  username      String   @unique
-  password      String
-  truck_view      Boolean?
-  tasco_view      Boolean?
-  labor_view      Boolean?
-  mechanic_view   Boolean?
-  email         String  @unique
-  emailVerified DateTime? @map("email_verified")
-  phone         String
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
+  id                  String    @id @default(cuid())
+  firstName           String
+  lastName            String
+  username            String    @unique
+  password            String
+  truck_view          Boolean?
+  tasco_view          Boolean?
+  labor_view          Boolean?
+  mechanic_view       Boolean?
+  email               String    @unique
+  emailVerified       DateTime? @map("email_verified")
+  phone               String
+  image               String?
+  accounts            Account[]
+  sessions            Session[]
+  employee_id         Int?
+  Employee            Employee? @relation(fields: [employee_id], references: [employee_id])
 
   @@map("users")
-}
-
-  model VerificationToken {
-  identifier String
-  token      String
-  expires    DateTime
-
-  @@unique([identifier, token])
-  @@map("verificationtokens")
-}
-
-//-------------------------------------------------------------------------------------------------//
-// Account holds the privelage levels of the users Admin can super admin can update the employee priv
-// this gets checked when they sign in allong with EmployeeView
-
-// for prisma to work with next auth I had to also include these tables....
-model User {
-  id               String     @id @default(cuid())
-  username         String     @unique
-  UsernameVerified DateTime?
-  password         String
-  image            String?
-  truck_view       Boolean?
-  tasco_view       Boolean?
-  labor_view       Boolean?
-  privilege_level  permission @default(USER)
-  createdAt        DateTime   @default(now())
-  updatedAt        DateTime   @updatedAt
-  accounts         Account[]
-  sessions         Session[]
 }
 
 model Account {
@@ -201,8 +144,9 @@ model Employee {
   employeePositions         EmployeePosition[]
   contacts                  ContactJoin[]
   addresses                 AddressAssigner[]
-  user                      Account[]
+  users                     User[]
   costcodeJobsite           CostCodeJobsite[]
+  Account                   Account?
 }
 
 //----------------------------------------------------------------------------------------------------------------------//

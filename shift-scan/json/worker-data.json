@@ -1,7 +1,7 @@
 {
-"workers" :[   
+"workers": [
     {
-        "user": {
+    "user": {
         "id": "1",
         "firstName": "Jessica",
         "lastName": "Rabbit",
@@ -17,78 +17,66 @@
         "image": "https://example.com/image.jpg"
     },
     "employee": {
-    "employee_first_name": "Jessica",
-    "employee_last_name": "Rabbit",
-    "employee_id": 1,
-    "employee_dob": "1990-01-01T00:00:00.000Z",
-    "employee_availability": "MTWRF 6am - 10pm",
-    "employee_start_date": "2022-01-01T00:00:00.000Z",
-    "createdAt": "2022-01-01T00:00:00.000Z",
-    "updatedAt": "2022-01-01T00:00:00.000Z"
-    },
-    "employeeAccount": {
-    "account_id": 1,
-    "employee_id": 1,
-    "employee_username": "jessicarabbit",
-    "employee_password": "securepassword",
-    "employee_truck_view": true,
-    "employee_tasco_view": false,
-    "employee_labor_view": true,
-    "employee_privilege_level": "USER",
-    "createdAt": "2022-01-01T00:00:00.000Z",
-    "updatedAt": "2022-01-01T00:00:00.000Z"
+        "employee_first_name": "Jessica",
+        "employee_last_name": "Rabbit",
+        "employee_id": 1,
+        "employee_dob": "1990-01-01T00:00:00.000Z",
+        "employee_availability": "MTWRF 6am - 10pm",
+        "employee_start_date": "2022-01-01T00:00:00.000Z",
+        "createdAt": "2022-01-01T00:00:00.000Z",
+        "updatedAt": "2022-01-01T00:00:00.000Z"
     },
     "employeePosition": {
-    "employee_positions_id": 1,
-    "employee_id": 1,
-    "position_id": 1,
-    "createdAt": "2022-01-01T00:00:00.000Z",
-    "updatedAt": "2022-01-01T00:00:00.000Z"
+        "employee_positions_id": 1,
+        "employee_id": 1,
+        "position_id": 1,
+        "createdAt": "2022-01-01T00:00:00.000Z",
+        "updatedAt": "2022-01-01T00:00:00.000Z"
     },
     "position": {
-    "position_id": 1,
-    "position_name": "Worker",
-    "createdAt": "2022-01-01T00:00:00.000Z",
-    "updatedAt": "2022-01-01T00:00:00.000Z"
+        "position_id": 1,
+        "position_name": "Worker",
+        "createdAt": "2022-01-01T00:00:00.000Z",
+        "updatedAt": "2022-01-01T00:00:00.000Z"
     },
     "contact": {
-    "contact_id": 1,
-    "phone_number": "123-456-7890",
-    "email": "jessica.rabbit@example.com",
-    "emergency_contact": "Roger Rabbit",
-    "emergency_contact_no": "098-765-4321",
-    "createdAt": "2022-01-01T00:00:00.000Z",
-    "updatedAt": "2022-01-01T00:00:00.000Z"
+        "contact_id": 1,
+        "phone_number": "123-456-7890",
+        "email": "jessica.rabbit@example.com",
+        "emergency_contact": "Roger Rabbit",
+        "emergency_contact_no": "098-765-4321",
+        "createdAt": "2022-01-01T00:00:00.000Z",
+        "updatedAt": "2022-01-01T00:00:00.000Z"
     },
     "contactJoin": {
-    "contact_join_id": 1,
-    "contact_id": 1,
-    "employee_id": 1,
-    "createdAt": "2022-01-01T00:00:00.000Z",
-    "updatedAt": "2022-01-01T00:00:00.000Z"
+        "contact_join_id": 1,
+        "contact_id": 1,
+        "employee_id": 1,
+        "createdAt": "2022-01-01T00:00:00.000Z",
+        "updatedAt": "2022-01-01T00:00:00.000Z"
     },
     "address": {
-    "address_id": 1,
-    "street_no": 123,
-    "street_name": "Main St",
-    "city": "Anytown",
-    "state": "CA",
-    "zipcode": 12345,
-    "country": "USA",
-    "createdAt": "2022-01-01T00:00:00.000Z",
-    "updatedAt": "2022-01-01T00:00:00.000Z"
+        "address_id": 1,
+        "street_no": 123,
+        "street_name": "Main St",
+        "city": "Anytown",
+        "state": "CA",
+        "zipcode": 12345,
+        "country": "USA",
+        "createdAt": "2022-01-01T00:00:00.000Z",
+        "updatedAt": "2022-01-01T00:00:00.000Z"
     },
     "addressAssigner": {
-    "address_assigner_id": 1,
-    "address_id": 1,
-    "employee_id": 1,
-    "jobsite_id": null,
-    "createdAt": "2022-01-01T00:00:00.000Z",
-    "updatedAt": "2022-01-01T00:00:00.000Z"
+        "address_assigner_id": 1,
+        "address_id": 1,
+        "employee_id": 1,
+        "jobsite_id": null,
+        "createdAt": "2022-01-01T00:00:00.000Z",
+        "updatedAt": "2022-01-01T00:00:00.000Z"
     }
     },
-    {  
-        "user": {
+    {
+    "user": {
         "id": "2",
         "firstName": "John",
         "lastName": "Doe",
@@ -110,18 +98,6 @@
         "employee_dob": "1985-05-15T00:00:00.000Z",
         "employee_availability": "MTWRF 7am - 6pm",
         "employee_start_date": "2021-06-01T00:00:00.000Z",
-        "createdAt": "2021-06-01T00:00:00.000Z",
-        "updatedAt": "2021-06-01T00:00:00.000Z"
-    },
-    "employeeAccount": {
-        "account_id": 2,
-        "employee_id": 2,
-        "employee_username": "johndoe",
-        "employee_password": "securepassword",
-        "employee_truck_view": true,
-        "employee_tasco_view": true,
-        "employee_labor_view": false,
-        "employee_privilege_level": "MANAGER",
         "createdAt": "2021-06-01T00:00:00.000Z",
         "updatedAt": "2021-06-01T00:00:00.000Z"
     },

@@ -15,12 +15,12 @@
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.2.0",
-    "@auth/prisma-adapter": "^2.2.0",
     "@prisma/client": "^5.15.0",
     "bcryptjs": "^2.4.3",
     "js-cookie": "^3.0.5",
     "jsonwebtoken": "^9.0.2",
     "next": "^14.2.3",
+    "next-auth": "^4.24.7",
     "next-intl": "^3.14.1",
     "nookies": "^2.5.2",
     "qr-scanner": "^1.4.2",
