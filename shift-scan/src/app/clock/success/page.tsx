@@ -18,9 +18,8 @@ const { scanResult} = useScanData();
 const { savedCostCode} = useSavedCostCode();
 const now = new Date();
 
-const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+const handleBeforeUnload = () => {
     const message = t('lN6');
-    event.returnValue = message;
     return message;
 }
 

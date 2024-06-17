@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "permission" AS ENUM ('USER', 'MANAGER', 'ADMIN', 'SUPERADMIN');
+CREATE TYPE "permission" AS ENUM ('USER', 'MANAGER', 'PROJECTMANAGER', 'ADMIN', 'SUPERADMIN');
 
 -- CreateEnum
 CREATE TYPE "formStatus" AS ENUM ('PENDING', 'APPROVED', 'DENIED');
@@ -18,6 +18,7 @@ CREATE TABLE "users" (
     "tasco_view" BOOLEAN,
     "labor_view" BOOLEAN,
     "mechanic_view" BOOLEAN,
+    "permission" "permission" NOT NULL,
     "email" TEXT NOT NULL,
     "email_verified" TIMESTAMP(3),
     "phone" TEXT NOT NULL,
