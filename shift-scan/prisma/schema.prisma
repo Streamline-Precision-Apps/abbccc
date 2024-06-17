@@ -36,6 +36,7 @@ datasource db {
 enum permission {
   USER
   MANAGER
+  PROJECTMANAGER
   ADMIN
   SUPERADMIN
 }
@@ -68,6 +69,7 @@ model User {
   tasco_view          Boolean?
   labor_view          Boolean?
   mechanic_view       Boolean?
+  permission          permission
   email               String    @unique
   emailVerified       DateTime? @map("email_verified")
   phone               String

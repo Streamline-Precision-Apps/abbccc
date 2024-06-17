@@ -1,20 +1,17 @@
 "use client";
+
 import React, { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import '@/app/globals.css';
 import UseModal from '../../components/UI/modal';
-import { PrismaClient } from '@prisma/client';
 import Banner from '../../components/app/banner';
 import HoursButton from '../../components/app/hoursButton';
 import { LoginButton, LogoutButton } from './api/auth';
-
-
-const prisma = new PrismaClient();
-
+import { useSession } from 'next-auth/react';
 
 export default function Index() {
-
     const t = useTranslations('page1');
+    const { data: session } = useSession();
 
     const [user, setUser] = useState({
         firstName: 'retrieving...',
@@ -24,23 +21,15 @@ export default function Index() {
     });
 
     useEffect(() => {
-        const fetchData = async () => { 
-            try {
-                const response = await fetch('../api/employee');
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const data = await response.json();
-                console.log('Fetched Data:', data); // Log the fetched data
-                setUser(data);
-            } catch (error) {
-                console.log('Error fetching user data:', error);
-            }
-        };
-
-        fetchData()   ;
-    }, []);
-
+        if (session && session.user) {
+            setUser({
+                firstName: session.user.firstName,
+                lastName: session.user.lastName,
+                payPeriodHours: 0, // Assuming this data will be fetched separately
+                date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+            });
+        }
+    }, [session]);
 
     return (
         <div className='flex flex-col items-center space-y-4'>
@@ -50,10 +39,10 @@ export default function Index() {
             <LogoutButton />
             <br />
             <Banner date={String(user.date)} />
-            <h2 className='text-3xl'>{t('Name', { firstName: user.firstName, lastName: user.lastName})}</h2>
-            <HoursButton payPeriodHours={Number(user.payPeriodHours)}/>
+            <h2 className='text-3xl'>{t('Name', { firstName: user.firstName, lastName: user.lastName })}</h2>
+            <HoursButton payPeriodHours={Number(user.payPeriodHours)} />
             <br />
             <h2>{t('lN4')}</h2>
         </div>
     );
-} 
+}
