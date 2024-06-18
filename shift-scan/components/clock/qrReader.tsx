@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef, MutableRefObject } from "react";
 import QrScanner from "qr-scanner";
 import { useRouter } from 'next/navigation';
 import { useScanData } from '../context/ScannedJobSIte';
+import { isAuthenticated, setAuthStep } from "@/app/api/auth";
 
 const QrReader: React.FC = () => {
     const videoRef: MutableRefObject<HTMLVideoElement | null> = useRef(null);
@@ -26,9 +27,8 @@ const QrReader: React.FC = () => {
         // console.error(err);
         setScanCount((prevCount) => prevCount + 1);
     };
-
+        
     useEffect(() => {
-
         if (videoRef.current) {
             const scanner = new QrScanner(
                 videoRef.current,
@@ -54,6 +54,7 @@ const QrReader: React.FC = () => {
             };
         }
     }, [videoRef]);
+
 
     useEffect(() => {
         if (scanCount >= SCAN_THRESHOLD) {

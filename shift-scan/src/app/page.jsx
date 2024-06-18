@@ -6,6 +6,7 @@ import '@/app/globals.css';
 import { useSession } from 'next-auth/react';
 import ManagerPreLogin from '../../components/app/managerPreLogin';
 import EmployeePreLogin from '../../components/app/employeePreLogin';
+import { getAuthStep, isDashboardAuthenticated } from './api/auth';
 
 export default function Index() {
     const t = useTranslations('page1');
@@ -31,6 +32,11 @@ export default function Index() {
             });
         }
     }, [session]);
+    useEffect(() => {
+        if (isDashboardAuthenticated()) {
+            window.location.href = '/dashboard';
+        }
+    }, []);
 
 
     if (user.permission === 'ADMIN' || user.permission === 'MANAGER' || user.permission === 'PROJECTMANAGER') {
