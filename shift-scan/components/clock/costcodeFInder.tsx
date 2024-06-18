@@ -1,10 +1,11 @@
 'use client';
 import React, { useState, useEffect, ChangeEvent } from 'react';
-import CustomSelect from '../clock/customSelect';
-import SearchBar from '../clock/searchbar';
+import CustomSelect from './customSelect';
+import SearchBar from './searchbar';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useSavedCostCode } from '../context/SavedCostCode';
+import { setAuthStep } from '@/app/api/auth';
 
 // define what the option values are
 interface Option {
@@ -73,6 +74,7 @@ const CostCodeFinder: React.FC = () => {
   const handleOptionSelect = (option: Option) => {
     setSelectedOption(option);
     setCostCode(option.value);
+    setAuthStep("verify");
   };
 
   // a function to toggle the dropdown
@@ -80,7 +82,8 @@ const CostCodeFinder: React.FC = () => {
   // a function to submit the costcode to the next page
   const handleSubmit = () => {
     if (selectedOption) {
-      router.push(`/clock/verify`);
+      
+      router.push("/clock/verify");
     } else {
       console.log('No option selected, please select a cost code');
     }

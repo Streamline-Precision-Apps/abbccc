@@ -39,7 +39,7 @@ export default function Hours({ payPeriodHours, permission }: HoursProps) {
             <h2 className="text-xl mg-auto">{t('lN6')}</h2>
             </div>
             </div>
-            <Link className="w-full flex justify-center" href="/clock">
+            <Link className="w-full flex justify-center" href="/clock/Qr">
             <button className='bg-green-400 text-5xl text-white w-3/4 h-64 p-5 gap-2 rounded'>
                 {t('lN3')}
             </button>
@@ -63,7 +63,7 @@ export default function Hours({ payPeriodHours, permission }: HoursProps) {
         <div className="w-full flex justify-center flex-col items-center mt-10">
         <div>
         </div>
-        <Link className="w-full flex justify-center" href="/clock">
+        <Link className="w-full flex justify-center" href="/clock/Qr">
         <button className='bg-green-400 text-5xl text-white w-3/4 h-64 p-5 gap-2 rounded'>
             {t('lN3')}
         </button>

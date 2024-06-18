@@ -9,3 +9,26 @@ export const LoginButton = () => {
 export const LogoutButton = () => {
     return<button onClick={() => signOut()}>Logout</button>
 }
+// auth steps to getting to dashboard
+export const setAuthStep = (step: string) => {
+    localStorage.setItem('authStep', step);
+};
+
+export const getAuthStep = () => {
+    return localStorage.getItem('authStep');
+};
+
+export const clearAuthStep = () => {
+    localStorage.removeItem('authStep');
+};
+
+export const isAuthenticated = () => {
+    const currentStep = getAuthStep();
+    
+    return currentStep === 'success';
+};
+export const isDashboardAuthenticated = () => {
+    const currentStep = getAuthStep();
+    
+    return currentStep === 'success';
+};

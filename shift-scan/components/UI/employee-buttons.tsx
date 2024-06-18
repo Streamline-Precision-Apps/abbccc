@@ -4,6 +4,7 @@ import '../../src/app/globals.css';
 
 const EmployeeButtons = () => {
     const t = useTranslations('EmployeeCards');
+
     return (
         <div className="grid grid-cols-2 grid-rows-2 gap-4 ">
 
@@ -35,7 +36,7 @@ const EmployeeButtons = () => {
             <button className="bg-blue-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 border border-gray-400  font-bold rounded"
             onClick={
                 () => {
-                    // <ClockOut />
+
                 }
             }
             >{t('Forms')}</button>
