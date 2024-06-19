@@ -158,7 +158,9 @@ async function upsertWorkerData(worker: any) {
 
   // Upsert address assigner
   await prisma.addressEmployee.upsert({
-    where: { id: addressEmployee.id },
+    where: {
+      id: addressEmployee.id,
+    },
     update: {
       address_id: addressEmployee.address_id,
       employee_id: addressEmployee.employee_id,
