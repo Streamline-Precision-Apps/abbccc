@@ -18,7 +18,6 @@ const LocaleCheckBox = () => {
 
     const handleChange = (event) => {
         const newLocale = event.target.checked ? "es" : "en";
-        console.log(newLocale);
         setLocale(newLocale); // updates the local state
         changeLocale(newLocale); // updates the cookie and reloads the page
     };

@@ -28,14 +28,14 @@ export const authOptions : NextAuthOptions ={
                 locale: {
                     label: "Hablas Espanol?",
                     type: "checkbox",
-                    value: "false"
+                    value: "true"
                 }
             },
         async authorize(credentials) {
-            if (credentials?.locale === 'false') {
-                cookies().set('locale', 'en', { path: '/' });
-            } else {
+            if (credentials?.locale === 'true') {
                 cookies().set('locale', 'es', { path: '/' });
+            } else {
+                cookies().set('locale', 'en', { path: '/' });
             }
 
             // Add logic here to look up the user from the credentials supplied
