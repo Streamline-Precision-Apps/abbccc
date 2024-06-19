@@ -300,14 +300,13 @@ model CostCode {
 //----------------------------------------------------------------------------------------------------------------------//
 // crew data for seeing the entire crew and enabling site linking it also has direct access to the employeed time cards, and some desire profile settings
 model CrewMember {
+  id          Int           @id @default(autoincrement())
   employee    Employee @relation(fields: [employee_id], references: [id])
   employee_id Int
   crew        Crew     @relation(fields: [crew_id], references: [id])
   crew_id     Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-
-  @@id([employee_id, crew_id])
 }
 
 // the crew model assigns member to a crew, it also reports  
@@ -325,6 +324,7 @@ model Crew {
 // @unique variable preventing duplication
 // we want this relation ship so that project managers can see the full teams of people for his site. 
 model CrewJobsite {
+  id         Int @id @default(autoincrement())
   crew_id    Int
   jobsite_id Int
   createdAt  DateTime @default(now())
@@ -332,14 +332,13 @@ model CrewJobsite {
   crew       Crew     @relation(fields: [crew_id], references: [id])
   jobsite    Jobsite  @relation(fields: [jobsite_id], references: [id])
 
-  @@unique([crew_id, jobsite_id])
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
 // employee positions
 model EmployeePosition {
 
-  id          Int  @id @unique @default(autoincrement())
+  id          Int  @id @default(autoincrement())
   employee_id Int
   position_id Int
   createdAt   DateTime @default(now())

@@ -67,7 +67,7 @@
         "updatedAt": "2022-01-01T00:00:00.000Z"
     },
     "addressEmployee": {
-        "address_assigner_id": 1,
+        "id": 1,
         "address_id": 1,
         "employee_id": 1,
         "createdAt": "2022-01-01T00:00:00.000Z",
@@ -109,13 +109,13 @@
         "updatedAt": "2021-06-01T00:00:00.000Z"
     },
     "position": {
-        "position_id": 2,
-        "position_name": "Manager",
+        "id": 2,
+        "name": "Manager",
         "createdAt": "2021-06-01T00:00:00.000Z",
         "updatedAt": "2021-06-01T00:00:00.000Z"
     },
     "contact": {
-        "contact_id": 2,
+        "id": 2,
         "phone_number": "987-654-3210",
         "email": "john.doe@example.com",
         "emergency_contact": "Jane Doe",
@@ -124,16 +124,15 @@
         "updatedAt": "2021-06-01T00:00:00.000Z"
     },
     "contactJoin": {
-        "contact_join_id": 2,
+        "id": 2,
         "contact_id": 2,
         "employee_id": 2,
         "createdAt": "2021-06-01T00:00:00.000Z",
         "updatedAt": "2021-06-01T00:00:00.000Z"
     },
     "address": {
-        "address_id": 2,
-        "street_no": 456,
-        "street_name": "Second St",
+        "id": 2,
+        "address": "Second St",
         "city": "Anycity",
         "state": "TX",
         "zipcode": 67890,
@@ -142,7 +141,7 @@
         "updatedAt": "2021-06-01T00:00:00.000Z"
     },
     "addressEmployee": {
-        "address_assigner_id": 2,
+        "id": 2,
         "address_id": 2,
         "employee_id": 2,
         "createdAt": "2021-06-01T00:00:00.000Z",
