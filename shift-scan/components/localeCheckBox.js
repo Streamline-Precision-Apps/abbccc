@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import Cookies from "js-cookie";
+import { cookies } from "next/headers";
 import { useTranslations } from 'next-intl';
 
 const changeLocale = (newLocale) => {
-    Cookies.set('locale', newLocale, { expires: 365 });
+    cookies().set('locale', newLocale, { expires: 365 });
     window.location.reload();
 };
 
@@ -12,7 +12,7 @@ const LocaleCheckBox = () => {
     const [locale, setLocale] = useState("en");
 
     useEffect(() => {
-        const currentLocale = Cookies.get('locale') || "en";
+        const currentLocale = cookies().get('locale') || "en";
         setLocale(currentLocale);
     }, []);
 
