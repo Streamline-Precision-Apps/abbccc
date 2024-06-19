@@ -6,6 +6,7 @@ import NextAuth, { NextAuthOptions} from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import * as bcrypt from "bcryptjs";
 import { User } from "@prisma/client";
+import {cookies} from "next/headers";
 
 export const authOptions : NextAuthOptions ={
     session: {
@@ -23,9 +24,20 @@ export const authOptions : NextAuthOptions ={
                 password: {
                     label: "Password",
                     type: "password" 
+                },
+                locale: {
+                    label: "Hablas Espanol?",
+                    type: "checkbox",
+                    value: "false"
                 }
             },
         async authorize(credentials) {
+            if (credentials?.locale === 'false') {
+                cookies().set('locale', 'en', { path: '/' });
+            } else {
+                cookies().set('locale', 'es', { path: '/' });
+            }
+
             // Add logic here to look up the user from the credentials supplied
             if (!credentials?.username || !credentials?.password) {
                 return null
