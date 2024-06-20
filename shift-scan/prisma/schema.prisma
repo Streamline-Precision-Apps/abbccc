@@ -84,43 +84,41 @@ model User {
 
 // use for next auth beta@5.0 we have 4.3  ignore for now
 model Account {
-  userId            String
-  employee_id       Int      @unique
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String?
-  access_token      String?
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?
-  session_state     String?
-  employee          Employee @relation(fields: [employee_id], references: [id])
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id                 String  @id @default(cuid())
+  userId             String  @map("user_id")
+  type               String
+  provider           String
+  providerAccountId  String  @map("provider_account_id")
+  refresh_token      String? @db.Text
+  access_token       String? @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String? @db.Text
+  session_state      String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@id([provider, providerAccountId])
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
 }
 
 model Session {
-  sessionToken String   @unique
-  userId       String
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  @@map("sessions")
 }
-
 model VerificationToken {
   identifier String
   token      String
   expires    DateTime
 
-  @@id([identifier, token])
+  @@unique([identifier, token])
+  @@map("verificationtokens")
 }
 
 /// cuts off right here
@@ -144,14 +142,14 @@ model Employee {
   updatedAt        DateTime  @updatedAt
 
   crewMembers      CrewMember[]
-  timeRequestForms FormData[]
+  forms            Form[]
   timeSheet        TimeSheet[]
   equipmentLogs    EmployeeEquipmentLog[]
-  Positions        EmployeePosition[]
+  positions        EmployeePosition[]
   contacts         ContactJoin[]
   addresses        AddressEmployee[]
   users            User[]
-  Account          Account?
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
@@ -227,7 +225,7 @@ model EmployeeEquipmentLog {
   jobsite_id       Int
   employee_id      Int
   start_time       DateTime
-  end_time         DateTime
+  end_time         DateTime?
   equipment_notes  String?
   equipment_status String   @default("Operational")
   createdAt        DateTime @default(now())
@@ -429,22 +427,35 @@ model Address {
 
 //----------------------------------------------------------------------------------------------------------------------//
 // one form in our db part of settings
-model FormData {
+enum formType{
+  MEDICAL
+  INSPECTION
+  MANAGER
+  LEAVE
+  SAFETY
+}
+// model timeRequestForms{
+//   id                    Int        @id @default(autoincrement())
+//   employee_id           Int
+//   start_date_requested  DateTime
+//   end_date_requested    DateTime
+//   time_request_type     String
+//   time_request_comments String
+//   status                formStatus @default(PENDING)
+//   employee              Employee   @relation(fields: [employee_id], references: [id])
+
+// }
+
+model Form {
   id                    Int        @id @default(autoincrement())
-  form_type             String
-  form_name             String
-  employee_id           Int
-  start_date_requested  DateTime
-  end_date_requested    DateTime
-  time_request_type     String
-  time_request_comments String
+  type                  formType //label to identify type of form 
   createdAt             DateTime   @default(now())
   updatedAt             DateTime   @updatedAt
   status                formStatus @default(PENDING)
-  employee              Employee   @relation(fields: [employee_id], references: [id])
+  employee              Employee   @relation(fields: [id], references: [id])
 }
 
-model Form {
+model FormStructure {
   id    Int     @id @default(autoincrement())
   title String
   box_1 Boolean @default(false)
