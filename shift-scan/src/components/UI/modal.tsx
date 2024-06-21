@@ -2,8 +2,8 @@
 import { useTranslations} from 'next-intl';
 
 import React, {useEffect, useState} from 'react';
-import Modal from '../Modal'
-import '../../src/app/globals.css';
+import Modal from '@/components/Modal';
+import '@/app/globals.css';
 
 
 export default function UseModal (){

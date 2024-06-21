@@ -1,4 +1,4 @@
-import { signIn } from "../authentication/sign-in"
+import { signIn } from "./sign-in"
  
 export function SignIn() {
   return (

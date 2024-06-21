@@ -1,5 +1,5 @@
 import React from 'react';
-import "../../src/app/globals.css";
+import "@/app/globals.css";
 // allows us to use the search bar and the dropdown together like modern design
 
 interface Option {

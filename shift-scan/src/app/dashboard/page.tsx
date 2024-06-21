@@ -1,11 +1,10 @@
 "use client";
 import React, {useEffect, useState} from 'react';
 import { useTranslations} from 'next-intl';
-import '../globals.css';
-import Link from 'next/link';
-import UseModal from '../../../components/UI/modal';
-import EmployeeCardDisplay from '../../../components/employeeCardDisplay';
-import { clearAuthStep, getAuthStep, isDashboardAuthenticated } from '../api/auth';
+import '@/app/globals.css';
+import UseModal from '@/components/UI/modal';
+import EmployeeCardDisplay from '@/components/employeeCardDisplay';
+import { clearAuthStep, getAuthStep, isDashboardAuthenticated } from '@/app/api/auth';
 import { useRouter } from 'next/navigation';
 
 

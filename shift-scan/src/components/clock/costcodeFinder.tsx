@@ -1,10 +1,10 @@
 'use client';
 import React, { useState, useEffect, ChangeEvent } from 'react';
-import CustomSelect from './customSelect';
-import SearchBar from './searchbar';
+import CustomSelect from '@/components/clock/customSelect';
+import SearchBar from '@/components/clock/searchbar';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { useSavedCostCode } from '../context/SavedCostCode';
+import { useSavedCostCode } from '@/app/context/SavedCostCode';
 import { setAuthStep } from '@/app/api/auth';
 
 // define what the option values are

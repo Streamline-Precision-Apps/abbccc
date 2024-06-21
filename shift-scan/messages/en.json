@@ -69,7 +69,7 @@
     },
 
     "dashboard": {
-        "Banner": "Welcome Back!",
+        "Banner": "End of the line pal!",
         "Name": "{firstName} {lastName}",
         "Date": "{date}",
         "lN1": "Copyright © 2024.Streamline Precision LLC. All rights reserved."
