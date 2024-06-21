@@ -1,5 +1,0 @@
-Today's Date: 05-03-2024
-Job Site Number: “C137383”
-user: John Doe
-employeeId: 123
-Clocked In At: 10:26:06
