@@ -1,4 +1,12 @@
+:root {
+--color-custom-blue: #57BDE9;
+--color-custom-dark-blue: #233861;
+--color-custom-green: #74E957;
+--color-custom-red: #FC3939;
+--color-custom-orange: #FC8F2B;
+}
+
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-

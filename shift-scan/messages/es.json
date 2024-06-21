@@ -1,17 +1,85 @@
 {
-    "login-page": {
-        "title": "portal de inicio de sesión",
-        "emp-id": "identificación de empleado",
-        "password": "Contraseña",
-        "submit": "Iniciar sesión",
-        "forgot-password": "olvidaste tu contraseña",
-        "error": "usuario o contraseña invalido",
-        "copyright": "Copyright © 2024. Todos los derechos reservados."
+    "PortalLogin": {
+        "Title": "Inicio de Sesión en el Portal",
+        "lN1": "ID de Empleado",
+        "lN2": "Contraseña",
+        "btn-signIn": "Iniciar sesión",
+        "lN3": "Uncheck to use English",
+        "btn-forgot": "¿Olvidó su contraseña?",
+        "Error": "Usuario o contraseña inválidos",
+        "lN4": "Copyright © 2024. Todos los derechos reservados."
     },
-    "page-1": {
-        "title": "pagina 1"
+    "modal-settings": {
+        "Settings" : "Configuraciones",
+        "btn-inbox" : "Bandeja de entrada",
+        "btn-profile" : "Perfil",
+        "btn-notifications" : "Notificaciones"
     },
-    "page-2": {
-        "title": "pagina 2"
+
+    "page1": {
+        "Banner": "¡Bienvenido de nuevo!",
+        "Name": "{firstName} {lastName}",
+        "Date": "{date}",
+        "lN1": "Horas Totales:",
+        "lN2": "{payPeriodHours}",
+        "lN3": "Registrar Entrada",
+        "lN4": "Copyright © 2024. Todos los derechos reservados."
+    },
+    "page2": { 
+        "title" :"Ficharse",
+        "subtitle": "Por favor, escanee el Código QR",
+        "btn-scan": "Simular Escaneo",
+        "btn-entry": "Ingresar manualmente"
+    },    
+    "page3": {
+        "title": "Cost Codes",
+        "lN1": "Trabajo encountrado: ",
+        "lN2": "seleccione un cost code:",
+        "btn-next": "Siguiente",
+        "used-codes": { 
+            "item1": "Cost Code #1",
+            "item2": "Cost Code #2",
+            "item3": "Cost Code #3" 
+        }
+    }, 
+    "page4": {
+        "lN1": "Ficharse",
+        "lN2" : "Trabajo encountrado:",
+        "lN3" : "Cost Code:",
+        "lN4" : "Inciciar un turno!"
+    },
+
+    "page5": {
+        "lN1": "Ficharse",
+        "lN2" : "Trabajo encountrado:",
+        "lN3" : "Cost Code:",
+        "lN4" : "Ficharse exitosamente!",
+        "lN5" : "siguiente pagina"
+    },
+    
+    "page6": {
+        "": "ya listo para comenzar un turno increíble!",
+        "Name": "{firstName} {lastName}",
+        "Date": "{date}",
+        "ClockOut-btn": "Cerrar sesión",
+        "Copyright": "Copyright © 2024. Todos los derechos reservados."
+    },
+
+    "EmployeeCards": {
+        "SwitchJobs": "Cambiar el Sitio",
+        "Equipment": "Equipo de Trabajo",
+        "ClockOut": "Salir de la Sesion",
+        "Forms" : "Formas de Trabajo",
+        "QrGenerator": "Generador de Códigos",
+        "MyTeam": "Mi Equipo"
+    },
+
+    "dashboard": {
+        "Banner": "¡Listo para empezar un dia increíble!",
+        "Name": "{firstName} {lastName}",
+        "Date": "{date}",
+        "lN1": "Derechos de Streamline Precision © 2024. Todos los derechos reservados."
     }
+
 }
+
