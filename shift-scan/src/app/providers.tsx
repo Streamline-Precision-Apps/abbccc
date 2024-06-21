@@ -1,8 +1,8 @@
 'use client';
 // this is the provider for the app, it wraps all the components 
 // this is so that all the components can access the context
-import {ScanDataProvider} from '../../components/context/ScannedJobSIte';
-import {SavedCostCodeProvider} from '../../components/context/SavedCostCode';
+import {ScanDataProvider} from './context/ScannedJobSIte';
+import {SavedCostCodeProvider} from './context/SavedCostCode';
 import {SessionProvider} from 'next-auth/react';
 // import {UserContext} from '../../components/context/UserContext';
 

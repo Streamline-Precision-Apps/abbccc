@@ -1,14 +1,12 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import CostCodeFinder from '../../../../components/clock/costcodeFinder';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useScanData } from '../../../../components/context/ScannedJobSIte';
-import { useSavedCostCode } from '../../../../components/context/SavedCostCode';
-import useBeforeUnload from '../../../../components/app/refreshWarning';
+import { useScanData } from '@/app/context/ScannedJobSIte';
+import { useSavedCostCode } from '@/app/context/SavedCostCode';
 import { clearAuthStep, getAuthStep, setAuthStep } from '@/app/api/auth';
-import { Clock } from '../../../../components/clock';
+import { Clock } from '@/components/clock';
 import "@/app/globals.css";
 
 const verify: React.FC = () => {

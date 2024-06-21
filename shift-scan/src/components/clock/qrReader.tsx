@@ -2,8 +2,8 @@
 import React, { useState, useEffect, useRef, MutableRefObject } from "react";
 import QrScanner from "qr-scanner";
 import { useRouter } from 'next/navigation';
-import { useScanData } from '../context/ScannedJobSIte';
-import { isAuthenticated, setAuthStep } from "@/app/api/auth";
+import { useScanData } from '@/app/context/ScannedJobSIte';
+
 
 const QrReader: React.FC = () => {
     const videoRef: MutableRefObject<HTMLVideoElement | null> = useRef(null);

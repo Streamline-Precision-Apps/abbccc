@@ -1,4 +1,4 @@
-import '../src/app/globals.css';
+import '@/app/globals.css';
 
 
 const Modal = ({ show, onClose, children }) => {

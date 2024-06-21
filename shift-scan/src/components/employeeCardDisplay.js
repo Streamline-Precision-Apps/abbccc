@@ -1,6 +1,6 @@
 import React from "react";
-import ManagerButtons from "./UI/manager-buttons";
-import EmployeeButtons from "./UI/employee-buttons";
+import ManagerButtons from "@/components/UI/manager-buttons";
+import EmployeeButtons from "@/components/UI/employee-buttons";
 
 const CardDisplay = (Props) => {
     const {role} = Props; 

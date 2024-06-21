@@ -4,9 +4,9 @@ import React, { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import '@/app/globals.css';
 import { useSession } from 'next-auth/react';
-import ManagerPreLogin from '../../components/app/managerPreLogin';
-import EmployeePreLogin from '../../components/app/employeePreLogin';
-import { isDashboardAuthenticated } from './api/auth';
+import ManagerPreLogin from '@/components/app/managerPreLogin';
+import EmployeePreLogin from '@/components/app/employeePreLogin';
+import { isDashboardAuthenticated } from '@/app/api/auth';
 
 type User = {
     name?: string | null;

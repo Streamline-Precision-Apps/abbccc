@@ -1,9 +1,9 @@
 import { useTranslations } from 'next-intl';
 import '@/app/globals.css';
-import UseModal from '../../components/UI/modal';
-import Banner from '../../components/app/banner';
-import HoursButton from '../../components/app/hoursButton';
-import { LoginButton, LogoutButton } from '../../src/app/api/auth';
+import UseModal from '@/components/UI/modal';
+import Banner from '@/components/app/banner';
+import HoursButton from '@/components/app/hoursButton';
+import { LoginButton, LogoutButton } from '@/app/api/auth';
 
 export default function ManagerPreLogin({ user }: any) {
     const t = useTranslations('page1'); 

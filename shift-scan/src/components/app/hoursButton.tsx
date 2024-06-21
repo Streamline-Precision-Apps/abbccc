@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 import "@/app/globals.css";
 import { useState } from "react";
-import ViewHoursComponent from "./hoursDisplay";
+import ViewHoursComponent from "@/components/app/hoursDisplay";
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 
