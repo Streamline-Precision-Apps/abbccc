@@ -1,17 +1,83 @@
-{
-    "login-page": {
-        "title": "Portal Login",
-        "emp-id": "Employee ID",
-        "password": "Password",
-        "submit": "login in",
-        "forgot-password": "Forgot password?",
-        "error": "Invalid username or password",
-        "copyright": "Copyright © 2024. All rights reserved."
+{   
+    "PortalLogin": {
+        "Title": "Portal Login",
+        "lN1": "Employee ID",
+        "lN2": "Password",
+        "btn-signIn": "Sign in",
+        "lN3": "Habla Espanol?",
+        "btn-forgot": "Forgot Password?",
+        "Error": "Invalid username or password",
+        "lN4": "Copyright © 2024. All rights reserved."
     },
-    "page-1": {
-        "title": "Page 1"
+    "modal-settings": {
+        "Settings" : "Settings",
+        "btn-inbox" : "Inbox",
+        "btn-profile" : "Profile",
+        "btn-notifications" : "Notifications"
     },
-    "page-2": {
-        "title": "Page 2"
+    "page1": {
+        "Banner": "Welcome Back!",
+        "Name": "{firstName} {lastName}",
+        "Date": "{date}",
+        "lN1": "Total Hours:",
+        "lN3": "Clock In",
+        "lN4": "Copyright © 2024.Streamline Precision LLC. All rights reserved."
+    },
+
+    "page2": { 
+        "title" :"Scan Job Site",
+        "subtitle": "Please scan the QR code",
+        "btn-scan": "simulate scan",
+        "btn-entry": "qr code working ? "
+    },
+    "page3": {
+        "title": "Cost Codes",
+        "lN1": "Job Found: ",
+        "lN2": "Please select a cost code:",
+        "btn-next": "next",
+        "used-codes": { 
+            "item1": "Cost Code #1",
+            "item2": "Cost Code #2",
+            "item3": "Cost Code #3" 
+        }
+    },
+    "page4": {
+        "title": "Select Cost Code:",
+        "lN1": "Type Here",
+        "lN2" : "Recently used:",
+        "submit": "Continue"
+        
+    },
+
+    "page5": {
+        "lN1": "Clock In",
+        "lN2" : "Job Found:",
+        "lN3" : "Cost Code:",
+        "lN4" : "Successfully Clocked In!",
+        "lN5" : "Start Shift!"
+    },
+    
+    "page6": {
+        "": "Ready to start an amazing shift!",
+        "Name": "{firstName} {lastName}",
+        "Date": "{date}",
+        "ClockOut-btn": "Clock Out",
+        "Copyright": "Copyright © 2024. All rights reserved."
+    },
+
+    "dashboard": {
+        "Banner": "Welcome Back!",
+        "Name": "{firstName} {lastName}",
+        "Date": "{date}",
+        "lN1": "Copyright © 2024.Streamline Precision LLC. All rights reserved."
+    },
+    
+    "EmployeeCards": {
+        "SwitchJobs": "Switch Job",
+        "Equipment": "Equipment",
+        "ClockOut": "Clock Out",
+        "Forms" : "Work Forms",
+        "QrGenerator": "QR Generator",
+        "MyTeam": "My Team"
     }
 }

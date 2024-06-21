@@ -15,6 +15,13 @@ const config: Config = {
       },
     },
   },
+  colors: {
+    'customBlue': '#57BDE9',
+    'customDarkBlue': '#233861',
+    'customGreen': '#74E957',
+    'customRed': '#FC3939',
+    'customOrange': '#FC8F2B',
+  },
   plugins: [],
 };
 export default config;
