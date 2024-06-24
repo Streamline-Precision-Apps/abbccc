@@ -31,6 +31,12 @@ i then uninstalled node and reinstalled it and fix the error with next/babel tha
 I got it working, now i am making a button switch component
 npm install nookies
 
+https://next-intl-docs.vercel.app/docs/getting-started/app-router/with-i18n-routing  
+this is the method you must take in order to get internationalization up on next js... just follow these steps and copy and paste. 
+```
+npm install next-intl
+```
+be sure to install the package too
 
 Updated as of 6/17/24
 
