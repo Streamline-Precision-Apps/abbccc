@@ -4,8 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useScanData } from '@/app/context/ScannedJobSIte';
 import { useSavedCostCode } from '@/app/context/SavedCostCode';
-import RedirectAfterDelay from '@/components/clock/redirectAfterDelay';
-import useBeforeUnload from '@/components/app/refreshWarning';
+import RedirectAfterDelay from '@/components/redirectAfterDelay';
 import { clearAuthStep, getAuthStep, isAuthenticated, setAuthStep } from '@/app/api/auth';
 
 const SuccessPage: React.FC = () => {
@@ -24,15 +23,13 @@ const SuccessPage: React.FC = () => {
         }
     }, []);
 
-    const handleBeforeUnload = () => {
-        const message = t('lN6');
-        clearAuthStep();
-        setAuthStep('dashboard');
-        return message;
-    };
+    // const handleBeforeUnload = () => {
+    //     const message = t('lN6');
+    //     clearAuthStep();
+    //     setAuthStep('dashboard');
+    //     return message;
+    // };
 
-    // To have a delay of 5 seconds, uncomment the line below
-    useBeforeUnload(handleBeforeUnload);
 
     return isAuthenticated() ? (
         <div className='flex flex-col items-center '>
