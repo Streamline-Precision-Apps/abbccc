@@ -4,8 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import '@/app/globals.css';
 import { useSession } from 'next-auth/react';
-import ManagerPreLogin from '@/components/app/managerPreLogin';
-import EmployeePreLogin from '@/components/app/employeePreLogin';
+import EmployeePreLogin from '@/app/employeePreLogin';
 import { isDashboardAuthenticated } from '@/app/api/auth';
 
 type User = {
@@ -58,7 +57,7 @@ export default function Index() {
     if (user.permission === 'ADMIN' || user.permission === 'MANAGER' || user.permission === 'PROJECTMANAGER') {
         return (
             <div className='flex flex-col items-center space-y-4'>
-                <ManagerPreLogin user={user} permission={user.permission} />
+                <EmployeePreLogin user={user} permission={user.permission} />
             </div>
         );
     } else if (user.permission === 'SUPERADMIN') {

@@ -2,7 +2,7 @@
 import React, {useEffect, useState} from 'react';
 import { useTranslations} from 'next-intl';
 import '@/app/globals.css';
-import UseModal from '@/components/UI/modal';
+import UseModal from '@/components/modal';
 import EmployeeCardDisplay from '@/components/employeeCardDisplay';
 import { clearAuthStep, getAuthStep, isDashboardAuthenticated } from '@/app/api/auth';
 import { useRouter } from 'next/navigation';
