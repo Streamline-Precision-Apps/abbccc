@@ -5,10 +5,12 @@ import {ScanDataProvider} from './context/JobSiteContext';
 import {SavedCostCodeProvider} from './context/CostCodeContext';
 import {SessionProvider} from 'next-auth/react';
 import { SavedPayPeriodHoursProvider } from './context/SavedPayPeriodHours';
+
 // import {UserContext} from '../../components/context/UserContext';
 
 export function Providers({ children }: { children: React.ReactNode }) {
     return <>
+
             <SavedPayPeriodHoursProvider>
             <SavedCostCodeProvider>
             <ScanDataProvider>
@@ -20,6 +22,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
             </ScanDataProvider>
             </SavedCostCodeProvider>
             </SavedPayPeriodHoursProvider>
+
             
         </>;
 }

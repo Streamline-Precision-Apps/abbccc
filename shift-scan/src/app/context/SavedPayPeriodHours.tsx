@@ -27,7 +27,7 @@ return (
 export const useSavedPayPeriodHours = () => {
     const context = useContext(SavedPayPeriodHours);
     if (context === undefined) {
-    throw new Error('useScanData must be used within a ScanDataProvider');
+    throw new Error('SavedPayPeriodHours must be used within a SavedPayPeriodHoursProvider');
 }
     return context;
 };
