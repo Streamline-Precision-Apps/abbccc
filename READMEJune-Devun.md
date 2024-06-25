@@ -1,0 +1,20 @@
+6/24/2024
+To put a pin on where we are in the project we are working on the first page of the application as far as the logic is concern as approaching the end of basic logic with out test cases so. Zack has been working on the settings section of the application and getting the components of the app consistent and reusable for later pages. Since a lot of the pages have similar button we are able to reuse them so its taking a bit longer to do that, Sean is currently working on a flow chart for the system along with the variable, Currently Im working on the homepage and am currently shrink my code of redundancy and looking for potential app breaking errors. 
+
+Packages that I am including as of today:
+I am adding a package called recharts to be able to visualize our hour data that will bedisplayed for empoyee and later on will use it for the dashboard app. I choose recharts because it is very powerful and simplictic to uses making only one cart for the app will be enough.
+
+"""
+npm install recharts
+"""
+
+6/25/2024
+Today I have the Goal To learn more about RESTful APIs in order to send and recieve data from prisma. The steps that I am taking are:
+1. research RESTful API
+2. Researching NextJS app router Restful Api
+3. Prisma Rest API and how to use them with the app routing system.
+
+The reasoning, we have data that we wnt to insert into the db and also into prisma and make api calls to recieve it fo rthe app. I want to make sure that everything loads server side rather then client side. I also need to know how parents and child respond. 
+I am also helping Sean with the last steps of set up for the app. 
+
+I will report back my findins at the end of my day.
