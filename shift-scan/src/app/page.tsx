@@ -8,6 +8,8 @@ import { isDashboardAuthenticated } from "@/app/api/auth";
 // this is to help typescript work
 import {User, CustomSession} from "@/lib/types";
 import { useSavedPayPeriodHours} from "@/app/context/SavedPayPeriodHours";
+import Name from "@/app/name";
+
 
 
 export default function Index() {
@@ -15,11 +17,13 @@ export default function Index() {
     const { data: session } = useSession() as { data: CustomSession | null };
     const { setPayPeriodHours } = useSavedPayPeriodHours();
 
+
     // this give a  default value to the user object before the data is fetched
     const [user, setUser] = useState<User>({
-        firstName: "Display Name",
+        id: "",
+        firstName: "",
         lastName: "",
-        payPeriodHours: "0",
+        payPeriodHours: "",
         date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
         permission: "",
     });
@@ -27,6 +31,7 @@ export default function Index() {
     useEffect(() => {
         if (session && session.user) {
             setUser({
+                id: session.user.id,
                 firstName: session.user.firstName || "Display Name",
                 lastName: session.user.lastName,
                 payPeriodHours: "24", // Data will be fetched separately.
@@ -50,6 +55,7 @@ export default function Index() {
     if (user.permission === "ADMIN" || user.permission === "MANAGER" || user.permission === "PROJECTMANAGER") {
         return (
             <div className="flex flex-col items-center space-y-4">
+                <Name translation={"page1"} user={user} /> 
                 <PreLogin user={user} permission={user.permission} />
             </div>
         );
@@ -63,6 +69,7 @@ export default function Index() {
     } else {
         return (
             <div className="flex flex-col items-center space-y-4">
+                <Name translation="page1" user={user} /> 
                 <PreLogin user={user} permission={user.permission} />
             </div>
         );
