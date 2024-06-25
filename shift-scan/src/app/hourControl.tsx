@@ -6,7 +6,11 @@ interface ControlComponentProps {
 }
 
 const ControlComponent: React.FC<ControlComponentProps> = ({ scrollLeft, scrollRight, returnToMain, currentDate }) => {
-    const Weekday = currentDate.toLocaleDateString('en-US', { weekday: 'long' });
+    let Weekday = currentDate.toLocaleDateString('en-US', { weekday: 'long' });
+    const today = new Date();
+    if (Weekday == today.toLocaleDateString('en-US', { weekday: 'long' })) {
+        Weekday = "Today";
+    }
     const datetoday = currentDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
     return (
