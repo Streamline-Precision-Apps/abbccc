@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import workerData from "@/data/json/worker-data.json";
+import workerData from "../src/data/worker-data.json";
 import { hash } from "bcryptjs";
 
 const prisma = new PrismaClient();
