@@ -17,4 +17,10 @@ Today I have the Goal To learn more about RESTful APIs in order to send and reci
 The reasoning, we have data that we wnt to insert into the db and also into prisma and make api calls to recieve it fo rthe app. I want to make sure that everything loads server side rather then client side. I also need to know how parents and child respond. 
 I am also helping Sean with the last steps of set up for the app. 
 
-I will report back my findins at the end of my day.
+I will report back my findings at the end of my day.
+
+To wrap up my day I learned alot about api in next js which was useful but is till have to figure out how and when to use server side and when not, plus the documentation I have is new so server side rendering is out of data and lots of the resources say to do that which is ironic. I also felt pretty accomplished minus the little setbacks. 
+
+6/26/2024
+
+Today I got a video on how to use api End points in our stack, I am excited to get it working! Goal is to make a api endpoint for the user nd use them/ save them on render. 
