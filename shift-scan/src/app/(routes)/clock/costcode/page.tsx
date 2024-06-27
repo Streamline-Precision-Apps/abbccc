@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect } from 'react';
-import CostCodeFinder from '@/app/clock/costcode/costcodeFinder';
+import CostCodeFinder from '@/app/(routes)/clock/costcode/costcodeFinder';
 import { useTranslations } from 'next-intl';
 import { clearAuthStep, getAuthStep, isAuthenticated, setAuthStep } from '@/app/api/auth';
 import { useRouter } from 'next/navigation';

@@ -8,19 +8,19 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      colors: {
+        'app-blue': '#57BDE9',
+        'app-dark-blue': '#233861',
+        'app-green': '#74E957',
+        'app-red' : '#FC3939',
+        'app-orange': '#FC8F2B',
+      },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
     },
-  },
-  colors: {
-    'customBlue': '#57BDE9',
-    'customDarkBlue': '#233861',
-    'customGreen': '#74E957',
-    'customRed': '#FC3939',
-    'customOrange': '#FC8F2B',
   },
   plugins: [],
 };

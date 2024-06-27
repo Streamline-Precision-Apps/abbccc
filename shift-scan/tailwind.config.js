@@ -5,19 +5,20 @@ module.exports = {
     './app/**/*.{js,ts,jsx,tsx,mdx}', // Note the addition of the `app` directory.
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
- 
+
     // Or if using `src` directory:
     './src/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
-    extend: {},
+    extend: { 
+      colors: {
+      'app-blue': '#57BDE9',
+      'app-dark-blue': '#233861',
+      'app-green': '#74E957',
+      'app-red' : '#FC3939',
+      'app-orange': '#FC8F2B',
+    },
   },
-  colors: {
-    'customBlue': '#57BDE9',
-    'customDarkBlue': '#233861',
-    'customGreen': '#74E957',
-    'customRed': '#FC3939',
-    'customOrange': '#FC8F2B',
   },
   plugins: [],
 }
