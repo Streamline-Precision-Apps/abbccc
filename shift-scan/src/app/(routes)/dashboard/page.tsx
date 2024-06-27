@@ -2,7 +2,7 @@
 import React, {useEffect, useState} from 'react';
 import { useTranslations} from 'next-intl';
 import '@/app/globals.css';
-import UseModal from '@/components/modal';
+// import UseModal from '@/components/modal';
 import EmployeeCardDisplay from '@/components/employeeCardDisplay';
 import { clearAuthStep, getAuthStep, isDashboardAuthenticated } from '@/app/api/auth';
 import { useRouter } from 'next/navigation';
@@ -19,6 +19,9 @@ export default function Index() {
         lastName: '',
         date: '',
     });
+
+
+
     useEffect(() => {
         if (!isDashboardAuthenticated()) {
             console.log('Not authenticated');
@@ -64,7 +67,7 @@ export default function Index() {
 
     return isDashboardAuthenticated() ? (
             <div className='flex flex-col items-center space-y-4 '> 
-                <UseModal />
+                {/* <UseModal show={true} onClose={CloseModal} children={<h1>Modal Content</h1>} /> */}
                 <h1>{t('Banner')}</h1>
                 <h2>{t('Name', { firstName: user.firstName, lastName: user.lastName })}</h2>
                 <h2>{t('Date', { date: user.date })}</h2>
