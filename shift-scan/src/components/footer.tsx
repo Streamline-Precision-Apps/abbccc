@@ -7,7 +7,7 @@ interface Props {
 export const Footer = ({pages}: Props) =>  {
     const t = useTranslations(pages);
     return (
-        <div className="w-full flex justify-center flex-col items-center text-sm">
+        <div className="text-xs flex justify-center w-full" >
             <h1>{t("lN4")}</h1>
         </div>
     );

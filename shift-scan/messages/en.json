@@ -19,7 +19,7 @@
         "Banner": "Welcome Back!",
         "Name": "{firstName} {lastName}",
         "Date": "{date}",
-        "lN1": "Total Hours:",
+        "lN1": "Total Hours",
         "lN3": "Clock In",
         "lN4": "Copyright © 2024.Streamline Precision LLC. All rights reserved.",
         "lN5": "QR Generator",

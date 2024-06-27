@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import ViewComponent from "../(content)/hourview";
+import ViewComponent from "../(content)/hourView";
 import { useSavedPayPeriodHours } from "../context/SavedPayPeriodHours";
 import {BarChartComponent} from "@/app/(content)/hourData";
 
@@ -45,11 +45,11 @@ const ControlComponent: React.FC<ControlComponentProps> = ( { toggle }) => {
     };
 
     return (
-        <div className="w-full flex flex-col items-center">
-            <div className="p-5 border w-1/2 bg-gray-200 rounded mb-5">
+        <div className="w-3/4 flex flex-col mx-auto items-center">
+            <div className=" border bg-gray-200 rounded mb-2">
             <ViewComponent scrollLeft={scrollLeft} scrollRight={scrollRight} returnToMain={returnToMain} currentDate={currentDate} />
             </div>
-            <div className="p-5 border w-1/2 bg-gray-200 rounded flex flex-col items-center justify-center">
+            <div className="p-1 border-2 border-black rounded flex flex-col items-center justify-center w-full ">
                 <h2>Current Data: {data[currentIndex]}</h2>
                 <p className="text-xs mb-5 ">Pay Period Hours: {payPeriodHours}</p>
                 <div style={{ width: '100%', height: 200 }}>

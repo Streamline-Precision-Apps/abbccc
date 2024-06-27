@@ -20,10 +20,11 @@ export default function Hours({setToggle, display}: HoursProps) {
     }
 
     return display ? (
-        <div className="w-full flex justify-center flex-col items-center ">    
-        <button onClick={handler} className="flex justify-center items-center p-5 border w-3/4 h-32 gap-2 text-white text-3xl bg-slate-700 rounded-lg">
-            <h2 className="flex">{t('lN1')} <div className=" flex items-center bg-white text-black p-2 rounded ">{payPeriodHours}</div></h2>
+        <>    
+        <button onClick={handler} className=" mb-2 flex m-auto items-center w-11/12 h-36 space-x-5 lg:space-x-8 text-white bg-app-dark-blue rounded-lg lg:h-20 ">
+            <h2 className="text-4xl pl-8 ">{t('lN1')} </h2>
+            <span className="flex bg-white text-black p-4 pl-6 pr-6 rounded border-3 border-black lg:pl-8 lg:pr-8 lg:text-2xl lg:p-3  ">{payPeriodHours}</span>
         </button>  
-        </div>
+        </>
     ):  <ViewHoursComponent toggle={setToggle} />
 }
