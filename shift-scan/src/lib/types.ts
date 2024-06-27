@@ -7,11 +7,8 @@ export type User = {
     image?: string | null;
     firstName?: string | null;
     lastName?: string | null;
-    payPeriodHours?: string | null;
-    date?: string | null;
     permission?: string | null;
-    emailVerified?: string | null;
-    employee_id?: number | null;
+
 };
 
 export type CustomSession = {
