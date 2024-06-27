@@ -79,16 +79,14 @@ export const authOptions : NextAuthOptions ={
                 user: {
                     ...session.user,
                     id: token.id,
+                    token: token.name,
                     firstName: token.firstName,
                     lastName: token.lastName,
-                    userName: token.username,
                     permission: token.permission,
                     truck_view: token.truck_view,
                     tasco_view: token.tasco_view,
                     labor_view: token.labor_view,
                     mechanic_view: token.mechanic_view,
-                    email: token.email,
-                    phone: token.phone,
                     
             
                 }
@@ -103,16 +101,14 @@ export const authOptions : NextAuthOptions ={
                 return {
                     ...token,
                     id: u.id,
+                    name: u.username,
                     firstName: u.firstName,
                     lastName: u.lastName,
-                    userName: u.username,
                     permission: u.permission,
                     truck_view: u.truck_view,
                     tasco_view: u.tasco_view,
                     labor_view: u.labor_view,
                     mechanic_view: u.mechanic_view,
-                    email: u.email,
-                    phone: u.phone,
                 }        
         }
         return token;

@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import QrReader from '@/app/clock/Qr/qrReader';
+import QrReader from '@/app/(routes)/clock/Qr/qrReader';
 import { useRouter } from 'next/navigation';
 import { setAuthStep } from '@/app/api/auth';
 
