@@ -15,7 +15,6 @@ export default function Content() {
     const t = useTranslations("page1");
     const { data: session } = useSession() as { data: CustomSession | null };
     const { payPeriodHours, setPayPeriodHours } = useSavedPayPeriodHours();
-
     const [toggle, setToggle] = useState(true);
 
     
@@ -54,11 +53,11 @@ export default function Content() {
         }
 
     return (
-        <div className="h-full">
+        <>
             <AppUser user={user} />
             <Hours setToggle={handler} display={toggle} />
             <WidgetSection user={user} display={toggle}/>
-        </div>
+        </>
     );
-}   
+}      
 

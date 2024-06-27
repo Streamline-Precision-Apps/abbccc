@@ -23,4 +23,4 @@ To wrap up my day I learned alot about api in next js which was useful but is ti
 
 6/26/2024
 
-Today I got a video on how to use api End points in our stack, I am excited to get it working! Goal is to make a api endpoint for the user nd use them/ save them on render. 
+Today I got a video on how to use api End points in our stack, I am excited to get it working! Goal is to make a api endpoint for the user nd use them/ save them on render. I also had finished connection of the colors we will use in the app and have styled them accordingly. 

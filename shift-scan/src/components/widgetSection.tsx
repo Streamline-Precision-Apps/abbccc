@@ -10,7 +10,7 @@ interface Props {
 
 export default function WidgetSection({ user, display }: Props) {
     return display ? (
-        <div className="mt-10 justify-items-center ">
+        <div className="flex flex-col items-center w-11/12 h-1/2 m-auto ">
             <ManagerWidget user={user} />
             <ClockInWidget user={user} />
         </div>
