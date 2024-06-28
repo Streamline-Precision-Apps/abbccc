@@ -15,7 +15,7 @@ export default async function RootLayout({
   locale = await getLocale();
   return (
     <html lang={locale}>
-      <body className="bg-dark-blue">
+      <body className="bg-app-dark-blue ">
         <NextIntlClientProvider messages={messages}>
           <Providers>
           {children}

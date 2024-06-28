@@ -45,15 +45,16 @@ const ControlComponent: React.FC<ControlComponentProps> = ( { toggle }) => {
     };
 
     return (
-        <div className="w-3/4 flex flex-col mx-auto items-center">
+        <div className="w-11/12 mx-auto">
             <div className=" border bg-gray-200 rounded mb-2">
             <ViewComponent scrollLeft={scrollLeft} scrollRight={scrollRight} returnToMain={returnToMain} currentDate={currentDate} />
             </div>
             <div className="p-1 border-2 border-black rounded flex flex-col items-center justify-center w-full ">
-                <h2>Current Data: {data[currentIndex]}</h2>
-                <p className="text-xs mb-5 ">Pay Period Hours: {payPeriodHours}</p>
-                <div style={{ width: '100%', height: 200 }}>
+                <p className="text-xs p-1">Pay Period Hours: {payPeriodHours}</p>
+                {/* This div needs to be here for the chart to render correctly. */}
+                <div style={{ width: '50%', height: 180 }}> 
                 <BarChartComponent data={currentData}/>
+                <h2>Hours: {data[currentIndex]}</h2>
                 </div>
             </div>
         </div>

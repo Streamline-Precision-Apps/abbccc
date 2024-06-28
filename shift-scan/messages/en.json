@@ -30,7 +30,8 @@
         "title" :"Scan Job Site",
         "subtitle": "Please scan the QR code",
         "btn-scan": "simulate scan",
-        "btn-entry": "qr code working ? "
+        "btn-entry": "qr code working ? ",
+        "lN1": "Trouble Scanning?"
     },
     "page3": {
         "title": "Cost Codes",

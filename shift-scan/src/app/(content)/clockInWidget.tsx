@@ -10,12 +10,15 @@ interface Props {
 }
 export default function ClockInWidget({ user }: Props) {
     const t = useTranslations("page1");
+    const router = useRouter();
+
     const loadNextPage = () => {
-        useRouter().push("/clock/Qr");
+        router.push("/clock/Qr");
     }
     return (
         <>
-                <button className="bg-app-green text-4xl font-semibold text-black w-full h-full rounded-lg mb-10 border-2 border-black" onClick={() => loadNextPage}>
+                <button className="bg-app-green text-4xl font-semibold text-black w-full h-full rounded-lg mb-10 border-2 border-black" 
+                onClick={loadNextPage}>
                     {t('lN3')}
                 </button>
         </>
