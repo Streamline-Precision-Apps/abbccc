@@ -3,7 +3,8 @@ import React, { useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import QrReader from '@/app/(routes)/clock/Qr/qrReader';
 import { useRouter } from 'next/navigation';
-import { setAuthStep } from '@/app/api/auth';
+import { clearAuthStep, setAuthStep } from '@/app/api/auth';
+import "@/app/globals.css";
 
 const QRPage: React.FC = () => {
     const router = useRouter();
@@ -13,13 +14,22 @@ const QRPage: React.FC = () => {
         setAuthStep('clock'); // Set initial auth step to 'clock'
     }, []);
 
+    const backAction = () => {
+        clearAuthStep();
+        router.push('/');
+    };
+
     return (
-        <div className='flex flex-col items-center'>
-            <h1 className="text-align-center text-2xl mb-4">{t('title')}</h1>
-            <h2>{t('subtitle')}</h2>
-            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                <QrReader/>
+        <div className='mt-16 h-screen'>
+            <div className="bg-white h-full flex flex-col items-center p-5">
+                <button className=' bg-app-red w-36 text-black text-lg p-2 rounded-lg' onClick={backAction}>cancel scan</button>
+            <h1 className="flex justify-center text-2xl font-bold pt-10 pb-10">{t('title')}</h1>
+            <button className=" flex justify-items-center items-center w-full h-96 p-5 border-4 border-black rounded-lg">
+                {/* <QrReader/> */}
             </button>
+            <br />
+            <button onClick={() => router.push('/clock/jobs')} className="flex justify-center text-lg font-light underline">{t('lN1')}</button>
+            </div>
         </div>
     );
 };

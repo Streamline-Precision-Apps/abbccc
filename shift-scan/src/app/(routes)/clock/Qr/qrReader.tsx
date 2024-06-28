@@ -11,7 +11,7 @@ const QrReader: React.FC = () => {
     const [scanCount, setScanCount] = useState(0);
     const { setScanResult } = useScanData();
     const router = useRouter();
-    const SCAN_THRESHOLD = 200; // Number of scans before redirecting
+    const SCAN_THRESHOLD = 1200; // Number of scans before redirecting
 
     const onScanSuccess = (result: QrScanner.ScanResult) => {
         setScanResult({ data: result.data });
@@ -65,7 +65,7 @@ const QrReader: React.FC = () => {
 
     return (
         <div>
-            <video ref={videoRef} style={{ width: '50%' }}></video>
+            <video ref={videoRef} style={{ width: '100%' }}></video>
         </div>
     );
 };
