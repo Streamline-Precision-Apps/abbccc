@@ -24,3 +24,10 @@ To wrap up my day I learned alot about api in next js which was useful but is ti
 6/26/2024
 
 Today I got a video on how to use api End points in our stack, I am excited to get it working! Goal is to make a api endpoint for the user nd use them/ save them on render. I also had finished connection of the colors we will use in the app and have styled them accordingly. 
+
+6/27/2024
+Spent most of the day styling the front page to have it presentable and not horrible to look at, I was very happy with the design for now. I also focused on styling my data analytics.
+
+6/28/2024
+
+Today I went through more of the styling for the clockin route, created the starts of a 404 page error, I also started to create a job route for thoses who took the link from a failed qr attempt to clock in. This fail safe will look almost identical to the other component of clock/costcodes so i need to coordinate with sean on his changes. 
