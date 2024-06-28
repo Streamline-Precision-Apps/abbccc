@@ -19,13 +19,13 @@ export default function Content() {
 
     
     const [user, setUser] = useState<User>({
-        id: "string",
-        name:" string",
-        email: "string",
-        image: "string",
-        firstName: "string",
-        lastName: "string",
-        permission: "string",
+        id: "",
+        name:" ",
+        email: "",
+        image: "",
+        firstName: "",
+        lastName: "",
+        permission: "",
         });
 
     useEffect(() => {
@@ -51,7 +51,7 @@ export default function Content() {
         const totalhours = 20.45;
             setPayPeriodHours(String(totalhours));
         }
-
+        
     return (
         <>
             <AppUser user={user} />
