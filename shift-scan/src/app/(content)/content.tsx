@@ -14,6 +14,7 @@ import { useSavedPayPeriodHours } from '../context/SavedPayPeriodHours';
 export default function Content() {
     const t = useTranslations("page1");
     const { data: session } = useSession() as { data: CustomSession | null };
+    // const {data: token} = useSession()as { data: CustomSession | null };
     const { payPeriodHours, setPayPeriodHours } = useSavedPayPeriodHours();
     const [toggle, setToggle] = useState(true);
 
