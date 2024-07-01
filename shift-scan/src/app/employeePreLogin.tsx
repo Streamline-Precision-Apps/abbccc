@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl';
 import '@/app/globals.css';
-import UseModal from '@/components/modal';
+// import UseModal from '@/components/modal';
 import Banner from '@/components/banner';
 import HoursButton from '@/app/hoursButton';
 import { LoginButton, LogoutButton } from '@/app/api/auth';
@@ -11,7 +11,7 @@ export default function EmployeePreLogin({ user }: any) {
 return(
     <div className='flex flex-col items-center space-y-4'>
     <h1>General Employee is logged here!</h1>
-    <UseModal />
+    {/* <UseModal /> */}
     <h1>Login under:</h1>
     <LoginButton />
     <LogoutButton />
