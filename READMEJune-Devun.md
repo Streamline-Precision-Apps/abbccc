@@ -31,3 +31,9 @@ Spent most of the day styling the front page to have it presentable and not horr
 6/28/2024
 
 Today I went through more of the styling for the clockin route, created the starts of a 404 page error, I also started to create a job route for thoses who took the link from a failed qr attempt to clock in. This fail safe will look almost identical to the other component of clock/costcodes so i need to coordinate with sean on his changes. 
+
+6/29/2024
+meet with professor and diascussed what plans, I have looking forward and how the general direction of the project is he stated that we are in the right dirrection and that he like what he has seen as far as component size and all that. I also looked briefly through one of the other processes and felt that I needed more there so I will touch back up on monday with that problem which was a mobile screen tailwind adjustment.
+
+7/1/2025
+Today I am redialing in on the sprint goals and what should be achieved this week I look to do a push each monday so we will do that. I look to implement the second signin option and the counter that it will need in order to get a jobsite not via a qr code but still have that auth step to continue forward. I will report back at the end of the day. 

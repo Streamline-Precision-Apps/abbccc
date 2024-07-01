@@ -427,7 +427,7 @@ model Address {
 
 //----------------------------------------------------------------------------------------------------------------------//
 // one form in our db part of settings
-enum formType{
+enum formType {
   MEDICAL
   INSPECTION
   MANAGER
