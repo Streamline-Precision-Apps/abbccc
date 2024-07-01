@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useScanData } from '@/app/context/JobSiteContext';
 
 
+
 const QrReader: React.FC = () => {
     const videoRef: MutableRefObject<HTMLVideoElement | null> = useRef(null);
     const [qrScanner, setQrScanner] = useState<QrScanner | null>(null);
@@ -18,7 +19,6 @@ const QrReader: React.FC = () => {
 
         // Stop the scanner
         qrScanner?.stop();
-
         // Navigate to the new page
         router.push('/clock/costcode');
     };
@@ -64,8 +64,8 @@ const QrReader: React.FC = () => {
     }, [scanCount, qrScanner, router]);
 
     return (
-        <div>
-            <video ref={videoRef} style={{ width: '50%' }}></video>
+        <div className="flex justify-center items-center">
+            <video ref={videoRef} style={{ width: '100%' }}></video>
         </div>
     );
 };

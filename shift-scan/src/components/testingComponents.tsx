@@ -4,7 +4,7 @@ import { LoginButton, LogoutButton } from '@/app/api/auth';
     and we will reassign the buttons to different parts of the app */
     export default function TestingComponents() {
     return ( 
-        <div className="flex flex-col items-center space-y-4">
+        <div className="flex flex-row space-x-4 justify-center">
         <LoginButton />
         <LogoutButton />
         </div>
