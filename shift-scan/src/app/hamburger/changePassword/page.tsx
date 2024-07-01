@@ -9,13 +9,14 @@ import SwitchWithLabel from '@/components/(inputs)/switchWithLabel';
 import BasicLabel from '@/components/(text)/label';
 import LocaleCheckBox from '@/components/(inputs)/checkBox';
 import TitleMedium from '@/components/(text)/title_h2';
-
+import Modal from '@/components/modal';
 import '@/app/globals.css';
 import Link from 'next/link';
 import EmptyBase from '@/components/emptyBase';
 
 
 export default function Index() {
+    const [isOpen, setIsOpen] = useState(false);
     const t = useTranslations('PortalLogin');
 return (
     <div> 
@@ -25,7 +26,13 @@ return (
                 <p></p>
             </DynamicSection>
             <DynamicSection>
-            <p></p>
+            <button onClick={() => setIsOpen(true)}>
+                Click to Open Modal
+            </button>
+
+            <Modal handleClose={() => setIsOpen(false)} isOpen={isOpen}>
+                This is Modal Content!
+            </Modal>
             </DynamicSection>
             <BasicButton>Change Password</BasicButton>
         </EmptyBase>

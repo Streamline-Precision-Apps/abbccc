@@ -6,5 +6,3 @@ export const formatDate = async () => {
     const date = new Date().toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric', weekday: 'long' });
     return date;
 };
-
-
