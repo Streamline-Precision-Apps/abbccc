@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef, MutableRefObject } from "react";
 import QrScanner from "qr-scanner";
 import { useRouter } from 'next/navigation';
-import { useScanData } from '@/app/context/ScannedJobSIte';
+import { useScanData } from '@/app/context/JobSiteContext';
 
 
 const QrReader: React.FC = () => {
