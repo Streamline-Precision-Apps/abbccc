@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect } from 'react';
-import CostCodeFinder from '@/components/(search)/codeFinder';
+import CodeFinder from '@/components/(search)/codeFinder';
 import { useTranslations } from 'next-intl';
 import { getAuthStep} from '@/app/api/auth';
 import { useRouter } from 'next/navigation';
@@ -23,7 +23,7 @@ const CostCodePage: React.FC = () => {
     return getAuthStep() === 'clock' ? (
         <div className='mt-16 h-screen lg:w-1/2 block m-auto'>
             <div className="bg-white h-full flex flex-col items-center p-5 rounded-t-2xl">
-            <CostCodeFinder datatype='costcode' />
+            <CodeFinder datatype='costcode' />
         </div>
         </div>
         
