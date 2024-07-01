@@ -17,7 +17,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ searchTerm, onSearchChange }) => 
       value={searchTerm}
       onChange={onSearchChange}
       placeholder={t('lN1')}
-      className="border-2 border-black p-2 w-1/4 m-4" 
+      className="border-2 border-black p-2 w-full m-5" 
     />
   );
 };

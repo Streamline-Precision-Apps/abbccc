@@ -18,6 +18,10 @@ const QRPage: React.FC = () => {
         clearAuthStep();
         router.push('/');
     };
+    const jobsiteLoginAlternative = () => {
+        setAuthStep('jobs');
+        router.push('/clock/jobs');
+    }
 
     return (
         <div className='mt-16 h-screen lg:w-1/2 block m-auto '>
@@ -28,7 +32,7 @@ const QRPage: React.FC = () => {
                 <QrReader/>
             </button>
             <br />
-            <button onClick={() => router.push('/clock/jobs')} className="flex justify-center text-lg font-light underline">{t('lN1')}</button>
+            <button onClick={() => jobsiteLoginAlternative()} className="flex justify-center text-lg font-light underline">{t('lN1')}</button>
             </div>
         </div>
     );

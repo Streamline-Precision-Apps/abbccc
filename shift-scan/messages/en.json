@@ -54,8 +54,8 @@
 
     "page5": {
         "lN1": "Clock In",
-        "lN2" : "Job Found:",
-        "lN3" : "Cost Code:",
+        "lN2" : "Job Site Found:",
+        "lN3" : "Cost Code Found:",
         "lN4" : "Successfully Clocked In!",
         "lN5" : "Start Shift!",
         "lN6" : "You have unsaved changes. Are you sure you want to leave?"
