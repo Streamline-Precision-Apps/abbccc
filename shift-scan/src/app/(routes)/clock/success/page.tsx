@@ -2,8 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { useScanData } from '@/app/context/ScannedJobSIte';
-import { useSavedCostCode } from '@/app/context/SavedCostCode';
+import { useScanData } from '../../../context/JobSiteContext';
+import { useSavedCostCode } from '../../../context/CostCodeContext';
 import RedirectAfterDelay from '@/components/redirectAfterDelay';
 import { clearAuthStep, getAuthStep, isAuthenticated, setAuthStep } from '@/app/api/auth';
 
