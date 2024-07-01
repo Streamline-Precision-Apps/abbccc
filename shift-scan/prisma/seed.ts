@@ -177,11 +177,15 @@ async function upsertWorkerData(worker: any) {
   });
 }
 
+
+
 async function main() {
   const { workers } = workerData;
+  
 
   for (const worker of workers) {
     await upsertWorkerData(worker);
+
   }
 
   console.log('Sample data upserted successfully!');

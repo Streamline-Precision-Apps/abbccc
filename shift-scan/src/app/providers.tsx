@@ -6,7 +6,6 @@ import {SavedCostCodeProvider} from './context/CostCodeContext';
 import {SessionProvider} from 'next-auth/react';
 import { SavedPayPeriodHoursProvider } from './context/SavedPayPeriodHours';
 
-// import {UserContext} from '../../components/context/UserContext';
 
 export function Providers({ children }: { children: React.ReactNode }) {
     return <>
@@ -15,9 +14,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
             <SavedCostCodeProvider>
             <ScanDataProvider>
             <SessionProvider>
-            {/* <UserContext> */}
                 {children}
-            {/* </UserContext> */}
             </SessionProvider>
             </ScanDataProvider>
             </SavedCostCodeProvider>

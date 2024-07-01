@@ -10,15 +10,13 @@ export default function ManagerWidget({ user }: Props) {
     
     if (user.permission === 'ADMIN' || user.permission === 'SUPERADMIN' || user.permission === 'MANAGER' || user.permission === 'PROJECTMANAGER') {
     return (
-        <div className="w-full flex justify-center flex-col items-center">
-        <div className="flex flex-row mb-5 w-3/4 text-center">
-            <div className="flex flex-row align-center justify-center bg-blue-500 text-white p-10 border-2 rounded w-1/2 ">
-                <h2 className="text-xl mg-auto ">{t('lN5')}</h2>
-            </div>
-            <div className="flex flex-row bg-blue-500 align-center items-center text-white p-10 border-2 w-1/2 rounded ">
-                <h2 className="text-xl mg-auto">{t('lN6')}</h2>
-            </div>
-        </div>
+        <div className="ml-10 mr-10 mb-5 mt-5 flex flex-row space-x-5 w-full h-64">
+            <button className="flex justify-center items-center bg-app-blue text-black rounded-lg w-1/2 h-full border-2 border-black">
+                <h2 className="text-xl">{t('lN5')}</h2>
+            </button>
+            <button className="flex justify-center items-center bg-app-blue text-black rounded-lg w-1/2 h-full border-2 border-black">
+                <h2 className="text-2xl">{t('lN6')}</h2>
+            </button>
         </div>
     );}
     else {return (<></>)}
