@@ -14,19 +14,19 @@ import { useSavedPayPeriodHours } from '../context/SavedPayPeriodHours';
 export default function Content() {
     const t = useTranslations("page1");
     const { data: session } = useSession() as { data: CustomSession | null };
+    // const {data: token} = useSession()as { data: CustomSession | null };
     const { payPeriodHours, setPayPeriodHours } = useSavedPayPeriodHours();
-
     const [toggle, setToggle] = useState(true);
 
     
     const [user, setUser] = useState<User>({
-        id: "string",
-        name:" string",
-        email: "string",
-        image: "string",
-        firstName: "string",
-        lastName: "string",
-        permission: "string",
+        id: "",
+        name:" ",
+        email: "",
+        image: "",
+        firstName: "",
+        lastName: "",
+        permission: "",
         });
 
     useEffect(() => {
@@ -52,13 +52,13 @@ export default function Content() {
         const totalhours = 20.45;
             setPayPeriodHours(String(totalhours));
         }
-
+        
     return (
-        <div className="h-full">
+        <>
             <AppUser user={user} />
             <Hours setToggle={handler} display={toggle} />
             <WidgetSection user={user} display={toggle}/>
-        </div>
+        </>
     );
-}   
+}      
 

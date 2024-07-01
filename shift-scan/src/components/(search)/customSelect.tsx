@@ -1,9 +1,10 @@
 import React from 'react';
 import "@/app/globals.css";
+import {CostCodeOptions} from '@/components/(search)/options';
 // allows us to use the search bar and the dropdown together like modern design
 
 interface Option {
-  value: string;
+  code: string;
   label: string;
 }
 // CustomSelectProps holds all the option passed in from CostCodeFinder
@@ -26,15 +27,12 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   // provide a key with the name as option value  becuase it is unique
   // if the costcodes need to be bilingual i would need to make a josn file for them. 
   return (
-    <div className="custom-select-container">
-      <div className="custom-select bg-green-500 ">
-        {selectedOption ? selectedOption.label : placeholder}
-      </div>
-        <div className="custom-select-dropdown">
+    <div className="w-full max-h-[15rem] overflow-y-auto text-center p-4  ">
+        <div className="">
           {options.map((option) => (
             <div
-              key={option.value}
-              className="text-3xl"
+              key={option.code}
+              className="text-3xl p-4 hover:bg-gray-200 cursor-pointer even:bg-gray-100"
               onClick={() => onOptionSelect(option)}
             >
               {option.label}
