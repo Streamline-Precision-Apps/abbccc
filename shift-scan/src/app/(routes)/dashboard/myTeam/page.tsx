@@ -1,8 +1,9 @@
-"use client"
+
 import Image from "next/image";
 import "@/app/globals.css";
 import { TitleBox } from "./titleBox";
 import TeamCards from "./teamCards";
+import TeamInfoButton from "./button";
 export default function MyTeam(){
 
     
