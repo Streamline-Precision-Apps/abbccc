@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import workerData from "../src/data/worker-data.json";
 import { hash } from "bcryptjs";
 
@@ -176,17 +176,57 @@ async function upsertWorkerData(worker: any) {
     },
   });
 }
-
+// sample of how we can create seeds for now on 
+// look into the node module folder click -> prisma -> client -> index.d.ts
+// C:\Users\19362\Streamline-Precision-Timecard\shift-scan\node_modules\.prisma\client\index.d.ts
+// we can see that the format below allows us to create seeds for our database with ease due to codeium auto filling it
+const initaialJobsites: Prisma.JobsiteCreateInput[]  = [
+  {
+    qr_id : "12345",
+    jobsite_name: "First Site",
+    jobsite_active: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    qr_id : "23456",
+    jobsite_name: "Second Site",
+    jobsite_active: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    qr_id : "34567",
+    jobsite_name: "Third Site",
+    jobsite_active: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    qr_id : "45678",
+    jobsite_name: "Fourth Site",
+    jobsite_active: true,
+    createdAt: new Date(),
+}
+];
 
 
 async function main() {
+  console.log('Seeding...');
   const { workers } = workerData;
   
+  for (const jobsite of initaialJobsites) {
+    const newJobsite = await prisma.jobsite.create({
+      data: jobsite,
+    });
+
+    console.log("created jobsite with id: ", newJobsite.id);
+  } 
 
   for (const worker of workers) {
     await upsertWorkerData(worker);
-
   }
+
 
   console.log('Sample data upserted successfully!');
 }
