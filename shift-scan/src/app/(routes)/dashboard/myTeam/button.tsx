@@ -1,4 +1,5 @@
 "use client";
+import { useRouter } from "next/navigation";
 import { ReactNode } from "react";
 
 type TeamInfoProps = {
@@ -7,8 +8,9 @@ type TeamInfoProps = {
 };
 
 export default function TeamInfoButton({ children, id}: TeamInfoProps) {
+    const router = useRouter();
     const handler = () => {
-        console.log("clicked on id: ", id);
+        router.push(`/dashboard/myTeam/${id}`);
     }
     return (
         <button className="bg-app-blue w-full h-1/6 py-4 px-10 rounded-lg text-white font-bold mb-5"
