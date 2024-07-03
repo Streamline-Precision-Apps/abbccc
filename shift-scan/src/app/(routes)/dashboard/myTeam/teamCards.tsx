@@ -1,4 +1,4 @@
-
+"use server";
 import prisma from "@/lib/prisma";
 import Image from "next/image";
 import TeamInfoButton from "./button";

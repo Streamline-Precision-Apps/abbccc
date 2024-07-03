@@ -1,14 +1,11 @@
 "use client";
 import Image from "next/image";
 import { ReactNode } from "react";
-import HourData from "@/app/(routes)/dashboard/myTeam/[id]/hourdata";
 
 type Props = {
-    params: {
-        id: string;
-    }
+  children: ReactNode;
 }
-export default function Calender(  params : Props) {
+export default function Calender( { children }: Props ) {
     const handler = () => {
         console.log("hi");
     }
@@ -22,7 +19,7 @@ export default function Calender(  params : Props) {
             <h1>7/3/2024</h1>
         </div>
         </button>
-        
+        {children}
         </>
     );
 }
