@@ -18,10 +18,14 @@ export default async function HourData({params} : Prop) {
         },
     );
 
-
-    const totalHours = timeSheets.reduce((total, timeSheet) => total + timeSheet.duration, 0);
+    // an array of timesheets
+    const totalHours = timeSheets.reduce((total, timesheets) => total + timesheets.duration, 10);
     
-    return totalHours
+    return (
+        <div>
+            <p>Total Hours: {totalHours}</p>
+        </div>
+    );
 
 
 }

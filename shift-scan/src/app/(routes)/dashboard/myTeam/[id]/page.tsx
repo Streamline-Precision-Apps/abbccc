@@ -5,7 +5,6 @@ import EmployeeHourInfo from "./employee-hour-info";
 
 export default async function crewMember({params} : Params) {
 
-
     return (
         <><EmployeeInfo params={params} />
         <EmployeeHourInfo params={params}/>

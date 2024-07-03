@@ -207,8 +207,11 @@ const initaialJobsites: Prisma.JobsiteCreateInput[]  = [
     jobsite_name: "Fourth Site",
     jobsite_active: true,
     createdAt: new Date(),
+
 }
 ];
+
+
 
 
 async function main() {
