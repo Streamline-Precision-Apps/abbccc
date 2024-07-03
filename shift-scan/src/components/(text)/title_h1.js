@@ -3,8 +3,8 @@
 const TitleLarge = ({children}) => {
     // const t = useTranslations('');
     return (
-        <div>
-            <h1 className="font-bold m-2 text-3xl text-center">
+        <div className="flex">
+            <h1 className="font-bold m-2 text-3xl lg:text-5xl flex flex-col items-center justify-center ">
                 {children}
             </h1>
         </div>
