@@ -31,8 +31,7 @@ export default function Calender({ children }: Props) {
         <Modal handleClose={() => setIsOpen(false)} isOpen={isOpen}>
             <CalenderModel setDate={setDate} /> 
         </Modal>
-    
-        {children}
+        {children } 
         </>
     );
 }
