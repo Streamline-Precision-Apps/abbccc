@@ -1,5 +1,5 @@
 import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
-import EditButton from "@/app/(routes)/dashboard/myTeam/[id]/editButton";
+import EditButton from "@/components/editButton";
 import { formatTime } from "@/app/(routes)/dashboard/myTeam/[id]/formatDate";
 import { TitleContainer } from "@/components/(text)/title_container";
 import {HalfSplitContainer} from "@/components/(text)/halfSplitContainer";
