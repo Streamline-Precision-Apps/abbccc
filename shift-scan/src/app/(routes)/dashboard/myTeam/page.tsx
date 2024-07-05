@@ -5,10 +5,10 @@ export default function MyTeam(){
 
     
     return (
-        <div className='mt-16 h-screen lg:w-1/2 block m-auto'>
-            <div className="bg-app-Darkblue h-full flex flex-col items-center p-5 rounded-t-2xl">
+        <div className=' h-screen lg:w-1/3 block m-auto'>
+            <div className="bg-app-dark-blue h-full  flex flex-col items-center rounded-t-2xl">
             <TitleBox title="My Team" />
-                <div className=" mt-5 bg-white h-full w-full flex justify-center items-center p-5 rounded-2xl overflow-y-auto">
+                <div className=" mt-5 bg-white h-full w-11/12 flex justify-center items-center rounded-2xl overflow-y-auto">
                     <TeamCards />
                 </div>
             </div>

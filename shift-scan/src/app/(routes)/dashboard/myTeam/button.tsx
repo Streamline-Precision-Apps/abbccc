@@ -13,7 +13,7 @@ export default function TeamInfoButton({ children, id}: TeamInfoProps) {
         router.push(`/dashboard/myTeam/${id}`);
     }
     return (
-        <button className="bg-app-blue w-full h-1/6 py-4 px-10 rounded-lg text-white font-bold mb-5"
+        <button className="bg-app-blue w-full h-1/6 py-4 px-5 rounded-lg text-black font-bold mb-5"
         onClick={handler} 
         >
             {children}
