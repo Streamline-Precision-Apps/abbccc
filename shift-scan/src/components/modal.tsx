@@ -11,10 +11,17 @@ interface ModalProps {
 function Modal({ children, isOpen, handleClose }: ModalProps) {
 
     useEffect(() => {
+        if (isOpen) {
         document.body.style.overflow = 'hidden';
+        }
+        else {
+            document.body.style.overflow = 'unset';
+        }
+
         return (): void => {
             document.body.style.overflow = 'unset';
         };
+
     }, [isOpen]);
 
     if (!isOpen) return null;
