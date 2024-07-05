@@ -1,5 +1,6 @@
-import Calender from "@/components/calender";
+"use server";
 import prisma from "@/lib/prisma";
+import EmployeeData from "./employeeData";
 
 type Prop = {
     params: { id: string
@@ -22,9 +23,12 @@ export default async function HourData({params} : Prop) {
     const totalHours = timeSheets.reduce((total, timesheets) => total + timesheets.duration, 10);
     
     return (
-        <div>
-            <p>Total Hours: {totalHours}</p>
-        </div>
+        <>
+            <p className="text-center">Total Hours: {totalHours}</p>
+            <div className="bg-white rounded-2xl">
+            <EmployeeData params={params} />
+            </div>
+        </>
     );
 
 

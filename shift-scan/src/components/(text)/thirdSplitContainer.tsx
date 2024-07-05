@@ -28,13 +28,13 @@ export const ThirdSplitContainer = ({ children_left, children_center, children_r
                 <h2 className="text-center text-lg">{RightTitle}</h2>
             </div>
             <div className="grid grid-cols-3 border-4 border-black">
-                <div className="h-auto text-sm p-0 lg:p-5 bg-white  border-r-2 border-black">
+                <div className="h-auto text-sm p-0 lg:p-5 bg-white  border-r-4 border-black">
                     {renderWithDividers(children_left)}
                 </div>
                 <div className="h-auto  text-sm p-0 lg:p-5 bg-white  border-black">
                     {renderWithDividers(children_center)}
                 </div>
-                <div className="h-auto text-sm p-0 lg:p-5 bg-white border-l-2 border-black ">
+                <div className="h-auto text-sm p-0 lg:p-5 bg-white border-l-4 border-black ">
                     {renderWithDividers(children_right)}
                 </div>
             </div>

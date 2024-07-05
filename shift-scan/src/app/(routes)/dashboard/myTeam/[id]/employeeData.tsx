@@ -19,8 +19,8 @@ export default async function EmployeeData({ params }: { params: Params }) {
     const formattedEndTime = [formatTime(dbTimestampEnd)];
 
     return (
-        <div className="h-fit w-full lg:w-1/2 flex mx-auto justify-center bg-app-blue rounded-b-2xl border-b-2 border-l-2 border-r-2 border-black lg:p-5 text-center text-3xl">
-            <div className="h-auto w-full flex flex-col mx-auto my-20 justify-center bg-white rounded-2xl p-5 text-center text-3xl">
+        <>
+            <div className="h-auto w-full flex flex-col mx-auto my-20 justify-center rounded-2xl p-5 text-center text-black text-3xl">
                 <EditButton />
                 
                 <HalfSplitContainer LeftTitle="Start Time" RightTitle="End Time" children_left={formattedStartTime} children_right={formattedEndTime} />
@@ -34,6 +34,6 @@ export default async function EmployeeData({ params }: { params: Params }) {
                 <HalfSplitContainer LeftTitle="Equipment" RightTitle="Total Time" children_left={leftData} children_right={rightData} />
 
             </div>
-        </div>
+            </>
     );
 }

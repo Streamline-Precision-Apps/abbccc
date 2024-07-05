@@ -10,7 +10,6 @@ export default async function crewMember({params} : Params) {
         <>
         <EmployeeInfo params={params} />
         <EmployeeHourInfo params={params}/>
-        <EmployeeData params={params}/>
         </> 
     );
 }
