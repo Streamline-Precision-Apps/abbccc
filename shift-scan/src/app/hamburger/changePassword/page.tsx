@@ -7,7 +7,6 @@ import BasicButton from '@/components/button';
 import TitleBox from '@/components/titleBox';
 import SwitchWithLabel from '@/components/(inputs)/switchWithLabel';
 import BasicLabel from '@/components/(text)/label';
-import LocaleCheckBox from '@/components/(inputs)/checkBox';
 import TitleMedium from '@/components/(text)/title_h2';
 import Modal from '@/components/modal';
 import '@/app/globals.css';
