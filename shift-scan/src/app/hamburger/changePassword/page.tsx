@@ -31,7 +31,7 @@ return (
             </button>
 
             <Modal handleClose={() => setIsOpen(false)} isOpen={isOpen}>
-                This is Modal Content!
+            Are you sure you want to sign out of your account?
             </Modal>
             </DynamicSection>
             <BasicButton>Change Password</BasicButton>
