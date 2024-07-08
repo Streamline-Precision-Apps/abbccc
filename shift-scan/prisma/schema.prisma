@@ -65,37 +65,44 @@ model User {
   lastName      String
   username      String     @unique
   password      String
-  truck_view    Boolean?
-  tasco_view    Boolean?
-  labor_view    Boolean?
-  mechanic_view Boolean?
+  truck_view    Boolean
+  tasco_view    Boolean
+  labor_view    Boolean
+  mechanic_view Boolean
   permission    permission
   email         String     @unique
   emailVerified DateTime?  @map("email_verified")
   phone         String
   image         String?
 
+<<<<<<< HEAD
+  crewMembers CrewMember[]
   accounts    Account[]
   sessions    Session[]
   Employee    Employee[]
+=======
+  accounts Account[]
+  sessions Session[]
+  Employee Employee[]
+>>>>>>> 08dfa3ac03203f198d49dc99c40cc5a87ee2718f
 
   @@map("users")
 }
 
 // use for next auth beta@5.0 we have 4.3  ignore for now
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String  @map("user_id")
-  type               String
-  provider           String
-  providerAccountId  String  @map("provider_account_id")
-  refresh_token      String? @db.Text
-  access_token       String? @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String? @db.Text
-  session_state      String?
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -112,6 +119,7 @@ model Session {
 
   @@map("sessions")
 }
+
 model VerificationToken {
   identifier String
   token      String
@@ -134,22 +142,31 @@ model Employee {
   first_name       String
   middle_name      String?
   last_name        String
-  dob              DateTime
+  dob              String
   start_date       DateTime? //set null for people who dont remember start date
   termination_date DateTime?
   availability     String
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 
-  crewMembers      CrewMember[]
-  forms            Form[]
-  timeSheet        TimeSheet[]
-  equipmentLogs    EmployeeEquipmentLog[]
-  positions        EmployeePosition[]
-  contacts         ContactJoin[]
-  addresses        AddressEmployee[]
-  users            User[]
-
+<<<<<<< HEAD
+=======
+  crewMembers   CrewMember[]
+>>>>>>> 08dfa3ac03203f198d49dc99c40cc5a87ee2718f
+  forms         Form[]
+  timeSheet     TimeSheet[]
+  equipmentLogs EmployeeEquipmentLog[]
+  positions     EmployeePosition[]
+<<<<<<< HEAD
+  contacts      Contact[]
+  addresses     AddressEmployee[]
+  users         User[]
+  CrewMember    CrewMember[]
+=======
+  contacts      ContactJoin[]
+  addresses     AddressEmployee[]
+  users         User[]
+>>>>>>> 08dfa3ac03203f198d49dc99c40cc5a87ee2718f
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
@@ -168,8 +185,8 @@ model Jobsite {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
-  costCode      CostCode[]
-  addresses     Address[]
+  costCode              CostCode[]
+  addresses             Address[]
   employeeEquipmentLogs EmployeeEquipmentLog[]
   jobsites              CrewJobsite[]
 }
@@ -220,16 +237,16 @@ model TimeSheet {
 // this also share with jobsite the equipment and the time it was used 
 //----------------------------------------------------------------------------------------------------------------------//
 model EmployeeEquipmentLog {
-  id               Int      @id @default(autoincrement())
+  id               Int       @id @default(autoincrement())
   equipment_id     Int
   jobsite_id       Int
   employee_id      Int
   start_time       DateTime
   end_time         DateTime?
   equipment_notes  String?
-  equipment_status String   @default("Operational")
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  equipment_status String    @default("Operational")
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
   employee  Employee   @relation(fields: [employee_id], references: [id])
   Job       Jobsite    @relation(fields: [jobsite_id], references: [id])
@@ -292,19 +309,21 @@ model CostCode {
   createdAt             DateTime @default(now())
   updatedAt             DateTime @default(now()) @updatedAt
 
-  Jobsite               Jobsite[]
+  Jobsite Jobsite[]
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
 // crew data for seeing the entire crew and enabling site linking it also has direct access to the employeed time cards, and some desire profile settings
 model CrewMember {
-  id          Int           @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   employee    Employee @relation(fields: [employee_id], references: [id])
   employee_id Int
   crew        Crew     @relation(fields: [crew_id], references: [id])
   crew_id     Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  User        User?    @relation(fields: [userId], references: [id])
+  userId      String?
 }
 
 // the crew model assigns member to a crew, it also reports  
@@ -322,28 +341,25 @@ model Crew {
 // @unique variable preventing duplication
 // we want this relation ship so that project managers can see the full teams of people for his site. 
 model CrewJobsite {
-  id         Int @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   crew_id    Int
   jobsite_id Int
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   crew       Crew     @relation(fields: [crew_id], references: [id])
   jobsite    Jobsite  @relation(fields: [jobsite_id], references: [id])
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
 // employee positions
 model EmployeePosition {
-
-  id          Int  @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   employee_id Int
   position_id Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   employee    Employee @relation(fields: [employee_id], references: [id])
   position    Position @relation(fields: [position_id], references: [id])
-
 }
 
 model Position {
@@ -360,40 +376,51 @@ model Position {
 //phone number models
 
 model Contact {
-  id                   Int           @id @default(autoincrement())
+  id                   Int        @id @default(autoincrement())
   phone_number         String
   email                String?
   emergency_contact    String?
   emergency_contact_no String?
-  createdAt            DateTime      @default(now())
-  updatedAt            DateTime      @updatedAt
-  contactJoin          ContactJoin[]
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+  contacts             Employee[]
 }
 
+<<<<<<< HEAD
+// model ContactJoin {
+//   id          Int      @id @default(autoincrement())
+//   contact_id  Int
+//   employee_id Int
+//   createdAt   DateTime @default(now())
+//   updatedAt   DateTime @updatedAt
+
+//   contact  Contact  @relation(fields: [contact_id], references: [id])
+//   employee Employee @relation(fields: [employee_id], references: [id])
+// }
+=======
 model ContactJoin {
-  id          Int     @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   contact_id  Int
   employee_id Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  contact     Contact  @relation(fields: [contact_id], references: [id])
-  employee    Employee @relation(fields: [employee_id], references: [id])
+  contact  Contact  @relation(fields: [contact_id], references: [id])
+  employee Employee @relation(fields: [employee_id], references: [id])
 }
+>>>>>>> 08dfa3ac03203f198d49dc99c40cc5a87ee2718f
 
 //----------------------------------------------------------------------------------------------------------------------//
 // Address Assigner makes a many to many relation ship from employees to there address
 
 model AddressEmployee {
-  id          Int @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   address_id  Int
   employee_id Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   address     Address  @relation(fields: [address_id], references: [id])
   employee    Employee @relation(fields: [employee_id], references: [id])
-
-
 }
 
 // model AddressJobsite {
@@ -434,6 +461,7 @@ enum formType {
   LEAVE
   SAFETY
 }
+
 // model timeRequestForms{
 //   id                    Int        @id @default(autoincrement())
 //   employee_id           Int
@@ -447,12 +475,12 @@ enum formType {
 // }
 
 model Form {
-  id                    Int        @id @default(autoincrement())
-  type                  formType //label to identify type of form 
-  createdAt             DateTime   @default(now())
-  updatedAt             DateTime   @updatedAt
-  status                formStatus @default(PENDING)
-  employee              Employee   @relation(fields: [id], references: [id])
+  id        Int        @id @default(autoincrement())
+  type      formType //label to identify type of form 
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  status    formStatus @default(PENDING)
+  employee  Employee   @relation(fields: [id], references: [id])
 }
 
 model FormStructure {
@@ -467,4 +495,11 @@ model FormStructure {
   box_7 Boolean @default(false)
   box_8 Boolean @default(false)
   box_9 Boolean @default(false)
+}
+
+model InjuryForm {
+  id                  Int     @id @default(autoincrement())
+  contactedSupervisor Boolean @default(false)
+  incidentDescription String
+  signedForm          Boolean @default(false)
 }
