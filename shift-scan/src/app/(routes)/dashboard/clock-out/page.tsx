@@ -1,9 +1,9 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import "@/app/globals.css";
-// import UseModal from '@/components/modal';
-import DashboardButtons from "@/components/dashboard-buttons";
+import ClockOutButtons from "@/components/clockOutButtons";
 import {
   clearAuthStep,
   getAuthStep,
@@ -12,7 +12,8 @@ import {
 import { useRouter } from "next/navigation";
 
 export default function Index() {
-  const t = useTranslations("dashboard");
+  // TODO: Add to en and es.
+  const t = useTranslations("ClockOutDashboard");
 
   const router = useRouter();
 
@@ -36,7 +37,7 @@ export default function Index() {
   useEffect(() => {
     const handlePopstate = () => {
       if (isDashboardAuthenticated()) {
-        window.location.href = "/dashboard";
+        window.location.href = "/dashboard/clock-out";
       }
     };
     // Attach beforeunload event listener
@@ -72,8 +73,7 @@ export default function Index() {
         {t("Name", { firstName: user.firstName, lastName: user.lastName })}
       </h2>
       <h2>{t("Date", { date: user.date })}</h2>
-      <br />
-      <DashboardButtons />
+      <ClockOutButtons />
       <h2>{t("lN1")}</h2>
     </div>
   ) : (
