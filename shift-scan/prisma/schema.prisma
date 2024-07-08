@@ -75,16 +75,10 @@ model User {
   phone         String
   image         String?
 
-<<<<<<< HEAD
   crewMembers CrewMember[]
   accounts    Account[]
   sessions    Session[]
   Employee    Employee[]
-=======
-  accounts Account[]
-  sessions Session[]
-  Employee Employee[]
->>>>>>> 08dfa3ac03203f198d49dc99c40cc5a87ee2718f
 
   @@map("users")
 }
@@ -138,7 +132,7 @@ model VerificationToken {
 // the position title they have in a company and their contact information, and address to send check to
 // with out this table the app wouldnt work.
 model Employee {
-  id               Int       @id @default(autoincrement())
+  id               Int                    @id @default(autoincrement())
   first_name       String
   middle_name      String?
   last_name        String
@@ -146,27 +140,16 @@ model Employee {
   start_date       DateTime? //set null for people who dont remember start date
   termination_date DateTime?
   availability     String
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-
-<<<<<<< HEAD
-=======
-  crewMembers   CrewMember[]
->>>>>>> 08dfa3ac03203f198d49dc99c40cc5a87ee2718f
-  forms         Form[]
-  timeSheet     TimeSheet[]
-  equipmentLogs EmployeeEquipmentLog[]
-  positions     EmployeePosition[]
-<<<<<<< HEAD
-  contacts      Contact[]
-  addresses     AddressEmployee[]
-  users         User[]
-  CrewMember    CrewMember[]
-=======
-  contacts      ContactJoin[]
-  addresses     AddressEmployee[]
-  users         User[]
->>>>>>> 08dfa3ac03203f198d49dc99c40cc5a87ee2718f
+  createdAt        DateTime               @default(now())
+  updatedAt        DateTime               @updatedAt
+  crewMembers      CrewMember[]
+  forms            Form[]
+  timeSheet        TimeSheet[]
+  equipmentLogs    EmployeeEquipmentLog[]
+  positions        EmployeePosition[]
+  contacts         Contact[]
+  addresses        AddressEmployee[]
+  users            User[]
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
@@ -386,7 +369,6 @@ model Contact {
   contacts             Employee[]
 }
 
-<<<<<<< HEAD
 // model ContactJoin {
 //   id          Int      @id @default(autoincrement())
 //   contact_id  Int
@@ -397,18 +379,6 @@ model Contact {
 //   contact  Contact  @relation(fields: [contact_id], references: [id])
 //   employee Employee @relation(fields: [employee_id], references: [id])
 // }
-=======
-model ContactJoin {
-  id          Int      @id @default(autoincrement())
-  contact_id  Int
-  employee_id Int
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  contact  Contact  @relation(fields: [contact_id], references: [id])
-  employee Employee @relation(fields: [employee_id], references: [id])
-}
->>>>>>> 08dfa3ac03203f198d49dc99c40cc5a87ee2718f
 
 //----------------------------------------------------------------------------------------------------------------------//
 // Address Assigner makes a many to many relation ship from employees to there address
