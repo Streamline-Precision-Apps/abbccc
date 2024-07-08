@@ -39,3 +39,4 @@ shift-scan/.env
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+

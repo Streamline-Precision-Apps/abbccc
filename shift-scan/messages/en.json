@@ -76,12 +76,18 @@
         "lN1": "Copyright © 2024.Streamline Precision LLC. All rights reserved."
     },
     
-    "EmployeeCards": {
+    "ManagerButtons": {
         "SwitchJobs": "Switch Job",
         "Equipment": "Equipment",
         "ClockOut": "Clock Out",
         "Forms" : "Work Forms",
         "QrGenerator": "QR Generator",
         "MyTeam": "My Team"
+    },
+    
+    "ClockOutButtons": {
+        "TakeABreak": "Take a break",
+        "EndWorkDay": "End work day",
+        "ReturnHome": "Return home"
     }
 }

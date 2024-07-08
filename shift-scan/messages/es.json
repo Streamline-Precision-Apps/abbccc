@@ -79,7 +79,12 @@
         "Name": "{firstName} {lastName}",
         "Date": "{date}",
         "lN1": "Derechos de Streamline Precision © 2024. Todos los derechos reservados."
+    },
+    
+    "ClockOutButtons": {
+        "TakeABreak": "Tomar un descanso",
+        "EndWorkDay": "Terminar la jornada laboral",
+        "ReturnHome": "Volver a casa"
     }
-
 }
 
