@@ -75,11 +75,11 @@ export default function Index() {
     return isDashboardAuthenticated() ? (
             <div className='flex flex-col items-center space-y-4 '> 
                 <button onClick={() => setIsOpen(true)}>
-                    <BasicButton>Hamburger Menu</BasicButton>
+                    <p>Hamburger Menu</p>
                 </button>
                 <Modal handleClose={() => setIsOpen(false)} isOpen={isOpen}>
                     <button onClick={()=> settingsPage()} className="close-btn">
-                        <BasicButton>Settings</BasicButton>
+                        <p>Settings</p>
                     </button>
                 </Modal>
                 {/* <UseModal show={true} onClose={CloseModal} children={<h1>Modal Content</h1>} /> */}

@@ -28,7 +28,7 @@ function Modal({ children, isOpen, handleClose }: ModalProps) {
                         <div className="modal-content">{children}</div>
                         <div className='flex flex-col'>
                             <button onClick={handleClose} className="close-btn">
-                                <BasicButton>Close</BasicButton>
+                                <p>Close</p>
                             </button>
                         </div>
                 </div>
