@@ -7,7 +7,6 @@ import BasicButton from '@/components/button';
 import TitleBox from '@/components/titleBox';
 import SwitchWithLabel from '@/components/(inputs)/switchWithLabel';
 import BasicLabel from '@/components/(text)/label';
-import LocaleCheckBox from '@/components/(inputs)/checkBox';
 import TitleMedium from '@/components/(text)/title_h2';
 import Modal from '@/components/modal';
 import '@/app/globals.css';
@@ -31,7 +30,7 @@ return (
             </button>
 
             <Modal handleClose={() => setIsOpen(false)} isOpen={isOpen}>
-                This is Modal Content!
+            Are you sure you want to sign out of your account?
             </Modal>
             </DynamicSection>
             <BasicButton>Change Password</BasicButton>

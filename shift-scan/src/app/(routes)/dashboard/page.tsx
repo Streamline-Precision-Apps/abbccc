@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import "@/app/globals.css";
-// import UseModal from '@/components/modal';
+import Modal from "@/components/modal";
 import DashboardButtons from "@/components/dashboard-buttons";
 import {
   clearAuthStep,
@@ -12,6 +12,10 @@ import {
 import { useRouter } from "next/navigation";
 
 export default function Index() {
+  const settingsPage = () => {
+    router.push("/hamburger/settings");
+  };
+  const [isOpen, setIsOpen] = useState(false);
   const t = useTranslations("dashboard");
 
   const router = useRouter();
@@ -66,6 +70,14 @@ export default function Index() {
 
   return isDashboardAuthenticated() ? (
     <div className="flex flex-col items-center space-y-4 ">
+      <button onClick={() => setIsOpen(true)}>
+        <p>Hamburger Menu</p>
+      </button>
+      <Modal handleClose={() => setIsOpen(false)} isOpen={isOpen}>
+        <button onClick={() => settingsPage()} className="close-btn">
+          <p>Settings</p>
+        </button>
+      </Modal>
       {/* <UseModal show={true} onClose={CloseModal} children={<h1>Modal Content</h1>} /> */}
       <h1>{t("Banner")}</h1>
       <h2>
