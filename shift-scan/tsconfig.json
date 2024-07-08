@@ -23,10 +23,6 @@
       "@/*": ["./src/*"]
     }
   },
-<<<<<<< HEAD
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", ".next/types/**/*.ts", "src/components/(text)/split_1_"],
-=======
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", ".next/types/**/*.ts", "src/components/(inputs)/formFilled.txs"],
->>>>>>> 08dfa3ac03203f198d49dc99c40cc5a87ee2718f
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
 }
