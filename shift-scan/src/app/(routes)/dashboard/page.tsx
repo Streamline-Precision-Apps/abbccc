@@ -6,10 +6,13 @@ import '@/app/globals.css';
 import EmployeeCardDisplay from '@/components/employeeCardDisplay';
 import { clearAuthStep, getAuthStep, isDashboardAuthenticated } from '@/app/api/auth';
 import { useRouter } from 'next/navigation';
+import Modal from '@/components/modal';
+import BasicButton from '@/components/button';
+import { link } from 'fs';
 
 
 export default function Index() {
-
+    const [isOpen, setIsOpen] = useState(false);
     const t = useTranslations('dashboard');
 
     const router = useRouter();
@@ -64,9 +67,21 @@ export default function Index() {
         }
         fetchData();
     }, []);
+    const settingsPage = () => {
+        router.push("/hamburger/settings");
+    }
+
 
     return isDashboardAuthenticated() ? (
             <div className='flex flex-col items-center space-y-4 '> 
+                <button onClick={() => setIsOpen(true)}>
+                    <BasicButton>Hamburger Menu</BasicButton>
+                </button>
+                <Modal handleClose={() => setIsOpen(false)} isOpen={isOpen}>
+                    <button onClick={()=> settingsPage()} className="close-btn">
+                        <BasicButton>Settings</BasicButton>
+                    </button>
+                </Modal>
                 {/* <UseModal show={true} onClose={CloseModal} children={<h1>Modal Content</h1>} /> */}
                 <h1>{t('Banner')}</h1>
                 <h2>{t('Name', { firstName: user.firstName, lastName: user.lastName })}</h2>
