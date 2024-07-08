@@ -14,7 +14,7 @@ export default function ManagerWidget({ user }: Props) {
         router.push("/dashboard/myTeam");
     }
     const loadGeneratorPage = () => {
-        router.push("/dashboard/myTeam");
+        router.push("/dashboard/qrGenerator");
     }
     
     if (user.permission === 'ADMIN' || user.permission === 'SUPERADMIN' || user.permission === 'MANAGER' || user.permission === 'PROJECTMANAGER') {
