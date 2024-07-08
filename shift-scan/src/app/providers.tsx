@@ -1,26 +1,24 @@
-'use client';
-// this is the provider for the app, it wraps all the components 
+"use client";
+// this is the provider for the app, it wraps all the components
 // this is so that all the components can access the context
-import {ScanDataProvider} from './context/JobSiteContext';
-import {SavedCostCodeProvider} from './context/CostCodeContext';
-import {SessionProvider} from 'next-auth/react';
-import { SavedPayPeriodHoursProvider } from './context/SavedPayPeriodHours';
-
+import { ScanDataProvider } from "./context/JobSiteContext";
+import { SavedCostCodeProvider } from "./context/CostCodeContext";
+import { SessionProvider } from "next-auth/react";
+import { SavedPayPeriodHoursProvider } from "./context/SavedPayPeriodHours";
+import { SavedUserDataProvider } from "./context/UserContext";
 
 export function Providers({ children }: { children: React.ReactNode }) {
-    return <>
-            {/* <SavedUser> */}
-            <SavedPayPeriodHoursProvider>
-            <SavedCostCodeProvider>
+  return (
+    <>
+      <SavedUserDataProvider>
+        <SavedPayPeriodHoursProvider>
+          <SavedCostCodeProvider>
             <ScanDataProvider>
-            <SessionProvider>
-                {children}
-            </SessionProvider>
+              <SessionProvider>{children}</SessionProvider>
             </ScanDataProvider>
-            </SavedCostCodeProvider>
-            </SavedPayPeriodHoursProvider>
-            {/* </SavedUser> */}
-
-            
-        </>;
+          </SavedCostCodeProvider>
+        </SavedPayPeriodHoursProvider>
+      </SavedUserDataProvider>
+    </>
+  );
 }
