@@ -7,7 +7,7 @@ import BasicButton from '@/components/button';
 import TitleBox from '@/components/titleBox';
 import SwitchWithLabel from '@/components/(inputs)/switchWithLabel';
 import BasicLabel from '@/components/(text)/label';
-// import LocaleCheckBox from '@/components/(inputs)/checkBox';
+// import LocaleLanguage from '@/components/(inputs)/checkBox';
 import TitleMedium from '@/components/(text)/title_h2';
 
 import '@/app/globals.css';
@@ -52,7 +52,7 @@ return (
                 </SwitchWithLabel>
             </DynamicSection>
             <DynamicSection>
-                {/* <LocaleCheckBox></LocaleCheckBox> */}<p></p>
+                {/* <LocaleLanguage></LocaleLanguage> */} <p></p>
             </DynamicSection>
             <BasicButton>Change Password</BasicButton>
         </EmptyBase>
