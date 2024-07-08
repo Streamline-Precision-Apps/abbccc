@@ -75,10 +75,16 @@ model User {
   phone         String
   image         String?
 
+<<<<<<< HEAD
   crewMembers CrewMember[]
   accounts    Account[]
   sessions    Session[]
   Employee    Employee[]
+=======
+  accounts Account[]
+  sessions Session[]
+  Employee Employee[]
+>>>>>>> 08dfa3ac03203f198d49dc99c40cc5a87ee2718f
 
   @@map("users")
 }
@@ -143,14 +149,24 @@ model Employee {
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 
+<<<<<<< HEAD
+=======
+  crewMembers   CrewMember[]
+>>>>>>> 08dfa3ac03203f198d49dc99c40cc5a87ee2718f
   forms         Form[]
   timeSheet     TimeSheet[]
   equipmentLogs EmployeeEquipmentLog[]
   positions     EmployeePosition[]
+<<<<<<< HEAD
   contacts      Contact[]
   addresses     AddressEmployee[]
   users         User[]
   CrewMember    CrewMember[]
+=======
+  contacts      ContactJoin[]
+  addresses     AddressEmployee[]
+  users         User[]
+>>>>>>> 08dfa3ac03203f198d49dc99c40cc5a87ee2718f
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
@@ -370,6 +386,7 @@ model Contact {
   contacts             Employee[]
 }
 
+<<<<<<< HEAD
 // model ContactJoin {
 //   id          Int      @id @default(autoincrement())
 //   contact_id  Int
@@ -380,6 +397,18 @@ model Contact {
 //   contact  Contact  @relation(fields: [contact_id], references: [id])
 //   employee Employee @relation(fields: [employee_id], references: [id])
 // }
+=======
+model ContactJoin {
+  id          Int      @id @default(autoincrement())
+  contact_id  Int
+  employee_id Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  contact  Contact  @relation(fields: [contact_id], references: [id])
+  employee Employee @relation(fields: [employee_id], references: [id])
+}
+>>>>>>> 08dfa3ac03203f198d49dc99c40cc5a87ee2718f
 
 //----------------------------------------------------------------------------------------------------------------------//
 // Address Assigner makes a many to many relation ship from employees to there address
@@ -466,4 +495,11 @@ model FormStructure {
   box_7 Boolean @default(false)
   box_8 Boolean @default(false)
   box_9 Boolean @default(false)
+}
+
+model InjuryForm {
+  id                  Int     @id @default(autoincrement())
+  contactedSupervisor Boolean @default(false)
+  incidentDescription String
+  signedForm          Boolean @default(false)
 }

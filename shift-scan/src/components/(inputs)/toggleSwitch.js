@@ -2,27 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useTranslations } from 'next-intl';
 import classNames from "classnames";
 
-const changeLocale = (newLocale) => {
-    Cookies.set('', newLocale, { expires: 365 });
-    window.location.reload();
-};
-// const LocaleToggleSwitch = () => {
-//     const t = useTranslations('PortalLogin');
-//     const [locale, setLocale] = useState("en");
-
-//     useEffect(() => {
-//         const currentLocale = Cookies.get('locale') || "en";
-//         setLocale(currentLocale);
-//     }, []);
-
-// const handleChange = (event) => {
-//     const newLocale = event.target.checked ? "es" : "en";
-//     console.log(newLocale);
-//     setLocale(newLocale); // updates the local state
-//     changeLocale(newLocale); // updates the cookie and reloads the page
-// };
-
-
 
 const LocaleToggleSwitch = () => {
     const [isSelected, setIsSelected] = useState(false);
