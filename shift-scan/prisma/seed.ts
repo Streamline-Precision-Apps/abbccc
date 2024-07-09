@@ -53,7 +53,7 @@ async function upsertWorkerData(worker: any) {
       first_name: employee.first_name,
       middle_name: employee.middle_name || null,
       last_name: employee.last_name,
-      dob: new Date(employee.dob),
+      dob: employee.dob,
       availability: employee.availability,
       start_date: new Date(employee.start_date),
       termination_date: employee.termination_date ? new Date(employee.termination_date) : null,
@@ -65,7 +65,7 @@ async function upsertWorkerData(worker: any) {
       first_name: employee.first_name,
       middle_name: employee.middle_name || null,
       last_name: employee.last_name,
-      dob: new Date(employee.dob),
+      dob: employee.dob,
       availability: employee.availability,
       start_date: new Date(employee.start_date),
       termination_date: employee.termination_date ? new Date(employee.termination_date) : null,
@@ -115,22 +115,22 @@ async function upsertWorkerData(worker: any) {
   });
 
   // Upsert contact join
-  await prisma.contactJoin.upsert({
-    where: { id: contactJoin.id },
-    update: {
-      contact_id: contactJoin.contact_id,
-      employee_id: contactJoin.employee_id,
-      createdAt: new Date(contactJoin.createdAt),
-      updatedAt: new Date(contactJoin.updatedAt),
-    },
-    create: {
-      id: contactJoin.id,
-      contact_id: contactJoin.contact_id,
-      employee_id: contactJoin.employee_id,
-      createdAt: new Date(contactJoin.createdAt),
-      updatedAt: new Date(contactJoin.updatedAt),
-    },
-  });
+  // await prisma.contactJoin.upsert({
+  //   where: { id: contactJoin.id },
+  //   update: {
+  //     contact_id: contactJoin.contact_id,
+  //     employee_id: contactJoin.employee_id,
+  //     createdAt: new Date(contactJoin.createdAt),
+  //     updatedAt: new Date(contactJoin.updatedAt),
+  //   },
+  //   create: {
+  //     id: contactJoin.id,
+  //     contact_id: contactJoin.contact_id,
+  //     employee_id: contactJoin.employee_id,
+  //     createdAt: new Date(contactJoin.createdAt),
+  //     updatedAt: new Date(contactJoin.updatedAt),
+  //   },
+  // });
 
   // Upsert address
   await prisma.address.upsert({
@@ -213,10 +213,93 @@ const initaialJobsites: Prisma.JobsiteCreateInput[]  = [
 
 
 
+const initialTimeSheets: Prisma.TimeSheetCreateInput[] = [
+  {
+    submit_date: new Date(),
+    form_id: 123,
+    date:new Date(new Date().setHours(0, 0, 0, 0)).toISOString(),
+    jobsite_id: 789,
+    costcode: 'CC-101',
+    start_time: new Date(new Date().setHours(8, 0, 0, 0)).toISOString(),
+    end_time: new Date(new Date().setHours(12, 0, 0, 0)).toISOString(),
+    total_break_time: 0,
+    duration: 4.00,
+    timesheet_comments: 'No issues during the shift.',
+    app_comment: 'H>8-J>789>CC-101>T>6.',
+    employee: {
+      connect: {
+        id: 2
+      }
+    }
+  },
+  {
+    submit_date: new Date(),
+    form_id: 124,
+    date: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(),
+    jobsite_id: 719,
+    costcode: 'CC-101',
+    start_time: new Date(new Date().setHours(12, 0, 0, 0)).toISOString(),
+    end_time: new Date(new Date().setHours(17, 0, 0, 0)).toISOString(),
+    total_break_time: 1.00,
+    duration: 4.00,
+    timesheet_comments: 'No issues during the shift.',
+    app_comment: 'H>8-J>789>CC-101>T>6.',
+    employee: {
+      connect: {
+        id: 2
+      }
+    }
+  },
+  {
+    submit_date: new Date(),
+    form_id: 125,
+    date: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(),
+    jobsite_id: 789,
+    costcode: 'CC-101',
+    start_time: new Date(new Date().setHours(8, 0, 0, 0)).toISOString(),
+    end_time: new Date(new Date().setHours(15, 0, 0, 0)).toISOString(),
+    total_break_time: 60,
+    duration: 6.00,
+    timesheet_comments: 'No issues during the shift.',
+    app_comment: 'Submitted on time.',
+    employee: {
+      connect: {
+        id: 1
+      }
+    }
+  },
+  {
+    submit_date: new Date(),
+    form_id: 126,
+    date: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(),
+    jobsite_id: 789,
+    costcode: 'CC-101',
+    start_time: new Date(new Date().setHours(15, 0, 0, 0)).toISOString(),
+    end_time: new Date(new Date().setHours(19, 0, 0, 0)).toISOString(),
+    total_break_time: 0,
+    duration: 4.00,
+    timesheet_comments: 'No issues during the shift.',
+    app_comment: 'Submitted on time.',
+    employee: {
+      connect: {
+        id: 1
+      }
+    }
+  }
+];
+
+
+
+
 
 async function main() {
   console.log('Seeding...');
   const { workers } = workerData;
+
+
+  for (const worker of workers) {
+    await upsertWorkerData(worker);
+  }
   
   for (const jobsite of initaialJobsites) {
     const newJobsite = await prisma.jobsite.create({
@@ -226,10 +309,13 @@ async function main() {
     console.log("created jobsite with id: ", newJobsite.id);
   } 
 
-  for (const worker of workers) {
-    await upsertWorkerData(worker);
-  }
 
+  for (const TimeSheet of initialTimeSheets) {
+    const newTimeSheet = await prisma.timeSheet.create({
+      data: TimeSheet,  
+    });
+    console.log("created timesheet with id: ", newTimeSheet.id);
+  }
 
   console.log('Sample data upserted successfully!');
 }

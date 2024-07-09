@@ -188,7 +188,7 @@ model TimeSheet {
   id                    Int      @id @default(autoincrement()) //in viewpoint this tracks the time form to come in, driver, tasco, and regular
   form_id               Int      @unique
   employee_id           Int
-  date                  DateTime @default(now()) //two dates are in the accounting software, for easy conversion they are implemented here
+  date                  DateTime @db.Date //two dates are in the accounting software, for easy conversion they are implemented here
   jobsite_id            Int
   costcode              String
   nu                    String   @default("nu") // non union {} default
@@ -197,7 +197,7 @@ model TimeSheet {
   start_time            DateTime
   end_time              DateTime
   total_break_time      Float?
-  duration              Float
+  duration              Float // this is the amount of time that was spent on a site
   starting_mileage      Int?
   ending_mileage        Int?
   left_idaho            Boolean? @default(false)
@@ -226,6 +226,7 @@ model EmployeeEquipmentLog {
   employee_id      Int
   start_time       DateTime
   end_time         DateTime?
+  duration         Float?
   equipment_notes  String?
   equipment_status String    @default("Operational")
   createdAt        DateTime  @default(now())
