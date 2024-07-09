@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "TimeSheet" ALTER COLUMN "submit_date" SET DATA TYPE TIMESTAMP(3),
+ALTER COLUMN "date" DROP DEFAULT;
