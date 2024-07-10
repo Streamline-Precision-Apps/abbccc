@@ -10,7 +10,7 @@ import {cookies} from "next/headers";
 
 export const authOptions : NextAuthOptions ={
     session: {
-        strategy: "jwt",
+        strategy: "database",
     },
     providers: [
         CredentialsProvider({
