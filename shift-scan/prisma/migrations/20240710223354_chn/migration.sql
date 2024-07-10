@@ -2,10 +2,10 @@
 CREATE TYPE "permission" AS ENUM ('USER', 'MANAGER', 'PROJECTMANAGER', 'ADMIN', 'SUPERADMIN');
 
 -- CreateEnum
-CREATE TYPE "formStatus" AS ENUM ('PENDING', 'APPROVED', 'DENIED');
+CREATE TYPE "tags" AS ENUM ('Truck', 'Trailer', 'Equipment');
 
 -- CreateEnum
-CREATE TYPE "tags" AS ENUM ('Truck', 'Trailer', 'Equipment');
+CREATE TYPE "formStatus" AS ENUM ('PENDING', 'APPROVED', 'DENIED');
 
 -- CreateEnum
 CREATE TYPE "formType" AS ENUM ('MEDICAL', 'INSPECTION', 'MANAGER', 'LEAVE', 'SAFETY');
@@ -17,6 +17,7 @@ CREATE TABLE "users" (
     "lastName" TEXT NOT NULL,
     "username" TEXT NOT NULL,
     "password" TEXT NOT NULL,
+    "Signature" TEXT,
     "truck_view" BOOLEAN NOT NULL,
     "tasco_view" BOOLEAN NOT NULL,
     "labor_view" BOOLEAN NOT NULL,
@@ -28,6 +29,18 @@ CREATE TABLE "users" (
     "image" TEXT,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "UserSettings" (
+    "id" TEXT NOT NULL,
+    "user_id" TEXT NOT NULL,
+    "language" TEXT NOT NULL,
+    "timezone" TEXT NOT NULL,
+    "dateFormat" TEXT NOT NULL,
+    "timeFormat" TEXT NOT NULL,
+
+    CONSTRAINT "UserSettings_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -66,6 +79,29 @@ CREATE TABLE "verificationtokens" (
 );
 
 -- CreateTable
+CREATE TABLE "Trainings" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Trainings_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "EmployeeTrainings" (
+    "id" SERIAL NOT NULL,
+    "employee_id" TEXT NOT NULL,
+    "completed_trainings" INTEGER NOT NULL,
+    "assigned_trainings" INTEGER NOT NULL,
+    "completion" BOOLEAN NOT NULL DEFAULT false,
+    "trainings" JSONB NOT NULL,
+
+    CONSTRAINT "EmployeeTrainings_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Employee" (
     "id" SERIAL NOT NULL,
     "first_name" TEXT NOT NULL,
@@ -95,11 +131,11 @@ CREATE TABLE "Jobsite" (
 
 -- CreateTable
 CREATE TABLE "TimeSheet" (
-    "submit_date" DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "submit_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "id" SERIAL NOT NULL,
     "form_id" INTEGER NOT NULL,
     "employee_id" INTEGER NOT NULL,
-    "date" DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "date" DATE NOT NULL,
     "jobsite_id" INTEGER NOT NULL,
     "costcode" TEXT NOT NULL,
     "nu" TEXT NOT NULL DEFAULT 'nu',
@@ -192,6 +228,7 @@ CREATE TABLE "CrewMember" (
 CREATE TABLE "Crew" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
+    "supervisor" BOOLEAN NOT NULL DEFAULT false,
     "description" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -208,27 +245,6 @@ CREATE TABLE "CrewJobsite" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "CrewJobsite_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "EmployeePosition" (
-    "id" SERIAL NOT NULL,
-    "employee_id" INTEGER NOT NULL,
-    "position_id" INTEGER NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "EmployeePosition_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Position" (
-    "id" SERIAL NOT NULL,
-    "name" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "Position_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -273,9 +289,11 @@ CREATE TABLE "Address" (
 CREATE TABLE "Form" (
     "id" SERIAL NOT NULL,
     "type" "formType" NOT NULL,
+    "name" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "updatedNow" TIMESTAMP(3) NOT NULL,
     "status" "formStatus" NOT NULL DEFAULT 'PENDING',
+    "employeeId" INTEGER NOT NULL,
 
     CONSTRAINT "Form_pkey" PRIMARY KEY ("id")
 );
@@ -284,17 +302,20 @@ CREATE TABLE "Form" (
 CREATE TABLE "FormStructure" (
     "id" SERIAL NOT NULL,
     "title" TEXT NOT NULL,
-    "box_1" BOOLEAN NOT NULL DEFAULT false,
-    "box_2" BOOLEAN NOT NULL DEFAULT false,
-    "box_3" BOOLEAN NOT NULL DEFAULT false,
-    "box_4" BOOLEAN NOT NULL DEFAULT false,
-    "box_5" BOOLEAN NOT NULL DEFAULT false,
-    "box_6" BOOLEAN NOT NULL DEFAULT false,
-    "box_7" BOOLEAN NOT NULL DEFAULT false,
-    "box_8" BOOLEAN NOT NULL DEFAULT false,
-    "box_9" BOOLEAN NOT NULL DEFAULT false,
+    "fields" JSONB NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "FormStructure_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "FormData" (
+    "id" SERIAL NOT NULL,
+    "formId" INTEGER NOT NULL,
+    "status" "formStatus" NOT NULL DEFAULT 'PENDING',
+
+    CONSTRAINT "FormData_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -335,7 +356,13 @@ CREATE TABLE "_AddressToJobsite" (
 CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "users_Signature_key" ON "users"("Signature");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "UserSettings_user_id_key" ON "UserSettings"("user_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "accounts_provider_provider_account_id_key" ON "accounts"("provider", "provider_account_id");
@@ -347,6 +374,9 @@ CREATE UNIQUE INDEX "sessions_session_token_key" ON "sessions"("session_token");
 CREATE UNIQUE INDEX "verificationtokens_identifier_token_key" ON "verificationtokens"("identifier", "token");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "EmployeeTrainings_employee_id_key" ON "EmployeeTrainings"("employee_id");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Jobsite_qr_id_key" ON "Jobsite"("qr_id");
 
 -- CreateIndex
@@ -354,9 +384,6 @@ CREATE UNIQUE INDEX "TimeSheet_form_id_key" ON "TimeSheet"("form_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Equipment_qr_id_key" ON "Equipment"("qr_id");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Position_name_key" ON "Position"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_EmployeeToUser_AB_unique" ON "_EmployeeToUser"("A", "B");
@@ -383,10 +410,16 @@ CREATE UNIQUE INDEX "_AddressToJobsite_AB_unique" ON "_AddressToJobsite"("A", "B
 CREATE INDEX "_AddressToJobsite_B_index" ON "_AddressToJobsite"("B");
 
 -- AddForeignKey
+ALTER TABLE "UserSettings" ADD CONSTRAINT "UserSettings_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "accounts" ADD CONSTRAINT "accounts_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "sessions" ADD CONSTRAINT "sessions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "EmployeeTrainings" ADD CONSTRAINT "EmployeeTrainings_employee_id_fkey" FOREIGN KEY ("employee_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "TimeSheet" ADD CONSTRAINT "TimeSheet_employee_id_fkey" FOREIGN KEY ("employee_id") REFERENCES "Employee"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -416,19 +449,16 @@ ALTER TABLE "CrewJobsite" ADD CONSTRAINT "CrewJobsite_crew_id_fkey" FOREIGN KEY 
 ALTER TABLE "CrewJobsite" ADD CONSTRAINT "CrewJobsite_jobsite_id_fkey" FOREIGN KEY ("jobsite_id") REFERENCES "Jobsite"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "EmployeePosition" ADD CONSTRAINT "EmployeePosition_employee_id_fkey" FOREIGN KEY ("employee_id") REFERENCES "Employee"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "EmployeePosition" ADD CONSTRAINT "EmployeePosition_position_id_fkey" FOREIGN KEY ("position_id") REFERENCES "Position"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "AddressEmployee" ADD CONSTRAINT "AddressEmployee_address_id_fkey" FOREIGN KEY ("address_id") REFERENCES "Address"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "AddressEmployee" ADD CONSTRAINT "AddressEmployee_employee_id_fkey" FOREIGN KEY ("employee_id") REFERENCES "Employee"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Form" ADD CONSTRAINT "Form_id_fkey" FOREIGN KEY ("id") REFERENCES "Employee"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Form" ADD CONSTRAINT "Form_employeeId_fkey" FOREIGN KEY ("employeeId") REFERENCES "Employee"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "FormData" ADD CONSTRAINT "FormData_formId_fkey" FOREIGN KEY ("formId") REFERENCES "Form"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_EmployeeToUser" ADD CONSTRAINT "_EmployeeToUser_A_fkey" FOREIGN KEY ("A") REFERENCES "Employee"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -138,17 +138,21 @@ model VerificationToken {
 
 // Provides Titles of trains and wheter they have been completed this helps the supervisor see which ones they completed. 
 model Trainings {
-  id         Int     @id @default(autoincrement())
-  name       String
-  completion Boolean @default(false)
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 // This show the employee, the trainings they have completed and the total assigned trainings that are required for the year. 
 model EmployeeTrainings {
-  id                  Int    @id @default(autoincrement())
-  employee_id         String @unique
+  id                  Int     @id @default(autoincrement())
+  employee_id         String  @unique
   completed_trainings Int
   assigned_trainings  Int
+  completion          Boolean @default(false)
+  trainings           Json // all the completed traings
 
   User User @relation(fields: [employee_id], references: [id])
 }
@@ -172,7 +176,6 @@ model Employee {
   contacts         Contact[]
   addresses        AddressEmployee[]
   users            User[]
-  crew             Crew[]
   Form             Form[]
 }
 
@@ -292,14 +295,12 @@ model CrewMember {
 model Crew {
   id          Int           @id @default(autoincrement())
   name        String
-  supervisor  Int // this is who is in charge 
+  supervisor  Boolean       @default(false) // if the crew is a supervisor or not
   description String
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   crewMembers CrewMember[]
   jobsites    CrewJobsite[]
-
-  Employee Employee? @relation(fields: [supervisor], references: [id])
 }
 
 // provides a many to many relationship to crew and jobsite. This enables us to assign a crew to a jobsite which can possible filter out the complexity of costcodes
