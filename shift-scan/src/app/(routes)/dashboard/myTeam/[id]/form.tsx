@@ -13,7 +13,6 @@
             const formData = new FormData(ref.current!);
             const date = formData.get('date') as string;
             onFormSubmit(date);
-            ref.current?.reset();
         }}
         >
         <input

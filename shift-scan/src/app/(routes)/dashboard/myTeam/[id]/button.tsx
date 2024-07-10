@@ -8,7 +8,7 @@
         type="submit"
         aria-disabled={pending}
         >
-        {pending ? "Looking..." : "Search"}
+        {pending ? "Looking..." : "Load User Data"}
         </button>
     );
     };
