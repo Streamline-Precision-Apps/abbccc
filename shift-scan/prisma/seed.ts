@@ -288,14 +288,59 @@ const initialTimeSheets: Prisma.TimeSheetCreateInput[] = [
   }
 ];
 
+const initialCrews: Prisma.CrewCreateInput[] = [
+  {
+    name: "Jessica's Crew",
+    description: "General Contrator Crew",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    name: "Devun's Crew",
+    description: "A Computer Science and App development Crew",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    name: "Dustin's Crew",
+    description: "Trucking Crew",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    name: "Seth's Crew",
+    description: "Fabrication Crew",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+];
 
+
+const initialCrewMembers: Prisma.CrewMemberCreateInput[] = [
+
+  {
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    employee: {
+      connect: {id: 1}},
+      crew: {connect: {id: 1}}
+  },
+
+  {
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    employee: { connect: {id: 2}},
+    crew: {connect: {id: 1}}
+  },
+  
+];
 
 
 
 async function main() {
   console.log('Seeding...');
   const { workers } = workerData;
-
+try{
 
   for (const worker of workers) {
     await upsertWorkerData(worker);
@@ -309,7 +354,7 @@ async function main() {
     console.log("created jobsite with id: ", newJobsite.id);
   } 
 
-
+// inserting data for timesheet testing, be sure to comment out if data exists
   for (const TimeSheet of initialTimeSheets) {
     const newTimeSheet = await prisma.timeSheet.create({
       data: TimeSheet,  
@@ -317,7 +362,42 @@ async function main() {
     console.log("created timesheet with id: ", newTimeSheet.id);
   }
 
+  // inserting general crew data
+  for (const crew of initialCrews)  {
+    const newCrew = await prisma.crew.create({
+      data: crew,  
+    });
+    console.log("created crew with id: ", newCrew.id);
+  }
+
+
+// inserting data for my team testing
+  for (const CrewMember of initialCrewMembers)  {
+    const newCrewMember = await prisma.crewMember.create({
+      data: CrewMember,  
+    });
+    console.log("created crew member with id: ", newCrewMember.id);
+  }
+  // general message for ending data seeding
   console.log('Sample data upserted successfully!');
+
+
+  //safety training 
+
+
+  //inbox look to see if other data is needed
+
+
+  // 
+
+
+}
+catch (error) {
+  console.log(error);
+  console.log("Known Errors to help with debugging: ");
+  console.log("--------------------------------------------------------------------------------------------");
+  console.log('\n\nSeeding failed! If Error is "Invalid `prisma.jobsite.create()` invocation", be sure to comment out the for loop create function above.\n\n');
+}
 }
 
 main()
