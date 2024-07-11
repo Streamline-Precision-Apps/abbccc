@@ -44,3 +44,6 @@ Today I am working on getting through my spint and finishing up the current task
 
 7/10/2024
 Today in order to add data I remade the seeding the way it needs to be to insert properly. The database is filled and necessary changes for zack and sean have been implemented. I also condensed the seeeding by puting the fake data into one file and the loops in the other. It works and I thoroughly tested it. I didnt get to doing the select data save 
+
+7/11/2024
+today spent awhile data proofing and make sure that the db2.0 is doing well. I realized that there were some errors. I then worked with sean on potential update and implentation on the app. After trial and error I found a video that solves the problems that we had. After that I altered the data so that the seed was alright. then went into teh my team and looked at ways to search the set for the edit button. As far as view Team is concerned. It is solved but needs adjustment for editing the teams hours which will take a bit

@@ -89,37 +89,22 @@ export const initialTrainings: Prisma.TrainingsCreateInput[] = [
 },  
 ];
 // creating training courses here:
-export const employeeTrainings: Prisma.EmployeeTrainingsCreateInput[] = [
-    { completed_trainings: 1, assigned_trainings: 10, completion: true, User: { connect: { id: "1" } }, trainings: {
-        Training: {
-        id: [1],
+export const UserTrainings: Prisma.UserTrainingsCreateInput[] = [
+    { "completed_trainings": 1, "assigned_trainings": 10, "completion": true, "User": { "connect": {
+                "id": "1" } }, "trainings": { "completed": [1], "assigned": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }
         },
-    },
-    },
-    { completed_trainings: 5, assigned_trainings: 10, completion: true, User: { connect: { id: "2" } }, trainings: {
-        Training: {
-        id: [1, 2, 3, 4, 5],
+        { "completed_trainings": 5, "assigned_trainings": 10, "completion": true, "User": { "connect": {
+                "id": "2" } }, "trainings": { "completed": [1, 2, 3, 4, 5], "assigned": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }
         },
-    },
-    },
-    { completed_trainings: 3, assigned_trainings: 10, completion: true, User: { connect: { id: "3" } }, trainings: {
-        Training: {
-        id: [1, 2, 3],
+        { "completed_trainings": 3, "assigned_trainings": 10, "completion": true, "User": { "connect": {
+                "id": "3" } }, "trainings": { "completed": [1, 2, 3], "assigned": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }
         },
-    },
-    },
-    { completed_trainings: 2, assigned_trainings: 10, completion: true, User: { connect: { id: "4" } }, trainings: {
-        Training: {
-        id: [1, 3],
+        { "completed_trainings": 2, "assigned_trainings": 10, "completion": true, "User": { "connect": {
+                "id": "4" } }, "trainings": { "completed": [1, 3], "assigned": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }
         },
-    },
-    },
-    { completed_trainings: 1, assigned_trainings: 10, completion: true, User: { connect: { id: "5" } }, trainings: {
-        Training: {
-        id: [4],
+        { "completed_trainings": 1, "assigned_trainings": 10, "completion": true, "User": { "connect": {
+                "id": "5" } }, "trainings": { "completed": [4], "assigned": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }
         },
-    },
-    },
 ];
 // initializing users
 export const initialUsers: Prisma.UserCreateInput[] = [
