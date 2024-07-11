@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { initialEmployees, initialUsers, initialContacts, initialAddresses, initialAddressEmployees, initialJobsites, initialTimeSheets, initialCrews, initialCrewMembers, initialTrainings, employeeTrainings, initialCostCodes,initialCrewJobsites } from "../src/data/dataValues";
+import { initialEmployees, initialUsers, initialContacts, initialAddresses, initialAddressEmployees, initialJobsites, initialTimeSheets, initialCrews, initialCrewMembers, initialTrainings, initialCostCodes,initialCrewJobsites, UserTrainings } from "../src/data/dataValues";
 
 const prisma = new PrismaClient();
 
@@ -78,15 +78,15 @@ async function main() {
     }
 
     // Insert employee trainings
-    for (const training of employeeTrainings) {
-      const newEmployeeTraining = await prisma.employeeTrainings.create({ data: training });
+    for (const training of UserTrainings) {
+      const newEmployeeTraining = await prisma.userTrainings.create({ data: training });
       console.log("Created employee training with id: ", newEmployeeTraining.id);
     }
 
     console.log('Sample data upserted successfully!');
   } catch (error) {
     console.log(error);
-    console.log("Known Errors to help with debugging: ");
+    console.log("\n\nKnown Errors to help with debugging: ");
     console.log("--------------------------------------------------------------------------------------------");
     console.log('\n\nSeeding failed! If Error is "Invalid `prisma.jobsite.create()` invocation", be sure to comment out the for loop create function above.\n\n');
   }

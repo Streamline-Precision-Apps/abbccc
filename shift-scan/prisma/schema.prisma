@@ -69,12 +69,12 @@ model User {
   phone         String
   image         String?
 
-  crewMembers       CrewMember[]
-  accounts          Account[]
-  sessions          Session[]
-  Employee          Employee[]
-  userSettings      UserSettings[]
-  EmployeeTrainings EmployeeTrainings?
+  crewMembers   CrewMember[]
+  accounts      Account[]
+  sessions      Session[]
+  Employee      Employee[]
+  userSettings  UserSettings[]
+  userTrainings UserTrainings[]
 
   @@map("users")
 }
@@ -146,19 +146,20 @@ model Trainings {
 }
 
 // This show the employee, the trainings they have completed and the total assigned trainings that are required for the year. 
-model EmployeeTrainings {
+model UserTrainings {
   id                  Int     @id @default(autoincrement())
-  employee_id         String  @unique
+  user_id             String  @unique
   completed_trainings Int
   assigned_trainings  Int
   completion          Boolean @default(false)
-  trainings           Json // all the completed traings
+  trainings           Json // with all the completed trainings and assigned trainings
 
-  User User @relation(fields: [employee_id], references: [id])
+  User User @relation(fields: [user_id], references: [id])
 }
 
 //-------------------------------------------------------------------------------------------------//
 // employee model holds data/information that wont be acessed consistently client-side 
+// mainly apart of dashboard app 
 model Employee {
   id               Int                    @id @default(autoincrement())
   first_name       String
@@ -191,7 +192,7 @@ model Jobsite {
   costCode              CostCode[]
   addresses             Address[]
   employeeEquipmentLogs EmployeeEquipmentLog[]
-  jobsites              CrewJobsite[]
+  crewjobsites          CrewJobsite[]
 }
 
 //  Time sheet that integrates with the accounting software. Accounting Software Data: {|submitDate | Form Id | empl ID| Date| ProfitID(jobsite)| CostCode| NU | FP| Start Time| END Time| Job Description | Duration |}
@@ -272,7 +273,7 @@ model CostCode {
   id                    Int       @id @default(autoincrement())
   cost_code             String
   cost_code_description String
-  cost_code_type        String
+  cost_code_type        String // set to an enum later
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @default(now()) @updatedAt
   Jobsite               Jobsite[]
@@ -359,6 +360,11 @@ enum formStatus {
   DENIED
 }
 
+enum formActive {
+  ACTIVE
+  INACTIVE
+}
+
 // holds all possible form types
 enum formType {
   MEDICAL
@@ -368,33 +374,32 @@ enum formType {
   SAFETY
 }
 
-// form holds type, name, and general information of filled forms
+// tracking every individual form for every employee
 model Form {
-  id         Int        @id @default(autoincrement())
-  type       formType
-  name       String
-  createdAt  DateTime   @default(now())
-  updatedNow DateTime   @updatedAt
-  status     formStatus @default(PENDING)
-  employeeId Int
-  employee   Employee   @relation(fields: [employeeId], references: [id])
-  formData   FormData[]
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  createdAt   DateTime @default(now())
+  type        formType
+  name        String
+  description String
+  content     String   @default("[]") // this will hold the content of the form, questions, fields, etc.
+
+  updatedNow      DateTime?         @updatedAt
+  published       Boolean           @default(false)
+  status          formStatus        @default(PENDING)
+  employee        Employee          @relation(fields: [userId], references: [id])
+  FormSubmissions FormSubmissions[]
+
+  @@unique([userId, name])
 }
 
-model FormStructure {
-  id     Int    @id @default(autoincrement())
-  title  String
-  fields Json // create json files for each form
-
+model FormSubmissions {
+  id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
+  formId    Int
+  form      Form     @relation(fields: [formId], references: [id])
 
-model FormData {
-  id     Int        @id @default(autoincrement())
-  formId Int
-  form   Form       @relation(fields: [formId], references: [id])
-  status formStatus @default(PENDING)
+  content String
 }
 
 // packing this into a json later V V V V V V
