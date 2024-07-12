@@ -5,16 +5,16 @@ import Image from "next/image";
 
 
 type Props = {
-    title : string | undefined
+    title : string
 }
-export const TitleBoxId = ({title} : Props) => {
+export const TitleBox = ({title} : Props) => {
     return (
-        <div className=" bg-white h-1/4 w-full flex p-5 rounded-2xl"> 
-                <Backbutton />
-                <div className="bg-white h-full w-full flex flex-col justify-center items-center p-5 rounded-2xl">
-                <Image className="rounded-full" src="/profile-icon.png" alt="Team Image" width={150} height={150}/>
-                <h1 className="text-5xl font-bold ">{title}</h1>
-        </div>
+        <div className=" bg-white h-1/4 w-full flex p-5 rounded-2xl relative "> 
+            <Backbutton />
+                <div className="bg-white h-full w-full flex flex-col justify-center items-center rounded-2xl relative">
+                <Image className="rounded-full" src="/profile-icon.png" alt="Team Image" width={125} height={125}/>
+                <h1 className="text-2xl font-bold ">{title}</h1>
+            </div>
         </div>
     )
 }
