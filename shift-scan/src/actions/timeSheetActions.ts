@@ -8,6 +8,7 @@ const prisma = new PrismaClient();
 // Get all TimeSheets
 export async function getTimeSheetsbyId() {
     const timesheets = prisma.timeSheet.findMany();
+    console.log(timesheets);
     return timesheets
 }
 
@@ -15,15 +16,25 @@ export async function getTimeSheetsbyId() {
 // Get TimeSheet by id
 export async function fetchTimesheets(employeeId: string, date: string) {
     console.log(employeeId, date);
+    
+    const startOfDay = new Date(date);
+    startOfDay.setUTCHours(0, 0, 0, 0);
 
-    const timeSheet = await prisma.timeSheet.findMany({
+    const endOfDay = new Date(date);
+    endOfDay.setUTCHours(23, 59, 59, 999);
+
+    const timeSheets = await prisma.timeSheet.findMany({
         where: {
-            id : parseInt(employeeId),
-            date: date
+            employee_id: parseInt(employeeId),
+            date: {
+                gte: startOfDay.toISOString(),
+                lte: endOfDay.toISOString(),
+            },
         },
     });
 
-    return timeSheet;
+    console.log("\n\n\nTimeSheets:", timeSheets);
+    return timeSheets;
 }
 
 // alter the timeSheet function to include the date
