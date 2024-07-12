@@ -20,7 +20,7 @@ export const initialJobsites: Prisma.JobsiteCreateInput[]  = [
 ];
 // time sheets create method
 export const initialTimeSheets: Prisma.TimeSheetCreateInput[] = [
-{ submit_date: new Date(), form_id: 123, date:new Date(new Date().setHours(0, 0, 0, 0)).toISOString(), jobsite_id: 789, costcode: 'CC-101', start_time: new Date(new Date().setHours(8, 0, 0, 0)).toISOString(), end_time: new Date(new Date().setHours(12, 0, 0, 0)).toISOString(), total_break_time: 0, duration: 4.00, timesheet_comments: 'No issues during the shift.', app_comment: 'H>8-J>789>CC-101>T>6.', employee: {
+{ submit_date: new Date(), form_id: 123, date:new Date(new Date().setHours(0, 0, 0, 0)).toISOString(), jobsite_id: 789, costcode: 'CC-101', start_time: new Date(new Date().setHours(8, 0, 0, 0)).toISOString(), end_time: new Date(new Date().setHours(12, 0, 0, 0)).toISOString(), total_break_time: 1.00, duration: 4.00, timesheet_comments: 'No issues during the shift.', app_comment: 'H>8-J>789>CC-101>T>6.', employee: {
     connect: {
         id: 2
     }
@@ -38,7 +38,7 @@ form_id: 125,
 date: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(), jobsite_id: 789, 
 costcode: 'CC-101', 
 start_time: new Date(new Date().setHours(8, 0, 0, 0)).toISOString(), 
-end_time: new Date(new Date().setHours(15, 0, 0, 0)).toISOString(), total_break_time: 1, 
+end_time: new Date(new Date().setHours(15, 0, 0, 0)).toISOString(), total_break_time: 1.01, 
 duration: 6.00, 
 timesheet_comments: 'No issues during the shift.', 
 app_comment: 'Submitted on time.',
@@ -48,7 +48,7 @@ connect: {
 }
 }
 },
-{ submit_date: new Date(), form_id: 126, date: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(), jobsite_id: 789, costcode: 'CC-101', start_time: new Date(new Date().setHours(15, 0, 0, 0)).toISOString(), end_time: new Date(new Date().setHours(19, 0, 0, 0)).toISOString(), total_break_time: 0, duration: 4.00, timesheet_comments: 'No issues during the shift.', app_comment: 'Submitted on time.', employee: {
+{ submit_date: new Date(), form_id: 126, date: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(), jobsite_id: 789, costcode: 'CC-101', start_time: new Date(new Date().setHours(15, 0, 0, 0)).toISOString(), end_time: new Date(new Date().setHours(19, 0, 0, 0)).toISOString(), total_break_time: 0.00, duration: 4.00, timesheet_comments: 'No issues during the shift.', app_comment: 'Submitted on time.', employee: {
     connect: {
         id: 1
     }
@@ -132,17 +132,17 @@ export const initialUsers: Prisma.UserCreateInput[] = [
 ];
 // initializing employees
 export const initialEmployees: Prisma.EmployeeCreateInput[] = [
-{ "first_name": "Jessica", "last_name": "Rabbit", "dob": "1990-01-01T00:00:00.000Z", "availability": "MTWRF 6am - 10pm", "start_date": "2022-01-01T00:00:00.000Z", "createdAt": "2022-01-01T00:00:00.000Z", "updatedAt": "2022-01-01T00:00:00.000Z"
+{ "first_name": "Jessica", "last_name": "Rabbit", "dob": "05-15-1985", "availability": "MTWRF 6am - 10pm", "start_date": "2022-01-01T00:00:00.000Z", "createdAt": "2022-01-01T00:00:00.000Z", "updatedAt": "2022-01-01T00:00:00.000Z"
 },
-{ "first_name": "John", "last_name": "Doe", "dob": "1985-05-15T00:00:00.000Z", "availability": "MTWRF 7am - 6pm", "start_date": "2021-06-01T00:00:00.000Z", "createdAt": "2021-06-01T00:00:00.000Z", "updatedAt": "2021-06-01T00:00:00.000Z"   
+{ "first_name": "John", "last_name": "Doe", "dob": " 01-01-1990", "availability": "MTWRF 7am - 6pm", "start_date": "2021-06-01T00:00:00.000Z", "createdAt": "2021-06-01T00:00:00.000Z", "updatedAt": "2021-06-01T00:00:00.000Z"   
 },
-{ "first_name": "Jane", "last_name": "Doe", "dob": "1990-01-01T00:00:00.000Z", "availability": "MTWRF 6am - 10pm", "start_date": "2022-01-01T00:00:00.000Z", "createdAt": "2022-01-01T00:00:00.000Z", "updatedAt": "2022-01-01T00:00:00.000Z"
+{ "first_name": "Jane", "last_name": "Doe", "dob": " 01-05-1990", "availability": "MTWRF 6am - 10pm", "start_date": "2022-01-01T00:00:00.000Z", "createdAt": "2022-01-01T00:00:00.000Z", "updatedAt": "2022-01-01T00:00:00.000Z"
 },
-{ "first_name": "Buggs", "last_name": "Bunny", "dob": "1990-01-01T00:00:00.000Z", "availability": "MTWRF 6am - 10pm", "start_date": "2022-01-01T00:00:00.000Z", "createdAt": "2022-01-01T00:00:00.000Z", "updatedAt": "2022-01-01T00:00:00.000Z" 
+{ "first_name": "Buggs", "last_name": "Bunny", "dob": " 01-19-1990", "availability": "MTWRF 6am - 10pm", "start_date": "2022-01-01T00:00:00.000Z", "createdAt": "2022-01-01T00:00:00.000Z", "updatedAt": "2022-01-01T00:00:00.000Z" 
 },
-{ "first_name": "Lola", "last_name": "Bunny", "dob": "1990-01-01T00:00:00.000Z", "availability": "MTWRF 6am - 10pm", "start_date": "2022-01-01T00:00:00.000Z", "createdAt": "2022-01-01T00:00:00.000Z", "updatedAt": "2022-01-01T00:00:00.000Z" 
+{ "first_name": "Lola", "last_name": "Bunny", "dob": " 01-30-1990", "availability": "MTWRF 6am - 10pm", "start_date": "2022-01-01T00:00:00.000Z", "createdAt": "2022-01-01T00:00:00.000Z", "updatedAt": "2022-01-01T00:00:00.000Z" 
 },
-{ "first_name": "Roger", "last_name": "Rabbit", "dob": "1985-05-15T00:00:00.000Z", "availability": "MTWRF 7am - 6pm", "start_date": "2021-06-01T00:00:00.000Z", "createdAt": "2021-06-01T00:00:00.000Z", "updatedAt": "2021-06-01T00:00:00.000Z" 
+{ "first_name": "Roger", "last_name": "Rabbit", "dob": "05-15-1989", "availability": "MTWRF 7am - 6pm", "start_date": "2021-06-01T00:00:00.000Z", "createdAt": "2021-06-01T00:00:00.000Z", "updatedAt": "2021-06-01T00:00:00.000Z" 
 }
 ];
 // initializing contacts

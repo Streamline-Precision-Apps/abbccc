@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
-import TitleBox from "@/components/titleBox";
+import {TitleBox} from "./titleBox";
 import { TitleContainer } from "@/components/(text)/title_container";
 import Image from "next/image";
 
@@ -29,10 +29,7 @@ export default async function employeeInfo({params} : Params) {
     return (
         <div className=' h-auto w-full lg:w-1/2 m-auto border-t-2 border-l-2 border-r-2 p-5 border-black rounded-t-2xl'>
             <div className=" h-full w-11/12 flex flex-col items-center mx-auto rounded-2xl">
-            <TitleBox>
-            <Image className="rounded-full" src="/profile-icon.png" alt="Team Image" width={100} height={100}/>
-            {employee?.first_name + " " + employee?.last_name}  
-            </TitleBox>
+            <TitleBox title={employee?.first_name + " " + employee?.last_name}/>
             <div className="mt-12 mb-3 bg-white h-full w-full flex flex-col   p-5 rounded-2xl overflow-y-auto">
                 <TitleContainer TitleofContainer="Phone" > 
                     {contacts?.phone_number}
@@ -48,7 +45,6 @@ export default async function employeeInfo({params} : Params) {
                 </TitleContainer>
                 <TitleContainer TitleofContainer="Birthdate">
                     {employee?.dob}
-                    <h4>Note we will insert the date of birth by string into the db in the future</h4>
                 </TitleContainer>
                 
                 </div>
