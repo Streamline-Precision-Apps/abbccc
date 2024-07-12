@@ -50,7 +50,7 @@ export async function createTimeSheet(formData: FormData) {
     try {
     await prisma.timeSheet.create({
     data: {
-        submit_date: formData.get("submit_date") as string,
+            submit_date: formData.get("submit_date") as string,
         id: Number(formData.get("id")),
         form_id: Number(formData.get("form_id")),
         employee_id: Number(formData.get("employee_id") ),
