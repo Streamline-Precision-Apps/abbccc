@@ -299,7 +299,6 @@ CREATE TABLE "Form" (
     "content" TEXT NOT NULL DEFAULT '[]',
     "updatedNow" TIMESTAMP(3),
     "published" BOOLEAN NOT NULL DEFAULT false,
-    "status" "formStatus" NOT NULL DEFAULT 'PENDING',
 
     CONSTRAINT "Form_pkey" PRIMARY KEY ("id")
 );
@@ -307,8 +306,10 @@ CREATE TABLE "Form" (
 -- CreateTable
 CREATE TABLE "FormSubmissions" (
     "id" SERIAL NOT NULL,
+    "userId" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "formId" INTEGER NOT NULL,
+    "status" "formStatus" NOT NULL DEFAULT 'PENDING',
     "content" TEXT NOT NULL,
 
     CONSTRAINT "FormSubmissions_pkey" PRIMARY KEY ("id")
@@ -382,7 +383,7 @@ CREATE UNIQUE INDEX "TimeSheet_form_id_key" ON "TimeSheet"("form_id");
 CREATE UNIQUE INDEX "Equipment_qr_id_key" ON "Equipment"("qr_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Form_userId_name_key" ON "Form"("userId", "name");
+CREATE UNIQUE INDEX "Form_userId_id_name_key" ON "Form"("userId", "id", "name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_EmployeeToUser_AB_unique" ON "_EmployeeToUser"("A", "B");

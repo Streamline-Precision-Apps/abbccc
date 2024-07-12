@@ -32,12 +32,21 @@ export const initialTimeSheets: Prisma.TimeSheetCreateInput[] = [
     }
     }
 },
-{ submit_date: new Date(), form_id: 125, date: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(), jobsite_id: 789, costcode: 'CC-101', start_time: new Date(new Date().setHours(8, 0, 0, 0)).toISOString(), end_time: new Date(new Date().setHours(15, 0, 0, 0)).toISOString(), total_break_time: 60, duration: 6.00, timesheet_comments: 'No issues during the shift.', app_comment: 'Submitted on time.',
-    employee: {
-    connect: {
-        id: 1
-    }
-    }
+{ 
+submit_date: new Date(), 
+form_id: 125, 
+date: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(), jobsite_id: 789, 
+costcode: 'CC-101', 
+start_time: new Date(new Date().setHours(8, 0, 0, 0)).toISOString(), 
+end_time: new Date(new Date().setHours(15, 0, 0, 0)).toISOString(), total_break_time: 1, 
+duration: 6.00, 
+timesheet_comments: 'No issues during the shift.', 
+app_comment: 'Submitted on time.',
+employee: {
+connect: {
+    id: 1
+}
+}
 },
 { submit_date: new Date(), form_id: 126, date: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(), jobsite_id: 789, costcode: 'CC-101', start_time: new Date(new Date().setHours(15, 0, 0, 0)).toISOString(), end_time: new Date(new Date().setHours(19, 0, 0, 0)).toISOString(), total_break_time: 0, duration: 4.00, timesheet_comments: 'No issues during the shift.', app_comment: 'Submitted on time.', employee: {
     connect: {
@@ -108,7 +117,7 @@ export const UserTrainings: Prisma.UserTrainingsCreateInput[] = [
 ];
 // initializing users
 export const initialUsers: Prisma.UserCreateInput[] = [
-{ "id": "1", "firstName": "Jessica", "lastName": "Rabbit", "username": "jessicarabbit", "password": "securepassword", "truck_view": true, "tasco_view": false, "labor_view": true, "mechanic_view": false, "permission": "ADMIN", "email": "jessicarabbit@example.com", "emailVerified": "2022-01-01T00:00:00.000Z", "phone": "123-456-7890", "image": "https://example.com/image.jpg"
+    { "id": "1", "firstName": "Jessica", "lastName": "Rabbit", "username": "jessicarabbit", "password": "securepassword", "truck_view": true, "tasco_view": false, "labor_view": true, "mechanic_view": false, "permission": "ADMIN", "email": "jessicarabbit@example.com", "emailVerified": "2022-01-01T00:00:00.000Z", "phone": "123-456-7890", "image": "https://example.com/image.jpg"
     },
     { "id": "2", "firstName": "John", "lastName": "Doe", "username": "johndoe", "password": "securepassword", "truck_view": true, "tasco_view": true, "labor_view": false, "mechanic_view": false, "permission": "USER", "email": "johndoe@example.com", "emailVerified": "2021-06-01T00:00:00.000Z", "phone": "987-654-3210", "image": "https://example.com/image.jpg"
     },
