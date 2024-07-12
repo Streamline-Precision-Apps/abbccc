@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { initialEmployees, initialUsers, initialContacts, initialAddresses, initialAddressEmployees, initialJobsites, initialTimeSheets, initialCrews, initialCrewMembers, initialTrainings, initialCostCodes,initialCrewJobsites, UserTrainings } from "../src/data/dataValues";
-
+import {hash} from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function main() {
@@ -14,7 +14,8 @@ async function main() {
 
     // Insert users
     for (const user of initialUsers) {
-      const newUser = await prisma.user.create({ data: user });
+      const hashed = await hash(user.password, 10);
+      const newUser = await prisma.user.create({data: { ...user, password: hashed }});
       console.log("Created user with id: ", newUser.id);
     }
 

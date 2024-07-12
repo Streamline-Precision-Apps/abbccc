@@ -386,18 +386,19 @@ model Form {
 
   updatedNow      DateTime?         @updatedAt
   published       Boolean           @default(false)
-  status          formStatus        @default(PENDING)
   employee        Employee          @relation(fields: [userId], references: [id])
   FormSubmissions FormSubmissions[]
 
-  @@unique([userId, name])
+  @@unique([userId, id, name]) // ptential break, remove name if error
 }
 
 model FormSubmissions {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
+  id        Int        @id @default(autoincrement())
+  userId    Int
+  createdAt DateTime   @default(now())
   formId    Int
-  form      Form     @relation(fields: [formId], references: [id])
+  status    formStatus @default(PENDING)
+  form      Form       @relation(fields: [formId], references: [id])
 
   content String
 }
