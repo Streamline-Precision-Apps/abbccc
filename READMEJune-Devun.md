@@ -50,3 +50,6 @@ today spent awhile data proofing and make sure that the db2.0 is doing well. I r
 
 7/12/2024
 finished the view team section today, all errors are gone and have a filtered option working for prisma, also worked with sean through them and mad the select handle changes rather then a button. Times are working as well. 
+
+7/15/2024 
+today made some changes to the db and worked with zack on his portion and then made some fixes to the user table
