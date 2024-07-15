@@ -1,4 +1,3 @@
-import ClockInWidget from "@/app/(content)/clockInWidget";
 import { User } from "@/lib/types";
 import "@/app/globals.css";
 import { useRouter } from "next/navigation";
