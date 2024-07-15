@@ -59,6 +59,7 @@ model User {
   username      String     @unique
   password      String
   Signature     String?    @unique
+  DOB           String
   truck_view    Boolean
   tasco_view    Boolean
   labor_view    Boolean
@@ -180,15 +181,15 @@ model Jobsite {
 
 //  Time sheet that integrates with the accounting software. Accounting Software Data: {|submitDate | Form Id | empl ID| Date| ProfitID(jobsite)| CostCode| NU | FP| Start Time| END Time| Job Description | Duration |}
 model TimeSheet {
-  submit_date           DateTime @default(now())
-  id                    Int      @id @default(autoincrement()) //in viewpoint this tracks the time form to come in, driver, tasco, and regular
-  form_id               Int      @unique
-  employee_id           String
-  date                  DateTime @db.Date //two dates are in the accounting software, for easy conversion they are implemented here
+  submit_date           DateTime   @default(now())
+  id                    Int        @id @default(autoincrement()) //in viewpoint this tracks the time form to come in, driver, tasco, and regular
+  form_id               Int        @unique
+  userId                String
+  date                  DateTime   @db.Date //two dates are in the accounting software, for easy conversion they are implemented here
   jobsite_id            Int
   costcode              String
-  nu                    String   @default("nu") // non union {} default
-  Fp                    String   @default("fp") // field personal
+  nu                    String     @default("nu") // non union {} default
+  Fp                    String     @default("fp") // field personal
   vehicle_id            Int?
   start_time            DateTime
   end_time              DateTime
@@ -196,15 +197,16 @@ model TimeSheet {
   duration              Float // this is the amount of time that was spent on a site
   starting_mileage      Int?
   ending_mileage        Int?
-  left_idaho            Boolean? @default(false)
+  left_idaho            Boolean?   @default(false)
   equipment_hauled      String?
   materials_hauled      String?
   hauled_loads_quantity Int?
   refueling_gallons     Float?
   timesheet_comments    String? // theses will be not nulled in the future
   app_comment           String? //this is a backend ai we want to develope to do filtered comments
+  status                formStatus @default(PENDING)
 
-  user      User     @relation(fields: [employee_id], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
   Jobsite   Jobsite? @relation(fields: [jobsiteId], references: [id])
   jobsiteId Int?
 
@@ -269,7 +271,8 @@ model CostCode {
 // crew data for seeing the entire crew and enabling site linking it also has direct access to the employeed time cards, and some desire profile settings
 model CrewMember {
   id          Int      @id @default(autoincrement())
-  employee    User     @relation(fields: [employee_id], references: [id])
+  user        User     @relation(fields: [employee_id], references: [id])
+  supervisor  Boolean  @default(false) // if the crew is a supervisor or not
   employee_id String
   crew        Crew     @relation(fields: [crew_id], references: [id])
   crew_id     Int
@@ -281,7 +284,6 @@ model CrewMember {
 model Crew {
   id          Int           @id @default(autoincrement())
   name        String
-  supervisor  Boolean       @default(false) // if the crew is a supervisor or not
   description String
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt

@@ -20,15 +20,15 @@ export const initialJobsites: Prisma.JobsiteCreateInput[]  = [
 ];
 // time sheets create method
 export const initialTimeSheets: Prisma.TimeSheetCreateInput[] = [
-{ submit_date: new Date(), form_id: 123, date:new Date(new Date().setHours(0, 0, 0, 0)).toISOString(), jobsite_id: 789, costcode: 'CC-101', start_time: new Date(new Date().setHours(8, 0, 0, 0)).toISOString(), end_time: new Date(new Date().setHours(12, 0, 0, 0)).toISOString(), total_break_time: 1.00, duration: 4.00, timesheet_comments: 'No issues during the shift.', app_comment: 'H>8-J>789>CC-101>T>6.', employee: {
+{ submit_date: new Date(), form_id: 123, date:new Date(new Date().setHours(0, 0, 0, 0)).toISOString(), jobsite_id: 789, costcode: 'CC-101', start_time: new Date(new Date().setHours(8, 0, 0, 0)).toISOString(), end_time: new Date(new Date().setHours(12, 0, 0, 0)).toISOString(), total_break_time: 1.00, duration: 4.00, timesheet_comments: 'No issues during the shift.', app_comment: 'H>8-J>789>CC-101>T>6.', user: {
     connect: {
-        id: 2
+        id: "2"
     }
     }
 },
-{ submit_date: new Date(), form_id: 124, date: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(), jobsite_id: 719, costcode: 'CC-101', start_time: new Date(new Date().setHours(12, 0, 0, 0)).toISOString(), end_time: new Date(new Date().setHours(17, 0, 0, 0)).toISOString(), total_break_time: 1.00, duration: 4.00, timesheet_comments: 'No issues during the shift.', app_comment: 'H>8-J>789>CC-101>T>6.', employee: {
+{ submit_date: new Date(), form_id: 124, date: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(), jobsite_id: 719, costcode: 'CC-101', start_time: new Date(new Date().setHours(12, 0, 0, 0)).toISOString(), end_time: new Date(new Date().setHours(17, 0, 0, 0)).toISOString(), total_break_time: 1.00, duration: 4.00, timesheet_comments: 'No issues during the shift.', app_comment: 'H>8-J>789>CC-101>T>6.', user: {
     connect: {
-        id: 2
+        id: "2"
     }
     }
 },
@@ -42,15 +42,15 @@ end_time: new Date(new Date().setHours(15, 0, 0, 0)).toISOString(), total_break_
 duration: 6.00, 
 timesheet_comments: 'No issues during the shift.', 
 app_comment: 'Submitted on time.',
-employee: {
+user: {
 connect: {
-    id: 1
+    id: "1"
 }
 }
 },
-{ submit_date: new Date(), form_id: 126, date: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(), jobsite_id: 789, costcode: 'CC-101', start_time: new Date(new Date().setHours(15, 0, 0, 0)).toISOString(), end_time: new Date(new Date().setHours(19, 0, 0, 0)).toISOString(), total_break_time: 0.00, duration: 4.00, timesheet_comments: 'No issues during the shift.', app_comment: 'Submitted on time.', employee: {
+{ submit_date: new Date(), form_id: 126, date: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(), jobsite_id: 789, costcode: 'CC-101', start_time: new Date(new Date().setHours(15, 0, 0, 0)).toISOString(), end_time: new Date(new Date().setHours(19, 0, 0, 0)).toISOString(), total_break_time: 0.00, duration: 4.00, timesheet_comments: 'No issues during the shift.', app_comment: 'Submitted on time.', user: {
     connect: {
-        id: 1
+        id: "1"
     }
     }
 }
@@ -69,15 +69,20 @@ export const initialCrews: Prisma.CrewCreateInput[] = [
 // initializing crew members
 export const initialCrewMembers: Prisma.CrewMemberCreateInput[] = [
 
-{ createdAt: new Date(), updatedAt: new Date(), employee: {
-    connect: {id: 1}},
-    crew: {connect: {id: 1}}
+{ createdAt: new Date(), updatedAt: new Date(), user: {
+    connect: {id: "1"}},
+    crew: {connect: {id: 1}}, supervisor: true
 
 },
 
 { createdAt: new Date(), updatedAt: new Date(),
-    employee: { connect: {id: 2}},
-    crew: {connect: {id: 1}}
+    user: { connect: {id: "2"}},
+    crew: {connect: {id: 1}}, supervisor: false
+},
+
+{ createdAt: new Date(), updatedAt: new Date(),
+    user: { connect: {id: "3"}},
+    crew: {connect: {id: 1}},  supervisor: false
 },
 
 ];
@@ -117,33 +122,18 @@ export const UserTrainings: Prisma.UserTrainingsCreateInput[] = [
 ];
 // initializing users
 export const initialUsers: Prisma.UserCreateInput[] = [
-    { "id": "1", "firstName": "Jessica", "lastName": "Rabbit", "username": "jessicarabbit", "password": "securepassword", "truck_view": true, "tasco_view": false, "labor_view": true, "mechanic_view": false, "permission": "ADMIN", "email": "jessicarabbit@example.com", "emailVerified": "2022-01-01T00:00:00.000Z", "phone": "123-456-7890", "image": "https://example.com/image.jpg"
+    { "id": "1", "firstName": "Jessica", "lastName": "Rabbit", "username": "jessicarabbit", "password": "securepassword", "DOB" : "01-01-2000" , "truck_view": true, "tasco_view": false, "labor_view": true, "mechanic_view": false, "permission": "ADMIN", "email": "jessicarabbit@example.com", "emailVerified": "2022-01-01T00:00:00.000Z", "phone": "123-456-7890", "image": "https://example.com/image.jpg"
     },
-    { "id": "2", "firstName": "John", "lastName": "Doe", "username": "johndoe", "password": "securepassword", "truck_view": true, "tasco_view": true, "labor_view": false, "mechanic_view": false, "permission": "USER", "email": "johndoe@example.com", "emailVerified": "2021-06-01T00:00:00.000Z", "phone": "987-654-3210", "image": "https://example.com/image.jpg"
+    { "id": "2", "firstName": "John", "lastName": "Doe", "username": "johndoe", "password": "securepassword", "DOB" : "01-01-2000", "truck_view": true, "tasco_view": true, "labor_view": false, "mechanic_view": false, "permission": "USER", "email": "johndoe@example.com", "emailVerified": "2021-06-01T00:00:00.000Z", "phone": "987-654-3210", "image": "https://example.com/image.jpg"
     },
-    { "id": "3", "firstName": "Jane", "lastName": "Doe", "username": "janedoe", "password": "securepassword", "truck_view": true, "tasco_view": true, "labor_view": false, "mechanic_view": false, "permission": "USER", "email": "janedoe@example.com", "emailVerified": "2021-06-01T00:00:00.000Z", "phone": "987-654-3210", "image": "https://example.com/image.jpg"
+    { "id": "3", "firstName": "Jane", "lastName": "Doe", "username": "janedoe", "password": "securepassword", "DOB" : "01-01-2000", "truck_view": true, "tasco_view": true, "labor_view": false, "mechanic_view": false, "permission": "USER", "email": "janedoe@example.com", "emailVerified": "2021-06-01T00:00:00.000Z", "phone": "987-654-3210", "image": "https://example.com/image.jpg"
     },
-    { "id": "4", "firstName": "Buggs", "lastName": "Bunny", "username": "buggsbunny", "password": "securepassword", "truck_view": true, "tasco_view": true, "labor_view": false, "mechanic_view": false, "permission": "USER", "email": "buggsbunny@example.com", "emailVerified": "2021-06-01T00:00:00.000Z", "phone": "987-654-3210", "image": "https://example.com/image.jpg"  
+    { "id": "4", "firstName": "Buggs", "lastName": "Bunny", "username": "buggsbunny", "password": "securepassword", "DOB" : "01-01-2000",  "truck_view": true, "tasco_view": true, "labor_view": false, "mechanic_view": false, "permission": "USER", "email": "buggsbunny@example.com", "emailVerified": "2021-06-01T00:00:00.000Z", "phone": "987-654-3210", "image": "https://example.com/image.jpg"  
     },
-    { "id": "5", "firstName": "Lola", "lastName": "Bunny", "username": "lolabunny", "password": "securepassword", "truck_view": true, "tasco_view": true, "labor_view": false, "mechanic_view": false, "permission": "USER", "email": "lolabunny@example.com", "emailVerified": "2021-06-01T00:00:00.000Z", "phone": "987-654-3210", "image": "https://example.com/image.jpg"  
+    { "id": "5", "firstName": "Lola", "lastName": "Bunny", "username": "lolabunny", "password": "securepassword", "DOB" : "01-01-2000",  "truck_view": true, "tasco_view": true, "labor_view": false, "mechanic_view": false, "permission": "USER", "email": "lolabunny@example.com", "emailVerified": "2021-06-01T00:00:00.000Z", "phone": "987-654-3210", "image": "https://example.com/image.jpg"  
     },
-    { "id": "6", "firstName": "Roger", "lastName": "Rabbit", "username": "rogerrabbit", "password": "securepassword", "truck_view": true, "tasco_view": false, "labor_view": true, "mechanic_view": false, "permission": "ADMIN", "email": "rogerrabbit@example.com", "emailVerified": "2022-01-01T00:00:00.000Z", "phone": "123-456-7890", "image": "https://example.com/image.jpg"
+    { "id": "6", "firstName": "Roger", "lastName": "Rabbit", "username": "rogerrabbit", "password": "securepassword", "DOB" : "01-01-2000", "truck_view": true, "tasco_view": false, "labor_view": true, "mechanic_view": false, "permission": "ADMIN", "email": "rogerrabbit@example.com", "emailVerified": "2022-01-01T00:00:00.000Z", "phone": "123-456-7890", "image": "https://example.com/image.jpg"
     }
-];
-// initializing employees
-export const initialEmployees: Prisma.EmployeeCreateInput[] = [
-{ "first_name": "Jessica", "last_name": "Rabbit", "dob": "05-15-1985", "availability": "MTWRF 6am - 10pm", "start_date": "2022-01-01T00:00:00.000Z", "createdAt": "2022-01-01T00:00:00.000Z", "updatedAt": "2022-01-01T00:00:00.000Z"
-},
-{ "first_name": "John", "last_name": "Doe", "dob": " 01-01-1990", "availability": "MTWRF 7am - 6pm", "start_date": "2021-06-01T00:00:00.000Z", "createdAt": "2021-06-01T00:00:00.000Z", "updatedAt": "2021-06-01T00:00:00.000Z"   
-},
-{ "first_name": "Jane", "last_name": "Doe", "dob": " 01-05-1990", "availability": "MTWRF 6am - 10pm", "start_date": "2022-01-01T00:00:00.000Z", "createdAt": "2022-01-01T00:00:00.000Z", "updatedAt": "2022-01-01T00:00:00.000Z"
-},
-{ "first_name": "Buggs", "last_name": "Bunny", "dob": " 01-19-1990", "availability": "MTWRF 6am - 10pm", "start_date": "2022-01-01T00:00:00.000Z", "createdAt": "2022-01-01T00:00:00.000Z", "updatedAt": "2022-01-01T00:00:00.000Z" 
-},
-{ "first_name": "Lola", "last_name": "Bunny", "dob": " 01-30-1990", "availability": "MTWRF 6am - 10pm", "start_date": "2022-01-01T00:00:00.000Z", "createdAt": "2022-01-01T00:00:00.000Z", "updatedAt": "2022-01-01T00:00:00.000Z" 
-},
-{ "first_name": "Roger", "last_name": "Rabbit", "dob": "05-15-1989", "availability": "MTWRF 7am - 6pm", "start_date": "2021-06-01T00:00:00.000Z", "createdAt": "2021-06-01T00:00:00.000Z", "updatedAt": "2021-06-01T00:00:00.000Z" 
-}
 ];
 // initializing contacts
 export const initialContacts: Prisma.ContactCreateInput[] = [
@@ -160,60 +150,7 @@ export const initialContacts: Prisma.ContactCreateInput[] = [
 { "phone_number": "987-654-3210", "email": "jessica.rabbit@example.com", "emergency_contact": "Jessica Rabbit", "emergency_contact_no": "098-765-4321", "createdAt": "2021-06-01T00:00:00.000Z", "updatedAt": "2021-06-01T00:00:00.000Z"
 }
 ]
-// initializing addresses
-export const initialAddresses: Prisma.AddressCreateInput[] = [
-{ "address": "322 Main St", "city": "Anytown", "state": "CA", "zipcode": 12345, "country": "USA", "createdAt": "2022-01-01T00:00:00.000Z", "updatedAt": "2022-01-01T00:00:00.000Z" 
-},
-{ "address": "324 Main St", "city": "Anytown", "state": "CA", "zipcode": 12345, "country": "USA", "createdAt": "2021-06-01T00:00:00.000Z", "updatedAt": "2021-06-01T00:00:00.000Z"
-},
-{ "address": "21 Second St", "city": "Anycity", "state": "CA", "zipcode": 12345, "country": "USA", "createdAt": "2021-06-01T00:00:00.000Z", "updatedAt": "2021-06-01T00:00:00.000Z"
-},
-{ "address": "12 Main St", "city": "Anytown", "state": "CA", "zipcode": 12345, "country": "USA", "createdAt": "2022-01-01T00:00:00.000Z", "updatedAt": "2022-01-01T00:00:00.000Z"
-},
-{ "address": "1278 Main St", "city": "Anytown", "state": "CA", "zipcode": 12345, "country": "USA", "createdAt": "2022-01-01T00:00:00.000Z", "updatedAt": "2022-01-01T00:00:00.000Z"
-},
-{ "address": "32 Main St", "city": "Anytown", "state": "CA", "zipcode": 12345, "country": "USA", "createdAt": "2021-06-01T00:00:00.000Z", "updatedAt": "2021-06-01T00:00:00.000Z"
-}
-]
-// connected to the address and employees they need to run 1st
-export const initialAddressEmployees: Prisma.AddressEmployeeCreateInput[] = [
-{
-    createdAt: "2022-01-01T00:00:00.000Z",
-    updatedAt: "2022-01-01T00:00:00.000Z",
-    employee: { connect: {id: 1}},
-    address: { connect: { id: 1}}
-},
-{
-    createdAt: "2022-01-01T00:00:00.000Z",
-    updatedAt: "2022-01-01T00:00:00.000Z",
-    employee: { connect: {id: 2}},
-    address: { connect: { id: 2}}
-},
-{
-    createdAt: "2022-01-01T00:00:00.000Z",
-    updatedAt: "2022-01-01T00:00:00.000Z",
-    employee: { connect: {id: 3}},
-    address: { connect: { id: 3}}
-},
-{
-    createdAt: "2022-01-01T00:00:00.000Z",
-    updatedAt: "2022-01-01T00:00:00.000Z",
-    employee: { connect: {id: 4}},
-    address: { connect: { id: 4}}
-},
-{
-    createdAt: "2022-01-01T00:00:00.000Z",
-    updatedAt: "2022-01-01T00:00:00.000Z",
-    employee: { connect: {id: 5}},
-    address: { connect: { id: 5}}
-},
-{
-    createdAt: "2021-06-01T00:00:00.000Z",
-    updatedAt: "2021-06-01T00:00:00.000Z",
-    employee: { connect: {id: 6}},
-    address: { connect: { id: 6}}
-}
-]
+
 // initializing cost codes
 export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
     { cost_code: "G-1.30", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "Payroll", cost_code_type: "", Jobsite: { connect: [{id:1}, {id:2}, {id:3}, {id:4}, {id:5}, {id:6} ] }
