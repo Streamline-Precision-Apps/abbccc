@@ -25,7 +25,9 @@ const ButtonRout = ({
 
     const router = useRouter();
     const pageRouter = () => {
-        href?.length && router.push(href);
+        if (href) {
+            router.push(href);
+        }
     };
 
     return (

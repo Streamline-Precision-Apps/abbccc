@@ -9,7 +9,7 @@ import DynamicSection from "@/components/dynamicSection";
 
 export default async function EmployeeInfo() {
 
-    const employee = await prisma.employee.findUnique(
+    const employee = await prisma.user.findUnique(
         {
             where: {
                 id: 1

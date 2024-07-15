@@ -38,7 +38,7 @@ export default function TabSection() {
             />  
         </div>
         <div className="p-6 rounded-2xl min-h-[200px] rounded-t-none bg-white">
-          {activeTab === 1 && <ul> {formData.map((data, index) => ( <li key={index}>{data.first_name}</li> ))} </ul>}
+          {activeTab === 1 && <ul> {formData.map((data, index) => ( <li key={index}>{data.firstName}</li> ))} </ul>}
         
           {activeTab === 2 && <p>Received Content</p>}
         </div>
