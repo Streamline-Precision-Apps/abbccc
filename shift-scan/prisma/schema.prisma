@@ -69,15 +69,15 @@ model User {
   phone         String
   image         String?
 
-  crewMembers   CrewMember[]
-  timeSheet     TimeSheet[]
-  equipmentLogs EmployeeEquipmentLog[]
-  contacts      Contact[]
-  Form          Form[]
-  accounts      Account[]
-  sessions      Session[]
-  userSettings  UserSettings[]
-  userTrainings UserTrainings[]
+  crewMembers     CrewMember[]
+  timeSheet       TimeSheet[]
+  equipmentLogs   EmployeeEquipmentLog[]
+  contacts        Contact[]
+  accounts        Account[]
+  sessions        Session[]
+  userSettings    UserSettings[]
+  userTrainings   UserTrainings[]
+  formSubmissions FormSubmissions[]
 
   @@map("users")
 }
@@ -353,7 +353,6 @@ enum formType {
 // tracking every individual form for every employee
 model Form {
   id          Int      @id @default(autoincrement())
-  userId      String
   createdAt   DateTime @default(now())
   type        formType
   name        String
@@ -362,22 +361,23 @@ model Form {
 
   updatedNow      DateTime?         @updatedAt
   published       Boolean           @default(false)
-  employee        User              @relation(fields: [userId], references: [id])
   FormSubmissions FormSubmissions[]
 
-  @@unique([userId, id, name]) // ptential break, remove name if error
+  @@unique([id, name]) // ptential break, remove name if error
 }
 
 model FormSubmissions {
   id        Int        @id @default(autoincrement())
-  userId    Int
+  userId    String
   createdAt DateTime   @default(now())
   formId    Int
   type      formType
+  submitted Boolean    @default(false)
   status    formStatus @default(PENDING)
   form      Form       @relation(fields: [formId], references: [id])
 
   content String
+  User    User   @relation(fields: [userId], references: [id])
 }
 
 // packing this into a json later V V V V V V
