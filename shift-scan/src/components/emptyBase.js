@@ -10,7 +10,7 @@ function EmptyBase({children}) {
     const t = useTranslations('PortalLogin');
 
     return (
-        <div className="w-full h-screen bg-gradient-to-b from-blue-900 to-blue-300 p-1 pt-10"> 
+        <div className="w-full h-screen bg-gradient-to-b from-blue-900 to-blue-300 p-3 pt-10"> 
             {children}
         </div>
     );
