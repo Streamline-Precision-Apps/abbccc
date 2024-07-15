@@ -2,8 +2,9 @@
 import React, { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useScanData } from "../../../context/JobSiteContext";
-import { useSavedCostCode } from "../../../context/CostCodeContext";
+import { useScanData } from "@/app/context/JobSiteContext";
+import { useSavedCostCode } from "@/app/context/CostCodeContext";
+import { useSavedClockInTime } from "@/app/context/ClockInTimeContext";
 import RedirectAfterDelay from "@/components/redirectAfterDelay";
 import {
   clearAuthStep,
@@ -11,22 +12,26 @@ import {
   isAuthenticated,
   setAuthStep,
 } from "@/app/api/auth";
-import { useSavedClockInTime } from "@/app/context/ClockInTimeContext";
 
-const SuccessPage: React.FC = () => {
+const ClockOutSuccessPage: React.FC = () => {
   const t = useTranslations("page5");
   const router = useRouter();
   const { scanResult } = useScanData();
   const { savedCostCode } = useSavedCostCode();
   const { clockInTime, setClockInTime } = useSavedClockInTime();
-  const time = new Date();
+  const clockOutTime = new Date();
 
   useEffect(() => {
     if (!isAuthenticated()) {
       console.log("Not authenticated");
       console.log(getAuthStep());
-      // router.push('/'); // Redirect to login page if not authenticated
+      router.push("/"); // Redirect to login page if not authenticated
     } else if (getAuthStep() !== "success") {
+      // clearAuthStep();
+      console.log(
+        "Your clocked time has been removed due to authentication failure"
+      );
+      setClockInTime(null);
       router.push("/"); // Redirect to QR page if steps are not followed
     }
   }, []);
@@ -34,16 +39,20 @@ const SuccessPage: React.FC = () => {
   // Sets the clock-in time if it's not already set
   useEffect(() => {
     if (clockInTime === null) {
-      setClockInTime(time);
+      // clearAuthStep();
+      console.log("It looks like you never clocked in.");
+      router.push("/"); // Redirect to QR page if steps are not followed
     }
-  }, [clockInTime, setClockInTime, time]);
+  }, [clockInTime, router, setClockInTime]);
 
-  // const handleBeforeUnload = () => {
-  //     const message = t('lN6');
-  //     clearAuthStep();
-  //     setAuthStep('dashboard');
-  //     return message;
-  // };
+  const formatDuration = (milliseconds: number) => {
+    const totalSeconds = Math.floor(milliseconds / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    return `${hours}:${minutes}:${seconds}`;
+  };
 
   return isAuthenticated() ? (
     <div className="flex flex-col items-center ">
@@ -54,22 +63,19 @@ const SuccessPage: React.FC = () => {
       <h2>
         {t("lN3")} {savedCostCode}
       </h2>
-      <p>{t("lN4")}</p>
+      <p>Successfully Clocked Out</p>
       {/* Conditionally renders clockInTime to ensure it's not null */}
       {clockInTime && (
         <h2>
-          {clockInTime.toLocaleTimeString("en-US", {
-            hour: "numeric",
-            minute: "numeric",
-            hour12: true,
-          })}
+          Hours Worked:{" "}
+          {formatDuration(clockOutTime.getTime() - clockInTime.getTime())}
         </h2>
       )}
-      <RedirectAfterDelay delay={5000} to="/dashboard" />
+      <RedirectAfterDelay delay={5000} to="/" />
     </div>
   ) : (
     <></> // Placeholder for non-authenticated state handling
   );
 };
 
-export default SuccessPage;
+export default ClockOutSuccessPage;
