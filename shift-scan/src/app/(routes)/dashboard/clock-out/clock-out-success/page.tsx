@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useScanData } from "@/app/context/JobSiteContext";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useSavedClockInTime } from "@/app/context/ClockInTimeContext";
+import { useSavedBreakTime } from "@/app/context/SavedBreakTimeContext";
 import RedirectAfterDelay from "@/components/redirectAfterDelay";
 import {
   clearAuthStep,
@@ -20,6 +21,7 @@ const ClockOutSuccessPage: React.FC = () => {
   const { savedCostCode } = useSavedCostCode();
   const { clockInTime, setClockInTime } = useSavedClockInTime();
   const clockOutTime = new Date();
+  const { breakTime, setBreakTime } = useSavedBreakTime();
 
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -54,6 +56,10 @@ const ClockOutSuccessPage: React.FC = () => {
     return `${hours}:${minutes}:${seconds}`;
   };
 
+  const clearBreakTime = () => {
+    setBreakTime(0);
+  };
+
   return isAuthenticated() ? (
     <div className="flex flex-col items-center ">
       <h1>{t("lN1")}</h1>
@@ -63,6 +69,8 @@ const ClockOutSuccessPage: React.FC = () => {
       <h2>
         {t("lN3")} {savedCostCode}
       </h2>
+      <p>Break Time: {formatDuration(breakTime)}</p>
+      {/* TODO: create form for submitting timesheet. */}
       <p>Successfully Clocked Out</p>
       {/* Conditionally renders clockInTime to ensure it's not null */}
       {clockInTime && (
