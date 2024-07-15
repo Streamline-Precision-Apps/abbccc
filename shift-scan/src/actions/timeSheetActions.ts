@@ -15,8 +15,6 @@ export async function getTimeSheetsbyId() {
 
 // Get TimeSheet by id
 export async function fetchTimesheets(employeeId: string, date: string) {
-    console.log(employeeId, date);
-    
     const startOfDay = new Date(date);
     startOfDay.setUTCHours(0, 0, 0, 0);
 
@@ -25,7 +23,7 @@ export async function fetchTimesheets(employeeId: string, date: string) {
 
     const timeSheets = await prisma.timeSheet.findMany({
         where: {
-            employee_id: parseInt(employeeId),
+            userId: employeeId,
             date: {
                 gte: startOfDay.toISOString(),
                 lte: endOfDay.toISOString(),
@@ -53,7 +51,7 @@ export async function createTimeSheet(formData: FormData) {
             submit_date: formData.get("submit_date") as string,
         id: Number(formData.get("id")),
         form_id: Number(formData.get("form_id")),
-        employee_id: Number(formData.get("employee_id") ),
+        userId: formData.get("employee_id") as string,
         date: formData.get("date") as string,
         jobsite_id: Number(formData.get("jobsite_id") ),
         costcode: formData.get("costcode") as string,
@@ -90,7 +88,7 @@ export async function updateTimeSheet(formData: FormData, id: number) {
     data: {
         submit_date: formData.get("submit_date") as string,
         form_id: Number(formData.get("form_id") ),
-        employee_id: Number(formData.get("employee_id") ),
+        userId: formData.get("employee_id") as string,
         date: formData.get("date") as string,
         jobsite_id: Number(formData.get("jobsite_id") ),
         costcode: formData.get("costcode") as string,

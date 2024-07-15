@@ -1,17 +1,11 @@
 import { PrismaClient } from "@prisma/client";
-import { initialEmployees, initialUsers, initialContacts, initialAddresses, initialAddressEmployees, initialJobsites, initialTimeSheets, initialCrews, initialCrewMembers, initialTrainings, initialCostCodes,initialCrewJobsites, UserTrainings } from "../src/data/dataValues";
+import { initialUsers, initialContacts, initialJobsites, initialTimeSheets, initialCrews, initialCrewMembers, initialTrainings, initialCostCodes,initialCrewJobsites, UserTrainings } from "../src/data/dataValues";
 import {hash} from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function main() {
   console.log('Seeding...');
   try {
-    // Insert employees
-    for (const employee of initialEmployees) {
-      const newEmployee = await prisma.employee.create({ data: employee });
-      console.log("Created employee with id: ", newEmployee.id);
-    }
-
     // Insert users
     for (const user of initialUsers) {
       const hashed = await hash(user.password, 10);
@@ -25,17 +19,6 @@ async function main() {
       console.log("Created contact with id: ", newContact.id);
     }
 
-    // Insert addresses
-    for (const address of initialAddresses) {
-      const newAddress = await prisma.address.create({ data: address });
-      console.log("Created address with id: ", newAddress.id);
-    }
-
-    // Insert address employees
-    for (const addressEmployee of initialAddressEmployees) {
-      const newAddressEmployee = await prisma.addressEmployee.create({ data: addressEmployee });
-      console.log("Created addressEmployee with id: ", newAddressEmployee.id);
-    }
 
     // Insert jobsites
     for (const jobsite of initialJobsites) {
