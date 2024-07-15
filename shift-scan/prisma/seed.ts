@@ -53,7 +53,7 @@ async function upsertWorkerData(worker: any) {
       first_name: employee.first_name,
       middle_name: employee.middle_name || null,
       last_name: employee.last_name,
-      dob: new Date(employee.dob),
+      dob: employee.dob,
       availability: employee.availability,
       start_date: new Date(employee.start_date),
       termination_date: employee.termination_date ? new Date(employee.termination_date) : null,
@@ -65,7 +65,7 @@ async function upsertWorkerData(worker: any) {
       first_name: employee.first_name,
       middle_name: employee.middle_name || null,
       last_name: employee.last_name,
-      dob: new Date(employee.dob),
+      dob: employee.dob,
       availability: employee.availability,
       start_date: new Date(employee.start_date),
       termination_date: employee.termination_date ? new Date(employee.termination_date) : null,
@@ -114,23 +114,23 @@ async function upsertWorkerData(worker: any) {
     },
   });
 
-  // Upsert contact join
-  await prisma.contactJoin.upsert({
-    where: { id: contactJoin.id },
-    update: {
-      contact_id: contactJoin.contact_id,
-      employee_id: contactJoin.employee_id,
-      createdAt: new Date(contactJoin.createdAt),
-      updatedAt: new Date(contactJoin.updatedAt),
-    },
-    create: {
-      id: contactJoin.id,
-      contact_id: contactJoin.contact_id,
-      employee_id: contactJoin.employee_id,
-      createdAt: new Date(contactJoin.createdAt),
-      updatedAt: new Date(contactJoin.updatedAt),
-    },
-  });
+  // // Upsert contact join
+  // await prisma.contactJoin.upsert({
+  //   where: { id: contactJoin.id },
+  //   update: {
+  //     contact_id: contactJoin.contact_id,
+  //     employee_id: contactJoin.employee_id,
+  //     createdAt: new Date(contactJoin.createdAt),
+  //     updatedAt: new Date(contactJoin.updatedAt),
+  //   },
+  //   create: {
+  //     id: contactJoin.id,
+  //     contact_id: contactJoin.contact_id,
+  //     employee_id: contactJoin.employee_id,
+  //     createdAt: new Date(contactJoin.createdAt),
+  //     updatedAt: new Date(contactJoin.updatedAt),
+  //   },
+  // });
 
   // Upsert address
   await prisma.address.upsert({
