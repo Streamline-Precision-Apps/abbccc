@@ -36,6 +36,6 @@ export default async function TeamCards() {
             </div>
             </TeamInfoButton>
             ))}
-            </div>
+        </div>
         );
     }

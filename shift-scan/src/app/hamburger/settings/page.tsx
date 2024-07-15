@@ -20,7 +20,10 @@ export default function Index() {
 return (
     <div> 
         <EmptyBase>
-            <TitleBox>Settings</TitleBox>
+            <TitleBox
+            title="Settings"
+            titleImg='/Settings.svg'
+            titleImgAlt="Settings"/>
             <DynamicSection>
             <TitleMedium>Notifications</TitleMedium>
                 <SwitchWithLabel>

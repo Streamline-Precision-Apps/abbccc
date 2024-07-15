@@ -14,7 +14,6 @@ import { useRouter } from "next/navigation";
 export default function Index() {
   // TODO: Add to en and es.
   const t = useTranslations("ClockOutDashboard");
-
   const router = useRouter();
 
   const [user, setUser] = useState<any>({
@@ -22,17 +21,6 @@ export default function Index() {
     lastName: "",
     date: "",
   });
-
-  useEffect(() => {
-    if (!isDashboardAuthenticated()) {
-      console.log("Not authenticated");
-      console.log(getAuthStep());
-      // router.push('/'); // Redirect to login page if not authenticated
-    }
-    if (getAuthStep() !== "success") {
-      router.push("/"); // Redirect to QR page if steps are not followed
-    }
-  }, []);
 
   useEffect(() => {
     const handlePopstate = () => {
