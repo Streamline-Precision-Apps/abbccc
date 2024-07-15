@@ -1,3 +1,4 @@
+"use client";
 import { useTranslations } from "next-intl";
 import "@/app/globals.css";
 import { useRouter } from "next/navigation";

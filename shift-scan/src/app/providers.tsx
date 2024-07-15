@@ -6,22 +6,26 @@ import { SavedCostCodeProvider } from "./context/CostCodeContext";
 import { SessionProvider } from "next-auth/react";
 import { SavedPayPeriodHoursProvider } from "./context/SavedPayPeriodHours";
 import { SavedUserDataProvider } from "./context/UserContext";
+import { SavedClockInTimeProvider } from "./context/ClockInTimeContext";
+import { SavedBreakTimeProvider } from "./context/SavedBreakTimeContext";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <SavedUserDataProvider>
-        {" "}
+      {" "}
+      <SavedBreakTimeProvider>
         <SavedUserDataProvider>
           <SavedPayPeriodHoursProvider>
             <SavedCostCodeProvider>
               <ScanDataProvider>
-                <SessionProvider>{children}</SessionProvider>
+                <SavedClockInTimeProvider>
+                  <SessionProvider>{children}</SessionProvider>
+                </SavedClockInTimeProvider>
               </ScanDataProvider>
             </SavedCostCodeProvider>
           </SavedPayPeriodHoursProvider>
         </SavedUserDataProvider>
-      </SavedUserDataProvider>
+      </SavedBreakTimeProvider>
     </>
   );
 }
