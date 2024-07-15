@@ -63,6 +63,10 @@ export const authOptions : NextAuthOptions ={
                 {
                     return null
                 }
+            // add this cookie so the app know that the user is logged in and has acess to the app.
+            if (user && user.password) {
+                cookies().set('user', user.id, { path: '/' });
+            } 
 
             // authorization was successful
             const { password, ...userWithoutPassword } = user;

@@ -35,5 +35,21 @@ Today I went through more of the styling for the clockin route, created the star
 6/29/2024
 meet with professor and diascussed what plans, I have looking forward and how the general direction of the project is he stated that we are in the right dirrection and that he like what he has seen as far as component size and all that. I also looked briefly through one of the other processes and felt that I needed more there so I will touch back up on monday with that problem which was a mobile screen tailwind adjustment.
 
-7/1/2025
+7/1/2024
 Today I am redialing in on the sprint goals and what should be achieved this week I look to do a push each monday so we will do that. I look to implement the second signin option and the counter that it will need in order to get a jobsite not via a qr code but still have that auth step to continue forward. I will report back at the end of the day. Today's review: I created a serverside finished product that pulls from the database the team page and search by the team sthey are assigned too. Next step is to make it client side and go from their . I am tired today so i will be leaving a bit early but it was over all really great having created the select jobs page and the MyTeamroute. 
+
+7/9/2024
+Today I am working on getting through my spint and finishing up the current task of displaying data for the manager to view and even edit of his employees. So far I learned/ studied alot about server mutations and got done with the docks. Currently I am doing well and have an idea of what I will do for the solution, It involves forms. The past few days I have also been looking at this too and figuring out what to do about the entirety of the page. Got the first sectin done happily.  I will report at the end of the day on what I have been doing. I also added a new category to equipment time to prisma so ill need to push that eventually. Add a float to the employee_equipment in prisma to enable a display called it duration. I was able to inish the server side fetch and learn how to do server call correctly. Its not pretty but its working. Okay I though I had a bug but i do not, when I reran the db it cleared my data on my users so ill just make a new one for tomorrow. 
+Today I am working on getting through my spint and finishing up the current task of displaying data for the manager to view and even edit of his employees. So far I learned/ studied alot about server mutations and got done with the docks. Currently I am doing well and have an idea of what I will do for the solution, It involves forms. The past few days I have also been looking at this too and figuring out what to do about the entirety of the page. Got the first sectin done happily.  I will report at the end of the day on what I have been doing. I also added a new category to equipment time to prisma so ill need to push that eventually. Add a float to the employee_equipment in prisma to enable a display called it duration. I was able to inish the server side fetch and learn how to do server call correctly. Its not pretty but its working. Okay I though I had a bug but i do not, when I reran the db it cleared my data on my users so ill just make a new one for tomorrow. 
+
+7/10/2024
+Today in order to add data I remade the seeding the way it needs to be to insert properly. The database is filled and necessary changes for zack and sean have been implemented. I also condensed the seeeding by puting the fake data into one file and the loops in the other. It works and I thoroughly tested it. I didnt get to doing the select data save 
+
+7/11/2024
+today spent awhile data proofing and make sure that the db2.0 is doing well. I realized that there were some errors. I then worked with sean on potential update and implentation on the app. After trial and error I found a video that solves the problems that we had. After that I altered the data so that the seed was alright. then went into teh my team and looked at ways to search the set for the edit button. As far as view Team is concerned. It is solved but needs adjustment for editing the teams hours which will take a bit
+
+7/12/2024
+finished the view team section today, all errors are gone and have a filtered option working for prisma, also worked with sean through them and mad the select handle changes rather then a button. Times are working as well. 
+
+7/15/2024 
+today made some changes to the db and worked with zack on his portion and then made some fixes to the user table

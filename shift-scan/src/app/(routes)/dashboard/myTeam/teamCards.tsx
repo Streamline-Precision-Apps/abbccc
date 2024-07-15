@@ -5,16 +5,19 @@ import TeamInfoButton from "./button";
 import employeeInfo from "./[id]/employee-info";
 
 export default async function TeamCards() {
+    const id = 1
 
     const crew = await prisma.crewMember.findMany(
         {
             where: {
+                supervisor: false,
                 crew : {
-                    id: 1
+                    id: id,
                 }
             },
             include: {
-                employee: true,
+                user: true,
+                crew: true
                 
             }
         },
@@ -28,7 +31,7 @@ export default async function TeamCards() {
             <div key={employee.id} className="w-full flex flex-row ">
                 <Image src={"/profile-icon.png"} alt="Team Image" width={80} height={80} className="rounded-full" />
                 <div className="w-full flex flex-row space-x-5 justify-center items-center">
-                <h2 className="text-3xl">{employee.employee.first_name} {employee.employee.last_name}</h2>
+                <h2 className="text-3xl">{employee.user.firstName} {employee.user.lastName}</h2>
                 </div>
             </div>
             </TeamInfoButton>
