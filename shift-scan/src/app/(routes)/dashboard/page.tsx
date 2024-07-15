@@ -10,11 +10,10 @@ import {
 } from "@/app/api/auth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import ButtonRout from "@/components/button";
 
 export default function Index() {
-  const settingsPage = () => {
-    router.push("/hamburger/settings");
-  };
+  
   const [isOpen, setIsOpen] = useState(false);
   const t = useTranslations("dashboard");
   const router = useRouter();
@@ -73,11 +72,10 @@ export default function Index() {
         <p>Hamburger Menu</p>
       </button>
       <Modal handleClose={() => setIsOpen(false)} isOpen={isOpen}>
-        <button onClick={() => settingsPage()} className="close-btn">
-          <p>Settings</p>
-        </button>
+          <ButtonRout href="/hamburger/settings" text="Settings" color="bg-orange-500 " width="w-50 " height="w-50 " />
+          <ButtonRout href="/hamburger/inbox" text="Inbox" color="bg-blue-500 " width="w-250 " height="w-250 " />
+          <ButtonRout href="/hamburger/profile" text="Profile" color="bg-green-500 " width="w-50 " height="w-50 " />
       </Modal>
-      {/* <UseModal show={true} onClose={CloseModal} children={<h1>Modal Content</h1>} /> */}
       <h1>{t("Banner")}</h1>
       <h2>
         {t("Name", { firstName: user.firstName, lastName: user.lastName })}
