@@ -1,8 +1,12 @@
 import { useTranslations } from "next-intl";
-import router from "next/router";
+import { useRouter } from "next/navigation";
 
 export const User = () => {
   const t = useTranslations("ManagerButtons");
+  const router = useRouter();
+  const loadClockOutPage = () => {
+    router.push("/dashboard/clock-out");
+  };
   return (
     <>
       <button
@@ -35,7 +39,7 @@ export const User = () => {
       <button
         className="bg-red-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 border border-gray-400  font-bold rounded"
         onClick={() => {
-          router.push("/dashboard/clock-out");
+          loadClockOutPage();
         }}
       >
         {t("ClockOut")}

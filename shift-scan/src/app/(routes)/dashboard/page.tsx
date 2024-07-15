@@ -1,5 +1,4 @@
 "use client";
-import React, { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import "@/app/globals.css";
 import Modal from "@/components/modal";
@@ -10,13 +9,13 @@ import {
   isDashboardAuthenticated,
 } from "@/app/api/auth";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import ButtonRout from "@/components/button";
 
 export default function Index() {
   
   const [isOpen, setIsOpen] = useState(false);
   const t = useTranslations("dashboard");
-
   const router = useRouter();
 
   const [user, setUser] = useState<any>({
