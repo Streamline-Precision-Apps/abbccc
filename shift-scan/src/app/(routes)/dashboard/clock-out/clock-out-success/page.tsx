@@ -38,7 +38,6 @@ const ClockOutSuccessPage: React.FC = () => {
     }
   }, []);
 
-  // Sets the clock-in time if it's not already set
   useEffect(() => {
     if (clockInTime === null) {
       // clearAuthStep();
@@ -47,6 +46,10 @@ const ClockOutSuccessPage: React.FC = () => {
     }
   }, [clockInTime, router, setClockInTime]);
 
+  useEffect(() => {
+    setBreakTime(0); // Clear break time when component mounts
+  }, [setBreakTime]);
+
   const formatDuration = (milliseconds: number) => {
     const totalSeconds = Math.floor(milliseconds / 1000);
     const hours = Math.floor(totalSeconds / 3600);
@@ -54,10 +57,6 @@ const ClockOutSuccessPage: React.FC = () => {
     const seconds = totalSeconds % 60;
 
     return `${hours}:${minutes}:${seconds}`;
-  };
-
-  const clearBreakTime = () => {
-    setBreakTime(0);
   };
 
   return isAuthenticated() ? (
