@@ -3,10 +3,10 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export async function getSentContent() {
-    const content = await prisma.employee.findMany(
+    const content = await prisma.user.findMany(
         {
             where: {
-                id: 1
+                id: "1"
             },
             // include: {
             //     formSubmissions: true,
