@@ -1,58 +1,76 @@
 
+import prisma from "@/lib/prisma";
 import { Prisma} from "@prisma/client";
 import { hash } from "bcryptjs";
 
 // jobsites
 export const initialJobsites: Prisma.JobsiteCreateInput[]  = [
-{qr_id : "12345", jobsite_name: "First Site", jobsite_active: true, createdAt: new Date(), updatedAt: new Date(),
+{ jobsite_id: "12345", jobsite_name: "First Site", jobsite_active: true, createdAt: new Date(), updatedAt: new Date(),
 },
-{ qr_id : "23456", jobsite_name: "Second Site", jobsite_active: true, createdAt: new Date(), updatedAt: new Date(),
+{ jobsite_id: "23456" , jobsite_name: "Second Site", jobsite_active: true, createdAt: new Date(), updatedAt: new Date(),
 },
-{ qr_id : "34567", jobsite_name: "Third Site", jobsite_active: true, createdAt: new Date(), updatedAt: new Date(),
+{ jobsite_id: "34567", jobsite_name: "Third Site", jobsite_active: true, createdAt: new Date(), updatedAt: new Date(),
 },
-{ qr_id : "45678", jobsite_name: "Fourth Site", jobsite_active: true, createdAt: new Date(), updatedAt: new Date(),
-},{
-    qr_id : "56789", jobsite_name: "Fifth Site", jobsite_active: true, createdAt: new Date(), updatedAt: new Date(),
+{ jobsite_id: "45678", jobsite_name: "Fourth Site", jobsite_active: true, createdAt: new Date(), updatedAt: new Date(),
+},{ jobsite_id: "56789",  jobsite_name: "Fifth Site", jobsite_active: true, createdAt: new Date(), updatedAt: new Date(),
 },
-{
-    qr_id : "67890", jobsite_name: "Sixth Site", jobsite_active: true, createdAt: new Date(), updatedAt: new Date(),
+{ jobsite_id: "67890", jobsite_name: "Sixth Site", jobsite_active: true, createdAt: new Date(), updatedAt: new Date(),
 }
 ];
 // time sheets create method
 export const initialTimeSheets: Prisma.TimeSheetCreateInput[] = [
-{ submit_date: new Date(), form_id: 123, date:new Date(new Date().setHours(0, 0, 0, 0)).toISOString(), jobsite_id: 789, costcode: 'CC-101', start_time: new Date(new Date().setHours(8, 0, 0, 0)).toISOString(), end_time: new Date(new Date().setHours(12, 0, 0, 0)).toISOString(), total_break_time: 1.00, duration: 4.00, timesheet_comments: 'No issues during the shift.', app_comment: 'H>8-J>789>CC-101>T>6.', user: {
-    connect: {
-        id: "2"
-    }
-    }
+{
+    submit_date: new Date(),
+    date: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(),
+ // Updated to 'jobsite' instead of 'Jobsite'
+    costcode: 'CC-101',
+    start_time: new Date(new Date().setHours(8, 0, 0, 0)).toISOString(),
+    end_time: new Date(new Date().setHours(12, 0, 0, 0)).toISOString(),
+    total_break_time: 1.00,
+    duration: 4.00,
+    timesheet_comments: 'No issues during the shift.',
+    app_comment: 'H>8-J>789>CC-101>T>6.',
+    user: { connect: { id: "2" } },
+    jobsite: { connect: { jobsite_id : "12345" } }
 },
-{ submit_date: new Date(), form_id: 124, date: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(), jobsite_id: 719, costcode: 'CC-101', start_time: new Date(new Date().setHours(12, 0, 0, 0)).toISOString(), end_time: new Date(new Date().setHours(17, 0, 0, 0)).toISOString(), total_break_time: 1.00, duration: 4.00, timesheet_comments: 'No issues during the shift.', app_comment: 'H>8-J>789>CC-101>T>6.', user: {
-    connect: {
-        id: "2"
-    }
-    }
+{
+    submit_date: new Date(),
+    date: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(),
+    jobsite: { connect: { jobsite_id: "12345" } }, // Updated to 'jobsite' instead of 'Jobsite'
+    costcode: 'CC-101',
+    start_time: new Date(new Date().setHours(12, 0, 0, 0)).toISOString(),
+    end_time: new Date(new Date().setHours(17, 0, 0, 0)).toISOString(),
+    total_break_time: 1.00,
+    duration: 4.00,
+    timesheet_comments: 'No issues during the shift.',
+    app_comment: 'H>8-J>789>CC-101>T>6.',
+    user: { connect: { id: "2" } }
 },
-{ 
-submit_date: new Date(), 
-form_id: 125, 
-date: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(), jobsite_id: 789, 
-costcode: 'CC-101', 
-start_time: new Date(new Date().setHours(8, 0, 0, 0)).toISOString(), 
-end_time: new Date(new Date().setHours(15, 0, 0, 0)).toISOString(), total_break_time: 1.01, 
-duration: 6.00, 
-timesheet_comments: 'No issues during the shift.', 
-app_comment: 'Submitted on time.',
-user: {
-connect: {
-    id: "1"
-}
-}
+{
+    submit_date: new Date(),
+    date: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(),
+    jobsite: { connect: { jobsite_id: "23456" } }, // Updated to 'jobsite' instead of 'Jobsite'
+    costcode: 'CC-101',
+    start_time: new Date(new Date().setHours(8, 0, 0, 0)).toISOString(),
+    end_time: new Date(new Date().setHours(15, 0, 0, 0)).toISOString(),
+    total_break_time: 1.01,
+    duration: 6.00,
+    timesheet_comments: 'No issues during the shift.',
+    app_comment: 'Submitted on time.',
+    user: { connect: { id: "1" } }
 },
-{ submit_date: new Date(), form_id: 126, date: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(), jobsite_id: 789, costcode: 'CC-101', start_time: new Date(new Date().setHours(15, 0, 0, 0)).toISOString(), end_time: new Date(new Date().setHours(19, 0, 0, 0)).toISOString(), total_break_time: 0.00, duration: 4.00, timesheet_comments: 'No issues during the shift.', app_comment: 'Submitted on time.', user: {
-    connect: {
-        id: "1"
-    }
-    }
+{
+    submit_date: new Date(),
+    date: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(),
+    jobsite: { connect: { jobsite_id: "34567" } }, // Updated to 'jobsite' instead of 'Jobsite'
+    costcode: 'CC-101',
+    start_time: new Date(new Date().setHours(15, 0, 0, 0)).toISOString(),
+    end_time: new Date(new Date().setHours(19, 0, 0, 0)).toISOString(),
+    total_break_time: 0.00,
+    duration: 4.00,
+    timesheet_comments: 'No issues during the shift.',
+    app_comment: 'Submitted on time.',
+    user: { connect: { id: "1" } }
 }
 ];
 // intaializing crew
@@ -153,38 +171,38 @@ export const initialContacts: Prisma.ContactCreateInput[] = [
 
 // initializing cost codes
 export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
-    { cost_code: "G-1.30", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "Payroll", cost_code_type: "", Jobsite: { connect: [{id:1}, {id:2}, {id:3}, {id:4}, {id:5}, {id:6} ] }
+    { cost_code: "G-1.30", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "Payroll", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] }
 },
-{ cost_code: "G-1.50", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "Pour cement", cost_code_type: "", Jobsite: { connect: [{id:1}, {id:2}, {id:3}, {id:4}, {id:5}, {id:6} ] }
+{ cost_code: "G-1.50", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "Pour cement", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] }
 },
-{ cost_code: "G-2.30", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "Labour", cost_code_type: "", Jobsite: { connect: [{id:1}, {id:2}, {id:3}, {id:4}, {id:5}, {id:6} ] },
+{ cost_code: "G-2.30", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "Labour", cost_code_type: "", Jobsite:{ connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] }
 },
-{ cost_code: "G-2.80", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "lift truck", cost_code_type: "", Jobsite: { connect: [{id:1}, {id:2}, {id:3}, {id:4}, {id:5}, {id:6} ] },
+{ cost_code: "G-2.80", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "lift truck", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] }
 },
-{ cost_code: "G-8.50", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "Picking", cost_code_type: "", Jobsite: { connect: [{id:1}, {id:2}, {id:3}, {id:4}, {id:5}, {id:6}  ] },
+{ cost_code: "G-8.50", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "Picking", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] }
 },
-{ cost_code: "G-8.30", createdAt: "2021-06-01T00:00:00.000Z", updatedAt: "2021-06-01T00:00:00.000Z", cost_code_description: "Packing", cost_code_type: "", Jobsite: { connect: [{id:1}, {id:2}, {id:3}, {id:4}, {id:5}, {id:6} ] },
+{ cost_code: "G-8.30", createdAt: "2021-06-01T00:00:00.000Z", updatedAt: "2021-06-01T00:00:00.000Z", cost_code_description: "Packing", cost_code_type: "", Jobsite:{ connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] }
 },
-{ cost_code: "G-7.30", createdAt: "2021-06-01T00:00:00.000Z", updatedAt: "2021-06-01T00:00:00.000Z", cost_code_description: "Roofing", cost_code_type: "", Jobsite: { connect: [{id:1}, {id:2}, {id:3}, {id:4}, {id:5}, {id:6} ] },
+{ cost_code: "G-7.30", createdAt: "2021-06-01T00:00:00.000Z", updatedAt: "2021-06-01T00:00:00.000Z", cost_code_description: "Roofing", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] }
 },
-{ cost_code: "G-6.30", createdAt: "2021-06-01T00:00:00.000Z", updatedAt: "2021-06-01T00:00:00.000Z", cost_code_description: "Building", cost_code_type: "", Jobsite: { connect: [{id:1}, {id:2}, {id:3}, {id:4} , {id:5}, {id:6} ] },
+{ cost_code: "G-6.30", createdAt: "2021-06-01T00:00:00.000Z", updatedAt: "2021-06-01T00:00:00.000Z", cost_code_description: "Building", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] }
 },
-{ cost_code: "G-4.30",    createdAt: "2021-06-01T00:00:00.000Z", updatedAt: "2021-06-01T00:00:00.000Z", cost_code_description: "Delivery", cost_code_type: "", Jobsite: { connect: [{id:1}, {id:2}, {id:3}, {id:4}, {id:5}, {id:6} ] },
+{ cost_code: "G-4.30",    createdAt: "2021-06-01T00:00:00.000Z", updatedAt: "2021-06-01T00:00:00.000Z", cost_code_description: "Delivery", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] }
 },
-{ cost_code: "G-5.30", createdAt: "2021-06-01T00:00:00.000Z", updatedAt: "2021-06-01T00:00:00.000Z",   cost_code_description: "Demolishing", cost_code_type: "", Jobsite: { connect: [{id:1}, {id:2}, {id:3}, {id:4}, {id:5}, {id:6} ] },
+{ cost_code: "G-5.30", createdAt: "2021-06-01T00:00:00.000Z", updatedAt: "2021-06-01T00:00:00.000Z",   cost_code_description: "Demolishing", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] }
 }
 ]
 export const initialCrewJobsites: Prisma.CrewJobsiteCreateInput[] = [
-    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 1}}, jobsite: { connect: { id: 1}}
+    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 1}}, jobsite: { connect: { jobsite_id: "12345"}}
     },
-    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 1}}, jobsite: { connect: { id: 2}}
+    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 1}}, jobsite: { connect: { jobsite_id: "23456"}}
     },
-    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 2}}, jobsite: { connect: { id: 3}}
+    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 2}}, jobsite: { connect: { jobsite_id: "34567"}}
     },
-    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 2}}, jobsite: { connect: { id: 4}}
+    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 2}}, jobsite: { connect: { jobsite_id: "45678"}}
     },
-    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 3}}, jobsite: { connect: { id: 5}}
+    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 3}}, jobsite: { connect: { jobsite_id: "56789"}}
     },
-    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 4}}, jobsite: { connect: { id: 6}}
+    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 4}}, jobsite: { connect: { jobsite_id: "67890"}}
     }
 ]

@@ -1,5 +1,6 @@
 'use client'
 
+import { clear } from "console"
 import {signIn, signOut} from "next-auth/react"
 
 export const LoginButton = () => {
@@ -7,6 +8,7 @@ export const LoginButton = () => {
 }
 
 export const LogoutButton = () => {
+    localStorage.clear();
     return<button onClick={() => signOut()}>Logout</button>
 }
 // auth steps to getting to dashboard
