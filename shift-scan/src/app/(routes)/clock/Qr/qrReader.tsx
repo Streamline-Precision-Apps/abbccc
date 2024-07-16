@@ -5,8 +5,11 @@ import { useRouter } from 'next/navigation';
 import { useScanData } from '@/app/context/JobSiteContext';
 
 
+interface QrReaderProps{
+    routerName: string 
+}
 
-const QrReader: React.FC = () => {
+const QrReader: React.FC<QrReaderProps> = ({ routerName }) => {
     const videoRef: MutableRefObject<HTMLVideoElement | null> = useRef(null);
     const [qrScanner, setQrScanner] = useState<QrScanner | null>(null);
     const [scanCount, setScanCount] = useState(0);
@@ -20,7 +23,7 @@ const QrReader: React.FC = () => {
         // Stop the scanner
         qrScanner?.stop();
         // Navigate to the new page
-        router.push('/clock/costcode');
+        router.push(routerName);
     };
 
     const onScanFail = (err: string | Error) => {
