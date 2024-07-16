@@ -53,3 +53,6 @@ finished the view team section today, all errors are gone and have a filtered op
 
 7/15/2024 
 today made some changes to the db and worked with zack on his portion and then made some fixes to the user table
+
+7/16/2024
+got clocking in data working for only two choice because the data needs to have recollection of it in the db to be creted, this was intetionall and worked well, I made some great changes in the db and rewrote some processes that seemed nicce on paper but better when dealling with the data now. Also in corporated error handling too
