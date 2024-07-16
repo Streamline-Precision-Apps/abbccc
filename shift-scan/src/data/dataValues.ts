@@ -15,6 +15,8 @@ export const initialJobsites: Prisma.JobsiteCreateInput[]  = [
 },{ jobsite_id: "56789",  jobsite_name: "Fifth Site", jobsite_active: true, createdAt: new Date(), updatedAt: new Date(),
 },
 { jobsite_id: "67890", jobsite_name: "Sixth Site", jobsite_active: true, createdAt: new Date(), updatedAt: new Date(),
+},
+{ jobsite_id: "j123", jobsite_name: "Jobsite 1", jobsite_active: true, createdAt: new Date(), updatedAt: new Date(),
 }
 ];
 // time sheets create method
@@ -190,6 +192,10 @@ export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
 { cost_code: "G-4.30",    createdAt: "2021-06-01T00:00:00.000Z", updatedAt: "2021-06-01T00:00:00.000Z", cost_code_description: "Delivery", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] }
 },
 { cost_code: "G-5.30", createdAt: "2021-06-01T00:00:00.000Z", updatedAt: "2021-06-01T00:00:00.000Z",   cost_code_description: "Demolishing", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] }
+},
+{
+    cost_code: "#cc123gdj1", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z",
+    cost_code_description: "Hauling", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] }
 }
 ]
 export const initialCrewJobsites: Prisma.CrewJobsiteCreateInput[] = [
@@ -204,5 +210,7 @@ export const initialCrewJobsites: Prisma.CrewJobsiteCreateInput[] = [
     { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 3}}, jobsite: { connect: { jobsite_id: "56789"}}
     },
     { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 4}}, jobsite: { connect: { jobsite_id: "67890"}}
+    },
+    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 3}}, jobsite: { connect: { jobsite_id: "j123"}}
     }
 ]
