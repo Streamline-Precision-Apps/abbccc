@@ -1,4 +1,3 @@
-import { text } from "stream/consumers";
 import TitleMedium from "./(text)/title_h2"
 import { useRouter } from "next/navigation";
 
@@ -42,3 +41,4 @@ const ButtonRout = ({
 }
 
 export default ButtonRout
+
