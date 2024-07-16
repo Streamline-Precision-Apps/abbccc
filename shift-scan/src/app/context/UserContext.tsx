@@ -16,8 +16,12 @@ export const SavedUserDataProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const [savedUserData, setSavedUserDataState] = useState<SavedUserData | null>(() => {
     // Load initial state from localStorage if available
-    const savedUserJSON = localStorage.getItem("savedUserData");
-    return savedUserJSON ? JSON.parse(savedUserJSON) : null;
+    if (typeof window !== 'undefined') {
+      const savedUserJSON = localStorage.getItem("savedUserData");
+      return savedUserJSON ? JSON.parse(savedUserJSON) : null;
+    } else {
+      return null;
+    }
   });
 
   const setSavedUserData = (userData: SavedUserData | null) => {

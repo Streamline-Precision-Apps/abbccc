@@ -3,6 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
 
+
 const prisma = new PrismaClient();
 
 // Get all TimeSheets
@@ -44,76 +45,88 @@ export async function handleFormSubmit(employeeId: string, date: string) {
 
 // Create TimeSheet
 // used at each login and will retain that timesheetId until the user logs out with switch jobsite
-// export async function CreateTimeSheet(formData: FormData) {
-//     try {
-//         console.log("Creating Timesheet...");
-//         console.log(formData);
-//     await prisma.timeSheet.create({
-//     data: {
-//         submit_date: new Date(formData.get("submit_date") as string),
-//         id: Number(formData.get("id")),
-//         userId: formData.get("employee_id") as string,
-//         date: new Date(formData.get("date") as string),
-//         jobsite_id: (formData.get("jobsite_id") as string),
-//         costcode: formData.get("costcode") as string,
-//         vehicle_id: Number(formData.get("vehicle_id") ),
-//         start_time: formData.get("start_time") as string,
-//         end_time: formData.get("end_time") as string,
-//         total_break_time: Number(formData.get("total_break_time") ),
-//         duration: Number(formData.get("duration") as string),
-//         starting_mileage: Number(formData.get("starting_mileage") ),
-//         ending_mileage: Number(formData.get("ending_mileage") ),
-//         left_idaho: Boolean(formData.get("left_idaho")),
-//         equipment_hauled: formData.get("equipment_hauled") as string,
-//         materials_hauled: formData.get("materials_hauled") as string,
-//         hauled_loads_quantity: Number(formData.get("hauled_loads_quantity") ),
-//         refueling_gallons: Number(formData.get("refueling_gallons") ),
-//         timesheet_comments: formData.get("timesheet_comments") as string,
-//         app_comment: formData.get("app_comment") as string
-//     },
-//     });
-// } catch(error){
-//     console.log(error);
-// }
-//     revalidatePath('/');
-// }
+export async function CreateTimeSheet(formData: FormData) {
+    try {
+        console.log("Creating Timesheet...");
+        console.log(formData);
+
+        // Helper function to convert timestamps to Date objects
+        const parseDate = (timestamp: string) => {
+            const parsedDate = new Date(Number(timestamp));
+            if (isNaN(parsedDate.getTime())) {
+                throw new RangeError(`Invalid time value: ${timestamp}`);
+            }
+            return parsedDate;
+        };
+
+        await prisma.timeSheet.create({
+            data: {
+                submit_date: parseDate(formData.get("submit_date") as string).toISOString(),
+                date: parseDate(formData.get("date") as string).toISOString(),
+                costcode: formData.get("costcode") as string,
+                vehicle_id: formData.get("vehicle_id") ? Number(formData.get("vehicle_id")) : null,
+                start_time: parseDate(formData.get("start_time") as string).toISOString(),
+                end_time: formData.get("end_time") ? parseDate(formData.get("end_time") as string).toISOString() : null,
+                total_break_time: formData.get("total_break_time") ? Number(formData.get("total_break_time")) : 0,
+                duration: formData.get("duration") ? Number(formData.get("duration") as string) : null,
+                starting_mileage: formData.get("starting_mileage") ? Number(formData.get("starting_mileage")) : null,
+                ending_mileage: formData.get("ending_mileage") ? Number(formData.get("ending_mileage")) : null,
+                left_idaho: formData.get("left_idaho") ? Boolean(formData.get("left_idaho")) : null,
+                equipment_hauled: formData.get("equipment_hauled") as string || null,
+                materials_hauled: formData.get("materials_hauled") as string || null,
+                hauled_loads_quantity: formData.get("hauled_loads_quantity") ? Number(formData.get("hauled_loads_quantity")) : null,
+                refueling_gallons: formData.get("refueling_gallons") ? Number(formData.get("refueling_gallons")) : null,
+                timesheet_comments: formData.get("timesheet_comments") as string || null,
+                app_comment: formData.get("app_comment") as string || null,
+                user: { connect: { id: formData.get("userId") as string } },
+                jobsite: { connect: { jobsite_id: formData.get("jobsite_id") as string } }
+            },
+        });
+        
+        console.log("Timesheet created successfully.");
+    } catch (error) {
+        console.error("Error creating timesheet:", error);
+    }
+
+    // Revalidate the path if necessary
+    revalidatePath('/');
+}
 
 // provides a way to update a timesheet and will give supervisor access to all timesheets
 // and provide a way to alter them as needed by employee accuracy. 
-// export async function updateTimeSheet(formData: FormData, id: number) {
-//     try {
-//     await prisma.timeSheet.update({
-//     where: { id },
-//     data: {
-//         submit_date: formData.get("submit_date") as string,
-//         form_id: Number(formData.get("form_id") ),
-//         userId: formData.get("employee_id") as string,
-//         date: formData.get("date") as string,
-//         jobsite_id: Number(formData.get("jobsite_id") ),
-//         costcode: formData.get("costcode") as string,
-//         nu:   formData.get("nu") as string,
-//         Fp:   formData.get("Fp") as string,
-//         vehicle_id: Number(formData.get("vehicle_id") ),
-//         start_time: formData.get("start_time") as string,
-//         end_time: formData.get("end_time") as string,
-//         total_break_time: Number(formData.get("total_break_time") as string),
-//         duration: Number(formData.get("duration") as string),
-//         starting_mileage: Number(formData.get("starting_mileage") ),
-//         ending_mileage: Number(formData.get("ending_mileage") ),
-//         left_idaho: Boolean(formData.get("left_idaho")),
-//         equipment_hauled: formData.get("equipment_hauled") as string,
-//         materials_hauled: formData.get("materials_hauled") as string,
-//         hauled_loads_quantity: Number(formData.get("hauled_loads_quantity") ),
-//         refueling_gallons: Number(formData.get("refueling_gallons") ),
-//         timesheet_comments: formData.get("timesheet_comments") as string,
-//         app_comment: formData.get("app_comment") as string
-//     },
-//     });
-// } catch(error){
-//     console.log(error);
-// }
-//     revalidatePath('/');
-// }
+export async function updateTimeSheet(formData: FormData, id: number) {
+    try {
+    await prisma.timeSheet.update({
+    where: { id },
+    data: {
+        submit_date: formData.get("submit_date") as string,
+        userId: formData.get("employee_id") as string,
+        date: formData.get("date") as string,
+        jobsite_id: formData.get("jobsite_id") as string,
+        costcode: formData.get("costcode") as string,
+        nu:   formData.get("nu") as string,
+        Fp:   formData.get("Fp") as string,
+        vehicle_id: Number(formData.get("vehicle_id") ),
+        start_time: formData.get("start_time") as string,
+        end_time: formData.get("end_time") as string,
+        total_break_time: Number(formData.get("total_break_time") as string),
+        duration: Number(formData.get("duration") as string),
+        starting_mileage: Number(formData.get("starting_mileage") ),
+        ending_mileage: Number(formData.get("ending_mileage") ),
+        left_idaho: Boolean(formData.get("left_idaho")),
+        equipment_hauled: formData.get("equipment_hauled") as string,
+        materials_hauled: formData.get("materials_hauled") as string,
+        hauled_loads_quantity: Number(formData.get("hauled_loads_quantity") ),
+        refueling_gallons: Number(formData.get("refueling_gallons") ),
+        timesheet_comments: formData.get("timesheet_comments") as string,
+        app_comment: formData.get("app_comment") as string
+    },
+    });
+} catch(error){
+    console.log(error);
+}
+    revalidatePath('/');
+}
 
 
 // Delete TimeSheet by id
