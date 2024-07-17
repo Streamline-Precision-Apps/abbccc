@@ -1,6 +1,7 @@
 "use server";
 import { PrismaClient } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
 
 
@@ -89,7 +90,8 @@ export async function CreateTimeSheet(formData: FormData) {
     }
 
     // Revalidate the path if necessary
-    revalidatePath('/');
+    revalidatePath('/clock');
+    redirect('/clock/success');
 }
 
 // provides a way to update a timesheet and will give supervisor access to all timesheets
@@ -135,4 +137,8 @@ export async function deleteTimeSheet(id: number) {
     await prisma.timeSheet.delete({
         where: { id },
     });
+}
+
+function resdirect(arg0: string) {
+    throw new Error("Function not implemented.");
 }
