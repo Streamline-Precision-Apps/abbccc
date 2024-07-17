@@ -10,6 +10,7 @@ import { CreateTimeSheet } from '@/actions/timeSheetActions';
 import "@/app/globals.css";
 import { createTimeSheet } from '../../dashboard/clock-out/injury-report/serverAction';
 import { useSavedUserData } from '@/app/context/UserContext';
+import { promises } from 'dns';
 
 const Verify: React.FC = () => {
     const router = useRouter();
@@ -18,12 +19,12 @@ const Verify: React.FC = () => {
     const { scanResult } = useScanData();
     const { savedCostCode } = useSavedCostCode();
     const { savedUserData } = useSavedUserData();
+    const [timeSheetId, setTimeSheetId] = useState<string | null>(null);
 
 
     useEffect(() => {
         setAuthStep("success");
-    }, []);
-
+    }, []); 
     return (
         <div className='mt-16 h-screen lg:w-1/2 block m-auto'>
             <form action={CreateTimeSheet} className="h-full bg-white flex flex-col items-center p-5 rounded-t-2xl">
@@ -38,12 +39,12 @@ const Verify: React.FC = () => {
                     {t('lN5')}
                     </button> 
                 {/* Hidden inputs */}
-                <input type="hidden" name="submit_date" value={Date.now().toString()} />
+                <input type="hidden" name="submit_date" value={new Date().toString()} />
                 <input type="hidden" name="userId" value={savedUserData?.id || ''} />
-                <input type="hidden" name="date" value={Date.now().toString()} />
+                <input type="hidden" name="date" value={new Date().toString()} />
                 <input type="hidden" name="jobsite_id" value={scanResult?.data || ''} />
                 <input type="hidden" name="costcode" value={savedCostCode?.toString() || ''} />
-                <input type="hidden" name="start_time" value={Date.now().toString()} />
+                <input type="hidden" name="start_time" value={new Date().toString()} />
                 <input type="hidden" name="user" value={savedUserData?.id || ''} />
             </form>
         </div>
