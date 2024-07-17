@@ -56,3 +56,6 @@ today made some changes to the db and worked with zack on his portion and then m
 
 7/16/2024
 got clocking in data working for only two choice because the data needs to have recollection of it in the db to be creted, this was intetionall and worked well, I made some great changes in the db and rewrote some processes that seemed nicce on paper but better when dealling with the data now. Also in corporated error handling too
+
+7/17/2024
+I was able to get the ground working going for a submission and my intial idea is to either have a dynamiclly inserted form or make the verify page one with the sucess page since they are online a message changing and the form will be there, This will also enable me to get the form pages id and save it quickly. I also have time zones implemented. I am hoping once i get this process down I can start the switch jobs process next. 

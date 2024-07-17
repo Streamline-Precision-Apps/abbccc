@@ -51,16 +51,16 @@ export async function CreateTimeSheet(formData: FormData) {
         console.log("Creating Timesheet...");
         console.log(formData);
 
-        // Helper function to convert timestamps to Date objects
         const parseDate = (timestamp: string) => {
-            const parsedDate = new Date(Number(timestamp));
-            if (isNaN(parsedDate.getTime())) {
+            const date = new Date(timestamp); // Directly parse the string as a date
+            if (isNaN(date.getTime())) {
                 throw new RangeError(`Invalid time value: ${timestamp}`);
             }
-            return parsedDate;
+            date.setMinutes(date.getMinutes() - date.getTimezoneOffset()); // Adjust for the timezone offset
+            return date;
         };
 
-        await prisma.timeSheet.create({
+        const newTimeSheet = await prisma.timeSheet.create({
             data: {
                 submit_date: parseDate(formData.get("submit_date") as string).toISOString(),
                 date: parseDate(formData.get("date") as string).toISOString(),
@@ -83,15 +83,16 @@ export async function CreateTimeSheet(formData: FormData) {
                 jobsite: { connect: { jobsite_id: formData.get("jobsite_id") as string } }
             },
         });
-        
         console.log("Timesheet created successfully.");
-    } catch (error) {
-        console.error("Error creating timesheet:", error);
-    }
+    
+        // Revalidate the path if necessary
+        revalidatePath('/clock');
+        redirect('/clock/success'); // Redirect to success page make success page this page?
 
-    // Revalidate the path if necessary
-    revalidatePath('/clock');
-    redirect('/clock/success');
+        } catch (error) {
+            console.error("Error creating timesheet:", error);
+            throw new Error('Failed to create timesheet');
+}
 }
 
 // provides a way to update a timesheet and will give supervisor access to all timesheets
