@@ -2,10 +2,10 @@
 import { PrismaClient } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
 
 
 const prisma = new PrismaClient();
+
 
 // Get all TimeSheets
 export async function getTimeSheetsbyId() {
@@ -42,7 +42,6 @@ export async function handleFormSubmit(employeeId: string, date: string) {
     date = new Date(date).toISOString();
     return fetchTimesheets(employeeId, date);
     }
-
 
 // Create TimeSheet
 // used at each login and will retain that timesheetId until the user logs out with switch jobsite
@@ -84,14 +83,17 @@ export async function CreateTimeSheet(formData: FormData) {
             },
         });
         console.log("Timesheet created successfully.");
-    
-        // Revalidate the path if necessary
-        revalidatePath('/clock');
-        redirect('/clock/success'); // Redirect to success page make success page this page?
+        const timesheetId = newTimeSheet.id;
 
-        } catch (error) {
-            console.error("Error creating timesheet:", error);
-            throw new Error('Failed to create timesheet');
+        // Revalidate the path
+        await revalidatePath(`/clock/success/${timesheetId}`);
+        
+        // Redirect to the success page
+        redirect(`/clock/success/${timesheetId}`);
+
+} catch (error) {
+    console.error("Error creating timesheet:", error);
+    throw error;
 }
 }
 

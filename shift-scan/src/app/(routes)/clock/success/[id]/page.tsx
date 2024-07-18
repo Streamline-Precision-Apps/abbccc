@@ -1,20 +1,24 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
-import { useScanData } from "../../../context/JobSiteContext";
-import { useSavedCostCode } from "../../../context/CostCodeContext";
+import { useRouter, useParams } from "next/navigation";
+import { useScanData } from "../../../../context/JobSiteContext";
+import { useSavedCostCode } from "../../../../context/CostCodeContext";
 import RedirectAfterDelay from "@/components/redirectAfterDelay";
 import { getAuthStep, isAuthenticated } from "@/app/api/auth";
 import { useSavedClockInTime } from "@/app/context/ClockInTimeContext";
+import { useSavedTimeSheetData } from "@/app/context/TimeSheetIdContext";
+
 
 const SuccessPage: React.FC = () => {
+    const Params = useParams<{id : string}>();
     const t = useTranslations("page5");
     const router = useRouter();
     const { scanResult } = useScanData();
     const { savedCostCode } = useSavedCostCode();
     const { clockInTime, setClockInTime } = useSavedClockInTime();
-    const [authStep, setAuthStepState] = useState<string | null>(null);
+    const [authStep, setAuthStepState] = useState<string | null>(null); 
+    const { savedTimeSheetData, setSavedTimeSheetData} = useSavedTimeSheetData();
 
     useEffect(() => {
         setAuthStepState(getAuthStep());
@@ -24,8 +28,9 @@ const SuccessPage: React.FC = () => {
         if (!isAuthenticated()) {
             router.push('/'); // Redirect to login page if not authenticated
         } else if (authStep !== "success") {
-          console.log(authStep);  
-          //router.push("/"); // Redirect to QR page if steps are not followed
+        console.log(authStep); 
+
+        setSavedTimeSheetData(Params); 
         }
     }, [authStep, router]);
 

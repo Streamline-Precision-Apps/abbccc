@@ -8,6 +8,7 @@ import { SavedPayPeriodHoursProvider } from "./context/SavedPayPeriodHours";
 import { SavedUserDataProvider } from "./context/UserContext";
 import { SavedClockInTimeProvider } from "./context/ClockInTimeContext";
 import { SavedBreakTimeProvider } from "./context/SavedBreakTimeContext";
+import { SavedTimeSheetDataProvider } from "./context/TimeSheetIdContext";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -19,7 +20,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
             <SavedCostCodeProvider>
               <ScanDataProvider>
                 <SavedClockInTimeProvider>
-                  <SessionProvider>{children}</SessionProvider>
+                  <SavedTimeSheetDataProvider>
+                  <SessionProvider>
+                    {children}
+                    </SessionProvider>
+                  </SavedTimeSheetDataProvider>
                 </SavedClockInTimeProvider>
               </ScanDataProvider>
             </SavedCostCodeProvider>
