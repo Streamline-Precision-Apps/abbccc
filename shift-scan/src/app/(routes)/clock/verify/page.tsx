@@ -1,16 +1,17 @@
 "use client";
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useScanData } from '@/app/context/JobSiteContext';
 import { useSavedCostCode } from '@/app/context/CostCodeContext';
+import { useSavedTimeSheetData } from '@/app/context/TimeSheetIdContext';
 import { clearAuthStep, getAuthStep, setAuthStep } from '@/app/api/auth';
 import { Clock } from '@/components/clock';
-import { CreateTimeSheet } from '@/actions/timeSheetActions';
+import { CreateTimeSheet} from '@/actions/timeSheetActions';
 import "@/app/globals.css";
-import { createTimeSheet } from '../../dashboard/clock-out/injury-report/serverAction';
 import { useSavedUserData } from '@/app/context/UserContext';
-import { promises } from 'dns';
+
 
 const Verify: React.FC = () => {
     const router = useRouter();
@@ -19,12 +20,11 @@ const Verify: React.FC = () => {
     const { scanResult } = useScanData();
     const { savedCostCode } = useSavedCostCode();
     const { savedUserData } = useSavedUserData();
-    const [timeSheetId, setTimeSheetId] = useState<string | null>(null);
-
 
     useEffect(() => {
         setAuthStep("success");
     }, []); 
+
     return (
         <div className='mt-16 h-screen lg:w-1/2 block m-auto'>
             <form action={CreateTimeSheet} className="h-full bg-white flex flex-col items-center p-5 rounded-t-2xl">
