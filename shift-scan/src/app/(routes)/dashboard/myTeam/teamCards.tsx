@@ -2,17 +2,29 @@
 import prisma from "@/lib/prisma";
 import Image from "next/image";
 import TeamInfoButton from "./button";
-import employeeInfo from "./[id]/employee-info";
+import { cookies } from "next/headers";
+
 
 export default async function TeamCards() {
-    const id = 1
-
-    const crew = await prisma.crewMember.findMany(
+    const user = cookies().get("user");
+    const id = user?.value;
+    const userCrewId = await prisma.user.findUnique({
+        where: {
+            id: id
+        },
+        include: {
+            crewMembers: true
+        }
+    }).then((data) => {
+        return data?.crewMembers[0].crew_id
+    })
+    
+    const crew = await prisma.crewMember.findMany( 
         {
             where: {
                 supervisor: false,
                 crew : {
-                    id: id,
+                    id: userCrewId
                 }
             },
             include: {
@@ -22,16 +34,16 @@ export default async function TeamCards() {
             }
         },
     );
-    // console.table(crew)
+    // console.log(crew.map((userCrewId) => userCrewId.user.id))
     return (
         <div className="w-full flex flex-col items-center p-5 rounded-2xl font-bold">
-            
-            {crew.map((employee) => (
-            <TeamInfoButton id={employee.id} key={employee.id} >
-            <div key={employee.id} className="w-full flex flex-row ">
+            {}
+            {crew.map((userCrewId) => (
+            <TeamInfoButton id={Number(userCrewId.user.id)} key={userCrewId.user.id} >
+            <div key={userCrewId.id} className="w-full flex flex-row ">
                 <Image src={"/profile-icon.png"} alt="Team Image" width={80} height={80} className="rounded-full" />
                 <div className="w-full flex flex-row space-x-5 justify-center items-center">
-                <h2 className="text-3xl">{employee.user.firstName} {employee.user.lastName}</h2>
+                <h2 className="text-3xl">{userCrewId.user.firstName} {userCrewId.user.lastName}</h2>
                 </div>
             </div>
             </TeamInfoButton>

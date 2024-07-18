@@ -83,7 +83,9 @@ export const initialContacts: Prisma.ContactCreateInput[] = [
 { "phone_number": "183-416-7890", "email": "buggsbunny@example.com", "emergency_contact": "Lola Bunny", "emergency_contact_no": "218-765-4021", "createdAt": "2022-01-01T00:00:00.000Z", "updatedAt": "2022-01-01T00:00:00.000Z"},
 { "phone_number": "987-654-3210", "email": "lolabunny@example.com", "emergency_contact": "Buggs Bunny", "emergency_contact_no": "098-745-4121", "createdAt": "2022-01-01T00:00:00.000Z", "updatedAt": "2022-01-01T00:00:00.000Z"},
 { "phone_number": "987-654-3210", "email": "jessica.rabbit@example.com", "emergency_contact": "Jessica Rabbit", "emergency_contact_no": "098-765-4321", "createdAt": "2021-06-01T00:00:00.000Z", "updatedAt": "2021-06-01T00:00:00.000Z"},
-{ "phone_number": "987-654-3210", "email": "wife.rabbit@example.com", "emergency_contact": "your wife", "emergency_contact_no": "218-765-4311", "createdAt": "2021-06-01T00:00:00.000Z", "updatedAt": "2021-06-01T00:00:00.000Z"},
+{ "phone_number": "987-654-3210", "email": "wife.@example.com", "emergency_contact": "your wife", "emergency_contact_no": "218-765-4311", "createdAt": "2021-06-01T00:00:00.000Z", "updatedAt": "2021-06-01T00:00:00.000Z"},
+{ "phone_number": "987-654-3210", "email": "wife.@example.com", "emergency_contact": "your wife", "emergency_contact_no": "218-765-4311", "createdAt": "2021-06-01T00:00:00.000Z", "updatedAt": "2021-06-01T00:00:00.000Z"},
+{ "phone_number": "987-654-3210", "email": "wife.@example.com", "emergency_contact": "your wife", "emergency_contact_no": "218-765-4311", "createdAt": "2021-06-01T00:00:00.000Z", "updatedAt": "2021-06-01T00:00:00.000Z"},
 ]
 // initializing cost codes
 export const initialCostCodes: Prisma.CostCodeCreateInput[] = [

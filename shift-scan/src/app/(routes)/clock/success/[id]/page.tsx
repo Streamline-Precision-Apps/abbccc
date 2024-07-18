@@ -26,7 +26,7 @@ const SuccessPage: React.FC = () => {
 
     useEffect(() => {
         if (!isAuthenticated()) {
-            router.push('/'); // Redirect to login page if not authenticated
+            // router.push('/'); // Redirect to login page if not authenticated
         } else if (authStep !== "success") {
         console.log(authStep); 
 

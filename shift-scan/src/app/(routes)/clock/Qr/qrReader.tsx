@@ -7,9 +7,11 @@ import { useScanData } from '@/app/context/JobSiteContext';
 
 interface QrReaderProps{
     routerName: string 
+    returnRouterName?: string
+    prcessName?: string
 }
 
-const QrReader: React.FC<QrReaderProps> = ({ routerName }) => {
+const QrReader: React.FC<QrReaderProps> = ({ routerName , returnRouterName, prcessName }) => {
     const videoRef: MutableRefObject<HTMLVideoElement | null> = useRef(null);
     const [qrScanner, setQrScanner] = useState<QrScanner | null>(null);
     const [scanCount, setScanCount] = useState(0);
@@ -62,7 +64,12 @@ const QrReader: React.FC<QrReaderProps> = ({ routerName }) => {
     useEffect(() => {
         if (scanCount >= SCAN_THRESHOLD) {
             qrScanner?.stop();
+            if (returnRouterName) {
+                router.push(returnRouterName);
+            }
+            else{
             router.push('/'); 
+            }
         }
     }, [scanCount, qrScanner, router]);
 
