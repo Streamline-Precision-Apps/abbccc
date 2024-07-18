@@ -11,6 +11,7 @@ try{
             lastName: formData.get('lastName') as string,
             username: formData.get('username') as string,
             password: formData.get('password') as string,
+            DOB: formData.get('DOB') as string,
             truck_view: (formData.get('truck_view') as unknown as boolean),
             tasco_view: (formData.get('tasco_view')as unknown  as boolean),
             labor_view: (formData.get('labor_view')as unknown  as boolean),
