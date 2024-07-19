@@ -83,3 +83,11 @@ I finished some more prisma DB research and Created the clock out dashboard page
 ## 7/17/2024
 
 - Finished error handling for clock out pages.
+- Start moving break page to be part of home page.
+
+## 7/18/2024
+
+- Finish transfer of break page to home page.
+- Researched qr generation.
+
+## 7/19/2024

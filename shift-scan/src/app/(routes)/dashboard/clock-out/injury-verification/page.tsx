@@ -47,7 +47,7 @@ export default function InjuryVerification() {
 
     const handleBeforeUnload = (ev: BeforeUnloadEvent) => {
       ev.preventDefault();
-      ev.returnValue = '';
+      ev.returnValue = "";
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
@@ -93,7 +93,7 @@ export default function InjuryVerification() {
       <div className="w-1/4 ">
         {checked ? (
           <button
-            className="bg-app-red text-black font-bold text-xl flex justify-center w-full py-4 border border-gray-400 rounded"
+            className="bg-app-green text-black font-bold text-xl flex justify-center w-full py-4 border border-gray-400 rounded"
             onClick={handleContinue}
           >
             Continue

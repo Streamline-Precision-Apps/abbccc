@@ -14,18 +14,29 @@ export default function DisplayBreakTime({
   display,
 }: BreakTimeProps) {
   const t = useTranslations("page1");
-  const { breakTime, setBreakTime } = useSavedBreakTime();
+  const { breakTime: getBreakTime, setBreakTime } = useSavedBreakTime();
 
   const handler = () => {
     setToggle(!display);
   };
 
   useEffect(() => {
+    const savedBreakTime = localStorage.getItem("breakTime");
+    if (savedBreakTime) {
+      setBreakTime(parseInt(savedBreakTime, 10));
+    }
+  }, [setBreakTime]);
+
+  useEffect(() => {
     let timer: NodeJS.Timeout | undefined;
 
     if (display) {
       timer = setInterval(() => {
-        setBreakTime((prevBreakTime) => prevBreakTime + 1);
+        setBreakTime((prevBreakTime) => {
+          const newBreakTime = prevBreakTime + 1;
+          localStorage.setItem("breakTime", newBreakTime.toString());
+          return newBreakTime;
+        });
       }, 1000);
     } else {
       clearInterval(timer);
@@ -50,7 +61,7 @@ export default function DisplayBreakTime({
       >
         <h2 className="text-4xl">Break Time: </h2>
         <span className="w-1/4 bg-white text-2xl text-black py-3 px-2 rounded border-2 border-black rounded-2xl lg:text-2xl lg:p-3">
-          {formatTime(breakTime)}
+          {formatTime(getBreakTime)}
         </span>
       </button>
     </>
