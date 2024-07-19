@@ -6,10 +6,13 @@ import Hours from "@/app/(content)/hours";
 import WidgetSection from "@/components/widgetSection";
 import { useSession } from "next-auth/react";
 import { CustomSession, User } from "@/lib/types";
-import { useEffect, useState } from "react";
-import { useSavedPayPeriodHours } from "../context/SavedPayPeriodHours";
+
+import { useEffect, useState, useContext } from "react";
+import { useSavedPayPeriodHours } from '../context/SavedPayPeriodHours';
+import {  useSavedUserData } from '../context/UserContext';
 import { getAuthStep } from "../api/auth";
 import DisplayBreakTime from "../displayBreakTime";
+
 
 // I put this into the content page to allow all the pages
 // to have access to the user object

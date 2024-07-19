@@ -53,3 +53,12 @@ finished the view team section today, all errors are gone and have a filtered op
 
 7/15/2024 
 today made some changes to the db and worked with zack on his portion and then made some fixes to the user table
+
+7/16/2024
+got clocking in data working for only two choice because the data needs to have recollection of it in the db to be creted, this was intetionall and worked well, I made some great changes in the db and rewrote some processes that seemed nicce on paper but better when dealling with the data now. Also in corporated error handling too
+
+7/17/2024
+I was able to get the ground working going for a submission and my intial idea is to either have a dynamiclly inserted form or make the verify page one with the sucess page since they are online a message changing and the form will be there, This will also enable me to get the form pages id and save it quickly. I also have time zones implemented. I am hoping once i get this process down I can start the switch jobs process next. 
+
+7/18/2024
+finished the connection for the first timecard subbmitt waiting to meet with sean on setting up the backend and looking for ways to implement the server action. I also add our real data to be able to start test casinf it when the data is submitting t the db each and everyday. I will now look into updating the timecards of employee via managers tools. Finished up, I push no broken code: working on jobsite switch while also making a plan/path for log equipment and other qr scanning.

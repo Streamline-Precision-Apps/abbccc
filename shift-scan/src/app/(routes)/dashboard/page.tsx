@@ -67,23 +67,46 @@ export default function Index() {
   }, []);
 
   return isDashboardAuthenticated() ? (
-    <div className="flex flex-col items-center space-y-4 ">
-      <button onClick={() => setIsOpen(true)}>
-        <p>Hamburger Menu</p>
-      </button>
-      <Modal handleClose={() => setIsOpen(false)} isOpen={isOpen}>
-          <ButtonRout href="/hamburger/settings" text="Settings" color="bg-orange-500 " width="w-50 " height="w-50 " />
-          <ButtonRout href="/hamburger/inbox" text="Inbox" color="bg-blue-500 " width="w-250 " height="w-250 " />
-          <ButtonRout href="/hamburger/profile" text="Profile" color="bg-green-500 " width="w-50 " height="w-50 " />
-      </Modal>
-      <h1>{t("Banner")}</h1>
-      <h2>
-        {t("Name", { firstName: user.firstName, lastName: user.lastName })}
-      </h2>
-      <h2>{t("Date", { date: user.date })}</h2>
-      <br />
-      <DashboardButtons />
-      <h2>{t("lN1")}</h2>
+    <div className="mt-16 h-screen lg:w-1/2 block m-auto">
+      <div className="h-full bg-white flex flex-col items-center p-5 rounded-t-2xl">
+        <button
+          onClick={() => setIsOpen(true)}
+          className="bg-gray-300 w-1/4 py-2 rounded-lg text-black font-bold mt-5"
+        >
+          <p>Hamburger Menu</p>
+        </button>
+        <Modal handleClose={() => setIsOpen(false)} isOpen={isOpen}>
+          <ButtonRout
+            href="/hamburger/settings"
+            text="Settings"
+            color="bg-orange-500"
+            width="w-full"
+            height="h-12"
+          />
+          <ButtonRout
+            href="/hamburger/inbox"
+            text="Inbox"
+            color="bg-blue-500"
+            width="w-full"
+            height="h-12"
+          />
+          <ButtonRout
+            href="/hamburger/profile"
+            text="Profile"
+            color="bg-green-500"
+            width="w-full"
+            height="h-12"
+          />
+        </Modal>
+        <h1 className="text-3xl my-5">{t("Banner")}</h1>
+        <h2 className="text-xl my-2">
+          {t("Name", { firstName: user.firstName, lastName: user.lastName })}
+        </h2>
+        <h2 className="text-xl my-2">{t("Date", { date: user.date })}</h2>
+        <br />
+        <DashboardButtons />
+        <h2 className="text-xl my-5">{t("lN1")}</h2>
+      </div>
     </div>
   ) : (
     <></>
