@@ -4,6 +4,7 @@ import "@/app/globals.css";
 import Checkbox from "@/app/(routes)/dashboard/clock-out/checkBox";
 import { isDashboardAuthenticated } from "@/app/api/auth";
 import { useRouter, useSearchParams } from "next/navigation";
+import { setAuthStep } from "@/app/api/auth";
 
 export default function Log() {
   const router = useRouter();
@@ -19,13 +20,13 @@ export default function Log() {
   useEffect(() => {
     const handlePopstate = () => {
       if (isDashboardAuthenticated()) {
-        window.location.href = "/before-you-go";
+        window.location.href = "/dashboard/clock-out/log";
       }
     };
 
     const handleBeforeUnload = (ev: BeforeUnloadEvent) => {
       ev.preventDefault();
-      ev.returnValue = '';
+      ev.returnValue = "";
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
@@ -40,7 +41,8 @@ export default function Log() {
   const handleContinue = async () => {
     try {
       if (buttonType === "b") {
-        await router.push("/dashboard/clock-out/break");
+        setAuthStep("break");
+        await router.push("/");
       } else if (buttonType === "ewd") {
         await router.push("/dashboard/clock-out/injury-verification");
       } else {
@@ -64,7 +66,8 @@ export default function Log() {
   return (
     <div className="flex flex-col items-center space-y-4">
       <h1 className="text-3xl font-bold">
-        I have completed and logged all forms, equipment, and all other items required of me today.
+        I have completed and logged all forms, equipment, and all other items
+        required of me today.
       </h1>
       <Checkbox checked={checked} onChange={handleCheckboxChange} />
       <div className="w-1/4">

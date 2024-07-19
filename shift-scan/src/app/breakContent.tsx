@@ -2,7 +2,7 @@
 import "@/app/globals.css";
 import { useTranslations } from "next-intl";
 import AppUser from "@/app/(content)/name";
-import BreakWidgetSection from "@/app/(routes)/dashboard/clock-out/break/breakWidgetSection";
+import BreakWidgetSection from "@/app/breakWidgetSection";
 import { useSession } from "next-auth/react";
 import { CustomSession, User } from "@/lib/types";
 import { useEffect, useState } from "react";
@@ -41,12 +41,9 @@ export default function BreakContent() {
       });
     }
   }, [session]);
-  const handler = () => {
-    setToggle(!toggle);
-    console.log(toggle);
-  };
-  // rerun at clock out to get updated hours
-  const countingBreakTime = () => {};
+
+  
+
 
   return (
     <>
