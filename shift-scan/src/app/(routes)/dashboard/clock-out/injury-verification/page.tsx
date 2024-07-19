@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import "@/app/globals.css";
-// import UseModal from '@/components/modal';
 import Checkbox from "../checkBox";
 import {
   clearAuthStep,
@@ -24,13 +23,19 @@ export default function InjuryVerification() {
 
   const router = useRouter();
   const [checked, setChecked] = useState(false);
+  const [signatureBlob, setSignatureBlob] = useState<Blob | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const handleCheckboxChange = (newChecked: boolean) => {
     setChecked(newChecked);
   };
-  const [signatureBlob, setSignatureBlob] = useState<Blob | null>(null);
+
   const handleSignatureEnd = (blob: Blob) => {
-    setSignatureBlob(blob);
+    if (blob) {
+      setSignatureBlob(blob);
+    } else {
+      setError("Failed to capture signature. Please try again.");
+    }
   };
 
   useEffect(() => {
@@ -39,16 +44,38 @@ export default function InjuryVerification() {
         window.location.href = "/before-you-go";
       }
     };
-    // Attach beforeunload event listener
-    window.addEventListener("beforeunload", handleBeforeUnload);
 
-    // Attach popstate event listener (for handling back navigation)
+    const handleBeforeUnload = (ev: BeforeUnloadEvent) => {
+      ev.preventDefault();
+      ev.returnValue = "";
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
     window.addEventListener("popstate", handlePopstate);
+
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
       window.removeEventListener("popstate", handlePopstate);
     };
   }, []);
+
+  const handleContinue = async () => {
+    try {
+      await router.push("/dashboard/clock-out/clock-out-success");
+    } catch (err) {
+      console.error("Navigation error:", err);
+      setError("Failed to navigate. Please try again.");
+    }
+  };
+
+  const handleReportInjury = async () => {
+    try {
+      await router.push("/dashboard/clock-out/injury-report");
+    } catch (err) {
+      console.error("Navigation error:", err);
+      setError("Failed to navigate. Please try again.");
+    }
+  };
 
   return (
     <div className="flex flex-col items-center space-y-4 w-full px-5 py-10 h-screen">
@@ -62,25 +89,21 @@ export default function InjuryVerification() {
         <h1 className="text-3xl font-bold">This is my signature</h1>
         <Checkbox checked={checked} onChange={handleCheckboxChange} />
       </div>
+      {error && <div className="text-red-500">{error}</div>}
       <div className="w-1/4 ">
-        {/* {t("button")} */}
         {checked ? (
           <button
-            className="bg-app-red text-black font-bold text-xl flex justify-center w-full py-4 border border-gray-400  font-bold rounded"
-            onClick={() => {
-              router.push("/dashboard/clock-out/clock-out-success");
-            }}
+            className="bg-app-green text-black font-bold text-xl flex justify-center w-full py-4 border border-gray-400 rounded"
+            onClick={handleContinue}
           >
-            {/* {t("button")} */}Continue
+            Continue
           </button>
         ) : (
           <button
-            className="bg-app-red text-black font-bold text-xl flex justify-center w-full py-4 border border-gray-400  font-bold rounded"
-            onClick={() => {
-              router.push("/dashboard/clock-out/injury-report");
-            }}
+            className="bg-app-red text-black font-bold text-xl flex justify-center w-full py-4 border border-gray-400 rounded"
+            onClick={handleReportInjury}
           >
-            {/* {t("button")} */}Report Injury
+            Report Injury
           </button>
         )}
       </div>
