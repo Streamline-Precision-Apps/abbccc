@@ -11,7 +11,7 @@ import {
 } from "@/app/api/auth";
 import { useRouter } from "next/navigation";
 
-export default function Index() {
+export default function ClockOut() {
   // TODO: Add to en and es.
   const t = useTranslations("ClockOutDashboard");
   const router = useRouter();
@@ -21,6 +21,7 @@ export default function Index() {
     lastName: "",
     date: "",
   });
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const handlePopstate = () => {
@@ -30,9 +31,8 @@ export default function Index() {
     };
     // Attach beforeunload event listener
     window.addEventListener("beforeunload", handleBeforeUnload);
-
-    // Attach popstate event listener (for handling back navigation)
     window.addEventListener("popstate", handlePopstate);
+
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
       window.removeEventListener("popstate", handlePopstate);
@@ -40,22 +40,31 @@ export default function Index() {
   }, []);
 
   useEffect(() => {
-    // simulating an api call here
     const fetchData = async () => {
-      const userData = {
-        firstName: "Devun",
-        lastName: "Durst",
-        date: "05-03-2024",
-        role: "Manager",
-      };
-      setUser(userData);
+      try {
+        // Simulating an API call here
+        const userData = {
+          firstName: "Devun",
+          lastName: "Durst",
+          date: "05-03-2024",
+          role: "Manager",
+        };
+        setUser(userData);
+      } catch (error) {
+        console.error("Failed to fetch user data", error);
+        setError("Failed to fetch user data. Please try again later.");
+      }
     };
     fetchData();
   }, []);
 
-  return isDashboardAuthenticated() ? (
-    <div className="flex flex-col items-center space-y-4 ">
-      {/* <UseModal show={true} onClose={CloseModal} children={<h1>Modal Content</h1>} /> */}
+  if (!isDashboardAuthenticated()) {
+    return null;
+  }
+
+  return (
+    <div className="flex flex-col items-center space-y-4">
+      {error && <div className="text-red-500">{error}</div>}
       <h1>{t("Banner")}</h1>
       <h2>
         {t("Name", { firstName: user.firstName, lastName: user.lastName })}
@@ -64,8 +73,6 @@ export default function Index() {
       <ClockOutButtons />
       <h2>{t("lN1")}</h2>
     </div>
-  ) : (
-    <></>
   );
 }
 
