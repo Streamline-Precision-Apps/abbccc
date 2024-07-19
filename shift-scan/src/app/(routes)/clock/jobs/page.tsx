@@ -13,7 +13,7 @@ const CostCodePage: React.FC = () => {
   useEffect(() => {
     if (getAuthStep() !== "jobs") {
       console.log(getAuthStep());
-      router.push("/"); // Redirect to QR page if steps are not followed
+      // router.push("/"); // Redirect to QR page if steps are not followed
     }
   }, []);
 

@@ -108,31 +108,30 @@ CREATE TABLE "UserTrainings" (
 -- CreateTable
 CREATE TABLE "Jobsite" (
     "id" SERIAL NOT NULL,
-    "qr_id" TEXT NOT NULL,
+    "jobsite_id" TEXT NOT NULL,
     "jobsite_name" TEXT NOT NULL,
     "jobsite_active" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Jobsite_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Jobsite_pkey" PRIMARY KEY ("jobsite_id")
 );
 
 -- CreateTable
 CREATE TABLE "timesheets" (
     "submit_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "id" SERIAL NOT NULL,
-    "form_id" INTEGER NOT NULL,
     "userId" TEXT NOT NULL,
     "date" DATE NOT NULL,
-    "jobsite_id" INTEGER NOT NULL,
+    "jobsite_id" TEXT NOT NULL,
     "costcode" TEXT NOT NULL,
     "nu" TEXT NOT NULL DEFAULT 'nu',
     "Fp" TEXT NOT NULL DEFAULT 'fp',
     "vehicle_id" INTEGER,
     "start_time" TIMESTAMP(3) NOT NULL,
-    "end_time" TIMESTAMP(3) NOT NULL,
+    "end_time" TIMESTAMP(3),
     "total_break_time" DOUBLE PRECISION,
-    "duration" DOUBLE PRECISION NOT NULL,
+    "duration" DOUBLE PRECISION,
     "starting_mileage" INTEGER,
     "ending_mileage" INTEGER,
     "left_idaho" BOOLEAN DEFAULT false,
@@ -143,7 +142,6 @@ CREATE TABLE "timesheets" (
     "timesheet_comments" TEXT,
     "app_comment" TEXT,
     "status" "formStatus" NOT NULL DEFAULT 'PENDING',
-    "jobsiteId" INTEGER,
 
     CONSTRAINT "timesheets_pkey" PRIMARY KEY ("id")
 );
@@ -152,7 +150,7 @@ CREATE TABLE "timesheets" (
 CREATE TABLE "EmployeeEquipmentLog" (
     "id" SERIAL NOT NULL,
     "equipment_id" INTEGER NOT NULL,
-    "jobsite_id" INTEGER NOT NULL,
+    "jobsite_id" TEXT NOT NULL,
     "employee_id" TEXT NOT NULL,
     "start_time" TIMESTAMP(3) NOT NULL,
     "end_time" TIMESTAMP(3),
@@ -229,7 +227,7 @@ CREATE TABLE "Crew" (
 CREATE TABLE "CrewJobsite" (
     "id" SERIAL NOT NULL,
     "crew_id" INTEGER NOT NULL,
-    "jobsite_id" INTEGER NOT NULL,
+    "jobsite_id" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -304,7 +302,7 @@ CREATE TABLE "InjuryForm" (
 -- CreateTable
 CREATE TABLE "_CostCodeToJobsite" (
     "A" INTEGER NOT NULL,
-    "B" INTEGER NOT NULL
+    "B" TEXT NOT NULL
 );
 
 -- CreateTable
@@ -316,7 +314,7 @@ CREATE TABLE "_ContactToUser" (
 -- CreateTable
 CREATE TABLE "_AddressToJobsite" (
     "A" INTEGER NOT NULL,
-    "B" INTEGER NOT NULL
+    "B" TEXT NOT NULL
 );
 
 -- CreateIndex
@@ -342,12 +340,6 @@ CREATE UNIQUE INDEX "verificationtokens_identifier_token_key" ON "verificationto
 
 -- CreateIndex
 CREATE UNIQUE INDEX "UserTrainings_user_id_key" ON "UserTrainings"("user_id");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Jobsite_qr_id_key" ON "Jobsite"("qr_id");
-
--- CreateIndex
-CREATE UNIQUE INDEX "timesheets_form_id_key" ON "timesheets"("form_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Equipment_qr_id_key" ON "Equipment"("qr_id");
@@ -389,13 +381,13 @@ ALTER TABLE "UserTrainings" ADD CONSTRAINT "UserTrainings_user_id_fkey" FOREIGN 
 ALTER TABLE "timesheets" ADD CONSTRAINT "timesheets_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "timesheets" ADD CONSTRAINT "timesheets_jobsiteId_fkey" FOREIGN KEY ("jobsiteId") REFERENCES "Jobsite"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "timesheets" ADD CONSTRAINT "timesheets_jobsite_id_fkey" FOREIGN KEY ("jobsite_id") REFERENCES "Jobsite"("jobsite_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "EmployeeEquipmentLog" ADD CONSTRAINT "EmployeeEquipmentLog_employee_id_fkey" FOREIGN KEY ("employee_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "EmployeeEquipmentLog" ADD CONSTRAINT "EmployeeEquipmentLog_jobsite_id_fkey" FOREIGN KEY ("jobsite_id") REFERENCES "Jobsite"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "EmployeeEquipmentLog" ADD CONSTRAINT "EmployeeEquipmentLog_jobsite_id_fkey" FOREIGN KEY ("jobsite_id") REFERENCES "Jobsite"("jobsite_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "EmployeeEquipmentLog" ADD CONSTRAINT "EmployeeEquipmentLog_equipment_id_fkey" FOREIGN KEY ("equipment_id") REFERENCES "Equipment"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -410,7 +402,7 @@ ALTER TABLE "CrewMember" ADD CONSTRAINT "CrewMember_crew_id_fkey" FOREIGN KEY ("
 ALTER TABLE "CrewJobsite" ADD CONSTRAINT "CrewJobsite_crew_id_fkey" FOREIGN KEY ("crew_id") REFERENCES "Crew"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "CrewJobsite" ADD CONSTRAINT "CrewJobsite_jobsite_id_fkey" FOREIGN KEY ("jobsite_id") REFERENCES "Jobsite"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "CrewJobsite" ADD CONSTRAINT "CrewJobsite_jobsite_id_fkey" FOREIGN KEY ("jobsite_id") REFERENCES "Jobsite"("jobsite_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "FormSubmissions" ADD CONSTRAINT "FormSubmissions_formId_fkey" FOREIGN KEY ("formId") REFERENCES "Form"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -422,7 +414,7 @@ ALTER TABLE "FormSubmissions" ADD CONSTRAINT "FormSubmissions_userId_fkey" FOREI
 ALTER TABLE "_CostCodeToJobsite" ADD CONSTRAINT "_CostCodeToJobsite_A_fkey" FOREIGN KEY ("A") REFERENCES "CostCode"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "_CostCodeToJobsite" ADD CONSTRAINT "_CostCodeToJobsite_B_fkey" FOREIGN KEY ("B") REFERENCES "Jobsite"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "_CostCodeToJobsite" ADD CONSTRAINT "_CostCodeToJobsite_B_fkey" FOREIGN KEY ("B") REFERENCES "Jobsite"("jobsite_id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_ContactToUser" ADD CONSTRAINT "_ContactToUser_A_fkey" FOREIGN KEY ("A") REFERENCES "Contact"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -434,4 +426,4 @@ ALTER TABLE "_ContactToUser" ADD CONSTRAINT "_ContactToUser_B_fkey" FOREIGN KEY 
 ALTER TABLE "_AddressToJobsite" ADD CONSTRAINT "_AddressToJobsite_A_fkey" FOREIGN KEY ("A") REFERENCES "Address"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "_AddressToJobsite" ADD CONSTRAINT "_AddressToJobsite_B_fkey" FOREIGN KEY ("B") REFERENCES "Jobsite"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "_AddressToJobsite" ADD CONSTRAINT "_AddressToJobsite_B_fkey" FOREIGN KEY ("B") REFERENCES "Jobsite"("jobsite_id") ON DELETE CASCADE ON UPDATE CASCADE;
