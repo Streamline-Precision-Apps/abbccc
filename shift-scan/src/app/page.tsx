@@ -5,6 +5,7 @@ import {Footer} from "@/components/footer"
 import TestingComponents from "@/components/testingComponents"
 import "@/app/globals.css"
 import { Header } from "@/components/header"
+import { getAuthStep } from "./api/auth"
 
 export default function Home() {
 
