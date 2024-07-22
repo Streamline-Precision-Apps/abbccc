@@ -103,7 +103,3 @@ function handleBeforeUnload(this: Window, ev: BeforeUnloadEvent) {
   throw new Error("Function not implemented.");
 }
 
-
-{/* <ButtonRout href="/hamburger/settings" text="Settings" color="bg-orange-500 " width="w-50 " height="w-50 " />
-          <ButtonRout href="/hamburger/inbox" text="Inbox" color="bg-blue-500 " width="w-250 " height="w-250 " />
-          <ButtonRout href="/hamburger/profile" text="Profile" color="bg-green-500 " width="w-50 " height="w-50 " /> */}

@@ -70,3 +70,24 @@ I finished some more prisma DB research and Created the clock out dashboard page
 
 - Finish break time context that was started previously.
 - Put components together for break time page.
+- Met with Team for merge meeting.
+- Fixed break time context reset from clock out.
+- Added needed tasks finished for clock out for sprint 3.
+
+## 7/16/2024
+
+- Set up buttons on clock out page to navigate to their respective pages after the log page.
+- Simplified some code on the clock out page.
+- Added some error handling for clock out page.
+
+## 7/17/2024
+
+- Finished error handling for clock out pages.
+- Start moving break page to be part of home page.
+
+## 7/18/2024
+
+- Finish transfer of break page to home page.
+- Researched qr generation.
+
+## 7/19/2024

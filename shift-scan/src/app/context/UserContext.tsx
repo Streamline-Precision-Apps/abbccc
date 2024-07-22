@@ -1,39 +1,51 @@
-"use client";
-import React, { createContext, useState, ReactNode, useContext } from "react";
+import React, { createContext, useState, ReactNode, useContext, useEffect } from "react";
 
-// creates a prop to be passes to a context
-interface SavedUserDataProps {
-  savedUserData: savedUserData | null;
-  setUserData: (userData: savedUserData | null) => void;
+interface SavedUserData {
+  id: string | null;
 }
-// creates a value to a savedUserData context
-interface savedUserData {
-  firstName: string | null;
-  lastName: string | null;
-  date: Date | null;
+
+interface SavedUserDataContextType {
+  savedUserData: SavedUserData | null;
+  setSavedUserData: (userData: SavedUserData | null) => void;
 }
-// creates a context for the savedUserData we pass this through the export
-const savedUserData = createContext<SavedUserDataProps | undefined>(undefined);
+
+const SavedUserDataContext = createContext<SavedUserDataContextType | undefined>(undefined);
 
 export const SavedUserDataProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  // creates a state for the savedUserData
-  const [user, setUser] = useState<savedUserData | null>(null);
-  // when the provider is called it will return the value below
+  const [savedUserData, setSavedUserDataState] = useState<SavedUserData | null>(() => {
+    // Load initial state from localStorage if available
+    if (typeof window !== 'undefined') {
+      const savedUserJSON = localStorage.getItem("savedUserData");
+      return savedUserJSON ? JSON.parse(savedUserJSON) : null;
+    } else {
+      return null;
+    }
+  });
+
+  const setSavedUserData = (userData: SavedUserData | null) => {
+    setSavedUserDataState(userData);
+    // Save to localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.setItem("savedUserData", JSON.stringify(userData));
+    } else {
+      localStorage.removeItem("savedUserData");
+    }
+    return null 
+  };
+
   return (
-    <savedUserData.Provider
-      value={{ savedUserData: user, setUserData: setUser }}
-    >
+    <SavedUserDataContext.Provider value={{ savedUserData, setSavedUserData }}>
       {children}
-    </savedUserData.Provider>
+    </SavedUserDataContext.Provider>
   );
 };
-// this is used to get the value of the savedUserData
-export const useSavedUser = () => {
-  const context = useContext(savedUserData);
-  if (context === undefined) {
-    throw new Error("useScanData must be used within a ScanDataProvider");
+
+export const useSavedUserData = () => {
+  const context = useContext(SavedUserDataContext);
+  if (!context) {
+    throw new Error("useSavedUserData must be used within a SavedUserDataProvider");
   }
   return context;
 };

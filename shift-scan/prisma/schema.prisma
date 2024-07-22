@@ -165,8 +165,8 @@ model UserTrainings {
 
 // Holds a uniquely generated QR code that can be read to distinct jobsite and general jobsite information 
 model Jobsite {
-  id             Int      @id @default(autoincrement())
-  qr_id          String   @unique
+  id             Int      @default(autoincrement())
+  jobsite_id     String   @id @default(cuid())
   jobsite_name   String
   jobsite_active Boolean  @default(true)
   createdAt      DateTime @default(now())
@@ -182,19 +182,18 @@ model Jobsite {
 //  Time sheet that integrates with the accounting software. Accounting Software Data: {|submitDate | Form Id | empl ID| Date| ProfitID(jobsite)| CostCode| NU | FP| Start Time| END Time| Job Description | Duration |}
 model TimeSheet {
   submit_date           DateTime   @default(now())
-  id                    Int        @id @default(autoincrement()) //in viewpoint this tracks the time form to come in, driver, tasco, and regular
-  form_id               Int        @unique
+  id                    Int        @id @default(autoincrement())
   userId                String
   date                  DateTime   @db.Date //two dates are in the accounting software, for easy conversion they are implemented here
-  jobsite_id            Int
+  jobsite_id            String
   costcode              String
   nu                    String     @default("nu") // non union {} default
   Fp                    String     @default("fp") // field personal
   vehicle_id            Int?
   start_time            DateTime
-  end_time              DateTime
+  end_time              DateTime?
   total_break_time      Float?
-  duration              Float // this is the amount of time that was spent on a site
+  duration              Float?
   starting_mileage      Int?
   ending_mileage        Int?
   left_idaho            Boolean?   @default(false)
@@ -206,9 +205,8 @@ model TimeSheet {
   app_comment           String? //this is a backend ai we want to develope to do filtered comments
   status                formStatus @default(PENDING)
 
-  user      User     @relation(fields: [userId], references: [id])
-  Jobsite   Jobsite? @relation(fields: [jobsiteId], references: [id])
-  jobsiteId Int?
+  user    User    @relation(fields: [userId], references: [id])
+  jobsite Jobsite @relation(fields: [jobsite_id], references: [jobsite_id])
 
   @@map("timesheets")
 }
@@ -217,7 +215,7 @@ model TimeSheet {
 model EmployeeEquipmentLog {
   id               Int       @id @default(autoincrement())
   equipment_id     Int
-  jobsite_id       Int
+  jobsite_id       String
   employee_id      String
   start_time       DateTime
   end_time         DateTime?
@@ -228,7 +226,7 @@ model EmployeeEquipmentLog {
   updatedAt        DateTime  @updatedAt
 
   employee  User       @relation(fields: [employee_id], references: [id])
-  Job       Jobsite    @relation(fields: [jobsite_id], references: [id])
+  Job       Jobsite    @relation(fields: [jobsite_id], references: [jobsite_id])
   Equipment Equipment? @relation(fields: [equipment_id], references: [id])
 }
 
@@ -295,11 +293,11 @@ model Crew {
 model CrewJobsite {
   id         Int      @id @default(autoincrement())
   crew_id    Int
-  jobsite_id Int
+  jobsite_id String
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   crew       Crew     @relation(fields: [crew_id], references: [id])
-  jobsite    Jobsite  @relation(fields: [jobsite_id], references: [id])
+  jobsite    Jobsite  @relation(fields: [jobsite_id], references: [jobsite_id])
 }
 
 //Employee contact information section. Purpose get ahold of them or their emergency contact. 
