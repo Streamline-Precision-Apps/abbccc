@@ -79,6 +79,8 @@ model User {
   userSettings    UserSettings[]
   userTrainings   UserTrainings[]
   formSubmissions FormSubmissions[]
+  // The next line is temporary:
+  // injuryForms     InjuryForm[]
 
   @@map("users")
 }
@@ -382,8 +384,12 @@ model FormSubmissions {
 
 // packing this into a json later V V V V V V
 model InjuryForm {
-  id                  Int     @id @default(autoincrement())
-  contactedSupervisor Boolean @default(false)
+  id                  Int      @id @default(autoincrement())
+  // userId              String
+  // user                User     @relation(fields: [userId], references: [id])
+  // submit_date         DateTime @default(now())
+  // date                DateTime @db.Date
+  contactedSupervisor Boolean  @default(false)
   incidentDescription String
-  signedForm          Boolean @default(false)
+  signedForm          Boolean  @default(false)
 }
