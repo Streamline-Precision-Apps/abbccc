@@ -37,7 +37,7 @@ const Verify: React.FC = () => {
                 <Clock time={date.getTime()} />
                 <button type="submit" className="bg-app-blue w-1/2 h-1/6 py-4 px-5 rounded-lg text-black font-bold mt-5">
                     {t('lN5')}
-                    </button> 
+                </button> 
                 {/* Hidden inputs */}
                 <input type="hidden" name="submit_date" value={new Date().toString()} />
                 <input type="hidden" name="userId" value={savedUserData?.id || ''} />

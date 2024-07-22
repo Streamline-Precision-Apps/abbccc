@@ -8,25 +8,23 @@ import { useSession } from "next-auth/react";
 import { CustomSession, User } from "@/lib/types";
 
 import { useEffect, useState, useContext } from "react";
-import { useSavedPayPeriodHours } from '../context/SavedPayPeriodHours';
-import {  useSavedUserData } from '../context/UserContext';
+import { useSavedPayPeriodHours } from "../context/SavedPayPeriodHours";
+import { useSavedUserData } from "../context/UserContext";
 import { getAuthStep } from "../api/auth";
 import DisplayBreakTime from "../displayBreakTime";
-
 
 // I put this into the content page to allow all the pages
 // to have access to the user object
 export default function Content() {
   const t = useTranslations("page1");
   const { data: session } = useSession() as { data: CustomSession | null };
+  // const {data: token} = useSession()as { data: CustomSession | null };
   const { payPeriodHours, setPayPeriodHours } = useSavedPayPeriodHours();
   const [toggle, setToggle] = useState(true);
-
-  const [user, setUser] = useState<User>({
+  const { savedUserData, setSavedUserData } = useSavedUserData();
+  const [user, setData] = useState<User>({
     id: "",
-    name: " ",
-    email: "",
-    image: "",
+    name: "",
     firstName: "",
     lastName: "",
     permission: "",
@@ -34,11 +32,12 @@ export default function Content() {
 
   useEffect(() => {
     if (session && session.user) {
-      setUser({
+      setSavedUserData({
+        id: session.user.id,
+      });
+      setData({
         id: session.user.id,
         name: session.user.name,
-        email: session.user.email,
-        image: session.user.image,
         firstName: session.user.firstName,
         lastName: session.user.lastName,
         permission: session.user.permission,
@@ -46,12 +45,10 @@ export default function Content() {
       setHoursContext();
     }
   }, [session]);
-
   const handler = () => {
     setToggle(!toggle);
     console.log(toggle);
   };
-
   // rerun at clock out to get updated hours
   const setHoursContext = () => {
     const totalhours = 20.45;
@@ -70,7 +67,7 @@ export default function Content() {
     );
   }
 
-  if (authStep === "success") {
+  if (authStep === null) {
     return (
       <>
         <AppUser user={user} />
