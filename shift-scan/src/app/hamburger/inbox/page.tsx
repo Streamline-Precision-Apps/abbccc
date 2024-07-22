@@ -1,17 +1,20 @@
-import EmptyBase from "@/components/emptyBase";
-import TitleBox from "@/components/titleBox";
+import { Bases } from "@/components/(reusable)/bases";
 import TabSection from "@/components/(inputs)/tabSection";
+import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
+import { Sections } from "@/components/(reusable)/sections";
 
 export default function Inbox() {
     
     return (
-        <EmptyBase>
-            <TitleBox
-            title="Inbox"
-            titleImg="/Inbox.svg"
-            titleImgAlt="Inbox"
-            />
+        <Bases>
+            <Sections size={"titleBox"}>
+                <TitleBoxes
+                title="Inbox"
+                titleImg="/Inbox.svg"
+                titleImgAlt="Inbox"
+                />
+            </Sections>
             <TabSection/>
-        </EmptyBase>  
+        </Bases>  
     )
 }

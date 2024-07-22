@@ -1,8 +1,8 @@
 'use client'
 import React from 'react'
-import Modal from '@/components/modal';
-import BasicButton from '@/components/button';
+import { Modals } from '@/components/(reusable)/modals';
 import { useState } from 'react';
+import { Buttons } from '@/components/(reusable)/buttons';
 
 export default function signOutModal() {
     const [isOpen, setIsOpen] = useState(false);
@@ -10,13 +10,13 @@ export default function signOutModal() {
 
   return (
     <div>
-        <button onClick={() => setIsOpen(true)}>
+        <Buttons onClick={() => setIsOpen(true)} variant="red" size="default">
             <p>Sign Out</p>
-        </button>
+        </Buttons>
 
-        <Modal handleClose={() => setIsOpen(false)} isOpen={isOpen}>
+        <Modals handleClose={() => setIsOpen(false)} isOpen={isOpen} type="signOut" variant={"default"} size={"sm"}>
             Are you sure you want to sign out of your account?
-        </Modal>
+        </Modals>
     </div>
   )
 }
