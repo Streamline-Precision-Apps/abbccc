@@ -9,7 +9,7 @@ const Checkbox: React.FC = () => {
   };
 
   return (
-    <div className="bg-white text-gray-800 font-semibold py-6 px-8 border border-gray-400 font-bold rounded flex items-center w-50 h-35">
+    <div className="bg-white text-gray-800 py-6 px-8 border border-gray-400 font-bold rounded flex items-center w-50 h-35">
       <input
         type="checkbox"
         checked={checked}
