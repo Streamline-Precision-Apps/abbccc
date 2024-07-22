@@ -24,7 +24,7 @@ import { useScanData } from '@/app/context/JobSiteContext';
         const [filteredOptions, setFilteredOptions] = useState<Option[]>([]);
         const [selectedOption, setSelectedOption] = useState<Option | null>(null);
         const router = useRouter();
-        const t = useTranslations('page4');
+        const t = useTranslations('clock');
         const { setScanResult } = useScanData();
         const { setCostCode } = useSavedCostCode();
         const options = CostCodeOptions(datatype);
@@ -46,7 +46,6 @@ import { useScanData } from '@/app/context/JobSiteContext';
         if (datatype === 'jobsite') {
             setScanResult({ data: option.code });
         }
-        setAuthStep("verify");
         setSearchTerm(option.label);
         };
         //  Handle search input change
@@ -55,31 +54,15 @@ import { useScanData } from '@/app/context/JobSiteContext';
         };
 
         // Handle form submission
-        const handleSubmit = () => {
-        if (selectedOption) { 
-
-            if (datatype === 'costcode') {
-                router.push("/clock/verify");
-                }
-            if (datatype === 'jobsite') {
-                setAuthStep("clock");
-                router.push("/clock/costcode");
-                }
-        } else {
-            console.log('No option selected');
-            }
-        };
     
         return (
         <div className="flex flex-col items-center w-1/2 m-auto">
-            <h1>{t('title')}</h1>
+            <h1>{t(`title-${datatype}-bar`)}</h1>
             <SearchBar searchTerm={searchTerm} onSearchChange={handleSearchChange} />
 
             <CustomSelect options={filteredOptions} 
             placeholder={t('placeholder')} onOptionSelect={handleOptionSelect} 
             selectedOption={selectedOption} />
-
-            <button className="bg-orange-500 text-black font-bold text-4xl p-2 rounded" onClick={handleSubmit}>{t('submit')}</button>
         </div>
         );
     };

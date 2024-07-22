@@ -84,14 +84,8 @@ export async function CreateTimeSheet(formData: FormData) {
             },
         });
         console.log("Timesheet created successfully.");
-        const timesheetId = newTimeSheet.id;
-
-        // Revalidate the path
-        await revalidatePath(`/clock/success/${timesheetId}`);
+        return newTimeSheet;
         
-        // Redirect to the success page
-        redirect(`/clock/success/${timesheetId}`);
-
 } catch (error) {
     console.error("Error creating timesheet:", error);
     throw error;
