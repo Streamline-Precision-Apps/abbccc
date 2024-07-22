@@ -13,8 +13,7 @@ export default function ClockInWidget({ user }: Props) {
     const router = useRouter();
 
     const loadNextPage = async () => {
-        await setAuthStep("success");
-        router.push("/clock/Qr");
+        router.push("/clock");
     }
 
     return (

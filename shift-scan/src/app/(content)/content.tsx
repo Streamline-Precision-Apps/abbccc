@@ -72,7 +72,7 @@ export default function Content() {
     );
   }
 
-  if (authStep === null ) {
+  if (authStep === null || authStep === "") {
     return (
       <>
         <AppUser user={user} />
