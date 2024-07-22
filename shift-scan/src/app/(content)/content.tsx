@@ -12,6 +12,8 @@ import { useSavedPayPeriodHours } from "../context/SavedPayPeriodHours";
 import { useSavedUserData } from "../context/UserContext";
 import { getAuthStep } from "../api/auth";
 import DisplayBreakTime from "../displayBreakTime";
+import { redirect } from "next/dist/server/api-utils";
+import { useRouter } from "next/navigation";
 
 // I put this into the content page to allow all the pages
 // to have access to the user object
@@ -22,6 +24,7 @@ export default function Content() {
   const { payPeriodHours, setPayPeriodHours } = useSavedPayPeriodHours();
   const [toggle, setToggle] = useState(true);
   const { savedUserData, setSavedUserData } = useSavedUserData();
+  const router = useRouter();
   const [user, setData] = useState<User>({
     id: "",
     name: "",
@@ -29,6 +32,12 @@ export default function Content() {
     lastName: "",
     permission: "",
   });
+
+  useEffect(() => {
+    if (authStep ==="success") {
+      router.push("/dashboard");
+    }
+  }, []);
 
   useEffect(() => {
     if (session && session.user) {
@@ -69,7 +78,7 @@ export default function Content() {
     );
   }
 
-  if (authStep === null || authStep === "") {
+  else {
     return (
       <>
         <AppUser user={user} />
