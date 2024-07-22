@@ -3,13 +3,30 @@ import "@/app/globals.css";
 import { useState, ChangeEvent, useEffect } from "react";
 import Checkbox from "../checkBox";
 import Signature from "../injury-verification/Signature";
+import { useSavedInjuryReportData } from "@/app/context/InjuryReportDataContext";
+import { CreateInjuryForm } from "@/actions/injuryReportActions";  // Import the server action
 
-export const InjuryForm = () => {
+export const InjuryReportContent = () => {
   const [checked, setChecked] = useState<boolean>(false);
   const [textarea, setTextarea] = useState<string>("");
   const [signatureBlob, setSignatureBlob] = useState<Blob | null>(null);
   const [signatureUrl, setSignatureUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const { savedInjuryReportData, setSavedInjuryReportData } =
+    useSavedInjuryReportData();
+
+  useEffect(() => {
+    if (savedInjuryReportData) {
+      setChecked(savedInjuryReportData.contactedSupervisor);
+      setTextarea(savedInjuryReportData.incidentDescription);
+      if (savedInjuryReportData.signatureBlob) {
+        const url = URL.createObjectURL(
+          new Blob([savedInjuryReportData.signatureBlob])
+        );
+        setSignatureUrl(url);
+      }
+    }
+  }, [savedInjuryReportData]);
 
   const handleCheckboxChange = (newChecked: boolean) => {
     setChecked(newChecked);
@@ -35,6 +52,31 @@ export const InjuryForm = () => {
 
   const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     setTextarea(event.target.value);
+  };
+
+  const handleSubmit = async () => {
+    if (!textarea) {
+      setError("Please describe what happened.");
+      return;
+    }
+    const formData = new FormData();
+    formData.append("contactedSupervisor", checked.toString());
+    formData.append("incidentDescription", textarea);
+    if (signatureBlob) {
+      formData.append("signature", signatureBlob);
+    }
+    try {
+      await CreateInjuryForm(formData);  // Use the server action to create the form
+      setSavedInjuryReportData({
+        contactedSupervisor: checked,
+        incidentDescription: textarea,
+        signatureBlob: signatureBlob ? await signatureBlob.text() : "",
+      });
+      setError(null);
+      // Add success feedback, e.g., redirect or show a message
+    } catch (error) {
+      setError("Failed to submit the form. Please try again.");
+    }
   };
 
   useEffect(() => {
@@ -77,6 +119,12 @@ export const InjuryForm = () => {
           )}
           {error && <p className="text-red-500">{error}</p>}
         </div>
+        <button
+          onClick={handleSubmit}
+          className="mt-4 bg-blue-500 text-white p-2 rounded"
+        >
+          Submit
+        </button>
       </div>
     </div>
   );
