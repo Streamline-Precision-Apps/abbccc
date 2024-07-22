@@ -1,6 +1,6 @@
 import "@/app/globals.css";
 import {cookies} from "next/headers"
-import Qr from "../../clock/Qr/page";
+import Qr from "@/components/(clock)/qr";
 import Clock from "../../clock/page";
 
 export default function MyTeam(){
