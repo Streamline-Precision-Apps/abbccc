@@ -1,21 +1,18 @@
 "use server";
 import prisma from "@/lib/prisma";
-import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
-import TitleBox from "@/components/titleBox";
-import { TitleContainer } from "@/components/(text)/title_container";
-import Image from "next/image";
 import { Input } from "@nextui-org/react";
-import DynamicSection from "@/components/dynamicSection";
+import { Sections } from "@/components/(reusable)/sections";
+import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 
 export default async function EmployeeInfo() {
 
     const employee = await prisma.user.findUnique(
         {
             where: {
-                id: 1
+                id: "1"
             },
             include: {
-                users: true, // we want the saved user data here
+                // users: true, // we want the saved user data here
             }
         },
     );
@@ -28,13 +25,15 @@ export default async function EmployeeInfo() {
     })
 
     return (
-        <div className=' h-auto w-full lg:w-1/2 m-auto border-t-2 border-l-2 border-r-2 p-5 border-black rounded-t-2xl'>
-            <TitleBox
-            title={employee?.first_name + " " + employee?.last_name}
-            titleImg="/profile-icon.png"
-            titleImgAlt="Profile Image"
-            />
-            <DynamicSection>
+        <div>
+            <Sections size={"titleBox"}>
+                <TitleBoxes
+                title={employee?.firstName + " " + employee?.lastName}
+                titleImg="/profile.svg"
+                titleImgAlt="Profile Image"
+                />
+            </Sections>
+            <Sections size={"dynamic"}>
                 <form action="" className=" p-5 mx-10 flex flex-col gap-5">
                     <div className='flex flex-col justify-center gap-1 items-center' >
                         <label htmlFor="">
@@ -82,7 +81,7 @@ export default async function EmployeeInfo() {
                     </div>
                 </form>
             
-            </DynamicSection>
+            </Sections>
         </div>
     );
 }
