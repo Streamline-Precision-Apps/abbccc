@@ -42,6 +42,7 @@ export default function Content() {
         lastName: session.user.lastName,
         permission: session.user.permission,
       });
+
       setHoursContext();
     }
   }, [session]);
@@ -54,6 +55,7 @@ export default function Content() {
     const totalhours = 20.45;
     setPayPeriodHours(String(totalhours));
   };
+  
 
   const authStep = getAuthStep();
 
@@ -67,7 +69,7 @@ export default function Content() {
     );
   }
 
-  if (authStep === null) {
+  if (authStep === null || authStep === "") {
     return (
       <>
         <AppUser user={user} />

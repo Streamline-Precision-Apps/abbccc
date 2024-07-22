@@ -14,7 +14,6 @@ import { useSavedUserData } from '@/app/context/UserContext';
 
 
 const Verify: React.FC = () => {
-    const router = useRouter();
     const t = useTranslations('page5');
     const [date] = useState(new Date());
     const { scanResult } = useScanData();

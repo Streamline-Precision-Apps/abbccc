@@ -195,7 +195,7 @@ model TimeSheet {
   start_time            DateTime
   end_time              DateTime?
   total_break_time      Float?
-  duration              Float? // this is the amount of time that was spent on a site
+  duration              Float?
   starting_mileage      Int?
   ending_mileage        Int?
   left_idaho            Boolean?   @default(false)

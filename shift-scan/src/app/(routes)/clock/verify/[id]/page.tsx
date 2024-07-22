@@ -63,7 +63,7 @@ const SuccessPage: React.FC = () => {
               )}
               </div>
               <p className="my-5">{t("lN4")}</p>
-              <RedirectAfterDelay delay={10000} to="/dashboard" />
+              <RedirectAfterDelay delay={3000} to="/dashboard" />
           </div>
       </div>
   );
