@@ -1,7 +1,7 @@
 "use client";
 import { useTranslations } from "next-intl";
 import "@/app/globals.css";
-import Modal from "@/components/modal";
+import { Modals } from "@/components/(reusable)/modals";
 import DashboardButtons from "@/components/dashboard-buttons";
 import {
   clearAuthStep,
@@ -10,7 +10,10 @@ import {
 } from "@/app/api/auth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import ButtonRout from "@/components/button";
+
+import { Buttons } from "@/components/(reusable)/buttons";
+import { Titles } from "@/components/(reusable)/titles";
+import { Images } from "@/components/(reusable)/images";
 
 export default function Index() {
   
@@ -67,46 +70,29 @@ export default function Index() {
   }, []);
 
   return isDashboardAuthenticated() ? (
-    <div className="mt-16 h-screen lg:w-1/2 block m-auto">
-      <div className="h-full bg-white flex flex-col items-center p-5 rounded-t-2xl">
-        <button
-          onClick={() => setIsOpen(true)}
-          className="bg-gray-300 w-1/4 py-2 rounded-lg text-black font-bold mt-5"
-        >
-          <p>Hamburger Menu</p>
-        </button>
-        <Modal handleClose={() => setIsOpen(false)} isOpen={isOpen}>
-          <ButtonRout
-            href="/hamburger/settings"
-            text="Settings"
-            color="bg-orange-500"
-            width="w-full"
-            height="h-12"
-          />
-          <ButtonRout
-            href="/hamburger/inbox"
-            text="Inbox"
-            color="bg-blue-500"
-            width="w-full"
-            height="h-12"
-          />
-          <ButtonRout
-            href="/hamburger/profile"
-            text="Profile"
-            color="bg-green-500"
-            width="w-full"
-            height="h-12"
-          />
-        </Modal>
-        <h1 className="text-3xl my-5">{t("Banner")}</h1>
-        <h2 className="text-xl my-2">
-          {t("Name", { firstName: user.firstName, lastName: user.lastName })}
-        </h2>
-        <h2 className="text-xl my-2">{t("Date", { date: user.date })}</h2>
-        <br />
-        <DashboardButtons />
-        <h2 className="text-xl my-5">{t("lN1")}</h2>
-      </div>
+    <div className="flex flex-col items-center space-y-4 ">
+      <button onClick={() => setIsOpen(true)}>
+        <p>Hamburger Menu</p>
+      </button>
+      <Modals handleClose={() => setIsOpen(false)} isOpen={isOpen}>
+        <Buttons href="/hamburger/settings" variant={"icon"} size={"small"}>
+          <Images titleImg={"/Settings.svg"} titleImgAlt={"settings"} variant={"icon"} size={"titlebox"} />
+        </Buttons>
+        <Buttons href="/hamburger/inbox" variant={"icon"} size={"small"}>
+          <Images titleImg={"/Inbox.svg"} titleImgAlt={"inbox"} variant={"icon"} size={"titlebox"} />
+        </Buttons>
+        <Buttons href="/hamburger/profile" variant={"icon"} size={"small"}>
+          <Images titleImg={"/profile.svg"} titleImgAlt={"profile"} variant={"icon"} size={"titlebox"} />
+        </Buttons>
+      </Modals>
+      <h1>{t("Banner")}</h1>
+      <h2>
+        {t("Name", { firstName: user.firstName, lastName: user.lastName })}
+      </h2>
+      <h2>{t("Date", { date: user.date })}</h2>
+      <br />
+      <DashboardButtons />
+      <h2>{t("lN1")}</h2>
     </div>
   ) : (
     <></>
@@ -116,3 +102,4 @@ export default function Index() {
 function handleBeforeUnload(this: Window, ev: BeforeUnloadEvent) {
   throw new Error("Function not implemented.");
 }
+
