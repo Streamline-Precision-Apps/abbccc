@@ -2,63 +2,64 @@
 import React, {useState} from 'react';
 import { useTranslations} from 'next-intl';
 import LocaleToggleSwitch from '@/components/(inputs)/toggleSwitch';
-import DynamicSection from '@/components/dynamicSection';
-import BasicButton from '@/components/button';
-import TitleBox from '@/components/titleBox';
+import { Sections } from '@/components/(reusable)/sections';
+import { Buttons } from '@/components/(reusable)/buttons';
 import SwitchWithLabel from '@/components/(inputs)/switchWithLabel';
-import BasicLabel from '@/components/(text)/label';
-// import LocaleLanguage from '@/components/(inputs)/checkBox';
-import TitleMedium from '@/components/(text)/title_h2';
-
+import { Titles } from '@/components/(reusable)/titles';
+import { TitleBoxes } from '@/components/(reusable)/titleBoxes';
+import { Bases } from '@/components/(reusable)/bases';
 import '@/app/globals.css';
-import Link from 'next/link';
-import EmptyBase from '@/components/emptyBase';
+import { Images } from '@/components/(reusable)/images';
+import { Texts } from '@/components/(reusable)/texts';
+
 
 
 export default function Index() {
     const t = useTranslations('PortalLogin');
 return (
     <div> 
-        <EmptyBase>
-            <TitleBox
-            title="Settings"
-            titleImg='/Settings.svg'
-            titleImgAlt="Settings"/>
-            <DynamicSection>
-            <TitleMedium>Notifications</TitleMedium>
+        <Bases>
+            <Sections size={"titleBox"}>
+                <TitleBoxes 
+                title="Settings" 
+                titleImg="/Settings.svg" 
+                titleImgAlt="Settings"  
+                variant={"default"} size={"default"}/>
+            </Sections>
+            <Sections size={"dynamic"}>
+            <Titles>Notifications</Titles>
                 <SwitchWithLabel>
-                    <BasicLabel>Approved Requests</BasicLabel>
+                    <Texts size={"left"}>Approved Requests</Texts>
                     <LocaleToggleSwitch></LocaleToggleSwitch>
                 </SwitchWithLabel>
                 <SwitchWithLabel>
-                    <BasicLabel>Time Off Requests</BasicLabel>
+                    <Texts>Time Off Requests</Texts>
                     <LocaleToggleSwitch></LocaleToggleSwitch>
                 </SwitchWithLabel>
                 <SwitchWithLabel>
-                    <BasicLabel>General Reminders</BasicLabel>
+                    <Texts>General Reminders</Texts>
                     <LocaleToggleSwitch></LocaleToggleSwitch>
                 </SwitchWithLabel>
-            </DynamicSection>
-            <DynamicSection>
-            <TitleMedium>Security</TitleMedium>
+            </Sections>
+            <Sections size={"dynamic"}>
+            <Titles>Security</Titles>
                 <SwitchWithLabel>
-                    <BasicLabel>Biometrics</BasicLabel>
-                    <LocaleToggleSwitch></LocaleToggleSwitch>
-                </SwitchWithLabel>
-                <SwitchWithLabel>
-                    <BasicLabel>Camera Access</BasicLabel>
+                    <Texts>Biometrics</Texts>
                     <LocaleToggleSwitch></LocaleToggleSwitch>
                 </SwitchWithLabel>
                 <SwitchWithLabel>
-                    <BasicLabel>Location Access</BasicLabel>
+                    <Texts>Camera Access</Texts>
                     <LocaleToggleSwitch></LocaleToggleSwitch>
                 </SwitchWithLabel>
-            </DynamicSection>
-            <DynamicSection>
-                {/* <LocaleLanguage></LocaleLanguage> */} <p></p>
-            </DynamicSection>
-            <BasicButton>Change Password</BasicButton>
-        </EmptyBase>
+                <SwitchWithLabel>
+                    <Texts>Location Access</Texts>
+                    <LocaleToggleSwitch></LocaleToggleSwitch>
+                </SwitchWithLabel>
+            </Sections>
+            <Buttons href="/hamburger/changePassword" variant={'orange'} size={'default'}>
+            <Titles>Change Password</Titles>
+            </Buttons>
+        </Bases>
     </div>
 );
 };

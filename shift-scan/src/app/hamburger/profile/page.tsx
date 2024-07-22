@@ -1,17 +1,15 @@
 // import { useTranslations} from 'next-intl';
 // import '@/app/globals.css';
-import EmptyBase from '@/components/emptyBase';
+import { Bases } from '@/components/(reusable)/bases';
 import SignOutModal from './signOutModal';
 import EmployeeInfo from './employeeInfo';
 
 
 export default function EmployeeProfile() {
 return (
-    <div> 
-        <EmptyBase>
+        <Bases size={"scroll"}>
             <EmployeeInfo/>
             <SignOutModal/>
-        </EmptyBase>
-    </div>
+        </Bases>
 );
 };
