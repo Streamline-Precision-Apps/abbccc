@@ -3,6 +3,8 @@ import React, { useEffect } from 'react'
 import { useState } from "react";
 import {Tab} from "@/components/(inputs)/tab";
 import { getSentContent } from '@/actions/inboxSentActions';
+import { Sections } from '../(reusable)/sections';
+import { Buttons } from '../(reusable)/buttons';
 
 export default function TabSection() {
   const [activeTab, setActiveTab] = useState(1);
@@ -37,12 +39,12 @@ export default function TabSection() {
             isTabActive= {activeTab === 2}
             />  
         </div>
-        <div className="p-6 rounded-2xl min-h-[200px] rounded-t-none bg-white">
+        <Sections variant={"tab"} size={"default"}>
           {activeTab === 1 && <ul> {formData.map((data, index) => ( <li key={index}>{data.firstName}</li> ))} </ul>}
-        
           {activeTab === 2 && <p>Received Content</p>}
-        </div>
-    </div>
+          <Buttons variant={"green"}>Add</Buttons>
+        </Sections>
+      </div>
     </div>
   )
 }
