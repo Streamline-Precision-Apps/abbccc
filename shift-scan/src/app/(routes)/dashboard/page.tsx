@@ -1,7 +1,7 @@
 "use client";
 import { useTranslations } from "next-intl";
 import "@/app/globals.css";
-import Modal from "@/components/modal";
+import { Modals } from "@/components/(reusable)/modals";
 import DashboardButtons from "@/components/dashboard-buttons";
 import {
   clearAuthStep,
@@ -10,7 +10,10 @@ import {
 } from "@/app/api/auth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import ButtonRout from "@/components/button";
+
+import { Buttons } from "@/components/(reusable)/buttons";
+import { Titles } from "@/components/(reusable)/titles";
+import { Images } from "@/components/(reusable)/images";
 
 export default function Index() {
   
@@ -71,11 +74,17 @@ export default function Index() {
       <button onClick={() => setIsOpen(true)}>
         <p>Hamburger Menu</p>
       </button>
-      <Modal handleClose={() => setIsOpen(false)} isOpen={isOpen}>
-          <ButtonRout href="/hamburger/settings" text="Settings" color="bg-orange-500 " width="w-50 " height="w-50 " />
-          <ButtonRout href="/hamburger/inbox" text="Inbox" color="bg-blue-500 " width="w-250 " height="w-250 " />
-          <ButtonRout href="/hamburger/profile" text="Profile" color="bg-green-500 " width="w-50 " height="w-50 " />
-      </Modal>
+      <Modals handleClose={() => setIsOpen(false)} isOpen={isOpen}>
+        <Buttons href="/hamburger/settings" variant={"icon"} size={"small"}>
+          <Images titleImg={"/Settings.svg"} titleImgAlt={"settings"} variant={"icon"} size={"titlebox"} />
+        </Buttons>
+        <Buttons href="/hamburger/inbox" variant={"icon"} size={"small"}>
+          <Images titleImg={"/Inbox.svg"} titleImgAlt={"inbox"} variant={"icon"} size={"titlebox"} />
+        </Buttons>
+        <Buttons href="/hamburger/profile" variant={"icon"} size={"small"}>
+          <Images titleImg={"/profile.svg"} titleImgAlt={"profile"} variant={"icon"} size={"titlebox"} />
+        </Buttons>
+      </Modals>
       <h1>{t("Banner")}</h1>
       <h2>
         {t("Name", { firstName: user.firstName, lastName: user.lastName })}
@@ -93,3 +102,8 @@ export default function Index() {
 function handleBeforeUnload(this: Window, ev: BeforeUnloadEvent) {
   throw new Error("Function not implemented.");
 }
+
+
+{/* <ButtonRout href="/hamburger/settings" text="Settings" color="bg-orange-500 " width="w-50 " height="w-50 " />
+          <ButtonRout href="/hamburger/inbox" text="Inbox" color="bg-blue-500 " width="w-250 " height="w-250 " />
+          <ButtonRout href="/hamburger/profile" text="Profile" color="bg-green-500 " width="w-50 " height="w-50 " /> */}
