@@ -70,13 +70,12 @@ export async function CreateInjuryForm(formData: FormData) {
       },
     });
     console.log("injuryForm created successfully.");
-    const injuryFormId = newInjuryForm.id;
 
     // Revalidate the path
-    await revalidatePath(`/clock/success/${injuryFormId}`);
+    await revalidatePath(`/dashboard/clock-out/clock-out-success`);
 
     // Redirect to the success page
-    redirect(`/clock/success/${injuryFormId}`);
+    redirect(`/dashboard/clock-out/clock-out-success`);
   } catch (error) {
     console.error("Error creating injuryForm:", error);
     throw error;
