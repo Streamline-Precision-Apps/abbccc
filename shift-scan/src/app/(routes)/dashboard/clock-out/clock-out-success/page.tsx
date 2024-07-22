@@ -6,7 +6,6 @@ import { useScanData } from "@/app/context/JobSiteContext";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useSavedClockInTime } from "@/app/context/ClockInTimeContext";
 import { useSavedBreakTime } from "@/app/context/SavedBreakTimeContext";
-import RedirectAfterDelay from "@/components/redirectAfterDelay";
 import { useSavedUserData } from "@/app/context/UserContext";
 import { useSavedTimeSheetData } from "@/app/context/TimeSheetIdContext";
 import {
@@ -29,9 +28,20 @@ const ClockOutSuccessPage: React.FC = () => {
   const { savedTimeSheetData } = useSavedTimeSheetData();
   const [clockOutTime, setClockOutTime] = useState(new Date(now()));
 
-  if (!isAuthenticated()) {
-    return null; // Placeholder for non-authenticated state handling
-  }
+  // if (!isAuthenticated()) {
+  //   return null; // Placeholder for non-authenticated state handling
+  // }
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    try {
+      await updateTimeSheet(new FormData(event.currentTarget));
+      setAuthStep("");
+      router.push("/"); // Redirect to home page on successful submission
+    } catch (error) {
+      console.error("Failed to submit the time sheet:", error);
+    }
+  };
 
   return (
     <div className="flex flex-col items-center">
@@ -46,7 +56,7 @@ const ClockOutSuccessPage: React.FC = () => {
       <p>Clock Out Time: {new Date().toString()}</p>
       <p>Successfully Clocked Out</p>
 
-      <form action={updateTimeSheet}>
+      <form onSubmit={handleSubmit}>
         <button
           type="submit"
           className="bg-app-blue w-1/2 h-1/6 py-4 px-5 rounded-lg text-black font-bold mt-5"
@@ -64,8 +74,6 @@ const ClockOutSuccessPage: React.FC = () => {
         <input type="hidden" name="timesheet_comments" value={""} />
         <input type="hidden" name="app_comments" value={""} />
       </form>
-
-      {/* <RedirectAfterDelay delay={5000} to="/" /> */}
     </div>
   );
 };
