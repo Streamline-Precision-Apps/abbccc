@@ -7,14 +7,14 @@ export const User = () => {
   const loadClockOutPage = () => {
     router.push("/dashboard/clock-out");
   };
+  function loadPage(href : string) {
+    router.push(href);
+  }
   return (
     <>
       <button
         className="bg-orange-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 border border-gray-400  font-bold rounded"
-        onClick={() => {
-          // <SwitchJobs />
-        }}
-      >
+        onClick={() => loadPage("/dashboard/switch-jobs")}>  
         {t("SwitchJobs")}
       </button>
 
