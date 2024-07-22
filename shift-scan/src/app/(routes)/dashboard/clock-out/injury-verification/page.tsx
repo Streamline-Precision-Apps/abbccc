@@ -10,7 +10,7 @@ import {
 } from "@/app/api/auth";
 import { useRouter } from "next/navigation";
 import Signature from "./Signature";
-import { TitleBox } from "@/app/(routes)/dashboard/myTeam/titleBox";
+import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 
 interface CheckboxProps {
   checked: boolean;
@@ -79,7 +79,13 @@ export default function InjuryVerification() {
 
   return (
     <div className="flex flex-col items-center space-y-4 w-full px-5 py-10 h-screen">
-      <TitleBox title="End Work Day" />
+      <TitleBoxes
+        title="My Team"
+        titleImg="/profile.svg"
+        titleImgAlt="Team"
+        variant={"default"}
+        size={"default"}
+      />
       <h1 className="text-3xl font-bold">
         By signing below, I certify that I suffered no injuries this day.
       </h1>
