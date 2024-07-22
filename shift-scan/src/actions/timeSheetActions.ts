@@ -144,6 +144,13 @@ export async function updateTimeSheet(formData: FormData, id: any) {
     console.log("Timesheet updated successfully.");
     console.log(updatedTimeSheet);
     setAuthStep("");
+    
+    // Revalidate the path
+    await revalidatePath(`/`);
+
+    // Redirect to the success page
+    redirect(`/dashboard/clock-out/clock-out-success`);
+
 } catch(error){
     console.log(error);
 }
