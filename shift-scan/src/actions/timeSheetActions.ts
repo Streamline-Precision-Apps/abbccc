@@ -2,6 +2,7 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { parse } from "path";
 
 
 
@@ -101,6 +102,44 @@ function parseUTC(dateString: any) {
     ));
 }
 
+    export async function editTimeSheet(formData: FormData) {
+    console.log("Editing Timesheet...");
+    console.log(formData);
+
+    function parseUTC(timestamp: string): Date {
+        const date = new Date(timestamp); // Directly parse the string as a date
+        if (isNaN(date.getTime())) {
+          throw new RangeError(`Invalid time value: ${timestamp}`);
+        }
+        date.setMinutes(date.getMinutes() - date.getTimezoneOffset()); // Adjust for the timezone offset
+        return date;
+      }
+
+    const id = formData.get("id");
+    const employeeId = formData.get("employeeId");
+    const costcode = formData.get("costcode");
+    const end_time = parseUTC(formData.get("end_time") as string);
+    const start_time = parseUTC(formData.get("start_time") as string);
+    const duration = (end_time.getTime() - start_time.getTime()) / (1000 * 60 * 60); // Duration in hours
+
+    if (!id) {
+        throw new Error("ID is required");
+    }
+
+    const timeSheet = await prisma.timeSheet.update({
+        where: { id: Number(id) },
+        data: {
+        costcode: costcode as string,
+        start_time: start_time.toISOString(),
+        end_time: end_time.toISOString(),
+        total_break_time: Number(formData.get("total_break_time") as string),
+        duration: duration || null,
+        },
+    });
+    console.log(timeSheet);
+    revalidatePath(`/dashboard/myTeam`);
+
+    }
 // provides a way to update a timesheet and will give supervisor access to all timesheets
 // and provide a way to alter them as needed by employee accuracy. 
 export async function updateTimeSheet(formData: FormData, id: any) {
