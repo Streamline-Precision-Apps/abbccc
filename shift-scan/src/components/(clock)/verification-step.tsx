@@ -11,6 +11,7 @@ import { Clock } from '../clock';
 import { setAuthStep } from '@/app/api/auth';
 import UserId from '../userId';
 
+
 const VerificationStep: React.FC<{ id: string | null; handleNextStep: () => void, type: string }> = ({ id, type, handleNextStep }) => {
   const t = useTranslations("clock");
   const { scanResult } = useScanData();
@@ -25,6 +26,9 @@ const VerificationStep: React.FC<{ id: string | null; handleNextStep: () => void
     try{
     e.preventDefault();
     // closing previous time sheet before starting new
+    if (id === null ) {
+      throw new Error("User id does not exist");
+    }
     if (type === "switchJobs") {
       try{
       console.log("The type is ", type);
