@@ -6,7 +6,7 @@ type Props = {
     type: string;
     id : string;
 }
-export default async function Clock({type}: Props) {
+export default async function Clock({type, id}: Props) {
     const user = cookies().get("user");
     const userstring = user?.value || null;
     const userId = userstring;
