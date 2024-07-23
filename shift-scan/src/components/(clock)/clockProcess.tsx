@@ -21,7 +21,7 @@ type clockProcessProps = {
     trailers: any[]; 
 };
 
-const ClockProcessor: React.FC<clockProcessProps> = ({ id,type }) => {
+const ClockProcessor: React.FC<clockProcessProps> = ({ id, type }) => {
 const t = useTranslations("page2");
 const [step, setStep] = useState(1);
 const [useQrCode, setUseQrCode] = useState(true);
@@ -81,6 +81,11 @@ const handleAlternativePath = () => {
 const handleBackAction = () => {
     setStep(1);
 };
+useEffect(() => {
+    return () => {
+      setStep(1); // Reset the number state when the component unmounts
+    };
+}, []);
 
 return (
     <div className="mt-16 h-screen lg:w-1/2 block m-auto">
@@ -106,7 +111,8 @@ return (
                 <h2 className="my-5">{t("lN3")} {savedCostCode}</h2>
                 <h2 className="my-5">{t("lN4")} {new Date().toLocaleDateString('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric' })}</h2>
             </div>
-            <RedirectAfterDelay delay={3000} to="/dashboard" />
+            <RedirectAfterDelay delay={3000} to="/dashboard"  />
+            
         </>
         )}
     </div>
