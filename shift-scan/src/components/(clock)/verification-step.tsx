@@ -20,26 +20,44 @@ const VerificationStep: React.FC<{ id: string | null; handleNextStep: () => void
   const [date] = useState(new Date());
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    try{
     e.preventDefault();
     // closing previous time sheet before starting new
     if (type === "switchJobs") {
+      try{
       console.log("The type is ", type);
 
       console.log("entered switch jobs:")
       const localeValue = localStorage.getItem("savedtimeSheetData");
       const id = JSON.parse(localeValue || "{}").id;
-
-      
       const formData = new FormData();
       formData.append('id', id?.toString() || '');
       formData.append('end_time', new Date().toISOString());
       formData.append('total_break_time', (0).toString());
-      formData.append('duration',  (0).toString());
       formData.append('timesheet_comments', '');
       formData.append('app_comment', 'Switched jobs');
       await updateTimeSheetBySwitch(formData);
-      console.log("closing previous time sheet before starting new");
+
+      const formData2 = new FormData();
+      formData2.append('submit_date', new Date().toISOString());
+      formData2.append('userId', id?.toString() || '');
+      formData2.append('date', new Date().toISOString());
+      formData2.append('jobsite_id', scanResult?.data || '');
+      formData2.append('costcode', savedCostCode?.toString() || '');
+      formData2.append('start_time', new Date().toISOString());
+  
+      const response = await CreateTimeSheet(formData2);
+      const result = {id: (response.id).toString()};
+      setSavedTimeSheetData(result);
+      setAuthStep('success');
+      handleNextStep();
+
     }
+    catch (error) { 
+      console.log(error);
+    }
+  }
+    else {
 
     
     const formData = new FormData();
@@ -55,7 +73,11 @@ const VerificationStep: React.FC<{ id: string | null; handleNextStep: () => void
     setSavedTimeSheetData(result);
     setAuthStep('success');
     handleNextStep();
-  };
+  }}
+  catch (error) {
+    console.log(error);
+  }
+} ;
 
   return (
     <>
