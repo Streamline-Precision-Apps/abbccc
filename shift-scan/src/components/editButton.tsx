@@ -1,8 +1,12 @@
 "use client";
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 
-export default function EditButton () {
-    const [edit, setEdit] = useState(false);
+type edit = {
+    edit: boolean
+    setEdit: Dispatch<SetStateAction<boolean>>
+}
+
+export default function EditButton({ edit, setEdit }: edit) {
 
     const editHandler = () => {
         setEdit(!edit);
