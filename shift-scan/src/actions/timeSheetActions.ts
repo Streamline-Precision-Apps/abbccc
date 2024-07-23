@@ -2,7 +2,6 @@
 import { PrismaClient } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { clearAuthStep, setAuthStep } from "@/app/api/auth";
 
 
 const prisma = new PrismaClient();
@@ -95,14 +94,14 @@ export async function CreateTimeSheet(formData: FormData) {
 function parseUTC(dateString: any) {
     const date = new Date(dateString);
     return new Date(Date.UTC(
-      date.getUTCFullYear(),
-      date.getUTCMonth(),
-      date.getUTCDate(),
-      date.getUTCHours(),
-      date.getUTCMinutes(),
-      date.getUTCSeconds()
+        date.getUTCFullYear(),
+        date.getUTCMonth(),
+        date.getUTCDate(),
+        date.getUTCHours(),
+        date.getUTCMinutes(),
+        date.getUTCSeconds()
     ));
-  }
+}
 
 // provides a way to update a timesheet and will give supervisor access to all timesheets
 // and provide a way to alter them as needed by employee accuracy. 
@@ -143,10 +142,9 @@ export async function updateTimeSheet(formData: FormData, id: any) {
     });
     console.log("Timesheet updated successfully.");
     console.log(updatedTimeSheet);
-    setAuthStep("");
     
     // Revalidate the path
-    await revalidatePath(`/`);
+    revalidatePath(`/`);
 
     // Redirect to the success page
     redirect(`/dashboard/clock-out/clock-out-success`);
@@ -155,6 +153,53 @@ export async function updateTimeSheet(formData: FormData, id: any) {
     console.log(error);
 }
 }
+
+export async function updateTimeSheetBySwitch(formData: FormData) {
+    try {
+        const parseDate = (timestamp: string) => {
+            const date = new Date(timestamp); // Directly parse the string as a date
+            if (isNaN(date.getTime())) {
+                throw new RangeError(`Invalid time value: ${timestamp}`);
+            }
+            date.setMinutes(date.getMinutes() - date.getTimezoneOffset()); // Adjust for the timezone offset
+            return date;
+        };
+    console.log("formData:", formData);
+    console.log("Updating Timesheet...");
+    const id = Number(formData.get("id"));
+    const end_time = parseUTC(formData.get("end_time"));
+    const start_time = parseUTC(formData.get("start_time"));
+    const duration = Math.floor(end_time.getSeconds() - start_time.getSeconds()) / 3600; // Duration in hours
+    const updatedTimeSheet = await prisma.timeSheet.update({
+    where: { id },
+    data: {
+
+        vehicle_id: Number(formData.get("vehicle_id") ) || null,
+        end_time: parseDate(formData.get("end_time") as string).toISOString(),
+        total_break_time: Number(formData.get("total_break_time") as string),
+        duration: duration || null,
+        starting_mileage: Number(formData.get("starting_mileage") ) || null,
+        ending_mileage: Number(formData.get("ending_mileage") ) || null,
+        left_idaho: Boolean(formData.get("left_idaho")) || null,
+        equipment_hauled: formData.get("equipment_hauled") as string || null,
+        materials_hauled: formData.get("materials_hauled") as string || null,
+        hauled_loads_quantity: Number(formData.get("hauled_loads_quantity") ) || null,
+        refueling_gallons: Number(formData.get("refueling_gallons") ) || null,
+        timesheet_comments: formData.get("timesheet_comments") as string,
+        app_comment: formData.get("app_comment") as string
+    },
+    });
+    console.log("Timesheet updated successfully.");
+    console.log(updatedTimeSheet);
+    
+    // Revalidate the path
+    revalidatePath(`/`);
+
+} catch(error){
+    console.log(error);
+}
+}
+
 
 
 // Delete TimeSheet by id

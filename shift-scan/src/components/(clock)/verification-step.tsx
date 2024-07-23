@@ -6,7 +6,7 @@ import { useSavedCostCode } from '@/app/context/CostCodeContext';
 import { useSavedClockInTime } from '@/app/context/ClockInTimeContext';
 import { useSavedTimeSheetData } from '@/app/context/TimeSheetIdContext';
 import { useSavedUserData } from '@/app/context/UserContext';
-import { CreateTimeSheet, updateTimeSheet } from '@/actions/timeSheetActions';
+import { CreateTimeSheet, updateTimeSheetBySwitch } from '@/actions/timeSheetActions';
 import { Clock } from '../clock';
 import { setAuthStep } from '@/app/api/auth';
 
@@ -23,20 +23,22 @@ const VerificationStep: React.FC<{ id: string | null; handleNextStep: () => void
     e.preventDefault();
     // closing previous time sheet before starting new
     if (type === "switchJobs") {
+      console.log("The type is ", type);
+
       console.log("entered switch jobs:")
       const localeValue = localStorage.getItem("savedtimeSheetData");
       const id = JSON.parse(localeValue || "{}").id;
 
       
       const formData = new FormData();
+      formData.append('id', id?.toString() || '');
       formData.append('end_time', new Date().toISOString());
       formData.append('total_break_time', (0).toString());
       formData.append('duration',  (0).toString());
       formData.append('timesheet_comments', '');
-      formData.append('app_comment', '');
-      await updateTimeSheet(formData, id);
+      formData.append('app_comment', 'Switched jobs');
+      await updateTimeSheetBySwitch(formData);
       console.log("closing previous time sheet before starting new");
-
     }
 
     
