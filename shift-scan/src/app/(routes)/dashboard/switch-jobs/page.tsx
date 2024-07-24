@@ -6,7 +6,7 @@ import Clock from "../../clock/page";
 export default async function MyTeam(){
     return (
     <>
-    <Clock type={"switchJobs"} id={""}/>
+    <Clock type={"switchJobs"}/>
     </>
     )
 }

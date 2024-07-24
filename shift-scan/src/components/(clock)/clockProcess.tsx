@@ -78,13 +78,8 @@ const handleAlternativePath = () => {
     handleNextStep();
 };
 
-const handleBackAction = () => {
-    setStep(1);
-};
 useEffect(() => {
-    return () => {
       setStep(1); // Reset the number state when the component unmounts
-    };
 }, []);
 
 return (

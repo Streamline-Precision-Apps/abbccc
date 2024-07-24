@@ -12,7 +12,7 @@ import { setAuthStep } from '@/app/api/auth';
 import UserId from '../userId';
 
 
-const VerificationStep: React.FC<{ id: string | null; handleNextStep: () => void, type: string }> = ({ id, type, handleNextStep }) => {
+const VerificationStep: React.FC<{ id: string | null; handleNextStep: () => void, type: string }> = ({ id, type, handleNextStep}) => {
   const t = useTranslations("clock");
   const { scanResult } = useScanData();
   const { savedCostCode } = useSavedCostCode();
