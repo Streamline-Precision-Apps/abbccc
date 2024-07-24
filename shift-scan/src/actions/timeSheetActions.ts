@@ -36,11 +36,6 @@ export async function fetchTimesheets(employeeId: string, date: string) {
     return timeSheets;
 }
 
-// alter the timeSheet function to include the date
-export async function handleFormSubmit(employeeId: string, date: string) {
-    date = new Date(date).toISOString();
-    return fetchTimesheets(employeeId, date);
-    }
 
 // Create TimeSheet
 // used at each login and will retain that timesheetId until the user logs out with switch jobsite
@@ -253,8 +248,4 @@ export async function deleteTimeSheet(id: number) {
     await prisma.timeSheet.delete({
         where: { id },
     });
-}
-
-function resdirect(arg0: string) {
-    throw new Error("Function not implemented.");
 }
