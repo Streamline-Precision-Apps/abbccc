@@ -62,3 +62,16 @@ I was able to get the ground working going for a submission and my intial idea i
 
 7/18/2024
 finished the connection for the first timecard subbmitt waiting to meet with sean on setting up the backend and looking for ways to implement the server action. I also add our real data to be able to start test casinf it when the data is submitting t the db each and everyday. I will now look into updating the timecards of employee via managers tools. Finished up, I push no broken code: working on jobsite switch while also making a plan/path for log equipment and other qr scanning.
+
+7/22/2024
+Today I looked in to the switch jobs function and saw alot of similarities with the clock out update statement. Started working on it and got arround to almost finishing it but there was a bugg or too. I also had a final project to finish up.
+
+7/23/24
+Today I went back and got the update working i also worked with sean on fixing the bug and found that it was a return issue. Also did some database tweaking.
+
+
+7/24/24
+Started up on the edit button page and noticed there wasa lot at work so I had to back petal and think more about the process of getting there. Had a problem with date and time converstions that was just lovely ultimately ditch the date time local attribute and just joined together the date and time attributes and it worked way better. I got the edits working as well tommorrow i am going to go back through condense files. I also want the cost code options to be visible there with the site. 
+
+7/25/24 
+Today I have accomplished the build of the edit jobs feature, it saves to the database and also has select statements that do the same thing. Today I want to look into the log in feature and go from there. Meeting starts in 30 so I am going to read into some typescript stuff.
