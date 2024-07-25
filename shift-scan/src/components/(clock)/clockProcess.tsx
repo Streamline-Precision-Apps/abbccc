@@ -5,6 +5,7 @@ import QRStep from "@/components/(clock)/qr-step";
 import StepButtons from "@/components/(clock)/step-buttons";
 import CodeStep from "@/components/(clock)/code-step";
 import VerificationStep from "./verification-step";
+import VerificationEQStep from "./verification-eq-step";
 import Clock from "@/app/(routes)/clock/page";
 import { useScanData } from "@/app/context/JobSiteContext";
 import RedirectAfterDelay from "@/components/redirectAfterDelay";
@@ -17,11 +18,9 @@ type clockProcessProps = {
     jobCodes: any[]; 
     CostCodes: any[]; // providing a future method of adding costcodes switch
     equipment: any[]; 
-    Vehicles: any[]; 
-    trailers: any[]; 
 };
 
-const ClockProcessor: React.FC<clockProcessProps> = ({ id, type }) => {
+const ClockProcessor: React.FC<clockProcessProps> = ({ id, type, equipment }) => {
 const t = useTranslations("page2");
 const [step, setStep] = useState(1);
 const [useQrCode, setUseQrCode] = useState(true);
@@ -41,28 +40,10 @@ useEffect(() => {
         if (processFilter === "J") {
             setPath("jobsite"); // Set path to jobsite Process;
         }
+        if (processFilter === "E") {
+            setPath("equipment"); // Set path to equipment Process;
+        }
 
-        // for future use of costcodes
-        // if (processFilter === "GP") {
-        //     setPath("General"); // Set path to general Process;
-        // }
-
-        // if (processFilter === "TK") {
-        //     setPath("Truck"); // Set path to truck Process;;
-        // }
-
-        // if (processFilter === "AG") { // TASCO - The Algumated Sugar company 
-        //     setPath("Algumated"); // Set path to "vehicles";
-        // }
-
-        // if (processFilter === "ME") {
-        //     setPath("Mechanic"); // Set path to mechanic;
-        // }
-        // // these next if statements are for Equipment Changes and Vehicles
-
-        // if (processFilter === "EQ") {
-        //     setPath("Equipment"); // Set path to "costcode";
-        // }
 
 
         setStep(3);
@@ -82,11 +63,37 @@ useEffect(() => {
       setStep(1); // Reset the number state when the component unmounts
 }, []);
 
+if (type === "equipment") {
+    return (
+        <div className="mt-16 h-screen lg:w-1/2 block m-auto">
+        <div className="bg-white h-full flex flex-col items-center p-5 rounded-t-2xl">
+            {step === 1 &&  (
+            <QRStep type="equipment" handleAlternativePath={handleAlternativePath} handleNextStep={handleNextStep} />
+            )}
+            {step === 2 &&  (
+            <CodeStep datatype="equipment" handlePrevStep={handlePrevStep} handleNextStep={handleNextStep} />
+            )}
+            {step === 3  && (
+            <VerificationEQStep type={type} id={id} equipment={equipment} handleNextStep={handleNextStep}  />
+            )}
+            {step === 4 && (
+            <>
+                <h1 className="flex justify-center text-2xl font-bold pt-10 pb-10">Process Completed</h1>
+                <p className="text-lg">Thank you! Your Equipment has been successfully Logged.</p>
+                <RedirectAfterDelay delay={3000} to="/dashboard"  /> 
+            </>
+            )}
+        </div>
+        </div>
+    );
+}
+
+
 return (
     <div className="mt-16 h-screen lg:w-1/2 block m-auto">
     <div className="bg-white h-full flex flex-col items-center p-5 rounded-t-2xl">
         {step === 1 &&  (
-        <QRStep handleAlternativePath={handleAlternativePath} handleNextStep={handleNextStep} />
+        <QRStep type="jobsite" handleAlternativePath={handleAlternativePath} handleNextStep={handleNextStep} />
         )}
         {step === 2 &&  (
         <CodeStep datatype="jobsite" handlePrevStep={handlePrevStep} handleNextStep={handleNextStep} />
@@ -114,5 +121,8 @@ return (
     </div>
 );
 };
+
+
+
 
 export default ClockProcessor;

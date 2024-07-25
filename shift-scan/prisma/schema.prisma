@@ -46,9 +46,10 @@ enum permission {
 
 // provides helpful tags to filter the equipment section, this will help with qr code reading too. 
 enum tags {
-  Truck
-  Trailer
-  Equipment
+  TRUCK
+  TRAILER
+  EQUIPMENT
+  VEHICLE
 }
 
 // Holds the login and general app data of employee but not all the data
@@ -215,17 +216,16 @@ model TimeSheet {
 
 //tracks notes on the used equipment, who used it, where, the condition its in, and for how long
 model EmployeeEquipmentLog {
-  id               Int       @id @default(autoincrement())
-  equipment_id     Int
-  jobsite_id       String
-  employee_id      String
-  start_time       DateTime
-  end_time         DateTime?
-  duration         Float?
-  equipment_notes  String?
-  equipment_status String    @default("Operational")
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  id              Int       @id @default(autoincrement())
+  equipment_id    String
+  jobsite_id      String
+  employee_id     String
+  start_time      DateTime
+  end_time        DateTime?
+  duration        Float?
+  equipment_notes String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   employee  User       @relation(fields: [employee_id], references: [id])
   Job       Jobsite    @relation(fields: [jobsite_id], references: [jobsite_id])
@@ -234,27 +234,31 @@ model EmployeeEquipmentLog {
 
 // This collection stores information about all company equipment. It includes a wide range of items such as company vehicles, trailers, handheld equipment, and heavy machinery. The purpose is to keep track of all assets the company owns and maintains.
 model Equipment {
-  id              Int       @id @default(autoincrement())
-  is_vehicle      Boolean
-  is_trailer      Boolean
-  qr_id           String    @unique
-  name            String
-  description     String
-  status          Boolean
-  equipment_tag   tags
-  last_inspection DateTime?
-  last_repair     DateTime?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  make            String?
-  model           String?
-  year            String?
-  license_plate   String?
-  is_registered   DateTime?
-  mileage         Int?
-  is_active       Boolean   @default(true)
+  id                      String          @id @default(cuid())
+  qr_id                   String          @unique @default(cuid())
+  name                    String
+  description             String
+  status                  formStatus      @default(PENDING)
+  equipment_tag           tags            @default(EQUIPMENT)
+  last_inspection         DateTime?
+  last_repair             DateTime?
+  equipment_status        equipmentStatus @default(OPERATIONAL)
+  createdAt               DateTime        @default(now())
+  updatedAt               DateTime        @updatedAt
+  make                    String?
+  model                   String?
+  year                    String?
+  license_plate           String?
+  registration_expiration DateTime?
+  mileage                 Int?
+  is_active               Boolean         @default(true)
 
   employeeEquipmentLogs EmployeeEquipmentLog[]
+}
+
+enum equipmentStatus {
+  OPERATIONAL
+  NEEDS_REPAIR
 }
 
 // This Table stores a collection of company Estimating codes. The purpose is to help in billing process. Very import for our project.

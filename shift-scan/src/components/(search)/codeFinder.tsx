@@ -46,6 +46,10 @@ import { useScanData } from '@/app/context/JobSiteContext';
         if (datatype === 'jobsite') {
             setScanResult({ data: option.code });
         }
+        if (datatype === 'equipment') {
+            setScanResult({ data: option.code });
+        }
+
         setSearchTerm(option.label);
         };
         //  Handle search input change

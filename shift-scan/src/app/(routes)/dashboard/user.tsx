@@ -20,10 +20,7 @@ export const User = () => {
 
       <button
         className="bg-green-300 hover:bg-gray-400 text-gray-800 font-semibold py-8 px-16 border border-gray-400  font-bold rounded"
-        onClick={() => {
-          // <Equipment modal needed />
-        }}
-      >
+        onClick={() => loadPage("/dashboard/equipment")}>  
         {t("Equipment")}
       </button>
 

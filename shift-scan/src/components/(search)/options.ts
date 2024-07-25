@@ -44,6 +44,15 @@ if (data == 'jobsite'){
     ];
     return options;
 }
+
+if (data == 'equipment'){
+    const options = [
+        { code : 'EQ-123456', label: 'Equipment 1' },   
+        { code : 'EQ-654321', label: 'Equipment 2' },
+        { code : 'EQ-789012', label: 'Equipment 3' },   
+    ];
+    return options;
+}
 else {
     throw new Error('Invalid data');
 }
