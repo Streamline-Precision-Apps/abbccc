@@ -118,8 +118,10 @@ export async function editTimeSheet(formData: FormData) {
         const costcode = formData.get("costcode");
         const end_time = parseUTC(formData.get("end_time") as string);
         const start_time = parseUTC(formData.get("start_time") as string);
-        const duration = (end_time.getTime() - start_time.getTime()) / (1000 * 60 * 60);
-    
+        const break_time = Number(formData.get("total_break_time") as string);
+        console.log(`break time: ${break_time}, {end_time}: ${end_time}, {start_time}: ${start_time},`);
+        const duration = ((end_time.getTime() - start_time.getTime()) / (1000 * 60 * 60) - (break_time)).toFixed(2);
+
         if (!id) {
         throw new Error("ID is required");
         }
@@ -131,7 +133,7 @@ export async function editTimeSheet(formData: FormData) {
             start_time: start_time.toISOString(),
             end_time: end_time.toISOString(),
             total_break_time: Number(formData.get("total_break_time") as string),
-            duration: duration || null,
+            duration: Number(duration),
         },
         });
     

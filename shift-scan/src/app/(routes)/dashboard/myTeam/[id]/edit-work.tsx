@@ -12,6 +12,7 @@ type Timesheet = {
   costcode: string;
   duration: string;
   submit_date: string;
+  employeeId: string;
 };
 type CostCode = {
   id: number;
@@ -28,22 +29,17 @@ type EditWorkProps = {
   costcodesData: CostCode[];
   jobsitesData: Jobsite[];
   timesheetData: Timesheet[];
+  handleFormSubmit: (employeeId: string, date: string, message?: string) => void;
+  setEdit: (edit: boolean) => void;
 };
 
-export default function EditWork({ timesheetData, jobsitesData, costcodesData, edit }: EditWorkProps) {
+export default function EditWork({ timesheetData, jobsitesData, costcodesData, edit, handleFormSubmit, setEdit}: EditWorkProps) {
   const [timesheets, setTimesheets] = useState<Timesheet[]>([]);
+  const [prevtimesheets, setprevTimesheets] = useState<Timesheet[]>(timesheetData);
   const [jobsites] = useState<Jobsite[]>(jobsitesData);
   const [costcodes] = useState<CostCode[]>(costcodesData);
   const [message, setMessage] = useState<string | null>(null);
 
-  const calculateDuration = (startTime: string, endTime: string) => {
-    const start = new Date(startTime).getHours();
-    console.log(startTime);
-    const end = new Date(endTime).getHours();
-    const duration = end - start;
-    console.log(`Calculating duration: start=${startTime}, end=${endTime}, duration=${duration}`);
-    return `${(duration).toString()}`;
-  };
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -51,10 +47,6 @@ export default function EditWork({ timesheetData, jobsitesData, costcodesData, e
     field: keyof Timesheet
   ) => {
     let value = e.target.value;
-    if (field === "start_time" || field === "end_time") {
-      value = new Date(e.target.value).toISOString();
-    }
-    console.log(`Input change: id=${id}, field=${field}, value=${value}`);
 
     setTimesheets((prevData) =>
       prevData.map((timesheet) =>
@@ -111,10 +103,14 @@ export default function EditWork({ timesheetData, jobsitesData, costcodesData, e
 
         await editTimeSheet(formData);
       }
-      setMessage("Changes saved successfully.");
+      handleFormSubmit(timesheets[0].employeeId, timesheets[0].submit_date, "Changes saved successfully.");
+      setEdit(false);
+
     } catch (error) {
       console.error("Failed to save changes", error);
       setMessage("Failed to save changes.");
+      setEdit(false);
+      handleFormSubmit(prevtimesheets[0].employeeId, prevtimesheets[0].submit_date);
     }
   };
 
@@ -134,6 +130,7 @@ export default function EditWork({ timesheetData, jobsitesData, costcodesData, e
       setTimesheets(initializedTimesheets);
     }
   }, [timesheetData]);
+
 
   return (
     <div>
