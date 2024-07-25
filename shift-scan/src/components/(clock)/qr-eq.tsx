@@ -2,24 +2,24 @@
 import React, { useEffect, useState, useRef, MutableRefObject } from "react";
 import QrScanner from "qr-scanner";
 import { useRouter } from 'next/navigation';
-import { useScanData } from '@/app/context/JobSiteContext';
+import { useEQScanData } from '@/app/context/equipmentContext';
 
 interface QrReaderProps {
 handleNextStep: () => void;
 }
 
-const QR: React.FC<QrReaderProps> = ({ handleNextStep }) => {
+const QR_EQ: React.FC<QrReaderProps> = ({ handleNextStep }) => {
 const videoRef: MutableRefObject<HTMLVideoElement | null> = useRef(null);
 const [qrScanner, setQrScanner] = useState<QrScanner | null>(null);
 const [scanCount, setScanCount] = useState(0);
-const { setScanResult } = useScanData();
+const { setscanEQResult } = useEQScanData();
 const router = useRouter();
 const SCAN_THRESHOLD = 200; // Number of scans before redirecting
 
 const onScanSuccess = (result: QrScanner.ScanResult) => {
 try {
     
-    setScanResult({ data: result.data });
+    setscanEQResult({ data: result.data });
     qrScanner?.stop();
     handleNextStep();
 
@@ -78,4 +78,4 @@ return (
 );
 };
 
-export default QR;
+export default QR_EQ;

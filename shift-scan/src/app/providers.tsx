@@ -10,6 +10,7 @@ import { SavedClockInTimeProvider } from "./context/ClockInTimeContext";
 import { SavedBreakTimeProvider } from "./context/SavedBreakTimeContext";
 import { SavedTimeSheetDataProvider } from "./context/TimeSheetIdContext";
 import { SavedInjuryReportDataProvider } from "./context/InjuryReportDataContext";
+import { ScanDataEQProvider } from "./context/equipmentContext";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -20,6 +21,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
           <SavedPayPeriodHoursProvider>
             <SavedCostCodeProvider>
               <ScanDataProvider>
+                <ScanDataEQProvider>
                 <SavedClockInTimeProvider>
                   <SavedTimeSheetDataProvider>
                     <SavedInjuryReportDataProvider>
@@ -27,6 +29,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
                     </SavedInjuryReportDataProvider>
                   </SavedTimeSheetDataProvider>
                 </SavedClockInTimeProvider>
+                </ScanDataEQProvider>
               </ScanDataProvider>
             </SavedCostCodeProvider>
           </SavedPayPeriodHoursProvider>

@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { initialUsers, initialContacts, initialJobsites, initialTimeSheets, initialCrews, initialCrewMembers, initialTrainings, initialCostCodes,initialCrewJobsites, UserTrainings } from "../src/data/dataValues";
+import { intialEmployeeEquipment, intialEquipment, initialUsers, initialContacts, initialJobsites, initialTimeSheets, initialCrews, initialCrewMembers, initialTrainings, initialCostCodes,initialCrewJobsites, UserTrainings } from "../src/data/dataValues";
 import {hash} from "bcryptjs";
 const prisma = new PrismaClient();
 
@@ -30,6 +30,10 @@ async function main() {
     for (const costCode of initialCostCodes) {
       const newCostCode = await prisma.costCode.create({ data: costCode });
       console.log("Created cost code with id: ", newCostCode.id);
+    }
+    for (const equip of intialEquipment) {
+      const newEquipment = await prisma.equipment.create({ data: equip });
+      console.log("Created equipment with id: ", newEquipment.id);
     }
 
     // Insert timesheets
@@ -65,6 +69,12 @@ async function main() {
     for (const training of UserTrainings) {
       const newEmployeeTraining = await prisma.userTrainings.create({ data: training });
       console.log("Created employee training with id: ", newEmployeeTraining.id);
+    }
+
+
+    for (const equipment of intialEmployeeEquipment) {
+      const newEmployeeEquipment = await prisma.employeeEquipmentLog.create({ data: equipment });
+      console.log("Created employee equipment with id: ", newEmployeeEquipment.id);
     }
 
     console.log('Sample data upserted successfully!');
