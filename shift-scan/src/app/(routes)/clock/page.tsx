@@ -13,10 +13,18 @@ export default async function Clock({type}: Props) {
     const jobCodes = await prisma.jobsite.findMany();
     const CostCodes = await prisma.costCode.findMany();
     const equipment = await prisma.equipment.findMany();
+
+    if (type === "equipment") {
+        return (
+            <div>
+            <ClockProcess type={type} id={userId} scannerType="EQ" jobCodes={jobCodes} CostCodes={CostCodes} equipment={equipment} />
+        </div>
+        );
+    }
     
         return (
             <div>
-            <ClockProcess type={type} id={userId} jobCodes={jobCodes} CostCodes={CostCodes} equipment={equipment} />
+            <ClockProcess type={type} id={userId} scannerType="Job" jobCodes={jobCodes} CostCodes={CostCodes} equipment={equipment} />
         </div>
     );
 }

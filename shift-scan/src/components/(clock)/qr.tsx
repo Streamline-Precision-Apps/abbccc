@@ -18,7 +18,8 @@ const SCAN_THRESHOLD = 200; // Number of scans before redirecting
 
 const onScanSuccess = (result: QrScanner.ScanResult) => {
 try {
-    
+    console.log(result.data);
+    console.log('I scanned using jobsite qr');
     setScanResult({ data: result.data });
     qrScanner?.stop();
     handleNextStep();
