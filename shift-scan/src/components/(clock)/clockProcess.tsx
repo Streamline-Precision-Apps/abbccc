@@ -108,7 +108,7 @@ return (
             <p className="text-lg">
             Thank you! Your Equipment has been successfully Logged.
             </p>
-            <RedirectAfterDelay delay={3000} to="/dashboard" />
+            <RedirectAfterDelay delay={2000} to="/dashboard" />
         </>
         )}
     </div>

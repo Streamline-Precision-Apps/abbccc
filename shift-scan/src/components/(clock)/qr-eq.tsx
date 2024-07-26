@@ -18,7 +18,8 @@ const SCAN_THRESHOLD = 200; // Number of scans before redirecting
 
 const onScanSuccess = (result: QrScanner.ScanResult) => {
 try {
-    
+    console.log(result.data);
+    console.log('Iscanned using equipment qrcode');
     setscanEQResult({ data: result.data });
     qrScanner?.stop();
     handleNextStep();
