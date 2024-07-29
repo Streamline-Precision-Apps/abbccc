@@ -3,7 +3,7 @@ import { HTMLAttributes, FC } from "react";
 import { cn } from "@/components/(reusable)/utils";
 
 const SectionVariants = cva(
-  "flex flex-col items-center", //this applies to all variants
+  "flex flex-col items-center max-w-lg mx-auto", //this applies to all variants
   {
     variants: {
       variant: {

@@ -20,14 +20,14 @@ export default function DashboardButtons() {
     user?.permission === "PROJECTMANAGER"
   ) {
     return (
-      <div className="grid grid-cols-2 grid-rows-3 gap-4">
+      <div className="grid grid-cols-2 grid-rows-3 gap-4 w-full m-4 p-4">
         <Manager />
         <User />
       </div>
     );
   } else {
     return (
-      <div className="grid grid-cols-2 grid-rows-2 gap-4">
+      <div className="grid grid-cols-2 grid-rows-2 gap-4 w-full m-4 p-4">
         <User />
       </div>
     );

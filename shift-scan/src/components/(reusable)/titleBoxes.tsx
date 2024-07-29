@@ -42,6 +42,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({className, variant, size, type, title, t
         return (
             <div className={cn(TitleBoxVariants({variant, size, className}))} {...props}>
                 <Titles variant={"default"} size={"h1"}>{title}</Titles>
+                {props.children}
             </div>
         )
     }
