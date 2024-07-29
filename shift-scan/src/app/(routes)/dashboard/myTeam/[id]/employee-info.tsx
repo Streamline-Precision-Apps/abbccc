@@ -1,8 +1,8 @@
 import prisma from "@/lib/prisma";
 import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
-import { TitleContainer } from "@/components/(text)/title_container";
 import Image from "next/image";
+import { Sections } from "@/components/(reusable)/sections";
 
 export default async function employeeInfo({ params }: Params) {
   const id = params.id;
@@ -23,31 +23,33 @@ export default async function employeeInfo({ params }: Params) {
 
   return (
     <div className=" h-auto w-full lg:w-1/2 m-auto border-t-2 border-l-2 border-r-2 p-5 border-black rounded-t-2xl">
-      <div className=" h-full w-11/12 flex flex-col items-center mx-auto rounded-2xl">
-        <TitleBoxes
-          title="My Team"
-          titleImg="/profile.svg"
-          titleImgAlt="Team"
-          variant={"default"}
-          size={"default"}
-        />
+      {/* <div className=" h-full w-11/12 flex flex-col items-center mx-auto rounded-2xl"> */}
+        <Sections size={"titleBox"}>
+          <TitleBoxes
+            title="My Team"
+            titleImg="/profile.svg"
+            titleImgAlt="Team"
+            variant={"default"}
+            size={"default"}
+          />
+        </Sections>
         <div className="mt-12 mb-3 bg-white h-full w-full flex flex-col   p-5 rounded-2xl overflow-y-auto">
-          <TitleContainer TitleofContainer="Phone Number">
+          <TitleBoxes title="Phone" titleImg="/phone.svg" titleImgAlt="Phone" type="titleOnly" variant={"default"} size={"default"}>
             {contacts?.phone_number}
-          </TitleContainer>
-          <TitleContainer TitleofContainer="Email">
+          </TitleBoxes>
+          <TitleBoxes title="Email" titleImg="/email.svg" titleImgAlt="Email" type="titleOnly" variant={"default"} size={"default"}>
             {contacts?.email}
-          </TitleContainer>
-          <TitleContainer TitleofContainer="Emergency Contact">
+          </TitleBoxes>
+          <TitleBoxes title="Emergency Contact" titleImg="/emergency.svg" titleImgAlt="Emergency Contact" type="titleOnly" variant={"default"} size={"default"}>
             {contacts?.emergency_contact}
-          </TitleContainer>
-          <TitleContainer TitleofContainer="Emergency Contact #">
+          </TitleBoxes>
+          <TitleBoxes title="Emergency Contact Number" titleImg="/phone.svg" titleImgAlt="Emergency Contact Number" type="titleOnly" variant={"default"} size={"default"}>
             {contacts?.emergency_contact_no}
-          </TitleContainer>
-          <TitleContainer TitleofContainer="Birth Date">
+          </TitleBoxes>
+          <TitleBoxes title="Date of Birth" titleImg="/dob.svg" titleImgAlt="Date of Birth" type="titleOnly" variant={"default"} size={"default"}>
             {employee?.DOB}
-          </TitleContainer>
-        </div>
+          </TitleBoxes>
+        {/* </div> */}
       </div>
     </div>
   );

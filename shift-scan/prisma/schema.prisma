@@ -36,20 +36,12 @@ datasource db {
 //SUPER ADMIN: Given All privelages and rights to change data and update things in the database. 
 //-------------------------------------------------------------------------------------------------//
 
-enum permission {
+enum Permission {
   USER
   MANAGER
   PROJECTMANAGER
   ADMIN
   SUPERADMIN
-}
-
-// provides helpful tags to filter the equipment section, this will help with qr code reading too. 
-enum tags {
-  TRUCK
-  TRAILER
-  EQUIPMENT
-  VEHICLE
 }
 
 // Holds the login and general app data of employee but not all the data
@@ -65,7 +57,7 @@ model User {
   tasco_view    Boolean
   labor_view    Boolean
   mechanic_view Boolean
-  permission    permission
+  permission    Permission
   email         String     @unique
   emailVerified DateTime?  @map("email_verified")
   phone         String
@@ -206,7 +198,7 @@ model TimeSheet {
   refueling_gallons     Float?
   timesheet_comments    String? // theses will be not nulled in the future
   app_comment           String? //this is a backend ai we want to develope to do filtered comments
-  status                formStatus @default(PENDING)
+  status                FormStatus @default(PENDING)
 
   user    User    @relation(fields: [userId], references: [id])
   jobsite Jobsite @relation(fields: [jobsite_id], references: [jobsite_id])
@@ -215,38 +207,50 @@ model TimeSheet {
 }
 
 //tracks notes on the used equipment, who used it, where, the condition its in, and for how long
+//tracks notes on the used equipment, who used it, where, the condition its in, and for how long
 model EmployeeEquipmentLog {
-  id                Int        @id @default(autoincrement())
-  equipment_id      String
-  jobsite_id        String
-  employee_id       String
-  start_time        DateTime
-  end_time          DateTime?
-  duration          Float?
-  equipment_notes   String?
-  refueling_gallons Float?
-  createdAt         DateTime   @default(now())
-  updatedAt         DateTime   @updatedAt
-  status            formStatus @default(PENDING)
-  completed         Boolean    @default(false) // equipment is filled out all the fields are happy determines color
-  submitted         Boolean    @default(false) // marks true when form is submitted at the end of day
+  id              Int       @id @default(autoincrement())
+  equipment_id    String
+  jobsite_id      String
+  employee_id     String
+  start_time      DateTime
+  end_time        DateTime?
+  duration        Float?
+  equipment_notes String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  completed       Boolean   @default(false) // equipment is filled out all the fields are happy determines color
+  submitted       Boolean   @default(false) // marks true when form is submitted at end of day
 
   employee  User       @relation(fields: [employee_id], references: [id])
   Job       Jobsite    @relation(fields: [jobsite_id], references: [jobsite_id])
   Equipment Equipment? @relation(fields: [equipment_id], references: [id])
 }
 
+enum equipmentStatus {
+  OPERATIONAL
+  NEEDS_REPAIR
+  NEEDS_MAINTENANCE
+}
+
+// provides helpful tags to filter the equipment section, this will help with qr code reading too. 
+enum Tags {
+  TRUCK
+  TRAILER
+  EQUIPMENT
+}
+
 // This collection stores information about all company equipment. It includes a wide range of items such as company vehicles, trailers, handheld equipment, and heavy machinery. The purpose is to keep track of all assets the company owns and maintains.
 model Equipment {
   id                      String          @id @default(cuid())
-  qr_id                   String          @unique @default(cuid())
+  qr_id                   String          @default(cuid())
   name                    String
   description             String
-  status                  formStatus      @default(PENDING)
-  equipment_tag           tags            @default(EQUIPMENT)
+  status                  FormStatus      @default(PENDING)
+  equipment_tag           Tags            @default(EQUIPMENT)
   last_inspection         DateTime?
   last_repair             DateTime?
-  equipment_status        equipmentStatus @default(OPERATIONAL)
+  equipment_status        EquipmentStatus @default(OPERATIONAL)
   createdAt               DateTime        @default(now())
   updatedAt               DateTime        @updatedAt
   make                    String?
@@ -256,11 +260,12 @@ model Equipment {
   registration_expiration DateTime?
   mileage                 Int?
   is_active               Boolean         @default(true)
+  // image                   Bytes?
 
   employeeEquipmentLogs EmployeeEquipmentLog[]
 }
 
-enum equipmentStatus {
+enum EquipmentStatus {
   OPERATIONAL
   NEEDS_REPAIR
 }
@@ -339,19 +344,19 @@ model Address {
 }
 
 // Provides options for form status column
-enum formStatus {
+enum FormStatus {
   PENDING
   APPROVED
   DENIED
 }
 
-enum formActive {
+enum FormActive {
   ACTIVE
   INACTIVE
 }
 
 // holds all possible form types
-enum formType {
+enum FormType {
   MEDICAL
   INSPECTION
   MANAGER
@@ -364,7 +369,7 @@ enum formType {
 model Form {
   id          Int      @id @default(autoincrement())
   createdAt   DateTime @default(now())
-  type        formType
+  type        FormType
   name        String
   description String
   content     String   @default("[]") // this will hold the content of the form, questions, fields, etc.
@@ -381,9 +386,9 @@ model FormSubmissions {
   userId    String
   createdAt DateTime   @default(now())
   formId    Int
-  type      formType
+  type      FormType
   submitted Boolean    @default(false)
-  status    formStatus @default(PENDING)
+  status    FormStatus @default(PENDING)
   form      Form       @relation(fields: [formId], references: [id])
 
   content String

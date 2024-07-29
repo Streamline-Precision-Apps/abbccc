@@ -10,6 +10,8 @@ const TextVariants = cva(
         default: "text-black",
         white: "text-white",
         disabled: "text-gray-600",
+        name: "pt-5 mt-5",
+        bottom: "absolute bottom-0",
       },
       size: {
         default: "text-2xl",
@@ -18,6 +20,7 @@ const TextVariants = cva(
         p2: "text-2xl",
         p3: "text-xl",
         p4: "text-lg",
+        sm: "text-sm",
       }
     },
     defaultVariants: {
