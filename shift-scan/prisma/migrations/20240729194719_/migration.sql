@@ -1,20 +1,23 @@
 -- CreateEnum
-CREATE TYPE "permission" AS ENUM ('USER', 'MANAGER', 'PROJECTMANAGER', 'ADMIN', 'SUPERADMIN');
+CREATE TYPE "Permission" AS ENUM ('USER', 'MANAGER', 'PROJECTMANAGER', 'ADMIN', 'SUPERADMIN');
 
 -- CreateEnum
-CREATE TYPE "tags" AS ENUM ('TRUCK', 'TRAILER', 'EQUIPMENT', 'VEHICLE');
+CREATE TYPE "equipmentStatus" AS ENUM ('OPERATIONAL', 'NEEDS_REPAIR', 'NEEDS_MAINTENANCE');
 
 -- CreateEnum
-CREATE TYPE "equipmentStatus" AS ENUM ('OPERATIONAL', 'NEEDS_REPAIR');
+CREATE TYPE "Tags" AS ENUM ('TRUCK', 'TRAILER', 'EQUIPMENT', 'VEHICLE');
 
 -- CreateEnum
-CREATE TYPE "formStatus" AS ENUM ('PENDING', 'APPROVED', 'DENIED');
+CREATE TYPE "EquipmentStatus" AS ENUM ('OPERATIONAL', 'NEEDS_REPAIR');
 
 -- CreateEnum
-CREATE TYPE "formActive" AS ENUM ('ACTIVE', 'INACTIVE');
+CREATE TYPE "FormStatus" AS ENUM ('PENDING', 'APPROVED', 'DENIED');
 
 -- CreateEnum
-CREATE TYPE "formType" AS ENUM ('MEDICAL', 'INSPECTION', 'MANAGER', 'LEAVE', 'SAFETY', 'INJURY');
+CREATE TYPE "FormActive" AS ENUM ('ACTIVE', 'INACTIVE');
+
+-- CreateEnum
+CREATE TYPE "FormType" AS ENUM ('MEDICAL', 'INSPECTION', 'MANAGER', 'LEAVE', 'SAFETY', 'INJURY');
 
 -- CreateTable
 CREATE TABLE "users" (
@@ -29,7 +32,7 @@ CREATE TABLE "users" (
     "tasco_view" BOOLEAN NOT NULL,
     "labor_view" BOOLEAN NOT NULL,
     "mechanic_view" BOOLEAN NOT NULL,
-    "permission" "permission" NOT NULL,
+    "permission" "Permission" NOT NULL,
     "email" TEXT NOT NULL,
     "email_verified" TIMESTAMP(3),
     "phone" TEXT NOT NULL,
@@ -144,7 +147,7 @@ CREATE TABLE "timesheets" (
     "refueling_gallons" DOUBLE PRECISION,
     "timesheet_comments" TEXT,
     "app_comment" TEXT,
-    "status" "formStatus" NOT NULL DEFAULT 'PENDING',
+    "status" "FormStatus" NOT NULL DEFAULT 'PENDING',
 
     CONSTRAINT "timesheets_pkey" PRIMARY KEY ("id")
 );
@@ -159,10 +162,8 @@ CREATE TABLE "EmployeeEquipmentLog" (
     "end_time" TIMESTAMP(3),
     "duration" DOUBLE PRECISION,
     "equipment_notes" TEXT,
-    "refueling_gallons" DOUBLE PRECISION,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "status" "formStatus" NOT NULL DEFAULT 'PENDING',
     "completed" BOOLEAN NOT NULL DEFAULT false,
     "submitted" BOOLEAN NOT NULL DEFAULT false,
 
@@ -175,11 +176,11 @@ CREATE TABLE "Equipment" (
     "qr_id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
-    "status" "formStatus" NOT NULL DEFAULT 'PENDING',
-    "equipment_tag" "tags" NOT NULL DEFAULT 'EQUIPMENT',
+    "status" "FormStatus" NOT NULL DEFAULT 'PENDING',
+    "equipment_tag" "Tags" NOT NULL DEFAULT 'EQUIPMENT',
     "last_inspection" TIMESTAMP(3),
     "last_repair" TIMESTAMP(3),
-    "equipment_status" "equipmentStatus" NOT NULL DEFAULT 'OPERATIONAL',
+    "equipment_status" "EquipmentStatus" NOT NULL DEFAULT 'OPERATIONAL',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "make" TEXT,
@@ -270,7 +271,7 @@ CREATE TABLE "Address" (
 CREATE TABLE "Form" (
     "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "type" "formType" NOT NULL,
+    "type" "FormType" NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "content" TEXT NOT NULL DEFAULT '[]',
@@ -286,9 +287,9 @@ CREATE TABLE "FormSubmissions" (
     "userId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "formId" INTEGER NOT NULL,
-    "type" "formType" NOT NULL,
+    "type" "FormType" NOT NULL,
     "submitted" BOOLEAN NOT NULL DEFAULT false,
-    "status" "formStatus" NOT NULL DEFAULT 'PENDING',
+    "status" "FormStatus" NOT NULL DEFAULT 'PENDING',
     "content" TEXT NOT NULL,
 
     CONSTRAINT "FormSubmissions_pkey" PRIMARY KEY ("id")
