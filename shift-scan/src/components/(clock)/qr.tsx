@@ -18,7 +18,8 @@ const SCAN_THRESHOLD = 200; // Number of scans before redirecting
 
 const onScanSuccess = (result: QrScanner.ScanResult) => {
 try {
-    
+    console.log(result.data);
+    console.log('I scanned using jobsite qr');
     setScanResult({ data: result.data });
     qrScanner?.stop();
     handleNextStep();
@@ -31,26 +32,6 @@ try {
         alert('Invalid QR code');
     }, 100); // Delay the alert by 100 milliseconds
 }
-// let dataFilter = data.slice(0, 1).toUpperCase();
-// // easy way to check if it's a valid QR code we might
-// //change this for a more robust solution with database lookups
-// const validCodes = ['J', 'E', 'V', 'T']; // Jobsite, Equipment, Vehicle, trailers
-// if (!validCodes.includes(dataFilter)) {
-//     qrScanner?.stop();
-//     router.back();
-//     setTimeout(() => {
-//         alert('Invalid QR code');
-//     }, 100); // Delay the alert by 100 milliseconds
-//     return;
-// }
-
-// else{
-// setScanResult({ data: result.data });
-
-// Stop the scanner
-// qrScanner?.stop();
-// Navigate to the new page
-// }
 };
 
 const onScanFail = (err: string | Error) => {
