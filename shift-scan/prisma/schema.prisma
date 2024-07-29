@@ -238,12 +238,13 @@ enum Tags {
   TRUCK
   TRAILER
   EQUIPMENT
+  VEHICLE
 }
 
 // This collection stores information about all company equipment. It includes a wide range of items such as company vehicles, trailers, handheld equipment, and heavy machinery. The purpose is to keep track of all assets the company owns and maintains.
 model Equipment {
   id                      String          @id @default(cuid())
-  qr_id                   String          @default(cuid())
+  qr_id                   String          @unique @default(cuid())
   name                    String
   description             String
   status                  FormStatus      @default(PENDING)
