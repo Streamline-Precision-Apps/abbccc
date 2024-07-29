@@ -15,8 +15,6 @@ import { useDBJobsite } from "@/app/context/dbJobsiteContext";
 import { useDBEquipment } from "@/app/context/dbEquipmentContext";
 import { useDBCostcode } from "@/app/context/dbCostcodeContext";
 
-
-
 type jobCodes = {
     id: number;
     jobsite_id: string;
@@ -34,14 +32,13 @@ type equipment = {
     name: string;
 }
 
-type clockProcessProps = {
-scannerType: string;
-id: string | null;
-type: string;
-
-jobCodes: jobCodes[];
-CostCodes: CostCode[];
-equipment: equipment[];
+interface clockProcessProps{
+    scannerType: string;
+    id: string | null;
+    type: string;
+    jobCodes: jobCodes[];
+    CostCodes: CostCode[];
+    equipment: equipment[];
 };
 
 const ClockProcessor: React.FC<clockProcessProps> = ({
@@ -65,11 +62,13 @@ const { costcodeResults, setCostcodeResults } = useDBCostcode();
 const { equipmentResults, setEquipmentResults } = useDBEquipment();
 
 useEffect(() => {
-setJobsiteResults(jobCodes);
-setCostcodeResults(CostCodes);
-setEquipmentResults(equipment);
-console.log("Are logged!");
-}, []);
+    setStep(1);
+    setJobsiteResults(jobCodes);
+    setCostcodeResults(CostCodes);
+    setEquipmentResults(equipment);
+}, [jobCodes, CostCodes, equipment, setJobsiteResults, setCostcodeResults, setEquipmentResults]);
+
+
 
 
 
@@ -106,9 +105,6 @@ setUseQrCode(false);
 handleNextStep();
 };
 
-useEffect(() => {
-setStep(1);
-}, [path]);
 
 if (type === "equipment") {
 return (
@@ -165,6 +161,7 @@ return (
         <CodeStep
         datatype="jobsite"
         handleNextStep={handleNextStep}
+
         />
     )}
     {step === 3 && path === "jobsite" && (
