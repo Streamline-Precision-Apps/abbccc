@@ -41,3 +41,30 @@ try {
     throw new Error(`Failed to create employee equipment log: ${error.message}`);
 }
 }
+
+
+
+export async function updateEmployeeEquipmentLog(formData: FormData) {
+    try {
+        console.log("Updating EmployeeEquipmentLog...");
+        console.log(formData);
+        const id = formData.get("id") as string;
+    
+        const log = await prisma.employeeEquipmentLog.update({
+        where: { id: Number(id),
+        },
+        data: {
+            end_time:(new Date(formData.get('end_time') as string).toISOString()),
+            duration: Number(formData.get('duration') as string),
+            equipment_notes: formData.get('equipment_notes') as string,
+        }
+        });
+    
+        revalidatePath('/');
+        return log;
+    } catch (error:any) {
+        console.error("Error updating employee equipment log:", error);
+        throw new Error(`Failed to update employee equipment log: ${error.message}`);
+    }
+    }
+    
