@@ -2,10 +2,10 @@
 CREATE TYPE "permission" AS ENUM ('USER', 'MANAGER', 'PROJECTMANAGER', 'ADMIN', 'SUPERADMIN');
 
 -- CreateEnum
-CREATE TYPE "tags" AS ENUM ('TRUCK', 'TRAILER', 'EQUIPMENT');
+CREATE TYPE "tags" AS ENUM ('TRUCK', 'TRAILER', 'EQUIPMENT', 'VEHICLE');
 
 -- CreateEnum
-CREATE TYPE "equipmentStatus" AS ENUM ('OPERATIONAL', 'NEEDS_REPAIR', 'NEEDS_MAINTENANCE');
+CREATE TYPE "equipmentStatus" AS ENUM ('OPERATIONAL', 'NEEDS_REPAIR');
 
 -- CreateEnum
 CREATE TYPE "formStatus" AS ENUM ('PENDING', 'APPROVED', 'DENIED');
@@ -159,8 +159,10 @@ CREATE TABLE "EmployeeEquipmentLog" (
     "end_time" TIMESTAMP(3),
     "duration" DOUBLE PRECISION,
     "equipment_notes" TEXT,
+    "refueling_gallons" DOUBLE PRECISION,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "status" "formStatus" NOT NULL DEFAULT 'PENDING',
     "completed" BOOLEAN NOT NULL DEFAULT false,
     "submitted" BOOLEAN NOT NULL DEFAULT false,
 

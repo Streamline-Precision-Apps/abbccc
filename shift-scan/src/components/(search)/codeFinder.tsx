@@ -8,6 +8,7 @@ import { useSavedCostCode } from '@/app/context/CostCodeContext';
 import { setAuthStep } from '@/app/api/auth';
 import {CostCodeOptions} from '@/components/(search)/options';
 import { useScanData } from '@/app/context/JobSiteContext';
+import { useEQScanData } from '@/app/context/equipmentContext';
 // Option interface
     interface Option {
         code: string;
@@ -16,6 +17,7 @@ import { useScanData } from '@/app/context/JobSiteContext';
         
         type props = {
         datatype: string
+        
     }
     // Static options array
     export default function CodeFinder({datatype} : props) {
@@ -26,13 +28,16 @@ import { useScanData } from '@/app/context/JobSiteContext';
         const router = useRouter();
         const t = useTranslations('clock');
         const { setScanResult } = useScanData();
+        const { setscanEQResult} = useEQScanData();
         const { setCostCode } = useSavedCostCode();
         const options = CostCodeOptions(datatype);
         // Filter options based on search term
         useEffect(() => {
         setFilteredOptions(
-            options.filter((option) =>
-            option.label.toLowerCase().includes(searchTerm.toLowerCase())
+            options
+            .flat() // Flatten the nested array
+            .filter((option) =>
+                option.label.toLowerCase().includes(searchTerm.toLowerCase())
             )
         );
         }, [searchTerm]);
@@ -44,8 +49,19 @@ import { useScanData } from '@/app/context/JobSiteContext';
             setCostCode(option.code);
         }
         if (datatype === 'jobsite') {
+            if (localStorage.getItem('jobSite')) {
+                localStorage.removeItem('jobSite');
+            }
             setScanResult({ data: option.code });
+            localStorage.setItem('jobSite', option.code);
         }
+        if (datatype === 'equipment') {
+            setscanEQResult({ data: option.code });
+            const jobSite = localStorage.getItem('jobSite');
+            const value = jobSite ? jobSite : '';
+            setScanResult({ data: value});
+        }
+
         setSearchTerm(option.label);
         };
         //  Handle search input change
