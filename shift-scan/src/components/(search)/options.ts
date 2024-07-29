@@ -1,8 +1,6 @@
-// Context providers
-import { DbEquipmentProvider, useDBEquipment } from "@/app/context/dbEquipmentContext";
-import { DbjobsiteProvider, useDBJobsite } from "@/app/context/dbJobsiteContext";
-import { DbcostcodeProvider, useDBCostcode } from "@/app/context/dbCostcodeContext";
-
+import { useDBEquipment } from "@/app/context/dbEquipmentContext";
+import { useDBJobsite } from "@/app/context/dbJobsiteContext";
+import { useDBCostcode } from "@/app/context/dbCostcodeContext";
 
 type jobCodes = {
     id: number;
