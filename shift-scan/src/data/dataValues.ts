@@ -4,11 +4,6 @@ import { Prisma} from "@prisma/client";
 
 // jobsites
 export const initialJobsites: Prisma.JobsiteCreateInput[]  = [
-{ jobsite_id: "12345", jobsite_name: "First Site", jobsite_active: true, createdAt: new Date(), updatedAt: new Date(),},
-{ jobsite_id: "23456" , jobsite_name: "Second Site", jobsite_active: true, createdAt: new Date(), updatedAt: new Date(),},
-{ jobsite_id: "34567", jobsite_name: "Third Site", jobsite_active: true, createdAt: new Date(), updatedAt: new Date(),},
-{ jobsite_id: "45678", jobsite_name: "Fourth Site", jobsite_active: true, createdAt: new Date(), updatedAt: new Date(),},
-{ jobsite_id: "56789",  jobsite_name: "Fifth Site", jobsite_active: true, createdAt: new Date(), updatedAt: new Date(),},
 { jobsite_id: "67890", jobsite_name: "Sixth Site", jobsite_active: true, createdAt: new Date(), updatedAt: new Date(),},
 { jobsite_id: "j123", jobsite_name: "Jobsite 1", jobsite_active: true, createdAt: new Date(), updatedAt: new Date(),}, 
 { jobsite_id: "j234", jobsite_name: "Jobsite 2", jobsite_active: true, createdAt: new Date(), updatedAt: new Date() },
@@ -92,17 +87,6 @@ export const initialContacts: Prisma.ContactCreateInput[] = [
 ]
 // initializing cost codes
 export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
-{ cost_code: "G-1.30", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "Payroll", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] }},
-{ cost_code: "G-1.50", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "Pour cement", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] }},
-{ cost_code: "G-2.30", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "Labour", cost_code_type: "", Jobsite:{ connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] }},
-{ cost_code: "G-2.80", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "lift truck", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] }},
-{ cost_code: "G-8.50", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "Picking", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] }},
-{ cost_code: "G-8.30", createdAt: "2021-06-01T00:00:00.000Z", updatedAt: "2021-06-01T00:00:00.000Z", cost_code_description: "Packing", cost_code_type: "", Jobsite:{ connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] }},
-{ cost_code: "G-7.30", createdAt: "2021-06-01T00:00:00.000Z", updatedAt: "2021-06-01T00:00:00.000Z", cost_code_description: "Roofing", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] }},
-{ cost_code: "G-6.30", createdAt: "2021-06-01T00:00:00.000Z", updatedAt: "2021-06-01T00:00:00.000Z", cost_code_description: "Building", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] }},
-{ cost_code: "G-4.30",    createdAt: "2021-06-01T00:00:00.000Z", updatedAt: "2021-06-01T00:00:00.000Z", cost_code_description: "Delivery", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] }},
-{ cost_code: "G-5.30", createdAt: "2021-06-01T00:00:00.000Z", updatedAt: "2021-06-01T00:00:00.000Z",   cost_code_description: "Demolishing", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] }},
-{ cost_code: "#cc123gdj1", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z",cost_code_description: "Hauling", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] }},
 { cost_code: "#cc123gdj1", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "1.0 Earthwork", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] } },
 { cost_code: "#cc123gdj2", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "2.0 Foundation", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] } },
 { cost_code: "#cc123gdj3", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "3.0 Concrete", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] } },

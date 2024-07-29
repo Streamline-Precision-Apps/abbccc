@@ -45,10 +45,11 @@ export default async function Clock({type}: Props) {
         </div>
         );
     }
-    
+    else {
         return (
             <div>
             <ClockProcess type={type} id={userId} scannerType="Job" jobCodes={jobCodes} CostCodes={CostCodes} equipment={equipment} />
         </div>
     );
+}
 }
