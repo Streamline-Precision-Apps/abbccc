@@ -1,7 +1,6 @@
 "use client";
 import { useTranslations } from "next-intl";
 import "@/app/globals.css";
-import { Modals } from "@/components/(reusable)/modals";
 import DashboardButtons from "@/components/dashboard-buttons";
 import {
   clearAuthStep,
@@ -11,9 +10,16 @@ import {
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { Bases } from "@/components/(reusable)/bases";
+import { Sections } from "@/components/(reusable)/sections";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
 import { Images } from "@/components/(reusable)/images";
+import { Modals } from "@/components/(reusable)/modals";
+import { Headers } from "@/components/(reusable)/headers";
+import { Banners } from "@/components/(reusable)/banners";
+import { Texts } from "@/components/(reusable)/texts";
+import { Footers } from "@/components/(reusable)/footers";
 
 export default function Index() {
   
@@ -70,30 +76,18 @@ export default function Index() {
   }, []);
 
   return isDashboardAuthenticated() ? (
-    <div className="flex flex-col items-center space-y-4 ">
-      <button onClick={() => setIsOpen(true)}>
-        <p>Hamburger Menu</p>
-      </button>
-      <Modals handleClose={() => setIsOpen(false)} isOpen={isOpen}>
-        <Buttons href="/hamburger/settings" variant={"icon"} size={"small"}>
-          <Images titleImg={"/Settings.svg"} titleImgAlt={"settings"} variant={"icon"} size={"titlebox"} />
-        </Buttons>
-        <Buttons href="/hamburger/inbox" variant={"icon"} size={"small"}>
-          <Images titleImg={"/Inbox.svg"} titleImgAlt={"inbox"} variant={"icon"} size={"titlebox"} />
-        </Buttons>
-        <Buttons href="/hamburger/profile" variant={"icon"} size={"small"}>
-          <Images titleImg={"/profile.svg"} titleImgAlt={"profile"} variant={"icon"} size={"titlebox"} />
-        </Buttons>
-      </Modals>
-      <h1>{t("Banner")}</h1>
-      <h2>
-        {t("Name", { firstName: user.firstName, lastName: user.lastName })}
-      </h2>
-      <h2>{t("Date", { date: user.date })}</h2>
-      <br />
-      <DashboardButtons />
-      <h2>{t("lN1")}</h2>
-    </div>
+    <Bases variant={"default"} size={"default"}>
+      <Sections size={"default"}>
+        <Headers variant={"relative"} size={"default"}></Headers>
+        <Banners variant={"default"} size={"default"}>
+          <Titles variant={"default"} size={"h1"}>{t("Banner")}</Titles>
+          <Texts variant={"default"} size={"p1"}>{t("Date", { date: user.date })}</Texts>
+        </Banners>
+        <Texts variant={"name"} size={"p1"}>{t("Name", { firstName: user.firstName, lastName: user.lastName })}</Texts>
+        <DashboardButtons/>
+        <Footers >{t("lN1")}</Footers>
+      </Sections>
+    </Bases>
   ) : (
     <></>
   );
@@ -102,4 +96,3 @@ export default function Index() {
 function handleBeforeUnload(this: Window, ev: BeforeUnloadEvent) {
   throw new Error("Function not implemented.");
 }
-

@@ -34,7 +34,7 @@ const VerificationStep: React.FC<{ id: string | null; handleNextStep: () => void
       formData.append('duration',  (0).toString());
       formData.append('timesheet_comments', '');
       formData.append('app_comment', '');
-      await updateTimeSheet(formData, id as unknown as number);
+      await updateTimeSheet(formData, id);
       console.log("closing previous time sheet before starting new");
 
     }
