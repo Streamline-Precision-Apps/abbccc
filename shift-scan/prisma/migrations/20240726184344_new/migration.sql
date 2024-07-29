@@ -159,8 +159,12 @@ CREATE TABLE "EmployeeEquipmentLog" (
     "end_time" TIMESTAMP(3),
     "duration" DOUBLE PRECISION,
     "equipment_notes" TEXT,
+    "refueling_gallons" DOUBLE PRECISION,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "status" "formStatus" NOT NULL DEFAULT 'PENDING',
+    "completed" BOOLEAN NOT NULL DEFAULT false,
+    "submitted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "EmployeeEquipmentLog_pkey" PRIMARY KEY ("id")
 );

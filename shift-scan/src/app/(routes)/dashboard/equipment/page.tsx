@@ -25,7 +25,7 @@ export default async function Equipment() {
                 <Titles>{name}</Titles>
                 <Buttons variant={"default"} size={"widgetLg"} href="/dashboard">Go Home</Buttons>
                 <Buttons variant={"green"} size={"widgetLg"}href="/dashboard/equipment/scan">log New</Buttons>
-                <Buttons variant={"orange"} size={"widgetLg"}href="/dashboard/current">current equipment</Buttons>
+                <Buttons variant={"orange"} size={"widgetLg"}href="/dashboard/equipment/current">current equipment</Buttons>
             </Sections>
         </Bases>  
     )

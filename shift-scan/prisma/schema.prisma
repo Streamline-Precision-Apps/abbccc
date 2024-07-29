@@ -216,16 +216,20 @@ model TimeSheet {
 
 //tracks notes on the used equipment, who used it, where, the condition its in, and for how long
 model EmployeeEquipmentLog {
-  id              Int       @id @default(autoincrement())
-  equipment_id    String
-  jobsite_id      String
-  employee_id     String
-  start_time      DateTime
-  end_time        DateTime?
-  duration        Float?
-  equipment_notes String?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id                Int        @id @default(autoincrement())
+  equipment_id      String
+  jobsite_id        String
+  employee_id       String
+  start_time        DateTime
+  end_time          DateTime?
+  duration          Float?
+  equipment_notes   String?
+  refueling_gallons Float?
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+  status            formStatus @default(PENDING)
+  completed         Boolean    @default(false) // equipment is filled out all the fields are happy determines color
+  submitted         Boolean    @default(false) // marks true when form is submitted at the end of day
 
   employee  User       @relation(fields: [employee_id], references: [id])
   Job       Jobsite    @relation(fields: [jobsite_id], references: [jobsite_id])
