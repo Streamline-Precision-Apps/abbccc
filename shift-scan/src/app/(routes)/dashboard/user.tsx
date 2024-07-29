@@ -1,5 +1,8 @@
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
+import { Buttons } from "@/components/(reusable)/buttons";
+import { Images } from "@/components/(reusable)/images";
+import { Texts } from "@/components/(reusable)/texts";
 
 export const User = () => {
   const t = useTranslations("ManagerButtons");
@@ -12,35 +15,22 @@ export const User = () => {
   }
   return (
     <>
-      <button
-        className="bg-orange-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 border border-gray-400  font-bold rounded"
-        onClick={() => loadPage("/dashboard/switch-jobs")}>  
-        {t("SwitchJobs")}
-      </button>
-
-      <button
-        className="bg-green-300 hover:bg-gray-400 text-gray-800 font-semibold py-8 px-16 border border-gray-400  font-bold rounded"
-        onClick={() => loadPage("/dashboard/equipment")}>  
-        {t("Equipment")}
-      </button>
-
-      <button
-        className="bg-blue-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 border border-gray-400  font-bold rounded"
-        onClick={() => {
-          // < link to the Forms page />
-        }}
-      >
-        {t("Forms")}
-      </button>
-
-      <button
-        className="bg-red-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 border border-gray-400  font-bold rounded"
-        onClick={() => {
-          loadClockOutPage();
-        }}
-      >
-        {t("ClockOut")}
-      </button>
+      <Buttons href="/dashboard/switch-jobs" variant={"orange"} size={"widgetSm"}>
+        <Images titleImg="/jobsite.svg" titleImgAlt="Jobsite Icon" variant={"icon"} size={"widgetSm"}></Images>
+        <Texts>{t("SwitchJobs")}</Texts>
+      </Buttons>
+      <Buttons href="/dashboard/equipment" variant={"green"} size={"widgetSm"}>
+        <Images titleImg="/equipment.svg" titleImgAlt="Equipment Icon" variant={"icon"} size={"widgetSm"}></Images>
+        <Texts>{t("Equipment")}</Texts>
+      </Buttons>
+      <Buttons href="/dashboard/forms" variant={"default"} size={"widgetSm"}>
+        <Images titleImg="/forms.svg" titleImgAlt="Forms Icon" variant={"icon"} size={"widgetSm"}></Images>
+        <Texts>{t("Forms")}</Texts>
+      </Buttons>
+      <Buttons href="/dashboard/clock-out" variant={"red"} size={"widgetSm"}>
+        <Images titleImg="/clockOut.svg" titleImgAlt="Clock Out Icon" variant={"icon"} size={"widgetSm"}></Images>
+        <Texts>{t("ClockOut")}</Texts>
+      </Buttons>
     </>
   );
 };

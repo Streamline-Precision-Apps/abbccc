@@ -90,4 +90,25 @@ I finished some more prisma DB research and Created the clock out dashboard page
 - Finish transfer of break page to home page.
 - Researched qr generation.
 
-## 7/19/2024
+## 7/22/2024
+
+- Finish clock out form submissions.
+- Met for push to github.
+
+## 7/23/2024
+
+- Research for QR generation.
+- Research client side vs server side components.
+- Create jobsite and QR code generator page.
+- Started Equipment creation page.
+
+## 7/24/2024
+
+- Worked on equipment creation page.
+- Helped debug clock in with Devun.
+- Developed equipment picture component.
+- Helped with myTeam debugging.
+
+## 7/25/2024
+
+- Helped with break time and duration calculation debugging.

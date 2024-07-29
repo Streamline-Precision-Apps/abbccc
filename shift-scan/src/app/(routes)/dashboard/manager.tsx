@@ -1,26 +1,22 @@
 import { useTranslations } from "next-intl";
+import { Buttons } from "@/components/(reusable)/buttons";
+import { Images } from "@/components/(reusable)/images";
+import { Titles } from "@/components/(reusable)/titles";
+import { Texts } from "@/components/(reusable)/texts";
 
 export const Manager = () => {
   const t = useTranslations("ManagerButtons");
   return (
     <>
-      <button
-        className="bg-blue-300 hover:bg-gray-400 text-gray-800 py-2 px-4 border border-gray-400  font-bold rounded"
-        onClick={() => {
-          // < link to my team page  />
-        }}
-      >
-        {t("MyTeam")}
-      </button>
+      <Buttons href="/dashboard/myTeam" variant={"default"} size={"widgetSm"}>
+        <Images titleImg="/myTeam.svg" titleImgAlt="my team" variant={"icon"} size={"widgetSm"}></Images>
+        <Texts>{t("MyTeam")}</Texts>
+      </Buttons>
 
-      <button
-        className="bg-blue-300 hover:bg-gray-400 text-gray-800 py-2 px-4 border border-gray-400  font-bold rounded"
-        onClick={() => {
-          // < link to QR generator page />
-        }}
-      >
-        {t("QrGenerator")}
-      </button>
+      <Buttons href="/dashboard/qrGenerator" variant={"default"} size={"widgetSm"}>
+        <Images titleImg="/qrCode.svg" titleImgAlt="QR Code" variant={"icon"} size={"widgetSm"}></Images>
+        <Texts>{t("QrGenerator")}</Texts>
+      </Buttons>
     </>
   );
 };

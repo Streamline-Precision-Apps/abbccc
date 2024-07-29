@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { Input } from "@nextui-org/react";
 import { Sections } from "@/components/(reusable)/sections";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
+import { log } from "console";
 
 export default async function EmployeeInfo() {
 
@@ -11,12 +12,9 @@ export default async function EmployeeInfo() {
             where: {
                 id: "1"
             },
-            include: {
-                // users: true, // we want the saved user data here
-            }
         },
     );
-
+    
     const contacts = await prisma.contact.findUnique(
         {
             where: {
