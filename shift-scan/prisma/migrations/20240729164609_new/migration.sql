@@ -2,7 +2,10 @@
 CREATE TYPE "permission" AS ENUM ('USER', 'MANAGER', 'PROJECTMANAGER', 'ADMIN', 'SUPERADMIN');
 
 -- CreateEnum
-CREATE TYPE "tags" AS ENUM ('Truck', 'Trailer', 'Equipment');
+CREATE TYPE "tags" AS ENUM ('TRUCK', 'TRAILER', 'EQUIPMENT', 'VEHICLE');
+
+-- CreateEnum
+CREATE TYPE "equipmentStatus" AS ENUM ('OPERATIONAL', 'NEEDS_REPAIR');
 
 -- CreateEnum
 CREATE TYPE "formStatus" AS ENUM ('PENDING', 'APPROVED', 'DENIED');
@@ -149,39 +152,41 @@ CREATE TABLE "timesheets" (
 -- CreateTable
 CREATE TABLE "EmployeeEquipmentLog" (
     "id" SERIAL NOT NULL,
-    "equipment_id" INTEGER NOT NULL,
+    "equipment_id" TEXT NOT NULL,
     "jobsite_id" TEXT NOT NULL,
     "employee_id" TEXT NOT NULL,
     "start_time" TIMESTAMP(3) NOT NULL,
     "end_time" TIMESTAMP(3),
     "duration" DOUBLE PRECISION,
     "equipment_notes" TEXT,
-    "equipment_status" TEXT NOT NULL DEFAULT 'Operational',
+    "refueling_gallons" DOUBLE PRECISION,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "status" "formStatus" NOT NULL DEFAULT 'PENDING',
+    "completed" BOOLEAN NOT NULL DEFAULT false,
+    "submitted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "EmployeeEquipmentLog_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Equipment" (
-    "id" SERIAL NOT NULL,
-    "is_vehicle" BOOLEAN NOT NULL,
-    "is_trailer" BOOLEAN NOT NULL,
+    "id" TEXT NOT NULL,
     "qr_id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
-    "status" BOOLEAN NOT NULL,
-    "equipment_tag" "tags" NOT NULL,
+    "status" "formStatus" NOT NULL DEFAULT 'PENDING',
+    "equipment_tag" "tags" NOT NULL DEFAULT 'EQUIPMENT',
     "last_inspection" TIMESTAMP(3),
     "last_repair" TIMESTAMP(3),
+    "equipment_status" "equipmentStatus" NOT NULL DEFAULT 'OPERATIONAL',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "make" TEXT,
     "model" TEXT,
     "year" TEXT,
     "license_plate" TEXT,
-    "is_registered" TIMESTAMP(3),
+    "registration_expiration" TIMESTAMP(3),
     "mileage" INTEGER,
     "is_active" BOOLEAN NOT NULL DEFAULT true,
 

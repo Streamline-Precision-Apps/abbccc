@@ -5,8 +5,8 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
-  url       = env("POSTGRES_PRISMA_URL")
-  directUrl = env("POSTGRES_URL_NON_POOLING")
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
 //-------------------------------------------------------------------------------------------------//
@@ -42,8 +42,6 @@ enum Permission {
   PROJECTMANAGER
   ADMIN
   SUPERADMIN
-
-  @@map("permission")
 }
 
 // Holds the login and general app data of employee but not all the data
@@ -240,21 +238,19 @@ enum Tags {
   TRUCK
   TRAILER
   EQUIPMENT
-
-  @@map("tags")
 }
 
 // This collection stores information about all company equipment. It includes a wide range of items such as company vehicles, trailers, handheld equipment, and heavy machinery. The purpose is to keep track of all assets the company owns and maintains.
 model Equipment {
   id                      String          @id @default(cuid())
-  qr_id                   String // add @unique to this in the future.
+  qr_id                   String          @default(cuid())
   name                    String
   description             String
   status                  FormStatus      @default(PENDING)
   equipment_tag           Tags            @default(EQUIPMENT)
   last_inspection         DateTime?
   last_repair             DateTime?
-  equipment_status        equipmentStatus @default(OPERATIONAL)
+  equipment_status        EquipmentStatus @default(OPERATIONAL)
   createdAt               DateTime        @default(now())
   updatedAt               DateTime        @updatedAt
   make                    String?
@@ -267,6 +263,11 @@ model Equipment {
   // image                   Bytes?
 
   employeeEquipmentLogs EmployeeEquipmentLog[]
+}
+
+enum EquipmentStatus {
+  OPERATIONAL
+  NEEDS_REPAIR
 }
 
 // This Table stores a collection of company Estimating codes. The purpose is to help in billing process. Very import for our project.
@@ -347,15 +348,11 @@ enum FormStatus {
   PENDING
   APPROVED
   DENIED
-
-  @@map("formStatus")
 }
 
 enum FormActive {
   ACTIVE
   INACTIVE
-
-  @@map("formActive")
 }
 
 // holds all possible form types
@@ -366,8 +363,6 @@ enum FormType {
   LEAVE
   SAFETY
   INJURY
-
-  @@map("formType")
 }
 
 // tracking every individual form for every employee

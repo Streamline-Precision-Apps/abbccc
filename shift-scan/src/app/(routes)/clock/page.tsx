@@ -4,25 +4,51 @@ import { cookies } from "next/headers";
 
 type Props = {
     type: string;
-    id : string;
 }
 export default async function Clock({type}: Props) {
     const user = cookies().get("user");
     const userstring = user?.value || null;
     const userId = userstring;
     // add these here to enable proper code selection in the form
-    const jobCodes = await prisma.jobsite.findMany();
-    const CostCodes = await prisma.costCode.findMany();
-    const equipment = await prisma.equipment.findMany();
-    const Vehicles = await prisma.equipment.findMany(
-        {where: {is_vehicle: true}});
-    const trailers = await prisma.equipment.findMany({
-        where: {is_trailer: true}});
-        
+    const jobCodes = await prisma.jobsite.findMany(
+        {
+            select: {
+                id: true,
+                jobsite_id: true,
+                jobsite_name: true
+            }
+        }
+    );
+    const CostCodes = await prisma.costCode.findMany(
+        {
+            select: {
+                id: true,
+                cost_code: true,
+                cost_code_description: true
+            }
+        }
+    );
+    const equipment = await prisma.equipment.findMany(
+        {
+            select: {
+                id: true,
+                qr_id: true,
+                name: true,
+            }
+        }
+    );
+
+    if (type === "equipment") {
+        return (
+            <div>
+            <ClockProcess type={type} id={userId} scannerType="EQ" jobCodes={jobCodes} CostCodes={CostCodes} equipment={equipment} />
+        </div>
+        );
+    }
     
         return (
             <div>
-            <ClockProcess type={type} id={userId} jobCodes={jobCodes} CostCodes={CostCodes} equipment={equipment} Vehicles={Vehicles} trailers={trailers} />
+            <ClockProcess type={type} id={userId} scannerType="Job" jobCodes={jobCodes} CostCodes={CostCodes} equipment={equipment} />
         </div>
     );
 }

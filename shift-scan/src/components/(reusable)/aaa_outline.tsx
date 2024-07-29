@@ -29,6 +29,7 @@ const xxxxxVariants = cva(
   }
 )
 
+// this extends the capability of HTMLAttributes or the VariantProps that it can hold, specify your props here
 interface xxxxxProps extends HTMLAttributes<HTMLElement>, VariantProps<typeof xxxxxVariants> {
 }
 
