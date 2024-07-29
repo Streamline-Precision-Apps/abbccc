@@ -1,7 +1,6 @@
 
 import prisma from "@/lib/prisma";
 import { Prisma} from "@prisma/client";
-import { hash } from "bcryptjs";
 
 // jobsites
 export const initialJobsites: Prisma.JobsiteCreateInput[]  = [
@@ -57,16 +56,16 @@ export const initialTrainings: Prisma.TrainingsCreateInput[] = [
 ];
 // creating training courses here:
 export const UserTrainings: Prisma.UserTrainingsCreateInput[] = [
-    { "completed_trainings": 1, "assigned_trainings": 10, "completion": true, "User": { "connect": {"id": "1" } }, "trainings": { "completed": [1], "assigned": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }},
-    { "completed_trainings": 5, "assigned_trainings": 10, "completion": true, "User": { "connect": {"id": "2" } }, "trainings": { "completed": [1, 2, 3, 4, 5], "assigned": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }},
-    { "completed_trainings": 3, "assigned_trainings": 10, "completion": true, "User": { "connect": {"id": "3" } }, "trainings": { "completed": [1, 2, 3], "assigned": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }},
-    { "completed_trainings": 2, "assigned_trainings": 10, "completion": true, "User": { "connect": {"id": "4" } }, "trainings": { "completed": [1, 3], "assigned": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }},
-    { "completed_trainings": 1, "assigned_trainings": 10, "completion": true, "User": { "connect": {"id": "5" } }, "trainings": { "completed": [4], "assigned": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }},
-    { "completed_trainings": 0, "assigned_trainings": 10, "completion": true, "User": { "connect": {"id": "6" } }, "trainings": { "completed": [], "assigned": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }},
-    { "completed_trainings": 0, "assigned_trainings": 10, "completion": true, "User": { "connect": {"id": "7" } }, "trainings": { "completed": [], "assigned": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }},
-    { "completed_trainings": 0, "assigned_trainings": 10, "completion": true, "User": { "connect": {"id": "8" } }, "trainings": { "completed": [], "assigned": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }},
-    { "completed_trainings": 0, "assigned_trainings": 10, "completion": true, "User": { "connect": {"id": "9" } }, "trainings": { "completed": [], "assigned": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }},
-    ];
+{ "completed_trainings": 1, "assigned_trainings": 10, "completion": true, "User": { "connect": {"id": "1" } }, "trainings": { "completed": [1], "assigned": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }},
+{ "completed_trainings": 5, "assigned_trainings": 10, "completion": true, "User": { "connect": {"id": "2" } }, "trainings": { "completed": [1, 2, 3, 4, 5], "assigned": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }},
+{ "completed_trainings": 3, "assigned_trainings": 10, "completion": true, "User": { "connect": {"id": "3" } }, "trainings": { "completed": [1, 2, 3], "assigned": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }},
+{ "completed_trainings": 2, "assigned_trainings": 10, "completion": true, "User": { "connect": {"id": "4" } }, "trainings": { "completed": [1, 3], "assigned": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }},
+{ "completed_trainings": 1, "assigned_trainings": 10, "completion": true, "User": { "connect": {"id": "5" } }, "trainings": { "completed": [4], "assigned": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }},
+{ "completed_trainings": 0, "assigned_trainings": 10, "completion": true, "User": { "connect": {"id": "6" } }, "trainings": { "completed": [], "assigned": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }},
+{ "completed_trainings": 0, "assigned_trainings": 10, "completion": true, "User": { "connect": {"id": "7" } }, "trainings": { "completed": [], "assigned": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }},
+{ "completed_trainings": 0, "assigned_trainings": 10, "completion": true, "User": { "connect": {"id": "8" } }, "trainings": { "completed": [], "assigned": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }},
+{ "completed_trainings": 0, "assigned_trainings": 10, "completion": true, "User": { "connect": {"id": "9" } }, "trainings": { "completed": [], "assigned": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }},
+];
 // initializing users
 export const initialUsers: Prisma.UserCreateInput[] = [
 { "id": "1", "firstName": "Jessica", "lastName": "Rabbit", "username": "jessicarabbit", "password": "securepassword", "DOB" : "01-01-2000" , "truck_view": true, "tasco_view": false, "labor_view": true, "mechanic_view": false, "permission": "ADMIN", "email": "jessicarabbit@example.com", "emailVerified": "2022-01-01T00:00:00.000Z", "phone": "123-456-7890", "image": "https://example.com/image.jpg"},
@@ -134,3 +133,97 @@ export const initialCrewJobsites: Prisma.CrewJobsiteCreateInput[] = [
     { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 4}}, jobsite: { connect: { jobsite_id: "67890"}}},
     { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 3}}, jobsite: { connect: { jobsite_id: "j123"}}}
 ]
+
+export const intialEquipment: Prisma.EquipmentCreateInput[] = [
+
+    {
+        qr_id: "EQ-123456",
+        name: "Excavator 3000",
+        description: "Heavy-duty excavator for construction sites",
+        status: "PENDING",
+        equipment_tag: "EQUIPMENT",
+        last_inspection: new Date("2023-06-15T00:00:00.000Z"),
+        last_repair: new Date("2023-05-10T00:00:00.000Z"),
+        createdAt: new Date("2024-07-25T00:00:00.000Z"),
+        updatedAt: new Date("2024-07-25T00:00:00.000Z"),
+        make: "Caterpillar",
+        model: "CAT3000",
+        year: "2020",
+        license_plate: "PLT123",
+        registration_expiration: new Date("2021-01-20T00:00:00.000Z"),
+        mileage: 1200,
+        is_active: true
+      },
+      {
+        qr_id: "EQ-654321",
+        name: "Trailer TX200",
+        description: "Utility trailer for transporting equipment",
+        status: "PENDING",
+        equipment_tag: "TRAILER",
+        last_inspection: new Date("2023-03-20T00:00:00.000Z"),
+        last_repair: null,
+        createdAt: new Date("2024-07-25T00:00:00.000Z"),
+        updatedAt: new Date("2024-07-25T00:00:00.000Z"),
+        make: "BigTex",
+        model: "TX200",
+        year: "2018",
+        license_plate: "TRL456",
+        registration_expiration: new Date("2018-05-30T00:00:00.000Z"),
+        mileage: null,
+        is_active: true
+      },
+      {
+        qr_id: "EQ-789012",
+        name: "Bulldozer B450",
+        description: "Powerful bulldozer for heavy-duty tasks",
+        status: "PENDING",
+        equipment_tag: "VEHICLE",
+        last_inspection: new Date("2023-02-10T00:00:00.000Z"),
+        last_repair: new Date("2023-01-05T00:00:00.000Z"),
+        createdAt: new Date("2024-07-25T00:00:00.000Z"),
+        updatedAt: new Date("2024-07-25T00:00:00.000Z"),
+        make: "Komatsu",
+        model: "B450",
+        year: "2019",
+        license_plate: "BDZ789",
+        registration_expiration: new Date("2019-06-25T00:00:00.000Z"),
+        mileage: 800,
+        is_active: true
+      }
+]
+
+export const intialEmployeeEquipment: Prisma.EmployeeEquipmentLogCreateInput[] = [
+    {
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        employee: { connect: { id: "1" } },
+        start_time: new Date(),
+        Job: { connect: { jobsite_id: "12345" } },
+        Equipment: { connect: { qr_id: "EQ-123456" } },
+        end_time: null,
+        duration: null,
+        equipment_notes: null,
+      },
+      {
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        employee: { connect: { id: "2" } },
+        start_time: new Date(),
+        Job: { connect: { jobsite_id: "12345" } },
+        Equipment: { connect: { qr_id: "EQ-654321" } },
+        end_time: null,
+        duration: null,
+        equipment_notes: null,
+      },
+      {
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        employee: { connect: { id: "3" } },
+        start_time: new Date(),
+        Job: { connect: { jobsite_id: "12345" } },
+        Equipment: { connect: { qr_id: "EQ-789012" } },
+        end_time: null,
+        duration: null,
+        equipment_notes: null,
+      }
+    ];
