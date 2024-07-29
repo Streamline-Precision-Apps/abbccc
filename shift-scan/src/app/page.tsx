@@ -1,7 +1,6 @@
 import Banner from "@/components/banner"
 import Content from "@/app/(content)/content"
 import {formatDate} from "@/components/getDate"
-import {Footer} from "@/components/footer"
 import TestingComponents from "@/components/testingComponents"
 import "@/app/globals.css"
 import { Header } from "@/components/header"
