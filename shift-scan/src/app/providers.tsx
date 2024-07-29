@@ -11,6 +11,9 @@ import { SavedBreakTimeProvider } from "./context/SavedBreakTimeContext";
 import { SavedTimeSheetDataProvider } from "./context/TimeSheetIdContext";
 import { SavedInjuryReportDataProvider } from "./context/InjuryReportDataContext";
 import { ScanDataEQProvider } from "./context/equipmentContext";
+import { DbEquipmentProvider } from "./context/dbEquipmentContext";
+import { DbcostcodeProvider } from "./context/dbCostcodeContext";
+import {DbjobsiteProvider} from "./context/dbJobsiteContext";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -25,7 +28,16 @@ export function Providers({ children }: { children: React.ReactNode }) {
                 <SavedClockInTimeProvider>
                   <SavedTimeSheetDataProvider>
                     <SavedInjuryReportDataProvider>
-                      <SessionProvider>{children}</SessionProvider>
+                      <SessionProvider>
+{/* The provider Entitled DB provide the DB data for each entry */}
+                      <DbEquipmentProvider>
+                      <DbjobsiteProvider>
+                      <DbcostcodeProvider>
+                        {children}
+                      </DbcostcodeProvider>
+                      </DbjobsiteProvider>
+                      </DbEquipmentProvider>
+                        </SessionProvider>
                     </SavedInjuryReportDataProvider>
                   </SavedTimeSheetDataProvider>
                 </SavedClockInTimeProvider>

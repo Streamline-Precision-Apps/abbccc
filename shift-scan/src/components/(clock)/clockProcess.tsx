@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import QRStep from "@/components/(clock)/qr-step";
 import StepButtons from "@/components/(clock)/step-buttons";
@@ -11,14 +11,37 @@ import RedirectAfterDelay from "@/components/redirectAfterDelay";
 import { useSavedClockInTime } from "@/app/context/ClockInTimeContext";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useEQScanData } from "@/app/context/equipmentContext";
+import { useDBJobsite } from "@/app/context/dbJobsiteContext";
+import { useDBEquipment } from "@/app/context/dbEquipmentContext";
+import { useDBCostcode } from "@/app/context/dbCostcodeContext";
+
+
+
+type jobCodes = {
+    id: number;
+    jobsite_id: string;
+    jobsite_name: string;
+}
+type CostCode = {
+    id: number;
+    cost_code: string;
+    cost_code_description: string;
+}
+
+type equipment = {
+    id: string;
+    qr_id: string;
+    name: string;
+}
 
 type clockProcessProps = {
 scannerType: string;
 id: string | null;
 type: string;
-jobCodes: any[];
-CostCodes: any[];
-equipment: any[];
+
+jobCodes: jobCodes[];
+CostCodes: CostCode[];
+equipment: equipment[];
 };
 
 const ClockProcessor: React.FC<clockProcessProps> = ({
@@ -26,6 +49,8 @@ id,
 type,
 equipment,
 scannerType,
+jobCodes,
+CostCodes
 }) => {
 const t = useTranslations("page2");
 const [step, setStep] = useState(1);
@@ -35,6 +60,20 @@ const { scanResult } = useScanData();
 const { scanEQResult } = useEQScanData();
 const [path, setPath] = useState("");
 const [scanner, setScanner] = useState("");
+const { jobsiteResults, setJobsiteResults } = useDBJobsite();
+const { costcodeResults, setCostcodeResults } = useDBCostcode();
+const { equipmentResults, setEquipmentResults } = useDBEquipment();
+
+useEffect(() => {
+setJobsiteResults(jobCodes);
+setCostcodeResults(CostCodes);
+setEquipmentResults(equipment);
+console.log("Are logged!");
+}, []);
+
+
+
+console.log(jobCodes, CostCodes, equipment);
 
 useEffect(() => {
 if (scannerType === "EQ") {
@@ -61,9 +100,6 @@ if (scanner) {
 }
 }, [scanner]);
 
-const handlePrevStep = () => {
-setStep((prevStep) => (prevStep > 1 ? prevStep - 1 : 1));
-};
 
 const handleAlternativePath = () => {
 setUseQrCode(false);
@@ -72,7 +108,7 @@ handleNextStep();
 
 useEffect(() => {
 setStep(1);
-}, []);
+}, [path]);
 
 if (type === "equipment") {
 return (
@@ -88,7 +124,6 @@ return (
         {step === 2 && (
         <CodeStep
             datatype="equipment"
-            handlePrevStep={handlePrevStep}
             handleNextStep={handleNextStep}
         />
         )}
@@ -129,14 +164,12 @@ return (
     {step === 2 && (
         <CodeStep
         datatype="jobsite"
-        handlePrevStep={handlePrevStep}
         handleNextStep={handleNextStep}
         />
     )}
     {step === 3 && path === "jobsite" && (
         <CodeStep
         datatype="costcode"
-        handlePrevStep={handlePrevStep}
         handleNextStep={handleNextStep}
         />
     )}

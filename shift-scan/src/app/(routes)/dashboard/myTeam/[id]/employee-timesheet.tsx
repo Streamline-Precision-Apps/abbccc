@@ -60,11 +60,14 @@ export const EmployeeTimeSheets = ({ employeeId, costcodeData, jobsiteData }: Pr
             <div className="flex flex-col py-5 px-2 w-11/12 mx-auto h-1/4 border-2 border-black rounded-2xl text-white text-3xl">
                 <h1 className="text-2xl pl-5 lg:text-3xl mb-5">Select Date</h1>
                 <form ref={formRef} onChange={handleFormChange} onSubmit={handleFormSubmit} >
-                    <input type="date" name="date" id="date" className="flex justify-center m-auto text-black text-2xl bg-white p-2 rounded border-2 border-black rounded-2xl lg:text-2xl lg:p-3"/>
+                    <input type="date" name="date" id="date" className="flex w-5/6 justify-center m-auto text-black text-2xl bg-white p-2 rounded border-2 border-black rounded-2xl lg:text-2xl lg:p-3"/>
                     <input type="hidden" name="id" value={employeeId} />
                 </form>
                 <button className="text-xl text-black font-bold text-center mb-10 bg-app-green">{message}</button>
-                <button className={buttonClass} onClick={editHandler}>{word}</button>
+            </div>
+            <div className="bg-white">
+            <button className={buttonClass} onClick={editHandler}>{word}</button>
+            </div>
                 <EditWork 
                     timesheetData={timesheets} 
                     edit={edit} 
@@ -73,7 +76,6 @@ export const EmployeeTimeSheets = ({ employeeId, costcodeData, jobsiteData }: Pr
                     handleFormSubmit={handleFormSubmitFromEditWork}
                     setEdit= {setEdit}
                     />
-            </div>
         </div>
     </>
     );

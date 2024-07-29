@@ -1,6 +1,5 @@
 import React from 'react';
 import "@/app/globals.css";
-import {CostCodeOptions} from '@/components/(search)/options';
 // allows us to use the search bar and the dropdown together like modern design
 
 interface Option {

@@ -32,7 +32,7 @@ export default async function employeeInfo({ params }: Params) {
           size={"default"}
         />
         <div className="mt-12 mb-3 bg-white h-full w-full flex flex-col   p-5 rounded-2xl overflow-y-auto">
-          <TitleContainer TitleofContainer="Phone">
+          <TitleContainer TitleofContainer="Phone Number">
             {contacts?.phone_number}
           </TitleContainer>
           <TitleContainer TitleofContainer="Email">
@@ -41,10 +41,10 @@ export default async function employeeInfo({ params }: Params) {
           <TitleContainer TitleofContainer="Emergency Contact">
             {contacts?.emergency_contact}
           </TitleContainer>
-          <TitleContainer TitleofContainer="Emergency Contact Number">
+          <TitleContainer TitleofContainer="Emergency Contact #">
             {contacts?.emergency_contact_no}
           </TitleContainer>
-          <TitleContainer TitleofContainer="Birthdate">
+          <TitleContainer TitleofContainer="Birth Date">
             {employee?.DOB}
           </TitleContainer>
         </div>

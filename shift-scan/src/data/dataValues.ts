@@ -1,8 +1,6 @@
 
 import prisma from "@/lib/prisma";
 import { Prisma} from "@prisma/client";
-import { hash } from "bcryptjs";
-import { now } from "next-auth/client/_utils";
 
 // jobsites
 export const initialJobsites: Prisma.JobsiteCreateInput[]  = [
