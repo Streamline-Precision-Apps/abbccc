@@ -106,7 +106,7 @@ function parseUTC(dateString: any) {
 
 // provides a way to update a timesheet and will give supervisor access to all timesheets
 // and provide a way to alter them as needed by employee accuracy. 
-export async function updateTimeSheet(formData: FormData) {
+export async function updateTimeSheet(formData: FormData, id: string) {
     try {
         const parseDate = (timestamp: string) => {
             const date = new Date(timestamp); // Directly parse the string as a date

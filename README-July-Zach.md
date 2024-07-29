@@ -49,3 +49,27 @@
 - Finished Modals reusable components.
 - Created Texts, Sections reusable components, cleaned out uneeded components.
 - Merg meeting.
+
+7/23/24
+- Created and edited variants for reusable components
+- Researched React form inputs
+
+7/24/24
+- Adjusted CSS on various reusable components
+- Meeting with Dev to clean out components
+- Started working on change password action
+
+7/25/24
+- Created Header/Footer Reusable components
+- Researched Server Actions
+- Added some icon images to project
+
+7/26/24
+- Worked on Dashboard page
+- Updated user/manager widget files
+- Researched Box shadows using tailwind
+
+7/29/24
+- Added rest of icon images to application
+- Fixed Bugs before Merge
+- Merge meeting
