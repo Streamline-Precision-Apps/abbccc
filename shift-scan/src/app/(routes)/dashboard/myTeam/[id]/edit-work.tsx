@@ -154,9 +154,25 @@ export default function EditWork({ timesheetData, jobsitesData, costcodesData, e
                 hidden
                 />
               </div>
+              <div>
+              <label htmlFor="duration">
+                Duration {edit ? (
+                    <span className="text-red-500 italic text-sm flex flex-wrap">
+                      The duration updates when editing changes are saved.
+                    </span>
+                  ) : null}
+                </label>
+                <input
+                  id="duration"
+                  className="w-full text-center border border-black"
+                  type="text"
+                  value={timesheet.duration}
+                  readOnly
+                />
+              </div>
               <div className="flex flex-wrap">
                 <label>
-                  Start Time:
+                  Clock In
                   <div className="flex flex-row w-full border border-black">
                     <input
                       id="start_date"
@@ -177,7 +193,7 @@ export default function EditWork({ timesheetData, jobsitesData, costcodesData, e
                   </div>
                 </label>
                 <label>
-                  End Time:
+                  Clock Out
                   <div className="flex flex-row w-full border border-black">
                     <input
                       id="end_date"
@@ -199,7 +215,7 @@ export default function EditWork({ timesheetData, jobsitesData, costcodesData, e
                 </label>
               </div>
               <div>
-                <label htmlFor="total_break_time">Total Break Time:</label>
+                <label htmlFor="total_break_time">Total Break Time</label>
                 <input
                   id="total_break_time"
                   className="w-full text-center border border-black"
@@ -210,10 +226,10 @@ export default function EditWork({ timesheetData, jobsitesData, costcodesData, e
                 />
               </div>
               <div>
-                <label htmlFor="jobsite_id">Jobsite ID:</label>
+                <label htmlFor="jobsite_id">Job Sites:</label>
                 <select
                   id="jobsite_id"
-                  className="w-full text-center border border-black"
+                  className=" text-center border border-black"
                   value={timesheet.jobsite_id}
                   onChange={(e) => handleCodeChange(e, timesheet.id)}
                   disabled={!edit}
@@ -225,12 +241,10 @@ export default function EditWork({ timesheetData, jobsitesData, costcodesData, e
                   </option>
                   ))}
                 </select>
-              </div>
-              <div>
-                <label htmlFor="costcode">Costcode:</label>
+                <label htmlFor="costcode">Cost Codes</label>
                 <select
                   id="costcode"
-                  className="w-full text-center border border-black"
+                  className=" text-center border border-black"
                   value={timesheet.costcode}
                   onChange={(e) => handleCodeChange(e, timesheet.id)}
                   disabled={!edit}
@@ -243,20 +257,32 @@ export default function EditWork({ timesheetData, jobsitesData, costcodesData, e
                 </select>
               </div>
               <div>
-              <label htmlFor="duration">
-                Duration:{edit ? (
-                    <span className="text-red-500 italic text-sm flex flex-wrap">
-                      The duration updates when editing changes are saved.
-                    </span>
-                  ) : null}
-                </label>
+                <label htmlFor="jobsite_id">Equipment</label>
+                <select
+                  id="jobsite_id"
+                  className=" text-center border border-black"
+                  value={timesheet.jobsite_id}
+                  onChange={(e) => handleCodeChange(e, timesheet.id)}
+                  disabled={!edit}
+                >
+                  <option>Select a Jobsite ID</option>
+                  {jobsites.map((jobsite) => (
+                    <option key={jobsite.id} value={jobsite.jobsite_id}>
+                      {jobsite.jobsite_id}
+                  </option>
+                  ))}
+                </select>
+                <label>
+                 Total Time {/* this is the total time for equipment */}
                 <input
-                  id="duration"
-                  className="w-full text-center border border-black"
-                  type="text"
-                  value={timesheet.duration}
-                  readOnly
-                />
+                      id=""
+                      className=" text-center border border-black"
+                      type="time"
+                      value={timesheet.end_time || ''}
+                      onChange={(e) => handleInputChangeDate(e, timesheet.id, "end_time")}
+                      readOnly={!edit}
+                    />
+                </label>
               </div>
             </li>
           ))}

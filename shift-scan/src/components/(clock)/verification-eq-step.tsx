@@ -10,22 +10,23 @@ import { useSavedUserData } from "@/app/context/UserContext";
 import { CreateEmployeeEquipmentLog } from "@/actions/equipmentActions";
 
 type Equipment = {
-id: string;
-name: string;
-};
+    id: string;
+    qr_id: string;
+    name: string;
+}
 
 type VerifyProcessProps = {
 id: string | null;
 handleNextStep: () => void;
 type: string;
 equipment: Equipment[];
-};
+}
 
 const VerificationEQStep: React.FC<VerifyProcessProps> = ({
 id,
 type,
 handleNextStep,
-equipment,
+
 }) => {
 const [filteredEquipmentName, setFilteredEquipmentName] = useState<string | null>(null);
 const t = useTranslations("clock");

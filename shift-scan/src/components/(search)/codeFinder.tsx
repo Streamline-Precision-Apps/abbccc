@@ -17,6 +17,7 @@ import { useEQScanData } from '@/app/context/equipmentContext';
         
         type props = {
         datatype: string
+        
     }
     // Static options array
     export default function CodeFinder({datatype} : props) {
@@ -33,8 +34,10 @@ import { useEQScanData } from '@/app/context/equipmentContext';
         // Filter options based on search term
         useEffect(() => {
         setFilteredOptions(
-            options.filter((option) =>
-            option.label.toLowerCase().includes(searchTerm.toLowerCase())
+            options
+            .flat() // Flatten the nested array
+            .filter((option) =>
+                option.label.toLowerCase().includes(searchTerm.toLowerCase())
             )
         );
         }, [searchTerm]);
