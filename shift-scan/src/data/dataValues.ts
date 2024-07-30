@@ -3,26 +3,86 @@ import prisma from "@/lib/prisma";
 import { Prisma} from "@prisma/client";
 
 // jobsites
-export const initialJobsites: Prisma.JobsiteCreateInput[]  = [
-{ jobsite_id: "j123", jobsite_name: "Jobsite 1", jobsite_active: true, createdAt: new Date(), updatedAt: new Date(),}, 
-{ jobsite_id: "j234", jobsite_name: "Jobsite 2", jobsite_active: true, createdAt: new Date(), updatedAt: new Date() },
-{ jobsite_id: "j345", jobsite_name: "Jobsite 3", jobsite_active: true, createdAt: new Date(), updatedAt: new Date() },
-{ jobsite_id: "j456", jobsite_name: "Jobsite 4", jobsite_active: true, createdAt: new Date(), updatedAt: new Date() },
-{ jobsite_id: "j567", jobsite_name: "Jobsite 5", jobsite_active: true, createdAt: new Date(), updatedAt: new Date() },
-{ jobsite_id: "j678", jobsite_name: "Jobsite 6", jobsite_active: true, createdAt: new Date(), updatedAt: new Date() },
-{ jobsite_id: "j789", jobsite_name: "Jobsite 7", jobsite_active: true, createdAt: new Date(), updatedAt: new Date() },
-{ jobsite_id: "j890", jobsite_name: "Jobsite 8", jobsite_active: true, createdAt: new Date(), updatedAt: new Date() },
-{ jobsite_id: "j901", jobsite_name: "Jobsite 9", jobsite_active: true, createdAt: new Date(), updatedAt: new Date() },
-{ jobsite_id: "j012", jobsite_name: "Jobsite 10", jobsite_active: true, createdAt: new Date(), updatedAt: new Date() },
-{ jobsite_id: "j111", jobsite_name: "Jobsite 11", jobsite_active: true, createdAt: new Date(), updatedAt: new Date() },
-{ jobsite_id: "j222", jobsite_name: "Jobsite 12", jobsite_active: true, createdAt: new Date(), updatedAt: new Date() }
+export const initialJobsites: Prisma.JobsiteCreateInput[] = [
+  {
+    jobsite_id: "j123",
+    jobsite_name: "Jobsite 1",
+    street_number: "123",
+    street_name: "Main St",
+    city: "City",
+    state: "State",
+    country: "Country",
+    jobsite_description: "Description for Jobsite 1",
+    comments: "Comments for Jobsite 1",
+    jobsite_active: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    jobsite_id: "j234",
+    jobsite_name: "Jobsite 2",
+    street_number: "234",
+    street_name: "Second St",
+    city: "City",
+    state: "State",
+    country: "Country",
+    jobsite_description: "Description for Jobsite 2",
+    comments: "Comments for Jobsite 2",
+    jobsite_active: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    jobsite_id: "j345",
+    jobsite_name: "Jobsite 3",
+    street_number: "345",
+    street_name: "Third St",
+    city: "City",
+    state: "State",
+    country: "Country",
+    jobsite_description: "Description for Jobsite 3",
+    comments: "Comments for Jobsite 3",
+    jobsite_active: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    jobsite_id: "j456",
+    jobsite_name: "Jobsite 4",
+    street_number: "456",
+    street_name: "Fourth St",
+    city: "City",
+    state: "State",
+    country: "Country",
+    jobsite_description: "Description for Jobsite 4",
+    comments: "Comments for Jobsite 4",
+    jobsite_active: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    jobsite_id: "j567",
+    jobsite_name: "Jobsite 5",
+    street_number: "567",
+    street_name: "Fifth St",
+    city: "City",
+    state: "State",
+    country: "Country",
+    jobsite_description: "Description for Jobsite 5",
+    comments: "Comments for Jobsite 5",
+    jobsite_active: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }
 ];
+
 // time sheets create method
 export const initialTimeSheets: Prisma.TimeSheetCreateInput[] = [
 { submit_date: new Date(), date: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(), jobsite: { connect: { jobsite_id: "j123" } }, costcode: '#cc123gdj1', start_time: new Date(new Date().setHours(12, 0, 0, 0)).toISOString(), end_time: new Date(new Date().setHours(17, 0, 0, 0)).toISOString(), total_break_time: 1.00, duration: 4.00, timesheet_comments: 'No issues during the shift.', app_comment: 'H>8-J>789>CC-101>T>6.', user: { connect: { id: "2" } } },
 { submit_date: new Date(), date: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(), jobsite: { connect: { jobsite_id: "j123" } }, costcode: '#cc123gdj1', start_time: new Date(new Date().setHours(8, 0, 0, 0)).toISOString(), end_time: new Date(new Date().setHours(15, 0, 0, 0)).toISOString(), total_break_time: 1.01, duration: 6.00, timesheet_comments: 'No issues during the shift.', app_comment: 'Submitted on time.', user: { connect: { id: "1" } } },
 { submit_date: new Date(), date: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(), jobsite: { connect: { jobsite_id: "j123" } }, costcode: '#cc123gdj1', start_time: new Date(new Date().setHours(15, 0, 0, 0)).toISOString(), end_time: new Date(new Date().setHours(19, 0, 0, 0)).toISOString(), total_break_time: 0.00, duration: 4.00, timesheet_comments: 'No issues during the shift.', app_comment: 'Submitted on time.', user: { connect: { id: "1" } } }
 ];
+
 // intaializing crew
 export const initialCrews: Prisma.CrewCreateInput[] = [
 { name: "Jessica's Crew", description: "General Contrator Crew", createdAt: new Date(), updatedAt: new Date(),},
@@ -30,6 +90,7 @@ export const initialCrews: Prisma.CrewCreateInput[] = [
 { name: "Dustin's Crew", description: "Trucking Crew", createdAt: new Date(), updatedAt: new Date(),},
 { name: "Seth's Crew", description: "Fabrication Crew", createdAt: new Date(), updatedAt: new Date(),},
 ];
+
 // initializing crew members
 export const initialCrewMembers: Prisma.CrewMemberCreateInput[] = [
 { createdAt: new Date(), updatedAt: new Date(), user: { connect: {id: "1"}}, crew: {connect: {id: 1}}, supervisor: true },
@@ -39,6 +100,7 @@ export const initialCrewMembers: Prisma.CrewMemberCreateInput[] = [
 { createdAt: new Date(), updatedAt: new Date(), user: { connect: {id: "2"}}, crew: {connect: {id: 1}}, supervisor: false },
 { createdAt: new Date(), updatedAt: new Date(), user: { connect: {id: "3"}}, crew: {connect: {id: 1}},  supervisor: false },
 ];
+
 // creating train courses here:
 export const initialTrainings: Prisma.TrainingsCreateInput[] = [
 { name: "Training 1", description: "Training 1 description", createdAt: new Date(), updatedAt: new Date(),},
@@ -47,6 +109,7 @@ export const initialTrainings: Prisma.TrainingsCreateInput[] = [
 { name: "Training 4", description: "Training 1 description", createdAt: new Date(), updatedAt: new Date(),},
 { name: "Training 5", description: "Training 1 description", createdAt: new Date(), updatedAt: new Date(),},  
 ];
+
 // creating training courses here:
 export const UserTrainings: Prisma.UserTrainingsCreateInput[] = [
 { "completed_trainings": 1, "assigned_trainings": 10, "completion": true, "User": { "connect": {"id": "1" } }, "trainings": { "completed": [1], "assigned": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }},
@@ -59,6 +122,7 @@ export const UserTrainings: Prisma.UserTrainingsCreateInput[] = [
 { "completed_trainings": 0, "assigned_trainings": 10, "completion": true, "User": { "connect": {"id": "8" } }, "trainings": { "completed": [], "assigned": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }},
 { "completed_trainings": 0, "assigned_trainings": 10, "completion": true, "User": { "connect": {"id": "9" } }, "trainings": { "completed": [], "assigned": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }},
 ];
+
 // initializing users
 export const initialUsers: Prisma.UserCreateInput[] = [
 { "id": "1", "firstName": "Jessica", "lastName": "Rabbit", "username": "jessicarabbit", "password": "securepassword", "DOB" : "01-01-2000" , "truck_view": true, "tasco_view": false, "labor_view": true, "mechanic_view": false, "permission": "ADMIN", "email": "jessicarabbit@example.com", "emailVerified": "2022-01-01T00:00:00.000Z", "phone": "123-456-7890", "image": "https://example.com/image.jpg"},
@@ -71,6 +135,7 @@ export const initialUsers: Prisma.UserCreateInput[] = [
 { "id": "8", "firstName": "Zachary", "lastName": "Robker", "username": "zrobker", "password": "securepassword", "DOB": "12-22-1996", "truck_view": true, "tasco_view": true, "labor_view": true, "mechanic_view": true, "permission": "SUPERADMIN", "email": "zrobker@example.com", "emailVerified": "2024-05-02T00:00:00.000Z", "phone": "724-470-4374", "image": "https://example.com/image.jpg"},
 { "id": "9", "firstName": "Sean", "lastName": "walker", "username": "seanwalk", "password": "securepassword", "DOB": "06-15-2000", "truck_view": true, "tasco_view": true, "labor_view": true, "mechanic_view": true, "permission": "SUPERADMIN", "email": "seanwalk@example.com", "emailVerified": "2024-05-02T00:00:00.000Z", "phone": "208-243-6992", "image": "https://example.com/image.jpg"}
 ];
+
 // initializing contacts
 export const initialContacts: Prisma.ContactCreateInput[] = [
 { "phone_number": "123-456-7890", "email": "jessica.rabbit@example.com", "emergency_contact": "Roger Rabbit", "emergency_contact_no": "098-765-4321", "createdAt": "2022-01-01T00:00:00.000Z", "updatedAt": "2022-01-01T00:00:00.000Z"},
@@ -406,14 +471,15 @@ export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
       }
   }
 ];
+
 export const initialCrewJobsites: Prisma.CrewJobsiteCreateInput[] = [
-    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 1}}, jobsite: { connect: { jobsite_id: "j222"}}},
-    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 1}}, jobsite: { connect: { jobsite_id: "j222"}}},
-    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 2}}, jobsite: { connect: { jobsite_id: "j222"}}},
-    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 2}}, jobsite: { connect: { jobsite_id: "j222"}}},
-    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 3}}, jobsite: { connect: { jobsite_id: "j222"}}},
-    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 4}}, jobsite: { connect: { jobsite_id: "j222"}}},
-    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 3}}, jobsite: { connect: { jobsite_id: "j222"}}}
+    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 1}}, jobsite: { connect: { jobsite_id: "j123"}}},
+    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 1}}, jobsite: { connect: { jobsite_id: "j123"}}},
+    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 2}}, jobsite: { connect: { jobsite_id: "j123"}}},
+    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 2}}, jobsite: { connect: { jobsite_id: "j123"}}},
+    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 3}}, jobsite: { connect: { jobsite_id: "j123"}}},
+    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 4}}, jobsite: { connect: { jobsite_id: "j123"}}},
+    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 3}}, jobsite: { connect: { jobsite_id: "j123"}}}
 ]
 
 export const intialEquipment: Prisma.EquipmentCreateInput[] = [
@@ -480,7 +546,7 @@ export const intialEmployeeEquipment: Prisma.EmployeeEquipmentLogCreateInput[] =
         updatedAt: new Date(),
         employee: { connect: { id: "1" } },
         start_time: new Date(),
-        Job: { connect: { jobsite_id: "j222" } },
+        Job: { connect: { jobsite_id: "j123" } },
         Equipment: { connect: { qr_id: "EQ-123456" } },
         end_time: null,
         duration: null,
@@ -491,7 +557,7 @@ export const intialEmployeeEquipment: Prisma.EmployeeEquipmentLogCreateInput[] =
         updatedAt: new Date(),
         employee: { connect: { id: "2" } },
         start_time: new Date(),
-        Job: { connect: { jobsite_id: "j222" } },
+        Job: { connect: { jobsite_id: "j123" } },
         Equipment: { connect: { qr_id: "EQ-654321" } },
         end_time: null,
         duration: null,
@@ -502,10 +568,9 @@ export const intialEmployeeEquipment: Prisma.EmployeeEquipmentLogCreateInput[] =
         updatedAt: new Date(),
         employee: { connect: { id: "3" } },
         start_time: new Date(),
-        Job: { connect: { jobsite_id: "j222" } },
+        Job: { connect: { jobsite_id: "j123" } },
         Equipment: { connect: { qr_id: "EQ-789012" } },
         end_time: null,
         duration: null,
-        equipment_notes: null,
       }
     ];

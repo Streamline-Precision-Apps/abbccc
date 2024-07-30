@@ -112,3 +112,13 @@ I finished some more prisma DB research and Created the clock out dashboard page
 ## 7/25/2024
 
 - Helped with break time and duration calculation debugging.
+- Worked on equipment creation page.
+
+## 7/26/2024
+
+- Debugging equipment creation page.
+
+## 7/29/2024
+
+- Finally finished equipment creation page. (Had some horrible bugs)
+- Started Jobsite creation page.
