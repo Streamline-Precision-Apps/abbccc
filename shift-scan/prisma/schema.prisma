@@ -160,12 +160,21 @@ model UserTrainings {
 
 // Holds a uniquely generated QR code that can be read to distinct jobsite and general jobsite information 
 model Jobsite {
-  id             Int      @default(autoincrement())
-  jobsite_id     String   @id @default(cuid())
-  jobsite_name   String
-  jobsite_active Boolean  @default(true)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id                  Int        @id @default(autoincrement())
+  jobsite_id          String     @unique @default(cuid())
+  jobsite_active      Boolean    @default(true)
+  jobsite_status      FormStatus @default(PENDING)
+  // project_manager  String
+  jobsite_name        String
+  street_number       String?
+  street_name         String
+  city                String
+  state               String?
+  country             String
+  jobsite_description String
+  comments            String?
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
 
   costCode              CostCode[]
   addresses             Address[]

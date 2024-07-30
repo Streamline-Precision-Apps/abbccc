@@ -5,7 +5,7 @@ import CustomSelect from "./customSelect";
 import { CostCodeOptions } from "@/components/(search)/options";
 import { Modals } from "@/components/(reusable)/modals";
 import QRCode from "qrcode";
-
+import { useRouter } from "next/navigation";
 interface Option {
   code: string;
   label: string;
@@ -17,7 +17,7 @@ const qrJobsiteContent: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState("");
-
+  const Router = useRouter();
   const jobSiteOptions = CostCodeOptions("jobsite");
 
   useEffect(() => {
@@ -43,8 +43,7 @@ const qrJobsiteContent: React.FC = () => {
   };
 
   const handleNew = () => {
-    console.log("New button clicked");
-    // Add your new functionality here
+    Router.push("/dashboard/qr-generator/add-new-jobsite");
   };
 
   const handleOptionSelect = (option: Option) => {
