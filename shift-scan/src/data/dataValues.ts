@@ -4,7 +4,6 @@ import { Prisma} from "@prisma/client";
 
 // jobsites
 export const initialJobsites: Prisma.JobsiteCreateInput[]  = [
-{ jobsite_id: "67890", jobsite_name: "Sixth Site", jobsite_active: true, createdAt: new Date(), updatedAt: new Date(),},
 { jobsite_id: "j123", jobsite_name: "Jobsite 1", jobsite_active: true, createdAt: new Date(), updatedAt: new Date(),}, 
 { jobsite_id: "j234", jobsite_name: "Jobsite 2", jobsite_active: true, createdAt: new Date(), updatedAt: new Date() },
 { jobsite_id: "j345", jobsite_name: "Jobsite 3", jobsite_active: true, createdAt: new Date(), updatedAt: new Date() },
@@ -20,10 +19,9 @@ export const initialJobsites: Prisma.JobsiteCreateInput[]  = [
 ];
 // time sheets create method
 export const initialTimeSheets: Prisma.TimeSheetCreateInput[] = [
-{ submit_date: new Date(), date: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(), costcode: 'CC-101', start_time: new Date(new Date().setHours(8, 0, 0, 0)).toISOString(), end_time: new Date(new Date().setHours(12, 0, 0, 0)).toISOString(), total_break_time: 1.00, duration: 4.00, timesheet_comments: 'No issues during the shift.', app_comment: 'H>8-J>789>CC-101>T>6.', user: { connect: { id: "2" } }, jobsite: { connect: { jobsite_id : "12345" } }},
-{ submit_date: new Date(), date: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(), jobsite: { connect: { jobsite_id: "12345" } }, costcode: 'CC-101', start_time: new Date(new Date().setHours(12, 0, 0, 0)).toISOString(), end_time: new Date(new Date().setHours(17, 0, 0, 0)).toISOString(), total_break_time: 1.00, duration: 4.00, timesheet_comments: 'No issues during the shift.', app_comment: 'H>8-J>789>CC-101>T>6.', user: { connect: { id: "2" } } },
-{ submit_date: new Date(), date: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(), jobsite: { connect: { jobsite_id: "23456" } }, costcode: 'CC-101', start_time: new Date(new Date().setHours(8, 0, 0, 0)).toISOString(), end_time: new Date(new Date().setHours(15, 0, 0, 0)).toISOString(), total_break_time: 1.01, duration: 6.00, timesheet_comments: 'No issues during the shift.', app_comment: 'Submitted on time.', user: { connect: { id: "1" } } },
-{ submit_date: new Date(), date: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(), jobsite: { connect: { jobsite_id: "34567" } }, costcode: 'CC-101', start_time: new Date(new Date().setHours(15, 0, 0, 0)).toISOString(), end_time: new Date(new Date().setHours(19, 0, 0, 0)).toISOString(), total_break_time: 0.00, duration: 4.00, timesheet_comments: 'No issues during the shift.', app_comment: 'Submitted on time.', user: { connect: { id: "1" } } }
+{ submit_date: new Date(), date: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(), jobsite: { connect: { jobsite_id: "j123" } }, costcode: '#cc123gdj1', start_time: new Date(new Date().setHours(12, 0, 0, 0)).toISOString(), end_time: new Date(new Date().setHours(17, 0, 0, 0)).toISOString(), total_break_time: 1.00, duration: 4.00, timesheet_comments: 'No issues during the shift.', app_comment: 'H>8-J>789>CC-101>T>6.', user: { connect: { id: "2" } } },
+{ submit_date: new Date(), date: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(), jobsite: { connect: { jobsite_id: "j123" } }, costcode: '#cc123gdj1', start_time: new Date(new Date().setHours(8, 0, 0, 0)).toISOString(), end_time: new Date(new Date().setHours(15, 0, 0, 0)).toISOString(), total_break_time: 1.01, duration: 6.00, timesheet_comments: 'No issues during the shift.', app_comment: 'Submitted on time.', user: { connect: { id: "1" } } },
+{ submit_date: new Date(), date: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(), jobsite: { connect: { jobsite_id: "j123" } }, costcode: '#cc123gdj1', start_time: new Date(new Date().setHours(15, 0, 0, 0)).toISOString(), end_time: new Date(new Date().setHours(19, 0, 0, 0)).toISOString(), total_break_time: 0.00, duration: 4.00, timesheet_comments: 'No issues during the shift.', app_comment: 'Submitted on time.', user: { connect: { id: "1" } } }
 ];
 // intaializing crew
 export const initialCrews: Prisma.CrewCreateInput[] = [
@@ -87,35 +85,335 @@ export const initialContacts: Prisma.ContactCreateInput[] = [
 ]
 // initializing cost codes
 export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
-{ cost_code: "#cc123gdj1", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "1.0 Earthwork", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] } },
-{ cost_code: "#cc123gdj2", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "2.0 Foundation", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] } },
-{ cost_code: "#cc123gdj3", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "3.0 Concrete", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] } },
-{ cost_code: "#cc123gdj4", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "4.0 Masonry", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] } },
-{ cost_code: "cc123gdj5", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "5.0 Structural Steel", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] } },
-{ cost_code: "cc123gdj6", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "6.0 Carpentry", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] } },
-{ cost_code: "cc123gdj7", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "7.0 Roofing", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] } },
-{ cost_code: "cc123gdj8", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "8.0 Windows and Doors", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] } },
-{ cost_code: "cc123gdj9", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "9.0 Drywall", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] } },
-{ cost_code: "cc123gdj10", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "10.0 Flooring", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] } },
-{ cost_code: "cc123gdj11", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "11.0 Painting", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] } },
-{ cost_code: "cc123gdj12", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "12.0 Plumbing", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] } },
-{ cost_code: "cc123gdj13", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "13.0 HVAC", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] } },
-{ cost_code: "cc123gdj14", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "14.0 Electrical", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] } },
-{ cost_code: "cc123gdj15", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "15.0 Landscaping", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] } },
-{ cost_code: "cc123gdj16", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "16.0 Site Utilities", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] } },
-{ cost_code: "cc123gdj17", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "17.0 Fire Protection", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] } },
-{ cost_code: "cc123gdj18", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "18.0 Elevator", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] } },
-{ cost_code: "cc123gdj19", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "19.0 Security", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] } },
-{ cost_code: "cc123gdj20", createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", cost_code_description: "20.0 Finishes", cost_code_type: "", Jobsite: { connect: [{jobsite_id:"12345"}, {jobsite_id:"23456"}, {jobsite_id:"34567"}, {jobsite_id:"45678"}, {jobsite_id:"56789"}] } }
-]
+  {
+      cost_code: "#cc123gdj1",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      cost_code_description: "1.0 Earthwork",
+      cost_code_type: "",
+      Jobsite: {
+          connect: [
+              { jobsite_id: "j123" },
+              { jobsite_id: "j234" },
+              { jobsite_id: "j345" },
+              { jobsite_id: "j456" },
+              { jobsite_id: "j567" }
+          ]
+      }
+  },
+  {
+      cost_code: "#cc123gdj2",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      cost_code_description: "2.0 Foundation",
+      cost_code_type: "",
+      Jobsite: {
+          connect: [
+              { jobsite_id: "j123" },
+              { jobsite_id: "j234" },
+              { jobsite_id: "j345" },
+              { jobsite_id: "j456" },
+              { jobsite_id: "j567" }
+          ]
+      }
+  },
+  {
+      cost_code: "#cc123gdj3",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      cost_code_description: "3.0 Concrete",
+      cost_code_type: "",
+      Jobsite: {
+          connect: [
+              { jobsite_id: "j123" },
+              { jobsite_id: "j234" },
+              { jobsite_id: "j345" },
+              { jobsite_id: "j456" },
+              { jobsite_id: "j567" }
+          ]
+      }
+  },
+  {
+      cost_code: "#cc123gdj4",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      cost_code_description: "4.0 Masonry",
+      cost_code_type: "",
+      Jobsite: {
+          connect: [
+              { jobsite_id: "j123" },
+              { jobsite_id: "j234" },
+              { jobsite_id: "j345" },
+              { jobsite_id: "j456" },
+              { jobsite_id: "j567" }
+          ]
+      }
+  },
+  {
+      cost_code: "cc123gdj5",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      cost_code_description: "5.0 Structural Steel",
+      cost_code_type: "",
+      Jobsite: {
+          connect: [
+              { jobsite_id: "j123" },
+              { jobsite_id: "j234" },
+              { jobsite_id: "j345" },
+              { jobsite_id: "j456" },
+              { jobsite_id: "j567" }
+          ]
+      }
+  },
+  {
+      cost_code: "cc123gdj6",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      cost_code_description: "6.0 Carpentry",
+      cost_code_type: "",
+      Jobsite: {
+          connect: [
+              { jobsite_id: "j123" },
+              { jobsite_id: "j234" },
+              { jobsite_id: "j345" },
+              { jobsite_id: "j456" },
+              { jobsite_id: "j567" }
+          ]
+      }
+  },
+  {
+      cost_code: "cc123gdj7",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      cost_code_description: "7.0 Roofing",
+      cost_code_type: "",
+      Jobsite: {
+          connect: [
+              { jobsite_id: "j123" },
+              { jobsite_id: "j234" },
+              { jobsite_id: "j345" },
+              { jobsite_id: "j456" },
+              { jobsite_id: "j567" }
+          ]
+      }
+  },
+  {
+      cost_code: "cc123gdj8",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      cost_code_description: "8.0 Windows and Doors",
+      cost_code_type: "",
+      Jobsite: {
+          connect: [
+              { jobsite_id: "j123" },
+              { jobsite_id: "j234" },
+              { jobsite_id: "j345" },
+              { jobsite_id: "j456" },
+              { jobsite_id: "j567" }
+          ]
+      }
+  },
+  {
+      cost_code: "cc123gdj9",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      cost_code_description: "9.0 Drywall",
+      cost_code_type: "",
+      Jobsite: {
+          connect: [
+              { jobsite_id: "j123" },
+              { jobsite_id: "j234" },
+              { jobsite_id: "j345" },
+              { jobsite_id: "j456" },
+              { jobsite_id: "j567" }
+          ]
+      }
+  },
+  {
+      cost_code: "cc123gdj10",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      cost_code_description: "10.0 Flooring",
+      cost_code_type: "",
+      Jobsite: {
+          connect: [
+              { jobsite_id: "j123" },
+              { jobsite_id: "j234" },
+              { jobsite_id: "j345" },
+              { jobsite_id: "j456" },
+              { jobsite_id: "j567" }
+          ]
+      }
+  },
+  {
+      cost_code: "cc123gdj11",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      cost_code_description: "11.0 Painting",
+      cost_code_type: "",
+      Jobsite: {
+          connect: [
+              { jobsite_id: "j123" },
+              { jobsite_id: "j234" },
+              { jobsite_id: "j345" },
+              { jobsite_id: "j456" },
+              { jobsite_id: "j567" }
+          ]
+      }
+  },
+  {
+      cost_code: "cc123gdj12",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      cost_code_description: "12.0 Plumbing",
+      cost_code_type: "",
+      Jobsite: {
+          connect: [
+              { jobsite_id: "j123" },
+              { jobsite_id: "j234" },
+              { jobsite_id: "j345" },
+              { jobsite_id: "j456" },
+              { jobsite_id: "j567" }
+          ]
+      }
+  },
+  {
+      cost_code: "cc123gdj13",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      cost_code_description: "13.0 HVAC",
+      cost_code_type: "",
+      Jobsite: {
+          connect: [
+              { jobsite_id: "j123" },
+              { jobsite_id: "j234" },
+              { jobsite_id: "j345" },
+              { jobsite_id: "j456" },
+              { jobsite_id: "j567" }
+          ]
+      }
+  },
+  {
+      cost_code: "cc123gdj14",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      cost_code_description: "14.0 Electrical",
+      cost_code_type: "",
+      Jobsite: {
+          connect: [
+              { jobsite_id: "j123" },
+              { jobsite_id: "j234" },
+              { jobsite_id: "j345" },
+              { jobsite_id: "j456" },
+              { jobsite_id: "j567" }
+          ]
+      }
+  },
+  {
+      cost_code: "cc123gdj15",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      cost_code_description: "15.0 Landscaping",
+      cost_code_type: "",
+      Jobsite: {
+          connect: [
+              { jobsite_id: "j123" },
+              { jobsite_id: "j234" },
+              { jobsite_id: "j345" },
+              { jobsite_id: "j456" },
+              { jobsite_id: "j567" }
+          ]
+      }
+  },
+  {
+      cost_code: "cc123gdj16",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      cost_code_description: "16.0 Site Utilities",
+      cost_code_type: "",
+      Jobsite: {
+          connect: [
+              { jobsite_id: "j123" },
+              { jobsite_id: "j234" },
+              { jobsite_id: "j345" },
+              { jobsite_id: "j456" },
+              { jobsite_id: "j567" }
+          ]
+      }
+  },
+  {
+      cost_code: "cc123gdj17",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      cost_code_description: "17.0 Fire Protection",
+      cost_code_type: "",
+      Jobsite: {
+          connect: [
+              { jobsite_id: "j123" },
+              { jobsite_id: "j234" },
+              { jobsite_id: "j345" },
+              { jobsite_id: "j456" },
+              { jobsite_id: "j567" }
+          ]
+      }
+  },
+  {
+      cost_code: "cc123gdj18",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      cost_code_description: "18.0 Elevator",
+      cost_code_type: "",
+      Jobsite: {
+          connect: [
+              { jobsite_id: "j123" },
+              { jobsite_id: "j234" },
+              { jobsite_id: "j345" },
+              { jobsite_id: "j456" },
+              { jobsite_id: "j567" }
+          ]
+      }
+  },
+  {
+      cost_code: "cc123gdj19",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      cost_code_description: "19.0 Security",
+      cost_code_type: "",
+      Jobsite: {
+          connect: [
+              { jobsite_id: "j123" },
+              { jobsite_id: "j234" },
+              { jobsite_id: "j345" },
+              { jobsite_id: "j456" },
+              { jobsite_id: "j567" }
+          ]
+      }
+  },
+  {
+      cost_code: "cc123gdj20",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      cost_code_description: "20.0 Finishes",
+      cost_code_type: "",
+      Jobsite: {
+          connect: [
+              { jobsite_id: "j123" },
+              { jobsite_id: "j234" },
+              { jobsite_id: "j345" },
+              { jobsite_id: "j456" },
+              { jobsite_id: "j567" }
+          ]
+      }
+  }
+];
 export const initialCrewJobsites: Prisma.CrewJobsiteCreateInput[] = [
-    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 1}}, jobsite: { connect: { jobsite_id: "12345"}}},
-    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 1}}, jobsite: { connect: { jobsite_id: "23456"}}},
-    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 2}}, jobsite: { connect: { jobsite_id: "34567"}}},
-    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 2}}, jobsite: { connect: { jobsite_id: "45678"}}},
-    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 3}}, jobsite: { connect: { jobsite_id: "56789"}}},
-    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 4}}, jobsite: { connect: { jobsite_id: "67890"}}},
-    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 3}}, jobsite: { connect: { jobsite_id: "j123"}}}
+    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 1}}, jobsite: { connect: { jobsite_id: "j222"}}},
+    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 1}}, jobsite: { connect: { jobsite_id: "j222"}}},
+    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 2}}, jobsite: { connect: { jobsite_id: "j222"}}},
+    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 2}}, jobsite: { connect: { jobsite_id: "j222"}}},
+    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 3}}, jobsite: { connect: { jobsite_id: "j222"}}},
+    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 4}}, jobsite: { connect: { jobsite_id: "j222"}}},
+    { createdAt: "2022-01-01T00:00:00.000Z", updatedAt: "2022-01-01T00:00:00.000Z", crew: { connect: {id: 3}}, jobsite: { connect: { jobsite_id: "j222"}}}
 ]
 
 export const intialEquipment: Prisma.EquipmentCreateInput[] = [
@@ -182,7 +480,7 @@ export const intialEmployeeEquipment: Prisma.EmployeeEquipmentLogCreateInput[] =
         updatedAt: new Date(),
         employee: { connect: { id: "1" } },
         start_time: new Date(),
-        Job: { connect: { jobsite_id: "12345" } },
+        Job: { connect: { jobsite_id: "j222" } },
         Equipment: { connect: { qr_id: "EQ-123456" } },
         end_time: null,
         duration: null,
@@ -193,7 +491,7 @@ export const intialEmployeeEquipment: Prisma.EmployeeEquipmentLogCreateInput[] =
         updatedAt: new Date(),
         employee: { connect: { id: "2" } },
         start_time: new Date(),
-        Job: { connect: { jobsite_id: "12345" } },
+        Job: { connect: { jobsite_id: "j222" } },
         Equipment: { connect: { qr_id: "EQ-654321" } },
         end_time: null,
         duration: null,
@@ -204,7 +502,7 @@ export const intialEmployeeEquipment: Prisma.EmployeeEquipmentLogCreateInput[] =
         updatedAt: new Date(),
         employee: { connect: { id: "3" } },
         start_time: new Date(),
-        Job: { connect: { jobsite_id: "12345" } },
+        Job: { connect: { jobsite_id: "j222" } },
         Equipment: { connect: { qr_id: "EQ-789012" } },
         end_time: null,
         duration: null,

@@ -66,7 +66,7 @@ useEffect(() => {
     setJobsiteResults(jobCodes);
     setCostcodeResults(CostCodes);
     setEquipmentResults(equipment);
-}, [jobCodes, CostCodes, equipment, setJobsiteResults, setCostcodeResults, setEquipmentResults]);
+}, [jobCodes, CostCodes, equipment]);
 
 
 

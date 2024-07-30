@@ -1,7 +1,6 @@
 "use client";
 import '@/app/globals.css';
 
-
 export default function AppUser ({ user }: any) {
     return (
         <div className="flex justify-center items-center space-y-4  ">
