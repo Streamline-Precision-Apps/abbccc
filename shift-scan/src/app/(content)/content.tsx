@@ -12,17 +12,9 @@ import { useSavedUserData } from "../context/UserContext";
 import { getAuthStep } from "../api/auth";
 import DisplayBreakTime from "./displayBreakTime";
 import { useRouter } from "next/navigation";
-import { Bases } from "@/components/(reusable)/bases";
-import { Sections } from "@/components/(reusable)/sections";
-import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
-import { Images } from "@/components/(reusable)/images";
-import { Modals } from "@/components/(reusable)/modals";
-import { Headers } from "@/components/(reusable)/headers";
 import { Banners } from "@/components/(reusable)/banners";
 import { Texts } from "@/components/(reusable)/texts";
-import { Footers } from "@/components/(reusable)/footers";
-
 
 
 export default function Content() {
@@ -33,27 +25,14 @@ export default function Content() {
   const { setSavedUserData } = useSavedUserData();
   const router = useRouter();
   const date = new Date().toLocaleDateString( 'en-US', { year: 'numeric', month: 'short', day: 'numeric', weekday: 'long' });
-  const [user, setData] = useState<User>({
-    id: "",
-    name: "",
-    firstName: "",
-    lastName: "",
-    permission: "",
-  });
-
+  const [user, setData] = useState<User>({ id: "", name: "", firstName: "", lastName: "", permission: "", });
+  // will send you to dashboard if authenticated
   useEffect(() => {
     if (authStep ==="success") {
       router.push("/dashboard");
     }
   }, []);
 
-  /* Todo: rather then use this use effect and save the data in a context
-  maybe look into using the cookie or local storage that way there isnt a load up state of user.
-  pulling from the database slows down the load of the pages and cause there to be 
-  empty data if the session isnt loaded in correctly. 
-  
-  response:
-   */
 
   useEffect(() => {
     if (session && session.user) {
@@ -67,10 +46,10 @@ export default function Content() {
         lastName: session.user.lastName,
         permission: session.user.permission,
       });
-
       setHoursContext();
     }
   }, [session]);
+  
   const handler = () => {
     setToggle(!toggle);
     console.log(toggle);

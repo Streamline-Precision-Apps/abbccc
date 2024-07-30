@@ -34,7 +34,7 @@ type equipment = {
 
 interface clockProcessProps{
     scannerType: string;
-    id: string | null;
+    id: string | undefined;
     type: string;
     jobCodes: jobCodes[];
     CostCodes: CostCode[];
@@ -63,11 +63,14 @@ const { equipmentResults, setEquipmentResults } = useDBEquipment();
 
 useEffect(() => {
     setStep(1);
+}, [path]);
+
+
+useEffect(() => {
     setJobsiteResults(jobCodes);
     setCostcodeResults(CostCodes);
     setEquipmentResults(equipment);
-}, [jobCodes, CostCodes, equipment]);
-
+}, []);
 
 useEffect(() => {
 if (scannerType === "EQ") {
