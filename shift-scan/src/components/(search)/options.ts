@@ -42,7 +42,7 @@ export const CostCodeOptions = (data: string) => {
 
     if (data === 'equipment') {
         const options = equipmentResults.map((equipment: equipment) => ({
-            code: equipment.id,
+            code: equipment.qr_id,
             label: equipment.name
         }));
         return options;

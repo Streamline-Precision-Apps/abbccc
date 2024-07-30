@@ -116,6 +116,7 @@ CREATE TABLE "Jobsite" (
     "id" SERIAL NOT NULL,
     "jobsite_id" TEXT NOT NULL,
     "jobsite_active" BOOLEAN NOT NULL DEFAULT true,
+    "jobsite_status" "FormStatus" NOT NULL DEFAULT 'PENDING',
     "jobsite_name" TEXT NOT NULL,
     "street_number" TEXT,
     "street_name" TEXT NOT NULL,

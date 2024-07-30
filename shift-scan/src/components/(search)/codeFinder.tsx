@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import { useSavedCostCode } from '@/app/context/CostCodeContext';
 import { CostCodeOptions } from '@/components/(search)/options';
 import { useScanData } from '@/app/context/JobSiteContext';
+import { useEQScanData } from '@/app/context/equipmentContext';
 
 interface Option {
     code: string;
@@ -25,6 +26,7 @@ export default function CodeFinder({ datatype } : Props) {
     const t = useTranslations('clock');
     const { setScanResult } = useScanData();
     const { setCostCode } = useSavedCostCode();
+    const { setscanEQResult } = useEQScanData();
     const options = CostCodeOptions(datatype);
 
     useEffect(() => {
@@ -38,10 +40,16 @@ export default function CodeFinder({ datatype } : Props) {
     const handleOptionSelect = (option: Option) => {
         setSelectedOption(option);
         if (datatype === 'costcode') {
+            localStorage.setItem("costCode", option.code);
             setCostCode(option.code);
         }
         if (datatype === 'jobsite') {
+            localStorage.setItem("jobSite", option.code);
             setScanResult({ data: option.code });
+        }
+        if (datatype === 'equipment') {
+            setscanEQResult({ data: option.code });
+            localStorage.setItem("previousEquipment", option.code);
         }
         setSearchTerm(option.label);
     };

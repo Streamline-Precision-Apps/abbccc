@@ -24,6 +24,7 @@ equipment: Equipment[];
 
 const VerificationEQStep: React.FC<VerifyProcessProps> = ({
 id,
+equipment,
 type,
 handleNextStep,
 
@@ -31,8 +32,14 @@ handleNextStep,
 const [filteredEquipmentName, setFilteredEquipmentName] = useState<string | null>(null);
 const t = useTranslations("clock");
 const { scanEQResult } = useEQScanData();
-const { scanResult } = useScanData();
+const { scanResult, setScanResult } = useScanData();
 const { savedUserData } = useSavedUserData();
+
+// if the jobsite is not in the case it will be stored in local storage
+if (!scanResult?.data) {
+const jobSiteId = localStorage.getItem("jobSite");
+setScanResult({ data: jobSiteId || "" });
+}
 
 
 const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
