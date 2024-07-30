@@ -1,3 +1,4 @@
+"use client";
 import { useMemo, useState } from "react";
 import ViewComponent from "../(content)/hourView";
 import { useSavedPayPeriodHours } from "../context/SavedPayPeriodHours";

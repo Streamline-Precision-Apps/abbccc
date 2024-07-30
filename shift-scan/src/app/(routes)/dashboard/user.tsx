@@ -1,18 +1,11 @@
+
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
 
 export const User = () => {
   const t = useTranslations("ManagerButtons");
-  const router = useRouter();
-  const loadClockOutPage = () => {
-    router.push("/dashboard/clock-out");
-  };
-  function loadPage(href : string) {
-    router.push(href);
-  }
   return (
     <>
       <Buttons href="/dashboard/switch-jobs" variant={"orange"} size={"widgetSm"}>

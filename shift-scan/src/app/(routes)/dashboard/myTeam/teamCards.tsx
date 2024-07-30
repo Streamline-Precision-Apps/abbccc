@@ -4,7 +4,8 @@ import Image from "next/image";
 import TeamInfoButton from "./button";
 import { cookies } from "next/headers";
 
-
+/* Todo: Make the  team card section use zacks code and get ride of the button 
+- provide routing for the buttons to go to the correct page */
 export default async function TeamCards() {
     const user = cookies().get("user");
     const id = user?.value;
