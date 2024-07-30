@@ -1,10 +1,10 @@
 import { Bases } from "@/components/(reusable)/bases";
 import { Sections } from "@/components/(reusable)/sections";
-import { Titles } from "@/components/(reusable)/titles";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { Buttons } from "@/components/(reusable)/buttons";
+import SubmitAll from "./submitAll";
 
 export default async function Current() {
     const userCookie = cookies().get("user");
@@ -12,29 +12,36 @@ export default async function Current() {
 
     const currentDate = new Date();
     const past24Hours = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
-    const completed = false
 
     const logs = await prisma.employeeEquipmentLog.findMany({
         where: {
             employee_id: userid,
-            createdAt: { lte: currentDate, gte: past24Hours, },
-            // completed: false,
-            // submitted : false,
+            createdAt: { lte: currentDate, gte: past24Hours },
+            submitted: false
         },
         include: {
-            Equipment: true
+            Equipment: true,
         }
     });
+
+    const total = logs.length;
+    const completed = logs.filter((log) => log.completed).length;
+    const green = total - completed;
+
     return (
         <Bases>
             <Sections size={"titleBox"}>
                 <TitleBoxes title="Current Equipment" titleImg="/current.svg" titleImgAlt="Current" variant={"default"} size={"default"} />
             </Sections>
             <Sections size={"default"}>
-            {logs.map((log) => (
-                <Buttons variant={(completed) ? "green" : "orange"} size={"default"} href={(`/dashboard/equipment/current/${log.id}`)}  key={log.id}>{log.Equipment?.name}</Buttons>
-            ))}
+                {green === 0 && total !== 0 ? <SubmitAll userid={userid} /> : <></>}
+                {total === 0 ? <h2>No Current Equipment</h2> : <></>}
+                {logs.map((log) => (
+                    <Buttons variant={(log.completed) ? "green" : "orange"} size={"default"} href={`/dashboard/equipment/current/${log.id}`} key={log.id}>
+                        {log.Equipment?.name}
+                    </Buttons>
+                ))}
             </Sections>
         </Bases>
-    )
+    );
 }

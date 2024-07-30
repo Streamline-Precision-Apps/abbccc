@@ -169,6 +169,8 @@ CREATE TABLE "EmployeeEquipmentLog" (
     "start_time" TIMESTAMP(3) NOT NULL,
     "end_time" TIMESTAMP(3),
     "duration" DOUBLE PRECISION,
+    "refueled" BOOLEAN NOT NULL DEFAULT false,
+    "fuel_used" DOUBLE PRECISION DEFAULT 0.0,
     "equipment_notes" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
