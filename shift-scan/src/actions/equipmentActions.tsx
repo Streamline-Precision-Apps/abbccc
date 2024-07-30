@@ -160,7 +160,6 @@ try {
 
 export async function updateEmployeeEquipmentLog(formData: FormData) {
     try {
-        console.log("Updating EmployeeEquipmentLog...");
         console.log(formData);
         const id = formData.get("id") as string;
     
@@ -171,6 +170,7 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
             end_time:(new Date(formData.get('end_time') as string).toISOString()),
             duration: Number(formData.get('duration') as string),
             equipment_notes: formData.get('equipment_notes') as string,
+            completed: true
         }
         });
     
@@ -181,4 +181,48 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
         throw new Error(`Failed to update employee equipment log: ${error.message}`);
     }
     }
-    
+
+
+    export async function Submit(formData: FormData) {
+      try {
+          const id = formData.get("id") as string;
+  
+          const logs = await prisma.employeeEquipmentLog.updateMany({
+              where: {
+                  employee_id: id,
+                  submitted: false
+              },
+              data: {
+                  completed: true,
+                  submitted: true
+              }
+          });
+  
+          // Revalidate the path to reflect changes
+          revalidatePath('/dashboard/equipment/current');
+          return logs;
+      } catch (error: any) {
+          console.error("Error updating employee equipment log:", error);
+          throw new Error(`Failed to update employee equipment log: ${error.message}`);
+      }
+  }
+
+
+
+
+  export async function DeleteLogs(formData: FormData) {
+    try {
+      console.log(formData);
+        const id = formData.get("id") as string;
+
+        const deletedLog = await prisma.employeeEquipmentLog.delete({
+            where: { id: Number(id) },
+        });
+        console.log(deletedLog);
+        // Revalidate the path to reflect changes
+        revalidatePath('/dashboard/equipment/current');
+    } catch (error: any) {
+        console.error("Error updating employee equipment log:", error);
+        throw new Error(`Failed to update employee equipment log: ${error.message}`);
+    }
+}
