@@ -3,20 +3,24 @@ import Content from "@/app/(content)/content"
 import {formatDate} from "@/components/getDate"
 import "@/app/globals.css"
 import { Header } from "@/components/header"
+import { Bases } from "@/components/(reusable)/bases"
+import { Sections } from "@/components/(reusable)/sections"
+import { Headers } from "@/components/(reusable)/headers"
+import { useTranslations } from "next-intl"
+import { Footers } from "@/components/(reusable)/footers"
 
 export default function Home() {
 
-    const date = formatDate();
+    const t = useTranslations("page1");
 
-    
     return (   
-        <>
-            <div className="flex-col justify-self-center items-center h-[54rem] w-11/12 md:w-1/2 lg:w-1/3 lg:h-full  absolute inset-1 bg-cover bg-center bg-no-repeat bg-white rounded-lg pb-0">
+        <Bases variant={"default"} size={"default"}>
             <Header/>
-            {/* <Header /> */}
-            <Banner date={date} translation="page1" />
-            <Content />
-            </div>
-        </> 
+            <Sections size={"default"}>
+            <Headers variant={"relative"} size={"default"}></Headers>
+                <Content />
+            <Footers >{t("lN4")}</Footers>
+            </Sections>
+        </Bases>
     )   
 }

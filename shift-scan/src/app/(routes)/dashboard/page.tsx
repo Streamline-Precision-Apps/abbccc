@@ -20,17 +20,24 @@ import { Headers } from "@/components/(reusable)/headers";
 import { Banners } from "@/components/(reusable)/banners";
 import { Texts } from "@/components/(reusable)/texts";
 import { Footers } from "@/components/(reusable)/footers";
+import { CustomSession, User } from "@/lib/types";
+import { useSession } from "next-auth/react";
+import { useSavedUserData } from "@/app/context/UserContext";
 
 export default function Index() {
   
   const [isOpen, setIsOpen] = useState(false);
   const t = useTranslations("dashboard");
   const router = useRouter();
-
-  const [user, setUser] = useState<any>({
+  const { data: session } = useSession() as { data: CustomSession | null };
+  const { setSavedUserData } = useSavedUserData();
+  const date = new Date().toLocaleDateString( 'en-US', { year: 'numeric', month: 'short', day: 'numeric', weekday: 'long' });
+  const [user, setData] = useState<User>({
+    id: "",
+    name: "",
     firstName: "",
     lastName: "",
-    date: "",
+    permission: "",
   });
 
   useEffect(() => {
@@ -62,18 +69,19 @@ export default function Index() {
   }, []);
 
   useEffect(() => {
-    // simulating an api call here
-    const fetchData = async () => {
-      const userData = {
-        firstName: "Devun",
-        lastName: "Durst",
-        date: "05-03-2024",
-        role: "Manager",
-      };
-      setUser(userData);
-    };
-    fetchData();
-  }, []);
+    if (session && session.user) {
+      setSavedUserData({
+        id: session.user.id,
+      });
+      setData({
+        id: session.user.id,
+        name: session.user.name,
+        firstName: session.user.firstName,
+        lastName: session.user.lastName,
+        permission: session.user.permission,
+      });
+    }
+  }, [session]);
 
   return isDashboardAuthenticated() ? (
     <Bases variant={"default"} size={"default"}>
@@ -81,7 +89,7 @@ export default function Index() {
         <Headers variant={"relative"} size={"default"}></Headers>
         <Banners variant={"default"} size={"default"}>
           <Titles variant={"default"} size={"h1"}>{t("Banner")}</Titles>
-          <Texts variant={"default"} size={"p1"}>{t("Date", { date: user.date })}</Texts>
+          <Texts variant={"default"} size={"p1"}>{t("Date", { date: date })}</Texts>
         </Banners>
         <Texts variant={"name"} size={"p1"}>{t("Name", { firstName: user.firstName, lastName: user.lastName })}</Texts>
         <DashboardButtons/>

@@ -3,6 +3,9 @@ import { useTranslations } from "next-intl";
 import "../../app/globals.css";
 import { useRouter } from "next/navigation";
 import { setAuthStep } from "../api/auth";
+import { Buttons } from "@/components/(reusable)/buttons";
+import { Texts } from "@/components/(reusable)/texts";
+import { Images } from "@/components/(reusable)/images";
 
 interface Props {
     user: User
@@ -18,10 +21,10 @@ export default function ClockInWidget({ user }: Props) {
 
     return (
         <>
-            <button className="bg-app-green text-4xl font-semibold text-black w-full h-full rounded-lg mb-10 border-2 border-black" 
-                onClick={loadNextPage}>
-                {t('lN3')}
-            </button>
+            <Buttons variant={"green"} size={"widgetLg"} onClick={loadNextPage}>
+            <Images titleImg="/clockIn.svg" titleImgAlt="QR Code" variant={"icon"} size={"widgetSm"}></Images>
+            <Texts>{t("lN3")}</Texts>
+            </Buttons>
         </>
     );
 }

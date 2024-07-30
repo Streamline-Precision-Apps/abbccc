@@ -2,7 +2,6 @@
 
 import "@/app/globals.css";
 import { useTranslations } from "next-intl";
-import AppUser from "@/app/(content)/name";
 import Hours from "@/app/(content)/hours";
 import WidgetSection from "@/components/widgetSection";
 import { useSession } from "next-auth/react";
@@ -13,15 +12,27 @@ import { useSavedUserData } from "../context/UserContext";
 import { getAuthStep } from "../api/auth";
 import DisplayBreakTime from "./displayBreakTime";
 import { useRouter } from "next/navigation";
+import { Bases } from "@/components/(reusable)/bases";
+import { Sections } from "@/components/(reusable)/sections";
+import { Buttons } from "@/components/(reusable)/buttons";
+import { Titles } from "@/components/(reusable)/titles";
+import { Images } from "@/components/(reusable)/images";
+import { Modals } from "@/components/(reusable)/modals";
+import { Headers } from "@/components/(reusable)/headers";
+import { Banners } from "@/components/(reusable)/banners";
+import { Texts } from "@/components/(reusable)/texts";
+import { Footers } from "@/components/(reusable)/footers";
 
-// TODO: pass the user data here after getting it in a server function. 
+
+
 export default function Content() {
   const t = useTranslations("page1");
   const { data: session } = useSession() as { data: CustomSession | null };
-  const { payPeriodHours, setPayPeriodHours } = useSavedPayPeriodHours();
+  const { setPayPeriodHours } = useSavedPayPeriodHours();
   const [toggle, setToggle] = useState(true);
-  const { savedUserData, setSavedUserData } = useSavedUserData();
+  const { setSavedUserData } = useSavedUserData();
   const router = useRouter();
+  const date = new Date().toLocaleDateString( 'en-US', { year: 'numeric', month: 'short', day: 'numeric', weekday: 'long' });
   const [user, setData] = useState<User>({
     id: "",
     name: "",
@@ -83,19 +94,26 @@ export default function Content() {
   if (authStep === "break") {
     return (
       <>
-        <AppUser user={user} />
-        <DisplayBreakTime setToggle={handler} display={toggle} />
-        <WidgetSection user={user} display={toggle} />
+      <Banners variant={"default"} size={"default"}>
+                <Titles variant={"default"} size={"h1"}>{t("Banner")}</Titles>
+                <Texts variant={"default"} size={"p1"}>{t("Date", { date })}</Texts>
+        </Banners>
+          <Texts variant={"name"} size={"p1"}>{t("Name", { firstName: user.firstName, lastName: user.lastName })}</Texts>
+          <DisplayBreakTime setToggle={handler} display={toggle} />
+          <WidgetSection user={user} display={toggle} />
       </>
     );
   }
-
   else {
     return (
       <>
-        <AppUser user={user} />
-        <Hours setToggle={handler} display={toggle} />
-        <WidgetSection user={user} display={toggle} />
+        <Banners variant={"default"} size={"default"}>
+                <Titles variant={"default"} size={"h1"}>{t("Banner")}</Titles>
+                <Texts variant={"default"} size={"p1"}>{t("Date", { date })}</Texts>
+        </Banners>
+          <Texts variant={"name"} size={"p1"}>{t("Name", { firstName: user.firstName, lastName: user.lastName })}</Texts>
+          <Hours setToggle={handler} display={toggle} />
+          <WidgetSection user={user} display={toggle} />
       </>
     );
   }
