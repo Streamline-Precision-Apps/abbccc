@@ -7,8 +7,7 @@ type Props = {
 }
 export default async function Clock({type}: Props) {
     const user = cookies().get("user");
-    const userstring = user?.value || null;
-    const userId = userstring;
+    const userId = user?.value ;
     // add these here to enable proper code selection in the form
     const jobCodes = await prisma.jobsite.findMany(
         {
@@ -37,6 +36,7 @@ export default async function Clock({type}: Props) {
             }
         }
     );
+    
 
     if (type === "equipment") {
         return (

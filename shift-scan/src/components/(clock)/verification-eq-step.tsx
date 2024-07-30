@@ -16,7 +16,7 @@ type Equipment = {
 }
 
 type VerifyProcessProps = {
-id: string | null;
+id: string | undefined;
 handleNextStep: () => void;
 type: string;
 equipment: Equipment[];
