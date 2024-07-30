@@ -69,11 +69,6 @@ useEffect(() => {
 }, [jobCodes, CostCodes, equipment]);
 
 
-
-
-
-console.log(jobCodes, CostCodes, equipment);
-
 useEffect(() => {
 if (scannerType === "EQ") {
     setScanner(scanEQResult?.data || "");
