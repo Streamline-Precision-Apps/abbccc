@@ -113,6 +113,7 @@ return (
             type="equipment"
             handleAlternativePath={handleAlternativePath}
             handleNextStep={handleNextStep}
+            url="/dashboard/equipment"
         />
         )}
         {step === 2 && (
@@ -153,6 +154,7 @@ return (
         type="jobsite"
         handleAlternativePath={handleAlternativePath}
         handleNextStep={handleNextStep}
+        url={(type === "switchJobs") ? "/dashboard/switch-jobs" : "/"}
         />
     )}
     {step === 2 && (

@@ -31,7 +31,7 @@ export default async function Current() {
     return (
         <Bases>
             <Sections size={"titleBox"}>
-                <TitleBoxes title="Current Equipment" titleImg="/current.svg" titleImgAlt="Current" variant={"default"} size={"default"} />
+                <TitleBoxes title="Current Equipment" titleImg="/equipment.svg" titleImgAlt="Current" variant={"default"} size={"default"} />
             </Sections>
             <Sections size={"default"}>
                 {green === 0 && total !== 0 ? <SubmitAll userid={userid} /> : <></>}
