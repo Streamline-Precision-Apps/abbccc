@@ -12,7 +12,7 @@ interface Props {
 }
 
 export default function ClockInWidget({ user }: Props) {
-    const t = useTranslations("page1");
+    const t = useTranslations('Home');
     const router = useRouter();
 
     const loadNextPage = async () => {
@@ -23,7 +23,7 @@ export default function ClockInWidget({ user }: Props) {
         <>
             <Buttons variant={"green"} size={"default"} onClick={loadNextPage}>
             <Images titleImg="/clockIn.svg" titleImgAlt="QR Code" variant={"icon"} size={"widgetSm"}></Images>
-            <Texts>{t("lN3")}</Texts>
+            <Texts>{t("Clock-btn")}</Texts>
             </Buttons>
         </>
     );

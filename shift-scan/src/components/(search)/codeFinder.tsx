@@ -24,7 +24,7 @@ export default function CodeFinder({ datatype }: Props) {
 const [searchTerm, setSearchTerm] = useState('');
 const [filteredOptions, setFilteredOptions] = useState<Option[]>([]);
 const [selectedOption, setSelectedOption] = useState<Option | null>(null);
-const t = useTranslations('clock');
+const t = useTranslations('Clock');
 const { setScanResult } = useScanData();
 const { setCostCode } = useSavedCostCode();
 const { setscanEQResult } = useEQScanData();
@@ -72,11 +72,10 @@ setSearchTerm(e.target.value);
 
 return (
 <div className="flex flex-col items-center w-1/2 m-auto">
-    <h1>{t(`title-${datatype}-bar`)}</h1>
-    <SearchBar searchTerm={searchTerm} onSearchChange={handleSearchChange} />
+    <SearchBar placeholder={t(`search-${datatype}`)} searchTerm={searchTerm} onSearchChange={handleSearchChange} />
     <CustomSelect 
     options={filteredOptions} 
-    placeholder={t('placeholder')} 
+    placeholder={t(`placeholder-${datatype}`)} 
     onOptionSelect={handleOptionSelect} 
     selectedOption={selectedOption} 
     />

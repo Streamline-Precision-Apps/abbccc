@@ -49,7 +49,7 @@ scannerType,
 jobCodes,
 CostCodes
 }) => {
-const t = useTranslations("page2");
+const t = useTranslations("Clock");
 const [step, setStep] = useState(1);
 const [useQrCode, setUseQrCode] = useState(true);
 const { savedCostCode } = useSavedCostCode();
@@ -133,10 +133,10 @@ return (
         {step === 4 && (
         <>
             <h1 className="flex justify-center text-2xl font-bold pt-10 pb-10">
-            Process Completed
+            {t("Confirmation-eq-message-1")}
             </h1>
             <p className="text-lg">
-            Thank you! Your Equipment has been successfully Logged.
+            {t("Confirmation-eq-message-2")}
             </p>
             <RedirectAfterDelay delay={2000} to="/dashboard" />
         </>
@@ -180,20 +180,24 @@ return (
     {step === 5 && path === "jobsite" && (
         <>
         <h1 className="flex justify-center text-2xl font-bold pt-10 pb-10">
-            Process Completed
+        {t("Confirmation-job-message-1")}
         </h1>
-        <p className="text-lg">
-            Thank you! Your timesheet has been successfully created.
-        </p>
+        {(type === "switchJobs") ? 
+        (<><p>{t("Confirmation-job-message-3")}</p>
+            <p>{t("Confirmation-job-message-4")}</p>
+        </>
+        )
+        : (<p className="text-lg">{t("Confirmation-job-message-2")}</p>)
+        }
         <div className="bg-pink-100 h-1/2 w-1/2 flex flex-col items-center p-5 rounded-t-2xl text-xl">
             <h2 className="my-5">
-            {t("lN2")} {scanResult?.data}
+            {t("JobSite-label")} {scanResult?.data}
             </h2>
             <h2 className="my-5">
-            {t("lN3")} {savedCostCode}
+            {t("CostCode-label")} {savedCostCode}
             </h2>
             <h2 className="my-5">
-            {t("lN4")}{" "}
+            {t("Confirmation-time")}{" "}
             {new Date().toLocaleDateString("en-US", {
                 hour: "numeric",
                 minute: "numeric",
@@ -201,7 +205,7 @@ return (
             })}
             </h2>
         </div>
-        <RedirectAfterDelay delay={3000} to="/dashboard" />
+        <RedirectAfterDelay delay={4000} to="/dashboard" />
         </>
     )}
     </div>

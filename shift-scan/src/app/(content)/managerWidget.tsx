@@ -10,7 +10,7 @@ interface Props {
   user: User;
 }
 export default function ManagerWidget({ user }: Props) {
-  const t = useTranslations("page1");
+  const t = useTranslations("Home");
   const router = useRouter();
 
   if (
@@ -23,12 +23,11 @@ export default function ManagerWidget({ user }: Props) {
     < div className="grid grid-cols-2 gap-4 w-full ">
         <Buttons href="/dashboard/myTeam" variant={"default"} size={"widgetSm"}>
         <Images titleImg="/myTeam.svg" titleImgAlt="my team" variant={"icon"} size={"widgetSm"}></Images>
-        <Texts>{t("lN6")}</Texts>
+        <Texts>{t("MyTeam-btn")}</Texts>
       </Buttons>
-
       <Buttons href="/dashboard/qr-generator" variant={"default"} size={"widgetSm"}>
         <Images titleImg="/qrCode.svg" titleImgAlt="QR Code" variant={"icon"} size={"widgetSm"}></Images>
-        <Texts>{t("lN5")}</Texts>
+        <Texts>{t("Qr-btn")}</Texts>
       </Buttons>
     </div>
     );
