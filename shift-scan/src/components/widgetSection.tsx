@@ -10,7 +10,7 @@ interface Props {
 
 export default function WidgetSection({ user, display }: Props) {
     return display ? (
-        <div className="grid grid-cols-1 grid-rows-2 gap-4 w-11/12 h-1/2 m-auto ">
+        <div className={`"grid grid-cols-3 grid-rows-2 gap-4 w-11/12 m-auto" ${ user?.permission !== "USER" ? "h-1/2": "h-11/12"}`}>
             <ManagerWidget user={user} />
             <ClockInWidget user={user} />
         </div>
