@@ -21,7 +21,7 @@ export default function ClockInWidget({ user }: Props) {
 
     return (
         <>
-            <Buttons variant={"green"} size={"widgetLg"} onClick={loadNextPage}>
+            <Buttons variant={"green"} size={"default"} onClick={loadNextPage}>
             <Images titleImg="/clockIn.svg" titleImgAlt="QR Code" variant={"icon"} size={"widgetSm"}></Images>
             <Texts>{t("lN3")}</Texts>
             </Buttons>
