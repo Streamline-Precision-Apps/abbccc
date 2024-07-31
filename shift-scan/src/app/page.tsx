@@ -11,7 +11,8 @@ import { Footers } from "@/components/(reusable)/footers"
 
 export default function Home() {
 
-    const t = useTranslations("page1");
+    const t = useTranslations("Home");
+    const f = useTranslations("Footer");
 
     return (   
         <Bases variant={"default"} size={"default"}>
@@ -19,7 +20,7 @@ export default function Home() {
             <Sections size={"default"}>
             <Headers variant={"relative"} size={"default"}></Headers>
                 <Content />
-            <Footers >{t("lN4")}</Footers>
+            <Footers >{f("Copyright")}</Footers>
             </Sections>
         </Bases>
     )   

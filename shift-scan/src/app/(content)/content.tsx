@@ -18,7 +18,7 @@ import { Texts } from "@/components/(reusable)/texts";
 
 
 export default function Content() {
-  const t = useTranslations("page1");
+  const t = useTranslations("Home");
   const { data: session } = useSession() as { data: CustomSession | null };
   const { setPayPeriodHours } = useSavedPayPeriodHours();
   const [toggle, setToggle] = useState(true);

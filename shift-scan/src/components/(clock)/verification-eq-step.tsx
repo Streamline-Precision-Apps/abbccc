@@ -30,7 +30,7 @@ handleNextStep,
 
 }) => {
 const [filteredEquipmentName, setFilteredEquipmentName] = useState<string | null>(null);
-const t = useTranslations("clock");
+const t = useTranslations("Clock");
 const { scanEQResult } = useEQScanData();
 const { scanResult, setScanResult } = useScanData();
 const { savedUserData } = useSavedUserData();
@@ -65,13 +65,13 @@ try {
 return (
 <>
     <h1 className="flex justify-center text-2xl font-bold pt-10 pb-10">
-    Title Verify
+        {t("VerifyEquipment")}
     </h1>
     <form
     onSubmit={handleSubmit}
     className="h-full bg-white flex flex-col items-center rounded-t-2xl"
     >
-    <label htmlFor="name">Equipment Scanned</label>
+    <label htmlFor="name">{t("Equipment-result")}</label>
     <input
         type="text"
         name="name"
@@ -80,7 +80,7 @@ return (
         readOnly
     />
     <label htmlFor="equipment_notes" className="">
-        Notes
+    {t("Equipment-notes-title")}
     </label>
     <textarea
         name="equipment_notes"
@@ -91,7 +91,7 @@ return (
         type="submit"
         className="bg-app-blue w-full h-1/6 py-4 rounded-lg text-black font-bold mt-5"
     >
-        Next
+        {t("Next-btn")}
     </button>
     
     <input type="hidden" name="equipment_id" value={scanEQResult?.data || ""} />
