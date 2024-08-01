@@ -16,7 +16,7 @@ import { Buttons } from '@/components/(reusable)/buttons';
 
 export default function Index() {
     const [isOpen, setIsOpen] = useState(false);
-    const t = useTranslations('PortalLogin');
+    const t = useTranslations('Hamburger');
 return (
     <div> 
         <Bases>
@@ -24,12 +24,12 @@ return (
                 <TitleBoxes title="Change Password" titleImg="/settings.svg" titleImgAlt="Change Password Icon"/>
             </Sections>
             <Sections size={"dynamic"}>
-                <Texts>New Password</Texts>
+                <Texts>{t('NewPassword')}</Texts>
             </Sections>
             <Sections size={"dynamic"}>
-                <Texts>Confirm New Password</Texts>
+                <Texts>{t('ConfirmPassword')}</Texts>
             </Sections>
-            <Buttons variant={"orange"}>Change Password</Buttons>
+            <Buttons variant={"orange"}>{t('ChangePassword')}</Buttons>
         </Bases>
     </div>
 );

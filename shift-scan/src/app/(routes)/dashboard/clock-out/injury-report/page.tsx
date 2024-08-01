@@ -2,12 +2,14 @@
 import "@/app/globals.css";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { InjuryReportContent } from "./injuryReportContent";
+import { useTranslations } from "next-intl";
 export default function InjuryReport() {
+  const t = useTranslations("clock-out");
   return (
     <div className=" h-screen block m-auto">
       <div className="bg-app-dark-blue h-auto  flex flex-col items-center rounded-t-2xl">
         <TitleBoxes
-          title="My Team"
+          title={t("InjuryReport")}
           titleImg="/profile.svg"
           titleImgAlt="Team"
           variant={"default"}
