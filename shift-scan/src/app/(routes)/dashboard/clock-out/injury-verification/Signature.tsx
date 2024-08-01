@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import React, { useRef, useState, useEffect } from "react";
 
 interface SignatureProps {
@@ -8,6 +9,7 @@ const Signature: React.FC<SignatureProps> = ({ onEnd }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [savedSignature, setSavedSignature] = useState<Blob | null>(null);
+  const t = useTranslations("Signature");
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -95,12 +97,12 @@ const Signature: React.FC<SignatureProps> = ({ onEnd }) => {
       </div>
       {savedSignature && (
         <div className="mt-4">
-          <h3 className="text-2xl font-bold">Saved Signature:</h3>
+          <h3 className="text-2xl font-bold">{t("Saved")}</h3>
           <a
             href={URL.createObjectURL(savedSignature)}
             download="signature.png"
           >
-            Download Signature
+            {t("Download")}
           </a>
         </div>
       )}

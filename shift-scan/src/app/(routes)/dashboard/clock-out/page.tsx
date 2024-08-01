@@ -10,10 +10,12 @@ import {
   isDashboardAuthenticated,
 } from "@/app/api/auth";
 import { useRouter } from "next/navigation";
+import { Bases } from "@/components/(reusable)/bases";
+import { Sections } from "@/components/(reusable)/sections";
+import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 
 export default function ClockOut() {
-  // TODO: Add to en and es.
-  const t = useTranslations("ClockOutDashboard");
+  const t = useTranslations("Clock-out");
   const router = useRouter();
 
   const [user, setUser] = useState<any>({
@@ -63,16 +65,19 @@ export default function ClockOut() {
   }
 
   return (
-    <div className="flex flex-col items-center space-y-4">
+    <Bases>
+      <Sections size={"titleBox"}>
+        <TitleBoxes
+          title={t("Title")}
+          titleImg="/profile.svg"
+          titleImgAlt="Team"
+          variant={"default"}
+          size={"default"}
+        />
+      </Sections>
       {error && <div className="text-red-500">{error}</div>}
-      <h1>{t("Banner")}</h1>
-      <h2>
-        {t("Name", { firstName: user.firstName, lastName: user.lastName })}
-      </h2>
-      <h2>{t("Date", { date: user.date })}</h2>
       <ClockOutButtons />
-      <h2>{t("lN1")}</h2>
-    </div>
+    </Bases>
   );
 }
 

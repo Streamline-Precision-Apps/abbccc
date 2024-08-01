@@ -5,11 +5,13 @@ import Checkbox from "@/app/(routes)/dashboard/clock-out/checkBox";
 import { isDashboardAuthenticated } from "@/app/api/auth";
 import { useRouter, useSearchParams } from "next/navigation";
 import { setAuthStep } from "@/app/api/auth";
+import { useTranslations } from "next-intl";
 
 export default function Log() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const buttonType = searchParams.get("bt");
+  const t = useTranslations("clock-out");
 
   const handleCheckboxChange = (newChecked: boolean) => {
     setChecked(newChecked);
@@ -50,7 +52,7 @@ export default function Log() {
       }
     } catch (err) {
       console.error("Navigation error:", err);
-      setError("Failed to navigate. Please try again.");
+      setError(t("NavError"));
     }
   };
 
@@ -59,15 +61,14 @@ export default function Log() {
       await router.push("/dashboard");
     } catch (err) {
       console.error("Navigation error:", err);
-      setError("Failed to navigate. Please try again.");
+      setError(t("NavError"));
     }
   };
 
   return (
     <div className="flex flex-col items-center space-y-4">
       <h1 className="text-3xl font-bold">
-        I have completed and logged all forms, equipment, and all other items
-        required of me today.
+        {t("EquipmentVerification")}
       </h1>
       <Checkbox checked={checked} onChange={handleCheckboxChange} />
       <div className="w-1/4">
@@ -77,14 +78,14 @@ export default function Log() {
             className="bg-app-green text-black font-bold text-xl flex justify-center w-full py-4 border border-gray-400 rounded"
             onClick={handleContinue}
           >
-            Continue
+            {t("Continue")}
           </button>
         ) : (
           <button
             className="bg-app-red text-black font-bold text-xl flex justify-center w-full py-4 border border-gray-400 rounded"
             onClick={handleReturnToDashboard}
           >
-            Return to Dashboard
+            {t("Return")}
           </button>
         )}
       </div>
