@@ -1,106 +1,81 @@
-"use client";
-import { useTranslations } from "next-intl";
-import "@/app/globals.css";
-import DashboardButtons from "@/components/dashboard-buttons";
-import {
-  clearAuthStep,
-  getAuthStep,
-  isDashboardAuthenticated,
-} from "@/app/api/auth";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import prisma from "@/lib/prisma";
+import { cookies } from "next/headers";
+import Content from "./content";
 
-import { Bases } from "@/components/(reusable)/bases";
-import { Sections } from "@/components/(reusable)/sections";
-import { Buttons } from "@/components/(reusable)/buttons";
-import { Titles } from "@/components/(reusable)/titles";
-import { Images } from "@/components/(reusable)/images";
-import { Modals } from "@/components/(reusable)/modals";
-import { Headers } from "@/components/(reusable)/headers";
-import { Banners } from "@/components/(reusable)/banners";
-import { Texts } from "@/components/(reusable)/texts";
-import { Footers } from "@/components/(reusable)/footers";
-import { CustomSession, User } from "@/lib/types";
-import { useSession } from "next-auth/react";
-import { useSavedUserData } from "@/app/context/UserContext";
+export default async function Dashboard() {
+const user = cookies().get("user");
+const userId = user?.value;
 
-export default function Index() {
-  
-  const [isOpen, setIsOpen] = useState(false);
-  const t = useTranslations("dashboard");
-  const router = useRouter();
-  const { data: session } = useSession() as { data: CustomSession | null };
-  const { setSavedUserData } = useSavedUserData();
-  const date = new Date().toLocaleDateString( 'en-US', { year: 'numeric', month: 'short', day: 'numeric', weekday: 'long' });
-  const [user, setData] = useState<User>({
-    id: "",
-    name: "",
-    firstName: "",
-    lastName: "",
-    permission: "",
-  });
+// Fetch all records
+const jobCodes = await prisma.jobsite.findMany({
+    select: {
+    id: true,
+    jobsite_id: true,
+    jobsite_name: true,
+    },
+});
 
-  useEffect(() => {
-    if (!isDashboardAuthenticated()) {
-      console.log("Not authenticated");
-      console.log(getAuthStep());
-      // router.push('/'); // Redirect to login page if not authenticated
-    }
-    if (getAuthStep() !== "success") {
-      router.push("/"); // Redirect to QR page if steps are not followed
-    }
-  }, []);
+const costCodes = await prisma.costCode.findMany({
+    select: {
+    id: true,
+    cost_code: true,
+    cost_code_description: true,
+    },
+});
 
-  useEffect(() => {
-    const handlePopstate = () => {
-      if (isDashboardAuthenticated()) {
-        window.location.href = "/dashboard";
-      }
-    };
-    // Attach beforeunload event listener
-    window.addEventListener("beforeunload", handleBeforeUnload);
+const equipment = await prisma.equipment.findMany({
+    select: {
+    id: true,
+    qr_id: true,
+    name: true,
+    },
+});
 
-    // Attach popstate event listener (for handling back navigation)
-    window.addEventListener("popstate", handlePopstate);
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-      window.removeEventListener("popstate", handlePopstate);
-    };
-  }, []);
+// Fetch recent records
+const recentJobSites = await prisma.jobsite.findMany({
+    select: {
+    id: true,
+    jobsite_id: true,
+    jobsite_name: true,
+    },
+    orderBy: {
+    createdAt: 'desc',
+    },
+    take: 5,
+});
 
-  useEffect(() => {
-    if (session && session.user) {
-      setSavedUserData({
-        id: session.user.id,
-      });
-      setData({
-        id: session.user.id,
-        name: session.user.name,
-        firstName: session.user.firstName,
-        lastName: session.user.lastName,
-        permission: session.user.permission,
-      });
-    }
-  }, [session]);
+const recentCostCodes = await prisma.costCode.findMany({
+    select: {
+    id: true,
+    cost_code: true,
+    cost_code_description: true,
+    },
+    orderBy: {
+    createdAt: 'desc',
+    },
+    take: 5,
+});
 
-  return isDashboardAuthenticated() ? (
-    <Bases variant={"default"} size={"default"}>
-      <Sections size={"default"}>
-        <Headers variant={"relative"} size={"default"}></Headers>
-        <Banners variant={"default"} size={"default"}>
-          <Titles variant={"default"} size={"h1"}>{t("Banner")}</Titles>
-          <Texts variant={"default"} size={"p1"}>{t("Date", { date: date })}</Texts>
-        </Banners>
-        <Texts variant={"name"} size={"p1"}>{t("Name", { firstName: user.firstName, lastName: user.lastName })}</Texts>
-        <DashboardButtons />
-        <Footers >{t("lN1")}</Footers>
-      </Sections>
-    </Bases>
-  ) : (
-    <></>
-  );
-}
+const recentEquipment = await prisma.equipment.findMany({
+    select: {
+    id: true,
+    qr_id: true,
+    name: true,
+    },
+    orderBy: {
+    createdAt: 'desc',
+    },
+    take: 5,
+});
 
-function handleBeforeUnload(this: Window, ev: BeforeUnloadEvent) {
-  throw new Error("Function not implemented.");
+return (
+    <Content
+    jobCodes={jobCodes}
+    CostCodes={costCodes}
+    equipment={equipment}
+    recentJobSites={recentJobSites}
+    recentCostCodes={recentCostCodes}
+    recentEquipment={recentEquipment}
+    />
+);
 }

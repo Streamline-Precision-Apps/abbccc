@@ -1,7 +1,5 @@
 "use client";
-import { useDBEquipment } from "@/app/context/dbEquipmentContext";
-import { useDBJobsite } from "@/app/context/dbJobsiteContext";
-import { useDBCostcode } from "@/app/context/dbCostcodeContext";
+import { useDBJobsite, useDBCostcode, useDBEquipment } from "@/app/context/dbCodeContext";
 
 type JobCode = {
 id: number;
@@ -27,9 +25,9 @@ label: string;
 }
 
 export const CostCodeOptions = (dataType: string, searchTerm: string): Option[] => {
-const { jobsiteResults, recentlyUsedJobCodes } = useDBJobsite();
-const { costcodeResults, recentlyUsedCostCodes } = useDBCostcode();
-const { equipmentResults, recentlyUsedEquipment } = useDBEquipment();
+const { jobsiteResults = [], recentlyUsedJobCodes = [] } = useDBJobsite();
+const { costcodeResults = [], recentlyUsedCostCodes = [] } = useDBCostcode();
+const { equipmentResults = [], recentlyUsedEquipment = [] } = useDBEquipment();
 
 let options: Option[] = [];
 
