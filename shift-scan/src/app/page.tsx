@@ -1,24 +1,71 @@
-import Banner from "@/components/banner"
+"use server";
 import Content from "@/app/(content)/content"
-import {formatDate} from "@/components/getDate"
-import TestingComponents from "@/components/testingComponents"
 import "@/app/globals.css"
-import { Header } from "@/components/header"
-import { getAuthStep } from "./api/auth"
+import prisma from "@/lib/prisma"
+import { cookies } from "next/headers"
 
-export default function Home() {
-
-    const date = formatDate();
-
+export default async function Home() {
+    const user = cookies().get("user");
+    const userId = user?.value ;
+    // add these here to enable proper code selection in the form
+    const jobCodes = await prisma.jobsite.findMany(
+        {
+            select: {
+                id: true,
+                jobsite_id: true,
+                jobsite_name: true
+            }
+        }
+    );
+    const CostCodes = await prisma.costCode.findMany(
+        {
+            select: {
+                id: true,
+                cost_code: true,
+                cost_code_description: true
+            }
+        }
+    );
+    const equipment = await prisma.equipment.findMany(
+        {
+            select: {
+                id: true,
+                qr_id: true,
+                name: true,
+            }
+        }
+    );
     
     return (   
-        <>
-            <div className="flex-col justify-self-center items-center h-[54rem] w-11/12 md:w-1/2 lg:w-1/3 lg:h-full  absolute inset-1 bg-cover bg-center bg-no-repeat bg-white rounded-lg pb-0">
-            <Header/>
-            {/* <Header /> */}
-            <Banner date={date} translation="page1" />
-            <Content />
-            </div>
-        </> 
+            <Content jobCodes={jobCodes} CostCodes={CostCodes} equipment={equipment} />
     )   
 }
+
+
+// old filter
+
+// export default async function Clock({type}: Props) {
+//     if (type === "equipment") {
+//         return (
+//             <div>
+//             <ClockProcess type={type} id={userId} scannerType="EQ" jobCodes={jobCodes} CostCodes={CostCodes} equipment={equipment} />
+//         </div>
+//         );
+//     }
+
+//     else if (type === "switchJobs"){
+//         return (
+//             <div>
+//             <ClockProcess type={type} id={userId} scannerType="Job" jobCodes={jobCodes} CostCodes={CostCodes} equipment={equipment} />
+//         </div>
+//         );
+//     }
+
+//     else {
+//         return (
+//             <div>
+//             <ClockProcess type={type} id={userId} scannerType="Job" jobCodes={jobCodes} CostCodes={CostCodes} equipment={equipment} />
+//         </div>
+//     );
+// }
+// }

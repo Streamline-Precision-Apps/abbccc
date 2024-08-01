@@ -73,7 +73,7 @@ if (scanCount >= SCAN_THRESHOLD) {
 }, [scanCount, qrScanner, router]);
 
 return (
-<div className="flex justify-center items-center">
+<div className="flex flex-col justify-center items-center w-full">
     <video ref={videoRef} style={{ width: '100%' }}></video>
 </div>
 );

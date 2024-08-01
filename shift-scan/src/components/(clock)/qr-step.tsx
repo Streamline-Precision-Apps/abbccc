@@ -4,28 +4,31 @@ import QR from './qr';
 import StepButtons from './step-buttons';
 import QR_EQ from './qr-eq';
 import { Buttons } from '../(reusable)/buttons';
+import { url } from 'inspector';
 
 interface QRStepProps {
   handleAlternativePath: () => void;
   handleNextStep: () => void;
   type: string;
+  url?: string;
 }
 
-const QRStep: React.FC<QRStepProps> = ({ handleAlternativePath, handleNextStep, type}) => {
-  const t = useTranslations("page2");
+const QRStep: React.FC<QRStepProps> = ({ handleAlternativePath, handleNextStep, type, url}) => {
+  const t = useTranslations("Clock");
 
   return (
     <>
-      <h1 className="flex justify-center text-2xl font-bold pt-10 pb-10">{t('title-qr')}</h1>
-      <Buttons variant={"red"} size={"small"} href="/" >Cancel</Buttons>
+    {type === "equipment" ? (<h1 className="flex justify-center text-2xl font-bold pt-10 pb-10">{t('ScanEquipment')}</h1>):
+    (<h1 className="flex justify-center text-2xl font-bold pt-10 pb-10">{t('ScanJobSite')}</h1>) 
+    }
       <div className="flex flex-col items-center w-full">
-        <div className="flex justify-items-center items-center w-full lg:w-1/3 h-96 p-5 border-4 border-black rounded-lg bg-gr">
+        <div className="flex justify-items-center items-center w-[500px] h-[500px] pb-5 border-4 border-black rounded-lg bg-black">
         {type === 'equipment' ? ( <QR_EQ handleNextStep={handleNextStep} />) :
           ( <QR handleNextStep={handleNextStep} />)
         }
         </div>
-        <button onClick={handleAlternativePath} className="flex justify-center text-lg font-light underline mt-4">
-          {t('lN1')}
+        <button onClick={handleAlternativePath} className="flex justify-center text-lg font-light underline pb-5">
+          {t('TroubleScanning')}
         </button>
       </div>
     </>

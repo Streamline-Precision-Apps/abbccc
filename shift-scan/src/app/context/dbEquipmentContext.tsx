@@ -1,34 +1,48 @@
-'use client';
+import React, { createContext, useContext, useState, ReactNode } from 'react';
 
-import React, { createContext, useState, ReactNode, useContext } from 'react';
-
-interface Equipment {
-    id: string;
-    qr_id: string;
-    name: string;
-}
-
-interface DbEquipmentContextProps {
-    equipmentResults: Equipment[];
-    setEquipmentResults: (equipmentResults: Equipment[]) => void;
-}
-
-const DbEquipmentContext = createContext<DbEquipmentContextProps | undefined>(undefined);
-
-export const DbEquipmentProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [equipmentResults, setEquipmentResults] = useState<Equipment[]>([]);
-
-    return (
-        <DbEquipmentContext.Provider value={{ equipmentResults, setEquipmentResults }}>
-            {children}
-        </DbEquipmentContext.Provider>
-    );
+// Define types for Equipment context
+type Equipment = {
+id: string;
+qr_id: string;
+name: string;
 };
 
-export const useDBEquipment = () => {
-    const context = useContext(DbEquipmentContext);
-    if (context === undefined) {
-        throw new Error('useDBEquipment must be used within a DbEquipmentProvider');
-    }
-    return context;
+interface EquipmentContextType {
+equipmentResults: Equipment[];
+recentlyUsedEquipment: Equipment[];
+setEquipmentResults: React.Dispatch<React.SetStateAction<Equipment[]>>;
+addRecentlyUsedEquipment: (equipment: Equipment) => void;
+}
+
+// Create context
+const EquipmentContext = createContext<EquipmentContextType>({
+equipmentResults: [],
+recentlyUsedEquipment: [],
+setEquipmentResults: () => {},
+addRecentlyUsedEquipment: () => {},
+});
+
+// Provider component
+export const EquipmentProvider = ({ children }: { children: ReactNode }) => {
+const [equipmentResults, setEquipmentResults] = useState<Equipment[]>([]);
+const [recentlyUsedEquipment, setRecentlyUsedEquipment] = useState<Equipment[]>([]);
+
+// Function to add equipment to the recently used list
+const addRecentlyUsedEquipment = (equipment: Equipment) => {
+setRecentlyUsedEquipment((prev) => {
+    const updatedList = [equipment, ...prev.filter((e) => e.id !== equipment.id)];
+    return updatedList.slice(0, 5); // Keep only the last 5 entries
+});
 };
+
+return (
+<EquipmentContext.Provider
+    value={{ equipmentResults, setEquipmentResults, recentlyUsedEquipment, addRecentlyUsedEquipment }}
+>
+    {children}
+</EquipmentContext.Provider>
+);
+};
+
+// Custom hook to use the Equipment context
+export const useDBEquipment = () => useContext(EquipmentContext);

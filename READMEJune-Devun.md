@@ -75,3 +75,17 @@ Started up on the edit button page and noticed there wasa lot at work so I had t
 
 7/25/24 
 Today I have accomplished the build of the edit jobs feature, it saves to the database and also has select statements that do the same thing. Today I want to look into the log in feature and go from there. Meeting starts in 30 so I am going to read into some typescript stuff.
+
+
+7/26 - 7/29
+Promise I worked and got a bunch done except on the weekend, for got to report progress here. 
+
+7/30/24
+- made tweeks current software
+- debugged equipment section
+- made a recently used page for code
+- convert the home screen to zacks model
+- started on switch jobs issue/logic
+
+7/30/24
+- working on translations

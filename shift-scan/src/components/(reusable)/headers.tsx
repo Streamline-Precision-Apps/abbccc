@@ -1,4 +1,4 @@
-// 'use client'
+'use client'
 import { cva, type VariantProps } from "class-variance-authority";
 import { HTMLAttributes, FC } from "react";
 import { cn } from "@/components/(reusable)/utils";
@@ -31,26 +31,26 @@ interface HeaderProps extends HTMLAttributes<HTMLElement>, VariantProps<typeof H
 }
 
 const Headers: FC<HeaderProps> = ({className, variant, size, ...props}) => {
-    const [isOpen, setIsOpen] = useState(false);
-    return (
-      <div className={cn(HeaderVariants({variant, size, className}))} {...props}>
-        <Images titleImg="/logo.svg" titleImgAlt="logo" variant={"iconLeft"} size={"lg"}/>
-        <Buttons variant={"icon"} size={"default"} onClick={() => setIsOpen(true)}>
-            <Images titleImg="/hamburger.svg" titleImgAlt="hamburger menu" variant={"iconRight"} size={"lg"}/>
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <div className={cn(HeaderVariants({variant, size, className}))} {...props}>
+      <Images titleImg="/logo.svg" titleImgAlt="logo" variant={"iconLeft"} size={"lg"}/>
+      <Buttons variant={"icon"} size={"default"} onClick={() => setIsOpen(true)}>
+          <Images titleImg="/hamburger.svg" titleImgAlt="hamburger menu" variant={"iconRight"} size={"lg"}/>
+      </Buttons>
+      <Modals handleClose={() => setIsOpen(false)} isOpen={isOpen}>
+      <Buttons href="/hamburger/settings" variant={"icon"} size={"small"}>
+          <Images titleImg={"/Settings.svg"} titleImgAlt={"settings"} variant={"icon"} size={"titlebox"} />
         </Buttons>
-       <Modals handleClose={() => setIsOpen(false)} isOpen={isOpen}>
-        <Buttons href="/hamburger/settings" variant={"icon"} size={"small"}>
-           <Images titleImg={"/Settings.svg"} titleImgAlt={"settings"} variant={"icon"} size={"titlebox"} />
-         </Buttons>
-         <Buttons href="/hamburger/inbox" variant={"icon"} size={"small"}>
-      <Images titleImg={"/Inbox.svg"} titleImgAlt={"inbox"} variant={"icon"} size={"titlebox"} />
-         </Buttons>
-         <Buttons href="/hamburger/profile" variant={"icon"} size={"small"}>
-           <Images titleImg={"/profile.svg"} titleImgAlt={"profile"} variant={"icon"} size={"titlebox"} />
-         </Buttons>
-       </Modals>
-      </div>
-    )
+        <Buttons href="/hamburger/inbox" variant={"icon"} size={"small"}>
+    <Images titleImg={"/Inbox.svg"} titleImgAlt={"inbox"} variant={"icon"} size={"titlebox"} />
+        </Buttons>
+        <Buttons href="/hamburger/profile" variant={"icon"} size={"small"}>
+          <Images titleImg={"/profile.svg"} titleImgAlt={"profile"} variant={"icon"} size={"titlebox"} />
+        </Buttons>
+      </Modals>
+    </div>
+  )
 }
 
 export {Headers, HeaderVariants}
