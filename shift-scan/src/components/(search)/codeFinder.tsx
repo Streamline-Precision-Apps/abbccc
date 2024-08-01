@@ -7,9 +7,7 @@ import { useSavedCostCode } from '@/app/context/CostCodeContext';
 import { CostCodeOptions } from '@/components/(search)/options';
 import { useScanData } from '@/app/context/JobSiteContext';
 import { useEQScanData } from '@/app/context/equipmentContext';
-import { useDBJobsite } from "@/app/context/dbJobsiteContext";
-import { useDBCostcode } from "@/app/context/dbCostcodeContext";
-import { useDBEquipment } from "@/app/context/dbEquipmentContext";
+import { useDBJobsite, useDBCostcode, useDBEquipment } from "@/app/context/dbCodeContext";
 
 interface Option {
 code: string;

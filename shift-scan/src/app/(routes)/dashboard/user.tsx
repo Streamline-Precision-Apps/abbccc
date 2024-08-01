@@ -39,7 +39,6 @@ export const User: React.FC<UserProps> = ({
     <>
       {additionalButtonsType === 'equipment' ? (
         <>
-        <div className="flex flex-col justify-center items-center w-full">
           <Buttons variant={"default"} size={"widgetSm"} onClick={handleShowManagerButtons}>
             <div className="flex flex-row justify-center items-center ">
             <Images titleImg="/home.svg" titleImgAlt="Home Icon" variant={"icon"} size={"default"}></Images>
@@ -63,7 +62,6 @@ export const User: React.FC<UserProps> = ({
                 <Images titleImg="/forms.svg" titleImgAlt="Current Equipment Icon" variant={"icon"} size={"default"}/>
                 <Texts>Current Equipment</Texts>
               </Buttons>
-        </div>
         </>
       ) : additionalButtonsType === 'clockOut' ? (
         <>
