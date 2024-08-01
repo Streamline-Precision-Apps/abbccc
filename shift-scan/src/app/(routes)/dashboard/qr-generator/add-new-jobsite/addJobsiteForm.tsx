@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { createJobsite } from "@/actions/jobsiteActions";
-
-
+import { useTranslations } from "next-intl";
 
 const AddJobsiteForm: React.FC<{}> = () => {
-
+  const t = useTranslations("addJobsiteForm");
 
   return (
     <form action={createJobsite} className="space-y-4">
       <div>
         <label htmlFor="jobsite_name" className="block">
-          Jobsite Name
+          {t("Name")}
         </label>
         <input
           id="jobsite_name"
@@ -22,7 +21,7 @@ const AddJobsiteForm: React.FC<{}> = () => {
       </div>
       <div>
         <label htmlFor="street_number" className="block">
-          Street Number
+          {t("StreetNumber")}
         </label>
         <textarea
           id="street_number"
@@ -32,7 +31,7 @@ const AddJobsiteForm: React.FC<{}> = () => {
       </div>
       <div>
         <label htmlFor="street_name" className="block">
-          Street Name
+          {t("StreetName")}
         </label>
         <textarea
           id="street_name"
@@ -42,7 +41,7 @@ const AddJobsiteForm: React.FC<{}> = () => {
       </div>
       <div>
         <label htmlFor="city" className="block">
-          City
+          {t("City")}
         </label>
         <textarea
           id="city"
@@ -52,7 +51,7 @@ const AddJobsiteForm: React.FC<{}> = () => {
       </div>
       <div>
         <label htmlFor="state" className="block">
-          State
+          {t("State")}
         </label>
         <textarea
           id="state"
@@ -62,7 +61,7 @@ const AddJobsiteForm: React.FC<{}> = () => {
       </div>
       <div>
         <label htmlFor="country" className="block">
-          Country
+          {t("Country")}
         </label>
         <textarea
           id="country"
@@ -72,7 +71,7 @@ const AddJobsiteForm: React.FC<{}> = () => {
       </div>
       <div>
         <label htmlFor="jobsite_description" className="block">
-          Jobsite Description
+          {t("Description")}
         </label>
         <textarea
           id="jobsite_description"
@@ -82,7 +81,7 @@ const AddJobsiteForm: React.FC<{}> = () => {
       </div>
       <div>
         <label htmlFor="jobsite_comments" className="block">
-          Jobsite Comments
+          {t("Comments")}
         </label>
         <textarea
           id="jobsite_comments"
@@ -91,7 +90,7 @@ const AddJobsiteForm: React.FC<{}> = () => {
         />
       </div>
       <Buttons variant="green" size="default" type="submit">
-        Submit
+        {t("Submit")}
       </Buttons>
     </form>
   );

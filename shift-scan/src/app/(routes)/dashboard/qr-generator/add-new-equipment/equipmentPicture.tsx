@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import { Buttons } from "@/components/(reusable)/buttons";
+import { useTranslations } from "next-intl";
 
 interface CameraComponentProps {
   setBlob: (blob: Blob | null) => void;
@@ -11,6 +12,7 @@ const CameraComponent: React.FC<CameraComponentProps> = ({ setBlob }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [cameraActive, setCameraActive] = useState(false);
+  const t = useTranslations("equipmentPicture");
 
   const startCamera = async () => {
     const constraints = {
@@ -102,7 +104,7 @@ const CameraComponent: React.FC<CameraComponentProps> = ({ setBlob }) => {
       </Buttons>
       {cameraActive && (
         <Buttons variant="green" size="default" onClick={takePicture}>
-          Take Picture
+          {t("Button")}
         </Buttons>
       )}
     </div>

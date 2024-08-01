@@ -6,16 +6,16 @@ import { Buttons } from '@/components/(reusable)/buttons';
 
 export default function signOutModal() {
     const [isOpen, setIsOpen] = useState(false);
-    // const t = useTranslations('PortalLogin');
+    const t = useTranslations('Hamburger');
 
   return (
     <div>
         <Buttons onClick={() => setIsOpen(true)} variant="red" size="default">
-            <p>Sign Out</p>
+            <p>{t("SignOut")}</p>
         </Buttons>
 
         <Modals handleClose={() => setIsOpen(false)} isOpen={isOpen} type="signOut" variant={"default"} size={"sm"}>
-            Are you sure you want to sign out of your account?
+            {t("SignOutConfirmation")}
         </Modals>
     </div>
   )

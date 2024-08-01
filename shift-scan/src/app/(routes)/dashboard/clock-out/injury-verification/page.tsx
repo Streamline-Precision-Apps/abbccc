@@ -18,8 +18,7 @@ interface CheckboxProps {
 }
 
 export default function InjuryVerification() {
-  // TODO: Add translations
-  // const t = useTranslations("injury-verification");
+  const t = useTranslations("clock-out");
 
   const router = useRouter();
   const [checked, setChecked] = useState(false);
@@ -34,7 +33,7 @@ export default function InjuryVerification() {
     if (blob) {
       setSignatureBlob(blob);
     } else {
-      setError("Failed to capture signature. Please try again.");
+      setError(t("SignatureFailure"));
     }
   };
 
@@ -64,7 +63,7 @@ export default function InjuryVerification() {
       await router.push("/dashboard/clock-out/clock-out-success");
     } catch (err) {
       console.error("Navigation error:", err);
-      setError("Failed to navigate. Please try again.");
+      setError(t("NavError"));
     }
   };
 
@@ -73,26 +72,24 @@ export default function InjuryVerification() {
       await router.push("/dashboard/clock-out/injury-report");
     } catch (err) {
       console.error("Navigation error:", err);
-      setError("Failed to navigate. Please try again.");
+      setError(t("NavError"));
     }
   };
 
   return (
     <div className="flex flex-col items-center space-y-4 w-full px-5 py-10 h-screen">
       <TitleBoxes
-        title="My Team"
+        title={t("InjuryVerification")}
         titleImg="/profile.svg"
         titleImgAlt="Team"
         variant={"default"}
         size={"default"}
       />
-      <h1 className="text-3xl font-bold">
-        By signing below, I certify that I suffered no injuries this day.
-      </h1>
+      <h1 className="text-3xl font-bold">{t("SignBelow")}</h1>
       <Signature onEnd={handleSignatureEnd} />
-      {signatureBlob && <p>Signature captured!</p>}
+      {signatureBlob && <p>{t("SignatureCaptured")}</p>}
       <div className="flex flex-row items-center space-x-4 w-full justify-center ">
-        <h1 className="text-3xl font-bold">This is my signature</h1>
+        <h1 className="text-3xl font-bold">{t("SignatureVerify")}</h1>
         <Checkbox checked={checked} onChange={handleCheckboxChange} />
       </div>
       {error && <div className="text-red-500">{error}</div>}
@@ -102,14 +99,14 @@ export default function InjuryVerification() {
             className="bg-app-green text-black font-bold text-xl flex justify-center w-full py-4 border border-gray-400 rounded"
             onClick={handleContinue}
           >
-            Continue
+            {t("Continue")}
           </button>
         ) : (
           <button
             className="bg-app-red text-black font-bold text-xl flex justify-center w-full py-4 border border-gray-400 rounded"
             onClick={handleReportInjury}
           >
-            Report Injury
+            {t("ReportInjury")}
           </button>
         )}
       </div>

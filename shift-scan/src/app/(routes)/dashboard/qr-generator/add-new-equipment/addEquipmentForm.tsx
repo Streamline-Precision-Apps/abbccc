@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { createEquipment } from "@/actions/equipmentActions";
+import { useTranslations } from "next-intl";
 
 interface AddEquipmentFormProps {
   blob: Blob | null;
@@ -8,6 +9,7 @@ interface AddEquipmentFormProps {
 
 const AddEquipmentForm: React.FC<AddEquipmentFormProps> = ({ blob }) => {
   const [equipmentTag, setEquipmentTag] = useState("EQUIPMENT");
+  const t = useTranslations("addEquipmentForm");
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -21,7 +23,7 @@ const AddEquipmentForm: React.FC<AddEquipmentFormProps> = ({ blob }) => {
     <form action={createEquipment} className="space-y-4">
       <div>
         <label htmlFor="equipment_tag" className="block">
-          Equipment Tag
+          {t("Tag")}
         </label>
         <select
           id="equipment_tag"
@@ -29,15 +31,15 @@ const AddEquipmentForm: React.FC<AddEquipmentFormProps> = ({ blob }) => {
           onChange={handleChange}
           className="block w-full border border-black rounded p-2"
         >
-          <option value="">Select One</option>
-          <option value="TRUCK">TRUCK</option>
-          <option value="TRAILER">TRAILER</option>
-          <option value="EQUIPMENT">EQUIPMENT</option>
+          <option value="">{t("Select")}</option>
+          <option value="TRUCK">{t("Truck")}</option>
+          <option value="TRAILER">{t("Trailer")}</option>
+          <option value="EQUIPMENT">{t("Equipment")}</option>
         </select>
       </div>
       <div>
         <label htmlFor="name" className="block">
-          Name
+          {t("Name")}
         </label>
         <input
           id="name"
@@ -48,7 +50,7 @@ const AddEquipmentForm: React.FC<AddEquipmentFormProps> = ({ blob }) => {
       </div>
       <div>
         <label htmlFor="description" className="block">
-          Description
+          {t("Description")}
         </label>
         <textarea
           id="description"
@@ -58,23 +60,23 @@ const AddEquipmentForm: React.FC<AddEquipmentFormProps> = ({ blob }) => {
       </div>
       <div>
         <label htmlFor="equipment_status" className="block">
-          Equipment Status
+          {t("Status")}
         </label>
         <select
           id="equipment_status"
           name="equipment_status"
           className="block w-full border border-black rounded p-2"
         >
-          <option value="">Select One</option>
-          <option value="OPERATIONAL">OPERATIONAL</option>
-          <option value="NEEDS_REPAIR">NEEDS_REPAIR</option>
+          <option value="">{t("Select")}</option>
+          <option value="OPERATIONAL">{t("Operational")}</option>
+          <option value="NEEDS_REPAIR">{t("NeedsRepair")}</option>
         </select>
       </div>
       {equipmentTag === "TRUCK" || equipmentTag === "TRAILER" ? (
         <>
           <div>
             <label htmlFor="make" className="block">
-              Make
+              {t("Make")}
             </label>
             <input
               id="make"
@@ -85,7 +87,7 @@ const AddEquipmentForm: React.FC<AddEquipmentFormProps> = ({ blob }) => {
           </div>
           <div>
             <label htmlFor="model" className="block">
-              Model
+              {t("Model")}
             </label>
             <input
               id="model"
@@ -96,7 +98,7 @@ const AddEquipmentForm: React.FC<AddEquipmentFormProps> = ({ blob }) => {
           </div>
           <div>
             <label htmlFor="year" className="block">
-              Year
+              {t("Year")}
             </label>
             <input
               id="year"
@@ -107,7 +109,7 @@ const AddEquipmentForm: React.FC<AddEquipmentFormProps> = ({ blob }) => {
           </div>
           <div>
             <label htmlFor="license_plate" className="block">
-              License Plate
+              {t("LicensePlate")}
             </label>
             <input
               id="license_plate"
@@ -118,7 +120,7 @@ const AddEquipmentForm: React.FC<AddEquipmentFormProps> = ({ blob }) => {
           </div>
           <div>
             <label htmlFor="registration_expiration" className="block">
-              Registration Expiration
+              {t("RegistrationExpiration")}
             </label>
             <input
               id="registration_expiration"
@@ -129,7 +131,7 @@ const AddEquipmentForm: React.FC<AddEquipmentFormProps> = ({ blob }) => {
           </div>
           <div>
             <label htmlFor="mileage" className="block">
-              Mileage
+              {t("Mileage")}
             </label>
             <input
               id="mileage"
@@ -141,7 +143,7 @@ const AddEquipmentForm: React.FC<AddEquipmentFormProps> = ({ blob }) => {
         </>
       ) : null}
       <Buttons variant="green" size="default" type="submit">
-        Submit
+        {t("Submit")}
       </Buttons>
     </form>
   );
