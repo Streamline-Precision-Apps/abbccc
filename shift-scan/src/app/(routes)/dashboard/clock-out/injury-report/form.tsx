@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { CreateInjuryForm } from "@/actions/injuryReportActions";
 import { useSavedUserData } from '@/app/context/UserContext';
+import { useTranslations } from "next-intl";
 
 interface FormProps {
   employeeId: string;
@@ -12,6 +13,7 @@ interface FormProps {
 
 export const Form = ({ employeeId, onFormSubmit, checked }: FormProps) => {
   const ref = useRef<HTMLFormElement>(null);
+  const t = useTranslations("clock-out");
 
   const button = () => {
     ref.current?.requestSubmit();
@@ -33,7 +35,7 @@ export const Form = ({ employeeId, onFormSubmit, checked }: FormProps) => {
         type="submit"
         className="bg-app-blue w-1/2 h-1/6 py-4 px-5 rounded-lg text-black font-bold mt-5"
       >
-        Submit Injury Report
+        {t("SubmitButton")}
       </button>
     </form>
   );

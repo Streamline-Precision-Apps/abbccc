@@ -18,7 +18,7 @@ import { updateTimeSheet } from "@/actions/timeSheetActions";
 import { now } from "next-auth/client/_utils";
 
 const ClockOutSuccessPage: React.FC = () => {
-  const t = useTranslations("page5");
+  const t = useTranslations("clock-out");
   const router = useRouter();
   const { scanResult } = useScanData();
   const { savedCostCode } = useSavedCostCode();
@@ -35,7 +35,7 @@ const ClockOutSuccessPage: React.FC = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      await updateTimeSheet(new FormData(event.currentTarget));
+      await updateTimeSheet(new FormData(event.currentTarget), savedTimeSheetData?.id);
       setAuthStep("");
       router.push("/"); // Redirect to home page on successful submission
     } catch (error) {
@@ -45,23 +45,23 @@ const ClockOutSuccessPage: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center">
-      <h1>{t("lN1")}</h1>
+      <h1>{t("ClockOut")}</h1>
       <h2>
-        {t("lN2")} {scanResult?.data || "No scan data available"}
+        {t("Jobsite")} {scanResult?.data || "No scan data available"}
       </h2>
       <h2>
-        {t("lN3")} {savedCostCode || "No cost code available"}
+        {t("CostCode")} {savedCostCode || "No cost code available"}
       </h2>
-      <p>Break Time: {breakTime}</p>
-      <p>Clock Out Time: {new Date().toString()}</p>
-      <p>Successfully Clocked Out</p>
+      <p>{t("BreakTime")}{breakTime}</p>
+      <p>{t("ClockOutTime")}{new Date().toString()}</p>
+      <p>{t("ClockOutSuccess")}</p>
 
       <form onSubmit={handleSubmit}>
         <button
           type="submit"
           className="bg-app-blue w-1/2 h-1/6 py-4 px-5 rounded-lg text-black font-bold mt-5"
         >
-          Submit time sheet
+          {t("SubmitButton")}
         </button>
         {/* Hidden inputs */}
         <input type="hidden" name="id" value={savedTimeSheetData?.id} />

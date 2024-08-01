@@ -69,7 +69,7 @@
         "ClockOut-btn": "Clock Out",
         "Copyright": "Copyright © 2024. All rights reserved."
     },
-
+    
     "dashboard": {
         "Banner": "End of the line pal!",
         "Name": "{firstName} {lastName}",
@@ -87,8 +87,130 @@
     },
     
     "ClockOutButtons": {
-        "TakeABreak": "Take a break",
-        "EndWorkDay": "End work day",
-        "ReturnHome": "Return home"
+        "Break": "Take a break",
+        "End": "End work day",
+        "Home": "Return home"
+    },
+
+    "Clock-out": {
+        "Title": "Clock Out"
+    },
+
+    "qr-Generator": {
+        "Title": "QR Generator"
+    },
+
+    "QrJobsiteContent": {
+        "Jobsite": "Jobsite",
+        "QRCode": "QR Code",
+        "Placeholder": "Select One",
+        "New": "New",
+        "Generate": "Generate"
+    },
+
+    "qrEquipmentContent": {
+        "Equipment": "Equipment",
+        "QRCode": "QR Code",
+        "Placeholder": "Select One",
+        "New": "New",
+        "Generate": "Generate"
+    },
+
+    "addEquipmentContent": {
+        "Title": "Create Equipment",
+        "Picture": "Picture of Equipment"
+    },
+    
+    "equipmentPicture": {
+        "Button": "Take Picture"
+    },
+    
+    "addEquipmentForm": {
+        "Tag": "Equipment Tag",
+        "Select": "Select One",
+        "Truck": "TRUCK",
+        "Trailer": "TRAILER",
+        "Equipment": "EQUIPMENT",
+        "Name": "Name",
+        "Description": "Description",
+        "Status": "Equipment status",
+        "Operational": "OPERATIONAL",
+        "NeedsRepair": "NEEDS REPAIR",
+        "Make": "Make",
+        "Model": "Model",
+        "Year": "Year",
+        "LicensePlate": "License Plate",
+        "RegistrationExpiration": "Registration Expiration",
+        "Mileage": "Mileage",
+        "Submit": "Submit"
+    },
+    
+    "addJobsiteContent": {
+        "Title": "Create Jobsite"
+    },
+
+    "addJobsiteForm": {
+        "Name": "Name",
+        "StreetNumber": "Street Number",
+        "StreetName": "Street Name",
+        "City": "City",
+        "State": "State",
+        "Country": "Country",
+        "Description": "Jobsite Description",
+        "Comments": "Jobsite Comments",
+        "Submit": "Submit"
+    },
+
+    "clock-out": {
+        "ClockOut": "Clock Out",
+        "Jobsite" : "Jobsite: ",
+        "CostCode" : "Cost Code: ",
+        "BreakTime" : "Break Time: ",
+        "ClockOutTime" : "Clock Out Time: ",
+        "ClockOutSuccess": "Successfully Clocked Out!",
+        "SubmitButton": "Submit",
+        "InjuryReport": "Injury Report",
+        "FailedToSubmit": "Failed to submit the form. Please try again.",
+        "ContactedSupervisor": "I contacted my supervisor: ",
+        "Comment": "Describe What Happend: ",
+        "Signature": "Signature: ",
+        "SignatureFailure": "Failed to capture signature. Please try again.",
+        "NavError": "Failed to navigate. Please try again.",
+        "InjuryVerification": "Injury Verification",
+        "SignBelow": "By signing below, I certify that I suffered no injuries this day.",
+        "SignatureCaptured": "Signature captured! ",
+        "SignatureVerify": "This is my signature.",
+        "Continue": "Continue",
+        "ReportInjury": "Report Injury",
+        "EquipmentVerification": "I have completed and logged all forms, equipment, and all other items required of me today. ",
+        "Return": "Return to Dashboard"
+    },
+
+    "Signature": {
+        "Saved": "Saved signature:",
+        "Download": "Download signature"
+    },
+
+    "Hamburger": {
+        "NewPassword": "New Password",
+        "ConfirmPassword": "Confirm New Password",
+        "ChangePassword": "Change Password",
+        "Title": "Settings",
+        "Notifications": "Notifications",
+        "ApprovedRequests": "Approved Requests",
+        "TimeOffRequests": "Time Off Requests",
+        "GeneralReminders": "General Reminders",
+        "Security": "Security",
+        "Biometrics": "Biometrics",
+        "CameraAccess": "Camera Access",
+        "LocationAccess": "Location Access",
+        "Inbox": "Inbox",
+        "EmployeeID": "Employee ID",
+        "ContactEmail": "Contact Email",
+        "ContactPhone#": "Contact Phone #",
+        "SafetyTraining": "Safety Training",
+        "SignOut": "Sign Out",
+        "SignOutConfirmation": "Are you sure you want to sign out of your account?"
+
     }
 }
