@@ -20,6 +20,7 @@ const ImageVariants = cva(
         titlebox: "w-20 h-20",
         backButton: "w-15 w-15 pt-0",
         lg: "w-50 h-50",
+        thin: "w-20 h-10 rounded-full",
       }
     },
     defaultVariants: {

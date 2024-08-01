@@ -92,7 +92,7 @@ export default function Index() {
           <Texts variant={"default"} size={"p1"}>{t("Date", { date: date })}</Texts>
         </Banners>
         <Texts variant={"name"} size={"p1"}>{t("Name", { firstName: user.firstName, lastName: user.lastName })}</Texts>
-        <DashboardButtons/>
+        <DashboardButtons />
         <Footers >{t("lN1")}</Footers>
       </Sections>
     </Bases>

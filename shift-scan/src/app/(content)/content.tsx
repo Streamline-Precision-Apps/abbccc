@@ -15,10 +15,44 @@ import { useRouter } from "next/navigation";
 import { Titles } from "@/components/(reusable)/titles";
 import { Banners } from "@/components/(reusable)/banners";
 import { Texts } from "@/components/(reusable)/texts";
+import { Footers } from "@/components/(reusable)/footers";
+import { Sections } from "@/components/(reusable)/sections";
+import { Bases } from "@/components/(reusable)/bases";
+import { Header } from "@/components/header";
+import { Headers } from "@/components/(reusable)/headers"
+import { useDBJobsite } from "@/app/context/dbJobsiteContext";
+import { useDBEquipment } from "@/app/context/dbEquipmentContext";
+import { useDBCostcode } from "@/app/context/dbCostcodeContext";
+type jobCodes = {
+  id: number;
+  jobsite_id: string;
+  jobsite_name: string;
+}
+type CostCode = {
+  id: number;
+  cost_code: string;
+  cost_code_description: string;
+}
 
+type equipment = {
+  id: string;
+  qr_id: string;
+  name: string;
+}
 
-export default function Content() {
+interface clockProcessProps{
+  jobCodes: jobCodes[];
+  CostCodes: CostCode[];
+  equipment: equipment[];
+};
+
+export default function Content({
+  equipment,
+  jobCodes,
+  CostCodes
+  } : clockProcessProps) {
   const t = useTranslations("Home");
+  const f = useTranslations("Footer");
   const { data: session } = useSession() as { data: CustomSession | null };
   const { setPayPeriodHours } = useSavedPayPeriodHours();
   const [toggle, setToggle] = useState(true);
@@ -26,34 +60,46 @@ export default function Content() {
   const router = useRouter();
   const date = new Date().toLocaleDateString( 'en-US', { year: 'numeric', month: 'short', day: 'numeric', weekday: 'long' });
   const [user, setData] = useState<User>({ id: "", name: "", firstName: "", lastName: "", permission: "", });
-  // will send you to dashboard if authenticated
-  useEffect(() => {
-    if (authStep ==="success") {
-      router.push("/dashboard");
-    }
-  }, []);
+  const { jobsiteResults, setJobsiteResults } = useDBJobsite();
+const { costcodeResults, setCostcodeResults } = useDBCostcode();
+const { equipmentResults, setEquipmentResults } = useDBEquipment();
 
 
-  useEffect(() => {
-    if (session && session.user) {
-      setSavedUserData({
-        id: session.user.id,
-      });
-      setData({
-        id: session.user.id,
-        name: session.user.name,
-        firstName: session.user.firstName,
-        lastName: session.user.lastName,
-        permission: session.user.permission,
-      });
-      setHoursContext();
-    }
-  }, [session]);
-  
-  const handler = () => {
-    setToggle(!toggle);
-    console.log(toggle);
-  };
+
+useEffect(() => {
+  if (authStep ==="success") {
+    router.push("/dashboard");
+  }
+}, []);
+
+
+useEffect(() => {
+  if (session && session.user) {
+    setSavedUserData({
+      id: session.user.id,
+    });
+    setData({
+      id: session.user.id,
+      name: session.user.name,
+      firstName: session.user.firstName,
+      lastName: session.user.lastName,
+      permission: session.user.permission,
+    });
+    setHoursContext();
+  }
+}, [session]);
+
+const handler = () => {
+  setToggle(!toggle);
+  console.log(toggle);
+};
+
+useEffect(() => {
+  setJobsiteResults(jobCodes);
+  setCostcodeResults(CostCodes);
+  setEquipmentResults(equipment);
+}, []);
+
 /*  ToDo: beable to get the set hours from user according to his hours work that day
   for a hint look at the my team section under recieveing time card and how to do that prisma call
   then look at adding the duration all together. Total hours will show the full two week pay period
@@ -72,7 +118,11 @@ export default function Content() {
 
   if (authStep === "break") {
     return (
-      <>
+      <> 
+      <Bases variant={"default"} size={"default"}>
+      <Header/>
+      <Sections size={"default"}>
+      <Headers variant={"relative"} size={"default"}></Headers>
       <Banners variant={"default"} size={"default"}>
                 <Titles variant={"default"} size={"h1"}>{t("Banner")}</Titles>
                 <Texts variant={"default"} size={"p1"}>{t("Date", { date })}</Texts>
@@ -80,12 +130,19 @@ export default function Content() {
           <Texts variant={"name"} size={"p1"}>{t("Name", { firstName: user.firstName, lastName: user.lastName })}</Texts>
           <DisplayBreakTime setToggle={handler} display={toggle} />
           <WidgetSection user={user} display={toggle} />
+          <Footers >{f("Copyright")}</Footers>
+            </Sections>
+        </Bases>
       </>
     );
   }
   else {
     return (
       <>
+        <Bases variant={"default"} size={"default"}>
+            <Header/>
+            <Sections size={"default"}>
+            <Headers variant={"relative"} size={"default"}></Headers>
         <Banners variant={"default"} size={"default"}>
                 <Titles variant={"default"} size={"h1"}>{t("Banner")}</Titles>
                 <Texts variant={"default"} size={"p1"}>{t("Date", { date })}</Texts>
@@ -93,6 +150,9 @@ export default function Content() {
           <Texts variant={"name"} size={"p1"}>{t("Name", { firstName: user.firstName, lastName: user.lastName })}</Texts>
           <Hours setToggle={handler} display={toggle} />
           <WidgetSection user={user} display={toggle} />
+          <Footers >{f("Copyright")}</Footers>
+            </Sections>
+        </Bases>
       </>
     );
   }

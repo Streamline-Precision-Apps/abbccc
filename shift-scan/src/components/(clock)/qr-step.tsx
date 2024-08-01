@@ -21,14 +21,13 @@ const QRStep: React.FC<QRStepProps> = ({ handleAlternativePath, handleNextStep, 
     {type === "equipment" ? (<h1 className="flex justify-center text-2xl font-bold pt-10 pb-10">{t('ScanEquipment')}</h1>):
     (<h1 className="flex justify-center text-2xl font-bold pt-10 pb-10">{t('ScanJobSite')}</h1>) 
     }
-      <Buttons variant={"red"} size={"small"} href={url}>{t('Cancel')}</Buttons>
       <div className="flex flex-col items-center w-full">
-        <div className="flex justify-items-center items-center w-full lg:w-1/3 h-96 p-5 border-4 border-black rounded-lg bg-gr">
+        <div className="flex justify-items-center items-center w-[500px] h-[500px] pb-5 border-4 border-black rounded-lg bg-black">
         {type === 'equipment' ? ( <QR_EQ handleNextStep={handleNextStep} />) :
           ( <QR handleNextStep={handleNextStep} />)
         }
         </div>
-        <button onClick={handleAlternativePath} className="flex justify-center text-lg font-light underline mt-4">
+        <button onClick={handleAlternativePath} className="flex justify-center text-lg font-light underline pb-5">
           {t('TroubleScanning')}
         </button>
       </div>

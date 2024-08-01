@@ -9,22 +9,15 @@ import { useSavedTimeSheetData } from "@/app/context/TimeSheetIdContext";
 import { useSavedUserData } from "@/app/context/UserContext";
 import { CreateEmployeeEquipmentLog } from "@/actions/equipmentActions";
 
-type Equipment = {
-    id: string;
-    qr_id: string;
-    name: string;
-}
 
 type VerifyProcessProps = {
 id: string | undefined;
 handleNextStep: () => void;
 type: string;
-equipment: Equipment[];
 }
 
 const VerificationEQStep: React.FC<VerifyProcessProps> = ({
 id,
-equipment,
 type,
 handleNextStep,
 
@@ -64,12 +57,13 @@ try {
 
 return (
 <>
-    <h1 className="flex justify-center text-2xl font-bold pt-10 pb-10">
+
+    <h1 className="flex justify-center text-2xl font-bold">
         {t("VerifyEquipment")}
     </h1>
     <form
     onSubmit={handleSubmit}
-    className="h-full bg-white flex flex-col items-center rounded-t-2xl"
+    className="h-full w-[500px] bg-white flex flex-col items-center rounded-t-2xl"
     >
     <label htmlFor="name">{t("Equipment-result")}</label>
     <input

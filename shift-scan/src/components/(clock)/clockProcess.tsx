@@ -2,52 +2,23 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import QRStep from "@/components/(clock)/qr-step";
-import StepButtons from "@/components/(clock)/step-buttons";
 import CodeStep from "@/components/(clock)/code-step";
 import VerificationStep from "./verification-step";
 import VerificationEQStep from "./verification-eq-step";
 import { useScanData } from "@/app/context/JobSiteContext";
 import RedirectAfterDelay from "@/components/redirectAfterDelay";
-import { useSavedClockInTime } from "@/app/context/ClockInTimeContext";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useEQScanData } from "@/app/context/equipmentContext";
-import { useDBJobsite } from "@/app/context/dbJobsiteContext";
-import { useDBEquipment } from "@/app/context/dbEquipmentContext";
-import { useDBCostcode } from "@/app/context/dbCostcodeContext";
-
-type jobCodes = {
-    id: number;
-    jobsite_id: string;
-    jobsite_name: string;
-}
-type CostCode = {
-    id: number;
-    cost_code: string;
-    cost_code_description: string;
-}
-
-type equipment = {
-    id: string;
-    qr_id: string;
-    name: string;
-}
-
 interface clockProcessProps{
     scannerType: string;
     id: string | undefined;
     type: string;
-    jobCodes: jobCodes[];
-    CostCodes: CostCode[];
-    equipment: equipment[];
 };
 
 const ClockProcessor: React.FC<clockProcessProps> = ({
 id,
 type,
-equipment,
 scannerType,
-jobCodes,
-CostCodes
 }) => {
 const t = useTranslations("Clock");
 const [step, setStep] = useState(1);
@@ -57,20 +28,10 @@ const { scanResult } = useScanData();
 const { scanEQResult } = useEQScanData();
 const [path, setPath] = useState("");
 const [scanner, setScanner] = useState("");
-const { jobsiteResults, setJobsiteResults } = useDBJobsite();
-const { costcodeResults, setCostcodeResults } = useDBCostcode();
-const { equipmentResults, setEquipmentResults } = useDBEquipment();
 
 useEffect(() => {
     setStep(1);
 }, [path]);
-
-
-useEffect(() => {
-    setJobsiteResults(jobCodes);
-    setCostcodeResults(CostCodes);
-    setEquipmentResults(equipment);
-}, []);
 
 useEffect(() => {
 if (scannerType === "EQ") {
@@ -106,8 +67,7 @@ handleNextStep();
 
 if (type === "equipment") {
 return (
-    <div className="mt-16 h-screen lg:w-1/2 block m-auto">
-    <div className="bg-white h-full flex flex-col items-center p-5 rounded-t-2xl">
+    <>
         {step === 1 && (
         <QRStep
             type="equipment"
@@ -126,7 +86,6 @@ return (
         <VerificationEQStep
             type={type}
             id={id}
-            equipment={equipment}
             handleNextStep={handleNextStep}
         />
         )}
@@ -141,14 +100,14 @@ return (
             <RedirectAfterDelay delay={2000} to="/dashboard" />
         </>
         )}
-    </div>
-    </div>
+    </>
+
 );
 }
 
 return (
-<div className="mt-16 h-screen lg:w-1/2 block m-auto">
-    <div className="bg-white h-full flex flex-col items-center p-5 rounded-t-2xl">
+
+    <>
     {step === 1 && (
         <QRStep
         type="jobsite"
@@ -178,8 +137,8 @@ return (
         />
     )}
     {step === 5 && path === "jobsite" && (
-        <>
-        <h1 className="flex justify-center text-2xl font-bold pt-10 pb-10">
+        <div className="flex flex-col items-center w-full w-[500px] h-[600px]">
+        <h1 className="flex justify-center text-2xl font-bold ">
         {t("Confirmation-job-message-1")}
         </h1>
         {(type === "switchJobs") ? 
@@ -189,7 +148,6 @@ return (
         )
         : (<p className="text-lg">{t("Confirmation-job-message-2")}</p>)
         }
-        <div className="bg-pink-100 h-1/2 w-1/2 flex flex-col items-center p-5 rounded-t-2xl text-xl">
             <h2 className="my-5">
             {t("JobSite-label")} {scanResult?.data}
             </h2>
@@ -204,12 +162,10 @@ return (
                 second: "numeric",
             })}
             </h2>
-        </div>
         <RedirectAfterDelay delay={4000} to="/dashboard" />
-        </>
+        </div>
     )}
-    </div>
-</div>
+    </>
 );
 };
 
