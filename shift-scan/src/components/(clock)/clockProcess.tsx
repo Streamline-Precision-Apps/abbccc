@@ -73,7 +73,7 @@ return (
             type="equipment"
             handleAlternativePath={handleAlternativePath}
             handleNextStep={handleNextStep}
-            url="/dashboard/equipment"
+            url="/dashboard"
         />
         )}
         {step === 2 && (

@@ -59,7 +59,7 @@ export const User: React.FC<UserProps> = ({
               />
             </div>
           </Modals>
-            <Buttons variant={"orange"} size={"default"}href="/dashboard/equipment/current">
+            <Buttons variant={"orange"} size={"widgetSm"}href="/dashboard/equipment/current">
                 <Images titleImg="/forms.svg" titleImgAlt="Current Equipment Icon" variant={"icon"} size={"default"}/>
                 <Texts>Current Equipment</Texts>
               </Buttons>

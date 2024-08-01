@@ -5,78 +5,77 @@ import { useRouter } from 'next/navigation';
 import { useEQScanData } from '@/app/context/equipmentContext';
 
 interface QrReaderProps {
-handleNextStep: () => void;
+  handleNextStep: () => void;
 }
 
 const QR_EQ: React.FC<QrReaderProps> = ({ handleNextStep }) => {
-const videoRef: MutableRefObject<HTMLVideoElement | null> = useRef(null);
-const [qrScanner, setQrScanner] = useState<QrScanner | null>(null);
-const [scanCount, setScanCount] = useState(0);
-const { setscanEQResult } = useEQScanData();
-const router = useRouter();
-const SCAN_THRESHOLD = 200; // Number of scans before redirecting
+  const videoRef: MutableRefObject<HTMLVideoElement | null> = useRef(null);
+  const [qrScanner, setQrScanner] = useState<QrScanner | null>(null);
+  const [scanCount, setScanCount] = useState(0);
+  const { setscanEQResult } = useEQScanData();
+  const router = useRouter();
+  const SCAN_THRESHOLD = 200; // Number of scans before redirecting
 
-const onScanSuccess = (result: QrScanner.ScanResult) => {
-try {
-    console.log(result.data);
-    console.log('Iscanned using equipment qrcode');
-    setscanEQResult({ data: result.data });
-    qrScanner?.stop();
-    handleNextStep();
-
-} catch (error) {
-    alert('Invalid QR code');
-    qrScanner?.stop();
-    router.back();
-    setTimeout(() => {
+  const onScanSuccess = (result: QrScanner.ScanResult) => {
+    try {
+      setscanEQResult({ data: result.data });
+      qrScanner?.stop();
+      handleNextStep();
+    } catch (error) {
+      console.error('Error processing QR code:', error);
+      alert('Invalid QR code');
+      qrScanner?.stop();
+      router.back();
+      setTimeout(() => {
         alert('Invalid QR code');
-    }, 100); // Delay the alert by 100 milliseconds
-}
-};
-
-const onScanFail = (err: string | Error) => {
-setScanCount((prevCount) => prevCount + 1);
-};
-
-useEffect(() => {
-if (videoRef.current) {
-    const scanner = new QrScanner(
-    videoRef.current,
-    (result: QrScanner.ScanResult) => onScanSuccess(result),
-    {
-        onDecodeError: onScanFail,
-        highlightScanRegion: true,
-        highlightCodeOutline: true,
+      }, 100); // Delay the alert by 100 milliseconds
     }
-    );
-    setQrScanner(scanner);
+  };
 
-    QrScanner.hasCamera().then((hasCamera: boolean) => {
-    if (hasCamera) {
-        scanner.start().catch((error: Error) => console.error(error));
-    } else {
-        console.error('No camera found');
+  const onScanFail = (err: string | Error) => {
+    setScanCount((prevCount) => prevCount + 1);
+    console.warn('Scan failed:', err);
+  };
+
+  useEffect(() => {
+    if (videoRef.current) {
+      const scanner = new QrScanner(
+        videoRef.current,
+        (result: QrScanner.ScanResult) => onScanSuccess(result),
+        {
+          onDecodeError: onScanFail,
+          highlightScanRegion: true,
+          highlightCodeOutline: true,
+        }
+      );
+      setQrScanner(scanner);
+
+      QrScanner.hasCamera().then((hasCamera: boolean) => {
+        if (hasCamera) {
+          scanner.start().catch((error: Error) => console.error('Scanner start error:', error));
+        } else {
+          console.error('No camera found');
+        }
+      });
+
+      return () => {
+        scanner.destroy();
+      };
     }
-    });
+  }, [videoRef.current]); // Only run this effect once when the component mounts
 
-    return () => {
-    scanner.destroy();
-    };
-}
-}, [videoRef]);
+  useEffect(() => {
+    if (scanCount >= SCAN_THRESHOLD) {
+      qrScanner?.stop();
+      router.push('/dashboard');
+    }
+  }, [scanCount, qrScanner, router]);
 
-useEffect(() => {
-if (scanCount >= SCAN_THRESHOLD) {
-    qrScanner?.stop();
-    router.push('/');
-}
-}, [scanCount, qrScanner, router]);
-
-return (
-<div className="flex justify-center items-center">
-    <video ref={videoRef} style={{ width: '100%' }}></video>
-</div>
-);
+  return (
+    <div className="flex justify-center items-center">
+      <video ref={videoRef} style={{ width: '100%' }}></video>
+    </div>
+  );
 };
 
 export default QR_EQ;

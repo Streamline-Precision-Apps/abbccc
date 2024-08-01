@@ -30,7 +30,7 @@ export default function DashboardButtons() {
     user?.permission === "PROJECTMANAGER"
   ) {
     return (
-      <div className=" w-full flex flex-wrap">
+      <div className="grid grid-cols-2 grid-rows-2 gap-4 w-full m-4 p-4">
         <Manager show={!additionalButtonsType} />
         <User
           additionalButtonsType={additionalButtonsType}
