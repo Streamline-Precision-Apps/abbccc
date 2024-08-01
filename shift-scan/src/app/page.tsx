@@ -14,6 +14,7 @@ export default async function Home() {
                 id: true,
                 jobsite_id: true,
                 jobsite_name: true
+                
             }
         }
     );
@@ -40,32 +41,3 @@ export default async function Home() {
             <Content jobCodes={jobCodes} CostCodes={CostCodes} equipment={equipment} />
     )   
 }
-
-
-// old filter
-
-// export default async function Clock({type}: Props) {
-//     if (type === "equipment") {
-//         return (
-//             <div>
-//             <ClockProcess type={type} id={userId} scannerType="EQ" jobCodes={jobCodes} CostCodes={CostCodes} equipment={equipment} />
-//         </div>
-//         );
-//     }
-
-//     else if (type === "switchJobs"){
-//         return (
-//             <div>
-//             <ClockProcess type={type} id={userId} scannerType="Job" jobCodes={jobCodes} CostCodes={CostCodes} equipment={equipment} />
-//         </div>
-//         );
-//     }
-
-//     else {
-//         return (
-//             <div>
-//             <ClockProcess type={type} id={userId} scannerType="Job" jobCodes={jobCodes} CostCodes={CostCodes} equipment={equipment} />
-//         </div>
-//     );
-// }
-// }
