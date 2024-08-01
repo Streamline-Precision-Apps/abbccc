@@ -35,21 +35,21 @@ const ClockOutButtons = () => {
         className="bg-orange-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 border border-gray-400 font-bold rounded"
         onClick={() => handleNavigation("b")} // b = break
       >
-        Take a break
+        {t("Break")}
       </button>
 
       <button
         className="bg-red-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 border border-gray-400 font-bold rounded"
         onClick={() => handleNavigation("ewd")} // ewd = end work day
       >
-        End work day
+        {t("End")}
       </button>
 
       <button
         className="bg-blue-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 border border-gray-400 font-bold rounded"
         onClick={handleHomeNavigation}
       >
-        Return home
+        {t("Home")}
       </button>
     </div>
   );
