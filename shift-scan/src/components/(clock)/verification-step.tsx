@@ -90,11 +90,9 @@ const VerificationStep: React.FC<{ id: string | undefined; handleNextStep: () =>
 } ;
 
   return (
-    <>
+    <div className="flex flex-col items-center w-[500px] h-[800px] m-auto">
       <TitleBoxes title={t('VerifyJobSite')} titleImg="/clockin.svg" titleImgAlt="Verify" variant="row" size="default" type="row" />
-
-      <form onSubmit={handleSubmit} className="h-full bg-white flex flex-col items-center rounded-t-2xl">
-        <div className="bg-pink-200 h-fit w-full flex flex-col items-center p-5 rounded-t-2xl text-xl">
+      <form onSubmit={handleSubmit} >
         <TitleBoxes title={t('Date-label')} titleImg="/clockin.svg" titleImgAlt="Verify" variant="default" size="default" type='titleOnly' >
           <Sections size={"dynamic"}>
           {date.toLocaleDateString('en-US', { year: 'numeric', month: 'numeric', day: 'numeric' })}
@@ -110,8 +108,7 @@ const VerificationStep: React.FC<{ id: string | undefined; handleNextStep: () =>
           {savedCostCode}
           </Sections>
         </TitleBoxes>
-        </div>
-        <button type="submit" className="bg-app-green mx-auto w-full h-1/2 py-4 px-5 rounded-lg text-black font-bold mt-5">
+        <button type="submit" className="bg-app-green mx-auto w-full h-16 py-4 px-5 rounded-lg text-black font-bold mt-5">
         <Clock time={date.getTime()} />
         </button>
 
@@ -122,7 +119,7 @@ const VerificationStep: React.FC<{ id: string | undefined; handleNextStep: () =>
         <input type="hidden" name="costcode" value={savedCostCode?.toString() || ''} />
         <input type="hidden" name="start_time" value={new Date().toISOString()} />
       </form>
-    </>
+    </div>
   );
 };
 

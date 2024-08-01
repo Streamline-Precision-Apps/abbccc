@@ -20,7 +20,8 @@ const ModalVariants = cva(
         default: "fixed rounded p-1 bg-white top-1/4 left-3/4 -translate-x-1/4 -translate-y-1/2 flex flex-col",
         sm: "fixed rounded p-1 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col",
         med: "p-10 w-40 h-40",
-        lg: "p-10 w-50 h-50"
+        lg: "p-10 w-50 h-50",
+        clock: "fixed rounded top-1/3 -translate-y-1/3 flex flex-col w-full h-[100%] "
       }
     },
     defaultVariants: {
@@ -73,7 +74,23 @@ const Modals: FC<ModalProps> = ({className, variant, size, type, isOpen, handleC
         </ReactPortal>
       )
     }
-    else return (
+
+    else if (type === "clock") 
+      return (
+      <ReactPortal wrapperId="react-portal-modal-container">
+        <div className="modal ">
+            <div className="fixed top-0 left-0 w-full h-screen bg-neutral-800 opacity-50"/>
+            <div className={cn(ModalVariants({variant, size, className}))} {...props}>
+              <Buttons onClick={handleClose} className="close-btn" variant={"darkBlue"} size={"thin"}>
+              <Images titleImg="/x.svg" titleImgAlt="x" variant={"icon"} size={"thin"}/>
+                </Buttons>
+              <div className="modal-content">{props.children}</div>
+            </div>
+        </div>      
+      </ReactPortal>
+  )
+    
+      else return (
         <ReactPortal wrapperId="react-portal-modal-container">
           <div className="modal ">
               <div className="fixed top-0 left-0 w-screen h-screen bg-neutral-800 opacity-50"/>

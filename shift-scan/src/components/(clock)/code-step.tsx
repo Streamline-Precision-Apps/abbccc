@@ -14,7 +14,7 @@ const CodeStep: React.FC<CodeStepProps> = ({ datatype, handleNextStep}) => {
 
     return (
         <>
-            <h1 className="flex justify-center text-2xl font-bold pt-10 pb-10">{t(`Title-${datatype}`)}</h1>
+            <h1 className="flex w-full justify-center text-2xl font-bold ">{t(`Title-${datatype}`)}</h1>
             <CodeFinder datatype={datatype} />
             <StepButtons handleNextStep={handleNextStep}/>
         </>

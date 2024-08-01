@@ -1,27 +1,71 @@
-import Banner from "@/components/banner"
+"use server";
 import Content from "@/app/(content)/content"
-import {formatDate} from "@/components/getDate"
 import "@/app/globals.css"
-import { Header } from "@/components/header"
-import { Bases } from "@/components/(reusable)/bases"
-import { Sections } from "@/components/(reusable)/sections"
-import { Headers } from "@/components/(reusable)/headers"
-import { useTranslations } from "next-intl"
-import { Footers } from "@/components/(reusable)/footers"
+import prisma from "@/lib/prisma"
+import { cookies } from "next/headers"
 
-export default function Home() {
-
-    const t = useTranslations("Home");
-    const f = useTranslations("Footer");
-
+export default async function Home() {
+    const user = cookies().get("user");
+    const userId = user?.value ;
+    // add these here to enable proper code selection in the form
+    const jobCodes = await prisma.jobsite.findMany(
+        {
+            select: {
+                id: true,
+                jobsite_id: true,
+                jobsite_name: true
+            }
+        }
+    );
+    const CostCodes = await prisma.costCode.findMany(
+        {
+            select: {
+                id: true,
+                cost_code: true,
+                cost_code_description: true
+            }
+        }
+    );
+    const equipment = await prisma.equipment.findMany(
+        {
+            select: {
+                id: true,
+                qr_id: true,
+                name: true,
+            }
+        }
+    );
+    
     return (   
-        <Bases variant={"default"} size={"default"}>
-            <Header/>
-            <Sections size={"default"}>
-            <Headers variant={"relative"} size={"default"}></Headers>
-                <Content />
-            <Footers >{f("Copyright")}</Footers>
-            </Sections>
-        </Bases>
+            <Content jobCodes={jobCodes} CostCodes={CostCodes} equipment={equipment} />
     )   
 }
+
+
+// old filter
+
+// export default async function Clock({type}: Props) {
+//     if (type === "equipment") {
+//         return (
+//             <div>
+//             <ClockProcess type={type} id={userId} scannerType="EQ" jobCodes={jobCodes} CostCodes={CostCodes} equipment={equipment} />
+//         </div>
+//         );
+//     }
+
+//     else if (type === "switchJobs"){
+//         return (
+//             <div>
+//             <ClockProcess type={type} id={userId} scannerType="Job" jobCodes={jobCodes} CostCodes={CostCodes} equipment={equipment} />
+//         </div>
+//         );
+//     }
+
+//     else {
+//         return (
+//             <div>
+//             <ClockProcess type={type} id={userId} scannerType="Job" jobCodes={jobCodes} CostCodes={CostCodes} equipment={equipment} />
+//         </div>
+//     );
+// }
+// }

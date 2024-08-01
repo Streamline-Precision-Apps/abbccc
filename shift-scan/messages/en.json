@@ -54,7 +54,8 @@
         "Confirmation-eq-message-2": " Thank you! Your Equipment has been successfully Logged.",
         "Equipment-result": "Equipment Found:",
         "Equipment-notes-title": "Notes",
-        "Next-btn": "Next"
+        "Next-btn": "Next",
+        "recentlyUsed" : "Recently Used"
     },
 
     "Footer": {
