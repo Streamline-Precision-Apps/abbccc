@@ -9,64 +9,56 @@
         "Error": "Invalid username or password",
         "lN4": "Copyright © 2024. All rights reserved."
     },
-    "modal-settings": {
-        "Settings" : "Settings",
-        "btn-inbox" : "Inbox",
-        "btn-profile" : "Profile",
-        "btn-notifications" : "Notifications"
+        "Home" : {
+            "Banner": "Welcome back!",
+            "Name": "{firstName} {lastName}",
+            "Date": "{date}",
+            "Hours": "Total Hours:",
+            "Break": "Break Time:",
+            "Unit": "hrs",
+            "DA-Time-Label" : "Hours",
+            "DA-PayPeriod-Label" : "Current Pay Period Total:",
+            "DA-ScrollLeft": "Scroll Left",
+            "DA-ScrollRight": "Scroll Right",
+            "DA-Return": "Return",
+            "DA-Today": "Today",
+            "Clock-btn": "Clock In",
+            "MyTeam-btn": "My Team",
+            "Qr-btn": "Qr Generator"
     },
-    "page1": {
-        "Banner": "Welcome Back!",
-        "Name": "{firstName} {lastName}",
-        "Date": "{date}",
-        "lN1": "Total Hours",
-        "lN3": "Clock In",
-        "lN4": "Copyright © 2024.Streamline Precision LLC. All rights reserved.",
-        "lN5": "QR Generator",
-        "lN6": "My Team"
+    "Clock": {
+        "ScanJobSite": "Scan Job Site",
+        "ScanQR": "Scan QR Code",
+        "ScanEquipment": "Scan Equipment",
+        "Cancel": "Cancel",
+        "TroubleScanning": "Trouble Scanning?",
+        "Title-jobsite": "Select Job Site",
+        "Title-equipment": "Select Equipment",
+        "Title-costcode": "Select Cost Code",
+        "search-jobsite": "Type here",
+        "search-equipment": "Type here",
+        "search-costcode": "Type here",
+        "VerifyJobSite": "Clock In",
+        "VerifyEquipment": "Verify Equipment",
+        "Date-label": "Date",
+        "JobSite-label": "Job Site #",
+        "Equipment-label": "Equipment Found:",
+        "CostCode-label": "Cost Code",
+        "ClockIn-btn": "Clock In",
+        "Confirmation-time": "Clocked in at",
+        "Confirmation-job-message-1": "Process Completed",
+        "Confirmation-job-message-2": "Thank you! Your timesheet has been successfully created.",
+        "Confirmation-job-message-3": "Successfully Switched Sites",
+        "Confirmation-job-message-4": "Your timesheet has been Submitted and a new one created.",
+        "Confirmation-eq-message-1": "Process Completed",
+        "Confirmation-eq-message-2": " Thank you! Your Equipment has been successfully Logged.",
+        "Equipment-result": "Equipment Found:",
+        "Equipment-notes-title": "Notes",
+        "Next-btn": "Next",
+        "recentlyUsed" : "Recently Used"
     },
 
-    "page2": { 
-        "title" :"Scan Job Site",
-        "subtitle": "Please scan the QR code",
-        "btn-scan": "simulate scan",
-        "btn-entry": "qr code working ? ",
-        "lN1": "Trouble Scanning?"
-    },
-    "page3": {
-        "title": "Cost Codes",
-        "lN1": "Job Found: ",
-        "lN2": "Please select a cost code:",
-        "btn-next": "next",
-        "used-codes": { 
-            "item1": "Cost Code #1",
-            "item2": "Cost Code #2",
-            "item3": "Cost Code #3" 
-        }
-    },
-    "page4": {
-        "title": "Select Cost Code:",
-        "lN1": "Type Here",
-        "lN2" : "Recently used:",
-        "submit": "Continue"
-        
-    },
-
-    "page5": {
-        "lN1": "Clock In",
-        "lN2" : "Job Site Found:",
-        "lN3" : "Cost Code Found:",
-        "lN4a" : "Punched In at: ",
-        "lN4" : "Successfully Clocked In!",
-        "lN5" : "Start Shift!",
-        "lN6" : "You have unsaved changes. Are you sure you want to leave?"
-    },
-    
-    "page6": {
-        "": "Ready to start an amazing shift!",
-        "Name": "{firstName} {lastName}",
-        "Date": "{date}",
-        "ClockOut-btn": "Clock Out",
+    "Footer": {
         "Copyright": "Copyright © 2024. All rights reserved."
     },
     

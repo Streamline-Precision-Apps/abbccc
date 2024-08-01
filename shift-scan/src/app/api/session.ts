@@ -1,4 +1,4 @@
-// pages/api/session.ts
+// you can recieve user information from next-auth not really the fastest way though
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../api/auth/[...nextauth]/route'; // Adjust the import path accordingly
 import type { NextApiRequest, NextApiResponse } from 'next';

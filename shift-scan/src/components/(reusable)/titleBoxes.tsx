@@ -87,6 +87,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({className, variant, size, type, title, t
             </div>
         )
     }
+    
     else return (
         <div className={cn(TitleBoxVariants({variant, size, className}))} {...props}>
             <Buttons href='back' variant={"icon"} size={"backButton"}>

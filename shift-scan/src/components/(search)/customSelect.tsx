@@ -1,5 +1,6 @@
 import React from 'react';
 import "@/app/globals.css";
+import { useTranslations } from 'next-intl';
 // allows us to use the search bar and the dropdown together like modern design
 
 interface Option {
@@ -25,9 +26,11 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   // it also map out all the elements in the drop down list. 
   // provide a key with the name as option value  becuase it is unique
   // if the costcodes need to be bilingual i would need to make a josn file for them. 
+  const t = useTranslations('Clock');
   return (
-    <div className="w-full max-h-[15rem] overflow-y-auto text-center p-4  ">
-        <div className="">
+    <div className="w-full overflow-y-auto text-center p-4 border-2 border-black mt-5 ">
+      {options ? <h2>{t("recentlyUsed")}</h2> : (<></>)}
+        <div className="border-2 border-black">
           {options.map((option) => (
             <div
               key={option.code}
