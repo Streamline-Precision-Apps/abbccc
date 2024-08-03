@@ -34,10 +34,11 @@ const ModalVariants = cva(
 interface ModalProps extends HTMLAttributes<HTMLElement>, VariantProps<typeof ModalVariants> {
     type?: string;
     isOpen: boolean;
+    step?: number;
     handleClose: () => void;
 }
 
-const Modals: FC<ModalProps> = ({className, variant, size, type, isOpen, handleClose, ...props}) => {
+const Modals: FC<ModalProps> = ({className, variant, size, type, isOpen, step, handleClose, ...props}) => {
     useEffect(() => {
         if (isOpen) {
         document.body.style.overflow = 'hidden';
@@ -79,11 +80,12 @@ const Modals: FC<ModalProps> = ({className, variant, size, type, isOpen, handleC
       return (
       <ReactPortal wrapperId="react-portal-modal-container">
         <div className="modal ">
-            <div className="fixed top-0 left-0 w-full h-screen bg-neutral-800 opacity-50"/>
+            <div className="fixed top-0 left-0 w-full h-screen bg-white opacity-50"/>
             <div className={cn(ModalVariants({variant, size, className}))} {...props}>
               <Buttons onClick={handleClose} className="close-btn" variant={"darkBlue"} size={"thin"}>
-              <Images titleImg="/x.svg" titleImgAlt="x" variant={"icon"} size={"thin"}/>
-                </Buttons>
+              {step === 5 ? <></> : <Images titleImg="/x.svg" titleImgAlt="x" variant={"icon"} size={"thin"}/>
+                }
+      </Buttons>
               <div className="modal-content">{props.children}</div>
             </div>
         </div>      

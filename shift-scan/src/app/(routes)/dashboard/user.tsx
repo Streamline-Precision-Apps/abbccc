@@ -49,12 +49,13 @@ export const User: React.FC<UserProps> = ({
                 <Images titleImg="/equipment.svg" titleImgAlt="Equipment Icon" variant={"icon"} size={"default"}/>
                 <Texts>Log New</Texts>
             </Buttons>
-            <Modals isOpen={isModalOpen} handleClose={handleCloseModal} variant={"default"} size={"clock"} type={"clock"}> 
+            <Modals isOpen={isModalOpen} handleClose={handleCloseModal}  variant={"default"} size={"clock"} type={"clock"}> 
             <div className="flex flex-col bg-white px-2 ">
               <ClockProcessor
                 type={"equipment"}
                 id={user?.id}
                 scannerType={"equipment"}
+                isModalOpen={isModalOpen}
               />
             </div>
           </Modals>
@@ -87,6 +88,7 @@ export const User: React.FC<UserProps> = ({
                 type={"switchJobs"}
                 id={user?.id}
                 scannerType={"jobsite"}
+                isModalOpen={isModalOpen}
               />
             </div>
           </Modals>

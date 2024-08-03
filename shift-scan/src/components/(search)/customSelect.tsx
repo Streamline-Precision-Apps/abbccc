@@ -9,16 +9,14 @@ interface Option {
 
 interface CustomSelectProps {
   options: Option[];
-  placeholder: string;
   onOptionSelect: (option: Option) => void;
   selectedOption: Option | null;
 }
 
 const CustomSelect: React.FC<CustomSelectProps> = ({
   options,
-  placeholder,
   onOptionSelect,
-  selectedOption,
+  selectedOption
 }) => {
   const t = useTranslations('Clock');
 
@@ -31,7 +29,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
             {options.map((option) => (
               <div
                 key={option.code}
-                className="text-3xl p-4 hover:bg-gray-200 cursor-pointer even:bg-gray-100"
+                className={`text-3xl p-4 hover:bg-gray-200 cursor-pointer ${selectedOption?.code === option.code ? 'bg-gray-300' : 'even:bg-gray-100'}`}
                 onClick={() => onOptionSelect(option)}
               >
                 {option.label}
@@ -40,7 +38,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
           </div>
         </div>
       )}
-      {options.length === 0 &&  <p>{t("noResults")}</p>}
+      {options.length === 0 && <p>{t("noResults")}</p>}
     </div>
   );
 };

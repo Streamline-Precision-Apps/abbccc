@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useRef, MutableRefObject } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import QrScanner from "qr-scanner";
 import { useRouter } from 'next/navigation';
 import { useEQScanData } from '@/app/context/equipmentContext';
@@ -9,8 +9,8 @@ interface QrReaderProps {
 }
 
 const QR_EQ: React.FC<QrReaderProps> = ({ handleNextStep }) => {
-  const videoRef: MutableRefObject<HTMLVideoElement | null> = useRef(null);
-  const [qrScanner, setQrScanner] = useState<QrScanner | null>(null);
+  const videoRef: React.MutableRefObject<HTMLVideoElement | null> = useRef(null);
+  const qrScannerRef: React.MutableRefObject<QrScanner | null> = useRef(null);
   const [scanCount, setScanCount] = useState(0);
   const { setscanEQResult } = useEQScanData();
   const router = useRouter();
@@ -19,12 +19,12 @@ const QR_EQ: React.FC<QrReaderProps> = ({ handleNextStep }) => {
   const onScanSuccess = (result: QrScanner.ScanResult) => {
     try {
       setscanEQResult({ data: result.data });
-      qrScanner?.stop();
+      qrScannerRef.current?.stop();
       handleNextStep();
     } catch (error) {
       console.error('Error processing QR code:', error);
       alert('Invalid QR code');
-      qrScanner?.stop();
+      qrScannerRef.current?.stop();
       router.back();
       setTimeout(() => {
         alert('Invalid QR code');
@@ -48,7 +48,7 @@ const QR_EQ: React.FC<QrReaderProps> = ({ handleNextStep }) => {
           highlightCodeOutline: true,
         }
       );
-      setQrScanner(scanner);
+      qrScannerRef.current = scanner;
 
       QrScanner.hasCamera().then((hasCamera: boolean) => {
         if (hasCamera) {
@@ -59,17 +59,18 @@ const QR_EQ: React.FC<QrReaderProps> = ({ handleNextStep }) => {
       });
 
       return () => {
+        scanner.stop();
         scanner.destroy();
       };
     }
-  }, [videoRef.current]); // Only run this effect once when the component mounts
+  }, []);
 
   useEffect(() => {
     if (scanCount >= SCAN_THRESHOLD) {
-      qrScanner?.stop();
+      qrScannerRef.current?.stop();
       router.push('/dashboard');
     }
-  }, [scanCount, qrScanner, router]);
+  }, [scanCount, router]);
 
   return (
     <div className="flex justify-center items-center">
