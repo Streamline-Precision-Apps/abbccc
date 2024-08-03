@@ -8,6 +8,8 @@ import { CostCodeOptions } from '@/components/(search)/options';
 import { useScanData } from '@/app/context/JobSiteContext';
 import { useEQScanData } from '@/app/context/equipmentContext';
 import { useDBJobsite, useDBCostcode, useDBEquipment } from "@/app/context/dbCodeContext";
+import { useRecentDBJobsite, useRecentDBCostcode, useRecentDBEquipment } from "@/app/context/dbRecentCodesContext";
+
 
 interface Option {
 code: string;
@@ -26,9 +28,12 @@ const t = useTranslations('Clock');
 const { setScanResult } = useScanData();
 const { setCostCode } = useSavedCostCode();
 const { setscanEQResult } = useEQScanData();
-const { jobsiteResults, addRecentlyUsedJobCode } = useDBJobsite();
-const { costcodeResults, addRecentlyUsedCostCode } = useDBCostcode();
-const { equipmentResults, addRecentlyUsedEquipment } = useDBEquipment();
+const { jobsiteResults } = useDBJobsite();
+const { addRecentlyUsedJobCode } = useRecentDBJobsite();
+const { costcodeResults } = useDBCostcode();
+const { addRecentlyUsedCostCode } = useRecentDBCostcode();
+const { equipmentResults } = useDBEquipment();
+const { addRecentlyUsedEquipment } = useRecentDBEquipment();
 const options = CostCodeOptions(datatype, searchTerm);
 
 useEffect(() => {
@@ -73,7 +78,6 @@ return (
     <SearchBar placeholder={t(`search-${datatype}`)} searchTerm={searchTerm} onSearchChange={handleSearchChange} />
     <CustomSelect 
     options={filteredOptions} 
-    placeholder={t(`placeholder-${datatype}`)} 
     onOptionSelect={handleOptionSelect} 
     selectedOption={selectedOption} 
     />
