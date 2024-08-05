@@ -9,6 +9,7 @@ const SectionVariants = cva(
       variant: {
         default: "bg-white rounded-2xl mt-3",
         tab: "bg-white rounded-2xl min-h-[200px] rounded-t-none p-6",
+        eq: "bg-white border-2 border-black rounded-2xl ",
       },
       size: {
         default: "w-full h-screen",

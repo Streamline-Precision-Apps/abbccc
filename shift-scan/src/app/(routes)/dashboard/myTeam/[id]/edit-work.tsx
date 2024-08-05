@@ -1,6 +1,9 @@
 import { editTimeSheet } from "@/actions/timeSheetActions";
-import { useState, useEffect } from "react";
-
+import { Images } from "@/components/(reusable)/images";
+import { useTranslations } from "next-intl";
+import React from "react";
+import { useState, useEffect} from "react";
+import Equipment from "../../equipment/page";
 type Timesheet = {
   id: string;
   start_time: string;
@@ -13,7 +16,9 @@ type Timesheet = {
   duration: string;
   submit_date: string;
   employeeId: string;
+  equipmentId: string;
 };
+
 type CostCode = {
   id: number;
   cost_code: string;
@@ -24,6 +29,25 @@ type Jobsite = {
   jobsite_id: string;
 };
 
+type EquipmentLogs = {
+  id: number;
+  equipment_id: string;
+  jobsite_id: string;
+  employee_id: string;
+  start_time: Date;
+  end_time: Date | null;
+  duration: number | null;
+  refueled: boolean;
+  fuel_used: number | null;
+  Equipment: Equipment[];
+};
+
+type Equipment = {
+  id: number;
+  name: string;
+  qr_id: string;
+};
+
 type EditWorkProps = {
   edit: boolean;
   costcodesData: CostCode[];
@@ -31,15 +55,16 @@ type EditWorkProps = {
   timesheetData: Timesheet[];
   handleFormSubmit: (employeeId: string, date: string, message?: string) => void;
   setEdit: (edit: boolean) => void;
+  employeeId: string;
 };
 
-export default function EditWork({ timesheetData, jobsitesData, costcodesData, edit, handleFormSubmit, setEdit}: EditWorkProps) {
+export default function EditWork({ timesheetData, jobsitesData, costcodesData, edit, handleFormSubmit, setEdit, employeeId }: EditWorkProps) {
   const [timesheets, setTimesheets] = useState<Timesheet[]>([]);
-  const [prevtimesheets, setprevTimesheets] = useState<Timesheet[]>(timesheetData);
+  const [prevtimesheets] = useState<Timesheet[]>(timesheetData);
   const [jobsites] = useState<Jobsite[]>(jobsitesData);
   const [costcodes] = useState<CostCode[]>(costcodesData);
   const [message, setMessage] = useState<string | null>(null);
-
+  const t = useTranslations("MyTeam");
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -61,29 +86,23 @@ export default function EditWork({ timesheetData, jobsitesData, costcodesData, e
     field: "start_date" | "start_time" | "end_date" | "end_time"
   ) => {
     const value = e.target.value;
-    console.log(`Date input change: id=${id}, field=${field}, value=${value}`);
 
     setTimesheets((prevTimesheets) =>
       prevTimesheets.map((timesheet) => {
         if (timesheet.id === id) {
           const updatedTimesheet = { ...timesheet, [field]: value };
-
-          console.log(`Saving changes: id=${timesheet.id}, start_time=${updatedTimesheet.start_time}, end_time=${updatedTimesheet.end_time}`);
-
-          return {
-            ...updatedTimesheet,
-          };
+          return updatedTimesheet;
         }
         return timesheet;
       })
     );
   };
 
-  const handleCodeChange = (e: React.ChangeEvent<HTMLSelectElement>, id: string) => {
-    const newJobsiteId = e.target.value;
+  const handleCodeChange = (e: React.ChangeEvent<HTMLSelectElement>, id: string, field: keyof Timesheet) => {
+    const value = e.target.value;
     setTimesheets((prevTimesheets) =>
       prevTimesheets.map((timesheet) =>
-        timesheet.id === id ? { ...timesheet, jobsite_id: newJobsiteId } : timesheet
+        timesheet.id === id ? { ...timesheet, [field]: value } : timesheet
       )
     );
   };
@@ -94,18 +113,16 @@ export default function EditWork({ timesheetData, jobsitesData, costcodesData, e
         const formData = new FormData();
         formData.append("id", timesheet.id);
         formData.append("submit_date", timesheet.submit_date);
-        formData.append("employeeId", ""); // Add employeeId if available
+        formData.append("employeeId", employeeId); 
         formData.append("costcode", timesheet.costcode);
         formData.append("start_time", `${timesheet.start_date}T${timesheet.start_time}`);
         formData.append("end_time", `${timesheet.end_date}T${timesheet.end_time}`);
         formData.append("total_break_time", timesheet.total_break_time);
-        formData.append("jobsite_id", timesheet.jobsite_id); // Add jobsite ID to form data
-
+        formData.append("jobsite_id", timesheet.jobsite_id);
         await editTimeSheet(formData);
       }
       handleFormSubmit(timesheets[0].employeeId, timesheets[0].submit_date, "Changes saved successfully.");
       setEdit(false);
-
     } catch (error) {
       console.error("Failed to save changes", error);
       setMessage("Failed to save changes.");
@@ -126,39 +143,57 @@ export default function EditWork({ timesheetData, jobsitesData, costcodesData, e
         end_date: new Date(timesheet.end_time).toISOString().split('T')[0],
         end_time: new Date(timesheet.end_time).toISOString().split('T')[1].split(':')[0] + ":" + new Date(timesheet.end_time).toISOString().split('T')[1].split(':')[1],
       }));
-      console.log("Initialized timesheets:", initializedTimesheets);
       setTimesheets(initializedTimesheets);
     }
   }, [timesheetData]);
 
+  const buttonClass = edit
+    ? "flex bg-app-red text-white font-bold p-2 rounded"
+    : "bg-app-orange text-black font-bold p-2 rounded m-auto";
+
+  const word = edit ?  (<Images titleImg={"/cancel.svg"} titleImgAlt={"Cancel"} variant={"icon"} size={"backButton"}  /> ): (<Images titleImg={"/edit.svg"} titleImgAlt={"Edit"} variant={"icon"} size={"backButton"} /> );
+
+  const editHandler = () => {
+    setEdit(!edit);
+  };
+
+  useEffect(() => {
+    setMessage("");
+  }, [edit]);
 
   return (
     <div>
+      {timesheetData.length === 0 ? null : (
+        <div className="flex flex-row justify-between p-2">
+          <button className={buttonClass} onClick={editHandler}>{word}</button>
+          {edit ? <button className="flex bg-app-blue text-white font-bold p-2 rounded" onClick={handleSaveChanges}><Images titleImg={"/save.svg"} titleImgAlt={"Save Changes"} variant={"icon"} size={"backButton"} /></button> : null}
+        </div>
+      )}
       {message ? (
-        <p className="text-center">{message}</p>
+        <div className="py-4">
+          <p className="text-center">{message}</p>
+        </div>
       ) : (
         <ul>
-          {edit ? <button onClick={handleSaveChanges}>Save Changes</button> : null}
           {timesheets.map((timesheet) => (
             <li
               key={timesheet.id}
-              className="flex flex-col justify-center items-center m-auto text-black text-2xl bg-white p-2 rounded border-2 border-black lg:text-2xl lg:p-3"
+              className="flex flex-col justify-center items-center m-auto text-black text-2xl bg-white p-4 rounded lg:text-2xl lg:p-3"
             >
-              <div className=" flex flex-col justify-center items-center">
-              <h2>{new Date(timesheet.submit_date).toLocaleDateString()}</h2>
-              <input
-                className=""
-                id="submit_date"
-                type="date"
-                value={new Date(timesheet.submit_date).toISOString().split('T')[0]}
-                hidden
+              <div className="flex flex-col justify-center items-center">
+                <h2>{new Date(timesheet.submit_date).toLocaleDateString()}</h2>
+                <input
+                  id="submit_date"
+                  type="date"
+                  value={new Date(timesheet.submit_date).toISOString().split('T')[0]}
+                  hidden
                 />
               </div>
               <div>
-              <label htmlFor="duration">
-                Duration {edit ? (
+                <label htmlFor="duration">
+                  {t("Duration")} {edit ? (
                     <span className="text-red-500 italic text-sm flex flex-wrap">
-                      The duration updates when editing changes are saved.
+                      {t("Duration-Comment")}
                     </span>
                   ) : null}
                 </label>
@@ -172,11 +207,10 @@ export default function EditWork({ timesheetData, jobsitesData, costcodesData, e
               </div>
               <div className="flex flex-wrap">
                 <label>
-                  Clock In
+                  {t("ClockIn")}
                   <div className="flex flex-row w-full border border-black">
                     <input
                       id="start_date"
-                      className=""
                       type="date"
                       value={timesheet.start_date || ''}
                       onChange={(e) => handleInputChangeDate(e, timesheet.id, "start_date")}
@@ -184,7 +218,6 @@ export default function EditWork({ timesheetData, jobsitesData, costcodesData, e
                     />
                     <input
                       id="start_time"
-                      className=""
                       type="time"
                       value={timesheet.start_time || ''}
                       onChange={(e) => handleInputChangeDate(e, timesheet.id, "start_time")}
@@ -193,11 +226,10 @@ export default function EditWork({ timesheetData, jobsitesData, costcodesData, e
                   </div>
                 </label>
                 <label>
-                  Clock Out
+                  {t("ClockOut")}
                   <div className="flex flex-row w-full border border-black">
                     <input
                       id="end_date"
-                      className=""
                       type="date"
                       value={timesheet.end_date || ''}
                       onChange={(e) => handleInputChangeDate(e, timesheet.id, "end_date")}
@@ -205,7 +237,6 @@ export default function EditWork({ timesheetData, jobsitesData, costcodesData, e
                     />
                     <input
                       id="end_time"
-                      className=""
                       type="time"
                       value={timesheet.end_time || ''}
                       onChange={(e) => handleInputChangeDate(e, timesheet.id, "end_time")}
@@ -215,7 +246,7 @@ export default function EditWork({ timesheetData, jobsitesData, costcodesData, e
                 </label>
               </div>
               <div>
-                <label htmlFor="total_break_time">Total Break Time</label>
+                <label htmlFor="total_break_time">{t("Breaktime")}</label>
                 <input
                   id="total_break_time"
                   className="w-full text-center border border-black"
@@ -226,27 +257,26 @@ export default function EditWork({ timesheetData, jobsitesData, costcodesData, e
                 />
               </div>
               <div>
-                <label htmlFor="jobsite_id">Job Sites:</label>
+                <label htmlFor="jobsite_id">{t("JobSites")}</label>
                 <select
                   id="jobsite_id"
-                  className=" text-center border border-black"
+                  className="text-center border border-black"
                   value={timesheet.jobsite_id}
-                  onChange={(e) => handleCodeChange(e, timesheet.id)}
+                  onChange={(e) => handleCodeChange(e, timesheet.id, "jobsite_id")}
                   disabled={!edit}
                 >
-                  <option>Select a Jobsite ID</option>
                   {jobsites.map((jobsite) => (
                     <option key={jobsite.id} value={jobsite.jobsite_id}>
                       {jobsite.jobsite_id}
-                  </option>
+                    </option>
                   ))}
                 </select>
-                <label htmlFor="costcode">Cost Codes</label>
+                <label htmlFor="costcode">{t("CostCode")}</label>
                 <select
                   id="costcode"
-                  className=" text-center border border-black"
+                  className="text-center border border-black"
                   value={timesheet.costcode}
-                  onChange={(e) => handleCodeChange(e, timesheet.id)}
+                  onChange={(e) => handleCodeChange(e, timesheet.id, "costcode")}
                   disabled={!edit}
                 >
                   {costcodes.map((costcode) => (
@@ -256,38 +286,12 @@ export default function EditWork({ timesheetData, jobsitesData, costcodesData, e
                   ))}
                 </select>
               </div>
-              <div>
-                <label htmlFor="jobsite_id">Equipment</label>
-                <select
-                  id="jobsite_id"
-                  className=" text-center border border-black"
-                  value={timesheet.jobsite_id}
-                  onChange={(e) => handleCodeChange(e, timesheet.id)}
-                  disabled={!edit}
-                >
-                  <option>Select a Jobsite ID</option>
-                  {jobsites.map((jobsite) => (
-                    <option key={jobsite.id} value={jobsite.jobsite_id}>
-                      {jobsite.jobsite_id}
-                  </option>
-                  ))}
-                </select>
-                <label>
-                 Total Time {/* this is the total time for equipment */}
-                <input
-                      id=""
-                      className=" text-center border border-black"
-                      type="time"
-                      value={timesheet.end_time || ''}
-                      onChange={(e) => handleInputChangeDate(e, timesheet.id, "end_time")}
-                      readOnly={!edit}
-                    />
-                </label>
-              </div>
             </li>
           ))}
         </ul>
       )}
+      <div>
+      </div>
     </div>
   );
 }
