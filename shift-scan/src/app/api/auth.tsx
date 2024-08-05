@@ -1,7 +1,7 @@
 'use client'
-import { clear } from "console"
 import {signIn, signOut} from "next-auth/react"
 
+// Handle Next auth login and logout pages 
 export const LoginButton = () => {
     return<button onClick={() => signIn()}>Login</button>
 }
@@ -9,6 +9,7 @@ export const LoginButton = () => {
 export const LogoutButton = () => {
     return<button onClick={() => signOut()}>Logout</button>
 }
+
 // auth steps to getting to dashboard
 export const getAuthStep = () => {
     if (typeof window !== "undefined") {

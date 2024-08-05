@@ -10,10 +10,13 @@ import { CreateTimeSheet, updateTimeSheetBySwitch } from '@/actions/timeSheetAct
 import { Clock } from '../clock';
 import { setAuthStep } from '@/app/api/auth';
 import UserId from '../userId';
+import { TitleBoxes } from '../(reusable)/titleBoxes';
+import { Sections } from '../(reusable)/sections';
+import { Bases } from '../(reusable)/bases';
 
 
-const VerificationStep: React.FC<{ id: string | null; handleNextStep: () => void, type: string }> = ({ id, type, handleNextStep}) => {
-  const t = useTranslations("clock");
+const VerificationStep: React.FC<{ id: string | undefined; handleNextStep: () => void, type: string }> = ({ id, type, handleNextStep}) => {
+  const t = useTranslations("Clock");
   const { scanResult } = useScanData();
   const { savedCostCode } = useSavedCostCode();
   const { clockInTime, setClockInTime } = useSavedClockInTime();
@@ -87,18 +90,28 @@ const VerificationStep: React.FC<{ id: string | null; handleNextStep: () => void
 } ;
 
   return (
-    <>
-      <h1 className="flex justify-center text-2xl font-bold pt-10 pb-10">{t('title-verify')}</h1>
-      <form onSubmit={handleSubmit} className="h-full bg-white flex flex-col items-center rounded-t-2xl">
-        <div className="bg-pink-100 h-1/2 w-5/6 flex flex-col items-center p-5 rounded-t-2xl text-xl">
-          <h2 className="my-5">Date: {date.toLocaleDateString('en-US', { year: 'numeric', month: 'numeric', day: 'numeric' })}</h2>
-          <h2 className="my-5">{t('lN2')} "{scanResult?.data}"</h2>
-          <h2 className="my-5">{t('lN3')} "{savedCostCode}"</h2>
-        </div>
+    <div className="flex flex-col items-center w-[500px] h-[800px] m-auto">
+      <TitleBoxes title={t('VerifyJobSite')} titleImg="/clockin.svg" titleImgAlt="Verify" variant="row" size="default" type="row" />
+      <form onSubmit={handleSubmit} >
+        <TitleBoxes title={t('Date-label')} titleImg="/clockin.svg" titleImgAlt="Verify" variant="default" size="default" type='titleOnly' >
+          <Sections size={"dynamic"}>
+          {date.toLocaleDateString('en-US', { year: 'numeric', month: 'numeric', day: 'numeric' })}
+          </Sections>
+        </TitleBoxes>
+        <TitleBoxes title={t('JobSite-label')} titleImg="/clockin.svg" titleImgAlt="Verify" variant="default" size="default" type='titleOnly' >
+          <Sections size={"dynamic"}>
+          {scanResult?.data}
+          </Sections>
+        </TitleBoxes>
+        <TitleBoxes title={t('CostCode-label')} titleImg="/clockin.svg" titleImgAlt="Verify" variant="default" size="default" type='titleOnly' >
+          <Sections size={"dynamic"}>
+          {savedCostCode}
+          </Sections>
+        </TitleBoxes>
+        <button type="submit" className="bg-app-green mx-auto w-full h-16 py-4 px-5 rounded-lg text-black font-bold mt-5">
         <Clock time={date.getTime()} />
-        <button type="submit" className="bg-app-blue w-1/2 h-1/6 py-4 px-5 rounded-lg text-black font-bold mt-5">
-          {t('lN5')}
         </button>
+
         <input type="hidden" name="submit_date" value={new Date().toISOString()} />
         <input type="hidden" name="userId" value={savedUserData?.id || ''} />
         <input type="hidden" name="date" value={new Date().toISOString()} />
@@ -106,7 +119,7 @@ const VerificationStep: React.FC<{ id: string | null; handleNextStep: () => void
         <input type="hidden" name="costcode" value={savedCostCode?.toString() || ''} />
         <input type="hidden" name="start_time" value={new Date().toISOString()} />
       </form>
-    </>
+    </div>
   );
 };
 

@@ -1,68 +1,32 @@
-import TextBox from "@/components/(inputs)/textBox";
-import { Bases } from "@/components/(reusable)/bases";
-import { Sections } from "@/components/(reusable)/sections";
-import { Buttons } from "@/components/(reusable)/buttons";
-import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
+"use server";
 import prisma from "@/lib/prisma";
-import { Textarea } from "@nextui-org/input";
-import Refueled from "./refueled";
-import { updateEmployeeEquipmentLog} from "@/actions/equipmentActions";
-import Submission from "./submission";
-import { revalidatePath } from "next/cache";
+import Base from "./base";
 
 export default async function Page({ params }: { params: { id: string } }) {
-const equipmentform = await prisma.employeeEquipmentLog.findUnique({
-where: {
-    id: Number(params.id),
-},
-include: {
-    Equipment: true,
-},
-});
+    const equipmentform = await prisma.employeeEquipmentLog.findUnique({
+        where: {
+            id: Number(params.id),
+        },
+        include: {
+            Equipment: true,
+        },
+    });
 
-const start_time = new Date(equipmentform?.start_time ?? "");
-const end_time = new Date() ;
-const duration = ((end_time.getTime() - start_time.getTime()) / (1000 * 60 * 60)).toFixed(2);
-revalidatePath(`/dashboard/equipment/current/${params.id}`)
 
-return (
-<Bases>
-    <Sections size={"titleBox"}>
-    <TitleBoxes
-        title={`${equipmentform?.Equipment?.name}`}
-        type="noIcon"
-        titleImg="/current.svg"
-        titleImgAlt="Current"
-        variant={"default"}
-        size={"default"}
-    />
-    { equipmentform?.completed ? 
-    (<>
-    <h2>Form Completed</h2>
-    </>)
-    :
-    (<></>) }
-    </Sections>
-    <form action={updateEmployeeEquipmentLog}>
-    <Sections size={"dynamic"}>
-        <Refueled />
-    </Sections>
-    <Sections size={"dynamic"}>
-        <label>
-        Total Time used
-        <input name="duration" value={`${duration} hours`}/>
-        </label>
-        <label>
-        Additional notes
-        <Textarea  name="equipment_notes" />
-        </label>
-    </Sections>
+    // Extract values from equipment form
+    const start_time = new Date(equipmentform?.start_time ?? "");
+    const completed = equipmentform?.completed;
+    const savedDuration = equipmentform?.duration?.toFixed(2);
+    const filled = equipmentform?.refueled;
+    const fuelUsed = equipmentform?.fuel_used?.toString();
+    const eqname = equipmentform?.Equipment?.name?.toString();
+    const eqid = equipmentform?.id?.toString();
+    const equipment_notes = equipmentform?.equipment_notes;
 
-    <input type="hidden" name="end_time" value={(end_time).toString()} />
-    <input type="hidden" name="id" value={ equipmentform?.id} />
-    <input type="hidden" name="completed" value={"true"} />
-    <Submission />
-    </form>
-</Bases>
-);
-}
+    // Log counts for debugging
+        return (
+        <> 
+            <Base name={eqname} eqid={eqid} start_time={start_time} completed={completed} fuelUsed={fuelUsed} savedDuration={savedDuration} filled={filled} equipment_notes={equipment_notes} />
+            </>
+        )
+    }
