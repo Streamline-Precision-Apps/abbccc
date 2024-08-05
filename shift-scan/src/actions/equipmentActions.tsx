@@ -181,6 +181,24 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
         throw new Error(`Failed to update employee equipment log: ${error.message}`);
     }
     }
+export async function updateEmployeeEquipment(formData: FormData) {
+  try {
+      console.log(formData);
+      const id = formData.get("id") as string;
+
+      const log = await prisma.employeeEquipmentLog.update({
+        where: { id: Number(id),},
+        data: {
+            completed: true
+        }
+      });
+
+}
+
+  catch (error:any) {
+      console.error("Error updating employee equipment log:", error);
+}
+}
 
 
     export async function Submit(formData: FormData) {
