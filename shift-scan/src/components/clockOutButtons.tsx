@@ -12,6 +12,7 @@ const ClockOutButtons = () => {
   const handleNavigation = async (bt: string) => {
     try {
       // bt = buttonType
+      console.log(`Navigating to /dashboard/clock-out/log?bt=${bt}`); // Debug line
       await router.push(`/dashboard/clock-out/log?bt=${bt}`);
     } catch (err) {
       console.error("Navigation error:", err);
