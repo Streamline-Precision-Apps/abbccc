@@ -11,9 +11,8 @@ import { SavedBreakTimeProvider } from "./context/SavedBreakTimeContext";
 import { SavedTimeSheetDataProvider } from "./context/TimeSheetIdContext";
 import { SavedInjuryReportDataProvider } from "./context/InjuryReportDataContext";
 import { ScanDataEQProvider } from "./context/equipmentContext";
-import {EquipmentProvider } from "./context/dbEquipmentContext";
-import {CostCodeProvider} from "./context/dbCostcodeContext";
-import {JobSiteProvider} from "./context/dbJobsiteContext";
+import {JobSiteProvider,EquipmentProvider,CostCodeProvider} from "./context/dbCodeContext";
+import {RecentCostCodeProvider,RecentJobSiteProvider,RecentEquipmentProvider} from "./context/dbRecentCodesContext";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -33,7 +32,13 @@ export function Providers({ children }: { children: React.ReactNode }) {
                       <EquipmentProvider>
                       <JobSiteProvider>
                       <CostCodeProvider>
+                        <RecentCostCodeProvider>
+                        <RecentJobSiteProvider>
+                        <RecentEquipmentProvider>
                         {children}
+                        </RecentEquipmentProvider>
+                        </RecentJobSiteProvider>
+                        </RecentCostCodeProvider>
                       </CostCodeProvider>
                       </JobSiteProvider>
                       </EquipmentProvider>
