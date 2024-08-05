@@ -205,6 +205,17 @@
         "SafetyTraining": "Safety Training",
         "SignOut": "Sign Out",
         "SignOutConfirmation": "Are you sure you want to sign out of your account?"
-
+    },
+    "MyTeam": {
+        "Duration": "Duration",
+        "Duration-Comment": "The duration updates when editing changes are saved.",
+        "ClockIn" : "Clock In",
+        "ClockOut" : "Clock Out",
+        "Breaktime" : "Total Break Time",
+        "JobSites" : "Job Site ID",
+        "CostCode" : "Cost Code",
+        "Equipment" : "Equipment",
+        "EQTotalTime" : "Total Time",
+        "NoData": "No Data Found"
     }
 }
