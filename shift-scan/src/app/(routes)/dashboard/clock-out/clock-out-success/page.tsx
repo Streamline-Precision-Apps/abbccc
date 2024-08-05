@@ -42,15 +42,22 @@ const ClockOutSuccessPage: React.FC = () => {
       console.error("Failed to submit the time sheet:", error);
     }
   };
+  const jobsite = localStorage.getItem("jobSite");
+  const costCode = localStorage.getItem("costCode");
+  
+  const ts = localStorage.getItem("savedtimeSheetData");
+  const timesheet = JSON.parse(ts || "{}");
+  const timesheeetId = (timesheet.id).toString();
+  
 
   return (
     <div className="flex flex-col items-center">
       <h1>{t("ClockOut")}</h1>
       <h2>
-        {t("Jobsite")} {scanResult?.data || "No scan data available"}
+        {t("Jobsite")} {scanResult?.data || jobsite}
       </h2>
       <h2>
-        {t("CostCode")} {savedCostCode || "No cost code available"}
+        {t("CostCode")} {savedCostCode || costCode}
       </h2>
       <p>{t("BreakTime")}{breakTime}</p>
       <p>{t("ClockOutTime")}{new Date().toString()}</p>
@@ -64,7 +71,7 @@ const ClockOutSuccessPage: React.FC = () => {
           {t("SubmitButton")}
         </button>
         {/* Hidden inputs */}
-        <input type="hidden" name="id" value={savedTimeSheetData?.id} />
+        <input type="hidden" name="id" value={savedTimeSheetData?.id || timesheeetId} />
         <input type="hidden" name="end_time" value={new Date().toString()} />
         <input
           type="hidden"
