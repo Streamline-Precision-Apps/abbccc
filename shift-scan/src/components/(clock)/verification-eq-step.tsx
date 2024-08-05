@@ -9,17 +9,11 @@ import { useSavedTimeSheetData } from "@/app/context/TimeSheetIdContext";
 import { useSavedUserData } from "@/app/context/UserContext";
 import { CreateEmployeeEquipmentLog } from "@/actions/equipmentActions";
 
-type Equipment = {
-    id: string;
-    qr_id: string;
-    name: string;
-}
 
 type VerifyProcessProps = {
-id: string | null;
+id: string | undefined;
 handleNextStep: () => void;
 type: string;
-equipment: Equipment[];
 }
 
 const VerificationEQStep: React.FC<VerifyProcessProps> = ({
@@ -29,10 +23,16 @@ handleNextStep,
 
 }) => {
 const [filteredEquipmentName, setFilteredEquipmentName] = useState<string | null>(null);
-const t = useTranslations("clock");
+const t = useTranslations("Clock");
 const { scanEQResult } = useEQScanData();
-const { scanResult } = useScanData();
+const { scanResult, setScanResult } = useScanData();
 const { savedUserData } = useSavedUserData();
+
+// if the jobsite is not in the case it will be stored in local storage
+if (!scanResult?.data) {
+const jobSiteId = localStorage.getItem("jobSite");
+setScanResult({ data: jobSiteId || "" });
+}
 
 
 const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -57,14 +57,15 @@ try {
 
 return (
 <>
-    <h1 className="flex justify-center text-2xl font-bold pt-10 pb-10">
-    Title Verify
+
+    <h1 className="flex justify-center text-2xl font-bold">
+        {t("VerifyEquipment")}
     </h1>
     <form
     onSubmit={handleSubmit}
-    className="h-full bg-white flex flex-col items-center rounded-t-2xl"
+    className="h-full w-[500px] bg-white flex flex-col items-center rounded-t-2xl"
     >
-    <label htmlFor="name">Equipment Scanned</label>
+    <label htmlFor="name">{t("Equipment-result")}</label>
     <input
         type="text"
         name="name"
@@ -73,7 +74,7 @@ return (
         readOnly
     />
     <label htmlFor="equipment_notes" className="">
-        Notes
+    {t("Equipment-notes-title")}
     </label>
     <textarea
         name="equipment_notes"
@@ -84,7 +85,7 @@ return (
         type="submit"
         className="bg-app-blue w-full h-1/6 py-4 rounded-lg text-black font-bold mt-5"
     >
-        Next
+        {t("Next-btn")}
     </button>
     
     <input type="hidden" name="equipment_id" value={scanEQResult?.data || ""} />

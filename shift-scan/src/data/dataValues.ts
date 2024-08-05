@@ -572,6 +572,5 @@ export const intialEmployeeEquipment: Prisma.EmployeeEquipmentLogCreateInput[] =
         Equipment: { connect: { qr_id: "EQ-789012" } },
         end_time: null,
         duration: null,
-        equipment_notes: null,
       }
     ];

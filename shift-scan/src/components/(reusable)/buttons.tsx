@@ -1,4 +1,5 @@
 'use client';
+import "@/app/globals.css";
 import { useRouter } from "next/navigation";
 import { cva, type VariantProps } from "class-variance-authority";
 import { ButtonHTMLAttributes, FC } from "react";
@@ -10,6 +11,7 @@ const ButtonVariants = cva(
     variants: {
       variant: {
         default: "bg-blue-300 rounded-xl",
+        darkBlue: "bg-blue-600 rounded-xl",
         green: "bg-green-300 rounded-xl",
         red: "bg-red-300 rounded-xl",
         orange: "bg-orange-300 rounded-xl",
@@ -23,6 +25,7 @@ const ButtonVariants = cva(
         widgetMed: "p-10 w-40 h-40",
         widgetLg: "p-20 w-50 h-50",
         backButton: "absolute top-5 left-5",
+        thin: " h-10 w-[520px] rounded-t-full z-10",
       }
     },
     defaultVariants: {
