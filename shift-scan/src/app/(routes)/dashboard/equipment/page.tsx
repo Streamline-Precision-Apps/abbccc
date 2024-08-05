@@ -7,11 +7,13 @@ import { Texts } from "@/components/(reusable)/texts";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import prisma from "@/lib/prisma";
+import { useTranslations } from "next-intl";
 import { cookies } from "next/headers";
 
 export default async function Equipment() {
     const userCookie = cookies().get("user");
     const userid = userCookie ? userCookie.value : undefined;
+    const t = useTranslations("Equipment");
     const User = await prisma.user.findUnique({
         where: {
             id: userid,
