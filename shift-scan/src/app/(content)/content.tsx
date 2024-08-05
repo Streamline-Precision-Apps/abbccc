@@ -20,9 +20,8 @@ import { Sections } from "@/components/(reusable)/sections";
 import { Bases } from "@/components/(reusable)/bases";
 import { Header } from "@/components/header";
 import { Headers } from "@/components/(reusable)/headers"
-import { useDBJobsite } from "@/app/context/dbJobsiteContext";
-import { useDBEquipment } from "@/app/context/dbEquipmentContext";
-import { useDBCostcode } from "@/app/context/dbCostcodeContext";
+import { useDBJobsite, useDBCostcode, useDBEquipment } from "@/app/context/dbCodeContext";
+
 type jobCodes = {
   id: number;
   jobsite_id: string;
@@ -44,13 +43,19 @@ interface clockProcessProps{
   jobCodes: jobCodes[];
   CostCodes: CostCode[];
   equipment: equipment[];
+  recentJobSites: jobCodes[];
+  recentCostCodes: CostCode[];
+  recentEquipment: equipment[];
 };
 
 export default function Content({
   equipment,
   jobCodes,
-  CostCodes
-  } : clockProcessProps) {
+  CostCodes,
+  recentJobSites,
+  recentCostCodes,
+  recentEquipment
+} : clockProcessProps) {
   const t = useTranslations("Home");
   const f = useTranslations("Footer");
   const { data: session } = useSession() as { data: CustomSession | null };

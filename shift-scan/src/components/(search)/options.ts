@@ -1,7 +1,7 @@
 "use client";
-import { useDBEquipment } from "@/app/context/dbEquipmentContext";
-import { useDBJobsite } from "@/app/context/dbJobsiteContext";
-import { useDBCostcode } from "@/app/context/dbCostcodeContext";
+import { useDBJobsite, useDBCostcode, useDBEquipment } from "@/app/context/dbCodeContext";
+import { useRecentDBJobsite, useRecentDBCostcode, useRecentDBEquipment } from "@/app/context/dbRecentCodesContext";
+
 
 type JobCode = {
 id: number;
@@ -27,9 +27,12 @@ label: string;
 }
 
 export const CostCodeOptions = (dataType: string, searchTerm: string): Option[] => {
-const { jobsiteResults, recentlyUsedJobCodes } = useDBJobsite();
-const { costcodeResults, recentlyUsedCostCodes } = useDBCostcode();
-const { equipmentResults, recentlyUsedEquipment } = useDBEquipment();
+const { jobsiteResults } = useDBJobsite();
+const { recentlyUsedJobCodes } = useRecentDBJobsite();
+const { costcodeResults } = useDBCostcode();
+const { recentlyUsedCostCodes } = useRecentDBCostcode();
+const { equipmentResults } = useDBEquipment();
+const { recentlyUsedEquipment } = useRecentDBEquipment();
 
 let options: Option[] = [];
 
@@ -43,11 +46,11 @@ case 'costcode':
     ? recentlyUsedCostCodes.map((costcode: CostCode) => ({
         code: costcode.cost_code,
         label: costcode.cost_code_description
-        }))
+    }))
     : costcodeResults.map((costcode: CostCode) => ({
         code: costcode.cost_code,
         label: costcode.cost_code_description
-        }));
+    }));
     break;
 
 case 'jobsite':
@@ -58,11 +61,11 @@ case 'jobsite':
     ? recentlyUsedJobCodes.map((jobcode: JobCode) => ({
         code: jobcode.jobsite_id,
         label: jobcode.jobsite_name
-        }))
+    }))
     : jobsiteResults.map((jobcode: JobCode) => ({
         code: jobcode.jobsite_id,
         label: jobcode.jobsite_name
-        }));
+    }));
     break;
 
 case 'equipment':
@@ -73,11 +76,11 @@ case 'equipment':
     ? recentlyUsedEquipment.map((equipment: Equipment) => ({
         code: equipment.qr_id,
         label: equipment.name
-        }))
+    }))
     : equipmentResults.map((equipment: Equipment) => ({
         code: equipment.qr_id,
         label: equipment.name
-        }));
+    }));
     break;
 
 default:

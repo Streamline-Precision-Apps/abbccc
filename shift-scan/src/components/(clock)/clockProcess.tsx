@@ -13,12 +13,14 @@ interface clockProcessProps{
     scannerType: string;
     id: string | undefined;
     type: string;
+    isModalOpen: boolean;
 };
 
 const ClockProcessor: React.FC<clockProcessProps> = ({
 id,
 type,
 scannerType,
+isModalOpen,
 }) => {
 const t = useTranslations("Clock");
 const [step, setStep] = useState(1);
@@ -31,7 +33,7 @@ const [scanner, setScanner] = useState("");
 
 useEffect(() => {
     setStep(1);
-}, [path]);
+}, [isModalOpen]);
 
 useEffect(() => {
 if (scannerType === "EQ") {
@@ -58,6 +60,13 @@ if (scanner) {
 }
 }, [scanner]);
 
+useEffect(() => {
+if (!isModalOpen) {
+    window.location.reload();
+}
+}, [isModalOpen]);
+
+
 
 const handleAlternativePath = () => {
 setUseQrCode(false);
@@ -73,7 +82,7 @@ return (
             type="equipment"
             handleAlternativePath={handleAlternativePath}
             handleNextStep={handleNextStep}
-            url="/dashboard/equipment"
+            url="/dashboard"
         />
         )}
         {step === 2 && (
@@ -137,7 +146,7 @@ return (
         />
     )}
     {step === 5 && path === "jobsite" && (
-        <div className="flex flex-col items-center w-full w-[500px] h-[600px]">
+        <div className="flex flex-col items-center w-full h-full">
         <h1 className="flex justify-center text-2xl font-bold ">
         {t("Confirmation-job-message-1")}
         </h1>
@@ -162,7 +171,7 @@ return (
                 second: "numeric",
             })}
             </h2>
-        <RedirectAfterDelay delay={4000} to="/dashboard" />
+        <RedirectAfterDelay delay={2000} to="/dashboard" /> {/* In Order for bug to be overcomed, the refresh must occur otherwise the unmounted qr code wont work*/}
         </div>
     )}
     </>

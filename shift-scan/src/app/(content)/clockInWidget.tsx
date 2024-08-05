@@ -38,6 +38,7 @@ export default function ClockInWidget({ user }: Props) {
                     type={"jobsite"}
                     id={user.id}
                     scannerType={"jobsite"}
+                    isModalOpen={isModalOpen}
                     />
                 </div>
             </Modals>
