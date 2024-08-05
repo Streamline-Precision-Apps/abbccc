@@ -102,21 +102,6 @@ if (getAuthStep() !== "success") {
 }
 }, []);
 
-useEffect(() => {
-const handlePopstate = () => {
-    if (isDashboardAuthenticated()) {
-    window.location.href = "/dashboard";
-    }
-};
-// Attach beforeunload event listener
-window.addEventListener("beforeunload", handleBeforeUnload);
-// Attach popstate event listener (for handling back navigation)
-window.addEventListener("popstate", handlePopstate);
-return () => {
-    window.removeEventListener("beforeunload", handleBeforeUnload);
-    window.removeEventListener("popstate", handlePopstate);
-};
-}, []);
 
 useEffect(() => {
 if (session && session.user) {
@@ -149,8 +134,4 @@ return session ? (
 ) : (
 <></>
 );
-}
-
-function handleBeforeUnload(this: Window, ev: BeforeUnloadEvent) {
-throw new Error("Function not implemented.");
 }
