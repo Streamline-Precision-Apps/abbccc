@@ -7,8 +7,14 @@ import { CustomSession } from "@/lib/types";
 import { User } from "@/app/(routes)/dashboard/user";
 import { Manager } from "@/app/(routes)/dashboard/manager";
 import { useState } from "react";
+import { Equipment, Logs } from "@/lib/types";
 
-export default function DashboardButtons() {
+
+interface DashboardButtonsProps {
+  logs: Logs[]; // Use the consistent Logs type
+}
+
+export default function DashboardButtons({ logs }: DashboardButtonsProps) {
   const t = useTranslations("EmployeeCards");
   const router = useRouter();
   const { data: session } = useSession() as { data: CustomSession | null };
@@ -36,6 +42,7 @@ export default function DashboardButtons() {
           additionalButtonsType={additionalButtonsType}
           handleShowManagerButtons={handleShowManagerButtons}
           handleShowAdditionalButtons={handleShowAdditionalButtons}
+          logs={logs} // Pass logs to User component
         />
       </div>
     );
@@ -46,6 +53,7 @@ export default function DashboardButtons() {
           additionalButtonsType={additionalButtonsType}
           handleShowManagerButtons={handleShowManagerButtons}
           handleShowAdditionalButtons={handleShowAdditionalButtons}
+          logs={logs} // Pass logs to User component
         />
       </div>
     );
