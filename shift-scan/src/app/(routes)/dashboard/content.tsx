@@ -149,21 +149,7 @@ export default function Content({
     }
   }, []);
 
-  useEffect(() => {
-    const handlePopstate = () => {
-      if (isDashboardAuthenticated()) {
-        window.location.href = "/dashboard";
-      }
-    };
-    // Attach beforeunload event listener
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    // Attach popstate event listener (for handling back navigation)
-    window.addEventListener("popstate", handlePopstate);
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-      window.removeEventListener("popstate", handlePopstate);
-    };
-  }, []);
+
 
   useEffect(() => {
     if (session && session.user) {
@@ -180,30 +166,21 @@ export default function Content({
     }
   }, [session]);
 
-  return session ? (
-    <Bases variant={"default"} size={"default"}>
-      <Sections size={"default"}>
-        <Headers variant={"relative"} size={"default"}></Headers>
-        <Banners variant={"default"} size={"default"}>
-          <Titles variant={"default"} size={"h1"}>
-            {t("Banner")}
-          </Titles>
-          <Texts variant={"default"} size={"p1"}>
-            {date}
-          </Texts>
-        </Banners>
-        <Texts variant={"name"} size={"p1"}>
-          {t("Name", { firstName: user.firstName, lastName: user.lastName })}
-        </Texts>
+return session ? (
+<Bases variant={"default"} size={"default"}>
+    <Sections size={"default"}>
+    <Headers variant={"relative"} size={"default"}></Headers>
+    <Banners variant={"default"} size={"default"}>
+        <Titles variant={"default"} size={"h1"}>{t("Banner")}</Titles>
+        <Texts variant={"default"} size={"p1"}>{date}</Texts>
+    </Banners>
+    <Texts variant={"name"} size={"p1"}>{t("Name", { firstName: user.firstName, lastName: user.lastName })}</Texts>
         <DashboardButtons logs={logs} />
-        <Footers>{t("lN1")}</Footers>
-      </Sections>
-    </Bases>
-  ) : (
-    <></>
-  );
+    <Footers >{t("lN1")}</Footers>
+    </Sections>
+</Bases>
+) : (
+<></>
+);
 }
 
-function handleBeforeUnload(this: Window, ev: BeforeUnloadEvent) {
-  throw new Error("Function not implemented.");
-}
