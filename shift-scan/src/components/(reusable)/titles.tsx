@@ -10,6 +10,7 @@ const TitleVariants = cva(
         default: "text-black",
         white: "text-white",
         disabled: "text-gray-600",
+        green : "text-app-green",
       },
       size: {
         default: " text-2xl",

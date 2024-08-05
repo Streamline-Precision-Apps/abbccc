@@ -22,11 +22,11 @@ export default async function employeeInfo({ params }: Params) {
   });
 
   return (
-    <div className=" h-auto w-full lg:w-1/2 m-auto border-t-2 border-l-2 border-r-2 p-5 border-black rounded-t-2xl">
+    <div className=" h-auto w-full lg:w-1/2 m-auto">
       {/* <div className=" h-full w-11/12 flex flex-col items-center mx-auto rounded-2xl"> */}
         <Sections size={"titleBox"}>
           <TitleBoxes
-            title="My Team"
+            title={`${employee?.firstName} ${employee?.lastName}`}
             titleImg="/profile.svg"
             titleImgAlt="Team"
             variant={"default"}
