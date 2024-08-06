@@ -6,7 +6,7 @@ import Hours from "@/app/(content)/hours";
 import WidgetSection from "@/components/widgetSection";
 import { useSession } from "next-auth/react";
 import { CustomSession, User } from "@/lib/types";
-import { useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import { useSavedPayPeriodHours } from "../context/SavedPayPeriodHours";
 import { useSavedUserData } from "../context/UserContext";
 import { getAuthStep } from "../api/auth";
@@ -19,34 +19,44 @@ import { Footers } from "@/components/(reusable)/footers";
 import { Sections } from "@/components/(reusable)/sections";
 import { Bases } from "@/components/(reusable)/bases";
 import { Header } from "@/components/header";
-import { Headers } from "@/components/(reusable)/headers"
-import { useDBJobsite, useDBCostcode, useDBEquipment } from "@/app/context/dbCodeContext";
+import { Headers } from "@/components/(reusable)/headers";
+import {
+  useDBJobsite,
+  useDBCostcode,
+  useDBEquipment,
+} from "@/app/context/dbCodeContext";
+import { useMemo } from "react";
 
 type jobCodes = {
   id: number;
   jobsite_id: string;
   jobsite_name: string;
-}
+};
 type CostCode = {
   id: number;
   cost_code: string;
   cost_code_description: string;
-}
+};
 
 type equipment = {
   id: string;
   qr_id: string;
   name: string;
-}
+};
 
-interface clockProcessProps{
+type timeSheets = {
+  duration: number | null;
+};
+
+interface clockProcessProps {
   jobCodes: jobCodes[];
   CostCodes: CostCode[];
   equipment: equipment[];
   recentJobSites: jobCodes[];
   recentCostCodes: CostCode[];
   recentEquipment: equipment[];
-};
+  timeSheets: timeSheets[];
+}
 
 export default function Content({
   equipment,
@@ -54,7 +64,8 @@ export default function Content({
   CostCodes,
   recentJobSites,
   recentCostCodes,
-  recentEquipment
+  recentEquipment,
+  timeSheets,
 } : clockProcessProps) {
   const t = useTranslations("Home");
   const f = useTranslations("Footer");
@@ -66,58 +77,55 @@ export default function Content({
   const date = new Date().toLocaleDateString( 'en-US', { year: 'numeric', month: 'short', day: 'numeric', weekday: 'long' });
   const [user, setData] = useState<User>({ id: "", name: "", firstName: "", lastName: "", permission: "", });
   const { jobsiteResults, setJobsiteResults } = useDBJobsite();
-const { costcodeResults, setCostcodeResults } = useDBCostcode();
-const { equipmentResults, setEquipmentResults } = useDBEquipment();
+  const { costcodeResults, setCostcodeResults } = useDBCostcode();
+  const { equipmentResults, setEquipmentResults } = useDBEquipment();
 
+  // Move useMemo outside of setHoursContext function
+  const totalhours = useMemo(() => {
+    // Use a type guard to ensure non-null values
+    return timeSheets
+      .filter((sheet): sheet is { duration: number } => sheet.duration !== null) // This narrows down the type
+      .reduce((total, sheet) => total + sheet.duration, 0);
+  }, [timeSheets]);
 
+  useEffect(() => {
+    if (authStep ==="success") {
+      router.push("/dashboard");
+    }
+  }, []);
 
-useEffect(() => {
-  if (authStep ==="success") {
-    router.push("/dashboard");
-  }
-}, []);
+  useEffect(() => {
+    if (session && session.user) {
+      setSavedUserData({
+        id: session.user.id,
+      });
+      setData({
+        id: session.user.id,
+        name: session.user.name,
+        firstName: session.user.firstName,
+        lastName: session.user.lastName,
+        permission: session.user.permission,
+      });
+      setHoursContext();
+    }
+  }, [session]);
 
-
-useEffect(() => {
-  if (session && session.user) {
-    setSavedUserData({
-      id: session.user.id,
-    });
-    setData({
-      id: session.user.id,
-      name: session.user.name,
-      firstName: session.user.firstName,
-      lastName: session.user.lastName,
-      permission: session.user.permission,
-    });
-    setHoursContext();
-  }
-}, [session]);
-
-const handler = () => {
-  setToggle(!toggle);
-  console.log(toggle);
-};
-
-useEffect(() => {
-  setJobsiteResults(jobCodes);
-  setCostcodeResults(CostCodes);
-  setEquipmentResults(equipment);
-}, []);
-
-/*  ToDo: beable to get the set hours from user according to his hours work that day
-  for a hint look at the my team section under recieveing time card and how to do that prisma call
-  then look at adding the duration all together. Total hours will show the full two week pay period
-  and the hours will be to 2 decimal places. you may want to place in another file however it must be client
-  side to function since this is client side 
-
-  response:
-*/
-  const setHoursContext = () => {
-    const totalhours = 20.45;
-    setPayPeriodHours(String(totalhours));
+  const handler = () => {
+    setToggle(!toggle);
+    console.log(toggle);
   };
-  
+
+  useEffect(() => {
+    setJobsiteResults(jobCodes);
+    setCostcodeResults(CostCodes);
+    setEquipmentResults(equipment);
+  }, []);
+
+  // Define setHoursContext function
+  const setHoursContext = () => {
+    // Set the pay period hours as a string
+    setPayPeriodHours(totalhours.toFixed(2)); // Ensure it's to 2 decimal places
+  };
 
   const authStep = getAuthStep();
 
