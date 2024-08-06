@@ -26,7 +26,7 @@ const t = useTranslations("Clock");
 const [step, setStep] = useState(1);
 const [useQrCode, setUseQrCode] = useState(true);
 const { savedCostCode } = useSavedCostCode();
-const { scanResult } = useScanData();
+const { scanResult, setScanResult } = useScanData();
 const { scanEQResult } = useEQScanData();
 const [path, setPath] = useState("");
 const [scanner, setScanner] = useState("");
@@ -71,6 +71,24 @@ if (!isModalOpen) {
 const handleAlternativePath = () => {
 setUseQrCode(false);
 handleNextStep();
+};
+
+const handleChangeJobsite = () => {
+    try{
+    setUseQrCode(false);
+    const jobsite = localStorage.getItem("jobSite");
+    if (jobsite !== null) {
+        setScanResult({ data: jobsite });
+        if (type === "equipment"){
+            throw new Error("Error");
+        }
+        else{
+            setStep(3);
+        }
+}
+} catch (error) {
+    console.log(error);
+}
 };
 
 
@@ -122,6 +140,7 @@ return (
         type="jobsite"
         handleAlternativePath={handleAlternativePath}
         handleNextStep={handleNextStep}
+        handleChangeJobsite={handleChangeJobsite}
         url={(type === "switchJobs") ? "/dashboard/switch-jobs" : "/"}
         />
     )}

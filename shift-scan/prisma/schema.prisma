@@ -79,13 +79,15 @@ model User {
 }
 
 model UserSettings {
-  id         String @id @default(cuid())
-  userId     String @unique @map("user_id")
-  language   String
-  timezone   String
-  dateFormat String
-  timeFormat String
-  // other fields to be added for settings
+  id               String  @id @default(cuid())
+  userId           String  @unique @map("user_id")
+  language         String
+  approvedRequests Boolean @default(false)
+  timeoffRequests  Boolean @default(false)
+  GeneralReminders Boolean @default(false)
+  Biometric        Boolean @default(false)
+  cameraAccess     Boolean @default(false)
+  LocationAccess   Boolean @default(false)
 
   user User @relation(fields: [userId], references: [id])
 }

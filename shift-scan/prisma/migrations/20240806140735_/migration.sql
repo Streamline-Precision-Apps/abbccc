@@ -46,9 +46,12 @@ CREATE TABLE "UserSettings" (
     "id" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
     "language" TEXT NOT NULL,
-    "timezone" TEXT NOT NULL,
-    "dateFormat" TEXT NOT NULL,
-    "timeFormat" TEXT NOT NULL,
+    "approvedRequests" BOOLEAN NOT NULL DEFAULT false,
+    "timeoffRequests" BOOLEAN NOT NULL DEFAULT false,
+    "GeneralReminders" BOOLEAN NOT NULL DEFAULT false,
+    "Biometric" BOOLEAN NOT NULL DEFAULT false,
+    "cameraAccess" BOOLEAN NOT NULL DEFAULT false,
+    "LocationAccess" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "UserSettings_pkey" PRIMARY KEY ("id")
 );
