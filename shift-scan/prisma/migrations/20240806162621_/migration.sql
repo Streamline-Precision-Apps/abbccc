@@ -166,6 +166,7 @@ CREATE TABLE "timesheets" (
 -- CreateTable
 CREATE TABLE "EmployeeEquipmentLog" (
     "id" SERIAL NOT NULL,
+    "date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "equipment_id" TEXT NOT NULL,
     "jobsite_id" TEXT NOT NULL,
     "employee_id" TEXT NOT NULL,
