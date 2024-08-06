@@ -14,11 +14,12 @@ export default async function crewMember({ params }: { params: Params }) {
             Equipment: true
         }
     });
+    const equipment = await prisma.equipment.findMany({});
 
     return (
         <Bases>
             <EmployeeInfo params={params} />
-            <EmployeeTimeSheets employeeId={params.id} jobsiteData={jobsiteData} costcodeData={costcodeData} equipmentData={equipmentData} />
+            <EmployeeTimeSheets employeeId={params.id} jobsiteData={jobsiteData} costcodeData={costcodeData} equipmentData={equipmentData} equipment={equipment} />
         </Bases>
     );
 }

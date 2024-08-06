@@ -11,9 +11,10 @@ employeeId: string;
 costcodeData: any[];
 jobsiteData: any[];
 equipmentData: any[];
+equipment: any[];
 };
 
-export const EmployeeTimeSheets = ({ employeeId, costcodeData, equipmentData, jobsiteData }: Props) => {
+export const EmployeeTimeSheets = ({ employeeId, costcodeData, equipmentData, equipment, jobsiteData }: Props) => {
 const [timesheets, setTimesheets] = useState<any[]>([]);
 const [filteredEquipmentData, setFilteredEquipmentData] = useState<any[]>([]);
 const [message, setMessage] = useState("");
@@ -73,6 +74,7 @@ return (
         setEdit={setEdit}
         employeeId={employeeId}
         date={date}
+        equipment={equipment}
         />
     </Sections>
     </Sections>
