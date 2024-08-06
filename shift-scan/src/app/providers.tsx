@@ -11,9 +11,8 @@ import { SavedBreakTimeProvider } from "./context/SavedBreakTimeContext";
 import { SavedTimeSheetDataProvider } from "./context/TimeSheetIdContext";
 import { SavedInjuryReportDataProvider } from "./context/InjuryReportDataContext";
 import { ScanDataEQProvider } from "./context/equipmentContext";
-import { DbEquipmentProvider } from "./context/dbEquipmentContext";
-import { DbcostcodeProvider } from "./context/dbCostcodeContext";
-import {DbjobsiteProvider} from "./context/dbJobsiteContext";
+import {JobSiteProvider,EquipmentProvider,CostCodeProvider} from "./context/dbCodeContext";
+import {RecentCostCodeProvider,RecentJobSiteProvider,RecentEquipmentProvider} from "./context/dbRecentCodesContext";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -30,13 +29,19 @@ export function Providers({ children }: { children: React.ReactNode }) {
                     <SavedInjuryReportDataProvider>
                       <SessionProvider>
 {/* The provider Entitled DB provide the DB data for each entry */}
-                      <DbEquipmentProvider>
-                      <DbjobsiteProvider>
-                      <DbcostcodeProvider>
+                      <EquipmentProvider>
+                      <JobSiteProvider>
+                      <CostCodeProvider>
+                        <RecentCostCodeProvider>
+                        <RecentJobSiteProvider>
+                        <RecentEquipmentProvider>
                         {children}
-                      </DbcostcodeProvider>
-                      </DbjobsiteProvider>
-                      </DbEquipmentProvider>
+                        </RecentEquipmentProvider>
+                        </RecentJobSiteProvider>
+                        </RecentCostCodeProvider>
+                      </CostCodeProvider>
+                      </JobSiteProvider>
+                      </EquipmentProvider>
                         </SessionProvider>
                     </SavedInjuryReportDataProvider>
                   </SavedTimeSheetDataProvider>

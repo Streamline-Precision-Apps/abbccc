@@ -6,12 +6,28 @@ import { useSession } from "next-auth/react";
 import { CustomSession } from "@/lib/types";
 import { User } from "@/app/(routes)/dashboard/user";
 import { Manager } from "@/app/(routes)/dashboard/manager";
+import { useState } from "react";
+import { Equipment, Logs } from "@/lib/types";
 
-export default function DashboardButtons() {
+
+interface DashboardButtonsProps {
+  logs: Logs[]; // Use the consistent Logs type
+}
+
+export default function DashboardButtons({ logs }: DashboardButtonsProps) {
   const t = useTranslations("EmployeeCards");
   const router = useRouter();
   const { data: session } = useSession() as { data: CustomSession | null };
   const user = session?.user;
+  const [additionalButtonsType, setAdditionalButtonsType] = useState<string | null>(null);
+
+  const handleShowManagerButtons = () => {
+    setAdditionalButtonsType(null);
+  };
+
+  const handleShowAdditionalButtons = (type: string) => {
+    setAdditionalButtonsType(type);
+  };
 
   if (
     user?.permission === "ADMIN" ||
@@ -20,15 +36,25 @@ export default function DashboardButtons() {
     user?.permission === "PROJECTMANAGER"
   ) {
     return (
-      <div className="grid grid-cols-2 grid-rows-3 gap-4 w-full m-4 p-4">
-        <Manager />
-        <User />
+      <div className="grid grid-cols-2 grid-rows-2 gap-4 w-full m-4 p-4">
+        <Manager show={!additionalButtonsType} />
+        <User
+          additionalButtonsType={additionalButtonsType}
+          handleShowManagerButtons={handleShowManagerButtons}
+          handleShowAdditionalButtons={handleShowAdditionalButtons}
+          logs={logs} // Pass logs to User component
+        />
       </div>
     );
   } else {
     return (
       <div className="grid grid-cols-2 grid-rows-2 gap-4 w-full m-4 p-4">
-        <User />
+        <User
+          additionalButtonsType={additionalButtonsType}
+          handleShowManagerButtons={handleShowManagerButtons}
+          handleShowAdditionalButtons={handleShowAdditionalButtons}
+          logs={logs} // Pass logs to User component
+        />
       </div>
     );
   }

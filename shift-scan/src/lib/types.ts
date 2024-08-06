@@ -15,3 +15,22 @@ export type CustomSession = {
     user?: User | null;
 };
 
+// src/lib/types.ts
+export type Equipment = {
+    id: string;
+    qr_id: string;
+    name: string;
+};
+
+export type EquipmentDetails = {
+    id: string;
+    qr_id: string;
+    name: string;
+};
+
+export type Logs = {
+    id: string;
+    employee_id: string;
+    equipment: EquipmentDetails | null;
+    submitted: boolean;
+};

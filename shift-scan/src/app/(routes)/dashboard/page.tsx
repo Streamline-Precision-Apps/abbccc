@@ -1,98 +1,120 @@
-"use client";
-import { useTranslations } from "next-intl";
-import "@/app/globals.css";
-import DashboardButtons from "@/components/dashboard-buttons";
-import {
-  clearAuthStep,
-  getAuthStep,
-  isDashboardAuthenticated,
-} from "@/app/api/auth";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import prisma from "@/lib/prisma";
+import { cookies } from "next/headers";
+import Content from "./content";
 
-import { Bases } from "@/components/(reusable)/bases";
-import { Sections } from "@/components/(reusable)/sections";
-import { Buttons } from "@/components/(reusable)/buttons";
-import { Titles } from "@/components/(reusable)/titles";
-import { Images } from "@/components/(reusable)/images";
-import { Modals } from "@/components/(reusable)/modals";
-import { Headers } from "@/components/(reusable)/headers";
-import { Banners } from "@/components/(reusable)/banners";
-import { Texts } from "@/components/(reusable)/texts";
-import { Footers } from "@/components/(reusable)/footers";
+export default async function Dashboard() {
+  const user = cookies().get("user");
+  const userId = user?.value;
 
-export default function Index() {
-  
-  const [isOpen, setIsOpen] = useState(false);
-  const t = useTranslations("dashboard");
-  const router = useRouter();
-
-  const [user, setUser] = useState<any>({
-    firstName: "",
-    lastName: "",
-    date: "",
+  // Fetch all records
+  const jobCodes = await prisma.jobsite.findMany({
+    select: {
+      id: true,
+      jobsite_id: true,
+      jobsite_name: true,
+    },
   });
 
-  useEffect(() => {
-    if (!isDashboardAuthenticated()) {
-      console.log("Not authenticated");
-      console.log(getAuthStep());
-      // router.push('/'); // Redirect to login page if not authenticated
-    }
-    if (getAuthStep() !== "success") {
-      router.push("/"); // Redirect to QR page if steps are not followed
-    }
-  }, []);
+  const costCodes = await prisma.costCode.findMany({
+    select: {
+      id: true,
+      cost_code: true,
+      cost_code_description: true,
+    },
+  });
 
-  useEffect(() => {
-    const handlePopstate = () => {
-      if (isDashboardAuthenticated()) {
-        window.location.href = "/dashboard";
-      }
-    };
-    // Attach beforeunload event listener
-    window.addEventListener("beforeunload", handleBeforeUnload);
+  const equipment = await prisma.equipment.findMany({
+    select: {
+      id: true,
+      qr_id: true,
+      name: true,
+    },
+  });
 
-    // Attach popstate event listener (for handling back navigation)
-    window.addEventListener("popstate", handlePopstate);
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-      window.removeEventListener("popstate", handlePopstate);
-    };
-  }, []);
+  // Fetch recent records
+  const recentJobSites = await prisma.jobsite.findMany({
+    select: {
+      id: true,
+      jobsite_id: true,
+      jobsite_name: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: 5,
+  });
 
-  useEffect(() => {
-    // simulating an api call here
-    const fetchData = async () => {
-      const userData = {
-        firstName: "Devun",
-        lastName: "Durst",
-        date: "05-03-2024",
-        role: "Manager",
-      };
-      setUser(userData);
-    };
-    fetchData();
-  }, []);
+  const recentCostCodes = await prisma.costCode.findMany({
+    select: {
+      id: true,
+      cost_code: true,
+      cost_code_description: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: 5,
+  });
 
-  return isDashboardAuthenticated() ? (
-    <Bases variant={"default"} size={"default"}>
-      <Sections size={"default"}>
-        <Headers variant={"relative"} size={"default"}></Headers>
-        <Banners variant={"default"} size={"default"}>
-          <Titles variant={"default"} size={"h1"}>{t("Banner")}</Titles>
-          <Texts variant={"default"} size={"p1"}>{t("Date", { date: user.date })}</Texts>
-        </Banners>
-        <Texts variant={"name"} size={"p1"}>{t("Name", { firstName: user.firstName, lastName: user.lastName })}</Texts>
-        <DashboardButtons/>
-        <Footers >{t("lN1")}</Footers>
-      </Sections>
-    </Bases>
-  ) : (
-    <></>
+  const recentEquipment = await prisma.equipment.findMany({
+    select: {
+      id: true,
+      qr_id: true,
+      name: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: 5,
+  });
+
+  const userCookie = cookies().get("user");
+  const userid = userCookie ? userCookie.value : undefined;
+
+  const currentDate = new Date();
+  const past24Hours = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
+
+  let logs;
+
+  logs = await prisma.employeeEquipmentLog.findMany({
+    where: {
+      employee_id: userid,
+      createdAt: { lte: currentDate, gte: past24Hours },
+      submitted: false,
+    },
+    include: {
+      Equipment: {
+        select: {
+          id: true,
+          qr_id: true,
+          name: true,
+        },
+      },
+    },
+  });
+
+  logs = logs.map((log) => ({
+    id: log.id.toString(),
+    employee_id: log.employee_id,
+    equipment: log.Equipment?.id
+      ? {
+          id: log.Equipment.id,
+          qr_id: log.Equipment.qr_id,
+          name: log.Equipment.name,
+        }
+      : null,
+    submitted: log.submitted,
+  }));
+
+  return (
+    <Content
+      jobCodes={jobCodes}
+      costCodes={costCodes}
+      equipment={equipment}
+      recentJobSites={recentJobSites}
+      recentCostCodes={recentCostCodes}
+      recentEquipment={recentEquipment}
+      logs={logs} // Pass logs to Content
+    />
   );
-}
-
-function handleBeforeUnload(this: Window, ev: BeforeUnloadEvent) {
-  throw new Error("Function not implemented.");
 }

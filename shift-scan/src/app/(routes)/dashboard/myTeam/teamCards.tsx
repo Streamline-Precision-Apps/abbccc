@@ -4,7 +4,8 @@ import Image from "next/image";
 import TeamInfoButton from "./button";
 import { cookies } from "next/headers";
 
-
+/* Todo: Make the  team card section use zacks code and get ride of the button 
+- provide routing for the buttons to go to the correct page */
 export default async function TeamCards() {
     const user = cookies().get("user");
     const id = user?.value;
@@ -41,7 +42,7 @@ export default async function TeamCards() {
             {crew.map((userCrewId) => (
             <TeamInfoButton id={Number(userCrewId.user.id)} key={userCrewId.user.id} >
             <div key={userCrewId.id} className="w-full flex flex-row ">
-                <Image src={"/profile-icon.png"} alt="Team Image" width={80} height={80} className="rounded-full" />
+                <Image src={"/profile.svg"} alt="Team Image" width={80} height={80} className="rounded-full" />
                 <div className="w-full flex flex-row space-x-5 justify-center items-center">
                 <h2 className="text-3xl">{userCrewId.user.firstName} {userCrewId.user.lastName}</h2>
                 </div>

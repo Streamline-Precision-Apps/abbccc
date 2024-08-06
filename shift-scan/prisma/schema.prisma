@@ -160,12 +160,21 @@ model UserTrainings {
 
 // Holds a uniquely generated QR code that can be read to distinct jobsite and general jobsite information 
 model Jobsite {
-  id             Int      @default(autoincrement())
-  jobsite_id     String   @id @default(cuid())
-  jobsite_name   String
-  jobsite_active Boolean  @default(true)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id                  Int        @id @default(autoincrement())
+  jobsite_id          String     @unique @default(cuid())
+  jobsite_active      Boolean    @default(true)
+  jobsite_status      FormStatus @default(PENDING)
+  // project_manager  String
+  jobsite_name        String
+  street_number       String?
+  street_name         String
+  city                String
+  state               String?
+  country             String
+  jobsite_description String
+  comments            String?
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
 
   costCode              CostCode[]
   addresses             Address[]
@@ -216,6 +225,8 @@ model EmployeeEquipmentLog {
   start_time      DateTime
   end_time        DateTime?
   duration        Float?
+  refueled        Boolean   @default(false) // added to save a state of fuel to a user this can be refrenced later for a timesheet submit.
+  fuel_used       Float?    @default(0.0)
   equipment_notes String?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -244,7 +255,7 @@ enum Tags {
 // This collection stores information about all company equipment. It includes a wide range of items such as company vehicles, trailers, handheld equipment, and heavy machinery. The purpose is to keep track of all assets the company owns and maintains.
 model Equipment {
   id                      String          @id @default(cuid())
-  qr_id                   String          @unique @default(cuid())
+  qr_id                   String          @unique // needed default off to be a qr id 
   name                    String
   description             String
   status                  FormStatus      @default(PENDING)
