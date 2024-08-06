@@ -15,49 +15,49 @@ import { Texts } from '@/components/(reusable)/texts';
 
 
 export default function Index() {
-    const t = useTranslations('PortalLogin');
+    const t = useTranslations('Hamburger');
 return (
     <div> 
         <Bases>
             <Sections size={"titleBox"}>
                 <TitleBoxes 
-                title="Settings" 
+                title={t("Title")} 
                 titleImg="/Settings.svg" 
                 titleImgAlt="Settings"  
                 variant={"default"} size={"default"}/>
             </Sections>
             <Sections size={"dynamic"}>
-            <Titles>Notifications</Titles>
+            <Titles>{t("Notifications")} </Titles>
                 <SwitchWithLabel>
-                    <Texts size={"left"}>Approved Requests</Texts>
+                    <Texts size={"left"}>{t("ApprovedRequests")} </Texts>
                     <LocaleToggleSwitch></LocaleToggleSwitch>
                 </SwitchWithLabel>
                 <SwitchWithLabel>
-                    <Texts>Time Off Requests</Texts>
+                    <Texts>{t("TimeOffRequests")} </Texts>
                     <LocaleToggleSwitch></LocaleToggleSwitch>
                 </SwitchWithLabel>
                 <SwitchWithLabel>
-                    <Texts>General Reminders</Texts>
+                    <Texts>{t("GeneralReminders")} </Texts>
                     <LocaleToggleSwitch></LocaleToggleSwitch>
                 </SwitchWithLabel>
             </Sections>
             <Sections size={"dynamic"}>
-            <Titles>Security</Titles>
+            <Titles>{t("Security")} </Titles>
                 <SwitchWithLabel>
-                    <Texts>Biometrics</Texts>
+                    <Texts>{t("Biometrics")} </Texts>
                     <LocaleToggleSwitch></LocaleToggleSwitch>
                 </SwitchWithLabel>
                 <SwitchWithLabel>
-                    <Texts>Camera Access</Texts>
+                    <Texts>{t("CameraAccess")} </Texts>
                     <LocaleToggleSwitch></LocaleToggleSwitch>
                 </SwitchWithLabel>
                 <SwitchWithLabel>
-                    <Texts>Location Access</Texts>
+                    <Texts>{t("LocationAccess")} </Texts>
                     <LocaleToggleSwitch></LocaleToggleSwitch>
                 </SwitchWithLabel>
             </Sections>
             <Buttons href="/hamburger/changePassword" variant={'orange'} size={'default'}>
-            <Titles>Change Password</Titles>
+            <Titles>{t("ChangePassword")} </Titles>
             </Buttons>
         </Bases>
     </div>

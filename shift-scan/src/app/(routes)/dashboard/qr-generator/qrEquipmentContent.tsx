@@ -6,6 +6,7 @@ import { CostCodeOptions } from "@/components/(search)/options";
 import { Modals } from "@/components/(reusable)/modals";
 import QRCode from "qrcode";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 interface Option {
   code: string;
@@ -21,7 +22,7 @@ const qrEquipmentContent: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState("");
-
+  const t = useTranslations("qrEquipmentContent");
   const equipmentOptions = CostCodeOptions("equipment");
 
   useEffect(() => {
@@ -57,19 +58,19 @@ const qrEquipmentContent: React.FC = () => {
 
   return (
     <div className="text-center font-sans">
-      <h2 className="text-xl font-bold mb-4">Equipment</h2>
+      <h2 className="text-xl font-bold mb-4">{t("Equipment")}</h2>
       <CustomSelect
         options={filteredOptions}
-        placeholder="Select One"
+        placeholder={t("Placeholder")}
         onOptionSelect={handleOptionSelect}
         selectedOption={selectedEquipment}
       />
       <div className="flex justify-center gap-4">
         <Buttons variant={"orange"} onClick={handleGenerate} size="default">
-          Generate
+          {t("Generate")}
         </Buttons>
         <Buttons variant={"green"} onClick={handleNew} size="default">
-          New
+          {t("New")}
         </Buttons>
       </div>
       <Modals
@@ -80,7 +81,7 @@ const qrEquipmentContent: React.FC = () => {
         {selectedEquipment && (
           <div className="text-center">
             <h2 className="text-xl font-bold mb-4">
-              {selectedEquipment.label} QR Code
+              {selectedEquipment.label} {t("QRCode")}
             </h2>
             <img src={qrCodeUrl} alt="QR Code" />
           </div>

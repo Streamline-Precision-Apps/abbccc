@@ -1,15 +1,19 @@
 
 import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
+import { Images } from "@/components/(reusable)/images";
 import { Sections } from "@/components/(reusable)/sections";
+import { Texts } from "@/components/(reusable)/texts";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import prisma from "@/lib/prisma";
+import { useTranslations } from "next-intl";
 import { cookies } from "next/headers";
 
 export default async function Equipment() {
     const userCookie = cookies().get("user");
     const userid = userCookie ? userCookie.value : undefined;
+    const t = useTranslations("Equipment");
     const User = await prisma.user.findUnique({
         where: {
             id: userid,
@@ -22,10 +26,18 @@ export default async function Equipment() {
     return (
         <Bases>
             <Sections size={"default"}>
-                <Titles>{name}</Titles>
-                <Buttons variant={"default"} size={"widgetLg"} href="/dashboard">Go Home</Buttons>
-                <Buttons variant={"green"} size={"widgetLg"}href="/dashboard/equipment/scan">log New</Buttons>
-                <Buttons variant={"orange"} size={"widgetLg"}href="/dashboard/equipment/current">current equipment</Buttons>
+                <Buttons variant={"default"} size={"default"} href="/dashboard">
+                <Images titleImg="/home.svg" titleImgAlt="Home Icon" variant={"icon"} size={"default"}/>
+                <Texts>Go Home</Texts>
+                </Buttons>
+                <Buttons variant={"green"} size={"default"}href="/dashboard/equipment/scan">
+                <Images titleImg="/equipment.svg" titleImgAlt="Equipment Icon" variant={"icon"} size={"default"}/>
+                <Texts>Log New</Texts>
+                </Buttons>
+                <Buttons variant={"orange"} size={"default"}href="/dashboard/equipment/current">
+                <Images titleImg="/forms.svg" titleImgAlt="Current Equipment Icon" variant={"icon"} size={"default"}/>
+                <Texts>Current Equipment</Texts>
+                </Buttons>
             </Sections>
         </Bases>  
     )

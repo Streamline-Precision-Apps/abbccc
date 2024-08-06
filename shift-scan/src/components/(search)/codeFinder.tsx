@@ -1,84 +1,86 @@
-'use client';
+"use client";
 import React, { useState, useEffect, ChangeEvent } from 'react';
 import CustomSelect from '@/components/(search)/customSelect';
 import SearchBar from '@/components/(search)/searchbar';
-import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useSavedCostCode } from '@/app/context/CostCodeContext';
-import { setAuthStep } from '@/app/api/auth';
-import {CostCodeOptions} from '@/components/(search)/options';
+import { CostCodeOptions } from '@/components/(search)/options';
 import { useScanData } from '@/app/context/JobSiteContext';
 import { useEQScanData } from '@/app/context/equipmentContext';
-// Option interface
-    interface Option {
-        code: string;
-        label: string;
-        }
-        
-        type props = {
-        datatype: string
-        
-    }
-    // Static options array
-    export default function CodeFinder({datatype} : props) {
-    
-        const [searchTerm, setSearchTerm] = useState('');
-        const [filteredOptions, setFilteredOptions] = useState<Option[]>([]);
-        const [selectedOption, setSelectedOption] = useState<Option | null>(null);
-        const router = useRouter();
-        const t = useTranslations('clock');
-        const { setScanResult } = useScanData();
-        const { setscanEQResult} = useEQScanData();
-        const { setCostCode } = useSavedCostCode();
-        const options = CostCodeOptions(datatype);
-        // Filter options based on search term
-        useEffect(() => {
-        setFilteredOptions(
-            options
-            .flat() // Flatten the nested array
-            .filter((option) =>
-                option.label.toLowerCase().includes(searchTerm.toLowerCase())
-            )
-        );
-        }, [searchTerm]);
-    
-        // Handle option selection
-        const handleOptionSelect = (option: Option) => {
-        setSelectedOption(option);
-        if (datatype === 'costcode') {
-            setCostCode(option.code);
-        }
-        if (datatype === 'jobsite') {
-            if (localStorage.getItem('jobSite')) {
-                localStorage.removeItem('jobSite');
-            }
-            setScanResult({ data: option.code });
-            localStorage.setItem('jobSite', option.code);
-        }
-        if (datatype === 'equipment') {
-            setscanEQResult({ data: option.code });
-            const jobSite = localStorage.getItem('jobSite');
-            const value = jobSite ? jobSite : '';
-            setScanResult({ data: value});
-        }
+import { useDBJobsite, useDBCostcode, useDBEquipment } from "@/app/context/dbCodeContext";
+import { useRecentDBJobsite, useRecentDBCostcode, useRecentDBEquipment } from "@/app/context/dbRecentCodesContext";
 
-        setSearchTerm(option.label);
-        };
-        //  Handle search input change
-        const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setSearchTerm(e.target.value);
-        };
 
-        // Handle form submission
-    
-        return (
-        <div className="flex flex-col items-center w-1/2 m-auto">
-            <h1>{t(`title-${datatype}-bar`)}</h1>
-            <SearchBar searchTerm={searchTerm} onSearchChange={handleSearchChange} />
+interface Option {
+code: string;
+label: string;
+}
 
-            <CustomSelect options={filteredOptions} 
-            placeholder={t('placeholder')} onOptionSelect={handleOptionSelect} 
-            selectedOption={selectedOption} />
-        </div>
-        );
-    };
+type Props = {
+datatype: string;
+}
+
+export default function CodeFinder({ datatype }: Props) {
+const [searchTerm, setSearchTerm] = useState('');
+const [filteredOptions, setFilteredOptions] = useState<Option[]>([]);
+const [selectedOption, setSelectedOption] = useState<Option | null>(null);
+const t = useTranslations('Clock');
+const { setScanResult } = useScanData();
+const { setCostCode } = useSavedCostCode();
+const { setscanEQResult } = useEQScanData();
+const { jobsiteResults } = useDBJobsite();
+const { addRecentlyUsedJobCode } = useRecentDBJobsite();
+const { costcodeResults } = useDBCostcode();
+const { addRecentlyUsedCostCode } = useRecentDBCostcode();
+const { equipmentResults } = useDBEquipment();
+const { addRecentlyUsedEquipment } = useRecentDBEquipment();
+const options = CostCodeOptions(datatype, searchTerm);
+
+useEffect(() => {
+setFilteredOptions(options);
+}, [searchTerm, options]);
+
+const handleOptionSelect = (option: Option) => {
+setSelectedOption(option);
+if (datatype === 'costcode') {
+    localStorage.setItem("costCode", option.code);
+    setCostCode(option.code);
+
+    // Add to recently used cost codes
+    const selectedCode = costcodeResults.find((c) => c.cost_code === option.code);
+    if (selectedCode) addRecentlyUsedCostCode(selectedCode);
+}
+if (datatype === 'jobsite') {
+    localStorage.setItem("jobSite", option.code);
+    setScanResult({ data: option.code });
+
+    // Add to recently used job codes
+    const selectedJobCode = jobsiteResults.find((j) => j.jobsite_id === option.code);
+    if (selectedJobCode) addRecentlyUsedJobCode(selectedJobCode);
+}
+if (datatype === 'equipment') {
+    setscanEQResult({ data: option.code });
+    localStorage.setItem("previousEquipment", option.code);
+
+    // Add to recently used equipment
+    const selectedEquipment = equipmentResults.find((e) => e.qr_id === option.code);
+    if (selectedEquipment) addRecentlyUsedEquipment(selectedEquipment);
+}
+setSearchTerm(option.label);
+};
+
+const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+setSearchTerm(e.target.value);
+};
+
+return (
+<div className="flex flex-col py-10 items-center w-[500px] h-[500px] m-auto">
+    <SearchBar placeholder={t(`search-${datatype}`)} searchTerm={searchTerm} onSearchChange={handleSearchChange} />
+    <CustomSelect 
+    options={filteredOptions} 
+    onOptionSelect={handleOptionSelect} 
+    selectedOption={selectedOption} 
+    />
+</div>
+);
+}

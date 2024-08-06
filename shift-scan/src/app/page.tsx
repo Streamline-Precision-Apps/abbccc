@@ -1,24 +1,81 @@
-import Banner from "@/components/banner"
-import Content from "@/app/(content)/content"
-import {formatDate} from "@/components/getDate"
-import TestingComponents from "@/components/testingComponents"
-import "@/app/globals.css"
-import { Header } from "@/components/header"
-import { getAuthStep } from "./api/auth"
+import prisma from "@/lib/prisma";
+import { cookies } from "next/headers";
+import Content from "@/app/(content)/content";
 
-export default function Home() {
+export default async function Home() {
+  const user = cookies().get("user");
+  const userId = user?.value;
 
-    const date = formatDate();
+  // Fetch all records
+  const jobCodes = await prisma.jobsite.findMany({
+    select: {
+      id: true,
+      jobsite_id: true,
+      jobsite_name: true,
+    },
+  });
 
-    
-    return (   
-        <>
-            <div className="flex-col justify-self-center items-center h-[54rem] w-11/12 md:w-1/2 lg:w-1/3 lg:h-full  absolute inset-1 bg-cover bg-center bg-no-repeat bg-white rounded-lg pb-0">
-            <Header/>
-            {/* <Header /> */}
-            <Banner date={date} translation="page1" />
-            <Content />
-            </div>
-        </> 
-    )   
+  const costCodes = await prisma.costCode.findMany({
+    select: {
+      id: true,
+      cost_code: true,
+      cost_code_description: true,
+    },
+  });
+
+  const equipment = await prisma.equipment.findMany({
+    select: {
+      id: true,
+      qr_id: true,
+      name: true,
+    },
+  });
+
+  // Fetch recent records
+  const recentJobSites = await prisma.jobsite.findMany({
+    select: {
+      id: true,
+      jobsite_id: true,
+      jobsite_name: true,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+    take: 5,
+  });
+
+  const recentCostCodes = await prisma.costCode.findMany({
+    select: {
+      id: true,
+      cost_code: true,
+      cost_code_description: true,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+    take: 5,
+  });
+
+  const recentEquipment = await prisma.equipment.findMany({
+    select: {
+      id: true,
+      qr_id: true,
+      name: true,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+    take: 5,
+  });
+
+  return (
+    <Content
+      jobCodes={jobCodes}
+      CostCodes={costCodes}
+      equipment={equipment}
+      recentJobSites={recentJobSites}
+      recentCostCodes={recentCostCodes}
+      recentEquipment={recentEquipment}
+    />
+  );
 }

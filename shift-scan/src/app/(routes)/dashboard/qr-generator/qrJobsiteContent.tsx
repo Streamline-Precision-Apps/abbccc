@@ -5,7 +5,8 @@ import CustomSelect from "./customSelect";
 import { CostCodeOptions } from "@/components/(search)/options";
 import { Modals } from "@/components/(reusable)/modals";
 import QRCode from "qrcode";
-
+import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 interface Option {
   code: string;
   label: string;
@@ -17,8 +18,9 @@ const qrJobsiteContent: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState("");
-
+  const Router = useRouter();
   const jobSiteOptions = CostCodeOptions("jobsite");
+  const t = useTranslations("QrJobsiteContent");
 
   useEffect(() => {
     setFilteredOptions(
@@ -43,8 +45,7 @@ const qrJobsiteContent: React.FC = () => {
   };
 
   const handleNew = () => {
-    console.log("New button clicked");
-    // Add your new functionality here
+    Router.push("/dashboard/qr-generator/add-new-jobsite");
   };
 
   const handleOptionSelect = (option: Option) => {
@@ -53,19 +54,19 @@ const qrJobsiteContent: React.FC = () => {
 
   return (
     <div className="text-center font-sans">
-      <h2 className="text-xl font-bold mb-4">Job Site</h2>
+      <h2 className="text-xl font-bold mb-4">{t("Jobsite")}</h2>
       <CustomSelect
         options={filteredOptions}
-        placeholder="Select One"
+        placeholder={t("Placeholder")}
         onOptionSelect={handleOptionSelect}
         selectedOption={selectedJobSite}
       />
       <div className="flex justify-center gap-4">
         <Buttons variant={"orange"} onClick={handleGenerate} size="default">
-          Generate
+          {t("Generate")}
         </Buttons>
         <Buttons variant={"green"} onClick={handleNew} size="default">
-          New
+          {t("New")}
         </Buttons>
       </div>
       <Modals
@@ -76,7 +77,7 @@ const qrJobsiteContent: React.FC = () => {
         {selectedJobSite && (
           <div className="text-center">
             <h2 className="text-xl font-bold mb-4">
-              {selectedJobSite.label} QR Code
+              {selectedJobSite.label} {t("QR Code")}
             </h2>
             <img src={qrCodeUrl} alt="QR Code" />
           </div>
