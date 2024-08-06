@@ -5,6 +5,7 @@ import { Images } from "@/components/(reusable)/images";
 import { useTranslations } from "next-intl";
 import React, { useState, useEffect, useRef } from "react";
 import { Sections } from "@/components/(reusable)/sections";
+import { Buttons } from "@/components/(reusable)/buttons";
 
 type Timesheet = {
   id: string;
@@ -228,14 +229,6 @@ const EditWork = ({ timesheetData, jobsitesData, costcodesData, edit, equipment,
     fetchData();
   }, [date, employeeId]);
 
-  const buttonClass = edit ? "flex bg-app-red text-white font-bold p-2 rounded" : "bg-app-orange text-black font-bold rounded m-auto pl-4 p-2";
-
-  const word = edit ? (
-    <Images titleImg={"/cancel.svg"} titleImgAlt={"Cancel"} variant={"icon"} size={"backButton"} />
-  ) : (
-    <Images titleImg={"/edit.svg"} titleImgAlt={"Edit"} variant={"icon"} size={"backButton"} />
-  );
-
   const editHandler = () => {
     setEdit(!edit);
   };
@@ -248,19 +241,23 @@ const EditWork = ({ timesheetData, jobsitesData, costcodesData, edit, equipment,
     <div>
       <Sections size={"dynamic"}>
       {timesheetData.length === 0 ? null : (
-        <div className="flex flex-row justify-between p-2">
-          <button className={buttonClass} onClick={editHandler}>{word}</button>
-          {edit ? <button className="flex bg-app-blue text-white font-bold p-2 rounded" onClick={handleSaveChanges}><Images titleImg={"/save.svg"} titleImgAlt={"Save Changes"} variant={"icon"} size={"backButton"} /></button> : null}
-        </div>
+        <>
+        {edit ?  
+          ( <>
+          <Buttons onClick={editHandler} variant={"red"} size={"default"}><Images titleImg={"/cancel.svg"} titleImgAlt={"Cancel"} variant={"icon"} size={"backButton"} /></Buttons>
+          <Buttons onClick={editHandler} variant={"default"} size={"default"}><Images titleImg={"/save.svg"} titleImgAlt={"Save Changes"} variant={"icon"} size={"backButton"} /></Buttons>
+          </>) : <Buttons onClick={editHandler} variant={"orange"} size={"default"}><Images titleImg={"/edit.svg"} titleImgAlt={"Edit"} variant={"icon"} size={"backButton"} /></Buttons>  
+          }
+        </>
       )}
       {message ? (
-        <div className="py-4">
-          <p className="text-center">{message}</p>
+        <div >
+          <p >{message}</p>
         </div>
       ) : (
         <ul>
           <br/>
-          <li className="text-center">{t("Timesheets")}</li>
+          <li >{t("Timesheets")}</li>
           {timesheets.map((timesheet) => (
             <li key={timesheet.id}>
               <div >
@@ -268,15 +265,15 @@ const EditWork = ({ timesheetData, jobsitesData, costcodesData, edit, equipment,
                 <input id="submit_date" type="date" value={new Date(timesheet.submit_date).toISOString().split('T')[0]} hidden />
               </div>
               <div>
-                <label className="w-full text-center text-black" htmlFor="duration">{t("Duration")} {edit ? (
-                  <span className="text-red-500 italic text-sm flex flex-wrap">{t("Duration-Comment")}</span>
+                <label >{t("Duration")} {edit ? (
+                  <span >{t("Duration-Comment")}</span>
                 ) : null}
                 </label>
-                <input id="duration" className="w-full text-center border text-black border-black" type="text" value={timesheet.duration} onChange={(e) => handleInputChange(e, timesheet.id, "duration")} readOnly />
+                <input id="duration" type="text" value={timesheet.duration} onChange={(e) => handleInputChange(e, timesheet.id, "duration")} readOnly />
               </div>
               <div>
                 <label>{t("ClockIn")}
-                  <div className="flex flex-row border border-black">
+                  <div>
                     <input id="start_date" type="date" value={timesheet.start_date || ''} onChange={(e) => handleInputChangeDate(e, timesheet.id, "start_date")} readOnly={!edit} />
                     <input id="start_time" type="time" value={timesheet.start_time || ''} onChange={(e) => handleInputChangeDate(e, timesheet.id, "start_time")} readOnly={!edit} />
                   </div>
@@ -290,17 +287,17 @@ const EditWork = ({ timesheetData, jobsitesData, costcodesData, edit, equipment,
               </div>
               <div>
                 <label htmlFor="total_break_time">{t("Breaktime")}</label>
-                <input id="total_break_time" className="text-center border border-black" type="text" value={timesheet.total_break_time || "0"} onChange={(e) => handleInputChange(e, timesheet.id, "total_break_time")} readOnly={!edit} />
+                <input id="total_break_time" type="text" value={timesheet.total_break_time || "0"} onChange={(e) => handleInputChange(e, timesheet.id, "total_break_time")} readOnly={!edit} />
               </div>
               <div>
                 <label htmlFor="jobsite_id">{t("JobSites")}</label>
-                <select id="jobsite_id" className="text-center border border-black" value={timesheet.jobsite_id} onChange={(e) => handleCodeChange(e, timesheet.id, "jobsite_id")} disabled={!edit}>
+                <select id="jobsite_id"  value={timesheet.jobsite_id} onChange={(e) => handleCodeChange(e, timesheet.id, "jobsite_id")} disabled={!edit}>
                   {jobsitesData.map((jobsite) => (
                     <option key={jobsite.id} value={jobsite.jobsite_id}>{jobsite.jobsite_id}</option>
                   ))}
                 </select>
                 <label htmlFor="costcode">{t("CostCode")}</label>
-                <select id="costcode" className="text-center border border-black" value={timesheet.costcode} onChange={(e) => handleCodeChange(e, timesheet.id, "costcode")} disabled={!edit}>
+                <select id="costcode" value={timesheet.costcode} onChange={(e) => handleCodeChange(e, timesheet.id, "costcode")} disabled={!edit}>
                   {costcodesData.map((costcode) => (
                     <option key={costcode.id} value={costcode.cost_code}>{costcode.cost_code}</option>
                   ))}
@@ -333,7 +330,6 @@ const EditWork = ({ timesheetData, jobsitesData, costcodesData, edit, equipment,
               </select>
               <label htmlFor="eq-duration">{t("Duration")} </label>
               <input
-                className="w-20"
                 type="text"
                 name="eq-duration"
                 value={log.duration !== null ? ((log.duration)).toString() : ''}
