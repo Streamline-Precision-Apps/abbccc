@@ -1,13 +1,19 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { HTMLAttributes, FC } from "react";
 import { cn } from "@/components/(reusable)/utils";
+import { Mako } from "next/font/google";
+
+const mako = Mako({ 
+  subsets: ["latin"], 
+  weight: "400",
+})
 
 const TextVariants = cva(
-  "p-1 m-2 text-center", //this applies to all variants
+  "p-1 m-2 text-center ", //this applies to all variants
   {
     variants: {
       variant: {
-        default: "text-black",
+        default: "text-black text-body",
         white: "text-white",
         disabled: "text-gray-600",
         name: "pt-5 mt-5",
@@ -35,7 +41,9 @@ interface TextProps extends HTMLAttributes<HTMLElement>, VariantProps<typeof Tex
 
 const Texts: FC<TextProps> = ({className, variant, size, ...props}) => {
     return (
-      <p className={cn(TextVariants({variant, size, className}))} {...props}/>
+      <div className={mako.className}>
+        <p className={cn(TextVariants({variant, size, className}))} {...props}/>
+      </div>
     )
 }
 

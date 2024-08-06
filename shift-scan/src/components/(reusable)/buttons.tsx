@@ -6,22 +6,22 @@ import { ButtonHTMLAttributes, FC } from "react";
 import { cn } from "@/components/(reusable)/utils";
 
 const ButtonVariants = cva(
-  "flex flex-col items-center justify-center border-2 border-black",
+  "flex flex-col items-center justify-center border-4 border-black rounded-xl",
   {
     variants: {
       variant: {
-        default: "bg-blue-300 rounded-xl",
-        darkBlue: "bg-blue-600 rounded-xl",
-        green: "bg-green-300 rounded-xl",
-        red: "bg-red-300 rounded-xl",
-        orange: "bg-orange-300 rounded-xl",
+        default: "bg-app-blue",
+        darkBlue: "bg-app-dark-blue",
+        green: "bg-app-green",
+        red: "bg-app-red",
+        orange: "bg-app-orange",
         icon: "bg-none border-0",
         listItem: "bg-yellow-500",
       },
       size: {
         default: "mx-auto my-3 p-1 w-5/6 h-100 ",
         small: "p-2 w-30 h-30",
-        widgetSm: "w-full",
+        widgetSm: "w-full shadow-[8px_8px_0px_grey]",
         widgetMed: "p-10 w-40 h-40",
         widgetLg: "p-20 w-50 h-50",
         backButton: "absolute top-5 left-5",
