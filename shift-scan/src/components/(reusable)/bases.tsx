@@ -8,7 +8,7 @@ const BaseVariants = cva(
     {
         variants: {
             variant: {
-                default: "bg-gradient-to-b from-blue-900 to-blue-300",
+                default: "bg-gradient-to-b from-app-dark-blue to-app-blue",
             },
             size: {
                 default: "w-full h-full",

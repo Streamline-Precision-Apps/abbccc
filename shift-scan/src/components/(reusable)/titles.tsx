@@ -1,6 +1,12 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { HTMLAttributes, FC } from "react";
 import { cn } from "@/components/(reusable)/utils";
+import { Anton } from "next/font/google";
+
+const anton = Anton({ 
+  subsets: ["latin"], 
+  weight: "400",
+})
 
 const TitleVariants = cva(
   "font-bold p-1 m-2 text-center",
@@ -32,7 +38,9 @@ interface TitleProps extends HTMLAttributes<HTMLElement>, VariantProps<typeof Ti
 const Titles: FC<TitleProps> = ({className, variant, size, ...props}) => {
     
     return (
-      <h1 className={cn(TitleVariants({variant, size, className}))} {...props}/>
+      <div className={anton.className}>
+        <h1 className={cn(TitleVariants({variant, size, className}))} {...props}/>
+      </div>
     )
 }
 
