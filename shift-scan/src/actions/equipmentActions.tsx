@@ -26,6 +26,37 @@ enum EquipmentStatus {
   NEEDS_REPAIR = "NEEDS_REPAIR",
 }
 
+
+
+export async function fetchEq(employeeId: string, date: string) {
+  const startOfDay = new Date(date);
+  startOfDay.setUTCHours(0, 0, 0, 0);
+
+  const endOfDay = new Date(date);
+  endOfDay.setUTCHours(23, 59, 59, 999);
+
+  const eqlogs = await prisma.employeeEquipmentLog.findMany({
+    where: {
+      employee_id: employeeId,
+      start_time: {
+        gte: startOfDay.toISOString(),
+        lte: endOfDay.toISOString(),
+      },
+    },
+    include: {
+      Equipment: true,
+    },
+  });
+
+  // Ensure no null values are present
+  const filteredEqLogs = eqlogs.filter((log) => log.Equipment !== null);
+
+  console.log("\n\n\nEquipment Logs:", filteredEqLogs);
+  revalidatePath("/dashboard/myTeam/" + employeeId);
+  return filteredEqLogs;
+}
+
+
 // Get all equipment forms
 export async function getEquipmentForms() {
   try {
