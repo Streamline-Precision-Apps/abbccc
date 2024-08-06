@@ -1,3 +1,4 @@
+"use client";
 import React from 'react';
 import { useTranslations } from 'next-intl';
 import QR from './qr';
@@ -6,12 +7,14 @@ import QR_EQ from './qr-eq';
 interface QRStepProps {
   handleAlternativePath: () => void;
   handleNextStep: () => void;
+  handleChangeJobsite?: () => void;
   type: string;
   url?: string;
 }
 
-const QRStep: React.FC<QRStepProps> = ({ handleAlternativePath, handleNextStep, type, url }) => {
+const QRStep: React.FC<QRStepProps> = ({ handleAlternativePath, handleNextStep, handleChangeJobsite, type, url }) => {
   const t = useTranslations("Clock");
+  const validation = localStorage.getItem("jobSite");
 
   return (
     <>
@@ -25,9 +28,16 @@ const QRStep: React.FC<QRStepProps> = ({ handleAlternativePath, handleNextStep, 
           {type === 'equipment' ? (
             <QR_EQ handleNextStep={handleNextStep} />
           ) : (
+            <>
             <QR handleNextStep={handleNextStep} />
-          )}
+            {validation ? (<button onClick={handleChangeJobsite} className="flex justify-center text-lg  border-2 border-black p-5">
+              {t('ReturnToJobsite')}
+              </button>)
+                : (null)} 
+                </>
+              )}
         </div>
+        
         <button onClick={handleAlternativePath} className="flex justify-center text-lg font-light underline pb-5">
           {t('TroubleScanning')}
         </button>
