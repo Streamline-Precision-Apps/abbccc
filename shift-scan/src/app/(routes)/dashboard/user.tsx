@@ -15,7 +15,7 @@ export const User = () => {
   }
   return (
     <>
-      <Buttons href="/dashboard/switch-jobs" variant={"orange"} size={"widgetSm"}>
+      <Buttons variant={"orange"} size={"widgetSm"}>
         <Images titleImg="/jobsite.svg" titleImgAlt="Jobsite Icon" variant={"icon"} size={"widgetSm"}></Images>
         <Texts>{t("SwitchJobs")}</Texts>
       </Buttons>
@@ -23,7 +23,7 @@ export const User = () => {
         <Images titleImg="/equipment.svg" titleImgAlt="Equipment Icon" variant={"icon"} size={"widgetSm"}></Images>
         <Texts>{t("Equipment")}</Texts>
       </Buttons>
-      <Buttons href="/dashboard/forms" variant={"default"} size={"widgetSm"}>
+      <Buttons href="/dashboard/forms" variant={"green"} size={"widgetSm"}>
         <Images titleImg="/forms.svg" titleImgAlt="Forms Icon" variant={"icon"} size={"widgetSm"}></Images>
         <Texts>{t("Forms")}</Texts>
       </Buttons>
