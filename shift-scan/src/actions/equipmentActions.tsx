@@ -68,7 +68,9 @@ export async function updateEq(formData1 : FormData){
       }
     })
 
-    await prisma.employeeEquipmentLog.update({
+    console.log(alter);
+
+    const log = await prisma.employeeEquipmentLog.update({
       where: {
         id: Number(id),
       },
