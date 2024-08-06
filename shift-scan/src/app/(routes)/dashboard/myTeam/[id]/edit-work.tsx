@@ -1,6 +1,6 @@
 "use client";
 import { editTimeSheet } from "@/actions/timeSheetActions";
-import { fetchEq } from "@/actions/equipmentActions";
+import { fetchEq, updateEq } from "@/actions/equipmentActions";
 import { Images } from "@/components/(reusable)/images";
 import { useTranslations } from "next-intl";
 import React, { useState, useEffect, useRef } from "react";
@@ -59,7 +59,34 @@ const EditWork = ({ timesheetData, jobsitesData, costcodesData, edit, handleForm
   const [timesheets, setTimesheets] = useState<Timesheet[]>([]);
   const [equipmentLogs, setEquipmentLogs] = useState<EquipmentLog[]>([]);
   const [message, setMessage] = useState<string | null>(null);
+
+
   const t = useTranslations("MyTeam");
+  useEffect(() => {
+    if (!timesheetData || timesheetData.length === 0) {
+      setMessage("No Timesheets Found");
+    } else {
+      setMessage(null);
+      const initializedTimesheets = timesheetData.map((timesheet) => {
+        const start_date = new Date(timesheet.start_time).toISOString().split('T')[0];
+        const start_time = new Date(timesheet.start_time).toISOString().split('T')[1].split(':')[0] + ":" + new Date(timesheet.start_time).toISOString().split('T')[1].split(':')[1];
+        const end_date = new Date(timesheet.end_time).toISOString().split('T')[0];
+        const end_time = new Date(timesheet.end_time).toISOString().split('T')[1].split(':')[0] + ":" + new Date(timesheet.end_time).toISOString().split('T')[1].split(':')[1];
+        
+        const durationBackup = (new Date(timesheet.end_time).getTime() - new Date(timesheet.start_time).getTime()) / (1000 * 60 * 60);
+  
+        return {
+          ...timesheet,
+          start_date,
+          start_time,
+          end_date,
+          end_time,
+          duration: timesheet.duration || durationBackup.toString()
+        };
+      });
+      setTimesheets(initializedTimesheets);
+    }
+  }, [timesheetData]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, id: string, field: keyof Timesheet) => {
     let value = e.target.value;
@@ -124,6 +151,15 @@ const EditWork = ({ timesheetData, jobsitesData, costcodesData, edit, handleForm
         formData.append("total_break_time", timesheet.total_break_time);
         formData.append("jobsite_id", timesheet.jobsite_id);
         await editTimeSheet(formData);
+      }
+
+      for (const log of updatedLogs) {
+        const formData1 = new FormData();
+        formData1.append("id", log.id.toString());
+        formData1.append("qr_id", log.Equipment.qr_id);
+        formData1.append("duration", (log.duration || 0).toString());
+        formData1.append("employeeId", employeeId);
+        await updateEq(formData1);
       }
 
       handleFormSubmit(timesheets[0].employeeId, timesheets[0].submit_date, "Changes saved successfully.");
@@ -208,6 +244,7 @@ const EditWork = ({ timesheetData, jobsitesData, costcodesData, edit, handleForm
 
   return (
     <div>
+      <Sections size={"dynamic"}>
       {timesheetData.length === 0 ? null : (
         <div className="flex flex-row justify-between p-2">
           <button className={buttonClass} onClick={editHandler}>{word}</button>
@@ -220,28 +257,30 @@ const EditWork = ({ timesheetData, jobsitesData, costcodesData, edit, handleForm
         </div>
       ) : (
         <ul>
+          <br/>
+          <li className="text-center">{t("Timesheets")}</li>
           {timesheets.map((timesheet) => (
-            <li key={timesheet.id} className="flex flex-col justify-center items-center m-auto text-black text-2xl bg-white p-4 rounded lg:text-2xl lg:p-3">
-              <div className="flex flex-col justify-center items-center">
+            <li key={timesheet.id}>
+              <div >
                 <h2>{new Date(timesheet.submit_date).toLocaleDateString()}</h2>
                 <input id="submit_date" type="date" value={new Date(timesheet.submit_date).toISOString().split('T')[0]} hidden />
               </div>
               <div>
-                <label htmlFor="duration">{t("Duration")} {edit ? (
+                <label className="w-full text-center text-black" htmlFor="duration">{t("Duration")} {edit ? (
                   <span className="text-red-500 italic text-sm flex flex-wrap">{t("Duration-Comment")}</span>
                 ) : null}
                 </label>
-                <input id="duration" className="w-full text-center border border-black" type="text" value={timesheet.duration} readOnly />
+                <input id="duration" className="w-full text-center border text-black border-black" type="text" value={timesheet.duration} onChange={(e) => handleInputChange(e, timesheet.id, "duration")} readOnly />
               </div>
-              <div className="flex flex-wrap">
+              <div>
                 <label>{t("ClockIn")}
-                  <div className="flex flex-row w-full border border-black">
+                  <div className="flex flex-row border border-black">
                     <input id="start_date" type="date" value={timesheet.start_date || ''} onChange={(e) => handleInputChangeDate(e, timesheet.id, "start_date")} readOnly={!edit} />
                     <input id="start_time" type="time" value={timesheet.start_time || ''} onChange={(e) => handleInputChangeDate(e, timesheet.id, "start_time")} readOnly={!edit} />
                   </div>
                 </label>
                 <label>{t("ClockOut")}
-                  <div className="flex flex-row w-full border border-black">
+                  <div>
                     <input id="end_date" type="date" value={timesheet.end_date || ''} onChange={(e) => handleInputChangeDate(e, timesheet.id, "end_date")} readOnly={!edit} />
                     <input id="end_time" type="time" value={timesheet.end_time || ''} onChange={(e) => handleInputChangeDate(e, timesheet.id, "end_time")} readOnly={!edit} />
                   </div>
@@ -249,7 +288,7 @@ const EditWork = ({ timesheetData, jobsitesData, costcodesData, edit, handleForm
               </div>
               <div>
                 <label htmlFor="total_break_time">{t("Breaktime")}</label>
-                <input id="total_break_time" className="w-full text-center border border-black" type="text" value={timesheet.total_break_time} onChange={(e) => handleInputChange(e, timesheet.id, "total_break_time")} readOnly={!edit} />
+                <input id="total_break_time" className="text-center border border-black" type="text" value={timesheet.total_break_time || "0"} onChange={(e) => handleInputChange(e, timesheet.id, "total_break_time")} readOnly={!edit} />
               </div>
               <div>
                 <label htmlFor="jobsite_id">{t("JobSites")}</label>
@@ -265,12 +304,16 @@ const EditWork = ({ timesheetData, jobsitesData, costcodesData, edit, handleForm
                   ))}
                 </select>
               </div>
+                <br/>
+              <div className="border border-black"></div>
+              <br/>
             </li>
           ))}
         </ul>
       )}
+      </Sections>
       <Sections size={"dynamic"}>
-        <h1>Equipment Sheets</h1>
+        <h1>{t("EquipmentLogs")}</h1>
         <ul>
           {equipmentLogs.map((log) => (
             <li key={log.id}>
@@ -285,17 +328,20 @@ const EditWork = ({ timesheetData, jobsitesData, costcodesData, edit, handleForm
                   </option>
                 ))}
               </select>
-              <label htmlFor="eq-duration">Duration: </label>
+              <label htmlFor="eq-duration">{t("Duration")} </label>
               <input
                 className="w-20"
                 type="text"
                 name="eq-duration"
-                value={log.duration !== null ? (Number(log.duration).toFixed(2)).toString() : ''}
+                value={log.duration !== null ? ((log.duration)).toString() : ''}
                 onChange={(e) => handleDurationChange(e, log.id)}
                 readOnly={!edit}
               />
             </li>
           ))}
+          <br/>
+          <div className="border border-black"></div>
+          <br/>
         </ul>
       </Sections>
     </div>

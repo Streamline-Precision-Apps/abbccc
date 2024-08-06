@@ -216,6 +216,7 @@
     },
   
     "MyTeam": {
+        "Timesheets": "Timesheets",
         "Duration": "Duration",
         "Duration-Comment": "The duration updates when editing changes are saved.",
         "ClockIn" : "Clock In",
@@ -225,6 +226,7 @@
         "CostCode" : "Cost Code",
         "Equipment" : "Equipment",
         "EQTotalTime" : "Total Time",
-        "NoData": "No Data Found"
+        "NoData": "No Data Found",
+        "EquipmentLogs": "Equipment Logs"
     }
 }

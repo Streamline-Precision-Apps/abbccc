@@ -57,6 +57,31 @@ export async function fetchEq(employeeId: string, date: string) {
 }
 
 
+export async function updateEq(formData1 : FormData){
+  {
+    console.log(formData1);
+    const id  = formData1.get("id") as string;
+    const e = formData1.get("qr_id") as string;
+    const alter = await prisma.equipment.findUnique({
+      where: {
+        qr_id: e,
+      }
+    })
+
+    await prisma.employeeEquipmentLog.update({
+      where: {
+        id: Number(id),
+      },
+      data: {
+        equipment_id: alter?.id,
+        duration: Number(formData1.get("duration") as string),
+      },
+    });
+  }
+  revalidatePath('/dashboard/myTeam/' + formData1.get("employeeId"));
+}
+
+
 // Get all equipment forms
 export async function getEquipmentForms() {
   try {
