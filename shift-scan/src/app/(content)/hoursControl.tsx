@@ -4,6 +4,7 @@ import ViewComponent from "../(content)/hourView";
 import { useSavedPayPeriodHours } from "../context/SavedPayPeriodHours";
 import {BarChartComponent} from "@/app/(content)/hourData";
 import { useTranslations } from "next-intl";
+import { useSavedDailyHours } from "../context/SavedDailyHours";
 
 interface ControlComponentProps {
     toggle: (toggle: boolean) => void;
@@ -15,6 +16,7 @@ const ControlComponent: React.FC<ControlComponentProps> = ( { toggle }) => {
     const data = [1,2,0,5,6, 8, 7, 8 , 9, 12, 0, 14, 16 , 1, 10, 2, 3, 6, 0,13,0,7,6,5,2,1,0,0]; // Replace with pay period data
     const {payPeriodHours} = useSavedPayPeriodHours();
     const t = useTranslations('Home');
+    const { dailyHours } = useSavedDailyHours();
 
     const currentData = useMemo(() => ({
         day: currentIndex + 1, 
