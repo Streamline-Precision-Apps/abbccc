@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
 import Content from "@/app/(content)/content";
+import { PayPeriodTimesheets } from "@/lib/types";
 
 export default async function Home() {
   const user = cookies().get("user");
@@ -8,11 +9,15 @@ export default async function Home() {
 
   // Calculate the start date of the current pay period
   const calculatePayPeriodStart = () => {
-    const startDate = new Date(2024, 7, 5); // August 5, 2024
+    const startDate = new Date(2024, 7, 4); // August 4, 2024
     const now = new Date();
     const diff = now.getTime() - startDate.getTime();
-    const diffWeeks = Math.floor(diff / (2 * 7 * 24 * 60 * 60 * 1000)); // Two-week intervals
-    return new Date(startDate.getTime() + diffWeeks * 2 * 7 * 24 * 60 * 60 * 1000);
+    const diffWeeks = Math.floor(diff / (2 * 7 * 24 * 60 * 60 * 1000))
+    
+    ; // Two-week intervals
+    return new Date(
+      startDate.getTime() + diffWeeks * 2 * 7 * 24 * 60 * 60 * 1000
+    );
   };
 
   const payPeriodStart = calculatePayPeriodStart();
@@ -85,26 +90,20 @@ export default async function Home() {
   });
 
   // Fetch timesheets for the current pay period
-  const payPeriodSheets = await prisma.timeSheet.findMany({
-    where: {
-      userId: userid,
-      start_time: { gte: payPeriodStart, lte: currentDate },
-    },
-    select: {
-      duration: true,
-    },
-  }).then((sheets) => sheets.filter((sheet) => sheet.duration !== null)); // Filter out null durations
-
-  // Fetch timesheets for today
-  const todaySheets = await prisma.timeSheet.findMany({
-    where: {
-      userId: userid,
-      start_time: { gte: todayStart, lte: currentDate },
-    },
-    select: {
-      duration: true,
-    },
-  }).then((sheets) => sheets.filter((sheet) => sheet.duration !== null)); // Filter out null durations
+  const payPeriodSheets = (await prisma.timeSheet
+    .findMany({
+      where: {
+        userId: userid,
+        start_time: { gte: payPeriodStart, lte: currentDate },
+      },
+      select: {
+        start_time: true,
+        duration: true,
+      },
+    })
+    .then((sheets) =>
+      sheets.filter((sheet) => sheet.duration !== null)
+    )) as PayPeriodTimesheets[]; // Type casting
 
   return (
     <Content
@@ -115,7 +114,6 @@ export default async function Home() {
       recentCostCodes={recentCostCodes}
       recentEquipment={recentEquipment}
       payPeriodSheets={payPeriodSheets}
-      todaySheets={todaySheets}
     />
   );
 }

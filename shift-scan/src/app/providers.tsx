@@ -22,47 +22,50 @@ import {
   RecentEquipmentProvider,
 } from "./context/dbRecentCodesContext";
 import { SavedDailyHoursProvider } from "./context/SavedDailyHours";
+import { SavedPayPeriodTimeSheetProvider } from "./context/SavedPayPeriodTimeSheets";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <>
       {" "}
-      <SavedDailyHoursProvider>
-        <SavedBreakTimeProvider>
-          <SavedUserDataProvider>
-            <SavedPayPeriodHoursProvider>
-              <SavedCostCodeProvider>
-                <ScanDataProvider>
-                  <ScanDataEQProvider>
-                    <SavedClockInTimeProvider>
-                      <SavedTimeSheetDataProvider>
-                        <SavedInjuryReportDataProvider>
-                          <SessionProvider>
-                            {/* The provider Entitled DB provide the DB data for each entry */}
-                            <EquipmentProvider>
-                              <JobSiteProvider>
-                                <CostCodeProvider>
-                                  <RecentCostCodeProvider>
-                                    <RecentJobSiteProvider>
-                                      <RecentEquipmentProvider>
-                                        {children}
-                                      </RecentEquipmentProvider>
-                                    </RecentJobSiteProvider>
-                                  </RecentCostCodeProvider>
-                                </CostCodeProvider>
-                              </JobSiteProvider>
-                            </EquipmentProvider>
-                          </SessionProvider>
-                        </SavedInjuryReportDataProvider>
-                      </SavedTimeSheetDataProvider>
-                    </SavedClockInTimeProvider>
-                  </ScanDataEQProvider>
-                </ScanDataProvider>
-              </SavedCostCodeProvider>
-            </SavedPayPeriodHoursProvider>
-          </SavedUserDataProvider>
-        </SavedBreakTimeProvider>
-      </SavedDailyHoursProvider>
+      <SavedPayPeriodTimeSheetProvider>
+        <SavedDailyHoursProvider>
+          <SavedBreakTimeProvider>
+            <SavedUserDataProvider>
+              <SavedPayPeriodHoursProvider>
+                <SavedCostCodeProvider>
+                  <ScanDataProvider>
+                    <ScanDataEQProvider>
+                      <SavedClockInTimeProvider>
+                        <SavedTimeSheetDataProvider>
+                          <SavedInjuryReportDataProvider>
+                            <SessionProvider>
+                              {/* The provider Entitled DB provide the DB data for each entry */}
+                              <EquipmentProvider>
+                                <JobSiteProvider>
+                                  <CostCodeProvider>
+                                    <RecentCostCodeProvider>
+                                      <RecentJobSiteProvider>
+                                        <RecentEquipmentProvider>
+                                          {children}
+                                        </RecentEquipmentProvider>
+                                      </RecentJobSiteProvider>
+                                    </RecentCostCodeProvider>
+                                  </CostCodeProvider>
+                                </JobSiteProvider>
+                              </EquipmentProvider>
+                            </SessionProvider>
+                          </SavedInjuryReportDataProvider>
+                        </SavedTimeSheetDataProvider>
+                      </SavedClockInTimeProvider>
+                    </ScanDataEQProvider>
+                  </ScanDataProvider>
+                </SavedCostCodeProvider>
+              </SavedPayPeriodHoursProvider>
+            </SavedUserDataProvider>
+          </SavedBreakTimeProvider>
+        </SavedDailyHoursProvider>
+      </SavedPayPeriodTimeSheetProvider>
     </>
   );
 }
