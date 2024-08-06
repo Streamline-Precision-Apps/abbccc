@@ -73,3 +73,11 @@
 - Added rest of icon images to application
 - Fixed Bugs before Merge
 - Merge meeting
+
+7/31/24 
+- Added custom fonts to application
+- 
+
+8/1/24
+- Researched Tailwind States (Hover, Focus, etc)
+- 
