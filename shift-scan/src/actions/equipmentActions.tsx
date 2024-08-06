@@ -26,6 +26,64 @@ enum EquipmentStatus {
   NEEDS_REPAIR = "NEEDS_REPAIR",
 }
 
+
+
+export async function fetchEq(employeeId: string, date: string) {
+  const startOfDay = new Date(date);
+  startOfDay.setUTCHours(0, 0, 0, 0);
+
+  const endOfDay = new Date(date);
+  endOfDay.setUTCHours(23, 59, 59, 999);
+
+  const eqlogs = await prisma.employeeEquipmentLog.findMany({
+    where: {
+      employee_id: employeeId,
+      start_time: {
+        gte: startOfDay.toISOString(),
+        lte: endOfDay.toISOString(),
+      },
+    },
+    include: {
+      Equipment: true,
+    },
+  });
+
+  // Ensure no null values are present
+  const filteredEqLogs = eqlogs.filter((log) => log.Equipment !== null);
+
+  console.log("\n\n\nEquipment Logs:", filteredEqLogs);
+  revalidatePath("/dashboard/myTeam/" + employeeId);
+  return filteredEqLogs;
+}
+
+
+export async function updateEq(formData1 : FormData){
+  {
+    console.log(formData1);
+    const id  = formData1.get("id") as string;
+    const e = formData1.get("qr_id") as string;
+    const alter = await prisma.equipment.findUnique({
+      where: {
+        qr_id: e,
+      }
+    })
+
+    console.log(alter);
+
+    const log = await prisma.employeeEquipmentLog.update({
+      where: {
+        id: Number(id),
+      },
+      data: {
+        equipment_id: alter?.id,
+        duration: Number(formData1.get("duration") as string),
+      },
+    });
+  }
+  revalidatePath('/dashboard/myTeam/' + formData1.get("employeeId"));
+}
+
+
 // Get all equipment forms
 export async function getEquipmentForms() {
   try {
