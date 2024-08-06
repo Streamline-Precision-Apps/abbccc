@@ -53,12 +53,14 @@ type EditWorkProps = {
   setEdit: (edit: boolean) => void;
   employeeId: string;
   date: string;
+  equipment: Equipment[];
 };
 
-const EditWork = ({ timesheetData, jobsitesData, costcodesData, edit, handleFormSubmit, setEdit, employeeId, date }: EditWorkProps) => {
+const EditWork = ({ timesheetData, jobsitesData, costcodesData, edit, equipment, handleFormSubmit, setEdit, employeeId, date }: EditWorkProps) => {
   const [timesheets, setTimesheets] = useState<Timesheet[]>([]);
   const [equipmentLogs, setEquipmentLogs] = useState<EquipmentLog[]>([]);
   const [message, setMessage] = useState<string | null>(null);
+
 
 
   const t = useTranslations("MyTeam");
@@ -322,10 +324,11 @@ const EditWork = ({ timesheetData, jobsitesData, costcodesData, edit, handleForm
                 onChange={(e) => handleEquipmentChange(e, log.id)}
                 disabled={!edit}
               >
-                {equipmentLogs.map((equipmentLog) => (
-                  <option key={equipmentLog.Equipment.id} value={equipmentLog.Equipment.name}>
-                    {equipmentLog.Equipment.name.slice(0, 10)} - {equipmentLog.Equipment.qr_id}
-                  </option>
+                
+                {equipment.map((equipmentLog) => (
+                    <option key={equipmentLog.id} value={equipmentLog.name} >
+                      {(equipmentLog.name).slice(0, 10)} - {equipmentLog.qr_id}
+                    </option>
                 ))}
               </select>
               <label htmlFor="eq-duration">{t("Duration")} </label>
