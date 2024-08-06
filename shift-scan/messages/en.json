@@ -32,6 +32,7 @@
         "ScanEquipment": "Scan Equipment",
         "Cancel": "Cancel",
         "TroubleScanning": "Trouble Scanning?",
+        "ReturnToJobsite": "Switching CostCode?",
         "Title-jobsite": "Select Job Site",
         "Title-equipment": "Select Equipment",
         "Title-costcode": "Select Cost Code",
