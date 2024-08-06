@@ -5,7 +5,23 @@ import Content from "@/app/(content)/content";
 export default async function Home() {
   const user = cookies().get("user");
   const userid = user ? user.value : undefined;
-  
+
+  // Calculate the start date of the current pay period
+  const calculatePayPeriodStart = () => {
+    const startDate = new Date(2024, 7, 5); // August 5, 2024
+    const now = new Date();
+    const diff = now.getTime() - startDate.getTime();
+    const diffWeeks = Math.floor(diff / (2 * 7 * 24 * 60 * 60 * 1000)); // Two-week intervals
+    return new Date(startDate.getTime() + diffWeeks * 2 * 7 * 24 * 60 * 60 * 1000);
+  };
+
+  const payPeriodStart = calculatePayPeriodStart();
+  const currentDate = new Date();
+
+  // Calculate the start of today
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0); // Set to start of the day
+
   // Fetch all records
   const jobCodes = await prisma.jobsite.findMany({
     select: {
@@ -14,7 +30,7 @@ export default async function Home() {
       jobsite_name: true,
     },
   });
-  
+
   const costCodes = await prisma.costCode.findMany({
     select: {
       id: true,
@@ -22,7 +38,7 @@ export default async function Home() {
       cost_code_description: true,
     },
   });
-  
+
   const equipment = await prisma.equipment.findMany({
     select: {
       id: true,
@@ -30,7 +46,7 @@ export default async function Home() {
       name: true,
     },
   });
-  
+
   // Fetch recent records
   const recentJobSites = await prisma.jobsite.findMany({
     select: {
@@ -39,11 +55,11 @@ export default async function Home() {
       jobsite_name: true,
     },
     orderBy: {
-      createdAt: 'desc',
+      createdAt: "desc",
     },
     take: 5,
   });
-  
+
   const recentCostCodes = await prisma.costCode.findMany({
     select: {
       id: true,
@@ -51,11 +67,11 @@ export default async function Home() {
       cost_code_description: true,
     },
     orderBy: {
-      createdAt: 'desc',
+      createdAt: "desc",
     },
     take: 5,
   });
-  
+
   const recentEquipment = await prisma.equipment.findMany({
     select: {
       id: true,
@@ -63,24 +79,32 @@ export default async function Home() {
       name: true,
     },
     orderBy: {
-      createdAt: 'desc',
+      createdAt: "desc",
     },
     take: 5,
   });
 
-  const currentDate = new Date();
-  const past24Hours = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
-  
-  const timeSheets = await prisma.timeSheet.findMany({
+  // Fetch timesheets for the current pay period
+  const payPeriodSheets = await prisma.timeSheet.findMany({
     where: {
       userId: userid,
-      start_time: { lte: currentDate, gte: past24Hours },
+      start_time: { gte: payPeriodStart, lte: currentDate },
     },
     select: {
       duration: true,
     },
   }).then((sheets) => sheets.filter((sheet) => sheet.duration !== null)); // Filter out null durations
 
+  // Fetch timesheets for today
+  const todaySheets = await prisma.timeSheet.findMany({
+    where: {
+      userId: userid,
+      start_time: { gte: todayStart, lte: currentDate },
+    },
+    select: {
+      duration: true,
+    },
+  }).then((sheets) => sheets.filter((sheet) => sheet.duration !== null)); // Filter out null durations
 
   return (
     <Content
@@ -90,7 +114,8 @@ export default async function Home() {
       recentJobSites={recentJobSites}
       recentCostCodes={recentCostCodes}
       recentEquipment={recentEquipment}
-      timeSheets={timeSheets}
+      payPeriodSheets={payPeriodSheets}
+      todaySheets={todaySheets}
     />
   );
 }
