@@ -4,101 +4,78 @@ import { fetchTimesheets } from "@/actions/timeSheetActions";
 import EditWork from "./edit-work";
 import { Sections } from "@/components/(reusable)/sections";
 import { Titles } from "@/components/(reusable)/titles";
-import EquipmentSheets from "./equipment-sheets";
+import { fetchEq } from "@/actions/equipmentActions";
 
 type Props = {
-    employeeId: string;
-    costcodeData: any[];
-    jobsiteData: any[];
-    equipmentData: any[];
-};
-
-type Equipment = {
-    id: string;
-    name: string;
-    qr_id: string;
-    description: string;
-    status: string;
-    equipment_tag: string;
-    last_inspection: Date | null;
-    last_repair: Date | null;
-    is_active: boolean;
-};
-
-type equipmentData = {
-    id: string;
-    employee_id: string;
-    equipment_id: string;
-    start_time: Date;
-    end_time: Date | null;
-    duration: number | null;
-    Equipment: Equipment;
+employeeId: string;
+costcodeData: any[];
+jobsiteData: any[];
+equipmentData: any[];
 };
 
 export const EmployeeTimeSheets = ({ employeeId, costcodeData, equipmentData, jobsiteData }: Props) => {
-    const [timesheets, setTimesheets] = useState<any[]>([]);
-    const [filteredEquipmentData, setFilteredEquipmentData] = useState<equipmentData[]>([]);
-    const [message, setMessage] = useState("");
-    const [edit, setEdit] = useState(false);
-    const formRef = useRef<HTMLFormElement>(null);
-    const [date, setDate] = useState("");
+const [timesheets, setTimesheets] = useState<any[]>([]);
+const [filteredEquipmentData, setFilteredEquipmentData] = useState<any[]>([]);
+const [message, setMessage] = useState("");
+const [edit, setEdit] = useState(false);
+const formRef = useRef<HTMLFormElement>(null);
+const [date, setDate] = useState("");
 
-    const handleFormSubmitWrapper = async (date: string, message?: string) => {
-        const results = await fetchTimesheets(employeeId, date);
-        setTimesheets(results);
-        setMessage(message || "");
+const handleFormSubmitWrapper = async (date: string, message?: string) => {
+const results = await fetchTimesheets(employeeId, date);
+setTimesheets(results);
 
-        const filteredEquipment = equipmentData.filter(log => {
-            const logDate = log.start_time.toISOString().split('T')[0];
-            return logDate === date;
-        });
-        setFilteredEquipmentData(filteredEquipment);
-    };
+const eqResults = await fetchEq(employeeId, date);
+setFilteredEquipmentData(eqResults);
 
-    const handleFormChange = () => {
-        formRef.current?.requestSubmit();
-    };
+setMessage(message || "");
+};
 
-    const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        const formData = new FormData(formRef.current!);
-        const date = formData.get('date') as string;
-        setDate(date);
-        handleFormSubmitWrapper(date);
-    };
+const handleFormChange = () => {
+formRef.current?.requestSubmit();
+};
 
-    const handleFormSubmitFromEditWork = async (employeeId: string, date: string, message?: string) => {
-        handleFormSubmitWrapper(date, message);
-    };
+const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+event.preventDefault();
+const formData = new FormData(formRef.current!);
+const date = formData.get('date') as string;
+setDate(date);
+handleFormSubmitWrapper(date);
+};
 
-    useEffect(() => {
-        setMessage("");
-    }, [edit]);
+const handleFormSubmitFromEditWork = async (employeeId: string, date: string, message?: string) => {
+handleFormSubmitWrapper(date, message);
+};
 
-    return (
-        <>
-            <Sections size={"dynamic"} variant={"default"}>
-                <Sections size={"titleBox"} variant={"default"}>
-                    <h1>Select Date</h1>
-                    <form ref={formRef} onChange={handleFormChange} onSubmit={handleFormSubmit}>
-                        <input type="date" name="date" id="date" className="flex justify-center m-auto text-black text-2xl bg-white p-2 rounded border-2 border-black rounded-2xl" />
-                        <input type="hidden" name="id" value={employeeId} />
-                    </form>
-                    <Titles variant={"green"}>{message}</Titles>
-                </Sections>
-                <Sections size={"dynamic"}>
-                    <EditWork
-                        timesheetData={timesheets}
-                        edit={edit}
-                        costcodesData={costcodeData}
-                        jobsitesData={jobsiteData}
-                        handleFormSubmit={handleFormSubmitFromEditWork}
-                        setEdit={setEdit}
-                        employeeId={employeeId}
-                    />
-                    <EquipmentSheets equipmentData={equipmentData} />
-                </Sections>
-            </Sections>
-        </>
-    );
+useEffect(() => {
+setMessage("");
+}, [edit]);
+
+return (
+<>
+    <Sections size={"dynamic"} variant={"default"}>
+    <Sections size={"titleBox"} variant={"default"}>
+        <h1>Select Date</h1>
+        <form ref={formRef} onChange={handleFormChange} onSubmit={handleFormSubmit}>
+        <input type="date" name="date" id="date" className="flex justify-center m-auto text-black text-2xl bg-white p-2 rounded border-2 border-black rounded-2xl" />
+        <input type="hidden" name="id" value={employeeId} />
+        </form>
+        <Titles variant={"green"}>{message}</Titles>
+    </Sections>
+    <Sections size={"dynamic"}>
+        <EditWork
+        timesheetData={timesheets}
+        edit={edit}
+        costcodesData={costcodeData}
+        jobsitesData={jobsiteData}
+        equipmentData={filteredEquipmentData}
+        handleFormSubmit={handleFormSubmitFromEditWork}
+        setEdit={setEdit}
+        employeeId={employeeId}
+        date={date}
+        />
+    </Sections>
+    </Sections>
+</>
+);
 };

@@ -221,6 +221,7 @@ model TimeSheet {
 //tracks notes on the used equipment, who used it, where, the condition its in, and for how long
 model EmployeeEquipmentLog {
   id              Int       @id @default(autoincrement())
+  date            DateTime  @default(now())
   equipment_id    String
   jobsite_id      String
   employee_id     String
