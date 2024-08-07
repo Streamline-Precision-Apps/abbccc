@@ -64,5 +64,5 @@ export async function uploadImage(formdata: FormData) {
             image: formdata.get('image') as string
         }
     })
-
+    revalidatePath('/hamburger/profile');
 }

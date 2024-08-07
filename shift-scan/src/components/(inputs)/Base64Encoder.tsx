@@ -38,10 +38,11 @@ export default function Base64Encoder({ employee, base64String, setBase64String 
   return (
     <Sections size="titleBox">
       <form action={uploadImage} >
-      <Buttons variant="default" size="default" type="submit">Upload Image</Buttons>
       <input type="file" accept="image/*" onChange={handleFileChange} />
-      <input type="text" name="image" value={base64String} readOnly />
-      <input type="text" name="id" value={employee.id} readOnly />
+      <Buttons variant="default" size="default" type="submit">Upload Image</Buttons>
+      
+      <input type="hidden" name="image" value={base64String} readOnly />
+      <input type="hidden" name="id" value={employee.id} readOnly />
       </form>
     </Sections>
   );
