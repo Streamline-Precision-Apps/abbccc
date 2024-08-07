@@ -38,11 +38,11 @@ export default function EmployeeInfo({ employee, contacts, training }: Props ) {
 
   return (
     <div>
-      <Base64Encoder employee={employee} base64String={base64String} setBase64String={setBase64String}  />
       <Sections size={"titleBox"}>
         <img src={employee?.image ?? ''} alt="Selected" style={{ maxWidth: '10%', height: 'auto', margin: 'auto' }} />
         <Titles variant={"default"} size={"h1"}>{employee?.firstName ?? ''} {employee?.lastName ?? ''}</Titles>
       </Sections>
+      <Base64Encoder employee={employee} base64String={base64String} setBase64String={setBase64String}  />
       <Sections size={"dynamic"}>
         <form action="" className=" p-5 mx-10 flex flex-col gap-5">
           <div className="flex flex-col justify-center gap-1 items-center">
