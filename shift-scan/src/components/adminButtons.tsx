@@ -20,7 +20,7 @@ export default function AdminButtons({}: AdminButtonsProps) {
     string | null
   >(null);
 
-  const handleShowManagerButtons = () => {
+  const handleResetButtons = () => {
     setAdditionalButtonsType(null);
   };
 
@@ -29,10 +29,9 @@ export default function AdminButtons({}: AdminButtonsProps) {
   };
   return (
     <div className="grid grid-cols-2 grid-rows-2 gap-4 w-full m-4 p-4">
-      <Manager show={!additionalButtonsType} />
       <Admin
         additionalButtonsType={additionalButtonsType}
-        handleShowManagerButtons={handleShowManagerButtons}
+        handleResetButtons={handleResetButtons}
         handleShowAdditionalButtons={handleShowAdditionalButtons}
       />
     </div>
