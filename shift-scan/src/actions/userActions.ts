@@ -1,6 +1,6 @@
 "use server";
 import prisma from "@/lib/prisma";
-import { permission } from "@prisma/client";
+import { Permission } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 export async function createUser(formData: FormData) {
@@ -12,11 +12,11 @@ try{
             username: formData.get('username') as string,
             password: formData.get('password') as string,
             DOB: formData.get('DOB') as string,
-            truck_view: (formData.get('truck_view') as unknown as boolean),
-            tasco_view: (formData.get('tasco_view')as unknown  as boolean),
-            labor_view: (formData.get('labor_view')as unknown  as boolean),
-            mechanic_view: (formData.get('mechanic_view') as unknown as boolean),
-            permission: formData.get('permission') as permission,
+            truck_view: (Boolean(formData.get('truck_view')) as unknown as boolean),
+            tasco_view: (Boolean(formData.get('tasco_view')) as unknown  as boolean),
+            labor_view: (Boolean(formData.get('labor_view')) as unknown  as boolean),
+            mechanic_view: (Boolean(formData.get('mechanic_view')) as unknown as boolean),
+            permission: formData.get('permission') as Permission,
             email: formData.get('email') as string,
             emailVerified: formData.get('emailVerified') as string,
             phone: formData.get('phone') as string,
@@ -41,7 +41,7 @@ export async function updateUser(formData: FormData, id: string) {
             tasco_view: (formData.get('tasco_view')as unknown  as boolean),
             labor_view: (formData.get('labor_view')as unknown  as boolean),
             mechanic_view: (formData.get('mechanic_view') as unknown as boolean),
-            permission: formData.get('permission') as permission,
+            permission: formData.get('permission') as Permission,
             email: formData.get('email') as string,
             emailVerified: formData.get('emailVerified') as string,
             phone: formData.get('phone') as string,
