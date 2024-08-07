@@ -1,31 +1,41 @@
-"use server";
-import prisma from "@/lib/prisma";
+"use client";
 import { Input } from "@nextui-org/react";
 import { Sections } from "@/components/(reusable)/sections";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
-import { log } from "console";
 import { useTranslations } from "next-intl";
 
-export default async function EmployeeInfo() {
+type Employee = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+};
+
+type Props = {
+  employee: Employee;
+  contacts: any;
+  training: any;
+};
+
+export default function EmployeeInfo({ employee, contacts, training }: Props ) {
   const t = useTranslations("Hamburger");
+  
+  const total = (Number(training?.assigned_trainings));
+  const completed = (Number(training?.completed_trainings));
+  console.log(total + " " + completed) 
 
-  const employee = await prisma.user.findUnique({
-    where: {
-      id: "1",
-    },
-  });
+  const completionStatus = (completed / total);
+  console.log(completionStatus)
 
-  const contacts = await prisma.contact.findUnique({
-    where: {
-      id: 1,
-    },
-  });
+  const completionPercentage = (completionStatus * 100).toFixed(0);
+  console.log(completionPercentage)
 
   return (
     <div>
       <Sections size={"titleBox"}>
         <TitleBoxes
-          title={employee?.firstName + " " + employee?.lastName}
+          title={`${employee?.firstName ?? ''} ${employee?.lastName ?? ''}`}
           titleImg="/profile.svg"
           titleImgAlt="Profile Image"
         />
@@ -37,7 +47,7 @@ export default async function EmployeeInfo() {
             <Input
               isDisabled
               type="text"
-              defaultValue={employee?.id?.toString()}
+              defaultValue={employee?.id?.toString() ?? ''}
               className="border-2 border-black rounded-md"
             />
           </div>
@@ -46,7 +56,7 @@ export default async function EmployeeInfo() {
             <Input
               isDisabled
               type="email"
-              defaultValue={contacts?.email?.toString()}
+              defaultValue={contacts?.email ?? ''}
               className="border-2 border-black rounded-md"
             />
           </div>
@@ -54,19 +64,26 @@ export default async function EmployeeInfo() {
             <label htmlFor="">{t("ContactPhone#")}</label>
             <Input
               isDisabled
-              type="phone"
-              defaultValue={contacts?.phone_number}
+              type="tel"
+              defaultValue={contacts?.phone_number ?? ''}
               className="border-2 border-black rounded-md"
             />
           </div>
-          <div className="flex flex-col justify-center gap-3 items-center">
+          <div className="flex flex-col w-full justify-center gap-3 items-center">
             <label htmlFor="">{t("SafetyTraining")}</label>
-            <Input
-              isDisabled
-              type=""
-              defaultValue=""
-              className="border-2 border-black rounded-md"
-            />
+            <div
+              className={`${completionStatus * 10 > 100 ? 'bg-green-500 w-full': 'bg-white w-full border-2 border-black ' }`}
+            >
+              <div style={{ width: `${completionPercentage}%`}} className="bg-app-orange">
+                <h1>{completionPercentage}% </h1>
+              <Input
+                isDisabled
+                type="text"
+                className={" rounded-md"}
+                style={{ width: `${completionPercentage}%` , padding: "5px", margin: "0px"}}
+                />
+                </div>
+            </div>
           </div>
         </form>
       </Sections>

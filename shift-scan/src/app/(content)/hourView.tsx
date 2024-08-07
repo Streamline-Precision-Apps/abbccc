@@ -1,5 +1,7 @@
 "use client";
 import { getCookieValue } from "@/app/(content)/getCookie";
+import { Buttons } from "@/components/(reusable)/buttons";
+import { Images } from "@/components/(reusable)/images";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
@@ -29,14 +31,13 @@ const ViewComponent: React.FC<ViewComponentProps> = ({ scrollLeft, scrollRight, 
     const datetoday = currentDate.toLocaleDateString(locale, { month: 'short', day: 'numeric', year: 'numeric' });
 
     return (
-        <div className="w-full">
-            <div className="flex justify-between w-full flex-row items-center">
-                <button onClick={scrollLeft} className="bg-app-blue text-white p-2 rounded">{t("DA-ScrollLeft")}</button>
-                <button onClick={returnToMain} className="bg-app-red text-white p-2 rounded">{t("DA-Return")}</button>
-                <button onClick={scrollRight} className="bg-app-blue text-white p-2 rounded">{t("DA-ScrollRight")}</button>
+        <div>
+            <div className="flex flex-row justify-between">
+                <Buttons variant={"default"} size={"small"} onClick={scrollLeft} ><Images titleImg={"/backarrow.svg"} titleImgAlt="left" variant={"icon"} size={"widgetSm"} /></Buttons>
+                <Buttons variant={"red"} size={"small"} onClick={returnToMain} >{t("DA-Return")}</Buttons>
+                <Buttons variant={"default"} size={"small"} onClick={scrollRight} ><Images titleImg={"/arrow.svg"} titleImgAlt="left" variant={"icon"} size={"widgetSm"} /></Buttons>
             </div>
-
-            <div className="flex justify-between w-full mt-4 flex flex-col items-center">
+            <div>
                 <h1>{Weekday}</h1>
                 <h1>{datetoday}</h1>
             </div>

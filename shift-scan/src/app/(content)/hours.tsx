@@ -23,14 +23,14 @@ export default function Hours({ setToggle, display }: HoursProps) {
   return display ? (
     <>
       <Buttons onClick={handler} variant={"darkBlue"} size={"default"}>
-        <h2 className="text-4xl">{t("PayPeriodHours")} </h2>
-        <span className="w-1/4 bg-white text-2xl text-black py-3 px-2 rounded border-2 border-black rounded-2xl lg:text-2xl lg:p-3 ">
+        <h2>{t("PayPeriodHours")} </h2>
+        <span>
           {payPeriodHours}
         </span>
       </Buttons>
     </>
   ) : (
-    <div className="w-11/12 mx-auto">
+    <div>
       <ViewHoursComponent toggle={setToggle} />
     </div>
   );

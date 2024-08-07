@@ -7,6 +7,9 @@ export default async function Home() {
   const user = cookies().get("user");
   const userid = user ? user.value : undefined;
 
+  const lang = cookies().get("locale");
+  const locale = lang ? lang.value : "en"; 
+
   // Calculate the start date of the current pay period
   const calculatePayPeriodStart = () => {
     const startDate = new Date(2024, 7, 5); // August 5, 2024
@@ -106,6 +109,7 @@ export default async function Home() {
 
   return (
     <Content
+      locale={locale}
       jobCodes={jobCodes}
       CostCodes={costCodes}
       equipment={equipment}
