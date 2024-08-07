@@ -3,10 +3,10 @@ import { editTimeSheet } from "@/actions/timeSheetActions";
 import { fetchEq, updateEq } from "@/actions/equipmentActions";
 import { Images } from "@/components/(reusable)/images";
 import { useTranslations } from "next-intl";
-import React, { useState, useEffect, useRef } from "react";
+import React from "react";
+import { useState, useEffect} from "react";
+import Equipment from "../../equipment/page";
 import { Sections } from "@/components/(reusable)/sections";
-import { Buttons } from "@/components/(reusable)/buttons";
-
 type Timesheet = {
   id: string;
   start_time: string;
@@ -241,14 +241,10 @@ const EditWork = ({ timesheetData, jobsitesData, costcodesData, edit, equipment,
     <div>
       <Sections size={"dynamic"}>
       {timesheetData.length === 0 ? null : (
-        <>
-        {edit ?  
-          ( <>
-          <Buttons onClick={editHandler} variant={"red"} size={"default"}><Images titleImg={"/cancel.svg"} titleImgAlt={"Cancel"} variant={"icon"} size={"backButton"} /></Buttons>
-          <Buttons onClick={editHandler} variant={"default"} size={"default"}><Images titleImg={"/save.svg"} titleImgAlt={"Save Changes"} variant={"icon"} size={"backButton"} /></Buttons>
-          </>) : <Buttons onClick={editHandler} variant={"orange"} size={"default"}><Images titleImg={"/edit.svg"} titleImgAlt={"Edit"} variant={"icon"} size={"backButton"} /></Buttons>  
-          }
-        </>
+        <div className="flex flex-row justify-between p-2">
+          <button className={buttonClass} onClick={editHandler}>{word}</button>
+          {edit ? <button className="flex bg-app-blue text-white font-bold p-2 rounded" onClick={handleSaveChanges}><Images titleImg={"/save.svg"} titleImgAlt={"Save Changes"} variant={"icon"} size={"backButton"} /></button> : null}
+        </div>
       )}
       {message ? (
         <div >

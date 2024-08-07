@@ -81,3 +81,14 @@
 8/1/24
 - Researched Tailwind States (Hover, Focus, etc)
 - 
+
+8/6/24
+- Researched manipulating disabled/enabled inputs with typescript. Better organized inputs, labels, forms. 
+- Merge meeting
+- Worked on styling my teams crew page/ updated various reusable components
+- Created grids and contents reusable components
+
+8/7/24
+- Researched overflows in tailwind
+- Continue working on my team page 
+
