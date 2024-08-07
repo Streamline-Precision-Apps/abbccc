@@ -17,22 +17,40 @@ const ControlComponent: React.FC<ControlComponentProps> = ({ toggle }) => {
   const t = useTranslations("Home");
   const { payPeriodHours } = useSavedPayPeriodHours();
 
+  const calculatePayPeriodStart = () => {
+    const startDate = new Date(2024, 7, 5); // August 5, 2024
+    const now = new Date();
+    const diff = now.getTime() - startDate.getTime();
+    const diffWeeks = Math.floor(diff / (2 * 7 * 24 * 60 * 60 * 1000)); // Two-week intervals
+    return new Date(
+      startDate.getTime() + diffWeeks * 2 * 7 * 24 * 60 * 60 * 1000
+    );
+  };
+
   // Calculate daily hours from the timesheets
   const dailyHours = useMemo(() => {
+    const startDate = calculatePayPeriodStart();
+    const endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + 13); // Two-week period
+
+    const dateKey = (date: Date) => date.toISOString().split("T")[0];
+
+    // Initialize daily hours with zeros for each date in the pay period
     const hoursMap: { [key: string]: number } = {};
+    let currentDate = new Date(startDate);
 
+    while (currentDate <= endDate) {
+      hoursMap[dateKey(currentDate)] = 0;
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    // Accumulate the timesheet durations into the initialized dates
     if (payPeriodTimeSheet) {
-      console.log(payPeriodTimeSheet);
       payPeriodTimeSheet.forEach((sheet) => {
-        // Convert start_time to a Date object and extract only the date part
         const dateKey = new Date(sheet.start_time).toISOString().split("T")[0];
-
-        // Accumulate the duration for each date
-        if (!hoursMap[dateKey]) {
-          hoursMap[dateKey] = 0;
+        if (hoursMap[dateKey] !== undefined) {
+          hoursMap[dateKey] += sheet.duration ?? 0;
         }
-        hoursMap[dateKey] += sheet.duration ?? 0;
-        console.log(hoursMap);
       });
     }
 
@@ -45,7 +63,7 @@ const ControlComponent: React.FC<ControlComponentProps> = ({ toggle }) => {
   // Set the initial index based on the current date
   useEffect(() => {
     const today = new Date().toISOString().split("T")[0];
-    const todayIndex = dailyHours.findIndex(entry => entry.date === today);
+    const todayIndex = dailyHours.findIndex((entry) => entry.date === today);
     if (todayIndex !== -1) {
       setCurrentIndex(todayIndex);
     }
@@ -53,7 +71,6 @@ const ControlComponent: React.FC<ControlComponentProps> = ({ toggle }) => {
 
   // Current data based on index
   const currentData = useMemo(() => {
-    console.log(dailyHours);
     const currentDay = dailyHours[currentIndex];
     const prevDay = dailyHours[currentIndex - 1];
     const nextDay = dailyHours[currentIndex + 1];

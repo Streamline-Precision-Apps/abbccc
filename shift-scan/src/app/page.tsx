@@ -9,12 +9,11 @@ export default async function Home() {
 
   // Calculate the start date of the current pay period
   const calculatePayPeriodStart = () => {
-    const startDate = new Date(2024, 7, 4); // August 4, 2024
+    const startDate = new Date(2024, 7, 5); // August 5, 2024
     const now = new Date();
     const diff = now.getTime() - startDate.getTime();
-    const diffWeeks = Math.floor(diff / (2 * 7 * 24 * 60 * 60 * 1000))
-    
-    ; // Two-week intervals
+    const diffWeeks = Math.floor(diff / (2 * 7 * 24 * 60 * 60 * 1000)); // Two-week intervals
+
     return new Date(
       startDate.getTime() + diffWeeks * 2 * 7 * 24 * 60 * 60 * 1000
     );
