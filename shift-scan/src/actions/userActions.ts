@@ -57,4 +57,13 @@ export async function deleteUser(id: string) {
 }
 
 
-// we call these function by using a form action={...} in the form ... = post, delete, put, patch
+export async function uploadImage(formdata: FormData) {
+    console.log(formdata);
+    await prisma.user.update({
+        where: { id: formdata.get('id') as string },
+        data: {
+            image: formdata.get('image') as string
+        }
+    })
+    revalidatePath('/hamburger/profile');
+}

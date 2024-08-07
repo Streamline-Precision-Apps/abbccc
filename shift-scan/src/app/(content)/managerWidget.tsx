@@ -3,16 +3,12 @@ import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
 import { User } from "@/lib/types";
 import { useTranslations } from "next-intl";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 interface Props {
   user: User;
 }
 export default function ManagerWidget({ user }: Props) {
   const t = useTranslations("Home");
-  const router = useRouter();
-
   if (
     user.permission === "ADMIN" ||
     user.permission === "SUPERADMIN" ||

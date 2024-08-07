@@ -6,7 +6,7 @@ import { ButtonHTMLAttributes, FC } from "react";
 import { cn } from "@/components/(reusable)/utils";
 
 const ButtonVariants = cva(
-  "flex flex-col items-center justify-center border-4 border-black rounded-xl",
+  "flex items-center border-4 border-black rounded-xl shadow-[8px_8px_0px_grey]",
   {
     variants: {
       variant: {
@@ -15,16 +15,18 @@ const ButtonVariants = cva(
         green: "bg-app-green",
         red: "bg-app-red",
         orange: "bg-app-orange",
-        icon: "bg-none border-0",
-        listItem: "bg-yellow-500",
+        icon: "bg-none border-0 shadow-none",
+      },
+      position: {
+        left: "left-5",
       },
       size: {
-        default: "mx-auto my-3 p-1 w-5/6 h-100 ",
-        small: "p-2 w-30 h-30",
+        default: "flex-col mx-auto my-3 p-1 w-5/6 h-100 ",
+        listLg: "flex-row w-full h-28 mt-5 first:mt-0 overflow-hidden justify-stretch",
         widgetSm: "w-full shadow-[8px_8px_0px_grey]",
         widgetMed: "p-10 w-40 h-40",
         widgetLg: "p-20 w-50 h-50",
-        backButton: "absolute top-5 left-5",
+        backButton: "absolute top-2 left-2",
         thin: " h-10 w-[520px] rounded-t-full z-10",
       }
     },
@@ -37,9 +39,10 @@ const ButtonVariants = cva(
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof ButtonVariants> {
   href?: string;
+  id?: string;
 }
 
-const Buttons: FC<ButtonProps> = ({className, variant, size, href, ...props}) => {
+const Buttons: FC<ButtonProps> = ({className, variant, size, href, id, ...props}) => {
     const router = useRouter();
     const pageAction = () => {
         if (href) {

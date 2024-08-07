@@ -18,13 +18,18 @@ const ControlComponent: React.FC<ControlComponentProps> = ({ toggle }) => {
   const { payPeriodHours } = useSavedPayPeriodHours();
 
   const calculatePayPeriodStart = () => {
-    const startDate = new Date(2024, 7, 5); // August 5, 2024
+    try{
+    const startDate = new Date(2024, 7, 5); // August 5, 2024 ->later you can change this to the actual start date of the app/ first day of the pay period when the app is deployed
     const now = new Date();
     const diff = now.getTime() - startDate.getTime();
     const diffWeeks = Math.floor(diff / (2 * 7 * 24 * 60 * 60 * 1000)); // Two-week intervals
     return new Date(
       startDate.getTime() + diffWeeks * 2 * 7 * 24 * 60 * 60 * 1000
     );
+  }
+  catch{
+    throw new Error("Failed to calculate pay period start date");
+  }
   };
 
   // Calculate daily hours from the timesheets
@@ -111,7 +116,7 @@ const ControlComponent: React.FC<ControlComponentProps> = ({ toggle }) => {
 
   return (
     <>
-      <div className="border bg-gray-200 rounded mb-2">
+      <div>
         <ViewComponent
           scrollLeft={scrollLeft}
           scrollRight={scrollRight}
@@ -119,16 +124,16 @@ const ControlComponent: React.FC<ControlComponentProps> = ({ toggle }) => {
           currentDate={currentDate}
         />
       </div>
-      <div className="p-1 border-2 border-black rounded flex flex-col items-center justify-center w-full">
-        <p className="text-xs p-1">
+      <div >
+        <p >
           {t("DA-PayPeriod-Label")} {payPeriodHours} {t("Unit")}
         </p>
-        {/* This div needs to be here for the chart to render correctly. */}
-        <div style={{ width: "80%", height: 180 }}>
+        {/* This div needs to be here for the chart to render correctly. It's a hack. I'm sorry. */}
+        <div style={{ margin: "auto", width: "100%", height: 180 }}>
           <BarChartComponent data={currentData} currentIndex={currentIndex} />
         </div>
         <h2>
-          {currentData.value || 0} {t("DA-Time-Label")}
+          {currentData.value.toFixed(2) || 0} {t("DA-Time-Label")}
         </h2>
       </div>
     </>
