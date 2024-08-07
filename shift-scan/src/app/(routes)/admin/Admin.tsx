@@ -14,13 +14,13 @@ import { Equipment, Logs } from "@/lib/types";
 
 interface AdminProps {
   additionalButtonsType: string | null;
-  handleShowManagerButtons: () => void;
+  handleResetButtons: () => void;
   handleShowAdditionalButtons: (type: string) => void;
 }
 
 export const Admin: React.FC<AdminProps> = ({
   additionalButtonsType,
-  handleShowManagerButtons,
+  handleResetButtons,
   handleShowAdditionalButtons,
 }) => {
   const t = useTranslations("admin");
@@ -44,7 +44,7 @@ export const Admin: React.FC<AdminProps> = ({
           <Buttons
             variant={"default"}
             size={"widgetSm"}
-            onClick={handleShowManagerButtons}
+            onClick={handleResetButtons}
           >
             <div className="flex flex-row justify-center items-center ">
               <Images
@@ -67,23 +67,14 @@ export const Admin: React.FC<AdminProps> = ({
               variant={"icon"}
               size={"default"}
             />
-            <Texts>Log New</Texts>
+            <Texts>Add New Employee</Texts>
           </Buttons>
           <Modals
             isOpen={isModalOpen}
             handleClose={handleCloseModal}
             variant={"default"}
-            size={"clock"}
-            type={"clock"}
+            size={"default"}
           >
-            <div className="flex flex-col bg-white px-2 ">
-              <ClockProcessor
-                type={"equipment"}
-                id={user?.id}
-                scannerType={"equipment"}
-                isModalOpen={isModalOpen}
-              />
-            </div>
           </Modals>
           <Buttons
             variant={"orange"}
@@ -96,15 +87,15 @@ export const Admin: React.FC<AdminProps> = ({
               variant={"icon"}
               size={"default"}
             />
-            <Texts>Current Equipment</Texts>
+            <Texts>See Current Employees</Texts>
           </Buttons>
         </>
-      ) : additionalButtonsType === "clockOut" ? (
+      ) : additionalButtonsType === "asset" ? (
         <>
           <Buttons
             variant={"default"}
             size={"widgetSm"}
-            onClick={handleShowManagerButtons}
+            onClick={handleResetButtons}
           >
             <Texts>Return Home</Texts>
           </Buttons>
@@ -112,67 +103,37 @@ export const Admin: React.FC<AdminProps> = ({
             variant={"orange"}
             size={"widgetSm"}
           >
-            <Texts>Start Break</Texts>
+            <Texts>AssetButton1</Texts>
           </Buttons>
-          <Modals
-            isOpen={isModalOpen}
-            handleClose={handleCloseModal}
-            variant={"default"}
-            size={"clock"}
-            type={"clock"}
-          >
-            <div className="flex flex-col bg-white px-2 ">
-              <h1>Equipment logs need to be submitted.</h1>
-              <Buttons
-                variant={"orange"}
-                size={"default"}
-                href={`/dashboard/equipment/current`}
-              >
-                <Texts>View Current Equipment</Texts>
-              </Buttons>
-            </div>
-          </Modals>
           <Buttons variant={"red"} size={"widgetSm"} >
-            <Texts>End Work Day</Texts>
+            <Texts>AssetButton2</Texts>
+          </Buttons>
+          <Buttons variant={"red"} size={"widgetSm"} >
+            <Texts>AssetButton3</Texts>
+          </Buttons>
+        </>
+      ) : additionalButtonsType === "reports" ? (
+        <>
+          <Buttons
+            variant={"default"}
+            size={"widgetSm"}
+            onClick={handleResetButtons}
+            >
+            <Texts>Return Home</Texts>
           </Buttons>
         </>
       ) : (
         <>
-          <Buttons
-            variant={"orange"}
-            size={"widgetSm"}
-            onClick={handleOpenModal}
-          >
-            <Images
-              titleImg="/jobsite.svg"
-              titleImgAlt="Jobsite Icon"
-              variant={"icon"}
-              size={"widgetSm"}
-            ></Images>
-            <Texts>{t("SwitchJobs")}</Texts>
+          <Buttons href="" variant={"default"} size={"widgetSm"}
+            onClick={() => handleShowAdditionalButtons("recruitment")}>
+            <Images titleImg="/myTeam.svg" titleImgAlt="my team" variant={"icon"} size={"widgetSm"}></Images>
+            <Texts>{t("Recruitment")}</Texts>
           </Buttons>
-          <Modals
-            isOpen={isModalOpen}
-            handleClose={handleCloseModal}
-            variant={"default"}
-            size={"clock"}
-            type={"clock"}
-          >
-            <div className="flex flex-col bg-white px-2 ">
-              <ClockProcessor
-                type={"switchJobs"}
-                id={user?.id}
-                scannerType={"jobsite"}
-                isModalOpen={isModalOpen}
-              />
-            </div>
-          </Modals>
-
           <Buttons
-            href="/dashboard/equipment"
+            href=""
             variant={"green"}
             size={"widgetSm"}
-            onClick={() => handleShowAdditionalButtons("equipment")}
+            onClick={() => handleShowAdditionalButtons("asset")}
           >
             <Images
               titleImg="/equipment.svg"
@@ -180,26 +141,12 @@ export const Admin: React.FC<AdminProps> = ({
               variant={"icon"}
               size={"widgetSm"}
             ></Images>
-            <Texts>{t("Equipment")}</Texts>
+            <Texts>{t("Asset")}</Texts>
           </Buttons>
           <Buttons
-            href="/dashboard/forms"
-            variant={"default"}
-            size={"widgetSm"}
-          >
-            <Images
-              titleImg="/forms.svg"
-              titleImgAlt="Forms Icon"
-              variant={"icon"}
-              size={"widgetSm"}
-            ></Images>
-            <Texts>{t("Forms")}</Texts>
-          </Buttons>
-          <Buttons
-            href="/dashboard/clock-out"
             variant={"red"}
             size={"widgetSm"}
-            onClick={() => handleShowAdditionalButtons("clockOut")}
+            onClick={() => handleShowAdditionalButtons("reports")}
           >
             <Images
               titleImg="/clockOut.svg"
@@ -207,7 +154,7 @@ export const Admin: React.FC<AdminProps> = ({
               variant={"icon"}
               size={"widgetSm"}
             ></Images>
-            <Texts>{t("ClockOut")}</Texts>
+            <Texts>{t("reports")}</Texts>
           </Buttons>
         </>
       )}

@@ -94,7 +94,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({className, variant, size, type, title, t
                 <Images titleImg="/backArrow.svg" titleImgAlt={titleImgAlt} variant={"icon"} size={"backButton"}/>
             </Buttons>
             <Images titleImg={titleImg} titleImgAlt={titleImgAlt} variant={"icon"} size={"titlebox"}/>
-            <Titles variant={"default"} size={"h1"}>{title}</Titles>
+            <Titles variant={"default"} size={"titlebox"}>{title}</Titles>
         </div>
     )
 }
