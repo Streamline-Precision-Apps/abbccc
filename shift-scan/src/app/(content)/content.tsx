@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import Hours from "@/app/(content)/hours";
 import WidgetSection from "@/components/widgetSection";
 import { useSession } from "next-auth/react";
-import { CustomSession, User } from "@/lib/types";
+import { CustomSession, User, PayPeriodTimesheets } from "@/lib/types";
 import { useEffect, useState, useMemo } from "react";
 import { useSavedPayPeriodHours } from "../context/SavedPayPeriodHours";
 import { useSavedUserData } from "../context/UserContext";
@@ -26,6 +26,7 @@ import {
   useDBEquipment,
 } from "@/app/context/dbCodeContext";
 import { useSavedDailyHours } from "../context/SavedDailyHours";
+import { useSavedPayPeriodTimeSheet } from "../context/SavedPayPeriodTimeSheets";
 
 type jobCodes = {
   id: number;
@@ -38,25 +39,25 @@ type CostCode = {
   cost_code_description: string;
 };
 
-type equipment = {
+type Equipment = {
   id: string;
   qr_id: string;
   name: string;
 };
 
-type timeSheets = {
+type TimeSheets = {
+  start_time: Date; // Consistent naming
   duration: number | null;
 };
 
 interface clockProcessProps {
   jobCodes: jobCodes[];
   CostCodes: CostCode[];
-  equipment: equipment[];
+  equipment: Equipment[];
   recentJobSites: jobCodes[];
   recentCostCodes: CostCode[];
-  recentEquipment: equipment[];
-  payPeriodSheets: timeSheets[];
-  todaySheets: timeSheets[];
+  recentEquipment: Equipment[];
+  payPeriodSheets: TimeSheets[];
 }
 
 export default function Content({
@@ -67,54 +68,43 @@ export default function Content({
   recentCostCodes,
   recentEquipment,
   payPeriodSheets,
-  todaySheets,
 }: clockProcessProps) {
   const t = useTranslations("Home");
   const f = useTranslations("Footer");
   const { data: session } = useSession() as { data: CustomSession | null };
   const { setPayPeriodHours } = useSavedPayPeriodHours();
-  const { setDailyHours } = useSavedDailyHours();
   const [toggle, setToggle] = useState(true);
   const { setSavedUserData } = useSavedUserData();
   const router = useRouter();
-  const date = new Date().toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    weekday: 'long',
+  const date = new Date().toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    weekday: "long",
   });
   const [user, setData] = useState<User>({
-    id: '',
-    name: '',
-    firstName: '',
-    lastName: '',
-    permission: '',
+    id: "",
+    name: "",
+    firstName: "",
+    lastName: "",
+    permission: "",
   });
   const { jobsiteResults, setJobsiteResults } = useDBJobsite();
   const { costcodeResults, setCostcodeResults } = useDBCostcode();
   const { equipmentResults, setEquipmentResults } = useDBEquipment();
+  const { setPayPeriodTimeSheets } = useSavedPayPeriodTimeSheet(); // Correct name here
+  setPayPeriodTimeSheets(payPeriodSheets); // Correct usage here
 
   // Calculate total hours for the current pay period
   const totalPayPeriodHours = useMemo(() => {
     return payPeriodSheets
-      .filter((sheet): sheet is { duration: number } => sheet.duration !== null)
-      .reduce((total, sheet) => total + sheet.duration, 0);
+      .filter((sheet): sheet is TimeSheets => sheet.duration !== null)
+      .reduce((total, sheet) => total + (sheet.duration ?? 0), 0);
   }, [payPeriodSheets]);
 
-  // Calculate total hours for today
-  const totalTodayHours = useMemo(() => {
-    return todaySheets
-      .filter((sheet): sheet is { duration: number } => sheet.duration !== null)
-      .reduce((total, sheet) => total + sheet.duration, 0);
-  }, [todaySheets]);
-
-  // Example use of totalPayPeriodHours and totalTodayHours: log them or display them
-  console.log(`Total hours for the current pay period: ${totalPayPeriodHours}`);
-  console.log(`Total hours for today: ${totalTodayHours}`);
-
   useEffect(() => {
-    if (authStep === 'success') {
-      router.push('/dashboard');
+    if (authStep === "success") {
+      router.push("/dashboard");
     }
   }, []);
 
@@ -136,7 +126,6 @@ export default function Content({
 
   const handler = () => {
     setToggle(!toggle);
-    console.log(toggle);
   };
 
   useEffect(() => {
@@ -149,35 +138,34 @@ export default function Content({
   const setHoursContext = () => {
     // Set the pay period hours as a string
     setPayPeriodHours(totalPayPeriodHours.toFixed(2)); // Ensure it's to 2 decimal places
-    setDailyHours(totalTodayHours.toFixed(2));
   };
 
   const authStep = getAuthStep();
 
-  if (authStep === 'break') {
+  if (authStep === "break") {
     return (
       <>
-        <Bases variant={'default'} size={'default'}>
+        <Bases variant={"default"} size={"default"}>
           <Header />
-          <Sections size={'default'}>
-            <Headers variant={'relative'} size={'default'}></Headers>
-            <Banners variant={'default'} size={'default'}>
-              <Titles variant={'default'} size={'h1'}>
-                {t('Banner')}
+          <Sections size={"default"}>
+            <Headers variant={"relative"} size={"default"}></Headers>
+            <Banners variant={"default"} size={"default"}>
+              <Titles variant={"default"} size={"h1"}>
+                {t("Banner")}
               </Titles>
-              <Texts variant={'default'} size={'p1'}>
-                {t('Date', { date })}
+              <Texts variant={"default"} size={"p1"}>
+                {t("Date", { date })}
               </Texts>
             </Banners>
-            <Texts variant={'name'} size={'p1'}>
-              {t('Name', {
+            <Texts variant={"name"} size={"p1"}>
+              {t("Name", {
                 firstName: user.firstName,
                 lastName: user.lastName,
               })}
             </Texts>
             <DisplayBreakTime setToggle={handler} display={toggle} />
             <WidgetSection user={user} display={toggle} />
-            <Footers>{f('Copyright')}</Footers>
+            <Footers>{f("Copyright")}</Footers>
           </Sections>
         </Bases>
       </>
@@ -185,27 +173,27 @@ export default function Content({
   } else {
     return (
       <>
-        <Bases variant={'default'} size={'default'}>
+        <Bases variant={"default"} size={"default"}>
           <Header />
-          <Sections size={'default'}>
-            <Headers variant={'relative'} size={'default'}></Headers>
-            <Banners variant={'default'} size={'default'}>
-              <Titles variant={'default'} size={'h1'}>
-                {t('Banner')}
+          <Sections size={"default"}>
+            <Headers variant={"relative"} size={"default"}></Headers>
+            <Banners variant={"default"} size={"default"}>
+              <Titles variant={"default"} size={"h1"}>
+                {t("Banner")}
               </Titles>
-              <Texts variant={'default'} size={'p1'}>
-                {t('Date', { date })}
+              <Texts variant={"default"} size={"p1"}>
+                {t("Date", { date })}
               </Texts>
             </Banners>
-            <Texts variant={'name'} size={'p1'}>
-              {t('Name', {
+            <Texts variant={"name"} size={"p1"}>
+              {t("Name", {
                 firstName: user.firstName,
                 lastName: user.lastName,
               })}
             </Texts>
             <Hours setToggle={handler} display={toggle} />
             <WidgetSection user={user} display={toggle} />
-            <Footers>{f('Copyright')}</Footers>
+            <Footers>{f("Copyright")}</Footers>
           </Sections>
         </Bases>
       </>
