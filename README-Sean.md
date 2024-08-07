@@ -147,3 +147,4 @@ I finished some more prisma DB research and Created the clock out dashboard page
 ## 8/6/2024
 
 - Finished Pay period hours display.
+- Started admin view.
