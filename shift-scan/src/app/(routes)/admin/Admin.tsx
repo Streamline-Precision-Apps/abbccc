@@ -11,6 +11,7 @@ import { useSession } from "next-auth/react";
 import { CustomSession } from "@/lib/types";
 import { setAuthStep } from "@/app/api/auth";
 import { Equipment, Logs } from "@/lib/types";
+import AddEmployeeForm from "./addEmployee";
 
 interface AdminProps {
   additionalButtonsType: string | null;
@@ -74,7 +75,11 @@ export const Admin: React.FC<AdminProps> = ({
             handleClose={handleCloseModal}
             variant={"default"}
             size={"default"}
+            type={"default"}
           >
+            <div className="flex flex-col bg-white px-2 ">
+              <AddEmployeeForm />
+            </div>
           </Modals>
           <Buttons
             variant={"orange"}
@@ -99,16 +104,13 @@ export const Admin: React.FC<AdminProps> = ({
           >
             <Texts>Return Home</Texts>
           </Buttons>
-          <Buttons
-            variant={"orange"}
-            size={"widgetSm"}
-          >
+          <Buttons variant={"orange"} size={"widgetSm"}>
             <Texts>AssetButton1</Texts>
           </Buttons>
-          <Buttons variant={"red"} size={"widgetSm"} >
+          <Buttons variant={"red"} size={"widgetSm"}>
             <Texts>AssetButton2</Texts>
           </Buttons>
-          <Buttons variant={"red"} size={"widgetSm"} >
+          <Buttons variant={"red"} size={"widgetSm"}>
             <Texts>AssetButton3</Texts>
           </Buttons>
         </>
@@ -118,15 +120,24 @@ export const Admin: React.FC<AdminProps> = ({
             variant={"default"}
             size={"widgetSm"}
             onClick={handleResetButtons}
-            >
+          >
             <Texts>Return Home</Texts>
           </Buttons>
         </>
       ) : (
         <>
-          <Buttons href="" variant={"default"} size={"widgetSm"}
-            onClick={() => handleShowAdditionalButtons("recruitment")}>
-            <Images titleImg="/myTeam.svg" titleImgAlt="my team" variant={"icon"} size={"widgetSm"}></Images>
+          <Buttons
+            href=""
+            variant={"default"}
+            size={"widgetSm"}
+            onClick={() => handleShowAdditionalButtons("recruitment")}
+          >
+            <Images
+              titleImg="/myTeam.svg"
+              titleImgAlt="my team"
+              variant={"icon"}
+              size={"widgetSm"}
+            ></Images>
             <Texts>{t("Recruitment")}</Texts>
           </Buttons>
           <Buttons
