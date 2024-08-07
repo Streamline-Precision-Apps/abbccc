@@ -22,6 +22,7 @@ import {
   RecentEquipmentProvider,
 } from "./context/dbRecentCodesContext";
 import { SavedDailyHoursProvider } from "./context/SavedDailyHours";
+import { SavedPayPeriodTimeSheetProvider } from "./context/SavedPayPeriodTimeSheets";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -44,9 +45,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
                                 <CostCodeProvider>
                                   <RecentCostCodeProvider>
                                     <RecentJobSiteProvider>
-                                      <RecentEquipmentProvider>
-                                        {children}
-                                      </RecentEquipmentProvider>
+                                      <SavedPayPeriodTimeSheetProvider>
+                                        <RecentEquipmentProvider>
+                                          {children}
+                                        </RecentEquipmentProvider>
+                                      </SavedPayPeriodTimeSheetProvider>
                                     </RecentJobSiteProvider>
                                   </RecentCostCodeProvider>
                                 </CostCodeProvider>
