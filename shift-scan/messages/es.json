@@ -1,90 +1,229 @@
-{
+{   
     "PortalLogin": {
-        "Title": "Inicio de Sesión en el Portal",
+        "Title": "El Portal de Inicio de sesión",
         "lN1": "ID de Empleado",
-        "lN2": "Contraseña",
-        "btn-signIn": "Iniciar sesión",
-        "lN3": "Uncheck to use English",
-        "btn-forgot": "¿Olvidó su contraseña?",
-        "Error": "Usuario o contraseña inválidos",
+        "lN2": "Contraseña",
+        "btn-signIn": "Iniciar Sesion",
+        "lN3": "Speak English?",
+        "btn-forgot": "olvides mi contraseña?",
+        "Error": "Nombre de usuario o contraseña no válido",
         "lN4": "Copyright © 2024. Todos los derechos reservados."
     },
-    "modal-settings": {
-        "Settings" : "Configuraciones",
-        "btn-inbox" : "Bandeja de entrada",
-        "btn-profile" : "Perfil",
-        "btn-notifications" : "Notificaciones"
+        "Home" : {
+            "Banner": "¡Bienvenido de vuelta!",
+            "Name": "{firstName} {lastName}",
+            "Date": "{date}",
+            "DailyHours": "Horas Totalales:",
+            "PayPeriodHours": "Total de horas del período",
+            "Break": " El tiempo de descanso:",
+            "Unit": "hras.",
+            "DA-Time-Label" : "Horas",
+            "DA-PayPeriod-Label" : "Total de horas del período",
+            "DA-ScrollLeft": "Desplazamiento a la izquierda",
+            "DA-ScrollRight": "Desplácese a la derecha",
+            "DA-Return": " Volver",
+            "DA-Today": "Hoy",
+            "Clock-btn": "Ficharme",
+            "MyTeam-btn": "Mi equipo",
+            "Qr-btn": "Generador de QR "
+    },
+    "Clock": {
+        "ScanJobSite": "Escanear el sitio de trabajo",
+        "ScanQR": "Escanear el código QR",
+        "ScanEquipment": "Escanee el equipo",
+        "Cancel": "Cancelar",
+        "TroubleScanning": "¿Problemas para escanear?",
+        "ReturnToJobsite": "¿Cambiar Código de coste?",
+        "Title-jobsite": "Seleccione el sitio ",
+        "Title-equipment": "Seleccione el equipo",
+        "Title-costcode": "Seleccione el Código de coste",
+        "search-jobsite": "Escribe aquí",
+        "search-equipment": "Escribe aquí",
+        "search-costcode": "Escribe aquí",
+        "VerifyJobSite": "Ficharme",
+        "VerifyEquipment": "Verificar el equipo",
+        "Date-label": "Fecha",
+        "JobSite-label": "el sitio #",
+        "Equipment-label": "Equipo encontrado:",
+        "CostCode-label": "Código de coste",
+        "ClockIn-btn": "Ficharme",
+        "Confirmation-time": "Fichado a las ",
+        "Confirmation-job-message-1": "Proceso completado",
+        "Confirmation-job-message-2": "¡Gracias! El parte de horas se ha creado correctamente.",
+        "Confirmation-job-message-3": "Sitios cambiados con éxito",
+        "Confirmation-job-message-4": "Se ha enviado el parte de horas y se ha creado uno nuevo.",
+        "Confirmation-eq-message-1": "Proceso completado",
+        "Confirmation-eq-message-2": "¡Gracias! Su equipo ha sido registrado con éxito.",
+        "Equipment-result": "Equipo encontrado:",
+        "Equipment-notes-title": "los Notas",
+        "Next-btn": "Siguiente",
+        "recentlyUsed" : "Utilizado recientemente",
+        "SearchedCodes" : "Resultados actuales",
+        "noResults" : "No se han encontrado resultados"
     },
 
-    "page1": {
-        "Banner": "¡Bienvenido de nuevo!",
-        "Name": "{firstName} {lastName}",
-        "Date": "{date}",
-        "lN1": "Horas Totales:",
-        "lN2": "{payPeriodHours}",
-        "lN3": "Registrar Entrada",
-        "lN4": "Copyright © 2024. Todos los derechos reservados."
-    },
-    "page2": { 
-        "title" :"Ficharse",
-        "subtitle": "Por favor, escanee el Código QR",
-        "btn-scan": "Simular Escaneo",
-        "btn-entry": "Ingresar manualmente"
-    },    
-    "page3": {
-        "title": "Cost Codes",
-        "lN1": "Trabajo encountrado: ",
-        "lN2": "seleccione un cost code:",
-        "btn-next": "Siguiente",
-        "used-codes": { 
-            "item1": "Cost Code #1",
-            "item2": "Cost Code #2",
-            "item3": "Cost Code #3" 
-        }
-    }, 
-    "page4": {
-        "lN1": "Ficharse",
-        "lN2" : "Trabajo encountrado:",
-        "lN3" : "Cost Code:",
-        "lN4" : "Inciciar un turno!"
-    },
-
-    "page5": {
-        "lN1": "Ficharse",
-        "lN2" : "Trabajo encountrado:",
-        "lN3" : "Cost Code:",
-        "lN4" : "Ficharse exitosamente!",
-        "lN5" : "siguiente pagina"
-    },
-    
-    "page6": {
-        "": "ya listo para comenzar un turno increíble!",
-        "Name": "{firstName} {lastName}",
-        "Date": "{date}",
-        "ClockOut-btn": "Cerrar sesión",
+    "Footer": {
         "Copyright": "Copyright © 2024. Todos los derechos reservados."
     },
-
-    "EmployeeCards": {
-        "SwitchJobs": "Cambiar el Sitio",
-        "Equipment": "Equipo de Trabajo",
-        "ClockOut": "Salir de la Sesion",
-        "Forms" : "Formas de Trabajo",
-        "QrGenerator": "Generador de Códigos",
-        "MyTeam": "Mi Equipo"
-    },
-
+    
     "dashboard": {
-        "Banner": "¡Listo para empezar un dia increíble!",
+        "Banner": "¡Trabajando hacia el éxito!",
         "Name": "{firstName} {lastName}",
         "Date": "{date}",
-        "lN1": "Derechos de Streamline Precision © 2024. Todos los derechos reservados."
+        "lN1": "Copyright © 2024.Streamline Precision LLC. Todos los derechos reservados."
     },
     
-    "ClockOutButtons": {
-        "TakeABreak": "Tomar un descanso",
-        "EndWorkDay": "Terminar la jornada laboral",
-        "ReturnHome": "Volver a casa"
+    "ManagerButtons": {
+        "SwitchJobs": "Cambiar trabajo",
+        "Equipment": "El equipo",
+        "ClockOut": "Fichar al salir",
+        "Forms" : "Formularios de trabajo",
+        "QrGenerator": "Generador de QR",
+        "MyTeam": "Mi Equipo",
+        "GoHome": "Volver a la pantalla antes",
+        "LogNew": "Iniciar un equipo",
+        "Current": "Equipos actuales revisados",
+        "Break": "Tomar un descanso",
+        "Submit": "Es necesario enviar los registros del equipo.",
+        "CurrEQ": "Ver el equipo actual",
+        "End": "Finalizar el turno"
+    },
+
+    "Clock-out": {
+        "Title": "Fichar al salir"
+    },
+
+    "qr-Generator": {
+        "Title": "Generador de QR"
+    },
+
+    "QrJobsiteContent": {
+        "Jobsite": "el sitio #",
+        "QRCode": "el código QR",
+        "Placeholder": "Seleccione uno",
+        "New": "Nuevo",
+        "Generate": "Generarlo"
+    },
+
+    "qrEquipmentContent": {
+        "Equipment": "El equipo",
+        "QRCode": "el código QR",
+        "Placeholder": "Seleccione uno",
+        "New": "Nuevo",
+        "Generate": "Generarlo"
+    },
+
+    "addEquipmentContent": {
+        "Title": "Crear equipo",
+        "Picture": "Imagen del equipo"
+    },
+    
+    "equipmentPicture": {
+        "Button": "Tomar una foto"
+    },
+    
+    "addEquipmentForm": {
+        "Tag": "Etiqueta de equipo",
+        "Select": "Seleccione uno",
+        "Truck": "CAMIÓN",
+        "Trailer": "TRÁILER",
+        "Equipment": "EQUIPO",
+        "Name": "NOMBRE",
+        "Description": "DESCRIPCIÓN",
+        "Status": "Estado del equipo",
+        "Operational": "OPERATIVO",
+        "NeedsRepair": "NECESITA REPARACIÓN",
+        "Make": "la Marca",
+        "Model": "el Modelo",
+        "Year": "el Año",
+        "LicensePlate": "la matrícula",
+        "RegistrationExpiration": "Caducidad del registro",
+        "Mileage": "el Millaje",
+        "Submit": "Entregar"
+    },
+    
+    "addJobsiteContent": {
+        "Title": "Crear Sitio "
+    },
+
+    "addJobsiteForm": {
+        "Name": "Nombre",
+        "StreetNumber": "Número de calle",
+        "StreetName": "nombre en la calle",
+        "City": "la ciudad",
+        "State": "el estado",
+        "Country": "el país",
+        "Description": "Descripción del Sitio",
+        "Comments": "Comentarios del Sitio",
+        "Submit": "Entregar"
+    },
+
+    "clock-out": {
+        "ClockOut": "Fichar al salir",
+        "Jobsite" : "Sitio #: ",
+        "CostCode" : "Código QR: ",
+        "BreakTime" : "Tiempo de descanso : ",
+        "ClockOutTime" : "Hora de salida: ",
+        "ClockOutSuccess": "¡Cerrado con éxito!",
+        "SubmitButton": "Entregar",
+        "InjuryReport": "Informe de lesiones",
+        "FailedToSubmit": "No se pudo enviar el formulario. Por favor, inténtelo de nuevo.",
+        "ContactedSupervisor": "Me puse en contacto con mi supervisor: ",
+        "Comment": "Describa lo que sucedió: ",
+        "Signature": "la firma: ",
+        "SignatureFailure": "No se pudo capturar la firma. Por favor, inténtelo de nuevo.",
+        "NavError": "Error al navegar. Por favor, inténtelo de nuevo.",
+        "InjuryVerification": "Verificación de lesiones",
+        "SignBelow":"Al firmar a continuación, certifico que no sufrí lesiones este día.",
+        "SignatureCaptured": "¡Firma capturada! ",
+        "SignatureVerify": "Esta es mi firma.",
+        "Continue": "Continuar",
+        "ReportInjury": "Informe de lesiones",
+        "EquipmentVerification": "He completado y registrado todos los formularios, equipos y todos los demás artículos que se me exigen hoy.",
+        "Return": "Volver al panel de control"
+    },
+
+    "Signature": {
+        "Saved": "Firma guardada:",
+        "Download": "Descargar firma"
+    },
+
+    "Hamburger": {
+        "NewPassword": "Nueva contraseña",
+        "ConfirmPassword": "Confirmar nueva contraseña",
+        "ChangePassword": "cambiar contraseña",
+        "Title": "Configuración",
+        "Notifications": "Notificación",
+        "ApprovedRequests": "Solicitudes aprobadas",
+        "TimeOffRequests": "Solicitudes de tiempo libre",
+        "GeneralReminders": "Recordatorios generales",
+        "Security": "Seguridad",
+        "Biometrics": "Biometría",
+        "CameraAccess": "Acceso a la cámara",
+        "LocationAccess": "Acceso a la ubicación",
+        "Inbox": "la bandeja",
+        "EmployeeID": "ID de Empleado",
+        "ContactEmail": "Email de contacto",
+        "ContactPhone#": "Numero de contacto #",
+        "SafetyTraining": "Capacitación en seguridad",
+        "SignOut": "fichar al salir",
+        "SignOutConfirmation": "¿Está seguro de que desea suscribirse a su cuenta?",
+        "SaveChanges": "¿Te gustaría guardar los cambios?",
+        "Yes": "SI",
+        "Cancel": "Cancelar"
+    },
+    "MyTeam": {
+        "Timesheets": "Timesheets",
+        "Duration": "Duración",
+        "Duration-Comment": "La duración se actualiza cuando se guardan los cambios de edición.",
+        "ClockIn" : "Ficharme",
+        "ClockOut" : "Fichar al salir",
+        "Breaktime" : "Tiempo de descanso",
+        "JobSites" : "Sitio #: ",
+        "CostCode" : "Código QR: ",
+        "Equipment" : "Equipo",
+        "EQTotalTime" : "Tiempo total: ",
+        "NoData": "No hay datos",
+        "EquipmentLogs": "Equipos registrados"
     }
 }
-
