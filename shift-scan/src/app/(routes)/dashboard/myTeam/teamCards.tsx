@@ -26,7 +26,7 @@ export default async function TeamCards() {
     const crew = await prisma.crewMember.findMany( 
         {
             where: {
-                supervisor: false,
+                // supervisor: false,
                 crew : {
                     id: userCrewId
                 }

@@ -13,7 +13,8 @@
             "Banner": "Welcome back!",
             "Name": "{firstName} {lastName}",
             "Date": "{date}",
-            "Hours": "Total Hours:",
+            "DailyHours": "Total Hours Today:",
+            "PayPeriodHours": "Total Pay Period Hours:",
             "Break": "Break Time:",
             "Unit": "hrs",
             "DA-Time-Label" : "Hours",
@@ -32,6 +33,7 @@
         "ScanEquipment": "Scan Equipment",
         "Cancel": "Cancel",
         "TroubleScanning": "Trouble Scanning?",
+        "ReturnToJobsite": "Switching CostCode?",
         "Title-jobsite": "Select Job Site",
         "Title-equipment": "Select Equipment",
         "Title-costcode": "Select Cost Code",
@@ -214,6 +216,7 @@
     },
   
     "MyTeam": {
+        "Timesheets": "Timesheets",
         "Duration": "Duration",
         "Duration-Comment": "The duration updates when editing changes are saved.",
         "ClockIn" : "Clock In",
@@ -223,6 +226,7 @@
         "CostCode" : "Cost Code",
         "Equipment" : "Equipment",
         "EQTotalTime" : "Total Time",
-        "NoData": "No Data Found"
+        "NoData": "No Data Found",
+        "EquipmentLogs": "Equipment Logs"
     }
 }
