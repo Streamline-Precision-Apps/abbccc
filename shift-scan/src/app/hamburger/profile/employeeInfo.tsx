@@ -3,6 +3,9 @@ import { Input } from "@nextui-org/react";
 import { Sections } from "@/components/(reusable)/sections";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useTranslations } from "next-intl";
+import Base64Encoder from "@/components/(inputs)/Base64Encoder";
+import { useState } from "react";
+import { Titles } from "@/components/(reusable)/titles";
 
 type Employee = {
   id: string;
@@ -10,6 +13,7 @@ type Employee = {
   lastName: string;
   email: string;
   phone: string;
+  image: string | null;
 };
 
 type Props = {
@@ -20,6 +24,7 @@ type Props = {
 
 export default function EmployeeInfo({ employee, contacts, training }: Props ) {
   const t = useTranslations("Hamburger");
+  const [base64String, setBase64String] = useState<string>('');
   
   const total = (Number(training?.assigned_trainings));
   const completed = (Number(training?.completed_trainings));
@@ -33,12 +38,10 @@ export default function EmployeeInfo({ employee, contacts, training }: Props ) {
 
   return (
     <div>
+      <Base64Encoder employee={employee} base64String={base64String} setBase64String={setBase64String}  />
       <Sections size={"titleBox"}>
-        <TitleBoxes
-          title={`${employee?.firstName ?? ''} ${employee?.lastName ?? ''}`}
-          titleImg="/profile.svg"
-          titleImgAlt="Profile Image"
-        />
+        <img src={employee?.image ?? ''} alt="Selected" style={{ maxWidth: '10%', height: 'auto', margin: 'auto' }} />
+        <Titles variant={"default"} size={"h1"}>{employee?.firstName ?? ''} {employee?.lastName ?? ''}</Titles>
       </Sections>
       <Sections size={"dynamic"}>
         <form action="" className=" p-5 mx-10 flex flex-col gap-5">

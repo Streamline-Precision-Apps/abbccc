@@ -5,6 +5,7 @@ import SignOutModal from './signOutModal';
 import EmployeeInfo from './employeeInfo';
 import prisma from "@/lib/prisma";
 import { cookies } from 'next/headers';
+import Base64Encoder from '@/components/(inputs)/Base64Encoder';
 
 type Employee = {
     id: string;
@@ -36,7 +37,7 @@ export default async function EmployeeProfile() {
 
     if (!userId) {
         return (
-            <Bases size={"scroll"}>
+            <Bases >
                 <div>Error: User not found</div>
             </Bases>
         );
@@ -52,12 +53,13 @@ export default async function EmployeeProfile() {
             lastName: true,
             email: true,
             phone: true,
+            image: true,
         },
     });
 
     if (!employee) {
         return (
-            <Bases size={"scroll"}>
+            <Bases >
                 <div>Error: Employee not found</div>
             </Bases>
         );
@@ -77,7 +79,7 @@ export default async function EmployeeProfile() {
 
     if (!contacts) {
         return (
-            <Bases size={"scroll"}>
+            <Bases>
                 <div>Error: Contacts not found</div>
             </Bases>
         );
@@ -97,7 +99,7 @@ export default async function EmployeeProfile() {
     });
 
     return (
-        <Bases size={"scroll"}>
+        <Bases>
             <EmployeeInfo employee={employee} contacts={contacts} training={training}/>
             <SignOutModal />
         </Bases>
