@@ -24,6 +24,7 @@ const TitleVariants = cva(
         h2: "text-2xl",
         h3: "text-xl",
         h4: "text-lg",
+        titlebox: "text-4xl p-0 pb-3 m-0 ",
       }
     },
     defaultVariants: {
