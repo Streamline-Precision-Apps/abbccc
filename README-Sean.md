@@ -135,3 +135,16 @@ I finished some more prisma DB research and Created the clock out dashboard page
 - Restore a little bit of lost code.
 - Work on replacing lost translations.
 - Start adjustments to clockout.
+
+## 8/1/2024
+
+- Finished debugging clock out.
+
+## 8/5/2024
+
+- Finished Total Pay period hours calculation.
+
+## 8/6/2024
+
+- Finished Pay period hours display.
+- Started admin view.

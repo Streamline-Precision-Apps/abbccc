@@ -1,6 +1,10 @@
 'use client'
 import React, { createContext, useState, ReactNode, useContext } from 'react';
 
+type PayPeriodForms = {
+    payPeriodHours: string | null;
+    setPayPeriodHours: (payPeriodHours: string | null) => void;
+};
 
 interface SavedPayPeriodHoursProps {
     payPeriodHours: string | null;

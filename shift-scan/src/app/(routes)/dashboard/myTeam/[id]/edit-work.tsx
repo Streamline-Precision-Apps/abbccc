@@ -1,10 +1,12 @@
+"use client";
 import { editTimeSheet } from "@/actions/timeSheetActions";
+import { fetchEq, updateEq } from "@/actions/equipmentActions";
 import { Images } from "@/components/(reusable)/images";
 import { useTranslations } from "next-intl";
 import React from "react";
 import { useState, useEffect} from "react";
 import Equipment from "../../equipment/page";
-import { Buttons } from "@/components/(reusable)/buttons";
+import { Sections } from "@/components/(reusable)/sections";
 type Timesheet = {
   id: string;
   start_time: string;
@@ -17,7 +19,6 @@ type Timesheet = {
   duration: string;
   submit_date: string;
   employeeId: string;
-  equipmentId: string;
 };
 
 type CostCode = {
@@ -30,23 +31,17 @@ type Jobsite = {
   jobsite_id: string;
 };
 
-type EquipmentLogs = {
-  id: number;
-  equipment_id: string;
-  jobsite_id: string;
-  employee_id: string;
-  start_time: Date;
-  end_time: Date | null;
-  duration: number | null;
-  refueled: boolean;
-  fuel_used: number | null;
-  Equipment: Equipment[];
-};
-
 type Equipment = {
   id: number;
   name: string;
   qr_id: string;
+};
+
+type EquipmentLog = {
+  id: number;
+  employee_id: string;
+  duration:  string | null;
+  Equipment: Equipment;
 };
 
 type EditWorkProps = {
@@ -54,40 +49,57 @@ type EditWorkProps = {
   costcodesData: CostCode[];
   jobsitesData: Jobsite[];
   timesheetData: Timesheet[];
+  equipmentData: EquipmentLog[];
   handleFormSubmit: (employeeId: string, date: string, message?: string) => void;
   setEdit: (edit: boolean) => void;
   employeeId: string;
+  date: string;
+  equipment: Equipment[];
 };
 
-export default function EditWork({ timesheetData, jobsitesData, costcodesData, edit, handleFormSubmit, setEdit, employeeId }: EditWorkProps) {
+const EditWork = ({ timesheetData, jobsitesData, costcodesData, edit, equipment, handleFormSubmit, setEdit, employeeId, date }: EditWorkProps) => {
   const [timesheets, setTimesheets] = useState<Timesheet[]>([]);
-  const [prevtimesheets] = useState<Timesheet[]>(timesheetData);
-  const [jobsites] = useState<Jobsite[]>(jobsitesData);
-  const [costcodes] = useState<CostCode[]>(costcodesData);
+  const [equipmentLogs, setEquipmentLogs] = useState<EquipmentLog[]>([]);
   const [message, setMessage] = useState<string | null>(null);
+
+
+
   const t = useTranslations("MyTeam");
+  useEffect(() => {
+    if (!timesheetData || timesheetData.length === 0) {
+      setMessage("No Timesheets Found");
+    } else {
+      setMessage(null);
+      const initializedTimesheets = timesheetData.map((timesheet) => {
+        const start_date = new Date(timesheet.start_time).toISOString().split('T')[0];
+        const start_time = new Date(timesheet.start_time).toISOString().split('T')[1].split(':')[0] + ":" + new Date(timesheet.start_time).toISOString().split('T')[1].split(':')[1];
+        const end_date = new Date(timesheet.end_time).toISOString().split('T')[0];
+        const end_time = new Date(timesheet.end_time).toISOString().split('T')[1].split(':')[0] + ":" + new Date(timesheet.end_time).toISOString().split('T')[1].split(':')[1];
+        
+        const durationBackup = (new Date(timesheet.end_time).getTime() - new Date(timesheet.start_time).getTime()) / (1000 * 60 * 60);
+  
+        return {
+          ...timesheet,
+          start_date,
+          start_time,
+          end_date,
+          end_time,
+          duration: timesheet.duration || durationBackup.toString()
+        };
+      });
+      setTimesheets(initializedTimesheets);
+    }
+  }, [timesheetData]);
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    id: string,
-    field: keyof Timesheet
-  ) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, id: string, field: keyof Timesheet) => {
     let value = e.target.value;
-
     setTimesheets((prevData) =>
-      prevData.map((timesheet) =>
-        timesheet.id === id ? { ...timesheet, [field]: value } : timesheet
-      )
+      prevData.map((timesheet) => (timesheet.id === id ? { ...timesheet, [field]: value } : timesheet))
     );
   };
 
-  const handleInputChangeDate = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    id: string,
-    field: "start_date" | "start_time" | "end_date" | "end_time"
-  ) => {
+  const handleInputChangeDate = (e: React.ChangeEvent<HTMLInputElement>, id: string, field: "start_date" | "start_time" | "end_date" | "end_time") => {
     const value = e.target.value;
-
     setTimesheets((prevTimesheets) =>
       prevTimesheets.map((timesheet) => {
         if (timesheet.id === id) {
@@ -102,19 +114,40 @@ export default function EditWork({ timesheetData, jobsitesData, costcodesData, e
   const handleCodeChange = (e: React.ChangeEvent<HTMLSelectElement>, id: string, field: keyof Timesheet) => {
     const value = e.target.value;
     setTimesheets((prevTimesheets) =>
-      prevTimesheets.map((timesheet) =>
-        timesheet.id === id ? { ...timesheet, [field]: value } : timesheet
+      prevTimesheets.map((timesheet) => (timesheet.id === id ? { ...timesheet, [field]: value } : timesheet))
+    );
+  };
+
+  const handleEquipmentChange = (e: React.ChangeEvent<HTMLSelectElement>, id: number) => {
+    const value = e.target.value;
+    setEquipmentLogs((prevLogs) =>
+      prevLogs.map((log) =>
+        log.id === id ? { ...log, Equipment: { ...log.Equipment, name: value } } : log
+      )
+    );
+  };
+
+  const handleDurationChange = (e: React.ChangeEvent<HTMLInputElement>, id: number) => {
+    const value = e.target.value;
+    setEquipmentLogs((prevLogs) =>
+      prevLogs.map((log) =>
+        log.id === id ? { ...log, duration: value } : log
       )
     );
   };
 
   const handleSaveChanges = async () => {
     try {
+      const updatedLogs = equipmentLogs.map((log) => ({
+        ...log,
+        duration: log.duration !== null ? parseFloat(log.duration as unknown as string) : null,
+      }));
+
       for (const timesheet of timesheets) {
         const formData = new FormData();
         formData.append("id", timesheet.id);
         formData.append("submit_date", timesheet.submit_date);
-        formData.append("employeeId", employeeId); 
+        formData.append("employeeId", employeeId);
         formData.append("costcode", timesheet.costcode);
         formData.append("start_time", `${timesheet.start_date}T${timesheet.start_time}`);
         formData.append("end_time", `${timesheet.end_date}T${timesheet.end_time}`);
@@ -122,13 +155,23 @@ export default function EditWork({ timesheetData, jobsitesData, costcodesData, e
         formData.append("jobsite_id", timesheet.jobsite_id);
         await editTimeSheet(formData);
       }
+
+      for (const log of updatedLogs) {
+        const formData1 = new FormData();
+        formData1.append("id", log.id.toString());
+        formData1.append("qr_id", log.Equipment.qr_id);
+        formData1.append("duration", (log.duration || 0).toString());
+        formData1.append("employeeId", employeeId);
+        await updateEq(formData1);
+      }
+
       handleFormSubmit(timesheets[0].employeeId, timesheets[0].submit_date, "Changes saved successfully.");
       setEdit(false);
     } catch (error) {
       console.error("Failed to save changes", error);
       setMessage("Failed to save changes.");
       setEdit(false);
-      handleFormSubmit(prevtimesheets[0].employeeId, prevtimesheets[0].submit_date);
+      handleFormSubmit(timesheets[0].employeeId, timesheets[0].submit_date);
     }
   };
 
@@ -148,11 +191,43 @@ export default function EditWork({ timesheetData, jobsitesData, costcodesData, e
     }
   }, [timesheetData]);
 
-  const buttonClass = edit
-    ? "flex bg-app-red text-white font-bold p-2 rounded"
-    : "bg-app-orange text-black font-bold p-2 rounded m-auto";
-
-  const word = edit ?  (<Images titleImg={"/cancel.svg"} titleImgAlt={"Cancel"} variant={"icon"} size={"backButton"}  /> ): (<Images titleImg={"/edit.svg"} titleImgAlt={"Edit"} variant={"icon"} size={"backButton"} /> );
+  useEffect(() => {
+    const fetchData = async () => {
+      if (date) {
+        const equipmentLogs = await fetchEq(employeeId, date);
+        const filteredEquipmentLogs = equipmentLogs
+          .filter((log) => log.duration !== null && log.Equipment !== null)
+          .map((log) => ({
+            ...log,
+            duration: (log.duration as unknown as string),
+            id: Number(log.id),
+            Equipment: {
+              ...log.Equipment,
+              id: Number(log.Equipment?.id),
+              name: log.Equipment?.name ?? "Unknown",
+              qr_id: log.Equipment?.qr_id ?? "Unknown",
+              description: log.Equipment?.description ?? "",
+              status: log.Equipment?.status ?? "UNKNOWN",
+              equipment_tag: log.Equipment?.equipment_tag ?? "UNKNOWN",
+              last_inspection: log.Equipment?.last_inspection ?? null,
+              last_repair: log.Equipment?.last_repair ?? null,
+              equipment_status: log.Equipment?.equipment_status ?? "UNKNOWN",
+              createdAt: log.Equipment?.createdAt ?? new Date(),
+              updatedAt: log.Equipment?.updatedAt ?? new Date(),
+              make: log.Equipment?.make ?? "Unknown",
+              model: log.Equipment?.model ?? "Unknown",
+              year: log.Equipment?.year ?? "Unknown",
+              license_plate: log.Equipment?.license_plate ?? "Unknown",
+              registration_expiration: log.Equipment?.registration_expiration ?? null,
+              mileage: log.Equipment?.mileage ?? 0,
+              is_active: log.Equipment?.is_active ?? false,
+            },
+          }));
+        setEquipmentLogs(filteredEquipmentLogs);
+      }
+    };
+    fetchData();
+  }, [date, employeeId]);
 
   const editHandler = () => {
     setEdit(!edit);
@@ -164,135 +239,108 @@ export default function EditWork({ timesheetData, jobsitesData, costcodesData, e
 
   return (
     <div>
+      <Sections size={"dynamic"}>
       {timesheetData.length === 0 ? null : (
-        <div className="">
-          <Buttons className={buttonClass} onClick={editHandler}>{word}</Buttons>
+        <div className="flex flex-row justify-between p-2">
+          <button className={buttonClass} onClick={editHandler}>{word}</button>
           {edit ? <button className="flex bg-app-blue text-white font-bold p-2 rounded" onClick={handleSaveChanges}><Images titleImg={"/save.svg"} titleImgAlt={"Save Changes"} variant={"icon"} size={"backButton"} /></button> : null}
         </div>
       )}
       {message ? (
-        <div className="py-4">
-          <p className="text-center">{message}</p>
+        <div >
+          <p >{message}</p>
         </div>
       ) : (
         <ul>
+          <br/>
+          <li >{t("Timesheets")}</li>
           {timesheets.map((timesheet) => (
-            <li
-              key={timesheet.id}
-              className="flex flex-col justify-center items-center m-auto text-black text-2xl bg-white p-4 rounded lg:text-2xl lg:p-3"
-            >
-              <div className="flex flex-col justify-center items-center">
+            <li key={timesheet.id}>
+              <div >
                 <h2>{new Date(timesheet.submit_date).toLocaleDateString()}</h2>
-                <input
-                  id="submit_date"
-                  type="date"
-                  value={new Date(timesheet.submit_date).toISOString().split('T')[0]}
-                  hidden
-                />
+                <input id="submit_date" type="date" value={new Date(timesheet.submit_date).toISOString().split('T')[0]} hidden />
               </div>
               <div>
-                <label htmlFor="duration">
-                  {t("Duration")} {edit ? (
-                    <span className="text-red-500 italic text-sm flex flex-wrap">
-                      {t("Duration-Comment")}
-                    </span>
-                  ) : null}
+                <label >{t("Duration")} {edit ? (
+                  <span >{t("Duration-Comment")}</span>
+                ) : null}
                 </label>
-                <input
-                  id="duration"
-                  className="w-full text-center border border-black"
-                  type="text"
-                  value={timesheet.duration}
-                  readOnly
-                />
+                <input id="duration" type="text" value={timesheet.duration} onChange={(e) => handleInputChange(e, timesheet.id, "duration")} readOnly />
               </div>
-              <div className="flex flex-wrap">
-                <label>
-                  {t("ClockIn")}
-                  <div className="flex flex-row w-full border border-black">
-                    <input
-                      id="start_date"
-                      type="date"
-                      value={timesheet.start_date || ''}
-                      onChange={(e) => handleInputChangeDate(e, timesheet.id, "start_date")}
-                      readOnly={!edit}
-                    />
-                    <input
-                      id="start_time"
-                      type="time"
-                      value={timesheet.start_time || ''}
-                      onChange={(e) => handleInputChangeDate(e, timesheet.id, "start_time")}
-                      readOnly={!edit}
-                    />
+              <div>
+                <label>{t("ClockIn")}
+                  <div>
+                    <input id="start_date" type="date" value={timesheet.start_date || ''} onChange={(e) => handleInputChangeDate(e, timesheet.id, "start_date")} readOnly={!edit} />
+                    <input id="start_time" type="time" value={timesheet.start_time || ''} onChange={(e) => handleInputChangeDate(e, timesheet.id, "start_time")} readOnly={!edit} />
                   </div>
                 </label>
-                <label>
-                  {t("ClockOut")}
-                  <div className="flex flex-row w-full border border-black">
-                    <input
-                      id="end_date"
-                      type="date"
-                      value={timesheet.end_date || ''}
-                      onChange={(e) => handleInputChangeDate(e, timesheet.id, "end_date")}
-                      readOnly={!edit}
-                    />
-                    <input
-                      id="end_time"
-                      type="time"
-                      value={timesheet.end_time || ''}
-                      onChange={(e) => handleInputChangeDate(e, timesheet.id, "end_time")}
-                      readOnly={!edit}
-                    />
+                <label>{t("ClockOut")}
+                  <div>
+                    <input id="end_date" type="date" value={timesheet.end_date || ''} onChange={(e) => handleInputChangeDate(e, timesheet.id, "end_date")} readOnly={!edit} />
+                    <input id="end_time" type="time" value={timesheet.end_time || ''} onChange={(e) => handleInputChangeDate(e, timesheet.id, "end_time")} readOnly={!edit} />
                   </div>
                 </label>
               </div>
               <div>
                 <label htmlFor="total_break_time">{t("Breaktime")}</label>
-                <input
-                  id="total_break_time"
-                  className="w-full text-center border border-black"
-                  type="text"
-                  value={timesheet.total_break_time}
-                  onChange={(e) => handleInputChange(e, timesheet.id, "total_break_time")}
-                  readOnly={!edit}
-                />
+                <input id="total_break_time" type="text" value={timesheet.total_break_time || "0"} onChange={(e) => handleInputChange(e, timesheet.id, "total_break_time")} readOnly={!edit} />
               </div>
               <div>
                 <label htmlFor="jobsite_id">{t("JobSites")}</label>
-                <select
-                  id="jobsite_id"
-                  className="text-center border border-black"
-                  value={timesheet.jobsite_id}
-                  onChange={(e) => handleCodeChange(e, timesheet.id, "jobsite_id")}
-                  disabled={!edit}
-                >
-                  {jobsites.map((jobsite) => (
-                    <option key={jobsite.id} value={jobsite.jobsite_id}>
-                      {jobsite.jobsite_id}
-                    </option>
+                <select id="jobsite_id"  value={timesheet.jobsite_id} onChange={(e) => handleCodeChange(e, timesheet.id, "jobsite_id")} disabled={!edit}>
+                  {jobsitesData.map((jobsite) => (
+                    <option key={jobsite.id} value={jobsite.jobsite_id}>{jobsite.jobsite_id}</option>
                   ))}
                 </select>
                 <label htmlFor="costcode">{t("CostCode")}</label>
-                <select
-                  id="costcode"
-                  className="text-center border border-black"
-                  value={timesheet.costcode}
-                  onChange={(e) => handleCodeChange(e, timesheet.id, "costcode")}
-                  disabled={!edit}
-                >
-                  {costcodes.map((costcode) => (
-                    <option key={costcode.id} value={costcode.cost_code}>
-                      {costcode.cost_code}
-                    </option>
+                <select id="costcode" value={timesheet.costcode} onChange={(e) => handleCodeChange(e, timesheet.id, "costcode")} disabled={!edit}>
+                  {costcodesData.map((costcode) => (
+                    <option key={costcode.id} value={costcode.cost_code}>{costcode.cost_code}</option>
                   ))}
                 </select>
               </div>
+                <br/>
+              <div className="border border-black"></div>
+              <br/>
             </li>
           ))}
         </ul>
       )}
-      <div>
-      </div>
+      </Sections>
+      <Sections size={"dynamic"}>
+        <h1>{t("EquipmentLogs")}</h1>
+        <ul>
+          {equipmentLogs.map((log) => (
+            <li key={log.id}>
+              <select
+                value={log.Equipment.name}
+                onChange={(e) => handleEquipmentChange(e, log.id)}
+                disabled={!edit}
+              >
+                
+                {equipment.map((equipmentLog) => (
+                    <option key={equipmentLog.id} value={equipmentLog.name} >
+                      {(equipmentLog.name).slice(0, 10)} - {equipmentLog.qr_id}
+                    </option>
+                ))}
+              </select>
+              <label htmlFor="eq-duration">{t("Duration")} </label>
+              <input
+                type="text"
+                name="eq-duration"
+                value={log.duration !== null ? ((log.duration)).toString() : ''}
+                onChange={(e) => handleDurationChange(e, log.id)}
+                readOnly={!edit}
+              />
+            </li>
+          ))}
+          <br/>
+          <div className="border border-black"></div>
+          <br/>
+        </ul>
+      </Sections>
     </div>
   );
-}
+};
+
+export default EditWork;
