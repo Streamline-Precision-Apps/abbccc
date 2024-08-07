@@ -3,18 +3,18 @@ import { HTMLAttributes, FC } from "react";
 import { cn } from "@/components/(reusable)/utils";
 
 const SectionVariants = cva(
-  "flex flex-col items-center max-w-lg mx-auto", //this applies to all variants
+  "p-3 m-4 mt-0 border border-white border-8", //this applies to all variants
   {
     variants: {
       variant: {
-        default: "bg-white rounded-2xl mt-3",
+        default: "bg-white rounded-2xl",
         tab: "bg-white rounded-2xl min-h-[200px] rounded-t-none p-6",
         eq: "bg-white border-2 border-black rounded-2xl ",
       },
       size: {
-        default: "w-full h-screen",
-        dynamic: "w-full h-full",
-        titleBox: "w-full h-full",
+        default: "h-screen min-w-screen",
+        dynamic: "h-full min-w-screen overflow-y-auto no-scrollbar",
+        titleBox: "pb-0 border-0",
       }
     },
     defaultVariants: {

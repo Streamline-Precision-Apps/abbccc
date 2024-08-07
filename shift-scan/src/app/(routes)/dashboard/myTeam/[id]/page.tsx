@@ -10,9 +10,6 @@ export default async function crewMember({ params }: { params: Params }) {
     const jobsiteData = await prisma.jobsite.findMany({});
     const costcodeData = await prisma.costCode.findMany({});
     const equipmentData = await prisma.employeeEquipmentLog.findMany({
-        // where: {
-        //     employee_id: params.id
-        // },
         include: {
             Equipment: true
         }

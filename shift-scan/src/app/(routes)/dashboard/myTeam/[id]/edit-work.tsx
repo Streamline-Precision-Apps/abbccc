@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import React from "react";
 import { useState, useEffect} from "react";
 import Equipment from "../../equipment/page";
+import { Buttons } from "@/components/(reusable)/buttons";
 type Timesheet = {
   id: string;
   start_time: string;
@@ -164,8 +165,8 @@ export default function EditWork({ timesheetData, jobsitesData, costcodesData, e
   return (
     <div>
       {timesheetData.length === 0 ? null : (
-        <div className="flex flex-row justify-between p-2">
-          <button className={buttonClass} onClick={editHandler}>{word}</button>
+        <div className="">
+          <Buttons className={buttonClass} onClick={editHandler}>{word}</Buttons>
           {edit ? <button className="flex bg-app-blue text-white font-bold p-2 rounded" onClick={handleSaveChanges}><Images titleImg={"/save.svg"} titleImgAlt={"Save Changes"} variant={"icon"} size={"backButton"} /></button> : null}
         </div>
       )}
