@@ -102,8 +102,8 @@ export const User: React.FC<UserProps> = ({
             isOpen={isModalOpen}
             handleClose={handleCloseModal}
             variant={"default"}
-            size={"clock"}
-            type={"clock"}
+            size={"default"}
+            type={"default"}
           >
             <div>
               <ClockProcessor
