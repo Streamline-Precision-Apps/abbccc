@@ -79,13 +79,14 @@
         "ClockOut": "Clock Out",
         "Forms" : "Work Forms",
         "QrGenerator": "QR Generator",
-        "MyTeam": "My Team"
-    },
-    
-    "ClockOutButtons": {
-        "Break": "Take a break",
-        "End": "End work day",
-        "Home": "Return home"
+        "MyTeam": "My Team",
+        "GoHome": "Go Home",
+        "LogNew": "Log New",
+        "Current": "Current Equipment",
+        "Break": "Start Break",
+        "Submit": "Equipment logs need to be submitted.",
+        "CurrEQ": "View Current Equipment",
+        "End": "End Work Day"
     },
 
     "Clock-out": {
@@ -206,15 +207,11 @@
         "ContactPhone#": "Contact Phone #",
         "SafetyTraining": "Safety Training",
         "SignOut": "Sign Out",
-        "SignOutConfirmation": "Are you sure you want to sign out of your account?"
+        "SignOutConfirmation": "Are you sure you want to sign out of your account?",
+        "SaveChanges": "Would you like to Save Changes?",
+        "Yes": "Yes",
+        "Cancel": "Cancel"
     },
-
-    "Equipment": {
-        "GoHome": "Go Home",
-        "LogNew": "Log New",
-        "Current": "Current Equipment"
-    },
-  
     "MyTeam": {
         "Timesheets": "Timesheets",
         "Duration": "Duration",

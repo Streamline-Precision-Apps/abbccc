@@ -1,5 +1,4 @@
 "use client";
-
 import "@/app/globals.css";
 import { useTranslations } from "next-intl";
 import Hours from "@/app/(content)/hours";
@@ -20,47 +19,13 @@ import { Sections } from "@/components/(reusable)/sections";
 import { Bases } from "@/components/(reusable)/bases";
 import { Header } from "@/components/header";
 import { Headers } from "@/components/(reusable)/headers";
-import {
-  useDBJobsite,
-  useDBCostcode,
-  useDBEquipment,
-} from "@/app/context/dbCodeContext";
-import { useSavedDailyHours } from "../context/SavedDailyHours";
+import { useDBJobsite, useDBCostcode, useDBEquipment } from "@/app/context/dbCodeContext";
 import { useSavedPayPeriodTimeSheet } from "../context/SavedPayPeriodTimeSheets";
+import { clockProcessProps, jobCodes, CostCode, Equipment, TimeSheets } from "@/lib/content";
 
-type jobCodes = {
-  id: number;
-  jobsite_id: string;
-  jobsite_name: string;
-};
-type CostCode = {
-  id: number;
-  cost_code: string;
-  cost_code_description: string;
-};
-
-type Equipment = {
-  id: string;
-  qr_id: string;
-  name: string;
-};
-
-type TimeSheets = {
-  start_time: Date; // Consistent naming
-  duration: number | null;
-};
-
-interface clockProcessProps {
-  jobCodes: jobCodes[];
-  CostCodes: CostCode[];
-  equipment: Equipment[];
-  recentJobSites: jobCodes[];
-  recentCostCodes: CostCode[];
-  recentEquipment: Equipment[];
-  payPeriodSheets: TimeSheets[];
-}
 
 export default function Content({
+  locale,
   equipment,
   jobCodes,
   CostCodes,
@@ -76,7 +41,7 @@ export default function Content({
   const [toggle, setToggle] = useState(true);
   const { setSavedUserData } = useSavedUserData();
   const router = useRouter();
-  const date = new Date().toLocaleDateString("en-US", {
+  const date = new Date().toLocaleDateString(locale, {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -140,6 +105,15 @@ export default function Content({
     setPayPeriodHours(totalPayPeriodHours.toFixed(2)); // Ensure it's to 2 decimal places
   };
 
+  // Helper function to capitalize the first letter of a string
+  function capitalize(str: any) {
+    if (typeof str !== "string") {
+    return "";
+    }
+    return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+
   const authStep = getAuthStep();
 
   if (authStep === "break") {
@@ -154,13 +128,13 @@ export default function Content({
                 {t("Banner")}
               </Titles>
               <Texts variant={"default"} size={"p1"}>
-                {t("Date", { date })}
+                {t("Date", { date: capitalize(date) })}
               </Texts>
             </Banners>
             <Texts variant={"name"} size={"p1"}>
               {t("Name", {
-                firstName: user.firstName,
-                lastName: user.lastName,
+                firstName: capitalize(user.firstName),
+                lastName: capitalize(user.lastName),
               })}
             </Texts>
             <DisplayBreakTime setToggle={handler} display={toggle} />
@@ -182,13 +156,13 @@ export default function Content({
                 {t("Banner")}
               </Titles>
               <Texts variant={"default"} size={"p1"}>
-                {t("Date", { date })}
+                {t("Date", { date: capitalize(date) })}
               </Texts>
             </Banners>
             <Texts variant={"name"} size={"p1"}>
               {t("Name", {
-                firstName: user.firstName,
-                lastName: user.lastName,
+                firstName: capitalize(user.firstName),
+                lastName: capitalize(user.lastName),
               })}
             </Texts>
             <Hours setToggle={handler} display={toggle} />
@@ -199,4 +173,6 @@ export default function Content({
       </>
     );
   }
+
+  
 }

@@ -34,6 +34,7 @@ interface TitleBoxProps extends HTMLAttributes<HTMLElement>, VariantProps<typeof
     title: string;
     titleImg: string;
     titleImgAlt: string;
+    src ?: string;
 }
 
 const TitleBoxes: FC<TitleBoxProps> = ({className, variant, size, type, title, titleImg, titleImgAlt, ...props}) => {
