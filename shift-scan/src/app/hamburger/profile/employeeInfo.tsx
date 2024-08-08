@@ -1,5 +1,5 @@
 "use client";
-import { Input } from "@nextui-org/react";
+import { image, Input } from "@nextui-org/react";
 import { Sections } from "@/components/(reusable)/sections";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useTranslations } from "next-intl";
@@ -39,8 +39,8 @@ export default function EmployeeInfo({ employee, contacts, training }: Props ) {
   return (
     <div>
       <Sections size={"titleBox"}>
-        <img src={employee?.image ?? ''} alt="Selected" style={{ maxWidth: '10%', height: 'auto', margin: 'auto' }} />
-        <Titles variant={"default"} size={"h1"}>{employee?.firstName ?? ''} {employee?.lastName ?? ''}</Titles>
+        {/*This Title box allows the profile pic to default as a base profile picture*/}
+        <TitleBoxes title={`${employee?.firstName} ${employee?.lastName}`} titleImg={employee?.image !== null ? `${employee?.image}` : "/profile.svg"}  titleImgAlt={"image"} />
       </Sections>
       <Base64Encoder employee={employee} base64String={base64String} setBase64String={setBase64String}  />
       <Sections size={"dynamic"}>

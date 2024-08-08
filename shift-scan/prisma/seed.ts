@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
-import { intialEmployeeEquipment, intialEquipment, initialUsers, initialContacts, initialJobsites, initialTimeSheets, initialCrews, initialCrewMembers, initialTrainings, initialCostCodes,initialCrewJobsites, UserTrainings } from "../src/data/dataValues";
+//intialEmployeeEquipment
+import {initialUserSettings, intialEquipment, initialUsers, initialContacts, initialJobsites, initialTimeSheets, initialCrews, initialCrewMembers, initialTrainings, initialCostCodes,initialCrewJobsites, UserTrainings } from "../src/data/dataValues";
 import {hash} from "bcryptjs";
 const prisma = new PrismaClient();
 
@@ -72,9 +73,16 @@ async function main() {
     }
 
 
-    for (const equipment of intialEmployeeEquipment) {
-      const newEmployeeEquipment = await prisma.employeeEquipmentLog.create({ data: equipment });
-      console.log("Created employee equipment with id: ", newEmployeeEquipment.id);
+    // for (const equipment of intialEmployeeEquipment) {
+    //   const newEmployeeEquipment = await prisma.employeeEquipmentLog.create({ data: equipment });
+    //   console.log("Created employee equipment with id: ", newEmployeeEquipment.id);
+    // }
+
+    
+
+    for (const settings of initialUserSettings) {
+      const newSettings = await prisma.userSettings.create({ data: settings });
+      console.log("Created employee equipment with id: ", newSettings.id);
     }
 
     console.log('Sample data upserted successfully!');
