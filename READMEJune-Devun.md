@@ -89,3 +89,44 @@ Promise I worked and got a bunch done except on the weekend, for got to report p
 
 7/30/24
 - working on translations
+
+8/8/24
+- i am alive just havent been vigilante about placing notes currently. 
+
+rewrote timesheet with gina from hr seeing if it works bigest problem was equipment logs. 
+
+- model TimeSheet {
+  submit_date           DateTime   @default(now())
+  id                    Int        @id @default(autoincrement())
+  userId                String
+  date                  DateTime   @db.Date //two dates are in the accounting software, for easy conversion they are implemented here
+  jobsite_id            String //Todo: needs to be equipment for mechanics 
+  costcode              String
+  nu                    String     @default("nu") // non union {} default
+  Fp                    String     @default("fp") // field personal
+  start_time            DateTime
+  end_time              DateTime?
+  timesheet_comments    String? // theses will be not nulled in the future, person needs to put in the comments amount of loads
+  duration              Float? //called comments in the accounting software
+  equipment_id          Int? //changed from vehicle to equipment
+  equipment_hours       Float? // needed from view point
+  starting_mileage      Int?
+  ending_mileage        Int?
+  miles_at_fuel         Float?
+  ABCDE_Loads           Int?
+  f_Loads               Int?
+  left_idaho            Boolean?   @default(false)
+  equipment_hauled      String?
+  materials_hauled      String?
+  hauled_loads_quantity Int?
+  refueling_gallons     Float?
+  total_break_time      Float?
+  
+  app_comment           String? //this is a backend ai we want to develope to do filtered comments
+  status                FormStatus @default(PENDING)
+
+  user    User    @relation(fields: [userId], references: [id])
+  jobsite Jobsite @relation(fields: [jobsite_id], references: [jobsite_id])
+
+  @@map("timesheets")
+}

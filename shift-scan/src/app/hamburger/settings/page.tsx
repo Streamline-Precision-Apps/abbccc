@@ -3,27 +3,14 @@ import Index from "@/app/hamburger/settings/content";
 import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
 
-type Data = {
-language: string;
-approvedRequests: boolean;
-timeoffRequests: boolean;
-GeneralReminders: boolean;
-Biometric: boolean;
-cameraAccess: boolean;
-LocationAccess: boolean;
-};
-
 export default async function Settings() {
-const u = cookies().get("user");
-const userId = u
+const user = cookies().get("user");
+const userId = user?.value;
 
-if (!userId) {
-return <div>No user found</div>;
-}
 
 const data = await prisma.userSettings.findUnique({
 where: {
-    userId: userId.value,
+    userId: userId,
 },
 select: {
     userId: true,

@@ -42,7 +42,7 @@ export default async function TeamCards() {
     return (
         <div>
             {crew.map((userCrewId) => (
-            <Buttons id="{userCrewId.user.id}" href="/dashboard/myTeam/{userCrewId.user.id}" variant={"default"} size={"listLg"}>
+            <Buttons id={userCrewId.user.id} href={`/dashboard/myTeam/${userCrewId.user.id}`} variant={"default"} size={"listLg"}>
                 <Contents variant={"image" } size={"image"}>
                     <Images titleImg="/johnDoe.webp" titleImgAlt="profile picture" variant={"icon"} size={"default"}></Images>
                 </Contents>

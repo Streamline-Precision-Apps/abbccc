@@ -242,7 +242,7 @@ const EditWork = ({ timesheetData, jobsitesData, costcodesData, edit, equipment,
       <Sections size={"dynamic"}>
       {timesheetData.length === 0 ? null : (
         <div className="flex flex-row justify-between p-2">
-          <button className={buttonClass} onClick={editHandler}>{word}</button>
+          <button onClick={editHandler}></button>
           {edit ? <button className="flex bg-app-blue text-white font-bold p-2 rounded" onClick={handleSaveChanges}><Images titleImg={"/save.svg"} titleImgAlt={"Save Changes"} variant={"icon"} size={"backButton"} /></button> : null}
         </div>
       )}
