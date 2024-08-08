@@ -148,3 +148,12 @@ I finished some more prisma DB research and Created the clock out dashboard page
 
 - Finished Pay period hours display.
 - Started admin view.
+
+## 8/7/2024
+
+- Wrokded on admin view.
+
+## 8/8/2024
+
+- worked on admin view.
+- worked on generalizing camera component.

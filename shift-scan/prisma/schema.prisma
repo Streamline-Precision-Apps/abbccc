@@ -258,7 +258,7 @@ enum Tags {
 // This collection stores information about all company equipment. It includes a wide range of items such as company vehicles, trailers, handheld equipment, and heavy machinery. The purpose is to keep track of all assets the company owns and maintains.
 model Equipment {
   id                      String          @id @default(cuid())
-  qr_id                   String          @unique // needed default off to be a qr id 
+  qr_id                   String          @unique @default(cuid())
   name                    String
   description             String
   status                  FormStatus      @default(PENDING)
@@ -275,7 +275,7 @@ model Equipment {
   registration_expiration DateTime?
   mileage                 Int?
   is_active               Boolean         @default(true)
-  // image                   Bytes?
+  image                   String?
 
   employeeEquipmentLogs EmployeeEquipmentLog[]
 }

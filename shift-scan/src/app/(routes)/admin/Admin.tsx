@@ -11,7 +11,7 @@ import { useSession } from "next-auth/react";
 import { CustomSession } from "@/lib/types";
 import { setAuthStep } from "@/app/api/auth";
 import { Equipment, Logs } from "@/lib/types";
-import AddEmployeeForm from "./addEmployee";
+import AddEmployeeForm from "./add-employee/addEmployee";
 
 interface AdminProps {
   additionalButtonsType: string | null;
@@ -60,7 +60,7 @@ export const Admin: React.FC<AdminProps> = ({
           <Buttons
             variant={"green"}
             size={"widgetSm"}
-            onClick={handleOpenModal}
+            href="/admin/add-employee"
           >
             <Images
               titleImg="/equipment.svg"
@@ -70,17 +70,6 @@ export const Admin: React.FC<AdminProps> = ({
             />
             <Texts>Add New Employee</Texts>
           </Buttons>
-          <Modals
-            isOpen={isModalOpen}
-            handleClose={handleCloseModal}
-            variant={"default"}
-            size={"default"}
-            type={"default"}
-          >
-            <div className="flex flex-col bg-white px-2 ">
-              <AddEmployeeForm />
-            </div>
-          </Modals>
           <Buttons
             variant={"orange"}
             size={"widgetSm"}
