@@ -1,3 +1,4 @@
+"use server";
 import { Bases } from "@/components/(reusable)/bases";
 import { Sections } from "@/components/(reusable)/sections";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
@@ -9,7 +10,7 @@ import SubmitAll from "./submitAll";
 export default async function Current() {
     const userCookie = cookies().get("user");
     const userid = userCookie ? userCookie.value : undefined;
-
+    
     const currentDate = new Date();
     const past24Hours = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
 
@@ -27,7 +28,7 @@ export default async function Current() {
     const total = logs.length;
     const completed = logs.filter((log) => log.completed).length;
     const green = total - completed;
-
+// usetranslate breaks here for what ever reason
     return (
         <Bases>
             <Sections size={"titleBox"}>
@@ -35,7 +36,7 @@ export default async function Current() {
             </Sections>
             <Sections size={"default"}>
                 {green === 0 && total !== 0 ? <SubmitAll userid={userid} /> : <></>}
-                {total === 0 ? <h2>No Current Equipment</h2> : <></>}
+                {total === 0 ? <p>No Current Equipment</p> : <></>}
                 {logs.map((log) => (
                     <Buttons variant={(log.completed) ? "green" : "orange"} size={"default"} href={`/dashboard/equipment/${log.id}`} key={log.id}>
                         {log.Equipment?.name}

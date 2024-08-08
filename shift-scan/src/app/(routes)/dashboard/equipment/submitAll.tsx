@@ -7,7 +7,7 @@ export default function SubmitAll({ userid }: { userid: string | undefined }) {
     const t = useTranslations("EquipmentContent");
     return (
         <form action={Submit}>
-            <Buttons type="submit" variant={"default"} size={"default"}>{t("Submit")}</Buttons>
+            <Buttons type="submit" variant={"default"} size={"default"}>{t("SubmitAll")}</Buttons>
             <input type="hidden" name="id" value={userid} />
             <input type="hidden" name="submitted" value={"true"} />
         </form>

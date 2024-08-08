@@ -106,10 +106,10 @@ export default function CombinedForm({ eqid, name, start_time, completed, filled
 
     return (
         <Bases>   
-        <Banners variant={"green"} >
-           {t("Banner")}
-        </Banners >
-
+        {completed ? (<Banners variant={"green"} >
+        {t("Banner")}
+        </Banners >) : null}
+        
             <Sections size={"titleBox"}>
                 <TitleBoxes
                     title={`${name}`}
