@@ -12,9 +12,10 @@ import { Equipment, Logs } from "@/lib/types";
 
 interface DashboardButtonsProps {
   logs: Logs[]; // Use the consistent Logs type
+  locale: string;
 }
 
-export default function DashboardButtons({ logs }: DashboardButtonsProps) {
+export default function DashboardButtons({ logs, locale }: DashboardButtonsProps) {
   const t = useTranslations("EmployeeCards");
   const router = useRouter();
   const { data: session } = useSession() as { data: CustomSession | null };
@@ -43,6 +44,7 @@ export default function DashboardButtons({ logs }: DashboardButtonsProps) {
           handleShowManagerButtons={handleShowManagerButtons}
           handleShowAdditionalButtons={handleShowAdditionalButtons}
           logs={logs} // Pass logs to User component
+          locale={locale}
         />
       </div>
     );
@@ -54,6 +56,7 @@ export default function DashboardButtons({ logs }: DashboardButtonsProps) {
           handleShowManagerButtons={handleShowManagerButtons}
           handleShowAdditionalButtons={handleShowAdditionalButtons}
           logs={logs} // Pass logs to User component
+          locale={locale}
         />
       </div>
     );

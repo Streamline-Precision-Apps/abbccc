@@ -9,11 +9,13 @@ import { useScanData } from "@/app/context/JobSiteContext";
 import RedirectAfterDelay from "@/components/redirectAfterDelay";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useEQScanData } from "@/app/context/equipmentContext";
+import { Titles } from "../(reusable)/titles";
 interface clockProcessProps{
     scannerType: string;
     id: string | undefined;
     type: string;
     isModalOpen: boolean;
+    locale: string;
 };
 
 const ClockProcessor: React.FC<clockProcessProps> = ({
@@ -21,6 +23,7 @@ id,
 type,
 scannerType,
 isModalOpen,
+locale
 }) => {
 const t = useTranslations("Clock");
 const [step, setStep] = useState(1);
@@ -118,13 +121,14 @@ return (
         )}
         {step === 4 && (
         <>
-            <h1 className="flex justify-center text-2xl font-bold pt-10 pb-10">
+            <Titles variant={"default"} size={"h1"}>
             {t("Confirmation-eq-message-1")}
-            </h1>
-            <p className="text-lg">
+            </Titles>
+            <Titles variant={"default"} size={"h4"}>
             {t("Confirmation-eq-message-2")}
-            </p>
-            <RedirectAfterDelay delay={2000} to="/dashboard" />
+            </Titles>
+            <RedirectAfterDelay delay={500} to="/dashboard" /> {/* In Order for bug to be overcomed, the refresh must occur otherwise the unmounted qr code wont work*
+                best solution for now is this becuase at least it does it behind the modal*/}
         </>
         )}
     </>
@@ -165,32 +169,32 @@ return (
         />
     )}
     {step === 5 && path === "jobsite" && (
-        <div className="flex flex-col items-center w-full h-full">
-        <h1 className="flex justify-center text-2xl font-bold ">
+        <div >
+        <Titles variant={"default"} size={"h1"}>
         {t("Confirmation-job-message-1")}
-        </h1>
+        </Titles>
         {(type === "switchJobs") ? 
-        (<><p>{t("Confirmation-job-message-3")}</p>
-            <p>{t("Confirmation-job-message-4")}</p>
+        (<><Titles variant={"default"} size={"h4"}>{t("Confirmation-job-message-3")}</Titles>
+        <Titles variant={"default"} size={"h4"}>{t("Confirmation-job-message-4")}</Titles>
         </>
         )
-        : (<p className="text-lg">{t("Confirmation-job-message-2")}</p>)
+        : (
+            <Titles variant={"default"} size={"h4"}>{t("Confirmation-job-message-2")}</Titles>
+        )
         }
-            <h2 className="my-5">
-            {t("JobSite-label")} {scanResult?.data}
-            </h2>
-            <h2 className="my-5">
-            {t("CostCode-label")} {savedCostCode}
-            </h2>
-            <h2 className="my-5">
+            <Titles variant={"default"} size={"h2"}>{t("JobSite-label")} {scanResult?.data}</Titles>
+            
+            <Titles variant={"default"} size={"h2"}>{t("CostCode-label")} {savedCostCode} </Titles>
+            <Titles variant={"default"} size={"h2"}>
             {t("Confirmation-time")}{" "}
-            {new Date().toLocaleDateString("en-US", {
+            {new Date().toLocaleDateString( locale, {
                 hour: "numeric",
                 minute: "numeric",
                 second: "numeric",
             })}
-            </h2>
-        <RedirectAfterDelay delay={2000} to="/dashboard" /> {/* In Order for bug to be overcomed, the refresh must occur otherwise the unmounted qr code wont work*/}
+            </Titles>
+        <RedirectAfterDelay delay={500} to="/dashboard" /> {/* In Order for bug to be overcomed, the refresh must occur otherwise the unmounted qr code wont work*
+            best solution for now is this becuase at least it does it behind the modal*/}
         </div>
     )}
     </>
