@@ -1,6 +1,7 @@
 
 import prisma from "@/lib/prisma";
 import { Prisma} from "@prisma/client";
+import { now } from "next-auth/client/_utils";
 
 // jobsites
 export const initialJobsites: Prisma.JobsiteCreateInput[] = [
@@ -150,326 +151,326 @@ export const initialContacts: Prisma.ContactCreateInput[] = [
 ]
 // initializing cost codes
 export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
-  {
-      cost_code: "#cc123gdj1",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      cost_code_description: "1.0 Earthwork",
-      cost_code_type: "",
-      Jobsite: {
-          connect: [
-              { jobsite_id: "j123" },
-              { jobsite_id: "j234" },
-              { jobsite_id: "j345" },
-              { jobsite_id: "j456" },
-              { jobsite_id: "j567" }
-          ]
-      }
-  },
-  {
-      cost_code: "#cc123gdj2",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      cost_code_description: "2.0 Foundation",
-      cost_code_type: "",
-      Jobsite: {
-          connect: [
-              { jobsite_id: "j123" },
-              { jobsite_id: "j234" },
-              { jobsite_id: "j345" },
-              { jobsite_id: "j456" },
-              { jobsite_id: "j567" }
-          ]
-      }
-  },
-  {
-      cost_code: "#cc123gdj3",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      cost_code_description: "3.0 Concrete",
-      cost_code_type: "",
-      Jobsite: {
-          connect: [
-              { jobsite_id: "j123" },
-              { jobsite_id: "j234" },
-              { jobsite_id: "j345" },
-              { jobsite_id: "j456" },
-              { jobsite_id: "j567" }
-          ]
-      }
-  },
-  {
-      cost_code: "#cc123gdj4",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      cost_code_description: "4.0 Masonry",
-      cost_code_type: "",
-      Jobsite: {
-          connect: [
-              { jobsite_id: "j123" },
-              { jobsite_id: "j234" },
-              { jobsite_id: "j345" },
-              { jobsite_id: "j456" },
-              { jobsite_id: "j567" }
-          ]
-      }
-  },
-  {
-      cost_code: "cc123gdj5",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      cost_code_description: "5.0 Structural Steel",
-      cost_code_type: "",
-      Jobsite: {
-          connect: [
-              { jobsite_id: "j123" },
-              { jobsite_id: "j234" },
-              { jobsite_id: "j345" },
-              { jobsite_id: "j456" },
-              { jobsite_id: "j567" }
-          ]
-      }
-  },
-  {
-      cost_code: "cc123gdj6",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      cost_code_description: "6.0 Carpentry",
-      cost_code_type: "",
-      Jobsite: {
-          connect: [
-              { jobsite_id: "j123" },
-              { jobsite_id: "j234" },
-              { jobsite_id: "j345" },
-              { jobsite_id: "j456" },
-              { jobsite_id: "j567" }
-          ]
-      }
-  },
-  {
-      cost_code: "cc123gdj7",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      cost_code_description: "7.0 Roofing",
-      cost_code_type: "",
-      Jobsite: {
-          connect: [
-              { jobsite_id: "j123" },
-              { jobsite_id: "j234" },
-              { jobsite_id: "j345" },
-              { jobsite_id: "j456" },
-              { jobsite_id: "j567" }
-          ]
-      }
-  },
-  {
-      cost_code: "cc123gdj8",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      cost_code_description: "8.0 Windows and Doors",
-      cost_code_type: "",
-      Jobsite: {
-          connect: [
-              { jobsite_id: "j123" },
-              { jobsite_id: "j234" },
-              { jobsite_id: "j345" },
-              { jobsite_id: "j456" },
-              { jobsite_id: "j567" }
-          ]
-      }
-  },
-  {
-      cost_code: "cc123gdj9",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      cost_code_description: "9.0 Drywall",
-      cost_code_type: "",
-      Jobsite: {
-          connect: [
-              { jobsite_id: "j123" },
-              { jobsite_id: "j234" },
-              { jobsite_id: "j345" },
-              { jobsite_id: "j456" },
-              { jobsite_id: "j567" }
-          ]
-      }
-  },
-  {
-      cost_code: "cc123gdj10",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      cost_code_description: "10.0 Flooring",
-      cost_code_type: "",
-      Jobsite: {
-          connect: [
-              { jobsite_id: "j123" },
-              { jobsite_id: "j234" },
-              { jobsite_id: "j345" },
-              { jobsite_id: "j456" },
-              { jobsite_id: "j567" }
-          ]
-      }
-  },
-  {
-      cost_code: "cc123gdj11",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      cost_code_description: "11.0 Painting",
-      cost_code_type: "",
-      Jobsite: {
-          connect: [
-              { jobsite_id: "j123" },
-              { jobsite_id: "j234" },
-              { jobsite_id: "j345" },
-              { jobsite_id: "j456" },
-              { jobsite_id: "j567" }
-          ]
-      }
-  },
-  {
-      cost_code: "cc123gdj12",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      cost_code_description: "12.0 Plumbing",
-      cost_code_type: "",
-      Jobsite: {
-          connect: [
-              { jobsite_id: "j123" },
-              { jobsite_id: "j234" },
-              { jobsite_id: "j345" },
-              { jobsite_id: "j456" },
-              { jobsite_id: "j567" }
-          ]
-      }
-  },
-  {
-      cost_code: "cc123gdj13",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      cost_code_description: "13.0 HVAC",
-      cost_code_type: "",
-      Jobsite: {
-          connect: [
-              { jobsite_id: "j123" },
-              { jobsite_id: "j234" },
-              { jobsite_id: "j345" },
-              { jobsite_id: "j456" },
-              { jobsite_id: "j567" }
-          ]
-      }
-  },
-  {
-      cost_code: "cc123gdj14",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      cost_code_description: "14.0 Electrical",
-      cost_code_type: "",
-      Jobsite: {
-          connect: [
-              { jobsite_id: "j123" },
-              { jobsite_id: "j234" },
-              { jobsite_id: "j345" },
-              { jobsite_id: "j456" },
-              { jobsite_id: "j567" }
-          ]
-      }
-  },
-  {
-      cost_code: "cc123gdj15",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      cost_code_description: "15.0 Landscaping",
-      cost_code_type: "",
-      Jobsite: {
-          connect: [
-              { jobsite_id: "j123" },
-              { jobsite_id: "j234" },
-              { jobsite_id: "j345" },
-              { jobsite_id: "j456" },
-              { jobsite_id: "j567" }
-          ]
-      }
-  },
-  {
-      cost_code: "cc123gdj16",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      cost_code_description: "16.0 Site Utilities",
-      cost_code_type: "",
-      Jobsite: {
-          connect: [
-              { jobsite_id: "j123" },
-              { jobsite_id: "j234" },
-              { jobsite_id: "j345" },
-              { jobsite_id: "j456" },
-              { jobsite_id: "j567" }
-          ]
-      }
-  },
-  {
-      cost_code: "cc123gdj17",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      cost_code_description: "17.0 Fire Protection",
-      cost_code_type: "",
-      Jobsite: {
-          connect: [
-              { jobsite_id: "j123" },
-              { jobsite_id: "j234" },
-              { jobsite_id: "j345" },
-              { jobsite_id: "j456" },
-              { jobsite_id: "j567" }
-          ]
-      }
-  },
-  {
-      cost_code: "cc123gdj18",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      cost_code_description: "18.0 Elevator",
-      cost_code_type: "",
-      Jobsite: {
-          connect: [
-              { jobsite_id: "j123" },
-              { jobsite_id: "j234" },
-              { jobsite_id: "j345" },
-              { jobsite_id: "j456" },
-              { jobsite_id: "j567" }
-          ]
-      }
-  },
-  {
-      cost_code: "cc123gdj19",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      cost_code_description: "19.0 Security",
-      cost_code_type: "",
-      Jobsite: {
-          connect: [
-              { jobsite_id: "j123" },
-              { jobsite_id: "j234" },
-              { jobsite_id: "j345" },
-              { jobsite_id: "j456" },
-              { jobsite_id: "j567" }
-          ]
-      }
-  },
-  {
-      cost_code: "cc123gdj20",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      cost_code_description: "20.0 Finishes",
-      cost_code_type: "",
-      Jobsite: {
-          connect: [
-              { jobsite_id: "j123" },
-              { jobsite_id: "j234" },
-              { jobsite_id: "j345" },
-              { jobsite_id: "j456" },
-              { jobsite_id: "j567" }
-          ]
-      }
-  }
+{
+    cost_code: "#cc123gdj1",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    cost_code_description: "1.0 Earthwork",
+    cost_code_type: "",
+    Jobsite: {
+        connect: [
+            { jobsite_id: "j123" },
+            { jobsite_id: "j234" },
+            { jobsite_id: "j345" },
+            { jobsite_id: "j456" },
+            { jobsite_id: "j567" }
+        ]
+    }
+},
+{
+    cost_code: "#cc123gdj2",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    cost_code_description: "2.0 Foundation",
+    cost_code_type: "",
+    Jobsite: {
+        connect: [
+            { jobsite_id: "j123" },
+            { jobsite_id: "j234" },
+            { jobsite_id: "j345" },
+            { jobsite_id: "j456" },
+            { jobsite_id: "j567" }
+        ]
+    }
+},
+{
+    cost_code: "#cc123gdj3",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    cost_code_description: "3.0 Concrete",
+    cost_code_type: "",
+    Jobsite: {
+        connect: [
+            { jobsite_id: "j123" },
+            { jobsite_id: "j234" },
+            { jobsite_id: "j345" },
+            { jobsite_id: "j456" },
+            { jobsite_id: "j567" }
+        ]
+    }
+},
+{
+    cost_code: "#cc123gdj4",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    cost_code_description: "4.0 Masonry",
+    cost_code_type: "",
+    Jobsite: {
+        connect: [
+            { jobsite_id: "j123" },
+            { jobsite_id: "j234" },
+            { jobsite_id: "j345" },
+            { jobsite_id: "j456" },
+            { jobsite_id: "j567" }
+        ]
+    }
+},
+{
+    cost_code: "cc123gdj5",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    cost_code_description: "5.0 Structural Steel",
+    cost_code_type: "",
+    Jobsite: {
+        connect: [
+            { jobsite_id: "j123" },
+            { jobsite_id: "j234" },
+            { jobsite_id: "j345" },
+            { jobsite_id: "j456" },
+            { jobsite_id: "j567" }
+        ]
+    }
+},
+{
+    cost_code: "cc123gdj6",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    cost_code_description: "6.0 Carpentry",
+    cost_code_type: "",
+    Jobsite: {
+        connect: [
+            { jobsite_id: "j123" },
+            { jobsite_id: "j234" },
+            { jobsite_id: "j345" },
+            { jobsite_id: "j456" },
+            { jobsite_id: "j567" }
+        ]
+    }
+},
+{
+    cost_code: "cc123gdj7",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    cost_code_description: "7.0 Roofing",
+    cost_code_type: "",
+    Jobsite: {
+        connect: [
+            { jobsite_id: "j123" },
+            { jobsite_id: "j234" },
+            { jobsite_id: "j345" },
+            { jobsite_id: "j456" },
+            { jobsite_id: "j567" }
+        ]
+    }
+},
+{
+    cost_code: "cc123gdj8",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    cost_code_description: "8.0 Windows and Doors",
+    cost_code_type: "",
+    Jobsite: {
+        connect: [
+            { jobsite_id: "j123" },
+            { jobsite_id: "j234" },
+            { jobsite_id: "j345" },
+            { jobsite_id: "j456" },
+            { jobsite_id: "j567" }
+        ]
+    }
+},
+{
+    cost_code: "cc123gdj9",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    cost_code_description: "9.0 Drywall",
+    cost_code_type: "",
+    Jobsite: {
+        connect: [
+            { jobsite_id: "j123" },
+            { jobsite_id: "j234" },
+            { jobsite_id: "j345" },
+            { jobsite_id: "j456" },
+            { jobsite_id: "j567" }
+        ]
+    }
+},
+{
+    cost_code: "cc123gdj10",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    cost_code_description: "10.0 Flooring",
+    cost_code_type: "",
+    Jobsite: {
+        connect: [
+            { jobsite_id: "j123" },
+            { jobsite_id: "j234" },
+            { jobsite_id: "j345" },
+            { jobsite_id: "j456" },
+            { jobsite_id: "j567" }
+        ]
+    }
+},
+{
+    cost_code: "cc123gdj11",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    cost_code_description: "11.0 Painting",
+    cost_code_type: "",
+    Jobsite: {
+        connect: [
+            { jobsite_id: "j123" },
+            { jobsite_id: "j234" },
+            { jobsite_id: "j345" },
+            { jobsite_id: "j456" },
+            { jobsite_id: "j567" }
+        ]
+    }
+},
+{
+    cost_code: "cc123gdj12",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    cost_code_description: "12.0 Plumbing",
+    cost_code_type: "",
+    Jobsite: {
+        connect: [
+            { jobsite_id: "j123" },
+            { jobsite_id: "j234" },
+            { jobsite_id: "j345" },
+            { jobsite_id: "j456" },
+            { jobsite_id: "j567" }
+        ]
+    }
+},
+{
+    cost_code: "cc123gdj13",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    cost_code_description: "13.0 HVAC",
+    cost_code_type: "",
+    Jobsite: {
+        connect: [
+            { jobsite_id: "j123" },
+            { jobsite_id: "j234" },
+            { jobsite_id: "j345" },
+            { jobsite_id: "j456" },
+            { jobsite_id: "j567" }
+        ]
+    }
+},
+{
+    cost_code: "cc123gdj14",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    cost_code_description: "14.0 Electrical",
+    cost_code_type: "",
+    Jobsite: {
+        connect: [
+            { jobsite_id: "j123" },
+            { jobsite_id: "j234" },
+            { jobsite_id: "j345" },
+            { jobsite_id: "j456" },
+            { jobsite_id: "j567" }
+        ]
+    }
+},
+{
+    cost_code: "cc123gdj15",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    cost_code_description: "15.0 Landscaping",
+    cost_code_type: "",
+    Jobsite: {
+        connect: [
+            { jobsite_id: "j123" },
+            { jobsite_id: "j234" },
+            { jobsite_id: "j345" },
+            { jobsite_id: "j456" },
+            { jobsite_id: "j567" }
+        ]
+    }
+},
+{
+    cost_code: "cc123gdj16",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    cost_code_description: "16.0 Site Utilities",
+    cost_code_type: "",
+    Jobsite: {
+        connect: [
+            { jobsite_id: "j123" },
+            { jobsite_id: "j234" },
+            { jobsite_id: "j345" },
+            { jobsite_id: "j456" },
+            { jobsite_id: "j567" }
+        ]
+    }
+},
+{
+    cost_code: "cc123gdj17",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    cost_code_description: "17.0 Fire Protection",
+    cost_code_type: "",
+    Jobsite: {
+        connect: [
+            { jobsite_id: "j123" },
+            { jobsite_id: "j234" },
+            { jobsite_id: "j345" },
+            { jobsite_id: "j456" },
+            { jobsite_id: "j567" }
+        ]
+    }
+},
+{
+    cost_code: "cc123gdj18",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    cost_code_description: "18.0 Elevator",
+    cost_code_type: "",
+    Jobsite: {
+        connect: [
+            { jobsite_id: "j123" },
+            { jobsite_id: "j234" },
+            { jobsite_id: "j345" },
+            { jobsite_id: "j456" },
+            { jobsite_id: "j567" }
+        ]
+    }
+},
+{
+    cost_code: "cc123gdj19",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    cost_code_description: "19.0 Security",
+    cost_code_type: "",
+    Jobsite: {
+        connect: [
+            { jobsite_id: "j123" },
+            { jobsite_id: "j234" },
+            { jobsite_id: "j345" },
+            { jobsite_id: "j456" },
+            { jobsite_id: "j567" }
+        ]
+    }
+},
+{
+    cost_code: "cc123gdj20",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    cost_code_description: "20.0 Finishes",
+    cost_code_type: "",
+    Jobsite: {
+        connect: [
+            { jobsite_id: "j123" },
+            { jobsite_id: "j234" },
+            { jobsite_id: "j345" },
+            { jobsite_id: "j456" },
+            { jobsite_id: "j567" }
+        ]
+    }
+}
 ];
 
 export const initialCrewJobsites: Prisma.CrewJobsiteCreateInput[] = [
@@ -483,94 +484,138 @@ export const initialCrewJobsites: Prisma.CrewJobsiteCreateInput[] = [
 ]
 
 export const intialEquipment: Prisma.EquipmentCreateInput[] = [
+// equipment
+{ qr_id: "EQ-100000",name: "ALKOTA PRESSURE WASHER", description: "", status: "PENDING", equipment_tag: "EQUIPMENT", last_inspection:new Date(now()), last_repair :new Date(now()), createdAt: new Date(now()), updatedAt: new Date(now()), make: "", model: "", year: "", license_plate: "", registration_expiration: null, mileage: null, is_active: true},
+{ qr_id: "EQ-100001", name: "CABLE PLOW", description: "", status: "PENDING", equipment_tag: "EQUIPMENT", last_inspection: new Date(now()), last_repair:new Date(now()), createdAt: new Date(now()), updatedAt: new Date(now()), make: "", model: "", year: "", license_plate: "", registration_expiration: null, mileage: null, is_active: true },
+{ qr_id: "EQ-100002", name: "CablePlo - Cable Plow Case", description: "", status: "PENDING", equipment_tag: "EQUIPMENT", last_inspection: new Date(now()), last_repair:new Date(now()), createdAt: new Date(now()), updatedAt: new Date(now()), make: "", model: "", year: "", license_plate: "", registration_expiration: null, mileage: null, is_active: true },
+{ qr_id: "EQ-100003", name: "Case International Chisel Dyker", description: "Case International Chisel Dyker", status: "PENDING", equipment_tag: "EQUIPMENT", last_inspection: new Date(now()), last_repair:new Date(now()), createdAt: new Date(now()), updatedAt: new Date(now()), make: "", model: "", year: "", license_plate: "", registration_expiration: null, mileage: null, is_active: true },
+{ qr_id: "EQ-100004", name: "CATTRACK", description: "CAT TRACK TRACTOR CH65", status: "PENDING", equipment_tag: "EQUIPMENT", last_inspection: new Date(now()), last_repair:new Date(now()), createdAt: new Date(now()), updatedAt: new Date(now()), make: "", model: "", year: "", license_plate: "", registration_expiration: null, mileage: null, is_active: true },
+{ qr_id: "EQ-100005", name: "CEMENT FORMS", description: "CEMENT FORMS", status: "PENDING", equipment_tag: "EQUIPMENT", last_inspection: new Date(now()), last_repair:new Date(now()), createdAt: new Date(now()), updatedAt: new Date(now()), make: "", model: "", year: "", license_plate: "", registration_expiration: null, mileage: null, is_active: true },
+{ qr_id: "EQ-100006", name: "CEMENT MIXER HYDRAULIC", description: "CEMENT MIXER HYDRAULIC", status: "PENDING", equipment_tag: "EQUIPMENT", last_inspection: new Date(now()), last_repair:new Date(now()), createdAt: new Date(now()), updatedAt: new Date(now()), make: "", model: "", year: "", license_plate: "", registration_expiration: null, mileage: null, is_active: true },
+{ qr_id: "EQ-100007", name: "CHAMP LIFT", description: "CHAMP LIFT", status: "PENDING", equipment_tag: "EQUIPMENT", last_inspection: new Date(now()), last_repair:new Date(now()), createdAt: new Date(now()), updatedAt: new Date(now()), make: "", model: "", year: "", license_plate: "", registration_expiration: null, mileage: null, is_active: true },
+{ qr_id: "EQ-100008", name: "CHISEL PLOW", description: "CHISEL PLOW", status: "PENDING", equipment_tag: "EQUIPMENT", last_inspection: new Date(now()), last_repair:new Date(now()), createdAt: new Date(now()), updatedAt: new Date(now()), make: "", model: "", year: "", license_plate: "", registration_expiration: null, mileage: null, is_active: true },
+{ qr_id: "EQ-100009", name: "CONCRETE FORMS", description: "CONCRETE FORMS", status: "PENDING", equipment_tag: "EQUIPMENT", last_inspection: new Date(now()), last_repair:new Date(now()), createdAt: new Date(now()), updatedAt: new Date(now()), make: "", model: "", year: "", license_plate: "", registration_expiration: null, mileage: null, is_active: true },
+{ qr_id: "EQ-100010", name: "CONCRETE MIXER#1", description: "CONCRETE MIXER#1", status: "PENDING", equipment_tag: "EQUIPMENT", last_inspection: new Date(now()), last_repair:new Date(now()), createdAt: new Date(now()), updatedAt: new Date(now()), make: "", model: "", year: "", license_plate: "", registration_expiration: null, mileage: null, is_active: true },
+{ qr_id: "EQ-100011", name: "CONCRETE SAW #1", description: "CONCRETE SAW SOFT CUT #1", status: "PENDING", equipment_tag: "EQUIPMENT", last_inspection: new Date(now()), last_repair:new Date(now()), createdAt: new Date(now()), updatedAt: new Date(now()), make: "", model: "", year: "", license_plate: "", registration_expiration: null, mileage: null, is_active: true },
+{ qr_id: "EQ-100012", name: "CONCRETE SAW #2", description: "CONCRETE SAW SOFT CUT #2", status: "PENDING", equipment_tag: "EQUIPMENT", last_inspection: new Date(now()), last_repair:new Date(now()), createdAt: new Date(now()), updatedAt: new Date(now()), make: "", model: "", year: "", license_plate: "", registration_expiration: null, mileage: null, is_active: true },
 
+{ qr_id: "EQ-100013", name: "CPS 1", description: "CONCRETE POWER SCREED", status: "PENDING", equipment_tag: "EQUIPMENT", last_inspection: new Date(now()), last_repair:new Date(now()), createdAt: new Date(now()), updatedAt: new Date(now()), make: "", model: "", year: "", license_plate: "", registration_expiration: null, mileage: null, is_active: true },
+{ qr_id: "EQ-100014", name: "CR1 - Grove RT Crane 1986", description: "", status: "PENDING", equipment_tag: "EQUIPMENT", last_inspection: new Date(now()), last_repair:new Date(now()), createdAt: new Date(now()), updatedAt: new Date(now()), make: "", model: "", year: "", license_plate: "", registration_expiration: null, mileage: null, is_active: true },
+{ qr_id: "EQ-100015", name: "CR2 - Manitowoc 275 Ton Crane 2002", description: "", status: "PENDING", equipment_tag: "EQUIPMENT", last_inspection: new Date(now()), last_repair:new Date(now()), createdAt: new Date(now()), updatedAt: new Date(now()), make: "", model: "", year: "", license_plate: "", registration_expiration: null, mileage: null, is_active: true },
+{ qr_id: "EQ-100016", name: "CR3 - RT890 Ton Crane", description: "", status: "PENDING", equipment_tag: "EQUIPMENT", last_inspection: new Date(now()), last_repair:new Date(now()), createdAt: new Date(now()), updatedAt: new Date(now()), make: "", model: "", year: "", license_plate: "", registration_expiration: null, mileage: null, is_active: true },
+{ qr_id: "EQ-100017", name: "CR4", description: "", status: "PENDING", equipment_tag: "EQUIPMENT", last_inspection: new Date(now()), last_repair:new Date(now()), createdAt: new Date(now()), updatedAt: new Date(now()), make: "", model: "", year: "", license_plate: "", registration_expiration: null, mileage: null, is_active: true },
+{ qr_id: "EQ-100018", name: "CR5 Medium", description: "", status: "PENDING", equipment_tag: "EQUIPMENT", last_inspection: new Date(now()), last_repair:new Date(now()), createdAt: new Date(now()), updatedAt: new Date(now()), make: "", model: "", year: "", license_plate: "", registration_expiration: null, mileage: null, is_active: true },
+{ qr_id: "EQ-100019", name: "CR6 mini crane", description: "", status: "PENDING", equipment_tag: "EQUIPMENT", last_inspection: new Date(now()), last_repair:new Date(now()), createdAt: new Date(now()), updatedAt: new Date(now()), make: "", model: "", year: "", license_plate: "", registration_expiration: null, mileage: null, is_active: true },
+{ qr_id: "EQ-100020", name: "CT 1 - Cement Truck 1 - 7846", description: "", status: "PENDING", equipment_tag: "EQUIPMENT", last_inspection: new Date(now()), last_repair:new Date(now()), createdAt: new Date(now()), updatedAt: new Date(now()), make: "", model: "", year: "", license_plate: "", registration_expiration: null, mileage: null, is_active: true },
+{ qr_id: "EQ-100021", name: "CT 2 - Cement Truck 2 - 7955", description: "", status: "PENDING", equipment_tag: "EQUIPMENT", last_inspection: new Date(now()), last_repair:new Date(now()), createdAt: new Date(now()), updatedAt: new Date(now()), make: "", model: "", year: "", license_plate: "", registration_expiration: null, mileage: null, is_active: true },
+{ qr_id: "EQ-100022", name: "D1 - CAT D6R LGP Bulldozer", description: "", status: "PENDING", equipment_tag: "EQUIPMENT", last_inspection: new Date(now()), last_repair:new Date(now()), createdAt: new Date(now()), updatedAt: new Date(now()), make: "", model: "", year: "", license_plate: "", registration_expiration: null, mileage: null, is_active: true },
+{ qr_id: "EQ-100023", name: "D2 - JD 850K DOZER", description: "JD 850K DOZER", status: "PENDING", equipment_tag: "EQUIPMENT", last_inspection: new Date(now()), last_repair:new Date(now()), createdAt: new Date(now()), updatedAt: new Date(now()), make: "", model: "", year: "", license_plate: "", registration_expiration: null, mileage: null, is_active: true },
+{ qr_id: "EQ-100024", name: "DIGGA", description: "DIGGA PIER DRIVE HEAD", status: "PENDING", equipment_tag: "EQUIPMENT", last_inspection: new Date(now()), last_repair:new Date(now()), createdAt: new Date(now()), updatedAt: new Date(now()), make: "", model: "", year: "", license_plate: "", registration_expiration: null, mileage: null, is_active: true },
+{ qr_id: "EQ-100025", name: "DT 11 - Volvo A25c 6x6 Articulated Dump Truck", description: "", status: "PENDING", equipment_tag: "EQUIPMENT", last_inspection: new Date(now()), last_repair:new Date(now()), createdAt: new Date(now()), updatedAt: new Date(now()), make: "", model: "", year: "", license_plate: "", registration_expiration: null, mileage: null, is_active: true },
+{ qr_id: "EQ-100026", name: "DT10 - Volvo A35C Haul Truck", description: "", status: "PENDING", equipment_tag: "EQUIPMENT", last_inspection: new Date(now()), last_repair:new Date(now()), createdAt: new Date(now()), updatedAt: new Date(now()), make: "", model: "", year: "", license_plate: "", registration_expiration: null, mileage: null, is_active: true },
+// start page 3 of equipment assignar 
+// trailers
+{
+    qr_id: "EQ-654321",
+    name: "Trailer TX200",
+    description: "Utility trailer for transporting equipment",
+    status: "PENDING",
+    equipment_tag: "TRAILER",
+    last_inspection: new Date("2023-03-20T00:00:00.000Z"),
+    last_repair: null,
+    createdAt: new Date("2024-07-25T00:00:00.000Z"),
+    updatedAt: new Date("2024-07-25T00:00:00.000Z"),
+    make: "BigTex",
+    model: "TX200",
+    year: "2018",
+    license_plate: "TRL456",
+    registration_expiration: new Date("2018-05-30T00:00:00.000Z"),
+    mileage: null,
+    is_active: true
+    },
+
+    // vehicles
     {
-        qr_id: "EQ-123456",
-        name: "Excavator 3000",
-        description: "Heavy-duty excavator for construction sites",
-        status: "PENDING",
-        equipment_tag: "EQUIPMENT",
-        last_inspection: new Date("2023-06-15T00:00:00.000Z"),
-        last_repair: new Date("2023-05-10T00:00:00.000Z"),
-        createdAt: new Date("2024-07-25T00:00:00.000Z"),
-        updatedAt: new Date("2024-07-25T00:00:00.000Z"),
-        make: "Caterpillar",
-        model: "CAT3000",
-        year: "2020",
-        license_plate: "PLT123",
-        registration_expiration: new Date("2021-01-20T00:00:00.000Z"),
-        mileage: 1200,
-        is_active: true
-      },
-      {
-        qr_id: "EQ-654321",
-        name: "Trailer TX200",
-        description: "Utility trailer for transporting equipment",
-        status: "PENDING",
-        equipment_tag: "TRAILER",
-        last_inspection: new Date("2023-03-20T00:00:00.000Z"),
-        last_repair: null,
-        createdAt: new Date("2024-07-25T00:00:00.000Z"),
-        updatedAt: new Date("2024-07-25T00:00:00.000Z"),
-        make: "BigTex",
-        model: "TX200",
-        year: "2018",
-        license_plate: "TRL456",
-        registration_expiration: new Date("2018-05-30T00:00:00.000Z"),
-        mileage: null,
-        is_active: true
-      },
-      {
-        qr_id: "EQ-789012",
-        name: "Bulldozer B450",
-        description: "Powerful bulldozer for heavy-duty tasks",
-        status: "PENDING",
-        equipment_tag: "VEHICLE",
-        last_inspection: new Date("2023-02-10T00:00:00.000Z"),
-        last_repair: new Date("2023-01-05T00:00:00.000Z"),
-        createdAt: new Date("2024-07-25T00:00:00.000Z"),
-        updatedAt: new Date("2024-07-25T00:00:00.000Z"),
-        make: "Komatsu",
-        model: "B450",
-        year: "2019",
-        license_plate: "BDZ789",
-        registration_expiration: new Date("2019-06-25T00:00:00.000Z"),
-        mileage: 800,
-        is_active: true
-      }
+    qr_id: "EQ-789012",
+    name: "Bulldozer B450",
+    description: "Powerful bulldozer for heavy-duty tasks",
+    status: "PENDING",
+    equipment_tag: "VEHICLE",
+    last_inspection: new Date("2023-02-10T00:00:00.000Z"),
+    last_repair: new Date("2023-01-05T00:00:00.000Z"),
+    createdAt: new Date("2024-07-25T00:00:00.000Z"),
+    updatedAt: new Date("2024-07-25T00:00:00.000Z"),
+    make: "Komatsu",
+    model: "B450",
+    year: "2019",
+    license_plate: "BDZ789",
+    registration_expiration: new Date("2019-06-25T00:00:00.000Z"),
+    mileage: 800,
+    is_active: true
+},
+{
+    qr_id: "EQ-123456",
+    name: "Excavator 3000",
+    description: "Heavy-duty excavator for construction sites",
+    status: "PENDING",
+    equipment_tag: "EQUIPMENT",
+    last_inspection: new Date("2023-06-15T00:00:00.000Z"),
+    last_repair: new Date("2023-05-10T00:00:00.000Z"),
+    createdAt: new Date("2024-07-25T00:00:00.000Z"),
+    updatedAt: new Date("2024-07-25T00:00:00.000Z"),
+    make: "Caterpillar",
+    model: "CAT3000",
+    year: "2020",
+    license_plate: "PLT123",
+    registration_expiration: new Date("2021-01-20T00:00:00.000Z"),
+    mileage: 1200,
+    is_active: true
+}
 ]
 
-export const intialEmployeeEquipment: Prisma.EmployeeEquipmentLogCreateInput[] = [
-    {
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        employee: { connect: { id: "1" } },
-        start_time: new Date(),
-        Job: { connect: { jobsite_id: "j123" } },
-        Equipment: { connect: { qr_id: "EQ-123456" } },
-        end_time: null,
-        duration: null,
-        equipment_notes: null,
-      },
-      {
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        employee: { connect: { id: "2" } },
-        start_time: new Date(),
-        Job: { connect: { jobsite_id: "j123" } },
-        Equipment: { connect: { qr_id: "EQ-654321" } },
-        end_time: null,
-        duration: null,
-        equipment_notes: null,
-      },
-      {
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        employee: { connect: { id: "3" } },
-        start_time: new Date(),
-        Job: { connect: { jobsite_id: "j123" } },
-        Equipment: { connect: { qr_id: "EQ-789012" } },
-        end_time: null,
-        duration: null,
-      }
-    ];
+export const initialUserSettings: Prisma.UserSettingsCreateInput[] = [
+    { user: { connect: { id: "1" } } },
+    { user: { connect: { id: "2" } } },
+    { user: { connect: { id: "3" } } },
+    { user: { connect: { id: "4" } } },
+    { user: { connect: { id: "5" } } },
+    { user: { connect: { id: "6" } } },
+    { user: { connect: { id: "7" } } },
+    { user: { connect: { id: "8" } } },
+    { user: { connect: { id: "9" } } }
+]
+
+// export const intialEmployeeEquipment: Prisma.EmployeeEquipmentLogCreateInput[] = [
+//     {
+//         createdAt: new Date(),
+//         updatedAt: new Date(),
+//         employee: { connect: { id: "1" } },
+//         start_time: new Date(),
+//         Job: { connect: { jobsite_id: "j123" } },
+//         Equipment: { connect: { qr_id: "EQ-100000" } },
+//         end_time: null,
+//         duration: null,
+//         equipment_notes: null,
+//     },
+//     {
+//     createdAt: new Date(),
+//     updatedAt: new Date(),
+//     employee: { connect: { id: "2" } },
+//     start_time: new Date(),
+//     Job: { connect: { jobsite_id: "j123" } },
+//     Equipment: { connect: { qr_id: "EQ-654321" } },
+//     end_time: null,
+//     duration: null,
+//     equipment_notes: null,
+//     },
+//     {
+//     createdAt: new Date(),
+//     updatedAt: new Date(),
+//     employee: { connect: { id: "3" } },
+//     start_time: new Date(),
+//     Job: { connect: { jobsite_id: "j123" } },
+//     Equipment: { connect: { qr_id: "EQ-789012" } },
+//     end_time: null,
+//     duration: null,
+//     }
+// ];
