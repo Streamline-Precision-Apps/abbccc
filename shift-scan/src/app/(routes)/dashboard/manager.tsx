@@ -19,7 +19,7 @@ export const Manager: React.FC<ManagerProps> = ({ show }) => {
             <Texts>{t("MyTeam")}</Texts>
           </Buttons>
 
-          <Buttons href="/dashboard/qrGenerator" variant={"default"} size={"widgetSm"}>
+          <Buttons href="/dashboard/qr-generator" variant={"default"} size={"widgetSm"}>
             <Images titleImg="/qrCode.svg" titleImgAlt="QR Code" variant={"icon"} size={"widgetSm"}></Images>
             <Texts>{t("QrGenerator")}</Texts>
           </Buttons>

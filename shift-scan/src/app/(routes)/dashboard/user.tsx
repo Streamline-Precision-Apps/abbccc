@@ -26,6 +26,7 @@ export const User: React.FC<UserProps> = ({
   logs, // Use logs prop
 }) => {
   const t = useTranslations("ManagerButtons");
+
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { data: session } = useSession() as { data: CustomSession | null };
@@ -74,14 +75,14 @@ export const User: React.FC<UserProps> = ({
             size={"widgetSm"}
             onClick={handleShowManagerButtons}
           >
-            <div className="flex flex-row justify-center items-center ">
+            <div>
               <Images
                 titleImg="/home.svg"
                 titleImgAlt="Home Icon"
                 variant={"icon"}
                 size={"default"}
               ></Images>
-              <Texts>Home</Texts>
+              <Texts>{t("GoHome")}</Texts>
             </div>
           </Buttons>
           <Buttons
@@ -95,7 +96,7 @@ export const User: React.FC<UserProps> = ({
               variant={"icon"}
               size={"default"}
             />
-            <Texts>Log New</Texts>
+            <Texts>{t("LogNew")}</Texts>
           </Buttons>
           <Modals
             isOpen={isModalOpen}
@@ -104,7 +105,7 @@ export const User: React.FC<UserProps> = ({
             size={"default"}
             type={"default"}
           >
-            <div className="flex flex-col bg-white px-2 ">
+            <div>
               <ClockProcessor
                 type={"equipment"}
                 id={user?.id}
@@ -124,7 +125,7 @@ export const User: React.FC<UserProps> = ({
               variant={"icon"}
               size={"default"}
             />
-            <Texts>Current Equipment</Texts>
+            <Texts>{t("Current")}</Texts>
           </Buttons>
         </>
       ) : additionalButtonsType === "clockOut" ? (
@@ -134,14 +135,14 @@ export const User: React.FC<UserProps> = ({
             size={"widgetSm"}
             onClick={handleShowManagerButtons}
           >
-            <Texts>Return Home</Texts>
+            <Texts>{t("GoHome")}</Texts>
           </Buttons>
           <Buttons
             variant={"orange"}
             size={"widgetSm"}
             onClick={handleCOButton2}
           >
-            <Texts>Start Break</Texts>
+            <Texts>{t("Break")}</Texts>
           </Buttons>
           <Modals
             isOpen={isModalOpen}
@@ -151,18 +152,18 @@ export const User: React.FC<UserProps> = ({
             type={"clock"}
           >
             <div className="flex flex-col bg-white px-2 ">
-              <h1>Equipment logs need to be submitted.</h1>
+              <h1>{t("Submit")}</h1>
               <Buttons
                 variant={"orange"}
                 size={"default"}
                 href={`/dashboard/equipment/current`}
               >
-                <Texts>View Current Equipment</Texts>
+                <Texts>{t("CurrEQ")}</Texts>
               </Buttons>
             </div>
           </Modals>
           <Buttons variant={"red"} size={"widgetSm"} onClick={handleCOButton3}>
-            <Texts>End Work Day</Texts>
+            <Texts>{t("End")}</Texts>
           </Buttons>
         </>
       ) : (

@@ -45,7 +45,7 @@ CREATE TABLE "users" (
 CREATE TABLE "UserSettings" (
     "id" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
-    "language" TEXT NOT NULL,
+    "language" TEXT NOT NULL DEFAULT 'en',
     "approvedRequests" BOOLEAN NOT NULL DEFAULT false,
     "timeoffRequests" BOOLEAN NOT NULL DEFAULT false,
     "GeneralReminders" BOOLEAN NOT NULL DEFAULT false,
@@ -257,6 +257,7 @@ CREATE TABLE "CrewJobsite" (
 -- CreateTable
 CREATE TABLE "Contact" (
     "id" SERIAL NOT NULL,
+    "employee_id" TEXT NOT NULL,
     "phone_number" TEXT NOT NULL,
     "email" TEXT,
     "emergency_contact" TEXT,
@@ -326,12 +327,6 @@ CREATE TABLE "_CostCodeToJobsite" (
 );
 
 -- CreateTable
-CREATE TABLE "_ContactToUser" (
-    "A" INTEGER NOT NULL,
-    "B" TEXT NOT NULL
-);
-
--- CreateTable
 CREATE TABLE "_AddressToJobsite" (
     "A" INTEGER NOT NULL,
     "B" INTEGER NOT NULL
@@ -368,6 +363,9 @@ CREATE UNIQUE INDEX "Jobsite_jobsite_id_key" ON "Jobsite"("jobsite_id");
 CREATE UNIQUE INDEX "Equipment_qr_id_key" ON "Equipment"("qr_id");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Contact_employee_id_key" ON "Contact"("employee_id");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Form_id_name_key" ON "Form"("id", "name");
 
 -- CreateIndex
@@ -375,12 +373,6 @@ CREATE UNIQUE INDEX "_CostCodeToJobsite_AB_unique" ON "_CostCodeToJobsite"("A", 
 
 -- CreateIndex
 CREATE INDEX "_CostCodeToJobsite_B_index" ON "_CostCodeToJobsite"("B");
-
--- CreateIndex
-CREATE UNIQUE INDEX "_ContactToUser_AB_unique" ON "_ContactToUser"("A", "B");
-
--- CreateIndex
-CREATE INDEX "_ContactToUser_B_index" ON "_ContactToUser"("B");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_AddressToJobsite_AB_unique" ON "_AddressToJobsite"("A", "B");
@@ -428,6 +420,9 @@ ALTER TABLE "CrewJobsite" ADD CONSTRAINT "CrewJobsite_crew_id_fkey" FOREIGN KEY 
 ALTER TABLE "CrewJobsite" ADD CONSTRAINT "CrewJobsite_jobsite_id_fkey" FOREIGN KEY ("jobsite_id") REFERENCES "Jobsite"("jobsite_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Contact" ADD CONSTRAINT "Contact_employee_id_fkey" FOREIGN KEY ("employee_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "FormSubmissions" ADD CONSTRAINT "FormSubmissions_formId_fkey" FOREIGN KEY ("formId") REFERENCES "Form"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -438,12 +433,6 @@ ALTER TABLE "_CostCodeToJobsite" ADD CONSTRAINT "_CostCodeToJobsite_A_fkey" FORE
 
 -- AddForeignKey
 ALTER TABLE "_CostCodeToJobsite" ADD CONSTRAINT "_CostCodeToJobsite_B_fkey" FOREIGN KEY ("B") REFERENCES "Jobsite"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_ContactToUser" ADD CONSTRAINT "_ContactToUser_A_fkey" FOREIGN KEY ("A") REFERENCES "Contact"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_ContactToUser" ADD CONSTRAINT "_ContactToUser_B_fkey" FOREIGN KEY ("B") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_AddressToJobsite" ADD CONSTRAINT "_AddressToJobsite_A_fkey" FOREIGN KEY ("A") REFERENCES "Address"("id") ON DELETE CASCADE ON UPDATE CASCADE;
