@@ -122,7 +122,7 @@
         "Button": "Take Picture"
     },
     "EquipmentContent" : {
-        "Banner": "Submitted form successfully",
+        "Banner": "Form Submitted",
         "Refueled": " Did you refuel?",
         "Gallons": "Total gallons refueled",
         "CheckedTime": "Total Time used",
@@ -130,7 +130,9 @@
         "Save": "Save",
         "Delete": "Delete",
         "Edit": "Edit",
-        "Submit": "Submit All"
+        "Submit": "Submit",
+        "SubmitAll": "Submit All",
+        "NoCurrent": "No Current Equipment"
     },
     
     "addEquipmentForm": {
