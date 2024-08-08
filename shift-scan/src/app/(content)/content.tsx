@@ -184,7 +184,7 @@ export default function Content({
               })}
             </Texts>
             <DisplayBreakTime setToggle={handler} display={toggle} />
-            <WidgetSection user={user} display={toggle} />
+            <WidgetSection user={user} display={toggle}  locale={locale} />
             <Footers>{f("Copyright")}</Footers>
           </Sections>
         </Bases>
@@ -212,7 +212,7 @@ export default function Content({
               })}
             </Texts>
             <Hours setToggle={handler} display={toggle} />
-            <WidgetSection user={user} display={toggle} />
+            <WidgetSection user={user} display={toggle}  locale={locale} />
             <Footers>{f("Copyright")}</Footers>
           </Sections>
         </Bases>
