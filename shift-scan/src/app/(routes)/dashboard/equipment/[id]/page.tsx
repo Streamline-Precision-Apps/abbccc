@@ -1,6 +1,6 @@
 "use server";
 import prisma from "@/lib/prisma";
-import Base from "./base";
+import Content from "./content";
 
 export default async function Page({ params }: { params: { id: string } }) {
     const equipmentform = await prisma.employeeEquipmentLog.findUnique({
@@ -25,8 +25,6 @@ export default async function Page({ params }: { params: { id: string } }) {
 
     // Log counts for debugging
         return (
-        <> 
-            <Base name={eqname} eqid={eqid} start_time={start_time} completed={completed} fuelUsed={fuelUsed} savedDuration={savedDuration} filled={filled} equipment_notes={equipment_notes} />
-            </>
+        <Content name={eqname} eqid={eqid} start_time={start_time} completed={completed} fuelUsed={fuelUsed} savedDuration={savedDuration} filled={filled} equipment_notes={equipment_notes} />
         )
     }

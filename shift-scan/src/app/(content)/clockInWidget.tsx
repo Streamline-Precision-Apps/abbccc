@@ -24,6 +24,7 @@ export default function ClockInWidget({ user }: Props) {
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
+        location.reload(); // only current method to reload the page
     };
 
     return (

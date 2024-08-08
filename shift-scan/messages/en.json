@@ -121,6 +121,17 @@
     "equipmentPicture": {
         "Button": "Take Picture"
     },
+    "EquipmentContent" : {
+        "Banner": "Submitted form successfully",
+        "Refueled": " Did you refuel?",
+        "Gallons": "Total gallons refueled",
+        "CheckedTime": "Total Time used",
+        "Notes": "Additional notes",
+        "Save": "Save",
+        "Delete": "Delete",
+        "Edit": "Edit",
+        "Submit": "Submit All"
+    },
     
     "addEquipmentForm": {
         "Tag": "Equipment Tag",
