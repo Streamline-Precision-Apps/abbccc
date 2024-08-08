@@ -81,7 +81,7 @@ model User {
 model UserSettings {
   id               String  @id @default(cuid())
   userId           String  @unique @map("user_id")
-  language         String
+  language         String  @default("en")
   approvedRequests Boolean @default(false)
   timeoffRequests  Boolean @default(false)
   GeneralReminders Boolean @default(false)
