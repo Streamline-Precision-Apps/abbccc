@@ -7,6 +7,10 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { DeleteLogs, updateEmployeeEquipmentLog } from "@/actions/equipmentActions";
 import { useRouter } from 'next/navigation';
+import { Titles } from "@/components/(reusable)/titles";
+import Banner from "@/components/banner";
+import { Banners } from "@/components/(reusable)/banners";
+import { useTranslations } from "next-intl";
 
 type Props = {
     eqid: string | undefined;
@@ -30,6 +34,7 @@ export default function CombinedForm({ eqid, name, start_time, completed, filled
     const end_time = new Date();
     const duration = ((end_time.getTime() - start_time.getTime()) / (1000 * 60 * 60)).toFixed(2);
     const [changedDuration, setChangedDuration] = useState(savedDuration);
+    const t = useTranslations("EquipmentContent");
 
     useEffect(() => {
         if (completed) {
@@ -81,7 +86,7 @@ export default function CombinedForm({ eqid, name, start_time, completed, filled
         const formData1 = new FormData();
         formData1.append('id', eqid ?? "");
         await DeleteLogs(formData1);
-        router.replace("/dashboard/equipment/current");
+        router.replace("/dashboard/equipment");
     }
 
     const confirmation = async (e: React.FormEvent<HTMLButtonElement>) => {
@@ -100,8 +105,11 @@ export default function CombinedForm({ eqid, name, start_time, completed, filled
 
 
     return (
-        <Bases>
-            <h2 className="bg-app-green w-full text-center rounded-2xl">{completed ? "Submitted form" : ""}</h2>
+        <Bases>   
+        <Banners variant={"green"} >
+           {t("Banner")}
+        </Banners >
+
             <Sections size={"titleBox"}>
                 <TitleBoxes
                     title={`${name}`}
@@ -115,7 +123,7 @@ export default function CombinedForm({ eqid, name, start_time, completed, filled
             <form action={updateEmployeeEquipmentLog} method="post">
                 <Sections size={"dynamic"}>
                     <label>
-                        Did you refuel?
+                        {t("Refueled")}
                         <input
                             name="refueled"
                             type="checkbox"
@@ -125,25 +133,25 @@ export default function CombinedForm({ eqid, name, start_time, completed, filled
                         />
                     </label>
                 </Sections>
-                <Sections size={"dynamic"}>
                     {refueled ? (
-                        <label>
-                            Total gallons refueled
-                            <input
-                                type="number"
-                                name="fuel_used"
-                                value={fuel}
-                                onChange={handleFuelValue}
-                                readOnly={!isEditMode && completed}
-                            />
-                        </label>
+                        <Sections size={"dynamic"}>
+                            <label>
+                                {t("Gallons")}
+                                <input
+                                    type="number"
+                                    name="fuel_used"
+                                    value={fuel}
+                                    onChange={handleFuelValue}
+                                    readOnly={!isEditMode && completed}
+                                />
+                            </label>
+                        </Sections>
                     ) : (
                         <input type="hidden" name="fuel_used" value="0" />
                     )}
-                </Sections>
                 <Sections size={"dynamic"}>
                     <label>
-                        Total Time used
+                        {t("CheckedTime")}
                         <input
                             name={"duration"}
                             value={completed ? changedDuration : duration}
@@ -152,7 +160,7 @@ export default function CombinedForm({ eqid, name, start_time, completed, filled
                         />
                     </label>
                     <label>
-                        Additional notes
+                        {t("Notes")}
                         <textarea
                             name="equipment_notes"
                             value={notes || ""}
@@ -173,7 +181,7 @@ export default function CombinedForm({ eqid, name, start_time, completed, filled
                             size={"default"}
                             value="Save"
                         >
-                            Save
+                            {t("Save")}
                         </Buttons>
                     ) : (
                         <Buttons
@@ -183,7 +191,7 @@ export default function CombinedForm({ eqid, name, start_time, completed, filled
                             size={"default"}
                             value="Edit"
                         >
-                            Edit
+                            {t("Edit")}
                         </Buttons>
                     )
                 ) : (
@@ -194,11 +202,11 @@ export default function CombinedForm({ eqid, name, start_time, completed, filled
                         size={"default"}
                         value="Submit"
                     >
-                        Submit
+                        {t("Submit")}
                     </Buttons>
                 )}
-                <Buttons href="/dashboard/equipment/current" variant={"red"} size={"default"} onClick={deleteHandler}>
-                    Delete
+                <Buttons href="/dashboard/equipment" variant={"red"} size={"default"} onClick={deleteHandler}>
+                {t("Delete")}
                 </Buttons>
             </form>
         </Bases>

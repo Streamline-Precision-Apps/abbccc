@@ -41,7 +41,7 @@ const Titles: FC<TitleProps> = ({className, variant, size, ...props}) => {
     
     return (
       <div className={anton.className}>
-        <h1 className={cn(TitleVariants({variant, size, className}))} {...props}/>
+        <h1 className={cn(TitleVariants({variant, size, className}))}{...props}/>
       </div>
     )
 }
