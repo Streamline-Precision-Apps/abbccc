@@ -6,6 +6,10 @@ import Signature from "../injury-verification/Signature";
 import { useSavedInjuryReportData } from "@/app/context/InjuryReportDataContext";
 import { CreateInjuryForm } from "@/actions/injuryReportActions";  // Import the server action
 import { useTranslations } from "next-intl";
+import { Contents } from "@/components/(reusable)/contents";
+import { Sections } from "@/components/(reusable)/sections";
+import { Titles } from "@/components/(reusable)/titles";
+import { Buttons } from "@/components/(reusable)/buttons";
 type FormProps = {
   handleNextStep: () => void
 }
@@ -94,16 +98,15 @@ export const InjuryReportContent = ({handleNextStep}: FormProps) => {
   }, [signatureUrl]);
 
   return (
-    <div className="mx-auto h-auto w-11/12 lg:w-11/12 flex flex-col justify-center bg-gradient-to-b from-app-dark-blue via-app-dark-blue to-app-blue py-20 border-l-2 border-r-2 border-black">
-      <div className="flex flex-col justify-center items-center py-5 px-2 w-11/12 mx-auto h-1/4 border-2 border-black rounded-2xl text-black text-xl">
-        <div className="flex flex-row text-center items-center bg-app-blue p-4 rounded-2xl space-x-4">
-          <label htmlFor="duration">{t("ContactedSupervisor")}</label>
-          <div id="duration">
+    <>
+          <Sections size={"titleBox"}>
+          <Contents variant={"rowCenter"}>
+          <Titles size={"h4"}>{t("ContactedSupervisor")}</Titles>
             <Checkbox checked={checked} onChange={handleCheckboxChange} />
-          </div>
-        </div>
-        <div className="w-11/12 mx-auto h-40 flex flex-col text-center items-center bg-app-blue p-4 rounded-2xl space-x-4 mt-4 mb-4">
-          <label htmlFor="comment">{t("Comment")}</label>
+          </Contents>
+        </Sections>
+        <Sections size={"titleBox"}>
+          <label htmlFor="comment"><Titles size={"h4"}>{t("Comment")}</Titles></label>
           <textarea
             id="comment"
             className="w-full h-full flex col text-center border-2 border-black rounded-2xl bg-gray-200"
@@ -111,7 +114,6 @@ export const InjuryReportContent = ({handleNextStep}: FormProps) => {
             onChange={handleChange}
             required
           />
-        </div>
         <div className="flex flex-col text-center">
           <label htmlFor="signature">{t("Signature")}</label>
           <Signature onEnd={handleSignatureEnd} />
@@ -121,17 +123,13 @@ export const InjuryReportContent = ({handleNextStep}: FormProps) => {
               className="w-36 h-auto mt-4 border-2 border-black rounded-2xl bg-gray-200"
               src={signatureUrl}
               alt="Signature"
+              
             />
           )}
           {error && <p className="text-red-500">{error}</p>}
         </div>
-        <button
-          onClick={handleSubmit}
-          className="mt-4 bg-blue-500 text-white p-2 rounded"
-        >
-          {t("SubmitButton")}
-        </button>
-      </div>
-    </div>
+        </Sections>
+        <Buttons onClick={handleNextStep}>{t("SubmitButton")}</Buttons>
+    </>
   );
 };

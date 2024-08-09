@@ -12,14 +12,12 @@ const Checkbox: React.FC<CheckboxProps> = ({ checked, onChange }) => {
   };
 
   return (
-    <div>
       <input
         type="checkbox"
         checked={checked}
         onChange={handleCheckboxChange}
-        className="w-8 h-8" // Tailwind classes to make the checkbox larger
+        className="p-5 w-10"
       />
-    </div>
   );
 };
 
