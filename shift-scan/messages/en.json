@@ -225,5 +225,30 @@
         "EQTotalTime" : "Total Time",
         "NoData": "No Data Found",
         "EquipmentLogs": "Equipment Logs"
+    },
+    "admin": {
+        "Banner": "Admin Dashboard",
+        "Name": "{firstName} {lastName}",
+        "Recruitment": "Recruitment",
+        "Assets": "Assets",
+        "reports": "Reports",
+        "Home": "Return Home",
+        "lN1": "Copyright © 2024.Streamline Precision LLC. All rights reserved.",
+        "AddEmployee": "Add Employee",
+        "SeeCurrentEmployees": "See Current Employees",
+        "FirstName": "First Name",
+        "LastName": "Last Name",
+        "Username": "Username",
+        "Password": "Password",
+        "DOB": "Date of Birth",
+        "TruckView": "Truck View",
+        "TascoView": "Tasco View",
+        "LaborView": "Labor View",
+        "MechanicView": "Mechanic View",
+        "Permission": "Permission",
+        "Email": "Email",
+        "Phone": "Phone",
+        "Submit": "Submit",
+        "Select": "Select One"
     }
 }

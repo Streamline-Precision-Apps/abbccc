@@ -167,7 +167,7 @@ if (session && session.user) {
 }, [session]);
 
 return session ? (
-<Bases variant={"default"} size={"default"}>
+<Bases variant={"default"}>
 <Sections size={"default"}>
 <Headers variant={"relative"} size={"default"}></Headers>
 <Banners variant={"default"} size={"default"}>
