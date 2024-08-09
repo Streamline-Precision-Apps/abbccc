@@ -187,9 +187,7 @@ export async function updateTimeSheet(formData: FormData, id: any) {
     
     // Revalidate the path
     revalidatePath(`/`);
-
-    // Redirect to the success page
-    redirect(`/dashboard/clock-out/clock-out-success`);
+    return updatedTimeSheet;
 
 } catch(error){
     console.log(error);

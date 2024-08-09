@@ -7,7 +7,7 @@ const ContentVariants = cva(
   {
     variants: {
       variant: {
-        default: "flex flex-col pt-10",
+        default: "flex flex-col pt-10 ",
         row: "flex flex-row",
         image: "bg-white",
       },

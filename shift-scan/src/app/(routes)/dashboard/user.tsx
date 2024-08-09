@@ -17,6 +17,7 @@ interface UserProps {
   handleShowManagerButtons: () => void;
   handleShowAdditionalButtons: (type: string) => void;
   logs: Logs[]; // Use the consistent Logs type
+  locale: string;
 }
 
 export const User: React.FC<UserProps> = ({
@@ -24,6 +25,7 @@ export const User: React.FC<UserProps> = ({
   handleShowManagerButtons,
   handleShowAdditionalButtons,
   logs, // Use logs prop
+  locale,
 }) => {
   const t = useTranslations("ManagerButtons");
 
@@ -58,7 +60,7 @@ export const User: React.FC<UserProps> = ({
   const handleCOButton3 = async () => {
     if (logs.length === 0) {
       // Perform action if there are no logs
-      router.push("/dashboard/clock-out/injury-verification");
+      router.push("/dashboard/clock-out");
     } else {
       setIsModalOpen(true);
     }
@@ -109,6 +111,7 @@ export const User: React.FC<UserProps> = ({
                 id={user?.id}
                 scannerType={"equipment"}
                 isModalOpen={isModalOpen}
+                locale={locale}
               />
             </div>
           </Modals>
@@ -154,7 +157,7 @@ export const User: React.FC<UserProps> = ({
               <Buttons
                 variant={"orange"}
                 size={"default"}
-                href={`/dashboard/equipment/current`}
+                href={`/dashboard/equipment`}
               >
                 <Texts>{t("CurrEQ")}</Texts>
               </Buttons>
@@ -192,6 +195,7 @@ export const User: React.FC<UserProps> = ({
                 id={user?.id}
                 scannerType={"jobsite"}
                 isModalOpen={isModalOpen}
+                locale={locale}
               />
             </div>
           </Modals>
