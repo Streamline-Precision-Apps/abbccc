@@ -24,8 +24,8 @@ const ButtonVariants = cva(
         default: "flex-col mx-auto my-3 p-1 w-5/6 h-100 ",
         listLg: "flex-row w-full h-28 mt-5 first:mt-0 overflow-hidden justify-stretch",
         widgetSm: "w-full shadow-[8px_8px_0px_grey]",
-        widgetMed: "p-10 w-40 h-40",
-        widgetLg: "p-20 w-50 h-50",
+        widgetMed: "p-10 w-60 h-20 mx-auto",
+        widgetLg: "p-20 w-50 h-50 mx-auto",
         backButton: "absolute top-2 left-2",
         thin: " h-10 w-[520px] rounded-t-full z-10",
       }

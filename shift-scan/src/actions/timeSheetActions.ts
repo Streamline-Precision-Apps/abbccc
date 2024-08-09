@@ -162,7 +162,7 @@ export async function updateTimeSheet(formData: FormData, id: any) {
     const id = Number(formData.get("id"));
     const end_time = parseUTC(formData.get("end_time"));
     const start_time = parseUTC(formData.get("start_time"));
-    const duration = Math.floor(end_time.getSeconds() - start_time.getSeconds()) / 3600; // Duration in hours
+    const duration = (end_time.getSeconds() - start_time.getSeconds()) / 3600; // Duration in hours 
     const updatedTimeSheet = await prisma.timeSheet.update({
     where: { id },
     data: {
@@ -209,7 +209,7 @@ export async function updateTimeSheetBySwitch(formData: FormData) {
     const id = Number(formData.get("id"));
     const end_time = parseUTC(formData.get("end_time"));
     const start_time = parseUTC(formData.get("start_time"));
-    const duration = Math.floor(end_time.getSeconds() - start_time.getSeconds()) / 3600; // Duration in hours
+    const duration = (end_time.getSeconds() - start_time.getSeconds()) / 3600; // Duration in hours
     const updatedTimeSheet = await prisma.timeSheet.update({
     where: { id },
     data: {
