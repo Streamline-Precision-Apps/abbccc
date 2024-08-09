@@ -2,7 +2,6 @@
 import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
-import { Images } from "@/components/(reusable)/images";
 import { Sections } from "@/components/(reusable)/sections";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useEffect, useState } from "react";
@@ -27,7 +26,7 @@ import { Clock } from "@/components/clock";
 
 export default function ClockOut() {
 
-    const [step, incrementStep] = useState(2); //Todo: change to 1 after testing
+    const [step, incrementStep] = useState(1); 
     const [path, setPath] = useState("ClockOut");
     const router = useRouter();
     const t = useTranslations("clock-out");
@@ -154,7 +153,7 @@ const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
                     </Bases>
         );
         // this is the base page for clock out, it allows you to report an injury and you submit it to the database then redirects user to final clock out screen 
-        //Todo: have a button to go back to previous page router back is not working
+        // have a button to go back to previous page router back is not working
     } else if (step === 2 && path === "Injury") {
         return (
             <Bases variant={"default"}>
