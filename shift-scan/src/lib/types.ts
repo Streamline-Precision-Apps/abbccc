@@ -1,5 +1,7 @@
 // This file holds all the types that will be used in the app
 
+import { Permission } from "@prisma/client";
+
 export type User = {
     id: string;
     name?: string | null;
@@ -9,6 +11,16 @@ export type User = {
     lastName?: string | null;
     permission?: string | null;
   };
+
+export type SearchUser = {
+  id: string,
+  firstName: string,
+  lastName: string,
+  permission: Permission,
+  DOB: string,
+  email: string,
+  phone: string,
+};
   
   export type CustomSession = {
     user?: User | null;
