@@ -204,6 +204,7 @@ CREATE TABLE "Equipment" (
     "registration_expiration" TIMESTAMP(3),
     "mileage" INTEGER,
     "is_active" BOOLEAN NOT NULL DEFAULT true,
+    "image" TEXT,
 
     CONSTRAINT "Equipment_pkey" PRIMARY KEY ("id")
 );

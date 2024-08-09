@@ -1,12 +1,12 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, Dispatch, SetStateAction } from "react";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { useTranslations } from "next-intl";
 
 interface CameraComponentProps {
-  setBlob: (blob: Blob | null) => void;
+  setBase64String: Dispatch<SetStateAction<string>>;
 }
 
-const CameraComponent: React.FC<CameraComponentProps> = ({ setBlob }) => {
+const CameraComponent: React.FC<CameraComponentProps> = ({ setBase64String }) => {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -20,9 +20,7 @@ const CameraComponent: React.FC<CameraComponentProps> = ({ setBlob }) => {
     };
 
     try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia(
-        constraints
-      );
+      const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
       setStream(mediaStream);
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
@@ -59,12 +57,7 @@ const CameraComponent: React.FC<CameraComponentProps> = ({ setBlob }) => {
         context.drawImage(videoRef.current, 0, 0, 300, 300);
         const imageData = canvasRef.current.toDataURL("image/png");
         setImageSrc(imageData);
-
-        canvasRef.current.toBlob((blob) => {
-          if (blob) {
-            setBlob(blob); // Use the setBlob prop to set the blob state in the parent component
-          }
-        }, "image/png");
+        setBase64String(imageData);
       }
     }
   };
