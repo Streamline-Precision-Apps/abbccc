@@ -131,7 +131,7 @@ const AddEmployeeForm = () => {
       </div>
       <div>
         <label htmlFor="permission" className="block">
-          {t("TPermission")}
+          {t("Permission")}
         </label>
         <select
           id="permission"

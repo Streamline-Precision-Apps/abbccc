@@ -3,15 +3,6 @@ import { useTranslations } from "next-intl";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { Modals } from "@/components/(reusable)/modals";
-import ClockProcessor from "@/components/(clock)/clockProcess";
-import { useSession } from "next-auth/react";
-import { CustomSession } from "@/lib/types";
-import { setAuthStep } from "@/app/api/auth";
-import { Equipment, Logs } from "@/lib/types";
-import AddEmployeeForm from "./add-employee/addEmployee";
 
 interface AdminProps {
   additionalButtonsType: string | null;
@@ -25,18 +16,6 @@ export const Admin: React.FC<AdminProps> = ({
   handleShowAdditionalButtons,
 }) => {
   const t = useTranslations("admin");
-  const router = useRouter();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const { data: session } = useSession() as { data: CustomSession | null };
-  const user = session?.user;
-
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
 
   return (
     <>
@@ -54,7 +33,7 @@ export const Admin: React.FC<AdminProps> = ({
                 variant={"icon"}
                 size={"default"}
               ></Images>
-              <Texts>Home</Texts>
+              <Texts>{t("Home")}</Texts>
             </div>
           </Buttons>
           <Buttons
@@ -68,12 +47,12 @@ export const Admin: React.FC<AdminProps> = ({
               variant={"icon"}
               size={"default"}
             />
-            <Texts>Add New Employee</Texts>
+            <Texts>{t("AddEmployee")}</Texts>
           </Buttons>
           <Buttons
             variant={"orange"}
             size={"widgetSm"}
-            href="/dashboard/equipment/current"
+            href="/admin/employee-search"
           >
             <Images
               titleImg="/forms.svg"
@@ -81,7 +60,7 @@ export const Admin: React.FC<AdminProps> = ({
               variant={"icon"}
               size={"default"}
             />
-            <Texts>See Current Employees</Texts>
+            <Texts>{t("SeeCurrentEmployees")}</Texts>
           </Buttons>
         </>
       ) : additionalButtonsType === "asset" ? (
@@ -91,7 +70,7 @@ export const Admin: React.FC<AdminProps> = ({
             size={"widgetSm"}
             onClick={handleResetButtons}
           >
-            <Texts>Return Home</Texts>
+            <Texts>{t("Home")}</Texts>
           </Buttons>
           <Buttons variant={"orange"} size={"widgetSm"}>
             <Texts>AssetButton1</Texts>
@@ -110,7 +89,7 @@ export const Admin: React.FC<AdminProps> = ({
             size={"widgetSm"}
             onClick={handleResetButtons}
           >
-            <Texts>Return Home</Texts>
+            <Texts>{t("Home")}</Texts>
           </Buttons>
         </>
       ) : (
@@ -141,7 +120,7 @@ export const Admin: React.FC<AdminProps> = ({
               variant={"icon"}
               size={"widgetSm"}
             ></Images>
-            <Texts>{t("Asset")}</Texts>
+            <Texts>{t("Assets")}</Texts>
           </Buttons>
           <Buttons
             variant={"red"}
