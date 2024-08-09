@@ -4,10 +4,10 @@ import { createEquipment } from "@/actions/equipmentActions";
 import { useTranslations } from "next-intl";
 
 interface AddEquipmentFormProps {
-  blob: Blob | null;
+  base64String: string | null;
 }
 
-const AddEquipmentForm: React.FC<AddEquipmentFormProps> = ({ blob }) => {
+const AddEquipmentForm: React.FC<AddEquipmentFormProps> = ({ base64String }) => {
   const [equipmentTag, setEquipmentTag] = useState("EQUIPMENT");
   const t = useTranslations("addEquipmentForm");
 
@@ -18,6 +18,10 @@ const AddEquipmentForm: React.FC<AddEquipmentFormProps> = ({ blob }) => {
   ) => {
     setEquipmentTag(e.target.value);
   };
+
+  useEffect(() => {
+    console.log("Base64 String:", base64String);
+  }, [base64String]);
 
   return (
     <form action={createEquipment} className="space-y-4">
@@ -142,6 +146,14 @@ const AddEquipmentForm: React.FC<AddEquipmentFormProps> = ({ blob }) => {
           </div>
         </>
       ) : null}
+      <div>
+        <input
+          id="image"
+          name="image"
+          type="hidden"
+          value={base64String || ""}
+        />
+      </div>
       <Buttons variant="green" size="default" type="submit">
         {t("Submit")}
       </Buttons>

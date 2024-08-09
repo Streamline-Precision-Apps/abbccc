@@ -8,14 +8,9 @@ import { Manager } from "@/app/(routes)/dashboard/manager";
 import { useState } from "react";
 import { Admin } from "@/app/(routes)/admin/Admin";
 
-interface AdminButtonsProps {
-}
 
-export default function AdminButtons({}: AdminButtonsProps) {
-  const t = useTranslations("admin");
-  const router = useRouter();
-  const { data: session } = useSession() as { data: CustomSession | null };
-  const user = session?.user;
+
+export default function AdminButtons() {
   const [additionalButtonsType, setAdditionalButtonsType] = useState<
     string | null
   >(null);

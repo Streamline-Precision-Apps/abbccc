@@ -98,7 +98,7 @@ const Modals: FC<ModalProps> = ({className, variant, size, type, isOpen, step, h
           <div className="modal ">
               <div className="fixed top-0 left-0 w-screen h-screen bg-neutral-800 opacity-50"/>
               <div className={cn(ModalVariants({variant, size, className}))} {...props}>
-                <Buttons onClick={handleClose} className="close-btn" variant={"icon"}>
+                <Buttons onClick={handleClose} className="close-btn" variant={"icon"} size={"widgetSm"}>
                     <Images titleImg="/x.svg" titleImgAlt="x" variant={"icon"} size={"titlebox"}/>
                 </Buttons>
                 <div className="modal-content">{props.children}</div>
