@@ -1,13 +1,16 @@
 "use client";
 import "@/app/globals.css";
 import { useState, ChangeEvent, useEffect } from "react";
-import Checkbox from "../checkBox";
+import Checkbox from "../injury-verification/checkBox";
 import Signature from "../injury-verification/Signature";
 import { useSavedInjuryReportData } from "@/app/context/InjuryReportDataContext";
 import { CreateInjuryForm } from "@/actions/injuryReportActions";  // Import the server action
 import { useTranslations } from "next-intl";
+type FormProps = {
+  handleNextStep: () => void
+}
 
-export const InjuryReportContent = () => {
+export const InjuryReportContent = ({handleNextStep}: FormProps) => {
   const [checked, setChecked] = useState<boolean>(false);
   const [textarea, setTextarea] = useState<string>("");
   const [signatureBlob, setSignatureBlob] = useState<Blob | null>(null);

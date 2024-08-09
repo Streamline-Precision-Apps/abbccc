@@ -71,9 +71,9 @@ export default function Log() {
     try {
       if (buttonType === "b") {
         setAuthStep("break");
-        await router.push("/");
+        router.push("/");
       } else if (buttonType === "ewd") {
-        await router.push("/dashboard/clock-out/injury-verification");
+        router.push("/dashboard/clock-out/");
       } else {
         setError("Invalid button type. Unable to continue.");
       }
@@ -85,7 +85,7 @@ export default function Log() {
 
   const handleReturnToDashboard = async () => {
     try {
-      await router.push("/dashboard");
+      router.push("/dashboard");
     } catch (err) {
       console.error("Navigation error:", err);
       setError(t("NavError"));
@@ -94,7 +94,7 @@ export default function Log() {
 
   const handleGoToCurrentEquipment = async () => {
     try {
-      await router.push("/dashboard/equipment/current");
+      router.push("/dashboard/equipment/current");
     } catch (err) {
       console.error("Navigation error:", err);
       setError(t("NavError"));

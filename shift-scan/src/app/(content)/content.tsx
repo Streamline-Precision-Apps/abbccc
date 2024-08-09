@@ -8,7 +8,7 @@ import { CustomSession, User, PayPeriodTimesheets } from "@/lib/types";
 import { useEffect, useState, useMemo } from "react";
 import { useSavedPayPeriodHours } from "../context/SavedPayPeriodHours";
 import { useSavedUserData } from "../context/UserContext";
-import { getAuthStep } from "../api/auth";
+import { getAuthStep, setAuthStep } from "../api/auth";
 import DisplayBreakTime from "./displayBreakTime";
 import { useRouter } from "next/navigation";
 import { Titles } from "@/components/(reusable)/titles";
@@ -121,6 +121,15 @@ export default function Content({
       router.push("/dashboard");
     }
   }, []);
+
+  // when you clock out, clear local storage then rests the auth step
+  useEffect(() => {
+    if (authStep === "removeLocalStorage") {
+      localStorage.clear();
+      setAuthStep("");
+    }
+  }, []);
+
 
   useEffect(() => {
     if (session && session.user) {

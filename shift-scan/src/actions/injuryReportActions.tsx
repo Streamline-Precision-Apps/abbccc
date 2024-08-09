@@ -75,7 +75,6 @@ export async function CreateInjuryForm(formData: FormData) {
     await revalidatePath(`/dashboard/clock-out/clock-out-success`);
 
     // Redirect to the success page
-    redirect(`/dashboard/clock-out/clock-out-success`);
   } catch (error) {
     console.error("Error creating injuryForm:", error);
     throw error;
