@@ -17,7 +17,7 @@ import { useSavedBreakTime } from "@/app/context/SavedBreakTimeContext";
 import { useSavedUserData } from "@/app/context/UserContext";
 import { useSavedTimeSheetData } from "@/app/context/TimeSheetIdContext";
 import { useRouter } from "next/navigation";
-import { updateTimeSheet } from "@/actions/timeSheetActions";
+import { updateTimeSheet, GetAllTimeSheets } from "@/actions/timeSheetActions";
 import { now } from "next-auth/client/_utils";
 import { Banners } from "@/components/(reusable)/banners";
 import { setAuthStep } from "@/app/api/auth";
@@ -45,7 +45,7 @@ export default function ClockOut() {
     const timesheet = JSON.parse(ts || "{}");
     const timesheeetId = (timesheet.id).toString();
     const breakTimeSec = localStorage.getItem("breakTime");
-    const breakTimeTotal = breakTimeSec ? (parseFloat(breakTimeSec) / 3600).toFixed(2) : null;
+    const breakTimeTotal = breakTimeSec ? (parseFloat(breakTimeSec) / 3600): null;
     const time = new Date().getTime();
 
     const handleSignatureEnd = (blob: Blob) => {
@@ -93,16 +93,26 @@ export default function ClockOut() {
 const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-        const data = await updateTimeSheet(new FormData(event.currentTarget), savedTimeSheetData?.id);
-        const duration = data?.duration
+        let duration = 0.00;
+        const date = await updateTimeSheet(new FormData(event.currentTarget));
+        const retrieve = (date?.date)?.toString();
+        if (retrieve ){
+        const data = await GetAllTimeSheets(retrieve);
+        
+        duration = data?.reduce((total, timeSheet) => {
+            return total + (timeSheet.duration ?? 0);
+        }, 0);
+    }
+        
         setAuthStep("");
-        setBanner(`Timecard Submitted! You will be redirected! \n \n ${duration?.toFixed(2)} total hours worked!`);
+        setBanner(`Timecard Submitted! You will be redirected! \n \n ${duration?.toFixed(2)} total hours worked today!`);
         setTimeout(() => {
         router.push("/");
         setBanner("")
         localStorage.removeItem("breakTime"); // Clear local storage
         setAuthStep("removeLocalStorage");
         }, 3000);
+        
     } catch (error) {
         console.error("Failed to submit the time sheet:", error);
     }

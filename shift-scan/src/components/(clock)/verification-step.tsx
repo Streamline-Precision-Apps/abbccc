@@ -39,11 +39,13 @@ const VerificationStep: React.FC<{ id: string | undefined; handleNextStep: () =>
       // pulls the timesheet id from local storage and pasrses it to a string
       const localeValue = localStorage.getItem("savedtimeSheetData");
       const t_id = JSON.parse(localeValue || "{}").id;
+      const break_t = parseFloat(localStorage.getItem("breakTime") || "0"); ;
+      const breakTime = break_t / 360;
       // declare a new FormData object due to having two different form data inputs
       const formData2 = new FormData();
       formData2.append('id', t_id?.toString() || '');
       formData2.append('end_time', new Date().toISOString());
-      formData2.append('total_break_time', (0).toString());
+      formData2.append('total_break_time', breakTime.toString());
       formData2.append('timesheet_comments', '');
       formData2.append('app_comment', 'Switched jobs');
       // updates the time sheet
@@ -60,6 +62,7 @@ const VerificationStep: React.FC<{ id: string | undefined; handleNextStep: () =>
       const response = await CreateTimeSheet(formData);
       const result = {id: (response.id).toString()};
       setSavedTimeSheetData(result);
+      localStorage.removeItem("breakTime");
       setAuthStep('success');
       handleNextStep();
     }
@@ -81,6 +84,7 @@ const VerificationStep: React.FC<{ id: string | undefined; handleNextStep: () =>
     const response = await CreateTimeSheet(formData);
     const result = {id: (response.id).toString()};
     setSavedTimeSheetData(result);
+    localStorage.removeItem("breakTime");
     setAuthStep('success');
     handleNextStep();
   }}
