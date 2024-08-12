@@ -7,14 +7,16 @@ const ContentVariants = cva(
   {
     variants: {
       variant: {
-        default: "flex flex-col pt-10",
+        default: "flex flex-col",
         row: "flex flex-row",
         image: "bg-white",
       },
       size: {
-        default: "h-full max-w-lg mx-auto",
-        image: "w-52 h-40 rounded-r-full border-black border-4 overflow-hidden -ml-3 justify-self-start",
+        default: "h-full max-w-lg mx-auto pt-10",
+        notTop: "h-full max-w-lg mx-auto pt-0",
+        listImage: "w-52 h-40 rounded-r-full border-black border-4 overflow-hidden -ml-3 justify-self-start",
         listTitle: "w-full justify-center",
+        profilePic: "w-36 h-36 rounded-full border-black border-4 overflow-hidden justify-self-center",
       }
     },
     defaultVariants: {
