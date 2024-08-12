@@ -4,6 +4,7 @@ import { cn } from "@/components/(reusable)/utils";
 import { Buttons } from "../(reusable)/buttons";
 import { Titles } from "../(reusable)/titles";
 import { Images } from "../(reusable)/images";
+import { Contents } from "./contents";
 
 const TitleBoxVariants = cva(
   "relative flex items-center justify-center w-full mx-auto", //this applies to all variants
@@ -38,7 +39,20 @@ interface TitleBoxProps extends HTMLAttributes<HTMLElement>, VariantProps<typeof
 }
 
 const TitleBoxes: FC<TitleBoxProps> = ({className, variant, size, type, title, titleImg, titleImgAlt, ...props}) => {
-    
+    if (type === "profilePic") {
+        return (
+            <div className={cn(TitleBoxVariants({variant, size, className}))} {...props}>
+                <Buttons href='back' variant={"icon"} size={"backButton"}>
+                    <Images titleImg="/backArrow.svg" titleImgAlt={titleImgAlt} variant={"icon"} size={"backButton"}/>
+                </Buttons>
+                <Contents variant={"image"} size={"profilePic"}>
+                    <Images titleImg={titleImg} titleImgAlt={titleImgAlt} variant={"icon"} size={"default"}/>
+                </Contents>
+                <Titles variant={"default"} size={"titlebox"}>{title}</Titles>
+            </div>
+
+        )  
+    }
     if (type === "titleOnly") {
         return (
             <div className={cn(TitleBoxVariants({variant, size, className}))} {...props}>
@@ -91,6 +105,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({className, variant, size, type, title, t
     
     else return (
         <div className={cn(TitleBoxVariants({variant, size, className}))} {...props}>
+            
             <Buttons href='back' variant={"icon"} size={"backButton"}>
                 <Images titleImg="/backArrow.svg" titleImgAlt={titleImgAlt} variant={"icon"} size={"backButton"}/>
             </Buttons>

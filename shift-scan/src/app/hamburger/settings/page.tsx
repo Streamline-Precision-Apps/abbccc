@@ -2,6 +2,7 @@
 import Index from "@/app/hamburger/settings/content";
 import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
+import { Bases } from "@/components/(reusable)/bases";
 
 type Data = {
 language: string;

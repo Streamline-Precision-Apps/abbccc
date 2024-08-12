@@ -42,26 +42,17 @@ export default async function TeamCards() {
     return (
         <div>
             {crew.map((userCrewId) => (
-            <Buttons id="{userCrewId.user.id}" href="/dashboard/myTeam/{userCrewId.user.id}" variant={"default"} size={"listLg"}>
-                <Contents variant={"image" } size={"image"}>
+            <Buttons id={userCrewId.user.id} href={`/dashboard/myTeam/${userCrewId.user.id}`} variant={"default"} size={"listLg"}>
+                <Contents variant={"image" } size={"listImage"}>
                     <Images titleImg="/johnDoe.webp" titleImgAlt="profile picture" variant={"icon"} size={"default"}></Images>
                 </Contents>
                 <Contents variant={"row"} size={"listTitle"}>
                     <Titles size={"h1"}>{userCrewId.user.firstName} {userCrewId.user.lastName}</Titles>
                 </Contents>
             </Buttons>
-            // <TeamInfoButton id={Number(userCrewId.user.id)} key={userCrewId.user.id} >
-            // <div key={userCrewId.id} className="w-full flex flex-row ">
-            //     <Image src={"/profile.svg"} alt="Team Image" width={80} height={80} className="rounded-full" />
-            //     <div className="w-full flex flex-row space-x-5 justify-center items-center">
-            //     <h2 className="text-3xl">{userCrewId.user.firstName} {userCrewId.user.lastName}</h2>
-            //     </div>
-            // </div>
-    
-            // </TeamInfoButton>
             ))}
                 <Buttons id="{userCrewId.user.id}" href="/dashboard/myTeam/{userCrewId.user.id}" variant={"default"} size={"listLg"}>
-                    <Contents variant={"image" } size={"image"}>
+                    <Contents variant={"image" } size={"listImage"}>
                         <Images titleImg="/johnDoe.webp" titleImgAlt="my team" variant={"icon"} size={"default"}></Images>
                     </Contents>
                     <Contents variant={"row"} size={"listTitle"}>

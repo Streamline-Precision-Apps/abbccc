@@ -18,7 +18,7 @@ const ImageVariants = cva(
         widgetSm: "pt-5 h-20",
         widgetMed: "p-10 w-40 h-40",
         widgetLg: "p-10 w-50 h-50",
-        titlebox: "w-32 h-32 -mb-7 -mt-3",
+        titlebox: "w-36",
         backButton: "w-15 w-15 pt-0",
         lg: "w-50 h-50",
         thin: "w-20 h-10",

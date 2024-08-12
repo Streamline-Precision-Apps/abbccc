@@ -13,7 +13,12 @@ export default function MyTeam(){
         <Bases variant={"default"}>
             <Contents size={"default"}>
                 <Sections size={"titleBox"}>
-                    <TitleBoxes title="My Team" titleImg="/myTeam.svg" titleImgAlt="Team" variant={"default"} size={"default"}/>
+                    <TitleBoxes 
+                    title="My Team" 
+                    titleImg="/myTeam.svg" 
+                    titleImgAlt="Team" 
+                    variant={"default"} 
+                    size={"default"}/>
                 </Sections>
                 <Sections size={"dynamic"}>
                     <TeamCards />

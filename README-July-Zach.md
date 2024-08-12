@@ -91,4 +91,17 @@
 8/7/24
 - Researched overflows in tailwind
 - Continue working on my team page 
+- Updated portions of Settings CSS
+
+8/8/24
+- Working on updating CSS on reusable components
+- Working on employee info section
+- Researched HTML input types
+
+8/9/24
+- Worked on employee timesheet section, tried reworking page to work with reusable components
+
+8/12/24
+- Preped for Merge/ Merge meeting.
+-
 
