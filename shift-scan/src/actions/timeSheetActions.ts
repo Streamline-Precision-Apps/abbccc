@@ -116,7 +116,7 @@ export async function editTimeSheet(formData: FormData) {
         const costcode = formData.get("costcode");
         const end_time = parseUTC(formData.get("end_time") as string);
         const start_time = parseUTC(formData.get("start_time") as string);
-        const duration = ((end_time.getTime() - start_time.getTime()) / (1000 * 60 * 60) ).toFixed(2);
+        const duration = ((end_time.getTime() - start_time.getTime()) / (1000 * 60 * 60) );
 
         if (!id) {
         throw new Error("ID is required");
@@ -170,7 +170,7 @@ export async function updateTimeSheet(formData: FormData, id?: string) {
 
         const durationMs = end_time.getTime() - new Date(start_time).getTime();
         const durationHours = (durationMs / (1000 * 60 * 60));
-        const duration = (durationHours).toFixed(2);
+        const duration = (durationHours);
 
         console.log(`{end_time}: ${end_time} - {start_time}: ${start_time} = duration: ${durationHours}`);
 
@@ -237,7 +237,7 @@ export async function updateTimeSheetBySwitch(formData: FormData) {
     const durationMs = end_time.getTime() - new Date(start_time).getTime();
     const durationHours = (durationMs / (1000 * 60 * 60));
 
-    const duration = (durationHours ).toFixed(2);
+    const duration = (durationHours );
 
     const updatedTimeSheet = await prisma.timeSheet.update({
     where: { id },
