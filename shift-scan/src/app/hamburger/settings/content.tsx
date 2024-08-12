@@ -13,6 +13,7 @@ import { Images } from '@/components/(reusable)/images';
 import { Texts } from '@/components/(reusable)/texts';
 import { Modals } from '@/components/(reusable)/modals';
 import { updateSettings } from '@/actions/hamburgerActions';
+import { Contents } from '@/components/(reusable)/contents';
 
 type Data = {
 userId: string;
