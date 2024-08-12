@@ -13,7 +13,8 @@ const RedirectAfterDelay: React.FC<RedirectAfterDelayProps> = ({ delay, to }) =>
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            window.location.reload();
+            location.reload();
+            router.push(to);
         }, delay);
 
         return () => clearTimeout(timer);

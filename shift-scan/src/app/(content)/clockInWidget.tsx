@@ -11,9 +11,10 @@ import ClockProcessor from "@/components/(clock)/clockProcess";
 
 interface Props {
     user: User;
+    locale: string;
 }
 
-export default function ClockInWidget({ user }: Props) {
+export default function ClockInWidget({ user, locale }: Props) {
     const t = useTranslations("Home");
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -24,6 +25,7 @@ export default function ClockInWidget({ user }: Props) {
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
+        location.reload(); // only current method to reload the page
     };
 
     return (
@@ -38,6 +40,7 @@ export default function ClockInWidget({ user }: Props) {
                     id={user.id}
                     scannerType={"jobsite"}
                     isModalOpen={isModalOpen}
+                    locale={locale}
                     />
             </Modals>
         </>
