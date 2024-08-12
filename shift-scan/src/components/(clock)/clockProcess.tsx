@@ -186,7 +186,7 @@ return (
     
     {step === 4 && path === "jobsite" && (
         <VerificationStep
-        type={"jobsite"}
+        type={type}
         id={id}
         handleNextStep={handleNextStep}
         option={ option }
