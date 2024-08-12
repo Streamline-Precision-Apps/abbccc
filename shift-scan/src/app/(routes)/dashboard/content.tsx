@@ -18,6 +18,7 @@ import { useDBJobsite, useDBCostcode, useDBEquipment} from "@/app/context/dbCode
 import { useRecentDBJobsite, useRecentDBCostcode, useRecentDBEquipment} from "@/app/context/dbRecentCodesContext";
 import { getAuthStep, isDashboardAuthenticated } from "@/app/api/auth";
 import { ClockProcessProps, Logs } from "@/lib/clockprocess";
+import { Contents } from "@/components/(reusable)/contents";
 
 export default function Content({
 locale,
@@ -130,7 +131,11 @@ if (session && session.user) {
 
 return session ? (
 <Bases variant={"default"}>
+<Contents variant={"default"} size={"default"}>
+
 <Sections size={"default"}>
+<Contents variant={"default"} size={"default"}>
+
 <Headers variant={"relative"} size={"default"}></Headers>
 <Banners variant={"default"} size={"default"}>
     <Titles variant={"default"} size={"h1"}>{t("Banner")}</Titles>
@@ -139,7 +144,9 @@ return session ? (
 <Texts variant={"name"} size={"p1"}>{t("Name", { firstName: user.firstName, lastName: user.lastName })}</Texts>
     <DashboardButtons logs={logs} locale={locale} />
 <Footers >{t("lN1")}</Footers>
+</Contents>
 </Sections>
+</Contents>
 </Bases>
 ) : (
 <></>

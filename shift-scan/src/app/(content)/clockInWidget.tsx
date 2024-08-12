@@ -12,9 +12,10 @@ import ClockProcessor from "@/components/(clock)/clockProcess";
 interface Props {
     user: User;
     locale: string;
+    option?: string;
 }
 
-export default function ClockInWidget({ user, locale }: Props) {
+export default function ClockInWidget({ user, locale, option}: Props) {
     const t = useTranslations("Home");
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -35,13 +36,14 @@ export default function ClockInWidget({ user, locale }: Props) {
                 <Texts>{t("Clock-btn")}</Texts>
             </Buttons>
             <Modals isOpen={isModalOpen} handleClose={handleCloseModal} variant={"default"} size={"clock"} type={"clock"}> 
-                <ClockProcessor
-                    type={"jobsite"}
-                    id={user.id}
-                    scannerType={"jobsite"}
-                    isModalOpen={isModalOpen}
-                    locale={locale}
-                    />
+            <ClockProcessor
+                type={"jobsite"}
+                id={user.id}
+                scannerType={"jobsite"}
+                isModalOpen={isModalOpen}
+                locale={locale}
+                option={option}
+            />
             </Modals>
         </>
     );

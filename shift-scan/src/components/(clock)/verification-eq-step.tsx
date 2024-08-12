@@ -14,13 +14,14 @@ type VerifyProcessProps = {
 id: string | undefined;
 handleNextStep: () => void;
 type: string;
+option?: string;
 }
 
 const VerificationEQStep: React.FC<VerifyProcessProps> = ({
 id,
 type,
 handleNextStep,
-
+option,
 }) => {
 const [filteredEquipmentName, setFilteredEquipmentName] = useState<string | null>(null);
 const t = useTranslations("Clock");

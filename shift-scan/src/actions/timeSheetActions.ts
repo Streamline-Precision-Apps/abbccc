@@ -1,7 +1,6 @@
 "use server";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 
 
@@ -41,8 +40,8 @@ export async function fetchTimesheets(employeeId: string, date: string) {
 // used at each login and will retain that timesheetId until the user logs out with switch jobsite
 export async function CreateTimeSheet(formData: FormData) {
     try {
-        // console.log("Creating Timesheet...");
-        // console.log(formData);
+        console.log("Creating Timesheet...");
+        console.log(formData);
 
         const parseDate = (timestamp: string) => {
             const date = new Date(timestamp); // Directly parse the string as a date
@@ -61,7 +60,6 @@ export async function CreateTimeSheet(formData: FormData) {
                 vehicle_id: formData.get("vehicle_id") ? Number(formData.get("vehicle_id")) : null,
                 start_time: parseDate(formData.get("start_time") as string).toISOString(),
                 end_time: formData.get("end_time") ? parseDate(formData.get("end_time") as string).toISOString() : null,
-                total_break_time: formData.get("total_break_time") ? Number(formData.get("total_break_time")) : null,
                 duration: formData.get("duration") ? Number(formData.get("duration") as string) : null,
                 starting_mileage: formData.get("starting_mileage") ? Number(formData.get("starting_mileage")) : null,
                 ending_mileage: formData.get("ending_mileage") ? Number(formData.get("ending_mileage")) : null,
@@ -118,9 +116,7 @@ export async function editTimeSheet(formData: FormData) {
         const costcode = formData.get("costcode");
         const end_time = parseUTC(formData.get("end_time") as string);
         const start_time = parseUTC(formData.get("start_time") as string);
-        const break_time = Number(formData.get("total_break_time") as string);
-        console.log(`break time: ${break_time}, {end_time}: ${end_time}, {start_time}: ${start_time},`);
-        const duration = ((end_time.getTime() - start_time.getTime()) / (1000 * 60 * 60) - (break_time)).toFixed(2);
+        const duration = ((end_time.getTime() - start_time.getTime()) / (1000 * 60 * 60) ).toFixed(2);
 
         if (!id) {
         throw new Error("ID is required");
@@ -132,7 +128,6 @@ export async function editTimeSheet(formData: FormData) {
             costcode: costcode as string,
             start_time: start_time.toISOString(),
             end_time: end_time.toISOString(),
-            total_break_time: Number(formData.get("total_break_time") as string),
             duration: Number(duration),
         },
         });
@@ -171,13 +166,11 @@ export async function updateTimeSheet(formData: FormData, id?: string) {
             date.setMinutes(date.getMinutes() - date.getTimezoneOffset()); // Adjust for the timezone offset
             return date;
         };
-        const total_break_time = Number(formData.get("total_break_time") as string);
         const end_time = parseDate(formData.get("end_time") as string);
 
         const durationMs = end_time.getTime() - new Date(start_time).getTime();
         const durationHours = (durationMs / (1000 * 60 * 60));
-        const totalBreakHours = total_break_time;
-        const duration = (durationHours - totalBreakHours).toFixed(2);
+        const duration = (durationHours).toFixed(2);
 
         console.log(`{end_time}: ${end_time} - {start_time}: ${start_time} = duration: ${durationHours}`);
 
@@ -186,7 +179,6 @@ export async function updateTimeSheet(formData: FormData, id?: string) {
             data: {
                 vehicle_id: Number(formData.get("vehicle_id")) || null,
                 end_time: end_time.toISOString(),
-                total_break_time: Number(formData.get("total_break_time") as string),
                 duration: Number(duration) || null,
                 starting_mileage: Number(formData.get("starting_mileage")) || null,
                 ending_mileage: Number(formData.get("ending_mileage")) || null,
@@ -215,6 +207,8 @@ export async function updateTimeSheetBySwitch(formData: FormData) {
     try {
 
         console.log("formData:", formData);
+        console.log("switch jobsite, updating Timesheet...");
+
         const id = Number(formData.get("id"));
         
         // Fetch the start_time from the database to prevent irregular dates
@@ -238,14 +232,12 @@ export async function updateTimeSheetBySwitch(formData: FormData) {
         };
     console.log("formData:", formData);
     console.log("Updating Timesheet...");
-    const total_break_time = Number(formData.get("total_break_time") as string);
     const end_time = parseDate(formData.get("end_time") as string);
     
     const durationMs = end_time.getTime() - new Date(start_time).getTime();
     const durationHours = (durationMs / (1000 * 60 * 60));
 
-    const totalBreakHours = (total_break_time  / (60 * 60 * 1000));
-    const duration = (durationHours - totalBreakHours).toFixed(2);
+    const duration = (durationHours ).toFixed(2);
 
     const updatedTimeSheet = await prisma.timeSheet.update({
     where: { id },
@@ -253,7 +245,6 @@ export async function updateTimeSheetBySwitch(formData: FormData) {
 
         vehicle_id: Number(formData.get("vehicle_id") ) || null,
         end_time: parseDate(formData.get("end_time") as string).toISOString(),
-        total_break_time: Number(formData.get("total_break_time") as string),
         duration: Number(duration) || null,
         starting_mileage: Number(formData.get("starting_mileage") ) || null,
         ending_mileage: Number(formData.get("ending_mileage") ) || null,

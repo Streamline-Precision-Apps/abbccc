@@ -3,16 +3,19 @@ import React from 'react';
 import { useTranslations } from 'next-intl';
 import QR from './qr';
 import QR_EQ from './qr-eq';
+import { Buttons } from '../(reusable)/buttons';
 
 interface QRStepProps {
   handleAlternativePath: () => void;
   handleNextStep: () => void;
   handleChangeJobsite?: () => void;
+  handleReturn?: () => void;
   type: string;
   url?: string;
+  option?: string;
 }
 
-const QRStep: React.FC<QRStepProps> = ({ handleAlternativePath, handleNextStep, handleChangeJobsite, type, url }) => {
+const QRStep: React.FC<QRStepProps> = ({option, handleReturn, handleAlternativePath, handleNextStep, handleChangeJobsite, type, url }) => {
   const t = useTranslations("Clock");
   const validation = localStorage.getItem("jobSite");
 
@@ -29,14 +32,17 @@ const QRStep: React.FC<QRStepProps> = ({ handleAlternativePath, handleNextStep, 
             <QR_EQ handleNextStep={handleNextStep} />
           ) : (
             <>
-            <QR handleNextStep={handleNextStep} />
-            {validation ? (<button onClick={handleChangeJobsite} className="flex justify-center text-lg  border-2 border-black p-5">
-              {t('ReturnToJobsite')}
-              </button>)
-                : (null)} 
-                </>
-              )}
+            <QR handleNextStep={handleNextStep} />  
+            </>)}
         </div>
+        {option === "break" ? ( <Buttons onClick={handleReturn} variant={'red'} size={'default'}>
+              {"Return To Previous Job and cost code"}
+              </Buttons>)
+                : (null)}
+        {validation ? ( <Buttons onClick={handleChangeJobsite} variant={'orange'} size={'default'}>
+              {t('ReturnToJobsite')}
+              </Buttons>)
+                : (null)} 
         
         <button onClick={handleAlternativePath} className="flex justify-center text-lg font-light underline pb-5">
           {t('TroubleScanning')}
