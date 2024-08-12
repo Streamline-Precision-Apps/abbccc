@@ -4,12 +4,12 @@ import { useState } from "react";
 import { Sections } from "@/components/(reusable)/sections";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import AddEquipmentForm from "./addEquipmentForm";
-import EquipmentPicture from "./equipmentPicture";
+import EquipmentPicture from "../../../../../components/(inputs)/camera";
 import { Bases } from "@/components/(reusable)/bases";
 import { useTranslations } from "next-intl";
 
 export const AddEquipmentContent = () => {
-  const [blob, setBlob] = useState<Blob | null>(null);
+  const [base64String, setBase64String] = useState<string>("");
   const t = useTranslations("addEquipmentContent");
 
   return (
@@ -25,10 +25,10 @@ export const AddEquipmentContent = () => {
       </Sections>
       <Sections size={"dynamic"}>
         <h1>{t("Picture")}</h1>
-        <EquipmentPicture setBlob={setBlob} />
+        <EquipmentPicture setBase64String={setBase64String} />
       </Sections>
       <Sections size={"dynamic"}>
-        <AddEquipmentForm blob={blob} />
+        <AddEquipmentForm base64String={base64String} />
       </Sections>
     </Bases>
   );

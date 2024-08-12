@@ -1,34 +1,29 @@
 "use client";
 import { useTranslations } from "next-intl";
 import "@/app/globals.css";
-import DashboardButtons from "@/components/dashboard-buttons";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Bases } from "@/components/(reusable)/bases";
 import { Sections } from "@/components/(reusable)/sections";
-import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
-import { Images } from "@/components/(reusable)/images";
-import { Modals } from "@/components/(reusable)/modals";
 import { Headers } from "@/components/(reusable)/headers";
 import { Banners } from "@/components/(reusable)/banners";
-import { Texts } from "@/components/(reusable)/texts";
 import { Footers } from "@/components/(reusable)/footers";
-import {
-  getAuthStep,
-  setAuthStep,
-  isDashboardAuthenticated,
-} from "@/app/api/auth";
-import { CustomSession, User } from "@/lib/types";
+import { setAuthStep } from "@/app/api/auth";
+import { CustomSession, User, SearchUser } from "@/lib/types";
 import { useSession } from "next-auth/react";
 import { useSavedUserData } from "@/app/context/UserContext";
-import AdminButtons from "@/components/adminButtons";
+import UserSearchBar from "./UserSearchBar";
 
-interface AdminContentProps {
+interface AddEmployeeContentProps {
   permission: string | undefined;
+  SearchUsers: SearchUser[];
 }
 
-export default function AdminContent({ permission }: AdminContentProps) {
+export default function SearchEmployeeContent({
+  permission,
+  SearchUsers,
+}: AddEmployeeContentProps) {
   const t = useTranslations("admin");
   const router = useRouter();
   const [user, setData] = useState<User>({
@@ -76,16 +71,10 @@ export default function AdminContent({ permission }: AdminContentProps) {
         <Headers variant={"relative"} size={"default"}></Headers>
         <Banners variant={"default"} size={"default"}>
           <Titles variant={"default"} size={"h1"}>
-            {t("Banner")}
+            {t("AddEmployee")}
           </Titles>
-          <Texts variant={"default"} size={"p1"}>
-            {date}
-          </Texts>
         </Banners>
-        <Texts variant={"name"} size={"p1"}>
-          {t("Name", { firstName: user.firstName, lastName: user.lastName })}
-        </Texts>
-        <AdminButtons />
+        <UserSearchBar data={SearchUsers} />
         <Footers>{t("lN1")}</Footers>
       </Sections>
     </Bases>
