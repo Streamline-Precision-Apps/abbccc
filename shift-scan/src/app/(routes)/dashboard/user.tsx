@@ -11,6 +11,7 @@ import { useSession } from "next-auth/react";
 import { CustomSession } from "@/lib/types";
 import { setAuthStep } from "@/app/api/auth";
 import { Equipment, Logs } from "@/lib/types";
+import { updateTimeSheetBySwitch } from "@/actions/timeSheetActions";
 
 interface UserProps {
   additionalButtonsType: string | null;
@@ -34,6 +35,7 @@ export const User: React.FC<UserProps> = ({
   const { data: session } = useSession() as { data: CustomSession | null };
   const user = session?.user;
 
+
   const handleOpenModal = () => {
     
     setIsModalOpen(true);
@@ -47,12 +49,26 @@ export const User: React.FC<UserProps> = ({
 
   // Function to handle CO Button 2 action
   const handleCOButton2 = async () => {
+    try{
     if (logs.length === 0) {
       // Perform action if there are no logs
+      const formData2 = new FormData();
+      const localeValue = localStorage.getItem("savedtimeSheetData");
+      const t_id = JSON.parse(localeValue || "{}").id;
+      formData2.append('id', t_id?.toString() || '');
+      formData2.append('end_time', new Date().toISOString()); 
+      formData2.append('timesheet_comments', '');
+      formData2.append('app_comment', 'On break');
+      await updateTimeSheetBySwitch(formData2);
+
+
       setAuthStep("break");
       router.push("/");
     } else {
       setIsModalOpen(true);
+    }}
+    catch(err){
+      console.error(err);
     }
   };
 

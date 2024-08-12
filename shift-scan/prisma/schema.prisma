@@ -198,7 +198,6 @@ model TimeSheet {
   vehicle_id            Int?
   start_time            DateTime
   end_time              DateTime?
-  total_break_time      Float?
   duration              Float?
   starting_mileage      Int?
   ending_mileage        Int?

@@ -10,12 +10,16 @@ import RedirectAfterDelay from "@/components/redirectAfterDelay";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useEQScanData } from "@/app/context/equipmentContext";
 import { Titles } from "../(reusable)/titles";
+import { Button } from "@nextui-org/react";
+import { Buttons } from "../(reusable)/buttons";
+import { setAuthStep } from "@/app/api/auth";
 interface clockProcessProps{
     scannerType: string;
     id: string | undefined;
     type: string;
     isModalOpen: boolean;
     locale: string;
+    option?: string;
 };
 
 const ClockProcessor: React.FC<clockProcessProps> = ({
@@ -23,12 +27,13 @@ id,
 type,
 scannerType,
 isModalOpen,
-locale
+locale,
+option,
 }) => {
 const t = useTranslations("Clock");
 const [step, setStep] = useState(1);
 const [useQrCode, setUseQrCode] = useState(true);
-const { savedCostCode } = useSavedCostCode();
+const { savedCostCode,setCostCode } = useSavedCostCode();
 const { scanResult, setScanResult } = useScanData();
 const { scanEQResult } = useEQScanData();
 const [path, setPath] = useState("");
@@ -59,7 +64,9 @@ if (scanner) {
     if (processFilter === "E") {
     setPath("equipment");
     }
-    setStep(3);
+    if (option !== 'break') {
+        setStep(3);
+    }
 }
 }, [scanner]);
 
@@ -94,17 +101,30 @@ const handleChangeJobsite = () => {
 }
 };
 
+const handleReturn = () => {
+try {
+    setStep(4);
+    const jobsite = localStorage.getItem("jobSite");
+    const costCode = localStorage.getItem("costCode");
+    if (jobsite !== null && costCode !== null) {
+    setScanResult({ data: jobsite });
+    setCostCode(costCode);
+    setAuthStep("success");
+    }
+} catch (error) {
+    console.log(error);
+}
+};
 
 if (type === "equipment") {
 return (
     <>
         {step === 1 && (
         <QRStep
-            type="equipment"
-            handleAlternativePath={handleAlternativePath}
-            handleNextStep={handleNextStep}
-            url="/dashboard"
-        />
+                type="equipment"
+                handleAlternativePath={handleAlternativePath}
+                handleNextStep={handleNextStep}
+                url="/dashboard"     />
         )}
         {step === 2 && (
         <CodeStep
@@ -145,7 +165,9 @@ return (
         handleAlternativePath={handleAlternativePath}
         handleNextStep={handleNextStep}
         handleChangeJobsite={handleChangeJobsite}
+        handleReturn={handleReturn}
         url={(type === "switchJobs") ? "/dashboard/switch-jobs" : "/"}
+        option={ option }
         />
     )}
     {step === 2 && (
@@ -161,18 +183,25 @@ return (
         handleNextStep={handleNextStep}
         />
     )}
+    
     {step === 4 && path === "jobsite" && (
         <VerificationStep
-        type={type}
+        type={"jobsite"}
         id={id}
         handleNextStep={handleNextStep}
+        option={ option }
         />
-    )}
+    )
+    }
+
     {step === 5 && path === "jobsite" && (
         <div >
         <Titles variant={"default"} size={"h1"}>
         {t("Confirmation-job-message-1")}
         </Titles>
+        {option === "break" ? (
+            <Titles variant={"default"} size={"h4"}>Hope you enjoyed your Break!</Titles>
+        ) : null}
         {(type === "switchJobs") ? 
         (<><Titles variant={"default"} size={"h4"}>{t("Confirmation-job-message-3")}</Titles>
         <Titles variant={"default"} size={"h4"}>{t("Confirmation-job-message-4")}</Titles>
