@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import "@/app/globals.css";
-import Checkbox from "../checkBox";
+import Checkbox from "./checkBox";
 import {
   clearAuthStep,
   getAuthStep,
@@ -11,6 +11,10 @@ import {
 import { useRouter } from "next/navigation";
 import Signature from "./Signature";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
+import { Bases } from "@/components/(reusable)/bases";
+import { Sections } from "@/components/(reusable)/sections";
+import { Contents } from "@/components/(reusable)/contents";
+import { Buttons } from "@/components/(reusable)/buttons";
 
 interface CheckboxProps {
   checked: boolean;
@@ -60,7 +64,7 @@ export default function InjuryVerification() {
 
   const handleContinue = async () => {
     try {
-      await router.push("/dashboard/clock-out/clock-out-success");
+      router.push("/dashboard/clock-out/clock-out-success");
     } catch (err) {
       console.error("Navigation error:", err);
       setError(t("NavError"));
@@ -69,7 +73,7 @@ export default function InjuryVerification() {
 
   const handleReportInjury = async () => {
     try {
-      await router.push("/dashboard/clock-out/injury-report");
+      router.push("/dashboard/clock-out/injury-report");
     } catch (err) {
       console.error("Navigation error:", err);
       setError(t("NavError"));
@@ -77,43 +81,38 @@ export default function InjuryVerification() {
   };
 
   return (
-    <div className="flex flex-col items-center space-y-4 w-full px-5 py-10 h-screen">
+    <Bases variant={"default"}>
+      <Contents size={"default"}>
+      <Sections size={"dynamic"}>
       <TitleBoxes
         title={t("InjuryVerification")}
-        titleImg="/profile.svg"
+        titleImg="/endDay.svg"
         titleImgAlt="Team"
         variant={"default"}
         size={"default"}
+        type="row"
       />
-      <h1 className="text-3xl font-bold">{t("SignBelow")}</h1>
+      <h1>{t("SignBelow")}</h1>
       <Signature onEnd={handleSignatureEnd} />
       {signatureBlob && <p>{t("SignatureCaptured")}</p>}
-      <div className="flex flex-row items-center space-x-4 w-full justify-center ">
-        <h1 className="text-3xl font-bold">{t("SignatureVerify")}</h1>
+      <Sections size={"titleBox"} className="flex-row gap-2">
+        <h1>{t("SignatureVerify")}</h1>
         <Checkbox checked={checked} onChange={handleCheckboxChange} />
-      </div>
+        </Sections>
       {error && <div className="text-red-500">{error}</div>}
-      <div className="w-1/4 ">
+      <div>
         {checked ? (
-          <button
-            className="bg-app-green text-black font-bold text-xl flex justify-center w-full py-4 border border-gray-400 rounded"
-            onClick={handleContinue}
-          >
-            {t("Continue")}
-          </button>
+          <Buttons variant={"green"} size={"default"} onClick={handleContinue} >
+              {t("Continue")}
+            </Buttons>
         ) : (
-          <button
-            className="bg-app-red text-black font-bold text-xl flex justify-center w-full py-4 border border-gray-400 rounded"
-            onClick={handleReportInjury}
-          >
+          <Buttons variant={"red"} size={"default"}  onClick={handleReportInjury} >
             {t("ReportInjury")}
-          </button>
+        </Buttons>
         )}
       </div>
-    </div>
+      </Sections>
+      </Contents>
+    </Bases>
   );
-}
-
-function handleBeforeUnload(this: Window, ev: BeforeUnloadEvent) {
-  throw new Error("Function not implemented.");
 }

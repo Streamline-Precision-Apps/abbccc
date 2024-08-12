@@ -11,6 +11,19 @@ const AddEquipmentForm: React.FC<AddEquipmentFormProps> = ({ base64String }) => 
   const [equipmentTag, setEquipmentTag] = useState("EQUIPMENT");
   const t = useTranslations("addEquipmentForm");
 
+  const randomQrCode = () => {
+    const characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let result = "EQ-";
+    for (let i = 0; i < 8; i++) {
+      result += characters.charAt(
+        Math.floor(Math.random() * characters.length)
+      );
+    }
+    console.log(result);
+    return result;
+  };
+
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -25,6 +38,9 @@ const AddEquipmentForm: React.FC<AddEquipmentFormProps> = ({ base64String }) => 
 
   return (
     <form action={createEquipment} className="space-y-4">
+      <div>
+      <input id="qr_id" name="qr_id" type="text"  value={randomQrCode()} />
+      </div>
       <div>
         <label htmlFor="equipment_tag" className="block">
           {t("Tag")}

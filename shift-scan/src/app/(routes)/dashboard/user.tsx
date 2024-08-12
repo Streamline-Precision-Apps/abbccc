@@ -17,6 +17,7 @@ interface UserProps {
   handleShowManagerButtons: () => void;
   handleShowAdditionalButtons: (type: string) => void;
   logs: Logs[]; // Use the consistent Logs type
+  locale: string;
 }
 
 export const User: React.FC<UserProps> = ({
@@ -24,6 +25,7 @@ export const User: React.FC<UserProps> = ({
   handleShowManagerButtons,
   handleShowAdditionalButtons,
   logs, // Use logs prop
+  locale,
 }) => {
   const t = useTranslations("ManagerButtons");
 
@@ -32,17 +34,15 @@ export const User: React.FC<UserProps> = ({
   const { data: session } = useSession() as { data: CustomSession | null };
   const user = session?.user;
 
-  // Calculate total, completed, and green logs based on the received logs prop
-  const total = logs.length;
-  const completed = logs.filter((log) => log.submitted).length;
-  const green = total - completed;
-
   const handleOpenModal = () => {
+    
     setIsModalOpen(true);
+
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+
   };
 
   // Function to handle CO Button 2 action
@@ -50,7 +50,7 @@ export const User: React.FC<UserProps> = ({
     if (logs.length === 0) {
       // Perform action if there are no logs
       setAuthStep("break");
-      await router.push("/");
+      router.push("/");
     } else {
       setIsModalOpen(true);
     }
@@ -60,7 +60,7 @@ export const User: React.FC<UserProps> = ({
   const handleCOButton3 = async () => {
     if (logs.length === 0) {
       // Perform action if there are no logs
-      await router.push("/dashboard/clock-out/injury-verification");
+      router.push("/dashboard/clock-out");
     } else {
       setIsModalOpen(true);
     }
@@ -111,13 +111,14 @@ export const User: React.FC<UserProps> = ({
                 id={user?.id}
                 scannerType={"equipment"}
                 isModalOpen={isModalOpen}
+                locale={locale}
               />
             </div>
           </Modals>
           <Buttons
             variant={"orange"}
             size={"widgetSm"}
-            href="/dashboard/equipment/current"
+            href="/dashboard/equipment"
           >
             <Images
               titleImg="/forms.svg"
@@ -156,7 +157,7 @@ export const User: React.FC<UserProps> = ({
               <Buttons
                 variant={"orange"}
                 size={"default"}
-                href={`/dashboard/equipment/current`}
+                href={`/dashboard/equipment`}
               >
                 <Texts>{t("CurrEQ")}</Texts>
               </Buttons>
@@ -194,6 +195,7 @@ export const User: React.FC<UserProps> = ({
                 id={user?.id}
                 scannerType={"jobsite"}
                 isModalOpen={isModalOpen}
+                locale={locale}
               />
             </div>
           </Modals>

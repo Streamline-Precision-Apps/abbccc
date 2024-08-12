@@ -1,44 +1,48 @@
-
+"use server";
 import { Bases } from "@/components/(reusable)/bases";
-import { Buttons } from "@/components/(reusable)/buttons";
-import { Images } from "@/components/(reusable)/images";
 import { Sections } from "@/components/(reusable)/sections";
-import { Texts } from "@/components/(reusable)/texts";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
-import { Titles } from "@/components/(reusable)/titles";
 import prisma from "@/lib/prisma";
-import { useTranslations } from "next-intl";
 import { cookies } from "next/headers";
+import { Buttons } from "@/components/(reusable)/buttons";
+import SubmitAll from "./submitAll";
 
-export default async function Equipment() {
+export default async function Current() {
     const userCookie = cookies().get("user");
     const userid = userCookie ? userCookie.value : undefined;
-    const t = useTranslations("Equipment");
-    const User = await prisma.user.findUnique({
-        where: {
-            id: userid,
-        },
-    });
-    const name = User ? `${User.firstName} ${User.lastName}` : "";
-
     
+    const currentDate = new Date();
+    const past24Hours = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
 
+    const logs = await prisma.employeeEquipmentLog.findMany({
+        where: {
+            employee_id: userid,
+            createdAt: { lte: currentDate, gte: past24Hours },
+            submitted: false
+        },
+        include: {
+            Equipment: true,
+        }
+    });
+
+    const total = logs.length;
+    const completed = logs.filter((log) => log.completed).length;
+    const green = total - completed;
+// usetranslate breaks here for what ever reason
     return (
         <Bases>
-            <Sections size={"default"}>
-                <Buttons variant={"default"} size={"default"} href="/dashboard">
-                <Images titleImg="/home.svg" titleImgAlt="Home Icon" variant={"icon"} size={"default"}/>
-                <Texts>Go Home</Texts>
-                </Buttons>
-                <Buttons variant={"green"} size={"default"}href="/dashboard/equipment/scan">
-                <Images titleImg="/equipment.svg" titleImgAlt="Equipment Icon" variant={"icon"} size={"default"}/>
-                <Texts>Log New</Texts>
-                </Buttons>
-                <Buttons variant={"orange"} size={"default"}href="/dashboard/equipment/current">
-                <Images titleImg="/forms.svg" titleImgAlt="Current Equipment Icon" variant={"icon"} size={"default"}/>
-                <Texts>Current Equipment</Texts>
-                </Buttons>
+            <Sections size={"titleBox"}>
+                <TitleBoxes title="Current Equipment" titleImg="/equipment.svg" titleImgAlt="Current" variant={"default"} size={"default"} />
             </Sections>
-        </Bases>  
-    )
+            <Sections size={"default"}>
+                {green === 0 && total !== 0 ? <SubmitAll userid={userid} /> : <></>}
+                {total === 0 ? <p>No Current Equipment</p> : <></>}
+                {logs.map((log) => (
+                    <Buttons variant={(log.completed) ? "green" : "orange"} size={"default"} href={`/dashboard/equipment/${log.id}`} key={log.id}>
+                        {log.Equipment?.name}
+                    </Buttons>
+                ))}
+            </Sections>
+        </Bases>
+    );
 }

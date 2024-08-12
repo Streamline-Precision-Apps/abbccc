@@ -1,3 +1,4 @@
+import { Buttons } from "@/components/(reusable)/buttons";
 import { useTranslations } from "next-intl";
 import React, { useRef, useState, useEffect } from "react";
 
@@ -74,26 +75,20 @@ const Signature: React.FC<SignatureProps> = ({ onEnd }) => {
     <div>
       <canvas
         ref={canvasRef}
-        width={500}
-        height={200}
-        style={{ border: "1px solid black" }}
+        // width={450}
+        // height={200}
+        style={{ border: "1px solid black", margin: "0 auto" }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
       />
-      <div className="flex space-x-4 mt-4">
-        <button
-          className="bg-app-red text-gray-800 font-semibold py-2 px-4 border border-gray-400 font-bold rounded"
-          onClick={handleClear}
-        >
+      <div className="flex flex-row gap-4">
+        <Buttons variant={"red"} size={"widgetSm"} onClick={handleClear}>
           Clear
-        </button>
-        <button
-          className="bg-app-green text-gray-800 font-semibold py-2 px-4 border border-gray-400 font-bold rounded"
-          onClick={handleSave}
-        >
-          Save
-        </button>
+        </Buttons>
+        <Buttons variant={"green"} size={"widgetSm"} onClick={handleSave}>
+        Save
+        </Buttons>
       </div>
       {savedSignature && (
         <div className="mt-4">

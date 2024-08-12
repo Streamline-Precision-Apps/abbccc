@@ -114,6 +114,7 @@ export async function createEquipment(formData: FormData) {
     const statusValue = formData.get("status") as string;
     const equipmentTagValue = formData.get("equipment_tag") as string;
     const equipmentStatusValue = formData.get("equipment_status") as string;
+    const qr_id = formData.get("qr_id") as string;
     const image = formData.get("image") as string;
 
     console.log("Image Base64 String:", image); // Log the image base64 string
@@ -129,6 +130,7 @@ export async function createEquipment(formData: FormData) {
       data: {
         name: formData.get("name") as string,
         description: formData.get("description") as string,
+        qr_id: qr_id,
         equipment_tag: equipmentTag,
         equipment_status: equipmentStatus,
         make: (formData.get("make") as string) || null,
@@ -144,9 +146,7 @@ export async function createEquipment(formData: FormData) {
         image: image || null,
       },
     });
-
     revalidatePath("/dashboard/qr-generator");
-    redirect("/dashboard/qr-generator");
   } catch (error) {
     console.error("Error creating equipment:", error);
     throw error;

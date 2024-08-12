@@ -9,6 +9,7 @@ const ContentVariants = cva(
       variant: {
         default: "flex flex-col",
         row: "flex flex-row",
+        rowCenter: "flex flex-row justify-center",
         image: "bg-white",
       },
       size: {

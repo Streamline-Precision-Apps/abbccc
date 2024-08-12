@@ -12,15 +12,12 @@ const Checkbox: React.FC<CheckboxProps> = ({ checked, onChange }) => {
   };
 
   return (
-    <div className="bg-app-darkblue text-black font-semibold py-6 font-bold rounded flex items-center">
       <input
         type="checkbox"
         checked={checked}
         onChange={handleCheckboxChange}
-        className="w-8 h-8" // Tailwind classes to make the checkbox larger
+        className="p-5 w-10"
       />
-      {/* Increased margin and text size */}
-    </div>
   );
 };
 

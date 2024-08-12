@@ -26,7 +26,7 @@ code: string;
 label: string;
 }
 
-export const CostCodeOptions = (dataType: string, searchTerm: string): Option[] => {
+export const CostCodeOptions = (dataType: string, searchTerm?: string): Option[] => {
 const { jobsiteResults } = useDBJobsite();
 const { recentlyUsedJobCodes } = useRecentDBJobsite();
 const { costcodeResults } = useDBCostcode();

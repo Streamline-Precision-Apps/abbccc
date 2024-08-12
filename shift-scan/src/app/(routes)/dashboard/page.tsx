@@ -71,6 +71,9 @@ export default async function Dashboard() {
   const userCookie = cookies().get("user");
   const userid = userCookie ? userCookie.value : undefined;
 
+  const lang = cookies().get("locale");
+  const locale = lang ? lang.value : "en"; // Default to English
+
   const currentDate = new Date();
   const past24Hours = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
 
@@ -108,6 +111,7 @@ export default async function Dashboard() {
 
   return (
     <Content
+      locale={locale}
       jobCodes={jobCodes}
       costCodes={costCodes}
       equipment={equipment}

@@ -8,7 +8,7 @@ import { CustomSession, User, PayPeriodTimesheets } from "@/lib/types";
 import { useEffect, useState, useMemo } from "react";
 import { useSavedPayPeriodHours } from "../context/SavedPayPeriodHours";
 import { useSavedUserData } from "../context/UserContext";
-import { getAuthStep } from "../api/auth";
+import { getAuthStep, setAuthStep } from "../api/auth";
 import DisplayBreakTime from "./displayBreakTime";
 import { useRouter } from "next/navigation";
 import { Titles } from "@/components/(reusable)/titles";
@@ -20,6 +20,7 @@ import { Bases } from "@/components/(reusable)/bases";
 import { Header } from "@/components/header";
 import { Headers } from "@/components/(reusable)/headers";
 import { useDBJobsite, useDBCostcode, useDBEquipment } from "@/app/context/dbCodeContext";
+import { useRecentDBJobsite, useRecentDBCostcode, useRecentDBEquipment} from "@/app/context/dbRecentCodesContext";
 import { useSavedPayPeriodTimeSheet } from "../context/SavedPayPeriodTimeSheets";
 import { clockProcessProps, jobCodes, CostCode, Equipment, TimeSheets } from "@/lib/content";
 
@@ -41,6 +42,7 @@ export default function Content({
   const [toggle, setToggle] = useState(true);
   const { setSavedUserData } = useSavedUserData();
   const router = useRouter();
+  const authStep = getAuthStep();
   const date = new Date().toLocaleDateString(locale, {
     year: "numeric",
     month: "short",
@@ -48,17 +50,64 @@ export default function Content({
     weekday: "long",
   });
   const [user, setData] = useState<User>({
-    id: "",
-    name: "",
-    firstName: "",
-    lastName: "",
-    permission: "",
+    id: "", name: "", firstName: "", lastName: "", permission: "",
   });
   const { jobsiteResults, setJobsiteResults } = useDBJobsite();
+  const {
+    recentlyUsedJobCodes,
+    setRecentlyUsedJobCodes,
+    addRecentlyUsedJobCode,
+    } = useRecentDBJobsite();
   const { costcodeResults, setCostcodeResults } = useDBCostcode();
+  const {
+    recentlyUsedCostCodes,
+    setRecentlyUsedCostCodes,
+    addRecentlyUsedCostCode,
+    } = useRecentDBCostcode();
   const { equipmentResults, setEquipmentResults } = useDBEquipment();
+  const {
+    recentlyUsedEquipment,
+    setRecentlyUsedEquipment,
+    addRecentlyUsedEquipment,
+    } = useRecentDBEquipment();
+
   const { setPayPeriodTimeSheets } = useSavedPayPeriodTimeSheet(); // Correct name here
   setPayPeriodTimeSheets(payPeriodSheets); // Correct usage here
+
+  useEffect(() => {
+    if (jobsiteResults.length === 0) {
+        setJobsiteResults(jobCodes);
+    }
+    if (costcodeResults.length === 0) {
+        setCostcodeResults(CostCodes);
+    }
+    if (equipmentResults.length === 0) {
+        setEquipmentResults(equipment);
+    }
+    if (recentlyUsedJobCodes.length === 0) {
+        setRecentlyUsedJobCodes(recentJobSites);
+    }
+    if (recentlyUsedCostCodes.length === 0) {
+        setRecentlyUsedCostCodes(recentCostCodes);
+    }
+    if (recentlyUsedEquipment.length === 0) {
+        setRecentlyUsedEquipment(recentEquipment);
+    }
+    }, [
+    jobCodes,
+    CostCodes,
+    equipment,
+    recentJobSites,
+    recentCostCodes,
+    recentEquipment,
+    jobsiteResults,
+    costcodeResults,
+    equipmentResults,
+    recentlyUsedJobCodes,
+    recentlyUsedCostCodes,
+    recentlyUsedEquipment,
+    ]);
+
 
   // Calculate total hours for the current pay period
   const totalPayPeriodHours = useMemo(() => {
@@ -72,6 +121,15 @@ export default function Content({
       router.push("/dashboard");
     }
   }, []);
+
+  // when you clock out, clear local storage then rests the auth step
+  useEffect(() => {
+    if (authStep === "removeLocalStorage") {
+      localStorage.clear();
+      setAuthStep("");
+    }
+  }, []);
+
 
   useEffect(() => {
     if (session && session.user) {
@@ -113,13 +171,10 @@ export default function Content({
     return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
-
-  const authStep = getAuthStep();
-
   if (authStep === "break") {
     return (
       <>
-        <Bases variant={"default"} size={"default"}>
+        <Bases variant={"default"}>
           <Header />
           <Sections size={"default"}>
             <Headers variant={"relative"} size={"default"}></Headers>
@@ -138,7 +193,7 @@ export default function Content({
               })}
             </Texts>
             <DisplayBreakTime setToggle={handler} display={toggle} />
-            <WidgetSection user={user} display={toggle} />
+            <WidgetSection user={user} display={toggle}  locale={locale} />
             <Footers>{f("Copyright")}</Footers>
           </Sections>
         </Bases>
@@ -147,7 +202,7 @@ export default function Content({
   } else {
     return (
       <>
-        <Bases variant={"default"} size={"default"}>
+        <Bases variant={"default"}>
           <Header />
           <Sections size={"default"}>
             <Headers variant={"relative"} size={"default"}></Headers>
@@ -166,13 +221,11 @@ export default function Content({
               })}
             </Texts>
             <Hours setToggle={handler} display={toggle} />
-            <WidgetSection user={user} display={toggle} />
+            <WidgetSection user={user} display={toggle}  locale={locale} />
             <Footers>{f("Copyright")}</Footers>
           </Sections>
         </Bases>
       </>
     );
-  }
-
-  
+  }  
 }
