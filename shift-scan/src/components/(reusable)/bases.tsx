@@ -9,7 +9,7 @@ const BaseVariants = cva(
         variants: {
             variant: {
                 default: "h-dvh",
-                scroll: "h-screen",
+                scroll: "h-full",
             }
         },
         defaultVariants: {
