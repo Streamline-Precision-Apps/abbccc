@@ -147,7 +147,6 @@ CREATE TABLE "timesheets" (
     "vehicle_id" INTEGER,
     "start_time" TIMESTAMP(3) NOT NULL,
     "end_time" TIMESTAMP(3),
-    "total_break_time" DOUBLE PRECISION,
     "duration" DOUBLE PRECISION,
     "starting_mileage" INTEGER,
     "ending_mileage" INTEGER,
@@ -204,6 +203,7 @@ CREATE TABLE "Equipment" (
     "registration_expiration" TIMESTAMP(3),
     "mileage" INTEGER,
     "is_active" BOOLEAN NOT NULL DEFAULT true,
+    "image" TEXT,
 
     CONSTRAINT "Equipment_pkey" PRIMARY KEY ("id")
 );
