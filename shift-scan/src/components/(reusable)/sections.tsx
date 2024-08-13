@@ -3,7 +3,7 @@ import { HTMLAttributes, FC } from "react";
 import { cn } from "@/components/(reusable)/utils";
 
 const SectionVariants = cva(
-  "p-3 m-4 mt-0 border border-white border-8 flex justify-center", //this applies to all variants
+  "p-3 m-4 mt-0 border border-white border-8 justify-center", //this applies to all variants
   {
     variants: {
       variant: {
