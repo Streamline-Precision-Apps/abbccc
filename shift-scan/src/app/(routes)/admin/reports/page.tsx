@@ -13,10 +13,16 @@ import { Texts } from "@/components/(reusable)/texts";
 
 export default function Reports() {
     const [timeSheets, setTimeSheets] = useState<any[]>([]);
+    const [loading, setLoading] = useState(false);  // Add loading state
 
     const handleSubmit = async (formData: FormData) => {
+        setLoading(true);  // Start loading
         const data = await timecardData(formData);
         setTimeSheets(data);
+        setInterval(() => {
+            
+        setLoading(false);  // End loading
+        } , 3000);
     };
 
     // Define the headers for the CSV
@@ -88,7 +94,9 @@ export default function Reports() {
                     <Inputs variant="default" type="date" name="end" />
                     <Buttons variant={"green"} size={"default"}><Texts variant="default">View Payroll Report</Texts></Buttons>
                 </Forms>
-                {timeSheets.length > 0 ? (
+                {loading ? (
+                    <p>Loading...</p>  // Display a loading indicator
+                ) : timeSheets.length > 0 ? (
                     <>
                     <Buttons variant={"green"} size={"default"}>
                     <CSVLink
