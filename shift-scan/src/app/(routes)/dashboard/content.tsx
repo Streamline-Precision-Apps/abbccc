@@ -18,6 +18,7 @@ import { useDBJobsite, useDBCostcode, useDBEquipment} from "@/app/context/dbCode
 import { useRecentDBJobsite, useRecentDBCostcode, useRecentDBEquipment} from "@/app/context/dbRecentCodesContext";
 import { getAuthStep, isDashboardAuthenticated } from "@/app/api/auth";
 import { ClockProcessProps, Logs } from "@/lib/clockprocess";
+import { Contents } from "@/components/(reusable)/contents";
 
 export default function Content({
 locale,
@@ -130,16 +131,20 @@ if (session && session.user) {
 
 return session ? (
 <Bases variant={"default"}>
-<Sections size={"default"}>
-<Headers variant={"relative"} size={"default"}></Headers>
-<Banners variant={"default"} size={"default"}>
-    <Titles variant={"default"} size={"h1"}>{t("Banner")}</Titles>
-    <Texts variant={"default"} size={"p1"}>{date}</Texts>
-</Banners>
-<Texts variant={"name"} size={"p1"}>{t("Name", { firstName: user.firstName, lastName: user.lastName })}</Texts>
-    <DashboardButtons logs={logs} locale={locale} />
-<Footers >{t("lN1")}</Footers>
-</Sections>
+    <Contents variant={"default"} size={"default"}>
+        <Sections variant={"default"} size={"dynamic"}>
+            <Contents variant={"header"} size={"test"}>
+                <Headers variant={"relative"} size={"default"}></Headers>
+            </Contents>
+            <Banners variant={"default"}>
+                <Titles variant={"default"} size={"h1"}>{t("Banner")}</Titles>
+                <Texts variant={"default"} size={"p1"}>{date}</Texts>
+            </Banners>
+            <Texts variant={"name"} size={"p1"}>{t("Name", { firstName: user.firstName, lastName: user.lastName })}</Texts>
+            <DashboardButtons logs={logs} locale={locale}/>
+            {/* <Footers >{t("lN1")}</Footers> */}
+        </Sections>
+    </Contents>
 </Bases>
 ) : (
 <></>
