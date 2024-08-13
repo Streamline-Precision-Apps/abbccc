@@ -13,7 +13,6 @@ type Timesheet = {
   start_date?: string;
   end_time: string;
   end_date?: string;
-  total_break_time: string;
   jobsite_id: string;
   costcode: string;
   duration: string;
@@ -151,7 +150,6 @@ const EditWork = ({ timesheetData, jobsitesData, costcodesData, edit, equipment,
         formData.append("costcode", timesheet.costcode);
         formData.append("start_time", `${timesheet.start_date}T${timesheet.start_time}`);
         formData.append("end_time", `${timesheet.end_date}T${timesheet.end_time}`);
-        formData.append("total_break_time", timesheet.total_break_time);
         formData.append("jobsite_id", timesheet.jobsite_id);
         await editTimeSheet(formData);
       }
@@ -280,10 +278,6 @@ const EditWork = ({ timesheetData, jobsitesData, costcodesData, edit, equipment,
                     <input id="end_time" type="time" value={timesheet.end_time || ''} onChange={(e) => handleInputChangeDate(e, timesheet.id, "end_time")} readOnly={!edit} />
                   </div>
                 </label>
-              </div>
-              <div>
-                <label htmlFor="total_break_time">{t("Breaktime")}</label>
-                <input id="total_break_time" type="text" value={timesheet.total_break_time || "0"} onChange={(e) => handleInputChange(e, timesheet.id, "total_break_time")} readOnly={!edit} />
               </div>
               <div>
                 <label htmlFor="jobsite_id">{t("JobSites")}</label>

@@ -9,18 +9,18 @@ const ImageVariants = cva(
       variant: {
         default: "bg-blue-500",
         icon: "bg-none",
-        iconLeft: "absolute left-0 ml-5",
-        iconRight: "absolute right-0 mr-5",
+        iconLeft: "absolute left-1 top-1",
+        iconRight: "absolute right-5 top-8",
         picture: "w-full h-full mt-3",
       },
       size: {
-        default: "",
+        default: "w-15 h-15",
         widgetSm: "pt-5 h-20",
         widgetMed: "p-10 w-40 h-40",
         widgetLg: "p-10 w-50 h-50",
         titlebox: "w-36",
         backButton: "w-15 w-15 pt-0",
-        lg: "w-50 h-50",
+        logo: "w-50 h-50",
         thin: "w-20 h-10",
       }
     },
