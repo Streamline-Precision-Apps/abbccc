@@ -6,6 +6,7 @@ import React, { useState } from "react";
 import { Images } from "./images";
 import { Modals } from "./modals";
 import { Buttons } from "./buttons";
+import { Contents } from "./contents";
 
 
 const HeaderVariants = cva(
@@ -17,7 +18,7 @@ const HeaderVariants = cva(
         relative: "relative bg-none",
       },
       size: {
-        default: "p-5 m-5 w-full h-100",
+        default: "w-full h-100",
       }
     },
     defaultVariants: {
@@ -34,21 +35,22 @@ const Headers: FC<HeaderProps> = ({className, variant, size, ...props}) => {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <div className={cn(HeaderVariants({variant, size, className}))} {...props}>
-      <Images titleImg="/logo.svg" titleImgAlt="logo" variant={"iconLeft"} size={"lg"}/>
-      <Buttons variant={"icon"} size={"default"} onClick={() => setIsOpen(true)}>
-          <Images titleImg="/hamburger.svg" titleImgAlt="hamburger menu" variant={"iconRight"} size={"lg"}/>
-      </Buttons>
+        <Images titleImg="/logo.svg" titleImgAlt="logo" variant={"iconLeft"} size={"logo"}/>
+        <Buttons variant={"icon"} size={"default"} onClick={() => setIsOpen(true)}>
+            <Images titleImg="/hamburger.svg" titleImgAlt="hamburger menu" variant={"iconRight"} size={"default"}/>
+        </Buttons>
       <Modals handleClose={() => setIsOpen(false)} isOpen={isOpen}>
-      <Buttons href="/hamburger/settings" variant={"icon"} size={"small"}>
-          <Images titleImg={"/Settings.svg"} titleImgAlt={"settings"} variant={"icon"} size={"titlebox"} />
+        <Buttons href="/hamburger/settings" variant={"icon"} size={"default"}>
+          <Images titleImg={"/Settings.svg"} titleImgAlt={"settings"} variant={"icon"} size={"default"} />
         </Buttons>
-        <Buttons href="/hamburger/inbox" variant={"icon"} size={"small"}>
-    <Images titleImg={"/Inbox.svg"} titleImgAlt={"inbox"} variant={"icon"} size={"titlebox"} />
+        <Buttons href="/hamburger/inbox" variant={"icon"} size={"default"}>
+          <Images titleImg={"/Inbox.svg"} titleImgAlt={"inbox"} variant={"icon"} size={"default"} />
         </Buttons>
-        <Buttons href="/hamburger/profile" variant={"icon"} size={"small"}>
-          <Images titleImg={"/profile.svg"} titleImgAlt={"profile"} variant={"icon"} size={"titlebox"} />
+        <Buttons href="/hamburger/profile" variant={"icon"} size={"default"}>
+          <Images titleImg={"/profile.svg"} titleImgAlt={"profile"} variant={"icon"} size={"default"} />
         </Buttons>
       </Modals>
+
     </div>
   )
 }
