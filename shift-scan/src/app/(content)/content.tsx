@@ -23,6 +23,7 @@ import { useDBJobsite, useDBCostcode, useDBEquipment } from "@/app/context/dbCod
 import { useRecentDBJobsite, useRecentDBCostcode, useRecentDBEquipment} from "@/app/context/dbRecentCodesContext";
 import { useSavedPayPeriodTimeSheet } from "../context/SavedPayPeriodTimeSheets";
 import { clockProcessProps, jobCodes, CostCode, Equipment, TimeSheets } from "@/lib/content";
+import { Contents } from "@/components/(reusable)/contents";
 
 
 export default function Content({
@@ -175,8 +176,10 @@ export default function Content({
     return (
       <>
         <Bases variant={"default"}>
+        <Contents size={"default"}>
           <Header />
           <Sections size={"default"}>
+          <Contents size={"default"}>
             <Headers variant={"relative"} size={"default"}></Headers>
             <Banners variant={"default"} size={"default"}>
               <Titles variant={"default"} size={"h1"}>
@@ -192,10 +195,14 @@ export default function Content({
                 lastName: capitalize(user.lastName),
               })}
             </Texts>
+            <Contents size={"default"}>
             <DisplayBreakTime setToggle={handler} display={toggle} />
-            <WidgetSection user={user} display={toggle}  locale={locale} />
+            <WidgetSection user={user} display={toggle} locale={locale} option={"break"} />
+            </Contents>
             <Footers>{f("Copyright")}</Footers>
+            </Contents>
           </Sections>
+        </Contents>
         </Bases>
       </>
     );
@@ -204,7 +211,9 @@ export default function Content({
       <>
         <Bases variant={"default"}>
           <Header />
+          <Contents size={"default"}>
           <Sections size={"default"}>
+          <Contents size={"default"}>
             <Headers variant={"relative"} size={"default"}></Headers>
             <Banners variant={"default"} size={"default"}>
               <Titles variant={"default"} size={"h1"}>
@@ -221,9 +230,11 @@ export default function Content({
               })}
             </Texts>
             <Hours setToggle={handler} display={toggle} />
-            <WidgetSection user={user} display={toggle}  locale={locale} />
+            <WidgetSection user={user} display={toggle} locale={locale} />
             <Footers>{f("Copyright")}</Footers>
+          </Contents>
           </Sections>
+          </Contents>
         </Bases>
       </>
     );

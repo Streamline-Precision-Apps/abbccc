@@ -105,13 +105,13 @@ const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     }
         
         setAuthStep("");
-        setBanner(`Timecard Submitted! You will be redirected! \n \n ${duration?.toFixed(2)} total hours worked today!`);
+        setBanner(`Timecard Submitted! ${duration?.toFixed(2)} total hours && ${breakTimeTotal?.toFixed(2)} total break time used. You will be redirected soon!`);
         setTimeout(() => {
         router.push("/");
         setBanner("")
         localStorage.removeItem("breakTime"); // Clear local storage
         setAuthStep("removeLocalStorage");
-        }, 3000);
+        }, 5000);
         
     } catch (error) {
         console.error("Failed to submit the time sheet:", error);
@@ -213,11 +213,6 @@ const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
             {/* Hidden inputs */}
             <input type="hidden" name="id" value={savedTimeSheetData?.id || timesheeetId} />
             <input type="hidden" name="end_time" value={new Date().toString()} />
-            <input
-            type="hidden"
-            name="total_break_time"
-            value={breakTimeTotal?.toString()}
-            />
             <input type="hidden" name="timesheet_comments" value={""} />
             <input type="hidden" name="app_comments" value={""} />
             </form>

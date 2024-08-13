@@ -23,12 +23,12 @@ export default function AdminButtons() {
     setAdditionalButtonsType(type);
   };
   return (
-    <div className="grid grid-cols-2 grid-rows-2 gap-4 w-full m-4 p-4">
+    <>
       <Admin
         additionalButtonsType={additionalButtonsType}
         handleResetButtons={handleResetButtons}
         handleShowAdditionalButtons={handleShowAdditionalButtons}
       />
-    </div>
+    </>
   );
 }

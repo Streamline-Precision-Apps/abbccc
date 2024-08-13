@@ -13,9 +13,11 @@ import UserId from '../userId';
 import { TitleBoxes } from '../(reusable)/titleBoxes';
 import { Sections } from '../(reusable)/sections';
 import { Bases } from '../(reusable)/bases';
+import { exit } from 'process';
+import { Buttons } from '../(reusable)/buttons';
 
 
-const VerificationStep: React.FC<{ id: string | undefined; handleNextStep: () => void, type: string }> = ({ id, type, handleNextStep}) => {
+const VerificationStep: React.FC<{ id: string | undefined; handleNextStep: () => void, type: string, option?: string }> = ({ id, type, handleNextStep, option}) => {
   const t = useTranslations("Clock");
   const { scanResult } = useScanData();
   const { savedCostCode } = useSavedCostCode();
@@ -23,34 +25,48 @@ const VerificationStep: React.FC<{ id: string | undefined; handleNextStep: () =>
   const { savedTimeSheetData, setSavedTimeSheetData } = useSavedTimeSheetData();
   const { savedUserData } = useSavedUserData();
   const [date] = useState(new Date());
-  
 
+  
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    try{
+    try {
     e.preventDefault();
-    // closing previous time sheet before starting new
-    if (id === null ) {
+
+    if (id === null) {
       throw new Error("User id does not exist");
     }
+
     if (type === "switchJobs") {
-      try{
-      console.log("The type is ", type);
-      console.log("entered switch jobs:")
-      // pulls the timesheet id from local storage and pasrses it to a string
-      const localeValue = localStorage.getItem("savedtimeSheetData");
-      const t_id = JSON.parse(localeValue || "{}").id;
-      const break_t = parseFloat(localStorage.getItem("breakTime") || "0"); ;
-      const breakTime = break_t / 360;
-      // declare a new FormData object due to having two different form data inputs
-      const formData2 = new FormData();
-      formData2.append('id', t_id?.toString() || '');
-      formData2.append('end_time', new Date().toISOString());
-      formData2.append('total_break_time', breakTime.toString());
-      formData2.append('timesheet_comments', '');
-      formData2.append('app_comment', 'Switched jobs');
-      // updates the time sheet
-      await updateTimeSheetBySwitch(formData2);
-      // beginning new time sheet process
+      try {
+        console.log("The type is ", type);
+        console.log("entered switch jobs:");
+
+        const localeValue = localStorage.getItem("savedtimeSheetData");
+        const t_id = JSON.parse(localeValue || "{}").id;
+        const formData2 = new FormData();
+        formData2.append('id', t_id?.toString() || '');
+        formData2.append('end_time', new Date().toISOString());
+        formData2.append('timesheet_comments', '');
+        formData2.append('app_comment', 'Switched jobs');
+
+        await updateTimeSheetBySwitch(formData2);
+
+        const formData = new FormData();
+        formData.append('submit_date', new Date().toISOString());
+        formData.append('userId', id?.toString() || '');
+        formData.append('date', new Date().toISOString());
+        formData.append('jobsite_id', scanResult?.data || '');
+        formData.append('costcode', savedCostCode?.toString() || '');
+        formData.append('start_time', new Date().toISOString());
+
+        const response = await CreateTimeSheet(formData);
+        const result = { id: (response.id).toString() };
+        setSavedTimeSheetData(result);
+        setAuthStep('success');
+        handleNextStep();
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
       const formData = new FormData();
       formData.append('submit_date', new Date().toISOString());
       formData.append('userId', id?.toString() || '');
@@ -58,41 +74,17 @@ const VerificationStep: React.FC<{ id: string | undefined; handleNextStep: () =>
       formData.append('jobsite_id', scanResult?.data || '');
       formData.append('costcode', savedCostCode?.toString() || '');
       formData.append('start_time', new Date().toISOString());
-      // creates a new time sheet & waiting for response
+
       const response = await CreateTimeSheet(formData);
-      const result = {id: (response.id).toString()};
+      const result = { id: (response.id).toString() };
       setSavedTimeSheetData(result);
-      localStorage.removeItem("breakTime");
       setAuthStep('success');
       handleNextStep();
-    }
-    catch (error) { 
-      console.log(error);
-    }
-  }
-  // if it is a new time sheet and not switch jobs
-  // this portion of verification step is implemented in the clock component
-    else {
-    const formData = new FormData();
-    formData.append('submit_date', new Date().toISOString());
-    formData.append('userId', id?.toString() || '');
-    formData.append('date', new Date().toISOString());
-    formData.append('jobsite_id', scanResult?.data || '');
-    formData.append('costcode', savedCostCode?.toString() || '');
-    formData.append('start_time', new Date().toISOString());
-
-    const response = await CreateTimeSheet(formData);
-    const result = {id: (response.id).toString()};
-    setSavedTimeSheetData(result);
-    localStorage.removeItem("breakTime");
-    setAuthStep('success');
-    handleNextStep();
-  }}
-  catch (error) {
+    };
+  } catch (error) {
     console.log(error);
   }
-} ;
-
+};
   return (
     <div className="flex flex-col items-center w-[500px] h-[800px] m-auto">
       <TitleBoxes title={t('VerifyJobSite')} titleImg="/clockin.svg" titleImgAlt="Verify" variant="row" size="default" type="row" />

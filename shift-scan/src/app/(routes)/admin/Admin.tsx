@@ -26,15 +26,14 @@ export const Admin: React.FC<AdminProps> = ({
             size={"widgetSm"}
             onClick={handleResetButtons}
           >
-            <div className="flex flex-row justify-center items-center ">
-              <Images
-                titleImg="/home.svg"
-                titleImgAlt="Home Icon"
-                variant={"icon"}
-                size={"default"}
-              ></Images>
+            <Images
+              titleImg="/home.svg"
+              titleImgAlt="Home Icon"
+              variant={"icon"}
+              size={"default"}
+            />
               <Texts>{t("Home")}</Texts>
-            </div>
+          
           </Buttons>
           <Buttons
             variant={"green"}
@@ -70,16 +69,40 @@ export const Admin: React.FC<AdminProps> = ({
             size={"widgetSm"}
             onClick={handleResetButtons}
           >
+            <Images
+              titleImg="/home.svg"
+              titleImgAlt="Home Icon"
+              variant={"icon"}
+              size={"default"}
+            />
             <Texts>{t("Home")}</Texts>
           </Buttons>
           <Buttons variant={"orange"} size={"widgetSm"}>
-            <Texts>AssetButton1</Texts>
+          <Images
+              titleImg="/equipment.svg"
+              titleImgAlt="Home Icon"
+              variant={"icon"}
+              size={"default"}
+            />
+            <Texts>Manage Equipment</Texts>
           </Buttons>
-          <Buttons variant={"red"} size={"widgetSm"}>
-            <Texts>AssetButton2</Texts>
+          <Buttons variant={"orange"} size={"widgetSm"}>
+          <Images
+              titleImg="/qrCode.svg"
+              titleImgAlt="Home Icon"
+              variant={"icon"}
+              size={"widgetSm"}
+            />
+            <Texts>Manage Jobsites </Texts>
           </Buttons>
-          <Buttons variant={"red"} size={"widgetSm"}>
-            <Texts>AssetButton3</Texts>
+          <Buttons variant={"orange"} size={"widgetSm"}>
+          <Images
+              titleImg="/jobsite.svg"
+              titleImgAlt="Home Icon"
+              variant={"icon"}
+              size={"default"}
+            />
+            <Texts>Manage Cost Codes</Texts>
           </Buttons>
         </>
       ) : additionalButtonsType === "reports" ? (
@@ -89,7 +112,22 @@ export const Admin: React.FC<AdminProps> = ({
             size={"widgetSm"}
             onClick={handleResetButtons}
           >
+            <Images
+              titleImg="/home.svg"
+              titleImgAlt="Home Icon"
+              variant={"icon"}
+              size={"default"}
+            />
             <Texts>{t("Home")}</Texts>
+          </Buttons>
+          <Buttons variant={"orange"} size={"widgetSm"} href="/admin/reports">
+          <Images
+              titleImg="/forms.svg"
+              titleImgAlt="Home Icon"
+              variant={"icon"}
+              size={"default"}
+            />
+            <Texts>Extract Reports</Texts>
           </Buttons>
         </>
       ) : (
