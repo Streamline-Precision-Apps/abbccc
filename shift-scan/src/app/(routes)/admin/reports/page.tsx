@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CSVLink } from "react-csv";
 import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
@@ -14,15 +14,21 @@ import { Texts } from "@/components/(reusable)/texts";
 export default function Reports() {
     const [timeSheets, setTimeSheets] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);  // Add loading state
+    const [showPayroll, setShowPayroll] = useState(true);
+
+    // on reload page, set showPayroll to true
+    useEffect(() => {
+        setShowPayroll(true);
+    }, []);
 
     const handleSubmit = async (formData: FormData) => {
         setLoading(true);  // Start loading
+        setShowPayroll(false)
         const data = await timecardData(formData);
         setTimeSheets(data);
         setInterval(() => {
-            
         setLoading(false);  // End loading
-        } , 3000);
+        } , 4000);
     };
 
     // Define the headers for the CSV
@@ -86,16 +92,18 @@ export default function Reports() {
                 <Inputs variant="default" type="default" state="disabled" data="Payroll" />
                 </Forms>
             </Sections>
-            <Sections size={"dynamic"}>
+            <Sections size={"titleBox"}>
                 <Forms action={handleSubmit}>
-                    <Labels variant="default" type="title">Start Date</Labels>
-                    <Inputs variant="default" type="date" name="start" />
+                    <Labels variant="default" type="title" >Start Date</Labels>
+                    <Inputs variant="default" type="date" name="start" onChange={() => setShowPayroll(true)} />
                     <Labels variant="default" type="title">End Date</Labels>
-                    <Inputs variant="default" type="date" name="end" />
-                    <Buttons variant={"green"} size={"default"}><Texts variant="default">View Payroll Report</Texts></Buttons>
+                    <Inputs variant="default" type="date" name="end" onChange={() => setShowPayroll(true)} />
+                    {showPayroll && <Buttons variant={"green"} size={"default"}><Texts variant="default">View Payroll Report</Texts></Buttons>}
                 </Forms>
+                </Sections>
+            <Sections size={"dynamic"}>
                 {loading ? (
-                    <p>Loading...</p>  // Display a loading indicator
+                    <Texts>Loading...</Texts>  // Display a loading indicator
                 ) : timeSheets.length > 0 ? (
                     <>
                     <Buttons variant={"green"} size={"default"}>
@@ -119,14 +127,14 @@ export default function Reports() {
                                     <th>Start Time</th>
                                     <th>End Time</th>
                                     <th>Duration</th>
-                                    <th>Starting Mileage</th>
-                                    <th>Ending Mileage</th>
+                                    <th>StartMileage</th>
+                                    <th>EndMileage</th>
                                     <th>Left Idaho</th>
-                                    <th>Equipment Hauled</th>
+                                    <th>EquipHauled</th>
                                     <th>Materials Hauled</th>
-                                    <th>Hauled Loads Quantity</th>
-                                    <th>Refueling Gallons</th>
-                                    <th>Timesheet Comments</th>
+                                    <th>LoadQty</th>
+                                    <th>FuelGallons</th>
+                                    <th>Comments</th>
                                     <th>App Comment</th>
                                     <th>User ID</th>
                                     <th>Jobsite ID</th>
@@ -158,10 +166,11 @@ export default function Reports() {
                             </tbody>
                         </table>
                     </>
+                    
                 ) : (
                     <Texts variant="default">No data available for the selected date range.</Texts>
                 )}
-            </Sections>
+                </Sections>
         </Bases>
     );
 }
