@@ -77,7 +77,7 @@ export const Admin: React.FC<AdminProps> = ({
             />
             <Texts>{t("Home")}</Texts>
           </Buttons>
-          <Buttons variant={"orange"} size={"widgetSm"}>
+          <Buttons variant={"orange"} size={"widgetSm"}  href="/admin/assets">
           <Images
               titleImg="/equipment.svg"
               titleImgAlt="Home Icon"
@@ -86,7 +86,7 @@ export const Admin: React.FC<AdminProps> = ({
             />
             <Texts>Manage Equipment</Texts>
           </Buttons>
-          <Buttons variant={"orange"} size={"widgetSm"}>
+          <Buttons variant={"orange"} size={"widgetSm"}  href="/admin/assets">
           <Images
               titleImg="/qrCode.svg"
               titleImgAlt="Home Icon"
@@ -95,7 +95,7 @@ export const Admin: React.FC<AdminProps> = ({
             />
             <Texts>Manage Jobsites </Texts>
           </Buttons>
-          <Buttons variant={"orange"} size={"widgetSm"}>
+          <Buttons variant={"orange"} size={"widgetSm"}  href="/admin/assets">
           <Images
               titleImg="/jobsite.svg"
               titleImgAlt="Home Icon"
