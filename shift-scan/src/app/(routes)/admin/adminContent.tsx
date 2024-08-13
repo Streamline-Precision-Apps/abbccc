@@ -23,6 +23,8 @@ import { CustomSession, User } from "@/lib/types";
 import { useSession } from "next-auth/react";
 import { useSavedUserData } from "@/app/context/UserContext";
 import AdminButtons from "@/components/adminButtons";
+import { Content } from "next/font/google";
+import { Contents } from "@/components/(reusable)/contents";
 
 interface AdminContentProps {
   permission: string | undefined;
@@ -72,7 +74,9 @@ export default function AdminContent({ permission }: AdminContentProps) {
 
   return session ? (
     <Bases variant={"default"}>
+      <Contents size={"default"}>
       <Sections size={"default"}>
+      <Contents size={"default"}>
         <Headers variant={"relative"} size={"default"}></Headers>
         <Banners variant={"default"} size={"default"}>
           <Titles variant={"default"} size={"h1"}>
@@ -87,7 +91,9 @@ export default function AdminContent({ permission }: AdminContentProps) {
         </Texts>
         <AdminButtons />
         <Footers>{t("lN1")}</Footers>
+        </Contents>
       </Sections>
+      </Contents>
     </Bases>
   ) : (
     <></>
