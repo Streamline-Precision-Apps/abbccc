@@ -40,31 +40,24 @@ type Props = {
 export default function Jobsite( { jobsites }: Props ) {
     const formRef = React.createRef<HTMLFormElement>();
     const t = useTranslations("admin-assets-jobsite");
-    const [searchTerm, setSearchTerm] = useState<string>("");
+    const [searchTerm1, setSearchTerm1] = useState<string>("");
+    const [searchTerm2, setSearchTerm2] = useState<string>("");
     const [jobsiteList, setJobsiteList] = useState<Jobsite[]>(jobsites);
     const [Response, setResponse] = useState<Jobsite | null>(null);
     const [editForm, setEditForm] = useState<boolean>(true);
     const [Banner, setBanner] = useState<string>("");
     const [showBanner, setShowBanner] = useState<boolean>(false);
-    const [isOpen1, setIsOpen1] = useState(false);
-    
-    const [isOpen3, setIsOpen3] = useState(false);
-    const [isOpen4, setIsOpen4] = useState(false);
-    const [isOpen5, setIsOpen5] = useState(false);
     
     // Reset the form when the modal is closed
-    useEffect(() => {
-        (!isOpen3)
-        {
-            setEditForm(true);
-            setResponse(null);
-            setSearchTerm("");
-        }
-    }, [isOpen3]);
 
-    const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleSearchChange = (e: ChangeEvent<HTMLInputElement>, id: string) => {
         const value = e.target.value.toLowerCase();
-        setSearchTerm(value);
+        if (id === '2') {
+            setSearchTerm2(value);
+        }
+        if (id === '1') {
+            setSearchTerm1(value);
+        }
         const filteredList = jobsites.filter((item) =>
             item.jobsite_name.toLowerCase().includes(value) ||
             item.jobsite_id.toLowerCase().includes(value)
@@ -73,9 +66,19 @@ export default function Jobsite( { jobsites }: Props ) {
         setEditForm(true);
     };
 
-    async function handleEditForm() {
+    async function handleEditForm(id: string) {
         setEditForm(false);
-        const response = await fetchByNameJobsite(searchTerm);
+        if (id === '2') {
+            const response = await fetchByNameJobsite(searchTerm2);
+            if (response) {
+                setResponse(response as unknown as Jobsite); // No need to access the first element of an array
+            } else {
+                console.log("Error fetching equipment.");
+            }
+        }
+        if (id === '1') {
+            }
+        const response = await fetchByNameJobsite(searchTerm1);
         if (response) {
           setResponse(response as unknown as Jobsite); // No need to access the first element of an array
         } else {
@@ -86,7 +89,8 @@ export default function Jobsite( { jobsites }: Props ) {
     async function handleBanner( words: string ) {
         setShowBanner(true);
         setBanner(words);
-        setSearchTerm("");
+        setSearchTerm1("");
+        setSearchTerm2("");
         setEditForm(true);
         // Trigger interval to hide the banner after 4 seconds
         const intervalId = setInterval(() => {
@@ -183,22 +187,22 @@ export default function Jobsite( { jobsites }: Props ) {
             <Expands title="Edit Existing Jobsite" divID={"3"}>
                 <Contents variant={"searchBar"} size="null">
                 <SearchBar
-                    searchTerm={searchTerm}
-                    onSearchChange={handleSearchChange}
+                    searchTerm={searchTerm1}
+                    onSearchChange={(e) => handleSearchChange(e, "1")}
                     placeholder="Search equipment..."
                     />
                 </Contents>
-                {searchTerm && editForm && (
+                {searchTerm1 && editForm && (
                     <ul>
                         {jobsiteList.map((item) => (
-                            <Buttons onClick={() => {setSearchTerm(item.jobsite_name);setEditForm(false);}} key={item.id}>
+                            <Buttons onClick={() => {setSearchTerm1(item.jobsite_name);setEditForm(false);}} key={item.id}>
                                 {item.jobsite_name} ({item.jobsite_id})
                             </Buttons>
                         ))}
                     </ul>
                 )}
                 {Response === null && 
-                <Buttons variant="orange" size="default" onClick={handleEditForm} >
+                <Buttons variant="orange" size="default" onClick={() => handleEditForm("1")} >
                     {t("Submit")}
                 </Buttons>
                 }
@@ -248,22 +252,22 @@ export default function Jobsite( { jobsites }: Props ) {
             <Expands title="Delete Existing Jobsite" divID={"4"}>
                 <Contents variant={"searchBar"} size="null">
                 <SearchBar
-                    searchTerm={searchTerm}
-                    onSearchChange={handleSearchChange}
+                    searchTerm={searchTerm2}
+                    onSearchChange={(e) => handleSearchChange(e, "2")}
                     placeholder="Search equipment..."
                     />
                 </Contents>
-                {searchTerm && editForm && (
+                {searchTerm2 && editForm && (
                     <ul>
                         {jobsiteList.map((item) => (
-                            <Buttons onClick={() => {setSearchTerm(item.jobsite_name);setEditForm(false);}} key={item.id}>
+                            <Buttons onClick={() => {setSearchTerm2(item.jobsite_name);setEditForm(false);}} key={item.id}>
                                 {item.jobsite_name} ({item.jobsite_id})
                             </Buttons>
                         ))}
                     </ul>
                 )}
                 {Response === null && 
-                <Buttons variant="orange" size="default" onClick={handleEditForm} >
+                <Buttons variant="orange" size="default" onClick={() => handleEditForm("2")} >
                     {t("Submit")}
                 </Buttons>
                 }
@@ -292,7 +296,7 @@ export default function Jobsite( { jobsites }: Props ) {
                     <ul>
                         {jobsiteList.map((item) => (
                             item.jobsite_id.slice(0, 3) === "J-T" ? 
-                            <Buttons onClick={() => {setSearchTerm(item.jobsite_name);setResponse(item);}} key={item.id}>
+                            <Buttons onClick={() => {setSearchTerm2(item.jobsite_name);setResponse(item);}} key={item.id}>
                                 {item.jobsite_name} ({item.jobsite_id})
                             </Buttons>
                             : null
