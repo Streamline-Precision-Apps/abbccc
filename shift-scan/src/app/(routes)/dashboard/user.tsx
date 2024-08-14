@@ -12,6 +12,7 @@ import { CustomSession } from "@/lib/types";
 import { setAuthStep } from "@/app/api/auth";
 import { Equipment, Logs } from "@/lib/types";
 import { updateTimeSheetBySwitch } from "@/actions/timeSheetActions";
+import { Manager } from "./manager";
 
 interface UserProps {
   additionalButtonsType: string | null;
