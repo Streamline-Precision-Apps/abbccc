@@ -82,22 +82,10 @@ export default function Jobsite( { jobsites }: Props ) {
             console.log("Error fetching equipment.");
         }
     }
-    async function handleEditSubmit() {
+
+    async function handleBanner( words: string ) {
         setShowBanner(true);
-        setBanner("job site was edited successfully");
-        setSearchTerm("");
-        setEditForm(true);
-        // Trigger interval to hide the banner after 4 seconds
-        const intervalId = setInterval(() => {
-            setShowBanner(false);
-            setBanner("");
-            clearInterval(intervalId); 
-            window.location.reload();
-        }, 4000);
-    }
-    async function handleDeleteSubmit() {
-        setShowBanner(true);
-        setBanner("Job Site was Deleted successfully");
+        setBanner(words);
         setSearchTerm("");
         setEditForm(true);
         // Trigger interval to hide the banner after 4 seconds
@@ -113,14 +101,14 @@ export default function Jobsite( { jobsites }: Props ) {
     return(
         <> 
          {/* This section is used to display all active jobsite */}
-        <Contents variant={"border"} size={"null"} >
-        <Expands title="Active Jobsites" divID={"1"}>
                 { showBanner && (
                     <Contents size={"null"} variant={"header"}>
                         <Texts>{Banner}</Texts>
                     </Contents>     
                     )
                 }    
+        <Contents variant={"border"} size={"null"} >
+        <Expands title="Active Jobsites" divID={"1"}>
                 <Contents size={"null"}>
                     <table>
                         <thead>
@@ -159,7 +147,7 @@ export default function Jobsite( { jobsites }: Props ) {
         {/* This section is used to create a new jobsite */}
         <Contents variant={"border"} size={"null"} >
         <Expands title= "Create New Jobsite" divID={"2"} >
-                <Forms action={createJobsite}>
+                <Forms action={createJobsite} onSubmit={() => handleBanner("Created Successfully")}>
 
                 <Labels variant="default" type="">{t("JobsiteName")} *</Labels>
                 <Inputs variant="default" type="text" name="jobsite_name" required />
@@ -191,14 +179,8 @@ export default function Jobsite( { jobsites }: Props ) {
                 </Forms>
             </Expands>
             </Contents>
-            <Contents variant={"border"} size={"null"} >
-            { showBanner && (
-                <Contents size={"null"} variant={"header"}>
-                    <Texts>{Banner}</Texts>
-                </Contents>     
-                )
-            }    
-           <Expands title="Edit Existing Jobsite" divID={"3"}>
+            <Contents variant={"border"} size={"null"} >   
+            <Expands title="Edit Existing Jobsite" divID={"3"}>
                 <Contents variant={"searchBar"} size="null">
                 <SearchBar
                     searchTerm={searchTerm}
@@ -222,7 +204,7 @@ export default function Jobsite( { jobsites }: Props ) {
                 }
                 {/* Display the form for editing the selected equipment */}
                 {Response !== null &&  !editForm && (
-                    <Forms action={updateJobsite} onSubmit={handleEditSubmit} >
+                    <Forms action={updateJobsite} onSubmit={() => handleBanner("Updated Successfully")} >
                         <Inputs type="text" name="id" defaultValue={Response.id} />
 
                         <Labels variant="default" type="">{t("IsActive")} *</Labels>
@@ -262,13 +244,7 @@ export default function Jobsite( { jobsites }: Props ) {
                 </Expands>
             </Contents>
             {/* Delete Existing Jobsites */}
-            <Contents variant={"border"} size={"null"} >
-            { showBanner && (
-                <Contents size={"null"} variant={"header"}>
-                    <Texts>{Banner}</Texts>
-                </Contents>     
-                )
-            }    
+            <Contents variant={"border"} size={"null"} > 
             <Expands title="Delete Existing Jobsite" divID={"4"}>
                 <Contents variant={"searchBar"} size="null">
                 <SearchBar
@@ -293,7 +269,7 @@ export default function Jobsite( { jobsites }: Props ) {
                 }
                 {/* Display the form for editing the selected equipment */}
                 {Response !== null &&  !editForm && (
-                    <Forms action={deleteJobsite} onSubmit={ handleDeleteSubmit} >
+                    <Forms action={deleteJobsite} onSubmit={() => handleBanner("Deleted jobsite Successfully")} >
                         <Inputs type="hidden" name="id" defaultValue={Response.id} />
                         <Buttons variant="orange" size="default" type="submit">
                             Delete Equipment
@@ -303,13 +279,7 @@ export default function Jobsite( { jobsites }: Props ) {
                 </Expands>
             </Contents>
             {/* Add New Jobsite */}
-            <Contents variant={"border"} size={"null"} >
-            { showBanner && (
-                <Contents size={"null"} variant={"header"}>
-                    <Texts>{Banner}</Texts>
-                </Contents>     
-                )
-            }    
+        <Contents variant={"border"} size={"null"} >
         <Expands title="Edit Existing Jobsite" divID={"5"}>
         {jobsites.filter((item) => item.jobsite_id.slice(0, 3) === "J-T") .length > 0 ? (
                 <>
@@ -331,7 +301,7 @@ export default function Jobsite( { jobsites }: Props ) {
                     {jobsites.filter((item) => item.jobsite_id.slice(0, 3) === "J-T") .length >  0 ? (
                         <>
                 {/* Display the form for editing the selected equipment */}
-                    <Forms action={editGeneratedJobsite} onSubmit={handleEditSubmit} >
+                    <Forms action={editGeneratedJobsite} onSubmit={() => handleBanner("Edited jobsite Successfully")} >
                         <Inputs type="hidden" name="id" defaultValue={Response?.id} />
 
                         <Labels variant="default" type="">Previous {t("JobsiteID")} </Labels>
