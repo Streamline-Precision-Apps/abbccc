@@ -14,6 +14,7 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Banners } from "@/components/(reusable)/banners";
 import { Titles } from "@/components/(reusable)/titles";
 import { Modals } from "@/components/(reusable)/modals";
+import { Expands } from "@/components/(reusable)/expands";
 
 type Equipment = {
     id: string;
@@ -47,10 +48,6 @@ export default function Equipment({ equipment }: Props) {
     const [equipmentTag, setEquipmentTag] = useState<string>("EQUIPMENT");
     const t = useTranslations("addEquipmentForm");
     const [qr_id, setQr_id] = useState<string>("");
-    const [isOpen1, setIsOpen1] = useState(false);
-    const [isOpen2, setIsOpen2] = useState(false);
-    const [isOpen3, setIsOpen3] = useState(false);
-    const [isOpen4, setIsOpen4] = useState(false);
 
 // Handle form changes mainly the search feature for getting the equipment by name and setting the target value to that equipment
     const handleChange = (
@@ -145,10 +142,7 @@ export default function Equipment({ equipment }: Props) {
         <>
 
         <Contents variant={"border"} size={"null"} >
-        <Buttons variant={"icon"} size={"default"}  onClick={() => setIsOpen1(true)} >
-                <Titles size={"h1"}>Create New Equipment</Titles>
-                </Buttons>
-        <Modals handleClose={() => setIsOpen1(false)} isOpen={isOpen1} type={"expand"}>
+        <Expands title="Create New Equipment" divID={"1"} >
                 <Forms action={createEquipment} onSubmit={handleCreateSubmit}>
                     <Labels variant="default" type="title">Equipment Code *</Labels>
                     <Inputs variant="default" type="default" name="qr_id" state="default" />
@@ -208,13 +202,10 @@ export default function Equipment({ equipment }: Props) {
                         {t("Submit")}
                     </Buttons>
                 </Forms>
-                </Modals>
+                </Expands>
             </Contents>
             <Contents variant={"border"} size={"null"} >
-            <Buttons variant={"icon"} size={"default"}  onClick={() => setIsOpen2(true)} >
-            <Titles size={"h1"}>Edit Existing Equipment</Titles>
-            </Buttons>
-        <Modals handleClose={() => setIsOpen2(false)} isOpen={isOpen2} type={"expand"}>
+            <Expands title="Edit Existing Equipment" divID={"2"} >
                 <Contents variant={"searchBar"} size="null">
                 <SearchBar
                     searchTerm={searchTerm}
@@ -341,14 +332,11 @@ export default function Equipment({ equipment }: Props) {
                         </Buttons>
                     </Forms>
                 )} 
-                </Modals>
+                </Expands>
             </Contents>
         {showBanner && <Banners>{banner}</Banners>}
         <Contents variant={"border"} size={"null"} >
-        <Buttons variant={"icon"} size={"default"}  onClick={() => setIsOpen3(true)} >
-            <Titles size={"h1"}>View Equipment by Tags</Titles>
-            </Buttons>
-            <Modals handleClose={() => setIsOpen3(false)} isOpen={isOpen3} type={"expand"}> 
+        <Expands title="Temporary Equipment" divID={"3"} >
             {equipment.filter((item) => item.qr_id.slice(0, 4) === "EQ-T") .length > 0 ? (
                     <>
                     <Texts variant="default" className="bg-app-orange">
@@ -388,13 +376,10 @@ export default function Equipment({ equipment }: Props) {
                     </Forms>
             </>
                 ) : <Texts variant="default">No Equipment with Temporary ID</Texts>}
-            </Modals>
+            </Expands>
         </Contents>
             <Contents variant={"border"} size={"null"} >
-            <Buttons variant={"icon"} size={"default"}  onClick={() => setIsOpen4(true)} >
-                <Titles variant="default" size="h1"> Delete Equipment</Titles>
-                </Buttons>
-                <Modals handleClose={() => setIsOpen4(false)} isOpen={isOpen4} type={"expand"}>
+                <Expands title="Delete Equipment" divID={"4"} >
                 {showBanner && <Banners>{banner}</Banners>}
                 <Contents variant={"searchBar"} size="null">
                 <SearchBar
@@ -420,7 +405,7 @@ export default function Equipment({ equipment }: Props) {
                 </Buttons>
                 </Forms>
                 }
-                </Modals>
+                </Expands>
             </Contents>
             </>
     ) 

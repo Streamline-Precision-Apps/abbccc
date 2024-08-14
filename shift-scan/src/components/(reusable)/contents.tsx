@@ -16,6 +16,7 @@ const ContentVariants = cva(
         searchBar: "flex justify-center",
         border: "bg-white border-2 border-black rounded-2xl ",
         assest: "flex flex-row",
+        hidden: "hidden flex-col",
       },
       size: {
         default: "h-full max-w-lg mx-auto pt-10",

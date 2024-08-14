@@ -3,6 +3,7 @@
 import { createJobsite, deleteJobsite, editGeneratedJobsite, fetchByNameJobsite, updateJobsite } from "@/actions/adminActions";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
+import { Expands } from "@/components/(reusable)/expands";
 import { Forms } from "@/components/(reusable)/forms";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
@@ -46,7 +47,7 @@ export default function Jobsite( { jobsites }: Props ) {
     const [Banner, setBanner] = useState<string>("");
     const [showBanner, setShowBanner] = useState<boolean>(false);
     const [isOpen1, setIsOpen1] = useState(false);
-    const [isOpen2, setIsOpen2] = useState(false);
+    
     const [isOpen3, setIsOpen3] = useState(false);
     const [isOpen4, setIsOpen4] = useState(false);
     const [isOpen5, setIsOpen5] = useState(false);
@@ -113,10 +114,7 @@ export default function Jobsite( { jobsites }: Props ) {
         <> 
          {/* This section is used to display all active jobsite */}
         <Contents variant={"border"} size={"null"} >
-        <Buttons variant={"icon"} size={"default"}  onClick={() => setIsOpen1(true)} >
-                <Titles size={"h1"}>Active Job Sites List </Titles>
-                </Buttons>
-        <Modals handleClose={() => setIsOpen1(false)} isOpen={isOpen1} type={"expand"}>
+        <Expands title="Active Jobsites" divID={"1"}>
                 { showBanner && (
                     <Contents size={"null"} variant={"header"}>
                         <Texts>{Banner}</Texts>
@@ -156,14 +154,11 @@ export default function Jobsite( { jobsites }: Props ) {
                         </tbody>
                     </table>
                 </Contents>
-            </Modals>
+            </Expands>
             </Contents>
         {/* This section is used to create a new jobsite */}
         <Contents variant={"border"} size={"null"} >
-        <Buttons variant={"icon"} size={"default"}  onClick={() => setIsOpen2(true)} >
-                <Titles size={"h1"}>Create New Jobsite</Titles>
-                </Buttons>
-        <Modals handleClose={() => setIsOpen2(false)} isOpen={isOpen2} type={"expand"}>
+        <Expands title= "Create New Jobsite" divID={"2"} >
                 <Forms action={createJobsite}>
 
                 <Labels variant="default" type="">{t("JobsiteName")} *</Labels>
@@ -194,7 +189,7 @@ export default function Jobsite( { jobsites }: Props ) {
                         {t("submit")}
                     </Buttons>
                 </Forms>
-                </Modals>
+            </Expands>
             </Contents>
             <Contents variant={"border"} size={"null"} >
             { showBanner && (
@@ -203,10 +198,7 @@ export default function Jobsite( { jobsites }: Props ) {
                 </Contents>     
                 )
             }    
-            <Buttons variant={"icon"} size={"default"}  onClick={() => setIsOpen3(true)} >
-                <Titles size={"h1"}>Edit Existing Jobsite</Titles>
-                </Buttons>
-        <Modals handleClose={() => setIsOpen3(false)} isOpen={isOpen3} type={"expand"}>
+           <Expands title="Edit Existing Jobsite" divID={"3"}>
                 <Contents variant={"searchBar"} size="null">
                 <SearchBar
                     searchTerm={searchTerm}
@@ -267,7 +259,7 @@ export default function Jobsite( { jobsites }: Props ) {
                     </Forms>
                 )} 
 
-                </Modals>
+                </Expands>
             </Contents>
             {/* Delete Existing Jobsites */}
             <Contents variant={"border"} size={"null"} >
@@ -277,10 +269,7 @@ export default function Jobsite( { jobsites }: Props ) {
                 </Contents>     
                 )
             }    
-            <Buttons variant={"icon"} size={"default"}  onClick={() => setIsOpen4(true)} >
-                <Titles size={"h1"}>Delete Existing Jobsite</Titles>
-                </Buttons>
-        <Modals handleClose={() => setIsOpen4(false)} isOpen={isOpen4} type={"expand"}>
+            <Expands title="Delete Existing Jobsite" divID={"4"}>
                 <Contents variant={"searchBar"} size="null">
                 <SearchBar
                     searchTerm={searchTerm}
@@ -311,7 +300,7 @@ export default function Jobsite( { jobsites }: Props ) {
                         </Buttons>
                     </Forms>
                 )} 
-                </Modals>
+                </Expands>
             </Contents>
             {/* Add New Jobsite */}
             <Contents variant={"border"} size={"null"} >
@@ -321,10 +310,7 @@ export default function Jobsite( { jobsites }: Props ) {
                 </Contents>     
                 )
             }    
-            <Buttons variant={"icon"} size={"default"}  onClick={() => setIsOpen5(true)} >
-                <Titles size={"h1"}>Edit Existing Jobsite</Titles>
-                </Buttons>
-        <Modals handleClose={() => setIsOpen5(false)} isOpen={isOpen5} type={"expand"}>
+        <Expands title="Edit Existing Jobsite" divID={"5"}>
         {jobsites.filter((item) => item.jobsite_id.slice(0, 3) === "J-T") .length > 0 ? (
                 <>
                     <Texts variant="default" className="bg-app-orange">
@@ -367,8 +353,7 @@ export default function Jobsite( { jobsites }: Props ) {
                     </Forms>
                     </> ) : (<Texts variant="default">No Jobsites with Temporary ID</Texts>
                 )} 
-
-                </Modals>
+                </Expands>
             </Contents>
             </>
     ) 
