@@ -13,6 +13,7 @@ import { Content } from "next/font/google";
 import { Contents } from "@/components/(reusable)/contents";
 import { Banners } from "@/components/(reusable)/banners";
 import { Titles } from "@/components/(reusable)/titles";
+import { Modals } from "@/components/(reusable)/modals";
 
 type Equipment = {
     id: string;
@@ -37,7 +38,6 @@ type Props = {
 };
 
 export default function Equipment({ equipment }: Props) {
-    const [view, setview] = useState(1);
     const [equipmentList, setEquipmentList] = useState<Equipment[]>(equipment);
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [editForm, setEditForm] = useState<boolean>(true);
@@ -47,27 +47,19 @@ export default function Equipment({ equipment }: Props) {
     const [equipmentTag, setEquipmentTag] = useState<string>("EQUIPMENT");
     const t = useTranslations("addEquipmentForm");
     const [qr_id, setQr_id] = useState<string>("");
+    const [isOpen1, setIsOpen1] = useState(false);
+    const [isOpen2, setIsOpen2] = useState(false);
+    const [isOpen3, setIsOpen3] = useState(false);
+    const [isOpen4, setIsOpen4] = useState(false);
 
-    const handleQRSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const qr = e.target.value;
-        setQr_id(qr);
-    
-        if (qr === "") {
-            // If no QR prefix is selected, show all equipment
-            setEquipmentList(equipment);
-        } else {
-            // Filter the equipmentList based on the first 4 characters of qr_id
-            const filteredList = equipment.filter((item) => item.qr_id.slice(0, 4) === qr);
-            setEquipmentList(filteredList);
-        }
-    };
-
+// Handle form changes mainly the search feature for getting the equipment by name and setting the target value to that equipment
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
     ) => {
         setEquipmentTag(e.target.value);
     };
 
+    // ths handler enables us to search for the equipment by name. We then can select the item from the list and set it as the target value
     const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value.toLowerCase();
         setSearchTerm(value);
@@ -79,6 +71,7 @@ export default function Equipment({ equipment }: Props) {
         setEditForm(true);
     };
 
+    // this lets us do the server action and provides error handling if there is an error
     async function handleEditForm() {
         setEditForm(false);
         const response = await fetchByNameEquipment(searchTerm);
@@ -148,24 +141,14 @@ export default function Equipment({ equipment }: Props) {
 
 
 
-    return view === 1 ? (
+    return(
         <>
-        <Contents size={"null"} variant={"row"}> 
-            <Buttons variant={"orange"} size={"default"} onClick={() => setview(1)}>
-                <Texts>Create</Texts>
-            </Buttons>
-            <Buttons variant={"default"} size={"default"} onClick={() => setview(2)} >
-            <Texts>Edit Equipment Details</Texts>
-            </Buttons>
-            <Buttons variant={"default"} size={"default"} onClick={() => setview(3)} >
-            <Texts>Generated</Texts>
-            </Buttons>
-            <Buttons variant={"default"} size={"default"} onClick={() => setview(4)} >
-            <Texts>Delete Equipment</Texts>
-            </Buttons>
-        </Contents>
-            <Sections size={"dynamic"}>
+
+        <Contents variant={"border"} size={"null"} >
+        <Buttons variant={"icon"} size={"default"}  onClick={() => setIsOpen1(true)} >
                 <Titles size={"h1"}>Create New Equipment</Titles>
+                </Buttons>
+        <Modals handleClose={() => setIsOpen1(false)} isOpen={isOpen1} type={"expand"}>
                 <Forms action={createEquipment} onSubmit={handleCreateSubmit}>
                     <Labels variant="default" type="title">Equipment Code *</Labels>
                     <Inputs variant="default" type="default" name="qr_id" state="default" />
@@ -225,28 +208,13 @@ export default function Equipment({ equipment }: Props) {
                         {t("Submit")}
                     </Buttons>
                 </Forms>
-            </Sections>
-        </>
-    ) : view === 2 ? (
-        <>    
-        <Contents size={"null"} variant={"row"}> 
-            <Buttons variant={"default"} size={"default"} onClick={() => setview(1)}>
-                <Texts>Create</Texts>
-            </Buttons>
-            <Buttons variant={"orange"} size={"default"} onClick={() => setview(2)} >
-            <Texts>Edit Equipment Details</Texts>
-            </Buttons>
-            <Buttons variant={"default"} size={"default"} onClick={() => setview(3)} >
-            <Texts>Generated</Texts>
-            </Buttons>
-            <Buttons variant={"default"} size={"default"} onClick={() => setview(4)} >
-            <Texts>Delete Equipment</Texts>
-            </Buttons>
-        </Contents>
-
-                {showBanner && <Banners>{banner}</Banners>}
-            <Sections size={"dynamic"}>
+                </Modals>
+            </Contents>
+            <Contents variant={"border"} size={"null"} >
+            <Buttons variant={"icon"} size={"default"}  onClick={() => setIsOpen2(true)} >
             <Titles size={"h1"}>Edit Existing Equipment</Titles>
+            </Buttons>
+        <Modals handleClose={() => setIsOpen2(false)} isOpen={isOpen2} type={"expand"}>
                 <Contents variant={"searchBar"} size="null">
                 <SearchBar
                     searchTerm={searchTerm}
@@ -373,27 +341,14 @@ export default function Equipment({ equipment }: Props) {
                         </Buttons>
                     </Forms>
                 )} 
-            </Sections>
-            </> ) : 
-            view === 3 ?(
-            <>
-            <Contents size={"null"} variant={"row"}> 
-            <Buttons variant={"default"} size={"default"} onClick={() => setview(1)}>
-                <Texts>Create</Texts>
-            </Buttons>
-            <Buttons variant={"default"} size={"default"} onClick={() => setview(2)} >
-            <Texts>Edit Equipment Details</Texts>
-            </Buttons>
-            <Buttons variant={"orange"} size={"default"} onClick={() => setview(3)} >
-            <Texts>Generated</Texts>
-            </Buttons>
-            <Buttons variant={"default"} size={"default"} onClick={() => setview(4)} >
-            <Texts>Delete Equipment</Texts>
-            </Buttons>
-        </Contents>
+                </Modals>
+            </Contents>
         {showBanner && <Banners>{banner}</Banners>}
-            <Sections size={"dynamic"}>
+        <Contents variant={"border"} size={"null"} >
+        <Buttons variant={"icon"} size={"default"}  onClick={() => setIsOpen3(true)} >
             <Titles size={"h1"}>View Equipment by Tags</Titles>
+            </Buttons>
+            <Modals handleClose={() => setIsOpen3(false)} isOpen={isOpen3} type={"expand"}> 
             {equipment.filter((item) => item.qr_id.slice(0, 4) === "EQ-T") .length > 0 ? (
                     <>
                     <Texts variant="default" className="bg-app-orange">
@@ -433,26 +388,13 @@ export default function Equipment({ equipment }: Props) {
                     </Forms>
             </>
                 ) : <Texts variant="default">No Equipment with Temporary ID</Texts>}
-
-        </Sections>
-            </> ) :  view === 4 ? ( 
-                <>
-                <Contents size={"null"} variant={"row"}> 
-                <Buttons variant={"default"} size={"default"} onClick={() => setview(1)}>
-                    <Texts>Create</Texts>
-                </Buttons>
-                <Buttons variant={"default"} size={"default"} onClick={() => setview(2)} >
-                <Texts>Edit Equipment Details</Texts>
-                </Buttons>
-                <Buttons variant={"default"} size={"default"} onClick={() => setview(3)} >
-                <Texts>Generated</Texts>
-                </Buttons>
-                <Buttons variant={"orange"} size={"default"} onClick={() => setview(4)} >
-                <Texts>Delete Equipment</Texts>
-                </Buttons>
-                </Contents>
-                <Sections size={"dynamic"}>
+            </Modals>
+        </Contents>
+            <Contents variant={"border"} size={"null"} >
+            <Buttons variant={"icon"} size={"default"}  onClick={() => setIsOpen4(true)} >
                 <Titles variant="default" size="h1"> Delete Equipment</Titles>
+                </Buttons>
+                <Modals handleClose={() => setIsOpen4(false)} isOpen={isOpen4} type={"expand"}>
                 {showBanner && <Banners>{banner}</Banners>}
                 <Contents variant={"searchBar"} size="null">
                 <SearchBar
@@ -478,11 +420,8 @@ export default function Equipment({ equipment }: Props) {
                 </Buttons>
                 </Forms>
                 }
-                </Sections>
-
-
-                </>
-            ) :
-            
-            (null)
-        }
+                </Modals>
+            </Contents>
+            </>
+    ) 
+}

@@ -3,6 +3,8 @@ import { useTranslations } from "next-intl";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
+import { setAuthStep } from "@/app/api/auth";
+import { useRouter } from "next/navigation";
 
 interface AdminProps {
   additionalButtonsType: string | null;
@@ -16,6 +18,12 @@ export const Admin: React.FC<AdminProps> = ({
   handleShowAdditionalButtons,
 }) => {
   const t = useTranslations("admin");
+const Router = useRouter();
+
+  function switchToDashboard(): void {
+    setAuthStep("success");
+    Router.push("/dashboard");
+  }
 
   return (
     <>
@@ -167,6 +175,20 @@ export const Admin: React.FC<AdminProps> = ({
           >
             <Images
               titleImg="/clockOut.svg"
+              titleImgAlt="Clock Out Icon"
+              variant={"icon"}
+              size={"widgetSm"}
+            ></Images>
+            <Texts>{t("reports")}</Texts>
+          </Buttons>
+
+          <Buttons
+            variant={"orange"}
+            size={"widgetSm"}
+            onClick={() => switchToDashboard()}
+          >
+            <Images
+              titleImg="/home.svg"
               titleImgAlt="Clock Out Icon"
               variant={"icon"}
               size={"widgetSm"}
