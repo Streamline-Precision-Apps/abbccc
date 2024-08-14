@@ -17,12 +17,39 @@ type Equipment = {
     name: string;
     equipment_tag: string;
 }
-type Props = {
-    equipment: Equipment[];
+
+type Jobsite = {
+    id: number;
+    jobsite_id: string;
+    jobsite_name: string;
+    street_number?: string | null;
+    street_name?: string;
+    city?: string;
+    state?: string | null;
+    country?: string;
+    zip?: string;
+    phone?: string;
+    email?: string;
+    created_at?: Date;
+    jobsite_description?: string | null;
+    jobsite_active: boolean;
 }
 
-export default function Content( { equipment }: Props ) {
-    const [activeTab, setActiveTab] = useState(1);
+type costCodes = {
+    id: number;
+    cost_code: string;
+    cost_code_description: string;
+}
+
+
+type Props = {
+    equipment: Equipment[];
+    jobsites: Jobsite[];
+    costCodes: costCodes[];
+}
+
+export default function Content( { equipment , jobsites, costCodes }: Props ) {
+    const [activeTab, setActiveTab] = useState(2); // change to one programming
     
     return (
         <Bases>
@@ -37,8 +64,7 @@ export default function Content( { equipment }: Props ) {
             type="noIcon"
             />
         </Sections>
-        <Sections size={"dynamic"}>
-        <Contents size={"assets"} variant={"row"}>
+        <Contents size={"assets"} variant={"assest"}>
         <Tab 
         onClick={() => setActiveTab(1)}
         tabLabel= "Equipment" 
@@ -56,9 +82,10 @@ export default function Content( { equipment }: Props ) {
         isTabActive= {activeTab === 3}
         />  
             </Contents>
+        <Sections size={"dynamic"}>
             {activeTab === 1 && <Equipment equipment={equipment}/> }
-            {activeTab === 2 && <Jobsite/>}
-            {activeTab === 3 && <Costcodes/>}
+            {activeTab === 2 && <Jobsite jobsites={jobsites}/>}
+            {activeTab === 3 && <Costcodes costCodes={costCodes}/>} {/* costCodes={costCodes}/*/}
             </Sections>
         </Bases>
     )

@@ -265,5 +265,20 @@
         "Phone": "Phone",
         "Submit": "Submit",
         "Select": "Select One"
+    },
+    "admin-assets-jobsite": {
+        "submit": "Submit",
+        "JobsiteName": "Jobsite Name",
+        "StreetNumber": "Street Number",
+        "StreetName": "Street Name",
+        "City": "City",
+        "State": "State",
+        "Country": "Country",
+        "Description": "Jobsite Description",
+        "Comments": "Additional Comments",
+        "IsActive": "Is Site Active?"
+    },
+    "admin-assets-costcode": {
+        "submit": "Submit"
     }
 }

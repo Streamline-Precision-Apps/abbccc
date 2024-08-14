@@ -14,6 +14,8 @@ const ContentVariants = cva(
         header: "w-full h-24 bg-orange-300",
         test: "",
         searchBar: "flex justify-center",
+        border: "bg-white border-2 border-black rounded-2xl ",
+        assest: "flex flex-row",
       },
       size: {
         default: "h-full max-w-lg mx-auto pt-10",
@@ -21,7 +23,7 @@ const ContentVariants = cva(
         listImage: "w-52 h-40 rounded-r-full border-black border-4 overflow-hidden -ml-3 justify-self-start",
         listTitle: "w-full justify-center",
         profilePic: "w-36 h-36 rounded-full border-black border-4 overflow-hidden justify-self-center",
-        assets:"w-50 h-fit space-x-10 bg-gray-200 rounded-3xl",
+        assets:"w-full h-fit justify-space-between mx-auto rounded-3xl",
         null: "",
         test: ""
       },

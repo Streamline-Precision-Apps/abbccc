@@ -289,7 +289,7 @@ model CostCode {
   id                    Int       @id @default(autoincrement())
   cost_code             String
   cost_code_description String
-  cost_code_type        String // set to an enum later
+  cost_code_type        String // set to an enum later,type is how we can filter the costcodes
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @default(now()) @updatedAt
   Jobsite               Jobsite[]

@@ -10,9 +10,11 @@ const SectionVariants = cva(
         default: "bg-white rounded-2xl",
         tab: "bg-white rounded-2xl min-h-[200px] rounded-t-none p-6",
         eq: "bg-white border-2 border-black rounded-2xl ",
+
       },
       size: {
         default: "h-screen min-w-screen",
+        half: "h-1/2 min-w-screen overflow-y-auto no-scrollbar",
         dynamic: "h-full min-w-screen  overflow-y-auto no-scrollbar",
         titleBox: "pb-0",
       }
