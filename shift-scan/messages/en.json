@@ -122,6 +122,7 @@
         "Button": "Take Picture"
     },
     "EquipmentContent" : {
+        "Title": "Current Equipment",
         "Banner": "Form Submitted",
         "Refueled": " Did you refuel?",
         "Gallons": "Total gallons refueled",
@@ -133,6 +134,7 @@
         "Submit": "Submit",
         "SubmitAll": "Submit All",
         "NoCurrent": "No Current Equipment"
+
     },
     
     "addEquipmentForm": {
