@@ -9,7 +9,7 @@ const mako = Mako({
 })
 
 const TextVariants = cva(
-  "p-1 m-2 text-center ", //this applies to all variants
+  "p-1 m-2 mt-0 text-center ", //this applies to all variants
   {
     variants: {
       variant: {
