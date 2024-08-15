@@ -3,7 +3,7 @@ import { HTMLAttributes, FC } from "react";
 import { cn } from "@/components/(reusable)/utils";
 
 const ContentVariants = cva(
-  "bg-none", //this applies to all variants
+  "", //this applies to all variants
   {
     variants: {
       variant: {
@@ -12,6 +12,10 @@ const ContentVariants = cva(
         rowCenter: "flex flex-row justify-center",
         image: "bg-white",
         header: "w-full h-24 bg-orange-300",
+        name: "w-full h-24 mt-[150px]",
+        widgetSection: "w-full -ml-1 bg-pink-300",
+        widgetButton: "bg-white w-full h-full m-1 flex flex-col justify-center items-center",
+        hidden: "hidden flex-col",
         test: ""
       },
       size: {
