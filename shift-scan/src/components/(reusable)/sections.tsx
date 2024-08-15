@@ -14,6 +14,7 @@ const SectionVariants = cva(
       size: {
         default: "h-screen min-w-screen",
         dynamic: "h-full min-w-screen  overflow-y-auto no-scrollbar",
+        homepage: "h-full",
         titleBox: "pb-0",
       }
     },

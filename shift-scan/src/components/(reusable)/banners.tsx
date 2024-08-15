@@ -7,7 +7,7 @@ const BannerVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-blue-300",
+        default: "bg-blue-300 shadow-[0px_8px_0px_grey]",
         green: "bg-green-500",
         red: "bg-red-500",
       }
