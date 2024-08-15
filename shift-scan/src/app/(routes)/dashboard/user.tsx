@@ -12,6 +12,7 @@ import { CustomSession } from "@/lib/types";
 import { setAuthStep } from "@/app/api/auth";
 import { Equipment, Logs } from "@/lib/types";
 import { updateTimeSheetBySwitch } from "@/actions/timeSheetActions";
+import { Contents } from "@/components/(reusable)/contents";
 
 interface UserProps {
   additionalButtonsType: string | null;
@@ -85,21 +86,19 @@ export const User: React.FC<UserProps> = ({
   return (
     <>
       {additionalButtonsType === "equipment" ? (
-        <>
+        <Contents variant={"test"} size={"test"}>
           <Buttons
             variant={"default"}
             size={"widgetSm"}
             onClick={handleShowManagerButtons}
           >
-            <div>
-              <Images
+            <Images
                 titleImg="/home.svg"
                 titleImgAlt="Home Icon"
                 variant={"icon"}
                 size={"default"}
-              ></Images>
-              <Texts>{t("GoHome")}</Texts>
-            </div>
+            />
+            <Texts>{t("GoHome")}</Texts>
           </Buttons>
           <Buttons
             variant={"green"}
@@ -144,7 +143,7 @@ export const User: React.FC<UserProps> = ({
             />
             <Texts>{t("Current")}</Texts>
           </Buttons>
-        </>
+        </Contents>
       ) : additionalButtonsType === "clockOut" ? (
         <>
           <Buttons
