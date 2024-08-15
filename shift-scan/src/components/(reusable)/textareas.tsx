@@ -22,10 +22,11 @@ defaultVariants: {
 interface TextAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElement>, VariantProps<typeof TextAreaVariants> {
 state?: string
 data?: any
+placeholder?: string
 onChange?: ChangeEventHandler<HTMLTextAreaElement>
 }
 
-const TextAreas: FC<TextAreaProps> = ({className, variant, state, data, ...props}) => {
+const TextAreas: FC<TextAreaProps> = ({className, variant, state, data, placeholder, ...props}) => {
 if (state === "disabled") {
     return (
         <textarea className={cn(TextAreaVariants({variant, className}))} {...props} disabled value={data} />
@@ -34,7 +35,7 @@ if (state === "disabled") {
 else {
     return (
         <>
-            <textarea className={cn(TextAreaVariants({variant, className}))} {...props} placeholder="" />
+            <textarea className={cn(TextAreaVariants({variant, className}))} {...props} placeholder={placeholder} />
         </>
     )
 }
