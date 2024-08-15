@@ -2,6 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { createEquipment } from "@/actions/equipmentActions";
 import { useTranslations } from "next-intl";
+import { Forms } from "@/components/(reusable)/forms";
+import { Inputs } from "@/components/(reusable)/inputs";
+import { TextAreas } from "@/components/(reusable)/textareas";
+import { Labels } from "@/components/(reusable)/labels";
 
 interface AddEquipmentFormProps {
   base64String: string | null;
@@ -37,143 +41,143 @@ const AddEquipmentForm: React.FC<AddEquipmentFormProps> = ({ base64String }) => 
   }, [base64String]);
 
   return (
-    <form action={createEquipment} className="space-y-4">
-      <div>
-      <input id="qr_id" name="qr_id" type="text"  value={randomQrCode()} />
-      </div>
-      <div>
-        <label htmlFor="equipment_tag" className="block">
+    <Forms action={createEquipment}>
+      
+      <Inputs id="qr_id" name="qr_id" type="hidden"  value={randomQrCode()} />
+      
+      
+        <Labels variant="default" size="default">
           {t("Tag")}
-        </label>
+        </Labels>
         <select
           id="equipment_tag"
           name="equipment_tag"
           onChange={handleChange}
-          className="block w-full border border-black rounded p-2"
+        
         >
           <option value="">{t("Select")}</option>
           <option value="TRUCK">{t("Truck")}</option>
           <option value="TRAILER">{t("Trailer")}</option>
           <option value="EQUIPMENT">{t("Equipment")}</option>
         </select>
-      </div>
-      <div>
-        <label htmlFor="name" className="block">
+      
+      
+        <Labels variant="default" size="default">
           {t("Name")}
-        </label>
-        <input
+        </Labels>
+        <Inputs
           id="name"
           name="name"
           type="text"
-          className="block w-full border border-black rounded p-2"
+        
         />
-      </div>
-      <div>
-        <label htmlFor="description" className="block">
+      
+      
+        <Labels variant="default" size="default">
           {t("Description")}
-        </label>
-        <textarea
+        </Labels>
+        <TextAreas
           id="description"
           name="description"
-          className="block w-full border border-black rounded p-2"
+        
         />
-      </div>
-      <div>
-        <label htmlFor="equipment_status" className="block">
+      
+      
+        <Labels variant="default" size="default">
           {t("Status")}
-        </label>
+        </Labels>
         <select
           id="equipment_status"
           name="equipment_status"
-          className="block w-full border border-black rounded p-2"
+        
         >
           <option value="">{t("Select")}</option>
           <option value="OPERATIONAL">{t("Operational")}</option>
           <option value="NEEDS_REPAIR">{t("NeedsRepair")}</option>
         </select>
-      </div>
+      
       {equipmentTag === "TRUCK" || equipmentTag === "TRAILER" ? (
         <>
-          <div>
-            <label htmlFor="make" className="block">
+          
+            <Labels variant="default" size="default">
               {t("Make")}
-            </label>
-            <input
+            </Labels>
+            <Inputs
               id="make"
               name="make"
               type="text"
-              className="block w-full border border-black rounded p-2"
+            
             />
-          </div>
-          <div>
-            <label htmlFor="model" className="block">
+          
+          
+            <Labels variant="default" size="default">
               {t("Model")}
-            </label>
-            <input
+            </Labels>
+            <Inputs
               id="model"
               name="model"
               type="text"
-              className="block w-full border border-black rounded p-2"
+            
             />
-          </div>
-          <div>
-            <label htmlFor="year" className="block">
+          
+          
+            <Labels variant="default" size="default">
               {t("Year")}
-            </label>
-            <input
+            </Labels>
+            <Inputs
               id="year"
               name="year"
               type="text"
-              className="block w-full border border-black rounded p-2"
+            
             />
-          </div>
-          <div>
-            <label htmlFor="license_plate" className="block">
+          
+          
+            <Labels variant="default" size="default">
               {t("LicensePlate")}
-            </label>
-            <input
+            </Labels>
+            <Inputs
               id="license_plate"
               name="license_plate"
               type="text"
-              className="block w-full border border-black rounded p-2"
+            
             />
-          </div>
-          <div>
-            <label htmlFor="registration_expiration" className="block">
+          
+          
+            <Labels variant="default" size="default">
               {t("RegistrationExpiration")}
-            </label>
-            <input
+            </Labels>
+            <Inputs
               id="registration_expiration"
               name="registration_expiration"
               type="date"
-              className="block w-full border border-black rounded p-2"
+            
             />
-          </div>
-          <div>
-            <label htmlFor="mileage" className="block">
+          
+          
+            <Labels variant="default" size="default">
               {t("Mileage")}
-            </label>
-            <input
+            </Labels>
+            <Inputs
               id="mileage"
               name="mileage"
               type="number"
-              className="block w-full border border-black rounded p-2"
+            
             />
-          </div>
+          
         </>
       ) : null}
-      <div>
-        <input
+      
+        <Inputs
           id="image"
           name="image"
           type="hidden"
           value={base64String || ""}
         />
-      </div>
+      
       <Buttons variant="green" size="default" type="submit">
         {t("Submit")}
       </Buttons>
-    </form>
+    </Forms>
   );
 };
 

@@ -25,6 +25,7 @@ const ContentVariants = cva(
         listTitle: "w-full justify-center",
         profilePic: "w-36 h-36 rounded-full border-black border-4 overflow-hidden justify-self-center",
         assets:"w-full h-fit justify-space-between mx-auto rounded-3xl",
+        generator:"w-full h-24 justify-space-between mx-auto rounded-3xl gap-4",
         null: "",
         test: ""
       },
