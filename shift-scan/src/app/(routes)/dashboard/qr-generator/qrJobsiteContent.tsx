@@ -7,6 +7,10 @@ import { Modals } from "@/components/(reusable)/modals";
 import QRCode from "qrcode";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { Titles } from "@/components/(reusable)/titles";
+import { Contents } from "@/components/(reusable)/contents";
+import { Texts } from "@/components/(reusable)/texts";
+import { Images } from "@/components/(reusable)/images";
 interface Option {
   code: string;
   label: string;
@@ -53,37 +57,39 @@ const qrJobsiteContent: React.FC = () => {
   };
 
   return (
-    <div className="text-center font-sans">
-      <h2 className="text-xl font-bold mb-4">{t("Jobsite")}</h2>
+    <>
+      <Titles variant={"default"} size={"default"}>{t("Jobsite")}</Titles>
       <CustomSelect
         options={filteredOptions}
         placeholder={t("Placeholder")}
         onOptionSelect={handleOptionSelect}
         selectedOption={selectedJobSite}
       />
-      <div className="flex justify-center gap-4">
+      <Contents variant={"rowCenter"} size={"generator"}>
         <Buttons variant={"orange"} onClick={handleGenerate} size="default">
-          {t("Generate")}
+          <Titles variant={"default"} size={"h1"}>{t("Generate")}</Titles>
         </Buttons>
         <Buttons variant={"green"} onClick={handleNew} size="default">
-          {t("New")}
+        <Titles variant={"default"} size={"h1"}>{t("New")}</Titles>
         </Buttons>
-      </div>
+      </Contents>
       <Modals
         isOpen={isModalOpen}
         handleClose={() => setIsModalOpen(false)}
         size="default"
       >
         {selectedJobSite && (
-          <div className="text-center">
-            <h2 className="text-xl font-bold mb-4">
+          <>
+            <Texts variant={"default"}>
               {selectedJobSite.label} {t("QR Code")}
-            </h2>
-            <img src={qrCodeUrl} alt="QR Code" />
-          </div>
+            </Texts>
+            <Contents variant={"rowCenter"} size={"default"}>
+            <Images titleImg="" titleImgAlt="QR Code" src={qrCodeUrl}/>
+            </Contents>
+          </>
         )}
       </Modals>
-    </div>
+    </>
   );
 };
 

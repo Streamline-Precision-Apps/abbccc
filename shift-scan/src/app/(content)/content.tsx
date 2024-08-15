@@ -181,7 +181,7 @@ export default function Content({
           <Sections size={"default"}>
           <Contents size={"default"}>
             <Headers variant={"relative"} size={"default"}></Headers>
-            <Banners variant={"default"} size={"default"}>
+            <Banners variant={"default"} >
               <Titles variant={"default"} size={"h1"}>
                 {t("Banner")}
               </Titles>
@@ -215,7 +215,7 @@ export default function Content({
           <Sections size={"default"}>
           <Contents size={"default"}>
             <Headers variant={"relative"} size={"default"}></Headers>
-            <Banners variant={"default"} size={"default"}>
+            <Banners variant={"default"} >
               <Titles variant={"default"} size={"h1"}>
                 {t("Banner")}
               </Titles>

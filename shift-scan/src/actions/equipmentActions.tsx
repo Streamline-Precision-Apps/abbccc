@@ -26,6 +26,12 @@ enum EquipmentStatus {
   NEEDS_REPAIR = "NEEDS_REPAIR",
 }
 
+enum Status {
+  PENDING = "PENDING",
+  APPROVED = "APPROVED",
+  DENIED = "DENIED",
+}
+
 export async function fetchEq(employeeId: string, date: string) {
   const startOfDay = new Date(date);
   startOfDay.setUTCHours(0, 0, 0, 0);
@@ -105,6 +111,19 @@ export async function fetchEquipment(id: string) {
   }
 }
 
+export async function fetchByNameEquipment(name: string) {
+  try {
+    const equipment = await prisma.equipment.findFirst({
+      where: name ? { name } : undefined,
+    });
+    console.log(equipment);
+    return equipment;
+  } catch (error) {
+    console.error("Error fetching equipment:", error);
+    throw error;
+  }
+}
+
 // Create equipment
 export async function createEquipment(formData: FormData) {
   try {
@@ -160,6 +179,20 @@ export async function deleteEquipment(id: string) {
       where: { id },
     });
     console.log("Equipment deleted successfully.");
+  } catch (error) {
+    console.error("Error deleting equipment:", error);
+    throw error;
+  }
+}
+
+export async function deleteEquipmentbyId(formData: FormData) {
+  try {
+    const deletedEquipment = await prisma.equipment.delete({
+      where: { id : formData.get("id") as string },
+    });
+    
+  revalidatePath("/admin/assets");
+  return true;
   } catch (error) {
     console.error("Error deleting equipment:", error);
     throw error;
@@ -245,6 +278,61 @@ export async function updateEmployeeEquipment(formData: FormData) {
         completed: true,
       },
     });
+  } catch (error: any) {
+    console.error("Error updating employee equipment log:", error);
+  }
+}
+
+export async function updateEquipment(formData: FormData) {
+  try {
+    console.log(formData);
+    const id = formData.get("id") as string;
+    const converted = new Date(formData.get("registration_expiration") as string).toISOString();
+    const statusValue = formData.get("status") as string;
+    const equipmentTagValue = formData.get("equipment_tag") as string;
+    const equipmentStatusValue = formData.get("equipment_status") as string;
+    const equipmentTag = toEnumValue(Tags, equipmentTagValue);
+    const equipmentStatus = toEnumValue(EquipmentStatus, equipmentStatusValue);
+    const status = toEnumValue( Status, statusValue);
+
+    const log = await prisma.equipment.update({
+      where: { id: id },
+      data: {
+        qr_id: formData.get("qr_id") as string,        
+        name: formData.get("name") as string,   
+        description: formData.get("description") as string,       
+        status: status || undefined,      
+        equipment_tag:  equipmentTag || undefined,        
+        last_inspection: formData.get("last_inspection") as string,      
+        last_repair: formData.get("last_repair") as string,           
+        equipment_status: equipmentStatus || undefined,       
+        make: formData.get("make") as string,                    
+        model: formData.get("model") as string,                   
+        year: formData.get("year") as string,                   
+        license_plate: formData.get("license_plate") as string,           
+        registration_expiration: converted || null, 
+      },
+    });
+    revalidatePath("/admin/assets");
+    console.log(log);
+    return log;
+  } catch (error: any) {
+    console.error("Error updating employee equipment log:", error);
+  }
+}
+export async function updateEquipmentID(formData: FormData) {
+  try {
+    console.log(formData);
+    const id = formData.get("id") as string;
+
+    const log = await prisma.equipment.update({
+      where: { id: id },
+      data: {
+        qr_id: formData.get("qr_id") as string,
+        name: formData.get("name") as string,        
+      },
+    });
+    revalidatePath("/admin/assets");
   } catch (error: any) {
     console.error("Error updating employee equipment log:", error);
   }

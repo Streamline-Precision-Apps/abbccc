@@ -19,10 +19,10 @@ export default function QrGeneratorDashboard() {
           size={"default"}
         />
       </Sections>
-      <Sections size={"dynamic"}>
+      <Sections size={"half"}>
         <QrJobsiteContent />
       </Sections>
-      <Sections size={"dynamic"}>
+      <Sections size={"half"}>
         <QrEquipmentContent />
       </Sections>
     </Bases>
