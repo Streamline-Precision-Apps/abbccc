@@ -215,14 +215,14 @@ export default function Content({
           <Sections size={"default"}>
           <Contents size={"default"}>
             <Headers variant={"relative"} size={"default"}></Headers>
-            <Banners variant={"default"} >
+            {/* <Banners variant={"default"} >
               <Titles variant={"default"} size={"h1"}>
                 {t("Banner")}
               </Titles>
               <Texts variant={"default"} size={"p1"}>
                 {t("Date", { date: capitalize(date) })}
               </Texts>
-            </Banners>
+            </Banners> */}
             <Texts variant={"name"} size={"p1"}>
               {t("Name", {
                 firstName: capitalize(user.firstName),

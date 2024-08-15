@@ -15,7 +15,7 @@
     "fetch": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/export-db.ts"
   },
   "dependencies": {
-    "@auth/prisma-adapter": "^2.4.1",
+    "@auth/prisma-adapter": "^2.4.2",
     "@next/font": "^14.2.5",
     "@nextui-org/input": "^2.2.2",
     "@nextui-org/react": "^2.4.2",
@@ -26,7 +26,7 @@
     "clsx": "^2.1.1",
     "jsonwebtoken": "^9.0.2",
     "next": "^14.2.4",
-    "next-auth": "^4.24.7",
+    "next-auth": "^5.0.0-beta.20",
     "next-base64": "^1.1.0",
     "next-intl": "^3.14.1",
     "qr-scanner": "^1.4.2",
