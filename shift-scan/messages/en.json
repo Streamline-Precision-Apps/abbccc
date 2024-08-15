@@ -1,10 +1,10 @@
 {   
     "PortalLogin": {
         "Title": "Portal Login",
-        "lN1": "Employee ID",
-        "lN2": "Password",
+        "Username": "Employee ID",
+        "Password": "Password",
         "btn-signIn": "Sign in",
-        "lN3": "Habla Espanol?",
+        "Spanish": "Habla Español?",
         "btn-forgot": "Forgot Password?",
         "Error": "Invalid username or password",
         "lN4": "Copyright © 2024. All rights reserved."
