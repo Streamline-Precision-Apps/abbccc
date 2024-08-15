@@ -7,28 +7,28 @@ import React, { useState }from 'react';
 import { Texts } from "./texts";
 import { Titles } from "./titles";
 import { Images } from "./images";
-
+ 
 const ExpandVariants = cva(
-" rounded-2xl", //this applies to all variants
-{
-variants: {
-    variant: {
-    default: "bg-blue-300",
-    green: "bg-green-500",
-    red: "bg-red-500",
+  " rounded-2xl", //this applies to all variants
+  {
+    variants: {
+      variant: {
+        default: "bg-blue-300",
+        green: "bg-green-500",
+        red: "bg-red-500",
+      },
+      size: {
+        default: "",
+        sm: "p-2 w-30 h-30",
+        med: "p-10 w-40 h-40",
+        lg: "p-10 w-50 h-50"
+      }
     },
-    size: {
-    default: "",
-    sm: "p-2 w-30 h-30",
-    med: "p-10 w-40 h-40",
-    lg: "p-10 w-50 h-50"
-    }
-},
-defaultVariants: {
-    variant: "default",
-    size: "default",
-},
-}
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
 )
 
 // this extends the capability of HTMLAttributes or the VariantProps that it can hold, specify your props here

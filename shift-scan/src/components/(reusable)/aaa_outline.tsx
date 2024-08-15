@@ -35,7 +35,7 @@ interface xxxxxProps extends HTMLAttributes<HTMLElement>, VariantProps<typeof xx
 
 const xxxxx: FC<xxxxxProps> = ({className, variant, size, ...props}) => {
     return (
-      <button className={cn(xxxxxVariants({variant, size, className}))} {...props}/>
+      <div className={cn(xxxxxVariants({variant, size, className}))} {...props}/>
     )
 }
 

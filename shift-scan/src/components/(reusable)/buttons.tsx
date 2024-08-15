@@ -6,7 +6,7 @@ import { ButtonHTMLAttributes, FC } from "react";
 import { cn } from "@/components/(reusable)/utils";
 
 const ButtonVariants = cva(
-  "flex items-center border-4 border-black rounded-xl shadow-[8px_8px_0px_grey]",
+  "flex items-center border-4 border-black rounded-2xl shadow-[8px_8px_0px_grey]",
   {
     variants: {
       variant: {
@@ -21,13 +21,13 @@ const ButtonVariants = cva(
         left: "left-5",
       },
       size: {
-        default: "flex-col mx-auto my-3 p-1 w-5/6 h-100 ",
+        default: "h-[50px] w-[50px] flex-row mx-auto my-3 p-1",
         listLg: "flex-row w-full h-28 mt-5 first:mt-0 overflow-hidden justify-stretch",
-        widgetSm: "w-full shadow-[8px_8px_0px_grey]",
+        widgetSm: "flex-col h-[150px] w-[180px] shadow-[8px_8px_0px_grey] first:ml-1 last:mr-1 m-2",
         widgetMed: "p-10 w-60 h-20 mx-auto",
         widgetLg: "p-20 w-50 h-50 mx-auto",
         backButton: "absolute top-2 left-2",
-        thin: " h-10 w-[520px] rounded-t-full z-10",
+        thin: " flex-col mx-auto my-3 p-1 w-5/6 h-100 ",
       }
     },
     defaultVariants: {
