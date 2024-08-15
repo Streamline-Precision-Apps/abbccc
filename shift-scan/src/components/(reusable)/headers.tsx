@@ -49,6 +49,9 @@ const Headers: FC<HeaderProps> = ({className, variant, size, ...props}) => {
         <Buttons href="/hamburger/profile" variant={"icon"} size={"default"}>
           <Images titleImg={"/profile.svg"} titleImgAlt={"profile"} variant={"icon"} size={"default"} />
         </Buttons>
+        <Buttons href="/admin" variant={"icon"} size={"default"}>
+          <Images titleImg={"/forms.svg"} titleImgAlt={"Admin Page"} variant={"icon"} size={"default"} />
+        </Buttons>
       </Modals>
 
     </div>

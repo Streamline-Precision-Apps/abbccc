@@ -23,6 +23,7 @@ const FormVariants = cva(
 
 interface FormProps extends FormHTMLAttributes<HTMLFormElement>, VariantProps<typeof FormVariants> {
   state?: string
+  ref?: React.RefObject<HTMLFormElement>
 }
 
 const Forms: FC<FormProps> = ({className, variant, size, state, ...props}) => {

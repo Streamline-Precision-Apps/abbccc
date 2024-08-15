@@ -1,99 +1,108 @@
-import React, { useState, useEffect } from "react";
-import { Buttons } from "@/components/(reusable)/buttons";
-import { createJobsite } from "@/actions/jobsiteActions";
-import { useTranslations } from "next-intl";
+  import React, { useState, useEffect } from "react";
+  import { Buttons } from "@/components/(reusable)/buttons";
+  import { createJobsite } from "@/actions/jobsiteActions";
+  import { useTranslations } from "next-intl";
+  import { Forms } from "@/components/(reusable)/forms";
+  import { Labels } from "@/components/(reusable)/labels";
+  import { Inputs } from "@/components/(reusable)/inputs";
+  import { TextAreas } from "@/components/(reusable)/textareas";
 
-const AddJobsiteForm: React.FC<{}> = () => {
+
+  const AddJobsiteForm: React.FC<{}> = () => {
   const t = useTranslations("addJobsiteForm");
 
   return (
-    <form action={createJobsite} className="space-y-4">
-      <div>
-        <label htmlFor="jobsite_name" className="block">
+    <Forms action={createJobsite} variant="default" size="default">
+
+        <Labels variant="default" size="default" >
           {t("Name")}
-        </label>
-        <input
+          </Labels> 
+        <Inputs
           id="jobsite_name"
           name="jobsite_name"
           type="text"
-          className="block w-full border border-black rounded p-2"
+        
         />
-      </div>
-      <div>
-        <label htmlFor="street_number" className="block">
+      
+      <Labels variant="default" size="default" >
           {t("StreetNumber")}
-        </label>
-        <textarea
+          </Labels> 
+        <Inputs
+          variant={"default"}
           id="street_number"
           name="street_number"
-          className="block w-full border border-black rounded p-2"
         />
-      </div>
-      <div>
-        <label htmlFor="street_name" className="block">
+      
+      
+      <Labels variant="default" size="default" >
           {t("StreetName")}
-        </label>
-        <textarea
+          </Labels> 
+          <Inputs
+          variant={"default"}
           id="street_name"
           name="street_name"
-          className="block w-full border border-black rounded p-2"
+        
         />
-      </div>
-      <div>
-        <label htmlFor="city" className="block">
+      
+      
+        <Labels variant="default" size="default" > 
           {t("City")}
-        </label>
-        <textarea
+        </Labels>
+          <Inputs
+          variant={"default"}
           id="city"
           name="city"
-          className="block w-full border border-black rounded p-2"
+        
         />
-      </div>
-      <div>
-        <label htmlFor="state" className="block">
+      
+      
+        <Labels variant="default" size="default" >
           {t("State")}
-        </label>
-        <textarea
+        </Labels>
+          <Inputs
+          variant={"default"}
           id="state"
           name="state"
-          className="block w-full border border-black rounded p-2"
+        
         />
-      </div>
-      <div>
-        <label htmlFor="country" className="block">
+      
+      
+        <Labels variant="default" size="default" >
           {t("Country")}
-        </label>
-        <textarea
+        </Labels>
+          <Inputs
+          variant={"default"}
           id="country"
           name="country"
-          className="block w-full border border-black rounded p-2"
+          
         />
-      </div>
-      <div>
-        <label htmlFor="jobsite_description" className="block">
+      
+      
+        <Labels variant="default" size="default" > 
           {t("Description")}
-        </label>
-        <textarea
+        </Labels>
+        <TextAreas
+          variant={"default"}
           id="jobsite_description"
           name="jobsite_description"
-          className="block w-full border border-black rounded p-2"
+          placeholder="Provide a description of the jobsite and the purpose for adding it."
         />
-      </div>
-      <div>
-        <label htmlFor="jobsite_comments" className="block">
+      
+      
+        <Labels variant="default" size="default" > 
           {t("Comments")}
-        </label>
-        <textarea
+        </Labels>
+          <TextAreas
           id="jobsite_comments"
           name="jobsite_comments"
-          className="block w-full border border-black rounded p-2"
+        
         />
-      </div>
+      
       <Buttons variant="green" size="default" type="submit">
         {t("Submit")}
       </Buttons>
-    </form>
+    </Forms>
   );
-};
+  };
 
-export default AddJobsiteForm;
+  export default AddJobsiteForm;

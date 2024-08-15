@@ -7,6 +7,7 @@ import React, { useEffect }from 'react';
 import { Buttons } from "./buttons";
 import { Images } from './images';
 import { Titles } from './titles';
+import { Contents } from "./contents";
 
 const ModalVariants = cva(
   "flex items-center justify-center rounded-full w-50 h-35", //this applies to all variants
@@ -92,6 +93,19 @@ const Modals: FC<ModalProps> = ({className, variant, size, type, isOpen, step, h
         </div>      
       </ReactPortal>
   )
+
+  else if (type === "expand") 
+    return (
+  <>
+        <Buttons onClick={handleClose} className="close-btn" variant={"red"} size={"default"}>
+                <Images titleImg="/x.svg" titleImgAlt="x" variant={"icon"} size={"default"}/>
+          </Buttons>
+        <Contents variant={"default"} size={"null"}>
+          {props.children}
+        </Contents>
+  </>
+
+)
     
       else return (
 
