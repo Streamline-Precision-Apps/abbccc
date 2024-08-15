@@ -10,6 +10,7 @@ import { useTranslations } from "next-intl";
 import { Titles } from "@/components/(reusable)/titles";
 import { Contents } from "@/components/(reusable)/contents";
 import { Texts } from "@/components/(reusable)/texts";
+import { Images } from "@/components/(reusable)/images";
 
 interface Option {
   code: string;
@@ -68,7 +69,7 @@ const qrEquipmentContent: React.FC = () => {
         onOptionSelect={handleOptionSelect}
         selectedOption={selectedEquipment}
       />
-      <Contents variant={"rowCenter"} size={"generator"}>
+      <Contents variant={"rowCenter"} size={"default"}>
         <Buttons variant={"orange"} onClick={handleGenerate} size="default">
         <Titles variant={"default"} size={"h1"}>{t("Generate")}</Titles>
         </Buttons>
@@ -87,7 +88,7 @@ const qrEquipmentContent: React.FC = () => {
                 {selectedEquipment.label} {t("QRCode")}
             </Texts>
             <Contents variant={"rowCenter"} size={"default"}>
-            <img src={qrCodeUrl} alt="QR Code" />
+            <Images titleImg={qrCodeUrl} titleImgAlt={"QR Code"} />
             </Contents>
           </>
         )}

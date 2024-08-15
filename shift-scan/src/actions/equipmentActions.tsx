@@ -32,6 +32,20 @@ enum Status {
   DENIED = "DENIED",
 }
 
+export async function equipmentTagExists(id: string) {
+  try {
+  const equipment = await prisma.equipment.findUnique({
+    where: {
+      id: id,
+    },
+  });
+  return equipment;
+} catch (error) {
+  console.error("Error checking if equipment exists:", error);
+  throw error;
+}
+}
+
 export async function fetchEq(employeeId: string, date: string) {
   const startOfDay = new Date(date);
   startOfDay.setUTCHours(0, 0, 0, 0);
