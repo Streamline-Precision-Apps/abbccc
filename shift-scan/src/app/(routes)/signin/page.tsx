@@ -1,5 +1,5 @@
+"use server";
 import { redirect } from "next/navigation";
-import { signIn, providerMap } from "@/auth";
 import { AuthError } from "next-auth";
 import { Forms } from "@/components/(reusable)/forms";
 import { Bases } from "@/components/(reusable)/bases";
@@ -7,8 +7,10 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Sections } from "@/components/(reusable)/sections";
 import { Images } from "@/components/(reusable)/images";
 import Password from "./password";
+import { cookies } from "next/headers";
 
-export default function SignInPage() {
+export default async function SignInPage() {
+  const locale = cookies().get("locale")?.value || "en";
   return (
     <Bases>
       <Contents variant="default">
@@ -17,9 +19,7 @@ export default function SignInPage() {
         </Contents>
         <Sections size="dynamic">
           <Contents variant="center" size="default">
-            {Object.values(providerMap).map((provider) => (
-             <Password key={provider.id} provider={provider}/>
-            ))}
+              <Password locale={locale} />
           </Contents>
         </Sections>
       </Contents>

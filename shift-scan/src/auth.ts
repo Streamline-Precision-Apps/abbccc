@@ -1,8 +1,7 @@
-    import NextAuth, { type DefaultSession } from "next-auth";
+    import NextAuth, { CredentialsSignin, type DefaultSession } from "next-auth";
     import Credentials from "next-auth/providers/credentials";
     import bcrypt from "bcryptjs";
     import { prisma } from "./lib/prisma";
-    import { cookies } from "next/headers";
     import type { Provider } from "next-auth/providers";
 
     declare module "next-auth" {
@@ -27,57 +26,47 @@
         mechanic_view: boolean;
     }
     }
+class InvalidLoginError extends CredentialsSignin {
+    constructor() {
+        super("Invalid credentials", { code: "credentials" });
+    }
+    }
 
-    const providers: Provider[] = [
-    Credentials({
-        credentials: {
+const providers: Provider[] = [
+Credentials({
+    credentials: {
         username: { label: "Username", type: "text" },
         password: { label: "Password", type: "password" },
         },
-        authorize: async (credentials) => {
-        // Your existing logic for authorization
-        try {
-            const username = credentials?.username as string;
-            const passwords = credentials?.password as string;
-
-            if (!username || !passwords) {
-            throw new Error("Username and password are required");
-            }
-
-            const user = await prisma.user.findUnique({
-            where: { username: username },
-            });
-
-            if (!user || !user.password) {
-            throw new Error("User not found");
-            }
-
-            const isValidPassword = await bcrypt.compare(passwords, user.password);
-            if (!isValidPassword) {
-            throw new Error("Invalid password");
-            }
-
-            cookies().set("user", user.id, { httpOnly: true, secure: true });
-            cookies().set("permission", user.permission, { httpOnly: true, secure: true });
-
-            const { password, ...userWithoutPassword } = user;
-            return userWithoutPassword;
-        } catch (error) {
-            console.error(error);
-            return null;
+        async authorize(credentials) {
+        console.log(credentials);
+        if (!credentials?.username || !credentials?.password) {
+            throw new InvalidLoginError();
         }
+        const username = credentials?.username as string;
+        const passwords = credentials?.password as string;
+
+        // Replace this with your own authentication logic
+        const user = await prisma.user.findUnique({
+            where: { username: username },
+        });
+
+        if (!user || !user.password) {  
+            throw new InvalidLoginError();
+        }   
+
+        const isValidPassword = await bcrypt.compare(
+            passwords,
+    user.password
+        );
+        if (!isValidPassword) {
+            throw new InvalidLoginError();
+        }
+        console.log(user);
+        return user;
         },
     }),
     ];
-
-    export const providerMap = providers.map((provider) => {
-    if (typeof provider === "function") {
-        const providerData = provider();
-        return { id: providerData.id, name: providerData.name };
-    } else {
-        return { id: provider.id, name: provider.name };
-    }
-    });
 
     export const { auth, handlers, signIn, signOut } = NextAuth({
     session: {
@@ -97,7 +86,7 @@
         }
         return token;
         },
-        session: async ({ session, token }) => {
+        session: async ({ session, user, token }) => {
         if (token) {
             session.user = {
             ...session.user,
