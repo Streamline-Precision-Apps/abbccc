@@ -6,7 +6,7 @@ import { Buttons } from './(reusable)/buttons';
     export default function TestingComponents() {
     return ( 
         <div className="flex flex-row space-x-10 justify-center">
-        <Buttons href="/login" variant={"icon"} size={null}>Login</Buttons>
+        <Buttons href="/signin" variant={"icon"} size={null}>Login</Buttons>
         <LogoutButton />
         </div>
     )
