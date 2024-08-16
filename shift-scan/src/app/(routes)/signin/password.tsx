@@ -1,5 +1,5 @@
 "use client";
-
+import { useFormStatus } from "react-dom";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Images } from "@/components/(reusable)/images";
@@ -12,28 +12,33 @@ import { Texts } from "@/components/(reusable)/texts";
 import { useTranslations } from "next-intl";
 import { signIn } from "next-auth/react";
 import { setLocale } from "@/actions/cookieActions";
+import { Forms } from "@/components/(reusable)/forms";
 
 type props = {
     locale: string
 }
+
 export default function SignInForm( {locale}: props) {
-const [viewSecret, setViewSecret] = useState(false);
-const [error, setError] = useState<string | null>(null);
-const router = useRouter();
+    const [viewSecret, setViewSecret] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [animation, setAnimation] = useState(false);
+    const router = useRouter();
 
-const t = useTranslations("PortalLogin");
-
-const viewPasscode = () => {
-setViewSecret(!viewSecret);
-};
-
-const LocaleHandler = async (event: ChangeEvent<HTMLInputElement> ) => {
-    await setLocale( event.target.checked );
-    router.refresh();
-
-}
-
+    
+    const t = useTranslations("PortalLogin");
+    
+    const viewPasscode = () => {
+        setViewSecret(!viewSecret);
+    };
+    
+    const LocaleHandler = async (event: ChangeEvent<HTMLInputElement> ) => {
+        await setLocale( event.target.checked );
+        router.refresh();
+        
+    }
+    
 const handleSubmit = async (event: React.FormEvent) => {
+setAnimation(true);
 event.preventDefault();
 const formData = new FormData(event.currentTarget as HTMLFormElement);
 
@@ -43,6 +48,7 @@ const result = await signIn("credentials", {
     password: formData.get("password") as string,
 });
 
+
 if (result?.error) {
     setError("Invalid credentials. Please try again.");
 } else {
@@ -51,7 +57,7 @@ if (result?.error) {
 };
 
 return (
-<form onSubmit={handleSubmit}>
+<Forms onSubmit={handleSubmit}>
     <Labels size="default" type="title">
     {t("Username")}
     </Labels>
@@ -73,18 +79,21 @@ return (
 
     {error && <Texts variant="default" size="default">{error}</Texts>}
 
-    <Buttons variant="default" size="default" type="submit">
-    {t("btn-signin")}
+    <Buttons variant="default" size={"widgetMed"} type="submit" >
+    {animation && <Images titleImg="/spinner.svg" titleImgAlt="login" variant="icon" size={"password"} className="animate-spin" />}
+    {!animation &&<Titles size={"titlebox"} variant={"default"}>{t("btn-signIn")}</Titles>}
     </Buttons>
 
     <Buttons variant="icon" size="forgotpassword" onClick={() => router.push("/login/forgotpassword")}>
-    {t("btn-forgot")}
+    <Texts size={"p4"} variant={"default"}>{t("btn-forgot")}</Texts>
     </Buttons>
 
     <Contents variant="rowCenter" size={null}>
     <Texts size="p1">{t("Spanish")}</Texts>
-    <Inputs variant="password" name="locale" type="checkbox" value="true" onChange={(e) => LocaleHandler(e)} />
+    <Inputs variant="password" name="locale" type="checkbox" 
+        value="true" onChange={(e) => LocaleHandler(e)} 
+    />
     </Contents>
-</form>
+</Forms>
 );
 } 
