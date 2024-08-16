@@ -14,7 +14,7 @@
         truck_view: boolean;
         tasco_view: boolean;
         mechanic_view: boolean;
-        };
+        } & DefaultSession["user"];
     }
     interface User {
         username: string;
@@ -63,7 +63,16 @@ Credentials({
             throw new InvalidLoginError();
         }
         console.log(user);
-        return user;
+        const userwithoutpassword = {
+            username: user.username,
+            permission: user.permission,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            truck_view: user.truck_view,
+            tasco_view: user.tasco_view,
+            mechanic_view: user.mechanic_view,
+        }
+        return userwithoutpassword;
         },
     }),
     ];
@@ -86,7 +95,7 @@ Credentials({
         }
         return token;
         },
-        session: async ({ session, user, token }) => {
+        session: async ({ session, token }) => {
         if (token) {
             session.user = {
             ...session.user,
