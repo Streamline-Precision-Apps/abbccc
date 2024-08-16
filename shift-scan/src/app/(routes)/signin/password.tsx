@@ -51,8 +51,10 @@ const result = await signIn("credentials", {
 
 if (result?.error) {
     setError("Invalid credentials. Please try again.");
+    setAnimation(false);
 } else {
     router.push("/");
+    setAnimation(false);
 }
 };
 
