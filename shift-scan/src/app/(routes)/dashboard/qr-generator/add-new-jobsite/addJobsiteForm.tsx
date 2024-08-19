@@ -1,6 +1,6 @@
   import React, { useState, useEffect } from "react";
   import { Buttons } from "@/components/(reusable)/buttons";
-  import { createJobsite } from "@/actions/jobsiteActions";
+  import { createJobsite, jobExists } from "@/actions/jobsiteActions";
   import { useTranslations } from "next-intl";
   import { Forms } from "@/components/(reusable)/forms";
   import { Labels } from "@/components/(reusable)/labels";
@@ -10,9 +10,41 @@
 
   const AddJobsiteForm: React.FC<{}> = () => {
   const t = useTranslations("addJobsiteForm");
+  const [qrCode, setQrCode] = useState("");
+
+  const randomQrCode = () => {
+    const characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let result = "J-TEMP-";
+    for (let i = 0; i < 6; i++) {
+      result += characters.charAt(
+        Math.floor(Math.random() * characters.length)
+      );
+    }
+      return result;
+  };
+// this checks if the qr code already exists in the database
+useEffect(() => {
+  async function generateQrCode() {
+    try {
+      const result = randomQrCode();
+      setQrCode(result);
+      const response = await jobExists(result);
+      if (response) {
+        setQrCode("");
+        return generateQrCode();
+      }
+    } catch (error) {
+      console.error("Failed to generate QR code:", error);
+    }
+  }
+  generateQrCode();
+}, []);
 
   return (
     <Forms action={createJobsite} variant="default" size="default">
+      <Labels variant="default" size="default" > Temporary Site ID </Labels>
+      <Inputs id="id" name="id" type="text" value={qrCode} disabled />
 
         <Labels variant="default" size="default" >
           {t("Name")}
@@ -104,5 +136,4 @@
     </Forms>
   );
   };
-
   export default AddJobsiteForm;

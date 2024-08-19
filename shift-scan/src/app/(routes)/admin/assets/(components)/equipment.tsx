@@ -15,6 +15,8 @@ import { Banners } from "@/components/(reusable)/banners";
 import { Titles } from "@/components/(reusable)/titles";
 import { Modals } from "@/components/(reusable)/modals";
 import { Expands } from "@/components/(reusable)/expands";
+import { Selects } from "@/components/(reusable)/selects";
+import { Options } from "@/components/(reusable)/options";
 
 type Equipment = {
     id: string;
@@ -129,12 +131,12 @@ export default function Equipment({ equipment }: Props) {
     return(
         <>
         { showBanner && (
-                    <Contents size={"null"} variant={"header"}>
+                    <Contents size={"default"} variant={"default"}>
                         <Texts>{banner}</Texts>
                     </Contents>     
                     )
                 } 
-        <Contents variant={"border"} size={"null"} >
+        <Contents size={"default"} variant={"default"}>
         <Expands title="Create New Equipment" divID={"1"} >
                 <Forms action={createEquipment} onSubmit={() => handleBanner("Equipment was created successfully")}>
                    <Labels variant="default" type="title">Equipment Code *</Labels>
@@ -147,18 +149,18 @@ export default function Equipment({ equipment }: Props) {
         state="default" 
     />
     <Labels variant="default" type="title">{t("Tag")} *</Labels>
-    <select
+    <Selects
         id="equipment_tag"
         name="equipment_tag"
         value={equipmentTag}
         onChange={(e) => setEquipmentTag(e.target.value)}
         className="block w-full border border-black rounded p-2"
     >
-        <option value="">{t("Select")}</option>
-        <option value="TRUCK">{t("Truck")}</option>
-        <option value="TRAILER">{t("Trailer")}</option>
-        <option value="EQUIPMENT">{t("Equipment")}</option>
-    </select>
+        <Options value="">{t("Select")}</Options>
+        <Options value="TRUCK">{t("Truck")}</Options>
+        <Options value="TRAILER">{t("Trailer")}</Options>
+        <Options value="EQUIPMENT">{t("Equipment")}</Options>
+    </Selects>
 
     <Labels variant="default" type="title">{t("Name")} *</Labels>
     <Inputs 
@@ -181,17 +183,17 @@ export default function Equipment({ equipment }: Props) {
     />
 
     <Labels variant="default" type="title">{t("Status")} *</Labels>
-    <select
+    <Selects
         id="equipment_status"
         name="equipment_status"
         value={status}
         onChange={(e) => setStatus(e.target.value)}
         className="block w-full border border-black rounded p-2"
     >
-        <option value="">{t("Select")}</option>
-        <option value="OPERATIONAL">{t("Operational")}</option>
-        <option value="NEEDS_REPAIR">{t("NeedsRepair")}</option>
-    </select>
+        <Options value="">{t("Select")}</Options>
+        <Options value="OPERATIONAL">{t("Operational")}</Options>
+        <Options value="NEEDS_REPAIR">{t("NeedsRepair")}</Options>
+    </Selects>
     
     {equipmentTag === "TRUCK" || equipmentTag === "TRAILER" ? (
         <>
@@ -264,9 +266,9 @@ export default function Equipment({ equipment }: Props) {
 </Forms>
                 </Expands>
             </Contents>
-            <Contents variant={"border"} size={"null"} >
+            <Contents variant={"default"} size={null} >
             <Expands title="Edit Existing Equipment" divID={"2"} >
-                <Contents variant={"searchBar"} size="null">
+                <Contents variant={"default"} size={null} >
                 <SearchBar
                     searchTerm={searchTerm1}
                     onSearchChange={(e) => handleSearchChange( e, "1")}
@@ -316,16 +318,16 @@ export default function Equipment({ equipment }: Props) {
                             defaultValue={equipmentResponse.description || ""}
                         />
                         <Labels variant="default" type="title">{t("Status")}</Labels>
-                        <select
+                        <Selects
                             id="equipment_status"
                             name="equipment_status"
                             className="block w-full border border-black rounded p-2"
                             defaultValue={equipmentResponse.status || ""}
                         >
-                            <option value="">{t("Select")}</option>
-                            <option value="OPERATIONAL">{t("Operational")}</option>
-                            <option value="NEEDS_REPAIR">{t("NeedsRepair")}</option>
-                        </select>
+                            <Options value="">{t("Select")}</Options>
+                            <Options value="OPERATIONAL">{t("Operational")}</Options>
+                            <Options value="NEEDS_REPAIR">{t("NeedsRepair")}</Options>
+                        </Selects>
                         
                         {/* Conditional fields based on equipmentTag */}
                         {equipmentResponse.equipment_tag === "TRUCK" || equipmentResponse.equipment_tag === "TRAILER" ? (
@@ -394,7 +396,7 @@ export default function Equipment({ equipment }: Props) {
                 )} 
                 </Expands>
             </Contents>
-        <Contents variant={"border"} size={"null"} >
+            <Contents variant={"default"} size={null} >
         <Expands title="Temporary Equipment" divID={"3"} >
             {equipment.filter((item) => item.qr_id.slice(0, 4) === "EQ-T") .length > 0 ? (
                     <>
@@ -437,9 +439,9 @@ export default function Equipment({ equipment }: Props) {
                 ) : <Texts variant="default">No Equipment with Temporary ID</Texts>}
             </Expands>
         </Contents>
-            <Contents variant={"border"} size={"null"} >
+        <Contents variant={"default"} size={null} >
                 <Expands title="Delete Equipment" divID={"4"} >
-                <Contents variant={"searchBar"} size="null">
+                <Contents variant={"default"} size={null} >
                 <SearchBar
                     searchTerm={searchTerm2}
                     onSearchChange={(e) => handleSearchChange(e, "2")}

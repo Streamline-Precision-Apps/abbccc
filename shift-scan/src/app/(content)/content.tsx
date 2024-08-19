@@ -213,8 +213,8 @@ export default function Content({
           <Header />
           <Contents size={"default"}>
           <Sections size={"default"}>
-          <Contents size={"default"}>
             <Headers variant={"relative"} size={"default"}></Headers>
+          <Contents variant={"default"} size={"devun2"}>
             <Banners variant={"default"} >
               <Titles variant={"default"} size={"h1"}>
                 {t("Banner")}
