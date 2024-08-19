@@ -31,11 +31,33 @@ export async function getJobsiteForms() {
   }
 }
 
+// Check if jobsite exists
+export async function jobExists(jobsite_id: string) {
+  try {
+    const jobsite = await prisma.jobsite.findUnique({
+      where: { jobsite_id: jobsite_id },
+    });
+    return jobsite;
+  } catch (error) {
+    console.error("Error checking if jobsite exists:", error);
+    throw error;
+  }
+}
+
 // Create jobsite
 export async function createJobsite(formData: FormData) {
   try {
     console.log("Creating jobsite...");
     console.log(formData);
+    const id = Number(formData.get("id"));
+    const verify = prisma.jobsite.findMany({
+      where: { id: id},
+    })
+    // Check if jobsite already exists
+    if ((await verify).length > 0) {
+      console.log("Jobsite already exists.");
+      throw new Error("Jobsite already exists.");
+    }
 
     await prisma.jobsite.create({
       data: {

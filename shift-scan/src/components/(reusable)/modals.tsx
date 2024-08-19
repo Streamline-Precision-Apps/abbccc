@@ -100,7 +100,7 @@ const Modals: FC<ModalProps> = ({className, variant, size, type, isOpen, step, h
         <Buttons onClick={handleClose} className="close-btn" variant={"red"} size={"default"}>
                 <Images titleImg="/x.svg" titleImgAlt="x" variant={"icon"} size={"default"}/>
           </Buttons>
-        <Contents variant={"default"} size={"null"}>
+        <Contents variant={"default"} size={null}>
           {props.children}
         </Contents>
   </>
@@ -108,7 +108,7 @@ const Modals: FC<ModalProps> = ({className, variant, size, type, isOpen, step, h
 )
     
       else return (
-
+  <ReactPortal wrapperId="react-portal-modal-container">
           <div className="modal ">
               <div className="fixed top-0 left-0 w-screen h-screen bg-neutral-800 opacity-50"/>
               <div className={cn(ModalVariants({variant, size, className}))} {...props}>
@@ -118,7 +118,7 @@ const Modals: FC<ModalProps> = ({className, variant, size, type, isOpen, step, h
                 <div className="modal-content">{props.children}</div>
               </div>
           </div>      
-
+    </ReactPortal>
     )
     
 }

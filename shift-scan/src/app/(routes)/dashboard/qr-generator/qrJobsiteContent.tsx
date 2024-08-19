@@ -65,7 +65,7 @@ const qrJobsiteContent: React.FC = () => {
         onOptionSelect={handleOptionSelect}
         selectedOption={selectedJobSite}
       />
-      <Contents variant={"rowCenter"} size={"generator"}>
+      <Contents variant={"rowCenter"} size={"default"}>
         <Buttons variant={"orange"} onClick={handleGenerate} size="default">
           <Titles variant={"default"} size={"h1"}>{t("Generate")}</Titles>
         </Buttons>
