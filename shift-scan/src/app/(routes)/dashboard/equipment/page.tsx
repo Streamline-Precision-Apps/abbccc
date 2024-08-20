@@ -1,11 +1,7 @@
 "use server";
-import { Bases } from "@/components/(reusable)/bases";
-import { Sections } from "@/components/(reusable)/sections";
-import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
-import { Buttons } from "@/components/(reusable)/buttons";
-import SubmitAll from "./submitAll";
+import Content from "@/app/(routes)/dashboard/equipment/content";
 
 export default async function Current() {
     const userCookie = cookies().get("user");
@@ -30,19 +26,6 @@ export default async function Current() {
     const green = total - completed;
 // usetranslate breaks here for what ever reason
     return (
-        <Bases>
-            <Sections size={"titleBox"}>
-                <TitleBoxes title="Current Equipment" titleImg="/equipment.svg" titleImgAlt="Current" variant={"default"} size={"default"} />
-            </Sections>
-            <Sections size={"default"}>
-                {green === 0 && total !== 0 ? <SubmitAll userid={userid} /> : <></>}
-                {total === 0 ? <p>No Current Equipment</p> : <></>}
-                {logs.map((log) => (
-                    <Buttons variant={(log.completed) ? "green" : "orange"} size={"default"} href={`/dashboard/equipment/${log.id}`} key={log.id}>
-                        {log.Equipment?.name}
-                    </Buttons>
-                ))}
-            </Sections>
-        </Bases>
+        <Content total={total} completed={completed} green={green} userid={userid} logs={logs} />
     );
 }

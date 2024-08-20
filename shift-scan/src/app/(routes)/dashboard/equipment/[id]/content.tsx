@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import { Bases } from "@/components/(reusable)/bases";
 import { Sections } from "@/components/(reusable)/sections";
@@ -7,10 +6,12 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { DeleteLogs, updateEmployeeEquipmentLog } from "@/actions/equipmentActions";
 import { useRouter } from 'next/navigation';
-import { Titles } from "@/components/(reusable)/titles";
-import Banner from "@/components/banner";
 import { Banners } from "@/components/(reusable)/banners";
 import { useTranslations } from "next-intl";
+import { Forms } from "@/components/(reusable)/forms";
+import { Labels } from "@/components/(reusable)/labels";
+import { Inputs } from "@/components/(reusable)/inputs";
+import { TextAreas } from "@/components/(reusable)/textareas";
 
 type Props = {
     eqid: string | undefined;
@@ -72,10 +73,10 @@ export default function CombinedForm({ eqid, name, start_time, completed, filled
         if (changedDuration !== undefined) {
             formData.append('duration', changedDuration);
         }
+
         formData.append('refueled', refueled.toString());
         formData.append('fuel_used', fuel.toString());
         formData.append('equipment_notes', notes || "");
-
         await updateEmployeeEquipmentLog(formData);
 
         setIsEditMode(false);
@@ -92,7 +93,6 @@ export default function CombinedForm({ eqid, name, start_time, completed, filled
     const confirmation = async (e: React.FormEvent<HTMLButtonElement>) => {
         e.preventDefault();
         const formData = new FormData();
-
         formData.append('end_time', end_time.toString());
         formData.append('id', eqid ?? "");
         formData.append('completed', "true");
@@ -120,58 +120,54 @@ export default function CombinedForm({ eqid, name, start_time, completed, filled
                     size={"default"}
                 />
             </Sections>
-            <form action={updateEmployeeEquipmentLog} method="post">
+            <Forms action={updateEmployeeEquipmentLog}>
                 <Sections size={"dynamic"}>
-                    <label>
+                    <Labels variant={"default"} size={"default"}></Labels>
                         {t("Refueled")}
-                        <input
+                        <Inputs
                             name="refueled"
                             type="checkbox"
                             checked={refueled}
                             onChange={handleRefueledChange}
                             readOnly={!isEditMode && completed}
                         />
-                    </label>
                 </Sections>
                     {refueled ? (
                         <Sections size={"dynamic"}>
-                            <label>
+                            <Labels variant={"default"} size={"default"}></Labels>
                                 {t("Gallons")}
-                                <input
+                                <Inputs
                                     type="number"
                                     name="fuel_used"
                                     value={fuel}
                                     onChange={handleFuelValue}
                                     readOnly={!isEditMode && completed}
                                 />
-                            </label>
                         </Sections>
                     ) : (
-                        <input type="hidden" name="fuel_used" value="0" />
+                        <Inputs type="hidden" name="fuel_used" value="0" />
                     )}
                 <Sections size={"dynamic"}>
-                    <label>
+                    <Labels variant={"default"} size={"default"}></Labels>
                         {t("CheckedTime")}
-                        <input
+                        <Inputs
                             name={"duration"}
                             value={completed ? changedDuration : duration}
                             onChange={handleDurationChange}
                             readOnly={!isEditMode && completed}
                         />
-                    </label>
-                    <label>
+                    <Labels variant={"default"} size={"default"}></Labels>
                         {t("Notes")}
-                        <textarea
+                        <TextAreas
                             name="equipment_notes"
                             value={notes || ""}
                             onChange={handleNotesChange}
                             readOnly={!isEditMode && completed}
                         />
-                    </label>
                 </Sections>
-                <input type="hidden" name="end_time" value={end_time.toString()} />
-                <input type="hidden" name="id" value={eqid} />
-                <input type="hidden" name="completed" value="true" />
+                <Inputs type="hidden" name="end_time" value={end_time.toString()} />
+                <Inputs type="hidden" name="id" value={eqid} />
+                <Inputs type="hidden" name="completed" value="true" />
                 {completed ? (
                     isEditMode ? (
                         <Buttons
@@ -208,7 +204,7 @@ export default function CombinedForm({ eqid, name, start_time, completed, filled
                 <Buttons href="/dashboard/equipment" variant={"red"} size={"default"} onClick={deleteHandler}>
                 {t("Delete")}
                 </Buttons>
-            </form>
+            </Forms>
         </Bases>
     );
 }

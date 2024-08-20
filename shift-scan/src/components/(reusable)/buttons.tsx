@@ -29,6 +29,7 @@ const ButtonVariants = cva(
         widgetLg: "grid col-span-2 row-span-2 h-full w-full",
         backButton: "absolute top-2 left-2",
         thin: " flex-col mx-auto my-3 p-1 w-5/6 h-100 ",
+        forgotpassword: "flex ml-auto my-3 p-3 w-40 h-100 underline",
       }
     },
     defaultVariants: {

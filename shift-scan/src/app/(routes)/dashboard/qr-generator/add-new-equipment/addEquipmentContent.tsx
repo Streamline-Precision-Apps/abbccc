@@ -7,6 +7,8 @@ import AddEquipmentForm from "./addEquipmentForm";
 import EquipmentPicture from "../../../../../components/(inputs)/camera";
 import { Bases } from "@/components/(reusable)/bases";
 import { useTranslations } from "next-intl";
+import { Titles } from "@/components/(reusable)/titles";
+import { Contents } from "@/components/(reusable)/contents";
 
 export const AddEquipmentContent = () => {
   const [base64String, setBase64String] = useState<string>("");
@@ -24,7 +26,7 @@ export const AddEquipmentContent = () => {
         />
       </Sections>
       <Sections size={"dynamic"}>
-        <h1>{t("Picture")}</h1>
+        <Titles variant={"default"} size={"h1"}>{t("Picture")}</Titles>
         <EquipmentPicture setBase64String={setBase64String} />
       </Sections>
       <Sections size={"dynamic"}>

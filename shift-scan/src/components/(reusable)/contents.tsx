@@ -16,6 +16,7 @@ const ContentVariants = cva(
         widgetButton: "w-full h-full m-1 flex flex-col justify-center items-center",
         widgetButtonRow: "m-1 flex flex-row justify-center items-center",
         hidden: "hidden flex-col",
+        center: "flex flex-col justify-center items-center",
         test: ""
       },
       size: {
@@ -23,7 +24,10 @@ const ContentVariants = cva(
         notTop: "h-full max-w-lg mx-auto pt-0",
         listImage: "w-52 h-40 rounded-r-full border-black border-4 overflow-hidden -ml-3 justify-self-start",
         listTitle: "w-full justify-center",
+        logo: "w-full h-36 justify-center items-center",
+        devun1: "w-1/2 h-36 justify-center items-center",
         profilePic: "w-36 h-36 rounded-full border-black border-4 overflow-hidden justify-self-center",
+        devun2: "h-full max-w-lg mx-auto mt-64",
         test: ""
       }
     },
