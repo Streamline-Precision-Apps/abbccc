@@ -3,16 +3,16 @@ import { HTMLAttributes, FC } from "react";
 import { cn } from "@/components/(reusable)/utils";
 
 const GridVariants = cva(
-  "flex items-center justify-center rounded-full w-50 h-35", //this applies to all variants
+  "m-1 -ml-2", //this applies to all variants
   {
     variants: {
       variant: {
         default: "bg-blue-500",
-        green: "bg-green-500",
+        widgets: " grid grid-cols-2 grid-rows-3 gap-x-5 gap-y-5",
         red: "bg-red-500",
       },
       size: {
-        default: "p-10 w-100 h-100",
+        default: "",
         sm: "p-2 w-30 h-30",
         med: "p-10 w-40 h-40",
         lg: "p-10 w-50 h-50"

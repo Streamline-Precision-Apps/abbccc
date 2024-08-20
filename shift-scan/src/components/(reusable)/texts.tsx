@@ -21,6 +21,8 @@ const TextVariants = cva(
       },
       size: {
         default: "text-2xl",
+        widgetSm: "text-2xl p-0 m-0 w-full",
+        widgetMed: "text-4xl mr-8",
         left: "text-start",
         p1: "text-3xl",
         p2: "text-2xl",

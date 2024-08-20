@@ -22,7 +22,11 @@ export default function Hours({ setToggle, display }: HoursProps) {
 
   return display ? (
     <>
-      <Buttons onClick={handler} variant={"darkBlue"} size={"default"}>
+      <Buttons 
+        onClick={handler} 
+        variant={"darkBlue"} 
+        size={"hours"}
+      >
         <h2>{t("PayPeriodHours")} </h2>
         <span>
           {payPeriodHours}
@@ -30,7 +34,7 @@ export default function Hours({ setToggle, display }: HoursProps) {
       </Buttons>
     </>
   ) : (
-    <div>
+    <div className="col-span-2">
       <ViewHoursComponent toggle={setToggle} />
     </div>
   );
