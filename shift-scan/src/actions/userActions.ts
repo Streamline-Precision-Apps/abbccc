@@ -2,6 +2,7 @@
 import prisma from "@/lib/prisma";
 import { Permission } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import bcrypt from 'bcryptjs';
 
 export async function createUser(formData: FormData) {
 try{
@@ -66,4 +67,19 @@ export async function uploadImage(formdata: FormData) {
         }
     })
     revalidatePath('/hamburger/profile');
+}
+
+export async function getUserFromDb(username: string, password: string) {
+    const user = await prisma.user.findUnique({
+        where: {
+            username: username,
+            password: password
+        }
+    })
+    if (user) {
+        if (await bcrypt.compare(password, user.password)) {
+            return user
+        }
+    }
+    return null
 }

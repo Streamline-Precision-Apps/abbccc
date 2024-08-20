@@ -7,6 +7,10 @@ import { Modals } from "@/components/(reusable)/modals";
 import QRCode from "qrcode";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { Titles } from "@/components/(reusable)/titles";
+import { Contents } from "@/components/(reusable)/contents";
+import { Texts } from "@/components/(reusable)/texts";
+import { Images } from "@/components/(reusable)/images";
 
 interface Option {
   code: string;
@@ -57,37 +61,39 @@ const qrEquipmentContent: React.FC = () => {
   };
 
   return (
-    <div className="text-center font-sans">
-      <h2 className="text-xl font-bold mb-4">{t("Equipment")}</h2>
+    <>
+      <Titles variant={"default"} size={"default"}>{t("Equipment")}</Titles>
       <CustomSelect
         options={filteredOptions}
         placeholder={t("Placeholder")}
         onOptionSelect={handleOptionSelect}
         selectedOption={selectedEquipment}
       />
-      <div className="flex justify-center gap-4">
+      <Contents variant={"rowCenter"} size={"default"}>
         <Buttons variant={"orange"} onClick={handleGenerate} size="default">
-          {t("Generate")}
+        <Titles variant={"default"} size={"h1"}>{t("Generate")}</Titles>
         </Buttons>
         <Buttons variant={"green"} onClick={handleNew} size="default">
-          {t("New")}
+        <Titles variant={"default"} size={"h1"}>{t("New")}</Titles>
         </Buttons>
-      </div>
+      </Contents>
       <Modals
         isOpen={isModalOpen}
         handleClose={() => setIsModalOpen(false)}
         size="sm"
       >
         {selectedEquipment && (
-          <div className="text-center">
-            <h2 className="text-xl font-bold mb-4">
-              {selectedEquipment.label} {t("QRCode")}
-            </h2>
-            <img src={qrCodeUrl} alt="QR Code" />
-          </div>
+          <>
+            <Texts variant={"default"}>
+                {selectedEquipment.label} {t("QRCode")}
+            </Texts>
+            <Contents variant={"rowCenter"} size={"default"}>
+            <Images titleImg={qrCodeUrl} titleImgAlt={"QR Code"} />
+            </Contents>
+          </>
         )}
       </Modals>
-    </div>
+    </>
   );
 };
 

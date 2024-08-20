@@ -1,3 +1,5 @@
+import { Options } from '@/components/(reusable)/options';
+import { Selects } from '@/components/(reusable)/selects';
 import React from 'react';
 
 interface Option {
@@ -19,7 +21,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   selectedOption,
 }) => {
   return (
-    <select
+    <Selects
       value={selectedOption ? selectedOption.code : ''}
       onChange={(e) => {
         const selected = options.find(option => option.code === e.target.value);
@@ -29,13 +31,13 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
       }}
       className="block mx-auto mb-4 p-2 border border-gray-300 rounded"
     >
-      <option value="">{placeholder}</option>
+       <Options variant={"default"} value="">{placeholder} </Options>
       {options.map(option => (
-        <option key={option.code} value={option.code}>
+         <Options variant={"default"} key={option.code} value={option.code}>
           {option.label}
-        </option>
+         </Options>
       ))}
-    </select>
+    </Selects>
   );
 };
 

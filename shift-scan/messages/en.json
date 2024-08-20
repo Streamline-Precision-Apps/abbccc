@@ -1,10 +1,10 @@
 {   
     "PortalLogin": {
         "Title": "Portal Login",
-        "lN1": "Employee ID",
-        "lN2": "Password",
+        "Username": "Employee ID",
+        "Password": "Password",
         "btn-signIn": "Sign in",
-        "lN3": "Habla Espanol?",
+        "Spanish": "Habla Español?",
         "btn-forgot": "Forgot Password?",
         "Error": "Invalid username or password",
         "lN4": "Copyright © 2024. All rights reserved."
@@ -122,6 +122,7 @@
         "Button": "Take Picture"
     },
     "EquipmentContent" : {
+        "Title": "Current Equipment",
         "Banner": "Form Submitted",
         "Refueled": " Did you refuel?",
         "Gallons": "Total gallons refueled",
@@ -133,6 +134,7 @@
         "Submit": "Submit",
         "SubmitAll": "Submit All",
         "NoCurrent": "No Current Equipment"
+
     },
     
     "addEquipmentForm": {
@@ -265,5 +267,20 @@
         "Phone": "Phone",
         "Submit": "Submit",
         "Select": "Select One"
+    },
+    "admin-assets-jobsite": {
+        "submit": "Submit",
+        "JobsiteName": "Jobsite Name",
+        "StreetNumber": "Street Number",
+        "StreetName": "Street Name",
+        "City": "City",
+        "State": "State",
+        "Country": "Country",
+        "Description": "Jobsite Description",
+        "Comments": "Additional Comments",
+        "IsActive": "Is Site Active?"
+    },
+    "admin-assets-costcode": {
+        "submit": "Submit"
     }
 }

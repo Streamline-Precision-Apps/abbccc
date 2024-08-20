@@ -1,13 +1,20 @@
-"use client";
-import { editTimeSheet } from "@/actions/timeSheetActions";
-import { fetchEq, updateEq } from "@/actions/equipmentActions";
-import { Images } from "@/components/(reusable)/images";
-import { useTranslations } from "next-intl";
-import React from "react";
-import { useState, useEffect} from "react";
-import Equipment from "../../equipment/page";
-import { Sections } from "@/components/(reusable)/sections";
-type Timesheet = {
+  "use client";
+  import { editTimeSheet } from "@/actions/timeSheetActions";
+  import { fetchEq, updateEq } from "@/actions/equipmentActions";
+  import { Images } from "@/components/(reusable)/images";
+  import { useTranslations } from "next-intl";
+  import React from "react";
+  import { useState, useEffect} from "react";
+  import Equipment from "../../equipment/page";
+  import { Sections } from "@/components/(reusable)/sections";
+  import { Contents } from "@/components/(reusable)/contents";
+  import { Selects } from "@/components/(reusable)/selects";
+  import { Inputs } from "@/components/(reusable)/inputs";
+  import { Buttons } from "@/components/(reusable)/buttons";
+  import { Titles } from "@/components/(reusable)/titles";
+  import { Texts } from "@/components/(reusable)/texts";
+  import { Labels } from "@/components/(reusable)/labels";
+  type Timesheet = {
   id: string;
   start_time: string;
   start_date?: string;
@@ -18,32 +25,32 @@ type Timesheet = {
   duration: string;
   submit_date: string;
   employeeId: string;
-};
+  };
 
-type CostCode = {
+  type CostCode = {
   id: number;
   cost_code: string;
-};
+  };
 
-type Jobsite = {
+  type Jobsite = {
   id: number;
   jobsite_id: string;
-};
+  };
 
-type Equipment = {
+  type Equipment = {
   id: number;
   name: string;
   qr_id: string;
-};
+  };
 
-type EquipmentLog = {
+  type EquipmentLog = {
   id: number;
   employee_id: string;
   duration:  string | null;
   Equipment: Equipment;
-};
+  };
 
-type EditWorkProps = {
+  type EditWorkProps = {
   edit: boolean;
   costcodesData: CostCode[];
   jobsitesData: Jobsite[];
@@ -54,9 +61,9 @@ type EditWorkProps = {
   employeeId: string;
   date: string;
   equipment: Equipment[];
-};
+  };
 
-const EditWork = ({ timesheetData, jobsitesData, costcodesData, edit, equipment, handleFormSubmit, setEdit, employeeId, date }: EditWorkProps) => {
+  const EditWork = ({ timesheetData, jobsitesData, costcodesData, edit, equipment, handleFormSubmit, setEdit, employeeId, date }: EditWorkProps) => {
   const [timesheets, setTimesheets] = useState<Timesheet[]>([]);
   const [equipmentLogs, setEquipmentLogs] = useState<EquipmentLog[]>([]);
   const [message, setMessage] = useState<string | null>(null);
@@ -76,7 +83,7 @@ const EditWork = ({ timesheetData, jobsitesData, costcodesData, edit, equipment,
         const end_time = new Date(timesheet.end_time).toISOString().split('T')[1].split(':')[0] + ":" + new Date(timesheet.end_time).toISOString().split('T')[1].split(':')[1];
         
         const durationBackup = (new Date(timesheet.end_time).getTime() - new Date(timesheet.start_time).getTime()) / (1000 * 60 * 60);
-  
+
         return {
           ...timesheet,
           start_date,
@@ -236,63 +243,69 @@ const EditWork = ({ timesheetData, jobsitesData, costcodesData, edit, equipment,
   }, [edit]);
 
   return (
-    <div>
+    <Contents variant={"default"} size={"default"}>
       <Sections size={"dynamic"}>
       {timesheetData.length === 0 ? null : (
-        <div className="flex flex-row justify-between p-2">
-          <button onClick={editHandler}></button>
-          {edit ? <button className="flex bg-app-blue text-white font-bold p-2 rounded" onClick={handleSaveChanges}><Images titleImg={"/save.svg"} titleImgAlt={"Save Changes"} variant={"icon"} size={"backButton"} /></button> : null}
-        </div>
+        <>
+          <Buttons onClick={editHandler}></Buttons>
+          {edit ? <Buttons className="flex bg-app-blue text-white font-bold p-2 rounded" onClick={handleSaveChanges}><Images titleImg={"/save.svg"} titleImgAlt={"Save Changes"} variant={"icon"} size={"backButton"} /></Buttons> : null}
+        </>
       )}
       {message ? (
-        <div >
-          <p >{message}</p>
-        </div>
+        <>
+          <Texts>{message}</Texts>
+        </>
       ) : (
         <ul>
           <br/>
           <li >{t("Timesheets")}</li>
           {timesheets.map((timesheet) => (
             <li key={timesheet.id}>
-              <div >
-                <h2>{new Date(timesheet.submit_date).toLocaleDateString()}</h2>
-                <input id="submit_date" type="date" value={new Date(timesheet.submit_date).toISOString().split('T')[0]} hidden />
-              </div>
-              <div>
-                <label >{t("Duration")} {edit ? (
+              <>
+                <Titles size={"default"} variant={"default"}>{new Date(timesheet.submit_date).toLocaleDateString()}</Titles>
+                <Inputs
+                variant={"default"} id="submit_date" type="date" value={new Date(timesheet.submit_date).toISOString().split('T')[0]} hidden />
+              </>
+              <>
+                <Labels size={"default"} variant={"default"} >{t("Duration")} {edit ? (
                   <span >{t("Duration-Comment")}</span>
                 ) : null}
-                </label>
-                <input id="duration" type="text" value={timesheet.duration} onChange={(e) => handleInputChange(e, timesheet.id, "duration")} readOnly />
-              </div>
-              <div>
-                <label>{t("ClockIn")}
-                  <div>
-                    <input id="start_date" type="date" value={timesheet.start_date || ''} onChange={(e) => handleInputChangeDate(e, timesheet.id, "start_date")} readOnly={!edit} />
-                    <input id="start_time" type="time" value={timesheet.start_time || ''} onChange={(e) => handleInputChangeDate(e, timesheet.id, "start_time")} readOnly={!edit} />
-                  </div>
-                </label>
-                <label>{t("ClockOut")}
-                  <div>
-                    <input id="end_date" type="date" value={timesheet.end_date || ''} onChange={(e) => handleInputChangeDate(e, timesheet.id, "end_date")} readOnly={!edit} />
-                    <input id="end_time" type="time" value={timesheet.end_time || ''} onChange={(e) => handleInputChangeDate(e, timesheet.id, "end_time")} readOnly={!edit} />
-                  </div>
-                </label>
-              </div>
-              <div>
-                <label htmlFor="jobsite_id">{t("JobSites")}</label>
-                <select id="jobsite_id"  value={timesheet.jobsite_id} onChange={(e) => handleCodeChange(e, timesheet.id, "jobsite_id")} disabled={!edit}>
+                </Labels>
+                <Inputs
+                variant={"default"} id="duration" type="text" value={timesheet.duration} onChange={(e) => handleInputChange(e, timesheet.id, "duration")} readOnly />
+              </>
+              <>
+                  <Labels size={"default"} variant={"default"} >{t("ClockIn")}
+                  <>
+                    <Inputs
+                variant={"default"} id="start_date" type="date" value={timesheet.start_date || ''} onChange={(e) => handleInputChangeDate(e, timesheet.id, "start_date")} readOnly={!edit} />
+                    <Inputs
+                variant={"default"} id="start_time" type="time" value={timesheet.start_time || ''} onChange={(e) => handleInputChangeDate(e, timesheet.id, "start_time")} readOnly={!edit} />
+                  </>
+                </Labels>
+                  <Labels size={"default"} variant={"default"} >{t("ClockOut")}
+                  <>
+                    <Inputs
+                variant={"default"} id="end_date" type="date" value={timesheet.end_date || ''} onChange={(e) => handleInputChangeDate(e, timesheet.id, "end_date")} readOnly={!edit} />
+                    <Inputs
+                variant={"default"} id="end_time" type="time" value={timesheet.end_time || ''} onChange={(e) => handleInputChangeDate(e, timesheet.id, "end_time")} readOnly={!edit} />
+                  </>
+                </Labels>
+              </>
+              <>
+                  <Labels size={"default"} variant={"default"}>{t("JobSites")}</Labels>
+                <Selects variant={"default"} id="jobsite_id"  value={timesheet.jobsite_id} onChange={(e) => handleCodeChange(e, timesheet.id, "jobsite_id")} disabled={!edit}>
                   {jobsitesData.map((jobsite) => (
                     <option key={jobsite.id} value={jobsite.jobsite_id}>{jobsite.jobsite_id}</option>
                   ))}
-                </select>
-                <label htmlFor="costcode">{t("CostCode")}</label>
-                <select id="costcode" value={timesheet.costcode} onChange={(e) => handleCodeChange(e, timesheet.id, "costcode")} disabled={!edit}>
+                </Selects>
+                  <Labels size={"default"} variant={"default"}>{t("CostCode")}</Labels>
+                <Selects variant={"default"} id="costcode" value={timesheet.costcode} onChange={(e) => handleCodeChange(e, timesheet.id, "costcode")} disabled={!edit}>
                   {costcodesData.map((costcode) => (
                     <option key={costcode.id} value={costcode.cost_code}>{costcode.cost_code}</option>
                   ))}
-                </select>
-              </div>
+                </Selects>
+              </>
                 <br/>
               <div className="border border-black"></div>
               <br/>
@@ -302,11 +315,11 @@ const EditWork = ({ timesheetData, jobsitesData, costcodesData, edit, equipment,
       )}
       </Sections>
       <Sections size={"dynamic"}>
-        <h1>{t("EquipmentLogs")}</h1>
+        <Titles size={"default"} variant={"default"}>{t("EquipmentLogs")}</Titles>
         <ul>
           {equipmentLogs.map((log) => (
             <li key={log.id}>
-              <select
+              <Selects variant={"default"}
                 value={log.Equipment.name}
                 onChange={(e) => handleEquipmentChange(e, log.id)}
                 disabled={!edit}
@@ -317,9 +330,10 @@ const EditWork = ({ timesheetData, jobsitesData, costcodesData, edit, equipment,
                       {(equipmentLog.name).slice(0, 10)} - {equipmentLog.qr_id}
                     </option>
                 ))}
-              </select>
-              <label htmlFor="eq-duration">{t("Duration")} </label>
-              <input
+              </Selects>
+                <Labels size={"default"} variant={"default"}>{t("Duration")} </Labels>
+              <Inputs
+                variant={"default"}
                 type="text"
                 name="eq-duration"
                 value={log.duration !== null ? ((log.duration)).toString() : ''}
@@ -333,8 +347,8 @@ const EditWork = ({ timesheetData, jobsitesData, costcodesData, edit, equipment,
           <br/>
         </ul>
       </Sections>
-    </div>
+    </Contents>
   );
-};
+  };
 
-export default EditWork;
+  export default EditWork;

@@ -40,30 +40,30 @@ divID: string
 
 
 const Expands: FC<ExpandProps> = ({className, variant, size, title, divID, ...props}) => {
-    function expandFunction() {
-        const x = document.getElementById(divID);
-        if (x !== null) {
-          if (x.style.display === "none") {
-            x.style.display = "block";
-          } else {
-            x.style.display = "none";
-          }
+function expandFunction() {
+    const x = document.getElementById(divID);
+    if (x !== null) {
+        if (x.style.display === "none") {
+        x.style.display = "block";
+        } else {
+        x.style.display = "none";
         }
     }
-    return (
-      <div className={cn(ExpandVariants({variant, size, className}))} {...props}>
-        <Contents variant={"row"} size={"test"}>
-            <Titles>{title}</Titles>
-            <Buttons onClick={expandFunction}>
-                <Images titleImg="/ongoing.svg" titleImgAlt="expand"/>
-            </Buttons>
-        </Contents>
-        <Contents variant={"hidden"} id={divID}>
-            <Texts>{props.children}</Texts>
-        </Contents>
+}
+return (
+    <div className={cn(ExpandVariants({variant, size, className}))} {...props}>
+    <Contents variant={"row"} size={"test"}>
+        <Titles>{title}</Titles>
+        <Buttons onClick={expandFunction}>
+            <Images titleImg="/ongoing.svg" titleImgAlt="expand"/>
+        </Buttons>
+    </Contents>
+    <Contents variant={"hidden"} size={null} id={divID}>
+        <Texts>{props.children}</Texts>
+    </Contents>
 
-      </div>
-    )
+    </div>
+)
 }
 
 export {Expands, ExpandVariants}
