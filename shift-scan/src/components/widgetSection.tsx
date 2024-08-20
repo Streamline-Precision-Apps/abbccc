@@ -1,7 +1,8 @@
 import ClockInWidget from "@/app/(content)/clockInWidget"
-import ManagerWidget from "@/app/(content)/managerWidget"
 import { User } from "@/lib/types"
 import '@/app/globals.css';
+import { Manager } from "@/app/(routes)/dashboard/manager";
+import { Grids } from "./(reusable)/grids";
 
 interface Props {
     user: User;
@@ -11,10 +12,33 @@ interface Props {
 }
 
 export default function WidgetSection({ user, display, locale, option}: Props) {
-    return display ? (
-        <div className={`"grid grid-cols-3 grid-rows-2 gap-4 w-full m-auto" ${ user?.permission !== "USER" ? "h-1/2": "h-11/12"}`}>
-            <ManagerWidget user={user} />
-            <ClockInWidget user={user} option={option}  locale={locale}/>
-        </div>
-    ) : null;  
+    if (
+        user?.permission === "ADMIN" ||
+        user?.permission === "SUPERADMIN" ||
+        user?.permission === "MANAGER" ||
+        user?.permission === "PROJECTMANAGER"
+      ) {
+        return (
+            <>
+                <Manager show={true} />
+                <ClockInWidget 
+                    user={user} 
+                    option={option}  
+                    locale={locale}
+                    manager={true}
+                    />
+            </>
+    );
+}   else {
+        return (
+            <>
+                <ClockInWidget 
+                    user={user} 
+                    option={option}  
+                    locale={locale}
+                    manager={false}
+                    />
+            </>
+        )
+    }
 }

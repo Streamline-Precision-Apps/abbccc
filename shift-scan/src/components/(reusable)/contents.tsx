@@ -11,10 +11,10 @@ const ContentVariants = cva(
         row: "flex flex-row",
         rowCenter: "flex flex-row justify-center",
         image: "bg-white",
-        header: "w-full h-24 bg-orange-300",
+        header: "w-full h-24",
         name: "w-full h-24 mt-[150px]",
-        widgetSection: "w-full -ml-1 bg-pink-300",
-        widgetButton: "bg-white w-full h-full m-1 flex flex-col justify-center items-center",
+        widgetButton: "w-full h-full m-1 flex flex-col justify-center items-center",
+        widgetButtonRow: "m-1 flex flex-row justify-center items-center",
         hidden: "hidden flex-col",
         center: "flex flex-col justify-center items-center",
         test: ""
