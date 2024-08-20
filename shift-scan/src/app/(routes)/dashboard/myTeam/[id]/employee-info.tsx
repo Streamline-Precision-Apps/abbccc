@@ -29,7 +29,7 @@ export default async function employeeInfo({ params }: Params) {
         <Sections size={"titleBox"}>
             <TitleBoxes
               title={`${employee?.firstName} ${employee?.lastName}`}
-              titleImg="/johnDoe.webp"
+              titleImg={employee?.image ?? "/johnDoe.webp"}
               titleImgAlt="Team"
               variant={"default"}
               size={"default"}

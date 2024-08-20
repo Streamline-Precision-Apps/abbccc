@@ -19,6 +19,7 @@ import { useRecentDBJobsite, useRecentDBCostcode, useRecentDBEquipment} from "@/
 import { getAuthStep, isDashboardAuthenticated } from "@/app/api/auth";
 import { ClockProcessProps, Logs } from "@/lib/clockprocess";
 import { Contents } from "@/components/(reusable)/contents";
+import { Grids } from "@/components/(reusable)/grids";
 
 export default function Content({
 locale,
@@ -143,7 +144,9 @@ return session ? (
             <Contents variant={"name"} size={"test"}>
                 <Texts variant={"name"} size={"p1"}>{t("Name", { firstName: user.firstName, lastName: user.lastName })}</Texts>
             </Contents>
-            <DashboardButtons logs={logs} locale={locale}/>
+            <Grids variant={"widgets"} size={"default"}>
+                <DashboardButtons logs={logs} locale={locale}/>
+            </Grids>
         </Sections>
     </Contents>
 </Bases>

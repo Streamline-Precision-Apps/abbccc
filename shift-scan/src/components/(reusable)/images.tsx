@@ -15,8 +15,8 @@ const ImageVariants = cva(
       },
       size: {
         default: "w-15 h-15",
-        widgetSm: "h-[80px] w-[80px] mt-2 bg-red-300",
-        widgetMed: "p-10 w-40 h-40",
+        widgetSm: "h-[80px] w-[80px]",
+        widgetMed: "h-[130px] w-[130px]",
         widgetLg: "p-10 w-50 h-50",
         titlebox: "w-36",
         backButton: "w-15 w-15 pt-0",

@@ -45,7 +45,7 @@ export default async function TeamCards() {
             <Buttons id={userCrewId.user.id} href={`/dashboard/myTeam/${userCrewId.user.id}`} variant={"default"} size={"listLg"}>
                 <Contents variant={"image" } size={"listImage"}>
 
-                    <Images titleImg="/johnDoe.webp" titleImgAlt="profile picture" variant={"icon"} size={"default"}></Images>
+                    <Images titleImg={userCrewId.user.image ?? "/johnDoe.webp"} titleImgAlt="profile picture" variant={"icon"} size={"default"}></Images>
                 </Contents>
                 <Contents variant={"row"} size={"listTitle"}>
                     <Titles size={"h1"}>{userCrewId.user.firstName} {userCrewId.user.lastName}</Titles>

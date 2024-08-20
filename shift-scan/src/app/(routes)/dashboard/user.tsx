@@ -20,6 +20,7 @@ interface UserProps {
   handleShowAdditionalButtons: (type: string) => void;
   logs: Logs[]; // Use the consistent Logs type
   locale: string;
+  manager: boolean;
 }
 
 export const User: React.FC<UserProps> = ({
@@ -28,6 +29,7 @@ export const User: React.FC<UserProps> = ({
   handleShowAdditionalButtons,
   logs, // Use logs prop
   locale,
+  manager,
 }) => {
   const t = useTranslations("ManagerButtons");
 
@@ -86,32 +88,36 @@ export const User: React.FC<UserProps> = ({
   return (
     <>
       {additionalButtonsType === "equipment" ? (
-        <Contents variant={"test"} size={"test"}>
+        <>
           <Buttons
             variant={"default"}
-            size={"widgetSm"}
+            size={"widgetMed"}
             onClick={handleShowManagerButtons}
           >
-            <Images
-                titleImg="/home.svg"
-                titleImgAlt="Home Icon"
-                variant={"icon"}
-                size={"default"}
-            />
-            <Texts>{t("GoHome")}</Texts>
+            <Contents variant={"widgetButtonRow"} size={"test"}>
+            <Texts size={"widgetMed"}>{t("GoHome")}</Texts>
+              <Images
+                  titleImg="/home.svg"
+                  titleImgAlt="Home Icon"
+                  variant={"icon"}
+                  size={"widgetMed"}
+              />
+            </Contents>
           </Buttons>
           <Buttons
             variant={"green"}
-            size={"widgetSm"}
+            size={"widgetMed"}
             onClick={handleOpenModal}
           >
-            <Images
-              titleImg="/equipment.svg"
-              titleImgAlt="Equipment Icon"
-              variant={"icon"}
-              size={"default"}
-            />
-            <Texts>{t("LogNew")}</Texts>
+            <Contents variant={"widgetButtonRow"} size={"test"}>
+              <Texts size={"widgetMed"}>{t("LogNew")}</Texts>
+              <Images
+                titleImg="/equipment.svg"
+                titleImgAlt="Equipment Icon"
+                variant={"icon"}
+                size={"widgetMed"}
+              />
+            </Contents>
           </Buttons>
           <Modals
             isOpen={isModalOpen}
@@ -132,33 +138,51 @@ export const User: React.FC<UserProps> = ({
           </Modals>
           <Buttons
             variant={"orange"}
-            size={"widgetSm"}
+            size={"widgetMed"}
             href="/dashboard/equipment"
           >
-            <Images
-              titleImg="/forms.svg"
-              titleImgAlt="Current Equipment Icon"
-              variant={"icon"}
-              size={"default"}
-            />
-            <Texts>{t("Current")}</Texts>
+            <Contents variant={"widgetButtonRow"} size={"test"}>
+              <Texts size={"widgetMed"}>{t("Current")}</Texts>
+              <Images
+                titleImg="/equipment.svg"
+                titleImgAlt="Equipment Icon"
+                variant={"icon"}
+                size={"widgetMed"}
+              />
+            </Contents> 
           </Buttons>
-        </Contents>
+        </>
       ) : additionalButtonsType === "clockOut" ? (
         <>
           <Buttons
             variant={"default"}
-            size={"widgetSm"}
+            size={"widgetMed"}
             onClick={handleShowManagerButtons}
           >
-            <Texts>{t("GoHome")}</Texts>
+            <Contents variant={"widgetButtonRow"} size={"test"}>
+              <Texts size={"widgetMed"}>{t("GoHome")}</Texts>
+              <Images
+                titleImg="/home.svg"
+                titleImgAlt="Home Icon"
+                variant={"icon"}
+                size={"widgetMed"}
+              />
+            </Contents>
           </Buttons>
           <Buttons
             variant={"orange"}
-            size={"widgetSm"}
+            size={"widgetMed"}
             onClick={handleCOButton2}
           >
-            <Texts>{t("Break")}</Texts>
+            <Contents variant={"widgetButtonRow"} size={"test"}>
+              <Texts size={"widgetMed"}>{t("Break")}</Texts>
+              <Images
+                titleImg="/break.svg"
+                titleImgAlt="Break Icon"
+                variant={"icon"} 
+                size={"widgetMed"}
+              />
+            </Contents>
           </Buttons>
           <Modals
             isOpen={isModalOpen}
@@ -178,24 +202,38 @@ export const User: React.FC<UserProps> = ({
               </Buttons>
             </div>
           </Modals>
-          <Buttons variant={"red"} size={"widgetSm"} onClick={handleCOButton3}>
-            <Texts>{t("End")}</Texts>
+          <Buttons 
+            variant={"red"} 
+            size={"widgetMed"} 
+            onClick={handleCOButton3}
+          >
+            <Contents variant={"widgetButtonRow"} size={"test"}>
+              <Texts size={"widgetMed"}>{t("End")}</Texts>
+              <Images
+                titleImg="/endDay.svg"
+                titleImgAlt="End Icon"
+                variant={"icon"}
+                size={"widgetMed"}
+              />
+            </Contents>
           </Buttons>
         </>
-      ) : (
+      ) : (manager === true ? (
         <>
           <Buttons
             variant={"orange"}
             size={"widgetSm"}
             onClick={handleOpenModal}
           >
-            <Images
-              titleImg="/jobsite.svg"
-              titleImgAlt="Jobsite Icon"
-              variant={"icon"}
-              size={"widgetSm"}
-            ></Images>
-            <Texts>{t("SwitchJobs")}</Texts>
+            <Contents variant={"widgetButton"} size={"test"}>
+              <Images
+                titleImg="/jobsite.svg"
+                titleImgAlt="Jobsite Icon"
+                variant={"icon"}
+                size={"widgetSm"}
+              ></Images>
+              <Texts size={"widgetSm"}>{t("SwitchJobs")}</Texts>
+            </Contents>
           </Buttons>
           <Modals
             isOpen={isModalOpen}
@@ -221,26 +259,30 @@ export const User: React.FC<UserProps> = ({
             size={"widgetSm"}
             onClick={() => handleShowAdditionalButtons("equipment")}
           >
-            <Images
-              titleImg="/equipment.svg"
-              titleImgAlt="Equipment Icon"
-              variant={"icon"}
-              size={"widgetSm"}
-            ></Images>
-            <Texts>{t("Equipment")}</Texts>
+            <Contents variant={"widgetButton"} size={"test"}>
+              <Images
+                titleImg="/equipment.svg"
+                titleImgAlt="Equipment Icon"
+                variant={"icon"}
+                size={"widgetSm"}
+              ></Images>
+              <Texts size={"widgetSm"}>{t("Equipment")}</Texts>
+            </Contents>
           </Buttons>
           <Buttons
             href="/dashboard/forms"
             variant={"default"}
             size={"widgetSm"}
           >
-            <Images
-              titleImg="/forms.svg"
-              titleImgAlt="Forms Icon"
-              variant={"icon"}
-              size={"widgetSm"}
-            ></Images>
-            <Texts>{t("Forms")}</Texts>
+            <Contents variant={"widgetButton"} size={"test"}>
+              <Images
+                titleImg="/forms.svg"
+                titleImgAlt="Forms Icon"
+                variant={"icon"}
+                size={"widgetSm"}
+              ></Images>
+              <Texts size={"widgetSm"}>{t("Forms")}</Texts>
+            </Contents>
           </Buttons>
           <Buttons
             href="/dashboard/clock-out"
@@ -248,16 +290,104 @@ export const User: React.FC<UserProps> = ({
             size={"widgetSm"}
             onClick={() => handleShowAdditionalButtons("clockOut")}
           >
-            <Images
-              titleImg="/clockOut.svg"
-              titleImgAlt="Clock Out Icon"
-              variant={"icon"}
-              size={"widgetSm"}
-            ></Images>
-            <Texts>{t("ClockOut")}</Texts>
+            <Contents variant={"widgetButton"} size={"test"}>
+              <Images
+                titleImg="/clockOut.svg"
+                titleImgAlt="Clock Out Icon"
+                variant={"icon"}
+                size={"widgetSm"}
+              ></Images>
+              <Texts size={"widgetSm"}>{t("ClockOut")}</Texts>
+            </Contents>
           </Buttons>
         </>
-      )}
+      
+      ): //manager === false
+      (
+        <>
+          <Buttons
+            variant={"orange"}
+            size={"widgetSm"}
+            onClick={handleOpenModal}
+          >
+            <Contents variant={"widgetButton"} size={"test"}>
+              <Images
+                titleImg="/jobsite.svg"
+                titleImgAlt="Jobsite Icon"
+                variant={"icon"}
+                size={"widgetSm"}
+              ></Images>
+              <Texts size={"widgetSm"}>{t("SwitchJobs")}</Texts>
+            </Contents>
+          </Buttons>
+          <Modals
+            isOpen={isModalOpen}
+            handleClose={handleCloseModal}
+            variant={"default"}
+            size={"clock"}
+            type={"clock"}
+          >
+            <div className="flex flex-col bg-white px-2 ">
+              <ClockProcessor
+                type={"switchJobs"}
+                id={user?.id}
+                scannerType={"jobsite"}
+                isModalOpen={isModalOpen}
+                locale={locale}
+              />
+            </div>
+          </Modals>
+
+          <Buttons
+            href="/dashboard/equipment"
+            variant={"green"}
+            size={"widgetSm"}
+            onClick={() => handleShowAdditionalButtons("equipment")}
+          >
+            <Contents variant={"widgetButton"} size={"test"}>
+              <Images
+                titleImg="/equipment.svg"
+                titleImgAlt="Equipment Icon"
+                variant={"icon"}
+                size={"widgetSm"}
+              ></Images>
+              <Texts size={"widgetSm"}>{t("Equipment")}</Texts>
+            </Contents>
+          </Buttons>
+          <Buttons
+            href="/dashboard/forms"
+            variant={"default"}
+            size={"widgetMed"}
+          >
+            <Contents variant={"widgetButtonRow"} size={"test"}>
+              <Texts size={"widgetMed"}>{t("Forms")}</Texts>
+              <Images
+                titleImg="/forms.svg"
+                titleImgAlt="Forms Icon"
+                variant={"icon"}
+                size={"widgetMed"}
+              />
+            </Contents>
+          </Buttons>
+          <Buttons
+            href="/dashboard/clock-out"
+            variant={"red"}
+            size={"widgetMed"}
+            onClick={() => handleShowAdditionalButtons("clockOut")}
+          >
+            <Contents variant={"widgetButtonRow"} size={"test"}>
+            <Texts size={"widgetMed"}>{t("ClockOut")}</Texts>
+              <Images
+                titleImg="/clockOut.svg"
+                titleImgAlt="Clock Out Icon"
+                variant={"icon"}
+                size={"widgetMed"}
+              />
+            </Contents>
+          </Buttons>
+        </>
+      
+        ))}
     </>
   );
 };
