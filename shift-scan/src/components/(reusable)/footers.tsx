@@ -12,7 +12,7 @@ const FooterVariants = cva(
           relative: "relative bg-none",
         },
         size: {
-          default: "p-1 w-full h-full",
+          default: "",
         }
       },
       defaultVariants: {

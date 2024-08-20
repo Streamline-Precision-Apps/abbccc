@@ -24,6 +24,7 @@ import { useRecentDBJobsite, useRecentDBCostcode, useRecentDBEquipment} from "@/
 import { useSavedPayPeriodTimeSheet } from "../context/SavedPayPeriodTimeSheets";
 import { clockProcessProps, jobCodes, CostCode, Equipment, TimeSheets } from "@/lib/content";
 import { Contents } from "@/components/(reusable)/contents";
+import { Grids } from "@/components/(reusable)/grids";
 
 
 export default function Content({
@@ -181,7 +182,7 @@ export default function Content({
           <Sections size={"default"}>
           <Contents size={"default"}>
             <Headers variant={"relative"} size={"default"}></Headers>
-            <Banners variant={"default"} >
+            <Banners variant={"default"}>
               <Titles variant={"default"} size={"h1"}>
                 {t("Banner")}
               </Titles>
@@ -199,7 +200,6 @@ export default function Content({
             <DisplayBreakTime setToggle={handler} display={toggle} />
             <WidgetSection user={user} display={toggle} locale={locale} option={"break"} />
             </Contents>
-            <Footers>{f("Copyright")}</Footers>
             </Contents>
           </Sections>
         </Contents>
@@ -211,28 +211,25 @@ export default function Content({
       <>
         <Bases variant={"default"}>
           <Header />
-          <Contents size={"default"}>
-          <Sections size={"default"}>
+          <Contents>
+          <Sections size={"homepage"}>
+          <Contents variant={"header"} size={"test"}>
             <Headers variant={"relative"} size={"default"}></Headers>
-          <Contents variant={"default"} size={"devun2"}>
-            <Banners variant={"default"} >
-              <Titles variant={"default"} size={"h1"}>
-                {t("Banner")}
-              </Titles>
-              <Texts variant={"default"} size={"p1"}>
-                {t("Date", { date: capitalize(date) })}
-              </Texts>
-            </Banners>
-            <Texts variant={"name"} size={"p1"}>
-              {t("Name", {
-                firstName: capitalize(user.firstName),
-                lastName: capitalize(user.lastName),
-              })}
-            </Texts>
-            <Hours setToggle={handler} display={toggle} />
-            <WidgetSection user={user} display={toggle} locale={locale} />
-            <Footers>{f("Copyright")}</Footers>
           </Contents>
+            <Banners variant={"default"}>
+              <Titles variant={"default"} size={"h1"}>{t("Banner")}</Titles>
+              <Texts variant={"default"} size={"p1"}>{t("Date", { date: capitalize(date) })}</Texts>
+            </Banners>
+            <Contents variant={"name"} size={"test"}>
+              <Texts variant={"name"} size={"p1"}>
+                {t("Name", {firstName: capitalize(user.firstName),lastName: capitalize(user.lastName),})}
+              </Texts>
+            </Contents>
+            <Grids variant={"widgets"} size={"default"}>
+              <Hours setToggle={handler} display={toggle} />
+              <WidgetSection user={user} display={toggle} locale={locale} />
+            </Grids>
+            <Footers>{f("Copyright")}</Footers>
           </Sections>
           </Contents>
         </Bases>

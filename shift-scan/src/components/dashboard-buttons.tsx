@@ -8,7 +8,6 @@ import { User } from "@/app/(routes)/dashboard/user";
 import { Manager } from "@/app/(routes)/dashboard/manager";
 import { useState } from "react";
 import { Equipment, Logs } from "@/lib/types";
-import { Contents } from "./(reusable)/contents";
 
 
 interface DashboardButtonsProps {
@@ -38,7 +37,7 @@ export default function DashboardButtons({ logs, locale }: DashboardButtonsProps
     user?.permission === "PROJECTMANAGER"
   ) {
     return (
-      <Contents variant={"widgetSection"} size={"test"}>
+      <>
         <Manager show={!additionalButtonsType}/>
         <User
           additionalButtonsType={additionalButtonsType}
@@ -46,20 +45,22 @@ export default function DashboardButtons({ logs, locale }: DashboardButtonsProps
           handleShowAdditionalButtons={handleShowAdditionalButtons}
           logs={logs} // Pass logs to User component
           locale={locale}
+          manager={true}
         />
-      </Contents>
+      </>
     );
   } else {
     return (
-      <Contents variant={"widgetSection"} size={"test"}>
+      <>
         <User
           additionalButtonsType={additionalButtonsType}
           handleShowManagerButtons={handleShowManagerButtons}
           handleShowAdditionalButtons={handleShowAdditionalButtons}
           logs={logs} // Pass logs to User component
           locale={locale}
+          manager={false}
         />
-      </Contents>
+      </>
     );
   }
 }
