@@ -2,10 +2,13 @@ import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
 import Content from "@/app/(content)/content";
 import { PayPeriodTimesheets } from "@/lib/types";
+import { auth } from "@/auth"
 
 export default async function Home() {
-  const user = cookies().get("user");
-  const userid = user ? user.value : undefined;
+  const session = await auth();
+  const userid = session?.user.id;
+  // const user = cookies().get("user");
+  // const userid = user ? user.value : undefined;
 
   const lang = cookies().get("locale");
   const locale = lang ? lang.value : "en"; 
@@ -109,6 +112,7 @@ export default async function Home() {
 
   return (
     <Content
+      session={session}
       locale={locale}
       jobCodes={jobCodes}
       CostCodes={costCodes}

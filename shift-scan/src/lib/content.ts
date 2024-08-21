@@ -1,3 +1,5 @@
+import { CustomSession } from "./types";
+
 // holds the same types so they dont need to be re declared over and over again
 type jobCodes = {
 id: number;
@@ -22,13 +24,14 @@ type TimeSheets = {
 };
 
 interface clockProcessProps {
-locale: string;
-jobCodes: jobCodes[];
-CostCodes: CostCode[];
-equipment: Equipment[];
-recentJobSites: jobCodes[];
-recentCostCodes: CostCode[];
-recentEquipment: Equipment[];
-payPeriodSheets: TimeSheets[];
+    session: CustomSession | null;
+    locale: string;
+    jobCodes: jobCodes[];
+    CostCodes: CostCode[];
+    equipment: Equipment[];
+    recentJobSites: jobCodes[];
+    recentCostCodes: CostCode[];
+    recentEquipment: Equipment[];
+    payPeriodSheets: TimeSheets[];
 }
 export type { clockProcessProps, jobCodes, CostCode, Equipment, TimeSheets };
