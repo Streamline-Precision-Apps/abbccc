@@ -70,7 +70,7 @@ export async function CreateTimeSheet(formData: FormData) {
                 refueling_gallons: formData.get("refueling_gallons") ? Number(formData.get("refueling_gallons")) : null,
                 timesheet_comments: formData.get("timesheet_comments") as string || null,
                 app_comment: formData.get("app_comment") as string || null,
-                user: { connect: { id: formData.get("userId") as string } },
+                user: { connect: { id: formData.get("user_id") as string } },
                 jobsite: { connect: { jobsite_id: formData.get("jobsite_id") as string } }
             },
         });
