@@ -22,6 +22,7 @@ const ButtonVariants = cva(
       },
       size: {
         default: "h-[50px] w-[50px] flex-row mx-auto my-3 p-1",
+        minBtn: "h-[50px] w-fit flex-row mx-auto my-3 p-1",
         hours: "h-[150px] w-full flex-row mx-auto p-3 col-span-2",
         listLg: "flex-row w-full h-28 mt-5 first:mt-0 overflow-hidden justify-stretch",
         widgetSm: " min-h-[150px] min-w-[180px] shadow-[8px_8px_0px_grey]",

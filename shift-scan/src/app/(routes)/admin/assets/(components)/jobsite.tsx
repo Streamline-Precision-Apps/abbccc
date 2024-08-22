@@ -106,14 +106,14 @@ export default function Jobsite( { jobsites }: Props ) {
         <> 
          {/* This section is used to display all active jobsite */}
                 { showBanner && (
-                    <Contents size={"null"} variant={"header"}>
+                    <Contents size={null} variant={"header"}>
                         <Texts>{Banner}</Texts>
                     </Contents>     
                     )
                 }    
-        <Contents variant={"border"} size={"null"} >
+        <Contents variant={"default"} size={null} >
         <Expands title="Active Jobsites" divID={"1"}>
-                <Contents size={"null"}>
+                <Contents size={null}>
                     <table>
                         <thead>
                             <tr>
@@ -149,7 +149,7 @@ export default function Jobsite( { jobsites }: Props ) {
             </Expands>
             </Contents>
         {/* This section is used to create a new jobsite */}
-        <Contents variant={"border"} size={"null"} >
+        <Contents variant={"default"} size={null} >
         <Expands title= "Create New Jobsite" divID={"2"} >
                 <Forms action={createJobsite} onSubmit={() => handleBanner("Created Successfully")}>
 
@@ -177,15 +177,16 @@ export default function Jobsite( { jobsites }: Props ) {
                 <Labels variant="default" type="">{t("Comments")} *</Labels>
                 <Inputs variant="default" type="text" name="comments" required />
 
-                    <Buttons variant="green" size="default" type="submit">
-                        {t("submit")}
+                    <Buttons variant="green" size={"minBtn"} type="submit">
+                        <Texts>Create Jobsite</Texts>
                     </Buttons>
                 </Forms>
             </Expands>
             </Contents>
-            <Contents variant={"border"} size={"null"} >   
+        {/* This section is used to create a new jobsite */}
+            <Contents variant={"default"} size={null} >   
             <Expands title="Edit Existing Jobsite" divID={"3"}>
-                <Contents variant={"searchBar"} size="null">
+                <Contents variant={"rowCenter"} size={null}>
                 <SearchBar
                     searchTerm={searchTerm1}
                     onSearchChange={(e) => handleSearchChange(e, "1")}
@@ -195,21 +196,23 @@ export default function Jobsite( { jobsites }: Props ) {
                 {searchTerm1 && editForm && (
                     <ul>
                         {jobsiteList.map((item) => (
-                            <Buttons onClick={() => {setSearchTerm1(item.jobsite_name);setEditForm(false);}} key={item.id}>
-                                {item.jobsite_name} ({item.jobsite_id})
+                            <Buttons variant="orange" size="listLg" onClick={() => {setSearchTerm1(item.jobsite_name);setEditForm(false);}} key={item.id}>
+                                <Texts>
+                                    {item.jobsite_name} ({item.jobsite_id})    
+                                </Texts>
                             </Buttons>
                         ))}
                     </ul>
                 )}
                 {Response === null && 
-                <Buttons variant="orange" size="default" onClick={() => handleEditForm("1")} >
-                    {t("Submit")}
+                <Buttons variant="orange" size={"minBtn"} onClick={() => handleEditForm("1")} >
+                    <Texts>Search</Texts>
                 </Buttons>
                 }
                 {/* Display the form for editing the selected equipment */}
                 {Response !== null &&  !editForm && (
                     <Forms action={updateJobsite} onSubmit={() => handleBanner("Updated Successfully")} >
-                        <Inputs type="text" name="id" defaultValue={Response.id} />
+                        <Inputs type="text" name="id" hidden defaultValue={Response.id} />
 
                         <Labels variant="default" type="">{t("IsActive")} *</Labels>
                         <Inputs variant="default" type="checkbox" defaultValue={Response.jobsite_active ? "true" : "false"} name="jobsite_active" />
@@ -239,8 +242,8 @@ export default function Jobsite( { jobsites }: Props ) {
                         <Inputs variant="default" type="text" name="comments"  defaultValue={Response.comments ?? " "} required />
                 
 
-                        <Buttons variant="orange" size="default" type="submit">
-                            Edit Equipment
+                        <Buttons variant="orange" size={"minBtn"} type="submit">
+                            Edit Selected Job Site
                         </Buttons>
                     </Forms>
                 )} 
@@ -248,9 +251,9 @@ export default function Jobsite( { jobsites }: Props ) {
                 </Expands>
             </Contents>
             {/* Delete Existing Jobsites */}
-            <Contents variant={"border"} size={"null"} > 
+            <Contents variant={"default"} size={null} > 
             <Expands title="Delete Existing Jobsite" divID={"4"}>
-                <Contents variant={"searchBar"} size="null">
+                <Contents variant={"rowCenter"} size={null}>
                 <SearchBar
                     searchTerm={searchTerm2}
                     onSearchChange={(e) => handleSearchChange(e, "2")}
@@ -260,22 +263,22 @@ export default function Jobsite( { jobsites }: Props ) {
                 {searchTerm2 && editForm && (
                     <ul>
                         {jobsiteList.map((item) => (
-                            <Buttons onClick={() => {setSearchTerm2(item.jobsite_name);setEditForm(false);}} key={item.id}>
-                                {item.jobsite_name} ({item.jobsite_id})
+                            <Buttons variant="orange" size="listLg" onClick={() => {setSearchTerm2(item.jobsite_name);setEditForm(false);}} key={item.id}>
+                                <Texts>{item.jobsite_name} ({item.jobsite_id})</Texts>
                             </Buttons>
                         ))}
                     </ul>
                 )}
                 {Response === null && 
-                <Buttons variant="orange" size="default" onClick={() => handleEditForm("2")} >
-                    {t("Submit")}
+                <Buttons variant="orange" size={"minBtn"} onClick={() => handleEditForm("2")} >
+                    <Texts>Search</Texts>
                 </Buttons>
                 }
                 {/* Display the form for editing the selected equipment */}
                 {Response !== null &&  !editForm && (
                     <Forms action={deleteJobsite} onSubmit={() => handleBanner("Deleted jobsite Successfully")} >
                         <Inputs type="hidden" name="id" defaultValue={Response.id} />
-                        <Buttons variant="orange" size="default" type="submit">
+                        <Buttons variant="orange" size={"minBtn"} type="submit">
                             Delete Equipment
                         </Buttons>
                     </Forms>
@@ -283,7 +286,7 @@ export default function Jobsite( { jobsites }: Props ) {
                 </Expands>
             </Contents>
             {/* Add New Jobsite */}
-        <Contents variant={"border"} size={"null"} >
+        <Contents variant={"default"} size={null}>
         <Expands title="Edit Existing Jobsite" divID={"5"}>
         {jobsites.filter((item) => item.jobsite_id.slice(0, 3) === "J-T") .length > 0 ? (
                 <>

@@ -106,7 +106,7 @@ const Router = useRouter();
               variant={"icon"}
               size={"default"}
             />
-            <Texts>Manage Assest </Texts>
+            <Texts>Manage Assets </Texts>
           </Contents>
           </Buttons>
         </>
