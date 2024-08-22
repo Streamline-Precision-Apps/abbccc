@@ -64,7 +64,7 @@ export default function Content( { equipment , jobsites, costCodes }: Props ) {
             type="noIcon"
             />
         </Sections>
-        <Contents size={"devun1"} variant={"row"}>
+        <Contents variant={"widgetButtonRow"} size={null}>
         <Tab 
         onClick={() => setActiveTab(1)}
         tabLabel= "Equipment" 
