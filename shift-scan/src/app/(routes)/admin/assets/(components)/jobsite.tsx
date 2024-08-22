@@ -183,7 +183,7 @@ export default function Jobsite( { jobsites }: Props ) {
                 </Forms>
             </Expands>
             </Contents>
-        {/* This section is used to create a new jobsite */}
+        {/* This section is used to search and update an existing  jobsite */}
             <Contents variant={"default"} size={null} >   
             <Expands title="Edit Existing Jobsite" divID={"3"}>
                 <Contents variant={"rowCenter"} size={null}>

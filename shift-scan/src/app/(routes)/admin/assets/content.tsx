@@ -39,6 +39,7 @@ type costCodes = {
     id: number;
     cost_code: string;
     cost_code_description: string;
+    cost_code_type: string;
 }
 
 

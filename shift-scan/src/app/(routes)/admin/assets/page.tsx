@@ -22,6 +22,7 @@ const jobsites = await prisma.jobsite.findMany();
         id: true,
         cost_code: true,
         cost_code_description: true,
+        cost_code_type: true,
     },
     });
 

@@ -151,3 +151,52 @@ export async function editGeneratedJobsite( formData: FormData ) {
         throw error;
     }
 }
+
+
+export async function createCostCode(formData: FormData) {
+    try {
+        console.log("Creating cost code...");
+        console.log(formData);
+        // Check if cost code already exists
+        await prisma.costCode.create({
+            data: {
+                cost_code: formData.get("cost_code") as string,
+                cost_code_description: formData.get("cost_code_description") as string,
+                cost_code_type: formData.get("cost_code_type") as string,
+            },
+        });
+        revalidatePath(`/admin/assets`);
+    } catch (error) {
+        console.error("Error creating cost code:", error);
+        throw error;
+    }
+}
+export async function fetchByNameCostCode(cost_code_description: string ) {
+
+    const costCode = await prisma.costCode.findMany({
+        where: {
+            cost_code_description: cost_code_description
+        }
+    })
+    revalidatePath(`/admin/assets`);
+    return costCode
+}
+
+export async function EditCostCode(formData: FormData) {
+    try {
+        console.log("Creating cost code...");
+        console.log(formData);
+        // Check if cost code already exists
+        await prisma.costCode.create({
+            data: {
+                cost_code: formData.get("cost_code") as string,
+                cost_code_description: formData.get("cost_code_description") as string,
+                cost_code_type: formData.get("cost_code_type") as string,
+            },
+        });
+        revalidatePath(`/admin/assets`);
+    } catch (error) {
+        console.error("Error creating cost code:", error);
+        throw error;
+    }
+}
