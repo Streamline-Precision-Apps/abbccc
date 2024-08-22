@@ -39,7 +39,7 @@ interface ModalProps extends HTMLAttributes<HTMLElement>, VariantProps<typeof Mo
     isOpen: boolean;
     step?: number;
     handleClose: () => void;
-    clockOut: () => void;
+    clockOut?: () => void; // clockOut is optional
 }
 
 const Modals: FC<ModalProps> = ({className, variant, size, type, isOpen, step, handleClose, clockOut, ...props}) => {
@@ -71,7 +71,7 @@ const Modals: FC<ModalProps> = ({className, variant, size, type, isOpen, step, h
                 <Buttons 
                 onClick={() => {
                 handleClose();
-                clockOut(); 
+                clockOut?.(); 
                 }} className="close-btn" variant={"green"} size={"default"}>
                     <Titles variant={"default"} size={"h3"}>Yes</Titles>
                 </Buttons>

@@ -5,6 +5,9 @@ import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
 import { setAuthStep } from "@/app/api/auth";
 import { useRouter } from "next/navigation";
+import { Grids } from "@/components/(reusable)/grids";
+import { Content } from "next/font/google";
+import { Contents } from "@/components/(reusable)/contents";
 
 interface AdminProps {
   additionalButtonsType: string | null;
@@ -29,54 +32,63 @@ const Router = useRouter();
     <>
       {additionalButtonsType === "recruitment" ? (
         <>
+          
           <Buttons
             variant={"default"}
-            size={"widgetSm"}
+            size={"widgetMed"}
             onClick={handleResetButtons}
-          >
+            >
+        <Contents variant={"widgetButton"} size={null}>
             <Images
               titleImg="/home.svg"
               titleImgAlt="Home Icon"
               variant={"icon"}
               size={"default"}
-            />
+              />
               <Texts>{t("Home")}</Texts>
-          
+              </Contents>
           </Buttons>
           <Buttons
             variant={"green"}
             size={"widgetSm"}
             href="/admin/add-employee"
           >
+            <Contents variant={"widgetButton"} size={null}>
+
             <Images
               titleImg="/equipment.svg"
               titleImgAlt="Equipment Icon"
               variant={"icon"}
               size={"default"}
-            />
+              />
             <Texts>{t("AddEmployee")}</Texts>
+            </Contents>
           </Buttons>
           <Buttons
             variant={"orange"}
             size={"widgetSm"}
             href="/admin/employee-search"
           >
+            <Contents variant={"widgetButton"} size={null}>
+
             <Images
               titleImg="/forms.svg"
               titleImgAlt="Current Equipment Icon"
               variant={"icon"}
               size={"default"}
-            />
+              />
             <Texts>{t("SeeCurrentEmployees")}</Texts>
+            </Contents>
           </Buttons>
         </>
       ) : additionalButtonsType === "asset" ? (
-        <>
+          <>
           <Buttons
             variant={"default"}
-            size={"widgetSm"}
+            size={"widgetMed"}
             onClick={handleResetButtons}
           >
+            <Contents variant={"widgetButton"} size={null}>
             <Images
               titleImg="/home.svg"
               titleImgAlt="Home Icon"
@@ -84,58 +96,47 @@ const Router = useRouter();
               size={"default"}
             />
             <Texts>{t("Home")}</Texts>
+          </Contents>
           </Buttons>
-          <Buttons variant={"orange"} size={"widgetSm"}  href="/admin/assets">
-          <Images
+          <Buttons variant={"orange"} size={"widgetMed"}  href="/admin/assets">
+          <Contents variant={"widgetButton"} size={null}>
+            <Images
               titleImg="/equipment.svg"
               titleImgAlt="Home Icon"
               variant={"icon"}
               size={"default"}
             />
-            <Texts>Manage Equipment</Texts>
-          </Buttons>
-          <Buttons variant={"orange"} size={"widgetSm"}  href="/admin/assets">
-          <Images
-              titleImg="/qrCode.svg"
-              titleImgAlt="Home Icon"
-              variant={"icon"}
-              size={"widgetSm"}
-            />
-            <Texts>Manage Jobsites </Texts>
-          </Buttons>
-          <Buttons variant={"orange"} size={"widgetSm"}  href="/admin/assets">
-          <Images
-              titleImg="/jobsite.svg"
-              titleImgAlt="Home Icon"
-              variant={"icon"}
-              size={"default"}
-            />
-            <Texts>Manage Cost Codes</Texts>
+            <Texts>Manage Assest </Texts>
+          </Contents>
           </Buttons>
         </>
       ) : additionalButtonsType === "reports" ? (
         <>
           <Buttons
             variant={"default"}
-            size={"widgetSm"}
+            size={"widgetMed"}
             onClick={handleResetButtons}
           >
+            <Contents variant={"widgetButton"} size={null}>
             <Images
               titleImg="/home.svg"
               titleImgAlt="Home Icon"
               variant={"icon"}
               size={"default"}
-            />
+              />
             <Texts>{t("Home")}</Texts>
+            </Contents>
           </Buttons>
-          <Buttons variant={"orange"} size={"widgetSm"} href="/admin/reports">
+          <Buttons variant={"orange"} size={"widgetMed"} href="/admin/reports">
+          <Contents variant={"widgetButton"} size={null}>
           <Images
               titleImg="/forms.svg"
               titleImgAlt="Home Icon"
               variant={"icon"}
               size={"default"}
-            />
+              />
             <Texts>Extract Reports</Texts>
+            </Contents>
           </Buttons>
         </>
       ) : (
@@ -146,13 +147,15 @@ const Router = useRouter();
             size={"widgetSm"}
             onClick={() => handleShowAdditionalButtons("recruitment")}
           >
+        <Contents variant={"widgetButton"} size={null}>
             <Images
               titleImg="/myTeam.svg"
               titleImgAlt="my team"
               variant={"icon"}
               size={"widgetSm"}
-            ></Images>
+              ></Images>
             <Texts>{t("Recruitment")}</Texts>
+            </Contents>
           </Buttons>
           <Buttons
             href=""
@@ -160,26 +163,31 @@ const Router = useRouter();
             size={"widgetSm"}
             onClick={() => handleShowAdditionalButtons("asset")}
           >
+            <Contents variant={"widgetButton"} size={null}>
+
             <Images
               titleImg="/equipment.svg"
               titleImgAlt="Equipment Icon"
               variant={"icon"}
               size={"widgetSm"}
-            ></Images>
+              ></Images>
             <Texts>{t("Assets")}</Texts>
+              </Contents>
           </Buttons>
           <Buttons
             variant={"red"}
             size={"widgetSm"}
             onClick={() => handleShowAdditionalButtons("reports")}
           >
+            <Contents variant={"widgetButton"} size={null}>
             <Images
               titleImg="/clockOut.svg"
               titleImgAlt="Clock Out Icon"
               variant={"icon"}
               size={"widgetSm"}
-            ></Images>
+              ></Images>
             <Texts>{t("reports")}</Texts>
+              </Contents>
           </Buttons>
 
           <Buttons
@@ -187,13 +195,16 @@ const Router = useRouter();
             size={"widgetSm"}
             onClick={() => switchToDashboard()}
           >
+            <Contents variant={"widgetButton"} size={null}>
+
             <Images
               titleImg="/home.svg"
               titleImgAlt="Clock Out Icon"
               variant={"icon"}
               size={"widgetSm"}
-            ></Images>
-            <Texts>{t("reports")}</Texts>
+              ></Images>
+            <Texts>Dashboard</Texts>
+              </Contents>
           </Buttons>
         </>
       )}
