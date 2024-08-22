@@ -4,8 +4,7 @@ import React, { useState } from 'react';
 import { Modals } from '@/components/(reusable)/modals';
 import { Buttons } from '@/components/(reusable)/buttons';
 import { useTranslations } from 'next-intl';
-import { updateTimeSheet, updateTimeSheetLogOut } from '@/actions/timeSheetActions';
-import { redirect } from 'next/dist/server/api-utils';
+import { updateTimeSheetLogOut } from '@/actions/timeSheetActions';
 import { useRouter } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 
@@ -16,6 +15,7 @@ export default function SignOutModal( { userid }: { userid: string }) {
 
 
   const clockOut = async () => {
+    try {
     const ts = localStorage.getItem('savedtimeSheetData');
     if (ts) {
       const timesheet = JSON.parse(ts);
@@ -34,6 +34,9 @@ export default function SignOutModal( { userid }: { userid: string }) {
     } else {
       console.error('No timesheet data found in localStorage.');
     }
+  } catch (error) {
+    console.error(error);
+  }
   };
 
   return (
@@ -42,7 +45,7 @@ export default function SignOutModal( { userid }: { userid: string }) {
         <p>{t("SignOut")}</p>
       </Buttons>
 
-      <Modals handleClose={() => setIsOpen(false)} clockOut={clockOut} isOpen={isOpen} type="signOut" variant={"default"} size={"sm"}>
+      <Modals handleClose={() => setIsOpen(false)} clockOut={ async () => await clockOut()} isOpen={isOpen} type="signOut" variant={"default"} size={"sm"}>
         {t("SignOutConfirmation")}
       </Modals>
     </div>
