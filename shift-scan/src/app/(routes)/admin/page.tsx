@@ -1,10 +1,11 @@
 import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
 import AdminContent from "./adminContent";
+import { auth } from "@/auth";
 
 export default async function AdminDashboard() {
-  const user = cookies().get("user");
-  const userId = user?.value;
+  const session = await auth();
+  const userId = session?.user.id;
 
   const User = await prisma.user.findUnique({
     where: {

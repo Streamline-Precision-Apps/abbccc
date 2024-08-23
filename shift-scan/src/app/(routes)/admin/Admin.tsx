@@ -18,7 +18,7 @@ export const Admin: React.FC<AdminProps> = ({
   handleShowAdditionalButtons,
 }) => {
   const t = useTranslations("admin");
-const Router = useRouter();
+  const Router = useRouter();
 
   function switchToDashboard(): void {
     setAuthStep("success");
@@ -40,34 +40,16 @@ const Router = useRouter();
               variant={"icon"}
               size={"default"}
             />
-              <Texts>{t("Home")}</Texts>
-          
+            <Texts>{t("Home")}</Texts>
           </Buttons>
-          <Buttons
-            variant={"green"}
-            size={"widgetSm"}
-            href="/admin/add-employee"
-          >
+          <Buttons variant={"orange"} size={"widgetSm"} href="/admin/employees">
             <Images
               titleImg="/equipment.svg"
               titleImgAlt="Equipment Icon"
               variant={"icon"}
               size={"default"}
             />
-            <Texts>{t("AddEmployee")}</Texts>
-          </Buttons>
-          <Buttons
-            variant={"orange"}
-            size={"widgetSm"}
-            href="/admin/employee-search"
-          >
-            <Images
-              titleImg="/forms.svg"
-              titleImgAlt="Current Equipment Icon"
-              variant={"icon"}
-              size={"default"}
-            />
-            <Texts>{t("SeeCurrentEmployees")}</Texts>
+            <Texts>{t("ManageEmployees")}</Texts>
           </Buttons>
         </>
       ) : additionalButtonsType === "asset" ? (
@@ -85,8 +67,8 @@ const Router = useRouter();
             />
             <Texts>{t("Home")}</Texts>
           </Buttons>
-          <Buttons variant={"orange"} size={"widgetSm"}  href="/admin/assets">
-          <Images
+          <Buttons variant={"orange"} size={"widgetSm"} href="/admin/assets">
+            <Images
               titleImg="/equipment.svg"
               titleImgAlt="Home Icon"
               variant={"icon"}
@@ -94,8 +76,8 @@ const Router = useRouter();
             />
             <Texts>Manage Equipment</Texts>
           </Buttons>
-          <Buttons variant={"orange"} size={"widgetSm"}  href="/admin/assets">
-          <Images
+          <Buttons variant={"orange"} size={"widgetSm"} href="/admin/assets">
+            <Images
               titleImg="/qrCode.svg"
               titleImgAlt="Home Icon"
               variant={"icon"}
@@ -103,8 +85,8 @@ const Router = useRouter();
             />
             <Texts>Manage Jobsites </Texts>
           </Buttons>
-          <Buttons variant={"orange"} size={"widgetSm"}  href="/admin/assets">
-          <Images
+          <Buttons variant={"orange"} size={"widgetSm"} href="/admin/assets">
+            <Images
               titleImg="/jobsite.svg"
               titleImgAlt="Home Icon"
               variant={"icon"}
@@ -129,7 +111,7 @@ const Router = useRouter();
             <Texts>{t("Home")}</Texts>
           </Buttons>
           <Buttons variant={"orange"} size={"widgetSm"} href="/admin/reports">
-          <Images
+            <Images
               titleImg="/forms.svg"
               titleImgAlt="Home Icon"
               variant={"icon"}

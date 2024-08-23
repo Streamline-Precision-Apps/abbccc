@@ -12,24 +12,25 @@ import { Footers } from "@/components/(reusable)/footers";
 import {
   setAuthStep,
 } from "@/app/api/auth";
-import { CustomSession, User } from "@/lib/types";
+import { CustomSession, SearchUser, User } from "@/lib/types";
 import { useSession } from "next-auth/react";
 import { useSavedUserData } from "@/app/context/UserContext";
 import AddEmployeeForm from "./addEmployee";
+import UserManagement from "./(components)/userManagement";
 
 interface AddEmployeeContentProps {
   permission: string | undefined;
+  users: SearchUser[];
 }
 
-export default function AddEmployeeContent({ permission }: AddEmployeeContentProps) {
+export default function AddEmployeeContent({ permission , users }: AddEmployeeContentProps) {
   const t = useTranslations("admin");
   const router = useRouter();
   const [user, setData] = useState<User>({
     id: "",
-    name: "",
     firstName: "",
     lastName: "",
-    permission: "",
+    permission: undefined,
   });
   const { data: session } = useSession() as { data: CustomSession | null };
   const { setSavedUserData } = useSavedUserData();
@@ -55,7 +56,6 @@ export default function AddEmployeeContent({ permission }: AddEmployeeContentPro
       });
       setData({
         id: session.user.id,
-        name: session.user.name,
         firstName: session.user.firstName,
         lastName: session.user.lastName,
         permission: session.user.permission,
@@ -67,12 +67,12 @@ export default function AddEmployeeContent({ permission }: AddEmployeeContentPro
     <Bases variant={"default"}>
       <Sections size={"default"}>
         <Headers variant={"relative"} size={"default"}></Headers>
-        <Banners variant={"default"} size={"default"}>
+        <Banners variant={"default"}>
           <Titles variant={"default"} size={"h1"}>
             {t("AddEmployee")}
           </Titles>
         </Banners>
-        <AddEmployeeForm />
+        <UserManagement users={users}/>
         <Footers>{t("lN1")}</Footers>
       </Sections>
     </Bases>
