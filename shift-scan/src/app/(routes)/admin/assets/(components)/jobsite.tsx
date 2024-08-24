@@ -12,9 +12,7 @@ import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import SearchBar from "@/components/(search)/searchbar";
 import { useTranslations } from "next-intl";
-import { revalidatePath } from "next/cache";
-import { Content } from "next/font/google";
-import React, { useEffect } from "react";
+import React from "react";
 import { ChangeEvent, useState } from "react";
 
 type Jobsite = {
@@ -212,6 +210,7 @@ export default function Jobsite( { jobsites }: Props ) {
                 {/* Display the form for editing the selected equipment */}
                 {Response !== null &&  !editForm && (
                     <Forms action={updateJobsite} onSubmit={() => handleBanner("Updated Successfully")} >
+
                         <Inputs type="text" name="id" hidden defaultValue={Response.id} />
 
                         <Labels variant="default" type="">{t("IsActive")} *</Labels>
@@ -243,15 +242,15 @@ export default function Jobsite( { jobsites }: Props ) {
                 
 
                         <Buttons variant="orange" size={"minBtn"} type="submit">
-                            Edit Selected Job Site
+                            <Texts>Edit Selected Job Site</Texts>
                         </Buttons>
                     </Forms>
                 )} 
-
                 </Expands>
             </Contents>
-            {/* Delete Existing Jobsites */}
-            <Contents variant={"default"} size={null} > 
+
+{/* Delete Existing Jobsites */}
+<Contents variant={"default"} size={null} > 
             <Expands title="Delete Existing Jobsite" divID={"4"}>
                 <Contents variant={"rowCenter"} size={null}>
                 <SearchBar

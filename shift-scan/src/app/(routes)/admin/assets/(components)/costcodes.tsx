@@ -13,26 +13,37 @@ import SearchBar from "@/components/(search)/searchbar";
 import { useTranslations } from "next-intl";
 import { ChangeEvent, useState } from "react";
 
-type Props = {
-    costCodes: costCodes[]
-}
-
 type costCodes = {
     id: number
     cost_code: string
     cost_code_description: string
     cost_code_type: string
 }
-export default function CostCodes( { costCodes }: Props ) {
-    const t = useTranslations("admin-assets-costcode");
-    const [Banner, setBanner] = useState<string>("");
-    const [showBanner, setShowBanner] = useState<boolean>(false);
-    const [searchTerm1, setSearchTerm1] = useState<string>("");
-    const [searchTerm2, setSearchTerm2] = useState<string>("");
-    const [editForm, setEditForm] = useState<boolean>(true);
-    const [costCodeList, setCostCodeList] = useState<costCodes[]>(costCodes);
-    const [Response, setResponse] = useState<costCodes | null>(null);
 
+type Props = {
+    costCodes: costCodes[]
+}
+export default function CostCodes( { costCodes }: Props ) {
+
+const t = useTranslations("admin-assets-costcode");
+// Banner for errors and success
+const [Banner, setBanner] = useState<string>("");
+// State for showing and hiding the banner
+const [showBanner, setShowBanner] = useState<boolean>(false);
+
+// edit costcode state
+const [searchTerm1, setSearchTerm1] = useState<string>("");
+
+// delete costcode state
+const [searchTerm2, setSearchTerm2] = useState<string>("");
+// sets the state for edits in costcode edit section
+const [editForm, setEditForm] = useState<boolean>(true);
+// helps search bar component show items based on user input and filter all items
+const [costCodeList, setCostCodeList] = useState<costCodes[]>(costCodes);
+// holds reponse value for the edit to re submit the form with current data filled out.
+const [Response, setResponse] = useState<costCodes | null>(null);
+
+// handles search outputs
     const handleSearchChange = (e: ChangeEvent<HTMLInputElement>, id: string) => {
         const value = e.target.value.toLowerCase();
         if (id === '2') {
@@ -49,7 +60,9 @@ export default function CostCodes( { costCodes }: Props ) {
         setEditForm(true);
     };
 
+    // edits the costcode in current db
     async function handleEditForm(id: string) {
+         // this handles the edit form sever action for the second search bar
         setEditForm(false);
         if (id === '2') {
             const response = await fetchByNameCostCode(searchTerm2);
@@ -59,13 +72,14 @@ export default function CostCodes( { costCodes }: Props ) {
                 console.log("Error fetching equipment.");
             }
         }
+        // this handles the edit form sever action for the first search bar
         if (id === '1') {
             }
         const response = await fetchByNameCostCode(searchTerm1);
         if (response) {
-          setResponse(response as unknown as costCodes); // No need to access the first element of an array
+            setResponse(response as unknown as costCodes); 
         } else {
-            console.log("Error fetching equipment.");
+            console.log("Error fetching costcode.");
         }
     }
 
@@ -107,7 +121,7 @@ export default function CostCodes( { costCodes }: Props ) {
                     </Contents>
             </Expands>
         </Contents>
-        {/*Form for creating cost codes*/}
+{/*Form for creating cost codes*/}
         <Contents variant={"default"} size={null} >
         <Expands title="Create Cost Codes" divID={"2"}>
         <Forms action={createCostCode} onSubmit={() => handleBanner("Created Successfully")}>
@@ -127,67 +141,76 @@ export default function CostCodes( { costCodes }: Props ) {
         </Forms>
         </Expands> 
         </Contents>
-        {/*Form for creating cost codes*/}
-        <Contents variant={"default"} size={null} >
-        <Expands title="Edit Cost Codes" divID={"3"}>
-        <Contents variant={"rowCenter"} size={null}>
-                <SearchBar
-                    searchTerm={searchTerm1}
-                    onSearchChange={(e) => handleSearchChange(e, "1")}
-                    placeholder="Search equipment..."
-                    />
-                </Contents>
-                {searchTerm1 && editForm && (
-                    <ul>
-                        {costCodes.map((item) => (
-                            <Buttons variant="orange" size="listLg" onClick={() => {setSearchTerm1(item.cost_code);setEditForm(false);}} key={item.id}>
-                                <Texts>
-                                    {item.cost_code} ({item.cost_code_description})    
-                                </Texts>
-                            </Buttons>
-                        ))}
-                    </ul>
-                )}
-                {Response === null && 
-                <Buttons variant="orange" size={"minBtn"} onClick={() => handleEditForm("1")} >
-                    <Texts>Search</Texts>
+{/*Form for creating cost codes*/}
+<Contents variant={"default"} size={null}>
+    <Expands title="Edit Cost Codes" divID={"3"}>
+    <Contents variant={"rowCenter"} size={null}>
+        <SearchBar
+            searchTerm={searchTerm1}
+            onSearchChange={(e) => handleSearchChange(e, "1")}
+            placeholder="Search for cost code..."
+            />
+    </Contents>
+{/* Display Search options for editing cost codes if search term is not empty and form is not in edit mode*/}
+{searchTerm1 && editForm && (
+<ul>
+    {costCodeList.map((item) => (
+        <Buttons variant="orange" size="listLg" onClick={() => {setSearchTerm1(item.cost_code_description);setEditForm(false);}} key={item.id}>
+                <Texts>
+                {item.cost_code} ({item.cost_code_description})    
+                </Texts>
                 </Buttons>
-                }
-                {/* Display the form for editing the selected equipment */}
-                {Response !== null &&  !editForm && (
-                <Forms action={EditCostCode} onSubmit={() => handleBanner("update Successfully")}>
+    ))}
+</ul>
+)}
+{/*Displays edit submit button when reponse is null*/}
+{Response === null && 
+    <Buttons variant="orange" size={"minBtn"} onClick={() => handleEditForm("1")} >
+        <Texts>Search</Texts>
+    </Buttons>
+}
+{/* Display the form for editing the selected equipment */}
+{Response !== null &&  !editForm && (
+    <Forms action={EditCostCode} onSubmit={() => handleBanner("update Successfully")}>
 
-                <Labels variant="default" type="" defaultValue={Response.cost_code}>Cost Code *</Labels>
-                <Inputs variant="default" type="text" name="cost_code" required />
+    <Inputs type="text" name="id" hidden defaultValue={Response.id} /> 
 
-                <Labels variant="default" type="" >Cost Code Description *</Labels>
-                <Inputs variant="default" type="text" name="cost_code_description" 
-                defaultValue={Response.cost_code_description}
-                required />
+    <Labels variant="default" type="">Cost Code *</Labels>
+    <Inputs variant="default" type="text" name="cost_code" defaultValue={Response.cost_code} required />
 
-                <Labels variant="default" type="">Cost code Tag *</Labels>
-                <Inputs variant="default" type="text" name="cost_code_type"
-                defaultValue={Response.cost_code_type} required/>
+    <Labels variant="default" type="" >Cost Code Description *</Labels>
+    <Inputs variant="default" type="text" name="cost_code_description" 
+    defaultValue={Response.cost_code_description}
+    required />
 
-                <Buttons variant="green" size={"minBtn"} type="submit">
-                <Texts>Edit</Texts>
-                </Buttons>
-                </Forms>
-                )}
-        </Expands> 
-        </Contents>
-        {/*Form for deleting cost codes*/}
-        <Contents variant={"default"} size={null} >
-        <Expands title="Delete Cost Codes" divID={"4"}>
+    <Labels variant="default" type="">Cost code Tag *</Labels>
+    <Inputs variant="default" type="text" name="cost_code_type"
+    defaultValue={Response.cost_code_type} required/>
 
-        </Expands> 
-        </Contents>
-            {/*will be an interactive table of cost codes under jobs, we will then assign costcodes by a list to a jobsite
-             cost_code_type is how we can filter the costcodes its a string for now */}
-            <Contents variant={"default"} size={null} >
-            <Expands title="Tag Costcodes to Jobs" divID={"5"}>
-            </Expands> 
-        </Contents>
+    <Buttons variant="green" size={"minBtn"} type="submit">
+    <Texts>Edit</Texts>
+    </Buttons>
+    </Forms>
+    )}
+    </Expands> 
+</Contents>
+
+{/*Form for deleting cost codes*/}
+
+<Contents variant={"default"} size={null} >
+<Expands title="Delete Cost Codes" divID={"4"}>
+
+</Expands> 
+</Contents>
+
+{/*will be an interactive table of cost codes under jobs, we will then assign costcodes by a list to a jobsite
+    cost_code_type is how we can filter the costcodes its a string for now */}
+
+<Contents variant={"default"} size={null} >
+    <Expands title="Tag Costcodes to Jobs" divID={"5"}>
+
+    </Expands> 
+</Contents>
         </>
     )
 }
