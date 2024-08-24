@@ -1,6 +1,6 @@
 "use client";
 
-import { createCostCode, EditCostCode, fetchByNameCostCode } from "@/actions/adminActions";
+import { createCostCode, deleteCostCode, EditCostCode, fetchByNameCostCode } from "@/actions/adminActions";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Expands } from "@/components/(reusable)/expands";
@@ -199,7 +199,45 @@ const [Response, setResponse] = useState<costCodes | null>(null);
 
 <Contents variant={"default"} size={null} >
 <Expands title="Delete Cost Codes" divID={"4"}>
+<Contents variant={"rowCenter"} size={null}>
+    <SearchBar
+        searchTerm={searchTerm2}
+        onSearchChange={(e) => handleSearchChange(e, "2")}
+        placeholder="Search equipment..."
+    />
+</Contents>
 
+{/* Displays the list of delete options if there is a search term and form is not in edit mode*/}
+
+{searchTerm2 && editForm && (
+<ul>
+{costCodeList.map((item) => (
+    <Buttons variant="orange" size="listLg" onClick={() => {setSearchTerm2(item.cost_code_description);setEditForm(false);}} key={item.id}>
+        <Texts>{item.cost_code} ({item.cost_code_description})</Texts>
+    </Buttons>
+))}
+</ul>
+)}
+
+{/*Displays edit submit button when reponse is null*/}
+
+{Response === null && 
+<Buttons variant="orange" size={"minBtn"} onClick={() => handleEditForm("2")} >
+    <Texts>Search</Texts>
+</Buttons>
+}
+
+{/* Display the form for editing the selected equipment */}
+
+{Response !== null &&  !editForm && (
+<Forms action={deleteCostCode} onSubmit={() => handleBanner("Deleted jobsite Successfully")} >
+    <Labels variant="default" type="">Are you sure you want to delete this cost code?</Labels>
+    <Inputs type="hidden" name="id" defaultValue={Response.id} />
+    <Buttons variant={"red"} size={"minBtn"} type="submit">
+        <Texts>Yes Delete</Texts>
+    </Buttons>
+</Forms>
+)}
 </Expands> 
 </Contents>
 
