@@ -208,3 +208,16 @@ export async function EditCostCode(formData: FormData) {
         throw error;
     }
 }
+export async function deleteCostCode(formData: FormData) {
+    const id = Number(formData.get("id") as string);
+    try {
+        await prisma.costCode.delete({
+        where: { id: id },
+        });
+        revalidatePath(`/admin/assets`);
+        return true;
+    } catch (error) {
+        console.error("Error deleting jobsite:", error);
+        throw error;
+    }
+    }

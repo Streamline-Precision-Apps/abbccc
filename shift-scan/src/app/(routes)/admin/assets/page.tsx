@@ -5,8 +5,6 @@ import prisma from "@/lib/prisma";
 
 export default async function Page() {
 
-
-
     const equipment = await prisma.equipment.findMany({
         select: {
         id: true,
