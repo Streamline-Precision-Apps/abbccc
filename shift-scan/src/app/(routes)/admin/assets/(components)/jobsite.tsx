@@ -12,7 +12,7 @@ import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import SearchBar from "@/components/(search)/searchbar";
 import { useTranslations } from "next-intl";
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { ChangeEvent, useState } from "react";
 
 type Jobsite = {
@@ -34,8 +34,10 @@ type Jobsite = {
 }
 type Props = {
     jobsites: Jobsite[];
+    setBanner: Dispatch<SetStateAction<string>>;
+    setShowBanner:  Dispatch<SetStateAction<boolean>>
 }
-export default function Jobsite( { jobsites }: Props ) {
+export default function Jobsite( { jobsites, setBanner, setShowBanner }: Props ) {
     const formRef = React.createRef<HTMLFormElement>();
     const t = useTranslations("admin-assets-jobsite");
     const [searchTerm1, setSearchTerm1] = useState<string>("");
@@ -43,8 +45,6 @@ export default function Jobsite( { jobsites }: Props ) {
     const [jobsiteList, setJobsiteList] = useState<Jobsite[]>(jobsites);
     const [Response, setResponse] = useState<Jobsite | null>(null);
     const [editForm, setEditForm] = useState<boolean>(true);
-    const [Banner, setBanner] = useState<string>("");
-    const [showBanner, setShowBanner] = useState<boolean>(false);
     
     // Reset the form when the modal is closed
 
@@ -102,13 +102,6 @@ export default function Jobsite( { jobsites }: Props ) {
 
     return(
         <> 
-         {/* This section is used to display all active jobsite */}
-                { showBanner && (
-                    <Contents size={null} variant={"header"}>
-                        <Texts>{Banner}</Texts>
-                    </Contents>     
-                    )
-                }    
         <Contents variant={"default"} size={null} >
         <Expands title="Active Jobsites" divID={"1"}>
                 <Contents size={null}>

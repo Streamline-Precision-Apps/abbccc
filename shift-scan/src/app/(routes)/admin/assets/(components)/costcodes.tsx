@@ -1,17 +1,20 @@
 "use client";
 
-import { createCostCode, deleteCostCode, EditCostCode, fetchByNameCostCode } from "@/actions/adminActions";
+import { createCostCode, deleteCostCode, EditCostCode, fetchByNameCostCode, findAllCostCodesByTags, TagCostCodeChange } from "@/actions/adminActions";
+import { Form } from "@/app/(routes)/dashboard/clock-out/(components)/injury-report/form";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Expands } from "@/components/(reusable)/expands";
 import { Forms } from "@/components/(reusable)/forms";
+import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
+import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import SearchBar from "@/components/(search)/searchbar";
 import { useTranslations } from "next-intl";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, Dispatch, FormEvent, SetStateAction, useState } from "react";
 
 type costCodes = {
     id: number
@@ -22,27 +25,35 @@ type costCodes = {
 
 type Props = {
     costCodes: costCodes[]
+    setBanner: Dispatch<SetStateAction<string>>;
+    setShowBanner:  Dispatch<SetStateAction<boolean>>
 }
-export default function CostCodes( { costCodes }: Props ) {
+export default function CostCodes( { costCodes, setBanner, setShowBanner }: Props ) {
 
 const t = useTranslations("admin-assets-costcode");
-// Banner for errors and success
-const [Banner, setBanner] = useState<string>("");
-// State for showing and hiding the banner
-const [showBanner, setShowBanner] = useState<boolean>(false);
 
 // edit costcode state
 const [searchTerm1, setSearchTerm1] = useState<string>("");
-
 // delete costcode state
 const [searchTerm2, setSearchTerm2] = useState<string>("");
+
+
 // sets the state for edits in costcode edit section
 const [editForm, setEditForm] = useState<boolean>(true);
 // helps search bar component show items based on user input and filter all items
 const [costCodeList, setCostCodeList] = useState<costCodes[]>(costCodes);
+
 // holds reponse value for the edit to re submit the form with current data filled out.
 const [Response, setResponse] = useState<costCodes | null>(null);
+// array of costcode types of a certain tag
+const [TagsRes, setTagsRes] = useState<costCodes[]>([]);
+const [editTags, setEditTags] = useState<boolean>(true);
 
+// makes a unique list of costcode types
+const uniqueCostCodes = costCodes.filter(
+    (item, index, self) =>
+        index === self.findIndex(t => t.cost_code_type === item.cost_code_type)
+);
 // handles search outputs
     const handleSearchChange = (e: ChangeEvent<HTMLInputElement>, id: string) => {
         const value = e.target.value.toLowerCase();
@@ -59,33 +70,41 @@ const [Response, setResponse] = useState<costCodes | null>(null);
         setCostCodeList(filteredList);
         setEditForm(true);
     };
-
     // edits the costcode in current db
-    async function handleEditForm(id: string) {
-         // this handles the edit form sever action for the second search bar
-        setEditForm(false);
-        if (id === '2') {
-            const response = await fetchByNameCostCode(searchTerm2);
-            if (response) {
-                setResponse(response as unknown as costCodes); // No need to access the first element of an array
-            } else {
-                console.log("Error fetching equipment.");
-            }
-        }
-        // this handles the edit form sever action for the first search bar
-        if (id === '1') {
-            }
-        const response = await fetchByNameCostCode(searchTerm1);
+async function handleEditForm(id: string, TagsId: string) {
+        // this handles the edit form sever action for the second search bar
+        setResponse(null);
+    if (id === '3') {
+        const response = await fetchByNameCostCode(TagsId);
         if (response) {
-            setResponse(response as unknown as costCodes); 
+            setResponse(response as unknown as costCodes); // No need to access the first element of an array
         } else {
-            console.log("Error fetching costcode.");
+            console.log("Error fetching equipment.");
         }
     }
+    if (id === '2') {
+        const response = await fetchByNameCostCode(searchTerm2);
+        if (response) {
+            setResponse(response as unknown as costCodes); // No need to access the first element of an array
+        } else {
+            console.log("Error fetching equipment.");
+        }
+    }
+    // this handles the edit form sever action for the first search bar
+    if (id === '1') {
+        }
+    const response = await fetchByNameCostCode(searchTerm1);
+    if (response) {
+        setResponse(response as unknown as costCodes); 
+    } else {
+        console.log("Error fetching costcode.");
+    }
+}
 
 
     async function handleBanner( words: string ) {
-        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
         setShowBanner(true);
         setBanner(words);
         setSearchTerm1("");
@@ -96,19 +115,24 @@ const [Response, setResponse] = useState<costCodes | null>(null);
             setShowBanner(false);
             setBanner("");
             clearInterval(intervalId); 
-            window.location.reload();
+            setResponse(null);
+            setTagsRes([]);
+            setEditTags(true);
         }, 4000);
     }
     
 
+    async function handleTags(event: FormEvent<HTMLFormElement>): Promise<void> {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        const costCodes = await findAllCostCodesByTags(formData);
+        setTagsRes(costCodes);
+        setEditTags(false);
+        setResponse(null);
+    }
+
     return (
-        <>
-        { showBanner && (
-                    <Contents size={null} variant={"header"}>
-                        <Texts>{Banner}</Texts>
-                    </Contents>     
-                    )
-                }    
+        <>   
             {/* We will mostlikly get ride of this section later on */}
             <Contents variant={"default"} size={null} >
             <Expands title="All in DB Cost Codes" divID={"1"}>
@@ -165,7 +189,7 @@ const [Response, setResponse] = useState<costCodes | null>(null);
 )}
 {/*Displays edit submit button when reponse is null*/}
 {Response === null && 
-    <Buttons variant="orange" size={"minBtn"} onClick={() => handleEditForm("1")} >
+    <Buttons variant="orange" size={"minBtn"} onClick={() => handleEditForm("1","")} >
         <Texts>Search</Texts>
     </Buttons>
 }
@@ -222,7 +246,7 @@ const [Response, setResponse] = useState<costCodes | null>(null);
 {/*Displays edit submit button when reponse is null*/}
 
 {Response === null && 
-<Buttons variant="orange" size={"minBtn"} onClick={() => handleEditForm("2")} >
+<Buttons variant="orange" size={"minBtn"} onClick={() => handleEditForm("2", "")} >
     <Texts>Search</Texts>
 </Buttons>
 }
@@ -240,12 +264,91 @@ const [Response, setResponse] = useState<costCodes | null>(null);
 )}
 </Expands> 
 </Contents>
+{/**************************************************************************/}
 
 {/*will be an interactive table of cost codes under jobs, we will then assign costcodes by a list to a jobsite
     cost_code_type is how we can filter the costcodes its a string for now */}
 
+{/**************************************************************************/}
+
 <Contents variant={"default"} size={null} >
     <Expands title="Tag Costcodes to Jobs" divID={"5"}>
+<Contents variant={"rowCenter"} size={null}>
+
+{/*step 1: Display the option created by the user*/}
+<Forms onSubmit={handleTags}> {/* setTagsRes() & setEditForm(false) , setEditTags(false); */}
+    <Labels variant="default">Select Cost Code Type</Labels>
+    <Selects 
+    variant="default" 
+    name="cost_code_type"
+    onChange={(e) => {
+    e.currentTarget.form?.requestSubmit();
+    }}
+    >
+    <option value="default" >Select Cost Code Type</option>
+    {uniqueCostCodes.map((item, index) => (
+    <option key={index} value={item.cost_code_type}>
+    {item.cost_code_type}
+    </option>
+    ))}
+    </Selects>
+</Forms>
+
+</Contents>
+
+{/* Displays the list of costcodes if there is a search term and form is not in edit mode*/}
+{Response === null &&
+<Contents variant={"rowCenter"} size={null}>
+{editTags == false && (
+<ul>
+{TagsRes.map((item) => (
+    <Buttons variant="orange" size="listLg" key={item.id} 
+    onClick={() =>{
+        handleEditForm("3",item.cost_code_description);
+    }}>
+        <Texts>{item.cost_code} ({item.cost_code_description})</Texts>
+    </Buttons>
+))}
+</ul>
+)}
+</Contents>
+}
+
+{/*Displays a form to change costcodes tags*/}
+<Contents variant={"center"} size={null}>
+{Response !== null && !editTags && (
+    <>
+    <Contents variant={"rowCenter"} size={"listTitle"}>
+<Buttons variant="orange" size={"default"} onClick={() => {setEditTags(false);; handleEditForm("3", ""); }}>
+    <Images variant={"icon"} size={"logo"} titleImg="/backArrow.svg" titleImgAlt="search" />
+</Buttons>
+    </Contents>
+
+<Forms action={TagCostCodeChange} onSubmit={() => handleBanner("Tagged Successfully changed")}>
+    <Inputs type="hidden" name="id" defaultValue={Response.id} />
+
+    <Labels variant="default" type="">Cost Code Id *</Labels>
+    <Inputs variant="default" type="text" name="cost_code"
+    defaultValue={Response.cost_code}
+    state="disabled"
+    />
+<Labels variant="default" type="">Cost Code Description*</Labels>
+<Inputs variant="default" type="text" name="cost_code_description"
+    defaultValue={Response.cost_code_description}
+    state="disabled"
+    />
+
+<Inputs variant="default" type="text" name="cost_code_type"
+    defaultValue={Response.cost_code_type}
+    />
+    
+    <Buttons variant="green" size={"minBtn"} type="submit">
+        <Texts>Tag</Texts>
+    </Buttons>
+</Forms>
+    </>
+)}
+</Contents>
 
     </Expands> 
 </Contents>

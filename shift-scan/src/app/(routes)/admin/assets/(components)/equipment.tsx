@@ -2,7 +2,7 @@
 import { Sections } from "@/components/(reusable)/sections";
 import { Texts } from "@/components/(reusable)/texts";
 import { Forms} from "@/components/(reusable)/forms";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { useTranslations } from "next-intl";
 import { Inputs } from "@/components/(reusable)/inputs";
@@ -39,15 +39,15 @@ type Equipment = {
 
 type Props = {
     equipment: Equipment[];
+    setBanner: Dispatch<SetStateAction<string>>;
+    setShowBanner:  Dispatch<SetStateAction<boolean>>
 };
 
-export default function Equipment({ equipment }: Props) {
+export default function Equipment({ equipment, setBanner, setShowBanner}: Props) {
     const [equipmentList, setEquipmentList] = useState<Equipment[]>(equipment);
     const [searchTerm1, setSearchTerm1] = useState<string>("");
     const [searchTerm2, setSearchTerm2] = useState<string>("");
     const [editForm, setEditForm] = useState<boolean>(true);
-    const [showBanner, setShowBanner] = useState<boolean>(false);
-    const [banner, setBanner] = useState("");
     const [equipmentResponse, setEquipmentResponse] = useState<Equipment | null>(null);
     const [equipmentTag, setEquipmentTag] = useState<string>("EQUIPMENT");
     const t = useTranslations("addEquipmentForm");
@@ -131,12 +131,6 @@ export default function Equipment({ equipment }: Props) {
 
     return(
         <>
-        { showBanner && (
-                    <Contents size={"default"} variant={"default"}>
-                        <Texts>{banner}</Texts>
-                    </Contents>     
-                    )
-                } 
         <Contents variant={"default"} size={null}>
         <Expands title="Create New Equipment" divID={"1"}  >
                 <Forms action={createEquipment} onSubmit={() => handleBanner("Equipment was created successfully")}>

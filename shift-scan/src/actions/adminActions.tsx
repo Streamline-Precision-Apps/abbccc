@@ -181,6 +181,20 @@ export async function fetchByNameCostCode(cost_code_description : string) {
     return costCode
 }
 
+export async function findAllCostCodesByTags(formData: FormData) {
+    console.log("findAllCostCodesByTags")
+    console.log(formData)
+
+    const cost_code_type = formData.get("cost_code_type") as string
+    const costCodes = await prisma.costCode.findMany({
+        where: {
+            cost_code_type: cost_code_type
+        }
+    })
+    revalidatePath(`/admin/assets`);
+    return costCodes
+}
+
 export async function EditCostCode(formData: FormData) {
     
     try {
@@ -221,3 +235,28 @@ export async function deleteCostCode(formData: FormData) {
         throw error;
     }
     }
+
+    
+export async function TagCostCodeChange(formData: FormData) {
+    try {
+        console.log("Creating cost code...");
+        console.log(formData);
+        const id = Number(formData.get("id") as string);
+        const costCodeType = formData.get("cost_code_type") as string;
+        await prisma.costCode.update({
+            where: {
+                id: id
+            },
+            data: {
+                cost_code_type: costCodeType
+            },
+        });
+
+        revalidatePath(`/admin/assets`);
+
+    } catch (error) {
+        console.error("Error creating cost code:", error);
+        throw error;
+    }
+}
+
