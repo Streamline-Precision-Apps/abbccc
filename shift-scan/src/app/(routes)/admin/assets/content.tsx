@@ -86,7 +86,7 @@ export default function Content( { equipment , jobsites, costCodes }: Props ) {
         <Sections size={"dynamic"}>
             {activeTab === 1 && <Equipment equipment={equipment}/> }
             {activeTab === 2 && <Jobsite jobsites={jobsites}/>}
-            {activeTab === 3 && <Costcodes costCodes={costCodes}/>} {/* costCodes={costCodes}/*/}
+            {activeTab === 3 && <Costcodes costCodes={costCodes}/>}
             </Sections>
         </Bases>
     )
