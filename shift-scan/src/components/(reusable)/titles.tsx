@@ -17,7 +17,6 @@ const TitleVariants = cva(
         white: "text-white",
         disabled: "text-gray-600",
         green : "text-app-green",
-        bannerMessage: "pb-0 mb-0",
       },
       size: {
         default: " text-2xl",

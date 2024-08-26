@@ -3,7 +3,7 @@ import { HTMLAttributes, FC } from "react";
 import { cn } from "@/components/(reusable)/utils";
 
 const GridVariants = cva(
-  "m-0", //this applies to all variants
+  "m-1 -ml-2", //this applies to all variants
   {
     variants: {
       variant: {

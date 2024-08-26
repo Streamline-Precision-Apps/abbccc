@@ -16,9 +16,8 @@ const TextVariants = cva(
         default: "text-black text-body",
         white: "text-white",
         disabled: "text-gray-600",
-        name: "",
+        name: "pt-5 mt-5",
         bottom: "absolute bottom-0",
-        bannerDate: "pt-0 mt-0",
       },
       size: {
         default: "text-2xl",
