@@ -3,21 +3,27 @@
 import { Permission } from "@prisma/client";
 
 export type User = {
-    id: string;
-    name?: string | null;
-    email?: string | null;
-    image?: string | null;
-    firstName?: string | null;
-    lastName?: string | null;
-    permission?: string | null;
+  id: string,
+  username?: string;
+  firstName?: string,
+  lastName?: string,
+  permission?: Permission,
+  DOB?: string,
+  email?: string,
+  phone?: string,
   };
 
 export type SearchUser = {
   id: string,
   firstName: string,
   lastName: string,
+  username: string;
   permission: Permission,
   DOB: string,
+  truck_view: boolean;
+  mechanic_view: boolean;
+  labor_view: boolean;
+  tasco_view: boolean;
   email: string,
   phone: string,
 };
