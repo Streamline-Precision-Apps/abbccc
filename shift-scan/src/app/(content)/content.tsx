@@ -63,10 +63,9 @@ export default function Content({
   });
   const [user, setData] = useState<User>({
     id: "",
-    name: "",
     firstName: "",
     lastName: "",
-    permission: "",
+    permission: undefined,
   });
   const { jobsiteResults, setJobsiteResults } = useDBJobsite();
   const {
@@ -155,7 +154,6 @@ export default function Content({
       });
       setData({
         id: session.user.id,
-        name: session.user.name,
         firstName: session.user.firstName,
         lastName: session.user.lastName,
         permission: session.user.permission,

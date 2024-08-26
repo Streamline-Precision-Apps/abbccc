@@ -24,7 +24,7 @@ type TimeSheets = {
 };
 
 interface clockProcessProps {
-    session: CustomSession | null;
+    session: any;
     locale: string;
     jobCodes: jobCodes[];
     CostCodes: CostCode[];

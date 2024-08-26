@@ -8,7 +8,6 @@ import { Buttons } from "./buttons";
 import { Images } from './images';
 import { Titles } from './titles';
 import { Contents } from "./contents";
-import { signOut } from "next-auth/react";
 
 const ModalVariants = cva(
   "flex items-center justify-center rounded-full w-50 h-35", //this applies to all variants
@@ -39,10 +38,9 @@ interface ModalProps extends HTMLAttributes<HTMLElement>, VariantProps<typeof Mo
     isOpen: boolean;
     step?: number;
     handleClose: () => void;
-    clockOut?: () => void; // clockOut is optional
 }
 
-const Modals: FC<ModalProps> = ({className, variant, size, type, isOpen, step, handleClose, clockOut, ...props}) => {
+const Modals: FC<ModalProps> = ({className, variant, size, type, isOpen, step, handleClose, ...props}) => {
     useEffect(() => {
         if (isOpen) {
         document.body.style.overflow = 'hidden';
@@ -60,7 +58,6 @@ const Modals: FC<ModalProps> = ({className, variant, size, type, isOpen, step, h
     if (!isOpen) return null;
     
     if (type === "signOut") {
-
       return (
         <ReactPortal wrapperId="react-portal-modal-container">
         <div className="modal ">
@@ -68,11 +65,7 @@ const Modals: FC<ModalProps> = ({className, variant, size, type, isOpen, step, h
             <div className={cn(ModalVariants({variant, size, className}))} {...props}>
               <div className="modal-content">{props.children}</div>
               <div className=" flex flex-row gap-10">
-                <Buttons 
-                onClick={() => {
-                handleClose();
-                clockOut?.(); 
-                }} className="close-btn" variant={"green"} size={"default"}>
+                <Buttons onClick={handleClose} className="close-btn" variant={"green"} size={"default"}>
                     <Titles variant={"default"} size={"h3"}>Yes</Titles>
                 </Buttons>
                 <Buttons onClick={handleClose} className="close-btn" variant={"red"} size={"default"}>
