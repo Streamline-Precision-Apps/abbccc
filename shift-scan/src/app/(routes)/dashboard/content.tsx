@@ -138,8 +138,8 @@ return session ? (
                 <Headers variant={"relative"} size={"default"}></Headers>
             </Contents>
             <Banners variant={"default"}>
-                <Titles variant={"default"} size={"h1"}>{t("Banner")}</Titles>
-                <Texts variant={"default"} size={"p1"}>{date}</Texts>
+                <Titles variant={"bannerMessage"} size={"h1"}>{t("Banner")}</Titles>
+                <Texts variant={"bannerDate"} size={"p2"}>{date}</Texts>
             </Banners>
             <Contents variant={"name"} size={"test"}>
                 <Texts variant={"name"} size={"p1"}>{t("Name", { firstName: user.firstName, lastName: user.lastName })}</Texts>
