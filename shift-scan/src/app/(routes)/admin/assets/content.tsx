@@ -97,7 +97,7 @@ export default function Content( { equipment , jobsites, costCodes }: Props ) {
         <Sections size={"dynamic"}>
             {activeTab === 1 && <Equipment equipment={equipment} setBanner={setBanner} setShowBanner={setShowBanner} /> }
             {activeTab === 2 && <Jobsite jobsites={jobsites} setBanner={setBanner} setShowBanner={setShowBanner} /> }
-            {activeTab === 3 && <Costcodes costCodes={costCodes} setBanner={setBanner} setShowBanner={setShowBanner} /> }
+            {activeTab === 3 && <Costcodes jobsites={jobsites} costCodes={costCodes} setBanner={setBanner} setShowBanner={setShowBanner} /> }
             </Sections>
         </Bases>
     )
