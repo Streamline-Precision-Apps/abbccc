@@ -25,6 +25,7 @@ import { useSavedUserData } from "@/app/context/UserContext";
 import AdminButtons from "@/components/adminButtons";
 import { Content } from "next/font/google";
 import { Contents } from "@/components/(reusable)/contents";
+import { Grids } from "@/components/(reusable)/grids";
 
 interface AdminContentProps {
   permission: string | undefined;
@@ -78,7 +79,7 @@ export default function AdminContent({ permission }: AdminContentProps) {
       <Sections size={"default"}>
       <Contents size={"default"}>
         <Headers variant={"relative"} size={"default"}></Headers>
-        <Banners variant={"default"} size={"default"}>
+        <Banners variant={"default"}>
           <Titles variant={"default"} size={"h1"}>
             {t("Banner")}
           </Titles>
@@ -86,10 +87,14 @@ export default function AdminContent({ permission }: AdminContentProps) {
             {date}
           </Texts>
         </Banners>
+        <Contents variant={"name"} size={"test"}>
         <Texts variant={"name"} size={"p1"}>
           {t("Name", { firstName: user.firstName, lastName: user.lastName })}
         </Texts>
+        </Contents>
+        <Grids variant={"widgets"} size={"default"}>
         <AdminButtons />
+        </Grids>
         <Footers>{t("lN1")}</Footers>
         </Contents>
       </Sections>
