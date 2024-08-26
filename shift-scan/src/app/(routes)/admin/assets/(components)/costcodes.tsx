@@ -1,6 +1,6 @@
 "use client";
-import { createCostCode, deleteCostCode, EditCostCode, fetchByNameCostCode, findAllCostCodesByTags, TagCostCodeChange } from "@/actions/adminActions";
-import { Form } from "@/app/(routes)/dashboard/clock-out/(components)/injury-report/form";
+import { AddlistToJobsite, createCostCode, deleteCostCode, EditCostCode, fetchByNameCostCode, findAllCostCodesByTags, RemovelistToJobsite, TagCostCodeChange } from "@/actions/adminActions";
+
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Expands } from "@/components/(reusable)/expands";
@@ -21,13 +21,29 @@ type costCodes = {
     cost_code_description: string
     cost_code_type: string
 }
-
+type Jobsite = {
+    id: number;
+    jobsite_id: string;
+    jobsite_name: string;
+    street_number?: string | null;
+    street_name?: string;
+    city?: string;
+    state?: string | null;
+    country?: string;
+    zip?: string;
+    phone?: string;
+    email?: string;
+    created_at?: Date;
+    jobsite_description?: string | null;
+    jobsite_active: boolean;
+}
 type Props = {
     costCodes: costCodes[]
+    jobsites: Jobsite[]
     setBanner: Dispatch<SetStateAction<string>>;
     setShowBanner:  Dispatch<SetStateAction<boolean>>
 }
-export default function CostCodes( { costCodes, setBanner, setShowBanner }: Props ) {
+export default function CostCodes( { jobsites, costCodes, setBanner, setShowBanner }: Props ) {
 
 const t = useTranslations("admin-assets-costcode");
 
@@ -41,6 +57,8 @@ const [searchTerm2, setSearchTerm2] = useState<string>("");
 const [editForm, setEditForm] = useState<boolean>(true);
 // helps search bar component show items based on user input and filter all items
 const [costCodeList, setCostCodeList] = useState<costCodes[]>(costCodes);
+const [jobsiteList, setJobsiteList] = useState<Jobsite[]>(jobsites);
+const [costCodeSelections, setCostCodeSelections] = useState([{ id: Date.now(), jobsite_id: "", cost_code_type: "" }]);
 
 // holds reponse value for the edit to re submit the form with current data filled out.
 const [Response, setResponse] = useState<costCodes | null>(null);
@@ -128,6 +146,45 @@ async function handleEditForm(id: string, TagsId: string) {
         setTagsRes(costCodes);
         setEditTags(false);
         setResponse(null);
+    }
+
+    const deleteCostCodeSelect = (id: number) => {
+        setCostCodeSelections(costCodeSelections.filter(selection => selection.id !== id));
+    };
+
+    const addMoreCostCode = () => {
+        setCostCodeSelections([...costCodeSelections, { id: Date.now(), jobsite_id: "", cost_code_type: "" }]);
+    };
+
+    const handleSelectChange = (index: number, value: string) => {
+        const updatedSelections = costCodeSelections.map((selection, i) =>
+            i === index ? { ...selection, cost_code_type: value } : selection
+        );
+        setCostCodeSelections(updatedSelections);
+    };
+
+    const handleSubmit = async (event : FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        
+        const formData = new FormData(event.currentTarget);
+        const jobsiteId = formData.get("jobsite_id") as string;
+        const costCodes = costCodeSelections.map((selection) => selection.cost_code_type);
+        formData.append("jobsite_id", jobsiteId)
+        formData.append("cost_code_types", costCodes.filter(code => code !== "").join(","));
+    
+        const response = await AddlistToJobsite(formData);
+    }
+
+    const disconnect = async (event : FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        
+        const formData = new FormData(event.currentTarget);
+        const jobsiteId = formData.get("jobsite_id") as string;
+        const costCodes = costCodeSelections.map((selection) => selection.cost_code_type);
+        formData.append("jobsite_id", jobsiteId)
+        formData.append("cost_code_types", costCodes.filter(code => code !== "").join(","));
+    
+        const response = await RemovelistToJobsite(formData);
     }
 
     return (
@@ -350,6 +407,115 @@ async function handleEditForm(id: string, TagsId: string) {
 </Contents>
 
     </Expands> 
+</Contents>
+<Contents variant={"default"} size={null}>
+    <Expands title="Assign Costcodes to Job Sites" divID={"6"}>
+    <Contents>
+        <Forms onSubmit={() => {handleBanner("Assigned Costcodes Successfully"); handleSubmit;}}>
+        {/* Jobsite Selection */}
+        <Labels variant="default">Select Jobsite</Labels>
+        <Selects variant="default" name="jobsite_id" required>
+            <option value="default">Select Jobsite</option>
+            {jobsites.map((item) => (
+            <option key={item.id} value={item.jobsite_id}>
+                {item.jobsite_name + " - " + item.jobsite_id}
+            </option>
+            ))}
+        </Selects>
+
+        {/* Dynamic Cost Code Selections */}
+        <Labels variant="default">Select Cost Code Type</Labels>
+        {costCodeSelections.map((selection, index) => (
+            <Contents variant={"rowCenter"} key={index}>
+            <Selects
+                variant="default"
+                name={`cost_code_type_${index}`}
+                value={selection.cost_code_type}
+                onChange={(e) => handleSelectChange(index, e.target.value)}
+                required
+            >
+                <option value="default">Select Cost Code Type</option>
+                {costCodes.map((item) => (
+                <option key={item.id} value={item.cost_code_type}>
+                    {item.cost_code_type}
+                </option>
+                ))}
+            </Selects>
+            {costCodeSelections.length > 1 && (
+                <Buttons variant="red" size="minBtn" type="button" onClick={() => deleteCostCodeSelect(selection.id)}>
+                <Texts>-</Texts>
+                </Buttons>
+            )}
+            </Contents>
+        ))}
+
+        {/* Buttons */}
+        <Contents variant={"rowCenter"}>
+            <Buttons variant="red" size={"minBtn"} type="submit">
+            <Texts>Assign List to Jobsite</Texts>
+            </Buttons>
+            <Buttons variant="green" size={"minBtn"} type="button" onClick={addMoreCostCode}>
+            <Texts>Add</Texts>
+            </Buttons>
+        </Contents>
+        </Forms>
+    </Contents>
+    </Expands>
+</Contents>
+
+<Contents variant={"default"} size={null}>
+    <Expands title="Unassign Costcodes from Job Sites" divID={"7"}>
+    <Contents>
+        <Forms onSubmit={() => {handleBanner("Unassigned Costcodes Successfully"); disconnect;}}>
+        {/* Jobsite Selection */}
+        <Labels variant="default">Select Jobsite</Labels>
+        <Selects variant="default" name="jobsite_id" required>
+            <option value="default">Select Jobsite</option>
+            {jobsites.map((item) => (
+            <option key={item.id} value={item.jobsite_id}>
+                {item.jobsite_name + " - " + item.jobsite_id}
+            </option>
+            ))}
+        </Selects>
+
+        {/* Dynamic Cost Code Selections */}
+        <Labels variant="default">Select Cost Code Type</Labels>
+        {costCodeSelections.map((selection, index) => (
+            <Contents variant={"rowCenter"} key={index}>
+            <Selects
+                variant="default"
+                name={`cost_code_type_${index}`}
+                value={selection.cost_code_type}
+                onChange={(e) => handleSelectChange(index, e.target.value)}
+                required
+            >
+                <option value="default">Select Cost Code Type</option>
+                {costCodes.map((item) => (
+                <option key={item.id} value={item.cost_code_type}>
+                    {item.cost_code_type}
+                </option>
+                ))}
+            </Selects>
+            {costCodeSelections.length > 1 && (
+                <Buttons variant="red" size="minBtn" type="button" onClick={() => deleteCostCodeSelect(selection.id)}>
+                <Texts>-</Texts>
+                </Buttons>
+            )}
+            </Contents>
+        ))}
+
+        {/* Buttons */}
+        <Contents variant={"rowCenter"}>
+            <Buttons variant="red" size={"minBtn"} type="submit">
+            <Texts>Unassign List to Jobsite</Texts>
+            </Buttons>
+            <Buttons variant="green" size={"minBtn"} type="button" onClick={addMoreCostCode}>
+            <Texts>Add</Texts>
+            </Buttons>
+        </Contents>
+        </Forms>
+    </Contents>
+    </Expands>
 </Contents>
         </>
     )
