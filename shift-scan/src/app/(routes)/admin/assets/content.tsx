@@ -39,7 +39,6 @@ type costCodes = {
     id: number;
     cost_code: string;
     cost_code_description: string;
-    cost_code_type: string;
 }
 
 
@@ -51,10 +50,7 @@ type Props = {
 
 export default function Content( { equipment , jobsites, costCodes }: Props ) {
     const [activeTab, setActiveTab] = useState(2); // change to one programming
-    const [showBanner, setShowBanner] = useState<boolean>(false);
-    const [banner, setBanner] = useState<string>("");
-
-
+    
     return (
         <Bases>
         <Sections
@@ -68,15 +64,7 @@ export default function Content( { equipment , jobsites, costCodes }: Props ) {
             type="noIcon"
             />
         </Sections>
-        <Contents size={null} variant={"default"} >
-        { showBanner && ( 
-                    <Contents size={null} variant={"green"} >
-                        <Texts>{banner} something</Texts>
-                    </Contents>     
-                )
-            } 
-        </Contents>
-        <Contents variant={"widgetButtonRow"} size={null}>
+        <Contents size={"assets"} variant={"assest"}>
         <Tab 
         onClick={() => setActiveTab(1)}
         tabLabel= "Equipment" 
@@ -95,9 +83,9 @@ export default function Content( { equipment , jobsites, costCodes }: Props ) {
         />  
             </Contents>
         <Sections size={"dynamic"}>
-            {activeTab === 1 && <Equipment equipment={equipment} setBanner={setBanner} setShowBanner={setShowBanner} /> }
-            {activeTab === 2 && <Jobsite jobsites={jobsites} setBanner={setBanner} setShowBanner={setShowBanner} /> }
-            {activeTab === 3 && <Costcodes costCodes={costCodes} setBanner={setBanner} setShowBanner={setShowBanner} /> }
+            {activeTab === 1 && <Equipment equipment={equipment}/> }
+            {activeTab === 2 && <Jobsite jobsites={jobsites}/>}
+            {activeTab === 3 && <Costcodes costCodes={costCodes}/>} {/* costCodes={costCodes}/*/}
             </Sections>
         </Bases>
     )
