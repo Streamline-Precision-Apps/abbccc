@@ -271,7 +271,7 @@ export const User: React.FC<UserProps> = ({
           </Buttons>
           <Buttons
             href="/dashboard/forms"
-            variant={"default"}
+            variant={"green"}
             size={"widgetSm"}
           >
             <Contents variant={"widgetButton"} size={"test"}>
@@ -356,7 +356,7 @@ export const User: React.FC<UserProps> = ({
           </Buttons>
           <Buttons
             href="/dashboard/forms"
-            variant={"default"}
+            variant={"green"}
             size={"widgetMed"}
           >
             <Contents variant={"widgetButtonRow"} size={"test"}>
