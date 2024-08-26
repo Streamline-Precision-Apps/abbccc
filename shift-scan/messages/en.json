@@ -251,8 +251,7 @@
         "reports": "Reports",
         "Home": "Return Home",
         "lN1": "Copyright © 2024.Streamline Precision LLC. All rights reserved.",
-        "AddEmployee": "Add Employee",
-        "SeeCurrentEmployees": "See Current Employees",
+        "ManageEmployees": "Manage Employee",
         "FirstName": "First Name",
         "LastName": "Last Name",
         "Username": "Username",
@@ -266,7 +265,14 @@
         "Email": "Email",
         "Phone": "Phone",
         "Submit": "Submit",
-        "Select": "Select One"
+        "Select": "Select One",
+        "True": "True",
+        "False": "False",
+        "User": "User",
+        "Manager": "Manager",
+        "ProjectManager": "Project Manager",
+        "SuperAdmin": "Super Admin",
+        "Admin": "Admin"
     },
     "admin-assets-jobsite": {
         "submit": "Submit",
