@@ -157,3 +157,14 @@ I finished some more prisma DB research and Created the clock out dashboard page
 
 - worked on admin view.
 - worked on generalizing camera component.
+
+## 8/20/2024
+
+- Fixed bug for clockin.
+- Start updates to admin empoloyee view to match equipment display in admin view.
+
+## 8/21/2024
+
+- Finished on admin employee view.
+
+## 8/22/2024

@@ -21,7 +21,7 @@ export const Admin: React.FC<AdminProps> = ({
   handleShowAdditionalButtons,
 }) => {
   const t = useTranslations("admin");
-const Router = useRouter();
+  const Router = useRouter();
 
   function switchToDashboard(): void {
     setAuthStep("success");

@@ -7,8 +7,6 @@ import { auth } from "@/auth"
 export default async function Home() {
   const session = await auth();
   const userid = session?.user.id;
-  // const user = cookies().get("user");
-  // const userid = user ? user.value : undefined;
 
   const lang = cookies().get("locale");
   const locale = lang ? lang.value : "en"; 
