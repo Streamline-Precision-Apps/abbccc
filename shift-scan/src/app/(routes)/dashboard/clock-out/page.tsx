@@ -18,6 +18,7 @@ import { useSavedUserData } from "@/app/context/UserContext";
 import { useSavedTimeSheetData } from "@/app/context/TimeSheetIdContext";
 import { useRouter } from "next/navigation";
 import { updateTimeSheet, GetAllTimeSheets } from "@/actions/timeSheetActions";
+import { now } from "next-auth/client/_utils";
 import { Banners } from "@/components/(reusable)/banners";
 import { setAuthStep } from "@/app/api/auth";
 import { Texts } from "@/components/(reusable)/texts";
@@ -186,7 +187,7 @@ const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     } else if (step === 2 && path ==="ClockOut" || step === 3 && path ==="Injury") {
         return (
             <Bases>
-            <Banners variant={banner.length > 0 ? "green" : null} >
+            <Banners variant={banner.length > 0 ? "green" : "clear"} >
             {banner}
             </Banners>
             <Contents>

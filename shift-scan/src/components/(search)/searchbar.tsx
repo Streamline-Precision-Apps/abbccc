@@ -1,8 +1,6 @@
 'use client';
 import React, { ChangeEvent } from 'react';
 import { Images } from '../(reusable)/images';
-import { Inputs } from '../(reusable)/inputs';
-import { Contents } from '../(reusable)/contents';
 
 // defines the searchbar type for typescript
 interface SearchBarProps {
@@ -14,15 +12,16 @@ interface SearchBarProps {
 // defines the searchbar component and what the input should look like
 const SearchBar: React.FC<SearchBarProps> = ({ searchTerm, onSearchChange, placeholder }) => {
   return (
-    <Contents size={"listTitle"} variant={"widgetButtonRow"}>
-    <Images titleImg="/search.svg" titleImgAlt="search" variant={"icon"} size={"logo"}/>
-    <Inputs 
+    <div className="flex border-2 border-black rounded w-5/6 flex-row p-2">
+    <Images titleImg="/search.svg" titleImgAlt="search" variant={"icon"} size={"lg"}/>
+    <input 
       type="text"
       value={searchTerm}
       onChange={onSearchChange}
       placeholder={placeholder}
+      className="w-full" 
     />
-    </Contents>
+    </div>
   );
 };
 

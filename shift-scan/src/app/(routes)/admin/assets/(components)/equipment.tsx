@@ -2,7 +2,7 @@
 import { Sections } from "@/components/(reusable)/sections";
 import { Texts } from "@/components/(reusable)/texts";
 import { Forms} from "@/components/(reusable)/forms";
-import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { useTranslations } from "next-intl";
 import { Inputs } from "@/components/(reusable)/inputs";
@@ -17,7 +17,6 @@ import { Modals } from "@/components/(reusable)/modals";
 import { Expands } from "@/components/(reusable)/expands";
 import { Selects } from "@/components/(reusable)/selects";
 import { Options } from "@/components/(reusable)/options";
-import { TextAreas } from "@/components/(reusable)/textareas";
 
 type Equipment = {
     id: string;
@@ -39,15 +38,15 @@ type Equipment = {
 
 type Props = {
     equipment: Equipment[];
-    setBanner: Dispatch<SetStateAction<string>>;
-    setShowBanner:  Dispatch<SetStateAction<boolean>>
 };
 
-export default function Equipment({ equipment, setBanner, setShowBanner}: Props) {
+export default function Equipment({ equipment }: Props) {
     const [equipmentList, setEquipmentList] = useState<Equipment[]>(equipment);
     const [searchTerm1, setSearchTerm1] = useState<string>("");
     const [searchTerm2, setSearchTerm2] = useState<string>("");
     const [editForm, setEditForm] = useState<boolean>(true);
+    const [showBanner, setShowBanner] = useState<boolean>(false);
+    const [banner, setBanner] = useState("");
     const [equipmentResponse, setEquipmentResponse] = useState<Equipment | null>(null);
     const [equipmentTag, setEquipmentTag] = useState<string>("EQUIPMENT");
     const t = useTranslations("addEquipmentForm");
@@ -131,8 +130,14 @@ export default function Equipment({ equipment, setBanner, setShowBanner}: Props)
 
     return(
         <>
-        <Contents variant={"default"} size={null}>
-        <Expands title="Create New Equipment" divID={"1"}  >
+        { showBanner && (
+                    <Contents size={"default"} variant={"default"}>
+                        <Texts>{banner}</Texts>
+                    </Contents>     
+                    )
+                } 
+        <Contents size={"default"} variant={"default"}>
+        <Expands title="Create New Equipment" divID={"1"} >
                 <Forms action={createEquipment} onSubmit={() => handleBanner("Equipment was created successfully")}>
                    <Labels variant="default" type="title">Equipment Code *</Labels>
     <Inputs 
@@ -169,7 +174,7 @@ export default function Equipment({ equipment, setBanner, setShowBanner}: Props)
     />
     
     <Labels variant="default" type="title">{t("Description")}</Labels>
-    <TextAreas
+    <textarea
         id="description"
         name="description"
         value={description}
@@ -255,10 +260,8 @@ export default function Equipment({ equipment, setBanner, setShowBanner}: Props)
         </>
     ) : null}
 
-    <Buttons variant="green" size={"minBtn"} type="submit">
-        <Contents variant={"center"} size={"listTitle"} >
-        <Titles variant={"default"} size={"h2"}>Create Equipment</Titles>
-        </Contents>
+    <Buttons variant="green" size="default" type="submit">
+        {t("Submit")}
     </Buttons>
 </Forms>
                 </Expands>
@@ -275,17 +278,15 @@ export default function Equipment({ equipment, setBanner, setShowBanner}: Props)
                 {searchTerm1 && editForm && (
                     <ul>
                         {equipmentList.map((item) => (
-                            <Buttons onClick={() => {setSearchTerm1(item.name); setEditForm(false);}} key={item.id} variant={"orange"} size={"listLg"}>
-                                <Texts variant={"default"} size={"left"} >{item.name} ({item.qr_id}) </Texts>
+                            <Buttons onClick={() => {setSearchTerm1(item.name); setEditForm(false);}} key={item.id}>
+                                {item.name} ({item.qr_id})
                             </Buttons>
                         ))}
                     </ul>
                 )}
                 {equipmentResponse === null && 
-                <Buttons variant={"orange"} size={"minBtn"} onClick={() => handleEditForm("1")}>
-                    <Titles variant={"default"} size={"h2"}>
-                    Edit Equipment
-                    </Titles>
+                <Buttons variant="orange" size="default" onClick={() => handleEditForm("1")}>
+                    {t("Submit")}
                 </Buttons>
                 }
 
@@ -450,8 +451,8 @@ export default function Equipment({ equipment, setBanner, setShowBanner}: Props)
                 {searchTerm2 && editForm && (
                     <ul>
                         {equipmentList.map((item) => (
-                            <Buttons variant={"orange"} size={"listLg"} onClick={() => {setSearchTerm2(item.id); setEditForm(false);}} key={item.id}>
-                                 <Texts variant={"default"} size={"left"} >{item.name} ({item.qr_id})</Texts>
+                            <Buttons onClick={() => {setSearchTerm2(item.id); setEditForm(false);}} key={item.id}>
+                                {item.name} ({item.qr_id})
                             </Buttons>
                         ))}
                     </ul>
@@ -459,7 +460,7 @@ export default function Equipment({ equipment, setBanner, setShowBanner}: Props)
                 {searchTerm2 && 
                 <Forms action={deleteEquipmentbyId} onSubmit={() => handleBanner("Equipment was Deleted successfully")}>
                 <Inputs type="hidden" name="id" defaultValue={searchTerm2} />
-                <Buttons variant="red" size={"minBtn"} type="submit">
+                <Buttons variant="red" size="default" type="submit">
                     <Texts>Delete</Texts>
                 </Buttons>
                 </Forms>
