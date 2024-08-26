@@ -57,13 +57,13 @@ Credentials({
 
         const isValidPassword = await bcrypt.compare(
             passwords,
-    user.password
+            user.password
         );
         if (!isValidPassword) {
             throw new InvalidLoginError();
         }
-        console.log(user);
         const userwithoutpassword = {
+            id: user.id,
             username: user.username,
             permission: user.permission,
             firstName: user.firstName,
@@ -85,7 +85,7 @@ Credentials({
     callbacks: {
         jwt: async ({ token, user }) => {
         if (user) {
-            token.id = user.id;
+            token.id = user.id as string;
             token.permission = user.permission;
             token.firstName = user.firstName;
             token.lastName = user.lastName;

@@ -52,7 +52,7 @@ const VerificationStep: React.FC<{ id: string | undefined; handleNextStep: () =>
 
         const formData = new FormData();
         formData.append('submit_date', new Date().toISOString());
-        formData.append('userId', id?.toString() || '');
+        formData.append('user_id', id?.toString() || '');
         formData.append('date', new Date().toISOString());
         formData.append('jobsite_id', scanResult?.data || '');
         formData.append('costcode', savedCostCode?.toString() || '');
@@ -69,7 +69,7 @@ const VerificationStep: React.FC<{ id: string | undefined; handleNextStep: () =>
     } else {
       const formData = new FormData();
       formData.append('submit_date', new Date().toISOString());
-      formData.append('userId', id?.toString() || '');
+      formData.append('user_id', id?.toString() || '');
       formData.append('date', new Date().toISOString());
       formData.append('jobsite_id', scanResult?.data || '');
       formData.append('costcode', savedCostCode?.toString() || '');
@@ -109,7 +109,7 @@ const VerificationStep: React.FC<{ id: string | undefined; handleNextStep: () =>
         </button>
 
         <input type="hidden" name="submit_date" value={new Date().toISOString()} />
-        <input type="hidden" name="userId" value={savedUserData?.id || ''} />
+        <input type="hidden" name="user_id" value={savedUserData?.id || ''} />
         <input type="hidden" name="date" value={new Date().toISOString()} />
         <input type="hidden" name="jobsite_id" value={scanResult?.data || ''} />
         <input type="hidden" name="costcode" value={savedCostCode?.toString() || ''} />
