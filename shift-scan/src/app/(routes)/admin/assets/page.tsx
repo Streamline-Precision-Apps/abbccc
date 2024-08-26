@@ -5,8 +5,6 @@ import prisma from "@/lib/prisma";
 
 export default async function Page() {
 
-
-
     const equipment = await prisma.equipment.findMany({
         select: {
         id: true,
@@ -16,14 +14,7 @@ export default async function Page() {
         },
     });
 const jobsites = await prisma.jobsite.findMany();
-
-    const costCodes = await prisma.costCode.findMany({
-    select: {
-        id: true,
-        cost_code: true,
-        cost_code_description: true,
-    },
-    });
+const costCodes = await prisma.costCode.findMany();
 
 
     return (
