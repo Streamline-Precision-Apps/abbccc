@@ -286,3 +286,26 @@ export async function deleteTimeSheet(id: number) {
         where: { id },
     });
 }
+
+
+export async function findTimesheetsforDay(formData: FormData) {
+    console.log("formData:", formData);
+    
+    const id = formData.get("id") as string;
+    const date = new Date(formData.get("date") as string).toISOString(); 
+
+    const timeSheets = await prisma.timeSheet.findMany({
+        where: {
+            userId: id,
+            date: {
+                equals: date
+            }
+        }
+    });
+    if (timeSheets.length === 0) {
+        return null;
+    }
+    else {
+    return timeSheets;
+    }
+}
