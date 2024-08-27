@@ -3,7 +3,6 @@ import "@/app/globals.css";
 import { useTranslations } from "next-intl";
 import Hours from "@/app/(content)/hours";
 import WidgetSection from "@/components/widgetSection";
-import { useSession } from "next-auth/react";
 import { useEffect, useState, useMemo } from "react";
 import { useSavedPayPeriodHours } from "../context/SavedPayPeriodHours";
 import { useSavedUserData } from "../context/UserContext";
@@ -18,21 +17,10 @@ import { Sections } from "@/components/(reusable)/sections";
 import { Bases } from "@/components/(reusable)/bases";
 import { Header } from "@/components/header";
 import { Headers } from "@/components/(reusable)/headers";
-import {
-  useDBJobsite,
-  useDBCostcode,
-  useDBEquipment,
-} from "@/app/context/dbCodeContext";
-import {
-  useRecentDBJobsite,
-  useRecentDBCostcode,
-  useRecentDBEquipment,
-} from "@/app/context/dbRecentCodesContext";
+import {useDBJobsite,useDBCostcode,useDBEquipment} from "@/app/context/dbCodeContext";
+import { useRecentDBJobsite, useRecentDBCostcode, useRecentDBEquipment,} from "@/app/context/dbRecentCodesContext";
 import { useSavedPayPeriodTimeSheet } from "../context/SavedPayPeriodTimeSheets";
-import {
-  clockProcessProps,
-  TimeSheets,
-} from "@/lib/content";
+import { clockProcessProps, TimeSheets,} from "@/lib/content"; // used for the interface and the props
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { User } from "@/lib/types";
@@ -48,6 +36,7 @@ export default function Content({
   recentEquipment,
   payPeriodSheets,
 }: clockProcessProps) {
+  // TODO: only have 1 use translation function
   const t = useTranslations("Home");
   const f = useTranslations("Footer");
   const { setPayPeriodHours } = useSavedPayPeriodHours();
@@ -55,30 +44,35 @@ export default function Content({
   const { setSavedUserData } = useSavedUserData();
   const router = useRouter();
   const authStep = getAuthStep();
+  const [hourbtn, setHourbtn] = useState(true);
   const date = new Date().toLocaleDateString(locale, {
     year: "numeric",
     month: "short",
     day: "numeric",
     weekday: "long",
   });
+  // creates a state of user data
   const [user, setData] = useState<User>({
     id: "",
     firstName: "",
     lastName: "",
     permission: undefined,
   });
+
+  // saves user instance of jobsite data until the user switches to another job
   const { jobsiteResults, setJobsiteResults } = useDBJobsite();
-  const {
-    recentlyUsedJobCodes,
-    setRecentlyUsedJobCodes,
-    addRecentlyUsedJobCode,
+  const {recentlyUsedJobCodes, setRecentlyUsedJobCodes,addRecentlyUsedJobCode,
   } = useRecentDBJobsite();
+
+  // saves users cost code data until the user switches to another cost code
   const { costcodeResults, setCostcodeResults } = useDBCostcode();
   const {
     recentlyUsedCostCodes,
     setRecentlyUsedCostCodes,
     addRecentlyUsedCostCode,
   } = useRecentDBCostcode();
+
+  // saves users equipment data until the user switches to another equipment
   const { equipmentResults, setEquipmentResults } = useDBEquipment();
   const {
     recentlyUsedEquipment,
@@ -86,12 +80,15 @@ export default function Content({
     addRecentlyUsedEquipment,
   } = useRecentDBEquipment();
 
+// runs the timesheet function and saves it to the context
   const { setPayPeriodTimeSheets } = useSavedPayPeriodTimeSheet();
 
+// sets the saved pay period time sheets to display on the pay period page
   useEffect(() => {
     setPayPeriodTimeSheets(payPeriodSheets);
   }, [payPeriodSheets, setPayPeriodTimeSheets]);
 
+  // if they loose their saved data it will reset them to new data
   useEffect(() => {
     if (jobsiteResults.length === 0) {
       setJobsiteResults(jobCodes);
@@ -112,33 +109,25 @@ export default function Content({
       setRecentlyUsedEquipment(recentEquipment);
     }
   }, [
-    session,
-    jobCodes,
-    CostCodes,
-    equipment,
-    recentJobSites,
-    recentCostCodes,
-    recentEquipment,
-    jobsiteResults,
-    costcodeResults,
-    equipmentResults,
-    recentlyUsedJobCodes,
-    recentlyUsedCostCodes,
-    recentlyUsedEquipment,
+    session, jobCodes, CostCodes, equipment, recentJobSites, recentCostCodes, recentEquipment,
+    jobsiteResults, costcodeResults, equipmentResults, recentlyUsedJobCodes, recentlyUsedCostCodes, recentlyUsedEquipment,
   ]);
 
+// calculates the total pay period hours into one number of hours
   const totalPayPeriodHours = useMemo(() => {
     return payPeriodSheets
       .filter((sheet): sheet is TimeSheets => sheet.duration !== null)
       .reduce((total, sheet) => total + (sheet.duration ?? 0), 0);
   }, [payPeriodSheets]);
 
+// redirects to dashboard if authStep is success
   useEffect(() => {
     if (authStep === "success") {
       router.push("/dashboard");
     }
   }, [authStep, router]);
 
+// removes local storage if authStep is removeLocalStorage
   useEffect(() => {
     if (authStep === "removeLocalStorage") {
       localStorage.clear();
@@ -146,6 +135,7 @@ export default function Content({
     }
   }, [authStep]);
 
+// sets the saved user data
   useEffect(() => {
     if (session && session.user) {
       console.log("Session user:", session.user);
@@ -200,7 +190,8 @@ export default function Content({
                     lastName: capitalize(user.lastName),
                   })}
                 </Texts>
-                <Contents size={"default"}>
+                {/* An if statement to display the widgets or the hours on click*/}
+                  {toggle ? <Grids variant={"widgets"} size={"default"}>
                   <DisplayBreakTime setToggle={handler} display={toggle} />
                   <WidgetSection
                     user={user}
@@ -208,7 +199,9 @@ export default function Content({
                     locale={locale}
                     option={"break"}
                   />
-                </Contents>
+                </Grids> : 
+                <Hours setToggle={handler} display={toggle} />
+              }
               </Contents>
             </Sections>
           </Contents>
@@ -241,10 +234,12 @@ export default function Content({
                   })}
                 </Texts>
               </Contents>
-              <Grids variant={"widgets"} size={"default"}>
+              {toggle ? <Grids variant={"widgets"} size={"default"}>
                 <Hours setToggle={handler} display={toggle} />
                 <WidgetSection user={user} display={toggle} locale={locale} />
-              </Grids>
+              </Grids> : 
+              <Hours setToggle={handler} display={toggle} />
+              }
               <Footers>{f("Copyright")}</Footers>
             </Sections>
           </Contents>

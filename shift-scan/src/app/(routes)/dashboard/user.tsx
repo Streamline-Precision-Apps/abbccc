@@ -10,7 +10,7 @@ import ClockProcessor from "@/components/(clock)/clockProcess";
 import { useSession } from "next-auth/react";
 import { CustomSession } from "@/lib/types";
 import { setAuthStep } from "@/app/api/auth";
-import { Equipment, Logs } from "@/lib/types";
+import { Logs } from "@/lib/types";
 import { updateTimeSheetBySwitch } from "@/actions/timeSheetActions";
 import { Contents } from "@/components/(reusable)/contents";
 
@@ -23,31 +23,26 @@ interface UserProps {
   manager: boolean;
 }
 
-export const User: React.FC<UserProps> = ({
+export default function User({
   additionalButtonsType,
   handleShowManagerButtons,
   handleShowAdditionalButtons,
   logs, // Use logs prop
   locale,
-  manager,
-}) => {
+  manager}: UserProps
+){
   const t = useTranslations("ManagerButtons");
-
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { data: session } = useSession() as { data: CustomSession | null };
   const user = session?.user;
 
-
   const handleOpenModal = () => {
-    
     setIsModalOpen(true);
-
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-
   };
 
   // Function to handle CO Button 2 action

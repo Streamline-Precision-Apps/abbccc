@@ -19,6 +19,7 @@ const TextVariants = cva(
         name: "",
         bottom: "absolute bottom-0",
         bannerDate: "pt-0 mt-0",
+        totalHours: "text-white pt-0 mt-0",
       },
       size: {
         default: "text-2xl",
@@ -30,6 +31,7 @@ const TextVariants = cva(
         p3: "text-xl",
         p4: "text-lg",
         sm: "text-sm",
+        p0: "text-4xl",
       }
     },
     defaultVariants: {
