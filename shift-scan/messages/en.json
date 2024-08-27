@@ -14,7 +14,7 @@
             "Name": "{firstName} {lastName}",
             "Date": "{date}",
             "DailyHours": "Total Hours Today",
-            "PayPeriodHours": "Total Pay Period Hours",
+            "PayPeriodHours": "Total Hours",
             "Break": "Break Time",
             "Unit": "hrs",
             "DA-Time-Label" : "Hours",

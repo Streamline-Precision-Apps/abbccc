@@ -5,6 +5,11 @@ import { useSavedPayPeriodTimeSheet } from "../context/SavedPayPeriodTimeSheets"
 import { BarChartComponent } from "@/app/(content)/hourData";
 import { useTranslations } from "next-intl";
 import { useSavedPayPeriodHours } from "../context/SavedPayPeriodHours";
+import { Contents } from "@/components/(reusable)/contents";
+import { Texts } from "@/components/(reusable)/texts";
+import test from "node:test";
+import { Button } from "@nextui-org/react";
+import { Buttons } from "@/components/(reusable)/buttons";
 
 interface ControlComponentProps {
   toggle: (toggle: boolean) => void;
@@ -116,27 +121,33 @@ const ControlComponent: React.FC<ControlComponentProps> = ({ toggle }) => {
 
   return (
     <>
-      <div>
+    <Contents variant={"hoursDisplay"} title={t("DA-Control-Title")}>
+      {/* <Contents variant={"rowCenter"} size={null} >
+          {t("DA-PayPeriod-Label")} {payPeriodHours} {t("Unit")}
+      </Contents > */}
+      <Contents variant={"default"} size={null} >
         <ViewComponent
           scrollLeft={scrollLeft}
           scrollRight={scrollRight}
           returnToMain={returnToMain}
           currentDate={currentDate}
-        />
-      </div>
-      <div >
-        <p >
-          {t("DA-PayPeriod-Label")} {payPeriodHours} {t("Unit")}
-        </p>
-        {/* This div needs to be here for the chart to render correctly. It's a hack. I'm sorry. */}
-        <div style={{ margin: "auto", width: "100%", height: 180 }}>
-          <BarChartComponent data={currentData} currentIndex={currentIndex} />
-        </div>
-        <h2>
-          {currentData.value.toFixed(2) || 0} {t("DA-Time-Label")}
-        </h2>
-      </div>
-    </>
+          />
+      </Contents>
+      <Contents variant={"barsBG"} size={null}>
+          <Contents size={null} style={{ margin: "auto", width: "100%", height: 300 }}>
+          <BarChartComponent data={currentData} />
+          </Contents>
+        <Texts variant={"default"} size={"p0"}>
+          {currentData.value.toFixed(1) || 0} {t("DA-Time-Label")}
+        </Texts>
+    </Contents>
+    <Buttons href="/timesheets" variant={"green"} size={"widgetMed"} className="mt-10">
+    <Texts variant={"default"} size={"p0"}>
+      view my payroll
+    </Texts>
+    </Buttons>
+    </Contents>
+          </>
   );
 };
 
