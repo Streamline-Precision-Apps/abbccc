@@ -110,12 +110,14 @@
         "QRCode": "QR Code",
         "Placeholder": "Select One",
         "New": "New",
-        "Generate": "Generate"
+        "Generate": "Generate",
+        "Select": "Select One"
     },
 
     "addEquipmentContent": {
         "Title": "Create Equipment",
-        "Picture": "Picture of Equipment"
+        "Picture": "Picture of Equipment",
+        "Select": "Select One"
     },
     
     "equipmentPicture": {

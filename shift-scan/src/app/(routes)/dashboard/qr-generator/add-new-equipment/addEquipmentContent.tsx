@@ -9,10 +9,22 @@ import { Bases } from "@/components/(reusable)/bases";
 import { useTranslations } from "next-intl";
 import { Titles } from "@/components/(reusable)/titles";
 import { Contents } from "@/components/(reusable)/contents";
+import { Texts } from "@/components/(reusable)/texts";
 
 export const AddEquipmentContent = () => {
   const [base64String, setBase64String] = useState<string>("");
   const t = useTranslations("addEquipmentContent");
+  const [banner, setBanner] = useState(false);
+  const [bannerText, setBannerText] = useState("");
+
+  const handleBanner = (words: string) => {
+    setBanner(true);
+    setBannerText(words);
+    setTimeout(() => {
+      setBanner(false);
+      setBannerText("");
+    }, 5000);
+  };
 
   return (
     <Bases>
@@ -25,12 +37,17 @@ export const AddEquipmentContent = () => {
           size={"default"}
         />
       </Sections>
+    { banner &&
+      <Contents variant="green" size={"listTitle"}>
+      <Texts>{bannerText}</Texts>
+    </Contents>
+    }
       <Sections size={"dynamic"}>
         <Titles variant={"default"} size={"h1"}>{t("Picture")}</Titles>
         <EquipmentPicture setBase64String={setBase64String} />
       </Sections>
       <Sections size={"dynamic"}>
-        <AddEquipmentForm base64String={base64String} />
+        <AddEquipmentForm base64String={base64String} setBanner={setBanner} setBannerText={setBannerText} handler={()=> handleBanner} />
       </Sections>
     </Bases>
   );

@@ -78,9 +78,7 @@ export async function createJobsite(formData: FormData) {
 
     // Revalidate the path
     revalidatePath(`/dashboard/qr-generator`);
-
-    // Redirect to the qr-generator page
-    redirect(`/dashboard/qr-generator`);
+    
   } catch (error) {
     console.error("Error creating jobsite:", error);
     throw error;
