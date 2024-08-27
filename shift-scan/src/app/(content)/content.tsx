@@ -171,11 +171,12 @@ export default function Content({
     return (
       <>
         <Bases variant={"default"}>
-          <Contents size={"default"}>
             <Header />
+            <Contents>
             <Sections size={"default"}>
-              <Contents size={"default"}>
+            <Contents variant={"header"} size={"test"}>
                 <Headers variant={"relative"} size={"default"}></Headers>
+              </Contents>
                 <Banners variant={"default"}>
                   <Titles variant={"default"} size={"h1"}>
                     {t("Banner")}
@@ -184,13 +185,15 @@ export default function Content({
                     {t("Date", { date: capitalize(date) })}
                   </Texts>
                 </Banners>
+                <Contents variant={"name"} size={null}>
                 <Texts variant={"name"} size={"p1"}>
                   {t("Name", {
                     firstName: capitalize(user.firstName),
                     lastName: capitalize(user.lastName),
                   })}
                 </Texts>
-                {/* An if statement to display the widgets or the hours on click*/}
+              </Contents>
+                {/* An if statement to display the widgets or the hours */}
                   {toggle ? <Grids variant={"widgets"} size={"default"}>
                   <DisplayBreakTime setToggle={handler} display={toggle} />
                   <WidgetSection
@@ -202,7 +205,6 @@ export default function Content({
                 </Grids> : 
                 <Hours setToggle={handler} display={toggle} />
               }
-              </Contents>
             </Sections>
           </Contents>
         </Bases>
