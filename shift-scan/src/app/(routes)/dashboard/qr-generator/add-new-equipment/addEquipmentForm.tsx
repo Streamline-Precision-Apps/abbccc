@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, FormEvent, SetStateAction, Dispatch } from "react";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { createEquipment, equipmentTagExists } from "@/actions/equipmentActions";
 import { useTranslations } from "next-intl";
@@ -8,12 +8,17 @@ import { TextAreas } from "@/components/(reusable)/textareas";
 import { Labels } from "@/components/(reusable)/labels";
 import { Selects } from "@/components/(reusable)/selects";
 import { Options } from "@/components/(reusable)/options";
+import { Contents } from "@/components/(reusable)/contents";
+import { Texts } from "@/components/(reusable)/texts";
 
-interface AddEquipmentFormProps {
+type AddEquipmentFormProps = {
   base64String: string | null;
+  handler:() => void
+  setBanner:  Dispatch<SetStateAction<boolean>>
+  setBannerText: Dispatch<SetStateAction<string>>
 }
 
-const AddEquipmentForm: React.FC<AddEquipmentFormProps> = ({ base64String }) => {
+export default function AddEquipmentForm({ base64String, setBannerText, handler, setBanner } : AddEquipmentFormProps){
   const [equipmentTag, setEquipmentTag] = useState("EQUIPMENT");
   const t = useTranslations("addEquipmentForm");
   const [eqCode, setEQCode] = useState("");
@@ -60,12 +65,21 @@ const AddEquipmentForm: React.FC<AddEquipmentFormProps> = ({ base64String }) => 
     console.log("Base64 String:", base64String);
   }, [base64String]);
 
+
+
+  function handleRoute() {
+    window.scrollTo({ top: 0, behavior: "smooth" })
+    setTimeout(() => {
+      setBanner(false);
+      setBannerText("");
+      window.history.back();
+    }, 3000);
+  }
+
   return (
-    <Forms action={createEquipment}>
-      
-      <Inputs id="qr_id" name="qr_id" type="text" disabled value={eqCode} />
-      
-      
+    <Forms action={createEquipment} onSubmit={() => {setBanner(true); setBannerText("Added Temporary Equipment Successfully"); handler(); handleRoute()}}>
+      <Labels variant="default" size="default">Temporary QR ID </Labels>
+      <Inputs name="qr_id" type="text" disabled value={eqCode} />
         <Labels variant="default" size="default">
           {t("Tag")}
         </Labels>
@@ -73,7 +87,7 @@ const AddEquipmentForm: React.FC<AddEquipmentFormProps> = ({ base64String }) => 
           id="equipment_tag"
           name="equipment_tag"
           onChange={handleChange}
-        >
+          >
           <Options value="">{t("Select")}</Options>
           <Options value="TRUCK">{t("Truck")}</Options>
           <Options value="TRAILER">{t("Trailer")}</Options>
@@ -88,8 +102,8 @@ const AddEquipmentForm: React.FC<AddEquipmentFormProps> = ({ base64String }) => 
           id="name"
           name="name"
           type="text"
-        
-        />
+          
+          />
       
       
         <Labels variant="default" size="default">
@@ -98,8 +112,8 @@ const AddEquipmentForm: React.FC<AddEquipmentFormProps> = ({ base64String }) => 
         <TextAreas
           id="description"
           name="description"
-        
-        />
+          
+          />
       
       
         <Labels variant="default" size="default">
@@ -108,7 +122,7 @@ const AddEquipmentForm: React.FC<AddEquipmentFormProps> = ({ base64String }) => 
         <Selects
           id="equipment_status"
           name="equipment_status"
-        >
+          >
           <Options value="">{t("Select")}</Options>
           <Options value="OPERATIONAL">{t("Operational")}</Options>
           <Options value="NEEDS_REPAIR">{t("NeedsRepair")}</Options>
@@ -124,8 +138,8 @@ const AddEquipmentForm: React.FC<AddEquipmentFormProps> = ({ base64String }) => 
               id="make"
               name="make"
               type="text"
-            
-            />
+              
+              />
           
           
             <Labels variant="default" size="default">
@@ -135,8 +149,8 @@ const AddEquipmentForm: React.FC<AddEquipmentFormProps> = ({ base64String }) => 
               id="model"
               name="model"
               type="text"
-            
-            />
+              
+              />
           
           
             <Labels variant="default" size="default">
@@ -146,8 +160,8 @@ const AddEquipmentForm: React.FC<AddEquipmentFormProps> = ({ base64String }) => 
               id="year"
               name="year"
               type="text"
-            
-            />
+              
+              />
           
           
             <Labels variant="default" size="default">
@@ -157,8 +171,8 @@ const AddEquipmentForm: React.FC<AddEquipmentFormProps> = ({ base64String }) => 
               id="license_plate"
               name="license_plate"
               type="text"
-            
-            />
+              
+              />
           
           
             <Labels variant="default" size="default">
@@ -168,8 +182,8 @@ const AddEquipmentForm: React.FC<AddEquipmentFormProps> = ({ base64String }) => 
               id="registration_expiration"
               name="registration_expiration"
               type="date"
-            
-            />
+              
+              />
           
           
             <Labels variant="default" size="default">
@@ -179,8 +193,8 @@ const AddEquipmentForm: React.FC<AddEquipmentFormProps> = ({ base64String }) => 
               id="mileage"
               name="mileage"
               type="number"
-            
-            />
+              
+              />
           
         </>
       ) : null}
@@ -190,7 +204,8 @@ const AddEquipmentForm: React.FC<AddEquipmentFormProps> = ({ base64String }) => 
           name="image"
           type="hidden"
           value={base64String || ""}
-        />
+          />
+        <Inputs id="qr_id" name="qr_id" type="hidden" value={eqCode} />
       
       <Buttons variant="green" size="default" type="submit">
         {t("Submit")}
@@ -198,5 +213,3 @@ const AddEquipmentForm: React.FC<AddEquipmentFormProps> = ({ base64String }) => 
     </Forms>
   );
 };
-
-export default AddEquipmentForm;

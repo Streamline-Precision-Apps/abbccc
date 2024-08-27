@@ -451,7 +451,7 @@ export default function Equipment({ equipment, setBanner, setShowBanner}: Props)
                     <ul>
                         {equipmentList.map((item) => (
                             <Buttons variant={"orange"} size={"listLg"} onClick={() => {setSearchTerm2(item.id); setEditForm(false);}} key={item.id}>
-                                 <Texts variant={"default"} size={"left"} >{item.name} ({item.qr_id})</Texts>
+                                    <Texts variant={"default"} size={"left"} >{item.name} ({item.qr_id})</Texts>
                             </Buttons>
                         ))}
                     </ul>
