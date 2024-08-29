@@ -236,7 +236,7 @@ export default function Content({
                   })}
                 </Texts>
               </Contents>
-              {toggle ? <Grids variant={"widgets"} size={"default"}>
+              {toggle ? <Grids variant={"widgets"} size={"sm"}>
                 <Hours setToggle={handler} display={toggle} />
                 <WidgetSection user={user} display={toggle} locale={locale} />
               </Grids> : 

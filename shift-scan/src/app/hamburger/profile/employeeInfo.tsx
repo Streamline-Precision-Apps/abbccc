@@ -38,9 +38,10 @@ export default function EmployeeInfo({ employee, contacts, training }: Props ) {
 
   // logic to get completion percentage
   const completionStatus = (completed / total);
-  // const completionPercentage = (completionStatus * 100).toFixed(0);
-
-  const completionPercentage = (20).toFixed(0);
+  const completionPercentage = (completionStatus * 100).toFixed(0);
+  
+//Testing v v v
+  // const completionPercentage = (90).toFixed(0);
   return (
   <Contents size={"default"} variant={"default"}>
   <Sections size={"titleBox"}>
