@@ -70,23 +70,24 @@ export default function Content( { equipment , jobsites, costCodes }: Props ) {
         tabLabel= "Equipment" 
         isTabActive= {activeTab === 1}
         />
-            <Tab
-            onClick={() => setActiveTab(2)} 
-            tabLabel= "Job Codes"
-            isTabActive= {activeTab === 2}
-            />  
+
+        <Tab
+        onClick={() => setActiveTab(2)} 
+        tabLabel= "Job Codes"
+        isTabActive= {activeTab === 2}
+        />  
 
         <Tab
         onClick={() => setActiveTab(3)} 
         tabLabel= "Cost Codes"
         isTabActive= {activeTab === 3}
         />  
-            </Contents>
+        </Contents>
         <Sections size={"dynamic"}>
             {activeTab === 1 && <Equipment equipment={equipment}/> }
             {activeTab === 2 && <Jobsite jobsites={jobsites}/>}
             {activeTab === 3 && <Costcodes costCodes={costCodes}/>} {/* costCodes={costCodes}/*/}
-            </Sections>
+        </Sections>
         </Bases>
     )
 }
