@@ -170,7 +170,7 @@ export default function UserManagement({ users }: Props) {
           <Texts>{banner}</Texts>
         </Contents>
       )}
-      <Contents size={"default"} variant={"default"}>
+      <Contents variant={"default"} size={null}>
         {/* This is to create a new user. */}
         <Expands title="Create New User" divID={"1"}>
           <Forms

@@ -13,7 +13,7 @@ interface SearchBarProps {
 const SearchBar: React.FC<SearchBarProps> = ({ searchTerm, onSearchChange, placeholder }) => {
   return (
     <div className="flex border-2 border-black rounded w-5/6 flex-row p-2">
-    <Images titleImg="/search.svg" titleImgAlt="search" variant={"icon"} size={"lg"}/>
+    <Images titleImg="/search.svg" titleImgAlt="search" variant={"icon"} size={"default"}/>
     <input 
       type="text"
       value={searchTerm}

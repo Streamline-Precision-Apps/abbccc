@@ -18,6 +18,11 @@ import { useSavedUserData } from "@/app/context/UserContext";
 import AddEmployeeForm from "./addEmployee";
 import UserManagement from "./(components)/userManagement";
 
+import { Tab } from "@/components/(inputs)/tab";
+import { Contents } from "@/components/(reusable)/contents";
+import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
+import UserCards from "./userCards";
+
 interface AddEmployeeContentProps {
   permission: string | undefined;
   users: SearchUser[];
@@ -40,6 +45,7 @@ export default function AddEmployeeContent({ permission , users }: AddEmployeeCo
     day: "numeric",
     weekday: "long",
   });
+  const [activeTab, setActiveTab] = useState(1);
 
   useEffect(() => {
     if (permission !== "ADMIN" && permission !== "SUPERADMIN") {
@@ -65,15 +71,33 @@ export default function AddEmployeeContent({ permission , users }: AddEmployeeCo
 
   return session ? (
     <Bases variant={"default"}>
-      <Sections size={"default"}>
-        <Headers variant={"relative"} size={"default"}></Headers>
-        <Banners variant={"default"}>
-          <Titles variant={"default"} size={"h1"}>
-            {t("AddEmployee")}
-          </Titles>
-        </Banners>
-        <UserManagement users={users}/>
+        <Sections
+        size={"titleBox"}>
+            <TitleBoxes
+            title="Assets"
+            titleImg="/assets.svg"
+            titleImgAlt="Assests"
+            variant={"default"}
+            size={"default"}
+            type="noIcon"
+            />
+        </Sections>
+      <Sections size={"dynamic"}>
+        <Contents size={"listTitle"} variant={"default"}>
+        <Tab 
+        onClick={() => setActiveTab(1)}
+        tabLabel= {t("ModifyEmployee")} 
+        isTabActive= {activeTab === 1}
+        />
+        <Tab
+        onClick={() => setActiveTab(2)} 
+        tabLabel= {t("ViewEmployees")}
+        isTabActive= {activeTab === 2}
+        />  
+            {activeTab === 1 && <UserManagement users={users}/> }
+            {activeTab === 2 && <UserCards users={users}/>}
         <Footers>{t("lN1")}</Footers>
+        </Contents>
       </Sections>
     </Bases>
   ) : (

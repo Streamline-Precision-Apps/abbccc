@@ -151,7 +151,7 @@ I finished some more prisma DB research and Created the clock out dashboard page
 
 ## 8/7/2024
 
-- Wrokded on admin view.
+- Workded on admin view.
 
 ## 8/8/2024
 
@@ -167,4 +167,20 @@ I finished some more prisma DB research and Created the clock out dashboard page
 
 - Finished on admin employee view.
 
-## 8/22/2024
+## 8/26/2024
+
+- Started First login setup.
+
+## 8/27/2024
+
+- Worked on first login setup.
+- started tabs on employee view.
+
+## 8/28/2024
+
+- Worked on tabs on employee view.
+- Worked on first login setup.
+
+## 8/29/2024
+
+- finished tabs on employee view.

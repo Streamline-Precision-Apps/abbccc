@@ -9,7 +9,9 @@ export default async function Home() {
   const userid = session?.user.id;
 
   const lang = cookies().get("locale");
-  const locale = lang ? lang.value : "en"; 
+  const locale = lang ? lang.value : "en";  
+
+  
 
   // Calculate the start date of the current pay period
   const calculatePayPeriodStart = () => {
