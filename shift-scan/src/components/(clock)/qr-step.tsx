@@ -37,11 +37,11 @@ const QRStep: React.FC<QRStepProps> = ({option, handleReturn, handleAlternativeP
             <QR handleNextStep={handleNextStep} url={url}  />  
             </>)}
         </div>
-        {option === "break" ? ( <Buttons onClick={handleReturn} variant={'red'} size={'default'}>
+        {option === "break" && type !== "equipment" ? ( <Buttons onClick={handleReturn} variant={'red'} size={'default'}>
               {"Return To Previous Job and cost code"}
               </Buttons>)
                 : (null)}
-        {validation ? ( <Buttons onClick={handleChangeJobsite} variant={'orange'} size={'default'}>
+        {validation && type !== "equipment" ? ( <Buttons onClick={handleChangeJobsite} variant={'orange'} size={'default'}>
               {t('ReturnToJobsite')}
               </Buttons>)
                 : (null)} 

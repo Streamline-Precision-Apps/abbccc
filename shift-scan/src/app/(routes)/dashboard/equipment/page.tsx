@@ -21,7 +21,7 @@ export default async function Current() {
             Equipment: true,
         }
     });
-
+    
     const total = logs.length;
     const completed = logs.filter((log) => log.completed).length;
     const green = total - completed;

@@ -19,7 +19,15 @@ interface clockProcessProps{
     locale: string;
     option?: string;
     returnpath: string;
+    equipment?: Equipment[]
 };
+
+interface Equipment {
+    id: string;
+    name: string;
+    qr_id: string;
+    images?: string;
+}
 
 const ClockProcessor: React.FC<clockProcessProps> = ({
 id,
@@ -27,7 +35,8 @@ type,
 scannerType,
 locale,
 option,
-returnpath
+returnpath,
+equipment
 }) => {
 const t = useTranslations("Clock");
 const [step, setStep] = useState(1);
@@ -129,11 +138,12 @@ return (
             handleNextStep={handleNextStep}
         />
         )}
-        {step === 3 && (
+        {step === 3 && equipment && (
         <VerificationEQStep
-            type={type}
-            id={id}
-            handleNextStep={handleNextStep}
+        type={type}
+        id={id}
+        handleNextStep={handleNextStep}
+        equipment={equipment}
         />
         )}
         {step === 4 && (
