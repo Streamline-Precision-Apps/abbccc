@@ -1,11 +1,9 @@
 "use server";
 
 import { Bases } from '@/components/(reusable)/bases';
-import SignOutModal from './signOutModal';
 import EmployeeInfo from './employeeInfo';
 import prisma from "@/lib/prisma";
-import { cookies } from 'next/headers';
-import Base64Encoder from '@/components/(inputs)/Base64Encoder';
+import { auth } from '@/auth';
 
 type Employee = {
     id: string;
@@ -32,8 +30,8 @@ type Training = {
 };
 
 export default async function EmployeeProfile() {
-    const user = cookies().get("user");
-    const userId = user?.value;
+    const session = await auth();
+    const userId = session?.user.id;
 
     if (!userId) {
         return (
@@ -101,7 +99,6 @@ export default async function EmployeeProfile() {
     return (
         <Bases>
             <EmployeeInfo employee={employee} contacts={contacts} training={training}/>
-            <SignOutModal />
         </Bases>
     );
 }

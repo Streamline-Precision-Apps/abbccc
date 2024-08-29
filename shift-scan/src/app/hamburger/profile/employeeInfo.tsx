@@ -6,6 +6,12 @@ import { useTranslations } from "next-intl";
 import Base64Encoder from "@/components/(inputs)/Base64Encoder";
 import { useState } from "react";
 import { Titles } from "@/components/(reusable)/titles";
+import { Contents } from "@/components/(reusable)/contents";
+import {Forms} from "@/components/(reusable)/forms";
+import { Labels } from "@/components/(reusable)/labels";
+import { Inputs } from "@/components/(reusable)/inputs";
+import { Texts } from "@/components/(reusable)/texts";
+import SignOutModal from './signOutModal';
 
 type Employee = {
   id: string;
@@ -25,71 +31,53 @@ type Props = {
 export default function EmployeeInfo({ employee, contacts, training }: Props ) {
   const t = useTranslations("Hamburger");
   const [base64String, setBase64String] = useState<string>('');
-  
+
+  // logic to get number of completed trainings
   const total = (Number(training?.assigned_trainings));
   const completed = (Number(training?.completed_trainings));
-  console.log(total + " " + completed) 
 
+  // logic to get completion percentage
   const completionStatus = (completed / total);
-  console.log(completionStatus)
+  // const completionPercentage = (completionStatus * 100).toFixed(0);
 
-  const completionPercentage = (completionStatus * 100).toFixed(0);
-  console.log(completionPercentage)
-
+  const completionPercentage = (20).toFixed(0);
   return (
-    <div>
-      <Sections size={"titleBox"}>
-        {/*This Title box allows the profile pic to default as a base profile picture*/}
-        <TitleBoxes title={`${employee?.firstName} ${employee?.lastName}`} titleImg={employee?.image !== null ? `${employee?.image}` : "/profile.svg"}  titleImgAlt={"image"} />
+  <Contents size={"default"} variant={"default"}>
+  <Sections size={"titleBox"}>
+{/*This Title box allows the profile pic to default as a base profile picture*/}
+      <TitleBoxes title={`${employee?.firstName} ${employee?.lastName}`} titleImg={employee?.image !== null ? `${employee?.image}` : "/profile.svg"}  titleImgAlt={"image"} />
+  </Sections>
+  
+    <Base64Encoder employee={employee} base64String={base64String} setBase64String={setBase64String}  />
+    <Sections size={"default"}>
+      <Forms>
+        <Labels variant="default">{t("EmployeeID")}</Labels>
+          <Inputs
+            disabled
+            type="text"
+            defaultValue={employee?.id?.toString() ?? ''}
+          />
+        <Labels>{t("ContactEmail")}</Labels>
+          <Inputs
+            disabled
+            type="email"
+            defaultValue={contacts?.email ?? ''}
+          />
+        <Labels>{t("ContactPhone#")}</Labels>
+          <Inputs
+            disabled
+            type="tel"
+            defaultValue={contacts?.phone_number ?? ''}
+          />
+        <Labels>{t("SafetyTraining")}</Labels>
+        <Contents size={null} variant={"safetyTrainingBar"}>
+          <Contents size={null} style={{ width: `${completionPercentage}%`}} className={Number(completionPercentage) === 100 ? "bg-app-green rounded-r-lg border-2 border-app-green" : "bg-app-orange rounded-r-lg border-2 border-app-orange"}>
+            <Texts size={"p3"}>{completionPercentage}%</Texts>
+          </Contents>
+        </Contents>
+      </Forms>
+        <SignOutModal />
       </Sections>
-      <Base64Encoder employee={employee} base64String={base64String} setBase64String={setBase64String}  />
-      <Sections size={"dynamic"}>
-        <form action="" className=" p-5 mx-10 flex flex-col gap-5">
-          <div className="flex flex-col justify-center gap-1 items-center">
-            <label htmlFor="">{t("EmployeeID")}</label>
-            <Input
-              isDisabled
-              type="text"
-              defaultValue={employee?.id?.toString() ?? ''}
-              className="border-2 border-black rounded-md"
-            />
-          </div>
-          <div className="flex flex-col justify-center gap-3 items-center">
-            <label htmlFor="">{t("ContactEmail")}</label>
-            <Input
-              isDisabled
-              type="email"
-              defaultValue={contacts?.email ?? ''}
-              className="border-2 border-black rounded-md"
-            />
-          </div>
-          <div className="flex flex-col justify-center gap-3 items-center">
-            <label htmlFor="">{t("ContactPhone#")}</label>
-            <Input
-              isDisabled
-              type="tel"
-              defaultValue={contacts?.phone_number ?? ''}
-              className="border-2 border-black rounded-md"
-            />
-          </div>
-          <div className="flex flex-col w-full justify-center gap-3 items-center">
-            <label htmlFor="">{t("SafetyTraining")}</label>
-            <div
-              className={`${completionStatus * 10 > 100 ? 'bg-green-500 w-full': 'bg-white w-full border-2 border-black ' }`}
-            >
-              <div style={{ width: `${completionPercentage}%`}} className="bg-app-orange">
-                <h1>{completionPercentage}% </h1>
-              <Input
-                isDisabled
-                type="text"
-                className={" rounded-md"}
-                style={{ width: `${completionPercentage}%` , padding: "5px", margin: "0px"}}
-                />
-                </div>
-            </div>
-          </div>
-        </form>
-      </Sections>
-    </div>
-  );
+  </Contents>
+);
 }
