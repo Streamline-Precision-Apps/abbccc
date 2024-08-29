@@ -4,6 +4,8 @@ import { useTranslations } from 'next-intl';
 import QR from './qr';
 import QR_EQ from './qr-eq';
 import { Buttons } from '../(reusable)/buttons';
+import { Texts } from '../(reusable)/texts';
+import { useRouter } from 'next/navigation';
 
 interface QRStepProps {
   handleAlternativePath: () => void;
@@ -11,14 +13,14 @@ interface QRStepProps {
   handleChangeJobsite?: () => void;
   handleReturn?: () => void;
   type: string;
-  url?: string;
+  url: string;
   option?: string;
 }
 
 const QRStep: React.FC<QRStepProps> = ({option, handleReturn, handleAlternativePath, handleNextStep, handleChangeJobsite, type, url }) => {
   const t = useTranslations("Clock");
   const validation = localStorage.getItem("jobSite");
-
+  const router = useRouter();
   return (
     <>
       {type === "equipment" ? (
@@ -32,7 +34,7 @@ const QRStep: React.FC<QRStepProps> = ({option, handleReturn, handleAlternativeP
             <QR_EQ handleNextStep={handleNextStep} />
           ) : (
             <>
-            <QR handleNextStep={handleNextStep} />  
+            <QR handleNextStep={handleNextStep} url={url}  />  
             </>)}
         </div>
         {option === "break" ? ( <Buttons onClick={handleReturn} variant={'red'} size={'default'}>

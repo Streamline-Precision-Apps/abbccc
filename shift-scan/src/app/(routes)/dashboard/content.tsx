@@ -60,10 +60,9 @@ const [equipmentLogsResults, setEquipmentLogsResults] = useState<Logs[]>([]);
 
 const [user, setData] = useState<User>({
 id: "",
-name: "",
 firstName: "",
 lastName: "",
-permission: "",
+permission: undefined,
 });
 
 useEffect(() => {
@@ -122,7 +121,6 @@ if (session && session.user) {
     setSavedUserData({ id: session.user.id });
     setData({
     id: session.user.id,
-    name: session.user.name,
     firstName: session.user.firstName,
     lastName: session.user.lastName,
     permission: session.user.permission,
