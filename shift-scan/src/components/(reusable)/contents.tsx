@@ -26,6 +26,7 @@ const ContentVariants = cva(
         white: "bg-white",
         barsBG: "flex flex-col border-2 border-black rounded-2xl mt-5",
         HrsBars: "m-auto w-full h[180px]>",
+        safetyTrainingBar: "w-full rounded-lg p-1 border border-2 border-black bg-gray-400",
       },
       size: {
         default: "h-full max-w-lg mx-auto pt-10",
