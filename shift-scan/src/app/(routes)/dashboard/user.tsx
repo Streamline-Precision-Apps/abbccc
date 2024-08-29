@@ -102,7 +102,7 @@ export default function User({
           <Buttons
             variant={"green"}
             size={"widgetMed"}
-            onClick={handleOpenModal}
+            href="/dashboard/log-new"
           >
             <Contents variant={"widgetButtonRow"} size={"test"}>
               <Texts size={"widgetMed"}>{t("LogNew")}</Texts>
@@ -114,23 +114,6 @@ export default function User({
               />
             </Contents>
           </Buttons>
-          <Modals
-            isOpen={isModalOpen}
-            handleClose={handleCloseModal}
-            variant={"default"}
-            size={"default"}
-            type={"default"}
-          >
-            <div>
-              <ClockProcessor
-                type={"equipment"}
-                id={user?.id}
-                scannerType={"equipment"}
-                isModalOpen={isModalOpen}
-                locale={locale}
-              />
-            </div>
-          </Modals>
           <Buttons
             variant={"orange"}
             size={"widgetMed"}
@@ -218,7 +201,7 @@ export default function User({
           <Buttons
             variant={"orange"}
             size={"widgetSm"}
-            onClick={handleOpenModal}
+            href="/dashboard/switch-jobs"
           >
             <Contents variant={"widgetButton"} size={"test"}>
               <Images
@@ -230,23 +213,6 @@ export default function User({
               <Texts size={"widgetSm"}>{t("SwitchJobs")}</Texts>
             </Contents>
           </Buttons>
-          <Modals
-            isOpen={isModalOpen}
-            handleClose={handleCloseModal}
-            variant={"default"}
-            size={"clock"}
-            type={"clock"}
-          >
-            <div className="flex flex-col bg-white px-2 ">
-              <ClockProcessor
-                type={"switchJobs"}
-                id={user?.id}
-                scannerType={"jobsite"}
-                isModalOpen={isModalOpen}
-                locale={locale}
-              />
-            </div>
-          </Modals>
 
           <Buttons
             href="/dashboard/equipment"
@@ -315,23 +281,6 @@ export default function User({
               <Texts size={"widgetSm"}>{t("SwitchJobs")}</Texts>
             </Contents>
           </Buttons>
-          <Modals
-            isOpen={isModalOpen}
-            handleClose={handleCloseModal}
-            variant={"default"}
-            size={"clock"}
-            type={"clock"}
-          >
-            <div className="flex flex-col bg-white px-2 ">
-              <ClockProcessor
-                type={"switchJobs"}
-                id={user?.id}
-                scannerType={"jobsite"}
-                isModalOpen={isModalOpen}
-                locale={locale}
-              />
-            </div>
-          </Modals>
 
           <Buttons
             href="/dashboard/equipment"
