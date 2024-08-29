@@ -4,6 +4,9 @@ import { useState, ChangeEvent, SetStateAction, Dispatch } from "react";
 import { Buttons } from "../(reusable)/buttons";
 import { Sections } from "../(reusable)/sections";
 import {uploadImage} from "@/actions/userActions";
+import {Forms} from "../(reusable)/forms";
+import {Inputs} from "../(reusable)/inputs";
+import { Contents } from "../(reusable)/contents";
 
 type Employee = {
   id: string;
@@ -37,13 +40,15 @@ export default function Base64Encoder({ employee, base64String, setBase64String 
 
   return (
     <Sections size="titleBox">
-      <form action={uploadImage} >
-      <input type="file" accept="image/*" onChange={handleFileChange} />
-      <Buttons variant="default" size="default" type="submit">Upload Image</Buttons>
-      
-      <input type="hidden" name="image" value={base64String} readOnly />
-      <input type="hidden" name="id" value={employee.id} readOnly />
-      </form>
+      <Forms action={uploadImage} >
+      <Contents size={null} variant={"row"}> 
+      {/* file enables user to use a file image upload */}
+      <Inputs type="file" accept="image/*" onChange={handleFileChange} variant={"files"} />
+      <Buttons variant="default" size={"minBtn"} type="submit">Upload Image</Buttons>
+      </Contents>
+      <Inputs type="hidden" name="image" value={base64String} readOnly />
+      <Inputs type="hidden" name="id" value={employee.id} readOnly />
+      </Forms>
     </Sections>
   );
 }
