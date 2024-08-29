@@ -254,6 +254,20 @@ export async function CreateEmployeeEquipmentLog(formData: FormData) {
   }
 }
 
+export async function findEquipmentLog(id: Number) {
+  try {
+    const log = await prisma.employeeEquipmentLog.findUnique({
+      where: { id: Number(id) },
+    });
+    return log;
+  } catch (error: any) {
+    console.error("Error finding employee equipment log:", error);
+    throw new Error(
+      `Failed to find employee equipment log: ${error.message}`
+    );
+  }
+}
+
 export async function updateEmployeeEquipmentLog(formData: FormData) {
   try {
     console.log(formData);

@@ -88,6 +88,7 @@ const locale = lang ? lang.value : "en"; // Default to English
             scannerType={"jobsite"}
             locale={locale}
             returnpath="/dashboard"
+            
         />
         </Contents>
         </Bases>

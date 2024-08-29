@@ -35,6 +35,7 @@ const equipment = await prisma.equipment.findMany({
     id: true,
     qr_id: true,
     name: true,
+    image: true,
     },
 });
 
@@ -87,6 +88,7 @@ const locale = lang ? lang.value : "en"; // Default to English
             scannerType={"equipment"}
             locale={locale}
             returnpath="/dashboard"
+            equipment={equipment}
         />
         </Bases>
     )
