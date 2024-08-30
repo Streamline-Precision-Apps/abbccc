@@ -164,7 +164,7 @@ export default function CombinedForm({
           <Inputs
             name="refueled"
             type="checkbox"
-            checked={refueled}
+            defaultChecked={refueled}
             onChange={handleRefueledChange}
             readOnly={!isEditMode && completed}
           />
@@ -177,7 +177,7 @@ export default function CombinedForm({
             <Inputs
               type="number"
               name="fuel_used"
-              value={fuel}
+              defaultValue={fuel}
               onChange={handleFuelValue}
               readOnly={!isEditMode && completed}
             />
