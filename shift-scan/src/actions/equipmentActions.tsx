@@ -279,6 +279,8 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
         end_time: new Date(formData.get("end_time") as string).toISOString(),
         duration: Number(formData.get("duration") as string),
         equipment_notes: formData.get("equipment_notes") as string,
+        refueled: Boolean(formData.get("refueled") as string),
+        fuel_used: Number(formData.get("fuel_used") as string),
         completed: true,
       },
     });
