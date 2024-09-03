@@ -74,6 +74,38 @@ export async function uploadImage(formdata: FormData) {
     revalidatePath('/hamburger/profile');
 }
 
+export async function uploadFirstImage(formdata: FormData) {
+    console.log(formdata);
+    await prisma.user.update({
+        where: { id: formdata.get('id') as string },
+        data: {
+            image: formdata.get('image') as string
+        }
+    })
+}
+
+export async function uploadFirstSignature(formdata: FormData) {
+    console.log(formdata);
+    await prisma.user.update({
+        where: { id: formdata.get('id') as string },
+        data: {
+            Signature: formdata.get('Signature') as string
+        }
+    })
+}
+
+export async function setUserSettings(formdata: FormData) {
+    console.log(formdata);
+    await prisma.userSettings.update({
+        where: { userId: formdata.get('id') as string },
+        data: {
+            approvedRequests: (Boolean(formdata.get('approvedRequests')) as unknown as boolean),
+            timeoffRequests: (Boolean(formdata.get('timeoffRequests')) as unknown as boolean),
+            GeneralReminders: (Boolean(formdata.get('GeneralReminders')) as unknown as boolean),
+        }
+    })
+}
+
 export async function fetchByNameUser(name: string) {
     try {
         const user = await prisma.user.findFirst({
@@ -106,4 +138,14 @@ export async function getUserFromDb(username: string, password: string) {
         }
     }
     return null
+}
+
+
+export async function setUserPassword(formData: FormData) {
+    await prisma.user.update({
+        where: { id: formData.get('id') as string },
+        data: {
+            password: formData.get('password') as string
+        }
+    })
 }

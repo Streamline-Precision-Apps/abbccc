@@ -184,3 +184,12 @@ I finished some more prisma DB research and Created the clock out dashboard page
 ## 8/29/2024
 
 - finished tabs on employee view.
+
+## 9/2/2024
+
+- worked on components for first login setup.
+
+## 9/3/2024
+
+- Finished components for first login setup.
+- Merge meeting with team.
