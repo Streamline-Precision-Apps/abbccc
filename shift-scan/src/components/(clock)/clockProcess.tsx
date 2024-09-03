@@ -10,25 +10,33 @@ import RedirectAfterDelay from "@/components/redirectAfterDelay";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useEQScanData } from "@/app/context/equipmentContext";
 import { Titles } from "../(reusable)/titles";
-import { Button } from "@nextui-org/react";
 import { Buttons } from "../(reusable)/buttons";
 import { setAuthStep } from "@/app/api/auth";
 interface clockProcessProps{
     scannerType: string;
     id: string | undefined;
     type: string;
-    isModalOpen: boolean;
     locale: string;
     option?: string;
+    returnpath: string;
+    equipment?: Equipment[]
 };
+
+interface Equipment {
+    id: string;
+    name: string;
+    qr_id: string;
+    images?: string;
+}
 
 const ClockProcessor: React.FC<clockProcessProps> = ({
 id,
 type,
 scannerType,
-isModalOpen,
 locale,
 option,
+returnpath,
+equipment
 }) => {
 const t = useTranslations("Clock");
 const [step, setStep] = useState(1);
@@ -40,8 +48,13 @@ const [path, setPath] = useState("");
 const [scanner, setScanner] = useState("");
 
 useEffect(() => {
-    setStep(1);
-}, [isModalOpen]);
+    // sets step to 1 on mount
+    setStep(1)
+    // sets step to 1 on unmount
+    return () => {
+        setStep(1);
+    };
+},[]);
 
 useEffect(() => {
 if (scannerType === "EQ") {
@@ -64,19 +77,8 @@ if (scanner) {
     if (processFilter === "E") {
     setPath("equipment");
     }
-    if (option !== 'break') {
-        setStep(3);
-    }
 }
 }, [scanner]);
-
-useEffect(() => {
-if (!isModalOpen) {
-    window.location.reload();
-}
-}, [isModalOpen]);
-
-
 
 const handleAlternativePath = () => {
 setUseQrCode(false);
@@ -111,6 +113,9 @@ try {
     setCostCode(costCode);
     setAuthStep("success");
     }
+    else {
+        setStep(1);
+    }
 } catch (error) {
     console.log(error);
 }
@@ -121,10 +126,11 @@ return (
     <>
         {step === 1 && (
         <QRStep
-                type="equipment"
-                handleAlternativePath={handleAlternativePath}
-                handleNextStep={handleNextStep}
-                url="/dashboard"     />
+            type="equipment"
+            handleAlternativePath={handleAlternativePath}
+            handleNextStep={handleNextStep}
+            url="/dashboard"
+        />
         )}
         {step === 2 && (
         <CodeStep
@@ -132,11 +138,12 @@ return (
             handleNextStep={handleNextStep}
         />
         )}
-        {step === 3 && (
+        {step === 3 && equipment && (
         <VerificationEQStep
-            type={type}
-            id={id}
-            handleNextStep={handleNextStep}
+        type={type}
+        id={id}
+        handleNextStep={handleNextStep}
+        equipment={equipment}
         />
         )}
         {step === 4 && (
@@ -147,7 +154,7 @@ return (
             <Titles variant={"default"} size={"h4"}>
             {t("Confirmation-eq-message-2")}
             </Titles>
-            <RedirectAfterDelay delay={500} to="/dashboard" /> {/* In Order for bug to be overcomed, the refresh must occur otherwise the unmounted qr code wont work*
+            <RedirectAfterDelay delay={200} to="/dashboard" /> {/* In Order for bug to be overcomed, the refresh must occur otherwise the unmounted qr code wont work*
                 best solution for now is this becuase at least it does it behind the modal*/}
         </>
         )}
@@ -166,7 +173,7 @@ return (
         handleNextStep={handleNextStep}
         handleChangeJobsite={handleChangeJobsite}
         handleReturn={handleReturn}
-        url={(type === "switchJobs") ? "/dashboard/switch-jobs" : "/"}
+        url={returnpath}
         option={ option }
         />
     )}
@@ -222,8 +229,7 @@ return (
                 second: "numeric",
             })}
             </Titles>
-        <RedirectAfterDelay delay={500} to="/dashboard" /> {/* In Order for bug to be overcomed, the refresh must occur otherwise the unmounted qr code wont work*
-            best solution for now is this becuase at least it does it behind the modal*/}
+        <RedirectAfterDelay delay={200} to="/dashboard" />
         </div>
     )}
     </>

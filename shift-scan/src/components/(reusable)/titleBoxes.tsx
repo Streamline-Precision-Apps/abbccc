@@ -45,6 +45,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({className, variant, size, type, title, t
                 <Buttons href='back' variant={"icon"} size={"backButton"}>
                     <Images titleImg="/backArrow.svg" titleImgAlt={titleImgAlt} variant={"icon"} size={"backButton"}/>
                 </Buttons>
+                    {props.children}
                 <Contents variant={"image"} size={"profilePic"}>
                     <Images titleImg={titleImg} titleImgAlt={titleImgAlt} variant={"icon"} size={"default"}/>
                 </Contents>
@@ -53,6 +54,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({className, variant, size, type, title, t
 
         )  
     }
+
     if (type === "titleOnly") {
         return (
             <div className={cn(TitleBoxVariants({variant, size, className}))} {...props}>

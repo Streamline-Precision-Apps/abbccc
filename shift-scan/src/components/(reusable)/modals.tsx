@@ -21,8 +21,11 @@ const ModalVariants = cva(
         test: "bg-red-300"
       },
       size: {
-        default: "fixed rounded p-1 bg-white top-1/4 left-3/4 -translate-x-1/4 -translate-y-1/2",
-        sm: "fixed rounded p-1 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
+        default: "fixed rounded p-1 bg-white top-1/4 left-3/4 -translate-x-1/4 -translate-y-1/2 flex flex-col",
+        sm: "fixed rounded p-1 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col",
+        med: "p-10 w-40 h-40",
+        lg: " fixed rounded-3xl p-1 bg-white h-fit w-2/3 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col justify-normal mt-16",
+        clock: "fixed rounded top-1/3 -translate-y-1/3 flex flex-col w-full h-[100%] ",
         fullPage: "fixed left-0 top-0 mt-10 rounded-2xl rounded-b-none w-full h-full",
       }
     },
@@ -105,6 +108,20 @@ const Modals: FC<ModalProps> = ({className, variant, size, type, isOpen, step, h
   </>
 
 )
+else if (type === "base64")
+  return (
+    <ReactPortal wrapperId="react-portal-modal-container">
+        <div className="fixed top-0 left-0 w-screen h-screen bg-neutral-800 opacity-50"/>
+        <div className={cn(ModalVariants({variant, size, className}))} {...props} >
+          <Buttons onClick={handleClose} className="close-btn" variant={"icon"} size={"minBtn"}>
+              <Images titleImg="/x.svg" titleImgAlt="x" variant={"icon"} size={"default"}/>
+          </Buttons>
+          <div className="modal-content-wrapper max-h-[80vh] overflow-y-auto scrollbar-hide">
+        {props.children}
+          </div>
+    </div>      
+  </ReactPortal>
+  )
     
       else return (
         <ReactPortal wrapperId="react-portal-modal-container">

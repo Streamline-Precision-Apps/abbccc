@@ -10,7 +10,7 @@ import ClockProcessor from "@/components/(clock)/clockProcess";
 import { useSession } from "next-auth/react";
 import { CustomSession } from "@/lib/types";
 import { setAuthStep } from "@/app/api/auth";
-import { Equipment, Logs } from "@/lib/types";
+import { Logs } from "@/lib/types";
 import { updateTimeSheetBySwitch } from "@/actions/timeSheetActions";
 import { Contents } from "@/components/(reusable)/contents";
 
@@ -23,31 +23,26 @@ interface UserProps {
   manager: boolean;
 }
 
-export const User: React.FC<UserProps> = ({
+export default function User({
   additionalButtonsType,
   handleShowManagerButtons,
   handleShowAdditionalButtons,
   logs, // Use logs prop
   locale,
-  manager,
-}) => {
+  manager}: UserProps
+){
   const t = useTranslations("ManagerButtons");
-
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { data: session } = useSession() as { data: CustomSession | null };
   const user = session?.user;
 
-
   const handleOpenModal = () => {
-    
     setIsModalOpen(true);
-
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-
   };
 
   // Function to handle CO Button 2 action
@@ -107,7 +102,7 @@ export const User: React.FC<UserProps> = ({
           <Buttons
             variant={"green"}
             size={"widgetMed"}
-            onClick={handleOpenModal}
+            href="/dashboard/log-new"
           >
             <Contents variant={"widgetButtonRow"} size={"test"}>
               <Texts size={"widgetMed"}>{t("LogNew")}</Texts>
@@ -119,23 +114,6 @@ export const User: React.FC<UserProps> = ({
               />
             </Contents>
           </Buttons>
-          <Modals
-            isOpen={isModalOpen}
-            handleClose={handleCloseModal}
-            variant={"default"}
-            size={"default"}
-            type={"default"}
-          >
-            <div>
-              <ClockProcessor
-                type={"equipment"}
-                id={user?.id}
-                scannerType={"equipment"}
-                isModalOpen={isModalOpen}
-                locale={locale}
-              />
-            </div>
-          </Modals>
           <Buttons
             variant={"orange"}
             size={"widgetMed"}
@@ -223,7 +201,7 @@ export const User: React.FC<UserProps> = ({
           <Buttons
             variant={"orange"}
             size={"widgetSm"}
-            onClick={handleOpenModal}
+            href="/dashboard/switch-jobs"
           >
             <Contents variant={"widgetButton"} size={"test"}>
               <Images
@@ -235,23 +213,6 @@ export const User: React.FC<UserProps> = ({
               <Texts size={"widgetSm"}>{t("SwitchJobs")}</Texts>
             </Contents>
           </Buttons>
-          <Modals
-            isOpen={isModalOpen}
-            handleClose={handleCloseModal}
-            variant={"default"}
-            size={"clock"}
-            type={"clock"}
-          >
-            <div className="flex flex-col bg-white px-2 ">
-              <ClockProcessor
-                type={"switchJobs"}
-                id={user?.id}
-                scannerType={"jobsite"}
-                isModalOpen={isModalOpen}
-                locale={locale}
-              />
-            </div>
-          </Modals>
 
           <Buttons
             href="/dashboard/equipment"
@@ -320,23 +281,6 @@ export const User: React.FC<UserProps> = ({
               <Texts size={"widgetSm"}>{t("SwitchJobs")}</Texts>
             </Contents>
           </Buttons>
-          <Modals
-            isOpen={isModalOpen}
-            handleClose={handleCloseModal}
-            variant={"default"}
-            size={"clock"}
-            type={"clock"}
-          >
-            <div className="flex flex-col bg-white px-2 ">
-              <ClockProcessor
-                type={"switchJobs"}
-                id={user?.id}
-                scannerType={"jobsite"}
-                isModalOpen={isModalOpen}
-                locale={locale}
-              />
-            </div>
-          </Modals>
 
           <Buttons
             href="/dashboard/equipment"

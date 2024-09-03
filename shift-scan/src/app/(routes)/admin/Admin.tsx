@@ -5,6 +5,7 @@ import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
 import { setAuthStep } from "@/app/api/auth";
 import { useRouter } from "next/navigation";
+import { Contents } from "@/components/(reusable)/contents";
 
 interface AdminProps {
   additionalButtonsType: string | null;
@@ -21,8 +22,7 @@ export const Admin: React.FC<AdminProps> = ({
   const Router = useRouter();
 
   function switchToDashboard(): void {
-    setAuthStep("success");
-    Router.push("/dashboard");
+    Router.push("/");
   }
 
   return (
@@ -34,15 +34,18 @@ export const Admin: React.FC<AdminProps> = ({
             size={"widgetSm"}
             onClick={handleResetButtons}
           >
+              <Contents variant={"widgetButton"} size={null}>
             <Images
               titleImg="/home.svg"
               titleImgAlt="Home Icon"
               variant={"icon"}
               size={"default"}
-            />
+              />
             <Texts>{t("Home")}</Texts>
+              </Contents>
           </Buttons>
           <Buttons variant={"orange"} size={"widgetSm"} href="/admin/employees">
+          <Contents variant={"widgetButton"} size={null}>
             <Images
               titleImg="/equipment.svg"
               titleImgAlt="Equipment Icon"
@@ -50,6 +53,7 @@ export const Admin: React.FC<AdminProps> = ({
               size={"default"}
             />
             <Texts>{t("ManageEmployees")}</Texts>
+          </Contents>
           </Buttons>
         </>
       ) : additionalButtonsType === "asset" ? (
@@ -59,6 +63,7 @@ export const Admin: React.FC<AdminProps> = ({
             size={"widgetSm"}
             onClick={handleResetButtons}
           >
+             <Contents variant={"widgetButton"} size={null}>
             <Images
               titleImg="/home.svg"
               titleImgAlt="Home Icon"
@@ -66,33 +71,18 @@ export const Admin: React.FC<AdminProps> = ({
               size={"default"}
             />
             <Texts>{t("Home")}</Texts>
+             </Contents>
           </Buttons>
           <Buttons variant={"orange"} size={"widgetSm"} href="/admin/assets">
+          <Contents variant={"widgetButton"} size={null}>
             <Images
               titleImg="/equipment.svg"
               titleImgAlt="Home Icon"
               variant={"icon"}
               size={"default"}
             />
-            <Texts>Manage Equipment</Texts>
-          </Buttons>
-          <Buttons variant={"orange"} size={"widgetSm"} href="/admin/assets">
-            <Images
-              titleImg="/qrCode.svg"
-              titleImgAlt="Home Icon"
-              variant={"icon"}
-              size={"widgetSm"}
-            />
-            <Texts>Manage Jobsites </Texts>
-          </Buttons>
-          <Buttons variant={"orange"} size={"widgetSm"} href="/admin/assets">
-            <Images
-              titleImg="/jobsite.svg"
-              titleImgAlt="Home Icon"
-              variant={"icon"}
-              size={"default"}
-            />
-            <Texts>Manage Cost Codes</Texts>
+            <Texts>Manage Assest</Texts>
+          </Contents>
           </Buttons>
         </>
       ) : additionalButtonsType === "reports" ? (
@@ -102,15 +92,18 @@ export const Admin: React.FC<AdminProps> = ({
             size={"widgetSm"}
             onClick={handleResetButtons}
           >
+            <Contents variant={"widgetButton"} size={null}>
             <Images
               titleImg="/home.svg"
               titleImgAlt="Home Icon"
               variant={"icon"}
               size={"default"}
-            />
+              />
             <Texts>{t("Home")}</Texts>
+              </Contents>
           </Buttons>
           <Buttons variant={"orange"} size={"widgetSm"} href="/admin/reports">
+          <Contents variant={"widgetButton"} size={null}>
             <Images
               titleImg="/forms.svg"
               titleImgAlt="Home Icon"
@@ -118,6 +111,7 @@ export const Admin: React.FC<AdminProps> = ({
               size={"default"}
             />
             <Texts>Extract Reports</Texts>
+          </Contents>
           </Buttons>
         </>
       ) : (
@@ -128,13 +122,15 @@ export const Admin: React.FC<AdminProps> = ({
             size={"widgetSm"}
             onClick={() => handleShowAdditionalButtons("recruitment")}
           >
+            <Contents variant={"widgetButton"} size={null}>
             <Images
               titleImg="/myTeam.svg"
               titleImgAlt="my team"
               variant={"icon"}
               size={"widgetSm"}
-            ></Images>
+              ></Images>
             <Texts>{t("Recruitment")}</Texts>
+              </Contents>
           </Buttons>
           <Buttons
             href=""
@@ -142,26 +138,31 @@ export const Admin: React.FC<AdminProps> = ({
             size={"widgetSm"}
             onClick={() => handleShowAdditionalButtons("asset")}
           >
+            <Contents variant={"widgetButton"} size={null}>
             <Images
               titleImg="/equipment.svg"
               titleImgAlt="Equipment Icon"
               variant={"icon"}
               size={"widgetSm"}
-            ></Images>
+              ></Images>
             <Texts>{t("Assets")}</Texts>
+              </Contents>
           </Buttons>
           <Buttons
             variant={"red"}
             size={"widgetSm"}
             onClick={() => handleShowAdditionalButtons("reports")}
           >
+            <Contents variant={"widgetButton"} size={null}>
+
             <Images
               titleImg="/clockOut.svg"
               titleImgAlt="Clock Out Icon"
               variant={"icon"}
               size={"widgetSm"}
-            ></Images>
+              ></Images>
             <Texts>{t("reports")}</Texts>
+              </Contents>
           </Buttons>
 
           <Buttons
@@ -169,13 +170,15 @@ export const Admin: React.FC<AdminProps> = ({
             size={"widgetSm"}
             onClick={() => switchToDashboard()}
           >
+          <Contents variant={"widgetButton"} size={null}>
             <Images
               titleImg="/home.svg"
               titleImgAlt="Clock Out Icon"
               variant={"icon"}
               size={"widgetSm"}
-            ></Images>
-            <Texts>{t("reports")}</Texts>
+              ></Images>
+            <Texts>Return to Home</Texts>
+              </Contents>
           </Buttons>
         </>
       )}

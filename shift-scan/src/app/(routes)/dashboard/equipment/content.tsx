@@ -13,11 +13,11 @@ interface ContentProps {
     total: number;
     completed: number;
     green: number;
-    userid: string | undefined;
+    user_Id: string | undefined;
     logs: any[];
 }
 
-export default function Content({ userid, logs, total, green }: ContentProps) {
+export default function Content({ user_Id, logs, total, green }: ContentProps) {
     const t = useTranslations("EquipmentContent");
     return (
     <Bases>
@@ -28,7 +28,7 @@ export default function Content({ userid, logs, total, green }: ContentProps) {
         {green === 0 && total !== 0 ? 
         (< Forms action={Submit}>
             <Buttons type="submit" variant={"default"} size={"default"}>{t("SubmitAll")}</Buttons>
-            <Inputs type="hidden" name="id" value={userid} />
+            <Inputs type="hidden" name="id" value={user_Id} />
             <Inputs type="hidden" name="submitted" value={"true"} />
         </Forms>)
         : <></>}

@@ -22,14 +22,6 @@ export default function ClockInWidget({ user, locale, option, manager}: Props) {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const handleOpenModal = () => {
-        setIsModalOpen(true);
-    };
-
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-        location.reload(); // only current method to reload the page
-    };
 
     if (manager) {
         return (
@@ -37,23 +29,13 @@ export default function ClockInWidget({ user, locale, option, manager}: Props) {
             <Buttons 
                 variant={"green"} 
                 size={"widgetMed"} 
-                onClick={handleOpenModal}
+                href="/clock"
             >
                 <Contents variant={"widgetButtonRow"} size={"test"}>
                     <Texts size={"widgetMed"}>{t("Clock-btn")}</Texts>
                     <Images titleImg="/clockIn.svg" titleImgAlt="QR Code" variant={"icon"} size={"widgetMed"} />
                 </Contents>
             </Buttons>
-            <Modals isOpen={isModalOpen} handleClose={handleCloseModal} variant={"default"} size={"clock"} type={"clock"}> 
-            <ClockProcessor
-                type={"jobsite"}
-                id={user.id}
-                scannerType={"jobsite"}
-                isModalOpen={isModalOpen}
-                locale={locale}
-                option={option}
-            />
-            </Modals>
         </>
     );
 }    else {
@@ -62,23 +44,13 @@ export default function ClockInWidget({ user, locale, option, manager}: Props) {
             <Buttons 
                 variant={"green"} 
                 size={"widgetLg"} 
-                onClick={handleOpenModal}
+                href="/clock"
             >
                 <Contents variant={"widgetButtonRow"} size={"test"}>
                     <Texts size={"widgetMed"}>{t("Clock-btn")}</Texts>
                     <Images titleImg="/clockIn.svg" titleImgAlt="QR Code" variant={"icon"} size={"widgetMed"} />
                 </Contents>
             </Buttons>
-            <Modals isOpen={isModalOpen} handleClose={handleCloseModal} variant={"default"} size={"clock"} type={"clock"}> 
-            <ClockProcessor
-                type={"jobsite"}
-                id={user.id}
-                scannerType={"jobsite"}
-                isModalOpen={isModalOpen}
-                locale={locale}
-                option={option}
-            />
-            </Modals>
         </>
         )
 }}
