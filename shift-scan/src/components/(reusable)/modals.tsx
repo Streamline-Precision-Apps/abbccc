@@ -22,7 +22,7 @@ const ModalVariants = cva(
         default: "fixed rounded p-1 bg-white top-1/4 left-3/4 -translate-x-1/4 -translate-y-1/2 flex flex-col",
         sm: "fixed rounded p-1 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col",
         med: "p-10 w-40 h-40",
-        lg: "fixed rounded p-1 bg-white h-5/6 w-2/3 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col justify-normal ",
+        lg: " fixed rounded-3xl p-1 bg-white h-fit w-2/3 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col justify-normal mt-16",
         clock: "fixed rounded top-1/3 -translate-y-1/3 flex flex-col w-full h-[100%] "
       }
     },
@@ -114,7 +114,9 @@ else if (type === "base64")
           <Buttons onClick={handleClose} className="close-btn" variant={"icon"} size={"minBtn"}>
               <Images titleImg="/x.svg" titleImgAlt="x" variant={"icon"} size={"default"}/>
           </Buttons>
-          <div>{props.children}</div>
+          <div className="modal-content-wrapper max-h-[80vh] overflow-y-auto scrollbar-hide">
+        {props.children}
+          </div>
     </div>      
   </ReactPortal>
   )
