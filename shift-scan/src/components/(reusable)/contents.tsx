@@ -17,7 +17,7 @@ const ContentVariants = cva(
         widgetButtonRow: "m-1 flex flex-row justify-center items-center",
         hidden: "hidden flex-col",
         center: "flex flex-col justify-center items-center",
-        test: ""
+        test: " h-full flex flex-col w-full",
       },
       size: {
         default: "h-full max-w-lg mx-auto pt-10",
