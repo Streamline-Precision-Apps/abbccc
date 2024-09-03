@@ -7,9 +7,7 @@ import { Images } from "./images";
 import { Modals } from "./modals";
 import { Buttons } from "./buttons";
 import { Contents } from "./contents";
-import { AnimatedHamburgerButton } from "@/app/hamburger/testing/page";
-
-
+import { AnimatedHamburgerButton } from "../(animations)/hamburgerMenu";
 const HeaderVariants = cva(
   "", //this applies to all variants
   {

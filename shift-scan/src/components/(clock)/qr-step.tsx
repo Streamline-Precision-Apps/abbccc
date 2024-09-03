@@ -6,6 +6,7 @@ import QR_EQ from './qr-eq';
 import { Buttons } from '../(reusable)/buttons';
 import { Texts } from '../(reusable)/texts';
 import { useRouter } from 'next/navigation';
+import { Titles } from '../(reusable)/titles';
 
 interface QRStepProps {
   handleAlternativePath: () => void;
@@ -24,12 +25,11 @@ const QRStep: React.FC<QRStepProps> = ({option, handleReturn, handleAlternativeP
   return (
     <>
       {type === "equipment" ? (
-        <h1 className="flex justify-center text-2xl font-bold pt-10 pb-10">{t('ScanEquipment')}</h1>
+        <Titles variant={"modal"} size={"h1"}>{t('ScanEquipment')}</Titles>
       ) : (
-        <h1 className="flex justify-center text-2xl font-bold pt-10 pb-10">{t('ScanJobSite')}</h1>
+        <Titles variant={"modal"} size={"h1"}>{t('ScanJobSite')}</Titles>
       )}
-      <div className="flex flex-col items-center w-full">
-        <div className="flex justify-items-center items-center w-[500px] h-[500px] pb-5 border-4 border-black rounded-lg bg-black">
+        <div className="bg-white mx-5 rounded-2xl p-3 border-4 border-black">
           {type === 'equipment' ? (
             <QR_EQ handleNextStep={handleNextStep} />
           ) : (
@@ -37,19 +37,17 @@ const QRStep: React.FC<QRStepProps> = ({option, handleReturn, handleAlternativeP
             <QR handleNextStep={handleNextStep} url={url}  />  
             </>)}
         </div>
-        {option === "break" && type !== "equipment" ? ( <Buttons onClick={handleReturn} variant={'red'} size={'default'}>
+        <button onClick={handleAlternativePath}>
+          <Texts variant={"link"} size={"p4"}>{t('TroubleScanning')}</Texts>
+        </button>
+        {option === "break" ? ( <Buttons onClick={handleReturn} variant={'red'} size={'default'}>
               {"Return To Previous Job and cost code"}
               </Buttons>)
                 : (null)}
-        {validation && type !== "equipment" ? ( <Buttons onClick={handleChangeJobsite} variant={'orange'} size={'default'}>
+        {validation ? ( <Buttons onClick={handleChangeJobsite} variant={'green'} size={'default'}>
               {t('ReturnToJobsite')}
               </Buttons>)
                 : (null)} 
-        
-        <button onClick={handleAlternativePath} className="flex justify-center text-lg font-light underline pb-5">
-          {t('TroubleScanning')}
-        </button>
-      </div>
     </>
   );
 };

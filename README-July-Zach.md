@@ -103,5 +103,12 @@
 
 8/12/24
 - Preped for Merge/ Merge meeting.
+
+8/28/24
+-Sick Day
+
+8/29/24
+-Working on Styling Modals
+-Long Meeting
 -
 
