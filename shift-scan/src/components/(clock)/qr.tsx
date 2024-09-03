@@ -3,12 +3,16 @@ import React, { useEffect, useRef, useState } from "react";
 import QrScanner from "qr-scanner";
 import { useRouter } from 'next/navigation';
 import { useScanData } from '@/app/context/JobSiteContext';
+import { Texts } from "../(reusable)/texts";
+import { Buttons } from "../(reusable)/buttons";
+import { Contents } from "../(reusable)/contents";
 
 interface QrReaderProps {
   handleNextStep: () => void;
+  url : string;
 }
 
-const QR: React.FC<QrReaderProps> = ({ handleNextStep }) => {
+const QR: React.FC<QrReaderProps> = ({ handleNextStep, url  }) => {
   const videoRef: React.MutableRefObject<HTMLVideoElement | null> = useRef(null);
   const qrScannerRef: React.MutableRefObject<QrScanner | null> = useRef(null);
   const [scanCount, setScanCount] = useState(0);
@@ -70,7 +74,7 @@ const QR: React.FC<QrReaderProps> = ({ handleNextStep }) => {
   useEffect(() => {
     if (scanCount >= SCAN_THRESHOLD) {
       qrScannerRef.current?.stop();
-      router.push('/');
+      router.push(url);
     }
   }, [scanCount, router]);
 

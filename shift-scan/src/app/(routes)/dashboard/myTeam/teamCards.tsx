@@ -5,13 +5,14 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Images } from "@/components/(reusable)/images";
 import { Titles } from "@/components/(reusable)/titles";
 import { Contents } from "@/components/(reusable)/contents";
+import { auth } from "@/auth";
 
 
 /* Todo: Make the  team card section use zacks code and get ride of the button 
 - provide routing for the buttons to go to the correct page */
 export default async function TeamCards() {
-    const user = cookies().get("user");
-    const id = user?.value;
+    const session = await auth();
+    const id = session?.user.id
     const userCrewId = await prisma.user.findUnique({
         where: {
             id: id

@@ -17,7 +17,7 @@ export default function WidgetSection({ user, display, locale, option}: Props) {
         user?.permission === "SUPERADMIN" ||
         user?.permission === "MANAGER" ||
         user?.permission === "PROJECTMANAGER"
-      ) {
+    ) {
         return (
             <>
                 <Manager show={true} />

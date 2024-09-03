@@ -142,16 +142,13 @@ export async function fetchByNameEquipment(name: string) {
 export async function createEquipment(formData: FormData) {
   try {
     console.log("Creating equipment...");
-    console.log("Form Data:", Object.fromEntries(formData.entries())); // Log all form data
+    console.log(formData);
 
     const statusValue = formData.get("status") as string;
     const equipmentTagValue = formData.get("equipment_tag") as string;
     const equipmentStatusValue = formData.get("equipment_status") as string;
     const qr_id = formData.get("qr_id") as string;
     const image = formData.get("image") as string;
-
-    console.log("Image Base64 String:", image); // Log the image base64 string
-
     const equipmentTag = toEnumValue(Tags, equipmentTagValue);
     const equipmentStatus = toEnumValue(EquipmentStatus, equipmentStatusValue);
 
@@ -257,6 +254,20 @@ export async function CreateEmployeeEquipmentLog(formData: FormData) {
   }
 }
 
+export async function findEquipmentLog(id: Number) {
+  try {
+    const log = await prisma.employeeEquipmentLog.findUnique({
+      where: { id: Number(id) },
+    });
+    return log;
+  } catch (error: any) {
+    console.error("Error finding employee equipment log:", error);
+    throw new Error(
+      `Failed to find employee equipment log: ${error.message}`
+    );
+  }
+}
+
 export async function updateEmployeeEquipmentLog(formData: FormData) {
   try {
     console.log(formData);
@@ -268,6 +279,8 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
         end_time: new Date(formData.get("end_time") as string).toISOString(),
         duration: Number(formData.get("duration") as string),
         equipment_notes: formData.get("equipment_notes") as string,
+        refueled: Boolean(formData.get("refueled") as string),
+        fuel_used: Number(formData.get("fuel_used") as string),
         completed: true,
       },
     });

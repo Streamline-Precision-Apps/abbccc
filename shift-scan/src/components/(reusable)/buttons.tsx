@@ -15,20 +15,25 @@ const ButtonVariants = cva(
         green: "bg-app-green",
         red: "bg-app-red",
         orange: "bg-app-orange",
+        white: "bg-white",
         icon: "bg-none border-0 shadow-none",
       },
       position: {
         left: "left-5",
       },
       size: {
-        default: "flex-row mx-auto my-3 p-1",
-        hours: "h-[150px] w-full flex-row mx-auto p-3 col-span-2",
+        default: "h-[50px] w-[50px] flex-row mx-auto my-3 p-1",
+        minBtn: "h-[50px] w-fit flex-row mx-auto my-3 p-1",
+        hours: "h-[150px] w-full flex-row items-center col-span-2 justify-space-between p-1",
         listLg: "flex-row w-full h-28 mt-5 first:mt-0 overflow-hidden justify-stretch",
         widgetSm: " min-h-[150px] min-w-[170px] shadow-[8px_8px_0px_grey]",
         widgetMed: "grid col-span-2 w-full",
+        dateBtn: "w-full h-full px-5 py-3 shadow-none ",
         widgetLg: "grid col-span-2 row-span-2 h-full w-full",
         backButton: "absolute top-2 left-2",
+        editButton: "absolute top-[80%] left-[89%] ",
         exit: " mx-auto mt-5 mb-5 p-2",
+        returnBtn :"w-16 h-16 absolute top-0 left-[43%] ",
         forgotpassword: "flex ml-auto my-3 p-3 w-40 h-100 underline",
         test: ""
       }
