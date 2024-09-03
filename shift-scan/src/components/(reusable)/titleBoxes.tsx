@@ -36,7 +36,6 @@ interface TitleBoxProps extends HTMLAttributes<HTMLElement>, VariantProps<typeof
     titleImg: string;
     titleImgAlt: string;
     src ?: string;
-    edit?: boolean;
 }
 
 const TitleBoxes: FC<TitleBoxProps> = ({className, variant, size, type, title, titleImg, titleImgAlt, ...props}) => {
@@ -55,6 +54,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({className, variant, size, type, title, t
 
         )  
     }
+
     if (type === "titleOnly") {
         return (
             <div className={cn(TitleBoxVariants({variant, size, className}))} {...props}>

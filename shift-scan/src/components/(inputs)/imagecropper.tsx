@@ -2,7 +2,6 @@ import { ChangeEvent, Dispatch, SetStateAction, useRef, useState } from "react";
 import { Inputs } from "../(reusable)/inputs";
 import { Labels } from "../(reusable)/labels";
 import { Contents } from "../(reusable)/contents";
-import { Images } from "../(reusable)/images";
 import 'react-image-crop/dist/ReactCrop.css';
 import ReactCrop, { centerCrop, convertToPixelCrop, makeAspectCrop, type Crop } from 'react-image-crop';
 import { Texts } from "../(reusable)/texts";
@@ -60,7 +59,6 @@ export default function ImageCropper({ setBase64String, handleFileChange }: Prop
         setCrop(CenteredCrop);
     };
     
-
     return (
         <>
             <Labels variant="default">
@@ -89,7 +87,6 @@ export default function ImageCropper({ setBase64String, handleFileChange }: Prop
                             onLoad={onImageLoad}
                         />
                     </ReactCrop>
-
                     <Buttons 
                     variant={"default"} 
                     size={"minBtn"}
