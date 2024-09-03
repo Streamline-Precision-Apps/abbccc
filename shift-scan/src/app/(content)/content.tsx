@@ -138,6 +138,7 @@ export default function Content({
 // sets the saved user data
   useEffect(() => {
     if (session && session.user) {
+      // if (session.user.)
       console.log("Session user:", session.user);
       setSavedUserData({
         id: session.user.id,
