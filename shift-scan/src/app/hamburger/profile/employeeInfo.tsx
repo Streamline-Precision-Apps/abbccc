@@ -12,6 +12,9 @@ import { Labels } from "@/components/(reusable)/labels";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Texts } from "@/components/(reusable)/texts";
 import SignOutModal from './signOutModal';
+import { Modals } from "@/components/(reusable)/modals";
+import { Buttons } from "@/components/(reusable)/buttons";
+import { Images } from "@/components/(reusable)/images";
 
 type Employee = {
   id: string;
@@ -39,17 +42,28 @@ export default function EmployeeInfo({ employee, contacts, training }: Props ) {
   // logic to get completion percentage
   const completionStatus = (completed / total);
   const completionPercentage = (completionStatus * 100).toFixed(0);
-  
+  const [isOpen, setIsOpen] = useState(false);
+
 //Testing v v v
   // const completionPercentage = (90).toFixed(0);
   return (
   <Contents size={"default"} variant={"default"}>
   <Sections size={"titleBox"}>
 {/*This Title box allows the profile pic to default as a base profile picture*/}
-      <TitleBoxes title={`${employee?.firstName} ${employee?.lastName}`} titleImg={employee?.image !== null ? `${employee?.image}` : "/profile.svg"}  titleImgAlt={"image"} />
+      <TitleBoxes type="profilePic" title={`${employee?.firstName} ${employee?.lastName}`} titleImg={employee?.image !== null ? `${employee?.image}` : "/profile.svg"}  titleImgAlt={"image"} >
+        <Contents size={"editBtn"} variant={"clear"} onClick={() => setIsOpen(true) } >
+        <Buttons variant={"icon"} size={"editButton"}> 
+          <Images titleImg="/edit.svg" titleImgAlt="edit" variant={"icon"} size={"editIcon"}/>
+        </Buttons>
+        </Contents>
+      </TitleBoxes>
   </Sections>
   
+  <Modals 
+  handleClose={() => {setIsOpen(false); setBase64String('');}} 
+  type="base64" variant={"default"} size={"lg"} isOpen={isOpen}>
     <Base64Encoder employee={employee} base64String={base64String} setBase64String={setBase64String}  />
+  </Modals>
     <Sections size={"default"}>
       <Forms>
         <Labels variant="default">{t("EmployeeID")}</Labels>

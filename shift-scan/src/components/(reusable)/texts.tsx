@@ -20,6 +20,7 @@ const TextVariants = cva(
         bottom: "absolute bottom-0",
         bannerDate: "pt-0 mt-0",
         totalHours: "text-white pt-0 mt-0",
+        error: "text-red-500",
       },
       size: {
         default: "text-2xl",

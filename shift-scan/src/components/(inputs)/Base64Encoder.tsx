@@ -7,6 +7,7 @@ import {uploadImage} from "@/actions/userActions";
 import {Forms} from "../(reusable)/forms";
 import {Inputs} from "../(reusable)/inputs";
 import { Contents } from "../(reusable)/contents";
+import ImageCropper from "./imagecropper";
 
 type Employee = {
   id: string;
@@ -39,16 +40,15 @@ export default function Base64Encoder({ employee, base64String, setBase64String 
   };
 
   return (
-    <Sections size="titleBox">
+    <Contents variant={"default"} size={"default"} >
       <Forms action={uploadImage} >
-      <Contents size={null} variant={"row"}> 
+      <Contents size={"default"} variant={"default"}> 
       {/* file enables user to use a file image upload */}
-      <Inputs type="file" accept="image/*" onChange={handleFileChange} variant={"files"} />
-      <Buttons variant="default" size={"minBtn"} type="submit">Upload Image</Buttons>
+      <ImageCropper setBase64String={setBase64String} handleFileChange={handleFileChange}  />
       </Contents>
       <Inputs type="hidden" name="image" value={base64String} readOnly />
       <Inputs type="hidden" name="id" value={employee.id} readOnly />
       </Forms>
-    </Sections>
+    </Contents>
   );
 }

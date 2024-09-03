@@ -36,6 +36,7 @@ interface TitleBoxProps extends HTMLAttributes<HTMLElement>, VariantProps<typeof
     titleImg: string;
     titleImgAlt: string;
     src ?: string;
+    edit?: boolean;
 }
 
 const TitleBoxes: FC<TitleBoxProps> = ({className, variant, size, type, title, titleImg, titleImgAlt, ...props}) => {
@@ -45,6 +46,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({className, variant, size, type, title, t
                 <Buttons href='back' variant={"icon"} size={"backButton"}>
                     <Images titleImg="/backArrow.svg" titleImgAlt={titleImgAlt} variant={"icon"} size={"backButton"}/>
                 </Buttons>
+                    {props.children}
                 <Contents variant={"image"} size={"profilePic"}>
                     <Images titleImg={titleImg} titleImgAlt={titleImgAlt} variant={"icon"} size={"default"}/>
                 </Contents>

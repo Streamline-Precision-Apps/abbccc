@@ -21,6 +21,7 @@ const ContentVariants = cva(
         widgetButtonRow: "m-1 flex flex-row justify-center items-center",
         hidden: "hidden flex-col",
         center: "flex flex-col justify-center items-center",
+        clear: "bg-clear",
         green: "bg-green-500 my-1",
         test: "",
         white: "bg-white",
@@ -39,6 +40,7 @@ const ContentVariants = cva(
         devun2: "h-full max-w-lg mx-auto mt-64",
         hoursBtn: "mx-12 h-20 rounded-2xl border-2 border-black shadow-none flex flex-grow justify-center items-center",
         test: "",
+        editBtn: "absolute top-0 h-36 w-36 rounded-full",
       }
     },
     defaultVariants: {
