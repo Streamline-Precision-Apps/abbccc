@@ -3,9 +3,9 @@ import { Buttons } from '../(reusable)/buttons';
 import { setUserSettings } from '@/actions/userActions';
 
 const NotificationSettings = ({ id, handleNextStep }: { id: string; handleNextStep: any }) => {
-  const [approvedRequests, setApprovedRequests] = useState(false);
-  const [timeoffRequests, setTimeoffRequests] = useState(false);
-  const [generalReminders, setGeneralReminders] = useState(false);
+  const [approvedRequests, setApprovedRequests] = useState(true);
+  const [timeoffRequests, setTimeoffRequests] = useState(true);
+  const [generalReminders, setGeneralReminders] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmitSettings = async () => {
