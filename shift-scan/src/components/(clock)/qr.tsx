@@ -14,7 +14,7 @@ const QR: React.FC<QrReaderProps> = ({ handleNextStep }) => {
   const [scanCount, setScanCount] = useState(0);
   const { setScanResult } = useScanData();
   const router = useRouter();
-  const SCAN_THRESHOLD = 200; // Number of scans before redirecting
+  const SCAN_THRESHOLD = 200; // Number of scans before redirecting Zach change this for working on clock in modals
 
   const onScanSuccess = (result: QrScanner.ScanResult) => {
     try {
@@ -75,9 +75,7 @@ const QR: React.FC<QrReaderProps> = ({ handleNextStep }) => {
   }, [scanCount, router]);
 
   return (
-    <div className="flex flex-col justify-center items-center w-full">
-      <video ref={videoRef} style={{ width: '100%' }}></video>
-    </div>
+    <video ref={videoRef} className="w-full rounded-2xl border-4 bg-gray-300 border-black"/>
   );
 };
 
