@@ -13,9 +13,10 @@ const TextVariants = cva(
   {
     variants: {
       variant: {
-        default: "text-black text-body",
+        default: "text-black",
         white: "text-white",
         disabled: "text-gray-600",
+        link: "underline underline-offset-2 text-black m-4",
         name: "",
         bottom: "absolute bottom-0",
         bannerDate: "pt-0 mt-0",

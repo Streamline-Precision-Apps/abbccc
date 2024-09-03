@@ -74,7 +74,7 @@ setSearchTerm(e.target.value);
 };
 
 return (
-<div className="flex flex-col py-10 items-center w-[500px] h-[500px] m-auto">
+<div>
     <SearchBar placeholder={t(`search-${datatype}`)} searchTerm={searchTerm} onSearchChange={handleSearchChange} />
     <CustomSelect 
     options={filteredOptions} 
