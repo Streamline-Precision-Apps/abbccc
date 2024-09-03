@@ -4,16 +4,21 @@ import { HTMLAttributes, FC } from "react";
 import { cn } from "@/components/(reusable)/utils";
 
 const BaseVariants = cva(
-    "bg-gradient-to-b from-app-dark-blue to-app-blue",
+    "",
     {
         variants: {
             variant: {
+                default: "bg-gradient-to-b from-app-dark-blue to-app-blue",
+                modal: "fixed top-0 left-0 w-screen h-screen bg-neutral-800 opacity-50",
+            },
+            size: {
                 default: "h-dvh",
                 scroll: "h-full",
             }
         },
         defaultVariants: {
             variant: "default",
+            size: "default",
         },
     }
 )
@@ -21,10 +26,10 @@ const BaseVariants = cva(
 interface BaseProps extends HTMLAttributes<HTMLElement>, VariantProps<typeof BaseVariants> {
 }
 
-const Bases: FC<BaseProps> = ({className, variant, ...props}) => {
+const Bases: FC<BaseProps> = ({className, variant, size, ...props}) => {
     
     return (
-      <div className={cn(BaseVariants({variant, className}))} {...props}/>
+      <div className={cn(BaseVariants({variant, size, className}))} {...props}/>
     )
 };
 

@@ -10,14 +10,18 @@ const ContentVariants = cva(
         default: "flex flex-col",
         row: "flex flex-row",
         rowCenter: "flex flex-row justify-center",
+        colCenter: "flex flex-col",
+        rowSpaceBetween: "flex flex-row items-center w-full bg-app-dark-blue rounded-2xl relative pt-10",
         image: "bg-white",
         header: "w-full h-24",
         name: "w-full h-24 mt-[150px]",
+        hours: "w-2/3 h-24",
+        hoursDisplay: "w-full h-1/2",
         widgetButton: "w-full h-full m-1 flex flex-col justify-center items-center",
         widgetButtonRow: "m-1 flex flex-row justify-center items-center",
         hidden: "hidden flex-col",
         center: "flex flex-col justify-center items-center",
-        test: ""
+        test: " h-full flex flex-col w-full",
       },
       size: {
         default: "h-full max-w-lg mx-auto pt-10",
@@ -28,7 +32,9 @@ const ContentVariants = cva(
         devun1: "w-1/2 h-36 justify-center items-center",
         profilePic: "w-36 h-36 rounded-full border-black border-4 overflow-hidden justify-self-center",
         devun2: "h-full max-w-lg mx-auto mt-64",
-        test: ""
+        hoursBtn: "mx-12 h-20 rounded-2xl border-2 border-black shadow-none flex flex-grow justify-center items-center",
+        test: "",
+        editBtn: "absolute top-0 h-36 w-36 rounded-full",
       }
     },
     defaultVariants: {

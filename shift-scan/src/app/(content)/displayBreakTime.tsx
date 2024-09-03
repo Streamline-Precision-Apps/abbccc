@@ -3,6 +3,9 @@ import { useTranslations } from "next-intl";
 import ViewHoursComponent from "@/app/(content)/hoursControl";
 import { useSavedBreakTime } from "@/app/context/SavedBreakTimeContext";
 import { useEffect } from "react";
+import { Buttons } from "@/components/(reusable)/buttons";
+import { Texts } from "@/components/(reusable)/texts";
+import { Contents } from "@/components/(reusable)/contents";
 
 interface BreakTimeProps {
   display: boolean;
@@ -55,14 +58,18 @@ export default function DisplayBreakTime({
 
   return display ? (
     <>
-      <button
-        onClick={handler}
+      <Buttons 
+        onClick={handler} 
+        variant={"darkBlue"} 
+        size={"hours"}
       >
-        <h2>{t('Break')}</h2>
-        <span>
+        <Texts variant={"totalHours"} size={"p0"}>{t('Break')}</Texts>
+        <Contents variant={"white"} size={"hoursBtn"}>
+        <Texts variant={"default"} size={"p2"}>
           {formatTime(getBreakTime)}
-        </span>
-      </button>
+        </Texts>
+        </Contents>
+      </Buttons>
     </>
   ) : (
     <div>

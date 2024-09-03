@@ -104,9 +104,9 @@ const VerificationStep: React.FC<{ id: string | undefined; handleNextStep: () =>
           {savedCostCode}
           </Sections>
         </TitleBoxes>
-        <button type="submit" className="bg-app-green mx-auto w-full h-16 py-4 px-5 rounded-lg text-black font-bold mt-5">
+        <Buttons type="submit" className="bg-app-green mx-auto w-full h-16 py-4 px-5 rounded-lg text-black font-bold mt-5">
         <Clock time={date.getTime()} />
-        </button>
+        </Buttons>
 
         <input type="hidden" name="submit_date" value={new Date().toISOString()} />
         <input type="hidden" name="user_id" value={savedUserData?.id || ''} />

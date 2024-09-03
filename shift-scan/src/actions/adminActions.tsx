@@ -74,7 +74,7 @@ export async function updateJobsite(formData: FormData) {
         const comments = formData.get("jobsite_comments") as string;
         const jobsite_active = Boolean(formData.get("jobsite_active") as string);
         const jobsite_id = Number(formData.get("id") as string);
-        const jobsite = await prisma.jobsite.update({
+        await prisma.jobsite.update({
             where: {
                 id: jobsite_id
             },
@@ -148,6 +148,204 @@ export async function editGeneratedJobsite( formData: FormData ) {
 
     } catch (error) {
         console.error("Error editing generated jobsite:", error);
+        throw error;
+    }
+}
+
+
+export async function createCostCode(formData: FormData) {
+    try {
+        console.log("Creating cost code...");
+        console.log(formData);
+        // Check if cost code already exists
+        await prisma.costCode.create({
+            data: {
+                cost_code: formData.get("cost_code") as string,
+                cost_code_description: formData.get("cost_code_description") as string,
+                cost_code_type: formData.get("cost_code_type") as string,
+            },
+        });
+        revalidatePath(`/admin/assets`);
+    } catch (error) {
+        console.error("Error creating cost code:", error);
+        throw error;
+    }
+}
+export async function fetchByNameCostCode(cost_code_description : string) {
+    const costCode = await prisma.costCode.findFirst({
+        where: {
+            cost_code_description: cost_code_description
+        }
+    })
+    revalidatePath(`/admin/assets`);
+    return costCode
+}
+
+export async function findAllCostCodesByTags(formData: FormData) {
+    console.log("findAllCostCodesByTags")
+    console.log(formData)
+
+    const cost_code_type = formData.get("cost_code_type") as string
+    const costCodes = await prisma.costCode.findMany({
+        where: {
+            cost_code_type: cost_code_type
+        }
+    })
+    revalidatePath(`/admin/assets`);
+    return costCodes
+}
+
+export async function EditCostCode(formData: FormData) {
+    
+    try {
+        console.log("Creating cost code...");
+        console.log(formData);
+        const id = Number(formData.get("id") as string);
+        const costCode = formData.get("cost_code") as string;
+        const costCodeDescription = formData.get("cost_code_description") as string;
+        const costCodeType = formData.get("cost_code_type") as string;
+        await prisma.costCode.update({
+            where: {
+                id: id
+            },
+            data: {
+                cost_code: costCode,
+                cost_code_description: costCodeDescription,
+                cost_code_type: costCodeType
+            },
+        });
+
+        revalidatePath(`/admin/assets`);
+
+    } catch (error) {
+        console.error("Error creating cost code:", error);
+        throw error;
+    }
+}
+export async function deleteCostCode(formData: FormData) {
+    const id = Number(formData.get("id") as string);
+    try {
+        await prisma.costCode.delete({
+        where: { id: id },
+        });
+        revalidatePath(`/admin/assets`);
+        return true;
+    } catch (error) {
+        console.error("Error deleting jobsite:", error);
+        throw error;
+    }
+    }
+
+    
+export async function TagCostCodeChange(formData: FormData) {
+    try {
+        console.log("Creating cost code...");
+        console.log(formData);
+        const id = Number(formData.get("id") as string);
+        const costCodeType = formData.get("cost_code_type") as string;
+        await prisma.costCode.update({
+            where: {
+                id: id
+            },
+            data: {
+                cost_code_type: costCodeType
+            },
+        });
+
+        revalidatePath(`/admin/assets`);
+
+    } catch (error) {
+        console.error("Error creating cost code:", error);
+        throw error;
+    }
+}
+
+export async function AddlistToJobsite(formData: FormData) {
+    try {
+        console.log("Adding cost codes to job site...");
+        const jobsiteId = formData.get("jobsite_id") as string;
+        const costCodeTypes = (formData.get("cost_code_types") as string).split(",").map(code => code.trim());
+
+        // Find all cost codes that match the list of cost_code_types
+        const costCodes = await prisma.costCode.findMany({
+            where: {
+                cost_code_type: {
+                    in: costCodeTypes
+                }
+            }
+        });
+
+        if (costCodes.length === 0) {
+            console.log("No matching cost codes found.");
+            return;
+        }
+
+        console.log("Cost codes found:", costCodes);
+
+        // Connect the found cost codes to the job site
+        const jobsite = await prisma.jobsite.update({
+            where: {
+                jobsite_id: jobsiteId
+            },
+            data: {
+                costCode: {
+                    connect: costCodes.map(code => ({ id: code.id }))
+                }
+            }
+        });
+
+        console.log("Job site updated with cost codes:", jobsite);
+
+        // Revalidate the path to reflect changes
+        revalidatePath(`/admin/assets`);
+
+    } catch (error) {
+        console.error("Error adding cost codes to job site:", error);
+        throw error;
+    }
+}
+
+export async function RemovelistToJobsite(formData: FormData) {
+    try {
+        console.log("Adding cost codes to job site...");
+        const jobsiteId = formData.get("jobsite_id") as string;
+        const costCodeTypes = (formData.get("cost_code_types") as string).split(",").map(code => code.trim());
+
+        // Find all cost codes that match the list of cost_code_types
+        const costCodes = await prisma.costCode.findMany({
+            where: {
+                cost_code_type: {
+                    in: costCodeTypes
+                }
+            }
+        });
+
+        if (costCodes.length === 0) {
+            console.log("No matching cost codes found.");
+            return;
+        }
+
+        console.log("Cost codes found:", costCodes);
+
+        // Connect the found cost codes to the job site
+        const jobsite = await prisma.jobsite.update({
+            where: {
+                jobsite_id: jobsiteId
+            },
+            data: {
+                costCode: {
+                    disconnect: costCodes.map(code => ({ id: code.id }))
+                }
+            }
+        });
+
+        console.log("Job site updated with cost codes:", jobsite);
+
+        // Revalidate the path to reflect changes
+        revalidatePath(`/admin/assets`);
+
+    } catch (error) {
+        console.error("Error adding cost codes to job site:", error);
         throw error;
     }
 }

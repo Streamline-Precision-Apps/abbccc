@@ -3,6 +3,10 @@ import prisma from "@/lib/prisma";
 import Content from "./content";
 
 export default async function Page({ params }: { params: { id: string } }) {
+
+    const currentDate = new Date();
+    const past24Hours = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
+
     const equipmentform = await prisma.employeeEquipmentLog.findUnique({
         where: {
             id: Number(params.id),
@@ -11,6 +15,14 @@ export default async function Page({ params }: { params: { id: string } }) {
             Equipment: true,
         },
     });
+    const usersLogs = await prisma.employeeEquipmentLog.findMany({
+        where: {
+            id: Number(params.id),
+            createdAt: { lte: currentDate, gte: past24Hours },
+            submitted: false
+        },
+
+    })
 
 
     // Extract values from equipment form
@@ -25,6 +37,6 @@ export default async function Page({ params }: { params: { id: string } }) {
 
     // Log counts for debugging
         return (
-        <Content name={eqname} eqid={eqid} start_time={start_time} completed={completed} fuelUsed={fuelUsed} savedDuration={savedDuration} filled={filled} equipment_notes={equipment_notes} />
+        <Content name={eqname} eqid={eqid} start_time={start_time} completed={completed} fuelUsed={fuelUsed} savedDuration={savedDuration} filled={filled} equipment_notes={equipment_notes} usersLogs={usersLogs} />
         )
     }

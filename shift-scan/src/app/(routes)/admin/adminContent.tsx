@@ -35,10 +35,9 @@ export default function AdminContent({ permission }: AdminContentProps) {
   const router = useRouter();
   const [user, setData] = useState<User>({
     id: "",
-    name: "",
     firstName: "",
     lastName: "",
-    permission: "",
+    permission: undefined,
   });
   const { data: session } = useSession() as { data: CustomSession | null };
   const { setSavedUserData } = useSavedUserData();
@@ -64,7 +63,6 @@ export default function AdminContent({ permission }: AdminContentProps) {
       });
       setData({
         id: session.user.id,
-        name: session.user.name,
         firstName: session.user.firstName,
         lastName: session.user.lastName,
         permission: session.user.permission,
@@ -78,7 +76,7 @@ export default function AdminContent({ permission }: AdminContentProps) {
       <Sections size={"default"}>
       <Contents size={"default"}>
         <Headers variant={"relative"} size={"default"}></Headers>
-        <Banners variant={"default"} size={"default"}>
+        <Banners variant={"default"}>
           <Titles variant={"default"} size={"h1"}>
             {t("Banner")}
           </Titles>
