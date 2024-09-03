@@ -21,6 +21,7 @@ const ImageVariants = cva(
         titlebox: "w-36",
         backButton: "w-15 w-15 pt-0",
         logo: "",
+        editIcon : "w-12 h-12 ",
         thin: "w-20 h-10",
         password: "w-10 h-10",
       }
