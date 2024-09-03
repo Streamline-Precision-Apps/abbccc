@@ -1,4 +1,4 @@
-  import React, { useState, useEffect } from "react";
+  import React, { useState, useEffect, SetStateAction, Dispatch } from "react";
   import { Buttons } from "@/components/(reusable)/buttons";
   import { createJobsite, jobExists } from "@/actions/jobsiteActions";
   import { useTranslations } from "next-intl";
@@ -6,11 +6,17 @@
   import { Labels } from "@/components/(reusable)/labels";
   import { Inputs } from "@/components/(reusable)/inputs";
   import { TextAreas } from "@/components/(reusable)/textareas";
+  import { useRouter } from 'next/navigation';
 
-
-  const AddJobsiteForm: React.FC<{}> = () => {
+type Props = {
+  handler:() => void
+  setBanner:  Dispatch<SetStateAction<boolean>>
+  setBannerText: Dispatch<SetStateAction<string>>
+}
+export default function AddJobsiteForm({ handler, setBanner, setBannerText}:Props){
   const t = useTranslations("addJobsiteForm");
   const [qrCode, setQrCode] = useState("");
+  const router = useRouter();
 
   const randomQrCode = () => {
     const characters =
@@ -41,8 +47,26 @@ useEffect(() => {
   generateQrCode();
 }, []);
 
+function handleRoute() {
+  window.scrollTo({ top: 0, behavior: "smooth" })
+  setTimeout(() => {
+    setBanner(false);
+    setBannerText("");
+    router.replace("/dashboard/qr-generator/");
+  }, 2300);
+}
+
   return (
-    <Forms action={createJobsite} variant="default" size="default">
+    <Forms action={createJobsite} 
+      onSubmit={() => { 
+        setBanner(true);
+        setBannerText("Created Jobsite Successfully");
+        handler();
+        handleRoute();
+      }} 
+      variant="default" 
+      size="default"
+    >
       <Labels variant="default" size="default" > Temporary Site ID </Labels>
       <Inputs id="id" name="id" type="text" value={qrCode} disabled />
 
@@ -136,4 +160,3 @@ useEffect(() => {
     </Forms>
   );
   };
-  export default AddJobsiteForm;

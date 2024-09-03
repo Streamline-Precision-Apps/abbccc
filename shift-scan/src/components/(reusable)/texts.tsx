@@ -13,12 +13,15 @@ const TextVariants = cva(
   {
     variants: {
       variant: {
-        default: "text-black text-body",
+        default: "text-black",
         white: "text-white",
         disabled: "text-gray-600",
+        link: "underline underline-offset-2 text-black m-4",
         name: "",
         bottom: "absolute bottom-0",
         bannerDate: "pt-0 mt-0",
+        totalHours: "text-white pt-0 mt-0",
+        error: "text-red-500",
       },
       size: {
         default: "text-2xl",
@@ -30,6 +33,7 @@ const TextVariants = cva(
         p3: "text-xl",
         p4: "text-lg",
         sm: "text-sm",
+        p0: "text-4xl",
       }
     },
     defaultVariants: {

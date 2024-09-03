@@ -3,6 +3,7 @@ import React from 'react';
 import CodeFinder from '@/components/(search)/codeFinder';
 import StepButtons from './step-buttons';
 import { useTranslations } from 'next-intl';
+import { Titles } from '../(reusable)/titles';
 
 interface CodeStepProps {
     datatype: string;
@@ -14,7 +15,7 @@ const CodeStep: React.FC<CodeStepProps> = ({ datatype, handleNextStep}) => {
 
     return (
         <>
-            <h1 className="flex w-full justify-center text-2xl font-bold ">{t(`Title-${datatype}`)}</h1>
+            <Titles>{t(`Title-${datatype}`)}</Titles>
             <CodeFinder datatype={datatype} />
             <StepButtons handleNextStep={handleNextStep}/>
         </>

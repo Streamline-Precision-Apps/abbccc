@@ -12,7 +12,7 @@ import { auth } from "@/auth";
 - provide routing for the buttons to go to the correct page */
 export default async function TeamCards() {
     const session = await auth();
-    const userId = session?.user.id;
+    const id = session?.user.id
     const userCrewId = await prisma.user.findUnique({
         where: {
             id: userId

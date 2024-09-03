@@ -15,17 +15,16 @@ export const Manager: React.FC<ManagerProps> = ({ show }) => {
     <>
       {show && (
         <>
-          <Buttons href="/dashboard/myTeam" variant={"default"} size={"widgetSm"}>
-            <Contents variant={"widgetButton"} size={"test"}>
-              <Images titleImg="/myTeam.svg" titleImgAlt="my team" variant={"icon"} size={"widgetSm"}/>
-              <Texts size={"widgetSm"}>{t("MyTeam")}</Texts>
-            </Contents>
-          </Buttons>
-
           <Buttons href="/dashboard/qr-generator" variant={"default"} size={"widgetSm"}>
             <Contents variant={"widgetButton"} size={"test"}>
               <Images titleImg="/qrCode.svg" titleImgAlt="QR Code" variant={"icon"} size={"widgetSm"}/>
               <Texts size={"widgetSm"}>{t("QrGenerator")}</Texts>
+            </Contents>
+          </Buttons>
+          <Buttons href="/dashboard/myTeam" variant={"default"} size={"widgetSm"}>
+            <Contents variant={"widgetButton"} size={"test"}>
+              <Images titleImg="/myTeam.svg" titleImgAlt="my team" variant={"icon"} size={"widgetSm"}/>
+              <Texts size={"widgetSm"}>{t("MyTeam")}</Texts>
             </Contents>
           </Buttons>
         </>

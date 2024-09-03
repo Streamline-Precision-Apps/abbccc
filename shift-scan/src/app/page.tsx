@@ -5,34 +5,37 @@ import { PayPeriodTimesheets } from "@/lib/types";
 import { auth } from "@/auth"
 
 export default async function Home() {
+// Get the current user
   const session = await auth();
   const userid = session?.user.id;
 
+// Get the current language
   const lang = cookies().get("locale");
   const locale = lang ? lang.value : "en";  
 
   
 
-  // Calculate the start date of the current pay period
+// Calculate the start date of the current pay period
   const calculatePayPeriodStart = () => {
     const startDate = new Date(2024, 7, 5); // August 5, 2024
     const now = new Date();
     const diff = now.getTime() - startDate.getTime();
     const diffWeeks = Math.floor(diff / (2 * 7 * 24 * 60 * 60 * 1000)); // Two-week intervals
-
     return new Date(
       startDate.getTime() + diffWeeks * 2 * 7 * 24 * 60 * 60 * 1000
     );
   };
-
+// Calculate the start date of the current pay period
   const payPeriodStart = calculatePayPeriodStart();
+
+// Calculate the start of today
   const currentDate = new Date();
 
   // Calculate the start of today
   const todayStart = new Date();
   todayStart.setHours(0, 0, 0, 0); // Set to start of the day
 
-  // Fetch all records
+  // Fetch all records, only shows the id, name, and qr_id for the codes
   const jobCodes = await prisma.jobsite.findMany({
     select: {
       id: true,
@@ -57,7 +60,7 @@ export default async function Home() {
     },
   });
 
-  // Fetch recent records
+  // Fetch the 5 recent records the user has entered
   const recentJobSites = await prisma.jobsite.findMany({
     select: {
       id: true,
@@ -110,6 +113,7 @@ export default async function Home() {
       sheets.filter((sheet) => sheet.duration !== null)
     )) as PayPeriodTimesheets[]; // Type casting
 
+// created the data fot the client side component
   return (
     <Content
       session={session}

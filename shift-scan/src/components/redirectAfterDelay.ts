@@ -1,5 +1,3 @@
-"use client";
-// This component is used to redirect the user after a certain amount of time
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -13,7 +11,6 @@ const RedirectAfterDelay: React.FC<RedirectAfterDelayProps> = ({ delay, to }) =>
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            location.reload();
             router.push(to);
         }, delay);
 

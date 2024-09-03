@@ -12,6 +12,7 @@ const ImageVariants = cva(
         iconLeft: "absolute left-1 top-1",
         iconRight: "absolute right-5 top-8",
         picture: "w-full h-full mt-3",
+        editIcon: "absolute z-2 top-24 right-0 bg-app-orange justify-center px-3 py-1 items-center rounded-full",  
       },
       size: {
         default: "w-15 h-15",
@@ -21,6 +22,7 @@ const ImageVariants = cva(
         titlebox: "w-36",
         backButton: "w-15 w-15 pt-0",
         logo: "",
+        editIcon : "w-10 h-10 pt-0 ",
         thin: "w-20 h-10",
         password: "w-10 h-10",
       }
