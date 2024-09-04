@@ -16,12 +16,11 @@ interface Props {
 
 export default function ClockInWidget({ user, locale, option, manager}: Props) {
     const t = useTranslations("Home");
-    if (manager) {
         return (
         <>
             <Buttons 
                 variant={"green"} 
-                size={"widgetMed"} 
+                size={manager === true ? "widgetMed" : "widgetLg"} // this eliminated the big if statement
                 href="/clock"
             >
                 <Contents variant={"widgetButtonRow"} size={"test"}>
@@ -31,19 +30,4 @@ export default function ClockInWidget({ user, locale, option, manager}: Props) {
             </Buttons>
         </>
     );
-}    else {
-        return (
-            <>
-            <Buttons 
-                variant={"green"} 
-                size={"widgetLg"} 
-                href="/clock"
-            >
-                <Contents variant={"widgetButtonRow"} size={"test"}>
-                    <Texts size={"widgetMed"}>{t("Clock-btn")}</Texts>
-                    <Images titleImg="/clockIn.svg" titleImgAlt="QR Code" variant={"icon"} size={"widgetMed"} />
-                </Contents>
-            </Buttons>
-        </>
-        )
-}}
+}

@@ -27,7 +27,7 @@ const ContentVariants = cva(
         hoursDisplayWrapper: "flex flex-row justify-center rounded-2xl shadow-[8px_8px_0px_grey] p-4 border-4 border-black w-full h-fit bg-white mt-4",
       },
       size: {
-        default: "h-full max-w-lg mx-auto pt-10",
+        default: "h-fit max-w-lg mx-auto pt-10",
         notTop: "h-full max-w-lg mx-auto pt-0",
         listImage: "w-52 h-40 rounded-r-full border-black border-4 overflow-hidden -ml-3 justify-self-start",
         listTitle: "w-full justify-center",
@@ -38,7 +38,7 @@ const ContentVariants = cva(
         nameContainer: "w-full h-fit py-5",
         test: "",
         editBtn: "absolute top-0 h-36 w-36 rounded-full",
-        defaultHours: "w-[100px] h-[300px] mx-auto rounded-2xl pt-10 pb-3 px-2 flex flex-col justify-end",
+        defaultHours: "w-[100px] h-[300px] mx-auto rounded-2xl pt-3 pb-3 px-2 flex flex-col justify-end",
       }
     },
     defaultVariants: {

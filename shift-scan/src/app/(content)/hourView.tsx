@@ -1,5 +1,5 @@
 "use client";
-import { getCookieValue } from "@/app/(content)/getCookie";
+import { getCookieValue } from "@/utils/getCookie";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Images } from "@/components/(reusable)/images";
@@ -27,16 +27,12 @@ const ViewComponent: React.FC<ViewComponentProps> = ({ scrollLeft, scrollRight, 
     const t = useTranslations('Home');
     const today = new Date();
     let Weekday = currentDate.toLocaleDateString(locale, { weekday: 'long' });
-    const Router = useRouter();
 
     if (Weekday === today.toLocaleDateString(locale, { weekday: 'long' }) && currentDate.toLocaleDateString(locale, { month: 'short', day: 'numeric', year: 'numeric' }) === today.toLocaleDateString(locale, { month: 'short', day: 'numeric', year: 'numeric' })) {
         Weekday = `${t("DA-Today")}`;
     }
     const datetoday = currentDate.toLocaleDateString(locale, { month: 'short', day: 'numeric', year: 'numeric' });
 
-    const viewPayroll = () => {
-        Router.push("/timesheets");
-    }
     return (
 
         <>

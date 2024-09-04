@@ -18,11 +18,12 @@ import { useSavedUserData } from "@/app/context/UserContext";
 import { useSavedTimeSheetData } from "@/app/context/TimeSheetIdContext";
 import { useRouter } from "next/navigation";
 import { updateTimeSheet, GetAllTimeSheets } from "@/actions/timeSheetActions";
-import { now } from "next-auth/client/_utils";
 import { Banners } from "@/components/(reusable)/banners";
 import { setAuthStep } from "@/app/api/auth";
 import { Texts } from "@/components/(reusable)/texts";
 import { Clock } from "@/components/clock";
+import { Forms } from "@/components/(reusable)/forms";
+import { Inputs } from "@/components/(reusable)/inputs";
 
 export default function ClockOut() {
 
@@ -36,7 +37,6 @@ export default function ClockOut() {
     const [banner, setBanner ] = useState("");
     const { scanResult } = useScanData();
     const { savedCostCode } = useSavedCostCode();
-    // const { breakTime } = useSavedBreakTime();
     const { savedUserData } = useSavedUserData();
     const { savedTimeSheetData } = useSavedTimeSheetData();
     const jobsite = localStorage.getItem("jobSite");
@@ -79,13 +79,6 @@ export default function ClockOut() {
     const handlePath = () => {
         setPath("Injury");
         handleNextStep();
-    };
-
-    const handlePreviousStep = () => {
-        incrementStep(step - 1);
-        if (path === "Injury") {
-            setPath("ClockOut");
-        }
     };
 
     // this handle updates the time sheet to have all parts required for the user 
@@ -187,7 +180,7 @@ const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     } else if (step === 2 && path ==="ClockOut" || step === 3 && path ==="Injury") {
         return (
             <Bases>
-            <Banners variant={banner.length > 0 ? "green" : "clear"} >
+            <Banners variant={banner.length > 0 ? "green" : "default"} >
             {banner}
             </Banners>
             <Contents>
@@ -203,7 +196,7 @@ const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
             {t("CostCode")} {savedCostCode || costCode}
             </Texts>
 
-            <form onSubmit={handleSubmit}>
+            <Forms onSubmit={handleSubmit}>
             <Buttons
             variant={"green"}
             size={"widgetLg"}
@@ -211,11 +204,13 @@ const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
             <Clock time={time} />
             </Buttons>
             {/* Hidden inputs */}
-            <input type="hidden" name="id" value={savedTimeSheetData?.id || timesheeetId} />
-            <input type="hidden" name="end_time" value={new Date().toString()} />
-            <input type="hidden" name="timesheet_comments" value={""} />
-            <input type="hidden" name="app_comments" value={""} />
-            </form>
+            <Inputs type="hidden" name="id" value={savedTimeSheetData?.id || timesheeetId} readOnly/>
+            <Inputs type="hidden" name="end_time" value={new Date().toString()} readOnly/>
+            <Inputs type="hidden" name="timesheet_comments" value={""} readOnly />
+            <Inputs type="hidden" name="app_comments" value={""} readOnly />
+            {/* uses this to verfy the person clocking out in server action */}
+            <Inputs type="hidden" name="user_id" value={savedUserData?.id || ""} readOnly />
+            </Forms>
 
             </Contents>
             </Sections>
