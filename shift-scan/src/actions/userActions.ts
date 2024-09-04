@@ -99,12 +99,13 @@ export async function setUserSettings(formdata: FormData) {
     await prisma.userSettings.update({
         where: { userId: formdata.get('id') as string },
         data: {
-            approvedRequests: (Boolean(formdata.get('approvedRequests')) as unknown as boolean),
-            timeoffRequests: (Boolean(formdata.get('timeoffRequests')) as unknown as boolean),
-            GeneralReminders: (Boolean(formdata.get('GeneralReminders')) as unknown as boolean),
+            approvedRequests: formdata.get('approvedRequests') === 'true',
+            timeoffRequests: formdata.get('timeoffRequests') === 'true',
+            GeneralReminders: formdata.get('GeneralReminders') === 'true',
         }
-    })
+    });
 }
+
 
 export async function fetchByNameUser(name: string) {
     try {
@@ -140,6 +141,14 @@ export async function getUserFromDb(username: string, password: string) {
     return null
 }
 
+export async function finishUserSetup(id: string) {
+    await prisma.user.update({
+        where: { id: id },
+        data: {
+            accountSetup: true
+        }
+    })
+}
 
 export async function setUserPassword(formData: FormData) {
     await prisma.user.update({

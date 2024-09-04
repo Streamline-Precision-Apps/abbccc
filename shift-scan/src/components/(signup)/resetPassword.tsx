@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Buttons } from '../(reusable)/buttons';
 import { setUserPassword } from '@/actions/userActions';
 import PasswordStrengthIndicator from './passwordStrengthIndicator';
+import {hash} from "bcryptjs";
+
 
 const ResetPassword = ({ id, handleNextStep }: { id: string; handleNextStep: any }) => {
   const [newPassword, setNewPassword] = useState('');
@@ -33,10 +35,11 @@ const ResetPassword = ({ id, handleNextStep }: { id: string; handleNextStep: any
       );
       return;
     }
-
+    
+    const hashed = await hash(newPassword, 10);
     const formData = new FormData();
     formData.append('id', id);
-    formData.append('password', newPassword);
+    formData.append('password', hashed);
 
     try {
       await setUserPassword(formData);
