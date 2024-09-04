@@ -33,7 +33,7 @@ const ButtonVariants = cva(
         backButton: "absolute top-2 left-2",
         editButton: "absolute top-[80%] left-[89%] ",
         exit: " mx-auto mt-5 mb-5 p-2",
-        returnBtn :"w-16 h-16 absolute top-0 left-[43%] ",
+        returnBtn :"w-16 h-16 absolute top-0 left-[43%] shadow-[15px 15px 0px 0px #7B7B7B]  ",
         forgotpassword: "flex ml-auto my-3 p-3 w-40 h-100 underline",
         test: ""
       }

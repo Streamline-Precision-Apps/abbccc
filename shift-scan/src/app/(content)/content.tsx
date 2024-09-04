@@ -44,7 +44,6 @@ export default function Content({
   const { setSavedUserData } = useSavedUserData();
   const router = useRouter();
   const authStep = getAuthStep();
-  const [hourbtn, setHourbtn] = useState(true);
   const date = new Date().toLocaleDateString(locale, {
     year: "numeric",
     month: "short",
@@ -166,58 +165,14 @@ export default function Content({
     }
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
-
-  if (authStep === "break") {
-    return (
-      <>
-        <Bases variant={"default"}>
-            <Header />
-            <Contents>
-            <Sections size={"default"}>
-            <Contents variant={"header"} size={"test"}>
-                <Headers variant={"relative"} size={"default"}></Headers>
-              </Contents>
-                <Banners variant={"default"}>
-                  <Titles variant={"default"} size={"h1"}>
-                    {t("Banner")}
-                  </Titles>
-                  <Texts variant={"default"} size={"p1"}>
-                    {t("Date", { date: capitalize(date) })}
-                  </Texts>
-                </Banners>
-                <Contents variant={"name"} size={null}>
-                <Texts variant={"name"} size={"p1"}>
-                  {t("Name", {
-                    firstName: capitalize(user.firstName),
-                    lastName: capitalize(user.lastName),
-                  })}
-                </Texts>
-              </Contents>
-                {/* An if statement to display the widgets or the hours */}
-                  {toggle ? <Grids variant={"widgets"} size={"default"}>
-                  <DisplayBreakTime setToggle={handler} display={toggle} />
-                  <WidgetSection
-                    user={user}
-                    display={toggle}
-                    locale={locale}
-                    option={"break"}
-                  />
-                </Grids> : 
-                <Hours setToggle={handler} display={toggle} />
-              }
-            </Sections>
-          </Contents>
-        </Bases>
-      </>
-    );
-  } else {
+  
     return (
       <>
         <Bases variant={"default"}>
           <Header />
-          <Contents>
+          <Contents variant={"default"} size={"default"}>
             <Sections size={"homepage"}>
-              <Contents variant={"header"} size={"test"}>
+              <Contents variant={"header"} size={null}>
                 <Headers variant={"relative"} size={"default"}></Headers>
               </Contents>
               <Banners variant={"default"}>
@@ -228,25 +183,50 @@ export default function Content({
                   {t("Date", { date: capitalize(date) })}
                 </Texts>
               </Banners>
-              <Contents variant={"name"} size={"test"}>
-                <Texts variant={"name"} size={"p1"}>
+              <Contents variant={"name"} size={"nameContainer"}>
+                <Texts variant={"name"} size={"p0"}>
                   {t("Name", {
                     firstName: capitalize(user.firstName),
                     lastName: capitalize(user.lastName),
                   })}
                 </Texts>
               </Contents>
-              {toggle ? <Grids variant={"widgets"} size={"sm"}>
-                <Hours setToggle={handler} display={toggle} />
-                <WidgetSection user={user} display={toggle} locale={locale} />
-              </Grids> : 
-              <Hours setToggle={handler} display={toggle} />
-              }
-              <Footers>{f("Copyright")}</Footers>
-            </Sections>
-          </Contents>
-        </Bases>
-      </>
-    );
-  }
+{/* A ternary statement to display the break time or hours
+      Truth -> display break time                         */}
+{(authStep === "break") ? 
+  <>
+  {/* A ternary statement to display the break widget or view hours */}
+    {toggle ? <Grids variant={"widgets"} size={"default"}>
+      <DisplayBreakTime setToggle={handler} display={toggle} />
+      <WidgetSection
+        user={user}
+        display={toggle}
+        locale={locale}
+        option={"break"}
+      />
+      </Grids> : 
+        <Hours setToggle={handler} display={toggle} />
+    }
+  </>
+:
+/* A ternary statement to display the break time or hours
+              False -> display hours                    */
+  <>
+    {/* A ternary statement to display the total clocked hours widget or view hours */}
+      {toggle ? 
+        <Grids variant={"widgets"} size={"sm"}>
+          <Hours setToggle={handler} display={toggle} />
+          <WidgetSection user={user} display={toggle} locale={locale} />
+        </Grids> 
+        : 
+        <Hours setToggle={handler} display={toggle} />
+      }
+  </>
+          }
+    </Sections>
+  </Contents>
+    <Footers variant={"default"}>{f("Copyright")}</Footers>
+  </Bases>
+</>
+);
 }
