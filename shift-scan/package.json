@@ -39,7 +39,6 @@
     "react-image-crop": "^11.0.6",
     "react-modal": "^3.16.1",
     "react-useportal": "^1.0.19",
-    "recharts": "^2.12.7",
     "tailwind-merge": "^2.4.0",
     "zod": "^3.23.8"
   },
@@ -68,6 +67,6 @@
   "prettier": {
     "singleQuote": false,
     "doubleQuote": true,
-    "tab_width": 4
+    "tab_width": 2
   }
 }

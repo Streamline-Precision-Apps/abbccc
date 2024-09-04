@@ -25,7 +25,8 @@
             "DA-Today": "Today",
             "Clock-btn": "Clock In",
             "MyTeam-btn": "My Team",
-            "Qr-btn": "Qr Generator"
+            "Qr-btn": "Qr Generator",
+            "Copyright": "Copyright © 2024. All rights reserved."
     },
     "Clock": {
         "ScanJobSite": "Scan Job Site",
@@ -60,10 +61,6 @@
         "recentlyUsed" : "Recently Used",
         "SearchedCodes" : "Current Results",
         "noResults" : "No results found"
-    },
-
-    "Footer": {
-        "Copyright": "Copyright © 2024. All rights reserved."
     },
     
     "dashboard": {

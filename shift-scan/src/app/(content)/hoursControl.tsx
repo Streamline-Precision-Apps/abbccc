@@ -6,7 +6,6 @@ import { useTranslations } from "next-intl";
 import { useSavedPayPeriodHours } from "../context/SavedPayPeriodHours";
 import { Contents } from "@/components/(reusable)/contents";
 import { Texts } from "@/components/(reusable)/texts";
-import { Button } from "@nextui-org/react";
 import { Buttons } from "@/components/(reusable)/buttons";
 
 interface ControlComponentProps {
