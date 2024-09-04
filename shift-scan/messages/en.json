@@ -17,7 +17,7 @@
             "PayPeriodHours": "Total Hours",
             "Break": "Break Time",
             "Unit": "hrs",
-            "DA-Time-Label" : "Hours",
+            "DA-Time-Label" : "Hrs",
             "DA-PayPeriod-Label" : "Current Pay Period Total",
             "DA-ScrollLeft": "Scroll Left",
             "DA-ScrollRight": "Scroll Right",

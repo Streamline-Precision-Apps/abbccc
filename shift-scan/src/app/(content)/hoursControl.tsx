@@ -2,12 +2,10 @@
 import { useMemo, useState, useEffect } from "react";
 import ViewComponent from "../(content)/hourView";
 import { useSavedPayPeriodTimeSheet } from "../context/SavedPayPeriodTimeSheets";
-import { BarChartComponent } from "@/app/(content)/hourData";
 import { useTranslations } from "next-intl";
 import { useSavedPayPeriodHours } from "../context/SavedPayPeriodHours";
 import { Contents } from "@/components/(reusable)/contents";
 import { Texts } from "@/components/(reusable)/texts";
-import test from "node:test";
 import { Button } from "@nextui-org/react";
 import { Buttons } from "@/components/(reusable)/buttons";
 
@@ -23,18 +21,17 @@ const ControlComponent: React.FC<ControlComponentProps> = ({ toggle }) => {
   const { payPeriodHours } = useSavedPayPeriodHours();
 
   const calculatePayPeriodStart = () => {
-    try{
-    const startDate = new Date(2024, 7, 5); // August 5, 2024 ->later you can change this to the actual start date of the app/ first day of the pay period when the app is deployed
-    const now = new Date();
-    const diff = now.getTime() - startDate.getTime();
-    const diffWeeks = Math.floor(diff / (2 * 7 * 24 * 60 * 60 * 1000)); // Two-week intervals
-    return new Date(
-      startDate.getTime() + diffWeeks * 2 * 7 * 24 * 60 * 60 * 1000
-    );
-  }
-  catch{
-    throw new Error("Failed to calculate pay period start date");
-  }
+    try {
+      const startDate = new Date(2024, 7, 5); // August 5, 2024
+      const now = new Date();
+      const diff = now.getTime() - startDate.getTime();
+      const diffWeeks = Math.floor(diff / (2 * 7 * 24 * 60 * 60 * 1000)); // Two-week intervals
+      return new Date(
+        startDate.getTime() + diffWeeks * 2 * 7 * 24 * 60 * 60 * 1000
+      );
+    } catch {
+      throw new Error("Failed to calculate pay period start date");
+    }
   };
 
   // Calculate daily hours from the timesheets
@@ -93,6 +90,12 @@ const ControlComponent: React.FC<ControlComponentProps> = ({ toggle }) => {
     };
   }, [currentIndex, dailyHours]);
 
+  // Function to calculate the bar height percentage
+  const calculateBarHeight = (value: number) => {
+    if (value === 0) return 0;
+    return value > 8 ? 100 : (value / 8) * 100;
+  };
+
   const scrollLeft = () => {
     if (currentIndex > 0) {
       setCurrentIndex((prevIndex) => prevIndex - 1);
@@ -121,33 +124,57 @@ const ControlComponent: React.FC<ControlComponentProps> = ({ toggle }) => {
 
   return (
     <>
-    <Contents variant={"hoursDisplay"} title={t("DA-Control-Title")}>
-      {/* <Contents variant={"rowCenter"} size={null} >
-          {t("DA-PayPeriod-Label")} {payPeriodHours} {t("Unit")}
-      </Contents > */}
-      <Contents variant={"default"} size={null} >
-        <ViewComponent
-          scrollLeft={scrollLeft}
-          scrollRight={scrollRight}
-          returnToMain={returnToMain}
-          currentDate={currentDate}
+      <Contents variant={"hoursDisplay"} size={null} title={t("DA-Control-Title")}>
+        <Contents variant={"default"} size={null}>
+          <ViewComponent
+            scrollLeft={scrollLeft}
+            scrollRight={scrollRight}
+            returnToMain={returnToMain}
+            currentDate={currentDate}
           />
-      </Contents>
-      <Contents variant={"barsBG"} size={null}>
-          <Contents size={null} style={{ margin: "auto", width: "100%", height: 300 }}>
-          <BarChartComponent data={currentData} />
+        </Contents>
+        <Contents variant={"hoursDisplayWrapper"} size={null}>
+          <Contents variant={"navy"} size={"defaultHours"}>
+            <Contents
+              variant={"default"}
+              size={"default"}
+              className={`bg-app-green rounded-2xl flex flex-col justify-end ${currentData.valuePrev === 0 ? "bg-app-dark-blue" : `h-[${calculateBarHeight(currentData.valuePrev)}%]`}`}
+            >
+              <Texts variant={"default"} size={"p0"}>
+                {currentData.valuePrev !== 0 ? `${currentData.valuePrev.toFixed(1)} ${t("DA-Time-Label")}` : `0 ${t("DA-Time-Label")}`}
+              </Texts>
+            </Contents>
           </Contents>
-        <Texts variant={"default"} size={"p0"}>
-          {currentData.value.toFixed(1) || 0} {t("DA-Time-Label")}
-        </Texts>
-    </Contents>
-    <Buttons href="/timesheets" variant={"green"} size={"widgetMed"} className="mt-10">
-    <Texts variant={"default"} size={"p0"}>
-      view my payroll
-    </Texts>
-    </Buttons>
-    </Contents>
-          </>
+          <Contents variant={"navy"} size={"defaultHours"}>
+            <Contents
+              variant={"default"}
+              size={"default"}
+              className={`bg-app-green flex flex-col justify-end rounded-2xl ${currentData.value === 0 ? "bg-app-dark-blue" : `h-[${calculateBarHeight(currentData.value)}%]`}`}
+            >
+              <Texts variant={"default"} size={"p0"}>
+                {currentData.value !== 0 ? `${currentData.value.toFixed(1)} ${t("DA-Time-Label")}` : `0 ${t("DA-Time-Label")}`}
+              </Texts>
+            </Contents>
+          </Contents>
+          <Contents variant={"navy"} size={"defaultHours"}>
+            <Contents
+              variant={"default"}
+              size={"default"}
+              className={`bg-app-green flex flex-col justify-end rounded-2xl ${currentData.valueNext === 0 ? "bg-app-dark-blue" : `h-[${calculateBarHeight(currentData.valueNext)}%]`}`}
+            >
+              <Texts variant={"default"} size={"p0"}>
+              {currentData.valueNext !== 0 ? `${currentData.valueNext.toFixed(1)} ${t("DA-Time-Label")}` : `0 ${t("DA-Time-Label")}`}
+              </Texts>
+            </Contents>
+          </Contents>
+        </Contents>
+        <Buttons href="/timesheets" variant={"green"} size={"widgetMed"} className="mt-2">
+          <Texts variant={"default"} size={"p0"}>
+            view my payroll
+          </Texts>
+        </Buttons>
+      </Contents>
+    </>
   );
 };
 
