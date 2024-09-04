@@ -17,7 +17,7 @@ export default async function crewMember({ params }: { params: Params }) {
     const equipment = await prisma.equipment.findMany({});
 
     return (
-        <Bases variant={"scroll"}>
+        <Bases variant={"default"}>
             <EmployeeInfo params={params} />
             <EmployeeTimeSheets employeeId={params.id} jobsiteData={jobsiteData} costcodeData={costcodeData} equipmentData={equipmentData} equipment={equipment} />
         </Bases>

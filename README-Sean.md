@@ -193,3 +193,11 @@ I finished some more prisma DB research and Created the clock out dashboard page
 
 - Finished components for first login setup.
 - Merge meeting with team.
+
+## 9/4/2024
+
+- finish admin view for editing timecards.
+- Setup route for moving to signup on first login setup.
+- Fix Account settings change on signup.
+- Set account setup to sign you out after account signup is done.
+- Fix password to save password as hashed password.
