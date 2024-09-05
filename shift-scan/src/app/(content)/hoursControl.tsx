@@ -139,73 +139,92 @@ const ControlComponent: React.FC<ControlComponentProps> = ({ toggle }) => {
     toggle(false);
   };
 
-  return (
-    <>
-      <Contents variant={"hoursDisplay"} size={null} title={t("DA-Control-Title")}>
-        <Contents variant={"default"} size={null}>
-          <ViewComponent
-            scrollLeft={scrollLeft}
-            scrollRight={scrollRight}
-            returnToMain={returnToMain}
-            currentDate={currentDate}
-          />
-        </Contents>
-        <Contents variant={"hoursDisplayWrapper"} size={null}>
-          <Contents variant={"navy"} size={"defaultHours"}>
-          <Texts variant={"default"} size={"p3"}>
-                {currentData.valuePrev !== 0 ? `${currentData.valuePrev.toFixed(1)} ${t("DA-Time-Label")}` : `0 ${t("DA-Time-Label")}`}
+return (
+<>
+<Contents variant={"hoursDisplay"} size={null} title={t("DA-Control-Title")}>
+   {/* Th */}
+    <ViewComponent
+      scrollLeft={scrollLeft}
+      scrollRight={scrollRight}
+      returnToMain={returnToMain}
+      currentDate={currentDate}
+    />
+{/* This is the start of the bar chart componnet and the previous day */}
+    <Contents variant={"barChartWrapper"} size={null}>
+{/* Contexts gives base styles for background app-dark-blue bars */}
+        <Contents variant={"navy"} size={"defaultHours"}>
+{/* - Contexts gives base styles for green bar with dark-blue background
+    it also provides the height of the green bar, based on the value and the color of the bar based on the value
+    - If the value is less than 8 hours are orange, greater than or equal to 8 hours are green
+    - Text Component is neccessary to give high to the content while having a blank space
+*/}
+        <Contents
+          variant={"default"}
+          size={null}
+/*
+1. ternary is used for height evavulation based on the value, it uses caluclate bar to get it in px 
+2. ternary is used for color evavulation based on the value, it uses caluclate bar to get it in px
+3. ternary is used to show blank non working days as a clear background rather then show any status
+*/
+          className={`w-full rounded-2xl flex flex-col justify-end
+          ${currentData.valuePrev === 0 ? "bg-clear" : `h-[${calculateBarHeight(currentData.valuePrev)}px]`}
+          ${currentData.valuePrev > 8 ? "bg-app-green" : "bg-app-orange"}
+          ${(currentData.valuePrev !== 0) ? "" : "bg-clear"}
+          `}
+        >
+         <Texts variant={"default"} size={"p3"}>
+                {currentData.valuePrev !== 0 ? `${currentData.valuePrev.toFixed(1)} ${t("DA-Time-Label")}` : ""}
               </Texts>
-            <Contents
-              variant={"default"}
-              size={null}
-              className={`w-full rounded-2xl flex flex-col justify-end ${currentData.valuePrev === 0 ? "bg-clear" : `h-[${calculateBarHeight(currentData.valuePrev)}px]`}
-              ${currentData.valuePrev > 8 ? "bg-app-green" : "bg-app-orange"}
-              ${(currentData.valuePrev !== 0) ? "" : "bg-clear"}
-                `}
-            >
-              <Texts variant={"default"} size={"p3"}>
-              </Texts>
-            </Contents>
-          </Contents>
-          <Contents variant={"navy"} size={"defaultHours"}>
-          <Texts variant={"default"} size={"p3"}>
-                {currentData.value !== 0 ? `${currentData.value.toFixed(1)} ${t("DA-Time-Label")}` : `0 ${t("DA-Time-Label")}`}
-              </Texts>
-            <Contents
-              variant={"default"}
-              size={null}
-              className={` w-full flex flex-col justify-end rounded-2xl ${currentData.value === 0 ? "bg-clear" : `h-[${calculateBarHeight(currentData.value)}px]` }  
-              ${currentData.value > 8 ? "bg-app-green" : "bg-app-orange"}
-              ${(currentData.value !== 0) ? "" : "bg-clear"}
-              `}
-            >
-              <Texts variant={"default"} size={"p3"}>
-                </Texts>
-            </Contents>
-          </Contents>
-          <Contents variant={"navy"} size={"defaultHours"}>
-          <Texts variant={"default"} size={"p3"}>
-              {currentData.valueNext !== 0 ? `${currentData.valueNext.toFixed(1)} ${t("DA-Time-Label")}` : `0 ${t("DA-Time-Label")}`}
-              </Texts>
-            <Contents
-              variant={"default"}
-              size={null}
-              className={` w-full flex flex-col justify-end rounded-2xl ${currentData.valueNext === 0 ? "bg-clear" : `h-[${calculateBarHeight(currentData.valueNext)}px] `}
-              ${currentData.valueNext > 8 ? "bg-app-green" : "bg-app-orange"}
-              ${(currentData.valueNext !== 0) ? "" : "bg-clear"}
-                `}
-            >
-              <Texts variant={"default"} size={"p3"}>
-              </Texts>
-            </Contents>
-          </Contents>
-        </Contents>
-        <Buttons href="/timesheets" variant={"green"} size={"widgetMed"} className="mt-2">
-          <Texts variant={"default"} size={"p3"}>
-            view my payroll
-          </Texts>
-        </Buttons>
       </Contents>
+    </Contents>
+{/* This is the current day bar same as the previous with styling */}
+    <Contents variant={"navy"} size={"defaultHours"}>
+      <Contents
+        variant={"default"}
+        size={null}
+        className={` w-full flex flex-col justify-end rounded-2xl 
+        ${currentData.value === 0 ? "bg-clear" : `h-[${calculateBarHeight(currentData.value)}px]` }  
+        ${currentData.value > 8 ? "bg-app-green" : "bg-app-orange"}
+        ${(currentData.value !== 0) ? "" : "bg-clear"}
+        `}
+      >
+       <Texts variant={"default"} size={"p3"}>
+          {currentData.value !== 0 ? `${currentData.value.toFixed(1)} ${t("DA-Time-Label")}` : ""}
+        </Texts>
+      </Contents>
+    </Contents>
+{/* This is the next day bar same as the previous with styling */}
+    <Contents variant={"navy"} size={"defaultHours"}>
+      <Contents
+        variant={"default"}
+        size={null}
+        className={` w-full flex flex-col justify-end rounded-2xl 
+        ${currentData.valueNext === 0 ? "bg-clear" : `h-[${calculateBarHeight(currentData.valueNext)}px] `}
+        ${currentData.valueNext > 8 ? "bg-app-green" : "bg-app-orange"}
+        ${(currentData.valueNext !== 0) ? "" : "bg-clear"}
+        `}
+      >
+        <Texts variant={"default"} size={"p3"}>
+          {currentData.valueNext !== 0 ? `${currentData.valueNext.toFixed(1)} ${t("DA-Time-Label")}` : ""}
+        </Texts>
+      </Contents>
+    </Contents>
+</Contents>
+  <Contents variant={null} size={null} >
+    <Buttons 
+    href="/timesheets" 
+    variant={"green"} 
+    size={"widgetMed"}
+    >
+      <Texts 
+      variant={"default"} 
+      size={"p3"}
+      >
+      View My Timesheets
+      </Texts>
+    </Buttons>
+  </Contents>
+</Contents>
     </>
   );
 };

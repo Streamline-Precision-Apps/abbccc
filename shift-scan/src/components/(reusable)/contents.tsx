@@ -11,7 +11,7 @@ const ContentVariants = cva(
         row: "flex flex-row",
         rowCenter: "flex flex-row justify-center",
         colCenter: "flex flex-col",
-        rowSpaceBetween: "flex flex-row items-center w-full bg-app-dark-blue rounded-2xl relative pt-10 shadow-[8px_8px_0px_grey]",
+        rowSpaceBetween: "flex flex-row items-center w-full bg-app-dark-blue rounded-2xl relative shadow-[8px_8px_0px_grey]",
         image: "bg-white",
         header: "w-full h-24",
         name: "w-full h-24 mt-[150px]",
@@ -25,7 +25,7 @@ const ContentVariants = cva(
         white: "bg-white",
         navy: "bg-app-dark-blue",
         red: "bg-app-red",
-        hoursDisplayWrapper: "flex flex-row justify-center rounded-2xl shadow-[8px_8px_0px_grey] p-4 border-4 border-black w-full h-fit bg-white mt-4",
+        barChartWrapper: "flex flex-row justify-center rounded-2xl shadow-[8px_8px_0px_grey] p-4 border-4 border-black w-full h-fit bg-white mt-4",
       },
       size: {
         default: "h-fit max-w-lg mx-auto pt-10",
@@ -39,7 +39,7 @@ const ContentVariants = cva(
         nameContainer: "w-full h-fit py-5",
         test: "",
         editBtn: "absolute top-0 h-36 w-36 rounded-full",
-        defaultHours: "w-[70px] h-[300px] mx-auto rounded-2xl pt-3 pb-3 px-2 flex flex-col justify-end",
+        defaultHours: "w-[100px] h-[300px] mx-auto rounded-2xl pt-3 pb-3 px-2 flex flex-col justify-end",
       }
     },
     defaultVariants: {
