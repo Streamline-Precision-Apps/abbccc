@@ -1,4 +1,4 @@
-import { LoginButton, LogoutButton } from '@/app/api/auth';
+import { LogoutButton } from '@/app/api/auth';
 import { Buttons } from './(reusable)/buttons';
     /* This button displays the login and logout buttons are testcases
     for the login and logout functionality and to view user permissions 
