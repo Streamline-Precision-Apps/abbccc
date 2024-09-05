@@ -38,9 +38,9 @@ const ViewComponent: React.FC<ViewComponentProps> = ({ scrollLeft, scrollRight, 
         <>
         <Contents variant={"rowSpaceBetween"} size={null}>
                 <Buttons variant={"red"} size={"returnBtn"} onClick={returnToMain}  >
-                <Images titleImg={"/backarrow.svg"} titleImgAlt="left" variant={"icon"} size={"widgetSm"} />
+                <Images titleImg={"/new/turnBack.svg"} titleImgAlt="left" variant={"icon"} size={"widgetSm"} />
                 </Buttons>
-                <Buttons variant={"default"} size={"default"} className=" shadow-none" onClick={scrollLeft} ><Images titleImg={"/backarrow.svg"} titleImgAlt="left" variant={"icon"} size={"widgetSm"} /></Buttons>
+                <Buttons variant={"default"} size={"arrow"} position={"leftArrow"} className=" shadow-none" onClick={scrollLeft} ><Images titleImg={"/new/backArrow.svg"} titleImgAlt="left" variant={"icon"} size={"widgetSm"} /></Buttons>
             <Contents variant={"center"} size={"default"}>
                 
                 <Contents variant={"colCenter"} size={"test"} >
@@ -49,7 +49,7 @@ const ViewComponent: React.FC<ViewComponentProps> = ({ scrollLeft, scrollRight, 
                 </Contents>
             
             </Contents>
-                <Buttons variant={"default"} size={"default"} className=" shadow-none" onClick={scrollRight} ><Images titleImg={"/arrow.svg"} titleImgAlt="left" variant={"icon"} size={"widgetSm"} /></Buttons>
+                <Buttons variant={"default"} size={"arrow"} position={"rightArrow"} className=" shadow-none" onClick={scrollRight} ><Images titleImg={"/new/forwardArrow.svg"} titleImgAlt="left" variant={"icon"} size={"widgetSm"} /></Buttons>
         </Contents>
         </>
     );

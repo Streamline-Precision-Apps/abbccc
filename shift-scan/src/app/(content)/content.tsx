@@ -163,7 +163,6 @@ export default function Content({
     return (
       <>
         <Bases variant={"default"}>
-          <Header />
           <Contents variant={"default"} size={"default"}>
             <Sections size={"homepage"}>
               <Contents variant={"header"} size={null}>
@@ -177,6 +176,7 @@ export default function Content({
                   {t("Date", { date: Capitalize(date) })}
                 </Texts>
               </Banners>
+              {/* {toggle ? */}
               <Contents variant={"name"} size={"nameContainer"}>
                 <Texts variant={"name"} size={"p0"}>
                   {t("Name", {
@@ -185,6 +185,7 @@ export default function Content({
                   })}
                 </Texts>
               </Contents>
+              {/* : null} */}
 {/* A ternary statement to display the break time or hours
       Truth -> display break time                         */}
 {(authStep === "break") ? 
@@ -200,11 +201,11 @@ export default function Content({
       />
       </Grids> : 
         <Hours setToggle={handleToggle} display={toggle} />
-    }
+      }
   </>
 :
 /* A ternary statement to display the break time or hours
-              False -> display hours                    */
+False -> display hours                    */
   <>
     {/* A ternary statement to display the total clocked hours widget or view hours */}
       {toggle ? 
@@ -219,7 +220,9 @@ export default function Content({
           }
     </Sections>
   </Contents>
-    <Footers variant={"default"}>{t("Copyright")}</Footers>
+    {/* <Footers variant={"default"}>{t("Copyright")}</Footers> */}
+    {/* <Header />  */}
+    {/* this contains the login log out buttons */}
   </Bases>
 </>
 );
