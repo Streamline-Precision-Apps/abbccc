@@ -79,10 +79,10 @@
         "MyTeam": "My Team",
         "GoHome": "Go Home",
         "LogNew": "Log New",
-        "Current": "Current Equipment",
+        "Current": "Log Out",
         "Break": "Start Break",
         "Submit": "Equipment logs need to be submitted.",
-        "CurrEQ": "View Current Equipment",
+        "CurrEQ": "View Borrowed Equipment",
         "End": "End Work Day"
     },
 
@@ -121,7 +121,7 @@
         "Button": "Take Picture"
     },
     "EquipmentContent" : {
-        "Title": "Current Equipment",
+        "Title": "Checked Out",
         "Banner": "Form Submitted",
         "Refueled": " Did you refuel?",
         "Gallons": "Total gallons refueled",
@@ -132,7 +132,7 @@
         "Edit": "Edit",
         "Submit": "Submit",
         "SubmitAll": "Submit All",
-        "NoCurrent": "No Current Equipment"
+        "NoCurrent": "No Equipment Currently In Use"
 
     },
     
@@ -240,7 +240,8 @@
         "Equipment" : "Equipment",
         "EQTotalTime" : "Total Time",
         "NoData": "No Data Found",
-        "EquipmentLogs": "Equipment Logs"
+        "EquipmentLogs": "Equipment Logs",
+        "NoEquipmentLogs": "No logs found for the day selected."
     },
     "admin": {
         "Banner": "Admin Dashboard",

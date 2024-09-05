@@ -245,12 +245,18 @@
   return (
     <Contents variant={"default"} size={"default"}>
       <Sections size={"dynamic"}>
+        <Contents variant={"rowCenter"} size={"default"}>
       {timesheetData.length === 0 ? null : (
         <>
-          <Buttons onClick={editHandler}></Buttons>
-          {edit ? <Buttons className="flex bg-app-blue text-white font-bold p-2 rounded" onClick={handleSaveChanges}><Images titleImg={"/save.svg"} titleImgAlt={"Save Changes"} variant={"icon"} size={"backButton"} /></Buttons> : null}
+          <Buttons onClick={editHandler} className={edit ? "bg-app-red" : "bg-app-orange"} >
+            <Images titleImg={ edit ? "/new/undo-edit.svg" : "/new/edit-form.svg"} titleImgAlt={ edit ? "Undo Edit" : "Edit Form"} variant={"icon"} size={"backButton"} className="p-2" />
+          </Buttons>
+          {edit ? <Buttons className="flex bg-app-green text-white font-bold p-2 rounded" onClick={handleSaveChanges}><Images titleImg={"/new/save-edit.svg"} titleImgAlt={"Save Changes"} variant={"icon"} size={"backButton"} />
+          </Buttons> : null}
+
         </>
       )}
+      </Contents>
       {message ? (
         <>
           <Texts>{message}</Texts>
@@ -258,7 +264,10 @@
       ) : (
         <ul>
           <br/>
-          <li >{t("Timesheets")}</li>
+          <Titles size={"default"} variant={"default"}>{t("Timesheets")}</Titles>
+          <br/>
+              <div className="border border-black"></div>
+            <br/>
           {timesheets.map((timesheet) => (
             <li key={timesheet.id}>
               <>
@@ -345,6 +354,9 @@
           <br/>
           <div className="border border-black"></div>
           <br/>
+          {equipmentLogs.length === 0 && (
+            <Texts size={"default"} variant={"default"}>{t("NoEquipmentLogs")}</Texts>
+          )}
         </ul>
       </Sections>
     </Contents>

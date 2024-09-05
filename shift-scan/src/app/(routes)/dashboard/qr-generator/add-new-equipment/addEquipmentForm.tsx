@@ -10,6 +10,7 @@ import { Selects } from "@/components/(reusable)/selects";
 import { Options } from "@/components/(reusable)/options";
 import { Contents } from "@/components/(reusable)/contents";
 import { Texts } from "@/components/(reusable)/texts";
+import { Bases } from "@/components/(reusable)/bases";
 
 type AddEquipmentFormProps = {
   base64String: string | null;

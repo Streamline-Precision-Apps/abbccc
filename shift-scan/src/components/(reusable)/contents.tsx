@@ -25,6 +25,7 @@ const ContentVariants = cva(
         white: "bg-white",
         navy: "bg-app-dark-blue",
         red: "bg-app-red",
+        green: "bg-app-green",
         clear: "bg-clear",
         barChartWrapper: "flex flex-row justify-center rounded-2xl shadow-[8px_8px_0px_grey] p-4 border-4 border-black w-full h-fit bg-white mt-4",
       },

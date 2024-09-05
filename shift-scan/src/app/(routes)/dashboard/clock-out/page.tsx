@@ -120,7 +120,7 @@ const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
                     <Sections size={"default"}>
                     <TitleBoxes
                         title={t("InjuryVerification")}
-                        titleImg="/endDay.svg"
+                        titleImg="/new/end-day.svg"
                         titleImgAlt="Team"
                         variant={"row"}
                         size={"default"}
@@ -164,7 +164,7 @@ const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
                     <Sections size={"titleBox"}>
                     <TitleBoxes
                         title={t("InjuryVerification")}
-                        titleImg="/injury.svg"
+                        titleImg="/new/injury.svg"
                         titleImgAlt="Team"
                         variant={"row"}
                         size={"default"}
@@ -185,7 +185,7 @@ const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
             </Banners>
             <Contents>
             <Sections size={"dynamic"}>
-            <TitleBoxes title={t("Bye")} titleImg={"/endDay.svg"} titleImgAlt={""} variant={"row"} size={"default"} type="row" />
+            <TitleBoxes title={t("Bye")} titleImg={"/new/end-day.svg"} titleImgAlt={""} variant={"row"} size={"default"} type="row" />
 
             <Contents variant={"default"}>
             <Texts>{t("ClockOutDate")} {new Date().toLocaleDateString()}</Texts>

@@ -2,7 +2,6 @@ import ClockInWidget from "@/app/(content)/clockInWidget"
 import { User } from "@/lib/types"
 import '@/app/globals.css';
 import { Manager } from "@/app/(routes)/dashboard/manager";
-import { Grids } from "./(reusable)/grids";
 
 interface Props {
     user: User;
@@ -12,33 +11,18 @@ interface Props {
 }
 
 export default function WidgetSection({ user, display, locale, option}: Props) {
-    if (
-        user?.permission === "ADMIN" ||
-        user?.permission === "SUPERADMIN" ||
-        user?.permission === "MANAGER" ||
-        user?.permission === "PROJECTMANAGER"
-    ) {
-        return (
-            <>
-                <Manager show={true} />
-                <ClockInWidget 
-                    user={user} 
-                    option={option}  
-                    locale={locale}
-                    manager={true}
-                    />
-            </>
-    );
-}   else {
-        return (
-            <>
-                <ClockInWidget 
-                    user={user} 
-                    option={option}  
-                    locale={locale}
-                    manager={false}
-                    />
-            </>
-        )
+return (
+<>
+{/*Terenary operator to check if the user has permission to see the widget*/}
+    {(user?.permission === "ADMIN" || user?.permission === "SUPERADMIN" || user?.permission === "MANAGER" || user?.permission === "PROJECTMANAGER" )
+    ? <Manager show={true} /> : null
     }
-}
+        <ClockInWidget 
+            user={user} 
+            option={option}  
+            locale={locale}
+            manager={(user?.permission === "ADMIN" || user?.permission === "SUPERADMIN" || user?.permission === "MANAGER" || user?.permission === "PROJECTMANAGER" ) ? true : false}
+            />
+</>
+);
+} 
