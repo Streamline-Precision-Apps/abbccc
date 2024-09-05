@@ -89,10 +89,28 @@ const ControlComponent: React.FC<ControlComponentProps> = ({ toggle }) => {
     };
   }, [currentIndex, dailyHours]);
 
-  // Function to calculate the bar height percentage
+  // Function to calculate the bar height in px
+  // max px=300
   const calculateBarHeight = (value: number) => {
     if (value === 0) return 0;
-    return value > 8 ? 100 : (value / 8) * 100;
+    if (value > 0 && value <= 1)
+      return 10;
+      if (value > 1 && value <= 2)
+        return 37.5;
+      if (value > 2 && value <= 3)
+        return 75;
+      if (value > 3 && value <= 4)
+        return 112.5;
+      if (value > 4 && value <= 5)
+        return 150;
+      if (value > 5 && value <= 6)
+        return 187.5;
+      if (value > 6 && value <= 7)
+        return 225;
+      if (value > 7 && value <= 8)
+      return 262.5;
+      if (value > 8) 
+      return 300;
   };
 
   const scrollLeft = () => {
@@ -134,41 +152,56 @@ const ControlComponent: React.FC<ControlComponentProps> = ({ toggle }) => {
         </Contents>
         <Contents variant={"hoursDisplayWrapper"} size={null}>
           <Contents variant={"navy"} size={"defaultHours"}>
-            <Contents
-              variant={"default"}
-              size={"default"}
-              className={`bg-app-green rounded-2xl flex flex-col justify-end ${currentData.valuePrev === 0 ? "bg-app-dark-blue" : `h-[${calculateBarHeight(currentData.valuePrev)}%]`}`}
-            >
-              <Texts variant={"default"} size={"p0"}>
+          <Texts variant={"default"} size={"p3"}>
                 {currentData.valuePrev !== 0 ? `${currentData.valuePrev.toFixed(1)} ${t("DA-Time-Label")}` : `0 ${t("DA-Time-Label")}`}
               </Texts>
-            </Contents>
-          </Contents>
-          <Contents variant={"navy"} size={"defaultHours"}>
             <Contents
               variant={"default"}
-              size={"default"}
-              className={`bg-app-green flex flex-col justify-end rounded-2xl ${currentData.value === 0 ? "bg-app-dark-blue" : `h-[${calculateBarHeight(currentData.value)}%]`}`}
+              size={null}
+              className={`w-full rounded-2xl flex flex-col justify-end ${currentData.valuePrev === 0 ? "bg-clear" : `h-[${calculateBarHeight(currentData.valuePrev)}px]`}
+              ${currentData.valuePrev > 8 ? "bg-app-green" : "bg-app-orange"}
+              ${(currentData.valuePrev !== 0) ? "" : "bg-clear"}
+                `}
             >
-              <Texts variant={"default"} size={"p0"}>
-                {currentData.value !== 0 ? `${currentData.value.toFixed(1)} ${t("DA-Time-Label")}` : `0 ${t("DA-Time-Label")}`}
+              <Texts variant={"default"} size={"p3"}>
               </Texts>
             </Contents>
           </Contents>
           <Contents variant={"navy"} size={"defaultHours"}>
+          <Texts variant={"default"} size={"p3"}>
+                {currentData.value !== 0 ? `${currentData.value.toFixed(1)} ${t("DA-Time-Label")}` : `0 ${t("DA-Time-Label")}`}
+              </Texts>
             <Contents
               variant={"default"}
-              size={"default"}
-              className={`bg-app-green flex flex-col justify-end rounded-2xl ${currentData.valueNext === 0 ? "bg-app-dark-blue" : `h-[${calculateBarHeight(currentData.valueNext)}%]`}`}
+              size={null}
+              className={` w-full flex flex-col justify-end rounded-2xl ${currentData.value === 0 ? "bg-clear" : `h-[${calculateBarHeight(currentData.value)}px]` }  
+              ${currentData.value > 8 ? "bg-app-green" : "bg-app-orange"}
+              ${(currentData.value !== 0) ? "" : "bg-clear"}
+              `}
             >
-              <Texts variant={"default"} size={"p0"}>
+              <Texts variant={"default"} size={"p3"}>
+                </Texts>
+            </Contents>
+          </Contents>
+          <Contents variant={"navy"} size={"defaultHours"}>
+          <Texts variant={"default"} size={"p3"}>
               {currentData.valueNext !== 0 ? `${currentData.valueNext.toFixed(1)} ${t("DA-Time-Label")}` : `0 ${t("DA-Time-Label")}`}
+              </Texts>
+            <Contents
+              variant={"default"}
+              size={null}
+              className={` w-full flex flex-col justify-end rounded-2xl ${currentData.valueNext === 0 ? "bg-clear" : `h-[${calculateBarHeight(currentData.valueNext)}px] `}
+              ${currentData.valueNext > 8 ? "bg-app-green" : "bg-app-orange"}
+              ${(currentData.valueNext !== 0) ? "" : "bg-clear"}
+                `}
+            >
+              <Texts variant={"default"} size={"p3"}>
               </Texts>
             </Contents>
           </Contents>
         </Contents>
         <Buttons href="/timesheets" variant={"green"} size={"widgetMed"} className="mt-2">
-          <Texts variant={"default"} size={"p0"}>
+          <Texts variant={"default"} size={"p3"}>
             view my payroll
           </Texts>
         </Buttons>
