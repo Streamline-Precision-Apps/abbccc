@@ -21,6 +21,8 @@ const ImageVariants = cva(
         widgetLg: "p-10 w-50 h-50",
         titlebox: "w-36",
         backButton: "w-15 w-15 pt-0",
+        icon: "w-[60px] h-[60px] ",
+        iconMed: "w-[80px] h-[80px] ",
         logo: "",
         editIcon : "w-10 h-10 pt-0 ",
         thin: "w-20 h-10",

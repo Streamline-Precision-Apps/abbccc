@@ -24,7 +24,7 @@ export const AddJobsiteContent = () => {
   };
   return (
     <Bases>
-    <Contents size={"default"}>
+    <Contents>
       <Sections size={"titleBox"}>
         <TitleBoxes
           title={t("Title")}

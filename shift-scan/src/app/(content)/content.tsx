@@ -220,9 +220,6 @@ False -> display hours                    */
           }
     </Sections>
   </Contents>
-    {/* <Footers variant={"default"}>{t("Copyright")}</Footers> */}
-    <Header /> 
-    {/* this contains the login log out buttons */}
   </Bases>
 </>
 );

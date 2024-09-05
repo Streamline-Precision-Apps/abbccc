@@ -36,7 +36,7 @@ const Headers: FC<HeaderProps> = ({className, variant, size, ...props}) => {
 
   return (
     <div className={cn(HeaderVariants({variant, size, className}))} {...props}>
-      <Images titleImg="/logo.svg" titleImgAlt="logo" variant={"iconLeft"} size={"logo"}/>
+      <Images titleImg="/new/logo.svg" titleImgAlt="logo" variant={"iconLeft"} size={"logo"}/>
       <AnimatedHamburgerButton/>
     </div>
   )

@@ -25,7 +25,7 @@ export default function ClockInWidget({ user, locale, option, manager}: Props) {
             >
                 <Contents variant={"widgetButtonRow"} size={"test"}>
                     <Texts size={"widgetMed"}>{t("Clock-btn")}</Texts>
-                    <Images titleImg="/clockIn.svg" titleImgAlt="QR Code" variant={"icon"} size={"widgetMed"} />
+                    <Images titleImg="/new/clock-in.svg" titleImgAlt="QR Code" variant={"icon"} size={"widgetMed"} />
                 </Contents>
             </Buttons>
         </>

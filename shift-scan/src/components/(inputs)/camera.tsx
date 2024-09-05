@@ -1,6 +1,7 @@
 import React, { useState, useRef, Dispatch, SetStateAction } from "react";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { useTranslations } from "next-intl";
+import { Contents } from "../(reusable)/contents";
 
 interface CameraComponentProps {
   setBase64String: Dispatch<SetStateAction<string>>;
@@ -45,6 +46,7 @@ const CameraComponent: React.FC<CameraComponentProps> = ({ setBase64String }) =>
   const toggleCamera = () => {
     if (cameraActive) {
       hideCamera();
+      setImageSrc(null);
     } else {
       startCamera();
     }
@@ -63,8 +65,8 @@ const CameraComponent: React.FC<CameraComponentProps> = ({ setBase64String }) =>
   };
 
   return (
-    <div>
-      <div>
+    <>
+      <Contents>
         <video
           ref={videoRef}
           autoPlay
@@ -72,6 +74,9 @@ const CameraComponent: React.FC<CameraComponentProps> = ({ setBase64String }) =>
             display: cameraActive && !imageSrc ? "block" : "none",
             width: "300px",
             height: "300px",
+            margin: "0 auto",
+            borderRadius: "10px",
+            border: "5px solid #ccc",
           }}
         ></video>
         <canvas
@@ -79,28 +84,37 @@ const CameraComponent: React.FC<CameraComponentProps> = ({ setBase64String }) =>
           style={{ display: "none" }}
           width="300"
           height="300"
+          
         ></canvas>
         {imageSrc && (
           <img
             src={imageSrc}
             alt="Captured"
-            style={{ width: "300px", height: "300px" }}
+            style={{ 
+              width: "300px", 
+              height: "300px",  
+              margin: "0 auto",
+              borderRadius: "10px",
+              border: "5px solid #ccc" 
+            }}
           />
         )}
-      </div>
+      </Contents>
+      <Contents variant={"rowCenter"}>
       <Buttons
         variant={cameraActive ? "red" : "green"}
-        size="default"
+        size={"minBtn"}
         onClick={toggleCamera}
       >
-        {cameraActive ? "Hide Camera" : "Show Camera"}
+        {cameraActive ? "Restart Camera" : "Start Camera"}
       </Buttons>
       {cameraActive && (
-        <Buttons variant="green" size="default" onClick={takePicture}>
+        <Buttons variant="green"  size={"minBtn"} onClick={takePicture}>
           {t("Button")}
         </Buttons>
       )}
-    </div>
+      </Contents>
+    </>
   );
 };
 

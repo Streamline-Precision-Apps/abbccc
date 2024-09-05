@@ -3,11 +3,11 @@ import Index from "@/app/hamburger/settings/content";
 import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { Bases } from "@/components/(reusable)/bases";
+import { auth } from "@/auth";
 
 export default async function Settings() {
-const user = cookies().get("user");
-const userId = user?.value;
-
+const session = await auth();
+const userId = session?.user.id;
 
 const data = await prisma.userSettings.findUnique({
 where: {
