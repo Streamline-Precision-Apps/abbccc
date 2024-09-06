@@ -67,7 +67,12 @@
         "Banner": "Working towards success!",
         "Name": "{firstName} {lastName}",
         "Date": "{date}",
-        "lN1": "Copyright © 2024.Streamline Precision LLC. All rights reserved."
+        "lN1": "Copyright © 2024.Streamline Precision LLC. All rights reserved.",
+        "Forms" : "Select A Form",
+        "FormDefault" : "Select A Form",
+        "Form1" : "Injury Report",
+        "Form2" : "JSA",
+        "Form3" : "Report App Bug"
     },
     
     "ManagerButtons": {

@@ -73,9 +73,7 @@ const QR_EQ: React.FC<QrReaderProps> = ({ handleNextStep }) => {
   }, [scanCount, router]);
 
   return (
-    <div className="flex justify-center items-center">
-      <video ref={videoRef} style={{ width: '100%' }}></video>
-    </div>
+      <video ref={videoRef} className="w-full h-[400px] rounded-2xl border-4 bg-gray-300 border-black"></video>
   );
 };
 

@@ -5,6 +5,7 @@ import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Images } from "@/components/(reusable)/images";
+import { Sections } from "@/components/(reusable)/sections";
 import { Texts } from "@/components/(reusable)/texts";
 import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
@@ -80,16 +81,17 @@ const lang = cookies().get("locale");
 const locale = lang ? lang.value : "en"; // Default to English
 
     return (
-        <Bases>
-        <Contents variant="default" size="default">
+        <Bases variant={"default"} size={"scroll"} >
+        <Contents size={"default"} variant={"default"}>
+        <Sections size={"default"}>
         <ClockProcessor
             type={"jobsite"}
             id={user_Id}
             scannerType={"jobsite"}
             locale={locale}
             returnpath="/dashboard"
-            
         />
+        </Sections>
         </Contents>
         </Bases>
     )
