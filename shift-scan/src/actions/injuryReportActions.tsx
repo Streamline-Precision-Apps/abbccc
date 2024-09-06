@@ -67,13 +67,10 @@ export async function CreateInjuryForm(formData: FormData) {
           ? Boolean(formData.get("contactedSupervisor"))
           : undefined,
         incidentDescription: formData.get("incidentDescription") as string,
+        signedForm: formData.get("signedForm") === 'true',
       },
     });
     console.log("injuryForm created successfully.");
-
-    // Revalidate the path
-    await revalidatePath(`/dashboard/clock-out/clock-out-success`);
-
     // Redirect to the success page
   } catch (error) {
     console.error("Error creating injuryForm:", error);

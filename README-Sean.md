@@ -201,3 +201,9 @@ I finished some more prisma DB research and Created the clock out dashboard page
 - Fix Account settings change on signup.
 - Set account setup to sign you out after account signup is done.
 - Fix password to save password as hashed password.
+- Fixed banners for signup page.
+
+## 9/5/2024
+
+- Made clockout pull signature from the database.
+- changed the functionality of clockout signature component.
