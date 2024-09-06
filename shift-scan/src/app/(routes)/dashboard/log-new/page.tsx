@@ -5,6 +5,7 @@ import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Images } from "@/components/(reusable)/images";
+import { Sections } from "@/components/(reusable)/sections";
 import { Texts } from "@/components/(reusable)/texts";
 import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
@@ -82,6 +83,8 @@ const locale = lang ? lang.value : "en"; // Default to English
 
     return (
         <Bases>
+        <Contents size={"default"} variant={"default"}>
+        <Sections size={"default"}>
         <ClockProcessor
             type={"equipment"}
             id={user_Id}
@@ -90,6 +93,8 @@ const locale = lang ? lang.value : "en"; // Default to English
             returnpath="/dashboard"
             equipment={equipment}
         />
+        </Sections>
+        </Contents>
         </Bases>
     )
 }

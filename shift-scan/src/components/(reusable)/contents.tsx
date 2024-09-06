@@ -42,6 +42,7 @@ const ContentVariants = cva(
         test: "",
         editBtn: "absolute top-0 h-36 w-36 rounded-full",
         defaultHours: "w-[100px] h-[300px] mx-auto rounded-2xl pt-3 pb-3 px-2 flex flex-col justify-end",
+        verifyStep: "items-center w-full h-[800px] m-auto",
       }
     },
     defaultVariants: {

@@ -17,6 +17,7 @@ import { Labels } from "../(reusable)/labels";
 import { Inputs } from "../(reusable)/inputs";
 import { Images } from "../(reusable)/images";
 import { Texts } from "../(reusable)/texts";
+import { TitleBoxes } from "../(reusable)/titleBoxes";
 
 interface Equipment {
     id: string;
@@ -54,43 +55,21 @@ setScanResult({ data: jobSiteId || "" });
 }
 
 
-const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-e.preventDefault();
-try {
-    if (id === null) {
-    throw new Error("User id does not exist");
-    }
-
-    const formData = new FormData();
-    formData.append("employee_id", id?.toString() || "");
-    formData.append("jobsite_id", scanResult?.data || "");
-    formData.append("equipment_id", scanEQResult?.data || "");
-    formData.append("start_time", new Date().toISOString());
-    await CreateEmployeeEquipmentLog(formData);
-
-    handleNextStep();
-} catch (error) {
-    console.log(error);
-}
-};
-
 return (
 <>
-<Titles variant={"default"} size={"h1"}>
-        {t("VerifyEquipment")}
-</Titles>
-    <Contents variant={"default"} size={"default"}>
-    <Forms 
-
-    onSubmit={handleSubmit}
-    className="h-full w-[500px] bg-white flex flex-col items-center rounded-t-2xl"
-    >
-    <label htmlFor="name">{t("Equipment-result")}</label>
-    <Titles variant="default" size="default">
-        {equipment?.find((equipment) => equipment.qr_id === scanEQResult?.data)?.name}
-    </Titles>
+<TitleBoxes title= {t("VerifyEquipment")} titleImg="/new/equipment.svg" titleImgAlt="Equipment icon" variant="row" size="default" type="row" />
+<Forms action={CreateEmployeeEquipmentLog} onSubmit={()=> handleNextStep()}>
+    <Labels variant="default" size="default">
+    {t("Equipment-result")}
+    <Inputs
+        defaultValue={equipment?.find((equipment) => equipment.qr_id === scanEQResult?.data)?.name}
+    />
+        </Labels>
+{/*If image is not found it will be null */}
+    {(equipment?.find((equipment) => equipment.qr_id === scanEQResult?.data)?.images) ? 
     <Images variant="default" size="default" titleImg={equipment?.find((equipment) => equipment.qr_id === scanEQResult?.data)?.images ?? ""} titleImgAlt="
-    Equipment Image not found" />
+    Equipment Image not found" /> : null}
+    
 
     <Inputs
         type="hidden"
@@ -99,21 +78,23 @@ return (
         className="p-2 text-center"
         readOnly
     />
+    <Labels variant="default" size="default" >
+    {t("Equipment-notes-title")} 
 
-    {/* <Labels variant="default" size="default" >
-    {t("Equipment-notes-title")}
-    </Labels>
     <TextAreas
         name="equipment_notes"
         className="p-2 border-2 border-black w-full"
-        placeholder="Enter notes here..."
-    /> */}
+        rows={5}
+        placeholder="You get 40 characters for notes. You can edit notes later."
+        maxLength={40}
+    />
+    </Labels>
     <Buttons
         variant={"default"}
-        size={"listLg"}
+        size={"maxBtn"}
         type="submit"
     >
-    <Texts size="p0" variant={"default"}>
+    <Texts size="p0" variant={"default"} >
         {t("Next-btn")}
         </Texts>
     </Buttons>
@@ -123,7 +104,6 @@ return (
     <Inputs type="hidden" name="start_time" value={new Date().toISOString()} />
     <Inputs type="hidden" name="employee_id" value={savedUserData?.id || ""} />
     </Forms>
-    </Contents>
 </>
 );
 };
