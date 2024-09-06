@@ -203,8 +203,9 @@
     },
 
     "Signature": {
+        "Save": "Save",
         "Saved": "Saved signature",
-        "Download": "Download signature"
+        "Clear": "Clear"
     },
 
     "Hamburger": {
