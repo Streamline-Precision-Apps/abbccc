@@ -14,6 +14,7 @@ costcodeData: any[];
 jobsiteData: any[];
 equipmentData: any[];
 equipment: any[];
+permission: string | undefined;
 };
 
 export const EmployeeTimeSheets = ({ employeeId, costcodeData, equipmentData, equipment, jobsiteData, permission }: Props) => {
