@@ -207,3 +207,9 @@ I finished some more prisma DB research and Created the clock out dashboard page
 
 - Made clockout pull signature from the database.
 - changed the functionality of clockout signature component.
+
+## 9/6/2024
+
+- Finished clockout signature component.
+- Finished injury report signature component.
+- Started method for admin to add a timesheet.
