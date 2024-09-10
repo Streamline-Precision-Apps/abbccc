@@ -70,7 +70,7 @@ export default function Content( { equipment , jobsites, costCodes }: Props ) {
         </Sections>
         <Contents size={null} variant={"default"} >
         { showBanner && ( 
-                    <Contents size={null} variant={"green"} >
+                    <Contents size={null} >
                         <Texts>{banner} something</Texts>
                     </Contents>     
                 )
@@ -82,18 +82,19 @@ export default function Content( { equipment , jobsites, costCodes }: Props ) {
         tabLabel= "Equipment" 
         isTabActive= {activeTab === 1}
         />
-            <Tab
-            onClick={() => setActiveTab(2)} 
-            tabLabel= "Job Codes"
-            isTabActive= {activeTab === 2}
-            />  
+
+        <Tab
+        onClick={() => setActiveTab(2)} 
+        tabLabel= "Job Codes"
+        isTabActive= {activeTab === 2}
+        />  
 
         <Tab
         onClick={() => setActiveTab(3)} 
         tabLabel= "Cost Codes"
         isTabActive= {activeTab === 3}
         />  
-            </Contents>
+        </Contents>
         <Sections size={"dynamic"}>
             {activeTab === 1 && <Equipment equipment={equipment} setBanner={setBanner} setShowBanner={setShowBanner} /> }
             {activeTab === 2 && <Jobsite jobsites={jobsites} setBanner={setBanner} setShowBanner={setShowBanner} /> }

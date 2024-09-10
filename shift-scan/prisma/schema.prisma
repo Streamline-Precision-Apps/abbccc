@@ -46,22 +46,26 @@ enum Permission {
 
 // Holds the login and general app data of employee but not all the data
 model User {
-  id            String     @id @default(cuid())
-  firstName     String
-  lastName      String
-  username      String     @unique
-  password      String
-  Signature     String?    @unique
-  DOB           String
-  truck_view    Boolean
-  tasco_view    Boolean
-  labor_view    Boolean
-  mechanic_view Boolean
-  permission    Permission
-  email         String     @unique
-  emailVerified DateTime?  @map("email_verified")
-  phone         String
-  image         String?
+  id              String     @id @default(cuid())
+  firstName       String
+  lastName        String
+  username        String     @unique
+  password        String
+  Signature       String?    @db.Text
+  DOB             String
+  truck_view      Boolean
+  tasco_view      Boolean
+  labor_view      Boolean
+  mechanic_view   Boolean
+  permission      Permission
+  email           String     @unique
+  emailVerified   DateTime?  @map("email_verified")
+  phone           String
+  image           String?
+  activeEmployee  Boolean    @default(true)
+  startDate       DateTime?  @default(now())
+  terminationDate DateTime?
+  accountSetup    Boolean    @default(false)
 
   crewMembers     CrewMember[]
   timeSheet       TimeSheet[]

@@ -37,6 +37,10 @@ CREATE TABLE "users" (
     "email_verified" TIMESTAMP(3),
     "phone" TEXT NOT NULL,
     "image" TEXT,
+    "activeEmployee" BOOLEAN NOT NULL DEFAULT true,
+    "startDate" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "terminationDate" TIMESTAMP(3),
+    "accountSetup" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
@@ -334,9 +338,6 @@ CREATE TABLE "_AddressToJobsite" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
-
--- CreateIndex
-CREATE UNIQUE INDEX "users_Signature_key" ON "users"("Signature");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
