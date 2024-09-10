@@ -321,6 +321,23 @@ CREATE TABLE "InjuryForm" (
 );
 
 -- CreateTable
+CREATE TABLE "timeoffRequestForm" (
+    "id" SERIAL NOT NULL,
+    "date" TIMESTAMP(3) NOT NULL,
+    "requestedStartDate" TIMESTAMP(3) NOT NULL,
+    "requestedEndDate" TIMESTAMP(3) NOT NULL,
+    "requestType" TEXT NOT NULL,
+    "comments" TEXT NOT NULL,
+    "mangerComments" TEXT,
+    "approved" BOOLEAN NOT NULL DEFAULT false,
+    "employee_id" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "timeoffRequestForm_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "_CostCodeToJobsite" (
     "A" INTEGER NOT NULL,
     "B" INTEGER NOT NULL
@@ -427,6 +444,9 @@ ALTER TABLE "FormSubmissions" ADD CONSTRAINT "FormSubmissions_formId_fkey" FOREI
 
 -- AddForeignKey
 ALTER TABLE "FormSubmissions" ADD CONSTRAINT "FormSubmissions_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "timeoffRequestForm" ADD CONSTRAINT "timeoffRequestForm_employee_id_fkey" FOREIGN KEY ("employee_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_CostCodeToJobsite" ADD CONSTRAINT "_CostCodeToJobsite_A_fkey" FOREIGN KEY ("A") REFERENCES "CostCode"("id") ON DELETE CASCADE ON UPDATE CASCADE;
