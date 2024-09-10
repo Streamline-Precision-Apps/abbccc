@@ -85,7 +85,7 @@ const locale = lang ? lang.value : "en"; // Default to English
         <Contents size={"default"} variant={"default"}>
         <Sections size={"default"}>
         <ClockProcessor
-            type={"jobsite"}
+            type={"switchJobs"}
             id={user_Id}
             scannerType={"jobsite"}
             locale={locale}
