@@ -19,6 +19,8 @@ const TitleVariants = cva(
         green : "text-app-green",
         bannerMessage: "pb-0 mb-0",
         modal: "mb-10",
+        left: "text-left text-white font-normal",
+        qrText: "mt-10 mb-10 text-center",
       },
       size: {
         default: " text-2xl",

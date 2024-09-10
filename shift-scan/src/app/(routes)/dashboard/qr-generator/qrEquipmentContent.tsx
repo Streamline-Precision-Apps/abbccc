@@ -63,7 +63,10 @@ export default function QrEquipmentContent({ equipment }: Props) {
 
   return (
     <>
+    <Contents variant={"center"} size={null}>
+    <Images titleImg="/new/equipment.svg" titleImgAlt="equipment" variant={"icon"} size={"iconMed"}/>
       <Titles variant={"default"} size={"default"}>{t("Equipment")}</Titles>
+    </Contents>
       <Selects value={selectedEquipment} onChange={handleOptionSelect}>
         <Options variant={"default"} value="">
           {t("Select")}

@@ -20,6 +20,9 @@ import { setAuthStep } from "@/app/api/auth";
 import { Texts } from "@/components/(reusable)/texts";
 import { Clock } from "@/components/clock";
 import { uploadFirstSignature } from "@/actions/userActions";
+import { Forms } from "@/components/(reusable)/forms";
+import { Inputs } from "@/components/(reusable)/inputs";
+import { useSession } from "next-auth/react";
 
 // Custom hook for managing banners
 function useBanner(initialMessage = "") {
@@ -161,7 +164,7 @@ export default function ClockOutContent({
           <Sections size={"default"}>
             <TitleBoxes
               title={t("InjuryVerification")}
-              titleImg="/endDay.svg"
+              titleImg="/new/end-day.svg"
               titleImgAlt="Team"
               variant={"row"}
               size={"default"}
@@ -215,7 +218,7 @@ export default function ClockOutContent({
           <Sections size={"titleBox"}>
             <TitleBoxes
               title={t("InjuryVerification")}
-              titleImg="/injury.svg"
+              titleImg="/new/injury.svg"
               titleImgAlt="Team"
               variant={"row"}
               size={"default"}
@@ -233,7 +236,49 @@ export default function ClockOutContent({
         </Contents>
       </Bases>
     );
-  } else {
+  }
+  else if (step === 2 && path ==="ClockOut" || step === 3 && path ==="Injury") {
+    return (
+        <Bases>
+        <Banners variant={bannerMessage.length > 0 ? "green" : "default"} >
+        {bannerMessage}
+        </Banners>
+        <Contents>
+        <Sections size={"dynamic"}>
+        <TitleBoxes title={t("Bye")} titleImg={"/new/end-day.svg"} titleImgAlt={""} variant={"row"} size={"default"} type="row" />
+
+        <Contents variant={"default"}>
+        <Texts>{t("ClockOutDate")} {new Date().toLocaleDateString()}</Texts>
+        <Texts>
+        {t("Jobsite")} {scanResult?.data || localStorageData?.jobsite}
+        </Texts>
+        <Texts>
+        {t("CostCode")} {savedCostCode || localStorageData?.costCode}
+        </Texts>
+
+        <Forms onSubmit={handleSubmit}>
+        <Buttons
+        variant={"green"}
+        size={"widgetLg"}
+        >
+        <Clock time={time} />
+        </Buttons>
+        {/* Hidden inputs */}
+        <Inputs type="hidden" name="id" value={savedTimeSheetData?.id || localStorageData?.timesheet} readOnly/>
+        <Inputs type="hidden" name="end_time" value={new Date().toString()} readOnly/>
+        <Inputs type="hidden" name="timesheet_comments" value={""} readOnly />
+        <Inputs type="hidden" name="app_comments" value={""} readOnly />
+        {/* uses this to verfy the person clocking out in server action */}
+        <Inputs type="hidden" name="user_id" value={ id || ""} readOnly />
+        </Forms>
+
+        </Contents>
+        </Sections>
+        </Contents>
+        </Bases>
+    );
+} 
+  else {
     return null;
   }
 }

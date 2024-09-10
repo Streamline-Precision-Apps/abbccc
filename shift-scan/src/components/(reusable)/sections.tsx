@@ -10,6 +10,7 @@ const SectionVariants = cva(
         default: "bg-white rounded-2xl",
         tab: "bg-white rounded-2xl min-h-[200px] rounded-t-none p-6",
         eq: "bg-white border-2 border-black rounded-2xl ",
+        darkBlue: "bg-app-dark-blue rounded-2xl p-10",
 
       },
       size: {
