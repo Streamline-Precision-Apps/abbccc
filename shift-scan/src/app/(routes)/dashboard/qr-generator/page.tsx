@@ -6,6 +6,7 @@ import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import QrJobsiteContent from "./qrJobsiteContent";
 import QrEquipmentContent from "./qrEquipmentContent";
 import prisma from "@/lib/prisma";
+import { Contents } from "@/components/(reusable)/contents";
 
 export default async function QrGeneratorDashboard() {
   const jobCodes = await prisma.jobsite.findMany({
@@ -27,10 +28,12 @@ export default async function QrGeneratorDashboard() {
 
   return (
     <Bases>
+    <Contents>
         <QrJobsiteContent  jobCodes={jobCodes} />
       <Sections size={"half"}>
         <QrEquipmentContent equipment={equipment} />
       </Sections>
+    </Contents>
     </Bases>
   );
 }

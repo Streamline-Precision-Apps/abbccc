@@ -79,7 +79,7 @@ const QR: React.FC<QrReaderProps> = ({ handleNextStep, url  }) => {
   }, [scanCount, router]);
 
   return (
-    <video ref={videoRef} className="w-full rounded-2xl border-4 bg-gray-300 border-black"/>
+    <video ref={videoRef} className="w-full h-[400px] rounded-2xl border-4 bg-gray-300 border-black"/>
   );
 };
 

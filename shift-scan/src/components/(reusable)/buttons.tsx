@@ -20,21 +20,26 @@ const ButtonVariants = cva(
       },
       position: {
         left: "left-5",
+        leftArrow: "absolute left-1",
+        rightArrow: "absolute right-1",
       },
       size: {
         default: "h-[50px] w-[50px] flex-row mx-auto my-3 p-1",
         minBtn: "h-[50px] w-fit flex-row mx-auto my-3 p-1",
+        maxBtn: "h-fit w-full flex-col my-3 p-1",
         hours: "h-[150px] w-full flex-row items-center col-span-2 justify-space-between p-1",
         listLg: "flex-row w-full h-28 mt-5 first:mt-0 overflow-hidden justify-stretch",
         widgetSm: " min-h-[150px] min-w-[170px] shadow-[8px_8px_0px_grey]",
         widgetMed: "grid col-span-2 w-full",
         dateBtn: "w-full h-full px-5 py-3 shadow-none ",
         widgetLg: "grid col-span-2 row-span-2 h-full w-full",
-        backButton: "absolute top-2 left-2",
+        backButton: "absolute top-2 left-2 ",
         editButton: "absolute top-[80%] left-[89%] ",
         exit: " mx-auto mt-5 mb-5 p-2",
-        returnBtn :"w-16 h-16 absolute top-0 left-[43%] ",
+        returnBtn :"w-12 h-12 p-2 absolute top-[-22%] left-[50%] -translate-x-[50%] shadow-[15px 15px 0px 0px #7B7B7B]  ",
+        arrow : "w-[70px] h-[70px] p-2 mx-3",
         forgotpassword: "flex ml-auto my-3 p-3 w-40 h-100 underline",
+        icon:"w-full absolute top-0 left-0",
         test: ""
       }
     },

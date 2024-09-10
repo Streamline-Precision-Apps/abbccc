@@ -16,7 +16,7 @@ import { useSession } from "next-auth/react";
 import { useSavedUserData } from "@/app/context/UserContext";
 import { useDBJobsite, useDBCostcode, useDBEquipment} from "@/app/context/dbCodeContext";
 import { useRecentDBJobsite, useRecentDBCostcode, useRecentDBEquipment} from "@/app/context/dbRecentCodesContext";
-import { getAuthStep, isDashboardAuthenticated } from "@/app/api/auth";
+import { getAuthStep} from "@/app/api/auth";
 import { ClockProcessProps, Logs } from "@/lib/clockprocess";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
@@ -104,11 +104,6 @@ logs,
 ]);
 
 useEffect(() => {
-if (!isDashboardAuthenticated()) {
-    console.log("Not authenticated");
-    console.log(getAuthStep());
-    router.push("/"); // Redirect to login page if not authenticated
-}
 if (getAuthStep() !== "success") {
     router.push("/"); // Redirect to QR page if steps are not followed
 }

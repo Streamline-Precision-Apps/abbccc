@@ -15,7 +15,7 @@ export default function MyTeam(){
                 <Sections size={"titleBox"}>
                     <TitleBoxes 
                     title="My Team" 
-                    titleImg="/myTeam.svg" 
+                    titleImg="/new/team.svg" 
                     titleImgAlt="Team" 
                     variant={"default"} 
                     size={"default"}/>

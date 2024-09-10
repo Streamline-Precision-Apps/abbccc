@@ -35,8 +35,3 @@ export const isAuthenticated = () => {
     
     return currentStep === 'success';
 };
-export const isDashboardAuthenticated = () => {
-    const currentStep = getAuthStep();
-    
-    return currentStep === 'success';
-};
