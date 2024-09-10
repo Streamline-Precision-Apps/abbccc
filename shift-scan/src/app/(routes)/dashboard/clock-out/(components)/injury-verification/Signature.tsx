@@ -3,45 +3,55 @@ import { useTranslations } from "next-intl";
 import React, { useRef, useState, useEffect } from "react";
 
 interface SignatureProps {
-  onEnd: (blob: Blob) => void;
+  setBase64String: (base64string: string) => void;
+  base64string?: string | null;
+  handleSubmitImage: () => void;
 }
 
-const Signature: React.FC<SignatureProps> = ({ onEnd }) => {
+const Signature: React.FC<SignatureProps> = ({ setBase64String, base64string, handleSubmitImage }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const ctxRef = useRef<CanvasRenderingContext2D | null>(null); // Ref for context optimization
   const [isDrawing, setIsDrawing] = useState(false);
-  const [savedSignature, setSavedSignature] = useState<Blob | null>(null);
-  const t = useTranslations("Signature");
+  const [showSaveButton, setShowSaveButton] = useState(!base64string);
+  const [localBase64String, setLocalBase64String] = useState<string | null>(null);
+  const t = useTranslations("");
 
   useEffect(() => {
-    if (canvasRef.current) {
-      const ctx = canvasRef.current.getContext("2d");
-      if (ctx) {
-        ctx.lineWidth = 2;
-        ctx.lineCap = "round";
-        ctx.strokeStyle = "black";
+    const canvas = canvasRef.current;
+    if (canvas) {
+      canvas.width = canvas.parentElement!.offsetWidth; // Set canvas width dynamically
+      canvas.height = 150;
+      ctxRef.current = canvas.getContext("2d");
+      if (ctxRef.current) {
+        ctxRef.current.lineWidth = 2;
+        ctxRef.current.lineCap = "round";
+        ctxRef.current.strokeStyle = "black";
+      }
+
+      if (base64string) {
+        const img = new Image();
+        img.src = base64string;
+        img.onload = () => {
+          ctxRef.current!.clearRect(0, 0, canvas.width, canvas.height);
+          ctxRef.current!.drawImage(img, 0, 0);
+        };
       }
     }
-  }, []);
+  }, [base64string]);
 
   const handleMouseDown = (event: React.MouseEvent<HTMLCanvasElement>) => {
     setIsDrawing(true);
-    const canvas = canvasRef.current;
-    if (canvas) {
-      const ctx = canvas.getContext("2d");
-      if (ctx) {
-        ctx.beginPath();
-        ctx.moveTo(event.nativeEvent.offsetX, event.nativeEvent.offsetY);
-      }
+    const ctx = ctxRef.current;
+    if (ctx) {
+      ctx.beginPath();
+      ctx.moveTo(event.nativeEvent.offsetX, event.nativeEvent.offsetY);
     }
   };
 
   const handleMouseMove = (event: React.MouseEvent<HTMLCanvasElement>) => {
-    if (isDrawing && canvasRef.current) {
-      const ctx = canvasRef.current.getContext("2d");
-      if (ctx) {
-        ctx.lineTo(event.nativeEvent.offsetX, event.nativeEvent.offsetY);
-        ctx.stroke();
-      }
+    if (isDrawing && ctxRef.current) {
+      ctxRef.current.lineTo(event.nativeEvent.offsetX, event.nativeEvent.offsetY);
+      ctxRef.current.stroke();
     }
   };
 
@@ -51,23 +61,18 @@ const Signature: React.FC<SignatureProps> = ({ onEnd }) => {
 
   const handleClear = () => {
     const canvas = canvasRef.current;
-    if (canvas) {
-      const ctx = canvas.getContext("2d");
-      if (ctx) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-      }
+    if (canvas && ctxRef.current) {
+      ctxRef.current.clearRect(0, 0, canvas.width, canvas.height);
+      setShowSaveButton(true);
     }
   };
 
   const handleSave = () => {
     const canvas = canvasRef.current;
     if (canvas) {
-      canvas.toBlob((blob) => {
-        if (blob) {
-          setSavedSignature(blob);
-          onEnd(blob); // Pass blob to parent component
-        }
-      }, "image/png");
+      const newBase64string = canvas.toDataURL("image/png");
+      setLocalBase64String(newBase64string); // Temporarily store locally
+      setBase64String(newBase64string); // Set parent base64 string
     }
   };
 
@@ -75,32 +80,21 @@ const Signature: React.FC<SignatureProps> = ({ onEnd }) => {
     <div>
       <canvas
         ref={canvasRef}
-        // width={450}
-        // height={200}
         style={{ border: "1px solid black", margin: "0 auto" }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
       />
       <div className="flex flex-row gap-4">
-        <Buttons variant={"red"} size={"widgetSm"} onClick={handleClear}>
-          Clear
+        <Buttons variant={"red"} size={"default"} onClick={handleClear}>
+          {t("Clear")}
         </Buttons>
-        <Buttons variant={"green"} size={"widgetSm"} onClick={handleSave}>
-        Save
-        </Buttons>
+        {showSaveButton && (
+          <Buttons variant={"green"} size={"default"} onClick={handleSave}>
+            {t("Save")}
+          </Buttons>
+        )}
       </div>
-      {savedSignature && (
-        <div className="mt-4">
-          <h3 className="text-2xl font-bold">{t("Saved")}</h3>
-          <a
-            href={URL.createObjectURL(savedSignature)}
-            download="signature.png"
-          >
-            {t("Download")}
-          </a>
-        </div>
-      )}
     </div>
   );
 };

@@ -31,6 +31,7 @@ export default async function AdminDashboard() {
       tasco_view: true,
       email: true,
       phone: true,
+      image: true,
     },
   });
 

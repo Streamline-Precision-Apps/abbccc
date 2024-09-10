@@ -151,7 +151,7 @@ I finished some more prisma DB research and Created the clock out dashboard page
 
 ## 8/7/2024
 
-- Wrokded on admin view.
+- Workded on admin view.
 
 ## 8/8/2024
 
@@ -167,4 +167,49 @@ I finished some more prisma DB research and Created the clock out dashboard page
 
 - Finished on admin employee view.
 
-## 8/22/2024
+## 8/26/2024
+
+- Started First login setup.
+
+## 8/27/2024
+
+- Worked on first login setup.
+- started tabs on employee view.
+
+## 8/28/2024
+
+- Worked on tabs on employee view.
+- Worked on first login setup.
+
+## 8/29/2024
+
+- finished tabs on employee view.
+
+## 9/2/2024
+
+- worked on components for first login setup.
+
+## 9/3/2024
+
+- Finished components for first login setup.
+- Merge meeting with team.
+
+## 9/4/2024
+
+- finish admin view for editing timecards.
+- Setup route for moving to signup on first login setup.
+- Fix Account settings change on signup.
+- Set account setup to sign you out after account signup is done.
+- Fix password to save password as hashed password.
+- Fixed banners for signup page.
+
+## 9/5/2024
+
+- Made clockout pull signature from the database.
+- changed the functionality of clockout signature component.
+
+## 9/6/2024
+
+- Finished clockout signature component.
+- Finished injury report signature component.
+- Started method for admin to add a timesheet.

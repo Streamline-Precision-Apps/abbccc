@@ -15,7 +15,7 @@ export default async function TeamCards() {
     const id = session?.user.id
     const userCrewId = await prisma.user.findUnique({
         where: {
-            id: id
+            id: userId
         },
         include: {
             crewMembers: true
