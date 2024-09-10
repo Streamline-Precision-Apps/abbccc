@@ -100,7 +100,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({className, variant, size, type, title, t
                     <Images titleImg="/backArrow.svg" titleImgAlt="back arrow" variant={"icon"} size={"backButton"}/>
                 </Buttons>
                 <Titles variant={"default"} size={"h1"}>{title}</Titles>
-                <Images titleImg={titleImg} titleImgAlt={titleImgAlt} variant={"icon"} size={"titlebox"}/>
+                <Images titleImg={titleImg} titleImgAlt={titleImgAlt} variant={"icon"} size={"iconMed"}/>
             </div>
         )
     }
@@ -111,7 +111,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({className, variant, size, type, title, t
             <Buttons href='back' variant={"icon"} size={"backButton"}>
                 <Images titleImg="/backArrow.svg" titleImgAlt={titleImgAlt} variant={"icon"} size={"backButton"}/>
             </Buttons>
-            <Images titleImg={titleImg} titleImgAlt={titleImgAlt} variant={"icon"} size={"titlebox"}/>
+            <Images titleImg={titleImg} titleImgAlt={titleImgAlt} variant={"icon"} size={"iconMed"}/>
             <Titles variant={"default"} size={"titlebox"}>{title}</Titles>
         </div>
     )

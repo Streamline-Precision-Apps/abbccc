@@ -90,9 +90,9 @@ export default function User({
             onClick={handleShowManagerButtons}
           >
             <Contents variant={"widgetButtonRow"} size={"test"}>
-            <Texts size={"widgetMed"}>{t("GoHome")}</Texts>
+              <Texts size={"widgetMed"}>{t("GoHome")}</Texts>
               <Images
-                  titleImg="/home.svg"
+                  titleImg="/new/home.svg"
                   titleImgAlt="Home Icon"
                   variant={"icon"}
                   size={"widgetMed"}
@@ -107,7 +107,7 @@ export default function User({
             <Contents variant={"widgetButtonRow"} size={"test"}>
               <Texts size={"widgetMed"}>{t("LogNew")}</Texts>
               <Images
-                titleImg="/equipment.svg"
+                titleImg="/new/equipment.svg"
                 titleImgAlt="Equipment Icon"
                 variant={"icon"}
                 size={"widgetMed"}
@@ -119,10 +119,10 @@ export default function User({
             size={"widgetMed"}
             href="/dashboard/equipment"
           >
-            <Contents variant={"widgetButtonRow"} size={"test"}>
+            <Contents variant={"widgetButtonRow"} size={null}>
               <Texts size={"widgetMed"}>{t("Current")}</Texts>
               <Images
-                titleImg="/equipment.svg"
+                titleImg="/new/current-equipment.svg"
                 titleImgAlt="Equipment Icon"
                 variant={"icon"}
                 size={"widgetMed"}
@@ -140,7 +140,7 @@ export default function User({
             <Contents variant={"widgetButtonRow"} size={"test"}>
               <Texts size={"widgetMed"}>{t("GoHome")}</Texts>
               <Images
-                titleImg="/home.svg"
+                titleImg="/new/home.svg"
                 titleImgAlt="Home Icon"
                 variant={"icon"}
                 size={"widgetMed"}
@@ -155,7 +155,7 @@ export default function User({
             <Contents variant={"widgetButtonRow"} size={"test"}>
               <Texts size={"widgetMed"}>{t("Break")}</Texts>
               <Images
-                titleImg="/break.svg"
+                titleImg="/new/break.svg"
                 titleImgAlt="Break Icon"
                 variant={"icon"} 
                 size={"widgetMed"}
@@ -188,7 +188,7 @@ export default function User({
             <Contents variant={"widgetButtonRow"} size={"test"}>
               <Texts size={"widgetMed"}>{t("End")}</Texts>
               <Images
-                titleImg="/endDay.svg"
+                titleImg="/new/end-day.svg"
                 titleImgAlt="End Icon"
                 variant={"icon"}
                 size={"widgetMed"}
@@ -205,7 +205,7 @@ export default function User({
           >
             <Contents variant={"widgetButton"} size={"test"}>
               <Images
-                titleImg="/jobsite.svg"
+                titleImg="/new/jobsite.svg"
                 titleImgAlt="Jobsite Icon"
                 variant={"icon"}
                 size={"widgetSm"}
@@ -222,7 +222,7 @@ export default function User({
           >
             <Contents variant={"widgetButton"} size={"test"}>
               <Images
-                titleImg="/equipment.svg"
+                titleImg="/new/equipment.svg"
                 titleImgAlt="Equipment Icon"
                 variant={"icon"}
                 size={"widgetSm"}
@@ -237,7 +237,7 @@ export default function User({
           >
             <Contents variant={"widgetButton"} size={"test"}>
               <Images
-                titleImg="/forms.svg"
+                titleImg="/new/form.svg"
                 titleImgAlt="Forms Icon"
                 variant={"icon"}
                 size={"widgetSm"}
@@ -253,7 +253,7 @@ export default function User({
           >
             <Contents variant={"widgetButton"} size={"test"}>
               <Images
-                titleImg="/clockOut.svg"
+                titleImg="/new/clock-out.svg"
                 titleImgAlt="Clock Out Icon"
                 variant={"icon"}
                 size={"widgetSm"}
@@ -273,7 +273,7 @@ export default function User({
           >
             <Contents variant={"widgetButton"} size={"test"}>
               <Images
-                titleImg="/jobsite.svg"
+                titleImg="/new/jobsite.svg"
                 titleImgAlt="Jobsite Icon"
                 variant={"icon"}
                 size={"widgetSm"}
@@ -290,7 +290,7 @@ export default function User({
           >
             <Contents variant={"widgetButton"} size={"test"}>
               <Images
-                titleImg="/equipment.svg"
+                titleImg="/new/equipment.svg"
                 titleImgAlt="Equipment Icon"
                 variant={"icon"}
                 size={"widgetSm"}
@@ -306,7 +306,7 @@ export default function User({
             <Contents variant={"widgetButtonRow"} size={"test"}>
               <Texts size={"widgetMed"}>{t("Forms")}</Texts>
               <Images
-                titleImg="/forms.svg"
+                titleImg="/new/form.svg"
                 titleImgAlt="Forms Icon"
                 variant={"icon"}
                 size={"widgetMed"}
@@ -322,7 +322,7 @@ export default function User({
             <Contents variant={"widgetButtonRow"} size={"test"}>
             <Texts size={"widgetMed"}>{t("ClockOut")}</Texts>
               <Images
-                titleImg="/clockOut.svg"
+                titleImg="/new/clock-out.svg"
                 titleImgAlt="Clock Out Icon"
                 variant={"icon"}
                 size={"widgetMed"}

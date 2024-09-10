@@ -4,6 +4,7 @@ import { Bases } from '@/components/(reusable)/bases';
 import EmployeeInfo from './employeeInfo';
 import prisma from "@/lib/prisma";
 import { auth } from '@/auth';
+import { redirect } from 'next/navigation';
 
 type Employee = {
     id: string;
@@ -34,11 +35,7 @@ export default async function EmployeeProfile() {
     const userId = session?.user.id;
 
     if (!userId) {
-        return (
-            <Bases >
-                <div>Error: User not found</div>
-            </Bases>
-        );
+        redirect('/signin');
     }
 
     const employee = await prisma.user.findUnique({
@@ -56,11 +53,7 @@ export default async function EmployeeProfile() {
     });
 
     if (!employee) {
-        return (
-            <Bases >
-                <div>Error: Employee not found</div>
-            </Bases>
-        );
+        redirect('/signin');
     }
 
     const contacts = await prisma.contact.findUnique({
@@ -76,11 +69,7 @@ export default async function EmployeeProfile() {
     });
 
     if (!contacts) {
-        return (
-            <Bases>
-                <div>Error: Contacts not found</div>
-            </Bases>
-        );
+        redirect('/signin');
     }
 
     const training = await prisma.userTrainings.findUnique({

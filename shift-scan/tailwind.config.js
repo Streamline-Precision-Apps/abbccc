@@ -17,6 +17,7 @@ module.exports = {
       'app-green': '#74E957',
       'app-red' : '#FC3939',
       'app-orange': '#FC8F2B',
+      'app-pink': '#FFC48E',
     },
   },
   },

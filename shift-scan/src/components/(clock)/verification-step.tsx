@@ -15,6 +15,13 @@ import { Sections } from '../(reusable)/sections';
 import { Bases } from '../(reusable)/bases';
 import { exit } from 'process';
 import { Buttons } from '../(reusable)/buttons';
+import { Contents } from '../(reusable)/contents';
+import { verify } from 'crypto';
+import { Labels } from '../(reusable)/labels';
+import { Inputs } from '../(reusable)/inputs';
+import { Forms } from '../(reusable)/forms';
+import { Images } from '../(reusable)/images';
+import { Texts } from '../(reusable)/texts';
 
 
 const VerificationStep: React.FC<{ id: string | undefined; handleNextStep: () => void, type: string, option?: string }> = ({ id, type, handleNextStep, option}) => {
@@ -57,6 +64,7 @@ const VerificationStep: React.FC<{ id: string | undefined; handleNextStep: () =>
         formData.append('jobsite_id', scanResult?.data || '');
         formData.append('costcode', savedCostCode?.toString() || '');
         formData.append('start_time', new Date().toISOString());
+        formData.append('end_time', "");
 
         const response = await CreateTimeSheet(formData);
         const result = { id: (response.id).toString() };
@@ -86,36 +94,54 @@ const VerificationStep: React.FC<{ id: string | undefined; handleNextStep: () =>
   }
 };
   return (
-    <div className="flex flex-col items-center w-[500px] h-[800px] m-auto">
-      <TitleBoxes title={t('VerifyJobSite')} titleImg="/clockin.svg" titleImgAlt="Verify" variant="row" size="default" type="row" />
-      <form onSubmit={handleSubmit} >
-        <TitleBoxes title={t('Date-label')} titleImg="/clockin.svg" titleImgAlt="Verify" variant="default" size="default" type='titleOnly' >
-          <Sections size={"dynamic"}>
-          {date.toLocaleDateString('en-US', { year: 'numeric', month: 'numeric', day: 'numeric' })}
-          </Sections>
-        </TitleBoxes>
-        <TitleBoxes title={t('JobSite-label')} titleImg="/clockin.svg" titleImgAlt="Verify" variant="default" size="default" type='titleOnly' >
-          <Sections size={"dynamic"}>
-          {scanResult?.data}
-          </Sections>
-        </TitleBoxes>
-        <TitleBoxes title={t('CostCode-label')} titleImg="/clockin.svg" titleImgAlt="Verify" variant="default" size="default" type='titleOnly' >
-          <Sections size={"dynamic"}>
-          {savedCostCode}
-          </Sections>
-        </TitleBoxes>
-        <Buttons type="submit" className="bg-app-green mx-auto w-full h-16 py-4 px-5 rounded-lg text-black font-bold mt-5">
-        <Clock time={date.getTime()} />
+    <>
+      <TitleBoxes title={t('VerifyJobSite')} titleImg="/new/clock-in.svg" titleImgAlt="Verify" variant="row" size="default" type="row" />
+      <Forms size={"fit"}  onSubmit={handleSubmit}  >
+        <Bases variant={"pinkCard"} size={"pinkCard"} className='relative'>
+        <Buttons variant={"icon"} size={null} type="submit" >
+        <Images titleImg={'/new/downArrow.svg'} titleImgAlt={'downArrow'} variant={'submitCard'} size={"downArrow"}/>
         </Buttons>
+        <Contents variant="default" size={"listTitle"}>
+        <Labels variant="default" size={"default"} >
+        <Texts size={"p4"} variant="left">
+          {t('Date-label')}
+        </Texts>
+        <Inputs state="disabled" variant={"white"} data={date.toLocaleDateString('en-US', { year: 'numeric', month: 'numeric', day: 'numeric' })}/>
+        </Labels>
 
-        <input type="hidden" name="submit_date" value={new Date().toISOString()} />
-        <input type="hidden" name="user_id" value={savedUserData?.id || ''} />
-        <input type="hidden" name="date" value={new Date().toISOString()} />
-        <input type="hidden" name="jobsite_id" value={scanResult?.data || ''} />
-        <input type="hidden" name="costcode" value={savedCostCode?.toString() || ''} />
-        <input type="hidden" name="start_time" value={new Date().toISOString()} />
-      </form>
-    </div>
+        <Labels variant="default" size={"default"} >
+          <Texts size={"p4"} variant="left">
+            {t('JobSite-label')}
+            </Texts>
+        <Inputs state="disabled" name="jobsite_id" variant={"white"} data={scanResult?.data || ''}/>
+        </Labels>
+
+        <Labels variant="top" size={"default"} >
+        <Texts size={"p4"} variant="left">
+          {t('CostCode-label')}
+        </Texts>
+        <Inputs state="disabled" name="costcode" variant={"white"} data={savedCostCode?.toString() || ''}/>
+        </Labels>
+        </Contents>
+        </Bases>
+        <Bases variant={null} size={"box"} className='relative'>
+          <Bases variant={"blueboxTop"} size={"blueboxTop"} >
+          </Bases>
+          <Bases variant={"blueboxTop2"} size={"blueboxTop"} >
+          </Bases>
+              <Bases variant={"blueBox"} size={"blueBox"} >
+              <Buttons type="submit" className="bg-app-green mx-auto flex justify-center w-full h-full py-4 px-5 rounded-lg text-black font-bold mt-5">
+              <Clock time={date.getTime()} />
+              </Buttons>
+              </Bases>
+        </Bases>
+        <Inputs type="hidden" name="submit_date" value={new Date().toISOString()} />
+        <Inputs type="hidden" name="user_id" value={savedUserData?.id || ''} />
+        <Inputs type="hidden" name="date" value={new Date().toISOString()} />
+        <Inputs type="hidden" name="start_time" value={new Date().toISOString()} />
+      </Forms>
+
+    </>
   );
 };
 

@@ -66,14 +66,17 @@ export default function QrJobsiteContent({ jobCodes }: Props) {
       <Sections size={"titleBox"}>
         <TitleBoxes
           title={q("Title")}
-          titleImg="/qrCode.svg"
+          titleImg="/new/qr.svg"
           titleImgAlt="Team"
           variant={"default"}
           size={"default"}
         />
       </Sections>
       <Sections size={"half"}>
+        <Contents variant={"center"} size={null}>
+        <Images titleImg="/new/jobsite.svg" titleImgAlt="jobsite" variant={"icon"} size={"iconMed"}/>
         <Titles variant={"default"} size={"default"}>{t("Jobsite")}</Titles>
+        </Contents>
         <Selects value={selectedJobSite} onChange={handleOptionSelect}>
         <Options variant={"default"} value="">
         Select One
