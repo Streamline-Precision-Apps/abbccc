@@ -10,6 +10,7 @@ import { Titles } from './titles';
 import { Contents } from "./contents";
 import { Bases } from "./bases";
 import { Sections } from "./sections";
+import {signOut} from "next-auth/react"
 
 const ModalVariants = cva(
   "flex flex-col", //this applies to all variants
@@ -68,7 +69,7 @@ const Modals: FC<ModalProps> = ({className, variant, size, type, isOpen, step, h
             <div className={cn(ModalVariants({variant, size, className}))} {...props}>
               <div className="modal-content">{props.children}</div>
               <div className=" flex flex-row gap-10">
-                <Buttons onClick={handleClose} className="close-btn" variant={"green"} size={"default"}>
+                <Buttons onClick={() => {handleClose(); signOut()}} className="close-btn" variant={"green"} size={"default"}>
                     <Titles variant={"default"} size={"h3"}>Yes</Titles>
                 </Buttons>
                 <Buttons onClick={handleClose} className="close-btn" variant={"red"} size={"default"}>

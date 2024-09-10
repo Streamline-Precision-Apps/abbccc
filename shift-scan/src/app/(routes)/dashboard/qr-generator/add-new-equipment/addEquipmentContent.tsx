@@ -27,7 +27,7 @@ export const AddEquipmentContent = () => {
   };
 
   return (
-    <Bases>
+    <>
       <Sections size={"titleBox"}>
         <TitleBoxes
           title={t("Title")}
@@ -42,13 +42,13 @@ export const AddEquipmentContent = () => {
       <Texts>{bannerText}</Texts>
     </Contents>
     }
-      <Sections size={"dynamic"}>
+      <Sections size={null}>
         <Titles variant={"default"} size={"h1"}>{t("Picture")}</Titles>
         <EquipmentPicture setBase64String={setBase64String} />
       </Sections>
-      <Sections size={"dynamic"}>
+      <Sections size={null}>
         <AddEquipmentForm base64String={base64String} setBanner={setBanner} setBannerText={setBannerText} handler={()=> handleBanner} />
       </Sections>
-    </Bases>
+    </>
   );
 };

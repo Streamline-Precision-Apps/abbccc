@@ -12,6 +12,7 @@ const FormVariants = cva(
       },
       size: {
         default: "w-full pb-2 px-2",
+        fit: "w-full h-fit pb-2 px-2",
       }
     },
     defaultVariants: {

@@ -78,6 +78,7 @@ model User {
   formSubmissions FormSubmissions[]
   // The next line is temporary:
   // injuryForms     InjuryForm[]
+  timeoffRequests timeoffRequestForm[]
 
   @@map("users")
 }
@@ -424,4 +425,20 @@ model InjuryForm {
   contactedSupervisor Boolean @default(false)
   incidentDescription String
   signedForm          Boolean @default(false)
+}
+
+model timeoffRequestForm {
+  id                 Int      @id @default(autoincrement())
+  date               DateTime
+  requestedStartDate DateTime
+  requestedEndDate   DateTime
+  requestType        String //make enum later
+  comments           String
+  mangerComments     String?
+  approved           Boolean  @default(false)
+  employee_id        String
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  employee User @relation(fields: [employee_id], references: [id])
 }

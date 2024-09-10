@@ -14,6 +14,7 @@ const config: Config = {
         'app-green': '#74E957',
         'app-red' : '#FC3939',
         'app-orange': '#FC8F2B',
+        'app-pink': '#FFC48E',
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

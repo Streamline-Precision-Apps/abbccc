@@ -28,7 +28,7 @@ interface FooterProps extends HTMLAttributes<HTMLElement>, VariantProps<typeof F
 const Footers: FC<FooterProps> = ({className, variant, size, ...props}) => {
     return (
       <div className={cn(FooterVariants({variant, size, className}))} {...props}>
-        <Texts variant={"default"} size={"sm"}>{(Array.isArray(props.children) ? props.children : [props.children])}</Texts>
+        <Texts variant={"white"} size={"sm"}>{(Array.isArray(props.children) ? props.children : [props.children])}</Texts>
       </div>
     )
 }

@@ -154,7 +154,7 @@ return (
             <Titles variant={"default"} size={"h4"}>
             {t("Confirmation-eq-message-2")}
             </Titles>
-            <RedirectAfterDelay delay={200} to="/dashboard" /> {/* In Order for bug to be overcomed, the refresh must occur otherwise the unmounted qr code wont work*
+            <RedirectAfterDelay delay={5000} to="/dashboard" /> {/* In Order for bug to be overcomed, the refresh must occur otherwise the unmounted qr code wont work*
                 best solution for now is this becuase at least it does it behind the modal*/}
         </>
         )}
@@ -229,7 +229,7 @@ return (
                 second: "numeric",
             })}
             </Titles>
-        <RedirectAfterDelay delay={200} to="/dashboard" />
+        <RedirectAfterDelay delay={5000} to="/dashboard" />
         </div>
     )}
     </>

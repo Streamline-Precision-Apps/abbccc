@@ -18,12 +18,13 @@ import { Bases } from "@/components/(reusable)/bases";
 import { Header } from "@/components/header";
 import { Headers } from "@/components/(reusable)/headers";
 import {useDBJobsite,useDBCostcode,useDBEquipment} from "@/app/context/dbCodeContext";
-import { useRecentDBJobsite, useRecentDBCostcode, useRecentDBEquipment,} from "@/app/context/dbRecentCodesContext";
+import { useRecentDBJobsite, useRecentDBCostcode, useRecentDBEquipment} from "@/app/context/dbRecentCodesContext";
 import { useSavedPayPeriodTimeSheet } from "../context/SavedPayPeriodTimeSheets";
 import { clockProcessProps, TimeSheets,} from "@/lib/content"; // used for the interface and the props
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { User } from "@/lib/types";
+import Capitalize from "@/utils/captitalize";
 
 export default function Content({
   session,
@@ -36,15 +37,13 @@ export default function Content({
   recentEquipment,
   payPeriodSheets,
 }: clockProcessProps) {
-  // TODO: only have 1 use translation function
+
   const t = useTranslations("Home");
-  const f = useTranslations("Footer");
   const { setPayPeriodHours } = useSavedPayPeriodHours();
   const [toggle, setToggle] = useState(true);
   const { setSavedUserData } = useSavedUserData();
   const router = useRouter();
   const authStep = getAuthStep();
-  const [hourbtn, setHourbtn] = useState(true);
   const date = new Date().toLocaleDateString(locale, {
     year: "numeric",
     month: "short",
@@ -61,7 +60,7 @@ export default function Content({
 
   // saves user instance of jobsite data until the user switches to another job
   const { jobsiteResults, setJobsiteResults } = useDBJobsite();
-  const {recentlyUsedJobCodes, setRecentlyUsedJobCodes,addRecentlyUsedJobCode,
+  const {recentlyUsedJobCodes, setRecentlyUsedJobCodes,
   } = useRecentDBJobsite();
 
   // saves users cost code data until the user switches to another cost code
@@ -69,7 +68,6 @@ export default function Content({
   const {
     recentlyUsedCostCodes,
     setRecentlyUsedCostCodes,
-    addRecentlyUsedCostCode,
   } = useRecentDBCostcode();
 
   // saves users equipment data until the user switches to another equipment
@@ -77,7 +75,6 @@ export default function Content({
   const {
     recentlyUsedEquipment,
     setRecentlyUsedEquipment,
-    addRecentlyUsedEquipment,
   } = useRecentDBEquipment();
 
 // runs the timesheet function and saves it to the context
@@ -88,7 +85,7 @@ export default function Content({
     setPayPeriodTimeSheets(payPeriodSheets);
   }, [payPeriodSheets, setPayPeriodTimeSheets]);
 
-  // if they loose their saved data it will reset them to new data
+  // if they loose their saved data it will reset them using a useEffect and useContext
   useEffect(() => {
     if (jobsiteResults.length === 0) {
       setJobsiteResults(jobCodes);
@@ -155,72 +152,23 @@ export default function Content({
     }
   }, [session]);
 
-  const handler = () => {
-    setToggle(!toggle);
-  };
-
+  // sets the total pay period hours for the home screen display
   const setHoursContext = () => {
     setPayPeriodHours(totalPayPeriodHours.toFixed(2));
   };
 
-  function capitalize(str: any) {
-    if (typeof str !== "string") {
-      return "";
-    }
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  }
+  // toogles fromt the home display to hours section 
+  const handleToggle = () => {
+    setToggle(!toggle);
+  };
 
-  if (authStep === "break") {
+  
     return (
       <>
         <Bases variant={"default"}>
-            <Header />
-            <Contents>
-            <Sections size={"default"}>
-            <Contents variant={"header"} size={"test"}>
-                <Headers variant={"relative"} size={"default"}></Headers>
-              </Contents>
-                <Banners variant={"default"}>
-                  <Titles variant={"default"} size={"h1"}>
-                    {t("Banner")}
-                  </Titles>
-                  <Texts variant={"default"} size={"p1"}>
-                    {t("Date", { date: capitalize(date) })}
-                  </Texts>
-                </Banners>
-                <Contents variant={"name"} size={null}>
-                <Texts variant={"name"} size={"p1"}>
-                  {t("Name", {
-                    firstName: capitalize(user.firstName),
-                    lastName: capitalize(user.lastName),
-                  })}
-                </Texts>
-              </Contents>
-                {/* An if statement to display the widgets or the hours */}
-                  {toggle ? <Grids variant={"widgets"} size={"default"}>
-                  <DisplayBreakTime setToggle={handler} display={toggle} />
-                  <WidgetSection
-                    user={user}
-                    display={toggle}
-                    locale={locale}
-                    option={"break"}
-                  />
-                </Grids> : 
-                <Hours setToggle={handler} display={toggle} />
-              }
-            </Sections>
-          </Contents>
-        </Bases>
-      </>
-    );
-  } else {
-    return (
-      <>
-        <Bases variant={"default"}>
-          <Header />
-          <Contents>
+          <Contents variant={"default"} size={"default"}>
             <Sections size={"homepage"}>
-              <Contents variant={"header"} size={"test"}>
+              <Contents variant={"header"} size={null}>
                 <Headers variant={"relative"} size={"default"}></Headers>
               </Contents>
               <Banners variant={"default"}>
@@ -228,28 +176,54 @@ export default function Content({
                   {t("Banner")}
                 </Titles>
                 <Texts variant={"default"} size={"p1"}>
-                  {t("Date", { date: capitalize(date) })}
+                  {t("Date", { date: Capitalize(date) })}
                 </Texts>
               </Banners>
-              <Contents variant={"name"} size={"test"}>
-                <Texts variant={"name"} size={"p1"}>
+              {/* {toggle ? */}
+              <Contents variant={"name"} size={"nameContainer"}>
+                <Texts variant={"name"} size={"p0"}>
                   {t("Name", {
-                    firstName: capitalize(user.firstName),
-                    lastName: capitalize(user.lastName),
+                    firstName: Capitalize(user.firstName),
+                    lastName: Capitalize(user.lastName),
                   })}
                 </Texts>
               </Contents>
-              {toggle ? <Grids variant={"widgets"} size={"sm"}>
-                <Hours setToggle={handler} display={toggle} />
-                <WidgetSection user={user} display={toggle} locale={locale} />
-              </Grids> : 
-              <Hours setToggle={handler} display={toggle} />
-              }
-              <Footers>{f("Copyright")}</Footers>
-            </Sections>
-          </Contents>
-        </Bases>
-      </>
-    );
-  }
+              {/* : null} */}
+{/* A ternary statement to display the break time or hours
+      Truth -> display break time                         */}
+{(authStep === "break") ? 
+  <>
+  {/* A ternary statement to display the break widget or view hours */}
+    {toggle ? <Grids variant={"widgets"} size={"default"}>
+      <DisplayBreakTime setToggle={handleToggle} display={toggle} />
+      <WidgetSection
+        user={user}
+        display={toggle}
+        locale={locale}
+        option={"break"}
+      />
+      </Grids> : 
+        <Hours setToggle={handleToggle} display={toggle} />
+      }
+  </>
+:
+/* A ternary statement to display the break time or hours
+False -> display hours                    */
+  <>
+    {/* A ternary statement to display the total clocked hours widget or view hours */}
+      {toggle ? 
+        <Grids variant={"widgets"} size={"sm"}>
+          <Hours setToggle={handleToggle} display={toggle} />
+          <WidgetSection user={user} display={toggle} locale={locale} />
+        </Grids> 
+        : 
+        <Hours setToggle={handleToggle} display={toggle} />
+      }
+  </>
+          }
+    </Sections>
+  </Contents>
+  </Bases>
+</>
+);
 }

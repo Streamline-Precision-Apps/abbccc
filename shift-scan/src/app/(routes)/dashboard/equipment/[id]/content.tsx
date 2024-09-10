@@ -23,7 +23,7 @@ type Props = {
   filled: boolean | undefined;
   fuelUsed: string | undefined;
   savedDuration: string | undefined;
-  equipment_notes?: string | null | undefined;
+  equipment_notes: string | undefined;
   current?: number;
   total?: number;
   usersLogs: any;
@@ -53,16 +53,20 @@ export default function CombinedForm({
   const t = useTranslations("EquipmentContent");
 
   useEffect(() => {
+    console.log('Completed:', completed);
+    console.log('Users Logs:', usersLogs);
+  
     if (completed) {
       setIsEditMode(false);
     }
-
-    // Populate state from usersLogs if needed
+  
+    // Check if usersLogs has valid data
     if (usersLogs && usersLogs.length > 0) {
-      const log = usersLogs[0]; // Assuming you want to use the first log entry
+      const log = usersLogs[0]; // Ensure that usersLogs contains the expected data
       setRefueled(log.refueled);
       setFuel(log.fuel_used ?? 0);
       setNotes(log.equipment_notes || "");
+      console.log('Equipment Notes from Log:', log.equipment_notes); // Debug log to check the notes value
     }
   }, [completed, usersLogs]);
 
@@ -200,7 +204,7 @@ export default function CombinedForm({
           {t("Notes")}
           <TextAreas
             name="equipment_notes"
-            value={notes || ""}
+            value={notes}
             maxLength={40}
             onChange={handleNotesChange}
             readOnly={!isEditMode && completed}

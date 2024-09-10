@@ -4,10 +4,12 @@ import React , { useState } from 'react';
 import { motion, MotionConfig } from "framer-motion";
 import { Buttons } from '@/components/(reusable)/buttons';
 import { Images } from '@/components/(reusable)/images';
-
+import { useSession } from "next-auth/react"
 
 export function AnimatedHamburgerButton(){
     const [active, setActive] = useState(false);
+    const { data: session } = useSession();
+    const role = session?.user.permission;
     return (
         <div className=' flex flex-row-reverse'>
         <MotionConfig transition={{duration: .7}}>
@@ -112,7 +114,7 @@ export function AnimatedHamburgerButton(){
             }}
             >
             <Buttons href="/hamburger/settings" variant={"icon"} size={"test"}>
-              <Images titleImg={"/Settings.svg"} titleImgAlt={"settings"} variant={"icon"} size={"default"} />
+                <Images titleImg={"/new/settings-sm.svg"} titleImgAlt={"settings"} variant={"icon"} size={"icon"} />
             </Buttons>
             </motion.div>
             <motion.div
@@ -131,7 +133,7 @@ export function AnimatedHamburgerButton(){
             }}
             >
             <Buttons href="/hamburger/inbox" variant={"icon"} size={"test"}>
-              <Images titleImg={"/Inbox.svg"} titleImgAlt={"inbox"} variant={"icon"} size={"default"} />
+                <Images titleImg={"/new/inbox-sm.svg"} titleImgAlt={"inbox"} variant={"icon"} size={"icon"} />
             </Buttons>
             </motion.div>
             <motion.div
@@ -150,7 +152,7 @@ export function AnimatedHamburgerButton(){
             }}
             >
             <Buttons href="/hamburger/profile" variant={"icon"} size={"test"}>
-              <Images titleImg={"/profile.svg"} titleImgAlt={"profile"} variant={"icon"} size={"default"} />
+                <Images titleImg={"/new/profile-sm.svg"} titleImgAlt={"profile"} variant={"icon"} size={"icon"} />
             </Buttons>
             </motion.div>
             <motion.div
@@ -160,7 +162,7 @@ export function AnimatedHamburgerButton(){
             initial={false} 
             animate={active ? "open" : "closed"}
             variants={{
-                     open: {
+                    open: {
                     opacity: [0, 0, .25, .5, 1],
                 },
                 closed: {
@@ -168,9 +170,12 @@ export function AnimatedHamburgerButton(){
                 },
             }}
             >
+                {/* if role is admin or superAdmin, show admin page */}
+            { (role === "ADMIN" || role === "SUPERADMIN") &&
             <Buttons href="/admin" variant={"icon"} size={"test"}>
-              <Images titleImg={"/forms.svg"} titleImgAlt={"Admin Page"} variant={"icon"} size={"default"} />
+                <Images titleImg={"/new/admin-sm.svg"} titleImgAlt={"Admin Page"} variant={"icon"} size={"icon"} />
             </Buttons>
+            }
             </motion.div>
         </motion.div>
         </MotionConfig>

@@ -4,7 +4,7 @@ import { Sections } from "@/components/(reusable)/sections";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useTranslations } from "next-intl";
 import Base64Encoder from "@/components/(inputs)/Base64Encoder";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Titles } from "@/components/(reusable)/titles";
 import { Contents } from "@/components/(reusable)/contents";
 import {Forms} from "@/components/(reusable)/forms";
@@ -83,12 +83,12 @@ export default function EmployeeInfo({ employee, contacts, training }: Props ) {
             type="tel"
             defaultValue={contacts?.phone_number ?? ''}
           />
-        <Labels>{t("SafetyTraining")}</Labels>
-        <Contents size={null} variant={"safetyTrainingBar"}>
+        {/* <Labels>{t("SafetyTraining")}</Labels> */}
+        {/* <Contents size={null} variant={"safetyTrainingBar"}>
           <Contents size={null} style={{ width: `${completionPercentage}%`}} className={Number(completionPercentage) === 100 ? "bg-app-green rounded-r-lg border-2 border-app-green" : "bg-app-orange rounded-r-lg border-2 border-app-orange"}>
             <Texts size={"p3"}>{completionPercentage}%</Texts>
           </Contents>
-        </Contents>
+        </Contents> */}
       </Forms>
         <SignOutModal />
       </Sections>
