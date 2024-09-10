@@ -8,6 +8,7 @@ import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Texts } from "@/components/(reusable)/texts";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Forms } from "@/components/(reusable)/forms";
+import { Contents } from "@/components/(reusable)/contents";
 
 interface ContentProps {
     total: number;
@@ -21,6 +22,7 @@ export default function Content({ user_Id, logs, total, green }: ContentProps) {
     const t = useTranslations("EquipmentContent");
     return (
     <Bases>
+    <Contents>
     <Sections size={"titleBox"}>
         <TitleBoxes title={t("Title")} titleImg="/equipment.svg" titleImgAlt="Current" variant={"default"} size={"default"} />
     </Sections>
@@ -39,6 +41,7 @@ export default function Content({ user_Id, logs, total, green }: ContentProps) {
             </Buttons>
         ))}
     </Sections>
+    </Contents>
     </Bases>
     );
 }

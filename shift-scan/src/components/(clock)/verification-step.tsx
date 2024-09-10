@@ -64,6 +64,7 @@ const VerificationStep: React.FC<{ id: string | undefined; handleNextStep: () =>
         formData.append('jobsite_id', scanResult?.data || '');
         formData.append('costcode', savedCostCode?.toString() || '');
         formData.append('start_time', new Date().toISOString());
+        formData.append('end_time', "");
 
         const response = await CreateTimeSheet(formData);
         const result = { id: (response.id).toString() };
@@ -95,7 +96,7 @@ const VerificationStep: React.FC<{ id: string | undefined; handleNextStep: () =>
   return (
     <>
       <TitleBoxes title={t('VerifyJobSite')} titleImg="/new/clock-in.svg" titleImgAlt="Verify" variant="row" size="default" type="row" />
-      <Forms size={"fit"} onSubmit={handleSubmit}  >
+      <Forms size={"fit"}  onSubmit={handleSubmit}  >
         <Bases variant={"pinkCard"} size={"pinkCard"} className='relative'>
         <Buttons variant={"icon"} size={null} type="submit" >
         <Images titleImg={'/new/downArrow.svg'} titleImgAlt={'downArrow'} variant={'submitCard'} size={"downArrow"}/>
