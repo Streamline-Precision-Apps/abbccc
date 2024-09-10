@@ -1,7 +1,7 @@
 "use client";
 import { useTranslations } from "next-intl";
 import ViewHoursComponent from "@/app/(content)/hoursControl";
-import { useSavedBreakTime } from "@/app/context/SavedBreakTimeContext";
+import { useSavedBreakTime } from "@/app/context/BreakTimeContext";
 import { useEffect } from "react";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Texts } from "@/components/(reusable)/texts";

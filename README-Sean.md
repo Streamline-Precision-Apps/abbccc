@@ -213,3 +213,14 @@ I finished some more prisma DB research and Created the clock out dashboard page
 - Finished clockout signature component.
 - Finished injury report signature component.
 - Started method for admin to add a timesheet.
+
+## 9/9/2024
+
+- Worked on team manager section for admin.
+
+## 9/10/2024
+
+- Worked on team manager section for admin.
+- Worked on add timesheet for admin.
+- Code review with team.
+- Merge meeting with team.

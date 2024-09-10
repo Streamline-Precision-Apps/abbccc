@@ -4,8 +4,7 @@ import { useTranslations } from "next-intl";
 import Hours from "@/app/(content)/hours";
 import WidgetSection from "@/components/widgetSection";
 import { useEffect, useState, useMemo } from "react";
-import { useSavedPayPeriodHours } from "../context/SavedPayPeriodHours";
-import { useSavedUserData } from "../context/UserContext";
+import { usePayPeriodHours } from "../context/PayPeriodHoursContext";
 import { getAuthStep, setAuthStep } from "../api/auth";
 import DisplayBreakTime from "./displayBreakTime";
 import { useRouter } from "next/navigation";
@@ -17,10 +16,18 @@ import { Sections } from "@/components/(reusable)/sections";
 import { Bases } from "@/components/(reusable)/bases";
 import { Header } from "@/components/header";
 import { Headers } from "@/components/(reusable)/headers";
-import {useDBJobsite,useDBCostcode,useDBEquipment} from "@/app/context/dbCodeContext";
-import { useRecentDBJobsite, useRecentDBCostcode, useRecentDBEquipment} from "@/app/context/dbRecentCodesContext";
-import { useSavedPayPeriodTimeSheet } from "../context/SavedPayPeriodTimeSheets";
-import { clockProcessProps, TimeSheets,} from "@/lib/content"; // used for the interface and the props
+import {
+  useDBJobsite,
+  useDBCostcode,
+  useDBEquipment,
+} from "@/app/context/dbCodeContext";
+import {
+  useRecentDBJobsite,
+  useRecentDBCostcode,
+  useRecentDBEquipment,
+} from "@/app/context/dbRecentCodesContext";
+import { usePayPeriodTimeSheet } from "../context/PayPeriodTimeSheetsContext";
+import { clockProcessProps, TimeSheets } from "@/lib/content"; // used for the interface and the props
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { User } from "@/lib/types";
@@ -37,11 +44,9 @@ export default function Content({
   recentEquipment,
   payPeriodSheets,
 }: clockProcessProps) {
-
   const t = useTranslations("Home");
-  const { setPayPeriodHours } = useSavedPayPeriodHours();
+  const { setPayPeriodHours } = usePayPeriodHours();
   const [toggle, setToggle] = useState(true);
-  const { setSavedUserData } = useSavedUserData();
   const router = useRouter();
   const authStep = getAuthStep();
   const date = new Date().toLocaleDateString(locale, {
@@ -60,27 +65,23 @@ export default function Content({
 
   // saves user instance of jobsite data until the user switches to another job
   const { jobsiteResults, setJobsiteResults } = useDBJobsite();
-  const {recentlyUsedJobCodes, setRecentlyUsedJobCodes,
-  } = useRecentDBJobsite();
+  const { recentlyUsedJobCodes, setRecentlyUsedJobCodes } =
+    useRecentDBJobsite();
 
   // saves users cost code data until the user switches to another cost code
   const { costcodeResults, setCostcodeResults } = useDBCostcode();
-  const {
-    recentlyUsedCostCodes,
-    setRecentlyUsedCostCodes,
-  } = useRecentDBCostcode();
+  const { recentlyUsedCostCodes, setRecentlyUsedCostCodes } =
+    useRecentDBCostcode();
 
   // saves users equipment data until the user switches to another equipment
   const { equipmentResults, setEquipmentResults } = useDBEquipment();
-  const {
-    recentlyUsedEquipment,
-    setRecentlyUsedEquipment,
-  } = useRecentDBEquipment();
+  const { recentlyUsedEquipment, setRecentlyUsedEquipment } =
+    useRecentDBEquipment();
 
-// runs the timesheet function and saves it to the context
-  const { setPayPeriodTimeSheets } = useSavedPayPeriodTimeSheet();
+  // runs the timesheet function and saves it to the context
+  const { setPayPeriodTimeSheets } = usePayPeriodTimeSheet();
 
-// sets the saved pay period time sheets to display on the pay period page
+  // sets the saved pay period time sheets to display on the pay period page
   useEffect(() => {
     setPayPeriodTimeSheets(payPeriodSheets);
   }, [payPeriodSheets, setPayPeriodTimeSheets]);
@@ -106,25 +107,36 @@ export default function Content({
       setRecentlyUsedEquipment(recentEquipment);
     }
   }, [
-    session, jobCodes, CostCodes, equipment, recentJobSites, recentCostCodes, recentEquipment,
-    jobsiteResults, costcodeResults, equipmentResults, recentlyUsedJobCodes, recentlyUsedCostCodes, recentlyUsedEquipment,
+    session,
+    jobCodes,
+    CostCodes,
+    equipment,
+    recentJobSites,
+    recentCostCodes,
+    recentEquipment,
+    jobsiteResults,
+    costcodeResults,
+    equipmentResults,
+    recentlyUsedJobCodes,
+    recentlyUsedCostCodes,
+    recentlyUsedEquipment,
   ]);
 
-// calculates the total pay period hours into one number of hours
+  // calculates the total pay period hours into one number of hours
   const totalPayPeriodHours = useMemo(() => {
     return payPeriodSheets
       .filter((sheet): sheet is TimeSheets => sheet.duration !== null)
       .reduce((total, sheet) => total + (sheet.duration ?? 0), 0);
   }, [payPeriodSheets]);
 
-// redirects to dashboard if authStep is success
+  // redirects to dashboard if authStep is success
   useEffect(() => {
     if (authStep === "success") {
       router.push("/dashboard");
     }
   }, [authStep, router]);
 
-// removes local storage if authStep is removeLocalStorage
+  // removes local storage if authStep is removeLocalStorage
   useEffect(() => {
     if (authStep === "removeLocalStorage") {
       localStorage.clear();
@@ -132,16 +144,13 @@ export default function Content({
     }
   }, [authStep]);
 
-// sets the saved user data
+  // sets the saved user data
   useEffect(() => {
     if (session && session.user) {
       if (session.user.accountSetup === false) {
         router.push("/signin/signup");
       }
       console.log("Session user:", session.user);
-      setSavedUserData({
-        id: session.user.id,
-      });
       setData({
         id: session.user.id,
         firstName: session.user.firstName,
@@ -157,73 +166,81 @@ export default function Content({
     setPayPeriodHours(totalPayPeriodHours.toFixed(2));
   };
 
-  // toogles fromt the home display to hours section 
+  // toogles fromt the home display to hours section
   const handleToggle = () => {
     setToggle(!toggle);
   };
 
-  
-    return (
-      <>
-        <Bases variant={"default"}>
-          <Contents variant={"default"} size={"default"}>
-            <Sections size={"homepage"}>
-              <Contents variant={"header"} size={null}>
-                <Headers variant={"relative"} size={"default"}></Headers>
-              </Contents>
-              <Banners variant={"default"}>
-                <Titles variant={"default"} size={"h1"}>
-                  {t("Banner")}
-                </Titles>
-                <Texts variant={"default"} size={"p1"}>
-                  {t("Date", { date: Capitalize(date) })}
-                </Texts>
-              </Banners>
-              {/* {toggle ? */}
-              <Contents variant={"name"} size={"nameContainer"}>
-                <Texts variant={"name"} size={"p0"}>
-                  {t("Name", {
-                    firstName: Capitalize(user.firstName),
-                    lastName: Capitalize(user.lastName),
-                  })}
-                </Texts>
-              </Contents>
-              {/* : null} */}
-{/* A ternary statement to display the break time or hours
+  return (
+    <>
+      <Bases variant={"default"}>
+        <Contents variant={"default"} size={"default"}>
+          <Sections size={"homepage"}>
+            <Contents variant={"header"} size={null}>
+              <Headers variant={"relative"} size={"default"}></Headers>
+            </Contents>
+            <Banners variant={"default"}>
+              <Titles variant={"default"} size={"h1"}>
+                {t("Banner")}
+              </Titles>
+              <Texts variant={"default"} size={"p1"}>
+                {t("Date", { date: Capitalize(date) })}
+              </Texts>
+            </Banners>
+            {/* {toggle ? */}
+            <Contents variant={"name"} size={"nameContainer"}>
+              <Texts variant={"name"} size={"p0"}>
+                {t("Name", {
+                  firstName: Capitalize(user.firstName),
+                  lastName: Capitalize(user.lastName),
+                })}
+              </Texts>
+            </Contents>
+            {/* : null} */}
+            {/* A ternary statement to display the break time or hours
       Truth -> display break time                         */}
-{(authStep === "break") ? 
-  <>
-  {/* A ternary statement to display the break widget or view hours */}
-    {toggle ? <Grids variant={"widgets"} size={"default"}>
-      <DisplayBreakTime setToggle={handleToggle} display={toggle} />
-      <WidgetSection
-        user={user}
-        display={toggle}
-        locale={locale}
-        option={"break"}
-      />
-      </Grids> : 
-        <Hours setToggle={handleToggle} display={toggle} />
-      }
-  </>
-:
-/* A ternary statement to display the break time or hours
+            {authStep === "break" ? (
+              <>
+                {/* A ternary statement to display the break widget or view hours */}
+                {toggle ? (
+                  <Grids variant={"widgets"} size={"default"}>
+                    <DisplayBreakTime
+                      setToggle={handleToggle}
+                      display={toggle}
+                    />
+                    <WidgetSection
+                      user={user}
+                      display={toggle}
+                      locale={locale}
+                      option={"break"}
+                    />
+                  </Grids>
+                ) : (
+                  <Hours setToggle={handleToggle} display={toggle} />
+                )}
+              </>
+            ) : (
+              /* A ternary statement to display the break time or hours
 False -> display hours                    */
-  <>
-    {/* A ternary statement to display the total clocked hours widget or view hours */}
-      {toggle ? 
-        <Grids variant={"widgets"} size={"sm"}>
-          <Hours setToggle={handleToggle} display={toggle} />
-          <WidgetSection user={user} display={toggle} locale={locale} />
-        </Grids> 
-        : 
-        <Hours setToggle={handleToggle} display={toggle} />
-      }
-  </>
-          }
-    </Sections>
-  </Contents>
-  </Bases>
-</>
-);
+              <>
+                {/* A ternary statement to display the total clocked hours widget or view hours */}
+                {toggle ? (
+                  <Grids variant={"widgets"} size={"sm"}>
+                    <Hours setToggle={handleToggle} display={toggle} />
+                    <WidgetSection
+                      user={user}
+                      display={toggle}
+                      locale={locale}
+                    />
+                  </Grids>
+                ) : (
+                  <Hours setToggle={handleToggle} display={toggle} />
+                )}
+              </>
+            )}
+          </Sections>
+        </Contents>
+      </Bases>
+    </>
+  );
 }

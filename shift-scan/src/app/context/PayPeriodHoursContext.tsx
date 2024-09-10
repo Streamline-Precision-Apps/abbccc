@@ -1,3 +1,5 @@
+// This will save the hours for the pay period for the home screen.
+
 'use client'
 import React, { createContext, useState, ReactNode, useContext } from 'react';
 
@@ -6,32 +8,32 @@ type PayPeriodForms = {
     setPayPeriodHours: (payPeriodHours: string | null) => void;
 };
 
-interface SavedPayPeriodHoursProps {
+interface PayPeriodHoursProps {
     payPeriodHours: string | null;
     setPayPeriodHours: (payPeriodHours: string | null) => void;
 }
 
-interface SavedPayPeriodHours {
+interface PayPeriodHours {
     data: string;
 }
 
-const SavedPayPeriodHours = createContext<SavedPayPeriodHoursProps | undefined>(undefined);
+const PayPeriodHours = createContext<PayPeriodHoursProps | undefined>(undefined);
 
-export const SavedPayPeriodHoursProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const PayPeriodHoursProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     // creates a state 
     const [payPeriodHours, setPayPeriodHours] = useState<string | null>(null);
     // when the provider is called it will return the value below
 return (
-    <SavedPayPeriodHours.Provider value={{ payPeriodHours, setPayPeriodHours }}>
+    <PayPeriodHours.Provider value={{ payPeriodHours, setPayPeriodHours }}>
         {children}
-    </SavedPayPeriodHours.Provider>
+    </PayPeriodHours.Provider>
     );
 };
 // this is used to get the value
-export const useSavedPayPeriodHours = () => {
-    const context = useContext(SavedPayPeriodHours);
+export const usePayPeriodHours = () => {
+    const context = useContext(PayPeriodHours);
     if (context === undefined) {
-    throw new Error('SavedPayPeriodHours must be used within a SavedPayPeriodHoursProvider');
+    throw new Error('PayPeriodHours must be used within a PayPeriodHoursProvider');
 }
     return context;
 };
