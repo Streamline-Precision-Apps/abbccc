@@ -1,3 +1,5 @@
+// This context is used to get the data from the database and stores it in a state.
+
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 // Define types for each context

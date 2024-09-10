@@ -1,8 +1,7 @@
 "use client";
 import { useTranslations } from "next-intl";
 import ViewHoursComponent from "@/app/(content)/hoursControl";
-import { useSavedPayPeriodHours } from "../context/SavedPayPeriodHours";
-import { useSavedDailyHours } from "../context/SavedDailyHours";
+import { usePayPeriodHours } from "../context/PayPeriodHoursContext";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
 import { Content } from "next/font/google";
@@ -18,26 +17,26 @@ interface HoursProps {
 
 export default function Hours({ setToggle, display }: HoursProps) {
   const t = useTranslations("Home");
-  const { payPeriodHours } = useSavedPayPeriodHours();
-  
+  const { payPeriodHours } = usePayPeriodHours();
+
   const handler = () => {
     setToggle(!display);
   };
 
   return display ? (
     <>
-      <Buttons 
-        onClick={handler} 
-        variant={"darkBlue"} 
-        size={"hours"}
-      >
-        <Texts variant={"totalHours"} size={"p0"}>{t("PayPeriodHours")}</Texts>
-          <Contents variant={"white"} size={"hoursBtn"}>
-          <Texts variant={"default"} size={"p0"}>{payPeriodHours}</Texts>
-          </Contents>
+      <Buttons onClick={handler} variant={"darkBlue"} size={"hours"}>
+        <Texts variant={"totalHours"} size={"p0"}>
+          {t("PayPeriodHours")}
+        </Texts>
+        <Contents variant={"white"} size={"hoursBtn"}>
+          <Texts variant={"default"} size={"p0"}>
+            {payPeriodHours}
+          </Texts>
+        </Contents>
       </Buttons>
     </>
   ) : (
-      <ViewHoursComponent toggle={setToggle} />
+    <ViewHoursComponent toggle={setToggle} />
   );
 }

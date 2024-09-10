@@ -2,7 +2,6 @@
 "use client";
 import { useRef } from "react";
 import { CreateInjuryForm } from "@/actions/injuryReportActions";
-import { useSavedUserData } from '@/app/context/UserContext';
 import { useTranslations } from "next-intl";
 
 interface FormProps {

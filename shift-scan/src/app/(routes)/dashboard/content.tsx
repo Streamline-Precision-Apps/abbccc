@@ -13,7 +13,6 @@ import { Texts } from "@/components/(reusable)/texts";
 import { Footers } from "@/components/(reusable)/footers";
 import { CustomSession, User } from "@/lib/types";
 import { useSession } from "next-auth/react";
-import { useSavedUserData } from "@/app/context/UserContext";
 import { useDBJobsite, useDBCostcode, useDBEquipment} from "@/app/context/dbCodeContext";
 import { useRecentDBJobsite, useRecentDBCostcode, useRecentDBEquipment} from "@/app/context/dbRecentCodesContext";
 import { getAuthStep} from "@/app/api/auth";
@@ -34,7 +33,6 @@ logs,
 const t = useTranslations("dashboard");
 const router = useRouter();
 const { data: session } = useSession() as { data: CustomSession | null };
-const { setSavedUserData } = useSavedUserData();
 const date = new Date().toLocaleDateString(locale, {
 year: "numeric",
 month: "short",
@@ -113,7 +111,6 @@ if (getAuthStep() !== "success") {
 
 useEffect(() => {
 if (session && session.user) {
-    setSavedUserData({ id: session.user.id });
     setData({
     id: session.user.id,
     firstName: session.user.firstName,

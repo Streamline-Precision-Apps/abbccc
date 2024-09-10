@@ -3,7 +3,6 @@ import "@/app/globals.css";
 import { useState, useEffect, ChangeEvent } from "react";
 import Checkbox from "../injury-verification/checkBox";
 import Signature from "../injury-verification/Signature";
-import { useSavedInjuryReportData } from "@/app/context/InjuryReportDataContext";
 import { CreateInjuryForm } from "@/actions/injuryReportActions";
 import { useTranslations } from "next-intl";
 import { Contents } from "@/components/(reusable)/contents";
@@ -27,17 +26,7 @@ export const InjuryReportContent = ({
   const [checked, setChecked] = useState<boolean>(false);
   const [textarea, setTextarea] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
-  const { savedInjuryReportData, setSavedInjuryReportData } =
-    useSavedInjuryReportData();
   const t = useTranslations("clock-out");
-
-  useEffect(() => {
-    if (savedInjuryReportData) {
-      setChecked(savedInjuryReportData.contactedSupervisor);
-      setTextarea(savedInjuryReportData.incidentDescription);
-      setBase64String(savedInjuryReportData.signedForm ?? null);
-    }
-  }, [savedInjuryReportData]);
 
   const handleCheckboxChange = (newChecked: boolean) => {
     setChecked(newChecked);
@@ -58,11 +47,6 @@ export const InjuryReportContent = ({
     formData.append("signedForm", "true");
     try {
       await CreateInjuryForm(formData); // I don't like the way this is put together, I am going to re-work it.
-      setSavedInjuryReportData({
-        contactedSupervisor: checked,
-        incidentDescription: textarea,
-        signedForm: "true",
-      });
       setError(null);
       handleComplete(); // Call handleComplete on success
     } catch (error) {

@@ -1,3 +1,5 @@
+// Saves any jobsite data scanned by the qr-scanner.
+
 'use client'
 import React, { createContext, useState, ReactNode, useContext } from 'react';
 

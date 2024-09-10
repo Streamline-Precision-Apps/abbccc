@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import QrScanner from "qr-scanner";
 import { useRouter } from 'next/navigation';
-import { useScanData } from '@/app/context/JobSiteContext';
+import { useScanData } from '@/app/context/JobSiteScanDataContext';
 import { Texts } from "../(reusable)/texts";
 import { Buttons } from "../(reusable)/buttons";
 import { Contents } from "../(reusable)/contents";

@@ -1,20 +1,22 @@
+// Stores the id for the time sheet that is currently open (waiting to be submitted when you clock out).
+
 import React, { createContext, useState, ReactNode, useContext, useEffect } from "react";
 
-interface SavedTimeSheetData {
+interface TimeSheetData {
 id: string;
 }
 
-interface SavedTimeSheetDataContextType {
-savedTimeSheetData: SavedTimeSheetData | null;
-setSavedTimeSheetData: (timesheetData: SavedTimeSheetData | null) => void;
+interface TimeSheetDataContextType {
+savedTimeSheetData: TimeSheetData | null;
+setTimeSheetData: (timesheetData: TimeSheetData | null) => void;
 }
 
-const SavedTimeSheetDataContext = createContext<SavedTimeSheetDataContextType | undefined>(undefined);
+const TimeSheetDataContext = createContext<TimeSheetDataContextType | undefined>(undefined);
 
-export const SavedTimeSheetDataProvider: React.FC<{ children: ReactNode }> = ({
+export const TimeSheetDataProvider: React.FC<{ children: ReactNode }> = ({
 children,
 }) => {
-const [savedTimeSheetData, setSavedTimeSheetDataState] = useState<SavedTimeSheetData | null>(() => {
+const [savedTimeSheetData, setTimeSheetDataState] = useState<TimeSheetData | null>(() => {
 // Load initial state from localStorage if available
 if (typeof window !== 'undefined') {
     const savedTimeSheetJSON = localStorage.getItem("savedTimeSheetData");
@@ -24,8 +26,8 @@ if (typeof window !== 'undefined') {
 }
 });
 
-const setSavedTimeSheetData = (timesheetData: SavedTimeSheetData | null) => {
-setSavedTimeSheetDataState(timesheetData);
+const setTimeSheetData = (timesheetData: TimeSheetData | null) => {
+setTimeSheetDataState(timesheetData);
 // Save to localStorage
 if (typeof window !== 'undefined') {
     localStorage.setItem("savedtimeSheetData", JSON.stringify(timesheetData));
@@ -36,16 +38,16 @@ return null
 };
 
 return (
-<SavedTimeSheetDataContext.Provider value={{ savedTimeSheetData, setSavedTimeSheetData}}>
+<TimeSheetDataContext.Provider value={{ savedTimeSheetData, setTimeSheetData}}>
     {children}
-</SavedTimeSheetDataContext.Provider>
+</TimeSheetDataContext.Provider>
 );
 };
 
-export const useSavedTimeSheetData = () => {
-const context = useContext(SavedTimeSheetDataContext);
+export const useTimeSheetData = () => {
+const context = useContext(TimeSheetDataContext);
 if (!context) {
-throw new Error("useSavedTimeSheetData must be used within a SavedTimeSheetDataProvider");
+throw new Error("useTimeSheetData must be used within a TimeSheetDataProvider");
 }
 return context;
 };

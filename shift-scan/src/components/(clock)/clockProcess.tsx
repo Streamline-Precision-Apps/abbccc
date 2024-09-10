@@ -5,7 +5,7 @@ import QRStep from "@/components/(clock)/qr-step";
 import CodeStep from "@/components/(clock)/code-step";
 import VerificationStep from "./verification-step";
 import VerificationEQStep from "./verification-eq-step";
-import { useScanData } from "@/app/context/JobSiteContext";
+import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import RedirectAfterDelay from "@/components/redirectAfterDelay";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useEQScanData } from "@/app/context/equipmentContext";
