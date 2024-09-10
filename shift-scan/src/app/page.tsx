@@ -11,7 +11,9 @@ export default async function Home() {
 
 // Get the current language
   const lang = cookies().get("locale");
-  const locale = lang ? lang.value : "en"; 
+  const locale = lang ? lang.value : "en";  
+
+  
 
 // Calculate the start date of the current pay period
   const calculatePayPeriodStart = () => {
