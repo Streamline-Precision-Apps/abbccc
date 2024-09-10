@@ -26,6 +26,7 @@ export type SearchUser = {
   tasco_view: boolean;
   email: string,
   phone: string,
+  image: string | null,
 };
   
   export type CustomSession = {
