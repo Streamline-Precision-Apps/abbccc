@@ -1,15 +1,12 @@
 "use client";
 // this is the provider for the app, it wraps all the components
 // this is so that all the components can access the context
-import { ScanDataProvider } from "./context/JobSiteContext";
+import { ScanDataProvider } from "./context/JobSiteScanDataContext";
 import { SavedCostCodeProvider } from "./context/CostCodeContext";
 import { SessionProvider } from "next-auth/react";
-import { SavedPayPeriodHoursProvider } from "./context/SavedPayPeriodHours";
-import { SavedUserDataProvider } from "./context/UserContext";
-import { SavedClockInTimeProvider } from "./context/ClockInTimeContext";
-import { SavedBreakTimeProvider } from "./context/SavedBreakTimeContext";
-import { SavedTimeSheetDataProvider } from "./context/TimeSheetIdContext";
-import { SavedInjuryReportDataProvider } from "./context/InjuryReportDataContext";
+import { PayPeriodHoursProvider } from "./context/PayPeriodHoursContext";
+import { SavedBreakTimeProvider } from "./context/BreakTimeContext";
+import { TimeSheetDataProvider } from "./context/TimeSheetIdContext";
 import { ScanDataEQProvider } from "./context/equipmentContext";
 import {
   JobSiteProvider,
@@ -21,51 +18,41 @@ import {
   RecentJobSiteProvider,
   RecentEquipmentProvider,
 } from "./context/dbRecentCodesContext";
-import { SavedDailyHoursProvider } from "./context/SavedDailyHours";
-import { SavedPayPeriodTimeSheetProvider } from "./context/SavedPayPeriodTimeSheets";
+import { PayPeriodTimeSheetProvider } from "./context/PayPeriodTimeSheetsContext";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <>
       {" "}
-      <SavedDailyHoursProvider>
-        <SavedBreakTimeProvider>
-          <SavedUserDataProvider>
-            <SavedPayPeriodHoursProvider>
-              <SavedCostCodeProvider>
-                <ScanDataProvider>
-                  <ScanDataEQProvider>
-                    <SavedClockInTimeProvider>
-                      <SavedTimeSheetDataProvider>
-                        <SavedInjuryReportDataProvider>
-                          <SessionProvider>
-                            {/* The provider Entitled DB provide the DB data for each entry */}
-                            <EquipmentProvider>
-                              <JobSiteProvider>
-                                <CostCodeProvider>
-                                  <RecentCostCodeProvider>
-                                    <RecentJobSiteProvider>
-                                      <SavedPayPeriodTimeSheetProvider>
-                                        <RecentEquipmentProvider>
-                                          {children}
-                                        </RecentEquipmentProvider>
-                                      </SavedPayPeriodTimeSheetProvider>
-                                    </RecentJobSiteProvider>
-                                  </RecentCostCodeProvider>
-                                </CostCodeProvider>
-                              </JobSiteProvider>
-                            </EquipmentProvider>
-                          </SessionProvider>
-                        </SavedInjuryReportDataProvider>
-                      </SavedTimeSheetDataProvider>
-                    </SavedClockInTimeProvider>
-                  </ScanDataEQProvider>
-                </ScanDataProvider>
-              </SavedCostCodeProvider>
-            </SavedPayPeriodHoursProvider>
-          </SavedUserDataProvider>
-        </SavedBreakTimeProvider>
-      </SavedDailyHoursProvider>
+      <SavedBreakTimeProvider>
+        <PayPeriodHoursProvider>
+          <SavedCostCodeProvider>
+            <ScanDataProvider>
+              <ScanDataEQProvider>
+                <TimeSheetDataProvider>
+                  <SessionProvider>
+                    <EquipmentProvider>
+                      <JobSiteProvider>
+                        <CostCodeProvider>
+                          <RecentCostCodeProvider>
+                            <RecentJobSiteProvider>
+                              <PayPeriodTimeSheetProvider>
+                                <RecentEquipmentProvider>
+                                  {children}
+                                </RecentEquipmentProvider>
+                              </PayPeriodTimeSheetProvider>
+                            </RecentJobSiteProvider>
+                          </RecentCostCodeProvider>
+                        </CostCodeProvider>
+                      </JobSiteProvider>
+                    </EquipmentProvider>
+                  </SessionProvider>
+                </TimeSheetDataProvider>
+              </ScanDataEQProvider>
+            </ScanDataProvider>
+          </SavedCostCodeProvider>
+        </PayPeriodHoursProvider>
+      </SavedBreakTimeProvider>
     </>
   );
 }
