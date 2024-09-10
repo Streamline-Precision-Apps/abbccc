@@ -17,11 +17,9 @@ import { Footers } from "@/components/(reusable)/footers";
 import {
   getAuthStep,
   setAuthStep,
-  isDashboardAuthenticated,
 } from "@/app/api/auth";
 import { CustomSession, User } from "@/lib/types";
 import { useSession } from "next-auth/react";
-import { useSavedUserData } from "@/app/context/UserContext";
 import AdminButtons from "@/components/adminButtons";
 import { Content } from "next/font/google";
 import { Contents } from "@/components/(reusable)/contents";
@@ -40,7 +38,6 @@ export default function AdminContent({ permission }: AdminContentProps) {
     permission: undefined,
   });
   const { data: session } = useSession() as { data: CustomSession | null };
-  const { setSavedUserData } = useSavedUserData();
   const date = new Date().toLocaleDateString("en-US", {
     year: "numeric",
     month: "short",
@@ -58,9 +55,6 @@ export default function AdminContent({ permission }: AdminContentProps) {
 
   useEffect(() => {
     if (session && session.user) {
-      setSavedUserData({
-        id: session.user.id,
-      });
       setData({
         id: session.user.id,
         firstName: session.user.firstName,

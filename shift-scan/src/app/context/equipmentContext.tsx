@@ -1,3 +1,5 @@
+// Stores the data for the equipment.
+
 'use client'
 import React, { createContext, useState, ReactNode, useContext } from 'react';
 

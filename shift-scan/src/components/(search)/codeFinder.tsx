@@ -5,7 +5,7 @@ import SearchBar from '@/components/(search)/searchbar';
 import { useTranslations } from 'next-intl';
 import { useSavedCostCode } from '@/app/context/CostCodeContext';
 import { CostCodeOptions } from '@/components/(search)/options';
-import { useScanData } from '@/app/context/JobSiteContext';
+import { useScanData } from '@/app/context/JobSiteScanDataContext';
 import { useEQScanData } from '@/app/context/equipmentContext';
 import { useDBJobsite, useDBCostcode, useDBEquipment } from "@/app/context/dbCodeContext";
 import { useRecentDBJobsite, useRecentDBCostcode, useRecentDBEquipment } from "@/app/context/dbRecentCodesContext";

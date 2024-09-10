@@ -14,7 +14,6 @@ import {
 } from "@/app/api/auth";
 import { CustomSession, SearchUser, User } from "@/lib/types";
 import { useSession } from "next-auth/react";
-import { useSavedUserData } from "@/app/context/UserContext";
 import AddEmployeeForm from "./addEmployee";
 import UserManagement from "./(components)/userManagement";
 
@@ -38,7 +37,6 @@ export default function AddEmployeeContent({ permission , users }: AddEmployeeCo
     permission: undefined,
   });
   const { data: session } = useSession() as { data: CustomSession | null };
-  const { setSavedUserData } = useSavedUserData();
   const date = new Date().toLocaleDateString("en-US", {
     year: "numeric",
     month: "short",
@@ -57,9 +55,6 @@ export default function AddEmployeeContent({ permission , users }: AddEmployeeCo
 
   useEffect(() => {
     if (session && session.user) {
-      setSavedUserData({
-        id: session.user.id,
-      });
       setData({
         id: session.user.id,
         firstName: session.user.firstName,

@@ -1,11 +1,9 @@
 "use client";
 import React, { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { useScanData } from '@/app/context/JobSiteContext';
+import { useScanData } from '@/app/context/JobSiteScanDataContext';
 import { useSavedCostCode } from '@/app/context/CostCodeContext';
-import { useSavedClockInTime } from '@/app/context/ClockInTimeContext';
 import { useSavedTimeSheetData } from '@/app/context/TimeSheetIdContext';
-import { useSavedUserData } from '@/app/context/UserContext';
 import { CreateTimeSheet, updateTimeSheetBySwitch } from '@/actions/timeSheetActions';
 import { Clock } from '../clock';
 import { setAuthStep } from '@/app/api/auth';
@@ -28,9 +26,7 @@ const VerificationStep: React.FC<{ id: string | undefined; handleNextStep: () =>
   const t = useTranslations("Clock");
   const { scanResult } = useScanData();
   const { savedCostCode } = useSavedCostCode();
-  const { clockInTime, setClockInTime } = useSavedClockInTime();
   const { savedTimeSheetData, setSavedTimeSheetData } = useSavedTimeSheetData();
-  const { savedUserData } = useSavedUserData();
   const [date] = useState(new Date());
 
   
@@ -136,7 +132,7 @@ const VerificationStep: React.FC<{ id: string | undefined; handleNextStep: () =>
               </Bases>
         </Bases>
         <Inputs type="hidden" name="submit_date" value={new Date().toISOString()} />
-        <Inputs type="hidden" name="user_id" value={savedUserData?.id || ''} />
+        <Inputs type="hidden" name="user_id" value={id || ''} />
         <Inputs type="hidden" name="date" value={new Date().toISOString()} />
         <Inputs type="hidden" name="start_time" value={new Date().toISOString()} />
       </Forms>

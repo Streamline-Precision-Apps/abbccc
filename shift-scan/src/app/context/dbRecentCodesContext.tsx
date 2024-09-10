@@ -1,3 +1,5 @@
+// This stores the previous 5 cost codes, jobsites, and equipment that the user has selected. This will make it easier to change cost codes.
+
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 type JobCode = {

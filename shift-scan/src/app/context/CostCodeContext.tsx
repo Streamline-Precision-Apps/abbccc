@@ -1,3 +1,5 @@
+// This is used to store the state of costcode.
+
 'use client'
 import React, { createContext, useState, ReactNode, useContext } from 'react';
 

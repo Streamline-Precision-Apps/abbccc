@@ -2,11 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useEQScanData } from "@/app/context/equipmentContext";
-import { useScanData } from "@/app/context/JobSiteContext";
-import { useSavedCostCode } from "@/app/context/CostCodeContext";
-import { useSavedClockInTime } from "@/app/context/ClockInTimeContext";
-import { useSavedTimeSheetData } from "@/app/context/TimeSheetIdContext";
-import { useSavedUserData } from "@/app/context/UserContext";
+import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { CreateEmployeeEquipmentLog } from "@/actions/equipmentActions";
 import { Titles } from "../(reusable)/titles";
 import { Forms } from "../(reusable)/forms";
@@ -45,7 +41,6 @@ const [filteredEquipmentName, setFilteredEquipmentName] = useState<string | null
 const t = useTranslations("Clock");
 const { scanEQResult } = useEQScanData();
 const { scanResult, setScanResult } = useScanData();
-const { savedUserData } = useSavedUserData();
 const [selectedEquipment, setEquipment] = useState<Equipment | null>(null);
 
 // if the jobsite is not in the case it will be stored in local storage
@@ -102,7 +97,7 @@ return (
     <Inputs type="hidden" name="equipment_id" value={scanEQResult?.data || ""} />
     <Inputs type="hidden" name="jobsite_id" value={scanResult?.data || ""} />
     <Inputs type="hidden" name="start_time" value={new Date().toISOString()} />
-    <Inputs type="hidden" name="employee_id" value={savedUserData?.id || ""} />
+    <Inputs type="hidden" name="employee_id" value={id || ""} />
     </Forms>
 </>
 );
