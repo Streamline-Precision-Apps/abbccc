@@ -27,7 +27,7 @@ import {
   useRecentDBEquipment,
 } from "@/app/context/dbRecentCodesContext";
 import { usePayPeriodTimeSheet } from "../context/PayPeriodTimeSheetsContext";
-import { clockProcessProps, TimeSheets } from "@/lib/content"; // used for the interface and the props
+import { clockProcessProps, TimeSheets } from "@/lib/types";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { User } from "@/lib/types";

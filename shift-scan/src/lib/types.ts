@@ -1,6 +1,7 @@
 // This file holds all the types that will be used in the app
 
 import { Permission } from "@prisma/client";
+// this imports the session types for the app, it works client and server-side
 import { Session } from "next-auth";
 
 export type User = {
@@ -34,12 +35,6 @@ export type SearchUser = {
     user?: User | null;
   };
   
-  // src/lib/types.ts
-  export type Equipment = {
-    id: string;
-    qr_id: string;
-    name: string;
-  };
   
   export type EquipmentDetails = {
     id: string;
@@ -96,3 +91,106 @@ export type RequestForm = {
 session: Session | null;
 signature: {Signature: string | null} | null;
 }
+
+
+export type jobCodes = {
+  id: number;
+  jobsite_id: string;
+  jobsite_name: string;
+  };
+
+  export type CostCode = {
+      id: number;
+      cost_code: string;
+      cost_code_description: string;
+  };
+  
+  export type Equipment = {
+      id: string;
+      qr_id: string;
+      name: string;
+  };
+  
+
+  export type TimeSheets = {
+      start_time: Date;
+      duration: number | null;
+  };
+  
+  export type clockProcessProps = {
+      session: any;
+      locale: string;
+      jobCodes: jobCodes[];
+      CostCodes: CostCode[];
+      equipment: Equipment[];
+      recentJobSites: jobCodes[];
+      recentCostCodes: CostCode[];
+      recentEquipment: Equipment[];
+      payPeriodSheets: TimeSheets[];
+  }
+  
+
+  export type Timesheet = {
+    id: string;
+    start_time: string;
+    start_date?: string;
+    end_time: string;
+    end_date?: string;
+    jobsite_id: string;
+    costcode: string;
+    duration: string;
+    submit_date: string;
+    employeeId: string;
+    };
+
+  export type EquipmentLog = {
+      id: number;
+      employee_id: string;
+      duration:  string | null;
+      Equipment: Equipment;
+      };
+
+      export type costCodes = {
+        id: number
+        cost_code: string
+        cost_code_description: string
+        cost_code_type: string
+    }
+    
+    export type Jobsite = {
+        id: number;
+        jobsite_id: string;
+        jobsite_name: string;
+        street_number?: string | null;
+        street_name?: string;
+        city?: string;
+        state?: string | null;
+        country?: string;
+        phone?: string;
+        created_at?: Date;
+        jobsite_description?: string | null;
+        jobsite_active: boolean;
+        comments?: string | null;
+        jobsite_status?: string;
+    }
+    
+    // This is used in the admin section for assets.
+    export type AssetEquipment = {
+      id: string;
+      qr_id: string;
+      name: string;
+      description?: string;
+      status?: string;
+      equipment_tag: string;
+      last_inspection?: Date | null;
+      last_repair?: Date | null;
+      equipment_status?: string;
+      make?: string | null;
+      model?: string | null;
+      year?: string | null;
+      license_plate?: string | null;
+      registration_expiration?: Date | null;
+      mileage?: number | null | undefined;
+      is_active?: boolean;
+      image?: string | null;
+    };

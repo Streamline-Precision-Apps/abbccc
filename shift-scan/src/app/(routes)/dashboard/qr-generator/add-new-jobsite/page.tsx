@@ -1,7 +1,7 @@
 import "@/app/globals.css";
 import { AddJobsiteContent } from "./addJobsiteContent";
 
-export default function InjuryReport() {
+export default function NewJobsite() {
   return (
       <AddJobsiteContent />
   );

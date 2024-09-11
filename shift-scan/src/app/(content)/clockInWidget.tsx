@@ -7,7 +7,7 @@ import { Texts } from "@/components/(reusable)/texts";
 import { Images } from "@/components/(reusable)/images";
 import { Contents } from "@/components/(reusable)/contents";
 
-interface Props {
+type Props = {
     user: User;
     locale: string;
     option?: string;
