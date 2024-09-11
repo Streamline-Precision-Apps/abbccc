@@ -1,5 +1,4 @@
 import prisma from "@/lib/prisma";
-import { cookies } from "next/headers";
 import AdminContent from "./adminContent";
 import { auth } from "@/auth";
 
