@@ -5,12 +5,12 @@ import StepButtons from './step-buttons';
 import { useTranslations } from 'next-intl';
 import { Titles } from '../(reusable)/titles';
 
-interface CodeStepProps {
+type CodeStepProps = {
     datatype: string;
     handleNextStep: () => void;
 }
 
-const CodeStep: React.FC<CodeStepProps> = ({ datatype, handleNextStep}) => {
+export default function CodeStep({ datatype, handleNextStep} : CodeStepProps){
     const t = useTranslations("Clock");
 
     return (
@@ -21,5 +21,3 @@ const CodeStep: React.FC<CodeStepProps> = ({ datatype, handleNextStep}) => {
         </>
     );
 };
-
-export default CodeStep;

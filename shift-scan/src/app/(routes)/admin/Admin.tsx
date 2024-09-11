@@ -7,17 +7,17 @@ import { setAuthStep } from "@/app/api/auth";
 import { useRouter } from "next/navigation";
 import { Contents } from "@/components/(reusable)/contents";
 
-interface AdminProps {
+type AdminProps = {
   additionalButtonsType: string | null;
   handleResetButtons: () => void;
   handleShowAdditionalButtons: (type: string) => void;
 }
 
-export const Admin: React.FC<AdminProps> = ({
+export default function Admin({
   additionalButtonsType,
   handleResetButtons,
   handleShowAdditionalButtons,
-}) => {
+} : AdminProps) {
   const t = useTranslations("admin");
   const Router = useRouter();
 
