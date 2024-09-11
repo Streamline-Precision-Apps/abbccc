@@ -7,11 +7,11 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Texts } from "@/components/(reusable)/texts";
 import { Buttons } from "@/components/(reusable)/buttons";
 
-interface ControlComponentProps {
+type ControlComponentProps = {
   toggle: (toggle: boolean) => void;
 }
 
-const ControlComponent: React.FC<ControlComponentProps> = ({ toggle }) => {
+export default function ControlComponent({ toggle } : ControlComponentProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentDate, setCurrentDate] = useState(new Date());
   const { payPeriodTimeSheet } = usePayPeriodTimeSheet();
@@ -233,4 +233,3 @@ const ControlComponent: React.FC<ControlComponentProps> = ({ toggle }) => {
   );
 };
 
-export default ControlComponent;

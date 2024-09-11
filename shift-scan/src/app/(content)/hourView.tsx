@@ -8,13 +8,13 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-interface ViewComponentProps {
+type ViewComponentProps = {
     scrollLeft: () => void;
     scrollRight: () => void;
     returnToMain: () => void;
     currentDate: Date;
 }
-const ViewComponent: React.FC<ViewComponentProps> = ({ scrollLeft, scrollRight, returnToMain, currentDate }) => {
+export default function ViewComponent({ scrollLeft, scrollRight, returnToMain, currentDate }: ViewComponentProps){
     const [locale, setLocale] = useState('en-US'); // Default to 'en-US'
 
     useEffect(() => {
@@ -54,5 +54,3 @@ const ViewComponent: React.FC<ViewComponentProps> = ({ scrollLeft, scrollRight, 
         </>
     );
 };
-
-export default ViewComponent;
