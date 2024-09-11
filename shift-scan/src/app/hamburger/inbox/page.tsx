@@ -5,6 +5,7 @@ import prisma from "@/lib/prisma";
 
 export default async function Inbox() {
     const session = await auth();
+    if (!session) return null
     const user_Id = session?.user.id;
     const permission = session?.user.permission
 
@@ -14,6 +15,7 @@ export default async function Inbox() {
             employee_id: user_Id,   
         }
     })
+
     const myTeamnumber = await prisma.crewMember.findMany({
         where: {
             employee_id: user_Id,
@@ -35,12 +37,12 @@ export default async function Inbox() {
 
     if (permission === "admin" || permission === "manager") {
     return (
-        <Content sentContent={sentContent} recievedContent={recievedContent} />
+        <Content sentContent={sentContent} recievedContent={recievedContent} session={session} />
     )
     }
     else {
         return (
-            <Content sentContent={sentContent} />
+            <Content sentContent={sentContent} session={session} />
         )
     }
 }

@@ -15,6 +15,7 @@ const TitleBoxVariants = cva(
         row: "flex-row py-7 items-end",
         red: "bg-red-500",
         orange: "bg-orange-500",
+        green: "bg-app-green",
       },
       size: {
         default: "",

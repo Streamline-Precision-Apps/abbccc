@@ -11,7 +11,7 @@ const SectionVariants = cva(
         tab: "bg-white rounded-2xl min-h-[200px] rounded-t-none p-6",
         eq: "bg-white border-2 border-black rounded-2xl ",
         darkBlue: "bg-app-dark-blue rounded-2xl p-10",
-
+        green: "bg-app-green rounded-2xl py-10",
       },
       size: {
         default: "h-screen min-w-screen",
