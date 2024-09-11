@@ -1,6 +1,7 @@
 // This file holds all the types that will be used in the app
 
 import { Permission } from "@prisma/client";
+import { Session } from "next-auth";
 
 export type User = {
   id: string,
@@ -58,3 +59,40 @@ export type SearchUser = {
     duration: number | null;
   };
   
+
+  export type inboxContent = {
+    sentContent : sentContent[];
+    recievedContent? : recievedContent[];
+    session: Session | null;
+}
+
+export type recievedContent = {
+    id: number;
+    date: Date;
+    requestedStartDate: Date;
+    requestedEndDate: Date;
+    requestType: string;
+    comments: string;
+    mangerComments: string | null;
+    status: string;
+    employee_id: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
+export type sentContent = {
+    id: number;
+    date: Date;
+    requestedStartDate: Date;
+    requestedEndDate: Date;
+    requestType: string;
+    comments: string;
+    mangerComments: string | null;
+    status: string;
+    employee_id: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
+export type RequestForm = {
+session: Session | null;
+signature: {Signature: string | null} | null;
+}

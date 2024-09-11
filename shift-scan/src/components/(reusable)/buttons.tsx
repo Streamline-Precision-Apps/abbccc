@@ -19,7 +19,7 @@ const ButtonVariants = cva(
         icon: "bg-none border-0 shadow-none",
       },
       position: {
-        left: "left-5",
+        left: "absolute left-5",
         leftArrow: "absolute left-1",
         rightArrow: "absolute right-1",
       },
@@ -40,7 +40,8 @@ const ButtonVariants = cva(
         arrow : "w-[70px] h-[70px] p-2 mx-3",
         forgotpassword: "flex ml-auto my-3 p-3 w-40 h-100 underline",
         icon:"w-full absolute top-0 left-0",
-        test: ""
+        test: "",
+        tapToSign: "w-full h-[200px] justify-center mt-5 ",
       }
     },
     defaultVariants: {

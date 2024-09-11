@@ -428,17 +428,17 @@ model InjuryForm {
 }
 
 model timeoffRequestForm {
-  id                 Int      @id @default(autoincrement())
+  id                 Int        @id @default(autoincrement())
   date               DateTime
   requestedStartDate DateTime
   requestedEndDate   DateTime
   requestType        String //make enum later
   comments           String
   mangerComments     String?
-  approved           Boolean  @default(false)
+  status             FormStatus @default(PENDING)
   employee_id        String
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
 
   employee User @relation(fields: [employee_id], references: [id])
 }

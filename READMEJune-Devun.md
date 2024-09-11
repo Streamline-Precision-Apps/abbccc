@@ -130,3 +130,6 @@ rewrote timesheet with gina from hr seeing if it works bigest problem was equipm
 
   @@map("timesheets")
 }
+9/10/2024
+- did my first code review got files condensed
+- worked on the inbox page
