@@ -295,9 +295,9 @@
                   <Labels size={"default"} variant={"default"} >{t("ClockOut")}
                   <>
                     <Inputs
-                variant={"default"} id="end_date" type="date" value={timesheet.end_date || ''} onChange={(e) => handleInputChangeDate(e, timesheet.id, "end_date")} readOnly={!edit} />
+                variant={"default"} id="end_date" type="date" value={timesheet.end_date?.toString() || ''} onChange={(e) => handleInputChangeDate(e, timesheet.id, "end_date")} readOnly={!edit} />
                     <Inputs
-                variant={"default"} id="end_time" type="time" value={timesheet.end_time || ''} onChange={(e) => handleInputChangeDate(e, timesheet.id, "end_time")} readOnly={!edit} />
+                variant={"default"} id="end_time" type="time" value={timesheet.end_time?.toString() || ''} onChange={(e) => handleInputChangeDate(e, timesheet.id, "end_time")} readOnly={!edit} />
                   </>
                 </Labels>
               </>

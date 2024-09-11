@@ -15,7 +15,7 @@ export default async function TeamCards() {
     const id = session?.user.id
     const userCrewId = await prisma.user.findUnique({
         where: {
-            id: userId
+            id: id
         },
         include: {
             crewMembers: true
@@ -42,7 +42,7 @@ export default async function TeamCards() {
     return (
         <div>
             {crew.map((userCrewId) => (
-            <Buttons id={userCrewId.user.id} href={`/dashboard/myTeam/${userCrewId.user.id}`} variant={"default"} size={"listLg"}>
+            <Buttons key={userCrewId.user.id} id={userCrewId.user.id} href={`/dashboard/myTeam/${userCrewId.user.id}`} variant={"default"} size={"listLg"}>
                 <Contents variant={"image" } size={"listImage"}>
                     <Images titleImg={userCrewId.user.image ?? "/johnDoe.webp"} titleImgAlt="profile picture" variant={"icon"} size={"default"}></Images>
                 </Contents>

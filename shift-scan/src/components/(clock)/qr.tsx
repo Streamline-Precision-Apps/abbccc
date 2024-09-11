@@ -7,12 +7,12 @@ import { Texts } from "../(reusable)/texts";
 import { Buttons } from "../(reusable)/buttons";
 import { Contents } from "../(reusable)/contents";
 
-interface QrReaderProps {
+type QrReaderProps = {
   handleNextStep: () => void;
   url : string;
 }
 
-const QR: React.FC<QrReaderProps> = ({ handleNextStep, url  }) => {
+export default function QR({ handleNextStep, url  } : QrReaderProps){
   const videoRef: React.MutableRefObject<HTMLVideoElement | null> = useRef(null);
   const qrScannerRef: React.MutableRefObject<QrScanner | null> = useRef(null);
   const [scanCount, setScanCount] = useState(0);
@@ -82,5 +82,3 @@ const QR: React.FC<QrReaderProps> = ({ handleNextStep, url  }) => {
     <video ref={videoRef} className="w-full h-[400px] rounded-2xl border-4 bg-gray-300 border-black"/>
   );
 };
-
-export default QR;

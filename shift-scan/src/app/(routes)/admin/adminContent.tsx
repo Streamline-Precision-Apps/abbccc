@@ -24,7 +24,7 @@ import AdminButtons from "@/components/adminButtons";
 import { Content } from "next/font/google";
 import { Contents } from "@/components/(reusable)/contents";
 
-interface AdminContentProps {
+type AdminContentProps = {
   permission: string | undefined;
 }
 

@@ -14,20 +14,21 @@ import { Inputs } from "../(reusable)/inputs";
 import { Images } from "../(reusable)/images";
 import { Texts } from "../(reusable)/texts";
 import { TitleBoxes } from "../(reusable)/titleBoxes";
+import {AssetEquipment} from "@/lib/types";
 
-interface Equipment {
-    id: string;
-    name: string;
-    qr_id: string;
-    images?: string;
-}
+// interface Equipment {
+//     id: string;
+//     name: string;
+//     qr_id: string;
+//     images?: string;
+// }
 
 type VerifyProcessProps = {
 id: string | undefined;
 handleNextStep: () => void;
 type: string;
 option?: string;
-equipment: Equipment[];
+equipment: AssetEquipment[];
 }
 
 const VerificationEQStep: React.FC<VerifyProcessProps> = ({
@@ -41,7 +42,7 @@ const [filteredEquipmentName, setFilteredEquipmentName] = useState<string | null
 const t = useTranslations("Clock");
 const { scanEQResult } = useEQScanData();
 const { scanResult, setScanResult } = useScanData();
-const [selectedEquipment, setEquipment] = useState<Equipment | null>(null);
+const [selectedEquipment, setEquipment] = useState<AssetEquipment | null>(null);
 
 // if the jobsite is not in the case it will be stored in local storage
 if (!scanResult?.data) {
@@ -61,8 +62,8 @@ return (
     />
         </Labels>
 {/*If image is not found it will be null */}
-    {(equipment?.find((equipment) => equipment.qr_id === scanEQResult?.data)?.images) ? 
-    <Images variant="default" size="default" titleImg={equipment?.find((equipment) => equipment.qr_id === scanEQResult?.data)?.images ?? ""} titleImgAlt="
+    {(equipment?.find((equipment) => equipment.qr_id === scanEQResult?.data)?.image) ? 
+    <Images variant="default" size="default" titleImg={equipment?.find((equipment) => equipment.qr_id === scanEQResult?.data)?.image ?? ""} titleImgAlt="
     Equipment Image not found" /> : null}
     
 
