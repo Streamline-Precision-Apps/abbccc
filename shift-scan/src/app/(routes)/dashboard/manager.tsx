@@ -5,11 +5,11 @@ import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
 import { Contents } from "@/components/(reusable)/contents";
 
-interface ManagerProps {
+type ManagerProps = {
   show: boolean;
 }
 
-export const Manager: React.FC<ManagerProps> = ({ show }) => {
+export default function Manager({ show } : ManagerProps) {
   const t = useTranslations("ManagerButtons");
   return (
     <>

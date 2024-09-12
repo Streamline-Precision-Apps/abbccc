@@ -40,7 +40,7 @@ export default async function TeamCards() {
         },
     );
     return (
-        <div>
+        <>
             {crew.map((userCrewId) => (
             <Buttons key={userCrewId.user.id} id={userCrewId.user.id} href={`/dashboard/myTeam/${userCrewId.user.id}`} variant={"default"} size={"listLg"}>
                 <Contents variant={"image" } size={"listImage"}>
@@ -51,14 +51,6 @@ export default async function TeamCards() {
                 </Contents>
             </Buttons>
             ))}
-                <Buttons id="{userCrewId.user.id}" href="/dashboard/myTeam/{userCrewId.user.id}" variant={"default"} size={"listLg"}>
-                    <Contents variant={"image" } size={"listImage"}>
-                        <Images titleImg="/johnDoe.webp" titleImgAlt="my team" variant={"icon"} size={"default"}></Images>
-                    </Contents>
-                    <Contents variant={"row"} size={"listTitle"}>
-                        <Titles size={"h1"}>Jose Felipe Perez Alverado</Titles>
-                    </Contents>
-                </Buttons>
-        </div>
+        </>
         );
     }

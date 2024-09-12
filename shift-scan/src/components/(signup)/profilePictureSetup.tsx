@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Buttons } from '../(reusable)/buttons';
 import { uploadFirstImage } from '@/actions/userActions';
-import CameraComponent from '../(inputs)/camera';
+import CameraComponent from '../(camera)/camera';
 import { Banners } from '@/components/(reusable)/banners';
 
 const ProfilePictureSetup = ({ id, handleNextStep }: { id: string; handleNextStep: any }) => {

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Sections } from "@/components/(reusable)/sections";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import AddEquipmentForm from "./addEquipmentForm";
-import EquipmentPicture from "../../../../../components/(inputs)/camera";
+import EquipmentPicture from "../../../../../components/(camera)/camera";
 import { Bases } from "@/components/(reusable)/bases";
 import { useTranslations } from "next-intl";
 import { Titles } from "@/components/(reusable)/titles";

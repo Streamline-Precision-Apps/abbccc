@@ -2,12 +2,12 @@ import React from 'react';
 import "@/app/globals.css";
 import { useTranslations } from 'next-intl';
 
-interface Option {
+type Option = {
   code: string;
   label: string;
 }
 
-interface CustomSelectProps {
+type CustomSelectProps = {
   options: Option[];
   onOptionSelect: (option: Option) => void;
   selectedOption: Option | null;

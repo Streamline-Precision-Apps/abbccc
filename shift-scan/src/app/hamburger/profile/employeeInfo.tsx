@@ -1,30 +1,17 @@
 "use client";
-import { image, Input } from "@nextui-org/react";
 import { Sections } from "@/components/(reusable)/sections";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useTranslations } from "next-intl";
-import Base64Encoder from "@/components/(inputs)/Base64Encoder";
-import { useEffect, useState } from "react";
-import { Titles } from "@/components/(reusable)/titles";
+import Base64Encoder from "@/components/(camera)/Base64Encoder";
+import { useState } from "react";
 import { Contents } from "@/components/(reusable)/contents";
 import {Forms} from "@/components/(reusable)/forms";
 import { Labels } from "@/components/(reusable)/labels";
 import { Inputs } from "@/components/(reusable)/inputs";
-import { Texts } from "@/components/(reusable)/texts";
 import SignOutModal from './signOutModal';
 import { Modals } from "@/components/(reusable)/modals";
-import { Buttons } from "@/components/(reusable)/buttons";
 import { Images } from "@/components/(reusable)/images";
-import CameraComponent from "@/components/(inputs)/camera";
-
-type Employee = {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  image: string | null;
-};
+import { Employee } from "@/lib/types";
 
 type Props = {
   employee: Employee;

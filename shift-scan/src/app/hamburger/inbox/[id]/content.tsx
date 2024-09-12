@@ -20,7 +20,8 @@ import { DeleteLeaveRequest, EditLeaveRequest } from "@/actions/inboxSentActions
 import { Images } from "@/components/(reusable)/images";
 import { useRouter } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { set } from "zod";
+import {formatDate} from '@/utils/formatDateYMD';
+
 type Props = {
     sentContent: sentContent[]; // Define the type of sentContent prop
     session: Session | null;
@@ -50,8 +51,9 @@ export default function Content({ params, sentContent, session } : Props) {
     return (
         <>
         <Bases>
-        <Sections size={"titleBox"}>
-        <TitleBoxes variant={"orange"} title="leave request" titleImg="/Inbox.svg" titleImgAlt="Inbox" type="noIcon" >
+        <Contents>
+        <Sections size={"titleBox"} variant={"orange"}>
+        <TitleBoxes variant={null} title="leave request" titleImg="/Inbox.svg" titleImgAlt="Inbox" type="noIcon" >
         </TitleBoxes>
         {sentContent.map((item) => (
             <Titles key={item.id}>
@@ -67,25 +69,27 @@ export default function Content({ params, sentContent, session } : Props) {
         )
         )}
         </Sections>
+        <Forms action={EditLeaveRequest} >
+        <Sections size={"titleBox"} >
+            <Contents variant={"widgetButtonRow"} size={null}>
             {!edit &&
-        <Sections size={"titleBox"}>
             <Buttons variant={"orange"} size={"minBtn"} onClick={() => setEdit(!edit)}>
                 <Images variant={"icon"} size={"iconSm"} titleImg={"/new/edit-form.svg"} titleImgAlt={"edit form"} />
             </Buttons>
-        </Sections>
             }
-        {sentContent.map((item) => (
-            <Sections size={"default"} key={item.id}>
             {edit && <Buttons variant={"red"} size={"minBtn"} onClick={() => handleEdit()}>
                 <Images variant={"icon"} size={"iconSm"} titleImg={"/new/undo-edit.svg"} titleImgAlt={"delete form"} />
             </Buttons>
             }
-            <Forms action={EditLeaveRequest} >
             {edit &&
             <Buttons variant={"green"} size={"minBtn"} type="submit">
             <Images variant={"icon"} size={"iconSm"} titleImg={"/new/save-edit.svg"} titleImgAlt={"delete form"} />
             </Buttons>
             }
+            </Contents>
+        </Sections>
+        {sentContent.map((item) => (
+            <Sections size={"default"} key={item.id}>
             <Inputs type="hidden" name="id" value={item.id} disabled/>
             <Inputs type="hidden" name="status" value={item.status} disabled/>
             <Inputs type="hidden" name="date" value={item.date.toString()} disabled/>
@@ -94,7 +98,7 @@ export default function Content({ params, sentContent, session } : Props) {
             <Inputs
             type="date"
             name="startDate"
-            defaultValue={item.requestedStartDate.toString()}
+            defaultValue={formatDate(item.requestedStartDate)}
             disabled={edit ? false : true}
             />
             </Labels>
@@ -103,7 +107,7 @@ export default function Content({ params, sentContent, session } : Props) {
             <Inputs
             type="date"
             name="endDate"
-            defaultValue={item.requestedEndDate.toString()}
+            defaultValue={formatDate(item.requestedEndDate)}
             disabled={edit ? false : true} 
             />
             </Labels>
@@ -151,9 +155,9 @@ export default function Content({ params, sentContent, session } : Props) {
             <Texts variant={"default"} size={"p4"}>
             *By Signing I acknowledge that time leave request are subject to management approval and company policy. *
             </Texts>
-        </Forms>
             </Sections>
         ))}
+        </Forms>
     
     {/* This button deletes the request from the db */}
             {edit && <Buttons 
@@ -169,6 +173,7 @@ export default function Content({ params, sentContent, session } : Props) {
                     Delete Request
                 </Titles>
             </Buttons>}
+        </Contents>
         </Bases>
         </>
     )

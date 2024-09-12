@@ -80,10 +80,10 @@ const router = useRouter();
         >
         <option value="">Choose a request</option>
         <option value="Vacation">Vacation</option>
-        <option value="Family/Medical Leave">Family/Medical Leave</option>
-        <option value="Military Leave">Military Leave</option>
-        <option value="Non Paid Personal Leave">Non Paid Personal Leave</option>
-        <option value="Sick Time">Sick Time</option>
+        <option value="Medical">Family/Medical Leave</option>
+        <option value="Military">Military Leave</option>
+        <option value="Personal">Non Paid Personal Leave</option>
+        <option value="Sick">Sick Time</option>
         </Selects>
         </Labels>
         <Labels>Comments

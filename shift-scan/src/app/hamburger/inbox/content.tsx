@@ -4,7 +4,7 @@ import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useTranslations } from "next-intl";
 import React, { useEffect } from 'react'
 import { useState } from "react";
-import {Tab} from "@/components/(inputs)/tab";
+import {Tab} from "@/components/(reusable)/tab";
 import {getUserSentContent } from '@/actions/inboxSentActions';
 import { Sections } from '../../../components/(reusable)/sections';
 import { Buttons } from '../../../components/(reusable)/buttons';
@@ -26,6 +26,7 @@ export default function Content( { sentContent, recievedContent, session } : inb
         }
         return (
         <Bases>
+        <Contents>
         <Sections 
         size={"titleBox"}>
             <TitleBoxes
@@ -47,10 +48,11 @@ export default function Content( { sentContent, recievedContent, session } : inb
         isTabActive= {activeTab === 2}
         />  
     </Contents>
-        <Sections variant={"tab"} size={"dynamic"}>
+        <Sections variant={"tab"} size={"homepage"}>
             {activeTab === 1 && <STab  sentContent={sentContent} session={session}/>}  
-            {activeTab === 2 && <RTab />}
+            {activeTab === 2 && <RTab recievedContent={recievedContent} session={session} sentContent={sentContent}/>}
         </Sections>
+        </Contents>
         </Bases>  
     )
 }

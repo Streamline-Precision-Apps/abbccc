@@ -1,25 +1,7 @@
 "use client";
 import { useDBJobsite, useDBCostcode, useDBEquipment } from "@/app/context/dbCodeContext";
 import { useRecentDBJobsite, useRecentDBCostcode, useRecentDBEquipment } from "@/app/context/dbRecentCodesContext";
-
-
-type JobCode = {
-id: number;
-jobsite_id: string;
-jobsite_name: string;
-};
-
-type CostCode = {
-id: number;
-cost_code: string;
-cost_code_description: string;
-};
-
-type Equipment = {
-id: string;
-qr_id: string;
-name: string;
-};
+import { JobCodes, CostCode, EquipmentCode } from "@/lib/types";
 
 interface Option {
 code: string;
@@ -58,11 +40,11 @@ case 'jobsite':
     throw new Error('jobsiteResults is undefined');
     }
     options = searchTerm === ''
-    ? recentlyUsedJobCodes.map((jobcode: JobCode) => ({
+    ? recentlyUsedJobCodes.map((jobcode: JobCodes) => ({
         code: jobcode.jobsite_id,
         label: jobcode.jobsite_name
     }))
-    : jobsiteResults.map((jobcode: JobCode) => ({
+    : jobsiteResults.map((jobcode: JobCodes) => ({
         code: jobcode.jobsite_id,
         label: jobcode.jobsite_name
     }));
@@ -73,11 +55,11 @@ case 'equipment':
     throw new Error('equipmentResults is undefined');
     }
     options = searchTerm === ''
-    ? recentlyUsedEquipment.map((equipment: Equipment) => ({
+    ? recentlyUsedEquipment.map((equipment: EquipmentCode) => ({
         code: equipment.qr_id,
         label: equipment.name
     }))
-    : equipmentResults.map((equipment: Equipment) => ({
+    : equipmentResults.map((equipment: EquipmentCode) => ({
         code: equipment.qr_id,
         label: equipment.name
     }));
