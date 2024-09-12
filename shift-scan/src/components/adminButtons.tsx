@@ -4,9 +4,9 @@ import "@/app/globals.css";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { CustomSession } from "@/lib/types";
-import { Manager } from "@/app/(routes)/dashboard/manager";
+import Manager from "@/app/(routes)/dashboard/manager";
 import { useState } from "react";
-import { Admin } from "@/app/(routes)/admin/Admin";
+import Admin from "@/app/(routes)/admin/Admin";
 
 
 

@@ -1,7 +1,7 @@
 import ClockInWidget from "@/app/(content)/clockInWidget"
 import { User } from "@/lib/types"
 import '@/app/globals.css';
-import { Manager } from "@/app/(routes)/dashboard/manager";
+import Manager from "@/app/(routes)/dashboard/manager";
 
 interface Props {
     user: User;
