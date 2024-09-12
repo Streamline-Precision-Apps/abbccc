@@ -6,7 +6,6 @@ import { Texts } from "@/components/(reusable)/texts";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Modals } from "@/components/(reusable)/modals";
-import ClockProcessor from "@/components/(clock)/clockProcess";
 import { useSession } from "next-auth/react";
 import { CustomSession } from "@/lib/types";
 import { setAuthStep } from "@/app/api/auth";
@@ -14,7 +13,7 @@ import { Logs } from "@/lib/types";
 import { updateTimeSheetBySwitch } from "@/actions/timeSheetActions";
 import { Contents } from "@/components/(reusable)/contents";
 
-interface UserProps {
+type UserProps = {
   additionalButtonsType: string | null;
   handleShowManagerButtons: () => void;
   handleShowAdditionalButtons: (type: string) => void;

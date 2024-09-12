@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import classNames from "classnames";
 
-const LocaleToggleSwitch = ({ data, onChange }) => {
+const LocaleToggleSwitch = ({ data, onChange }: any) => {
 const [isSelected, setIsSelected] = useState(data);
 
 useEffect(() => {

@@ -13,7 +13,7 @@
   import { Titles } from "@/components/(reusable)/titles";
   import { Texts } from "@/components/(reusable)/texts";
   import { Labels } from "@/components/(reusable)/labels";
-  import { CostCode, Jobsite, Timesheet, EquipmentLog, Equipment } from "@/lib/types";
+  import { CostCode, Jobsite, Timesheet, EquipmentLog, EquipmentCode } from "@/lib/types";
 
   type EditWorkProps = {
   edit: boolean;
@@ -25,7 +25,7 @@
   setEdit: (edit: boolean) => void;
   employeeId: string;
   date: string;
-  equipment: Equipment[];
+  equipment: EquipmentCode[];
   };
 
   const EditWork = ({ timesheetData, jobsitesData, costcodesData, edit, equipment, handleFormSubmit, setEdit, employeeId, date }: EditWorkProps) => {

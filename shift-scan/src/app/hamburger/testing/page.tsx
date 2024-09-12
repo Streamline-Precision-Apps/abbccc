@@ -11,7 +11,7 @@ import { Modals } from '@/components/(reusable)/modals';
 import ClockProcessor from "@/components/(clock)/clockProcess";
 import { useSession } from "next-auth/react";
 import { CustomSession } from "@/lib/types";
-import { Equipment, Logs } from "@/lib/types";
+import { EquipmentCode, Logs } from "@/lib/types";
 
 interface UserProps {
     locale: string;

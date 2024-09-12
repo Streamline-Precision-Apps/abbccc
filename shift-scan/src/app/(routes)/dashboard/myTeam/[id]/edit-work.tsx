@@ -5,7 +5,6 @@
   import { useTranslations } from "next-intl";
   import React from "react";
   import { useState, useEffect} from "react";
-  import Equipment from "../../equipment/page";
   import { Sections } from "@/components/(reusable)/sections";
   import { Contents } from "@/components/(reusable)/contents";
   import { Selects } from "@/components/(reusable)/selects";
@@ -14,41 +13,7 @@
   import { Titles } from "@/components/(reusable)/titles";
   import { Texts } from "@/components/(reusable)/texts";
   import { Labels } from "@/components/(reusable)/labels";
-  type Timesheet = {
-  id: string;
-  start_time: string;
-  start_date?: string;
-  end_time: string;
-  end_date?: string;
-  jobsite_id: string;
-  costcode: string;
-  duration: string;
-  submit_date: string;
-  employeeId: string;
-  };
-
-  type CostCode = {
-  id: number;
-  cost_code: string;
-  };
-
-  type Jobsite = {
-  id: number;
-  jobsite_id: string;
-  };
-
-  type Equipment = {
-  id: number;
-  name: string;
-  qr_id: string;
-  };
-
-  type EquipmentLog = {
-  id: number;
-  employee_id: string;
-  duration:  string | null;
-  Equipment: Equipment;
-  };
+  import { CostCode, Jobsite, Timesheet, EquipmentLog, AssetEquipment } from "@/lib/types";
 
   type EditWorkProps = {
   edit: boolean;
@@ -60,7 +25,7 @@
   setEdit: (edit: boolean) => void;
   employeeId: string;
   date: string;
-  equipment: Equipment[];
+  equipment: AssetEquipment[];
   };
 
   const EditWork = ({ timesheetData, jobsitesData, costcodesData, edit, equipment, handleFormSubmit, setEdit, employeeId, date }: EditWorkProps) => {
@@ -196,6 +161,7 @@
     }
   }, [timesheetData]);
 
+  // todo: chnage this to be a better server action
   useEffect(() => {
     const fetchData = async () => {
       if (date) {
@@ -208,7 +174,7 @@
             id: Number(log.id),
             Equipment: {
               ...log.Equipment,
-              id: Number(log.Equipment?.id),
+              id: log.Equipment?.id ?? "Unknown",
               name: log.Equipment?.name ?? "Unknown",
               qr_id: log.Equipment?.qr_id ?? "Unknown",
               description: log.Equipment?.description ?? "",

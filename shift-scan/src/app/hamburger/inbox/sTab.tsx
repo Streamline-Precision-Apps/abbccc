@@ -11,6 +11,7 @@ export default function STab({ sentContent} : inboxContent) {
     const denied = sentContent.filter((item) => item.status === "DENIED");
 return (
 <>
+{/*This map show all approved requests on top */}
 {approved.map((item) => (
     <Buttons variant={"green"} size={"maxBtn"} key={item.id} href={`/hamburger/inbox/${item.id}`}>      
         <Titles>
@@ -26,7 +27,7 @@ return (
         })}
     </Buttons>
 ))}
-
+{/*This map show pending requests in the middle*/}
 {pending.map((item) => (
     <Buttons variant={"orange"} size={"maxBtn"} key={item.id} href={`/hamburger/inbox/${item.id}`}>
     <Titles>
@@ -43,6 +44,7 @@ return (
     </Buttons>
 ))}
 
+{/*This map show denined requests on the bottom*/}
 {denied.map((item) => (
     <Buttons variant={"red"} size={"maxBtn"} key={item.id} href={`/hamburger/inbox/${item.id}`}>
     <Titles>
@@ -59,6 +61,7 @@ return (
     </Buttons>
 ))}
 
+{/*This is the request button*/}
 <Buttons 
     href="/hamburger/inbox/form" 
     size={"minBtn"} 

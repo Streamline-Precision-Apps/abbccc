@@ -15,6 +15,42 @@ export type User = {
   phone?: string,
   };
 
+  export type Employee = {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    image: string | null;
+    imageUrl?: string | null;
+  };
+export type Contact = {
+    phone_number: string;
+    email: string;
+    emergency_contact: string;
+    emergency_contact_no: string;
+};
+
+export type Training = {
+    id: number;
+    user_id: string;
+    completed_trainings: number;
+    assigned_trainings: number;
+    completion: boolean;
+    trainings: JSON;
+};
+
+export type Settings = {
+  userId: string;
+  language?: string;
+  approvedRequests?: boolean;
+  timeoffRequests?: boolean;
+  GeneralReminders?: boolean;
+  Biometric?: boolean;
+  cameraAccess?: boolean;
+  LocationAccess?: boolean;
+  };
+
 export type SearchUser = {
   id: string,
   firstName: string,
@@ -93,7 +129,7 @@ signature: {Signature: string | null} | null;
 }
 
 
-export type jobCodes = {
+export type JobCodes = {
   id: number;
   jobsite_id: string;
   jobsite_name: string;
@@ -105,7 +141,7 @@ export type jobCodes = {
       cost_code_description: string;
   };
   
-  export type Equipment = {
+  export type EquipmentCode = {
       id: string;
       qr_id: string;
       name: string;
@@ -120,12 +156,12 @@ export type jobCodes = {
   export type clockProcessProps = {
       session: any;
       locale: string;
-      jobCodes: jobCodes[];
+      jobCodes: JobCodes[];
       CostCodes: CostCode[];
-      equipment: Equipment[];
-      recentJobSites: jobCodes[];
+      equipment: EquipmentCode[];
+      recentJobSites: JobCodes[];
       recentCostCodes: CostCode[];
-      recentEquipment: Equipment[];
+      recentEquipment: EquipmentCode[];
       payPeriodSheets: TimeSheets[];
   }
   
@@ -147,7 +183,7 @@ export type jobCodes = {
       id: number;
       employee_id: string;
       duration:  string | null;
-      Equipment: Equipment;
+      Equipment: EquipmentCode;
       };
 
       export type costCodes = {

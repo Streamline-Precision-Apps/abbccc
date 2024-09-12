@@ -1,7 +1,7 @@
 // import { useTranslations } from 'next-intl';
 
-const SwitchWithLabel = ({children}) => {
-    // const t = useTranslations('');
+
+const SwitchWithLabel = ({children} : any) => {
     return (
         <div className="flex m-6 mb-3 justify-center gap-3">
             {children}

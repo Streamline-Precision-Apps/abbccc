@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { Contents } from "../(reusable)/contents";
 import 'react-image-crop/dist/ReactCrop.css';
 import ReactCrop, { centerCrop, convertToPixelCrop, makeAspectCrop, type Crop } from 'react-image-crop';
-import SetCanvasPreview from "../(inputs)/setCanvasPreview"; // Import your canvas preview function
+import SetCanvasPreview from "./setCanvasPreview"; // Import your canvas preview function
 import { Texts } from "../(reusable)/texts";
 
 interface CameraComponentProps {
