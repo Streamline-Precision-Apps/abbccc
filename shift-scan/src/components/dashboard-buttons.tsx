@@ -4,7 +4,7 @@ import "@/app/globals.css";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { CustomSession } from "@/lib/types";
-import { Manager } from "@/app/(routes)/dashboard/manager";
+import Manager from "@/app/(routes)/dashboard/manager";
 import { useState } from "react";
 import { EquipmentCode, Logs } from "@/lib/types";
 import User from "@/app/(routes)/dashboard/user";
