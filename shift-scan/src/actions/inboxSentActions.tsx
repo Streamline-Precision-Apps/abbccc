@@ -1,7 +1,7 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { FormStatus, PrismaClient } from "@prisma/client";
+import { FormStatus} from "@prisma/client";
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation";
 

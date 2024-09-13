@@ -1,8 +1,18 @@
 // This file holds all the types that will be used in the app
-
 import { Permission } from "@prisma/client";
 // this imports the session types for the app, it works client and server-side
 import { Session } from "next-auth";
+
+//--------------------------------------------------------------------------------------
+// example of using zod for types
+// this synchronize the type needed and updates based on zod data validation.
+
+import {z} from "zod";
+import { clockInFormSchema } from "./validation";
+// whatever i am looking for in the zod data validation will automatically update here
+
+export type clockInForm = z.infer<typeof clockInFormSchema>;
+// -------------------------------------------------------------------------------------
 
 export type User = {
   id: string,
