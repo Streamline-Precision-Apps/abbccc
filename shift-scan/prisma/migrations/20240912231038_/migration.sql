@@ -333,10 +333,11 @@ CREATE TABLE "timeoffRequestForm" (
     "requestType" TEXT NOT NULL,
     "comments" TEXT NOT NULL,
     "mangerComments" TEXT,
-    "approved" BOOLEAN NOT NULL DEFAULT false,
+    "status" "FormStatus" NOT NULL DEFAULT 'PENDING',
     "employee_id" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "decidedBy" TEXT,
 
     CONSTRAINT "timeoffRequestForm_pkey" PRIMARY KEY ("id")
 );

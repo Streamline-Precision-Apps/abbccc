@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 //intialEmployeeEquipment
 import {initialUserSettings, intialEquipment, initialUsers, initialContacts, 
   initialJobsites, initialTimeSheets, initialCrews, initialCrewMembers, initialTrainings, 
-  initialCostCodes,initialCrewJobsites, UserTrainings } from "@/data-access/dataValues";
+  initialCostCodes,initialCrewJobsites, UserTrainings } from "@/data/dataValues";
 import {hash} from "bcryptjs";
 const prisma = new PrismaClient();
 

@@ -66,6 +66,30 @@ export async function EditLeaveRequest(formData: FormData) {
             }
             })
             console.log(result)
+            revalidatePath("/hamburger/inbox/recieved");
+        }
+    } catch (error) {
+        console.log(error)
+    }
+
+}
+export async function ManagerLeaveRequest(formData: FormData) {
+    try {
+        console.log(formData)
+        const managerComment = formData.get("mangerComments") as string
+        const status = formData.get("decision") as string;
+        const name = formData.get("decidedBy") as string;
+        console.log(managerComment, status, name)
+        if (status) {
+            const result = await prisma.timeoffRequestForm.update({
+            where: { id: Number(formData.get("id") as string) },
+            data: {
+            mangerComments : managerComment,
+            status: status as FormStatus,
+            decidedBy: name,
+            }
+            })
+            console.log(result)
             revalidatePath("/hamburger/inbox");
         }
     } catch (error) {

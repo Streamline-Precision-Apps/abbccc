@@ -13,6 +13,7 @@ const SectionVariants = cva(
         darkBlue: "bg-app-dark-blue rounded-2xl p-10",
         green: "bg-app-green rounded-2xl py-10 border-none",
         orange: "bg-app-orange rounded-2xl py-10 border-none",
+        red: "bg-app-red rounded-2xl py-10 border-none",
       },
       size: {
         default: "h-screen min-w-screen",

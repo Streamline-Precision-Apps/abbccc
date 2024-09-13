@@ -11,7 +11,7 @@
     "seed": "ts-node ./prisma/seed.ts"
   },
   "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts",
+    "seed": "ts-node -r tsconfig-paths/register --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts",
     "fetch": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/export-db.ts"
   },
   "dependencies": {
@@ -39,6 +39,7 @@
     "react-modal": "^3.16.1",
     "react-useportal": "^1.0.19",
     "tailwind-merge": "^2.4.0",
+    "tsconfig-paths": "^4.2.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {

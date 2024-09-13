@@ -20,10 +20,6 @@ export default function Content( { sentContent, recievedContent, session } : inb
     const [recievedContents, setRecievedContents] = useState(recievedContent);
     const userId = session?.user?.id;
 
-    async function fetchSentContent() {
-        const results = await getUserSentContent(userId);
-        return results;
-        }
         return (
         <Bases>
         <Contents>
@@ -48,7 +44,7 @@ export default function Content( { sentContent, recievedContent, session } : inb
         isTabActive= {activeTab === 2}
         />  
     </Contents>
-        <Sections variant={"tab"} size={"homepage"}>
+        <Sections variant={"tab"} size={"default"}>
             {activeTab === 1 && <STab  sentContent={sentContent} session={session}/>}  
             {activeTab === 2 && <RTab recievedContent={recievedContent} session={session} sentContent={sentContent}/>}
         </Sections>
