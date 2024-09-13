@@ -1,6 +1,7 @@
 "use server";
 import Content from "@/app/hamburger/inbox/content";
 import { auth } from "@/auth";
+import UserId from "@/components/userId";
 import prisma from "@/lib/prisma";
 
 export default async function Inbox() {
@@ -29,20 +30,15 @@ export default async function Inbox() {
         
     })
 
+    // get all the time request forms
     const recievedContent = await prisma.timeoffRequestForm.findMany({
-        where: {
-            
-        } 
+        where :{
+            status : "PENDING"
+        }
     })
 
-    if (permission === "admin" || permission === "manager") {
-    return (
-        <Content sentContent={sentContent} recievedContent={recievedContent} session={session} />
-    )
-    }
-    else {
+    const pending = sentContent.filter((item) => item.status === "PENDING" );
         return (
-            <Content sentContent={sentContent} session={session} />
+            <Content sentContent={sentContent} recievedContent={recievedContent} session={session} />
         )
     }
-}

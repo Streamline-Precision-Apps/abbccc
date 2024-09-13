@@ -439,6 +439,7 @@ model timeoffRequestForm {
   employee_id        String
   createdAt          DateTime   @default(now())
   updatedAt          DateTime   @updatedAt
+  decidedBy          String? // ment to hold the individual who approved the timesheet
 
   employee User @relation(fields: [employee_id], references: [id])
 }

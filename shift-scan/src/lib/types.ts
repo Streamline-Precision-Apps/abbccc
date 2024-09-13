@@ -109,6 +109,7 @@ export type recievedContent = {
     employee_id: string;
     createdAt: Date;
     updatedAt: Date;
+    decidedBy:String | null
 }
 export type sentContent = {
     id: number;
@@ -122,6 +123,7 @@ export type sentContent = {
     employee_id: string;
     createdAt: Date;
     updatedAt: Date;
+    decidedBy: String | null;
 }
 export type RequestForm = {
 session: Session | null;
