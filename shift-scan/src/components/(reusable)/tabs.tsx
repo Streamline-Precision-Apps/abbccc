@@ -5,7 +5,7 @@ import { cn } from "@/components/(reusable)/utils";
 import React, { useEffect } from 'react'
 import { useState } from "react";
 import {Tab} from "@/components/(reusable)/tab";
-import { getSentContent } from '@/actions/inboxSentActions';
+import { getUserSentContent } from '@/actions/inboxSentActions';
 import { Sections } from '../(reusable)/sections';
 import { Buttons } from '../(reusable)/buttons';
 import { Contents } from "./contents";

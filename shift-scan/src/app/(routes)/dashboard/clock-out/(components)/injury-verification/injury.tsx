@@ -6,7 +6,6 @@ import Checkbox from "./checkBox";
 import {
   clearAuthStep,
   getAuthStep,
-  isDashboardAuthenticated,
 } from "@/app/api/auth";
 import { useRouter } from "next/navigation";
 import Signature from "./Signature";
@@ -41,26 +40,7 @@ export default function InjuryVerification() {
     }
   };
 
-  useEffect(() => {
-    const handlePopstate = () => {
-      if (isDashboardAuthenticated()) {
-        window.location.href = "/before-you-go";
-      }
-    };
-
-    const handleBeforeUnload = (ev: BeforeUnloadEvent) => {
-      ev.preventDefault();
-      ev.returnValue = "";
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    window.addEventListener("popstate", handlePopstate);
-
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-      window.removeEventListener("popstate", handlePopstate);
-    };
-  }, []);
+  
 
   const handleContinue = async () => {
     try {
@@ -93,7 +73,7 @@ export default function InjuryVerification() {
         type="row"
       />
       <h1>{t("SignBelow")}</h1>
-      <Signature onEnd={handleSignatureEnd} />
+      {/* <Signature  /> */}
       {signatureBlob && <p>{t("SignatureCaptured")}</p>}
       <Sections size={"titleBox"} className="flex-row gap-2">
         <h1>{t("SignatureVerify")}</h1>

@@ -13,8 +13,8 @@ interface Props {
 export default function WidgetSection({ user, display, locale, option}: Props) {
 return (
 <>
-{/*Terenary operator to check if the user has permission to see the widget*/}
-    {(user?.permission === "ADMIN" || user?.permission === "SUPERADMIN" || user?.permission === "MANAGER" || user?.permission === "PROJECTMANAGER" )
+{/*Ternary operator to check if the user has permission to see the widget*/}
+    {(user?.permission === "ADMIN" || user?.permission === "SUPERADMIN" || user?.permission === "MANAGER" )
     ? <Manager show={true} /> : null
     }
         <ClockInWidget 

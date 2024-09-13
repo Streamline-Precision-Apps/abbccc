@@ -1,30 +1,48 @@
 import "@/app/globals.css";
-import TeamCards from "./teamCards";
-import {cookies} from "next/headers"
+import { auth } from "@/auth";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Sections } from "@/components/(reusable)/sections";
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
+import prisma from "@/lib/prisma";
+import Content from "@/app/(routes)/dashboard/myTeam/content"
+import { Suspense } from "react";
 
-
-export default function MyTeam(){
-
+export default async function MyTeam(){
+    const session = await auth();
+    const userId = session?.user.id
+    const userCrewData = await prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+            crewMembers: {
+                select: {
+                    crew_id: true,
+                    crew: {
+                        select: {
+                            crewMembers: {
+                                select: {
+                                    user: {
+                                        select: {
+                                            id: true,
+                                            firstName: true,
+                                            lastName: true,
+                                            image: true
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    });
+    
+    // Extract crew members from the fetched data
+    const crew = userCrewData?.crewMembers[0]?.crew?.crewMembers || [];
+    
     return (
-        <Bases variant={"default"}>
-            <Contents size={"default"}>
-                <Sections size={"titleBox"}>
-                    <TitleBoxes 
-                    title="My Team" 
-                    titleImg="/new/team.svg" 
-                    titleImgAlt="Team" 
-                    variant={"default"} 
-                    size={"default"}/>
-                </Sections>
-                <Sections size={"dynamic"}>
-                    <TeamCards />
-                </Sections>
-            </Contents>
-        </Bases>
+    <Content crew={crew}/>
     )
 
 }

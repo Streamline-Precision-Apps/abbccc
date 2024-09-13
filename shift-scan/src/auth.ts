@@ -86,6 +86,8 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     strategy: "jwt",
   },
   providers,
+  trustHost: true,
+  debug: true,
   callbacks: {
     jwt: async ({ token, user }) => {
       if (user) {
@@ -120,4 +122,5 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   pages: {
     signIn: "/signin", // Custom sign-in page
   },
+  
 });
