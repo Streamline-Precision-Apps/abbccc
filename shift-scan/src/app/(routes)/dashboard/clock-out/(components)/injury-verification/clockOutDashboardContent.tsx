@@ -5,7 +5,6 @@ import ClockOutButtons from "@/components/clockOutButtons";
 import {
   clearAuthStep,
   getAuthStep,
-  isDashboardAuthenticated,
 } from "@/app/api/auth";
 import { useRouter } from "next/navigation";
 import { Bases } from "@/components/(reusable)/bases";
