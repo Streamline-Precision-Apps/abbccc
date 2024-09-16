@@ -1,5 +1,5 @@
 import { object, string } from "zod"
- 
+
 export const signInSchema = object({
   username: string({ required_error: "username is required" })
     .min(1, "Username is required"),
