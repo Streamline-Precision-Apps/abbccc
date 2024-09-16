@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 import "@/app/globals.css";
 
-interface Props {
+type Props = {
     date: Promise<string>
     translation: string
 }
