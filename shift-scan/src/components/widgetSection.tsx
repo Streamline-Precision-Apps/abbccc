@@ -3,7 +3,7 @@ import { User } from "@/lib/types"
 import '@/app/globals.css';
 import Manager from "@/app/(routes)/dashboard/manager";
 
-interface Props {
+type Props = {
     user: User;
     display: boolean;
     locale: string;

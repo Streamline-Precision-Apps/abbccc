@@ -4,12 +4,12 @@
 import React, { createContext, useState, ReactNode, useContext } from 'react';
 
 // creates a prop to be passes to a context
-interface SavedCostCodeProps {
+type SavedCostCodeProps = {
     savedCostCode: string | null;
     setCostCode: (costCode: string | null) => void;
 }
 // creates a value to a savedCostCode context
-interface savedCostCode {
+type savedCostCode = {
     savedCostCode: string;
 }
 // creates a context for the savedCostCode we pass this through the export

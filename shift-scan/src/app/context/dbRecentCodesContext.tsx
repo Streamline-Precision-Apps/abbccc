@@ -1,29 +1,12 @@
 // This stores the previous 5 cost codes, jobsites, and equipment that the user has selected. This will make it easier to change cost codes.
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { JobCodes, CostCode, EquipmentCodes } from '@/lib/types';
 
-type JobCode = {
-  id: number;
-  jobsite_id: string;
-  jobsite_name: string;
-};
-
-type CostCode = {
-    id: number;
-    cost_code: string;
-    cost_code_description: string;
-  };
-
-type Equipment = {
-id: string;
-qr_id: string;
-name: string;
-};
-
-interface RecentJobSiteContextType {
-  recentlyUsedJobCodes: JobCode[];
-  setRecentlyUsedJobCodes: React.Dispatch<React.SetStateAction<JobCode[]>>;
-  addRecentlyUsedJobCode: (code: JobCode) => void;
+type RecentJobSiteContextType = {
+  recentlyUsedJobCodes: JobCodes[];
+  setRecentlyUsedJobCodes: React.Dispatch<React.SetStateAction<JobCodes[]>>;
+  addRecentlyUsedJobCode: (code: JobCodes) => void;
 }
 
 const RecentJobSiteContext = createContext<RecentJobSiteContextType>({
@@ -33,9 +16,9 @@ const RecentJobSiteContext = createContext<RecentJobSiteContextType>({
 });
 
 export const RecentJobSiteProvider = ({ children }: { children: ReactNode }) => {
-  const [recentlyUsedJobCodes, setRecentlyUsedJobCodes] = useState<JobCode[]>([]);
+  const [recentlyUsedJobCodes, setRecentlyUsedJobCodes] = useState<JobCodes[]>([]);
 
-  const addRecentlyUsedJobCode = (code: JobCode) => {
+  const addRecentlyUsedJobCode = (code: JobCodes) => {
     setRecentlyUsedJobCodes((prev) => {
       const updatedList = [code, ...prev.filter((c) => c.id !== code.id)];
       return updatedList.slice(0, 5);
@@ -85,9 +68,9 @@ interface RecentCostCodeContextType {
 
 
   interface RecentEquipmentContextType {
-    recentlyUsedEquipment: Equipment[];
-    setRecentlyUsedEquipment: React.Dispatch<React.SetStateAction<Equipment[]>>;
-    addRecentlyUsedEquipment: (equipment: Equipment) => void;
+    recentlyUsedEquipment: EquipmentCodes[];
+    setRecentlyUsedEquipment: React.Dispatch<React.SetStateAction<EquipmentCodes[]>>;
+    addRecentlyUsedEquipment: (equipment: EquipmentCodes) => void;
   }
   
   const RecentEquipmentContext = createContext<RecentEquipmentContextType>({
@@ -97,9 +80,9 @@ interface RecentCostCodeContextType {
   });
   
   export const RecentEquipmentProvider = ({ children }: { children: ReactNode }) => {
-    const [recentlyUsedEquipment, setRecentlyUsedEquipment] = useState<Equipment[]>([]);
+    const [recentlyUsedEquipment, setRecentlyUsedEquipment] = useState<EquipmentCodes[]>([]);
   
-    const addRecentlyUsedEquipment = (equipment: Equipment) => {
+    const addRecentlyUsedEquipment = (equipment: EquipmentCodes) => {
       setRecentlyUsedEquipment((prev) => {
         const updatedList = [equipment, ...prev.filter((e) => e.id !== equipment.id)];
         return updatedList.slice(0, 5);

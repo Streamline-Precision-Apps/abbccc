@@ -15,8 +15,16 @@ const ImageVariants = cva(
         picture: "w-full h-full mt-3",
         editIcon: "absolute z-2 top-24 right-0 bg-app-orange justify-center px-3 py-1 items-center rounded-full",  
       },
+      position: {
+        center: "self-center",
+        left: "self-start",
+        right: "self-end",
+      },
       size: {
-        default: "w-15 h-15",
+        half: "w-[15%]",
+        fill: "w-[50%]",
+
+        default: "self-center w-[40%] max-w-[300px] m-10",
         widgetSm: "h-[80px] w-[80px]",
         widgetMed: "h-[130px] w-[130px]",
         widgetLg: "p-10 w-50 h-50",
@@ -26,7 +34,7 @@ const ImageVariants = cva(
         iconSm : "w-[40px] h-[40px] ",
         icon: "w-[60px] h-[60px] ",
         iconMed: "w-[80px] h-[80px] ",
-        logo: "w-60 h-20",
+        logo: "h-20",
         editIcon : "w-10 h-10 pt-0 ",
         thin: "w-20 h-10",
         password: "w-10 h-10",
@@ -34,6 +42,7 @@ const ImageVariants = cva(
     },
     defaultVariants: {
       variant: "default",
+      position: "center",
       size: "default",
     },
   }
@@ -44,9 +53,9 @@ interface ImageProps extends ImgHTMLAttributes<HTMLImageElement>, VariantProps<t
     titleImgAlt: string;
 }
 
-const Images: FC<ImageProps> = ({className, variant, size, titleImg, titleImgAlt, ...props}) => {
+const Images: FC<ImageProps> = ({className, variant,position, size, titleImg, titleImgAlt, ...props}) => {
     return (
-      <img src={titleImg} alt={titleImgAlt} className={cn(ImageVariants({variant, size, className}))} {...props}/>
+      <img src={titleImg} alt={titleImgAlt} className={cn(ImageVariants({variant,position, size, className}))} {...props}/>
     )
 }
 

@@ -1,12 +1,12 @@
 "use client";
 import React from "react";
 
-interface CheckboxProps {
+type CheckboxProps = {
   checked: boolean;
   onChange: (checked: boolean) => void;
 }
 
-const Checkbox: React.FC<CheckboxProps> = ({ checked, onChange }) => {
+export const Checkbox = ({ checked, onChange }: CheckboxProps) => {
   const handleCheckboxChange = () => {
     onChange(!checked);
   };
@@ -20,5 +20,3 @@ const Checkbox: React.FC<CheckboxProps> = ({ checked, onChange }) => {
       />
   );
 };
-
-export default Checkbox;

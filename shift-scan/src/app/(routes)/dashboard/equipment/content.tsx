@@ -10,7 +10,7 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Forms } from "@/components/(reusable)/forms";
 import { Contents } from "@/components/(reusable)/contents";
 
-interface ContentProps {
+type EquipmentLogs = {
     total: number;
     completed: number;
     green: number;
@@ -18,7 +18,7 @@ interface ContentProps {
     logs: any[];
 }
 
-export default function Content({ user_Id, logs, total, green }: ContentProps) {
+export default function EquipmentLogContent({ user_Id, logs, total, green }: EquipmentLogs) {
     const t = useTranslations("EquipmentContent");
     return (
     <Bases>

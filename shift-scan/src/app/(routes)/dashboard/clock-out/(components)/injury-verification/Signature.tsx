@@ -2,13 +2,12 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { useTranslations } from "next-intl";
 import React, { useRef, useState, useEffect } from "react";
 
-interface SignatureProps {
+type SignatureProps = {
   setBase64String: (base64string: string) => void;
   base64string?: string | null;
-  handleSubmitImage: () => void;
 }
 
-const Signature: React.FC<SignatureProps> = ({ setBase64String, base64string, handleSubmitImage }) => {
+export const Signature = ({ setBase64String, base64string}: SignatureProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null); // Ref for context optimization
   const [isDrawing, setIsDrawing] = useState(false);
@@ -99,4 +98,4 @@ const Signature: React.FC<SignatureProps> = ({ setBase64String, base64string, ha
   );
 };
 
-export default Signature;
+
