@@ -3,12 +3,12 @@
 'use client'
 import React, { createContext, useState, ReactNode, useContext } from 'react';
 
-interface ScanDataEQContextProps {
+type ScanDataEQContextProps = {
     scanEQResult: scanEQResult | null;
     setscanEQResult: (result: scanEQResult | null) => void;
 }
 
-interface scanEQResult {
+type scanEQResult = {
     data: string;
 }
 

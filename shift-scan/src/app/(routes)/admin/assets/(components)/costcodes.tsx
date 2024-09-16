@@ -14,29 +14,8 @@ import { Titles } from "@/components/(reusable)/titles";
 import SearchBar from "@/components/(search)/searchbar";
 import { useTranslations } from "next-intl";
 import { ChangeEvent, Dispatch, FormEvent, SetStateAction, useState } from "react";
+import { costCodes, Jobsite } from "@/lib/types";
 
-type costCodes = {
-    id: number
-    cost_code: string
-    cost_code_description: string
-    cost_code_type: string
-}
-type Jobsite = {
-    id: number;
-    jobsite_id: string;
-    jobsite_name: string;
-    street_number?: string | null;
-    street_name?: string;
-    city?: string;
-    state?: string | null;
-    country?: string;
-    zip?: string;
-    phone?: string;
-    email?: string;
-    created_at?: Date;
-    jobsite_description?: string | null;
-    jobsite_active: boolean;
-}
 type Props = {
     costCodes: costCodes[]
     jobsites: Jobsite[]

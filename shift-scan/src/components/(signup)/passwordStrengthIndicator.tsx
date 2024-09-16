@@ -1,6 +1,6 @@
 import React from 'react';
 
-interface PasswordStrengthIndicatorProps {
+type PasswordStrengthIndicatorProps = {
   password: string;
 }
 
