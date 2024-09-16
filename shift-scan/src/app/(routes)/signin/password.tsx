@@ -13,6 +13,7 @@ import { useTranslations } from "next-intl";
 import { signIn } from "next-auth/react";
 import { setLocale } from "@/actions/cookieActions";
 import { Forms } from "@/components/(reusable)/forms";
+import { Holds } from "@/components/(reusable)/holds";
 
 type props = {
     locale: string
@@ -60,37 +61,41 @@ if (result?.error) {
 
 return (
 <Forms onSubmit={handleSubmit}>
-    <Labels size="default" type="title">
-    {t("Username")}
-    </Labels>
-    <Inputs variant="default" name="username" type="text" required />
-
-    <Labels size="default" type="title">
-    {t("Password")}
-    </Labels>
-    <Contents variant="row" size={null}>
-    <Inputs variant="default" name="password" type={viewSecret ? "text" : "password"} required />
-    <Images
-        titleImg={viewSecret ? "/eye.svg" : "/eye-slash.svg"}
-        titleImgAlt="eye"
-        variant="icon"
-        size="password"
-        onClick={viewPasscode}
-    />
+    <Holds>
+        <Labels size="default" type="title">{t("Username")}</Labels>
+        <Inputs variant="default" name="username" type="text" required />
+        <Contents variant="row" size={null} >
+            <Labels size="default" type="title">{t("Password")}</Labels>
+            <Images
+                titleImg={viewSecret ? "/eye.svg" : "/eye-slash.svg"}
+                titleImgAlt="eye"
+                variant="icon"
+                size="password"
+                onClick={viewPasscode}
+            />
+        </Contents>
+        <Inputs variant="default" name="password" type={viewSecret ? "text" : "password"} required />
+    </Holds>
+    {error && <Texts variant="default" size="default">{error}</Texts>}
+    <Contents size="container">
+        <Buttons variant="link" position="right" size="half" onClick={() => router.push("/login/forgotpassword")}>
+            <Texts size={"p4"} variant={"default"}>{t("btn-forgot")}</Texts>
+        </Buttons>
+    </Contents>
+    <Contents variant="row" size="container">
+    <Contents size="container">
+            <Images titleImg="/new/biometrics.svg" titleImgAlt="biometrics" variant="icon" position="left" size="half" />
+        </Contents>
+        <Contents size="container">
+            <Buttons variant="green" position="center" size="fill" type="submit" >
+            {animation && <Images titleImg="/spinner.svg" titleImgAlt="login" variant="icon" size={"password"} className="animate-spin" />}
+            {!animation &&<Titles >{t("btn-signIn")}</Titles>}
+            </Buttons>
+        </Contents>
     </Contents>
 
-    {error && <Texts variant="default" size="default">{error}</Texts>}
 
-    <Buttons variant="default" size={"widgetMed"} type="submit" >
-    {animation && <Images titleImg="/spinner.svg" titleImgAlt="login" variant="icon" size={"password"} className="animate-spin" />}
-    {!animation &&<Titles size={"titlebox"} variant={"default"}>{t("btn-signIn")}</Titles>}
-    </Buttons>
-
-    <Buttons variant="icon" size="forgotpassword" onClick={() => router.push("/login/forgotpassword")}>
-    <Texts size={"p4"} variant={"default"}>{t("btn-forgot")}</Texts>
-    </Buttons>
-
-    <Contents variant="rowCenter" size={null}>
+    <Contents variant="row" size={null}>
     <Texts size="p1">{t("Spanish")}</Texts>
     <Inputs variant="password" name="locale" type="checkbox" 
         value="true" onChange={(e) => LocaleHandler(e)} 

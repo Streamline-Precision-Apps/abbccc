@@ -1,12 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useTranslations } from "next-intl";
 import "@/app/globals.css";
 import ClockOutButtons from "@/components/clockOutButtons";
-import {
-  clearAuthStep,
-  getAuthStep,
-  isDashboardAuthenticated,
-} from "@/app/api/auth";
 import { useRouter } from "next/navigation";
 import { Bases } from "@/components/(reusable)/bases";
 import { Sections } from "@/components/(reusable)/sections";
