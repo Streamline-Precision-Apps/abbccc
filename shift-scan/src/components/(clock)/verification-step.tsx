@@ -1,28 +1,26 @@
 "use client";
-import React, { useState } from "react";
-import { useTranslations } from "next-intl";
-import { useScanData } from "@/app/context/JobSiteScanDataContext";
-import { useSavedCostCode } from "@/app/context/CostCodeContext";
-import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
-import {
-  CreateTimeSheet,
-  updateTimeSheetBySwitch,
-} from "@/actions/timeSheetActions";
-import { Clock } from "../clock";
-import { setAuthStep } from "@/app/api/auth";
-import UserId from "../userId";
-import { TitleBoxes } from "../(reusable)/titleBoxes";
-import { Sections } from "../(reusable)/sections";
-import { Bases } from "../(reusable)/bases";
-import { exit } from "process";
-import { Buttons } from "../(reusable)/buttons";
-import { Contents } from "../(reusable)/contents";
-import { verify } from "crypto";
-import { Labels } from "../(reusable)/labels";
-import { Inputs } from "../(reusable)/inputs";
-import { Forms } from "../(reusable)/forms";
-import { Images } from "../(reusable)/images";
-import { Texts } from "../(reusable)/texts";
+import React, { useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { useScanData } from '@/app/context/JobSiteScanDataContext';
+import { useSavedCostCode } from '@/app/context/CostCodeContext';
+import { useTimeSheetData } from '@/app/context/TimeSheetIdContext';
+import { CreateTimeSheet, updateTimeSheetBySwitch } from '@/actions/timeSheetActions';
+import { Clock } from '../clock';
+import { setAuthStep } from '@/app/api/auth';
+import UserId from '../userId';
+import { TitleBoxes } from '../(reusable)/titleBoxes';
+import { Sections } from '../(reusable)/sections';
+import { Bases } from '../(reusable)/bases';
+import { exit } from 'process';
+import { Buttons } from '../(reusable)/buttons';
+import { Contents } from '../(reusable)/contents';
+import { verify } from 'crypto';
+import { Labels } from '../(reusable)/labels';
+import { Inputs } from '../(reusable)/inputs';
+import { Forms } from '../(reusable)/forms';
+import { Images } from '../(reusable)/images';
+import { Texts } from '../(reusable)/texts';
+
 
 const VerificationStep: React.FC<{
   id: string | undefined;
@@ -33,6 +31,7 @@ const VerificationStep: React.FC<{
   const t = useTranslations("Clock");
   const { scanResult } = useScanData();
   const { savedCostCode } = useSavedCostCode();
+  const { savedTimeSheetData, setTimeSheetData } = useTimeSheetData();
   const { savedTimeSheetData, setTimeSheetData } = useTimeSheetData();
   const [date] = useState(new Date());
 
@@ -68,33 +67,33 @@ const VerificationStep: React.FC<{
           formData.append("start_time", new Date().toISOString());
           formData.append("end_time", "");
 
-          const response = await CreateTimeSheet(formData);
-          const result = { id: response.id.toString() };
-          setTimeSheetData(result);
-          setAuthStep("success");
-          handleNextStep();
-        } catch (error) {
-          console.log(error);
-        }
-      } else {
-        const formData = new FormData();
-        formData.append("submit_date", new Date().toISOString());
-        formData.append("user_id", id?.toString() || "");
-        formData.append("date", new Date().toISOString());
-        formData.append("jobsite_id", scanResult?.data || "");
-        formData.append("costcode", savedCostCode?.toString() || "");
-        formData.append("start_time", new Date().toISOString());
-
         const response = await CreateTimeSheet(formData);
-        const result = { id: response.id.toString() };
+        const result = { id: (response.id).toString() };
         setTimeSheetData(result);
-        setAuthStep("success");
+        setAuthStep('success');
         handleNextStep();
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+    } else {
+      const formData = new FormData();
+      formData.append('submit_date', new Date().toISOString());
+      formData.append('user_id', id?.toString() || '');
+      formData.append('date', new Date().toISOString());
+      formData.append('jobsite_id', scanResult?.data || '');
+      formData.append('costcode', savedCostCode?.toString() || '');
+      formData.append('start_time', new Date().toISOString());
+
+      const response = await CreateTimeSheet(formData);
+      const result = { id: (response.id).toString() };
+      setTimeSheetData(result);
+      setAuthStep('success');
+      handleNextStep();
+    };
+  } catch (error) {
+    console.log(error);
+  }
+};
   return (
     <>
       <TitleBoxes

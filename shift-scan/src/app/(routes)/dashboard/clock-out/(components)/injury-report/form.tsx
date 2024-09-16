@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { CreateInjuryForm } from "@/actions/injuryReportActions";
 import { useTranslations } from "next-intl";
 
-interface FormProps {
+type FormProps = {
   employeeId: string;
   onFormSubmit: (date: string) => void;
   checked: boolean; // Add checked prop

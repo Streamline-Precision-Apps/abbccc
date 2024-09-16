@@ -1,7 +1,6 @@
 "use server";
 import prisma from "@/lib/prisma";
-import { cookies } from "next/headers";
-import Content from "@/app/(routes)/dashboard/equipment/content";
+import EquipmentLogContent from "@/app/(routes)/dashboard/equipment/content";
 import { auth } from "@/auth";
 
 export default async function Current() {
@@ -27,6 +26,6 @@ export default async function Current() {
     const green = total - completed;
 // usetranslate breaks here for what ever reason
     return (
-        <Content total={total} completed={completed} green={green} user_Id={user_Id} logs={logs} />
+        <EquipmentLogContent total={total} completed={completed} green={green} user_Id={user_Id} logs={logs} />
     );
 }
