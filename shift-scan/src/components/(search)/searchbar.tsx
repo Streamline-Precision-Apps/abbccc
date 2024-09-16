@@ -3,17 +3,17 @@ import React, { ChangeEvent } from 'react';
 import { Images } from '../(reusable)/images';
 
 // defines the searchbar type for typescript
-interface SearchBarProps {
+type SearchBarProps = {
   searchTerm: string;
   onSearchChange: (e: ChangeEvent<HTMLInputElement>) => void;
   placeholder: string;
 }
 
 // defines the searchbar component and what the input should look like
-const SearchBar: React.FC<SearchBarProps> = ({ searchTerm, onSearchChange, placeholder }) => {
+export default function SearchBar({ searchTerm, onSearchChange, placeholder }: SearchBarProps) {
   return (
     <div className="flex border-2 border-black rounded w-5/6 flex-row p-2 w-full">
-    <Images titleImg="/search.svg" titleImgAlt="search" variant={"icon"} size={"lg"}/>
+    <Images titleImg="/search.svg" titleImgAlt="search" variant={"icon"} size={"icon"}/>
     <input 
       type="text"
       value={searchTerm}
@@ -24,5 +24,3 @@ const SearchBar: React.FC<SearchBarProps> = ({ searchTerm, onSearchChange, place
     </div>
   );
 };
-
-export default SearchBar;

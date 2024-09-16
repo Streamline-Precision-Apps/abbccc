@@ -12,10 +12,6 @@ import { useTranslations } from "next-intl";
 
 export default function Content() {
     const t = useTranslations("dashboard");
-
-    // const handleFormSelect = (e :  ) => {
-        
-    // }
     return (
         <Sections size={"default"}>
             <Contents >

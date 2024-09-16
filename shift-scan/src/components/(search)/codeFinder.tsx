@@ -11,7 +11,7 @@ import { useDBJobsite, useDBCostcode, useDBEquipment } from "@/app/context/dbCod
 import { useRecentDBJobsite, useRecentDBCostcode, useRecentDBEquipment } from "@/app/context/dbRecentCodesContext";
 
 
-interface Option {
+type Option = {
 code: string;
 label: string;
 }

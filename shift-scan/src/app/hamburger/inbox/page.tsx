@@ -1,10 +1,12 @@
 "use server";
 import Content from "@/app/hamburger/inbox/content";
 import { auth } from "@/auth";
+import UserId from "@/components/userId";
 import prisma from "@/lib/prisma";
 
 export default async function Inbox() {
     const session = await auth();
+    if (!session) return null
     const user_Id = session?.user.id;
     const permission = session?.user.permission
 
@@ -14,6 +16,7 @@ export default async function Inbox() {
             employee_id: user_Id,   
         }
     })
+
     const myTeamnumber = await prisma.crewMember.findMany({
         where: {
             employee_id: user_Id,
@@ -27,20 +30,15 @@ export default async function Inbox() {
         
     })
 
+    // get all the time request forms
     const recievedContent = await prisma.timeoffRequestForm.findMany({
-        where: {
-            
-        } 
+        where :{
+            status : "PENDING"
+        }
     })
 
-    if (permission === "admin" || permission === "manager") {
-    return (
-        <Content sentContent={sentContent} recievedContent={recievedContent} />
-    )
-    }
-    else {
+    const pending = sentContent.filter((item) => item.status === "PENDING" );
         return (
-            <Content sentContent={sentContent} />
+            <Content sentContent={sentContent} recievedContent={recievedContent} session={session} />
         )
     }
-}

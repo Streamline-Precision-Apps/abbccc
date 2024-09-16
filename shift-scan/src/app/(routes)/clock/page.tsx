@@ -7,7 +7,7 @@ import { Sections } from "@/components/(reusable)/sections";
 import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
 
-export default async function Clock( type : string ) {
+export default async function Clock() {
 const session = await auth();
 const user_Id = session?.user.id;
 

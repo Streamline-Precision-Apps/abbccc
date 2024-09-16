@@ -42,6 +42,7 @@ const ButtonVariants = cva(
         // returnBtn :"w-12 h-12 p-2 absolute top-[-22%] left-[50%] -translate-x-[50%] shadow-[15px 15px 0px 0px #7B7B7B]  ",
         // arrow : "w-[70px] h-[70px] p-2 mx-3",
         // icon:"w-full absolute top-0 left-0",
+        //tapToSign: "w-full h-[200px] justify-center mt-5 ",
       }
     },
     defaultVariants: {

@@ -12,15 +12,10 @@ import { Texts } from "@/components/(reusable)/texts";
 import { Images } from "@/components/(reusable)/images";
 import { Selects } from "@/components/(reusable)/selects";
 import { Options } from "@/components/(reusable)/options";
-
-type Equipment = {
-  id: string;
-  qr_id: string;
-  name: string;
-}
+import { EquipmentCode } from "@/lib/types";
 
 type Props = {
-  equipment: Equipment[];
+  equipment: EquipmentCode[];
 };
 
 export default function QrEquipmentContent({ equipment }: Props) {

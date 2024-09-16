@@ -8,7 +8,7 @@ import { Texts } from '../(reusable)/texts';
 import { useRouter } from 'next/navigation';
 import { Titles } from '../(reusable)/titles';
 
-interface QRStepProps {
+type QRStepProps = {
   handleAlternativePath: () => void;
   handleNextStep: () => void;
   handleChangeJobsite?: () => void;
@@ -18,7 +18,7 @@ interface QRStepProps {
   option?: string;
 }
 
-const QRStep: React.FC<QRStepProps> = ({option, handleReturn, handleAlternativePath, handleNextStep, handleChangeJobsite, type, url }) => {
+export default function QRStep({option, handleReturn, handleAlternativePath, handleNextStep, handleChangeJobsite, type, url }: QRStepProps) {
   const t = useTranslations("Clock");
   const validation = localStorage.getItem("jobSite");
   const router = useRouter();
@@ -51,5 +51,3 @@ const QRStep: React.FC<QRStepProps> = ({option, handleReturn, handleAlternativeP
     </>
   );
 };
-
-export default QRStep;

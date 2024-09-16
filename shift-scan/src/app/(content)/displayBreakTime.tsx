@@ -7,7 +7,7 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Texts } from "@/components/(reusable)/texts";
 import { Contents } from "@/components/(reusable)/contents";
 
-interface BreakTimeProps {
+type BreakTimeProps = {
   display: boolean;
   setToggle: (toggle: boolean) => void;
 }

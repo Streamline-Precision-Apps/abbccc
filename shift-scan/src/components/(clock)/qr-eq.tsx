@@ -4,11 +4,11 @@ import QrScanner from "qr-scanner";
 import { useRouter } from 'next/navigation';
 import { useEQScanData } from '@/app/context/equipmentContext';
 
-interface QrReaderProps {
+type QrReaderProps = {
   handleNextStep: () => void;
 }
 
-const QR_EQ: React.FC<QrReaderProps> = ({ handleNextStep }) => {
+export default function QR_EQ ({ handleNextStep } : QrReaderProps) {
   const videoRef: React.MutableRefObject<HTMLVideoElement | null> = useRef(null);
   const qrScannerRef: React.MutableRefObject<QrScanner | null> = useRef(null);
   const [scanCount, setScanCount] = useState(0);
@@ -76,5 +76,3 @@ const QR_EQ: React.FC<QrReaderProps> = ({ handleNextStep }) => {
       <video ref={videoRef} className="w-full h-[400px] rounded-2xl border-4 bg-gray-300 border-black"></video>
   );
 };
-
-export default QR_EQ;

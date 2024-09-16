@@ -31,14 +31,7 @@ const costCodes = await prisma.costCode.findMany({
     },
 });
 
-const equipment = await prisma.equipment.findMany({
-    select: {
-    id: true,
-    qr_id: true,
-    name: true,
-    image: true,
-    },
-});
+const equipment = await prisma.equipment.findMany();
 
 // Fetch recent records
 const recentJobSites = await prisma.jobsite.findMany({

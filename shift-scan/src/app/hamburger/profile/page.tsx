@@ -5,30 +5,7 @@ import EmployeeInfo from './employeeInfo';
 import prisma from "@/lib/prisma";
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
-
-type Employee = {
-    id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    phone: string;
-};
-
-type Contact = {
-    phone_number: string;
-    email: string;
-    emergency_contact: string;
-    emergency_contact_no: string;
-};
-
-type Training = {
-    id: number;
-    user_id: string;
-    completed_trainings: number;
-    assigned_trainings: number;
-    completion: boolean;
-    trainings: JSON;
-};
+import { Employee, Contact, Training } from '@/lib/types';
 
 export default async function EmployeeProfile() {
     const session = await auth();

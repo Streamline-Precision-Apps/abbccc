@@ -31,6 +31,7 @@ const ImageVariants = cva(
         titlebox: "w-36",
         backButton: "w-15 w-15 pt-0",
         downArrow: "w-[50px] h-[50px]",
+        iconSm : "w-[40px] h-[40px] ",
         icon: "w-[60px] h-[60px] ",
         iconMed: "w-[80px] h-[80px] ",
         logo: "h-20",

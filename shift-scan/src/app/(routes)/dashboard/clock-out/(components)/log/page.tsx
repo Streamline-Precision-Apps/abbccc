@@ -6,27 +6,28 @@ import { setAuthStep } from "@/app/api/auth";
 import { useTranslations } from "next-intl";
 import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
+import { useSession } from "next-auth/react";
 
 export default function Log() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const buttonType = searchParams.get("bt");
   const t = useTranslations("clock-out");
+  const session = useSession()
+  const userId = session?.data?.user?.id
 
   const [error, setError] = useState<string | null>(null);
   const [hasEquipmentCheckedOut, setHasEquipmentCheckedOut] = useState<boolean | null>(null);
 
   useEffect(() => {
     const fetchLogs = async () => {
-      const userCookie = cookies().get("user");
-      const userid = userCookie ? userCookie.value : undefined;
 
       const currentDate = new Date();
       const past24Hours = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
 
       const logs = await prisma.employeeEquipmentLog.findMany({
         where: {
-          employee_id: userid,
+          employee_id: userId,
           createdAt: { lte: currentDate, gte: past24Hours },
           submitted: false,
         },
@@ -39,6 +40,7 @@ export default function Log() {
     };
 
     fetchLogs();
+
 
   }, []);
 
