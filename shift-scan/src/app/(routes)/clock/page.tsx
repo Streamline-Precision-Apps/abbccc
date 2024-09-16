@@ -2,11 +2,8 @@
 import { auth } from "@/auth";
 import ClockProcessor from "@/components/(clock)/clockProcess";
 import { Bases } from "@/components/(reusable)/bases";
-import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
-import { Images } from "@/components/(reusable)/images";
 import { Sections } from "@/components/(reusable)/sections";
-import { Texts } from "@/components/(reusable)/texts";
 import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
 
