@@ -10,15 +10,6 @@ export default async function Timesheets() {
     
     const timesheets = await prisma.timeSheet.findMany({ 
     where: { userId: id },
-    select: {
-        id: true,
-        date: true,
-        jobsite_id: true,
-        costcode: true,
-        start_time: true,
-        end_time: true,
-        duration: true,
-    }
 });
     
     return (

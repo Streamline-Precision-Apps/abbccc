@@ -1,29 +1,12 @@
 // This context is used to get the data from the database and stores it in a state.
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { CostCode, JobCodes, EquipmentCodes } from '@/lib/types';
 
-// Define types for each context
-type CostCode = {
-id: number;
-cost_code: string;
-cost_code_description: string;
-};
 
-type Equipment = {
-id: string;
-qr_id: string;
-name: string;
-};
-
-type JobCode = {
-id: number;
-jobsite_id: string;
-jobsite_name: string;
-};
-
-interface JobSiteContextType {
-jobsiteResults: JobCode[];
-setJobsiteResults: React.Dispatch<React.SetStateAction<JobCode[]>>;
+type JobSiteContextType = {
+jobsiteResults: JobCodes[];
+setJobsiteResults: React.Dispatch<React.SetStateAction<JobCodes[]>>;
 }
 
 const JobSiteContext = createContext<JobSiteContextType>({
@@ -32,7 +15,7 @@ setJobsiteResults: () => {},
 });
 
 export const JobSiteProvider = ({ children }: { children: ReactNode }) => {
-const [jobsiteResults, setJobsiteResults] = useState<JobCode[]>([]);
+const [jobsiteResults, setJobsiteResults] = useState<JobCodes[]>([]);
 
 return (
 <JobSiteContext.Provider value={{ jobsiteResults, setJobsiteResults }}>
@@ -43,7 +26,7 @@ return (
 
 export const useDBJobsite = () => useContext(JobSiteContext);
 
-interface CostCodeContextType {
+type CostCodeContextType = {
 costcodeResults: CostCode[];
 setCostcodeResults: React.Dispatch<React.SetStateAction<CostCode[]>>;
 }
@@ -67,9 +50,9 @@ export const useDBCostcode = () => useContext(CostCodeContext);
 
 
 
-interface EquipmentContextType {
-equipmentResults: Equipment[];
-setEquipmentResults: React.Dispatch<React.SetStateAction<Equipment[]>>;
+type EquipmentContextType = {
+equipmentResults: EquipmentCodes[];
+setEquipmentResults: React.Dispatch<React.SetStateAction<EquipmentCodes[]>>;
 }
 
 const EquipmentContext = createContext<EquipmentContextType>({
@@ -78,7 +61,7 @@ setEquipmentResults: () => {},
 });
 
 export const EquipmentProvider = ({ children }: { children: ReactNode }) => {
-const [equipmentResults, setEquipmentResults] = useState<Equipment[]>([]);
+const [equipmentResults, setEquipmentResults] = useState<EquipmentCodes[]>([]);
 
 return (
     <EquipmentContext.Provider value={{ equipmentResults, setEquipmentResults }}>
