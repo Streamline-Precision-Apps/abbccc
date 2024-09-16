@@ -224,3 +224,20 @@ I finished some more prisma DB research and Created the clock out dashboard page
 - Worked on add timesheet for admin.
 - Code review with team.
 - Merge meeting with team.
+
+## 9/11/2024
+
+- Worked on team manager section.
+- Code review with team (type managment)
+
+## 9/12/2024
+
+- Code Review for type completion for the whole application.
+- Started ability to search Jobsites and choose costcodes that are only in that jobsite.
+- Worked more on components for the team manager section.
+
+## 9/13/2024
+
+- Code review- Work on Prisma Schema names and table contents.
+- Worked on team manager section.
+- Organized types section.
