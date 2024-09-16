@@ -1,48 +1,113 @@
-import "@/app/globals.css";
-import { auth } from "@/auth";
-import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
-import { Sections } from "@/components/(reusable)/sections";
+"use client";
 import { Bases } from "@/components/(reusable)/bases";
+import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
-import prisma from "@/lib/prisma";
-import Content from "@/app/(routes)/dashboard/myTeam/content"
-import { Suspense } from "react";
+import { Images } from "@/components/(reusable)/images";
+import { Sections } from "@/components/(reusable)/sections";
+import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
+import { Titles } from "@/components/(reusable)/titles";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
 
-export default async function MyTeam(){
-    const session = await auth();
-    const userId = session?.user.id
-    const userCrewData = await prisma.user.findUnique({
-        where: { id: userId },
-        select: {
-            crewMembers: {
-                select: {
-                    crew_id: true,
-                    crew: {
-                        select: {
-                            crewMembers: {
-                                select: {
-                                    user: {
-                                        select: {
-                                            id: true,
-                                            firstName: true,
-                                            lastName: true,
-                                            image: true
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+type CrewMember = {
+    user: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    image: string | null;
+};
+};
+
+export default function Content() {
+const [crew, setCrew] = useState<CrewMember[]>([]);
+const [isLoading, setIsLoading] = useState(true);
+const { data: session, status } = useSession();
+
+useEffect(() => {
+const fetchCrew = async () => {
+    try {
+    setIsLoading(true);
+    const response = await fetch("/api/getCrew");
+    if (response.ok) {
+        const crewData = await response.json();
+        setCrew(crewData);
+    } else {
+        console.error("Failed to fetch crew data");
+    }
+    } catch (error) {
+    console.error("Error fetching crew data:", error);
+    } finally {
+    setIsLoading(false);
+    }
+};
+
+if (status === "authenticated") {
+    fetchCrew();
+}
+}, [status]);
+
+return (
+<Bases variant="default">
+    <Contents size="default">
+    <Sections size="titleBox">
+        <TitleBoxes
+        title="My Team"
+        titleImg="/new/team.svg"
+        titleImgAlt="Team"
+        variant="default"
+        size="default"
+        />
+    </Sections>
+    {isLoading ? <>
+        <Sections size="dynamic">
+        <Buttons
+            variant="default"
+            size="listLg"
+            >
+            <Contents variant="row" size="listTitle">
+            <Titles size="h1">
+            </Titles>
+            <Images 
+            titleImg="/new/ongoing.svg"
+            titleImgAlt="loading icon"
+            variant="icon"
+            size={"default"}
+            className="animate-spin"
+            />
+            </Contents>
+        </Buttons>
+        </Sections>
+    </> :
+    <Sections size="dynamic">
+        {crew.map((userCrewId) => (
+            <Buttons
+            key={userCrewId.user.id}
+            id={userCrewId.user.id}
+            href={`/dashboard/myTeam/${userCrewId.user.id}`}
+            variant="default"
+            size="listLg"
+            >
+            <Contents variant="image" size="listImage">
+            <Images
+            titleImg={
+                userCrewId.user.image ?? "./new/default-profile.svg"
             }
-        }
-    });
-    
-    // Extract crew members from the fetched data
-    const crew = userCrewData?.crewMembers[0]?.crew?.crewMembers || [];
-    
-    return (
-    <Content crew={crew}/>
-    )
-
+            titleImgAlt="profile picture"
+            variant="icon"
+            size="default"
+            loading="lazy"
+            />
+            </Contents>
+            <Contents variant="row" size="listTitle">
+            <Titles size="h1">
+            {userCrewId.user.firstName} {userCrewId.user.lastName}
+            </Titles>
+            </Contents>
+            </Buttons>
+        ))}
+        </Sections>
+    }
+        </Contents>
+        </Bases>
+    );
 }
