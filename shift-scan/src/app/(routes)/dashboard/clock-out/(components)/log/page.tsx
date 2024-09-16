@@ -25,11 +25,11 @@ export default function Log() {
       const currentDate = new Date();
       const past24Hours = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
 
-      const logs = await prisma.employeeEquipmentLog.findMany({
+      const logs = await prisma.employeeEquipmentLogs.findMany({
         where: {
-          employee_id: userId,
+          employeeId: userId,
           createdAt: { lte: currentDate, gte: past24Hours },
-          submitted: false,
+          isSubmitted: false,
         },
         include: {
           Equipment: true,

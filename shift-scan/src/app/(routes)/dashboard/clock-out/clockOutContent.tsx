@@ -109,9 +109,8 @@ export default function ClockOutContent({
         "id",
         savedTimeSheetData?.id || localStorageData.timesheet.id.toString()
       );
-      formData.append("end_time", new Date().toString());
-      formData.append("timesheet_comments", "");
-      formData.append("app_comments", "");
+      formData.append("endTime", new Date().toString());
+      formData.append("timesheetComments", "");
 
       const date = await updateTimeSheet(formData);
       const retrieve = date?.date?.toString();
@@ -197,7 +196,7 @@ export default function ClockOutContent({
             {/* Button changes based on checkbox state */}
             <Buttons
               variant={checked ? "green" : "red"} // Green for Continue, Red for Report an Injury
-              size={"widgetMed"}
+              size={null}
               onClick={handleNextStepAndSubmit}
             >
               <Titles size={"h3"}>

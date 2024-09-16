@@ -13,7 +13,7 @@ import STab from './sTab';
 import RTab from './rTab';
 import { Contents } from '@/components/(reusable)/contents';
 
-export default function Content( { sentContent, recievedContent, session } : inboxContent) {
+export default function Content( { sentContent, receivedContent: recievedContent, session } : inboxContent) {
     const t = useTranslations("Hamburger");
     const [activeTab, setActiveTab] = useState(1);
     const [sentContents, setSentContents] = useState([]);
@@ -46,7 +46,7 @@ export default function Content( { sentContent, recievedContent, session } : inb
     </Contents>
         <Sections variant={"tab"} size={"default"}>
             {activeTab === 1 && <STab  sentContent={sentContent} session={session}/>}  
-            {activeTab === 2 && <RTab recievedContent={recievedContent} session={session} sentContent={sentContent}/>}
+            {activeTab === 2 && <RTab receivedContent={recievedContent} session={session} sentContent={sentContent}/>}
         </Sections>
         </Contents>
         </Bases>  
