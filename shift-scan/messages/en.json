@@ -278,7 +278,21 @@
         "Manager": "Manager",
         "ProjectManager": "Project Manager",
         "SuperAdmin": "Super Admin",
-        "Admin": "Admin"
+        "Admin": "Admin",
+        "JobsiteID": "Jobsite ID",
+        "CostCode": "Cost Code",
+        "VehicleId": "Vehicle ID",
+        "StartTime": "Start Time",
+        "EndTime": "End Time",
+        "StartingMileage": "Starting Mileage",
+        "EndingMileage": "Ending Mileage",
+        "LeftIdaho": "Left Idaho",
+        "EquipmentHauled": "Equipment Hauled",
+        "HauledLoadsQuantity": "Hauled Loads Quantity",
+        "GallonsRefueled": "Gallons Refueled",
+        "Comments": "Comments",
+        "AppComments": "App Comments",
+        "Date": "Date"
     },
     "admin-assets-jobsite": {
         "submit": "Submit",

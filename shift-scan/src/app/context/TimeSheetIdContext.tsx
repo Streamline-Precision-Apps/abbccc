@@ -2,11 +2,11 @@
 
 import React, { createContext, useState, ReactNode, useContext, useEffect } from "react";
 
-interface TimeSheetData {
+type TimeSheetData = {
 id: string;
 }
 
-interface TimeSheetDataContextType {
+type TimeSheetDataContextType = {
 savedTimeSheetData: TimeSheetData | null;
 setTimeSheetData: (timesheetData: TimeSheetData | null) => void;
 }

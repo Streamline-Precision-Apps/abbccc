@@ -89,6 +89,7 @@ export default function Content({
                   id={userId}
                   handleNextStep={handleNextStep}
                 />
+                
               )}
               {step === 6 && (
                 <Permissions id={userId} handleAccept={handleComplete} />
