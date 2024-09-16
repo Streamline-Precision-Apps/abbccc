@@ -9,12 +9,12 @@ export default async function AdminDashboard() {
       });
   const userId = session?.user.id;
 
-  const user = await prisma.user.findUnique({
+  const user = await prisma.users.findUnique({
     where: {
         id: userId,
       },
       select: {
-        Signature: true,
+        signature: true,
       },
     })
     .catch((err) => {
@@ -23,5 +23,5 @@ export default async function AdminDashboard() {
     });
 
 
-  return <ClockOutContent id={userId ?? ""} signature={user?.Signature ?? null} />;
+  return <ClockOutContent id={userId ?? ""} signature={user?.signature ?? null} />;
 }

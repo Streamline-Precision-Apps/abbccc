@@ -25,7 +25,7 @@ export default function Hours({ setToggle, display }: HoursProps) {
 
   return display ? (
     <>
-      <Buttons onClick={handler} variant={"darkBlue"} size={"hours"}>
+      <Buttons onClick={handler} variant={"darkBlue"} size={"fill"}>
         <Texts variant={"totalHours"} size={"p0"}>
           {t("PayPeriodHours")}
         </Texts>

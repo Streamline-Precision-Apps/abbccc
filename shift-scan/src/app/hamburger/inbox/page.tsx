@@ -11,27 +11,27 @@ export default async function Inbox() {
     const permission = session?.user.permission
 
     // gives you all the inbox of the user with no filter so well come back here later.
-    const sentContent = await prisma.timeoffRequestForm.findMany({
+    const sentContent = await prisma.timeoffRequestForms.findMany({
         where: {
-            employee_id: user_Id,   
+            employeeId: user_Id,   
         }
     })
 
-    const myTeamnumber = await prisma.crewMember.findMany({
+    const myTeamnumber = await prisma.crewMembers.findMany({
         where: {
-            employee_id: user_Id,
+            employeeId: user_Id,
         }
     })
-    const crewMembers = prisma.crewMember.findMany({
+    const crewMembers = prisma.crewMembers.findMany({
         where: {
-            crew_id: myTeamnumber[0].crew_id,
+            crewId: myTeamnumber[0].crewId,
             supervisor: false
         }
         
     })
 
     // get all the time request forms
-    const recievedContent = await prisma.timeoffRequestForm.findMany({
+    const recievedContent = await prisma.timeoffRequestForms.findMany({
         where :{
             status : "PENDING"
         }
@@ -39,6 +39,6 @@ export default async function Inbox() {
 
     const pending = sentContent.filter((item) => item.status === "PENDING" );
         return (
-            <Content sentContent={sentContent} recievedContent={recievedContent} session={session} />
+            <Content sentContent={sentContent} receivedContent={recievedContent} session={session} />
         )
     }

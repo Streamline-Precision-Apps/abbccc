@@ -61,8 +61,8 @@ return (
     {isLoading ? <>
         <Sections size="dynamic">
         <Buttons
-            variant="default"
-            size="listLg"
+            variant="lightBlue"
+            size={null}
             >
             <Contents variant="row" size="listTitle">
             <Titles size="h1">
@@ -84,8 +84,8 @@ return (
             key={userCrewId.user.id}
             id={userCrewId.user.id}
             href={`/dashboard/myTeam/${userCrewId.user.id}`}
-            variant="default"
-            size="listLg"
+            variant="lightBlue"
+            size={null}
             >
             <Contents variant="image" size="listImage">
             <Images

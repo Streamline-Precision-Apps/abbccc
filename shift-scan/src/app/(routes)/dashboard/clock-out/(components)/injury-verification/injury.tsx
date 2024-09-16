@@ -68,11 +68,11 @@ export default function InjuryVerification() {
       {error && <div className="text-red-500">{error}</div>}
       <div>
         {checked ? (
-          <Buttons variant={"green"} size={"default"} >
+          <Buttons variant={"green"} size={null} >
               {t("Continue")}
             </Buttons>
         ) : (
-          <Buttons variant={"red"} size={"default"}  onClick={handleReportInjury} >
+          <Buttons variant={"red"} size={null}  onClick={handleReportInjury} >
             {t("ReportInjury")}
         </Buttons>
         )}

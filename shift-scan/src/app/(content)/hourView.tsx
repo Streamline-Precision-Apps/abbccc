@@ -31,25 +31,25 @@ export default function ViewComponent({ scrollLeft, scrollRight, returnToMain, c
     if (Weekday === today.toLocaleDateString(locale, { weekday: 'long' }) && currentDate.toLocaleDateString(locale, { month: 'short', day: 'numeric', year: 'numeric' }) === today.toLocaleDateString(locale, { month: 'short', day: 'numeric', year: 'numeric' })) {
         Weekday = `${t("DA-Today")}`;
     }
-    const datetoday = currentDate.toLocaleDateString(locale, { month: 'short', day: 'numeric', year: 'numeric' });
+    const dateToday = currentDate.toLocaleDateString(locale, { month: 'short', day: 'numeric', year: 'numeric' });
 
     return (
 
         <>
         <Contents variant={"rowSpaceBetween"} size={null}>
-                <Buttons variant={"red"} size={"returnBtn"} onClick={returnToMain}  >
+                <Buttons variant={"red"} size={null} onClick={returnToMain}  >
                 <Images titleImg={"/new/turnBack.svg"} titleImgAlt="left" variant={"icon"} size={"widgetSm"} />
                 </Buttons>
-                <Buttons variant={"default"} size={"arrow"} position={"leftArrow"} className=" shadow-none" onClick={scrollLeft} ><Images titleImg={"/new/backArrow.svg"} titleImgAlt="left" variant={"icon"} size={"widgetSm"} /></Buttons>
+                <Buttons variant={"lightBlue"} size={null} position={"left"} className=" shadow-none" onClick={scrollLeft} ><Images titleImg={"/new/backArrow.svg"} titleImgAlt="left" variant={"icon"} size={"widgetSm"} /></Buttons>
             <Contents variant={"center"} size={"default"}>
                 
                 <Contents variant={"colCenter"} size={"test"} >
                 <Texts variant={"totalHours"} size={"p0"}>{Weekday}</Texts>
-                <Texts variant={"totalHours"} size={"p4"}>{datetoday}</Texts>
+                <Texts variant={"totalHours"} size={"p4"}>{dateToday}</Texts>
                 </Contents>
             
             </Contents>
-                <Buttons variant={"default"} size={"arrow"} position={"rightArrow"} className=" shadow-none" onClick={scrollRight} ><Images titleImg={"/new/forwardArrow.svg"} titleImgAlt="left" variant={"icon"} size={"widgetSm"} /></Buttons>
+                <Buttons variant={"lightBlue"} size={null} position={"right"} className=" shadow-none" onClick={scrollRight} ><Images titleImg={"/new/forwardArrow.svg"} titleImgAlt="left" variant={"icon"} size={"widgetSm"} /></Buttons>
         </Contents>
         </>
     );
