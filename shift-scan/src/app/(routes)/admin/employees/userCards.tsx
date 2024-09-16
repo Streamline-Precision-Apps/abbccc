@@ -37,7 +37,7 @@ export default function UserCards({ users }: UserCardsProps) {
           <Buttons
             key={user.id}
             id={user.id}
-            href={`/dashboard/myTeam/${user.id}`}
+            href={`/admin/employees/${user.id}`}
             variant={"default"}
             size={"listLg"}
           >

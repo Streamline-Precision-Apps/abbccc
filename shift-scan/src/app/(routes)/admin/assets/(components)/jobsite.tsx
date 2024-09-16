@@ -14,26 +14,11 @@ import SearchBar from "@/components/(search)/searchbar";
 import { useTranslations } from "next-intl";
 import React, { Dispatch, SetStateAction } from "react";
 import { ChangeEvent, useState } from "react";
+import { Jobsite as JobsiteType } from "@/lib/types";
 
-type Jobsite = {
-    id: number;
-    jobsite_id: string;
-    jobsite_name: string;
-    street_number?: string | null;
-    street_name?: string;
-    city?: string;
-    state?: string | null;
-    country?: string;
-    zip?: string;
-    phone?: string;
-    email?: string;
-    created_at?: Date;
-    jobsite_description?: string | null;
-    jobsite_active: boolean;
-    comments?: string | null;
-}
+
 type Props = {
-    jobsites: Jobsite[];
+    jobsites: JobsiteType[];
     setBanner: Dispatch<SetStateAction<string>>;
     setShowBanner:  Dispatch<SetStateAction<boolean>>
 }
@@ -42,8 +27,8 @@ export default function Jobsite( { jobsites, setBanner, setShowBanner }: Props )
     const t = useTranslations("admin-assets-jobsite");
     const [searchTerm1, setSearchTerm1] = useState<string>("");
     const [searchTerm2, setSearchTerm2] = useState<string>("");
-    const [jobsiteList, setJobsiteList] = useState<Jobsite[]>(jobsites);
-    const [Response, setResponse] = useState<Jobsite | null>(null);
+    const [jobsiteList, setJobsiteList] = useState<JobsiteType[]>(jobsites);
+    const [Response, setResponse] = useState<JobsiteType | null>(null);
     const [editForm, setEditForm] = useState<boolean>(true);
     
     // Reset the form when the modal is closed
@@ -69,7 +54,7 @@ export default function Jobsite( { jobsites, setBanner, setShowBanner }: Props )
         if (id === '2') {
             const response = await fetchByNameJobsite(searchTerm2);
             if (response) {
-                setResponse(response as unknown as Jobsite); // No need to access the first element of an array
+                setResponse(response as unknown as JobsiteType); // No need to access the first element of an array
             } else {
                 console.log("Error fetching equipment.");
             }
@@ -78,7 +63,7 @@ export default function Jobsite( { jobsites, setBanner, setShowBanner }: Props )
             }
         const response = await fetchByNameJobsite(searchTerm1);
         if (response) {
-          setResponse(response as unknown as Jobsite); // No need to access the first element of an array
+          setResponse(response as unknown as JobsiteType); // No need to access the first element of an array
         } else {
             console.log("Error fetching equipment.");
         }

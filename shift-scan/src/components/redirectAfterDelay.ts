@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-interface RedirectAfterDelayProps {
+type RedirectAfterDelayProps = {
     delay: number;
     to: string;
 }
 
-const RedirectAfterDelay: React.FC<RedirectAfterDelayProps> = ({ delay, to }) => {
+export default function RedirectAfterDelay({ delay, to }: RedirectAfterDelayProps) {
     const router = useRouter();
 
     useEffect(() => {
@@ -19,5 +19,3 @@ const RedirectAfterDelay: React.FC<RedirectAfterDelayProps> = ({ delay, to }) =>
 
     return null;
 };
-
-export default RedirectAfterDelay;
