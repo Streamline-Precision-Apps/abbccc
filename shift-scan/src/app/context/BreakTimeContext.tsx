@@ -3,7 +3,7 @@
 "use client";
 import React, { createContext, useState, useContext, ReactNode, useEffect } from "react";
 
-interface SavedBreakTimeProps {
+type SavedBreakTimeProps = {
   breakTime: number;
   setBreakTime: React.Dispatch<React.SetStateAction<number>>;
 }

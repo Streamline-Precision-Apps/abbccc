@@ -4,7 +4,7 @@
 import { PayPeriodTimesheets } from "@/lib/types";
 import React, { createContext, useState, ReactNode, useContext } from "react";
 
-interface PayPeriodTimeSheetProps {
+type PayPeriodTimeSheetProps = {
   payPeriodTimeSheet: PayPeriodTimesheets[] | null;
   setPayPeriodTimeSheets: (
     payPeriodTimeSheets: PayPeriodTimesheets[] | null

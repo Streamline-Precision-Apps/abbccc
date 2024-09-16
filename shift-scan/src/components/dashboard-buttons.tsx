@@ -10,7 +10,7 @@ import { Equipment, Logs } from "@/lib/types";
 import User from "@/app/(routes)/dashboard/user";
 
 
-interface DashboardButtonsProps {
+type DashboardButtonsProps = {
   logs: Logs[]; // Use the consistent Logs type
   locale: string;
 }

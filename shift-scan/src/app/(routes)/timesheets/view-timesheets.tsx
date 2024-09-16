@@ -11,16 +11,8 @@ import { findTimesheetsforDay } from "@/actions/timeSheetActions";
 import { Texts } from "@/components/(reusable)/texts";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Labels } from "@/components/(reusable)/labels";
+import { Timesheet } from "@/lib/types";
 
-type Timesheet = {
-    id: number;
-    date: Date;
-    jobsite_id: string;
-    costcode: string;
-    start_time: Date;
-    end_time: Date | null;
-    duration: number | null;
-}
 type Props = {
     timesheets: Timesheet[]
     user : string | undefined
@@ -65,7 +57,7 @@ export default function ViewTimesheets({ timesheets, user }: Props) {
                                 timesheetData.map((timesheet) => (
                                     <Contents key={timesheet.id} variant={"green"} size={null}>
                                         <Texts>Timesheet ID: {timesheet.id}</Texts>
-                                        <Texts>Start Time: {timesheet.start_time.toLocaleString()}</Texts>
+                                        <Texts>Start Time: {timesheet.start_time?.toLocaleString()}</Texts>
                                         <Texts>End Time: {timesheet.end_time?.toLocaleString() || "N/A"}</Texts>
                                         <Texts>Duration: {(timesheet.duration)?.toFixed(2)}</Texts>
                                         <Texts>Jobsite ID: {timesheet.jobsite_id}</Texts>
