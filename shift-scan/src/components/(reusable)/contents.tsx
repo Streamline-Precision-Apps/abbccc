@@ -30,16 +30,19 @@ const ContentVariants = cva(
         barChartWrapper: "flex flex-row justify-center rounded-2xl shadow-[8px_8px_0px_grey] p-4 border-4 border-black w-full h-fit bg-white mt-4",
       },
       size: {
-        default: "h-fit max-w-lg mx-auto pt-10",
+        container: "w-full h-full",
+        default: "h-fit max-w-lg mx-auto pt-10 bg-pink-300",
+
+
         notTop: "h-full max-w-lg mx-auto pt-0",
         listImage: "w-52 h-40 rounded-r-full border-black border-4 overflow-hidden -ml-3 justify-self-start",
         listTitle: "w-full justify-center",
-        logo: "w-full h-36 justify-center items-center",
+        logo: "items-center bg-green-300 my-10",
         devun1: "w-1/2 h-36 justify-center items-center",
         profilePic: "w-36 h-36 rounded-full border-black border-4 overflow-hidden justify-self-center",
         hoursBtn: "mx-12 h-20 rounded-2xl border-2 border-black shadow-none flex flex-grow justify-center items-center",
         nameContainer: "w-full h-fit py-5",
-        test: "",
+        test: "bg-red-400 w-full m-5 sm:w-4/5 md:w-3/4 lg:w-1/2",
         editBtn: "absolute top-0 h-36 w-36 rounded-full",
         defaultHours: "w-[100px] h-[300px] mx-auto rounded-2xl pt-3 pb-3 px-2 flex flex-col justify-end",
         verifyStep: "items-center w-full h-[800px] m-auto",

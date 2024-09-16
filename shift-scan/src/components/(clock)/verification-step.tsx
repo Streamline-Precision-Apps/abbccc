@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useScanData } from '@/app/context/JobSiteScanDataContext';
 import { useSavedCostCode } from '@/app/context/CostCodeContext';
-import { useSavedTimeSheetData } from '@/app/context/TimeSheetIdContext';
+import { useTimeSheetData } from '@/app/context/TimeSheetIdContext';
 import { CreateTimeSheet, updateTimeSheetBySwitch } from '@/actions/timeSheetActions';
 import { Clock } from '../clock';
 import { setAuthStep } from '@/app/api/auth';
@@ -26,7 +26,7 @@ const VerificationStep: React.FC<{ id: string | undefined; handleNextStep: () =>
   const t = useTranslations("Clock");
   const { scanResult } = useScanData();
   const { savedCostCode } = useSavedCostCode();
-  const { savedTimeSheetData, setSavedTimeSheetData } = useSavedTimeSheetData();
+  const { savedTimeSheetData, setTimeSheetData } = useTimeSheetData();
   const [date] = useState(new Date());
 
   
@@ -64,7 +64,7 @@ const VerificationStep: React.FC<{ id: string | undefined; handleNextStep: () =>
 
         const response = await CreateTimeSheet(formData);
         const result = { id: (response.id).toString() };
-        setSavedTimeSheetData(result);
+        setTimeSheetData(result);
         setAuthStep('success');
         handleNextStep();
       } catch (error) {
@@ -81,7 +81,7 @@ const VerificationStep: React.FC<{ id: string | undefined; handleNextStep: () =>
 
       const response = await CreateTimeSheet(formData);
       const result = { id: (response.id).toString() };
-      setSavedTimeSheetData(result);
+      setTimeSheetData(result);
       setAuthStep('success');
       handleNextStep();
     };

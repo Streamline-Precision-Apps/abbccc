@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import "@/app/globals.css";
-import { isDashboardAuthenticated } from "@/app/api/auth";
 import { useRouter, useSearchParams } from "next/navigation";
 import { setAuthStep } from "@/app/api/auth";
 import { useTranslations } from "next-intl";
@@ -41,24 +40,6 @@ export default function Log() {
 
     fetchLogs();
 
-    const handlePopstate = () => {
-      if (isDashboardAuthenticated()) {
-        window.location.href = "/dashboard/clock-out/log";
-      }
-    };
-
-    const handleBeforeUnload = (ev: BeforeUnloadEvent) => {
-      ev.preventDefault();
-      ev.returnValue = "";
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    window.addEventListener("popstate", handlePopstate);
-
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-      window.removeEventListener("popstate", handlePopstate);
-    };
   }, []);
 
   useEffect(() => {

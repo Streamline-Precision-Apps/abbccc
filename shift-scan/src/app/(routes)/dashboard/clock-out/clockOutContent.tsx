@@ -5,14 +5,14 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Sections } from "@/components/(reusable)/sections";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useEffect, useState } from "react";
-import Signature from "./(components)/injury-verification/Signature";
-import Checkbox from "./(components)/injury-verification/checkBox";
+import { Signature } from "./(components)/injury-verification/Signature";
+import { Checkbox } from "./(components)/injury-verification/checkBox";
 import { useTranslations } from "next-intl";
 import { InjuryReportContent } from "./(components)/injury-report/injuryReportContent";
 import { Titles } from "@/components/(reusable)/titles";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
-import { useSavedTimeSheetData } from "@/app/context/TimeSheetIdContext";
+import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
 import { useRouter } from "next/navigation";
 import { updateTimeSheet, GetAllTimeSheets } from "@/actions/timeSheetActions";
 import { Banners } from "@/components/(reusable)/banners";
@@ -22,7 +22,6 @@ import { Clock } from "@/components/clock";
 import { uploadFirstSignature } from "@/actions/userActions";
 import { Forms } from "@/components/(reusable)/forms";
 import { Inputs } from "@/components/(reusable)/inputs";
-import { useSession } from "next-auth/react";
 
 // Custom hook for managing banners
 function useBanner(initialMessage = "") {
@@ -39,7 +38,7 @@ function useBanner(initialMessage = "") {
   return { showBanner, bannerMessage, setShowBanner, setBannerMessage };
 }
 
-interface ClockOutContentProps {
+type ClockOutContentProps = {
   id: string;
   signature: string | null;
 }
@@ -57,7 +56,7 @@ export default function ClockOutContent({
     useBanner();
   const { scanResult } = useScanData();
   const { savedCostCode } = useSavedCostCode();
-  const { savedTimeSheetData } = useSavedTimeSheetData();
+  const { savedTimeSheetData } = useTimeSheetData();
 
   const localStorageData = {
     jobsite: localStorage.getItem("jobSite"),
@@ -187,7 +186,6 @@ export default function ClockOutContent({
               <Signature
                 setBase64String={setBase64String}
                 base64string={base64String}
-                handleSubmitImage={handleSubmitImage}
               />
             </Sections>
             <Sections size={"titleBox"}>

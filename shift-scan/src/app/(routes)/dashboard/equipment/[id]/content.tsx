@@ -15,7 +15,7 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 
-type Props = {
+type EquipmentLog = {
   eqid: string | undefined;
   name: string | undefined;
   start_time: Date;
@@ -39,7 +39,7 @@ export default function CombinedForm({
   savedDuration,
   equipment_notes,
   usersLogs
-}: Props) {
+}: EquipmentLog) {
   const router = useRouter();
   const [logs, setLogs] = useState(usersLogs);
   const [refueled, setRefueled] = useState<boolean>(filled ?? false);
