@@ -13,11 +13,7 @@ import { Sections } from "@/components/(reusable)/sections";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Selects } from "@/components/(reusable)/selects";
 import { Options } from "@/components/(reusable)/options";
-type JobCodes = {
-  id: number;
-  jobsite_id: string;
-  jobsite_name: string;
-}
+import { JobCodes } from "@/lib/types";
 
 type Props = {
   jobCodes: JobCodes[];

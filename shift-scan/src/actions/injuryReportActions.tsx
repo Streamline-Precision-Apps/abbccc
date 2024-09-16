@@ -1,10 +1,8 @@
 "use server";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { clearAuthStep } from "@/app/api/auth";
-
-const prisma = new PrismaClient();
 
 // Get all injuryForms
 export async function getInjuryForms() {

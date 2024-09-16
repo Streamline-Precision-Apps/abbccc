@@ -1,14 +1,13 @@
-import { ReactNode } from 'react';
+// import { useTranslations } from 'next-intl';
 
-interface SwitchWithLabelProps {
-    children: ReactNode;
-}
 
-export default function SwitchWithLabel({ children}: SwitchWithLabelProps) {
+const SwitchWithLabel = ({children} : any) => {
     return (
         <div className="flex m-6 mb-3 justify-center gap-3">
             {children}
         </div>
-    );
+
+    )
 }
 
+export default SwitchWithLabel

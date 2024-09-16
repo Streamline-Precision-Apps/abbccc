@@ -6,7 +6,7 @@ import 'react-image-crop/dist/ReactCrop.css';
 import ReactCrop, { centerCrop, convertToPixelCrop, makeAspectCrop, type Crop } from 'react-image-crop';
 import { Texts } from "../(reusable)/texts";
 import { Buttons } from "../(reusable)/buttons";
-import SetCanvasPreview from "../(inputs)/setCanvasPreview";
+import SetCanvasPreview from "./setCanvasPreview";
 import React from "react";
 type Props = {
 setBase64String: Dispatch<SetStateAction<string>>,

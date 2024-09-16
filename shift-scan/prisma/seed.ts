@@ -1,6 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 //intialEmployeeEquipment
-import {initialUserSettings, intialEquipment, initialUsers, initialContacts, initialJobsites, initialTimeSheets, initialCrews, initialCrewMembers, initialTrainings, initialCostCodes,initialCrewJobsites, UserTrainings } from "../src/data/dataValues";
+import {initialUserSettings, intialEquipment, initialUsers, initialContacts, 
+  initialJobsites, initialTimeSheets, initialCrews, initialCrewMembers, initialTrainings, 
+  initialCostCodes,initialCrewJobsites, UserTrainings } from "@/data/dataValues";
 import {hash} from "bcryptjs";
 const prisma = new PrismaClient();
 

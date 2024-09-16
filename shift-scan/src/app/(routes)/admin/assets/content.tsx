@@ -5,7 +5,7 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Sections } from "@/components/(reusable)/sections";
 import { Texts } from "@/components/(reusable)/texts";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
-import { Tab } from "@/components/(inputs)/tab";
+import { Tab } from "@/components/(reusable)/tab";
 import { useState } from "react";
 import Jobsite from "./(components)/jobsite";
 import Equipment from "./(components)/equipment";

@@ -1,37 +1,34 @@
 import React, { useState, useEffect } from "react";
 import classNames from "classnames";
 
-type LocaleToggleSwitchProps = {
-    data: boolean;
-    onChange: (value: boolean) => void;
-}
+const LocaleToggleSwitch = ({ data, onChange }: any) => {
+const [isSelected, setIsSelected] = useState(data);
 
-export default function LocaleToggleSwitch({ data, onChange }: LocaleToggleSwitchProps) {
-    const [isSelected, setIsSelected] = useState<boolean>(data);
+useEffect(() => {
+setIsSelected(data); // Update the local state when props change
+}, [data]);
 
-    useEffect(() => {
-        setIsSelected(data); // Update the local state when props change
-    }, [data]);
-
-    const handleClick = () => {
-        const newValue = !isSelected;
-        setIsSelected(newValue);
-        onChange(newValue);
-    };
-
-    return (
-        <div
-            onClick={handleClick}
-            className="flex w-20 h-10 bg-blue-900 border-black border-2 justify-center items-center rounded-xl"
-        >
-            <span
-                className={classNames("w-9 h-9 rounded-xl border-black border-2 transition-all duration-500", {
-                    "ml-10": isSelected,
-                    "bg-green-500": isSelected,
-                    "mr-10": !isSelected,
-                    "bg-red-500": !isSelected,
-                })}
-            />
-        </div>
-    );
+const handleClick = () => {
+const newValue = !isSelected;
+setIsSelected(newValue);
+onChange(newValue);
 };
+
+return (
+<div
+    onClick={handleClick}
+    className="flex w-20 h-10 bg-blue-900 border-black border-2 justify-center items-center rounded-xl"
+>
+    <span
+    className={classNames("w-9 h-9 rounded-xl border-black border-2 transition-all duration-500", {
+        "ml-10": isSelected,
+        "bg-green-500": isSelected,
+        "mr-10": !isSelected,
+        "bg-red-500": !isSelected,
+    })}
+    />
+</div>
+);
+};
+
+export default LocaleToggleSwitch;

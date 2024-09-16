@@ -12,24 +12,19 @@ import { useEQScanData } from "@/app/context/equipmentContext";
 import { Titles } from "../(reusable)/titles";
 import { Buttons } from "../(reusable)/buttons";
 import { setAuthStep } from "@/app/api/auth";
-interface clockProcessProps{
+import { AssetEquipment } from "@/lib/types";
+type clockProcessProps = {
     scannerType: string;
     id: string | undefined;
     type: string;
     locale: string;
     option?: string;
     returnpath: string;
-    equipment?: Equipment[]
+    equipment?: AssetEquipment[]
 };
 
-interface Equipment {
-    id: string;
-    name: string;
-    qr_id: string;
-    images?: string;
-}
 
-const ClockProcessor: React.FC<clockProcessProps> = ({
+export default function ClockProcessor({
 id,
 type,
 scannerType,
@@ -37,7 +32,9 @@ locale,
 option,
 returnpath,
 equipment
-}) => {
+}
+: clockProcessProps
+){
 const t = useTranslations("Clock");
 const [step, setStep] = useState(1);
 const [useQrCode, setUseQrCode] = useState(true);
@@ -235,5 +232,3 @@ return (
     </>
 );
 };
-
-export default ClockProcessor;

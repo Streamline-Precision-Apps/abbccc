@@ -10,7 +10,7 @@ import { Texts } from "@/components/(reusable)/texts";
 
 // Assuming User has at least these fields, adjust accordingly
 
-interface HoursProps {
+type HoursProps = {
   display: boolean;
   setToggle: (toggle: boolean) => void;
 }

@@ -1,12 +1,11 @@
 
-import prisma from "@/lib/prisma";
 import { Prisma} from "@prisma/client";
 
 export const now = new Date();
 
 // jobsites
 export const initialJobsites: Prisma.JobsiteCreateInput[] = [
-  {
+{
     jobsite_id: "j123",
     jobsite_name: "Jobsite 1",
     street_number: "123",

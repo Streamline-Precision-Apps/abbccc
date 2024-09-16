@@ -11,16 +11,7 @@ import ImageCropper from "./imagecropper";
 import CameraComponent from "./cameraProfile";
 import { Labels } from "../(reusable)/labels";
 import { Texts } from "../(reusable)/texts";
-
-type Employee = {
-  id: string;
-  image: string | null;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  imageUrl?: string | null;
-};
+import { Employee } from "@/lib/types";
 
 type Props = {
   employee: Employee;

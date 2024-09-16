@@ -3,6 +3,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// generator zod {
+//   provider = "prisma-zod-generator"
+// }
+
 datasource db {
   provider  = "postgresql"
   url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
@@ -13,7 +17,7 @@ datasource db {
 
 // employee account permission provide the correct view of the product!
 // this enum represents all the role levels in order to maintain a hiearchy of 
-// User -> Manager -> projectManager -> Admin -> SuperAdmin
+// User -> Manager -> Admin -> SuperAdmin
 //-------------------------------------------------------------------------------------------------//
 
 // USER: Base level operation to the app can only Read, and write over files 
@@ -39,104 +43,52 @@ datasource db {
 enum Permission {
   USER
   MANAGER
-  PROJECTMANAGER
   ADMIN
   SUPERADMIN
 }
 
 // Holds the login and general app data of employee but not all the data
-model User {
+model Users {
   id              String     @id @default(cuid())
   firstName       String
   lastName        String
   username        String     @unique
   password        String
-  Signature       String?    @db.Text
+  signature       String?    @db.Text
   DOB             String
-  truck_view      Boolean
-  tasco_view      Boolean
-  labor_view      Boolean
-  mechanic_view   Boolean
+  truckView       Boolean
+  tascoView       Boolean
+  laborView       Boolean
+  mechanicView    Boolean
   permission      Permission
-  email           String     @unique
-  emailVerified   DateTime?  @map("email_verified")
-  phone           String
   image           String?
   activeEmployee  Boolean    @default(true)
   startDate       DateTime?  @default(now())
   terminationDate DateTime?
   accountSetup    Boolean    @default(false)
 
-  crewMembers     CrewMember[]
-  timeSheet       TimeSheet[]
-  equipmentLogs   EmployeeEquipmentLog[]
-  contacts        Contact[]
-  accounts        Account[]
-  sessions        Session[]
-  userSettings    UserSettings[]
-  userTrainings   UserTrainings[]
-  formSubmissions FormSubmissions[]
-  // The next line is temporary:
-  // injuryForms     InjuryForm[]
-  timeoffRequests timeoffRequestForm[]
-
-  @@map("users")
+  crewMembers         CrewMembers[]
+  timeSheet           TimeSheets[]
+  equipmentLogs       EmployeeEquipmentLogs[]
+  contacts            Contacts[]
+  userSettings        UserSettings[]
+  userTrainings       UserTrainings[]
+  injuryForms         InjuryForms[]
+  timeoffRequestForms timeoffRequestForms[]
 }
 
 model UserSettings {
   id               String  @id @default(cuid())
-  userId           String  @unique @map("user_id")
+  userId           String  @unique
   language         String  @default("en")
   approvedRequests Boolean @default(false)
-  timeoffRequests  Boolean @default(false)
-  GeneralReminders Boolean @default(false)
-  Biometric        Boolean @default(false)
+  timeOffRequests  Boolean @default(false)
+  generalReminders Boolean @default(false)
+  biometric        Boolean @default(false)
   cameraAccess     Boolean @default(false)
-  LocationAccess   Boolean @default(false)
+  locationAccess   Boolean @default(false)
 
-  user User @relation(fields: [userId], references: [id])
-}
-
-// use for next auth beta@5.0 we have 4.3  ignore for now
-//-------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------------------
-model Account {
-  id                String  @id @default(cuid())
-  userId            String  @map("user_id")
-  type              String
-  provider          String
-  providerAccountId String  @map("provider_account_id")
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String? @db.Text
-  session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
-  @@map("accounts")
-}
-
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique @map("session_token")
-  userId       String   @map("user_id")
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("sessions")
-}
-
-model VerificationToken {
-  identifier String
-  token      String
-  expires    DateTime
-
-  @@unique([identifier, token])
-  @@map("verificationtokens")
+  user Users @relation(fields: [userId], references: [id])
 }
 
 //-------------------------------------------------------------------------------------------
@@ -144,111 +96,104 @@ model VerificationToken {
 
 // Provides Titles of trains and wheter they have been completed this helps the supervisor see which ones they completed. 
 model Trainings {
-  id          Int      @id @default(autoincrement())
-  name        String
-  description String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String          @id @default(cuid())
+  name          String
+  description   String
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  userTrainings UserTrainings[]
 }
 
 // This show the employee, the trainings they have completed and the total assigned trainings that are required for the year. 
 model UserTrainings {
-  id                  Int     @id @default(autoincrement())
-  user_id             String  @unique
-  completed_trainings Int
-  assigned_trainings  Int
-  completion          Boolean @default(false)
-  trainings           Json // with all the completed trainings and assigned trainings
+  userId      String
+  trainingId  String  @unique
+  isCompleted Boolean @default(false)
 
-  User User @relation(fields: [user_id], references: [id])
+  Training Trainings @relation(fields: [trainingId], references: [id])
+  User     Users     @relation(fields: [userId], references: [id])
+
+  @@id(name: "id", [trainingId, userId])
 }
 
 //-------------------------------------------------------------------------------------------------//
 
 // Holds a uniquely generated QR code that can be read to distinct jobsite and general jobsite information 
-model Jobsite {
-  id                  Int        @id @default(autoincrement())
-  jobsite_id          String     @unique @default(cuid())
-  jobsite_active      Boolean    @default(true)
-  jobsite_status      FormStatus @default(PENDING)
-  // project_manager  String
-  jobsite_name        String
-  street_number       String?
-  street_name         String
-  city                String
-  state               String?
-  country             String
-  jobsite_description String
-  comments            String?
-  createdAt           DateTime   @default(now())
-  updatedAt           DateTime   @updatedAt
+model Jobsites {
+  id           String     @id @default(cuid())
+  qrId         String     @unique @default(cuid()) // qr-id
+  isActive     Boolean    @default(true)
+  status       FormStatus @default(PENDING)
+  name         String
+  streetNumber String?
+  streetName   String?
+  city         String?
+  state        String?
+  country      String?
+  description  String
+  comment      String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 
-  costCode              CostCode[]
-  addresses             Address[]
-  employeeEquipmentLogs EmployeeEquipmentLog[]
-  crewjobsites          CrewJobsite[]
-  TimeSheet             TimeSheet[]
+  costCode              CostCodes[]
+  address               Addresses[]
+  employeeEquipmentLogs EmployeeEquipmentLogs[]
+  crewjobsites          CrewJobsites[]
+  TimeSheet             TimeSheets[]
 }
 
 //  Time sheet that integrates with the accounting software. Accounting Software Data: {|submitDate | Form Id | empl ID| Date| ProfitID(jobsite)| CostCode| NU | FP| Start Time| END Time| Job Description | Duration |}
-model TimeSheet {
-  submit_date           DateTime   @default(now())
-  id                    Int        @id @default(autoincrement())
-  userId                String
-  date                  DateTime   @db.Date //two dates are in the accounting software, for easy conversion they are implemented here
-  jobsite_id            String
-  costcode              String
-  nu                    String     @default("nu") // non union {} default
-  Fp                    String     @default("fp") // field personal
-  vehicle_id            Int?
-  start_time            DateTime
-  end_time              DateTime?
-  duration              Float?
-  starting_mileage      Int?
-  ending_mileage        Int?
-  left_idaho            Boolean?   @default(false)
-  equipment_hauled      String?
-  materials_hauled      String?
-  hauled_loads_quantity Int?
-  refueling_gallons     Float?
-  timesheet_comments    String? // theses will be not nulled in the future
-  app_comment           String? //this is a backend ai we want to develope to do filtered comments
-  status                FormStatus @default(PENDING)
+model TimeSheets {
+  submitDate          DateTime   @default(now())
+  id                  Int        @id @default(autoincrement())
+  userId              String
+  date                DateTime   @db.Date //two dates are in the accounting software, for easy conversion they are implemented here
+  jobsiteId           String
+  costcode            String
+  nu                  String     @default("nu") // non union {} default
+  Fp                  String     @default("fp") // field personal
+  vehicleId           Int?
+  startTime           DateTime
+  endTime             DateTime?
+  duration            Float?
+  startingMileage     Int?
+  endingMileage       Int?
+  leftIdaho           Boolean?   @default(false)
+  equipmentHauled     String?
+  materialsHauled     String?
+  hauledLoadsQuantity Int?
+  refuelingGallons    Float?
+  timeSheetComments   String? // theses will be not nulled in the future
+  status              FormStatus @default(PENDING)
 
-  user    User    @relation(fields: [userId], references: [id])
-  jobsite Jobsite @relation(fields: [jobsite_id], references: [jobsite_id])
-
-  @@map("timesheets")
+  user    Users    @relation(fields: [userId], references: [id])
+  jobsite Jobsites @relation(fields: [jobsiteId], references: [qrId])
 }
 
 //tracks notes on the used equipment, who used it, where, the condition its in, and for how long
 //tracks notes on the used equipment, who used it, where, the condition its in, and for how long
-model EmployeeEquipmentLog {
-  id              Int       @id @default(autoincrement())
-  date            DateTime  @default(now())
-  equipment_id    String
-  jobsite_id      String
-  employee_id     String
-  start_time      DateTime
-  end_time        DateTime?
-  duration        Float?
-  refueled        Boolean   @default(false) // added to save a state of fuel to a user this can be refrenced later for a timesheet submit.
-  fuel_used       Float?    @default(0.0)
-  equipment_notes String?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  completed       Boolean   @default(false) // equipment is filled out all the fields are happy determines color
-  submitted       Boolean   @default(false) // marks true when form is submitted at end of day
+model EmployeeEquipmentLogs {
+  id          Int       @id @default(autoincrement())
+  date        DateTime  @default(now())
+  equipmentId String
+  jobsiteId   String
+  employeeId  String
+  startTime   DateTime
+  endTime     DateTime?
+  duration    Float?
+  isRefueled  Boolean   @default(false) // added to save a state of fuel to a user this can be refrenced later for a timesheet submit.
+  fuelUsed    Float?    @default(0.0)
+  comment     String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
-  employee  User       @relation(fields: [employee_id], references: [id])
-  Job       Jobsite    @relation(fields: [jobsite_id], references: [jobsite_id])
-  Equipment Equipment? @relation(fields: [equipment_id], references: [id])
-}
+  isCompleted Boolean    @default(false) // equipment is filled out all the fields are happy determines color
+  isSubmitted Boolean    @default(false) // marks true when form is submitted at end of day
+  status      FormStatus @default(PENDING) // approving of the form
 
-enum equipmentStatus {
-  OPERATIONAL
-  NEEDS_REPAIR
-  NEEDS_MAINTENANCE
+  employee  Users      @relation(fields: [employeeId], references: [id])
+  Job       Jobsites   @relation(fields: [jobsiteId], references: [qrId])
+  Equipment Equipment? @relation(fields: [equipmentId], references: [id])
 }
 
 // provides helpful tags to filter the equipment section, this will help with qr code reading too. 
@@ -261,106 +206,110 @@ enum Tags {
 
 // This collection stores information about all company equipment. It includes a wide range of items such as company vehicles, trailers, handheld equipment, and heavy machinery. The purpose is to keep track of all assets the company owns and maintains.
 model Equipment {
-  id                      String          @id @default(cuid())
-  qr_id                   String          @unique @default(cuid())
-  name                    String
-  description             String
-  status                  FormStatus      @default(PENDING)
-  equipment_tag           Tags            @default(EQUIPMENT)
-  last_inspection         DateTime?
-  last_repair             DateTime?
-  equipment_status        EquipmentStatus @default(OPERATIONAL)
-  createdAt               DateTime        @default(now())
-  updatedAt               DateTime        @updatedAt
-  make                    String?
-  model                   String?
-  year                    String?
-  license_plate           String?
-  registration_expiration DateTime?
-  mileage                 Int?
-  is_active               Boolean         @default(true)
-  image                   String?
+  id                     String          @id @default(cuid())
+  qrId                   String          @unique @default(cuid())
+  name                   String
+  description            String
+  equipmentTag           Tags            @default(EQUIPMENT)
+  lastInspection         DateTime?
+  lastRepair             DateTime?
+  status                 EquipmentStatus @default(OPERATIONAL)
+  createdAt              DateTime        @default(now())
+  updatedAt              DateTime        @updatedAt
+  make                   String?
+  model                  String?
+  year                   String?
+  licensePlate           String?
+  registrationExpiration DateTime?
+  mileage                Int?
+  isActive               Boolean         @default(true)
+  image                  String?
+  inUse                  Boolean         @default(false)
 
-  employeeEquipmentLogs EmployeeEquipmentLog[]
+  employeeEquipmentLogs EmployeeEquipmentLogs[]
 }
 
 enum EquipmentStatus {
   OPERATIONAL
   NEEDS_REPAIR
+  NEEDS_MAINTENANCE
 }
 
 // This Table stores a collection of company Estimating codes. The purpose is to help in billing process. Very import for our project.
-model CostCode {
-  id                    Int       @id @default(autoincrement())
-  cost_code             String
-  cost_code_description String
-  cost_code_type        String // set to an enum later,type is how we can filter the costcodes
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @default(now()) @updatedAt
-  Jobsite               Jobsite[]
+model CostCodes {
+  id          Int        @id @default(autoincrement())
+  name        String
+  description String
+  type        String // set to an enum later,type is how we can filter the costcodes
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @default(now()) @updatedAt
+  Jobsite     Jobsites[]
 }
 
 // crew data for seeing the entire crew and enabling site linking it also has direct access to the employeed time cards, and some desire profile settings
-model CrewMember {
-  id          Int      @id @default(autoincrement())
-  user        User     @relation(fields: [employee_id], references: [id])
-  supervisor  Boolean  @default(false) // if the crew is a supervisor or not
-  employee_id String
-  crew        Crew     @relation(fields: [crew_id], references: [id])
-  crew_id     Int
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+model CrewMembers {
+  supervisor Boolean @default(false) // if the crew member is a supervisor or not
+  employeeId String
+  crewId     Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  crew Crews @relation(fields: [crewId], references: [id])
+  user Users @relation(fields: [employeeId], references: [id])
+
+  @@id(name: "id", [crewId, employeeId])
 }
 
 // the crew model assigns creates a crew and assigns an employee to be the lead
-model Crew {
-  id          Int           @id @default(autoincrement())
+model Crews {
+  id          Int            @id @default(autoincrement())
   name        String
   description String
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  crewMembers CrewMember[]
-  jobsites    CrewJobsite[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  crewMembers CrewMembers[]
+  jobsites    CrewJobsites[]
 }
 
 // provides a many to many relationship to crew and jobsite. This enables us to assign a crew to a jobsite which can possible filter out the complexity of costcodes
-model CrewJobsite {
-  id         Int      @id @default(autoincrement())
-  crew_id    Int
-  jobsite_id String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  crew       Crew     @relation(fields: [crew_id], references: [id])
-  jobsite    Jobsite  @relation(fields: [jobsite_id], references: [jobsite_id])
+model CrewJobsites {
+  id        Int      @id @default(autoincrement())
+  crewId    Int
+  jobsiteId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  crew      Crews    @relation(fields: [crewId], references: [id])
+  jobsite   Jobsites @relation(fields: [jobsiteId], references: [qrId])
 }
 
 //Employee contact information section. Purpose get ahold of them or their emergency contact. 
-model Contact {
-  id                   Int      @id @default(autoincrement())
-  employee_id          String   @unique
-  phone_number         String
-  email                String?
-  emergency_contact    String?
-  emergency_contact_no String?
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
-  employee             User     @relation(fields: [employee_id], references: [id])
+model Contacts {
+  id                     Int      @id @default(autoincrement())
+  employeeId             String   @unique
+  phoneNumber            String
+  email                  String?
+  emergencyContact       String?
+  emergencyContactNumber String?
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  user                   Users    @relation(fields: [employeeId], references: [id])
 }
 
 // Address Assigner makes a many to many relation ship from employees to there address
 
 // the purpose of the address table is to hold all addresses of sites, employees, and other data necessary for app, potetially using geolocation to access sites down the line. 
-model Address {
+model Addresses {
   id        Int      @id @default(autoincrement())
   address   String
   city      String
   state     String
-  zipcode   Int
+  zipCode   Int
   country   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  jobsite Jobsite[]
+  jobsite Jobsites[]
 }
 
 // Provides options for form status column
@@ -370,7 +319,7 @@ enum FormStatus {
   DENIED
 }
 
-enum FormActive {
+enum IsActive {
   ACTIVE
   INACTIVE
 }
@@ -385,60 +334,32 @@ enum FormType {
   INJURY
 }
 
-// tracking every individual form for every employee
-model Form {
-  id          Int      @id @default(autoincrement())
-  createdAt   DateTime @default(now())
-  type        FormType
-  name        String
-  description String
-  content     String   @default("[]") // this will hold the content of the form, questions, fields, etc.
-
-  updatedNow      DateTime?         @updatedAt
-  published       Boolean           @default(false)
-  FormSubmissions FormSubmissions[]
-
-  @@unique([id, name]) // ptential break, remove name if error
-}
-
-model FormSubmissions {
-  id        Int        @id @default(autoincrement())
-  userId    String
-  createdAt DateTime   @default(now())
-  formId    Int
-  type      FormType
-  submitted Boolean    @default(false)
-  status    FormStatus @default(PENDING)
-  form      Form       @relation(fields: [formId], references: [id])
-
-  content String
-  User    User   @relation(fields: [userId], references: [id])
-}
-
 // packing this into a json later V V V V V V
-model InjuryForm {
-  id                  Int     @id @default(autoincrement())
-  // userId              String
-  // user                User     @relation(fields: [userId], references: [id])
-  // submit_date         DateTime @default(now())
-  // date                DateTime @db.Date
-  contactedSupervisor Boolean @default(false)
+model InjuryForms {
+  id                  Int      @id @default(autoincrement())
+  userId              String
+  submitDate          DateTime @default(now())
+  date                DateTime @db.Date
+  contactedSupervisor Boolean  @default(false)
   incidentDescription String
-  signedForm          Boolean @default(false)
+  signature           String?  @db.Text
+  verifyFormSignature Boolean  @default(false)
+  user                Users    @relation(fields: [userId], references: [id])
 }
 
-model timeoffRequestForm {
-  id                 Int      @id @default(autoincrement())
+model timeoffRequestForms {
+  id                 Int        @id @default(autoincrement())
   date               DateTime
   requestedStartDate DateTime
   requestedEndDate   DateTime
   requestType        String //make enum later
-  comments           String
-  mangerComments     String?
-  approved           Boolean  @default(false)
-  employee_id        String
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  comment            String
+  managerComment     String?
+  status             FormStatus @default(PENDING)
+  employeeId         String
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+  decidedBy          String? // ment to hold the individual who approved the timesheet
 
-  employee User @relation(fields: [employee_id], references: [id])
+  employee Users @relation(fields: [employeeId], references: [id])
 }

@@ -17,12 +17,12 @@ import { useSession } from "next-auth/react";
 import AddEmployeeForm from "./addEmployee";
 import UserManagement from "./(components)/userManagement";
 
-import { Tab } from "@/components/(inputs)/tab";
+import { Tab } from "@/components/(reusable)/tab";
 import { Contents } from "@/components/(reusable)/contents";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import UserCards from "./userCards";
 
-interface AddEmployeeContentProps {
+type AddEmployeeContentProps = {
   permission: string | undefined;
   users: SearchUser[];
 }

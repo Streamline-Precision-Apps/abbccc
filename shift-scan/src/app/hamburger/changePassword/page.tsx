@@ -2,7 +2,6 @@
 import React, {useState} from 'react';
 import { useTranslations} from 'next-intl';
 import LocaleToggleSwitch from '@/components/(inputs)/toggleSwitch';
-import SwitchWithLabel from '@/components/(inputs)/switchWithLabel';
 import { Titles } from '@/components/(reusable)/titles';
 import '@/app/globals.css';
 import Link from 'next/link';
@@ -18,7 +17,6 @@ export default function Index() {
     const [isOpen, setIsOpen] = useState(false);
     const t = useTranslations('Hamburger');
 return (
-    <div> 
         <Bases>
             <Sections size={"titleBox"}>
                 <TitleBoxes title="Change Password" titleImg="/settings.svg" titleImgAlt="Change Password Icon"/>
@@ -31,6 +29,5 @@ return (
             </Sections>
             <Buttons variant={"orange"}>{t('ChangePassword')}</Buttons>
         </Bases>
-    </div>
 );
 };

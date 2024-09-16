@@ -5,7 +5,6 @@
   import { useTranslations } from "next-intl";
   import React from "react";
   import { useState, useEffect} from "react";
-  import Equipment from "../../equipment/page";
   import { Sections } from "@/components/(reusable)/sections";
   import { Contents } from "@/components/(reusable)/contents";
   import { Selects } from "@/components/(reusable)/selects";
@@ -14,41 +13,7 @@
   import { Titles } from "@/components/(reusable)/titles";
   import { Texts } from "@/components/(reusable)/texts";
   import { Labels } from "@/components/(reusable)/labels";
-  type Timesheet = {
-  id: string;
-  start_time: string;
-  start_date?: string;
-  end_time: string;
-  end_date?: string;
-  jobsite_id: string;
-  costcode: string;
-  duration: string;
-  submit_date: string;
-  employeeId: string;
-  };
-
-  type CostCode = {
-  id: number;
-  cost_code: string;
-  };
-
-  type Jobsite = {
-  id: number;
-  jobsite_id: string;
-  };
-
-  type Equipment = {
-  id: number;
-  name: string;
-  qr_id: string;
-  };
-
-  type EquipmentLog = {
-  id: number;
-  employee_id: string;
-  duration:  string | null;
-  Equipment: Equipment;
-  };
+  import { CostCode, Jobsite, Timesheet, EquipmentLog, EquipmentCode } from "@/lib/types";
 
   type EditWorkProps = {
   edit: boolean;
@@ -60,7 +25,7 @@
   setEdit: (edit: boolean) => void;
   employeeId: string;
   date: string;
-  equipment: Equipment[];
+  equipment: EquipmentCode[];
   };
 
   const EditWork = ({ timesheetData, jobsitesData, costcodesData, edit, equipment, handleFormSubmit, setEdit, employeeId, date }: EditWorkProps) => {
@@ -196,43 +161,43 @@
     }
   }, [timesheetData]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (date) {
-        const equipmentLogs = await fetchEq(employeeId, date);
-        const filteredEquipmentLogs = equipmentLogs
-          .filter((log) => log.duration !== null && log.Equipment !== null)
-          .map((log) => ({
-            ...log,
-            duration: (log.duration as unknown as string),
-            id: Number(log.id),
-            Equipment: {
-              ...log.Equipment,
-              id: Number(log.Equipment?.id),
-              name: log.Equipment?.name ?? "Unknown",
-              qr_id: log.Equipment?.qr_id ?? "Unknown",
-              description: log.Equipment?.description ?? "",
-              status: log.Equipment?.status ?? "UNKNOWN",
-              equipment_tag: log.Equipment?.equipment_tag ?? "UNKNOWN",
-              last_inspection: log.Equipment?.last_inspection ?? null,
-              last_repair: log.Equipment?.last_repair ?? null,
-              equipment_status: log.Equipment?.equipment_status ?? "UNKNOWN",
-              createdAt: log.Equipment?.createdAt ?? new Date(),
-              updatedAt: log.Equipment?.updatedAt ?? new Date(),
-              make: log.Equipment?.make ?? "Unknown",
-              model: log.Equipment?.model ?? "Unknown",
-              year: log.Equipment?.year ?? "Unknown",
-              license_plate: log.Equipment?.license_plate ?? "Unknown",
-              registration_expiration: log.Equipment?.registration_expiration ?? null,
-              mileage: log.Equipment?.mileage ?? 0,
-              is_active: log.Equipment?.is_active ?? false,
-            },
-          }));
-        setEquipmentLogs(filteredEquipmentLogs);
-      }
-    };
-    fetchData();
-  }, [date, employeeId]);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     if (date) {
+  //       const equipmentLogs = await fetchEq(employeeId, date);
+  //       const filteredEquipmentLogs = equipmentLogs
+  //         .filter((log) => log.duration !== null && log.Equipment !== null)
+  //         .map((log) => ({
+  //           ...log,
+  //           duration: (log.duration as unknown as string),
+  //           id: Number(log.id),
+  //           Equipment: {
+  //             ...log.Equipment,
+  //             id: Number(log.Equipment?.id),
+  //             name: log.Equipment?.name ?? "Unknown",
+  //             qr_id: log.Equipment?.qr_id ?? "Unknown",
+  //             description: log.Equipment?.description ?? "",
+  //             status: log.Equipment?.status ?? "UNKNOWN",
+  //             equipment_tag: log.Equipment?.equipment_tag ?? "UNKNOWN",
+  //             last_inspection: log.Equipment?.last_inspection ?? null,
+  //             last_repair: log.Equipment?.last_repair ?? null,
+  //             equipment_status: log.Equipment?.equipment_status ?? "UNKNOWN",
+  //             createdAt: log.Equipment?.createdAt ?? new Date(),
+  //             updatedAt: log.Equipment?.updatedAt ?? new Date(),
+  //             make: log.Equipment?.make ?? "Unknown",
+  //             model: log.Equipment?.model ?? "Unknown",
+  //             year: log.Equipment?.year ?? "Unknown",
+  //             license_plate: log.Equipment?.license_plate ?? "Unknown",
+  //             registration_expiration: log.Equipment?.registration_expiration ?? null,
+  //             mileage: log.Equipment?.mileage ?? 0,
+  //             is_active: log.Equipment?.is_active ?? false,
+  //           },
+  //         }));
+  //       setEquipmentLogs(filteredEquipmentLogs);
+  //     }
+  //   };
+  //   fetchData();
+  // }, [date, employeeId]);
 
   const editHandler = () => {
     setEdit(!edit);

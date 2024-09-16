@@ -1,7 +1,7 @@
 import NextAuth, { CredentialsSignin, type DefaultSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import { prisma } from "./lib/prisma";
+import prisma from "./lib/prisma";
 import type { Provider } from "next-auth/providers";
 
 declare module "next-auth" {
@@ -86,6 +86,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     strategy: "jwt",
   },
   providers,
+  trustHost: true,
   callbacks: {
     jwt: async ({ token, user }) => {
       if (user) {
@@ -120,4 +121,5 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   pages: {
     signIn: "/signin", // Custom sign-in page
   },
+  
 });

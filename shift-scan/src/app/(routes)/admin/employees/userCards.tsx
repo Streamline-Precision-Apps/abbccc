@@ -7,7 +7,7 @@ import SearchBar from "@/components/(search)/searchbar"; // Importing SearchBar
 
 import { SearchUser } from "@/lib/types";
 
-interface UserCardsProps {
+type UserCardsProps = {
   users: SearchUser[];
 }
 
