@@ -35,19 +35,18 @@ export type User = {
     imageUrl?: string | null;
   };
 export type Contact = {
-    phone_number: string;
+    id: number;
+    phoneNumber: string;
     email: string;
-    emergency_contact: string;
-    emergency_contact_no: string;
+    emergencyContact: string;
+    emergencyContactNumber: string;
 };
 
-export type Training = {
+export type UserTraining = {
     id: number;
-    user_id: string;
-    completed_trainings: number;
-    assigned_trainings: number;
-    completion: boolean;
-    trainings: JSON;
+    userId: string;
+    trainingId: string;
+    isCompleted: boolean;
 };
 
 export type SearchUser = {
@@ -57,12 +56,10 @@ export type SearchUser = {
   username: string;
   permission: Permission,
   DOB: string,
-  truck_view: boolean;
-  mechanic_view: boolean;
-  labor_view: boolean;
-  tasco_view: boolean;
-  email: string,
-  phone: string,
+  truckView: boolean;
+  mechanicView: boolean;
+  laborView: boolean;
+  tascoView: boolean;
   image: string | null,
 };
   
@@ -71,16 +68,10 @@ export type SearchUser = {
   };
   
   
-  export type EquipmentDetails = {
-    id: string;
-    qr_id: string;
-    name: string;
-  };
-  
   export type Logs = {
     id: string;
-    employee_id: string;
-    equipment: EquipmentDetails | null;
+    userId: string;
+    equipment: EquipmentCodes | null;
     submitted: boolean;
   };
   
@@ -89,7 +80,13 @@ export type SearchUser = {
     duration: number | null;
   };
 
-export type recievedContent = {
+  export type inboxContent = {
+    sentContent : sentContent[];
+    receivedContent? : receivedContent[];
+    session: Session | null;
+  }
+
+export type receivedContent = {
     id: number;
     date: Date;
     requestedStartDate: Date;
@@ -98,7 +95,7 @@ export type recievedContent = {
     comments: string;
     mangerComments: string | null;
     status: string;
-    employee_id: string;
+    employeeId: string;
     createdAt: Date;
     updatedAt: Date;
     decidedBy: String | null
@@ -113,338 +110,144 @@ export type sentContent = {
     comments: string;
     mangerComments: string | null;
     status: string;
-    employee_id: string;
+    employeeId: string;
     createdAt: Date;
     updatedAt: Date;
     decidedBy: String | null;
 }
-export type RequestForm = {
-session: Session | null;
-signature: {Signature: string | null} | null;
-}
 
-
-export type JobCodes = {
-  id: number;
-  jobsite_id: string;
-  jobsite_name: string;
-  };
-  
-  export type EquipmentCode = {
-      id: string;
-      qr_id: string;
-      name: string;
-  };
-    
-    // This is used in the admin section for assets.
-    export type AssetEquipment = {
-      id: string;
-      qr_id: string;
-      name: string;
-      description?: string;
-      status?: string;
-      equipment_tag: string;
-      last_inspection?: Date | null;
-      last_repair?: Date | null;
-      equipment_status?: string;
-      make?: string | null;
-      model?: string | null;
-      year?: string | null;
-      license_plate?: string | null;
-      registration_expiration?: Date | null;
-      mileage?: number | null | undefined;
-      is_active?: boolean;
-      image?: string | null;
-    };
-  
-  export type inboxContent = {
-    sentContent : sentContent[];
-    recievedContent? : recievedContent[];
-    session: Session | null;
-  }
-  
-  export type EquipmentCodes = {
-    id: string;
-    qr_id: string;
-    name: string;
-  };
-  
-  
-  export type TimeSheets = {
-    start_time: Date;
-    duration: number | null;
-  };
-  
   export type clockProcessProps = {
     session: any;
     locale: string;
     jobCodes: JobCodes[];
-    CostCodes: CostCode[];
+    costCodes: CostCodes[];
     equipment: EquipmentCodes[];
     recentJobSites: JobCodes[];
-    recentCostCodes: CostCode[];
+    recentCostCodes: CostCodes[];
     recentEquipment: EquipmentCodes[];
     payPeriodSheets: TimeSheets[];
+    logs: Logs[];
   }
   
   
-  export type Timesheet = {
-    submit_date?: Date;
+  export type TimeSheet = {
+    submitDate?: Date;
     id?: number;
     userId?: string;
     date?: Date;
-    jobsite_id?: string;
+    jobsiteId?: string;
     costcode?: string;
-    number?: number;
-    Fps?: number;
-    vehicle_id?: number | null;
-    start_time?: Date;
-    end_time?: Date | null;
+    nu?: string;
+    Fp?: string;
+    vehicleId?: number | null;
+    startTime?: Date;
+    endTime?: Date | null;
     duration?: number | null;
-    starting_mileage?: number | null;
-    ending_mileage?: number | null;
-    left_idaho?: boolean | null;
-    equipment_hauled?: string | null;
-    materials_hauled?: string | null;
-    hauled_loads_quantity?: number | null;
-    refueling_gallons?: number | null;
-    timesheet_comments?: string | null;
-    app_comments?: string;
+    startingMileage?: number | null;
+    endingMileage?: number | null;
+    leftIdaho?: boolean | null;
+    equipmentHauled?: string | null;
+    materialsHauled?: string | null;
+    hauledLoadsQuantity?: number | null;
+    refuelingGallons?: number | null;
+    timeSheetComments?: string | null;
     status?: string;
   };
   
   export type EquipmentLog = {
     id: number;
-    employee_id: string;
+    employeeId: string;
     duration:  string | null;
     Equipment: EquipmentCodes;
   };
   
-  export type costCodes = {
-    id: number
-    cost_code: string
-    cost_code_description: string
-    cost_code_type: string
-  }
-  
-  export type Jobsite = {
-    id: number;
-    jobsite_id: string;
-    jobsite_name: string;
-    street_number?: string | null;
-    street_name?: string;
-    city?: string;
-    state?: string | null;
-    country?: string;
-    phone?: string;
-    created_at?: Date;
-    jobsite_description?: string | null;
-    jobsite_active: boolean;
-    comments?: string | null;
-    jobsite_status?: string;
-  }
-  
-  // This is used in the admin section for assets.
-  
-  export type Settings = {
-    userId: string;
-    language?: string;
-    approvedRequests?: boolean;
-    timeoffRequests?: boolean;
-    GeneralReminders?: boolean;
-    Biometric?: boolean;
-    cameraAccess?: boolean;
-    LocationAccess?: boolean;
-  };
-  
-  type JobCode = {
-    id: number;
-    jobsite_id: string;
-    jobsite_name: string;
-  };
-  
-  export type CostCode = {
-    id: number;
-    cost_code: string;
-    cost_code_description: string;
-  };
-  
-  interface ClockProcessProps {
-    locale: string;
-    jobCodes: JobCode[];
-    costCodes: CostCode[];
-    equipment: Equipment[];
-    recentJobSites: JobCode[];
-    recentCostCodes: CostCode[];
-    recentEquipment: Equipment[];
-    logs: Logs[];
-  }
-
-  export type Equipment = {
-    id: string;
-    qr_id: string;
-    name: string;
-    description?: string;
-    status?: string;
-    equipment_tag: string;
-    last_inspection?: Date | null;
-    last_repair?: Date | null;
-    equipment_status?: string;
-    make?: string | null;
-    model?: string | null;
-    year?: string | null;
-    license_plate?: string | null;
-    registration_expiration?: Date | null;
-    mileage?: number | null | undefined;
-    is_active?: boolean;
-    image?: string | null;
-  };
-
-  type jobCodes = {
-    id: number;
-    jobsite_id: string;
-    jobsite_name: string;
-    };
-
-
-  export type inboxContent = {
-    sentContent : sentContent[];
-    recievedContent? : recievedContent[];
+  export type RequestForm = {
     session: Session | null;
-}
-
-export type recievedContent = {
-    id: number;
-    date: Date;
-    requestedStartDate: Date;
-    requestedEndDate: Date;
-    requestType: string;
-    comments: string;
-    mangerComments: string | null;
-    status: string;
-    employee_id: string;
-    createdAt: Date;
-    updatedAt: Date;
-    decidedBy:String | null
-}
-export type sentContent = {
-    id: number;
-    date: Date;
-    requestedStartDate: Date;
-    requestedEndDate: Date;
-    requestType: string;
-    comments: string;
-    mangerComments: string | null;
-    status: string;
-    employee_id: string;
-    createdAt: Date;
-    updatedAt: Date;
-    decidedBy: String | null;
-}
-export type RequestForm = {
-session: Session | null;
-signature: {Signature: string | null} | null;
-}
-
-
-export type JobCodes = {
-  id: number;
-  jobsite_id: string;
-  jobsite_name: string;
-  };
-
-  export type CostCode = {
-      id: number;
-      cost_code: string;
-      cost_code_description: string;
-  };
-  
-  export type EquipmentCode = {
-      id: string;
-      qr_id: string;
-      name: string;
-  };
-  
-
+    signature: {Signature: string | null} | null;
+    }
+    
   export type TimeSheets = {
       start_time: Date;
       duration: number | null;
   };
+      
+      // This is used in the admin section for assets.
   
-  export type clockProcessProps = {
-      session: any;
-      locale: string;
-      jobCodes: JobCodes[];
-      CostCodes: CostCode[];
-      equipment: EquipmentCode[];
-      recentJobSites: JobCodes[];
-      recentCostCodes: CostCode[];
-      recentEquipment: EquipmentCode[];
-      payPeriodSheets: TimeSheets[];
-  }
+  export type UserSettings = {
+    userId: string;
+    language?: string;
+    approvedRequests?: boolean;
+    timeOffRequests?: boolean;
+    generalReminders?: boolean;
+    biometric?: boolean;
+    cameraAccess?: boolean;
+    LocationAccess?: boolean;
+  };
   
-
-  export type Timesheet = {
+  // --------------------------------------
+  // this are used to get only the qr data, name, and description
+  export type JobCodes = {
     id: string;
-    start_time: string;
-    start_date?: string;
-    end_time: string;
-    end_date?: string;
-    jobsite_id: string;
-    costcode: string;
-    duration: string;
-    submit_date: string;
-    employeeId: string;
-    };
+    qrId: string;
+    name: string;
+  };
 
-  export type EquipmentLog = {
-      id: number;
-      employee_id: string;
-      duration:  string | null;
-      Equipment: EquipmentCode;
-      };
+  
+  export type CostCodes = {
+    id: number;
+    name: string;
+    description: string;
+  };
+  
+  export type EquipmentCodes = {
+    id: string;
+    qrId: string;
+    name: string;
+    
+};
 
-      export type costCodes = {
-        id: number
-        cost_code: string
-        cost_code_description: string
-        cost_code_type: string
-    }
-    
-    export type Jobsite = {
-        id: number;
-        jobsite_id: string;
-        jobsite_name: string;
-        street_number?: string | null;
-        street_name?: string;
-        city?: string;
-        state?: string | null;
-        country?: string;
-        phone?: string;
-        created_at?: Date;
-        jobsite_description?: string | null;
-        jobsite_active: boolean;
-        comments?: string | null;
-        jobsite_status?: string;
-    }
-    
-    // This is used in the admin section for assets.
-    export type AssetEquipment = {
-      id: string;
-      qr_id: string;
-      name: string;
-      description?: string;
-      status?: string;
-      equipment_tag: string;
-      last_inspection?: Date | null;
-      last_repair?: Date | null;
-      equipment_status?: string;
-      make?: string | null;
-      model?: string | null;
-      year?: string | null;
-      license_plate?: string | null;
-      registration_expiration?: Date | null;
-      mileage?: number | null | undefined;
-      is_active?: boolean;
-      image?: string | null;
-    };
+  //--------------------------------------------
+
+  export type Equipment = {
+    id: string;
+    qrId: string;
+    name: string;
+    description?: string;
+    equipmentTag: string;
+    lastInspection?: Date | null;
+    lastRepair?: Date | null;
+    status?: string;
+    make?: string | null;
+    model?: string | null;
+    year?: string | null;
+    licensePlate?: string | null;
+    registrationExpiration?: Date | null;
+    mileage?: number | null | undefined;
+    isActive?: boolean;
+    image?: string | null;
+    inUse?: boolean;
+  };
+
+
+  export type Jobsites = {
+    id: string;
+    qrId: string;
+    name: string;
+    streetNumber?: string | null;
+    streetName?: string | null;
+    city?: string | null;
+    state?: string | null;
+    country?: string | null;
+    phone?: string;
+    description?: string | null;
+    isActive: boolean;
+    comments?: string | null;
+    status?: string;
+  }
+
+  export type  costCodes = {
+    id: number;
+    name: string;
+    description: string;
+    type: string;
+  }

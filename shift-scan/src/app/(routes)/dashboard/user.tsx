@@ -33,8 +33,6 @@ export default function User({
   const t = useTranslations("ManagerButtons");
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { data: session } = useSession() as { data: CustomSession | null };
-  const user = session?.user;
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -53,9 +51,8 @@ export default function User({
       const localeValue = localStorage.getItem("savedtimeSheetData");
       const t_id = JSON.parse(localeValue || "{}").id;
       formData2.append('id', t_id?.toString() || '');
-      formData2.append('end_time', new Date().toISOString()); 
-      formData2.append('timesheet_comments', '');
-      formData2.append('app_comment', 'On break');
+      formData2.append('endTime', new Date().toISOString()); 
+      formData2.append('TimeSheetComments', '');
       await updateTimeSheetBySwitch(formData2);
 
 

@@ -36,7 +36,7 @@ export default function Admin({
           >
               <Contents variant={"widgetButton"} size={null}>
             <Images
-              titleImg="/home.svg"
+              titleImg="/new/home.svg"
               titleImgAlt="Home Icon"
               variant={"icon"}
               size={"default"}
@@ -47,7 +47,7 @@ export default function Admin({
           <Buttons variant={"orange"} size={"widgetSm"} href="/admin/employees">
           <Contents variant={"widgetButton"} size={null}>
             <Images
-              titleImg="/equipment.svg"
+              titleImg="/new/equipment.svg"
               titleImgAlt="Equipment Icon"
               variant={"icon"}
               size={"default"}
@@ -65,7 +65,7 @@ export default function Admin({
           >
              <Contents variant={"widgetButton"} size={null}>
             <Images
-              titleImg="/home.svg"
+              titleImg="/new/home.svg"
               titleImgAlt="Home Icon"
               variant={"icon"}
               size={"default"}
@@ -76,7 +76,7 @@ export default function Admin({
           <Buttons variant={"orange"} size={"widgetSm"} href="/admin/assets">
           <Contents variant={"widgetButton"} size={null}>
             <Images
-              titleImg="/equipment.svg"
+              titleImg="/new/equipment.svg"
               titleImgAlt="Home Icon"
               variant={"icon"}
               size={"default"}
@@ -94,7 +94,7 @@ export default function Admin({
           >
             <Contents variant={"widgetButton"} size={null}>
             <Images
-              titleImg="/home.svg"
+              titleImg="/new/home.svg"
               titleImgAlt="Home Icon"
               variant={"icon"}
               size={"default"}
@@ -105,7 +105,7 @@ export default function Admin({
           <Buttons variant={"orange"} size={"widgetSm"} href="/admin/reports">
           <Contents variant={"widgetButton"} size={null}>
             <Images
-              titleImg="/forms.svg"
+              titleImg="/new/forms.svg"
               titleImgAlt="Home Icon"
               variant={"icon"}
               size={"default"}
@@ -124,7 +124,7 @@ export default function Admin({
           >
             <Contents variant={"widgetButton"} size={null}>
             <Images
-              titleImg="/myTeam.svg"
+              titleImg="/new/myTeam.svg"
               titleImgAlt="my team"
               variant={"icon"}
               size={"widgetSm"}
@@ -140,7 +140,7 @@ export default function Admin({
           >
             <Contents variant={"widgetButton"} size={null}>
             <Images
-              titleImg="/equipment.svg"
+              titleImg="/new/equipment.svg"
               titleImgAlt="Equipment Icon"
               variant={"icon"}
               size={"widgetSm"}
@@ -156,7 +156,7 @@ export default function Admin({
             <Contents variant={"widgetButton"} size={null}>
 
             <Images
-              titleImg="/clockOut.svg"
+              titleImg="/new/clockOut.svg"
               titleImgAlt="Clock Out Icon"
               variant={"icon"}
               size={"widgetSm"}
@@ -172,7 +172,7 @@ export default function Admin({
           >
           <Contents variant={"widgetButton"} size={null}>
             <Images
-              titleImg="/home.svg"
+              titleImg="/new/home.svg"
               titleImgAlt="Clock Out Icon"
               variant={"icon"}
               size={"widgetSm"}

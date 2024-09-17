@@ -181,7 +181,7 @@ return (
         
       />
     
-    <Buttons variant="green" size="default" type="submit">
+    <Buttons variant="green" type="submit">
       {t("Submit")}
     </Buttons>
   </Forms>

@@ -33,9 +33,7 @@ export default function DashboardButtons({ logs, locale }: DashboardButtonsProps
   if (
     user?.permission === "ADMIN" ||
     user?.permission === "SUPERADMIN" ||
-    user?.permission === "MANAGER" ||
-    user?.permission === "PROJECTMANAGER"
-  ) {
+    user?.permission === "MANAGER"  ) {
     return (
       <>
         <Manager show={!additionalButtonsType}/>
