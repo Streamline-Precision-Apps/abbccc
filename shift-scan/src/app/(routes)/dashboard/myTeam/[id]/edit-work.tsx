@@ -29,8 +29,8 @@
   };
   
   export type TimeSheet = {
-    end_date: any;
-    start_date: any;
+    endDate: any;
+    startDate: any;
     submitDate?: Date;
     id?: string;
     userId?: string;
@@ -163,8 +163,8 @@
           formData.append("submit_date", timesheet.submitDate?.toISOString() ?? "");
           formData.append("employeeId", employeeId);
           formData.append("costcode", timesheet.costcode ?? "");
-          formData.append("start_time", `${timesheet.start_date}T${timesheet.startTime}`);
-          formData.append("end_time", `${timesheet.end_date}T${timesheet.endTime}`);
+          formData.append("start_time", `${timesheet.startDate}T${timesheet.startTime}`);
+          formData.append("end_time", `${timesheet.endDate}T${timesheet.endTime}`);
           formData.append("jobsite_id", timesheet.jobsiteId ?? "");
           await editTimeSheet(formData);
         }
@@ -330,7 +330,7 @@
                           variant={"default"}
                           id="start_date"
                           type="date"
-                          value={timesheet.start_date?.toString() || ""}
+                          value={timesheet.startDate?.toString() || ""}
                           onChange={(e) => handleInputChangeDate(e, timesheet.id ?? "", "start_date")}
                           readOnly={!edit}
                         />
@@ -351,7 +351,7 @@
                           variant={"default"}
                           id="end_date"
                           type="date"
-                          value={timesheet.end_date?.toString() || ""}
+                          value={timesheet.endDate?.toString() || ""}
                           onChange={(e) => handleInputChangeDate(e, timesheet.id ?? "", "end_date")}
                           readOnly={!edit}
                         />
