@@ -125,7 +125,7 @@ type sentContent = {
     recentJobSites: JobCodes[];
     recentCostCodes: CostCodes[];
     recentEquipment: EquipmentCodes[];
-    payPeriodSheets: TimeSheets[];
+    payPeriodSheets?: TimeSheets[];
     logs: Logs[];
   }
   
@@ -137,7 +137,7 @@ type sentContent = {
 
   export type TimeSheet = {
     submitDate?: Date;
-    id?: string;
+    id?: number;
     userId?: string;
     date?: Date;
     jobsiteId?: string;
@@ -158,6 +158,7 @@ type sentContent = {
     timeSheetComments?: string | null;
     status?: string;
   };
+
   
   export type EquipmentLog = {
     id: number;

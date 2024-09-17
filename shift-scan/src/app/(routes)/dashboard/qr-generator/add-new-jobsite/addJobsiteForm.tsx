@@ -154,7 +154,7 @@ function handleRoute() {
         
         />
       
-      <Buttons variant="green" size="default" type="submit">
+      <Buttons variant={"green"} size={null} type="submit">
         {t("Submit")}
       </Buttons>
     </Forms>

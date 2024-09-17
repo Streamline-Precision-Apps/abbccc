@@ -16,7 +16,7 @@ import { useSession } from "next-auth/react";
 import { useDBJobsite, useDBCostcode, useDBEquipment} from "@/app/context/dbCodeContext";
 import { useRecentDBJobsite, useRecentDBCostcode, useRecentDBEquipment} from "@/app/context/dbRecentCodesContext";
 import { getAuthStep} from "@/app/api/auth";
-import { ClockProcessProps, Logs } from "@/lib/clockprocess";
+import { clockProcessProps, Logs } from "@/lib/types";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 
@@ -29,7 +29,7 @@ recentJobSites,
 recentCostCodes,
 recentEquipment,
 logs,
-}: ClockProcessProps) {
+}: clockProcessProps) {
 const t = useTranslations("dashboard");
 const router = useRouter();
 const { data: session } = useSession() as { data: CustomSession | null };
