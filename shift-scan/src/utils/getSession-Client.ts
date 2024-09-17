@@ -2,7 +2,7 @@
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 
-export default async function getUser() {
+export default function getUser() {
     const session = useSession();
     // if unauthenticated return to sign In page
     if (session.status === "unauthenticated") {

@@ -3,11 +3,12 @@ import { cookies } from "next/headers";
 import Content from "@/app/(content)/content";
 import { PayPeriodTimesheets } from "@/lib/types";
 import { auth } from "@/auth"
+import getUser from "@/utils/getSession-Server";
 
 export default async function Home() {
-// Get the current user
-  const session = await auth();
-  const userId = session?.user.id;
+// Get the current user and checks if the user is authenticated
+const session = await getUser();
+const userId = session.id;
 
 // Get the current language
   const lang = cookies().get("locale");
