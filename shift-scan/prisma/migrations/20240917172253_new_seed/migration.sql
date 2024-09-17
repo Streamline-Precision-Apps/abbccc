@@ -67,11 +67,12 @@ CREATE TABLE "Trainings" (
 
 -- CreateTable
 CREATE TABLE "UserTrainings" (
+    "id" SERIAL NOT NULL,
     "userId" TEXT NOT NULL,
     "trainingId" TEXT NOT NULL,
     "isCompleted" BOOLEAN NOT NULL DEFAULT false,
 
-    CONSTRAINT "UserTrainings_pkey" PRIMARY KEY ("trainingId","userId")
+    CONSTRAINT "UserTrainings_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -182,13 +183,14 @@ CREATE TABLE "CostCodes" (
 
 -- CreateTable
 CREATE TABLE "CrewMembers" (
+    "id" SERIAL NOT NULL,
     "supervisor" BOOLEAN NOT NULL DEFAULT false,
     "employeeId" TEXT NOT NULL,
     "crewId" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "CrewMembers_pkey" PRIMARY KEY ("crewId","employeeId")
+    CONSTRAINT "CrewMembers_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable

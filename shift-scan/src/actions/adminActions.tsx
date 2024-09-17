@@ -14,7 +14,7 @@ export async function timecardData(formData: FormData) {
     const endOfDay = new Date(endDate);
     endOfDay.setUTCHours(23, 59, 59, 999);
 
-    const timeSheets = await prisma.timeSheet.findMany({
+    const timeSheets = await prisma.timeSheets.findMany({
         where: {
             date: {
                 gte: startOfDay.toISOString(),
@@ -33,17 +33,17 @@ try {
     console.log("Creating jobsite...");
     console.log(formData);
 
-    await prisma.jobsite.create({
+    await prisma.jobsites.create({
     data: {
-        jobsite_name: formData.get("jobsite_name") as string,
-        street_number: (formData.get("street_number") as string) || null,
-        street_name: formData.get("street_name") as string,
+        name: formData.get("name") as string,
+        streetNumber: (formData.get("streetNumber") as string) || null,
+        streetName: formData.get("streetName") as string,
         city: formData.get("city") as string,
         state: (formData.get("state") as string) || null,
         country: formData.get("country") as string,
-        jobsite_description: formData.get("jobsite_description") as string,
-        comments: (formData.get("jobsite_comments") as string) || null,
-        jobsite_active: true,
+        description: formData.get("description") as string,
+        comment: (formData.get("jobsite_comment") as string) || null,
+        isActive: true,
         createdAt: new Date(),
         updatedAt: new Date(),
     },
@@ -64,30 +64,31 @@ export async function updateJobsite(formData: FormData) {
     try {
         console.log("Updating jobsite...");
         console.log(formData);
-        const jobsite_name = formData.get("jobsite_name") as string;
-        const street_number = formData.get("street_number") as string;
-        const street_name = formData.get("street_name") as string;
+        const name = formData.get("name") as string;
+        const streetNumber = formData.get("streetNumber") as string;
+        const streetName = formData.get("streetName") as string;
         const city = formData.get("city") as string;
         const state = formData.get("state") as string;
         const country = formData.get("country") as string;
-        const jobsite_description = formData.get("jobsite_description") as string;
-        const comments = formData.get("jobsite_comments") as string;
-        const jobsite_active = Boolean(formData.get("jobsite_active") as string);
-        const jobsite_id = Number(formData.get("id") as string);
-        await prisma.jobsite.update({
+        const description = formData.get("description") as string;
+        const comment = formData.get("jobsite_comment") as string;
+        const isActive = Boolean(formData.get("isActive") as string);
+        const qrId = formData.get("qrId") as string;
+        const id = formData.get("id") as string;
+        await prisma.jobsites.update({
             where: {
-                id: jobsite_id
+                id: id,
             },
             data: {
-                jobsite_name: jobsite_name,
-                street_number: street_number,
-                street_name: street_name,
+                name: name,
+                streetNumber: streetNumber,
+                streetName: streetName,
                 city: city,
                 state: state,
                 country: country,
-                jobsite_description: jobsite_description,
-                comments: comments,
-                jobsite_active: jobsite_active
+                description: description,
+                comment: comment,
+                isActive: isActive
             }
         })
         revalidatePath(`/admin/assets`);
@@ -100,11 +101,11 @@ export async function updateJobsite(formData: FormData) {
 }
 
 // Fetch first jobsite
-export async function fetchByNameJobsite( jobsite_name: string ) {
+export async function fetchByNameJobsite( name: string ) {
 
-    const jobsite = await prisma.jobsite.findFirst({
+    const jobsite = await prisma.jobsites.findFirst({
         where: {
-            jobsite_name: jobsite_name
+            name: name
         }
     })
     revalidatePath(`/admin/assets`);
@@ -113,10 +114,10 @@ export async function fetchByNameJobsite( jobsite_name: string ) {
 
 // Delete jobsite by id
 export async function deleteJobsite(formData: FormData) {
-    const id = Number(formData.get("id") as string);
+    const qrId = formData.get("qrId") as string;
     try {
-        await prisma.jobsite.delete({
-        where: { id: id },
+        await prisma.jobsites.delete({
+        where: { qrId: qrId },
         });
         revalidatePath(`/admin/assets`);
         return true;
@@ -128,17 +129,16 @@ export async function deleteJobsite(formData: FormData) {
 
 export async function editGeneratedJobsite( formData: FormData ) {
     try {
-        const id = Number(formData.get("id") as string);
-        const jobsite_name = formData.get("jobsite_name") as string;
-        const jobsite_id = formData.get("jobsite_id") as string;
+        const name = formData.get("name") as string;
+        const qrId = formData.get("qrId") as string;
 
-        await prisma.jobsite.update({
+        await prisma.jobsites.update({
             where: {
-                id: id
+                qrId: qrId
             },
             data: {
-                jobsite_name: jobsite_name,
-                jobsite_id: jobsite_id
+                name: name,
+                qrId: qrId
             }
         })
 
@@ -158,11 +158,11 @@ export async function createCostCode(formData: FormData) {
         console.log("Creating cost code...");
         console.log(formData);
         // Check if cost code already exists
-        await prisma.costCode.create({
+        await prisma.costCodes.create({
             data: {
-                cost_code: formData.get("cost_code") as string,
-                cost_code_description: formData.get("cost_code_description") as string,
-                cost_code_type: formData.get("cost_code_type") as string,
+                name: formData.get("name") as string,
+                description: formData.get("description") as string,
+                type: formData.get("type") as string,
             },
         });
         revalidatePath(`/admin/assets`);
@@ -171,10 +171,10 @@ export async function createCostCode(formData: FormData) {
         throw error;
     }
 }
-export async function fetchByNameCostCode(cost_code_description : string) {
-    const costCode = await prisma.costCode.findFirst({
+export async function fetchByNameCostCode(description : string) {
+    const costCode = await prisma.costCodes.findFirst({
         where: {
-            cost_code_description: cost_code_description
+            description: description
         }
     })
     revalidatePath(`/admin/assets`);
@@ -185,10 +185,10 @@ export async function findAllCostCodesByTags(formData: FormData) {
     console.log("findAllCostCodesByTags")
     console.log(formData)
 
-    const cost_code_type = formData.get("cost_code_type") as string
-    const costCodes = await prisma.costCode.findMany({
+    const type = formData.get("type") as string
+    const costCodes = await prisma.costCodes.findMany({
         where: {
-            cost_code_type: cost_code_type
+            type: type
         }
     })
     revalidatePath(`/admin/assets`);
@@ -201,17 +201,17 @@ export async function EditCostCode(formData: FormData) {
         console.log("Creating cost code...");
         console.log(formData);
         const id = Number(formData.get("id") as string);
-        const costCode = formData.get("cost_code") as string;
-        const costCodeDescription = formData.get("cost_code_description") as string;
-        const costCodeType = formData.get("cost_code_type") as string;
-        await prisma.costCode.update({
+        const name = formData.get("name") as string;
+        const costCodeDescription = formData.get("description") as string;
+        const costCodeType = formData.get("type") as string;
+        await prisma.costCodes.update({
             where: {
                 id: id
             },
             data: {
-                cost_code: costCode,
-                cost_code_description: costCodeDescription,
-                cost_code_type: costCodeType
+                name: name,
+                description: costCodeDescription,
+                type: costCodeType
             },
         });
 
@@ -225,7 +225,7 @@ export async function EditCostCode(formData: FormData) {
 export async function deleteCostCode(formData: FormData) {
     const id = Number(formData.get("id") as string);
     try {
-        await prisma.costCode.delete({
+        await prisma.costCodes.delete({
         where: { id: id },
         });
         revalidatePath(`/admin/assets`);
@@ -242,13 +242,13 @@ export async function TagCostCodeChange(formData: FormData) {
         console.log("Creating cost code...");
         console.log(formData);
         const id = Number(formData.get("id") as string);
-        const costCodeType = formData.get("cost_code_type") as string;
-        await prisma.costCode.update({
+        const costCodeType = formData.get("type") as string;
+        await prisma.costCodes.update({
             where: {
                 id: id
             },
             data: {
-                cost_code_type: costCodeType
+                type: costCodeType
             },
         });
 
@@ -263,13 +263,13 @@ export async function TagCostCodeChange(formData: FormData) {
 export async function AddlistToJobsite(formData: FormData) {
     try {
         console.log("Adding cost codes to job site...");
-        const jobsiteId = formData.get("jobsite_id") as string;
-        const costCodeTypes = (formData.get("cost_code_types") as string).split(",").map(code => code.trim());
+        const qrId = formData.get("qrId") as string;
+        const costCodeTypes = (formData.get("types") as string).split(",").map(code => code.trim());
 
-        // Find all cost codes that match the list of cost_code_types
-        const costCodes = await prisma.costCode.findMany({
+        // Find all cost codes that match the list of types
+        const costCodes = await prisma.costCodes.findMany({
             where: {
-                cost_code_type: {
+                type: {
                     in: costCodeTypes
                 }
             }
@@ -283,9 +283,9 @@ export async function AddlistToJobsite(formData: FormData) {
         console.log("Cost codes found:", costCodes);
 
         // Connect the found cost codes to the job site
-        const jobsite = await prisma.jobsite.update({
+        const jobsite = await prisma.jobsites.update({
             where: {
-                jobsite_id: jobsiteId
+                qrId: qrId
             },
             data: {
                 costCode: {
@@ -308,13 +308,13 @@ export async function AddlistToJobsite(formData: FormData) {
 export async function RemovelistToJobsite(formData: FormData) {
     try {
         console.log("Adding cost codes to job site...");
-        const jobsiteId = formData.get("jobsite_id") as string;
-        const costCodeTypes = (formData.get("cost_code_types") as string).split(",").map(code => code.trim());
+        const qrId = formData.get("qrId") as string;
+        const costCodeTypes = (formData.get("types") as string).split(",").map(code => code.trim());
 
-        // Find all cost codes that match the list of cost_code_types
-        const costCodes = await prisma.costCode.findMany({
+        // Find all cost codes that match the list of types
+        const costCodes = await prisma.costCodes.findMany({
             where: {
-                cost_code_type: {
+                type: {
                     in: costCodeTypes
                 }
             }
@@ -328,9 +328,9 @@ export async function RemovelistToJobsite(formData: FormData) {
         console.log("Cost codes found:", costCodes);
 
         // Connect the found cost codes to the job site
-        const jobsite = await prisma.jobsite.update({
+        const jobsite = await prisma.jobsites.update({
             where: {
-                jobsite_id: jobsiteId
+                qrId: qrId
             },
             data: {
                 costCode: {

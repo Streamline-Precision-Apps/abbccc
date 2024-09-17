@@ -9,20 +9,20 @@ export default async function Page({ params }: { params: { id: string } }) {
     const session = await auth();
     const manager = `${session?.user?.firstName} ${session?.user?.lastName}`; 
 
-    const recievedContent = await prisma.timeoffRequestForm.findMany({
+    const receivedContent = await prisma.timeoffRequestForms.findMany({
         where: {
             id : Number(params.id),
             status : "PENDING"
         }
     })
-    if (recievedContent.length <= 0){
+    if ( receivedContent.length <= 0){
         return redirect("/hamburger/inbox")
     }
-    const employee_id = recievedContent[0]?.employee_id
+    const employeeId =  receivedContent[0]?.employeeId
 
-    const employeeName = await prisma.user.findUnique({
+    const employeeName = await prisma.users.findUnique({
         where: {
-            id: employee_id
+            id: employeeId
         },
         select:{
             firstName:true,
@@ -32,7 +32,7 @@ export default async function Page({ params }: { params: { id: string } }) {
     const name = (employeeName?.firstName ?? '') + " " + (employeeName?.lastName ?? '')
     return (
         <>
-            <Content recievedContent={recievedContent} session={session} params={params} name={name} manager={manager} />
+            <Content  receivedContent={receivedContent} session={session} params={params} name={name} manager={manager} />
         </>
     )
 }

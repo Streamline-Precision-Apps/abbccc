@@ -7,21 +7,18 @@ import bcrypt from 'bcryptjs';
 export async function createUser(formData: FormData) {
 try{
     console.log("Creating user:", formData);
-    await prisma.user.create({
+    await prisma.users.create({
         data: {
             firstName: formData.get('firstName') as string,
             lastName: formData.get('lastName') as string,
             username: formData.get('username') as string,
             password: formData.get('password') as string,
             DOB: formData.get('DOB') as string,
-            truck_view: (Boolean(formData.get('truck_view')) as unknown as boolean),
-            tasco_view: (Boolean(formData.get('tasco_view')) as unknown  as boolean),
-            labor_view: (Boolean(formData.get('labor_view')) as unknown  as boolean),
-            mechanic_view: (Boolean(formData.get('mechanic_view')) as unknown as boolean),
+            truckView: (Boolean(formData.get('truckView')) as unknown as boolean),
+            tascoView: (Boolean(formData.get('tascoView')) as unknown  as boolean),
+            laborView: (Boolean(formData.get('laborView')) as unknown  as boolean),
+            mechanicView: (Boolean(formData.get('mechanicView')) as unknown as boolean),
             permission: formData.get('permission') as Permission,
-            email: formData.get('email') as string,
-            emailVerified: formData.get('emailVerified') as string,
-            phone: formData.get('phone') as string,
             image: formData.get('image') as string,
         }
     });
@@ -33,21 +30,18 @@ try{
 }
 
 export async function updateUser(formData: FormData) {
-    await prisma.user.update({
+    await prisma.users.update({
         where: { id: formData.get('id') as string },
         data: {
             firstName: formData.get('firstName') as string,
             lastName: formData.get('lastName') as string,
             username: formData.get('username') as string,
             DOB: formData.get('DOB') as string,
-            truck_view: formData.get('truck_view') === 'true',
-            tasco_view: formData.get('tasco_view') === 'true',
-            labor_view: formData.get('labor_view') === 'true',
-            mechanic_view: formData.get('mechanic_view') === 'true',
+            truckView: formData.get('truckView') === 'true',
+            tascoView: formData.get('tascoView') === 'true',
+            laborView: formData.get('laborView') === 'true',
+            mechanicView: formData.get('mechanicView') === 'true',
             permission: formData.get('permission') as Permission,
-            email: formData.get('email') as string,
-            emailVerified: formData.get('emailVerified') as string,
-            phone: formData.get('phone') as string,
             image: formData.get('image') as string,
         }
     });
@@ -56,7 +50,7 @@ export async function updateUser(formData: FormData) {
 
 export async function deleteUser(formData: FormData) {
     const id = formData.get('id') as string;
-    await prisma.user.delete({
+    await prisma.users.delete({
         where: { id },
     });
 }
@@ -65,7 +59,7 @@ export async function deleteUser(formData: FormData) {
 
 export async function uploadImage(formdata: FormData) {
     console.log(formdata);
-    await prisma.user.update({
+    await prisma.users.update({
         where: { id: formdata.get('id') as string },
         data: {
             image: formdata.get('image') as string
@@ -76,7 +70,7 @@ export async function uploadImage(formdata: FormData) {
 
 export async function uploadFirstImage(formdata: FormData) {
     console.log(formdata);
-    await prisma.user.update({
+    await prisma.users.update({
         where: { id: formdata.get('id') as string },
         data: {
             image: formdata.get('image') as string
@@ -86,10 +80,10 @@ export async function uploadFirstImage(formdata: FormData) {
 
 export async function uploadFirstSignature(formdata: FormData) {
     console.log(formdata);
-    await prisma.user.update({
+    await prisma.users.update({
         where: { id: formdata.get('id') as string },
         data: {
-            Signature: formdata.get('Signature') as string
+            signature: formdata.get('Signature') as string
         }
     })
 }
@@ -100,8 +94,8 @@ export async function setUserSettings(formdata: FormData) {
         where: { userId: formdata.get('id') as string },
         data: {
             approvedRequests: formdata.get('approvedRequests') === 'true',
-            timeoffRequests: formdata.get('timeoffRequests') === 'true',
-            GeneralReminders: formdata.get('GeneralReminders') === 'true',
+            timeOffRequests: formdata.get('timeoffRequests') === 'true',
+            generalReminders: formdata.get('GeneralReminders') === 'true',
         }
     });
 }
@@ -109,7 +103,7 @@ export async function setUserSettings(formdata: FormData) {
 
 export async function fetchByNameUser(name: string) {
     try {
-        const user = await prisma.user.findFirst({
+        const user = await prisma.users.findFirst({
             where: {
                 OR: [
                     { firstName: { contains: name, mode: 'insensitive' } },
@@ -127,7 +121,7 @@ export async function fetchByNameUser(name: string) {
 
 
 export async function getUserFromDb(username: string, password: string) {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
         where: {
             username: username,
             password: password
@@ -142,7 +136,7 @@ export async function getUserFromDb(username: string, password: string) {
 }
 
 export async function finishUserSetup(id: string) {
-    await prisma.user.update({
+    await prisma.users.update({
         where: { id: id },
         data: {
             accountSetup: true
@@ -151,7 +145,7 @@ export async function finishUserSetup(id: string) {
 }
 
 export async function setUserPassword(formData: FormData) {
-    await prisma.user.update({
+    await prisma.users.update({
         where: { id: formData.get('id') as string },
         data: {
             password: formData.get('password') as string

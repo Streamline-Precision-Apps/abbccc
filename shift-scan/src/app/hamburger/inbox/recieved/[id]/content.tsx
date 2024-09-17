@@ -11,7 +11,7 @@ import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
-import { recievedContent } from "@/lib/types";
+import { receivedContent } from "@/lib/types";
 import { Session } from "next-auth";
 import { useTranslations } from "next-intl";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
@@ -21,27 +21,27 @@ import { useRouter } from "next/navigation";
 import {formatDate} from '@/utils/formatDateYMD';
 
 type Props = {
-    recievedContent: recievedContent[]; // Define the type of sentContent prop
+    receivedContent:  receivedContent[]; // Define the type of sentContent prop
     session: Session | null;
     params: { id: string };
     name: string;
     manager: string;
 }
 
-export default function Content({ params, recievedContent, session, name, manager } : Props) {
+export default function Content({ params,  receivedContent, session, name, manager } : Props) {
     const t = useTranslations("Hamburger");
     const router = useRouter();
     const user_Id = session?.user.id;
     const [decision, setDecision] = useState("APPROVED")
     const [managerComment, setManagerComment] = useState('');
 
-    const [initialContent, setInitialContent] = useState<recievedContent[]>(recievedContent);
-    const [currentContent, setCurrentContent] = useState<recievedContent[]>(recievedContent);
+    const [initialContent, setInitialContent] = useState<receivedContent[]>(receivedContent);
+    const [currentContent, setCurrentContent] = useState<receivedContent[]>(receivedContent);
 
 
     useEffect(() => {
-        setInitialContent(recievedContent); // Store initial values
-    }, [recievedContent]);
+        setInitialContent(receivedContent); // Store initial values
+    }, [receivedContent]);
 
 const handleManagerCommentChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
         setManagerComment(e.target.value); // Update the state with the new comment
@@ -61,7 +61,7 @@ const handleManagerCommentChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
         <Sections size={"titleBox"} variant={"orange"}>
         <TitleBoxes variant={null} title="leave request" titleImg="/Inbox.svg" titleImgAlt="Inbox" type="noIcon" >
         </TitleBoxes>
-        {recievedContent.map((item) => (
+        {receivedContent.map((item) => (
             <Titles key={item.id}>
             {item.date.toLocaleString("en-US", {
                 day: "numeric",
@@ -75,10 +75,10 @@ const handleManagerCommentChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
         )
         )}
         </Sections>
-        {recievedContent.map((item) => (
+        {receivedContent.map((item) => (
             <Sections size={"dynamic"} key={item.id}>
             <Inputs type="hidden" name="date" value={item.date.toString()} disabled/>
-            <Inputs type="hidden" name="employee_id" value={item.employee_id} disabled/>
+            <Inputs type="hidden" name="employee_id" value={item.employeeId} disabled/>
             <Labels>
                 Employee
                 <Inputs
@@ -113,7 +113,7 @@ const handleManagerCommentChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
             <Labels> Comments
             <TextAreas 
             name = "description"
-            defaultValue={item.comments}
+            defaultValue={item.comment}
             disabled
             rows={2} 
             />
@@ -154,7 +154,7 @@ const handleManagerCommentChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
         value={managerComment}
         hidden
     />
-    <Buttons variant={"red"} size={"minBtn"} type="submit">
+    <Buttons variant={"red"} size={null} type="submit">
         <Titles variant={"default"} size={"h2"}>
             Deny
         </Titles>
@@ -172,7 +172,7 @@ const handleManagerCommentChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
         value={managerComment}
         hidden
     />
-    <Buttons variant={"green"} size={"minBtn"} type="submit">
+    <Buttons variant={"green"} size={null} type="submit">
         <Titles variant={"default"} size={"h2"}>
             Approve
         </Titles>

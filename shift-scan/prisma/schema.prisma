@@ -106,14 +106,13 @@ model Trainings {
 
 // This show the employee, the trainings they have completed and the total assigned trainings that are required for the year. 
 model UserTrainings {
+  id          Int     @id @default(autoincrement())
   userId      String
   trainingId  String  @unique
   isCompleted Boolean @default(false)
 
   Training Trainings @relation(fields: [trainingId], references: [id])
   User     Users     @relation(fields: [userId], references: [id])
-
-  @@id(name: "id", [trainingId, userId])
 }
 
 //-------------------------------------------------------------------------------------------------//
@@ -240,7 +239,7 @@ model CostCodes {
   id          Int        @id @default(autoincrement())
   name        String
   description String
-  type        String // set to an enum later,type is how we can filter the costcodes
+  type        String     // set to an enum later,type is how we can filter the costcodes
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @default(now()) @updatedAt
   Jobsite     Jobsites[]
@@ -248,6 +247,7 @@ model CostCodes {
 
 // crew data for seeing the entire crew and enabling site linking it also has direct access to the employeed time cards, and some desire profile settings
 model CrewMembers {
+  id         Int     @id @default(autoincrement())
   supervisor Boolean @default(false) // if the crew member is a supervisor or not
   employeeId String
   crewId     Int
@@ -257,8 +257,6 @@ model CrewMembers {
 
   crew Crews @relation(fields: [crewId], references: [id])
   user Users @relation(fields: [employeeId], references: [id])
-
-  @@id(name: "id", [crewId, employeeId])
 }
 
 // the crew model assigns creates a crew and assigns an employee to be the lead

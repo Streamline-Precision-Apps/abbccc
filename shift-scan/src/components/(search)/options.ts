@@ -1,7 +1,7 @@
 "use client";
 import { useDBJobsite, useDBCostcode, useDBEquipment } from "@/app/context/dbCodeContext";
 import { useRecentDBJobsite, useRecentDBCostcode, useRecentDBEquipment } from "@/app/context/dbRecentCodesContext";
-import { JobCodes, CostCode, EquipmentCode } from "@/lib/types";
+import { JobCodes, CostCodes, EquipmentCodes } from "@/lib/types";
 
 interface Option {
 code: string;
@@ -25,13 +25,13 @@ case 'costcode':
     }
     // Use recent codes if no search term
     options = searchTerm === ''
-    ? recentlyUsedCostCodes.map((costcode: CostCode) => ({
-        code: costcode.cost_code,
-        label: costcode.cost_code_description
+    ? recentlyUsedCostCodes.map((costcode: CostCodes) => ({
+        code: costcode.name,
+        label: costcode.description
     }))
-    : costcodeResults.map((costcode: CostCode) => ({
-        code: costcode.cost_code,
-        label: costcode.cost_code_description
+    : costcodeResults.map((costcode: CostCodes) => ({
+        code: costcode.name,
+        label: costcode.description
     }));
     break;
 
@@ -41,12 +41,12 @@ case 'jobsite':
     }
     options = searchTerm === ''
     ? recentlyUsedJobCodes.map((jobcode: JobCodes) => ({
-        code: jobcode.jobsite_id,
-        label: jobcode.jobsite_name
+        code: jobcode.qrId,
+        label: jobcode.name
     }))
     : jobsiteResults.map((jobcode: JobCodes) => ({
-        code: jobcode.jobsite_id,
-        label: jobcode.jobsite_name
+        code: jobcode.qrId,
+        label: jobcode.name
     }));
     break;
 
@@ -55,12 +55,12 @@ case 'equipment':
     throw new Error('equipmentResults is undefined');
     }
     options = searchTerm === ''
-    ? recentlyUsedEquipment.map((equipment: EquipmentCode) => ({
-        code: equipment.qr_id,
+    ? recentlyUsedEquipment.map((equipment: EquipmentCodes) => ({
+        code: equipment.qrId,
         label: equipment.name
     }))
-    : equipmentResults.map((equipment: EquipmentCode) => ({
-        code: equipment.qr_id,
+    : equipmentResults.map((equipment: EquipmentCodes) => ({
+        code: equipment.qrId,
         label: equipment.name
     }));
     break;

@@ -7,7 +7,7 @@ import { inboxContent } from "@/lib/types";
 import { redirect } from "next/navigation";
 
 
-export default function RTab({sentContent, session, recievedContent} : inboxContent) {
+export default function RTab({sentContent, session, receivedContent: recievedContent} : inboxContent) {
     if (!session) {
         return redirect("/signin")
     }
@@ -17,7 +17,7 @@ export default function RTab({sentContent, session, recievedContent} : inboxCont
         return <Titles>Coming Soon</Titles>;
     }
     const user_Id = session?.user?.id
-    const pending = recievedContent?.filter((item)=> item.employee_id !== user_Id)
+    const pending = recievedContent?.filter((item)=> item.employeeId !== user_Id)
     
     if (pending=== undefined || pending.length <= 0) {
         return <Titles>There Are No Requests Currently</Titles>
@@ -27,7 +27,7 @@ export default function RTab({sentContent, session, recievedContent} : inboxCont
     return (
         <>
         {pending.map((item) => (
-        <Buttons variant={"orange"} size={"maxBtn"} key={item.id} href={`/hamburger/inbox/recieved/${item.id}`}>
+        <Buttons variant={"orange"} size={"fill"} key={item.id} href={`/hamburger/inbox/recieved/${item.id}`}>
         <Titles>
             {item.requestType} 
         </Titles>

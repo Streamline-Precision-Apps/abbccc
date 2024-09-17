@@ -329,7 +329,7 @@ export default function UserManagement({ users }: Props) {
               onChange={(e) => setPhone(e.target.value)}
               state="default"
             />
-            <Buttons variant="green" size="default" type="submit">
+            <Buttons variant="green" type="submit">
               {t("Submit")}
             </Buttons>
           </Forms>
@@ -363,7 +363,6 @@ export default function UserManagement({ users }: Props) {
           {userResponse === null && (
             <Buttons
               variant="orange"
-              size="default"
               onClick={() => handleEditForm("1")}
             >
               {t("Submit")}
@@ -510,7 +509,7 @@ export default function UserManagement({ users }: Props) {
                 onChange={(e) => setPhone(e.target.value)}
                 state="default"
               />
-              <Buttons variant="orange" size="default" type="submit">
+              <Buttons variant="orange" type="submit">
                 {t("Submit")}
               </Buttons>
             </Forms>
@@ -547,7 +546,7 @@ export default function UserManagement({ users }: Props) {
               onSubmit={() => handleBanner("User was deleted successfully")}
             >
               <Inputs type="hidden" name="id" defaultValue={searchTerm2} />
-              <Buttons variant="red" size="default" type="submit">
+              <Buttons variant="red" type="submit">
                 <Texts>Delete</Texts>
               </Buttons>
             </Forms>

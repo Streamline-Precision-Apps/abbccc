@@ -103,7 +103,7 @@ export default function VerificationStep({ id, type, handleNextStep, option} : V
         type="row"
       />
       <Forms size={"fit"} onSubmit={handleSubmit}>
-        <Bases variant={"pinkCard"} size={"pinkCard"} className="relative">
+        {/* <Bases variant={"pinkCard"} size={"pinkCard"} className="relative"> */}
           <Buttons variant={"icon"} size={null} type="submit">
             <Images
               titleImg={"/new/downArrow.svg"}
@@ -152,19 +152,22 @@ export default function VerificationStep({ id, type, handleNextStep, option} : V
               />
             </Labels>
           </Contents>
-        </Bases>
-        <Bases variant={null} size={"box"} className="relative">
+          
+{/* This commented out code was the design for the punch in /punch out box */}
+
+        {/* </Bases> */}
+        {/* <Bases variant={null} size={"box"} className="relative">
           <Bases variant={"blueboxTop"} size={"blueboxTop"}></Bases>
           <Bases variant={"blueboxTop2"} size={"blueboxTop"}></Bases>
-          <Bases variant={"blueBox"} size={"blueBox"}>
+          <Bases variant={"blueBox"} size={"blueBox"}> */}
             <Buttons
               type="submit"
               className="bg-app-green mx-auto flex justify-center w-full h-full py-4 px-5 rounded-lg text-black font-bold mt-5"
             >
               <Clock time={date.getTime()} />
             </Buttons>
-          </Bases>
-        </Bases>
+          {/* </Bases>
+        </Bases> */}
         <Inputs
           type="hidden"
           name="submit_date"

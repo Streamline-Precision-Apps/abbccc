@@ -85,11 +85,11 @@ export const Signature = ({ setBase64String, base64string}: SignatureProps) => {
         onMouseUp={handleMouseUp}
       />
       <div className="flex flex-row gap-4">
-        <Buttons variant={"red"} size={"default"} onClick={handleClear}>
+        <Buttons variant={"red"} size={null} onClick={handleClear}>
           {t("Clear")}
         </Buttons>
         {showSaveButton && (
-          <Buttons variant={"green"} size={"default"} onClick={handleSave}>
+          <Buttons variant={"green"} size={null} onClick={handleSave}>
             {t("Save")}
           </Buttons>
         )}

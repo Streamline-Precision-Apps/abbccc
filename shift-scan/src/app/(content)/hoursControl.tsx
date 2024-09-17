@@ -222,7 +222,7 @@ export default function ControlComponent({ toggle } : ControlComponentProps) {
           </Contents>
         </Contents>
         <Contents variant={null} size={null}>
-          <Buttons href="/timesheets" variant={"green"} size={"widgetMed"}>
+          <Buttons href="/timesheets" variant={"green"} size={"fill"}>
             <Texts variant={"default"} size={"p3"}>
               View My Timesheets
             </Texts>

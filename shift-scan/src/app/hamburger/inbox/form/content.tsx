@@ -99,12 +99,12 @@ const router = useRouter();
         <Inputs type="hidden" name="status" value="PENDING" />
         <Inputs type="hidden" name="date" value={new Date().toISOString()} />
         {sign ? (
-            <Buttons variant={"default"} size={"tapToSign"} onClick={(event) => {event.preventDefault(); setSign(false) }}>
+            <Buttons variant={"lightBlue"} size={null} onClick={(event) => {event.preventDefault(); setSign(false) }}>
                 <Images titleImg={""} titleImgAlt="signature" />
             </Buttons>
         ):
         (
-            <Buttons variant={"default"} size={"tapToSign"} onClick={(event) => {event.preventDefault(); setSign(true) }}>
+            <Buttons variant={"lightBlue"} size={null} onClick={(event) => {event.preventDefault(); setSign(true) }}>
             <Titles variant={"default"} size={"h1"}>
                 Tap to sign
             </Titles>
@@ -116,7 +116,7 @@ const router = useRouter();
             *By Signing I acknowledge that time leave request are subject to management approval and company policy. *
         </Texts>
         </Sections>
-        <Buttons type="submit" variant={"green"} size={"maxBtn"}>
+        <Buttons type="submit" variant={"green"} size={null}>
             <Titles variant={"default"} size={"h1"}>
                 Submit
             </Titles>

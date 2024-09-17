@@ -14,21 +14,14 @@ import { Inputs } from "../(reusable)/inputs";
 import { Images } from "../(reusable)/images";
 import { Texts } from "../(reusable)/texts";
 import { TitleBoxes } from "../(reusable)/titleBoxes";
-import {AssetEquipment} from "@/lib/types";
-
-// interface Equipment {
-//     id: string;
-//     name: string;
-//     qr_id: string;
-//     images?: string;
-// }
+import {Equipment} from "@/lib/types";
 
 type VerifyProcessProps = {
 id: string | undefined;
 handleNextStep: () => void;
 type: string;
 option?: string;
-equipment: AssetEquipment[];
+equipment: Equipment[];
 }
 
 const VerificationEQStep: React.FC<VerifyProcessProps> = ({
@@ -42,7 +35,7 @@ const [filteredEquipmentName, setFilteredEquipmentName] = useState<string | null
 const t = useTranslations("Clock");
 const { scanEQResult } = useEQScanData();
 const { scanResult, setScanResult } = useScanData();
-const [selectedEquipment, setEquipment] = useState<AssetEquipment | null>(null);
+const [selectedEquipment, setEquipment] = useState<Equipment | null>(null);
 
 // if the jobsite is not in the case it will be stored in local storage
 if (!scanResult?.data) {
@@ -58,18 +51,17 @@ return (
     <Labels variant="default" size="default">
     {t("Equipment-result")}
     <Inputs
-        defaultValue={equipment?.find((equipment) => equipment.qr_id === scanEQResult?.data)?.name}
+        defaultValue={equipment?.find((equipment) => equipment.qrId === scanEQResult?.data)?.name}
     />
         </Labels>
 {/*If image is not found it will be null */}
-    {(equipment?.find((equipment) => equipment.qr_id === scanEQResult?.data)?.image) ? 
-    <Images variant="default" size="default" titleImg={equipment?.find((equipment) => equipment.qr_id === scanEQResult?.data)?.image ?? ""} titleImgAlt="
+    {(equipment?.find((equipment) => equipment.qrId === scanEQResult?.data)?.image) ? 
+    <Images variant="default" size="default" titleImg={equipment?.find((equipment) => equipment.qrId === scanEQResult?.data)?.image ?? ""} titleImgAlt="
     Equipment Image not found" /> : null}
     
-
+{/* this in put is for displaying the id */}
     <Inputs
         type="hidden"
-        name="name"
         value={scanEQResult?.data || ""}
         className="p-2 text-center"
         readOnly
@@ -78,7 +70,7 @@ return (
     {t("Equipment-notes-title")} 
 
     <TextAreas
-        name="equipment_notes"
+        name="comment"
         className="p-2 border-2 border-black w-full"
         rows={5}
         placeholder="You get 40 characters for notes. You can edit notes later."
@@ -86,8 +78,7 @@ return (
     />
     </Labels>
     <Buttons
-        variant={"default"}
-        size={"maxBtn"}
+        variant={"lightBlue"}
         type="submit"
     >
     <Texts size="p0" variant={"default"} >
@@ -95,10 +86,10 @@ return (
         </Texts>
     </Buttons>
     
-    <Inputs type="hidden" name="equipment_id" value={scanEQResult?.data || ""} />
-    <Inputs type="hidden" name="jobsite_id" value={scanResult?.data || ""} />
-    <Inputs type="hidden" name="start_time" value={new Date().toISOString()} />
-    <Inputs type="hidden" name="employee_id" value={id || ""} />
+    <Inputs type="hidden" name="equipmentId" value={scanEQResult?.data || ""} />
+    <Inputs type="hidden" name="jobsiteId" value={scanResult?.data || ""} />
+    <Inputs type="hidden" name="startTime" value={new Date().toISOString()} />
+    <Inputs type="hidden" name="employeeId" value={id || ""} />
     </Forms>
 </>
 );
