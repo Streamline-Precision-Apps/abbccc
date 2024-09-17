@@ -7,17 +7,17 @@ import Content from "@/app/hamburger/inbox/form/content";
 export default async function Form() {
     const session = await auth();
     if (!session) return null
-    const user_Id = session?.user.id;
-    const signature = await prisma.user.findUnique({
+    const userId = session?.user.id;
+    const user = await prisma.users.findUnique({
         where: {
-            id: user_Id
+            id: userId
         },
         select: {
-            Signature: true
+            signature: true
         }
     });
     
     return (
-    <Content signature={signature} session={session} />
+        user ? <Content signature={user.signature} session={session} /> : null
     )
 }

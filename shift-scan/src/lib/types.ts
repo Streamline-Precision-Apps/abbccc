@@ -29,8 +29,6 @@ export type User = {
     id: string;
     firstName: string;
     lastName: string;
-    email: string;
-    phone: string;
     image: string | null;
     imageUrl?: string | null;
   };
@@ -101,7 +99,7 @@ export type receivedContent = {
     decidedBy: String | null ;
 }
 
-type sentContent = {
+export type sentContent = {
   id: number;
   date: Date;
   requestedStartDate: Date;
@@ -169,8 +167,8 @@ type sentContent = {
   
   export type RequestForm = {
     session: Session | null;
-    signature: {Signature: string | null} | null;
-    }
+    signature: string | null; 
+  };
     
       
       // This is used in the admin section for assets.

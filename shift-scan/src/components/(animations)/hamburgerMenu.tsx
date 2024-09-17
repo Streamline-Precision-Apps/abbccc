@@ -113,7 +113,7 @@ export function AnimatedHamburgerButton(){
                 },
             }}
             >
-            <Buttons href="/hamburger/settings" variant={"icon"} size={"test"}>
+            <Buttons href="/hamburger/settings" variant={"icon"} >
                 <Images titleImg={"/new/settings-sm.svg"} titleImgAlt={"settings"} variant={"icon"} size={"icon"} />
             </Buttons>
             </motion.div>
@@ -132,7 +132,7 @@ export function AnimatedHamburgerButton(){
                 },
             }}
             >
-            <Buttons href="/hamburger/inbox" variant={"icon"} size={"test"}>
+            <Buttons href="/hamburger/inbox" variant={"icon"} >
                 <Images titleImg={"/new/inbox-sm.svg"} titleImgAlt={"inbox"} variant={"icon"} size={"icon"} />
             </Buttons>
             </motion.div>
@@ -151,7 +151,7 @@ export function AnimatedHamburgerButton(){
                 },
             }}
             >
-            <Buttons href="/hamburger/profile" variant={"icon"} size={"test"}>
+            <Buttons href="/hamburger/profile" variant={"icon"} >
                 <Images titleImg={"/new/profile-sm.svg"} titleImgAlt={"profile"} variant={"icon"} size={"icon"} />
             </Buttons>
             </motion.div>
@@ -172,7 +172,7 @@ export function AnimatedHamburgerButton(){
             >
                 {/* if role is admin or superAdmin, show admin page */}
             { (role === "ADMIN" || role === "SUPERADMIN") &&
-            <Buttons href="/admin" variant={"icon"} size={"test"}>
+            <Buttons href="/admin" variant={"icon"}>
                 <Images titleImg={"/new/admin-sm.svg"} titleImgAlt={"Admin Page"} variant={"icon"} size={"icon"} />
             </Buttons>
             }
