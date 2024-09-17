@@ -73,16 +73,16 @@ export default function Content({ params, sentContent, session } : Props) {
         <Sections size={"titleBox"} >
             <Contents variant={"widgetButtonRow"} size={null}>
             {!edit &&
-            <Buttons variant={"orange"} size={"minBtn"} onClick={() => setEdit(!edit)}>
+            <Buttons variant={"orange"} size={null} onClick={() => setEdit(!edit)}>
                 <Images variant={"icon"} size={"iconSm"} titleImg={"/new/edit-form.svg"} titleImgAlt={"edit form"} />
             </Buttons>
             }
-            {edit && <Buttons variant={"red"} size={"minBtn"} onClick={() => handleEdit()}>
+            {edit && <Buttons variant={"red"} size={null} onClick={() => handleEdit()}>
                 <Images variant={"icon"} size={"iconSm"} titleImg={"/new/undo-edit.svg"} titleImgAlt={"delete form"} />
             </Buttons>
             }
             {edit &&
-            <Buttons variant={"green"} size={"minBtn"} type="submit">
+            <Buttons variant={"green"} size={null}  type="submit">
             <Images variant={"icon"} size={"iconSm"} titleImg={"/new/save-edit.svg"} titleImgAlt={"delete form"} />
             </Buttons>
             }
@@ -93,7 +93,7 @@ export default function Content({ params, sentContent, session } : Props) {
             <Inputs type="hidden" name="id" value={item.id} disabled/>
             <Inputs type="hidden" name="status" value={item.status} disabled/>
             <Inputs type="hidden" name="date" value={item.date.toString()} disabled/>
-            <Inputs type="hidden" name="employee_id" value={item.employee_id} disabled/>
+            <Inputs type="hidden" name="employee_id" value={item.employeeId} disabled/>
             <Labels> Start Date
             <Inputs
             type="date"
@@ -129,7 +129,7 @@ export default function Content({ params, sentContent, session } : Props) {
             <Labels> Comments
             <TextAreas 
             name = "description"
-            defaultValue={item.comments}
+            defaultValue={item.comment}
             disabled={edit ? false : true}
             rows={5} 
             />
@@ -138,7 +138,7 @@ export default function Content({ params, sentContent, session } : Props) {
             <Labels> Managers Comments
             <TextAreas
             name="mangerComments"
-            defaultValue={item.mangerComments ?? ""}
+            defaultValue={item.managerComment ?? ""}
             disabled 
             />
             </Labels>
@@ -168,7 +168,7 @@ export default function Content({ params, sentContent, session } : Props) {
                     setEdit(!edit);
                 }
             } 
-            variant={"red"} size={"minBtn"}>
+            variant={"red"} size={null}>
                 <Titles variant={"default"} size={"h1"}>
                     Delete Request
                 </Titles>

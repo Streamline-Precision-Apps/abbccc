@@ -5,12 +5,12 @@ import Content from "@/app/hamburger/inbox/sent/denied/[id]/content";
 
 export default async function Page({ params }: { params: { id: string } }) {
     const session = await auth();
-    const user_Id = session?.user.id;
+    const userId = session?.user.id;
 
-    const sentContent = await prisma.timeoffRequestForm.findMany({
+    const sentContent = await prisma.timeoffRequestForms.findMany({
         where: {
             id : Number(params.id),
-            employee_id: user_Id,
+            employeeId: userId,
         }
     })
     

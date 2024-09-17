@@ -14,11 +14,11 @@ import { Titles } from "@/components/(reusable)/titles";
 import SearchBar from "@/components/(search)/searchbar";
 import { useTranslations } from "next-intl";
 import { ChangeEvent, Dispatch, FormEvent, SetStateAction, useState } from "react";
-import { costCodes, Jobsite } from "@/lib/types";
+import { costCodes as costCodesTypes, Jobsites } from "@/lib/types";
 
 type Props = {
-    costCodes: costCodes[]
-    jobsites: Jobsite[]
+    costCodes: costCodesTypes[]
+    jobsites: Jobsites[]
     setBanner: Dispatch<SetStateAction<string>>;
     setShowBanner:  Dispatch<SetStateAction<boolean>>
 }
@@ -35,20 +35,20 @@ const [searchTerm2, setSearchTerm2] = useState<string>("");
 // sets the state for edits in costcode edit section
 const [editForm, setEditForm] = useState<boolean>(true);
 // helps search bar component show items based on user input and filter all items
-const [costCodeList, setCostCodeList] = useState<costCodes[]>(costCodes);
-const [jobsiteList, setJobsiteList] = useState<Jobsite[]>(jobsites);
-const [costCodeSelections, setCostCodeSelections] = useState([{ id: Date.now(), jobsite_id: "", cost_code_type: "" }]);
+const [costCodeList, setCostCodeList] = useState<costCodesTypes[]>(costCodes);
+const [jobsiteList, setJobsiteList] = useState<Jobsites[]>(jobsites);
+const [costCodeSelections, setCostCodeSelections] = useState([{ id: Date.now(), jobsiteId: "", type: "" }]);
 
 // holds reponse value for the edit to re submit the form with current data filled out.
-const [Response, setResponse] = useState<costCodes | null>(null);
+const [Response, setResponse] = useState<costCodesTypes | null>(null);
 // array of costcode types of a certain tag
-const [TagsRes, setTagsRes] = useState<costCodes[]>([]);
+const [TagsRes, setTagsRes] = useState<costCodesTypes[]>([]);
 const [editTags, setEditTags] = useState<boolean>(true);
 
 // makes a unique list of costcode types
 const uniqueCostCodes = costCodes.filter(
     (item, index, self) =>
-        index === self.findIndex(t => t.cost_code_type === item.cost_code_type)
+        index === self.findIndex(t => t.type === item.type)
 );
 // handles search outputs
     const handleSearchChange = (e: ChangeEvent<HTMLInputElement>, id: string) => {
@@ -60,8 +60,8 @@ const uniqueCostCodes = costCodes.filter(
             setSearchTerm1(value);
         }
         const filteredList = costCodes.filter((item) =>
-            item.cost_code.toLowerCase().includes(value) ||
-            item.cost_code_description.toLowerCase().includes(value)
+            item.name.toLowerCase().includes(value) ||
+            item.description.toLowerCase().includes(value)
         );
         setCostCodeList(filteredList);
         setEditForm(true);
@@ -73,7 +73,7 @@ async function handleEditForm(id: string, TagsId: string) {
     if (id === '3') {
         const response = await fetchByNameCostCode(TagsId);
         if (response) {
-            setResponse(response as unknown as costCodes); // No need to access the first element of an array
+            setResponse(response as unknown as costCodesTypes); // No need to access the first element of an array
         } else {
             console.log("Error fetching equipment.");
         }
@@ -81,7 +81,7 @@ async function handleEditForm(id: string, TagsId: string) {
     if (id === '2') {
         const response = await fetchByNameCostCode(searchTerm2);
         if (response) {
-            setResponse(response as unknown as costCodes); // No need to access the first element of an array
+            setResponse(response as unknown as costCodesTypes); // No need to access the first element of an array
         } else {
             console.log("Error fetching equipment.");
         }
@@ -91,7 +91,7 @@ async function handleEditForm(id: string, TagsId: string) {
         }
     const response = await fetchByNameCostCode(searchTerm1);
     if (response) {
-        setResponse(response as unknown as costCodes); 
+        setResponse(response as unknown as costCodesTypes); 
     } else {
         console.log("Error fetching costcode.");
     }
@@ -132,12 +132,12 @@ async function handleEditForm(id: string, TagsId: string) {
     };
 
     const addMoreCostCode = () => {
-        setCostCodeSelections([...costCodeSelections, { id: Date.now(), jobsite_id: "", cost_code_type: "" }]);
+        setCostCodeSelections([...costCodeSelections, { id: Date.now(), jobsiteId: "", type: "" }]);
     };
 
     const handleSelectChange = (index: number, value: string) => {
         const updatedSelections = costCodeSelections.map((selection, i) =>
-            i === index ? { ...selection, cost_code_type: value } : selection
+            i === index ? { ...selection, type: value } : selection
         );
         setCostCodeSelections(updatedSelections);
     };
@@ -146,10 +146,10 @@ async function handleEditForm(id: string, TagsId: string) {
         event.preventDefault();
         
         const formData = new FormData(event.currentTarget);
-        const jobsiteId = formData.get("jobsite_id") as string;
-        const costCodes = costCodeSelections.map((selection) => selection.cost_code_type);
-        formData.append("jobsite_id", jobsiteId)
-        formData.append("cost_code_types", costCodes.filter(code => code !== "").join(","));
+        const jobsiteId = formData.get("jobsiteId") as string;
+        const costCodes = costCodeSelections.map((selection) => selection.type);
+        formData.append("jobsiteId", jobsiteId)
+        formData.append("types", costCodes.filter(code => code !== "").join(","));
     
         const response = await AddlistToJobsite(formData);
     }
@@ -158,10 +158,10 @@ async function handleEditForm(id: string, TagsId: string) {
         event.preventDefault();
         
         const formData = new FormData(event.currentTarget);
-        const jobsiteId = formData.get("jobsite_id") as string;
-        const costCodes = costCodeSelections.map((selection) => selection.cost_code_type);
-        formData.append("jobsite_id", jobsiteId)
-        formData.append("cost_code_types", costCodes.filter(code => code !== "").join(","));
+        const jobsiteId = formData.get("jobsiteId") as string;
+        const costCodes = costCodeSelections.map((selection) => selection.type);
+        formData.append("jobsiteId", jobsiteId)
+        formData.append("types", costCodes.filter(code => code !== "").join(","));
     
         const response = await RemovelistToJobsite(formData);
     }
@@ -172,9 +172,9 @@ async function handleEditForm(id: string, TagsId: string) {
             <Contents variant={"default"} size={null} >
             <Expands title="All in DB Cost Codes" divID={"1"}>
             <Contents>
-                    {costCodes.map((costCode: costCodes) => (
+                    {costCodes.map((costCode: costCodesTypes) => (
                         <ul key={costCode.id}>
-                            <li>{costCode.cost_code} {costCode.cost_code_description}</li>
+                            <li>{costCode.name} {costCode.description}</li>
                         </ul>
                     ))}
                     </Contents>
@@ -186,13 +186,13 @@ async function handleEditForm(id: string, TagsId: string) {
         <Forms action={createCostCode} onSubmit={() => handleBanner("Created Successfully")}>
 
         <Labels variant="default" type="">Cost Code *</Labels>
-        <Inputs variant="default" type="text" name="cost_code"  required />
+        <Inputs variant="default" type="text" name="name"  required />
 
         <Labels variant="default" type="">Cost Code Description *</Labels>
-        <Inputs variant="default" type="text" name="cost_code_description" required />
+        <Inputs variant="default" type="text" name="description" required />
 
         <Labels variant="default" type="">Cost code Tag *</Labels>
-        <Inputs variant="default" type="text" name="cost_code_type" required/>
+        <Inputs variant="default" type="text" name="type" required/>
 
         <Buttons variant="green" size={"minBtn"} type="submit">
             <Texts>Create Jobsite</Texts>
@@ -214,9 +214,9 @@ async function handleEditForm(id: string, TagsId: string) {
 {searchTerm1 && editForm && (
 <ul>
     {costCodeList.map((item) => (
-        <Buttons variant="orange" size="listLg" onClick={() => {setSearchTerm1(item.cost_code_description);setEditForm(false);}} key={item.id}>
+        <Buttons variant="orange" size="listLg" onClick={() => {setSearchTerm1(item.description);setEditForm(false);}} key={item.id}>
                 <Texts>
-                {item.cost_code} ({item.cost_code_description})    
+                {item.name} ({item.description})    
                 </Texts>
                 </Buttons>
     ))}
@@ -235,16 +235,16 @@ async function handleEditForm(id: string, TagsId: string) {
     <Inputs type="text" name="id" hidden defaultValue={Response.id} /> 
 
     <Labels variant="default" type="">Cost Code *</Labels>
-    <Inputs variant="default" type="text" name="cost_code" defaultValue={Response.cost_code} required />
+    <Inputs variant="default" type="text" name="name" defaultValue={Response.name} required />
 
     <Labels variant="default" type="" >Cost Code Description *</Labels>
-    <Inputs variant="default" type="text" name="cost_code_description" 
-    defaultValue={Response.cost_code_description}
+    <Inputs variant="default" type="text" name="description" 
+    defaultValue={Response.description}
     required />
 
     <Labels variant="default" type="">Cost code Tag *</Labels>
-    <Inputs variant="default" type="text" name="cost_code_type"
-    defaultValue={Response.cost_code_type} required/>
+    <Inputs variant="default" type="text" name="type"
+    defaultValue={Response.type} required/>
 
     <Buttons variant="green" size={"minBtn"} type="submit">
     <Texts>Edit</Texts>
@@ -271,8 +271,8 @@ async function handleEditForm(id: string, TagsId: string) {
 {searchTerm2 && editForm && (
 <ul>
 {costCodeList.map((item) => (
-    <Buttons variant="orange" size="listLg" onClick={() => {setSearchTerm2(item.cost_code_description);setEditForm(false);}} key={item.id}>
-        <Texts>{item.cost_code} ({item.cost_code_description})</Texts>
+    <Buttons variant="orange" size="listLg" onClick={() => {setSearchTerm2(item.description);setEditForm(false);}} key={item.id}>
+        <Texts>{item.name} ({item.description})</Texts>
     </Buttons>
 ))}
 </ul>
@@ -302,7 +302,7 @@ async function handleEditForm(id: string, TagsId: string) {
 {/**************************************************************************/}
 
 {/*will be an interactive table of cost codes under jobs, we will then assign costcodes by a list to a jobsite
-    cost_code_type is how we can filter the costcodes its a string for now */}
+    type is how we can filter the costcodes its a string for now */}
 
 {/**************************************************************************/}
 
@@ -315,15 +315,15 @@ async function handleEditForm(id: string, TagsId: string) {
     <Labels variant="default">Select Cost Code Type</Labels>
     <Selects 
     variant="default" 
-    name="cost_code_type"
+    name="type"
     onChange={(e) => {
     e.currentTarget.form?.requestSubmit();
     }}
     >
     <option value="default" >Select Cost Code Type</option>
     {uniqueCostCodes.map((item, index) => (
-    <option key={index} value={item.cost_code_type}>
-    {item.cost_code_type}
+    <option key={index} value={item.type}>
+    {item.type}
     </option>
     ))}
     </Selects>
@@ -339,9 +339,9 @@ async function handleEditForm(id: string, TagsId: string) {
 {TagsRes.map((item) => (
     <Buttons variant="orange" size="listLg" key={item.id} 
     onClick={() =>{
-        handleEditForm("3",item.cost_code_description);
+        handleEditForm("3",item.description);
     }}>
-        <Texts>{item.cost_code} ({item.cost_code_description})</Texts>
+        <Texts>{item.name} ({item.description})</Texts>
     </Buttons>
 ))}
 </ul>
@@ -363,18 +363,18 @@ async function handleEditForm(id: string, TagsId: string) {
     <Inputs type="hidden" name="id" defaultValue={Response.id} />
 
     <Labels variant="default" type="">Cost Code Id *</Labels>
-    <Inputs variant="default" type="text" name="cost_code"
-    defaultValue={Response.cost_code}
+    <Inputs variant="default" type="text" name="costCode"
+    defaultValue={Response.name}
     state="disabled"
     />
 <Labels variant="default" type="">Cost Code Description*</Labels>
-<Inputs variant="default" type="text" name="cost_code_description"
-    defaultValue={Response.cost_code_description}
+<Inputs variant="default" type="text" name="description"
+    defaultValue={Response.description}
     state="disabled"
     />
 
-<Inputs variant="default" type="text" name="cost_code_type"
-    defaultValue={Response.cost_code_type}
+<Inputs variant="default" type="text" name="type"
+    defaultValue={Response.type}
     />
     
     <Buttons variant="green" size={"minBtn"} type="submit">
@@ -393,11 +393,11 @@ async function handleEditForm(id: string, TagsId: string) {
         <Forms onSubmit={() => {handleBanner("Assigned Costcodes Successfully"); handleSubmit;}}>
         {/* Jobsite Selection */}
         <Labels variant="default">Select Jobsite</Labels>
-        <Selects variant="default" name="jobsite_id" required>
+        <Selects variant="default" name="id" required>
             <option value="default">Select Jobsite</option>
             {jobsites.map((item) => (
-            <option key={item.id} value={item.jobsite_id}>
-                {item.jobsite_name + " - " + item.jobsite_id}
+            <option key={item.id} value={item.id}>
+                {item.name + " - " + item.id}
             </option>
             ))}
         </Selects>
@@ -408,15 +408,15 @@ async function handleEditForm(id: string, TagsId: string) {
             <Contents variant={"rowCenter"} key={index}>
             <Selects
                 variant="default"
-                name={`cost_code_type_${index}`}
-                value={selection.cost_code_type}
+                name={`type_${index}`}
+                value={selection.type}
                 onChange={(e) => handleSelectChange(index, e.target.value)}
                 required
             >
                 <option value="default">Select Cost Code Type</option>
                 {costCodes.map((item) => (
-                <option key={item.id} value={item.cost_code_type}>
-                    {item.cost_code_type}
+                <option key={item.id} value={item.type}>
+                    {item.type}
                 </option>
                 ))}
             </Selects>
@@ -448,11 +448,11 @@ async function handleEditForm(id: string, TagsId: string) {
         <Forms onSubmit={() => {handleBanner("Unassigned Costcodes Successfully"); disconnect;}}>
         {/* Jobsite Selection */}
         <Labels variant="default">Select Jobsite</Labels>
-        <Selects variant="default" name="jobsite_id" required>
+        <Selects variant="default" name="id" required>
             <option value="default">Select Jobsite</option>
             {jobsites.map((item) => (
-            <option key={item.id} value={item.jobsite_id}>
-                {item.jobsite_name + " - " + item.jobsite_id}
+            <option key={item.id} value={item.id}>
+                {item.name + " - " + item.id}
             </option>
             ))}
         </Selects>
@@ -463,15 +463,15 @@ async function handleEditForm(id: string, TagsId: string) {
             <Contents variant={"rowCenter"} key={index}>
             <Selects
                 variant="default"
-                name={`cost_code_type_${index}`}
-                value={selection.cost_code_type}
+                name={`type_${index}`}
+                value={selection.type}
                 onChange={(e) => handleSelectChange(index, e.target.value)}
                 required
             >
                 <option value="default">Select Cost Code Type</option>
                 {costCodes.map((item) => (
-                <option key={item.id} value={item.cost_code_type}>
-                    {item.cost_code_type}
+                <option key={item.id} value={item.type}>
+                    {item.type}
                 </option>
                 ))}
             </Selects>

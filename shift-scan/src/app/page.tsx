@@ -7,7 +7,7 @@ import { auth } from "@/auth"
 export default async function Home() {
 // Get the current user
   const session = await auth();
-  const userid = session?.user.id;
+  const userId = session?.user.id;
 
 // Get the current language
   const lang = cookies().get("locale");
@@ -36,36 +36,36 @@ export default async function Home() {
   todayStart.setHours(0, 0, 0, 0); // Set to start of the day
 
   // Fetch all records, only shows the id, name, and qr_id for the codes
-  const jobCodes = await prisma.jobsite.findMany({
+  const jobCodes = await prisma.jobsites.findMany({
     select: {
       id: true,
-      jobsite_id: true,
-      jobsite_name: true,
+      qrId: true,
+      name: true,
     },
   });
 
-  const costCodes = await prisma.costCode.findMany({
+  const costCodes = await prisma.costCodes.findMany({
     select: {
       id: true,
-      cost_code: true,
-      cost_code_description: true,
+      name: true,
+      description: true,
     },
   });
 
   const equipment = await prisma.equipment.findMany({
     select: {
       id: true,
-      qr_id: true,
+      qrId: true,
       name: true,
     },
   });
 
   // Fetch the 5 recent records the user has entered
-  const recentJobSites = await prisma.jobsite.findMany({
+  const recentJobSites = await prisma.jobsites.findMany({
     select: {
       id: true,
-      jobsite_id: true,
-      jobsite_name: true,
+      qrId: true,
+      name: true,
     },
     orderBy: {
       createdAt: "desc",
@@ -73,11 +73,11 @@ export default async function Home() {
     take: 5,
   });
 
-  const recentCostCodes = await prisma.costCode.findMany({
+  const recentCostCodes = await prisma.costCodes.findMany({
     select: {
       id: true,
-      cost_code: true,
-      cost_code_description: true,
+      name: true,
+      description: true,
     },
     orderBy: {
       createdAt: "desc",
@@ -88,7 +88,7 @@ export default async function Home() {
   const recentEquipment = await prisma.equipment.findMany({
     select: {
       id: true,
-      qr_id: true,
+      qrId: true,
       name: true,
     },
     orderBy: {
@@ -98,14 +98,14 @@ export default async function Home() {
   });
 
   // Fetch timesheets for the current pay period
-  const payPeriodSheets = (await prisma.timeSheet
+  const payPeriodSheets = (await prisma.timeSheets
     .findMany({
       where: {
-        userId: userid,
-        start_time: { gte: payPeriodStart, lte: currentDate },
+        userId: userId,
+        startTime: { gte: payPeriodStart, lte: currentDate },
       },
       select: {
-        start_time: true,
+        startTime: true,
         duration: true,
       },
     })
@@ -119,12 +119,13 @@ export default async function Home() {
       session={session}
       locale={locale}
       jobCodes={jobCodes}
-      CostCodes={costCodes}
+      costCodes={costCodes}
       equipment={equipment}
       recentJobSites={recentJobSites}
       recentCostCodes={recentCostCodes}
       recentEquipment={recentEquipment}
-      payPeriodSheets={payPeriodSheets}
-    />
+      payPeriodSheets={payPeriodSheets} 
+      logs={[]}    
+      />
   );
 }

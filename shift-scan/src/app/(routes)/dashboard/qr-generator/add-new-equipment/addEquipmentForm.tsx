@@ -208,7 +208,7 @@ export default function AddEquipmentForm({ base64String, setBannerText, handler,
           />
         <Inputs id="qr_id" name="qr_id" type="hidden" value={eqCode} />
       
-      <Buttons variant="green" size="default" type="submit">
+      <Buttons variant={"green"} size={null} type="submit">
         {t("Submit")}
       </Buttons>
     </Forms>

@@ -13,7 +13,7 @@ return (
 <>
 {/*This map show all approved requests on top */}
 {approved.map((item) => (
-    <Buttons variant={"green"} size={"maxBtn"} key={item.id} href={`/hamburger/inbox/sent/approved/${item.id}`}>      
+    <Buttons variant={"green"} size={null} key={item.id} href={`/hamburger/inbox/sent/approved/${item.id}`}>      
         <Titles>
             {item.requestType} 
         </Titles>
@@ -29,7 +29,7 @@ return (
 ))}
 {/*This map show pending requests in the middle*/}
 {pending.map((item) => (
-    <Buttons variant={"orange"} size={"maxBtn"} key={item.id} href={`/hamburger/inbox/sent/${item.id}`}>
+    <Buttons variant={"orange"} size={null} key={item.id} href={`/hamburger/inbox/sent/${item.id}`}>
     <Titles>
         {item.requestType} 
     </Titles>
@@ -46,7 +46,7 @@ return (
 
 {/*This map show denined requests on the bottom*/}
 {denied.map((item) => (
-    <Buttons variant={"red"} size={"maxBtn"} key={item.id} href={`/hamburger/inbox/sent/denied/${item.id}`}>
+    <Buttons variant={"red"} size={null} key={item.id} href={`/hamburger/inbox/sent/denied/${item.id}`}>
     <Titles>
         {item.requestType} 
     </Titles>
@@ -64,7 +64,7 @@ return (
 {/*This is the request button*/}
 <Buttons 
     href="/hamburger/inbox/form" 
-    size={"minBtn"} 
+    size={null}
     variant={"green"}
     >
     <Texts variant={"default"} size={"p2"}>

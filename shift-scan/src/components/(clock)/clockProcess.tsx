@@ -12,7 +12,7 @@ import { useEQScanData } from "@/app/context/equipmentContext";
 import { Titles } from "../(reusable)/titles";
 import { Buttons } from "../(reusable)/buttons";
 import { setAuthStep } from "@/app/api/auth";
-import { AssetEquipment } from "@/lib/types";
+import { Equipment } from "@/lib/types";
 type clockProcessProps = {
     scannerType: string;
     id: string | undefined;
@@ -20,7 +20,7 @@ type clockProcessProps = {
     locale: string;
     option?: string;
     returnpath: string;
-    equipment?: AssetEquipment[]
+    equipment?: Equipment[]
 };
 
 

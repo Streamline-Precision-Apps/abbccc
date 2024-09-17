@@ -8,36 +8,36 @@ export default async function Dashboard() {
   const userId = session?.user.id;
 
   // Fetch all records
-  const jobCodes = await prisma.jobsite.findMany({
+  const jobCodes = await prisma.jobsites.findMany({
     select: {
       id: true,
-      jobsite_id: true,
-      jobsite_name: true,
+      qrId: true,
+      name: true,
     },
   });
 
-  const costCodes = await prisma.costCode.findMany({
+  const costCodes = await prisma.costCodes.findMany({
     select: {
       id: true,
-      cost_code: true,
-      cost_code_description: true,
+      name: true,
+      description: true,
     },
   });
 
   const equipment = await prisma.equipment.findMany({
     select: {
       id: true,
-      qr_id: true,
+      qrId: true,
       name: true,
     },
   });
 
   // Fetch recent records
-  const recentJobSites = await prisma.jobsite.findMany({
+  const recentJobSites = await prisma.jobsites.findMany({
     select: {
       id: true,
-      jobsite_id: true,
-      jobsite_name: true,
+      qrId: true,
+      name: true,
     },
     orderBy: {
       createdAt: "desc",
@@ -45,11 +45,11 @@ export default async function Dashboard() {
     take: 5,
   });
 
-  const recentCostCodes = await prisma.costCode.findMany({
+  const recentCostCodes = await prisma.costCodes.findMany({
     select: {
       id: true,
-      cost_code: true,
-      cost_code_description: true,
+      name: true,
+      description: true,
     },
     orderBy: {
       createdAt: "desc",
@@ -60,7 +60,7 @@ export default async function Dashboard() {
   const recentEquipment = await prisma.equipment.findMany({
     select: {
       id: true,
-      qr_id: true,
+      qrId: true,
       name: true,
     },
     orderBy: {
@@ -68,9 +68,6 @@ export default async function Dashboard() {
     },
     take: 5,
   });
-
-  const userCookie = cookies().get("user");
-  const userid = userCookie ? userCookie.value : undefined;
 
   const lang = cookies().get("locale");
   const locale = lang ? lang.value : "en"; // Default to English
@@ -80,17 +77,17 @@ export default async function Dashboard() {
 
   let logs;
 
-  logs = await prisma.employeeEquipmentLog.findMany({
+  logs = await prisma.employeeEquipmentLogs.findMany({
     where: {
-      employee_id: userid,
+      employeeId: userId,
       createdAt: { lte: currentDate, gte: past24Hours },
-      submitted: false,
+      isSubmitted: false,
     },
     include: {
       Equipment: {
         select: {
           id: true,
-          qr_id: true,
+          qrId: true,
           name: true,
         },
       },
@@ -99,15 +96,15 @@ export default async function Dashboard() {
 
   logs = logs.map((log) => ({
     id: log.id.toString(),
-    employee_id: log.employee_id,
+    userId: log.employeeId, // Add this line
     equipment: log.Equipment?.id
       ? {
           id: log.Equipment.id,
-          qr_id: log.Equipment.qr_id,
+          qrId: log.Equipment.qrId,
           name: log.Equipment.name,
         }
       : null,
-    submitted: log.submitted,
+    submitted: log.isSubmitted,
   }));
 
   return (
@@ -119,7 +116,8 @@ export default async function Dashboard() {
       recentJobSites={recentJobSites}
       recentCostCodes={recentCostCodes}
       recentEquipment={recentEquipment}
-      logs={logs} // Pass logs to Content
-    />
+      logs={logs} session={undefined} 
+      
+      />
   );
 }

@@ -17,11 +17,11 @@ select: {
     userId: true,
     language: true,
     approvedRequests: true,
-    timeoffRequests: true,
-    GeneralReminders: true,
-    Biometric: true,
+    timeOffRequests: true,
+    generalReminders: true,
+    biometric: true,
     cameraAccess: true,
-    LocationAccess: true,
+    locationAccess: true,
 },
 });
 

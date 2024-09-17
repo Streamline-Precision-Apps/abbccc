@@ -53,10 +53,10 @@ export async function fetchEq(employeeId: string, date: string) {
   const endOfDay = new Date(date);
   endOfDay.setUTCHours(23, 59, 59, 999);
 
-  const eqlogs = await prisma.employeeEquipmentLog.findMany({
+  const eqlogs = await prisma.employeeEquipmentLogs.findMany({
     where: {
-      employee_id: employeeId,
-      start_time: {
+      employeeId: employeeId,
+      startTime: {
         gte: startOfDay.toISOString(),
         lte: endOfDay.toISOString(),
       },
@@ -78,21 +78,21 @@ export async function updateEq(formData1: FormData) {
   {
     console.log(formData1);
     const id = formData1.get("id") as string;
-    const e = formData1.get("qr_id") as string;
+    const e = formData1.get("qrId") as string;
     const alter = await prisma.equipment.findUnique({
       where: {
-        qr_id: e,
+        qrId: e,
       },
     });
 
     console.log(alter);
 
-    const log = await prisma.employeeEquipmentLog.update({
+    const log = await prisma.employeeEquipmentLogs.update({
       where: {
         id: Number(id),
       },
       data: {
-        equipment_id: alter?.id,
+        equipmentId: alter?.id,
         duration: Number(formData1.get("duration") as string),
       },
     });
@@ -145,9 +145,9 @@ export async function createEquipment(formData: FormData) {
     console.log(formData);
 
     const statusValue = formData.get("status") as string;
-    const equipmentTagValue = formData.get("equipment_tag") as string;
-    const equipmentStatusValue = formData.get("equipment_status") as string;
-    const qr_id = formData.get("qr_id") as string;
+    const equipmentTagValue = formData.get("equipmentTag") as string;
+    const equipmentStatusValue = formData.get("status") as string;
+    const qrId = formData.get("qrId") as string;
     const image = formData.get("image") as string;
     const equipmentTag = toEnumValue(Tags, equipmentTagValue);
     const equipmentStatus = toEnumValue(EquipmentStatus, equipmentStatusValue);
@@ -160,15 +160,15 @@ export async function createEquipment(formData: FormData) {
       data: {
         name: formData.get("name") as string,
         description: formData.get("description") as string,
-        qr_id: qr_id,
-        equipment_tag: equipmentTag,
-        equipment_status: equipmentStatus,
+        qrId: qrId,
+        equipmentTag: equipmentTag,
+        status: equipmentStatus,
         make: (formData.get("make") as string) || null,
         model: (formData.get("model") as string) || null,
         year: (formData.get("year") as string) || null,
-        license_plate: (formData.get("license_plate") as string) || null,
-        registration_expiration: formData.get("registration_expiration")
-          ? new Date(formData.get("registration_expiration") as string)
+        licensePlate: (formData.get("licensePlate") as string) || null,
+        registrationExpiration: formData.get("registrationExpiration")
+          ? new Date(formData.get("registrationExpiration") as string)
           : null,
         mileage: formData.get("mileage")
           ? Number(formData.get("mileage"))
@@ -214,33 +214,33 @@ export async function CreateEmployeeEquipmentLog(formData: FormData) {
   try {
     console.log("Creating EmployeeEquipmentLog...");
     console.log(formData);
-    const employeeId = formData.get("employee_id") as string;
-    const equipmentQrId = formData.get("equipment_id") as string;
-    const jobsiteId = formData.get("jobsite_id") as string;
+    const employeeId = formData.get("employeeId") as string;
+    const equipmentQrId = formData.get("equipmentId") as string;
+    const jobsiteId = formData.get("jobsiteId") as string;
 
     // Check if the related records exist form of errror handling
     const [employee, equipment, jobsite] = await Promise.all([
-      prisma.user.findUnique({ where: { id: employeeId } }),
-      prisma.equipment.findUnique({ where: { qr_id: equipmentQrId } }),
-      prisma.jobsite.findUnique({ where: { jobsite_id: jobsiteId } }),
+      prisma.users.findUnique({ where: { id: employeeId } }),
+      prisma.equipment.findUnique({ where: { qrId: equipmentQrId } }),
+      prisma.jobsites.findUnique({ where: { qrId: jobsiteId } }),
     ]);
 
     if (!employee)
       throw new Error(`Employee with id ${employeeId} does not exist`);
     if (!equipment)
-      throw new Error(`Equipment with qr_id ${equipmentQrId} does not exist`);
+      throw new Error(`Equipment with qrId ${equipmentQrId} does not exist`);
     if (!jobsite)
       throw new Error(`Jobsite with id ${jobsiteId} does not exist`);
 
-    const log = await prisma.employeeEquipmentLog.create({
+    const log = await prisma.employeeEquipmentLogs.create({
       data: {
-        start_time: formData.get("start_time") as string,
-        end_time: formData.get("end_time") as string,
+        startTime: formData.get("startTime") as string,
+        endTime: formData.get("endTime") as string,
         duration: Number(formData.get("duration") as string) || null,
-        equipment_notes: formData.get("equipment_notes") as string,
+        comment: formData.get("comment") as string,
         employee: { connect: { id: employeeId } },
-        Equipment: { connect: { qr_id: equipmentQrId } },
-        Job: { connect: { jobsite_id: jobsiteId } },
+        Equipment: { connect: { qrId: equipmentQrId } },
+        Job: { connect: { qrId: jobsiteId } },
       },
     });
 
@@ -256,7 +256,7 @@ export async function CreateEmployeeEquipmentLog(formData: FormData) {
 
 export async function findEquipmentLog(id: Number) {
   try {
-    const log = await prisma.employeeEquipmentLog.findUnique({
+    const log = await prisma.employeeEquipmentLogs.findUnique({
       where: { id: Number(id) },
     });
     return log;
@@ -273,15 +273,15 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
     console.log(formData);
     const id = formData.get("id") as string;
 
-    const log = await prisma.employeeEquipmentLog.update({
+    const log = await prisma.employeeEquipmentLogs.update({
       where: { id: Number(id) },
       data: {
-        end_time: new Date(formData.get("end_time") as string).toISOString(),
+        endTime: new Date(formData.get("endTime") as string).toISOString(),
         duration: Number(formData.get("duration") as string),
-        equipment_notes: formData.get("equipment_notes") as string,
-        refueled: Boolean(formData.get("refueled") as string),
-        fuel_used: Number(formData.get("fuel_used") as string),
-        completed: true,
+        comment: formData.get("comment") as string,
+        isRefueled: Boolean(formData.get("isRefueled") as string),
+        fuelUsed: Number(formData.get("fuelUsed") as string),
+        isCompleted: true,
       },
     });
 
@@ -299,10 +299,10 @@ export async function updateEmployeeEquipment(formData: FormData) {
     console.log(formData);
     const id = formData.get("id") as string;
 
-    const log = await prisma.employeeEquipmentLog.update({
+    const log = await prisma.employeeEquipmentLogs.update({
       where: { id: Number(id) },
       data: {
-        completed: true,
+        isCompleted: true,
       },
     });
   } catch (error: any) {
@@ -314,10 +314,10 @@ export async function updateEquipment(formData: FormData) {
   try {
     console.log(formData);
     const id = formData.get("id") as string;
-    const converted = new Date(formData.get("registration_expiration") as string).toISOString();
+    const converted = new Date(formData.get("registrationExpiration") as string).toISOString();
     const statusValue = formData.get("status") as string;
-    const equipmentTagValue = formData.get("equipment_tag") as string;
-    const equipmentStatusValue = formData.get("equipment_status") as string;
+    const equipmentTagValue = formData.get("equipmentTag") as string;
+    const equipmentStatusValue = formData.get("status") as string;
     const equipmentTag = toEnumValue(Tags, equipmentTagValue);
     const equipmentStatus = toEnumValue(EquipmentStatus, equipmentStatusValue);
     const status = toEnumValue( Status, statusValue);
@@ -325,19 +325,18 @@ export async function updateEquipment(formData: FormData) {
     const log = await prisma.equipment.update({
       where: { id: id },
       data: {
-        qr_id: formData.get("qr_id") as string,        
+        qrId: formData.get("qrId") as string,        
         name: formData.get("name") as string,   
         description: formData.get("description") as string,       
-        status: status || undefined,      
-        equipment_tag:  equipmentTag || undefined,        
-        last_inspection: formData.get("last_inspection") as string,      
-        last_repair: formData.get("last_repair") as string,           
-        equipment_status: equipmentStatus || undefined,       
+        equipmentTag:  equipmentTag || undefined,        
+        lastInspection: formData.get("lastInspection") as string,      
+        lastRepair: formData.get("lastRepair") as string,           
+        status: equipmentStatus || undefined,       
         make: formData.get("make") as string,                    
         model: formData.get("model") as string,                   
         year: formData.get("year") as string,                   
-        license_plate: formData.get("license_plate") as string,           
-        registration_expiration: converted || null, 
+        licensePlate: formData.get("licensePlate") as string,           
+        registrationExpiration: converted || null, 
       },
     });
     revalidatePath("/admin/assets");
@@ -355,7 +354,7 @@ export async function updateEquipmentID(formData: FormData) {
     const log = await prisma.equipment.update({
       where: { id: id },
       data: {
-        qr_id: formData.get("qr_id") as string,
+        qrId: formData.get("qrId") as string,
         name: formData.get("name") as string,        
       },
     });
@@ -369,14 +368,14 @@ export async function Submit(formData: FormData) {
   try {
     const id = formData.get("id") as string;
 
-    const logs = await prisma.employeeEquipmentLog.updateMany({
+    const logs = await prisma.employeeEquipmentLogs.updateMany({
       where: {
-        employee_id: id,
-        submitted: false,
+        employeeId: id,
+        isSubmitted: false,
       },
       data: {
-        completed: true,
-        submitted: true,
+        isCompleted: true,
+        isSubmitted: true,
       },
     });
 
@@ -396,7 +395,7 @@ export async function DeleteLogs(formData: FormData) {
     console.log(formData);
     const id = formData.get("id") as string;
 
-    const deletedLog = await prisma.employeeEquipmentLog.delete({
+    const deletedLog = await prisma.employeeEquipmentLogs.delete({
       where: { id: Number(id) },
     });
     console.log(deletedLog);

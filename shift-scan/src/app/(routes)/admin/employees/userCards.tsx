@@ -38,8 +38,6 @@ export default function UserCards({ users }: UserCardsProps) {
             key={user.id}
             id={user.id}
             href={`/admin/employees/${user.id}`}
-            variant={"default"}
-            size={"listLg"}
           >
             <Contents variant={"image"} size={"listImage"}>
               <Images
@@ -60,8 +58,6 @@ export default function UserCards({ users }: UserCardsProps) {
         <Buttons
           id="{someStaticId}"
           href="/dashboard/myTeam/{someStaticId}"
-          variant={"default"}
-          size={"listLg"}
         >
           <Contents variant={"image"} size={"listImage"}>
             <Images

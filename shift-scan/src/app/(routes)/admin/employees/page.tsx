@@ -8,7 +8,7 @@ export default async function AdminDashboard() {
   const session = await auth();
   const userId = session?.user.id;
 
-  const User = await prisma.user.findUnique({
+  const User = await prisma.users.findUnique({
     where: {
       id: userId,
     },
@@ -17,7 +17,7 @@ export default async function AdminDashboard() {
     },
   });
 
-  const users: SearchUser[] = await prisma.user.findMany({
+  const users: SearchUser[] = await prisma.users.findMany({
     select: {
       id: true,
       firstName: true,
@@ -25,12 +25,10 @@ export default async function AdminDashboard() {
       username: true,
       permission: true,
       DOB: true,
-      truck_view: true,
-      mechanic_view: true,
-      labor_view: true,
-      tasco_view: true,
-      email: true,
-      phone: true,
+      truckView: true,
+      mechanicView: true,
+      laborView: true,
+      tascoView: true,
       image: true,
     },
   });
