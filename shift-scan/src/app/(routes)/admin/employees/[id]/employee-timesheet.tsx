@@ -8,7 +8,7 @@ import { fetchEq } from "@/actions/equipmentActions";
 import router from "next/router";
 import { setAuthStep } from "@/app/api/auth";
 import { Contents } from "@/components/(reusable)/contents";
-import { Tab } from "@/components/(inputs)/tab";
+import { Tab } from "@/components/(reusable)/tab";
 import { useTranslations } from "next-intl";
 import AddTimeSheet from "./addTimesheet";
 

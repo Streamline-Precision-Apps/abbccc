@@ -10,7 +10,7 @@ import { Inputs } from "@/components/(reusable)/inputs";
 export default async function employeeInfo({ params }: Params) {
   
   const id = params.id;
-  const employee = await prisma.user.findUnique({
+  const employee = await prisma.users.findUnique({
     where: {
       id: id.toString(),
     },
@@ -19,9 +19,9 @@ export default async function employeeInfo({ params }: Params) {
     },
   });
 
-  const contacts = await prisma.contact.findUnique({
+  const contacts = await prisma.contacts.findUnique({
     where: {
-      employee_id: id,
+      employeeId: id,
     },
   });
 
@@ -40,13 +40,13 @@ export default async function employeeInfo({ params }: Params) {
         <Sections size={"dynamic"}>
           <Forms>
             <Labels variant="default">Phone Number</Labels>
-            <Inputs variant="default" type="default" state="disabled" data={contacts?.phone_number}></Inputs>
+            <Inputs variant="default" type="default" state="disabled" data={contacts?.phoneNumber}></Inputs>
             <Labels variant="default">Email</Labels>
             <Inputs variant="default" type="default" state="disabled" data={contacts?.email}></Inputs>
             <Labels variant="default">Emergency Contact</Labels>
-            <Inputs variant="default" type="default" state="disabled" data={contacts?.emergency_contact}></Inputs>
+            <Inputs variant="default" type="default" state="disabled" data={contacts?.emergencyContact}></Inputs>
             <Labels variant="default">Emergency Contact Number</Labels>
-            <Inputs variant="default" type="default" state="disabled" data={contacts?.emergency_contact_no}></Inputs>
+            <Inputs variant="default" type="default" state="disabled" data={contacts?.emergencyContactNumber}></Inputs>
             <Labels variant="default">Date of Birth</Labels>
             <Inputs variant="default" type="default" state="disabled" data={employee?.DOB}></Inputs>
           </Forms>
