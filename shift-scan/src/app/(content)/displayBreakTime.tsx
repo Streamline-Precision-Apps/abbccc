@@ -61,7 +61,7 @@ export default function DisplayBreakTime({
       <Buttons 
         onClick={handler} 
         variant={"darkBlue"} 
-        size={"hours"}
+        size={"fill"}
       >
         <Texts variant={"totalHours"} size={"p0"}>{t('Break')}</Texts>
         <Contents variant={"white"} size={"hoursBtn"}>

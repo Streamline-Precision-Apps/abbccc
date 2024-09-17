@@ -88,8 +88,7 @@ export default function ImageCropper({ setBase64String, handleFileChange }: Prop
                         />
                     </ReactCrop>
                     <Buttons 
-                    variant={"default"} 
-                    size={"minBtn"}
+                    variant={"lightBlue"} 
                     type="submit"
                         onClick={() => {
                             if (imgRef.current && canvasRef.current && crop) {

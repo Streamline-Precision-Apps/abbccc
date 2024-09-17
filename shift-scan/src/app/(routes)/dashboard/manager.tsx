@@ -15,13 +15,13 @@ export default function Manager({ show } : ManagerProps) {
     <>
       {show && (
         <>
-          <Buttons href="/dashboard/qr-generator" variant={"default"} size={"widgetSm"}>
+          <Buttons href="/dashboard/qr-generator" variant={"lightBlue"} size={null}>
             <Contents variant={"widgetButton"} size={"test"}>
               <Images titleImg="/new/qr.svg" titleImgAlt="QR Code" variant={"icon"} size={"widgetSm"}/>
               <Texts size={"widgetSm"}>{t("QrGenerator")}</Texts>
             </Contents>
           </Buttons>
-          <Buttons href="/dashboard/myTeam" variant={"default"} size={"widgetSm"}>
+          <Buttons href="/dashboard/myTeam" variant={"lightBlue"} size={null}>
             <Contents variant={"widgetButton"} size={"test"}>
               <Images titleImg="/new/team.svg" titleImgAlt="my team" variant={"icon"} size={"widgetSm"}/>
               <Texts size={"widgetSm"}>{t("MyTeam")}</Texts>

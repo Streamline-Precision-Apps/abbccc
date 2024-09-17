@@ -10,11 +10,11 @@ export default async function Current() {
     const currentDate = new Date();
     const past24Hours = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
 
-    const logs = await prisma.employeeEquipmentLog.findMany({
+    const logs = await prisma.employeeEquipmentLogs.findMany({
         where: {
-            employee_id: user_Id,
+            employeeId: user_Id,
             createdAt: { lte: currentDate, gte: past24Hours },
-            submitted: false
+            isSubmitted: false
         },
         include: {
             Equipment: true,
@@ -22,9 +22,9 @@ export default async function Current() {
     });
     
     const total = logs.length;
-    const completed = logs.filter((log) => log.completed).length;
+    const completed = logs.filter((log) => log.isCompleted).length;
     const green = total - completed;
-// usetranslate breaks here for what ever reason
+// use translate breaks here for what ever reason
     return (
         <EquipmentLogContent total={total} completed={completed} green={green} user_Id={user_Id} logs={logs} />
     );

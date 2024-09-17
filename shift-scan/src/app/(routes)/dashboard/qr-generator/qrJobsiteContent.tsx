@@ -49,12 +49,12 @@ export default function QrJobsiteContent({ jobCodes }: Props) {
   const handleOptionSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedId = event.target.value;
     const selectedOption = jobCodes.find(
-      (option) => option.jobsite_id === selectedId
+      (option) => option.qrId === selectedId
     );
 
     if (selectedOption) {
-      setSelectedJobSite(selectedOption.jobsite_id);
-      setSelectedJobSiteName(selectedOption.jobsite_name);
+      setSelectedJobSite(selectedOption.qrId);
+      setSelectedJobSiteName(selectedOption.name);
     }
   };
   return (
@@ -80,18 +80,18 @@ export default function QrJobsiteContent({ jobCodes }: Props) {
         {jobCodes.map((option) => (
         <Options
         variant={"default"}
-        key={option.jobsite_id}
-        value={option.jobsite_id}
+        key={option.qrId}
+        value={option.qrId}
         >
-        {option.jobsite_name}
+        {option.name}
         </Options>
         ))}
         </Selects>
         <Contents variant={"rowCenter"} size={null}>
-          <Buttons variant={"orange"} onClick={handleGenerate} size={"minBtn"}>
+          <Buttons variant={"orange"} onClick={handleGenerate} size={null}>
             <Titles variant={"default"} size={"h1"}>{t("Generate")}</Titles>
           </Buttons>
-          <Buttons variant={"green"} onClick={handleNew} size={"minBtn"}>
+          <Buttons variant={"green"} onClick={handleNew} size={null}>
             <Titles variant={"default"} size={"h1"}>{t("New")}</Titles>
           </Buttons>
         </Contents>

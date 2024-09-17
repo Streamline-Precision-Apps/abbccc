@@ -20,7 +20,7 @@ export default function ClockInWidget({ user, locale, option, manager}: Props) {
         <>
             <Buttons 
                 variant={"green"} 
-                size={manager === true ? "widgetMed" : "widgetLg"} // this eliminated the big if statement
+                size={"fill"} // this eliminated the big if statement
                 href="/clock"
             >
                 <Contents variant={"widgetButtonRow"} size={"test"}>

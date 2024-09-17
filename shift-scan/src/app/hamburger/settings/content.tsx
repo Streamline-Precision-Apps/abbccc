@@ -14,9 +14,9 @@ import { Texts } from "@/components/(reusable)/texts";
 import { Modals } from "@/components/(reusable)/modals";
 import { updateSettings } from "@/actions/hamburgerActions";
 import { Contents } from "@/components/(reusable)/contents";
-import { Settings } from "@/lib/types";
+import { UserSettings } from "@/lib/types";
 
-export default function Index({ data }: { data: Settings }) {
+export default function Index({ data }: { data: UserSettings }) {
   const t = useTranslations("Hamburger");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [updatedData, setUpdatedData] = useState(data);
@@ -31,7 +31,7 @@ export default function Index({ data }: { data: Settings }) {
     setIsModalOpen(false);
   };
 
-  const handleChange = (key: keyof Settings, value: boolean) => {
+  const handleChange = (key: keyof UserSettings, value: boolean) => {
     setUpdatedData((prev) => ({ ...prev, [key]: value }));
     setIsModalOpen(true);
   };
@@ -68,18 +68,18 @@ export default function Index({ data }: { data: Settings }) {
           <SwitchWithLabel>
             <Texts>{t("TimeOffRequests")}</Texts>
             <LocaleToggleSwitch
-              data={updatedData.timeoffRequests || false}
+              data={updatedData.timeOffRequests || false}
               onChange={(value: boolean) =>
-                handleChange("timeoffRequests", value)
+                handleChange("timeOffRequests", value)
               }
             />
           </SwitchWithLabel>
           <SwitchWithLabel>
             <Texts>{t("GeneralReminders")}</Texts>
             <LocaleToggleSwitch
-              data={updatedData.GeneralReminders || false}
+              data={updatedData.generalReminders || false}
               onChange={(value: boolean) =>
-                handleChange("GeneralReminders", value)
+                handleChange("generalReminders", value)
               }
             />
           </SwitchWithLabel>
@@ -90,8 +90,8 @@ export default function Index({ data }: { data: Settings }) {
           <SwitchWithLabel>
             <Texts>{t("Biometrics")}</Texts>
             <LocaleToggleSwitch
-              data={updatedData.Biometric || false}
-              onChange={(value: boolean) => handleChange("Biometric", value)}
+              data={updatedData.biometric || false}
+              onChange={(value: boolean) => handleChange("biometric", value)}
             />
           </SwitchWithLabel>
           <SwitchWithLabel>
@@ -115,7 +115,7 @@ export default function Index({ data }: { data: Settings }) {
         <Buttons
           onClick={() => setIsModalOpen(true)}
           variant={"orange"}
-          size={"default"}
+          size={null}
         >
           <Titles>{t("ChangePassword")}</Titles>
         </Buttons>
@@ -124,10 +124,10 @@ export default function Index({ data }: { data: Settings }) {
       <Modals isOpen={isModalOpen} handleClose={handleCancel} size="clock">
         <Sections size={"dynamic"} className="p-4">
           <h2>{t("SaveChanges")}</h2>
-          <Buttons onClick={handleSave} variant={"green"} size={"default"}>
+          <Buttons onClick={handleSave} variant={"green"} size={null}>
             <Titles>{t("Yes")}</Titles>
           </Buttons>
-          <Buttons onClick={handleCancel} variant={"red"} size={"default"}>
+          <Buttons onClick={handleCancel} variant={"red"} size={null}>
             <Titles>{t("Cancel")}</Titles>
           </Buttons>
         </Sections>

@@ -6,7 +6,7 @@ import { useSession } from "next-auth/react";
 import { CustomSession } from "@/lib/types";
 import Manager from "@/app/(routes)/dashboard/manager";
 import { useState } from "react";
-import { EquipmentCode, Logs } from "@/lib/types";
+import { EquipmentCodes, Logs } from "@/lib/types";
 import User from "@/app/(routes)/dashboard/user";
 
 
@@ -33,7 +33,8 @@ export default function DashboardButtons({ logs, locale }: DashboardButtonsProps
   if (
     user?.permission === "ADMIN" ||
     user?.permission === "SUPERADMIN" ||
-    user?.permission === "MANAGER"  ) {
+    user?.permission === "MANAGER" 
+  ) {
     return (
       <>
         <Manager show={!additionalButtonsType}/>

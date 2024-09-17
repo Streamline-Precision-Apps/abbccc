@@ -103,13 +103,12 @@ const CameraComponent: React.FC<CameraComponentProps> = ({ setBase64String }) =>
       <Contents variant={"rowCenter"}>
       <Buttons
         variant={cameraActive ? "red" : "green"}
-        size={"minBtn"}
         onClick={toggleCamera}
       >
         {cameraActive ? "Restart Camera" : "Start Camera"}
       </Buttons>
       {cameraActive && (
-        <Buttons variant="green"  size={"minBtn"} onClick={takePicture}>
+        <Buttons variant="green"  onClick={takePicture}>
           {t("Button")}
         </Buttons>
       )}

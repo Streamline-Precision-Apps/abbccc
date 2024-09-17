@@ -11,9 +11,9 @@ declare module "next-auth" {
       permission: string;
       firstName: string;
       lastName: string;
-      truck_view: boolean;
-      tasco_view: boolean;
-      mechanic_view: boolean;
+      truckView: boolean;
+      tascoView: boolean;
+      mechanicView: boolean;
       accountSetup: boolean; // Add accountSetup to Session
     } & DefaultSession["user"];
   }
@@ -23,9 +23,9 @@ declare module "next-auth" {
     permission: string;
     firstName: string;
     lastName: string;
-    truck_view: boolean;
-    tasco_view: boolean;
-    mechanic_view: boolean;
+    truckView: boolean;
+    tascoView: boolean;
+    mechanicView: boolean;
     accountSetup: boolean; // Add accountSetup to User
   }
 }
@@ -51,7 +51,7 @@ const providers: Provider[] = [
       const passwords = credentials?.password as string;
 
       // Replace this with your own authentication logic
-      const user = await prisma.user.findUnique({
+      const user = await prisma.users.findUnique({
         where: { username: username },
       });
 
@@ -70,9 +70,9 @@ const providers: Provider[] = [
         permission: user.permission,
         firstName: user.firstName,
         lastName: user.lastName,
-        truck_view: user.truck_view,
-        tasco_view: user.tasco_view,
-        mechanic_view: user.mechanic_view,
+        truckView: user.truckView,
+        tascoView: user.tascoView,
+        mechanicView: user.mechanicView,
         accountSetup: user.accountSetup, // Include accountSetup from user
       };
 
@@ -94,9 +94,9 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         token.permission = user.permission;
         token.firstName = user.firstName;
         token.lastName = user.lastName;
-        token.truck_view = user.truck_view;
-        token.tasco_view = user.tasco_view;
-        token.mechanic_view = user.mechanic_view;
+        token.truckView = user.truckView;
+        token.tascoView = user.tascoView;
+        token.mechanicView = user.mechanicView;
         token.accountSetup = user.accountSetup; // Add accountSetup to token
       }
       return token;
@@ -109,9 +109,9 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
           permission: token.permission as string,
           firstName: token.firstName as string,
           lastName: token.lastName as string,
-          truck_view: token.truck_view as boolean,
-          tasco_view: token.tasco_view as boolean,
-          mechanic_view: token.mechanic_view as boolean,
+          truckView: token.truck_view as boolean,
+          tascoView: token.tasco_view as boolean,
+          mechanicView: token.mechanic_view as boolean,
           accountSetup: token.accountSetup as boolean, // Add accountSetup to session
         };
       }
