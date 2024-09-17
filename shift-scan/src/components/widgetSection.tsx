@@ -21,7 +21,7 @@ return (
             user={user} 
             option={option}  
             locale={locale}
-            manager={(user?.permission === "ADMIN" || user?.permission === "SUPERADMIN" || user?.permission === "MANAGER" || user?.permission === "PROJECTMANAGER" ) ? true : false}
+            manager={(user?.permission === "ADMIN" || user?.permission === "SUPERADMIN" || user?.permission === "MANAGER" ) ? true : false}
             />
 </>
 );

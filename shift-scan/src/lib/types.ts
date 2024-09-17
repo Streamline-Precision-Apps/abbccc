@@ -1,5 +1,5 @@
 // This file holds all the types that will be used in the app
-import { Permission } from "@prisma/client";
+import { FormStatus, Permission } from "@prisma/client";
 // this imports the session types for the app, it works client and server-side
 import { Session } from "next-auth";
 
@@ -29,8 +29,6 @@ export type User = {
     id: string;
     firstName: string;
     lastName: string;
-    email: string;
-    phone: string;
     image: string | null;
     imageUrl?: string | null;
   };
@@ -41,6 +39,7 @@ export type Contact = {
     emergencyContact: string;
     emergencyContactNumber: string;
 };
+
 
 export type UserTraining = {
     id: number;
@@ -86,35 +85,36 @@ export type SearchUser = {
     session: Session | null;
   }
 
+
 export type receivedContent = {
     id: number;
     date: Date;
     requestedStartDate: Date;
     requestedEndDate: Date;
     requestType: string;
-    comments: string;
-    mangerComments: string | null;
+    comment: string;
+    managerComment: string | null;
     status: string;
     employeeId: string;
     createdAt: Date;
     updatedAt: Date;
-    decidedBy: String | null
+    decidedBy: String | null ;
 }
 
 export type sentContent = {
-    id: number;
-    date: Date;
-    requestedStartDate: Date;
-    requestedEndDate: Date;
-    requestType: string;
-    comments: string;
-    mangerComments: string | null;
-    status: string;
-    employeeId: string;
-    createdAt: Date;
-    updatedAt: Date;
-    decidedBy: String | null;
-}
+  id: number;
+  date: Date;
+  requestedStartDate: Date;
+  requestedEndDate: Date;
+  requestType: string;
+  comment: string;
+  managerComment: string | null;
+  status: FormStatus;
+  employeeId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  decidedBy: string | null;
+};
 
   export type clockProcessProps = {
     session: any;
@@ -125,23 +125,28 @@ export type sentContent = {
     recentJobSites: JobCodes[];
     recentCostCodes: CostCodes[];
     recentEquipment: EquipmentCodes[];
-    payPeriodSheets: TimeSheets[];
+    payPeriodSheets?: TimeSheets[];
     logs: Logs[];
   }
   
   
+  export type TimeSheets = {
+      start_time: Date;
+      duration: number | null;
+  };
+
   export type TimeSheet = {
     submitDate?: Date;
     id?: number;
     userId?: string;
     date?: Date;
     jobsiteId?: string;
-    costcode?: string;
+    costcode?: string ;
     nu?: string;
     Fp?: string;
     vehicleId?: number | null;
-    startTime?: Date;
-    endTime?: Date | null;
+    startTime?: Date | string;
+    endTime?: Date | string | null;
     duration?: number | null;
     startingMileage?: number | null;
     endingMileage?: number | null;
@@ -153,6 +158,7 @@ export type sentContent = {
     timeSheetComments?: string | null;
     status?: string;
   };
+
   
   export type EquipmentLog = {
     id: number;
@@ -163,13 +169,9 @@ export type sentContent = {
   
   export type RequestForm = {
     session: Session | null;
-    signature: {Signature: string | null} | null;
-    }
-    
-  export type TimeSheets = {
-      start_time: Date;
-      duration: number | null;
+    signature: string | null; 
   };
+    
       
       // This is used in the admin section for assets.
   
@@ -192,6 +194,7 @@ export type sentContent = {
     name: string;
   };
 
+
   
   export type CostCodes = {
     id: number;
@@ -203,7 +206,6 @@ export type sentContent = {
     id: string;
     qrId: string;
     name: string;
-    
 };
 
   //--------------------------------------------
@@ -230,22 +232,22 @@ export type sentContent = {
 
 
   export type Jobsites = {
-    id: string;
+    id: number;
     qrId: string;
     name: string;
     streetNumber?: string | null;
-    streetName?: string | null;
-    city?: string | null;
+    streetName?: string;
+    city?: string;
     state?: string | null;
-    country?: string | null;
+    country?: string;
     phone?: string;
     description?: string | null;
-    isActive: boolean;
+    active: boolean;
     comments?: string | null;
     status?: string;
   }
 
-  export type  costCodes = {
+  export type costCodes = {
     id: number;
     name: string;
     description: string;

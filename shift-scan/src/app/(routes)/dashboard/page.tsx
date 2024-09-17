@@ -96,7 +96,7 @@ export default async function Dashboard() {
 
   logs = logs.map((log) => ({
     id: log.id.toString(),
-    employeeId: log.employeeId,
+    userId: log.employeeId, // Add this line
     equipment: log.Equipment?.id
       ? {
           id: log.Equipment.id,
@@ -116,7 +116,8 @@ export default async function Dashboard() {
       recentJobSites={recentJobSites}
       recentCostCodes={recentCostCodes}
       recentEquipment={recentEquipment}
-      logs={logs} // Pass logs to Content
-    />
+      logs={logs} session={undefined} 
+      
+      />
   );
 }

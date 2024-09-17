@@ -29,14 +29,14 @@ export default function EquipmentLogContent({ user_Id, logs, total, green }: Equ
     <Sections size={"default"}>
         {green === 0 && total !== 0 ? 
         (< Forms action={Submit}>
-            <Buttons type="submit" variant={"default"} size={"default"}>{t("SubmitAll")}</Buttons>
+            <Buttons type="submit" variant={"lightBlue"} size={null}>{t("SubmitAll")}</Buttons>
             <Inputs type="hidden" name="id" value={user_Id} />
             <Inputs type="hidden" name="submitted" value={"true"} />
         </Forms>)
         : <></>}
         {total === 0 ? <Texts>{t("NoCurrent")}</Texts> : <></>}
         {logs.map((log) => (
-            <Buttons variant={(log.completed) ? "green" : "orange"} size={"default"} href={`/dashboard/equipment/${log.id}`} key={log.id}>
+            <Buttons variant={(log.completed) ? "green" : "orange"} size={null} href={`/dashboard/equipment/${log.id}`} key={log.id}>
                 {log.Equipment?.name}
             </Buttons>
         ))}

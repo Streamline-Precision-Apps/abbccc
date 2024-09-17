@@ -81,8 +81,8 @@ export default function User({
       {additionalButtonsType === "equipment" ? (
         <>
           <Buttons
-            variant={"default"}
-            size={"widgetMed"}
+            variant={"lightBlue"}
+            size={null}
             onClick={handleShowManagerButtons}
           >
             <Contents variant={"widgetButtonRow"} size={"test"}>
@@ -97,7 +97,7 @@ export default function User({
           </Buttons>
           <Buttons
             variant={"green"}
-            size={"widgetMed"}
+            size={null}
             href="/dashboard/log-new"
           >
             <Contents variant={"widgetButtonRow"} size={"test"}>
@@ -112,7 +112,7 @@ export default function User({
           </Buttons>
           <Buttons
             variant={"orange"}
-            size={"widgetMed"}
+            size={null}
             href="/dashboard/equipment"
           >
             <Contents variant={"widgetButtonRow"} size={null}>
@@ -129,8 +129,8 @@ export default function User({
       ) : additionalButtonsType === "clockOut" ? (
         <>
           <Buttons
-            variant={"default"}
-            size={"widgetMed"}
+            variant={"lightBlue"}
+            size={null}
             onClick={handleShowManagerButtons}
           >
             <Contents variant={"widgetButtonRow"} size={"test"}>
@@ -145,7 +145,7 @@ export default function User({
           </Buttons>
           <Buttons
             variant={"orange"}
-            size={"widgetMed"}
+            size={null}
             onClick={handleCOButton2}
           >
             <Contents variant={"widgetButtonRow"} size={"test"}>
@@ -169,7 +169,7 @@ export default function User({
               <h1>{t("Submit")}</h1>
               <Buttons
                 variant={"orange"}
-                size={"default"}
+                size={null}
                 href={`/dashboard/equipment`}
               >
                 <Texts>{t("CurrEQ")}</Texts>
@@ -178,7 +178,7 @@ export default function User({
           </Modals>
           <Buttons 
             variant={"red"} 
-            size={"widgetMed"} 
+            size={null}
             onClick={handleCOButton3}
           >
             <Contents variant={"widgetButtonRow"} size={"test"}>
@@ -196,7 +196,7 @@ export default function User({
         <>
           <Buttons
             variant={"orange"}
-            size={"widgetSm"}
+            size={null}
             href="/dashboard/switch-jobs"
           >
             <Contents variant={"widgetButton"} size={"test"}>
@@ -213,7 +213,7 @@ export default function User({
           <Buttons
             href="/dashboard/equipment"
             variant={"green"}
-            size={"widgetSm"}
+            size={null}
             onClick={() => handleShowAdditionalButtons("equipment")}
           >
             <Contents variant={"widgetButton"} size={"test"}>
@@ -229,7 +229,7 @@ export default function User({
           <Buttons
             href="/dashboard/forms"
             variant={"green"}
-            size={"widgetSm"}
+            size={null}
           >
             <Contents variant={"widgetButton"} size={"test"}>
               <Images
@@ -244,7 +244,7 @@ export default function User({
           <Buttons
             href="/dashboard/clock-out"
             variant={"red"}
-            size={"widgetSm"}
+            size={null}
             onClick={() => handleShowAdditionalButtons("clockOut")}
           >
             <Contents variant={"widgetButton"} size={"test"}>
@@ -264,7 +264,7 @@ export default function User({
         <>
           <Buttons
             variant={"orange"}
-            size={"widgetSm"}
+            size={null}
             onClick={handleOpenModal}
           >
             <Contents variant={"widgetButton"} size={"test"}>
@@ -281,7 +281,7 @@ export default function User({
           <Buttons
             href="/dashboard/equipment"
             variant={"green"}
-            size={"widgetSm"}
+            size={null}
             onClick={() => handleShowAdditionalButtons("equipment")}
           >
             <Contents variant={"widgetButton"} size={"test"}>
@@ -297,7 +297,7 @@ export default function User({
           <Buttons
             href="/dashboard/forms"
             variant={"green"}
-            size={"widgetMed"}
+            size={null}
           >
             <Contents variant={"widgetButtonRow"} size={"test"}>
               <Texts size={"widgetMed"}>{t("Forms")}</Texts>
@@ -312,7 +312,7 @@ export default function User({
           <Buttons
             href="/dashboard/clock-out"
             variant={"red"}
-            size={"widgetMed"}
+            size={null}
             onClick={() => handleShowAdditionalButtons("clockOut")}
           >
             <Contents variant={"widgetButtonRow"} size={"test"}>

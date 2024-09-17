@@ -9,11 +9,11 @@ import prisma from "@/lib/prisma";
 import { Contents } from "@/components/(reusable)/contents";
 
 export default async function QrGeneratorDashboard() {
-  const jobCodes = await prisma.jobsite.findMany({
+  const jobCodes = await prisma.jobsites.findMany({
     select: {
       id: true,
-      jobsite_id: true,
-      jobsite_name: true,
+      qrId: true,
+      name: true,
     },
   });
 
@@ -21,7 +21,7 @@ export default async function QrGeneratorDashboard() {
   const equipment = await prisma.equipment.findMany({
     select: {
       id: true,
-      qr_id: true,
+      qrId: true,
       name: true,
     },
   });

@@ -11,15 +11,15 @@ import { findTimesheetsforDay } from "@/actions/timeSheetActions";
 import { Texts } from "@/components/(reusable)/texts";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Labels } from "@/components/(reusable)/labels";
-import { Timesheet } from "@/lib/types";
+import { TimeSheet } from "@/lib/types";
 
 type Props = {
-    timesheets: Timesheet[]
+    timesheets: TimeSheet[]
     user : string | undefined
 }
 export default function ViewTimesheets({ timesheets, user }: Props) {
     const [showTimesheets, setShowTimesheets] = useState(false);
-    const [timesheetData, setTimesheetData] = useState<Timesheet[]>([]);
+    const [timesheetData, setTimesheetData] = useState<TimeSheet[]>([]);
 
     const handleSubmit = async (formData: FormData) => {
         const result = await findTimesheetsforDay(formData);
@@ -48,7 +48,7 @@ export default function ViewTimesheets({ timesheets, user }: Props) {
                             <Inputs type="hidden" name="id" value={user} readOnly />
                             <Labels size="default" type="title">Enter Date</Labels>
                             <Inputs type="date" name="date" defaultValue={currentDate} />
-                            <Buttons type="submit" variant={"default"} size={"default"}>Submit</Buttons>
+                            <Buttons type="submit" variant={"lightBlue"} size={null}>Submit</Buttons>
                         </Forms>
                     </Contents>
                     {showTimesheets ? (
@@ -57,10 +57,10 @@ export default function ViewTimesheets({ timesheets, user }: Props) {
                                 timesheetData.map((timesheet) => (
                                     <Contents key={timesheet.id} variant={"green"} size={null}>
                                         <Texts>Timesheet ID: {timesheet.id}</Texts>
-                                        <Texts>Start Time: {timesheet.start_time?.toLocaleString()}</Texts>
-                                        <Texts>End Time: {timesheet.end_time?.toLocaleString() || "N/A"}</Texts>
+                                        <Texts>Start Time: {timesheet.startTime?.toLocaleString()}</Texts>
+                                        <Texts>End Time: {timesheet.endTime?.toLocaleString() || "N/A"}</Texts>
                                         <Texts>Duration: {(timesheet.duration)?.toFixed(2)}</Texts>
-                                        <Texts>Jobsite ID: {timesheet.jobsite_id}</Texts>
+                                        <Texts>Jobsite ID: {timesheet.jobsiteId}</Texts>
                                         <Texts>Cost Code: {timesheet.costcode}</Texts>
                                     </Contents>
                                 ))

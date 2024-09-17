@@ -1,8 +1,8 @@
 "use client";
 import "@/app/globals.css";
 import { useState, useEffect, ChangeEvent } from "react";
-import Checkbox from "../injury-verification/checkBox";
-import Signature from "../injury-verification/Signature";
+import { Checkbox } from "../injury-verification/checkBox";
+import { Signature } from "../injury-verification/Signature";
 import { CreateInjuryForm } from "@/actions/injuryReportActions";
 import { useTranslations } from "next-intl";
 import { Contents } from "@/components/(reusable)/contents";
@@ -82,7 +82,7 @@ export const InjuryReportContent = ({
           <Signature
             setBase64String={setBase64String}
             base64string={base64String}
-            handleSubmitImage={handleSubmitImage}
+            // handleSubmitImage={handleSubmitImage}
           />
           {error && <p className="text-red-500">{error}</p>}
         </div>

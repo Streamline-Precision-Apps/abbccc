@@ -5,7 +5,7 @@ import EmployeeInfo from './employeeInfo';
 import prisma from "@/lib/prisma";
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
-import { Employee, Contact, Training } from '@/lib/types';
+import { Employee, Contact, UserTraining } from '@/lib/types';
 
 export default async function EmployeeProfile() {
     const session = await auth();
@@ -15,7 +15,7 @@ export default async function EmployeeProfile() {
         redirect('/signin');
     }
 
-    const employee = await prisma.user.findUnique({
+    const employee = await prisma.users.findUnique({
         where: {
             id: userId.toString(),
         },
@@ -23,8 +23,6 @@ export default async function EmployeeProfile() {
             id: true,
             firstName: true,
             lastName: true,
-            email: true,
-            phone: true,
             image: true,
         },
     });
@@ -33,15 +31,15 @@ export default async function EmployeeProfile() {
         redirect('/signin');
     }
 
-    const contacts = await prisma.contact.findUnique({
+    const contacts = await prisma.contacts.findUnique({
         where: {
-            employee_id: userId.toString(),
+            employeeId: userId.toString(),
         },
         select: {
-            phone_number: true,
+            phoneNumber: true,
             email: true,
-            emergency_contact: true,
-            emergency_contact_no: true,
+            emergencyContact: true,
+            emergencyContactNumber: true,
         },
     });
 
@@ -49,22 +47,18 @@ export default async function EmployeeProfile() {
         redirect('/signin');
     }
 
-    const training = await prisma.userTrainings.findUnique({
+    const userTrainingsWithDetails = await prisma.userTrainings.findMany({
         where: {
-            user_id: userId.toString(),
+          userId: userId,  // Replace with the actual userId
         },
-        select: {
-            id: true,
-            user_id: true,
-            completed_trainings: true,
-            assigned_trainings: true,
-            completion: true,
+        include: {
+          Training: true,  // Include the associated Training details
         },
     });
 
     return (
         <Bases>
-            <EmployeeInfo employee={employee} contacts={contacts} training={training}/>
+            <EmployeeInfo employee={employee} contacts={contacts} training={userTrainingsWithDetails}/>
         </Bases>
     );
 }

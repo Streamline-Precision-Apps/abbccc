@@ -38,7 +38,7 @@ export default function Content({
   locale,
   equipment,
   jobCodes,
-  CostCodes,
+  costCodes,
   recentJobSites,
   recentCostCodes,
   recentEquipment,
@@ -92,7 +92,7 @@ export default function Content({
       setJobsiteResults(jobCodes);
     }
     if (costcodeResults.length === 0) {
-      setCostcodeResults(CostCodes);
+      setCostcodeResults(costCodes);
     }
     if (equipmentResults.length === 0) {
       setEquipmentResults(equipment);
@@ -109,7 +109,7 @@ export default function Content({
   }, [
     session,
     jobCodes,
-    CostCodes,
+    costCodes,
     equipment,
     recentJobSites,
     recentCostCodes,

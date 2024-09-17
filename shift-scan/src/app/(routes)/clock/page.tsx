@@ -9,39 +9,39 @@ import { cookies } from "next/headers";
 
 export default async function Clock() {
 const session = await auth();
-const user_Id = session?.user.id;
+const userId = session?.user.id;
 
 // Fetch all records
-const jobCodes = await prisma.jobsite.findMany({
+const jobCodes = await prisma.jobsites.findMany({
     select: {
     id: true,
-    jobsite_id: true,
-    jobsite_name: true,
+    qrId: true,
+    name: true,
     },
 });
 
-const costCodes = await prisma.costCode.findMany({
+const costCodes = await prisma.costCodes.findMany({
     select: {
     id: true,
-    cost_code: true,
-    cost_code_description: true,
+    name: true,
+    description: true,
     },
 });
 
 const equipment = await prisma.equipment.findMany({
     select: {
     id: true,
-    qr_id: true,
+    qrId: true,
     name: true,
     },
 });
 
 // Fetch recent records
-const recentJobSites = await prisma.jobsite.findMany({
+const recentJobSites = await prisma.jobsites.findMany({
     select: {
     id: true,
-    jobsite_id: true,
-    jobsite_name: true,
+    qrId: true,
+    name: true,
     },
     orderBy: {
     createdAt: "desc",
@@ -49,11 +49,11 @@ const recentJobSites = await prisma.jobsite.findMany({
     take: 5,
 });
 
-const recentCostCodes = await prisma.costCode.findMany({
+const recentCostCodes = await prisma.costCodes.findMany({
     select: {
     id: true,
-    cost_code: true,
-    cost_code_description: true,
+    name: true,
+    description: true,
     },
     orderBy: {
     createdAt: "desc",
@@ -64,7 +64,7 @@ const recentCostCodes = await prisma.costCode.findMany({
 const recentEquipment = await prisma.equipment.findMany({
     select: {
     id: true,
-    qr_id: true,
+    qrId: true,
     name: true,
     },
     orderBy: {
@@ -83,7 +83,7 @@ return (
 <Sections size={"default"}>
 <ClockProcessor
         type={"jobsite"}
-        id={user_Id}
+        id={userId}
         scannerType={"jobsite"}
         locale={locale}
         returnpath="/"

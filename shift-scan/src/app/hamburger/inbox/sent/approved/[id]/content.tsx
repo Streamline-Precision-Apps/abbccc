@@ -88,7 +88,7 @@ export default function Content({ params, sentContent, session } : Props) {
             <Inputs type="hidden" name="id" value={item.id} disabled/>
             <Inputs type="hidden" name="status" value={item.status} disabled/>
             <Inputs type="hidden" name="date" value={item.date.toString()} disabled/>
-            <Inputs type="hidden" name="employee_id" value={item.employee_id} disabled/>
+            <Inputs type="hidden" name="employee_id" value={item.employeeId} disabled/>
             <Labels> Start Date
             <Inputs
             type="date"
@@ -118,7 +118,7 @@ export default function Content({ params, sentContent, session } : Props) {
             <Labels> Comments
             <TextAreas 
             name = "description"
-            defaultValue={item.comments}
+            defaultValue={item.comment}
             disabled
             rows={5} 
             />
@@ -129,7 +129,7 @@ export default function Content({ params, sentContent, session } : Props) {
             <Labels> Managers Comments
             <TextAreas
             name="mangerComments"
-            defaultValue={item.mangerComments ?? ""}
+            defaultValue={item.managerComment ?? ""}
             disabled 
             />
             </Labels>
