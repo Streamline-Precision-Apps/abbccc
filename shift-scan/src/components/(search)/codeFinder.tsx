@@ -55,7 +55,7 @@ if (datatype === 'jobsite') {
     setScanResult({ data: option.code });
 
     // Add to recently used job codes
-    const selectedJobCode = jobsiteResults.find((j) => j.jobsite_id === option.code);
+    const selectedJobCode = jobsiteResults.find((j) => j.qrId === option.code);
     if (selectedJobCode) addRecentlyUsedJobCode(selectedJobCode);
 }
 if (datatype === 'equipment') {
@@ -63,7 +63,7 @@ if (datatype === 'equipment') {
     localStorage.setItem("previousEquipment", option.code);
 
     // Add to recently used equipment
-    const selectedEquipment = equipmentResults.find((e) => e.qr_id === option.code);
+    const selectedEquipment = equipmentResults.find((e) => e.qrId === option.code);
     if (selectedEquipment) addRecentlyUsedEquipment(selectedEquipment);
 }
 setSearchTerm(option.label);

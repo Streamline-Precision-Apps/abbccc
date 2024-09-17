@@ -12,7 +12,7 @@ setBase64String: Dispatch<SetStateAction<string>>;
 }
 const VIDEO_DIMENSIONS = 300;
 const DIMENSIONS = 150;
-const APECT_RATIO = 1/1;
+const ASPECT_RATIO = 1/1;
 
 const CameraComponent: React.FC<CameraComponentProps> = ({ setBase64String }) => {
 const [imageSrc, setImageSrc] = useState<string | null>(null);
@@ -83,7 +83,7 @@ const crop = makeAspectCrop(
     unit: '%',
     width: cropWidthInPercent,
     }, 
-    APECT_RATIO, 
+    ASPECT_RATIO, 
     width, 
     height
 );
@@ -114,13 +114,12 @@ return (
     <Contents size={null} variant={"center"}>
     <Buttons
         variant={cameraActive ? "red" : "green"}
-        size={"minBtn"}
         onClick={toggleCamera}
     >
         {cameraActive ? "Hide Camera" : "Show Camera"}
     </Buttons>
     {cameraActive && (
-        <Buttons variant="green" size={"minBtn"} onClick={takePicture}>
+        <Buttons variant="green" onClick={takePicture}>
         {t("Button")}
         </Buttons>
     )}
@@ -132,7 +131,7 @@ return (
         crop={crop}
         circularCrop
         keepSelection
-        aspect={APECT_RATIO}
+        aspect={ASPECT_RATIO}
         minWidth={DIMENSIONS}
         onChange={(pixelCrop, percentCrop) => setCrop(percentCrop)}
         >
@@ -145,8 +144,7 @@ return (
         </ReactCrop>
 
         <Buttons
-        variant={"default"}
-        size={"minBtn"}
+        variant={"lightBlue"}
         type="submit" 
         onClick={() => {
             if (imgRef.current && canvasRef.current && crop) {
