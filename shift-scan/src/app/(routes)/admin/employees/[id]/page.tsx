@@ -12,13 +12,13 @@ export default async function crewMember({ params }: { params: Params }) {
         console.error("Error in authentication:", err);
         return null;
         });
-    const jobsiteData = await prisma.jobsite.findMany({
+    const jobsiteData = await prisma.jobsites.findMany({
         where: {
-            jobsite_active: true,
+            isActive: true,
             },
     });
-    const costcodeData = await prisma.costCode.findMany({});
-    const equipmentData = await prisma.employeeEquipmentLog.findMany({
+    const costcodeData = await prisma.costCodes.findMany({});
+    const equipmentData = await prisma.employeeEquipmentLogs.findMany({
         include: {
             Equipment: true
         }

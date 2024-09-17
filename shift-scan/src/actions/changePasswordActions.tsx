@@ -9,7 +9,7 @@ export async function updatePassword(formData: FormData, id: string) {
         const password = formData.get("password") as string;
     console.log("formData:", formData);
     console.log("Updating Password...");
-    const updatedPassword = await prisma.user.update({
+    const updatedPassword = await prisma.users.update({
     where: {id} ,
     data: {
         password: formData.get("password") as string,

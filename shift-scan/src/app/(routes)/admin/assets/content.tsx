@@ -12,14 +12,14 @@ import Equipment from "./(components)/equipment";
 import Costcodes from "./(components)/costcodes";
 import {
   Equipment as EquipmentType,
-  Jobsite as JobsiteType,
-  costCodes as CostCodeType,
+  Jobsites,
+  costCodes,
 } from "@/lib/types";
 
 type Props = {
   equipment: EquipmentType[];
-  jobsites: JobsiteType[];
-  costCodes: CostCodeType[];
+  jobsites: Jobsites[];
+  costCodes: costCodes[];
 };
 
 export default function Content({ equipment, jobsites, costCodes }: Props) {
