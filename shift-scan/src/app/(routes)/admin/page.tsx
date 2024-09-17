@@ -6,7 +6,7 @@ export default async function AdminDashboard() {
   const session = await auth();
   const userId = session?.user.id;
   
-  const User = await prisma.user.findUnique({
+  const User = await prisma.users.findUnique({
     where: {
       id: userId,
     },

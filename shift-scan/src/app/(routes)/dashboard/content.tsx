@@ -11,12 +11,12 @@ import { Headers } from "@/components/(reusable)/headers";
 import { Banners } from "@/components/(reusable)/banners";
 import { Texts } from "@/components/(reusable)/texts";
 import { Footers } from "@/components/(reusable)/footers";
-import { CustomSession, User } from "@/lib/types";
+import { clockProcessProps, CustomSession, User } from "@/lib/types";
 import { useSession } from "next-auth/react";
 import { useDBJobsite, useDBCostcode, useDBEquipment} from "@/app/context/dbCodeContext";
 import { useRecentDBJobsite, useRecentDBCostcode, useRecentDBEquipment} from "@/app/context/dbRecentCodesContext";
 import { getAuthStep} from "@/app/api/auth";
-import { clockProcessProps, Logs } from "@/lib/types";
+import { Logs } from "@/lib/types";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 

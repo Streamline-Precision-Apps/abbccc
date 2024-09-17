@@ -69,7 +69,6 @@ export default async function Dashboard() {
     take: 5,
   });
 
-
   const lang = cookies().get("locale");
   const locale = lang ? lang.value : "en"; // Default to English
 

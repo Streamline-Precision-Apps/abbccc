@@ -24,7 +24,7 @@ import { Expands } from "@/components/(reusable)/expands";
 import { Selects } from "@/components/(reusable)/selects";
 import { Options } from "@/components/(reusable)/options";
 import { TextAreas } from "@/components/(reusable)/textareas";
-import { Equipment } from "@/lib/types";
+import type { Equipment } from "@/lib/types";
 
 type Props = {
   equipment: Equipment[];
@@ -46,7 +46,7 @@ export default function Equipment({
   );
   const [equipmentTag, setEquipmentTag] = useState<string>("EQUIPMENT");
   const t = useTranslations("addEquipmentForm");
-  const [qr_id, setQr_id] = useState<string>("");
+  const [qrId, setQr_id] = useState<string>("");
   const [name, setName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [status, setStatus] = useState<string>("");
@@ -83,7 +83,7 @@ export default function Equipment({
     const filteredList = equipment.filter(
       (item) =>
         item.name.toLowerCase().includes(value) ||
-        item.qr_id.toLowerCase().includes(value)
+        item.qrId.toLowerCase().includes(value)
     );
     setEquipmentList(filteredList);
     setEditForm(true);
@@ -137,8 +137,8 @@ export default function Equipment({
             <Inputs
               variant="default"
               type="default"
-              name="qr_id"
-              value={qr_id}
+              name="qrId"
+              value={qrId}
               onChange={(e) => setQr_id(e.target.value)}
               state="default"
             />
@@ -146,8 +146,8 @@ export default function Equipment({
               {t("Tag")} *
             </Labels>
             <Selects
-              id="equipment_tag"
-              name="equipment_tag"
+              id="equipmentTag"
+              name="equipmentTag"
               value={equipmentTag}
               onChange={(e) => setEquipmentTag(e.target.value)}
               className="block w-full border border-black rounded p-2"
@@ -186,8 +186,8 @@ export default function Equipment({
               {t("Status")} *
             </Labels>
             <Selects
-              id="equipment_status"
-              name="equipment_status"
+              id="equipmentStatus"
+              name="equipmentStatus"
               value={status}
               onChange={(e) => setStatus(e.target.value)}
               className="block w-full border border-black rounded p-2"
@@ -253,8 +253,8 @@ export default function Equipment({
                 <Inputs
                   variant="default"
                   type="date"
-                  id="registration_expiration"
-                  name="registration_expiration"
+                  id="registrationExpiration"
+                  name="registrationExpiration"
                   value={registrationExpiration}
                   onChange={(e) => setRegistrationExpiration(e.target.value)}
                   state="default"
@@ -306,7 +306,7 @@ export default function Equipment({
                   size={"listLg"}
                 >
                   <Texts variant={"default"} size={"left"}>
-                    {item.name} ({item.qr_id}){" "}
+                    {item.name} ({item.qrId}){" "}
                   </Texts>
                 </Buttons>
               ))}
@@ -343,8 +343,8 @@ export default function Equipment({
               <Inputs
                 variant="default"
                 type="default"
-                name="qr_id"
-                defaultValue={equipmentResponse.qr_id}
+                name="qrId"
+                defaultValue={equipmentResponse.qrId}
                 state="default"
               />
               <Labels variant="default" type="title">
@@ -370,8 +370,8 @@ export default function Equipment({
                 {t("Status")}
               </Labels>
               <Selects
-                id="equipment_status"
-                name="equipment_status"
+                id="equipmentStatus"
+                name="equipmentStatus"
                 className="block w-full border border-black rounded p-2"
                 defaultValue={equipmentResponse.status || ""}
               >
@@ -381,8 +381,8 @@ export default function Equipment({
               </Selects>
 
               {/* Conditional fields based on equipmentTag */}
-              {equipmentResponse.equipment_tag === "TRUCK" ||
-              equipmentResponse.equipment_tag === "TRAILER" ? (
+              {equipmentResponse.equipmentTag === "TRUCK" ||
+              equipmentResponse.equipmentTag === "TRAILER" ? (
                 <>
                   <Labels variant="default" type="title">
                     {t("Make")}
@@ -425,7 +425,7 @@ export default function Equipment({
                     type="default"
                     id="license_plate"
                     name="license_plate"
-                    defaultValue={equipmentResponse.license_plate || ""}
+                    defaultValue={equipmentResponse.licensePlate || ""}
                     state="default"
                   />
                   <Labels variant="default" type="title">
@@ -434,11 +434,11 @@ export default function Equipment({
                   <Inputs
                     variant="default"
                     type="date"
-                    id="registration_expiration"
-                    name="registration_expiration"
+                    id="registrationExpiration"
+                    name="registrationExpiration"
                     defaultValue={
-                      equipmentResponse.registration_expiration
-                        ? equipmentResponse.registration_expiration.toISOString()
+                      equipmentResponse.registrationExpiration
+                        ? equipmentResponse.registrationExpiration.toISOString()
                         : ""
                     }
                     state="default"
@@ -466,7 +466,7 @@ export default function Equipment({
       </Contents>
       <Contents variant={"default"} size={null}>
         <Expands title="Temporary Equipment" divID={"3"}>
-          {equipment.filter((item) => item.qr_id.slice(0, 4) === "EQ-T")
+          {equipment.filter((item) => item.qrId.slice(0, 4) === "EQ-T")
             .length > 0 ? (
             <>
               <Texts variant="default" className="bg-app-orange">
@@ -478,20 +478,20 @@ export default function Equipment({
 
           <ul>
             {equipmentList.map((item) =>
-              item.qr_id.slice(0, 4) === "EQ-T" ? (
+              item.qrId.slice(0, 4) === "EQ-T" ? (
                 <Buttons
                   key={item.id}
                   onClick={() => {
-                    setQr_id(item.qr_id);
+                    setQr_id(item.qrId);
                     setEquipmentResponse(item);
                   }}
                 >
-                  {item.name} ({item.qr_id})
+                  {item.name} ({item.qrId})
                 </Buttons>
               ) : null
             )}
           </ul>
-          {equipment.filter((item) => item.qr_id.slice(0, 4) === "EQ-T")
+          {equipment.filter((item) => item.qrId.slice(0, 4) === "EQ-T")
             .length > 0 ? (
             <>
               <Forms
@@ -514,7 +514,7 @@ export default function Equipment({
                 <Inputs
                   type="text"
                   readOnly
-                  defaultValue={equipmentResponse?.qr_id}
+                  defaultValue={equipmentResponse?.qrId}
                   state="disabled"
                 />
                 <Labels variant="default" type="title">
@@ -522,8 +522,8 @@ export default function Equipment({
                 </Labels>
                 <Inputs
                   type="text"
-                  name="qr_id"
-                  defaultValue={equipmentResponse?.qr_id}
+                  name="qrId"
+                  defaultValue={equipmentResponse?.qrId}
                 />
 
                 <Labels variant="default" type="title">
@@ -577,7 +577,7 @@ export default function Equipment({
                   key={item.id}
                 >
                   <Texts variant={"default"} size={"left"}>
-                    {item.name} ({item.qr_id})
+                    {item.name} ({item.qrId})
                   </Texts>
                 </Buttons>
               ))}
