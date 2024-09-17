@@ -7,9 +7,9 @@ import { redirect } from "next/navigation";
 
 export async function getUserSentContent(user_id: string | undefined) {
     if (!user_id) return
-    const sentContent = await prisma.timeoffRequestForm.findMany({
+    const sentContent = await prisma.timeoffRequestForms.findMany({
         where: {
-            employee_id: user_id,
+            employeeId: user_id,
         }
     })
     return sentContent
@@ -24,16 +24,16 @@ export async function createLeaveRequest(formData: FormData) {
     const status = formData.get("status") as string;
     
     if (status) {
-        const result = await prisma.timeoffRequestForm.create({
+        const result = await prisma.timeoffRequestForms.create({
         data: {
             date: new Date(formData.get("date") as string),
             requestedStartDate: new Date(formData.get("startDate") as string),
             requestedEndDate: new Date(formData.get("endDate") as string),
             requestType: requestType,
-            comments: formData.get("description") as string,
-            mangerComments : null,
+            comment: formData.get("description") as string,
+            managerComment : null,
             status: status as FormStatus,
-            employee_id: user_id,
+            employeeId: user_id,
         }
         })
         console.log(result)
@@ -52,17 +52,17 @@ export async function EditLeaveRequest(formData: FormData) {
         const status = formData.get("status") as string;
         
         if (status) {
-            const result = await prisma.timeoffRequestForm.update({
+            const result = await prisma.timeoffRequestForms.update({
             where: { id: Number(formData.get("id") as string) },
             data: {
             date: new Date(formData.get("date") as string),
             requestedStartDate: new Date(formData.get("startDate") as string),
             requestedEndDate: new Date(formData.get("endDate") as string),
             requestType: requestType,
-            comments: formData.get("description") as string,
-            mangerComments : null,
+            comment: formData.get("description") as string,
+            managerComment : null,
             status: status as FormStatus,
-            employee_id: user_id,
+            employeeId: user_id,
             }
             })
             console.log(result)
@@ -76,15 +76,15 @@ export async function EditLeaveRequest(formData: FormData) {
 export async function ManagerLeaveRequest(formData: FormData) {
     try {
         console.log(formData)
-        const managerComment = formData.get("mangerComments") as string
+        const managerComment = formData.get("managerComment") as string
         const status = formData.get("decision") as string;
         const name = formData.get("decidedBy") as string;
         console.log(managerComment, status, name)
         if (status) {
-            const result = await prisma.timeoffRequestForm.update({
+            const result = await prisma.timeoffRequestForms.update({
             where: { id: Number(formData.get("id") as string) },
             data: {
-            mangerComments : managerComment,
+            managerComment : managerComment,
             status: status as FormStatus,
             decidedBy: name,
             }
@@ -102,15 +102,15 @@ export async function DeleteLeaveRequest(id : string, user_id : string | undefin
     try {
         const deleteId = Number(id)
 
-    const userCheck = await prisma.timeoffRequestForm.findMany({
+    const userCheck = await prisma.timeoffRequestForms.findMany({
         where: {
             id: deleteId,
-            employee_id: user_id
+            employeeId: user_id
         }
     })
 
     if (userCheck.length > 0) {
-        await prisma.timeoffRequestForm.delete({
+        await prisma.timeoffRequestForms.delete({
             where: { id: deleteId },
         });
         revalidatePath("/hamburger/inbox");
