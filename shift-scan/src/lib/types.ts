@@ -40,6 +40,7 @@ export type Contact = {
     emergencyContactNumber: string;
 };
 
+
 export type UserTraining = {
     id: number;
     userId: string;
@@ -83,6 +84,7 @@ export type SearchUser = {
     receivedContent? : receivedContent[];
     session: Session | null;
   }
+
 
 export type receivedContent = {
     id: number;
@@ -191,6 +193,7 @@ export type sentContent = {
     qrId: string;
     name: string;
   };
+
 
   
   export type CostCodes = {
