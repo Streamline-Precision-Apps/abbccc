@@ -31,7 +31,6 @@ export default function Content({ session, locale, payPeriodSheets }: clockProce
   // useStates hooks
   const [toggle, setToggle] = useState(true);
 
-  //----------------------  Checked  ----------------------
   const { setPayPeriodHours } = usePayPeriodHours();
   const { setPayPeriodTimeSheets} = usePayPeriodTimeSheet();
   const { jobsiteResults, setJobsiteResults } = useDBJobsite();
@@ -99,31 +98,12 @@ export default function Content({ session, locale, payPeriodSheets }: clockProce
     setRecentlyUsedEquipment,
   ]);
 
-  // Fetch pay period sheets
-  useEffect(() => {
-    const fetchPayPeriodSheets = async () => {
-      try {
-        const res = await fetch("/api/getPayPeriodTimeSheet");
-        const data = await res.json();
-        if (res.ok) {
-          setPayPeriodTimeSheets(data);
-        } else {
-          console.error("Error:", data.error);
-        }
-      } catch (error) {
-        console.error("Error fetching pay period sheets:", error);
-      }
-    };
-
-    fetchPayPeriodSheets();
-  }, [setPayPeriodTimeSheets]);
 
   // Calculate total pay period hours
   const totalPayPeriodHours = useMemo(() => {
     if (!payPeriodSheets) return 0;
-    return payPeriodSheets
-      .filter((sheet: TimeSheets): sheet is TimeSheets => sheet.duration !== null)
-      .reduce((total: number, sheet: TimeSheets) => total + (sheet.duration ?? 0), 0);
+    return payPeriodSheets.filter((sheet): sheet is TimeSheets => sheet.duration !== null)
+      .reduce((total, sheet) => total + (sheet.duration ?? 0), 0);
   }, [payPeriodSheets]);
 
   // Set the total pay period hours in context
