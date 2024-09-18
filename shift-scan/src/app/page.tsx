@@ -44,67 +44,7 @@ const locale = lang ? lang.value : "en";
   const todayStart = new Date();
   todayStart.setHours(0, 0, 0, 0); // Set to start of the day
 
-  // Fetch all records, only shows the id, name, and qr_id for the codes
-  const jobCodes = await prisma.jobsites.findMany({
-    select: {
-      id: true,
-      qrId: true,
-      name: true,
-    },
-  });
 
-  const costCodes = await prisma.costCodes.findMany({
-    select: {
-      id: true,
-      name: true,
-      description: true,
-    },
-  });
-
-  const equipment = await prisma.equipment.findMany({
-    select: {
-      id: true,
-      qrId: true,
-      name: true,
-    },
-  });
-
-  // Fetch the 5 recent records the user has entered
-  const recentJobSites = await prisma.jobsites.findMany({
-    select: {
-      id: true,
-      qrId: true,
-      name: true,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-    take: 5,
-  });
-
-  const recentCostCodes = await prisma.costCodes.findMany({
-    select: {
-      id: true,
-      name: true,
-      description: true,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-    take: 5,
-  });
-
-  const recentEquipment = await prisma.equipment.findMany({
-    select: {
-      id: true,
-      qrId: true,
-      name: true,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-    take: 5,
-  });
 
   // Fetch timesheets for the current pay period
   const payPeriodSheets = (await prisma.timeSheets
@@ -127,12 +67,6 @@ const locale = lang ? lang.value : "en";
     <Content
       session={session}
       locale={locale}
-      jobCodes={jobCodes}
-      costCodes={costCodes}
-      equipment={equipment}
-      recentJobSites={recentJobSites}
-      recentCostCodes={recentCostCodes}
-      recentEquipment={recentEquipment}
       payPeriodSheets={payPeriodSheets} 
       logs={[]}    
       />
