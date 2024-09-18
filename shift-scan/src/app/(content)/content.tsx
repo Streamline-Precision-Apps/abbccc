@@ -11,7 +11,6 @@ import { useRouter } from "next/navigation";
 import { Titles } from "@/components/(reusable)/titles";
 import { Banners } from "@/components/(reusable)/banners";
 import { Texts } from "@/components/(reusable)/texts";
-import { Footers } from "@/components/(reusable)/footers";
 import { Sections } from "@/components/(reusable)/sections";
 import { Bases } from "@/components/(reusable)/bases";
 import { Header } from "@/components/header";
@@ -83,7 +82,7 @@ export default function Content({
 
   // sets the saved pay period time sheets to display on the pay period page
   useEffect(() => {
-    setPayPeriodTimeSheets(payPeriodSheets);
+    setPayPeriodTimeSheets(payPeriodSheets ?? []);
   }, [payPeriodSheets, setPayPeriodTimeSheets]);
 
   // if they loose their saved data it will reset them using a useEffect and useContext
@@ -124,8 +123,8 @@ export default function Content({
 
   // calculates the total pay period hours into one number of hours
   const totalPayPeriodHours = useMemo(() => {
-    return payPeriodSheets
-      .filter((sheet): sheet is TimeSheets => sheet.duration !== null)
+    if (!payPeriodSheets) return 0;
+    return payPeriodSheets.filter((sheet): sheet is TimeSheets => sheet.duration !== null)
       .reduce((total, sheet) => total + (sheet.duration ?? 0), 0);
   }, [payPeriodSheets]);
 
