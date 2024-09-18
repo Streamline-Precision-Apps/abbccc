@@ -11,12 +11,12 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const userCrewData = await prisma.user.findUnique({
+  const userCrewData = await prisma.users.findUnique({
     where: { id: userId },
     select: {
       crewMembers: {
         select: {
-          crew_id: true,
+          crewId: true,
           crew: {
             select: {
               crewMembers: {
