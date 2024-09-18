@@ -56,11 +56,13 @@ const providers: Provider[] = [
       });
 
       if (!user || !user.password) {
+        console.log("User not found or password not found");
         throw new InvalidLoginError();
       }
 
       const isValidPassword = await bcrypt.compare(passwords, user.password);
       if (!isValidPassword) {
+        console.log("Invalid password");
         throw new InvalidLoginError();
       }
 
@@ -86,7 +88,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     strategy: "jwt",
   },
   providers,
-  trustHost: true,
+  // trustHost: true,
   callbacks: {
     jwt: async ({ token, user }) => {
       if (user) {
@@ -109,9 +111,9 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
           permission: token.permission as string,
           firstName: token.firstName as string,
           lastName: token.lastName as string,
-          truckView: token.truck_view as boolean,
-          tascoView: token.tasco_view as boolean,
-          mechanicView: token.mechanic_view as boolean,
+          truckView: token.truckView as boolean,
+          tascoView: token.tascoView as boolean,
+          mechanicView: token.mechanicView as boolean,
           accountSetup: token.accountSetup as boolean, // Add accountSetup to session
         };
       }
