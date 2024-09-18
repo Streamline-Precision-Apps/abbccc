@@ -128,6 +128,12 @@ export type sentContent = {
     payPeriodSheets?: TimeSheets[];
     logs: Logs[];
   }
+  export type clockProcess = {
+    payPeriodSheets?: TimeSheets[];
+    session: any;
+    locale: string;
+    logs: Logs[];
+  }
   
   
   export type TimeSheets = {

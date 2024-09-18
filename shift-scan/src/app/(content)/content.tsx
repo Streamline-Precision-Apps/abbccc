@@ -15,127 +15,130 @@ import { Sections } from "@/components/(reusable)/sections";
 import { Bases } from "@/components/(reusable)/bases";
 import { Header } from "@/components/header";
 import { Headers } from "@/components/(reusable)/headers";
-import {
-  useDBJobsite,
-  useDBCostcode,
-  useDBEquipment,
-} from "@/app/context/dbCodeContext";
-import {
-  useRecentDBJobsite,
-  useRecentDBCostcode,
-  useRecentDBEquipment,
-} from "@/app/context/dbRecentCodesContext";
+import {useDBJobsite,useDBCostcode,useDBEquipment,} from "@/app/context/dbCodeContext";
+import {useRecentDBJobsite,useRecentDBCostcode,useRecentDBEquipment,} from "@/app/context/dbRecentCodesContext";
 import { usePayPeriodTimeSheet } from "../context/PayPeriodTimeSheetsContext";
-import { clockProcessProps, TimeSheets } from "@/lib/types";
+import { clockProcess, TimeSheets} from "@/lib/types";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { User } from "@/lib/types";
 import Capitalize from "@/utils/captitalize";
 
-export default function Content({
-  session,
-  locale,
-  equipment,
-  jobCodes,
-  costCodes,
-  recentJobSites,
-  recentCostCodes,
-  recentEquipment,
-  payPeriodSheets,
-}: clockProcessProps) {
-  const t = useTranslations("Home");
-  const { setPayPeriodHours } = usePayPeriodHours();
-  const [toggle, setToggle] = useState(true);
+export default function Content({ session, locale, payPeriodSheets }: clockProcess) {
   const router = useRouter();
+  const t = useTranslations("Home");
   const authStep = getAuthStep();
+  // useStates hooks
+  const [toggle, setToggle] = useState(true);
+
+  //----------------------  Checked  ----------------------
+  const { setPayPeriodHours } = usePayPeriodHours();
+  const { setPayPeriodTimeSheets} = usePayPeriodTimeSheet();
+  const { jobsiteResults, setJobsiteResults } = useDBJobsite();
+  const { recentlyUsedJobCodes, setRecentlyUsedJobCodes } = useRecentDBJobsite();
+  const { costcodeResults, setCostcodeResults } = useDBCostcode();
+  const { recentlyUsedCostCodes, setRecentlyUsedCostCodes } = useRecentDBCostcode();
+  const { equipmentResults, setEquipmentResults } = useDBEquipment();
+  const { recentlyUsedEquipment, setRecentlyUsedEquipment } = useRecentDBEquipment();
+// on load user
+  const [user, setUser] = useState<User>({
+    id: "",
+    firstName: "",
+    lastName: "",
+    permission: undefined,
+  });
+// banner
   const date = new Date().toLocaleDateString(locale, {
     year: "numeric",
     month: "short",
     day: "numeric",
     weekday: "long",
   });
-  // creates a state of user data
-  const [user, setData] = useState<User>({
-    id: "",
-    firstName: "",
-    lastName: "",
-    permission: undefined,
-  });
 
-  // saves user instance of jobsite data until the user switches to another job
-  const { jobsiteResults, setJobsiteResults } = useDBJobsite();
-  const { recentlyUsedJobCodes, setRecentlyUsedJobCodes } =
-    useRecentDBJobsite();
-
-  // saves users cost code data until the user switches to another cost code
-  const { costcodeResults, setCostcodeResults } = useDBCostcode();
-  const { recentlyUsedCostCodes, setRecentlyUsedCostCodes } =
-    useRecentDBCostcode();
-
-  // saves users equipment data until the user switches to another equipment
-  const { equipmentResults, setEquipmentResults } = useDBEquipment();
-  const { recentlyUsedEquipment, setRecentlyUsedEquipment } =
-    useRecentDBEquipment();
-
-  // runs the timesheet function and saves it to the context
-  const { setPayPeriodTimeSheets } = usePayPeriodTimeSheet();
-
-  // sets the saved pay period time sheets to display on the pay period page
+  // Fetch job sites, cost codes, equipment, and timesheet data from the API
   useEffect(() => {
-    setPayPeriodTimeSheets(payPeriodSheets ?? []);
-  }, [payPeriodSheets, setPayPeriodTimeSheets]);
+    const fetchData = async () => {
+      try {
+        const [jobsiteResponse, recentJobsiteResponse, costcodeResponse, recentCostcodeResponse, equipmentResponse, recentEquipmentResponse] = await Promise.all([
+          fetch("/api/getJobsites"),
+          fetch("/api/getRecentJobsites"),
+          fetch("/api/getCostCodes"),
+          fetch("/api/getRecentCostCodes"),
+          fetch("/api/getEquipment"),
+          fetch("/api/getRecentEquipment"),
+        ]);
 
-  // if they loose their saved data it will reset them using a useEffect and useContext
-  useEffect(() => {
-    if (jobsiteResults.length === 0) {
-      setJobsiteResults(jobCodes);
-    }
-    if (costcodeResults.length === 0) {
-      setCostcodeResults(costCodes);
-    }
-    if (equipmentResults.length === 0) {
-      setEquipmentResults(equipment);
-    }
-    if (recentlyUsedJobCodes.length === 0) {
-      setRecentlyUsedJobCodes(recentJobSites);
-    }
-    if (recentlyUsedCostCodes.length === 0) {
-      setRecentlyUsedCostCodes(recentCostCodes);
-    }
-    if (recentlyUsedEquipment.length === 0) {
-      setRecentlyUsedEquipment(recentEquipment);
-    }
+        const [jobSites, recentJobSites, costCodes, recentCostCodes, equipment, recentEquipment] = await Promise.all([
+          jobsiteResponse.json(),
+          recentJobsiteResponse.json(),
+          costcodeResponse.json(),
+          recentCostcodeResponse.json(),
+          equipmentResponse.json(),
+          recentEquipmentResponse.json(),
+        ]);
+
+        setJobsiteResults(jobSites);
+        setRecentlyUsedJobCodes(recentJobSites);
+        setCostcodeResults(costCodes);
+        setRecentlyUsedCostCodes(recentCostCodes);
+        setEquipmentResults(equipment);
+        setRecentlyUsedEquipment(recentEquipment);
+
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
   }, [
-    session,
-    jobCodes,
-    costCodes,
-    equipment,
-    recentJobSites,
-    recentCostCodes,
-    recentEquipment,
-    jobsiteResults,
-    costcodeResults,
-    equipmentResults,
-    recentlyUsedJobCodes,
-    recentlyUsedCostCodes,
-    recentlyUsedEquipment,
+    setJobsiteResults,
+    setRecentlyUsedJobCodes,
+    setCostcodeResults,
+    setRecentlyUsedCostCodes,
+    setEquipmentResults,
+    setRecentlyUsedEquipment,
   ]);
 
-  // calculates the total pay period hours into one number of hours
+  // Fetch pay period sheets
+  useEffect(() => {
+    const fetchPayPeriodSheets = async () => {
+      try {
+        const res = await fetch("/api/getPayPeriodTimeSheet");
+        const data = await res.json();
+        if (res.ok) {
+          setPayPeriodTimeSheets(data);
+        } else {
+          console.error("Error:", data.error);
+        }
+      } catch (error) {
+        console.error("Error fetching pay period sheets:", error);
+      }
+    };
+
+    fetchPayPeriodSheets();
+  }, [setPayPeriodTimeSheets]);
+
+  // Calculate total pay period hours
   const totalPayPeriodHours = useMemo(() => {
     if (!payPeriodSheets) return 0;
-    return payPeriodSheets.filter((sheet): sheet is TimeSheets => sheet.duration !== null)
-      .reduce((total, sheet) => total + (sheet.duration ?? 0), 0);
+    return payPeriodSheets
+      .filter((sheet: TimeSheets): sheet is TimeSheets => sheet.duration !== null)
+      .reduce((total: number, sheet: TimeSheets) => total + (sheet.duration ?? 0), 0);
   }, [payPeriodSheets]);
 
-  // redirects to dashboard if authStep is success
+  // Set the total pay period hours in context
+  useEffect(() => {
+    setPayPeriodHours(totalPayPeriodHours.toFixed(2));
+  }, [totalPayPeriodHours, setPayPeriodHours]);
+
+  // Redirect to dashboard if authStep is success
   useEffect(() => {
     if (authStep === "success") {
       router.push("/dashboard");
     }
   }, [authStep, router]);
 
-  // removes local storage if authStep is removeLocalStorage
+  // Clear local storage if authStep is removeLocalStorage
   useEffect(() => {
     if (authStep === "removeLocalStorage") {
       localStorage.clear();
@@ -143,32 +146,23 @@ export default function Content({
     }
   }, [authStep]);
 
-  // sets the saved user data
+  // Set user data
   useEffect(() => {
     if (session && session.user) {
-      if (session.user.accountSetup === false) {
+      if (!session.user.accountSetup) {
         router.push("/signin/signup");
       }
-      console.log("Session user:", session.user);
-      setData({
+      setUser({
         id: session.user.id,
         firstName: session.user.firstName,
         lastName: session.user.lastName,
         permission: session.user.permission,
       });
-      setHoursContext();
     }
-  }, [session]);
+  }, [session, router]);
 
-  // sets the total pay period hours for the home screen display
-  const setHoursContext = () => {
-    setPayPeriodHours(totalPayPeriodHours.toFixed(2));
-  };
-
-  // toogles fromt the home display to hours section
-  const handleToggle = () => {
-    setToggle(!toggle);
-  };
+  // Toggle between home display and hours section
+  const handleToggle = () => setToggle(!toggle);
 
   return (
     <>
@@ -178,14 +172,14 @@ export default function Content({
             <Contents variant={"header"} size={null}>
               <Headers variant={"relative"} size={"default"}></Headers>
             </Contents>
-            <Banners variant={"default"}>
+            {/* <Banners variant={"default"}>
               <Titles variant={"default"} size={"h1"}>
                 {t("Banner")}
               </Titles>
               <Texts variant={"default"} size={"p1"}>
                 {t("Date", { date: Capitalize(date) })}
               </Texts>
-            </Banners>
+            </Banners> */}
             {/* {toggle ? */}
             <Contents variant={"name"} size={"nameContainer"}>
               <Texts variant={"name"} size={"p0"}>
