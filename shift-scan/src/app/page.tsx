@@ -2,19 +2,27 @@ import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
 import Content from "@/app/(content)/content";
 import { PayPeriodTimesheets } from "@/lib/types";
-import { auth } from "@/auth"
-import getUser from "@/utils/getSession-Server";
+import { auth } from "@/auth";
+
 
 export default async function Home() {
+//------------------------------------------------------------------------
+// Authentication
+
 // Get the current user and checks if the user is authenticated
-const session = await getUser();
-const userId = session.id;
+const session = await auth();
+if (!session) {
+  // Redirect or return an error if the user is not authenticated
+  return { redirect: { destination: '/signin', permanent: false } };
+}
+// passes the session to the content component
+
+//------------------------------------------------------------------------
+const userId = session.user.id;
 
 // Get the current language
-  const lang = cookies().get("locale");
-  const locale = lang ? lang.value : "en";  
-
-  
+const lang = cookies().get("locale");
+const locale = lang ? lang.value : "en";  
 
 // Calculate the start date of the current pay period
   const calculatePayPeriodStart = () => {
