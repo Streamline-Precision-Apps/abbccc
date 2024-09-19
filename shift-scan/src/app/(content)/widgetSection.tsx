@@ -14,6 +14,8 @@ import { usePayPeriodHours } from "../context/PayPeriodHoursContext";
 import { usePayPeriodTimeSheet } from "../context/PayPeriodTimeSheetsContext";
 import { useRouter } from "next/navigation";
 import { Session } from "next-auth";
+import { useRecentDBCostcode, useRecentDBEquipment, useRecentDBJobsite } from "../context/dbRecentCodesContext";
+import { useDBCostcode, useDBEquipment, useDBJobsite } from "../context/dbCodeContext";
 type props = {
     session: Session;
 }
@@ -30,8 +32,63 @@ const accountSetup = session.user.accountSetup;
 const { setPayPeriodHours } = usePayPeriodHours();
 const { setPayPeriodTimeSheets} = usePayPeriodTimeSheet();
 const [payPeriodSheets, setPayPeriodSheets] = useState([]);
+
+
+const { jobsiteResults, setJobsiteResults } = useDBJobsite();
+  const { recentlyUsedJobCodes, setRecentlyUsedJobCodes } = useRecentDBJobsite();
+  const { costcodeResults, setCostcodeResults } = useDBCostcode();
+  const { recentlyUsedCostCodes, setRecentlyUsedCostCodes } = useRecentDBCostcode();
+  const { equipmentResults, setEquipmentResults } = useDBEquipment();
+  const { recentlyUsedEquipment, setRecentlyUsedEquipment } = useRecentDBEquipment();
 //---------------------Fetches-------------------------------------------
   // Fetch job sites, cost codes, equipment, and timesheet data from the API
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [jobsiteResponse, recentJobsiteResponse, costcodeResponse, recentCostcodeResponse, equipmentResponse, recentEquipmentResponse] = await Promise.all([
+          fetch("/api/getJobsites"),
+          fetch("/api/getRecentJobsites"),
+          fetch("/api/getCostCodes"),
+          fetch("/api/getRecentCostCodes"),
+          fetch("/api/getEquipment"),
+          fetch("/api/getRecentEquipment"),
+        ]);
+
+        const [jobSites, recentJobSites, costCodes, recentCostCodes, equipment, recentEquipment] = await Promise.all([
+          jobsiteResponse.json(),
+          recentJobsiteResponse.json(),
+          costcodeResponse.json(),
+          recentCostcodeResponse.json(),
+          equipmentResponse.json(),
+          recentEquipmentResponse.json(),
+
+        ]);
+
+        setJobsiteResults(jobSites);
+        setRecentlyUsedJobCodes(recentJobSites);
+        setCostcodeResults(costCodes);
+        setRecentlyUsedCostCodes(recentCostCodes);
+        setEquipmentResults(equipment);
+        setRecentlyUsedEquipment(recentEquipment);
+
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, [
+    setJobsiteResults,
+    setRecentlyUsedJobCodes,
+    setCostcodeResults,
+    setRecentlyUsedCostCodes,
+    setEquipmentResults,
+    setRecentlyUsedEquipment,
+  ]);
+
+//---------------------------------------------------------------------
+
   useEffect(() => {
     const fetchData = async () => {
       try {

@@ -132,6 +132,7 @@ export default function ControlComponent({ toggle } : ControlComponentProps) {
 
   return (
 <>
+<Holds>
         {/* Th */}
         <ViewComponent
           scrollLeft={scrollLeft}
@@ -221,6 +222,7 @@ export default function ControlComponent({ toggle } : ControlComponentProps) {
               View My Timesheets
             </Texts>
           </Buttons>
+          </Holds>
         </>
   );
 };

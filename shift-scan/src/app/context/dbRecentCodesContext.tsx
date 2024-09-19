@@ -20,7 +20,7 @@ export const RecentJobSiteProvider = ({ children }: { children: ReactNode }) => 
 
   const addRecentlyUsedJobCode = (code: JobCodes) => {
     setRecentlyUsedJobCodes((prev) => {
-      const updatedList = [code, ...prev.filter((c) => c.id !== code.id)];
+      const updatedList = [code, ...prev.filter((c) => c.qrId !== code.qrId)];
       return updatedList.slice(0, 5);
     });
   };
@@ -52,7 +52,7 @@ interface RecentCostCodeContextType {
   
     const addRecentlyUsedCostCode = (code: CostCodes) => {
       setRecentlyUsedCostCodes((prev) => {
-        const updatedList = [code, ...prev.filter((c) => c.id !== code.id)];
+        const updatedList = [code, ...prev.filter((c) => c.name !== code.name)];
         return updatedList.slice(0, 5);
       });
     };
@@ -84,7 +84,7 @@ interface RecentCostCodeContextType {
   
     const addRecentlyUsedEquipment = (equipment: EquipmentCodes) => {
       setRecentlyUsedEquipment((prev) => {
-        const updatedList = [equipment, ...prev.filter((e) => e.id !== equipment.id)];
+        const updatedList = [equipment, ...prev.filter((e) => e.qrId !== equipment.qrId)];
         return updatedList.slice(0, 5);
       });
     };
