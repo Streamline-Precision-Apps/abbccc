@@ -31,7 +31,7 @@ const ContentVariants = cva(
       },
       size: {
         container: "w-full h-full",
-        default: "h-fit max-w-lg mx-auto pt-10 bg-pink-300",
+        default: "h-fit max-w-lg mx-auto pt-10",
 
 
         notTop: "h-full max-w-lg mx-auto pt-0",
@@ -44,7 +44,6 @@ const ContentVariants = cva(
         nameContainer: "w-full h-fit py-5",
         test: "bg-red-400 w-full m-5 sm:w-4/5 md:w-3/4 lg:w-1/2",
         editBtn: "absolute top-0 h-36 w-36 rounded-full",
-        defaultHours: "w-[100px] h-[300px] mx-auto rounded-2xl pt-3 pb-3 px-2 flex flex-col justify-end",
         verifyStep: "items-center w-full h-[800px] m-auto",
       }
     },

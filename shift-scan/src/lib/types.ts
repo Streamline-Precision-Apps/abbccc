@@ -129,7 +129,7 @@ export type sentContent = {
     logs: Logs[];
   }
   export type clockProcess = {
-    payPeriodSheets?: TimeSheet[];
+    payPeriodSheets?: TimeSheets[];
     session: any;
     locale: string;
     logs: Logs[];

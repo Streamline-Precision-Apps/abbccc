@@ -2,7 +2,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
-import { PayPeriodTimesheets } from "@/lib/types";
 
 export async function GET() {
     const session = await auth();

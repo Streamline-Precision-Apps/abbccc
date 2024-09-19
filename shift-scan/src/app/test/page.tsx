@@ -1,21 +1,22 @@
 import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { auth } from "@/auth";
-import { getTranslations } from "next-intl/server";
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
-import { Banners } from "@/components/(reusable)/banners";
-import { Holds } from "@/components/(reusable)/holds";
 import { Sections } from "@/components/(reusable)/sections";
-import { Texts } from "@/components/(reusable)/texts";
-import { Titles } from "@/components/(reusable)/titles";
 import { Headers } from "@/components/(reusable)/headers";
-import WidgetSection from "@/app/(content)/widgetSection";
+import { Holds } from "@/components/(reusable)/holds";
+import { Banners } from "@/components/(reusable)/banners";
+import { Titles } from "@/components/(reusable)/titles";
+import { Texts } from "@/components/(reusable)/texts";
 import Capitalize from "@/utils/captitalize";
-import NameContainer from "@/app/(content)/nameContainer";
+import {getTranslations} from "next-intl/server"; 
+import NameContainer from "../(content)/nameContainer";
+import { Buttons } from "@/components/(reusable)/buttons";
+import WidgetSection from "../(content)/widgetSection";
 
-export default async function Home() {
- //------------------------------------------------------------------------
+export default async function Test() {
+  //------------------------------------------------------------------------
   // Authentication: Get the current user
   const session = await auth();
   const t = await getTranslations("Home");
@@ -42,11 +43,13 @@ export default async function Home() {
 
   // Pass the fetched data to the client-side Content component
   return (
-    <Bases>
-      <Contents>
-      <Sections size={"dynamic"}>
-      <Holds >
-      <Headers variant={"relative"} size={"default"}></Headers>
+    <Bases variant={"default"}>
+      <Contents variant={"default"} size={"test"}>
+      <Sections size={"default"}>
+      <Holds>
+      <Contents variant={"header"} size={null}>
+            <Headers variant={"relative"} size={"default"}></Headers>
+      </Contents>
       <Banners variant={"default"}>
             <Titles variant={"default"} size={"h1"}>
               {t("Banner")}
