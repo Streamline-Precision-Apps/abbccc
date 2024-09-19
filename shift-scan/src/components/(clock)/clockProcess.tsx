@@ -13,8 +13,6 @@ import { Titles } from "../(reusable)/titles";
 import { Buttons } from "../(reusable)/buttons";
 import { setAuthStep } from "@/app/api/auth";
 import { Equipment } from "@/lib/types";
-import { useDBCostcode, useDBEquipment, useDBJobsite } from "@/app/context/dbCodeContext";
-import { useRecentDBCostcode, useRecentDBEquipment, useRecentDBJobsite } from "@/app/context/dbRecentCodesContext";
 type clockProcessProps = {
     scannerType: string;
     id: string | undefined;
@@ -46,60 +44,7 @@ const { scanEQResult } = useEQScanData();
 const [path, setPath] = useState("");
 const [scanner, setScanner] = useState("");
 
-const { jobsiteResults, setJobsiteResults } = useDBJobsite();
-  const { recentlyUsedJobCodes, setRecentlyUsedJobCodes } = useRecentDBJobsite();
-  const { costcodeResults, setCostcodeResults } = useDBCostcode();
-  const { recentlyUsedCostCodes, setRecentlyUsedCostCodes } = useRecentDBCostcode();
-  const { equipmentResults, setEquipmentResults } = useDBEquipment();
-  const { recentlyUsedEquipment, setRecentlyUsedEquipment } = useRecentDBEquipment();
 
-//---------------------Fetches-------------------------------------------
-  // Fetch job sites, cost codes, equipment, and timesheet data from the API
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [jobsiteResponse, recentJobsiteResponse, costcodeResponse, recentCostcodeResponse, equipmentResponse, recentEquipmentResponse] = await Promise.all([
-          fetch("/api/getJobsites"),
-          fetch("/api/getRecentJobsites"),
-          fetch("/api/getCostCodes"),
-          fetch("/api/getRecentCostCodes"),
-          fetch("/api/getEquipment"),
-          fetch("/api/getRecentEquipment"),
-        ]);
-
-        const [jobSites, recentJobSites, costCodes, recentCostCodes, equipment, recentEquipment] = await Promise.all([
-          jobsiteResponse.json(),
-          recentJobsiteResponse.json(),
-          costcodeResponse.json(),
-          recentCostcodeResponse.json(),
-          equipmentResponse.json(),
-          recentEquipmentResponse.json(),
-
-        ]);
-
-        setJobsiteResults(jobSites);
-        setRecentlyUsedJobCodes(recentJobSites);
-        setCostcodeResults(costCodes);
-        setRecentlyUsedCostCodes(recentCostCodes);
-        setEquipmentResults(equipment);
-        setRecentlyUsedEquipment(recentEquipment);
-
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, [
-    setJobsiteResults,
-    setRecentlyUsedJobCodes,
-    setCostcodeResults,
-    setRecentlyUsedCostCodes,
-    setEquipmentResults,
-    setRecentlyUsedEquipment,
-  ]);
-
-//---------------------------------------------------------------------
 
 
 useEffect(() => {
