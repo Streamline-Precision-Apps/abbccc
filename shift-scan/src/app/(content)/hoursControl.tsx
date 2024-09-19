@@ -131,7 +131,7 @@ export default function ControlComponent({ toggle } : ControlComponentProps) {
   };
 
   return (
-    <Holds className="w-full h-fit">
+<>
         {/* Th */}
         <ViewComponent
           scrollLeft={scrollLeft}
@@ -157,14 +157,14 @@ export default function ControlComponent({ toggle } : ControlComponentProps) {
               */
              className={`w-full rounded-2xl flex flex-col justify-end h-fit max-w-lg mx-auto pt-10
               ${
-            currentData.valuePrev === 0
-              ? "bg-clear"
-              : `h-[${calculateBarHeight(currentData.valuePrev)}px]`
-          }
-          ${currentData.valuePrev > 8 ? "bg-app-green" : "bg-app-orange"}
-          ${currentData.valuePrev !== 0 ? "" : "bg-clear"}
-          `}
-            >
+                currentData.valuePrev === 0
+                ? "bg-clear"
+                : `h-[${calculateBarHeight(currentData.valuePrev)}px]`
+                }
+                ${currentData.valuePrev > 8 ? "bg-app-green" : "bg-app-orange"}
+                ${currentData.valuePrev !== 0 ? "" : "bg-clear"}
+                `}
+                >
               <Texts variant={"default"} size={"p3"}>
                 {currentData.valuePrev !== 0
                   ? `${currentData.valuePrev.toFixed(1)} ${t("DA-Time-Label")}`
@@ -221,7 +221,7 @@ export default function ControlComponent({ toggle } : ControlComponentProps) {
               View My Timesheets
             </Texts>
           </Buttons>
-        </Holds>
+        </>
   );
 };
 

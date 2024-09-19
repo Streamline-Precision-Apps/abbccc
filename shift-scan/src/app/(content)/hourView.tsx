@@ -7,6 +7,7 @@ import { Texts } from "@/components/(reusable)/texts";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Holds } from "@/components/(reusable)/holds";
 
 type ViewComponentProps = {
     scrollLeft: () => void;
@@ -36,21 +37,21 @@ export default function ViewComponent({ scrollLeft, scrollRight, returnToMain, c
     return (
 
         <>
-        <Contents variant={"rowSpaceBetween"} size={null}>
-                <Buttons variant={"red"} size={null} onClick={returnToMain}  >
-                <Images titleImg={"/new/turnBack.svg"} titleImgAlt="left" variant={"icon"} size={"widgetSm"} />
-                </Buttons>
-                <Buttons variant={"lightBlue"} size={null} position={"left"} className=" shadow-none" onClick={scrollLeft} ><Images titleImg={"/new/backArrow.svg"} titleImgAlt="left" variant={"icon"} size={"widgetSm"} /></Buttons>
-            <Contents variant={"center"} size={"default"}>
-                
-                <Contents variant={"colCenter"} size={"test"} >
-                <Texts variant={"totalHours"} size={"p0"}>{Weekday}</Texts>
-                <Texts variant={"totalHours"} size={"p4"}>{dateToday}</Texts>
-                </Contents>
-            
-            </Contents>
-                <Buttons variant={"lightBlue"} size={null} position={"right"} className=" shadow-none" onClick={scrollRight} ><Images titleImg={"/new/forwardArrow.svg"} titleImgAlt="left" variant={"icon"} size={"widgetSm"} /></Buttons>
-        </Contents>
+        <Holds className="flex flex-row justify-center items-center w-full bg-app-dark-blue rounded-2xl relative shadow-[8px_8px_0px_grey]">
+                <Buttons variant={"lightBlue"} position={"left"} className=" shadow-none" onClick={scrollLeft} >
+                    <Images titleImg={"/new/backArrow.svg"} titleImgAlt="left" variant={"icon"}  size={"fill"} className="mx-auto" />
+                    </Buttons>
+                    <Holds variant={"col"} >
+                        <Buttons variant={"red"} size={"half"} onClick={returnToMain}>
+                        <Images titleImg={"/new/turnBack.svg"} titleImgAlt="return" variant={"icon"} size={"fill"} className="mx-auto" />
+                        </Buttons>
+                        <Texts variant={"totalHours"} size={"p0"} className="pt-2">{Weekday}</Texts>
+                        <Texts variant={"totalHours"} size={"p4"}>{dateToday}</Texts>
+                    </Holds>
+            <Buttons variant={"lightBlue"} position={"left"} className="shadow-none" onClick={scrollRight}  >
+                <Images titleImg={"/new/forwardArrow.svg"} titleImgAlt="right" variant={"icon"} size={"fill"} className="mx-auto" />
+            </Buttons>
+        </Holds>
         </>
     );
 };

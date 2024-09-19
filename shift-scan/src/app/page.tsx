@@ -43,7 +43,7 @@ export default async function Home() {
   // Pass the fetched data to the client-side Content component
   return (
     <Bases>
-      <Contents>
+      <Contents variant={"center"} size={"container"}>
       <Sections size={"dynamic"}>
       <Holds >
       <Headers variant={"relative"} size={"default"}></Headers>
