@@ -25,7 +25,6 @@ export default function Hours({ setToggle, display }: HoursProps) {
   };
 
   return display ? (
-    <Holds>
       <Buttons onClick={handler} variant={"darkBlue"} size={"fill"}>
         <Texts variant={"totalHours"} size={"p0"}>
           {t("PayPeriodHours")}
@@ -36,7 +35,6 @@ export default function Hours({ setToggle, display }: HoursProps) {
           </Texts>
         </Contents>
       </Buttons>
-    </Holds>
   ) : (
       <ViewHoursComponent toggle={setToggle} />
   );
