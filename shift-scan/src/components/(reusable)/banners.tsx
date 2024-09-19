@@ -1,9 +1,9 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { HTMLAttributes, FC } from "react";
 import { cn } from "@/components/(reusable)/utils";
-
+// add mt-24 to banner to bring it down lower
 const BannerVariants = cva(
-  "flex flex-col items-center justify-center p-1 absolute left-0 right-0", //this applies to all variants
+  "flex flex-col items-center justify-center mt-2 p-1 ", //this applies to all variants
   {
     variants: {
       variant: {

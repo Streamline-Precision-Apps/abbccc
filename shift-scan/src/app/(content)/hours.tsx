@@ -7,6 +7,7 @@ import { Titles } from "@/components/(reusable)/titles";
 import { Content } from "next/font/google";
 import { Contents } from "@/components/(reusable)/contents";
 import { Texts } from "@/components/(reusable)/texts";
+import { Holds } from "@/components/(reusable)/holds";
 
 // Assuming User has at least these fields, adjust accordingly
 
@@ -24,7 +25,7 @@ export default function Hours({ setToggle, display }: HoursProps) {
   };
 
   return display ? (
-    <>
+    <Holds>
       <Buttons onClick={handler} variant={"darkBlue"} size={"fill"}>
         <Texts variant={"totalHours"} size={"p0"}>
           {t("PayPeriodHours")}
@@ -35,8 +36,8 @@ export default function Hours({ setToggle, display }: HoursProps) {
           </Texts>
         </Contents>
       </Buttons>
-    </>
+    </Holds>
   ) : (
-    <ViewHoursComponent toggle={setToggle} />
+      <ViewHoursComponent toggle={setToggle} />
   );
 }
