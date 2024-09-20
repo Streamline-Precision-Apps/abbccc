@@ -132,7 +132,7 @@ export default function ControlComponent({ toggle } : ControlComponentProps) {
 
   return (
 <>
-<Holds>
+<Holds className="flex flex-col justify-start">
         {/* Th */}
         <ViewComponent
           scrollLeft={scrollLeft}
@@ -198,7 +198,7 @@ export default function ControlComponent({ toggle } : ControlComponentProps) {
           {/* This is the next day bar same as the previous with styling */}
           <Holds className="bg-app-dark-blue w-[100px] h-[300px] mx-auto rounded-2xl pt-3 pb-3 px-2 flex flex-col justify-end">
             <Holds
-              className={`h-fit max-w-lg mx-auto pt-10  w-full flex flex-col justify-end rounded-2xl 
+              className={`h-fit max-w-lg mx-auto pt-10 w-full flex flex-col justify-end rounded-2xl 
                 ${
                   currentData.valueNext === 0
                   ? "bg-clear"
