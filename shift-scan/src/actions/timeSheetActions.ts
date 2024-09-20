@@ -56,7 +56,7 @@ export async function CreateTimeSheet(formData: FormData) {
             data: {
                 submitDate: parseDate(formData.get("submitDate") as string).toISOString(),
                 date: parseDate(formData.get("date") as string).toISOString(),
-                jobsite: { connect: { id: formData.get("jobsiteId") as string } },
+                jobsite: { connect: { qrId: formData.get("jobsiteId") as string } },
                 costcode: formData.get("costcode") as string,
                 vehicleId: formData.get("vehicleId") ? Number(formData.get("vehicleId")) : null,
                 startTime: parseDate(formData.get("startTime") as string).toISOString(),
@@ -70,7 +70,7 @@ export async function CreateTimeSheet(formData: FormData) {
                 hauledLoadsQuantity:  null,
                 refuelingGallons:  null,
                 timeSheetComments: null,
-                user: { connect: { id: formData.get("user_id") as string } },
+                user: { connect: { id: formData.get("userId") as string } },
             },
         });
         console.log("Timesheet created successfully.");
