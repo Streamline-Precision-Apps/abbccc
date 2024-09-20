@@ -12,7 +12,6 @@ import { Titles } from "@/components/(reusable)/titles";
 import { Headers } from "@/components/(reusable)/headers";
 import WidgetSection from "@/app/(content)/widgetSection";
 import Capitalize from "@/utils/captitalize";
-import NameContainer from "@/app/(content)/nameContainer";
 
 export default async function Home() {
  //------------------------------------------------------------------------
