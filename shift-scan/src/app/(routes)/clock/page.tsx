@@ -83,7 +83,6 @@ return (
 <Sections size={"default"}>
 <ClockProcessor
         type={"jobsite"}
-        id={userId}
         scannerType={"jobsite"}
         locale={locale}
         returnpath="/"

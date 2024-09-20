@@ -6,7 +6,7 @@ import { clearAuthStep } from "@/app/api/auth";
 
 // Get all injuryForms
 export async function getInjuryForms() {
-  const injuryForms = prisma.injuryForm.findMany();
+  const injuryForms = prisma.injuryForms.findMany();
   console.log(injuryForms);
   return injuryForms;
 }
@@ -54,18 +54,19 @@ export async function CreateInjuryForm(formData: FormData) {
       return date;
     };
 
-    const newInjuryForm = await prisma.injuryForm.create({
+    const newInjuryForm = await prisma.injuryForms.create({
       data: {
-        // user_id: { connect: { id: formData.get("userId") as string } },
-        // submit_date: parseDate(
-        //   formData.get("submit_date") as string
-        // ).toISOString(),
-        // date: parseDate(formData.get("date") as string).toISOString(),
+        submitDate: parseDate(
+          new Date().toISOString().split("T")[0]
+        ).toISOString(),
+        date: parseDate(formData.get("date") as string).toISOString(),
         contactedSupervisor: formData.get("contactedSupervisor")
-          ? Boolean(formData.get("contactedSupervisor"))
-          : undefined,
+        ? Boolean(formData.get("contactedSupervisor"))
+        : undefined,
         incidentDescription: formData.get("incidentDescription") as string,
-        signedForm: formData.get("signedForm") === 'true',
+        signature: formData.get("signature") as string,
+        verifyFormSignature: formData.get("signedForm") === 'true',
+        user: { connect: { id: formData.get("userId") as string } },
       },
     });
     console.log("injuryForm created successfully.");
@@ -139,7 +140,7 @@ function parseUTC(dateString: any) {
 // Delete injuryForm by id
 // will be used by Admin only
 export async function deleteInjuryForm(id: number) {
-  await prisma.injuryForm.delete({
+  await prisma.injuryForms.delete({
     where: { id },
   });
 }

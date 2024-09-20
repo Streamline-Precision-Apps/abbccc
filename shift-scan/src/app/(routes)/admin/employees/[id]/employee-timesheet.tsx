@@ -11,6 +11,7 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Tab } from "@/components/(reusable)/tab";
 import { useTranslations } from "next-intl";
 import AddTimeSheet from "./addTimesheet";
+import { Bases } from "@/components/(reusable)/bases";
 
 type Props = {
   employeeId: string;
@@ -81,6 +82,7 @@ export const EmployeeTimeSheets = ({
 
   return (
     <>
+      <Bases>
       <Sections size={"dynamic"} variant={"default"}>
         <Sections size={"titleBox"} variant={"default"}>
           <h1>Select Date</h1>
@@ -88,13 +90,13 @@ export const EmployeeTimeSheets = ({
             ref={formRef}
             onChange={handleFormChange}
             onSubmit={handleFormSubmit}
-          >
+            >
             <input
               type="date"
               name="date"
               id="date"
               className="flex justify-center m-auto text-black text-2xl bg-white p-2 rounded border-2 border-black rounded-2xl"
-            />
+              />
             <input type="hidden" name="id" value={employeeId} />
           </form>
           <Titles variant={"green"}>{message}</Titles>
@@ -105,36 +107,37 @@ export const EmployeeTimeSheets = ({
               onClick={() => setActiveTab(1)}
               tabLabel={t("ViewTimeSheets")}
               isTabActive={activeTab === 1}
-            />
+              />
             <Tab
               onClick={() => setActiveTab(2)}
               tabLabel={t("AddTimeSheet")}
               isTabActive={activeTab === 2}
-            />
+              />
             {activeTab === 1 && (
               <AddTimeSheet
-                jobsites={jobsiteData}
-                costcodes={costcodeData}
-                employeeId={employeeId}
+              jobsites={jobsiteData}
+              costcodes={costcodeData}
+              employeeId={employeeId}
               />
             )}
             {activeTab === 2 && (
               <EditWork
-                timesheetData={timesheets}
-                edit={edit}
-                costcodesData={costcodeData}
-                jobsitesData={jobsiteData}
-                equipmentData={filteredEquipmentData}
-                handleFormSubmit={handleFormSubmitFromEditWork}
-                setEdit={setEdit}
-                employeeId={employeeId}
-                date={date}
-                equipment={equipment}
+              timesheetData={timesheets}
+              edit={edit}
+              costcodesData={costcodeData}
+              jobsitesData={jobsiteData}
+              equipmentData={filteredEquipmentData}
+              handleFormSubmit={handleFormSubmitFromEditWork}
+              setEdit={setEdit}
+              employeeId={employeeId}
+              date={date}
+              equipment={equipment}
               />
             )}
           </Contents>
         </Sections>
       </Sections>
+      </Bases>
     </>
   );
 };
