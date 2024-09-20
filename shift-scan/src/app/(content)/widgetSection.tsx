@@ -89,28 +89,20 @@ const { jobsiteResults, setJobsiteResults } = useDBJobsite();
 
 //---------------------------------------------------------------------
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [payPeriodSheetsResponse] = await Promise.all([
-          fetch("/api/getPayPeriodTimeSheets")
-        ]);
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const response = await fetch("/api/getPayPeriodTimeSheets");
+      const data = await response.json();
+      setPayPeriodSheets(data);
+      setPayPeriodTimeSheets(data); // Update the context after fetching
+    } catch (error) {
+      console.error("Error fetching pay period sheets:", error);
+    }
+  };
 
-        const [payPeriodSheets] = await Promise.all([
-          payPeriodSheetsResponse.json(),
-        ]);
-        setPayPeriodSheets(payPeriodSheets);
-
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, [
-
-    setPayPeriodTimeSheets(payPeriodSheets)
-  ]);
+  fetchData();
+}, [setPayPeriodTimeSheets]);
 
 //---------------------------------------------------------------------
  // Redirect to dashboard if authStep is success
@@ -132,18 +124,19 @@ const { jobsiteResults, setJobsiteResults } = useDBJobsite();
 
 //-----------------------------------------------------------------------
   // Calculate total pay period hours
-const totalPayPeriodHours = useMemo(() => {
-    if (!payPeriodSheets) return 0;
-    return payPeriodSheets.filter((sheet : any) => sheet.duration !== null)
-    .reduce((total, sheet:any) => total + (sheet.duration ?? 0), 0);
+  const totalPayPeriodHours = useMemo(() => {
+    if (!payPeriodSheets.length) return 0;
+    return payPeriodSheets
+      .filter((sheet: any) => sheet.duration !== null)
+      .reduce((total, sheet: any) => total + (sheet.duration ?? 0), 0);
   }, [payPeriodSheets]);
-
-  // Set the total pay period hours in context
+  
   useEffect(() => {
     setPayPeriodHours(totalPayPeriodHours.toFixed(2));
   }, [totalPayPeriodHours, setPayPeriodHours]);
+
 return (
-<>
+<Holds className="">
 {authStep === "break" ? (
 <>
 
@@ -160,7 +153,7 @@ return (
 ) :
 (
     <>
-<Hours setToggle={handleToggle} display={toggle}  />
+    <Hours setToggle={handleToggle} display={toggle}  />
 </>
 )
 }
@@ -169,20 +162,19 @@ return (
     { permission === "ADMIN" || permission === "SUPERADMIN" || permission === "MANAGER"  ? (
       <>
     <Buttons href="/dashboard/qr-generator" variant={"lightBlue"} size={"fill"}>
-        <Holds>
+        <Holds variant={"col"} className="justify-center items-center py-5">
             <Images titleImg="/new/qr.svg" titleImgAlt="QR Code" variant={"icon"} size={"widgetSm"}/>
             <Texts size={"widgetSm"}>{t("QrGenerator")}</Texts>
         </Holds>
     </Buttons>
     <Buttons href="/dashboard/myTeam" variant={"lightBlue"} size={"fill"}>
-        <Holds>
+    <Holds variant={"col"} className="justify-center items-center py-5">
             <Images titleImg="/new/team.svg" titleImgAlt="my team" variant={"icon"} size={"widgetSm"}/>
                 <Texts size={"widgetSm"}>{t("MyTeam")}</Texts>
         </Holds>
     </Buttons> 
-</>
-) : 
-<Hours setToggle={handleToggle} display={toggle}  />
+    </>
+) :(null)
 }
     <Buttons 
         variant={"green"} 
@@ -198,6 +190,6 @@ return (
     </Grids>
         ) : (null)
       }
-    </>
+      </Holds>
     );
   }

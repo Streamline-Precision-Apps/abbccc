@@ -47,6 +47,7 @@ export default async function Home() {
       <Sections size={"dynamic"}>
       <Holds >
       <Headers variant={"relative"} size={"default"}></Headers>
+
       <Banners variant={"default"}>
             <Titles variant={"default"} size={"h1"}>
               {t("Banner")}
@@ -55,8 +56,15 @@ export default async function Home() {
               {t("Date", { date: Capitalize(date) })}
             </Texts>
           </Banners>
-          <NameContainer firstName={user.firstName} lastName={user.firstName}/>
+          <Texts size={"p0"} className="text-center py-4">
+            {t("Name", {
+              firstName: Capitalize(user.firstName),
+              lastName: Capitalize(user.lastName),
+            })}
+          </Texts>
+
           <WidgetSection session={session}/> 
+
       </Holds>
         </Sections>
       </Contents>
