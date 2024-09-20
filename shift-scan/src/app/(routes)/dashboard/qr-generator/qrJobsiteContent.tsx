@@ -9,24 +9,22 @@ import { Titles } from "@/components/(reusable)/titles";
 import { Contents } from "@/components/(reusable)/contents";
 import { Texts } from "@/components/(reusable)/texts";
 import { Images } from "@/components/(reusable)/images";
-import { Sections } from "@/components/(reusable)/sections";
-import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Selects } from "@/components/(reusable)/selects";
 import { Options } from "@/components/(reusable)/options";
 import { JobCodes } from "@/lib/types";
+import { Labels } from "@/components/(reusable)/labels";
+import { Holds } from "@/components/(reusable)/holds";
 
-type Props = {
-  jobCodes: JobCodes[];
-};
-
-export default function QrJobsiteContent({ jobCodes }: Props) {
+export default function QrJobsiteContent() {
   const [selectedJobSiteName, setSelectedJobSiteName] = useState<string>("");
   const [selectedJobSite, setSelectedJobSite] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [generatedList, setGeneratedList] = useState<JobCodes[]>([]);
+  const [loading, setLoading] = useState(true);  // Loading state
   const [qrCodeUrl, setQrCodeUrl] = useState("");
   const router = useRouter();
   const t = useTranslations("QrJobsiteContent");
-  const q = useTranslations("qr-Generator");
+
 
   const handleGenerate = async () => {
     if (selectedJobSite) {
@@ -42,13 +40,34 @@ export default function QrJobsiteContent({ jobCodes }: Props) {
     }
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const jobsiteResponse = await fetch("/api/getJobsites");
+
+        if (!jobsiteResponse.ok) {
+          throw new Error("Failed to fetch job sites");
+        }
+
+        const jobSites = await jobsiteResponse.json();
+        setGeneratedList(jobSites);
+        setLoading(false);  // Set loading to false after data is fetched
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setLoading(false);  // Set loading to false even if there is an error
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const handleNew = () => {
     router.push("/dashboard/qr-generator/add-new-jobsite");
   };
 
   const handleOptionSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedId = event.target.value;
-    const selectedOption = jobCodes.find(
+    const selectedOption = generatedList.find(
       (option) => option.qrId === selectedId
     );
 
@@ -57,61 +76,58 @@ export default function QrJobsiteContent({ jobCodes }: Props) {
       setSelectedJobSiteName(selectedOption.name);
     }
   };
+
   return (
     <>
-      <Sections size={"titleBox"}>
-        <TitleBoxes
-          title={q("Title")}
-          titleImg="/new/qr.svg"
-          titleImgAlt="Team"
-          variant={"default"}
-          size={"default"}
-        />
-      </Sections>
-      <Sections size={"half"}>
-        <Contents variant={"center"} size={null}>
-        <Images titleImg="/new/jobsite.svg" titleImgAlt="jobsite" variant={"icon"} size={"iconMed"}/>
-        <Titles variant={"default"} size={"default"}>{t("Jobsite")}</Titles>
-        </Contents>
-        <Selects value={selectedJobSite} onChange={handleOptionSelect}>
-        <Options variant={"default"} value="">
-        Select One
-        </Options>
-        {jobCodes.map((option) => (
-        <Options
-        variant={"default"}
-        key={option.qrId}
-        value={option.qrId}
-        >
-        {option.name}
-        </Options>
-        ))}
+      {loading ? (
+        <>
+        <Selects>
+          <Options>
+            Loading job codes...
+          </Options>
         </Selects>
-        <Contents variant={"rowCenter"} size={null}>
-          <Buttons variant={"orange"} onClick={handleGenerate} size={null}>
-            <Titles variant={"default"} size={"h1"}>{t("Generate")}</Titles>
-          </Buttons>
-          <Buttons variant={"green"} onClick={handleNew} size={null}>
-            <Titles variant={"default"} size={"h1"}>{t("New")}</Titles>
-          </Buttons>
-        </Contents>
-        <Modals
-          isOpen={isModalOpen}
-          handleClose={() => setIsModalOpen(false)}
-          size="default"
-        >
-          {selectedJobSite && (
-            <>
-              <Texts variant={"default"}>
-                {selectedJobSiteName} {t("QR Code")}
-              </Texts>
-              <Contents variant={"rowCenter"} size={"default"}>
-                <Images titleImg="" titleImgAlt="QR Code" src={qrCodeUrl} />
-              </Contents>
-            </>
-          )}
-        </Modals>
-      </Sections>
+        </>
+      ) : (
+        <Selects value={selectedJobSite} onChange={handleOptionSelect}>
+          <Options variant={"default"} value="">
+            Select One
+          </Options>
+          {generatedList.map((option) => (
+            <Options
+              variant={"default"}
+              key={option.qrId}
+              value={option.qrId}
+            >
+              {option.name}
+            </Options>
+          ))}
+        </Selects>
+      )}
+      
+      <Holds variant={"row"} className="flex justify-evenly ">
+        <Buttons variant={"orange"} onClick={handleGenerate} size={"half"} >
+          <Titles variant={"default"} size={"h1"}>{t("Generate")}</Titles>
+        </Buttons>
+        <Buttons variant={"green"} onClick={handleNew} size={"half"} >
+          <Titles variant={"default"} size={"h1"}>{t("New")}</Titles>
+        </Buttons>
+      </Holds>
+      <Modals
+        isOpen={isModalOpen}
+        handleClose={() => setIsModalOpen(false)}
+        size="sm"
+      >
+        {selectedJobSite && (
+          <>
+            <Texts variant={"default"}>
+              {selectedJobSiteName} {t("QR Code")}
+            </Texts>
+            <Contents variant={"rowCenter"} size={"default"}>
+              <Images titleImg="" titleImgAlt="QR Code" src={qrCodeUrl} />
+            </Contents>
+          </>
+        )}
+      </Modals>
     </>
   );
 }
