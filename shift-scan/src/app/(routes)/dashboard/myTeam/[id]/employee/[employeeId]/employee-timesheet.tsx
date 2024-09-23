@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { fetchTimesheets } from "@/actions/timeSheetActions";
-import EditWork from "./edit-work";
+import EditWork from "./editWork";
 import { Sections } from "@/components/(reusable)/sections";
 import { Titles } from "@/components/(reusable)/titles";
 import { fetchEq } from "@/actions/equipmentActions";
@@ -10,19 +10,37 @@ import { Inputs } from "@/components/(reusable)/inputs";
 
 type Props = {
 employeeId: string;
-costcodeData: any[];
-jobsiteData: any[];
-equipmentData: any[];
-equipment: any[];
 };
 
-export const EmployeeTimeSheets = ({ employeeId, costcodeData, equipmentData, equipment, jobsiteData }: Props) => {
+export const EmployeeTimeSheets = ({ employeeId }: Props) => {
 const [timesheets, setTimesheets] = useState<any[]>([]);
 const [filteredEquipmentData, setFilteredEquipmentData] = useState<any[]>([]);
 const [message, setMessage] = useState("");
 const [edit, setEdit] = useState(false);
 const formRef = useRef<HTMLFormElement>(null);
 const [date, setDate] = useState("");
+const [costcodesData, setCostcodesData] = useState([]);
+const [jobsitesData, setJobsitesData] = useState([]);
+const [equipmentData, setEquipmentData] = useState([]);
+const [equipment, setEquipment] = useState([]);
+
+useEffect(() => {
+    const fetchData = async () => {
+    const [costcodes, jobsites, equipment, equipmentData] = await Promise.all([
+        fetch("/api/getCostcodes").then((res) => res.json()),
+        fetch("/api/getJobsites").then((res) => res.json()),
+        fetch("/api/getAllEquipment").then((res) => res.json()),
+        fetch("/api/getEquipment").then((res) => res.json()),
+    ]);
+
+    setCostcodesData(costcodes);
+    setJobsitesData(jobsites);
+    setEquipmentData(equipmentData);
+    setEquipment(equipment);
+    };
+
+    fetchData();
+  }, []);
 
 const handleFormSubmitWrapper = async (date: string, message?: string) => {
 const results = await fetchTimesheets(employeeId, date);
@@ -67,13 +85,14 @@ return (
         </form>
         <Titles variant={"green"}>{message}</Titles>
     </Sections>
+    {date &&
     <Sections size={"dynamic"}>
         <EditWork
         timesheetData={timesheets}
         edit={edit}
-        costcodesData={costcodeData}
-        jobsitesData={jobsiteData}
-        equipmentData={filteredEquipmentData}
+        costcodesData={costcodesData}
+        jobsitesData={jobsitesData}
+        equipmentData={filteredEquipmentData} 
         handleFormSubmit={handleFormSubmitFromEditWork}
         setEdit={setEdit}
         employeeId={employeeId}
@@ -81,6 +100,7 @@ return (
         equipment={equipment}
         />
     </Sections>
+    }
     </Sections>
         </Contents>
 </>

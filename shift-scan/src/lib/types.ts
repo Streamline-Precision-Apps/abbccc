@@ -142,6 +142,7 @@ export type sentContent = {
   };
 
   export type TimeSheet = {
+    startDate: any;
     submitDate?: Date;
     id?: number;
     userId?: string;
@@ -151,7 +152,7 @@ export type sentContent = {
     nu?: string;
     Fp?: string;
     vehicleId?: number | null;
-    startTime?: Date | string;
+    startTime?: Date | string |undefined;
     endTime?: Date | string | null;
     duration?: number | null;
     startingMileage?: number | null;
