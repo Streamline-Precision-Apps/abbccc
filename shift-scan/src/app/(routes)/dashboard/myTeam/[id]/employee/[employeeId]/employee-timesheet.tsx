@@ -26,19 +26,16 @@ const [equipment, setEquipment] = useState([]);
 
 useEffect(() => {
     const fetchData = async () => {
-    const [costcodes, jobsites, equipment, equipmentData] = await Promise.all([
-        fetch("/api/getCostcodes").then((res) => res.json()),
+      const [costcodes, jobsites, equipment] = await Promise.all([
+        fetch("/api/getCostCodes").then((res) => res.json()),
         fetch("/api/getJobsites").then((res) => res.json()),
         fetch("/api/getAllEquipment").then((res) => res.json()),
-        fetch("/api/getEquipment").then((res) => res.json()),
-    ]);
+      ]);
 
-    setCostcodesData(costcodes);
-    setJobsitesData(jobsites);
-    setEquipmentData(equipmentData);
-    setEquipment(equipment);
+      setCostcodesData(costcodes);
+      setJobsitesData(jobsites);
+      setEquipment(equipment);
     };
-
     fetchData();
   }, []);
 
