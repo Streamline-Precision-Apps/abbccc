@@ -9,17 +9,9 @@ import { Titles } from "@/components/(reusable)/titles";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
-type CrewMember = {
-    user: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    image: string | null;
-};
-};
 
 export default function Content() {
-const [crew, setCrew] = useState<CrewMember[]>([]);
+const [myTeams,  setMyTeams] = useState<any[]>([]);
 const [isLoading, setIsLoading] = useState(true);
 const { data: session, status } = useSession();
 
@@ -27,10 +19,10 @@ useEffect(() => {
 const fetchCrew = async () => {
     try {
     setIsLoading(true);
-    const response = await fetch("/api/getCrew");
+    const response = await fetch("/api/getTeam");
     if (response.ok) {
-        const crewData = await response.json();
-        setCrew(crewData);
+        const myTeams = await response.json();
+        setMyTeams(myTeams);
     } else {
         console.error("Failed to fetch crew data");
     }
@@ -47,11 +39,11 @@ if (status === "authenticated") {
 }, [status]);
 
 return (
-<Bases variant="default">
-    <Contents size="default">
+<Bases>
+    <Contents>
     <Sections size="titleBox">
         <TitleBoxes
-        title="My Team"
+        title="My Teams"
         titleImg="/new/team.svg"
         titleImgAlt="Team"
         variant="default"
@@ -62,7 +54,6 @@ return (
         <Sections size="dynamic">
         <Buttons
             variant="lightBlue"
-            size={null}
             >
             <Contents variant="row" size="listTitle">
             <Titles size="h1">
@@ -79,32 +70,20 @@ return (
         </Sections>
     </> :
     <Sections size="dynamic">
-        {crew.map((userCrewId) => (
+        {myTeams.map((teams) => (
             <Buttons
-            key={userCrewId.user.id}
-            id={userCrewId.user.id}
-            href={`/dashboard/myTeam/${userCrewId.user.id}`}
             variant="lightBlue"
-            size={null}
+            href={`/dashboard/myTeam/${teams.id}`}
+            key={teams.id}
             >
-            <Contents variant="image" size="listImage">
-            <Images
-            titleImg={
-                userCrewId.user.image ?? "./new/default-profile.svg"
-            }
-            titleImgAlt="profile picture"
-            variant="icon"
-            size="default"
-            loading="lazy"
-            />
-            </Contents>
             <Contents variant="row" size="listTitle">
             <Titles size="h1">
-            {userCrewId.user.firstName} {userCrewId.user.lastName}
+                Team {teams.id}
             </Titles>
             </Contents>
             </Buttons>
-        ))}
+        ))
+    }
         </Sections>
     }
         </Contents>

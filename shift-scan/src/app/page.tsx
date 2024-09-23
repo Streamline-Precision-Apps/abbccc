@@ -12,6 +12,7 @@ import { Titles } from "@/components/(reusable)/titles";
 import { Headers } from "@/components/(reusable)/headers";
 import WidgetSection from "@/app/(content)/widgetSection";
 import Capitalize from "@/utils/captitalize";
+import { redirect } from 'next/navigation'
 
 export default async function Home() {
  //------------------------------------------------------------------------
@@ -20,7 +21,7 @@ export default async function Home() {
   const t = await getTranslations("Home");
   if (!session) {
     // Redirect or return an error if the user is not authenticated
-    return { redirect: { destination: '/signin', permanent: false } };
+    redirect('/signin');
   }
 
   const user = session.user;
