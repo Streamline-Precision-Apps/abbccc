@@ -1,4 +1,5 @@
 "use client";
+import Spinner from "@/components/(animations)/spinner";
 import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
@@ -52,21 +53,11 @@ return (
     </Sections>
     {isLoading ? <>
         <Sections size="dynamic">
-        <Buttons
-            variant="lightBlue"
-            >
             <Contents variant="row" size="listTitle">
             <Titles size="h1">
             </Titles>
-            <Images 
-            titleImg="/new/ongoing.svg"
-            titleImgAlt="loading icon"
-            variant="icon"
-            size={"default"}
-            className="animate-spin"
-            />
+            <Spinner />
             </Contents>
-        </Buttons>
         </Sections>
     </> :
     <Sections size="dynamic">
