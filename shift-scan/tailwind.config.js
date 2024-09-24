@@ -1,7 +1,9 @@
 /** @type {import('tailwindcss').Config} */
-const colors = require('tailwindcss/colors')
+import fluid, { extract } from "fluid-tailwind";
+
 module.exports = {
-  content: [
+  content: {
+    files : [
     './app/**/*.{js,ts,jsx,tsx,mdx}', // Note the addition of the `app` directory.
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -9,6 +11,12 @@ module.exports = {
     // Or if using `src` directory:
     './src/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  extract: {
+    wtf: (content) => {
+      return content.match(/[^<>"'`\s]*/g)
+    }
+  }
+  },
   theme: {
     extend: { 
       colors: {
@@ -21,5 +29,7 @@ module.exports = {
     },
   },
   },
-  plugins: [],
+  plugins: [
+    fluid
+  ],
 }

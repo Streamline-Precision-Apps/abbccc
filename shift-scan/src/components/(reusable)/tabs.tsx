@@ -6,7 +6,7 @@ import React, { useEffect } from 'react'
 import { useState } from "react";
 import {Tab} from "@/components/(reusable)/tab";
 import { getUserSentContent } from '@/actions/inboxSentActions';
-import { Sections } from '../(reusable)/sections';
+import { Holds } from '../(reusable)/Holds';
 import { Buttons } from '../(reusable)/buttons';
 import { Contents } from "./contents";
 import { Titles } from "./titles";
@@ -65,7 +65,7 @@ const Tabs: FC<TabProps> = ({className, variant, size, ...props}) => {
               isTabActive= {activeTab === 3}
               />
           </div>
-          <Sections variant={"tab"} size={"default"}>
+          <Holds variant={"tab"} size={"default"}>
             {activeTab === 1 && 
             <Contents>
               <Expands title="Current Equipment" divID="1">
@@ -96,7 +96,7 @@ const Tabs: FC<TabProps> = ({className, variant, size, ...props}) => {
             }
             {activeTab === 2 && <p>Example 2</p>}
             {activeTab === 3 && <p>Example 3</p>}
-          </Sections>
+          </Holds>
         </div>
       </div>
     )

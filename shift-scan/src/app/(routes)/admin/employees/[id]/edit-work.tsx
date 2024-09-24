@@ -5,7 +5,7 @@ import { Images } from "@/components/(reusable)/images";
 import { useTranslations } from "next-intl";
 import React from "react";
 import { useState, useEffect } from "react";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/Holds";
 import { Contents } from "@/components/(reusable)/contents";
 import { Selects } from "@/components/(reusable)/selects";
 import { Inputs } from "@/components/(reusable)/inputs";
@@ -341,7 +341,7 @@ const EditWork = ({
 
   return (
     <Contents variant={"default"} size={"default"}>
-      <Sections size={"dynamic"}>
+      <Holds size={"dynamic"}>
         {timesheetData.length === 0 ? null : (
           <>
             <Buttons onClick={editHandler}></Buttons>
@@ -505,8 +505,8 @@ const EditWork = ({
             ))}
           </ul>
         )}
-      </Sections>
-      <Sections size={"dynamic"}>
+      </Holds>
+      <Holds size={"dynamic"}>
         <Titles size={"default"} variant={"default"}>
           {t("EquipmentLogs")}
         </Titles>
@@ -542,7 +542,7 @@ const EditWork = ({
           <div className="border border-black"></div>
           <br />
         </ul>
-      </Sections>
+      </Holds>
     </Contents>
   );
 };

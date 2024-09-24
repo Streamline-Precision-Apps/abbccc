@@ -6,7 +6,7 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Forms } from "@/components/(reusable)/forms";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/Holds";
 import { Selects } from "@/components/(reusable)/selects";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
@@ -52,7 +52,7 @@ export default function Content({ params, sentContent, session } : Props) {
         <>
         <Bases>
         <Contents>
-        <Sections size={"titleBox"} variant={"orange"}>
+        <Holds size={"titleBox"} variant={"orange"}>
         <TitleBoxes variant={null} title="leave request" titleImg="/Inbox.svg" titleImgAlt="Inbox" type="noIcon" >
         </TitleBoxes>
         {sentContent.map((item) => (
@@ -68,9 +68,9 @@ export default function Content({ params, sentContent, session } : Props) {
             </Titles>
         )
         )}
-        </Sections>
+        </Holds>
         <Forms action={EditLeaveRequest} >
-        <Sections size={"titleBox"} >
+        <Holds size={"titleBox"} >
             <Contents variant={"widgetButtonRow"} size={null}>
             {!edit &&
             <Buttons variant={"orange"} size={null} onClick={() => setEdit(!edit)}>
@@ -87,9 +87,9 @@ export default function Content({ params, sentContent, session } : Props) {
             </Buttons>
             }
             </Contents>
-        </Sections>
+        </Holds>
         {sentContent.map((item) => (
-            <Sections size={"default"} key={item.id}>
+            <Holds size={"default"} key={item.id}>
             <Inputs type="hidden" name="id" value={item.id} disabled/>
             <Inputs type="hidden" name="status" value={item.status} disabled/>
             <Inputs type="hidden" name="date" value={item.date.toString()} disabled/>
@@ -155,7 +155,7 @@ export default function Content({ params, sentContent, session } : Props) {
             <Texts variant={"default"} size={"p4"}>
             *By Signing I acknowledge that time leave request are subject to management approval and company policy. *
             </Texts>
-            </Sections>
+            </Holds>
         ))}
         </Forms>
     

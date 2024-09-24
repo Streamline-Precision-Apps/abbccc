@@ -2,7 +2,7 @@
 import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/Holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useEffect, useState } from "react";
 import { Signature } from "./(components)/injury-verification/Signature";
@@ -159,7 +159,7 @@ export default function ClockOutContent({
     return (
       <Bases variant={"default"}>
         <Contents size={"default"}>
-          <Sections size={"default"}>
+          <Holds size={"default"}>
             <TitleBoxes
               title={t("InjuryVerification")}
               titleImg="/new/end-day.svg"
@@ -180,19 +180,19 @@ export default function ClockOutContent({
                 <Banners variant="red">{bannerMessage}</Banners>
               </div>
             )}
-            <Sections size={"titleBox"}>
+            <Holds size={"titleBox"}>
               <Titles size={"h3"}>{t("SignBelow")}</Titles>
               <Signature
                 setBase64String={setBase64String}
                 base64string={base64String}
               />
-            </Sections>
-            <Sections size={"titleBox"}>
+            </Holds>
+            <Holds size={"titleBox"}>
               <Contents variant={"rowCenter"}>
                 <Titles size={"h4"}>{t("SignatureVerify")}</Titles>
                 <Checkbox checked={checked} onChange={handleCheckboxChange} />
               </Contents>
-            </Sections>
+            </Holds>
             {/* Button changes based on checkbox state */}
             <Buttons
               variant={checked ? "green" : "red"} // Green for Continue, Red for Report an Injury
@@ -204,7 +204,7 @@ export default function ClockOutContent({
                 {/* Button text changes */}
               </Titles>
             </Buttons>
-          </Sections>
+          </Holds>
         </Contents>
       </Bases>
     );
@@ -212,7 +212,7 @@ export default function ClockOutContent({
     return (
       <Bases variant={"default"}>
         <Contents size={"default"}>
-          <Sections size={"titleBox"}>
+          <Holds size={"titleBox"}>
             <TitleBoxes
               title={t("InjuryVerification")}
               titleImg="/new/injury.svg"
@@ -221,15 +221,15 @@ export default function ClockOutContent({
               size={"default"}
               type="row"
             />
-          </Sections>
-          <Sections size={"dynamic"}>
+          </Holds>
+          <Holds size={"dynamic"}>
             <InjuryReportContent
               base64String={base64String}
               setBase64String={setBase64String}
               handleComplete={handleSubmit} // Ensure handleComplete does the right thing
               handleSubmitImage={handleSubmitImage}
             />
-          </Sections>
+          </Holds>
         </Contents>
       </Bases>
     );
@@ -241,7 +241,7 @@ export default function ClockOutContent({
         {bannerMessage}
         </Banners>
         <Contents>
-        <Sections size={"dynamic"}>
+        <Holds size={"dynamic"}>
         <TitleBoxes title={t("Bye")} titleImg={"/new/end-day.svg"} titleImgAlt={""} variant={"row"} size={"default"} type="row" />
 
         <Contents variant={"default"}>
@@ -270,7 +270,7 @@ export default function ClockOutContent({
         </Forms>
 
         </Contents>
-        </Sections>
+        </Holds>
         </Contents>
         </Bases>
     );

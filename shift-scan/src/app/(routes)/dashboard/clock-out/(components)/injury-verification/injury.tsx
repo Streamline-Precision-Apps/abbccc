@@ -6,7 +6,7 @@ import { Checkbox } from "./checkBox";
 import { useRouter } from "next/navigation";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Bases } from "@/components/(reusable)/bases";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/Holds";
 import { Contents } from "@/components/(reusable)/contents";
 import { Buttons } from "@/components/(reusable)/buttons";
 
@@ -49,7 +49,7 @@ export default function InjuryVerification() {
   return (
     <Bases variant={"default"}>
       <Contents size={"default"}>
-      <Sections size={"dynamic"}>
+      <Holds size={"dynamic"}>
       <TitleBoxes
         title={t("InjuryVerification")}
         titleImg="/endDay.svg"
@@ -61,10 +61,10 @@ export default function InjuryVerification() {
       <h1>{t("SignBelow")}</h1>
       {/* <Signature onEnd={handleSignatureEnd} /> */}
       {signatureBlob && <p>{t("SignatureCaptured")}</p>}
-      <Sections size={"titleBox"} className="flex-row gap-2">
+      <Holds size={"titleBox"} className="flex-row gap-2">
         <h1>{t("SignatureVerify")}</h1>
         <Checkbox checked={checked} onChange={handleCheckboxChange} />
-        </Sections>
+        </Holds>
       {error && <div className="text-red-500">{error}</div>}
       <div>
         {checked ? (
@@ -77,7 +77,7 @@ export default function InjuryVerification() {
         </Buttons>
         )}
       </div>
-      </Sections>
+      </Holds>
       </Contents>
     </Bases>
   );

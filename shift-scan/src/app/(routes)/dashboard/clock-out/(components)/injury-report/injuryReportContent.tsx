@@ -6,7 +6,7 @@ import { Signature } from "../injury-verification/Signature";
 import { CreateInjuryForm } from "@/actions/injuryReportActions";
 import { useTranslations } from "next-intl";
 import { Contents } from "@/components/(reusable)/contents";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/Holds";
 import { Titles } from "@/components/(reusable)/titles";
 import { Buttons } from "@/components/(reusable)/buttons";
 
@@ -60,13 +60,13 @@ export const InjuryReportContent = ({
 
   return (
     <>
-      <Sections size="titleBox">
+      <Holds size="titleBox">
         <Contents variant="rowCenter">
           <Titles size="h4">{t("ContactedSupervisor")}</Titles>
           <Checkbox checked={checked} onChange={handleCheckboxChange} />
         </Contents>
-      </Sections>
-      <Sections size="titleBox">
+      </Holds>
+      <Holds size="titleBox">
         <label htmlFor="comment">
           <Titles size="h4">{t("Comment")}</Titles>
         </label>
@@ -86,7 +86,7 @@ export const InjuryReportContent = ({
           />
           {error && <p className="text-red-500">{error}</p>}
         </div>
-      </Sections>
+      </Holds>
       <Buttons onClick={handleSubmit}>{t("SubmitButton")}</Buttons>
     </>
   );

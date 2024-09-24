@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import LocaleToggleSwitch from "@/components/(inputs)/toggleSwitch";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/Holds";
 import { Buttons } from "@/components/(reusable)/buttons";
 import SwitchWithLabel from "@/components/(inputs)/switchWithLabel";
 import { Titles } from "@/components/(reusable)/titles";
@@ -44,7 +44,7 @@ export default function Index({ data }: { data: UserSettings }) {
   return (
     <div>
       <Bases>
-        <Sections size={"titleBox"}>
+        <Holds size={"titleBox"}>
           <TitleBoxes
             title={t("Title")}
             titleImg="/Settings.svg"
@@ -52,9 +52,9 @@ export default function Index({ data }: { data: UserSettings }) {
             variant={"default"}
             size={"default"}
           />
-        </Sections>
+        </Holds>
 
-        <Sections size={"dynamic"}>
+        <Holds size={"dynamic"}>
           <Titles>{t("Notifications")}</Titles>
           <SwitchWithLabel>
             <Texts size={"left"}>{t("ApprovedRequests")}</Texts>
@@ -83,9 +83,9 @@ export default function Index({ data }: { data: UserSettings }) {
               }
             />
           </SwitchWithLabel>
-        </Sections>
+        </Holds>
 
-        <Sections size={"dynamic"}>
+        <Holds size={"dynamic"}>
           <Titles>{t("Security")}</Titles>
           <SwitchWithLabel>
             <Texts>{t("Biometrics")}</Texts>
@@ -110,7 +110,7 @@ export default function Index({ data }: { data: UserSettings }) {
               }
             />
           </SwitchWithLabel>
-        </Sections>
+        </Holds>
 
         <Buttons
           onClick={() => setIsModalOpen(true)}
@@ -122,7 +122,7 @@ export default function Index({ data }: { data: UserSettings }) {
       </Bases>
 
       <Modals isOpen={isModalOpen} handleClose={handleCancel} size="clock">
-        <Sections size={"dynamic"} className="p-4">
+        <Holds size={"dynamic"} className="p-4">
           <h2>{t("SaveChanges")}</h2>
           <Buttons onClick={handleSave} variant={"green"} size={null}>
             <Titles>{t("Yes")}</Titles>
@@ -130,7 +130,7 @@ export default function Index({ data }: { data: UserSettings }) {
           <Buttons onClick={handleCancel} variant={"red"} size={null}>
             <Titles>{t("Cancel")}</Titles>
           </Buttons>
-        </Sections>
+        </Holds>
       </Modals>
     </div>
   );
