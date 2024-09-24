@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Bases } from "@/components/(reusable)/bases";
 import { Sections } from "@/components/(reusable)/sections";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
@@ -16,41 +15,56 @@ import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 
 type EquipmentLog = {
-  eqid: string | undefined;
-  name: string | undefined;
-  start_time: Date;
-  completed: boolean | undefined;
-  filled: boolean | undefined;
-  fuelUsed: string | undefined;
-  savedDuration: string | undefined;
-  equipment_notes: string | undefined;
-  current?: number;
-  total?: number;
-  usersLogs: any;
+  userId: string | undefined;
+  formId: string | undefined;
 };
 
 export default function CombinedForm({
-  eqid,
-  name,
-  start_time,
-  completed,
-  filled,
-  fuelUsed,
-  savedDuration,
-  equipment_notes,
-  usersLogs
+  userId,
+  formId,
 }: EquipmentLog) {
   const router = useRouter();
-  const [logs, setLogs] = useState(usersLogs);
-  const [refueled, setRefueled] = useState<boolean>(filled ?? false);
-  const [fuel, setFuel] = useState<number>(fuelUsed ? Number(fuelUsed) : 0);
-  const [notes, setNotes] = useState<string>(equipment_notes || "");
-  const [characterCount, setCharacterCount] = useState<number>(40 - (equipment_notes?.length || 0));
+  const [logs, setLogs] = useState<any[]>([]);
+  const [refueled, setRefueled] = useState<boolean>(false);
+  const [fuel, setFuel] = useState<number>(0);
+  const [notes, setNotes] = useState<string>("");
+  const [characterCount, setCharacterCount] = useState<number>(40);
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
-  const end_time = new Date();
-  const duration = ((end_time.getTime() - start_time.getTime()) / (1000 * 60 * 60)).toFixed(2);
-  const [changedDuration, setChangedDuration] = useState<string | undefined>(savedDuration);
+  const [completed, setCompleted] = useState<boolean>(false); // For handling completion status
   const t = useTranslations("EquipmentContent");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`/api/getLogs/${formId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setLogs(data.usersLogs);
+          setRefueled(data.equipmentform?.refueled ?? false);
+          setFuel(data.equipmentform?.fuel_used ?? 0);
+          setNotes(data.equipmentform?.equipment_notes || "");
+          setCompleted(data.equipmentform?.completed ?? false);
+          setCharacterCount(40 - (data.equipmentform?.equipment_notes?.length || 0));
+        } else {
+          console.error("Failed to fetch logs");
+        }
+      } catch (error) {
+        console.error("Error fetching logs:", error);
+      }
+    };
+
+    fetchData();
+  }, [formId]); // Fetch data when formId changes
+
+  const handleSaveClick = async (e: React.FormEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    // Form data handling and saving
+  };
+
+  const handleEditClick = () => {
+    setIsEditMode(true);
+  };
+
 
   useEffect(() => {
     console.log('Completed:', completed);
@@ -97,7 +111,7 @@ export default function CombinedForm({
     formData.append('end_time', end_time.toString());
     formData.append('id', eqid ?? "");
     formData.append('completed', "true");
-    if (changedDuration !== undefined) {
+    if (setChangedDuration !== undefined) {
       formData.append('duration', changedDuration);
     }
     formData.append('refueled', refueled.toString());
@@ -127,7 +141,7 @@ export default function CombinedForm({
   const confirmation = async (e: React.FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append('end_time', end_time.toString());
+    formData.append('endTime', endTime.toString());
     formData.append('id', eqid ?? "");
     formData.append('completed', "true");
     formData.append('duration', duration);
@@ -143,7 +157,7 @@ export default function CombinedForm({
   };
 
   return (
-    <Bases>
+    <>
       {completed ? (
         <Banners variant={"green"}>
           {t("Banner")}
@@ -263,6 +277,6 @@ export default function CombinedForm({
           {t("Delete")}
         </Buttons>
       </Forms>
-    </Bases>
+    </>
   );
 }
