@@ -5,12 +5,13 @@ import { CreateInjuryForm } from "@/actions/injuryReportActions";
 import { useTranslations } from "next-intl";
 
 type FormProps = {
-  employeeId: string;
+  userId: string;
   onFormSubmit: (date: string) => void;
   checked: boolean; // Add checked prop
+  signature: string | null;
 }
 
-export const Form = ({ employeeId, onFormSubmit, checked }: FormProps) => {
+export const Form = ({ userId, onFormSubmit, checked, signature }: FormProps) => {
   const ref = useRef<HTMLFormElement>(null);
   const t = useTranslations("clock-out");
 
@@ -21,15 +22,20 @@ export const Form = ({ employeeId, onFormSubmit, checked }: FormProps) => {
   return (
     <form action={CreateInjuryForm}>
       {/* Hidden inputs */}
-      <input type="hidden" name="user_id" value={employeeId} />
-      <input type="hidden" name="submit_date" value={new Date().toString()} />
       <input type="hidden" name="date" value={new Date().toString()} />
       <input
-        type="hidden"
-        name="contacted_supervisor"
+        type="checkbox"
+        name="contactedSupervisor"
         value={checked ? "true" : "false"}
       />
-      <input type="hidden" name="incident_description" value={""} />
+      <input type="text" name="incidentDescription" value={""} />
+      <input type="hidden" name="signature" value={signature ?? ""} />
+      <input
+        type="checkbox"
+        name="verifyFormSignature"
+        value={checked ? "true" : "false"}
+      />
+      <input type="hidden" name="Id" value={userId} />
       <button
         type="submit"
         className="bg-app-blue w-1/2 h-1/6 py-4 px-5 rounded-lg text-black font-bold mt-5"

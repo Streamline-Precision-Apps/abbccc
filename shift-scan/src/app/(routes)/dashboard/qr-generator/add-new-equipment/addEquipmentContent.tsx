@@ -1,7 +1,7 @@
 "use client";
 import "@/app/globals.css";
 import { useState } from "react";
-import { Holds } from "@/components/(reusable)/Holds";
+import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import AddEquipmentForm from "./addEquipmentForm";
 import EquipmentPicture from "../../../../../components/(camera)/camera";

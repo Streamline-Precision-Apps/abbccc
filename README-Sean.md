@@ -241,3 +241,36 @@ I finished some more prisma DB research and Created the clock out dashboard page
 - Code review- Work on Prisma Schema names and table contents.
 - Worked on team manager section.
 - Organized types section.
+
+## 9/16/2024
+
+- code reveiew- fix errors cause by prisma schema update. (There was a lot of them.)
+
+## 9/17/2024
+
+- code reveiew- fix errors cause by prisma schema update. (There was a lot of them.)
+- Work on injury report section.
+
+## 9/18/2024
+
+- Work on debugging clockin.
+- research fetching data client side.
+
+## 9/19/2024
+
+- Fixed Clockout bugs
+- Fixed injury report
+- Finished add timesheet for admin.
+
+## 9/20/2024
+
+- Worked on team manager section for admin.
+
+## 9/23/2024
+
+- Adapted my team to meet devuns request for search bar changes.
+- Server actions fix for db changes.
+
+## 9/24/2024
+
+- server actions fix for db changes.

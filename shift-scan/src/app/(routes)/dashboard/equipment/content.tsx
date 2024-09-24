@@ -3,7 +3,7 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Submit } from "@/actions/equipmentActions";
 import { useTranslations } from "next-intl";
 import { Bases } from "@/components/(reusable)/bases";
-import { Holds } from "@/components/(reusable)/Holds";
+import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Texts } from "@/components/(reusable)/texts";
 import { Inputs } from "@/components/(reusable)/inputs";

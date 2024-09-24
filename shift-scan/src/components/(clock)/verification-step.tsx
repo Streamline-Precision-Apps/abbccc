@@ -16,20 +16,25 @@ import { Inputs } from '../(reusable)/inputs';
 import { Forms } from '../(reusable)/forms';
 import { Images } from '../(reusable)/images';
 import { Texts } from '../(reusable)/texts';
+import { useSession } from 'next-auth/react';
 
 type VerifyProcessProps = {
-  id: string | undefined;
   handleNextStep: () => void;
   type: string;
   option?: string;
 }
 
-export default function VerificationStep({ id, type, handleNextStep, option} : VerifyProcessProps) {
+export default function VerificationStep({ type, handleNextStep, option} : VerifyProcessProps) {
   const t = useTranslations("Clock");
   const { scanResult } = useScanData();
   const { savedCostCode } = useSavedCostCode();
   const { savedTimeSheetData, setTimeSheetData } = useTimeSheetData();
   const [date] = useState(new Date());
+  const { data: session } = useSession();
+  if (!session) {
+    return null;
+  }
+  const { id } = session.user;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
@@ -48,20 +53,20 @@ export default function VerificationStep({ id, type, handleNextStep, option} : V
           const t_id = JSON.parse(localeValue || "{}").id;
           const formData2 = new FormData();
           formData2.append("id", t_id?.toString() || "");
-          formData2.append("end_time", new Date().toISOString());
-          formData2.append("timesheet_comments", "");
-          formData2.append("app_comment", "Switched jobs");
+          formData2.append("endTime", new Date().toISOString());
+          formData2.append("timesheetComments", "");
+          formData2.append("appComment", "Switched jobs");
 
           await updateTimeSheetBySwitch(formData2);
 
           const formData = new FormData();
-          formData.append("submit_date", new Date().toISOString());
-          formData.append("user_id", id?.toString() || "");
+          formData.append("submitDate", new Date().toISOString());
+          formData.append("userId", id?.toString() || "");
           formData.append("date", new Date().toISOString());
-          formData.append("jobsite_id", scanResult?.data || "");
+          formData.append("jobsiteId", scanResult?.data || "");
           formData.append("costcode", savedCostCode?.toString() || "");
-          formData.append("start_time", new Date().toISOString());
-          formData.append("end_time", "");
+          formData.append("startTime", new Date().toISOString());
+          formData.append("endTime", "");
 
         const response = await CreateTimeSheet(formData);
         const result = { id: (response.id).toString() };
@@ -74,12 +79,12 @@ export default function VerificationStep({ id, type, handleNextStep, option} : V
       }
     } else {
       const formData = new FormData();
-      formData.append('submit_date', new Date().toISOString());
-      formData.append('user_id', id?.toString() || '');
+      formData.append('submitDate', new Date().toISOString());
+      formData.append('userId', id.toString());
       formData.append('date', new Date().toISOString());
-      formData.append('jobsite_id', scanResult?.data || '');
+      formData.append('jobsiteId', scanResult?.data || '');
       formData.append('costcode', savedCostCode?.toString() || '');
-      formData.append('start_time', new Date().toISOString());
+      formData.append('startTime', new Date().toISOString());
 
       const response = await CreateTimeSheet(formData);
       const result = { id: (response.id).toString() };
@@ -134,7 +139,7 @@ export default function VerificationStep({ id, type, handleNextStep, option} : V
               </Texts>
               <Inputs
                 state="disabled"
-                name="jobsite_id"
+                name="jobsiteId"
                 variant={"white"}
                 data={scanResult?.data || ""}
               />
@@ -170,14 +175,14 @@ export default function VerificationStep({ id, type, handleNextStep, option} : V
         </Bases> */}
         <Inputs
           type="hidden"
-          name="submit_date"
+          name="submitDate"
           value={new Date().toISOString()}
         />
-        <Inputs type="hidden" name="user_id" value={id || ""} />
+        <Inputs type="hidden" name="userId" value={id} />
         <Inputs type="hidden" name="date" value={new Date().toISOString()} />
         <Inputs
           type="hidden"
-          name="start_time"
+          name="startTime"
           value={new Date().toISOString()}
         />
       </Forms>
