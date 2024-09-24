@@ -18,12 +18,12 @@ import { Texts } from "@/components/(reusable)/texts";
 type EquipmentLog = {
   eqid: string | undefined;
   name: string | undefined;
-  start_time: Date;
+  startTime: Date;
   completed: boolean | undefined;
   filled: boolean | undefined;
   fuelUsed: string | undefined;
   savedDuration: string | undefined;
-  equipment_notes: string | undefined;
+  comment: string | undefined;
   current?: number;
   total?: number;
   usersLogs: any;
@@ -32,23 +32,23 @@ type EquipmentLog = {
 export default function CombinedForm({
   eqid,
   name,
-  start_time,
+  startTime,
   completed,
   filled,
   fuelUsed,
   savedDuration,
-  equipment_notes,
+  comment,
   usersLogs
 }: EquipmentLog) {
   const router = useRouter();
   const [logs, setLogs] = useState(usersLogs);
   const [refueled, setRefueled] = useState<boolean>(filled ?? false);
   const [fuel, setFuel] = useState<number>(fuelUsed ? Number(fuelUsed) : 0);
-  const [notes, setNotes] = useState<string>(equipment_notes || "");
-  const [characterCount, setCharacterCount] = useState<number>(40 - (equipment_notes?.length || 0));
+  const [notes, setNotes] = useState<string>(comment || "");
+  const [characterCount, setCharacterCount] = useState<number>(40 - (comment?.length || 0));
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
-  const end_time = new Date();
-  const duration = ((end_time.getTime() - start_time.getTime()) / (1000 * 60 * 60)).toFixed(2);
+  const endTime = new Date();
+  const duration = ((endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60)).toFixed(2);
   const [changedDuration, setChangedDuration] = useState<string | undefined>(savedDuration);
   const t = useTranslations("EquipmentContent");
 
@@ -64,9 +64,9 @@ export default function CombinedForm({
     if (usersLogs && usersLogs.length > 0) {
       const log = usersLogs[0]; // Ensure that usersLogs contains the expected data
       setRefueled(log.refueled);
-      setFuel(log.fuel_used ?? 0);
-      setNotes(log.equipment_notes || "");
-      console.log('Equipment Notes from Log:', log.equipment_notes); // Debug log to check the notes value
+      setFuel(log.fuelUsed ?? 0);
+      setNotes(log.comment || "");
+      console.log('Equipment Notes from Log:', log.comment); // Debug log to check the notes value
     }
   }, [completed, usersLogs]);
 
@@ -94,15 +94,15 @@ export default function CombinedForm({
   const handleSaveClick = async (e: React.FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append('end_time', end_time.toString());
+    formData.append('endTime', endTime.toString());
     formData.append('id', eqid ?? "");
     formData.append('completed', "true");
     if (changedDuration !== undefined) {
       formData.append('duration', changedDuration);
     }
     formData.append('refueled', refueled.toString());
-    formData.append('fuel_used', fuel.toString());
-    formData.append('equipment_notes', notes);
+    formData.append('fuelUsed', fuel.toString());
+    formData.append('comment', notes);
 
     try {
       await updateEmployeeEquipmentLog(formData);
@@ -127,13 +127,13 @@ export default function CombinedForm({
   const confirmation = async (e: React.FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append('end_time', end_time.toString());
+    formData.append('endTime', endTime.toString());
     formData.append('id', eqid ?? "");
     formData.append('completed', "true");
     formData.append('duration', duration);
     formData.append('refueled', refueled.toString());
-    formData.append('fuel_used', fuel.toString());
-    formData.append('equipment_notes', notes);
+    formData.append('fuelUsed', fuel.toString());
+    formData.append('comment', notes);
 
     try {
       await updateEmployeeEquipmentLog(formData);
@@ -180,14 +180,14 @@ export default function CombinedForm({
             {t("Gallons")}
             <Inputs
               type="number"
-              name="fuel_used"
+              name="fuelUsed"
               defaultValue={fuel}
               onChange={handleFuelValue}
               readOnly={!isEditMode && completed}
             />
           </Holds>
         ) : (
-          <Inputs type="hidden" name="fuel_used" value="0" />
+          <Inputs type="hidden" name="fuelUsed" value="0" />
         )}
 
         <Holds size={"dynamic"}>
@@ -203,7 +203,7 @@ export default function CombinedForm({
           <Labels variant={"default"} size={"default"} />
           {t("Notes")}
           <TextAreas
-            name="equipment_notes"
+            name="comment"
             value={notes}
             maxLength={40}
             onChange={handleNotesChange}
@@ -221,7 +221,7 @@ export default function CombinedForm({
           </Texts>
         </Holds>
 
-        <Inputs type="hidden" name="end_time" value={end_time.toString()} />
+        <Inputs type="hidden" name="endTime" value={endTime.toString()} />
         <Inputs type="hidden" name="id" value={eqid} />
         <Inputs type="hidden" name="completed" value="true" />
 

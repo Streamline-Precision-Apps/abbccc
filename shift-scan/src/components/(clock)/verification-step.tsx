@@ -50,9 +50,9 @@ export default function VerificationStep({ type, handleNextStep, option} : Verif
           console.log("entered switch jobs:");
 
           const localeValue = localStorage.getItem("savedtimeSheetData");
-          const t_id = JSON.parse(localeValue || "{}").id;
+          const tId = JSON.parse(localeValue || "{}").id;
           const formData2 = new FormData();
-          formData2.append("id", t_id?.toString() || "");
+          formData2.append("id", tId?.toString() || "");
           formData2.append("endTime", new Date().toISOString());
           formData2.append("timesheetComments", "");
           formData2.append("appComment", "Switched jobs");

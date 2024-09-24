@@ -74,8 +74,8 @@ function handleRoute() {
           {t("Name")}
           </Labels> 
         <Inputs
-          id="jobsite_name"
-          name="jobsite_name"
+          id="name"
+          name="name"
           type="text"
         
         />
@@ -85,8 +85,8 @@ function handleRoute() {
           </Labels> 
         <Inputs
           variant={"default"}
-          id="street_number"
-          name="street_number"
+          id="streetNumber"
+          name="streetNumber"
         />
       
       
@@ -95,8 +95,8 @@ function handleRoute() {
           </Labels> 
           <Inputs
           variant={"default"}
-          id="street_name"
-          name="street_name"
+          id="streetName"
+          name="streetName"
         
         />
       
@@ -139,8 +139,8 @@ function handleRoute() {
         </Labels>
         <TextAreas
           variant={"default"}
-          id="jobsite_description"
-          name="jobsite_description"
+          id="description"
+          name="description"
           placeholder="Provide a description of the jobsite and the purpose for adding it."
         />
       
@@ -149,8 +149,8 @@ function handleRoute() {
           {t("Comments")}
         </Labels>
           <TextAreas
-          id="jobsite_comments"
-          name="jobsite_comments"
+          id="comment"
+          name="comment"
         
         />
       

@@ -75,7 +75,7 @@ export type SearchUser = {
   };
   
   export type PayPeriodTimesheets = {
-    start_time: Date; // Correct field name
+    startTime: Date; // Correct field name
     duration: number | null;
   };
 
@@ -131,7 +131,7 @@ export type sentContent = {
   
   
   export type TimeSheets = {
-      start_time: Date;
+      startTime: Date;
       duration: number | null;
   };
 

@@ -408,7 +408,7 @@ async function handleEditForm(id: string, TagsId: string) {
             <Contents variant={"rowCenter"} key={index}>
             <Selects
                 variant="default"
-                name={`type_${index}`}
+                name={`type${index}`}
                 value={selection.type}
                 onChange={(e) => handleSelectChange(index, e.target.value)}
                 required
@@ -463,7 +463,7 @@ async function handleEditForm(id: string, TagsId: string) {
             <Contents variant={"rowCenter"} key={index}>
             <Selects
                 variant="default"
-                name={`type_${index}`}
+                name={`type${index}`}
                 value={selection.type}
                 onChange={(e) => handleSelectChange(index, e.target.value)}
                 required

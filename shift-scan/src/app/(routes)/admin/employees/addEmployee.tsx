@@ -83,8 +83,8 @@ return (
         {t("TruckView")}
       </Labels>
       <Selects
-        id="truck_view"
-        name="truck_view"
+        id="truckView"
+        name="truckView"
         onChange={handleChange}
         
       >
@@ -98,8 +98,8 @@ return (
         {t("TascoView")}
       </Labels>
       <Selects
-        id="tasco_view"
-        name="tasco_view"
+        id="tascoView"
+        name="tascoView"
         onChange={handleChange}
         
       >
@@ -113,8 +113,8 @@ return (
         {t("LaborView")}
       </Labels>
       <Selects
-        id="labor_view"
-        name="labor_view"
+        id="laborView"
+        name="laborView"
         onChange={handleChange}
         
       >
@@ -128,8 +128,8 @@ return (
         {t("MechanicView")}
       </Labels>
       <Selects
-        id="mechanic_view"
-        name="mechanic_view"
+        id="mechanicView"
+        name="mechanicView"
         onChange={handleChange}
         
       >

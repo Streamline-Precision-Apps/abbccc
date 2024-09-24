@@ -31,7 +31,7 @@ type Props = {
 export default function Content({ params, sentContent, session } : Props) {
     const t = useTranslations("Hamburger");
     const router = useRouter();
-    const user_Id = session?.user.id;
+    const userId = session?.user.id;
 
 
     const [initialContent, setInitialContent] = useState<sentContent[]>(sentContent);
@@ -88,7 +88,7 @@ export default function Content({ params, sentContent, session } : Props) {
             <Inputs type="hidden" name="id" value={item.id} disabled/>
             <Inputs type="hidden" name="status" value={item.status} disabled/>
             <Inputs type="hidden" name="date" value={item.date.toString()} disabled/>
-            <Inputs type="hidden" name="employee_id" value={item.employeeId} disabled/>
+            <Inputs type="hidden" name="employeeId" value={item.employeeId} disabled/>
             <Labels> Start Date
             <Inputs
             type="date"
