@@ -5,7 +5,7 @@ import { Images } from "@/components/(reusable)/images";
 import { useTranslations } from "next-intl";
 import React from "react";
 import { useState, useEffect} from "react";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/holds";
 import { Contents } from "@/components/(reusable)/contents";
 import { Selects } from "@/components/(reusable)/selects";
 import { Inputs } from "@/components/(reusable)/inputs";
@@ -220,17 +220,15 @@ const EditWork = ({
   }, [edit]);
 
   return (
-    <Contents variant={"default"} size={"default"}>
-      <Sections size={"dynamic"}>
-        <Contents variant={"rowCenter"} size={"default"}>
+    <Contents>
+      <Holds>
+        <Holds>
           {timesheetData.length === 0 ? null : (
             <>
               <Buttons onClick={editHandler} className={edit ? "bg-app-red" : "bg-app-orange"}>
                 <Images
                   titleImg={edit ? "/new/undo-edit.svg" : "/new/edit-form.svg"}
                   titleImgAlt={edit ? "Undo Edit" : "Edit Form"}
-                  variant={"icon"}
-                  size={"backButton"}
                   className="p-2"
                 />
               </Buttons>
@@ -239,14 +237,12 @@ const EditWork = ({
                   <Images
                     titleImg={"/new/save-edit.svg"}
                     titleImgAlt={"Save Changes"}
-                    variant={"icon"}
-                    size={"backButton"}
                   />
                 </Buttons>
               ) : null}
             </>
           )}
-        </Contents>
+        </Holds>
         {message ? (
           <>
             <Texts>{message}</Texts>
@@ -254,7 +250,7 @@ const EditWork = ({
         ) : (
           <ul>
             <br />
-            <Titles size={"default"} variant={"default"}>
+            <Titles>
               {t("Timesheets")}
             </Titles>
             <br />
@@ -263,7 +259,7 @@ const EditWork = ({
             {timesheets.map((timesheet) => (
               <li key={timesheet.id}>
                 <>
-                  <Titles size={"default"} variant={"default"}>
+                  <Titles>
                     {new Date(timesheet.submitDate ?? "").toLocaleDateString()}
                   </Titles>
                   <Inputs
@@ -275,11 +271,10 @@ const EditWork = ({
                   />
                 </>
                 <>
-                  <Labels size={"default"} variant={"default"}>
+                  <Labels>
                     {t("Duration")} {edit ? <span>{t("Duration-Comment")}</span> : null}
                   </Labels>
                   <Inputs
-                    variant={"default"}
                     id="duration"
                     type="text"
                     value={timesheet.duration ? timesheet.duration.toString() : ""}
@@ -288,7 +283,7 @@ const EditWork = ({
                   />
                 </>
                 <>
-                  <Labels size={"default"} variant={"default"}>
+                  <Labels>
                     {t("ClockIn")}
                     <>
                       <Inputs
@@ -309,7 +304,7 @@ const EditWork = ({
                       />
                     </>
                   </Labels>
-                  <Labels size={"default"} variant={"default"}>
+                  <Labels>
                     {t("ClockOut")}
                     <>
                       <Inputs
@@ -332,7 +327,7 @@ const EditWork = ({
                   </Labels>
                 </>
                 <>
-                  <Labels size={"default"} variant={"default"}>
+                  <Labels >
                     {t("JobSites")}
                   </Labels>
                   <Selects
@@ -348,7 +343,7 @@ const EditWork = ({
                       </option>
                     ))}
                   </Selects>
-                  <Labels size={"default"} variant={"default"}>
+                  <Labels >
                     {t("CostCode")}
                   </Labels>
                   <Selects
@@ -372,9 +367,9 @@ const EditWork = ({
             ))}
           </ul>
         )}
-      </Sections>
-      <Sections size={"dynamic"}>
-        <Titles size={"default"} variant={"default"}>
+      </Holds>
+      <Holds>
+        <Titles >
           {t("EquipmentLogs")}
         </Titles>
         <ul>
@@ -392,7 +387,7 @@ const EditWork = ({
                   </option>
                 ))}
               </Selects>
-              <Labels size={"default"} variant={"default"}>
+              <Labels >
                 {t("Duration")}
               </Labels>
               <Inputs
@@ -409,12 +404,12 @@ const EditWork = ({
           <div className="border border-black"></div>
           <br />
           {equipmentLogs.length === 0 && (
-            <Texts size={"default"} variant={"default"}>
+            <Texts >
               {t("NoEquipmentLogs")}
             </Texts>
           )}
         </ul>
-      </Sections>
+      </Holds>
     </Contents>
   );
 };

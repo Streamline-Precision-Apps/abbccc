@@ -37,20 +37,26 @@ export default function ViewComponent({ scrollLeft, scrollRight, returnToMain, c
     return (
 
         <>
-        <Holds variant={"row"} className="w-full bg-app-dark-blue rounded-2xl relative shadow-[8px_8px_0px_grey]">
-                <Buttons variant={"lightBlue"} position={"center"} className=" shadow-none" onClick={scrollLeft} >
-                    <Images titleImg={"/new/backArrow.svg"} titleImgAlt="left" variant={"icon"}  size={"fill"} className="mx-auto" />
-                    </Buttons>
-                    <Holds variant={"col"} className="w-full" >
-                        <Buttons variant={"red"} size={"half"} onClick={returnToMain}>
-                        <Images titleImg={"/new/turnBack.svg"} titleImgAlt="return" variant={"icon"} size={"fill"} className="mx-auto" />
+        <Holds position={"row"} className="w-full bg-app-dark-blue rounded-2xl relative shadow-[8px_8px_0px_grey]">
+            <Holds size={"20"} >
+                <Buttons background={"lightBlue"} position={"left"} className=" shadow-none" onClick={scrollLeft} >
+                    <Images titleImg={"/backArrow.svg"} titleImgAlt="left" size={"70"} className="mx-auto" />
+                </Buttons>
+            </Holds>
+                    <Holds size={"60"} >
+                    <Holds size={"40"} >
+                        <Buttons background={"red"} size={"70"} onClick={returnToMain}>
+                        <Images titleImg={"/turnBack.svg"} titleImgAlt="return" size={"full"} className="mx-auto" />
                         </Buttons>
-                        <Texts variant={"totalHours"} size={"p3"} className="pt-4 px-0">{Weekday}</Texts>
-                        <Texts variant={"totalHours"} size={"p4"}>{dateToday}</Texts>
+                        </Holds>
+                        <Texts text={"white"} size={"p3"} className="pt-4 px-0">{Weekday}</Texts>
+                        <Texts text={"white"} size={"p4"}>{dateToday}</Texts>
                     </Holds>
-            <Buttons variant={"lightBlue"} position={"center"} className="shadow-none" onClick={scrollRight}  >
-                <Images titleImg={"/new/forwardArrow.svg"} titleImgAlt="right" variant={"icon"} size={"fill"} className="mx-auto" />
+                    <Holds size={"20"} >
+                <Buttons background={"lightBlue"} position={"center"} className="shadow-none" onClick={scrollRight}  >
+                <Images titleImg={"/forwardArrow.svg"} titleImgAlt="right" size={"70"} className="mx-auto" />
             </Buttons>
+            </Holds>
         </Holds>
         </>
     );

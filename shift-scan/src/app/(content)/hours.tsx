@@ -4,38 +4,45 @@ import ViewHoursComponent from "@/app/(content)/hoursControl";
 import { usePayPeriodHours } from "../context/PayPeriodHoursContext";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
-import { Content } from "next/font/google";
 import { Contents } from "@/components/(reusable)/contents";
 import { Texts } from "@/components/(reusable)/texts";
 import { Holds } from "@/components/(reusable)/holds";
+import Spinner from "@/components/(animations)/spinner";
 
 // Assuming User has at least these fields, adjust accordingly
 
 type HoursProps = {
   display: boolean;
   setToggle: (toggle: boolean) => void;
+  loading: boolean;
 }
 
-export default function Hours({ setToggle, display }: HoursProps) {
+export default function Hours({ setToggle, display, loading }: HoursProps) {
   const t = useTranslations("Home");
   const { payPeriodHours } = usePayPeriodHours();
 
   const handler = () => {
     setToggle(!display);
   };
-
-  return display ? (
-      <Buttons onClick={handler} variant={"darkBlue"} size={"fill"}>
-        <Texts variant={"totalHours"} size={"p0"}>
+  if (loading) return (
+    <Buttons onClick={handler} background={"darkBlue"} size={"full"}>
+        <Texts size={"p1"}>
           {t("PayPeriodHours")}
         </Texts>
-        <Contents variant={"white"} size={"hoursBtn"}>
-          <Texts variant={"default"} size={"p0"}>
+        <Spinner />
+    </Buttons>
+  )
+
+  return display ? (  
+      <Buttons onClick={handler} background={"darkBlue"} size={"full"}>
+        <Texts size={"p1"}>
+          {t("PayPeriodHours")}
+        </Texts>
+          <Texts size={"p1"}>
             {payPeriodHours}
           </Texts>
-        </Contents>
       </Buttons>
   ) : (
-      <ViewHoursComponent toggle={setToggle} />
+    <ViewHoursComponent toggle={setToggle} />
   );
 }

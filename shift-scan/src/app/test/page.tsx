@@ -3,15 +3,12 @@ import { cookies } from "next/headers";
 import { auth } from "@/auth";
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
-import { Sections } from "@/components/(reusable)/sections";
-import { Headers } from "@/components/(reusable)/headers";
 import { Holds } from "@/components/(reusable)/holds";
 import { Banners } from "@/components/(reusable)/banners";
 import { Titles } from "@/components/(reusable)/titles";
 import { Texts } from "@/components/(reusable)/texts";
 import Capitalize from "@/utils/captitalize";
 import {getTranslations} from "next-intl/server"; 
-import NameContainer from "../(content)/nameContainer";
 import { Buttons } from "@/components/(reusable)/buttons";
 import WidgetSection from "../(content)/widgetSection";
 
@@ -43,25 +40,20 @@ export default async function Test() {
 
   // Pass the fetched data to the client-side Content component
   return (
-    <Bases variant={"default"}>
-      <Contents variant={"default"} size={"test"}>
-      <Sections size={"default"}>
+    <Bases >
+      <Contents >
+      
       <Holds>
-      <Contents variant={"header"} size={null}>
-            <Headers variant={"relative"} size={"default"}></Headers>
-      </Contents>
-      <Banners variant={"default"}>
-            <Titles variant={"default"} size={"h1"}>
+      <Banners >
+            <Titles size={"p1"}>
               {t("Banner")}
             </Titles>
-            <Texts variant={"default"} size={"p1"}>
+            <Texts size={"p1"}>
               {t("Date", { date: Capitalize(date) })}
             </Texts>
           </Banners>
-          <NameContainer firstName={user.firstName} lastName={user.firstName}/>
           <WidgetSection session={session}/> 
       </Holds>
-        </Sections>
       </Contents>
     </Bases>
   );

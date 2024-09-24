@@ -20,6 +20,7 @@ type props = {
     session: Session;
 }
 export default function WidgetSection( {session} : props) {
+const [loading, setLoading] = useState(true);
 const router = useRouter();
 const t = useTranslations("ManagerButtons");
 const f = useTranslations("Home");
@@ -45,6 +46,7 @@ const { jobsiteResults, setJobsiteResults } = useDBJobsite();
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         const [jobsiteResponse, recentJobsiteResponse, costcodeResponse, recentCostcodeResponse, equipmentResponse, recentEquipmentResponse] = await Promise.all([
           fetch("/api/getJobsites"),
@@ -74,6 +76,9 @@ const { jobsiteResults, setJobsiteResults } = useDBJobsite();
 
       } catch (error) {
         console.error("Error fetching data:", error);
+      }
+      finally {
+        setLoading(false);
       }
     };
 
@@ -147,13 +152,13 @@ return (
       display={toggle}
 />
     ) : (
-      <Hours setToggle={handleToggle} display={toggle} />
+      <Hours setToggle={handleToggle} display={toggle} loading={loading} />
     )}
     </>
 ) :
 (
     <>
-    <Hours setToggle={handleToggle} display={toggle}  />
+    <Hours setToggle={handleToggle} display={toggle}  loading={loading}  />
 </>
 )
 }

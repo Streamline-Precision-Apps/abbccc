@@ -4,8 +4,8 @@ import Spinner from "@/components/(animations)/spinner";
 import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
+import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
-import { Sections } from "@/components/(reusable)/sections";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { useSession } from "next-auth/react";
@@ -64,7 +64,7 @@ export default function Content({ params }: { params: { id: string } }) {
   return (
     <Bases>
       <Contents>
-        <Sections size="titleBox">
+        <Holds size="titleBox">
           <TitleBoxes
             title="My Team"
             titleImg="/new/team.svg"
@@ -72,9 +72,9 @@ export default function Content({ params }: { params: { id: string } }) {
             variant="default"
             size="default"
           />
-        </Sections>
+        </Holds>
 
-        <Sections size="dynamic">
+        <Holds size="dynamic">
           {isLoading ? (
             <Contents variant="row" size="listTitle">
               <Titles size="h1"></Titles>
@@ -105,7 +105,7 @@ export default function Content({ params }: { params: { id: string } }) {
               </Buttons>
             ))
           )}
-        </Sections>
+        </Holds>
       </Contents>
     </Bases>
   );
