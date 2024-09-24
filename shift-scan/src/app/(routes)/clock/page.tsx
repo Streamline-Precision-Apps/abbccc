@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import ClockProcessor from "@/components/(clock)/clockProcess";
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/Holds";
 import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
 
@@ -80,14 +80,14 @@ const locale = lang ? lang.value : "en"; // Default to English
 return (
 <Bases>
 <Contents size={"default"} variant={"default"}>
-<Sections size={"default"}>
+<Holds size={"default"}>
 <ClockProcessor
         type={"jobsite"}
         scannerType={"jobsite"}
         locale={locale}
         returnpath="/"
         />
-</Sections>
+</Holds>
 </Contents>
 </Bases>
 )

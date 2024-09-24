@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { fetchTimesheets } from "@/actions/timeSheetActions";
 import EditWork from "./edit-work";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/Holds";
 import { Titles } from "@/components/(reusable)/titles";
 import { fetchEq } from "@/actions/equipmentActions";
 import router from "next/router";
@@ -82,7 +82,8 @@ export const EmployeeTimeSheets = ({
 
   return (
     <>
-        <Sections size={"titleBox"} className="w-[50%] self-center">
+      <Holds size={"dynamic"} variant={"default"}>
+        <Holds size={"titleBox"} variant={"default"}>
           <h1>Select Date</h1>
           <form
             ref={formRef}
@@ -98,8 +99,8 @@ export const EmployeeTimeSheets = ({
             <input type="hidden" name="id" value={employeeId} />
           </form>
           <Titles variant={"green"}>{message}</Titles>
-        </Sections>
-        <Sections className="w-[50%] self-center pt-10">
+        </Holds>
+        <Holds size={"dynamic"}>
           <Contents size={"listTitle"} variant={"default"}>
             <Tab
               onClick={() => setActiveTab(1)}
@@ -133,7 +134,8 @@ export const EmployeeTimeSheets = ({
               />
             )}
           </Contents>
-        </Sections>
+        </Holds>
+      </Holds>
     </>
   );
 };

@@ -4,7 +4,7 @@ import "@/app/globals.css";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Bases } from "@/components/(reusable)/bases";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/Holds";
 import { Titles } from "@/components/(reusable)/titles";
 import { Headers } from "@/components/(reusable)/headers";
 import { Banners } from "@/components/(reusable)/banners";
@@ -66,7 +66,7 @@ export default function AddEmployeeContent({ permission , users }: AddEmployeeCo
 
   return session ? (
     <Bases variant={"default"}>
-        <Sections
+        <Holds
         size={"titleBox"}>
             <TitleBoxes
             title="Assets"
@@ -76,8 +76,8 @@ export default function AddEmployeeContent({ permission , users }: AddEmployeeCo
             size={"default"}
             type="noIcon"
             />
-        </Sections>
-      <Sections size={"dynamic"}>
+        </Holds>
+      <Holds size={"dynamic"}>
         <Contents size={"listTitle"} variant={"default"}>
         <Tab 
         onClick={() => setActiveTab(1)}
@@ -93,7 +93,7 @@ export default function AddEmployeeContent({ permission , users }: AddEmployeeCo
             {activeTab === 2 && <UserCards users={users}/>}
         <Footers>{t("lN1")}</Footers>
         </Contents>
-      </Sections>
+      </Holds>
     </Bases>
   ) : (
     <></>

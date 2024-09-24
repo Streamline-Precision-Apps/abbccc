@@ -3,17 +3,27 @@ import { HTMLAttributes, FC } from "react";
 import { cn } from "@/components/(reusable)/utils";
 
 const BannerVariants = cva(
-  "flex flex-col items-center justify-center p-1 absolute left-0 right-0", //this applies to all variants
+  "rounded-xl p-3", //this applies to all variants
   {
     variants: {
-      variant: {
+      background: {
         default: "bg-app-blue shadow-[0px_8px_0px_grey]",
         green: "bg-green-500",
         red: "bg-red-500",
+      },
+      position: {//only position attributes
+        flex: "flex flex-col",
+        absolute: "absolute left-0 right-0",
+      },
+      size: {
+        full: "w-full",
       }
+
     },
     defaultVariants: {
-      variant: "default",
+      background: "default",
+      position: "flex",
+      size: "full",
     },
   }
 )
@@ -21,9 +31,9 @@ const BannerVariants = cva(
 interface BannerProps extends HTMLAttributes<HTMLElement>, VariantProps<typeof BannerVariants> {
 }
 
-const Banners: FC<BannerProps> = ({className, variant, ...props}) => {
+const Banners: FC<BannerProps> = ({className, background, position, size, ...props}) => {
     return (
-      <div className={cn(BannerVariants({variant, className}))} {...props}/>
+      <div className={cn(BannerVariants({background, position, size, className}))} {...props}/>
     )
 }
 
