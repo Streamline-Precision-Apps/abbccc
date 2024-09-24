@@ -5,9 +5,8 @@ import DashboardButtons from "@/components/dashboard-buttons";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Bases } from "@/components/(reusable)/bases";
-import { Holds } from "@/components/(reusable)/Holds";
+import { Holds } from "@/components/(reusable)/holds";
 import { Titles } from "@/components/(reusable)/titles";
-import { Headers } from "@/components/(reusable)/headers";
 import { Banners } from "@/components/(reusable)/banners";
 import { Texts } from "@/components/(reusable)/texts";
 import { Footers } from "@/components/(reusable)/footers";
@@ -124,9 +123,6 @@ return session ? (
 <Bases variant={"default"}>
     <Contents variant={"default"} size={"default"}>
         <Holds variant={"default"} size={"homepage"}>
-            <Contents variant={"header"} size={"test"}>
-                <Headers variant={"relative"} size={"default"}></Headers>
-            </Contents>
             <Banners variant={"default"}>
                 <Titles variant={"bannerMessage"} size={"h1"}>{t("Banner")}</Titles>
                 <Texts variant={"bannerDate"} size={"p2"}>{date}</Texts>

@@ -6,7 +6,7 @@ import { Checkbox } from "./checkBox";
 import { useRouter } from "next/navigation";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Bases } from "@/components/(reusable)/bases";
-import { Holds } from "@/components/(reusable)/Holds";
+import { Holds } from "@/components/(reusable)/holds";
 import { Contents } from "@/components/(reusable)/contents";
 import { Buttons } from "@/components/(reusable)/buttons";
 

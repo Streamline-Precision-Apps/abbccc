@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import LocaleToggleSwitch from "@/components/(inputs)/toggleSwitch";
-import { Holds } from "@/components/(reusable)/Holds";
+import { Holds } from "@/components/(reusable)/holds";
 import { Buttons } from "@/components/(reusable)/buttons";
 import SwitchWithLabel from "@/components/(inputs)/switchWithLabel";
 import { Titles } from "@/components/(reusable)/titles";
