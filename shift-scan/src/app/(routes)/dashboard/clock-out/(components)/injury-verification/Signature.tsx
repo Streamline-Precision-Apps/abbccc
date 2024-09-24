@@ -5,14 +5,14 @@ import React, { useRef, useState, useEffect } from "react";
 type SignatureProps = {
   setBase64String: (base64string: string) => void;
   base64string?: string | null;
+  handleSubmitImage: () => void;
 }
 
-export const Signature = ({ setBase64String, base64string}: SignatureProps) => {
+export const Signature = ({ setBase64String, base64string, handleSubmitImage }: SignatureProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null); // Ref for context optimization
   const [isDrawing, setIsDrawing] = useState(false);
   const [showSaveButton, setShowSaveButton] = useState(!base64string);
-  const [localBase64String, setLocalBase64String] = useState<string | null>(null);
   const t = useTranslations("");
 
   useEffect(() => {
@@ -70,8 +70,8 @@ export const Signature = ({ setBase64String, base64string}: SignatureProps) => {
     const canvas = canvasRef.current;
     if (canvas) {
       const newBase64string = canvas.toDataURL("image/png");
-      setLocalBase64String(newBase64string); // Temporarily store locally
       setBase64String(newBase64string); // Set parent base64 string
+      handleSubmitImage();
     }
   };
 

@@ -5,12 +5,11 @@ import DashboardButtons from "@/components/dashboard-buttons";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Bases } from "@/components/(reusable)/bases";
-import { Holds } from "@/components/(reusable)/Holds";
+import { Holds } from "@/components/(reusable)/holds";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
 import { Images } from "@/components/(reusable)/images";
 import { Modals } from "@/components/(reusable)/modals";
-import { Headers } from "@/components/(reusable)/headers";
 import { Banners } from "@/components/(reusable)/banners";
 import { Texts } from "@/components/(reusable)/texts";
 import { Footers } from "@/components/(reusable)/footers";
@@ -69,7 +68,6 @@ export default function AdminContent({ permission }: AdminContentProps) {
       <Contents size={"default"}>
       <Holds size={"default"}>
       <Contents size={"default"}>
-        <Headers variant={"relative"} size={"default"}></Headers>
         <Banners variant={"default"}>
           <Titles variant={"default"} size={"h1"}>
             {t("Banner")}

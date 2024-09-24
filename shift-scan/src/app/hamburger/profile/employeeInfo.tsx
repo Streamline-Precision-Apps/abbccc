@@ -1,5 +1,5 @@
 "use client";
-import { Holds } from "@/components/(reusable)/Holds";
+import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useTranslations } from "next-intl";
 import Base64Encoder from "@/components/(camera)/Base64Encoder";

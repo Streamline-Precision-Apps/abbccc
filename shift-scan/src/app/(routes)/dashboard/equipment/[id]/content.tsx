@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Bases } from "@/components/(reusable)/bases";
-import { Holds } from "@/components/(reusable)/Holds";
+import { Holds } from "@/components/(reusable)/holds";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { DeleteLogs, updateEmployeeEquipmentLog } from "@/actions/equipmentActions";

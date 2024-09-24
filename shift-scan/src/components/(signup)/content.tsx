@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Footers } from "@/components/(reusable)/footers";
-import { Holds } from "@/components/(reusable)/Holds";
+import { Holds } from "@/components/(reusable)/holds";
 import { Bases } from "@/components/(reusable)/bases";
 import { Header } from "@/components/header";
 import { Contents } from "@/components/(reusable)/contents";
