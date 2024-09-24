@@ -49,8 +49,8 @@ export default function User({
       // Perform action if there are no logs
       const formData2 = new FormData();
       const localeValue = localStorage.getItem("savedtimeSheetData");
-      const t_id = JSON.parse(localeValue || "{}").id;
-      formData2.append('id', t_id?.toString() || '');
+      const tId = JSON.parse(localeValue || "{}").id;
+      formData2.append('id', tId?.toString() || '');
       formData2.append('endTime', new Date().toISOString()); 
       formData2.append('TimeSheetComments', '');
       await updateTimeSheetBySwitch(formData2);

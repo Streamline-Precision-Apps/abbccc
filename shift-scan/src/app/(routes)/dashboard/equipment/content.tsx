@@ -14,11 +14,11 @@ type EquipmentLogs = {
     total: number;
     completed: number;
     green: number;
-    user_Id: string | undefined;
+    userId: string | undefined;
     logs: any[];
 }
 
-export default function EquipmentLogContent({ user_Id, logs, total, green }: EquipmentLogs) {
+export default function EquipmentLogContent({ userId, logs, total, green }: EquipmentLogs) {
     const t = useTranslations("EquipmentContent");
     return (
     <Bases>
@@ -30,7 +30,7 @@ export default function EquipmentLogContent({ user_Id, logs, total, green }: Equ
         {green === 0 && total !== 0 ? 
         (< Forms action={Submit}>
             <Buttons type="submit" variant={"lightBlue"} size={null}>{t("SubmitAll")}</Buttons>
-            <Inputs type="hidden" name="id" value={user_Id} />
+            <Inputs type="hidden" name="id" value={userId} />
             <Inputs type="hidden" name="submitted" value={"true"} />
         </Forms>)
         : <></>}

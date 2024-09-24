@@ -95,7 +95,7 @@ const router = useRouter();
         required
         />
         </Labels>
-        <Inputs type="hidden" name="user_id" value={session?.user?.id} />
+        <Inputs type="hidden" name="userId" value={session?.user?.id} />
         <Inputs type="hidden" name="status" value="PENDING" />
         <Inputs type="hidden" name="date" value={new Date().toISOString()} />
         {sign ? (

@@ -51,7 +51,7 @@ export default function ControlComponent({ toggle } : ControlComponentProps) {
     // Accumulate the timesheet durations into the initialized dates
     if (payPeriodTimeSheet) {
       payPeriodTimeSheet.forEach((sheet) => {
-        const dateKey = new Date(sheet.start_time).toISOString().split("T")[0];
+        const dateKey = new Date(sheet.startTime).toISOString().split("T")[0];
         if (hoursMap[dateKey] !== undefined) {
           hoursMap[dateKey] += sheet.duration ?? 0;
         }

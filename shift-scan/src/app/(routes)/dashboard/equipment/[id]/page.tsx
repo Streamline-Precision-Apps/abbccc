@@ -40,7 +40,7 @@ export default async function Page({ params }: { params: { id: string } }) {
 
     })
     // Extract values from equipment form and creates and pass individual props of items
-    const start_time = new Date(equipmentform?.start_time ?? "");
+    const startTime = new Date(equipmentform?.startTime ?? "");
     const completed = equipmentform?.completed;
     const savedDuration = equipmentform?.duration?.toFixed(2);
     const filled = equipmentform?.refueled;
@@ -51,6 +51,6 @@ export default async function Page({ params }: { params: { id: string } }) {
 
     // Log counts for debugging
         return (
-        <Content name={eqname} eqid={eqid} start_time={start_time} completed={completed} fuelUsed={fuelUsed} savedDuration={savedDuration} filled={filled} equipment_notes={equipment_notes} usersLogs={usersLogs} />
+        <Content name={eqname} eqid={eqid} startTime={startTime} completed={completed} fuelUsed={fuelUsed} savedDuration={savedDuration} filled={filled} equipment_notes={equipment_notes} usersLogs={usersLogs} />
         )
     }

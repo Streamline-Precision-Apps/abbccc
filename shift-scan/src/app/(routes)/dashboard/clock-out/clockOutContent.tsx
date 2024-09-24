@@ -266,11 +266,10 @@ export default function ClockOutContent({
         </Buttons>
         {/* Hidden inputs */}
         <Inputs type="hidden" name="id" value={savedTimeSheetData?.id || localStorageData?.timesheet} readOnly/>
-        <Inputs type="hidden" name="end_time" value={new Date().toString()} readOnly/>
-        <Inputs type="hidden" name="timesheet_comments" value={""} readOnly />
-        <Inputs type="hidden" name="app_comments" value={""} readOnly />
+        <Inputs type="hidden" name="endTime" value={new Date().toString()} readOnly/>
+        <Inputs type="hidden" name="timeSheetComments" value={""} readOnly />
         {/* uses this to verfy the person clocking out in server action */}
-        <Inputs type="hidden" name="user_id" value={ id || ""} readOnly />
+        <Inputs type="hidden" name="userId" value={ id || ""} readOnly />
         </Forms>
 
         </Contents>

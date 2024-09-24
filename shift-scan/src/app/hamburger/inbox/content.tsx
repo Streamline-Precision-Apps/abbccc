@@ -6,7 +6,7 @@ import React, { useEffect } from 'react'
 import { useState } from "react";
 import {Tab} from "@/components/(reusable)/tab";
 import {getUserSentContent } from '@/actions/inboxSentActions';
-import { Holds } from '../../../components/(reusable)/Holds';
+import { Holds } from '../../../components/(reusable)/holds';
 import { Buttons } from '../../../components/(reusable)/buttons';
 import {inboxContent} from "@/lib/types";
 import STab from './sTab';
