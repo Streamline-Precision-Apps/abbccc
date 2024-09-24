@@ -2,7 +2,7 @@
 
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
-import { Holds } from "@/components/(reusable)/Holds";
+import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import Content from "@/app/(routes)/dashboard/forms/content";
 

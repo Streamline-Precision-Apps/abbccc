@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { CSVLink } from "react-csv";
 import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
-import { Holds } from "@/components/(reusable)/Holds";
+import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Forms } from "@/components/(reusable)/forms";
 import { Labels } from "@/components/(reusable)/labels";

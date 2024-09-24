@@ -6,7 +6,7 @@ import { Signature } from "../injury-verification/Signature";
 import { CreateInjuryForm } from "@/actions/injuryReportActions";
 import { useTranslations } from "next-intl";
 import { Contents } from "@/components/(reusable)/contents";
-import { Holds } from "@/components/(reusable)/Holds";
+import { Holds } from "@/components/(reusable)/holds";
 import { Titles } from "@/components/(reusable)/titles";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { useSession } from "next-auth/react";
@@ -81,31 +81,33 @@ export const InjuryReportContent = ({
   return (
     <>
       <Holds size="titleBox">
-        <Contents variant="rowCenter">
-          <Titles size="h4">{t("ContactedSupervisor")}</Titles>
-          <Checkbox checked={checked} onChange={handleCheckboxChange} />
-        </Contents>
-        </Holds>
-        <Holds size="titleBox">
-        <label htmlFor="comment">
-          <Titles size="h4">{t("Comment")}</Titles>
+        <Titles size="h4">{t("ContactedSupervisor")}</Titles>
+        <Checkbox checked={supervisorChecked} onChange={handleSupervisorCheckboxChange} />
+      </Holds>
+
+      <Holds size="titleBox">
+        <label htmlFor="incidentDescription">
+          <Titles size="h4">{t("incidentDescription")}</Titles>
         </label>
         <textarea
           id="incidentDescription"
           value={textarea}
           onChange={handleChange}
-          required
+          placeholder="Describe the incident"
+          className="border p-2 w-full"
         />
-        <div className="flex flex-col text-center">
-          <label htmlFor="signature">{t("Signature")}</label>
-          <Signature
-            setBase64String={setBase64String}
-            base64string={base64String}
-            // handleSubmitImage={handleSubmitImage}
-          />
-          {error && <p className="text-red-500">{error}</p>}
-        </div>
-        </Holds>
+        {error && <p className="text-red-500">{error}</p>}
+      </Holds>
+
+      <Holds size="titleBox">
+        <Titles size="h4">{t("Signature")}</Titles>
+        <Signature setBase64String={setBase64String} base64string={base64String} handleSubmitImage={handleSubmitImage}/>
+      </Holds>
+      <Holds size="titleBox">
+        <Titles size="h4">{t("VerifySignatureStatement")}</Titles>
+        <Checkbox checked={signatureChecked} onChange={handleSignatureCheckboxChange} />
+      </Holds>
+
       <Buttons onClick={handleSubmit}>{t("SubmitButton")}</Buttons>
     </>
   );

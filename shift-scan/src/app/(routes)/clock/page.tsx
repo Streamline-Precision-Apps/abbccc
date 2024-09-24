@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import ClockProcessor from "@/components/(clock)/clockProcess";
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
-import { Holds } from "@/components/(reusable)/Holds";
+import { Holds } from "@/components/(reusable)/holds";
 import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
 

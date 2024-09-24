@@ -4,9 +4,8 @@ import "@/app/globals.css";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Bases } from "@/components/(reusable)/bases";
-import { Holds } from "@/components/(reusable)/Holds";
+import { Holds } from "@/components/(reusable)/holds";
 import { Titles } from "@/components/(reusable)/titles";
-import { Headers } from "@/components/(reusable)/headers";
 import { Banners } from "@/components/(reusable)/banners";
 import { Footers } from "@/components/(reusable)/footers";
 import {

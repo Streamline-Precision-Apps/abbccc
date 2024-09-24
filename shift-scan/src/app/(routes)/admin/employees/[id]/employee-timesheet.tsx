@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { fetchTimesheets } from "@/actions/timeSheetActions";
 import EditWork from "./edit-work";
-import { Holds } from "@/components/(reusable)/Holds";
+import { Holds } from "@/components/(reusable)/holds";
 import { Titles } from "@/components/(reusable)/titles";
 import { fetchEq } from "@/actions/equipmentActions";
 import router from "next/router";
