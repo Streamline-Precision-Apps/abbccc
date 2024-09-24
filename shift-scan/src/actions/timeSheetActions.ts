@@ -80,6 +80,52 @@ export async function CreateTimeSheet(formData: FormData) {
     }
 }
 
+// Create TimeSheet
+// used at each login and will retain that timesheetId until the user logs out with switch jobsite
+export async function AddWholeTimeSheet(formData: FormData) {
+    try {
+        console.log("Creating Timesheet...");
+        console.log(formData);
+
+        const parseDate = (timestamp: string) => {
+            const date = new Date(timestamp); // Directly parse the string as a date
+            if (isNaN(date.getTime())) {
+                throw new RangeError(`Invalid time value: ${timestamp}`);
+            }
+            date.setMinutes(date.getMinutes() - date.getTimezoneOffset()); // Adjust for the timezone offset
+            return date;
+        };
+
+        const newTimeSheet = await prisma.timeSheets.create({
+            data: {
+                submitDate: parseDate(formData.get("submitDate") as string).toISOString(),
+                date: parseDate(formData.get("date") as string).toISOString(),
+                jobsite: { connect: { qrId: formData.get("jobsiteId") as string } },
+                costcode: formData.get("costcode") as string,
+                vehicleId: formData.get("vehicleId") ? Number(formData.get("vehicleId")) : null,
+                startTime: parseDate(formData.get("startTime") as string).toISOString(),
+                endTime: formData.get("endTime") ? parseDate(formData.get("endTime") as string).toISOString() : null,
+                duration: formData.get("duration") ? Number(formData.get("duration")) : null,
+                startingMileage: formData.get("startingMileage") ? Number(formData.get("startingMileage")) : null,
+                endingMileage: formData.get("endingMileage") ? Number(formData.get("endingMileage")) : null,
+                leftIdaho: formData.get("leftIdaho") ? Boolean(formData.get("leftIdaho")) : null,
+                equipmentHauled: formData.get("equipmentHauled") ? (formData.get("equipmentHauled") as string) : null,
+                materialsHauled: formData.get("materialsHauled") ? (formData.get("materialsHauled") as string) : null,
+                hauledLoadsQuantity:  formData.get("hauledLoadsQuantity") ? Number(formData.get("hauledLoadsQuantity")) : null,
+                refuelingGallons:  formData.get("refuelingGallons") ? Number(formData.get("refuelingGallons")) : null,
+                timeSheetComments: formData.get("timeSheetComments") ? (formData.get("timeSheetComments") as string) : null,
+                user: { connect: { id: formData.get("userId") as string } },
+            },
+        });
+        console.log("Timesheet created successfully.");
+        return newTimeSheet;
+        
+} catch (error) {
+    console.error("Error creating timesheet:", error);
+    throw error;
+}
+}
+
 function parseUTC(dateString: any) {
     const date = new Date(dateString);
     return new Date(Date.UTC(

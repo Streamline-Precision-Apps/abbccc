@@ -15,7 +15,6 @@ import { setAuthStep } from "@/app/api/auth";
 import { Equipment } from "@/lib/types";
 type clockProcessProps = {
     scannerType: string;
-    id: string | undefined;
     type: string;
     locale: string;
     option?: string;
@@ -25,7 +24,6 @@ type clockProcessProps = {
 
 
 export default function ClockProcessor({
-id,
 type,
 scannerType,
 locale,
@@ -141,7 +139,6 @@ return (
         {step === 3 && equipment && (
         <VerificationEQStep
         type={type}
-        id={id}
         handleNextStep={handleNextStep}
         equipment={equipment}
         />

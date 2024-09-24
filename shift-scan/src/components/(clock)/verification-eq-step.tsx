@@ -15,9 +15,9 @@ import { Images } from "../(reusable)/images";
 import { Texts } from "../(reusable)/texts";
 import { TitleBoxes } from "../(reusable)/titleBoxes";
 import {Equipment} from "@/lib/types";
+import { useSession } from "next-auth/react";
 
 type VerifyProcessProps = {
-id: string | undefined;
 handleNextStep: () => void;
 type: string;
 option?: string;
@@ -25,7 +25,6 @@ equipment: Equipment[];
 }
 
 const VerificationEQStep: React.FC<VerifyProcessProps> = ({
-id,
 type,
 handleNextStep,
 option,
@@ -36,6 +35,11 @@ const t = useTranslations("Clock");
 const { scanEQResult } = useEQScanData();
 const { scanResult, setScanResult } = useScanData();
 const [selectedEquipment, setEquipment] = useState<Equipment | null>(null);
+const { data: session } = useSession();
+if (!session) {
+  return null;
+}
+const { id } = session.user;
 
 // if the jobsite is not in the case it will be stored in local storage
 if (!scanResult?.data) {

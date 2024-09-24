@@ -5,7 +5,7 @@ import { Images } from "@/components/(reusable)/images";
 import { useTranslations } from "next-intl";
 import React from "react";
 import { useState, useEffect } from "react";
-import { Holds } from "@/components/(reusable)/Holds";
+import { Holds } from "@/components/(reusable)/holds";
 import { Contents } from "@/components/(reusable)/contents";
 import { Selects } from "@/components/(reusable)/selects";
 import { Inputs } from "@/components/(reusable)/inputs";

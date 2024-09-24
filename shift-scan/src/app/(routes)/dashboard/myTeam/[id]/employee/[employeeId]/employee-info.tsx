@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
-import { Holds } from "@/components/(reusable)/Holds";
+import { Holds } from "@/components/(reusable)/holds";
 import { Contents } from "@/components/(reusable)/contents";
 import { Forms } from "@/components/(reusable)/forms";
 import { Labels } from "@/components/(reusable)/labels";

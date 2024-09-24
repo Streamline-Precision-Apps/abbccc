@@ -1,7 +1,7 @@
 "use server";
 import "@/app/globals.css";
 import { Bases } from "@/components/(reusable)/bases";
-import { Holds } from "@/components/(reusable)/Holds";
+import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import QrJobsiteContent from "./qrJobsiteContent";
 import QrEquipmentContent from "./qrEquipmentContent";

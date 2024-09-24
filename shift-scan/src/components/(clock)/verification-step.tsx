@@ -52,11 +52,13 @@ export default function VerificationStep({ type, handleNextStep, option} : Verif
           const formData2 = new FormData();
           formData2.append("id", t_id?.toString() || "");
           formData2.append("endTime", new Date().toISOString());
+          formData2.append("timesheetComments", "");
+          formData2.append("appComment", "Switched jobs");
 
           await updateTimeSheetBySwitch(formData2);
 
           const formData = new FormData();
-          formData.append("submit_date", new Date().toISOString());
+          formData.append("submitDate", new Date().toISOString());
           formData.append("userId", id?.toString() || "");
           formData.append("date", new Date().toISOString());
           formData.append("jobsiteId", scanResult?.data || "");
