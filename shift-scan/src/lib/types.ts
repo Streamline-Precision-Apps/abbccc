@@ -75,7 +75,7 @@ export type SearchUser = {
   };
   
   export type PayPeriodTimesheets = {
-    start_time: Date; // Correct field name
+    startTime: Date; // Correct field name
     duration: number | null;
   };
 
@@ -128,6 +128,12 @@ export type sentContent = {
     payPeriodSheets?: TimeSheets[];
     logs: Logs[];
   }
+  export type clockProcess = {
+    payPeriodSheets?: TimeSheets[];
+    session: any;
+    locale: string;
+    logs: Logs[];
+  }
   
   
   export type TimeSheets = {
@@ -136,6 +142,7 @@ export type sentContent = {
   };
 
   export type TimeSheet = {
+    startDate: any;
     submitDate?: Date;
     id?: number;
     userId?: string;
@@ -145,7 +152,7 @@ export type sentContent = {
     nu?: string;
     Fp?: string;
     vehicleId?: number | null;
-    startTime?: Date | string;
+    startTime?: Date | string |undefined;
     endTime?: Date | string | null;
     duration?: number | null;
     startingMileage?: number | null;

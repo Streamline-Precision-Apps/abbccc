@@ -13,18 +13,39 @@ import { Images } from "@/components/(reusable)/images";
 import { Selects } from "@/components/(reusable)/selects";
 import { Options } from "@/components/(reusable)/options";
 import { EquipmentCodes } from "@/lib/types";
+import { Holds } from "@/components/(reusable)/holds";
 
-type Props = {
-  equipment: EquipmentCodes[];
-};
 
-export default function QrEquipmentContent({ equipment }: Props) {
+export default function QrEquipmentContent() {
   const router = useRouter();
+  const [generatedList, setGeneratedList] = useState<EquipmentCodes[]>([]);
   const [selectedEquipmentName, setSelectedEquipmentName] = useState<string>("");
   const [selectedEquipment, setSelectedEquipment] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState("");
+  const [loading, setLoading] = useState(true);  // Loading state
   const t = useTranslations("qrEquipmentContent");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const equipmentResponse = await fetch("/api/getEquipment");
+
+        if (!equipmentResponse.ok) {
+          throw new Error("Failed to fetch job sites");
+        }
+
+        const equipment = await equipmentResponse.json();
+        setGeneratedList(equipment);
+        setLoading(false);  // Set loading to false after data is fetched
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setLoading(false);  // Set loading to false even if there is an error
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleGenerate = async () => {
     if (selectedEquipment) {
@@ -46,7 +67,7 @@ export default function QrEquipmentContent({ equipment }: Props) {
 
   const handleOptionSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedId = event.target.value;
-    const selectedOption = equipment.find(
+    const selectedOption = generatedList.find(
       (option) => option.qrId === selectedId
     );
 
@@ -58,33 +79,39 @@ export default function QrEquipmentContent({ equipment }: Props) {
 
   return (
     <>
-    <Contents variant={"center"} size={null}>
-    <Images titleImg="/new/equipment.svg" titleImgAlt="equipment" variant={"icon"} size={"iconMed"}/>
-      <Titles variant={"default"} size={"default"}>{t("Equipment")}</Titles>
-    </Contents>
-      <Selects value={selectedEquipment} onChange={handleOptionSelect}>
-        <Options variant={"default"} value="">
-          {t("Select")}
-        </Options>
-        {equipment.map((option) => (
-          <Options
-            variant={"default"}
-            key={option.qrId}
-            value={option.qrId}
-          >
-            {option.name}
+    {loading ? (
+        <>
+        <Selects>
+          <Options>
+            Loading Equipment codes...
           </Options>
-        ))}
+        </Selects>
+        </>
+      ) : (
+      <Selects value={selectedEquipment} onChange={handleOptionSelect}>
+      <Options variant={"default"} value="">
+            Select One
+          </Options>
+          {generatedList.map((option) => (
+            <Options
+              variant={"default"}
+              key={option.qrId}
+              value={option.qrId}
+            >
+              {option.name}
+            </Options>
+          ))}
       </Selects>
-      <Contents variant={"rowCenter"} size={"default"}>
-        <Buttons variant={"orange"} onClick={handleGenerate} size={null}>
+      )}
+      <Holds variant={"row"}>
+        <Buttons variant={"orange"} onClick={handleGenerate} size={"half"}>
           <Titles variant={"default"} size={"h1"}>{t("Generate")}</Titles>
         </Buttons>
-        <Buttons variant={"green"} onClick={handleNew} size={null
-        }>
+        <Buttons variant={"green"} onClick={handleNew} size={"half"}
+        >
           <Titles variant={"default"} size={"h1"}>{t("New")}</Titles>
         </Buttons>
-      </Contents>
+        </Holds>
       <Modals
         isOpen={isModalOpen}
         handleClose={() => setIsModalOpen(false)}
