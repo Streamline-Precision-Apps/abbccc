@@ -15,6 +15,7 @@ import { setLocale } from "@/actions/cookieActions";
 import { Forms } from "@/components/(reusable)/forms";
 import { Holds } from "@/components/(reusable)/holds";
 
+
 type props = {
     locale: string
 }
@@ -60,47 +61,66 @@ if (result?.error) {
 };
 
 return (
-<Forms onSubmit={handleSubmit}>
-    <Holds>
-        <Labels size="default" type="title">{t("Username")}</Labels>
-        <Inputs variant="default" name="username" type="text" required />
-        <Contents variant="row" size={null} >
-            <Labels size="default" type="title">{t("Password")}</Labels>
-            <Images
-                titleImg={viewSecret ? "/eye.svg" : "/eye-slash.svg"}
-                titleImgAlt="eye"
-                variant="icon"
-                size="password"
-                onClick={viewPasscode}
-            />
-        </Contents>
-        <Inputs variant="default" name="password" type={viewSecret ? "text" : "password"} required />
-    </Holds>
-    {error && <Texts variant="default" size="default">{error}</Texts>}
-    <Contents size="container">
-        <Buttons variant="link" position="right" size="half" onClick={() => router.push("/login/forgotpassword")}>
-            <Texts size={"p4"} variant={"default"}>{t("btn-forgot")}</Texts>
-        </Buttons>
+    <Contents height={"page"}>
+        <Forms onSubmit={handleSubmit} className="pt-3">
+            <Labels>{t("Username")}</Labels>
+            <Inputs variant="default" name="username" type="text" required />
+            <Holds position={"row"}>
+                <Labels>{t("Password")}</Labels>
+                <Images
+                    titleImg={viewSecret ? "/eye.svg" : "/eye-slash.svg"}
+                    titleImgAlt="eye"
+                    background="none"
+                    size="10"
+                    onClick={viewPasscode}
+                />
+            </Holds>
+            <Inputs variant="default" name="password" type={viewSecret ? "text" : "password"} required />
+            {error && <Texts>{error}</Texts>}
+            <Holds className="mb-10">
+                <Buttons background="none" position="right" onClick={() => router.push("/login/forgotpassword")}>
+                    <Texts text={"link"} size={"p5"} position={"right"}>{t("btn-forgot")}</Texts>
+                </Buttons>
+            </Holds>
+            <Holds position={"row"} className="mb-10">
+                <Holds size={"30"}>
+                    <Images 
+                    titleImg="/biometrics.svg" 
+                    titleImgAlt="biometrics" 
+                    background="none" 
+                    position="left" 
+                    size="50"/>
+                </Holds>
+                <Holds size={"70"}>
+                    <Buttons 
+                    background="green"   
+                    type="submit">
+                        {animation && 
+                        <Images 
+                        titleImg="/spinner.svg" 
+                        titleImgAlt="login" 
+                        size={"30"} 
+                        className="animate-spin"/>}
+                        {!animation &&
+                        <Titles className="p-3">{t("btn-signIn")}</Titles>}
+                    </Buttons>
+                </Holds>
+            </Holds>
+            <Holds position="row" className="mb-3">
+                <Holds size={"70"}>
+                    <Texts size="p2">{t("Spanish")}</Texts>
+                </Holds>
+                <Holds size={"30"}>
+                    <Inputs  
+                    name="locale" 
+                    type="checkbox" 
+                    value="true" 
+                    onChange={(e) => LocaleHandler(e)}
+                    className="w-10 h-10"
+                    />
+                </Holds>
+            </Holds>
+        </Forms>
     </Contents>
-    <Contents variant="row" size="container">
-    <Contents size="container">
-            <Images titleImg="/new/biometrics.svg" titleImgAlt="biometrics" variant="icon" position="left" size="half" />
-        </Contents>
-        <Contents size="container">
-            <Buttons variant="green" position="center" size="fill" type="submit" >
-            {animation && <Images titleImg="/spinner.svg" titleImgAlt="login" variant="icon" size={"password"} className="animate-spin" />}
-            {!animation &&<Titles >{t("btn-signIn")}</Titles>}
-            </Buttons>
-        </Contents>
-    </Contents>
-
-
-    <Contents variant="row" size={null}>
-    <Texts size="p1">{t("Spanish")}</Texts>
-    <Inputs variant="password" name="locale" type="checkbox" 
-        value="true" onChange={(e) => LocaleHandler(e)} 
-    />
-    </Contents>
-</Forms>
 );
 } 

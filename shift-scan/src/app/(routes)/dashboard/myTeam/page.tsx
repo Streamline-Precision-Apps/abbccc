@@ -3,7 +3,7 @@ import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Images } from "@/components/(reusable)/images";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/Holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { useSession } from "next-auth/react";
@@ -49,7 +49,7 @@ if (status === "authenticated") {
 return (
 <Bases variant="default">
     <Contents size="default">
-    <Sections size="titleBox">
+    <Holds size="titleBox">
         <TitleBoxes
         title="My Team"
         titleImg="/new/team.svg"
@@ -57,9 +57,9 @@ return (
         variant="default"
         size="default"
         />
-    </Sections>
+    </Holds>
     {isLoading ? <>
-        <Sections size="dynamic">
+        <Holds size="dynamic">
         <Buttons
             variant="lightBlue"
             size={null}
@@ -76,9 +76,9 @@ return (
             />
             </Contents>
         </Buttons>
-        </Sections>
+        </Holds>
     </> :
-    <Sections size="dynamic">
+    <Holds size="dynamic">
         {crew.map((userCrewId) => (
             <Buttons
             key={userCrewId.user.id}
@@ -105,7 +105,7 @@ return (
             </Contents>
             </Buttons>
         ))}
-        </Sections>
+        </Holds>
     }
         </Contents>
         </Bases>

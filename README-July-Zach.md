@@ -47,7 +47,7 @@
 
 7/22/24
 - Finished Modals reusable components.
-- Created Texts, Sections reusable components, cleaned out uneeded components.
+- Created Texts, Holds reusable components, cleaned out uneeded components.
 - Merg meeting.
 
 7/23/24
