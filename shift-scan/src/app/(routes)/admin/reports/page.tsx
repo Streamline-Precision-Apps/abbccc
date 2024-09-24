@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { CSVLink } from "react-csv";
 import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/Holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Forms } from "@/components/(reusable)/forms";
 import { Labels } from "@/components/(reusable)/labels";
@@ -77,7 +77,7 @@ export default function Reports() {
 
     return (
         <Bases>
-            <Sections size={"titleBox"}>
+            <Holds size={"titleBox"}>
                 <TitleBoxes
                     title={"Reports"}
                     titleImg="/forms.svg"
@@ -85,14 +85,14 @@ export default function Reports() {
                     variant={"default"}
                     size={"default"}
                 />
-            </Sections>
-            <Sections size={"titleBox"}>
+            </Holds>
+            <Holds size={"titleBox"}>
                 <Forms action={handleSubmit}>
                     <Labels variant="default" type="title">Select Report</Labels>
                 <Inputs variant="default" type="default" state="disabled" data="Payroll" />
                 </Forms>
-            </Sections>
-            <Sections size={"titleBox"}>
+            </Holds>
+            <Holds size={"titleBox"}>
                 <Forms action={handleSubmit}>
                     <Labels variant="default" type="title" >Start Date</Labels>
                     <Inputs variant="default" type="date" name="start" onChange={() => setShowPayroll(true)} />
@@ -100,8 +100,8 @@ export default function Reports() {
                     <Inputs variant="default" type="date" name="end" onChange={() => setShowPayroll(true)} />
                     {showPayroll && <Buttons variant={"green"} size={"default"}><Texts variant="default">View Payroll Report</Texts></Buttons>}
                 </Forms>
-                </Sections>
-            <Sections size={"dynamic"}>
+                </Holds>
+            <Holds size={"dynamic"}>
                 {loading ? (
                     <Texts>Loading...</Texts>  // Display a loading indicator
                 ) : timeSheets.length > 0 ? (
@@ -170,7 +170,7 @@ export default function Reports() {
                 ) : (
                     <Texts variant="default">No data available for the selected date range.</Texts>
                 )}
-                </Sections>
+                </Holds>
         </Bases>
     );
 }

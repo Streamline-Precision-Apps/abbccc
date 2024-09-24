@@ -3,7 +3,7 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Submit } from "@/actions/equipmentActions";
 import { useTranslations } from "next-intl";
 import { Bases } from "@/components/(reusable)/bases";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/Holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Texts } from "@/components/(reusable)/texts";
 import { Inputs } from "@/components/(reusable)/inputs";
@@ -23,10 +23,10 @@ export default function EquipmentLogContent({ user_Id, logs, total, green }: Equ
     return (
     <Bases>
     <Contents>
-    <Sections size={"titleBox"}>
+    <Holds size={"titleBox"}>
         <TitleBoxes title={t("Title")} titleImg="/equipment.svg" titleImgAlt="Current" variant={"default"} size={"default"} />
-    </Sections>
-    <Sections size={"default"}>
+    </Holds>
+    <Holds size={"default"}>
         {green === 0 && total !== 0 ? 
         (< Forms action={Submit}>
             <Buttons type="submit" variant={"lightBlue"} size={null}>{t("SubmitAll")}</Buttons>
@@ -40,7 +40,7 @@ export default function EquipmentLogContent({ user_Id, logs, total, green }: Equ
                 {log.Equipment?.name}
             </Buttons>
         ))}
-    </Sections>
+    </Holds>
     </Contents>
     </Bases>
     );

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Bases } from "@/components/(reusable)/bases";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/Holds";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { DeleteLogs, updateEmployeeEquipmentLog } from "@/actions/equipmentActions";
@@ -150,7 +150,7 @@ export default function CombinedForm({
         </Banners>
       ) : null}
 
-      <Sections size={"titleBox"}>
+      <Holds size={"titleBox"}>
         <TitleBoxes
           title={`${name}`}
           type="noIcon"
@@ -159,10 +159,10 @@ export default function CombinedForm({
           variant={"default"}
           size={"default"}
         />
-      </Sections>
+      </Holds>
 
       <Forms action={updateEmployeeEquipmentLog}>
-        <Sections size={"dynamic"}>
+        <Holds size={"dynamic"}>
           <Labels variant={"default"} size={"default"} />
           {t("Refueled")}
           <Inputs
@@ -172,10 +172,10 @@ export default function CombinedForm({
             onChange={handleRefueledChange}
             readOnly={!isEditMode && completed}
           />
-        </Sections>
+        </Holds>
 
         {refueled ? (
-          <Sections size={"dynamic"}>
+          <Holds size={"dynamic"}>
             <Labels variant={"default"} size={"default"} />
             {t("Gallons")}
             <Inputs
@@ -185,12 +185,12 @@ export default function CombinedForm({
               onChange={handleFuelValue}
               readOnly={!isEditMode && completed}
             />
-          </Sections>
+          </Holds>
         ) : (
           <Inputs type="hidden" name="fuel_used" value="0" />
         )}
 
-        <Sections size={"dynamic"}>
+        <Holds size={"dynamic"}>
           <Labels variant={"default"} size={"default"} />
           {t("CheckedTime")}
           <Inputs
@@ -219,7 +219,7 @@ export default function CombinedForm({
           <Texts size={"p3"} className={characterCount > 0 ? "text-green-800  text-right" : "text-red-400 text-right"}>
             {`${characterCount} Characters`}
           </Texts>
-        </Sections>
+        </Holds>
 
         <Inputs type="hidden" name="end_time" value={end_time.toString()} />
         <Inputs type="hidden" name="id" value={eqid} />

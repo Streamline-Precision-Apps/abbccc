@@ -5,6 +5,7 @@ import { motion, MotionConfig } from "framer-motion";
 import { Buttons } from '@/components/(reusable)/buttons';
 import { Images } from '@/components/(reusable)/images';
 import { useSession } from "next-auth/react"
+import { Holds } from '../(reusable)/holds';
 
 export function AnimatedHamburgerButton(){
     const [active, setActive] = useState(false);
@@ -17,74 +18,76 @@ export function AnimatedHamburgerButton(){
         <motion.button
         animate={active ? "open" : "closed"} 
         onClick={() => setActive(!active)}
-        className="relative right-0 h-20 w-20 m-2 rounded-full bg-white transition-colors"
+        className="relative m-2 mr-0 mt-1 h-20 w-20  rounded-none transition-colors"
         >
-            <motion.span
-            initial={false} 
-            animate={active ? "open" : "closed"} 
-            style={{
-                left: "50%",
-                top: "35%",
-                x: "-50%",
-                y: "-50%",
-            }}
-            className="absolute h-1 w-10 rounded-full bg-black"
-            variants={{
-                open: {
-                    rotate: [0, 0, 45],
-                    top: ["35%", "50%", "50%"],
-                },
-                closed: {
-                    rotate: [45, 0, 0],
-                    top: ["50%", "50%", "35%"],
-                },
-            }}
-            />
-            <motion.span
-            initial={false} 
-            animate={active ? "open" : "closed"} 
-            style={{
-                left: "50%",
-                top: "50%",
-                x: "-50%",
-                y: "-50%",
-            }}   
-            className="absolute h-1 w-10 rounded-full bg-black"
-            variants={{
-                open: {
-                    rotate: [0, 0, -45],
-                },
-                closed: {
-                    rotate: [-45, 0, 0],
-                },
-            }}
-            />
-            <motion.span 
-            initial={false} 
-            animate={active ? "open" : "closed"}
-            style={{
-                left: "50%",
-                bottom: "35%",
-                x: "-50%",
-                y: "50%",
-            }}             
-            className="absolute h-1 w-10 rounded-full bg-black"
-            variants={{
-                open: {
-                    rotate: [0, 0, 45],
-                    bottom: ["35%", "50%", "50%"],
-                },
-                closed: {
-                    rotate: [45, 0, 0],
-                    bottom: ["50%", "50%", "35%"],
-                },
-            }}
-            />
+            <Holds>
+                <motion.span
+                initial={false} 
+                animate={active ? "open" : "closed"} 
+                style={{
+                    left: "50%",
+                    top: "35%",
+                    x: "-50%",
+                    y: "-50%",
+                }}
+                className="absolute h-1 w-10 rounded-full bg-black"
+                variants={{
+                    open: {
+                        rotate: [0, 0, 45],
+                        top: ["35%", "50%", "50%"],
+                    },
+                    closed: {
+                        rotate: [45, 0, 0],
+                        top: ["50%", "50%", "35%"],
+                    },
+                }}
+                />
+                <motion.span
+                initial={false} 
+                animate={active ? "open" : "closed"} 
+                style={{
+                    left: "50%",
+                    top: "50%",
+                    x: "-50%",
+                    y: "-50%",
+                }}   
+                className="absolute h-1 w-10 rounded-full bg-black"
+                variants={{
+                    open: {
+                        rotate: [0, 0, -45],
+                    },
+                    closed: {
+                        rotate: [-45, 0, 0],
+                    },
+                }}
+                />
+                <motion.span 
+                initial={false} 
+                animate={active ? "open" : "closed"}
+                style={{
+                    left: "50%",
+                    bottom: "35%",
+                    x: "-50%",
+                    y: "50%",
+                }}             
+                className="absolute h-1 w-10 rounded-full bg-black"
+                variants={{
+                    open: {
+                        rotate: [0, 0, 45],
+                        bottom: ["35%", "50%", "50%"],
+                    },
+                    closed: {
+                        rotate: [45, 0, 0],
+                        bottom: ["50%", "50%", "35%"],
+                    },
+                }}
+                />
+            </Holds>
         </motion.button>
         <motion.div
         initial={false} 
         animate={active ? "open" : "closed"}
-        className='flex-row none items-center m-2 justify-between bg-white p-2 z-10 h-20 w-full'
+        className='flex-row none items-center mt-2 z-10 h-20 w-[150%]'
         variants={{
             open: {
                 opacity: [0, 0, .25, .5, 1],
@@ -113,8 +116,10 @@ export function AnimatedHamburgerButton(){
                 },
             }}
             >
-            <Buttons href="/hamburger/settings" variant={"icon"} >
-                <Images titleImg={"/new/settings-sm.svg"} titleImgAlt={"settings"} variant={"icon"} size={"icon"} />
+            <Buttons href="/hamburger/settings" background={"none"}  >
+                <Holds>
+                    <Images titleImg={"/settings-sm.svg"} titleImgAlt={"settings"} position={"right"} size={"70"} />
+                </Holds>
             </Buttons>
             </motion.div>
             <motion.div
@@ -132,8 +137,10 @@ export function AnimatedHamburgerButton(){
                 },
             }}
             >
-            <Buttons href="/hamburger/inbox" variant={"icon"} >
-                <Images titleImg={"/new/inbox-sm.svg"} titleImgAlt={"inbox"} variant={"icon"} size={"icon"} />
+            <Buttons href="/hamburger/inbox" background={"none"} >
+                <Holds>
+                    <Images titleImg={"/inbox-sm.svg"} titleImgAlt={"inbox"} position={"right"} size={"70"} />
+                </Holds>
             </Buttons>
             </motion.div>
             <motion.div
@@ -151,8 +158,10 @@ export function AnimatedHamburgerButton(){
                 },
             }}
             >
-            <Buttons href="/hamburger/profile" variant={"icon"} >
-                <Images titleImg={"/new/profile-sm.svg"} titleImgAlt={"profile"} variant={"icon"} size={"icon"} />
+            <Buttons href="/hamburger/profile" background={"none"} >
+                <Holds>
+                    <Images titleImg={"/profile-sm.svg"} titleImgAlt={"profile"} position={"right"} size={"70"} />
+                </Holds>
             </Buttons>
             </motion.div>
             <motion.div
@@ -172,8 +181,10 @@ export function AnimatedHamburgerButton(){
             >
                 {/* if role is admin or superAdmin, show admin page */}
             { (role === "ADMIN" || role === "SUPERADMIN") &&
-            <Buttons href="/admin" variant={"icon"}>
-                <Images titleImg={"/new/admin-sm.svg"} titleImgAlt={"Admin Page"} variant={"icon"} size={"icon"} />
+            <Buttons href="/admin" background={"none"}>
+                <Holds>
+                    <Images titleImg={"/admin-sm.svg"} titleImgAlt={"Admin Page"} position={"right"} size={"70"} />
+                </Holds>
             </Buttons>
             }
             </motion.div>

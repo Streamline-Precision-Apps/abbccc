@@ -9,7 +9,7 @@ import { Titles } from "@/components/(reusable)/titles";
 import { Contents } from "@/components/(reusable)/contents";
 import { Texts } from "@/components/(reusable)/texts";
 import { Images } from "@/components/(reusable)/images";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/Holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Selects } from "@/components/(reusable)/selects";
 import { Options } from "@/components/(reusable)/options";
@@ -59,7 +59,7 @@ export default function QrJobsiteContent({ jobCodes }: Props) {
   };
   return (
     <>
-      <Sections size={"titleBox"}>
+      <Holds size={"titleBox"}>
         <TitleBoxes
           title={q("Title")}
           titleImg="/new/qr.svg"
@@ -67,8 +67,8 @@ export default function QrJobsiteContent({ jobCodes }: Props) {
           variant={"default"}
           size={"default"}
         />
-      </Sections>
-      <Sections size={"half"}>
+      </Holds>
+      <Holds size={"half"}>
         <Contents variant={"center"} size={null}>
         <Images titleImg="/new/jobsite.svg" titleImgAlt="jobsite" variant={"icon"} size={"iconMed"}/>
         <Titles variant={"default"} size={"default"}>{t("Jobsite")}</Titles>
@@ -111,7 +111,7 @@ export default function QrJobsiteContent({ jobCodes }: Props) {
             </>
           )}
         </Modals>
-      </Sections>
+      </Holds>
     </>
   );
 }

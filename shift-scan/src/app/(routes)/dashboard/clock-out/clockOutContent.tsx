@@ -2,7 +2,7 @@
 import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/Holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useEffect, useState } from "react";
 import { Signature } from "./(components)/injury-verification/Signature";
@@ -159,7 +159,7 @@ export default function ClockOutContent({
     return (
       <Bases variant={"default"}>
         <Contents size={"default"}>
-          <Sections size={"default"}>
+          <Holds size={"default"}>
             <TitleBoxes
               title={t("InjuryVerification")}
               titleImg="/new/end-day.svg"
@@ -180,20 +180,20 @@ export default function ClockOutContent({
                 <Banners variant="red">{bannerMessage}</Banners>
               </div>
             )}
-            <Sections size={"titleBox"}>
+            <Holds size={"titleBox"}>
               <Titles size={"h3"}>{t("SignBelow")}</Titles>
               <Signature
                 setBase64String={setBase64String}
                 base64string={base64String}
                 handleSubmitImage={handleSubmitImage}
               />
-            </Sections>
-            <Sections size={"titleBox"}>
+            </Holds>
+            <Holds size={"titleBox"}>
               <Contents variant={"rowCenter"}>
                 <Titles size={"h4"}>{t("SignatureVerify")}</Titles>
                 <Checkbox checked={checked} onChange={handleCheckboxChange} />
               </Contents>
-            </Sections>
+            </Holds>
             {/* Button changes based on checkbox state */}
             <Buttons
               variant={checked ? "green" : "red"} // Green for Continue, Red for Report an Injury
@@ -205,7 +205,7 @@ export default function ClockOutContent({
                 {/* Button text changes */}
               </Titles>
             </Buttons>
-          </Sections>
+          </Holds>
         </Contents>
       </Bases>
     );
@@ -213,7 +213,7 @@ export default function ClockOutContent({
     return (
       <Bases variant={"default"}>
         <Contents size={"default"}>
-          <Sections size={"titleBox"}>
+          <Holds size={"titleBox"}>
             <TitleBoxes
               title={t("InjuryVerification")}
               titleImg="/new/injury.svg"
@@ -221,28 +221,15 @@ export default function ClockOutContent({
               variant={"row"}
               size={"default"}
               type="row"
-            />
-            {showBanner && (
-              <div
-                style={{
-                  position: "fixed",
-                  top: 0,
-                  width: "100%",
-                  zIndex: 1000,
-                }}
-              >
-                <Banners variant="red">{bannerMessage}</Banners>
-              </div>
-            )}
-          </Sections>
-          <Sections size={"dynamic"}>
+            />          </Holds>
+          <Holds size={"dynamic"}>
             <InjuryReportContent
               base64String={base64String}
               setBase64String={setBase64String}
               handleComplete={handleSubmit} // Ensure handleComplete does the right thing
               handleSubmitImage={handleSubmitImage}
             />
-          </Sections>
+          </Holds>
         </Contents>
       </Bases>
     );
@@ -256,15 +243,8 @@ export default function ClockOutContent({
           {bannerMessage}
         </Banners>
         <Contents>
-          <Sections size={"dynamic"}>
-            <TitleBoxes
-              title={t("Bye")}
-              titleImg={"/new/end-day.svg"}
-              titleImgAlt={""}
-              variant={"row"}
-              size={"default"}
-              type="row"
-            />
+        <Holds size={"dynamic"}>
+        <TitleBoxes title={t("Bye")} titleImg={"/new/end-day.svg"} titleImgAlt={""} variant={"row"} size={"default"} type="row" />
 
             <Contents variant={"default"}>
               <Texts>
@@ -277,40 +257,24 @@ export default function ClockOutContent({
                 {t("CostCode")} {savedCostCode || localStorageData?.costCode}
               </Texts>
 
-              <Forms onSubmit={handleSubmit}>
-                <Buttons variant={"green"}>
-                  <Clock time={time} />
-                </Buttons>
-                {/* Hidden inputs */}
-                <Inputs
-                  type="hidden"
-                  name="id"
-                  value={savedTimeSheetData?.id || localStorageData?.timesheet}
-                  readOnly
-                />
-                <Inputs
-                  type="hidden"
-                  name="end_time"
-                  value={new Date().toString()}
-                  readOnly
-                />
-                <Inputs
-                  type="hidden"
-                  name="timesheet_comments"
-                  value={""}
-                  readOnly
-                />
-                <Inputs type="hidden" name="app_comments" value={""} readOnly />
-                {/* uses this to verfy the person clocking out in server action */}
-                <Inputs
-                  type="hidden"
-                  name="user_id"
-                  value={id || ""}
-                  readOnly
-                />
-              </Forms>
-            </Contents>
-          </Sections>
+        <Forms onSubmit={handleSubmit}>
+        <Buttons
+        variant={"green"}
+        size={"widgetLg"}
+        >
+        <Clock time={time} />
+        </Buttons>
+        {/* Hidden inputs */}
+        <Inputs type="hidden" name="id" value={savedTimeSheetData?.id || localStorageData?.timesheet} readOnly/>
+        <Inputs type="hidden" name="end_time" value={new Date().toString()} readOnly/>
+        <Inputs type="hidden" name="timesheet_comments" value={""} readOnly />
+        <Inputs type="hidden" name="app_comments" value={""} readOnly />
+        {/* uses this to verfy the person clocking out in server action */}
+        <Inputs type="hidden" name="user_id" value={ id || ""} readOnly />
+        </Forms>
+
+        </Contents>
+        </Holds>
         </Contents>
       </Bases>
     );

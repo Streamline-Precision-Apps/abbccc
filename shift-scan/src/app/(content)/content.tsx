@@ -11,10 +11,11 @@ import { useRouter } from "next/navigation";
 import { Titles } from "@/components/(reusable)/titles";
 import { Banners } from "@/components/(reusable)/banners";
 import { Texts } from "@/components/(reusable)/texts";
-import { Sections } from "@/components/(reusable)/sections";
+import { Footers } from "@/components/(reusable)/footers";
 import { Bases } from "@/components/(reusable)/bases";
 import { Header } from "@/components/header";
-import { Headers } from "@/components/(reusable)/headers";
+import { Images } from "@/components/(reusable)/images";
+import { AnimatedHamburgerButton } from "@/components/(animations)/hamburgerMenu";
 import {
   useDBJobsite,
   useDBCostcode,
@@ -31,6 +32,7 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { User } from "@/lib/types";
 import Capitalize from "@/utils/captitalize";
+import { Holds } from "@/components/(reusable)/holds";
 
 export default function Content({
   session,
@@ -172,29 +174,37 @@ export default function Content({
 
   return (
     <>
-      <Bases variant={"default"}>
-        <Contents variant={"default"} size={"default"}>
-          <Sections size={"homepage"}>
-            <Contents variant={"header"} size={null}>
-              <Headers variant={"relative"} size={"default"}></Headers>
-            </Contents>
-            <Banners variant={"default"}>
-              <Titles variant={"default"} size={"h1"}>
-                {t("Banner")}
-              </Titles>
-              <Texts variant={"default"} size={"p1"}>
-                {t("Date", { date: Capitalize(date) })}
-              </Texts>
+      <Bases>
+        <Contents className="h-[90%] mt-10">
+          <Holds background={"white"} className="h-full">
+            <Holds position={"row"} className="mb-5">
+              <Holds size={"30"}>
+                <Images 
+                titleImg="/logo.svg" 
+                titleImgAlt="logo" 
+                position={"left"} 
+                background={"none"} 
+                size={"full"}/>
+              </Holds>
+              <Holds size={"70"}>
+                <AnimatedHamburgerButton/> {/* come back to this */}
+              </Holds>
+            </Holds>
+            <Holds className="mb-10">
+            <Banners position={"flex"}>
+              <Titles text={"black"} size={"p1"}>{t("Banner")}</Titles>
+              <Texts text={"black"} size={"p4"}>{t("Date", { date: Capitalize(date) })}</Texts>
             </Banners>
             {/* {toggle ? */}
-            <Contents variant={"name"} size={"nameContainer"}>
-              <Texts variant={"name"} size={"p0"}>
+            </Holds>
+            <Holds>
+              <Texts text={"black"} size={"p2"}>
                 {t("Name", {
                   firstName: Capitalize(user.firstName),
                   lastName: Capitalize(user.lastName),
                 })}
               </Texts>
-            </Contents>
+            </Holds>
             {/* : null} */}
             {/* A ternary statement to display the break time or hours
       Truth -> display break time                         */}
@@ -237,7 +247,7 @@ False -> display hours                    */
                 )}
               </>
             )}
-          </Sections>
+          </Holds>
         </Contents>
       </Bases>
     </>

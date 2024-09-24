@@ -1,7 +1,7 @@
 "use server";
 import "@/app/globals.css";
 import { Bases } from "@/components/(reusable)/bases";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/Holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import QrJobsiteContent from "./qrJobsiteContent";
 import QrEquipmentContent from "./qrEquipmentContent";
@@ -30,9 +30,9 @@ export default async function QrGeneratorDashboard() {
     <Bases>
     <Contents>
         <QrJobsiteContent  jobCodes={jobCodes} />
-      <Sections size={"half"}>
+      <Holds size={"half"}>
         <QrEquipmentContent equipment={equipment} />
-      </Sections>
+      </Holds>
     </Contents>
     </Bases>
   );
