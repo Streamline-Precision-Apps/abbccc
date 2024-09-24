@@ -5,7 +5,7 @@ import DashboardButtons from "@/components/dashboard-buttons";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Bases } from "@/components/(reusable)/bases";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/Holds";
 import { Titles } from "@/components/(reusable)/titles";
 import { Headers } from "@/components/(reusable)/headers";
 import { Banners } from "@/components/(reusable)/banners";
@@ -123,7 +123,7 @@ if (session && session.user) {
 return session ? (
 <Bases variant={"default"}>
     <Contents variant={"default"} size={"default"}>
-        <Sections variant={"default"} size={"homepage"}>
+        <Holds variant={"default"} size={"homepage"}>
             <Contents variant={"header"} size={"test"}>
                 <Headers variant={"relative"} size={"default"}></Headers>
             </Contents>
@@ -137,7 +137,7 @@ return session ? (
             <Grids variant={"widgets"} size={"default"}>
                 <DashboardButtons logs={logs} locale={locale}/>
             </Grids>
-        </Sections>
+        </Holds>
     </Contents>
 </Bases>
 ) : (

@@ -2,48 +2,41 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { ImgHTMLAttributes, FC } from "react";
 import { cn } from "@/components/(reusable)/utils";
 
+//this determines styles of all images
 const ImageVariants = cva(
-  "flex items-center justify-center", //this applies to all variants
+  "flex items-center justify-center ", //this applies to all variants
   {
     variants: {
-      variant: {
-        default: "bg-blue-500",
-        icon: "bg-none",
-        iconLeft: "absolute left-1 top-1",
-        iconRight: "absolute right-5 top-8",
-        submitCard:"absolute right-2 top-3",
-        picture: "w-full h-full mt-3",
-        editIcon: "absolute z-2 top-24 right-0 bg-app-orange justify-center px-3 py-1 items-center rounded-full",  
+      background: {//only background attributes
+        white: "bg-white rounded-2xl",
+        none: "bg-none",  
       },
-      position: {
+      position: {//only position attributes
         center: "self-center",
         left: "self-start",
         right: "self-end",
       },
-      size: {
-        half: "w-[15%]",
-        fill: "w-[50%]",
-
-        default: "self-center w-[40%] max-w-[300px] m-10",
-        widgetSm: "h-[80px] w-[80px]",
-        widgetMed: "h-[130px] w-[130px]",
-        widgetLg: "p-10 w-50 h-50",
-        titlebox: "w-36",
-        backButton: "w-15 w-15 pt-0",
-        downArrow: "w-[50px] h-[50px]",
-        iconSm : "w-[40px] h-[40px] ",
-        icon: "w-[60px] h-[60px] ",
-        iconMed: "w-[80px] h-[80px] ",
-        logo: "h-20",
-        editIcon : "w-10 h-10 pt-0 ",
-        thin: "w-20 h-10",
-        password: "w-10 h-10",
+      size: {//only width and height
+        // small: "w-[9%] sm:w-[7%] md:w-[5%] 2xl:w-[3%]", REMOVE AFTER FLUID IS IMPLEMENTED
+        // medium: "w-[35%] sm:w-[30%] md:w-[28%] lg:w-[25%] xl:w-[22%] 2xl:w-[18%]",
+        // large: "w-[40%] sm:w-[30%] md:w-[30%]",
+        // default: "w-[80%] sm:w-[75%] md:w-[70%] lg:w-[55%] xl:w-[50%] 2xl:w-[45%]",
+        full: "w-full",
+        "90": "w-[90%]",
+        "80": "w-[80%]",
+        "70": "w-[70%]",
+        "60": "w-[60%]",
+        "50": "w-[50%]",
+        "40": "w-[40%]",
+        "30": "w-[30%]",
+        "20": "w-[20%]",
+        "10": "w-[10%]",
       }
     },
     defaultVariants: {
-      variant: "default",
+      background: "none",
       position: "center",
-      size: "default",
+      size: "80",
     },
   }
 )
@@ -53,9 +46,9 @@ interface ImageProps extends ImgHTMLAttributes<HTMLImageElement>, VariantProps<t
     titleImgAlt: string;
 }
 
-const Images: FC<ImageProps> = ({className, variant,position, size, titleImg, titleImgAlt, ...props}) => {
+const Images: FC<ImageProps> = ({className, background, position, size, titleImg, titleImgAlt, ...props}) => {
     return (
-      <img src={titleImg} alt={titleImgAlt} className={cn(ImageVariants({variant,position, size, className}))} {...props}/>
+      <img src={titleImg} alt={titleImgAlt} className={cn(ImageVariants({background, position, size, className}))} {...props}/>
     )
 }
 

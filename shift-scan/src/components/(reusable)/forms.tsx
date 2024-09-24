@@ -3,21 +3,29 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { FormHTMLAttributes, FC, useRef } from "react";
 import { cn } from "@/components/(reusable)/utils";
 
+//This determines styles of all forms
 const FormVariants = cva(
-  "bg-yellow-500", //this applies to all variants
+  "", //this applies to all variants
   {
     variants: {
-      variant: {
-        default: "",
+      background: {//only background attributes
+        none: "bg-none",
+        white: "bg-white rounded-2xl border border-white border-8",
       },
-      size: {
-        default: "w-full m-5",
-        fit: "w-full h-fit pb-2 px-2",
+      position: {//only position attributes
+        center: "self-center",
+        left: "self-start",
+        right: "self-end",
+      },
+      size: {//only width and height
+        full: "w-[100%]",
+        half: "w-[50%]",
       }
     },
     defaultVariants: {
-      variant: "default",
-      size: "default",
+      background: "none",
+      position: "center",
+      size: "full",
     },
   }
 )
@@ -27,13 +35,13 @@ interface FormProps extends FormHTMLAttributes<HTMLFormElement>, VariantProps<ty
   ref?: React.RefObject<HTMLFormElement>
 }
 
-const Forms: FC<FormProps> = ({className, variant, size, state, ...props}) => {
+const Forms: FC<FormProps> = ({className ,background ,position, size, state, ...props}) => {
     const formRef = useRef<HTMLFormElement>(null);
     const handleFormChange = () => {
       formRef.current?.requestSubmit();
     };
     return (
-      <form ref={formRef} className={cn(FormVariants({variant, size, className}))} {...props}/>
+      <form ref={formRef} className={cn(FormVariants({background, position, size, className}))} {...props}/>
     )
 }
 

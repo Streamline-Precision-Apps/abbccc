@@ -1,7 +1,7 @@
 "use client";
 import "@/app/globals.css";
 import { useState } from "react";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/Holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import AddJobsiteForm from "./addJobsiteForm";
 import { Bases } from "@/components/(reusable)/bases";
@@ -25,7 +25,7 @@ export const AddJobsiteContent = () => {
   return (
     <Bases>
     <Contents>
-      <Sections size={"titleBox"}>
+      <Holds size={"titleBox"}>
         <TitleBoxes
           title={t("Title")}
           titleImg="/profile.svg"
@@ -33,15 +33,15 @@ export const AddJobsiteContent = () => {
           variant={"default"}
           size={"default"}
           />
-      </Sections>
+      </Holds>
       { banner &&
       <Contents variant="green" size={"listTitle"}>
       <Texts>{bannerText}</Texts>
     </Contents>
     }
-      <Sections size={"dynamic"}>
+      <Holds size={"dynamic"}>
         <AddJobsiteForm setBanner={setBanner} setBannerText={setBannerText} handler={()=> handleBanner} />
-      </Sections>
+      </Holds>
     </Contents>
     </Bases>
   );

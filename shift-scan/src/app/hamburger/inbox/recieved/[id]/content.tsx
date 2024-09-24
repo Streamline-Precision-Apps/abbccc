@@ -5,7 +5,7 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Forms } from "@/components/(reusable)/forms";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/Holds";
 import { Selects } from "@/components/(reusable)/selects";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
@@ -58,7 +58,7 @@ const handleManagerCommentChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
         <>
         <Bases>
         <Contents>
-        <Sections size={"titleBox"} variant={"orange"}>
+        <Holds size={"titleBox"} variant={"orange"}>
         <TitleBoxes variant={null} title="leave request" titleImg="/Inbox.svg" titleImgAlt="Inbox" type="noIcon" >
         </TitleBoxes>
         {receivedContent.map((item) => (
@@ -74,9 +74,9 @@ const handleManagerCommentChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
             </Titles>
         )
         )}
-        </Sections>
+        </Holds>
         {receivedContent.map((item) => (
-            <Sections size={"dynamic"} key={item.id}>
+            <Holds size={"dynamic"} key={item.id}>
             <Inputs type="hidden" name="date" value={item.date.toString()} disabled/>
             <Inputs type="hidden" name="employee_id" value={item.employeeId} disabled/>
             <Labels>
@@ -180,7 +180,7 @@ const handleManagerCommentChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     </Buttons>
 </Forms>
         </Contents>
-            </Sections>
+            </Holds>
         ))}
         </Contents>
         </Bases>
