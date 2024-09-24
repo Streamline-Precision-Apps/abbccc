@@ -1,7 +1,7 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { HTMLAttributes, FC } from "react";
 import { cn } from "@/components/(reusable)/utils";
-
+// add mt-24 to banner to bring it down lower
 const BannerVariants = cva(
   "rounded-xl p-3", //this applies to all variants
   {

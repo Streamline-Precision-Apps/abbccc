@@ -1,7 +1,7 @@
 // This context is used to get the data from the database and stores it in a state.
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { CostCode, JobCodes, EquipmentCodes } from '@/lib/types';
+import { CostCodes, JobCodes, EquipmentCodes } from '@/lib/types';
 
 
 type JobSiteContextType = {
@@ -27,8 +27,8 @@ return (
 export const useDBJobsite = () => useContext(JobSiteContext);
 
 type CostCodeContextType = {
-costcodeResults: CostCode[];
-setCostcodeResults: React.Dispatch<React.SetStateAction<CostCode[]>>;
+costcodeResults: CostCodes[];
+setCostcodeResults: React.Dispatch<React.SetStateAction<CostCodes[]>>;
 }
 
 const CostCodeContext = createContext<CostCodeContextType>({
@@ -37,7 +37,7 @@ setCostcodeResults: () => {},
 });
 
 export const CostCodeProvider = ({ children }: { children: ReactNode }) => {
-const [costcodeResults, setCostcodeResults] = useState<CostCode[]>([]);
+const [costcodeResults, setCostcodeResults] = useState<CostCodes[]>([]);
 
 return (
     <CostCodeContext.Provider value={{ costcodeResults, setCostcodeResults }}>
