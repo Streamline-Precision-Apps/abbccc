@@ -20,7 +20,7 @@ const SectionVariants = cva(
         half: "h-1/2 min-w-screen overflow-y-auto no-scrollbar",
         dynamic: "h-full min-w-screen  overflow-y-auto no-scrollbar",
         homepage: "h-full",
-        titleBox: "pb-0",
+        titleBox: "pb-0 w-[50%]",
       }
     },
     defaultVariants: {

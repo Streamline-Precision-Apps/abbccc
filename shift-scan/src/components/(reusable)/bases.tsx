@@ -9,7 +9,7 @@ const BaseVariants = cva(
     {
         variants: {
             variant: {
-                default: "flex content-center justify-center item", //will let data fill screen vertically
+                default: "flex flex-col content-center justify-center item", //will let data fill screen vertically
                 center: "flex content-center justify-center items-center", //will push items to center of screen
 
                 // modal: "fixed top-0 left-0 w-screen h-screen bg-neutral-800 opacity-50",

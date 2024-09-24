@@ -265,3 +265,12 @@ I finished some more prisma DB research and Created the clock out dashboard page
 ## 9/20/2024
 
 - Worked on team manager section for admin.
+
+## 9/23/2024
+
+- Adapted my team to meet devuns request for search bar changes.
+- Server actions fix for db changes.
+
+## 9/24/2024
+
+- server actions fix for db changes.

@@ -82,9 +82,7 @@ export const EmployeeTimeSheets = ({
 
   return (
     <>
-      <Bases>
-      <Sections size={"dynamic"} variant={"default"}>
-        <Sections size={"titleBox"} variant={"default"}>
+        <Sections size={"titleBox"} className="w-[50%] self-center">
           <h1>Select Date</h1>
           <form
             ref={formRef}
@@ -101,7 +99,7 @@ export const EmployeeTimeSheets = ({
           </form>
           <Titles variant={"green"}>{message}</Titles>
         </Sections>
-        <Sections size={"dynamic"}>
+        <Sections className="w-[50%] self-center pt-10">
           <Contents size={"listTitle"} variant={"default"}>
             <Tab
               onClick={() => setActiveTab(1)}
@@ -116,7 +114,7 @@ export const EmployeeTimeSheets = ({
             {activeTab === 1 && (
               <AddTimeSheet
               jobsites={jobsiteData}
-              costcodes={costcodeData}
+              equipment={equipment}
               employeeId={employeeId}
               />
             )}
@@ -136,8 +134,6 @@ export const EmployeeTimeSheets = ({
             )}
           </Contents>
         </Sections>
-      </Sections>
-      </Bases>
     </>
   );
 };
