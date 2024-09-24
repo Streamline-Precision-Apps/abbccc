@@ -15,7 +15,7 @@ const GridVariants = cva(
         default: "",
         sm: "p-2 w-30 h-30",
         med: "p-10 w-40 h-40",
-        lg: "p-10 w-50 h-50"
+        lg: "p-10 w-50 h-50",
       }
     },
     defaultVariants: {

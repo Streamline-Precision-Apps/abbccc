@@ -1,10 +1,10 @@
 {   
     "PortalLogin": {
         "Title": "El Portal de Inicio de sesión",
-        "lN1": "ID de Empleado",
-        "lN2": "Contraseña",
+        "Username": "Usuario",
+        "Password": "Contraseña",
         "btn-signIn": "Iniciar Sesion",
-        "lN3": "Speak English?",
+        "Spanish": "Speak English?",
         "btn-forgot": "olvides mi contraseña?",
         "Error": "Nombre de usuario o contraseña no válido",
         "lN4": "Copyright © 2024. Todos los derechos reservados."

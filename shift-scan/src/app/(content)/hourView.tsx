@@ -36,17 +36,16 @@ export default function ViewComponent({ scrollLeft, scrollRight, returnToMain, c
 
     return (
 
-        <>
-        <Holds position={"row"} className="w-full bg-app-dark-blue rounded-2xl relative shadow-[8px_8px_0px_grey]">
+        <Holds position={"row"} className="w-full bg-app-dark-blue rounded-2xl py-2">
             <Holds size={"20"} >
                 <Buttons background={"lightBlue"} position={"left"} className=" shadow-none" onClick={scrollLeft} >
-                    <Images titleImg={"/backArrow.svg"} titleImgAlt="left" size={"70"} className="mx-auto" />
+                    <Images titleImg={"/backArrow.svg"} titleImgAlt="left" size={"70"} className="mx-auto p-2" />
                 </Buttons>
             </Holds>
                     <Holds size={"60"} >
                     <Holds size={"40"} >
                         <Buttons background={"red"} size={"70"} onClick={returnToMain}>
-                        <Images titleImg={"/turnBack.svg"} titleImgAlt="return" size={"full"} className="mx-auto" />
+                        <Images titleImg={"/turnBack.svg"} titleImgAlt="return" size={"full"} className="mx-auto p-2" />
                         </Buttons>
                         </Holds>
                         <Texts text={"white"} size={"p3"} className="pt-4 px-0">{Weekday}</Texts>
@@ -54,10 +53,9 @@ export default function ViewComponent({ scrollLeft, scrollRight, returnToMain, c
                     </Holds>
                     <Holds size={"20"} >
                 <Buttons background={"lightBlue"} position={"center"} className="shadow-none" onClick={scrollRight}  >
-                <Images titleImg={"/forwardArrow.svg"} titleImgAlt="right" size={"70"} className="mx-auto" />
+                <Images titleImg={"/forwardArrow.svg"} titleImgAlt="right" size={"70"} className="mx-auto p-2" />
             </Buttons>
             </Holds>
         </Holds>
-        </>
     );
 };
