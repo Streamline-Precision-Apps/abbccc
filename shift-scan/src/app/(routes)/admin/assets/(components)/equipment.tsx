@@ -1,5 +1,5 @@
 "use client";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/Holds";
 import { Texts } from "@/components/(reusable)/texts";
 import { Forms } from "@/components/(reusable)/forms";
 import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";

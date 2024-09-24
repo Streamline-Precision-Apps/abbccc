@@ -5,7 +5,7 @@
   import { useTranslations } from "next-intl";
   import React from "react";
   import { useState, useEffect} from "react";
-  import { Sections } from "@/components/(reusable)/sections";
+  import { Holds } from "@/components/(reusable)/Holds";
   import { Contents } from "@/components/(reusable)/contents";
   import { Selects } from "@/components/(reusable)/selects";
   import { Inputs } from "@/components/(reusable)/inputs";
@@ -256,7 +256,7 @@
   
     return (
       <Contents variant={"default"} size={"default"}>
-        <Sections size={"dynamic"}>
+        <Holds size={"dynamic"}>
           <Contents variant={"rowCenter"} size={"default"}>
             {timesheetData.length === 0 ? null : (
               <>
@@ -407,8 +407,8 @@
               ))}
             </ul>
           )}
-        </Sections>
-        <Sections size={"dynamic"}>
+        </Holds>
+        <Holds size={"dynamic"}>
           <Titles size={"default"} variant={"default"}>
             {t("EquipmentLogs")}
           </Titles>
@@ -449,7 +449,7 @@
               </Texts>
             )}
           </ul>
-        </Sections>
+        </Holds>
       </Contents>
     );
   };

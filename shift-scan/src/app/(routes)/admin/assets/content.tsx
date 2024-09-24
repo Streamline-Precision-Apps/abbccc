@@ -2,7 +2,7 @@
 import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/Holds";
 import { Texts } from "@/components/(reusable)/texts";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Tab } from "@/components/(reusable)/tab";
@@ -29,7 +29,7 @@ export default function Content({ equipment, jobsites, costCodes }: Props) {
 
   return (
     <Bases>
-      <Sections size={"titleBox"}>
+      <Holds size={"titleBox"}>
         <TitleBoxes
           title="Assets"
           titleImg="/assets.svg"
@@ -38,7 +38,7 @@ export default function Content({ equipment, jobsites, costCodes }: Props) {
           size={"default"}
           type="noIcon"
         />
-      </Sections>
+      </Holds>
       <Contents size={null} variant={"default"}>
         {showBanner && (
           <Contents size={null}>
@@ -65,7 +65,7 @@ export default function Content({ equipment, jobsites, costCodes }: Props) {
           isTabActive={activeTab === 3}
         />
       </Contents>
-      <Sections size={"dynamic"}>
+      <Holds size={"dynamic"}>
         {activeTab === 1 && (
           <Equipment
             equipment={equipment}
@@ -88,7 +88,7 @@ export default function Content({ equipment, jobsites, costCodes }: Props) {
             setShowBanner={setShowBanner}
           />
         )}
-      </Sections>
+      </Holds>
     </Bases>
   );
 }

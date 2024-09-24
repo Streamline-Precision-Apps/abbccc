@@ -4,6 +4,7 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
 import { Contents } from "@/components/(reusable)/contents";
+import { Holds } from "@/components/(reusable)/holds";
 
 type ManagerProps = {
   show: boolean;
@@ -15,17 +16,17 @@ export default function Manager({ show } : ManagerProps) {
     <>
       {show && (
         <>
-          <Buttons href="/dashboard/qr-generator" variant={"lightBlue"} size={null}>
-            <Contents variant={"widgetButton"} size={"test"}>
-              <Images titleImg="/new/qr.svg" titleImgAlt="QR Code" variant={"icon"} size={"widgetSm"}/>
-              <Texts size={"widgetSm"}>{t("QrGenerator")}</Texts>
-            </Contents>
+          <Buttons href="/dashboard/qr-generator" background={"lightBlue"}>
+            <Holds className="my-3">
+              <Images titleImg="/qr.svg" titleImgAlt="QR Code" background={"none"} size={"70"}/>
+              <Texts size={"p4"}>{t("QrGenerator")}</Texts>
+            </Holds>
           </Buttons>
-          <Buttons href="/dashboard/myTeam" variant={"lightBlue"} size={null}>
-            <Contents variant={"widgetButton"} size={"test"}>
-              <Images titleImg="/new/team.svg" titleImgAlt="my team" variant={"icon"} size={"widgetSm"}/>
-              <Texts size={"widgetSm"}>{t("MyTeam")}</Texts>
-            </Contents>
+          <Buttons href="/dashboard/myTeam" background={"lightBlue"}>
+            <Holds className="my-3">
+              <Images titleImg="/team.svg" titleImgAlt="my team" background={"none"} size={"70"}/>
+              <Texts size={"p4"}>{t("MyTeam")}</Texts>
+            </Holds>
           </Buttons>
         </>
       )}

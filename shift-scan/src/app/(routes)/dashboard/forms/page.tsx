@@ -2,7 +2,7 @@
 
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/Holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import Content from "@/app/(routes)/dashboard/forms/content";
 
@@ -12,7 +12,7 @@ export default async function Forms() {
     return (
     <Bases>
     <Contents>
-        <Sections size={"titleBox"}>
+        <Holds size={"titleBox"}>
             <TitleBoxes
             title="Forms"
             titleImg="/new/form.svg"
@@ -20,7 +20,7 @@ export default async function Forms() {
             variant="default"
             size="default"
             />
-        </Sections>
+        </Holds>
         <Content/>
     </Contents>
     </Bases>

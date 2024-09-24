@@ -5,7 +5,7 @@ import { useSavedBreakTime } from "@/app/context/BreakTimeContext";
 import { useEffect } from "react";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Texts } from "@/components/(reusable)/texts";
-import { Contents } from "@/components/(reusable)/contents";
+import { Holds } from "@/components/(reusable)/holds";
 
 type BreakTimeProps = {
   display: boolean;
@@ -61,14 +61,14 @@ export default function DisplayBreakTime({
       <Buttons 
         onClick={handler} 
         variant={"darkBlue"} 
-        size={"fill"}
+        size={"widgetMed"}
       >
-        <Texts variant={"totalHours"} size={"p0"}>{t('Break')}</Texts>
-        <Contents variant={"white"} size={"hoursBtn"}>
-        <Texts variant={"default"} size={"p2"}>
+        <Texts variant={"white"} size={"p3"}>{t('Break')}</Texts>
+        <Holds size={"child"}>
+        <Texts variant={"white"} size={"p3"}>
           {formatTime(getBreakTime)}
         </Texts>
-        </Contents>
+        </Holds>
       </Buttons>
     </>
   ) : (

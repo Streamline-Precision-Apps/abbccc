@@ -70,7 +70,7 @@ export async function CreateTimeSheet(formData: FormData) {
                 hauledLoadsQuantity:  null,
                 refuelingGallons:  null,
                 timeSheetComments: null,
-                user: { connect: { id: formData.get("user_id") as string } },
+                user: { connect: { id: formData.get("userId") as string } },
             },
         });
         console.log("Timesheet created successfully.");

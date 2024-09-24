@@ -5,7 +5,7 @@ import DashboardButtons from "@/components/dashboard-buttons";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Bases } from "@/components/(reusable)/bases";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/Holds";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
 import { Images } from "@/components/(reusable)/images";
@@ -67,7 +67,7 @@ export default function AdminContent({ permission }: AdminContentProps) {
   return session ? (
     <Bases variant={"default"}>
       <Contents size={"default"}>
-      <Sections size={"default"}>
+      <Holds size={"default"}>
       <Contents size={"default"}>
         <Headers variant={"relative"} size={"default"}></Headers>
         <Banners variant={"default"}>
@@ -84,7 +84,7 @@ export default function AdminContent({ permission }: AdminContentProps) {
         <AdminButtons />
         <Footers>{t("lN1")}</Footers>
         </Contents>
-      </Sections>
+      </Holds>
       </Contents>
     </Bases>
   ) : (
