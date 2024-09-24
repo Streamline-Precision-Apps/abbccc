@@ -1,7 +1,11 @@
+import {nextui} from '@nextui-org/theme';
 import type { Config } from "tailwindcss";
 import fluid, { extract } from "fluid-tailwind";
 
 const config: Config = {
+  content: [
+    "./node_modules/@nextui-org/theme/dist/components/(checkbox|input).js"
+],
   content: {
     files : [
       "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -30,8 +34,6 @@ const config: Config = {
       },
     },
   },
-  plugins: [
-    fluid
-  ],
+  plugins: [fluid,nextui()],
 };
 export default config;

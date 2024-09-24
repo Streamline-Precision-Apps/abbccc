@@ -35,14 +35,15 @@ export default function Hours({ setToggle, display, loading }: HoursProps) {
 
   return display ? (  
       <Buttons onClick={handler} background={"darkBlue"} size={"full"}>
-        <Texts size={"p1"}>
+        <Texts text={"white"} size={"p1"}>
           {t("PayPeriodHours")}
         </Texts>
-          <Texts size={"p1"}>
+          <Texts text={"white"} size={"p1"}>
             {payPeriodHours}
           </Texts>
       </Buttons>
   ) : (
+    
     <ViewHoursComponent toggle={setToggle} />
-  );
+    );
 }

@@ -193,7 +193,7 @@ return (
             </Holds>
         </Buttons>
     </Grids>
-        ) : (null)
+        ) : ( null)
       }
       </Holds>
     );

@@ -131,8 +131,7 @@ export default function ControlComponent({ toggle } : ControlComponentProps) {
   };
 
   return (
-<>
-<Holds className="flex flex-col justify-start">
+<Holds size={"full"} className="gap-x-5 gap-y-5" >
         {/* Th */}
         <ViewComponent
           scrollLeft={scrollLeft}
@@ -141,7 +140,8 @@ export default function ControlComponent({ toggle } : ControlComponentProps) {
           currentDate={currentDate}
           />
         {/* This is the start of the bar chart componnet and the previous day */}
-          <Holds className="flex justify-center rounded-2xl shadow-[8px_8px_0px_grey] p-2 border-4 border-black w-full h-fit bg-white mt-4">
+        
+          <Holds className="flex justify-center rounded-2xl shadow-[8px_8px_0px_grey] border-4 border-black w-full bg-white mt-4">
           {/* Contexts gives base styles for background app-dark-blue bars */}
           <Holds className="flex flex-row justify-center ">
           <Holds size={"30"} className="bg-app-dark-blue h-[300px] mx-auto rounded-t-2xl  pt-3 pb-3 px-2 flex flex-col justify-end">
@@ -152,8 +152,8 @@ export default function ControlComponent({ toggle } : ControlComponentProps) {
     */}
             <Holds
              
-              /*
-              1. ternary is used for height evavulation based on the value, it uses caluclate bar to get it in px 
+             /*
+             1. ternary is used for height evavulation based on the value, it uses caluclate bar to get it in px 
               2. ternary is used for color evavulation based on the value, it uses caluclate bar to get it in px
               3. ternary is used to show blank non working days as a clear background rather then show any status
               */
@@ -226,7 +226,6 @@ export default function ControlComponent({ toggle } : ControlComponentProps) {
           </Holds>
           </Holds>
         </Holds>
-        </>
   );
 };
 

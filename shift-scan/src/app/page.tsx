@@ -64,7 +64,7 @@ export default async function Home() {
               <Texts text={"black"} size={"p4"}>{t("Date", { date: Capitalize(date) })}</Texts>
             </Banners>
               </Holds>
-              <Holds>
+              <Holds size={"full"}>
               <Texts text={"black"} size={"p2"}>
                 {t("Name", {
                   firstName: Capitalize(user.firstName),
@@ -72,7 +72,7 @@ export default async function Home() {
                 })}
               </Texts>
                 </Holds>
-          <WidgetSection session={session}/> 
+                  <WidgetSection session={session}/> 
       </Holds>
       </Contents>
     </Bases>
