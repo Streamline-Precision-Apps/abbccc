@@ -5,7 +5,7 @@ import { Forms } from "@/components/(reusable)/forms";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
 import { Options } from "@/components/(reusable)/options";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/Holds";
 import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
 import { useTranslations } from "next-intl";
@@ -13,7 +13,7 @@ import { useTranslations } from "next-intl";
 export default function Content() {
     const t = useTranslations("dashboard");
     return (
-        <Sections size={"default"}>
+        <Holds size={"default"}>
             <Contents >
                 <Texts>{t("Forms")}</Texts>
                 <Forms>
@@ -29,6 +29,6 @@ export default function Content() {
                     
                 </Forms>
             </Contents>
-        </Sections>
+        </Holds>
     );
 }

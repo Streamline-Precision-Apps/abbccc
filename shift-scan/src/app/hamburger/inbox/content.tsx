@@ -6,7 +6,7 @@ import React, { useEffect } from 'react'
 import { useState } from "react";
 import {Tab} from "@/components/(reusable)/tab";
 import {getUserSentContent } from '@/actions/inboxSentActions';
-import { Sections } from '../../../components/(reusable)/sections';
+import { Holds } from '../../../components/(reusable)/Holds';
 import { Buttons } from '../../../components/(reusable)/buttons';
 import {inboxContent} from "@/lib/types";
 import STab from './sTab';
@@ -23,14 +23,14 @@ export default function Content( { sentContent, receivedContent: recievedContent
         return (
         <Bases>
         <Contents>
-        <Sections 
+        <Holds 
         size={"titleBox"}>
             <TitleBoxes
             title={t("Inbox")}
             titleImg="/Inbox.svg"
             titleImgAlt="Inbox"
             />
-        </Sections>
+        </Holds>
 
     <Contents variant={"widgetButtonRow"} size={null}>
         <Tab 
@@ -44,10 +44,10 @@ export default function Content( { sentContent, receivedContent: recievedContent
         isTabActive= {activeTab === 2}
         />  
     </Contents>
-        <Sections variant={"tab"} size={"default"}>
+        <Holds variant={"tab"} size={"default"}>
             {activeTab === 1 && <STab  sentContent={sentContent} session={session}/>}  
             {activeTab === 2 && <RTab receivedContent={recievedContent} session={session} sentContent={sentContent}/>}
-        </Sections>
+        </Holds>
         </Contents>
         </Bases>  
     )

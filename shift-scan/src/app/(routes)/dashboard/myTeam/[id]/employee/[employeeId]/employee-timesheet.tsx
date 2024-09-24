@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { fetchTimesheets } from "@/actions/timeSheetActions";
 import EditWork from "./editWork";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/Holds";
 import { Titles } from "@/components/(reusable)/titles";
 import { fetchEq } from "@/actions/equipmentActions";
 import { Contents } from "@/components/(reusable)/contents";
@@ -73,17 +73,18 @@ return (
 <>
 <Contents>
 
-    <Sections size={"dynamic"} variant={"default"}>
-    <Sections size={"titleBox"} variant={"darkBlue"}>
+    <Holds size={"dynamic"} variant={"default"}>
+    <Holds size={"titleBox"} variant={"darkBlue"}>
         <Titles variant={"left"} >Select Date</Titles>
         <form ref={formRef} onChange={handleFormChange} onSubmit={handleFormSubmit}>
         <Inputs type="date" name="date" id="date" className="flex justify-center m-auto text-black text-2xl bg-white p-2 rounded border-2 border-black rounded-2xl" />
         <Inputs type="hidden" name="id" value={employeeId} />
         </form>
         <Titles variant={"green"}>{message}</Titles>
-    </Sections>
+ 
+      </Holds>
     {date &&
-    <Sections size={"dynamic"}>
+    <Holds size={"full"}>
         <EditWork
         timesheetData={timesheets}
         edit={edit}
@@ -96,9 +97,10 @@ return (
         date={date}
         equipment={equipment}
         />
-    </Sections>
+
+    </Holds>
     }
-    </Sections>
+    </Holds>
         </Contents>
 </>
 );

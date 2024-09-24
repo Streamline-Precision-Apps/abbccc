@@ -8,39 +8,35 @@ const mako = Mako({
   weight: "400",
 })
 
+//this determines styles of all paragraph text
 const TextVariants = cva(
-  "p-1 m-2 mt-0 text-center ", //this applies to all variants
+  "", //this applies to all variants
   {
     variants: {
-      variant: {
-        default: "text-black",
+      text: {//only text color and style
+        black: "text-black",
         white: "text-white",
         disabled: "text-gray-600",
-        link: "underline underline-offset-2 text-black m-4",
-        name: "",
-        bottom: "absolute bottom-0",
-        bannerDate: "pt-0 mt-0",
-        totalHours: "text-white pt-0 mt-0",
-        error: "text-red-500",
-        hoursBottom: "flex flex-col justify-end",
-        left: "text-start text-black m-0 mt-1",
+        link: "text-black underline underline-offset-2",
       },
-      size: {
-        default: "text-2xl",
-        widgetSm: "text-2xl p-0 m-0 w-full",
-        widgetMed: "text-4xl mr-8",
+      position: {//only position attributes
+        center: "text-center",
         left: "text-start",
-        p1: "text-3xl",
-        p2: "text-2xl",
+        right: "text-end",
+      },
+      size: {//only text size
+        p1: "text-3xl sm:text-3xl md:text-4xl lg:text-5xl",
+        p2: "text-2xl sm:text-2xl md:text-3xl lg:text-4xl",
         p3: "text-xl",
         p4: "text-lg",
-        sm: "text-sm",
-        p0: "text-4xl",
+        p5: "text-med",
+        p6: "text-sm",
       }
     },
     defaultVariants: {
-      variant: "default",
-      size: "default",
+      text: "black",
+      position: "center",
+      size: "p2",
     },
   }
 )
@@ -48,10 +44,10 @@ const TextVariants = cva(
 interface TextProps extends HTMLAttributes<HTMLElement>, VariantProps<typeof TextVariants> {
 }
 
-const Texts: FC<TextProps> = ({className, variant, size, ...props}) => {
+const Texts: FC<TextProps> = ({className, text, position, size, ...props}) => {
     return (
       <div className={mako.className}>
-        <p className={cn(TextVariants({variant, size, className}))} {...props}/>
+        <p className={cn(TextVariants({text, position, size, className}))} {...props}/>
       </div>
     )
 }

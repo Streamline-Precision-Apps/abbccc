@@ -1,5 +1,5 @@
 "use client";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/Holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useTranslations } from "next-intl";
 import Base64Encoder from "@/components/(camera)/Base64Encoder";
@@ -36,21 +36,21 @@ export default function EmployeeInfo({ employee, contacts, training }: Props ) {
   // const completionPercentage = (90).toFixed(0);
   return (
   <Contents size={"default"} variant={"default"}>
-  <Sections size={"titleBox"}>
+  <Holds size={"titleBox"}>
 {/*This Title box allows the profile pic to default as a base profile picture*/}
       <TitleBoxes type="profilePic" title={`${employee?.firstName} ${employee?.lastName}`} titleImg={employee?.image !== null ? `${employee?.image}` : "/profile.svg"}  titleImgAlt={"image"}  >
         <Contents size={"editBtn"} variant={"clear"} onClick={() => setIsOpen(true) } >
         <Images titleImg={"/edit.svg"} titleImgAlt={"Edit tool"} variant={"editIcon"} size={"editIcon"} onClick={() => setIsOpen(true)}/>
         </Contents>
       </TitleBoxes>
-  </Sections>
+  </Holds>
   
   <Modals 
   handleClose={() => {setIsOpen(false); setBase64String('');}} 
   type="base64" variant={"default"} size={"lg"} isOpen={isOpen}>
     <Base64Encoder employee={employee} base64String={base64String} setBase64String={setBase64String} setIsOpen={setIsOpen}  />
   </Modals>
-    <Sections size={"default"}>
+    <Holds size={"default"}>
       <Forms>
         <Labels variant="default">{t("EmployeeID")}</Labels>
           <Inputs
@@ -79,7 +79,7 @@ export default function EmployeeInfo({ employee, contacts, training }: Props ) {
         </Contents> */}
       </Forms>
         <SignOutModal />
-      </Sections>
+      </Holds>
   </Contents>
 );
 }

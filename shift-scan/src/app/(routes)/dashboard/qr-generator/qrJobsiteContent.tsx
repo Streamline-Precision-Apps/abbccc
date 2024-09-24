@@ -9,11 +9,12 @@ import { Titles } from "@/components/(reusable)/titles";
 import { Contents } from "@/components/(reusable)/contents";
 import { Texts } from "@/components/(reusable)/texts";
 import { Images } from "@/components/(reusable)/images";
+import { Holds } from "@/components/(reusable)/Holds";
+import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Selects } from "@/components/(reusable)/selects";
 import { Options } from "@/components/(reusable)/options";
 import { JobCodes } from "@/lib/types";
 import { Labels } from "@/components/(reusable)/labels";
-import { Holds } from "@/components/(reusable)/holds";
 
 export default function QrJobsiteContent() {
   const [selectedJobSiteName, setSelectedJobSiteName] = useState<string>("");
@@ -88,6 +89,7 @@ export default function QrJobsiteContent() {
         </Selects>
         </>
       ) : (
+        <Holds size={"half"}>
         <Selects value={selectedJobSite} onChange={handleOptionSelect}>
           <Options variant={"default"} value="">
             Select One
@@ -102,32 +104,32 @@ export default function QrJobsiteContent() {
             </Options>
           ))}
         </Selects>
-      )}
-      
-      <Holds variant={"row"} className="flex justify-evenly ">
-        <Buttons variant={"orange"} onClick={handleGenerate} size={"half"} >
-          <Titles variant={"default"} size={"h1"}>{t("Generate")}</Titles>
-        </Buttons>
-        <Buttons variant={"green"} onClick={handleNew} size={"half"} >
-          <Titles variant={"default"} size={"h1"}>{t("New")}</Titles>
-        </Buttons>
+        <Contents variant={"rowCenter"} size={null}>
+          <Buttons variant={"orange"} onClick={handleGenerate} size={null}>
+            <Titles variant={"default"} size={"h1"}>{t("Generate")}</Titles>
+          </Buttons>
+          <Buttons variant={"green"} onClick={handleNew} size={null}>
+            <Titles variant={"default"} size={"h1"}>{t("New")}</Titles>
+          </Buttons>
+        </Contents>
+        <Modals
+          isOpen={isModalOpen}
+          handleClose={() => setIsModalOpen(false)}
+          size="default"
+        >
+          {selectedJobSite && (
+            <>
+              <Texts variant={"default"}>
+                {selectedJobSiteName} {t("QR Code")}
+              </Texts>
+              <Contents variant={"rowCenter"} size={"default"}>
+                <Images titleImg="" titleImgAlt="QR Code" src={qrCodeUrl} />
+              </Contents>
+            </>
+          )}
+        </Modals>
       </Holds>
-      <Modals
-        isOpen={isModalOpen}
-        handleClose={() => setIsModalOpen(false)}
-        size="sm"
-      >
-        {selectedJobSite && (
-          <>
-            <Texts variant={"default"}>
-              {selectedJobSiteName} {t("QR Code")}
-            </Texts>
-            <Contents variant={"rowCenter"} size={"default"}>
-              <Images titleImg="" titleImgAlt="QR Code" src={qrCodeUrl} />
-            </Contents>
-          </>
-        )}
-      </Modals>
+      )}
     </>
   );
 }

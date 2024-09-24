@@ -1,7 +1,7 @@
 "use server";
 import "@/app/globals.css";
 import { Bases } from "@/components/(reusable)/bases";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/Holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import QrJobsiteContent from "./qrJobsiteContent";
 import QrEquipmentContent from "./qrEquipmentContent";
@@ -11,7 +11,6 @@ import { getTranslations } from "next-intl/server";
 import { Images } from "@/components/(reusable)/images";
 import { Titles } from "@/components/(reusable)/titles";
 import { Buttons } from "@/components/(reusable)/buttons";
-import { Holds } from "@/components/(reusable)/holds";
 
 export default async function QrGeneratorDashboard() {
   const q = await getTranslations("qr-Generator");
@@ -21,7 +20,7 @@ export default async function QrGeneratorDashboard() {
   return (
     <Bases>
     <Contents>
-    <Sections size={"titleBox"}>
+    <Holds size={"half"}>
         <TitleBoxes
           title={q("Title")}
           titleImg="/new/qr.svg"
@@ -29,8 +28,9 @@ export default async function QrGeneratorDashboard() {
           variant={"default"}
           size={"default"}
           />
-    </Sections>
-      <Sections size={"default"}>
+    </Holds>
+
+    <Holds size={"half"}>
       <Holds className="w-full">
         <Images titleImg="/new/jobsite.svg" titleImgAlt="jobsite" variant={"icon"} size={"iconMed"}/>
         <Titles variant={"default"} size={"default"}>{t("Jobsite")}</Titles>
@@ -39,7 +39,7 @@ export default async function QrGeneratorDashboard() {
           <Titles variant={"default"} size={"default"}>{u("Equipment")}</Titles>
         <QrEquipmentContent />
       </Holds>
-      </Sections>
+    </Holds>
     </Contents>
     </Bases>
   );

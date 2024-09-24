@@ -4,7 +4,7 @@ import "@/app/globals.css";
 import ClockOutButtons from "@/components/clockOutButtons";
 import { useRouter } from "next/navigation";
 import { Bases } from "@/components/(reusable)/bases";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/Holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 
 export default function ClockOutDashboardContent() {
@@ -13,7 +13,7 @@ export default function ClockOutDashboardContent() {
 
   return (
     <Bases>
-      <Sections size={"titleBox"}>
+      <Holds size={"titleBox"}>
         <TitleBoxes
           title={t("Title")}
           titleImg="/profile.svg"
@@ -21,7 +21,7 @@ export default function ClockOutDashboardContent() {
           variant={"default"}
           size={"default"}
         />
-      </Sections>
+      </Holds>
       <ClockOutButtons />
     </Bases>
   );

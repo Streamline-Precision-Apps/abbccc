@@ -6,7 +6,7 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Forms } from "@/components/(reusable)/forms";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/Holds";
 import { Selects } from "@/components/(reusable)/selects";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
@@ -47,7 +47,7 @@ export default function Content({ params, sentContent, session } : Props) {
         <>
         <Bases>
         <Contents>
-        <Sections size={"titleBox"} variant={"green"}>
+        <Holds size={"titleBox"} variant={"green"}>
         <TitleBoxes variant={null} title="leave request" titleImg="/Inbox.svg" titleImgAlt="Inbox" type="noIcon" >
         </TitleBoxes>
         {sentContent.map((item) => (<>
@@ -64,10 +64,10 @@ export default function Content({ params, sentContent, session } : Props) {
             </>
         )
         )}
-        </Sections>
+        </Holds>
         {sentContent.map((item) => (
             <>
-            <Sections size={"titleBox"}>
+            <Holds size={"titleBox"}>
             <Labels>
                 Status
                 <Inputs
@@ -75,9 +75,9 @@ export default function Content({ params, sentContent, session } : Props) {
                     defaultValue={item?.status}
                     />
             </Labels>
-            </Sections>
+            </Holds>
 
-                <Sections size={"dynamic"} key={item.id}>
+                <Holds size={"dynamic"} key={item.id}>
             <Labels>
                 Employee
                 <Inputs
@@ -123,9 +123,9 @@ export default function Content({ params, sentContent, session } : Props) {
             rows={5} 
             />
             </Labels>
-                </Sections>
+                </Holds>
 
-                <Sections size={"dynamic"}>
+                <Holds size={"dynamic"}>
             <Labels> Managers Comments
             <TextAreas
             name="mangerComments"
@@ -141,7 +141,7 @@ export default function Content({ params, sentContent, session } : Props) {
                     disabled
                     />
             </Labels>
-            </Sections>
+            </Holds>
             </>
         ))}
         </Contents>

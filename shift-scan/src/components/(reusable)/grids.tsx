@@ -8,7 +8,7 @@ const GridVariants = cva(
     variants: {
       variant: {
         default: "bg-blue-500",
-        widgets: " grid grid-cols-2 grid-rows-3 gap-x-5 gap-y-5",
+        widgets: " grid grid-cols-2 gap-x-5 gap-y-5",
         red: "bg-red-500",
       },
       size: {

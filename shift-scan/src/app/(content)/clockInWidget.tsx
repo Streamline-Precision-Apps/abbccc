@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Texts } from "@/components/(reusable)/texts";
 import { Images } from "@/components/(reusable)/images";
-import { Contents } from "@/components/(reusable)/contents";
+import { Holds } from "@/components/(reusable)/holds";
 
 type Props = {
     user: User;
@@ -19,14 +19,18 @@ export default function ClockInWidget({ user, locale, option, manager}: Props) {
         return (
         <>
             <Buttons 
-                variant={"green"} 
-                size={"fill"} // this eliminated the big if statement
+                background={"green"} 
                 href="/clock"
+                className="col-span-2"
             >
-                <Contents variant={"widgetButtonRow"} size={"test"}>
-                    <Texts size={"widgetMed"}>{t("Clock-btn")}</Texts>
-                    <Images titleImg="/new/clock-in.svg" titleImgAlt="QR Code" variant={"icon"} size={"widgetMed"} />
-                </Contents>
+                <Holds position={"row"}>
+                    <Holds>
+                        <Texts size={"p1"}>{t("Clock-btn")}</Texts>
+                    </Holds>
+                    <Holds>
+                        <Images titleImg="/clock-in.svg" titleImgAlt="QR Code" size={"30"} />
+                    </Holds>
+                </Holds>
             </Buttons>
         </>
     );
