@@ -2,7 +2,7 @@
 import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
-import { Holds } from "@/components/(reusable)/Holds";
+import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useEffect, useState } from "react";
 import { Signature } from "./(components)/injury-verification/Signature";
@@ -41,7 +41,7 @@ function useBanner(initialMessage = "") {
 type ClockOutContentProps = {
   id: string;
   signature: string | null;
-}
+};
 
 export default function ClockOutContent({
   id,
@@ -185,6 +185,7 @@ export default function ClockOutContent({
               <Signature
                 setBase64String={setBase64String}
                 base64string={base64String}
+                handleSubmitImage={handleSubmitImage}
               />
             </Holds>
             <Holds size={"titleBox"}>
@@ -220,8 +221,7 @@ export default function ClockOutContent({
               variant={"row"}
               size={"default"}
               type="row"
-            />
-          </Holds>
+            />          </Holds>
           <Holds size={"dynamic"}>
             <InjuryReportContent
               base64String={base64String}
@@ -233,25 +233,29 @@ export default function ClockOutContent({
         </Contents>
       </Bases>
     );
-  }
-  else if (step === 2 && path ==="ClockOut" || step === 3 && path ==="Injury") {
+  } else if (
+    (step === 2 && path === "ClockOut") ||
+    (step === 3 && path === "Injury")
+  ) {
     return (
-        <Bases>
-        <Banners variant={bannerMessage.length > 0 ? "green" : "default"} >
-        {bannerMessage}
+      <Bases>
+        <Banners variant={bannerMessage.length > 0 ? "green" : "default"}>
+          {bannerMessage}
         </Banners>
         <Contents>
         <Holds size={"dynamic"}>
         <TitleBoxes title={t("Bye")} titleImg={"/new/end-day.svg"} titleImgAlt={""} variant={"row"} size={"default"} type="row" />
 
-        <Contents variant={"default"}>
-        <Texts>{t("ClockOutDate")} {new Date().toLocaleDateString()}</Texts>
-        <Texts>
-        {t("Jobsite")} {scanResult?.data || localStorageData?.jobsite}
-        </Texts>
-        <Texts>
-        {t("CostCode")} {savedCostCode || localStorageData?.costCode}
-        </Texts>
+            <Contents variant={"default"}>
+              <Texts>
+                {t("ClockOutDate")} {new Date().toLocaleDateString()}
+              </Texts>
+              <Texts>
+                {t("Jobsite")} {scanResult?.data || localStorageData?.jobsite}
+              </Texts>
+              <Texts>
+                {t("CostCode")} {savedCostCode || localStorageData?.costCode}
+              </Texts>
 
         <Forms onSubmit={handleSubmit}>
         <Buttons
@@ -272,10 +276,9 @@ export default function ClockOutContent({
         </Contents>
         </Holds>
         </Contents>
-        </Bases>
+      </Bases>
     );
-} 
-  else {
+  } else {
     return null;
   }
 }

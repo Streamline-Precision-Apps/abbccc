@@ -7,7 +7,7 @@ import '@/app/globals.css';
 import Link from 'next/link';
 import { Bases } from '@/components/(reusable)/bases';
 import { TitleBoxes } from '@/components/(reusable)/titleBoxes';
-import { Holds } from '@/components/(reusable)/Holds';
+import { Holds } from '@/components/(reusable)/holds';
 import { Modals } from '@/components/(reusable)/modals';
 import { Texts } from '@/components/(reusable)/texts';
 import { Buttons } from '@/components/(reusable)/buttons';

@@ -1,5 +1,5 @@
 "use client";
-import { Holds } from "@/components/(reusable)/Holds";
+import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 import { Forms } from "@/components/(reusable)/forms";
 import { ChangeEvent, useState } from "react";
