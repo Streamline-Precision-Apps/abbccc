@@ -161,30 +161,30 @@ return (
   <Grids variant={"widgets"} size={"sm"}>
     { permission === "ADMIN" || permission === "SUPERADMIN" || permission === "MANAGER"  ? (
       <>
-    <Buttons href="/dashboard/qr-generator" variant={"lightBlue"} size={"fill"}>
-        <Holds variant={"col"} className="justify-center items-center py-5">
-            <Images titleImg="/new/qr.svg" titleImgAlt="QR Code" variant={"icon"} size={"widgetSm"}/>
-            <Texts size={"widgetSm"}>{t("QrGenerator")}</Texts>
+    <Buttons href="/dashboard/qr-generator" background={"lightBlue"} size={"full"}>
+        <Holds className="justify-center items-center py-5">
+            <Images titleImg="/qr.svg" titleImgAlt="QR Code" size={"40"}/>
+            <Texts>{t("QrGenerator")}</Texts>
         </Holds>
     </Buttons>
-    <Buttons href="/dashboard/myTeam" variant={"lightBlue"} size={"fill"}>
-    <Holds variant={"col"} className="justify-center items-center py-5">
-            <Images titleImg="/new/team.svg" titleImgAlt="my team" variant={"icon"} size={"widgetSm"}/>
-                <Texts size={"widgetSm"}>{t("MyTeam")}</Texts>
+    <Buttons href="/dashboard/myTeam" background={"lightBlue"} size={"full"}>
+    <Holds className="justify-center items-center py-5">
+            <Images titleImg="/team.svg" titleImgAlt="my team" size={"40"}/>
+                <Texts >{t("MyTeam")}</Texts>
         </Holds>
     </Buttons> 
     </>
 ) :(null)
 }
     <Buttons 
-        variant={"green"} 
-        size={"fill"} // this eliminated the big if statement
+        background={"green"} 
+        size={"full"} // this eliminated the big if statement
         href="/clock"
         className="col-span-2" // added this if they are
         >
-            <Holds variant={"col"} className="justify-center items-center py-5">
-            <Images titleImg="/new/clock-in.svg" titleImgAlt="QR Code" variant={"icon"} size={"widgetSm"}  />
-            <Texts size={"widgetMed"}>{f("Clock-btn")}</Texts>
+            <Holds className="justify-center items-center py-5">
+            <Images titleImg="/clock-in.svg" titleImgAlt="QR Code" size={"40"}  />
+            <Texts>{f("Clock-btn")}</Texts>
             </Holds>
         </Buttons>
     </Grids>

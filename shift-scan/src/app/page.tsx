@@ -6,13 +6,13 @@ import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
 import { Banners } from "@/components/(reusable)/banners";
 import { Holds } from "@/components/(reusable)/holds";
-import { Sections } from "@/components/(reusable)/sections";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import { Headers } from "@/components/(reusable)/headers";
 import WidgetSection from "@/app/(content)/widgetSection";
+import { Images } from "@/components/(reusable)/images";
 import Capitalize from "@/utils/captitalize";
 import { redirect } from 'next/navigation'
+import { AnimatedHamburgerButton } from "@/components/(animations)/hamburgerMenu";
 
 export default async function Home() {
  //------------------------------------------------------------------------
@@ -43,30 +43,37 @@ export default async function Home() {
   // Pass the fetched data to the client-side Content component
   return (
     <Bases>
-      <Contents variant={"center"} size={"container"}>
-      <Sections size={"dynamic"}>
-      <Holds >
-      <Headers variant={"relative"} size={"default"}></Headers>
-
-      <Banners variant={"default"}>
-            <Titles variant={"default"} size={"h1"}>
-              {t("Banner")}
-            </Titles>
-            <Texts variant={"default"} size={"p1"}>
-              {t("Date", { date: Capitalize(date) })}
-            </Texts>
-          </Banners>
-          <Texts size={"p0"} className="text-center py-4">
-            {t("Name", {
-              firstName: Capitalize(user.firstName),
-              lastName: Capitalize(user.lastName),
-            })}
-          </Texts>
-
+      <Contents className="h-[90%] mt-10">
+      <Holds background={"white"} className="h-full">
+      <Holds position={"row"} className="mb-5">
+      <Holds size={"30"}>
+      <Images 
+                titleImg="/logo.svg" 
+                titleImgAlt="logo" 
+                position={"left"} 
+                background={"none"} 
+                size={"full"} />
+              </Holds>
+              <Holds size={"70"}>
+                <AnimatedHamburgerButton/> {/* come back to this */}
+              </Holds>
+              </Holds>
+              <Holds className="mb-10">
+              <Banners position={"flex"}>
+              <Titles text={"black"} size={"p1"}>{t("Banner")}</Titles>
+              <Texts text={"black"} size={"p4"}>{t("Date", { date: Capitalize(date) })}</Texts>
+            </Banners>
+              </Holds>
+              <Holds>
+              <Texts text={"black"} size={"p2"}>
+                {t("Name", {
+                  firstName: Capitalize(user.firstName),
+                  lastName: Capitalize(user.lastName),
+                })}
+              </Texts>
+                </Holds>
           <WidgetSection session={session}/> 
-
       </Holds>
-        </Sections>
       </Contents>
     </Bases>
   );
