@@ -35,8 +35,17 @@ const fetchCrew = async () => {
 };
 
 if (status === "authenticated") {
-    fetchCrew();
-}
+    // Check if data is already in local storage
+    const storedTeams = localStorage.getItem("myTeams");
+    if (storedTeams) {
+      // Parse and set local data
+      setMyTeams(JSON.parse(storedTeams));
+      setIsLoading(false); // Stop loading
+    } else {
+      // Fetch from server if no data in local storage
+      fetchCrew();
+    }
+  }
 }, [status]);
 
 return (
