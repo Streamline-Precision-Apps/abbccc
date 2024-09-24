@@ -5,7 +5,7 @@ import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Images } from "@/components/(reusable)/images";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/Holds";
 import { Texts } from "@/components/(reusable)/texts";
 import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
@@ -83,7 +83,7 @@ const locale = lang ? lang.value : "en"; // Default to English
     return (
         <Bases variant={"default"} size={"scroll"} >
         <Contents size={"default"} variant={"default"}>
-        <Sections size={"default"}>
+        <Holds size={"default"}>
         <ClockProcessor
             type={"switchJobs"}
             id={user_Id}
@@ -91,7 +91,7 @@ const locale = lang ? lang.value : "en"; // Default to English
             locale={locale}
             returnpath="/dashboard"
         />
-        </Sections>
+        </Holds>
         </Contents>
         </Bases>
     )

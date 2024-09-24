@@ -6,7 +6,7 @@ import { Forms } from "@/components/(reusable)/forms";
 import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/Holds";
 import { Selects } from "@/components/(reusable)/selects";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
@@ -38,21 +38,21 @@ const router = useRouter();
     return (
     <Bases>
     <Contents>
-    <Sections size={"titleBox"} variant={"green"}>
+    <Holds size={"titleBox"} variant={"green"}>
         <TitleBoxes
         title="Leave Request Form" 
         titleImg="/new/Inbox.svg"
         titleImgAlt="Inbox"
         type="noIcon"
         />
-    </Sections>
+    </Holds>
     {
     closeBanner && (
     <Titles>{message}</Titles>
     )
     }
         <Forms action={createLeaveRequest} onSubmit={handleSubmit}>
-    <Sections size={"dynamic"}>
+    <Holds size={"dynamic"}>
         <Labels >Start Date
         <Inputs
         type="date"
@@ -115,7 +115,7 @@ const router = useRouter();
         <Texts variant={"default"} size={"p4"}>
             *By Signing I acknowledge that time leave request are subject to management approval and company policy. *
         </Texts>
-        </Sections>
+        </Holds>
         <Buttons type="submit" variant={"green"} size={null}>
             <Titles variant={"default"} size={"h1"}>
                 Submit

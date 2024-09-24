@@ -4,7 +4,7 @@ import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Images } from "@/components/(reusable)/images";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/Holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { useSession } from "next-auth/react";
@@ -49,9 +49,9 @@ if (status === "authenticated") {
 }, [status]);
 
 return (
-<Bases>
-    <Contents>
-    <Sections size="titleBox">
+<Bases variant="default">
+    <Contents size="default">
+    <Holds size="titleBox">
         <TitleBoxes
         title="My Teams"
         titleImg="/new/team.svg"
@@ -59,17 +59,17 @@ return (
         variant="default"
         size="default"
         />
-    </Sections>
+    </Holds>
     {isLoading ? <>
-        <Sections size="dynamic">
+        <Holds size="dynamic">
             <Contents variant="row" size="listTitle">
             <Titles size="h1">
             </Titles>
             <Spinner />
             </Contents>
-        </Sections>
+        </Holds>
     </> :
-    <Sections size="dynamic">
+    <Holds size="dynamic">
         {myTeams.map((teams) => (
             <Buttons
             variant="lightBlue"
@@ -82,9 +82,8 @@ return (
             </Titles>
             </Contents>
             </Buttons>
-        ))
-    }
-        </Sections>
+        ))}
+    </Holds>
     }
         </Contents>
         </Bases>

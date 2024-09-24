@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Footers } from "@/components/(reusable)/footers";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/Holds";
 import { Bases } from "@/components/(reusable)/bases";
 import { Header } from "@/components/header";
 import { Contents } from "@/components/(reusable)/contents";
@@ -69,7 +69,7 @@ export default function Content({
       <Bases variant={"default"}>
         <Header />
         <Contents>
-          <Sections size={"homepage"}>
+          <Holds size={"homepage"}>
             <Contents variant={"name"} size={"test"}>
               {step === 1 && <ShiftScanIntro handleNextStep={handleNextStep} />}
               {step === 2 && (
@@ -96,7 +96,7 @@ export default function Content({
               )}
               <Footers>{f("Copyright")}</Footers>
             </Contents>
-          </Sections>
+          </Holds>
         </Contents>
       </Bases>
     </>

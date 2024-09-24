@@ -9,7 +9,7 @@ import { Images } from './images';
 import { Titles } from './titles';
 import { Contents } from "./contents";
 import { Bases } from "./bases";
-import { Sections } from "./sections";
+import { Holds } from "./Holds";
 import {signOut} from "next-auth/react"
 
 const ModalVariants = cva(

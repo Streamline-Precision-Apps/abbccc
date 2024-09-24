@@ -8,32 +8,36 @@ const anton = Anton({
   weight: "400",
 })
 
+//this determines styles of all title text
 const TitleVariants = cva(
-  "font-bold p-1 m-2 text-center",
+  "", //this applies to all variants
   {
     variants: {
-      variant: {
-        default: "text-black",
+      text: {//only text color and style
+        black: "text-black",
+        bold: "text-black font-bold",
         white: "text-white",
         disabled: "text-gray-600",
-        green : "text-app-green",
-        bannerMessage: "pb-0 mb-0",
-        modal: "mb-10",
-        left: "text-left text-white font-normal",
-        qrText: "mt-10 mb-10 text-center",
+        link: "text-black underline underline-offset-2",
       },
-      size: {
-        default: " text-2xl",
-        h1: "text-3xl",
-        h2: "text-2xl",
-        h3: "text-xl",
-        h4: "text-lg",
-        titlebox: "text-4xl p-0 pb-3 m-0 ",
+      position: {//only position attributes
+        center: "text-center",
+        left: "text-start",
+        right: "text-end",
+      },
+      size: {//only text size
+        p1: "text-3xl sm:text-3xl md:text-4xl lg:text-5xl",
+        p2: "text-2xl sm:text-2xl md:text-3xl lg:text-4xl",
+        p3: "text-xl",
+        p4: "text-lg",
+        p5: "text-med",
+        p6: "text-sm",
       }
     },
     defaultVariants: {
-      variant: "default",
-      size: "default",
+      text: "black",
+      position: "center",
+      size: "p2",
     },
   }
 )
@@ -41,11 +45,11 @@ const TitleVariants = cva(
 interface TitleProps extends HTMLAttributes<HTMLElement>, VariantProps<typeof TitleVariants> {
 }
 
-const Titles: FC<TitleProps> = ({className, variant, size, ...props}) => {
+const Titles: FC<TitleProps> = ({className, text, position, size, ...props}) => {
     
     return (
       <div className={anton.className}>
-        <h1 className={cn(TitleVariants({variant, size, className}))}{...props}/>
+        <h1 className={cn(TitleVariants({text, position, size, className}))}{...props}/>
       </div>
     )
 }

@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/Holds";
 import { Contents } from "@/components/(reusable)/contents";
 import { Forms } from "@/components/(reusable)/forms";
 import { Labels } from "@/components/(reusable)/labels";
@@ -25,7 +25,7 @@ export default async function employeeInfo({ params }: { params: { employeeId: s
 
   return (
 <Contents>
-        <Sections size={"titleBox"}>
+        <Holds size={"titleBox"}>
             <TitleBoxes
               title={`${employee?.firstName} ${employee?.lastName}`}
               titleImg={employee?.image ?? "/johnDoe.webp"}
@@ -34,8 +34,8 @@ export default async function employeeInfo({ params }: { params: { employeeId: s
               size={"default"}
               type="profilePic"
             />
-        </Sections>
-        <Sections size={"dynamic"}>
+        </Holds>
+        <Holds size={"dynamic"}>
           <Forms>
             <Labels variant="default">Phone Number</Labels>
             <Inputs variant="default" type="default" state="disabled" data={contacts?.phoneNumber}></Inputs>
@@ -48,7 +48,7 @@ export default async function employeeInfo({ params }: { params: { employeeId: s
             <Labels variant="default">Date of Birth</Labels>
             <Inputs variant="default" type="default" state="disabled" data={employee?.DOB}></Inputs>
           </Forms>
-        </Sections>
+        </Holds>
     </Contents>
   );
 }

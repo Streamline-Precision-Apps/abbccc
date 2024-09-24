@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
 import { Inputs } from "@/components/(reusable)/inputs";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/Holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { Forms } from "@/components/(reusable)/forms";
@@ -38,10 +38,10 @@ export default function ViewTimesheets({ timesheets, user }: Props) {
     return (
         <Bases>
             <Contents size={"default"} variant={"default"}>
-                <Sections size={"titleBox"} variant={"default"}>
+                <Holds size={"titleBox"} variant={"default"}>
                     <TitleBoxes title={"View Timesheets"} titleImg={"/"} titleImgAlt={"no image"} type="noIcon" />
-                </Sections>
-                <Sections size={"dynamic"}>
+                </Holds>
+                <Holds size={"dynamic"}>
                     <Contents variant={"default"} size={null}>
                         <Texts>Please enter a date to search for your timesheets.</Texts>
                         <Forms action={handleSubmit}>
@@ -69,7 +69,7 @@ export default function ViewTimesheets({ timesheets, user }: Props) {
                     ): (
                         <Texts>You were not working a shift that day. No Timesheets Found. </Texts>
                     )}
-                </Sections>
+                </Holds>
             </Contents>
         </Bases>
     );

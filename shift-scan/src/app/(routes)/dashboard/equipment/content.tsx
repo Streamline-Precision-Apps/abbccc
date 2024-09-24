@@ -2,7 +2,7 @@
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Submit } from "@/actions/equipmentActions";
 import { useTranslations } from "next-intl";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Forms } from "@/components/(reusable)/forms";
@@ -46,7 +46,7 @@ export default function EquipmentLogContent({ userId }: EquipmentLogs) {
     }, [userId]); // Dependency on userId
 
     return (
-        <Sections size={"default"}>
+        <Holds size={"default"}>
             {loading ? (
                 // animated spinner
                 <Spinner />
@@ -74,6 +74,6 @@ export default function EquipmentLogContent({ userId }: EquipmentLogs) {
                     ))}
                 </>
             )}
-        </Sections>
+            </Holds>
     );
 }
