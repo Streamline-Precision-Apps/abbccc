@@ -14,8 +14,8 @@ const lang = cookies().get("locale");
 const locale = lang ? lang.value : "en"; // Default to English
 return (
 <Bases>
-<Contents size={"default"} variant={"default"}>
-<Holds size={"default"}>
+<Contents>
+<Holds background={"white"}>
 <ClockProcessor
         type={"jobsite"}
         scannerType={"jobsite"}

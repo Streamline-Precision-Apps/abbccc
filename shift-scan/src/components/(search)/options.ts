@@ -25,15 +25,19 @@ case 'costcode':
     }
     // Use recent codes if no search term
     options = searchTerm === ''
-    ? recentlyUsedCostCodes.map((costcode: CostCodes) => ({
-        code: costcode.name,
-        label: costcode.description
-    }))
-    : costcodeResults.map((costcode: CostCodes) => ({
-        code: costcode.name,
-        label: costcode.description
-    }));
-    break;
+        ? recentlyUsedCostCodes
+            .filter((costcode: CostCodes | null) => costcode !== null) // Check for null
+            .map((costcode: CostCodes) => ({
+              code: costcode.name,
+              label: costcode.description
+            }))
+        : costcodeResults
+            .filter((costcode: CostCodes | null) => costcode !== null) // Check for null
+            .map((costcode: CostCodes) => ({
+              code: costcode.name,
+              label: costcode.description
+            }));
+      break;
 
 case 'jobsite':
     if (!jobsiteResults) {

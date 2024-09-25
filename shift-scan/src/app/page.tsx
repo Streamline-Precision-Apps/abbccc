@@ -43,8 +43,8 @@ export default async function Home() {
   // Pass the fetched data to the client-side Content component
   return (
     <Bases>
-      <Contents className="h-[90%] mt-10">
-      <Holds background={"white"} size={"first"} className="h-fit mx-auto">
+      <Contents className="h-dvh mt-10"> 
+      <Holds background={"white"} className="h-full mx-auto">
       <Holds position={"row"} className="mb-5">
       <Holds size={"30"}>
       <Images 
