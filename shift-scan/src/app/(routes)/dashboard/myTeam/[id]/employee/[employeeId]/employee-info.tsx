@@ -5,8 +5,10 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Forms } from "@/components/(reusable)/forms";
 import { Labels } from "@/components/(reusable)/labels";
 import { Inputs } from "@/components/(reusable)/inputs";
+import { getTranslations } from "next-intl/server";
 
 export default async function employeeInfo({ params }: { params: { employeeId: string } }) {
+  const t = await getTranslations("MyTeam");
   const id = params.employeeId;
   const employee = await prisma.users.findUnique({
     where: {
@@ -37,15 +39,15 @@ export default async function employeeInfo({ params }: { params: { employeeId: s
         </Holds>
         <Holds size={"dynamic"}>
           <Forms>
-            <Labels variant="default">Phone Number</Labels>
+            <Labels variant="default">{t("PhoneNumber")}</Labels>
             <Inputs variant="default" type="default" state="disabled" data={contacts?.phoneNumber}></Inputs>
-            <Labels variant="default">Email</Labels>
+            <Labels variant="default">{t("Email")}</Labels>
             <Inputs variant="default" type="default" state="disabled" data={contacts?.email}></Inputs>
-            <Labels variant="default">Emergency Contact</Labels>
+            <Labels variant="default">{t("EmergencyContact")}</Labels>
             <Inputs variant="default" type="default" state="disabled" data={contacts?.emergencyContact}></Inputs>
-            <Labels variant="default">Emergency Contact Number</Labels>
+            <Labels variant="default">{t("EmergencyContactNumber")}</Labels>
             <Inputs variant="default" type="default" state="disabled" data={contacts?.emergencyContactNumber}></Inputs>
-            <Labels variant="default">Date of Birth</Labels>
+            <Labels variant="default">{t("DOB")}</Labels>
             <Inputs variant="default" type="default" state="disabled" data={employee?.DOB}></Inputs>
           </Forms>
         </Holds>

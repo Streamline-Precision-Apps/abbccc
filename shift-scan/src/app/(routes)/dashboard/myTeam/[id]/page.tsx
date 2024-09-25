@@ -9,6 +9,7 @@ import { Images } from "@/components/(reusable)/images";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { useSession } from "next-auth/react";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
 type CrewMember = {
@@ -28,6 +29,7 @@ export default function Content({ params }: { params: { id: string } }) {
   const { data: session, status } = useSession();
   const { id } = params;
   const crewId = Number(id);
+  const t = useTranslations("MyTeam");
 
   useEffect(() => {
     const fetchCrew = async () => {
@@ -66,9 +68,9 @@ export default function Content({ params }: { params: { id: string } }) {
       <Contents>
         <Holds size="titleBox">
           <TitleBoxes
-            title="My Team"
+            title={`${t('MyTeams-Title')}`}
             titleImg="/new/team.svg"
-            titleImgAlt="Team"
+            titleImgAlt={`${t('Teams-Logo-Title')}`}
             variant="default"
             size="default"
           />

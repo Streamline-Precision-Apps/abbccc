@@ -23,8 +23,9 @@
             "DA-ScrollRight": "Scroll Right",
             "DA-Return": "Return",
             "DA-Today": "Today",
+            "TimeSheet-Label": "View my Timesheet",
             "Clock-btn": "Clock In",
-            "MyTeam-btn": "My Team",
+            "MyTeam-btn": "Teams",
             "Qr-btn": "Qr Generator",
             "Copyright": "Copyright © 2024. All rights reserved."
     },

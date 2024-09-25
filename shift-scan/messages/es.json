@@ -14,18 +14,19 @@
             "Name": "{firstName} {lastName}",
             "Date": "{date}",
             "DailyHours": "Horas Totalales:",
-            "PayPeriodHours": "Total de horas del período",
+            "PayPeriodHours": "Horas del pago",
             "Break": " El tiempo de descanso:",
-            "Unit": "hras.",
-            "DA-Time-Label" : "Horas",
-            "DA-PayPeriod-Label" : "Total de horas del período",
+            "Unit": "",
+            "DA-Time-Label" : "H",
+            "DA-PayPeriod-Label" : "Horas del pago",
             "DA-ScrollLeft": "Desplazamiento a la izquierda",
             "DA-ScrollRight": "Desplácese a la derecha",
             "DA-Return": " Volver",
             "DA-Today": "Hoy",
-            "Clock-btn": "Ficharme",
-            "MyTeam-btn": "Mi equipo",
-            "Qr-btn": "Generador de QR "
+            "TimeSheet-Label": "Ver Mis Hojas de Tiempo",
+            "Clock-btn": "Fichar",
+            "MyTeam-btn": "Equipos",
+            "Qr-btn": "Generador QR"
     },
     "Clock": {
         "ScanJobSite": "Escanear el sitio de trabajo",
@@ -213,7 +214,11 @@
         "Cancel": "Cancelar"
     },
     "MyTeam": {
-        "Timesheets": "Timesheets",
+        "Teams-Title": "Mis equipos",
+        "Teams-Logo-Title": "Icon de equipo",
+        "MyTeams-Title": "Mi equipo",
+        "Teams-Button-Name": "Equipo",
+        "Timesheets": "Reportes de horas",
         "Duration": "Duración",
         "Duration-Comment": "La duración se actualiza cuando se guardan los cambios de edición.",
         "ClockIn" : "Ficharme",
@@ -224,6 +229,15 @@
         "Equipment" : "Equipo",
         "EQTotalTime" : "Tiempo total: ",
         "NoData": "No hay datos",
-        "EquipmentLogs": "Equipos registrados"
+        "EquipmentLogs": "Equipos registrados",
+        "PhoneNumber": "Numero de telefono",
+        "Email": "Correo electronico",
+        "EmergencyContact": "Contacto de emergencia",
+        "EmergencyContactNumber": "Numero de contacto de emergencia",
+        "DOB": "Fecha de nacimiento",
+        "Edit": "Editar",
+        "Delete": "Eliminar",
+        "SelectDate": "Seleccionar fecha",
+        "NoEquipmentLogs": "No hay registros para el día seleccionado."
     }
 }

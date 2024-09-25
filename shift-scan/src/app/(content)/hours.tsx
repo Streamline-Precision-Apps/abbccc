@@ -39,7 +39,7 @@ export default function Hours({ setToggle, display, loading }: HoursProps) {
           {t("PayPeriodHours")}
         </Texts>
           <Texts text={"white"} size={"p1"}>
-            {payPeriodHours}
+            {payPeriodHours} {t("Unit")}
           </Texts>
       </Buttons>
   ) : (

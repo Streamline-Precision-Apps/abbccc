@@ -9,9 +9,11 @@ import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 
 export default function Content() {
+const t = useTranslations("MyTeam");
 const [myTeams,  setMyTeams] = useState<any[]>([]);
 const [isLoading, setIsLoading] = useState(true);
 const { data: session, status } = useSession();
@@ -53,9 +55,9 @@ return (
     <Contents size="default">
     <Holds size="titleBox">
         <TitleBoxes
-        title="My Teams"
+        title={`${t('Teams-Title')}`}
         titleImg="/new/team.svg"
-        titleImgAlt="Team"
+        titleImgAlt={`${t('Teams-Logo-Title')}`}
         variant="default"
         size="default"
         />
@@ -78,7 +80,7 @@ return (
             >
             <Contents variant="row" size="listTitle">
             <Titles size="h1">
-                Team {teams.id}
+            {teams.name} ({teams.totalMembers})
             </Titles>
             </Contents>
             </Buttons>

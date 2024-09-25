@@ -169,13 +169,13 @@ return (
     <Buttons href="/dashboard/qr-generator" background={"lightBlue"} size={"full"}>
         <Holds className="justify-center items-center py-5">
             <Images titleImg="/qr.svg" titleImgAlt="QR Code" size={"40"}/>
-            <Texts>{t("QrGenerator")}</Texts>
+            <Texts>{f("Qr-btn")}</Texts>
         </Holds>
     </Buttons>
     <Buttons href="/dashboard/myTeam" background={"lightBlue"} size={"full"}>
     <Holds className="justify-center items-center py-5">
             <Images titleImg="/team.svg" titleImgAlt="my team" size={"40"}/>
-                <Texts >{t("MyTeam")}</Texts>
+                <Texts >{f("MyTeam-btn")}</Texts>
         </Holds>
     </Buttons> 
     </>
