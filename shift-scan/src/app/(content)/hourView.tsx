@@ -8,6 +8,8 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Holds } from "@/components/(reusable)/holds";
+import Capitalize from "@/utils/captitalize";
+import CapitalizeAll from "@/utils/capitalizeAll";
 
 type ViewComponentProps = {
     scrollLeft: () => void;
@@ -34,6 +36,8 @@ export default function ViewComponent({ scrollLeft, scrollRight, returnToMain, c
     }
     const dateToday = currentDate.toLocaleDateString(locale, { month: 'short', day: 'numeric', year: 'numeric' });
 
+    
+
     return (
 
         <Holds position={"row"} className="w-full bg-app-dark-blue rounded-2xl py-2">
@@ -48,8 +52,8 @@ export default function ViewComponent({ scrollLeft, scrollRight, returnToMain, c
                         <Images titleImg={"/turnBack.svg"} titleImgAlt="return" size={"full"} className="mx-auto p-2" />
                         </Buttons>
                         </Holds>
-                        <Texts text={"white"} size={"p3"} className="pt-4 px-0">{Weekday}</Texts>
-                        <Texts text={"white"} size={"p4"}>{dateToday}</Texts>
+                        <Texts text={"white"} size={"p3"} className="pt-4 px-0">{Capitalize(Weekday)}</Texts>
+                        <Texts text={"white"} size={"p4"}>{CapitalizeAll(dateToday)}</Texts>
                     </Holds>
                     <Holds size={"20"} >
                 <Buttons background={"lightBlue"} position={"center"} className="shadow-none" onClick={scrollRight}  >

@@ -13,6 +13,7 @@ import { Images } from "@/components/(reusable)/images";
 import Capitalize from "@/utils/captitalize";
 import { redirect } from 'next/navigation'
 import { AnimatedHamburgerButton } from "@/components/(animations)/hamburgerMenu";
+import capitalizeAll from "@/utils/capitalizeAll";
 export default async function Home() {
  //------------------------------------------------------------------------
   // Authentication: Get the current user
@@ -43,7 +44,7 @@ export default async function Home() {
   return (
     <Bases>
       <Contents className="h-[90%] mt-10">
-      <Holds background={"white"} className="h-full">
+      <Holds background={"white"} size={"first"} className="h-fit mx-auto">
       <Holds position={"row"} className="mb-5">
       <Holds size={"30"}>
       <Images 
@@ -60,7 +61,7 @@ export default async function Home() {
               <Holds className="mb-10">
               <Banners position={"flex"}>
               <Titles text={"black"} size={"p1"}>{t("Banner")}</Titles>
-              <Texts text={"black"} size={"p4"}>{t("Date", { date: Capitalize(date) })}</Texts>
+              <Texts text={"black"} size={"p4"}>{t("Date", { date: capitalizeAll(date) })}</Texts>
             </Banners>
               </Holds>
               <Holds size={"full"}>

@@ -220,7 +220,7 @@ export default function ControlComponent({ toggle } : ControlComponentProps) {
           <Holds size={"full"} position="center" className="mt-1" >
           <Buttons href={"/timesheets"} background={"green"} size={"full"}>
             <Texts size={"p3"}>
-              View My Timesheets
+            {t("TimeSheet-Label")}
             </Texts>
           </Buttons>
           </Holds>
