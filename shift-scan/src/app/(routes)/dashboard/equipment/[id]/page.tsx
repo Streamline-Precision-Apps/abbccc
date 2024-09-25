@@ -2,55 +2,34 @@
 import prisma from "@/lib/prisma";
 import Content from "./content";
 import { auth } from "@/auth";
+import { Bases } from "@/components/(reusable)/bases";
+import { Contents } from "@/components/(reusable)/contents";
+import { Sections } from "@/components/(reusable)/sections";
+import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 
-export default async function Page({ params }: { params: { id: string } }) {
-    const session = await auth();
-    const user_Id = session?.user.id;
-    
-    // get current data 
-    const currentDate = new Date();
-    // taking the current date find the past 24 hoursof equipment records
-    const past24Hours = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
+export default async function Page({ params }: { params: { form: string } }) {
+  const session = await auth();
+  if (!session) return null;
+  const userId = session.user.id;
 
-    // get necessary data from the equipment log but find it based off url
-    const equipmentform = await prisma.employeeEquipmentLog.findUnique({
-        where: {
-            id: Number(params.id),
-        },
-        include: {
-            Equipment: true,
-        },
-    });
-    const userNotes = await prisma.employeeEquipmentLog.findUnique({
-        where: {
-            id: Number(params.id),
-            employee_id: user_Id,
-        }
-    })
+  // Log counts for debugging
+  return (
+    <Bases>
+      <Contents>
+        <Sections size={"dynamic"}>
+          <Content userId={userId} formId={params.form} />
+        </Sections>
+      </Contents>
+    </Bases>
+  );
+}
 
-    // find all other related logs the past 24 hours that are not submitted
-    // this enables us to prevent user from clocking out.
-    const usersLogs = await prisma.employeeEquipmentLog.findMany({
-        where: {
-            id: Number(params.id),
-            employee_id: user_Id,
-            createdAt: { lte: currentDate, gte: past24Hours },
-            submitted: false
-        },
-
-    })
-    // Extract values from equipment form and creates and pass individual props of items
-    const startTime = new Date(equipmentform?.startTime ?? "");
-    const completed = equipmentform?.completed;
-    const savedDuration = equipmentform?.duration?.toFixed(2);
-    const filled = equipmentform?.refueled;
-    const fuelUsed = equipmentform?.fuel_used?.toString();
-    const eqname = equipmentform?.Equipment?.name?.toString();
-    const eqid = equipmentform?.id?.toString();
-    const equipment_notes = userNotes?.equipment_notes?.toString() ;
-
-    // Log counts for debugging
-        return (
-        <Content name={eqname} eqid={eqid} startTime={startTime} completed={completed} fuelUsed={fuelUsed} savedDuration={savedDuration} filled={filled} equipment_notes={equipment_notes} usersLogs={usersLogs} />
-        )
-    }
+// // Extract values from equipment form and creates and pass individual props of items
+// const start_time = new Date(equipmentform?.startTime ?? "");
+// const completed = equipmentform?.isCompleted;
+// const savedDuration = equipmentform?.duration?.toFixed(2);
+// const filled = equipmentform?.isRefueled;
+// const fuelUsed = equipmentform?.fuelUsed?.toString();
+// const eqname = equipmentform?.Equipment?.name?.toString();
+// const eqid = equipmentform?.id?.toString();
+// const equipment_notes = userNotes?.comment?.toString() ;
