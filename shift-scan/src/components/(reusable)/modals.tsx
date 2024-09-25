@@ -69,10 +69,10 @@ const Modals: FC<ModalProps> = ({className, variant, size, type, isOpen, step, h
             <div className={cn(ModalVariants({variant, size, className}))} {...props}>
               <div className="modal-content">{props.children}</div>
               <div className=" flex flex-row gap-10">
-                <Buttons onClick={() => {handleClose(); signOut()}} className="close-btn" variant={"green"} size={"default"}>
+                <Buttons onClick={() => {handleClose(); signOut()}} className="close-btn" variant={"green"} size={"fill"}>
                     <Titles variant={"default"} size={"h3"}>Yes</Titles>
                 </Buttons>
-                <Buttons onClick={handleClose} className="close-btn" variant={"red"} size={"default"}>
+                <Buttons onClick={handleClose} className="close-btn" variant={"red"} size={"fill"}>
                     <Titles variant={"default"} size={"h3"}>Cancel</Titles>
                 </Buttons>
               </div>
@@ -86,7 +86,7 @@ const Modals: FC<ModalProps> = ({className, variant, size, type, isOpen, step, h
       return (
       <ReactPortal wrapperId="react-portal-modal-container">
         <div className={cn(ModalVariants({variant, size, className}))} {...props}>
-          <Buttons onClick={handleClose} className="close-btn" variant={"red"} size={"exit"}>
+          <Buttons onClick={handleClose} className="close-btn" variant={"red"} size={"fill"}>
           {step === 5 ? <></> : <Images titleImg="/x.svg" titleImgAlt="x" variant={"icon"} size={"thin"}/>
             }
           </Buttons>
@@ -100,7 +100,7 @@ const Modals: FC<ModalProps> = ({className, variant, size, type, isOpen, step, h
   else if (type === "expand") 
     return (
   <>
-        <Buttons onClick={handleClose} className="close-btn" variant={"red"} size={"default"}>
+        <Buttons onClick={handleClose} className="close-btn" variant={"red"} size={"fill"}>
                 <Images titleImg="/x.svg" titleImgAlt="x" variant={"icon"} size={"default"}/>
         </Buttons>
         <Contents variant={"test"} size={"test"}>
@@ -114,7 +114,7 @@ else if (type === "base64")
     <ReactPortal wrapperId="react-portal-modal-container">
         <div className="fixed top-0 left-0 w-screen h-screen bg-neutral-800 opacity-50"/>
         <div className={cn(ModalVariants({variant, size, className}))} {...props} >
-          <Buttons onClick={handleClose} className="close-btn" variant={"icon"} size={"minBtn"}>
+          <Buttons onClick={handleClose} className="close-btn" variant={"icon"} size={"fill"}>
               <Images titleImg="/x.svg" titleImgAlt="x" variant={"icon"} size={"default"}/>
           </Buttons>
           <div className="modal-content-wrapper max-h-[80vh] overflow-y-auto scrollbar-hide">
@@ -127,9 +127,9 @@ else if (type === "base64")
       else return (
         <ReactPortal wrapperId="react-portal-modal-container">
           <div className="modal ">
-              <div className="fixed top-0 left-0 w-screen h-screen bg-neutral-800 opacity-50"/>
+              <div className="fixed top-0  w-screen h-screen bg-neutral-800 opacity-50"/>
               <div className={cn(ModalVariants({variant, size, className}))} {...props}>
-                <Buttons onClick={handleClose} className="close-btn" variant={"icon"} size={"default"}>
+                <Buttons onClick={handleClose} className="close-btn" variant={"icon"} size={"fill"}>
                     <Images titleImg="/x.svg" titleImgAlt="x" variant={"icon"} size={"default"}/>
                 </Buttons>
                 <div className="modal-content">{props.children}</div>

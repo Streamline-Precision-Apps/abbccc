@@ -1,0 +1,38 @@
+"use server";
+import { NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
+import { auth } from "@/auth";
+
+export async function GET() {
+  const session = await auth();
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const currentDate = new Date();
+  const past24Hours = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
+
+  try {
+    const logs = await prisma.employeeEquipmentLogs.findMany({
+      where: {
+        employeeId: userId,
+        createdAt: { lte: currentDate, gte: past24Hours },
+        isSubmitted: false,
+      },
+      include: {
+        Equipment: true,
+      },
+    });
+
+    return NextResponse.json(logs, {
+      headers: {
+        "Cache-Control": "public, max-age=60, s-maxage=60, stale-while-revalidate=30",
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching logs:", error);
+    return NextResponse.json({ error: "Failed to fetch logs" }, { status: 500 });
+  }
+}

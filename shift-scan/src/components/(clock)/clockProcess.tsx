@@ -42,6 +42,9 @@ const { scanEQResult } = useEQScanData();
 const [path, setPath] = useState("");
 const [scanner, setScanner] = useState("");
 
+
+
+
 useEffect(() => {
     // sets step to 1 on mount
     setStep(1)
