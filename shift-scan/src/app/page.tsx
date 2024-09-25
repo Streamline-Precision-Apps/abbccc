@@ -13,7 +13,6 @@ import { Images } from "@/components/(reusable)/images";
 import Capitalize from "@/utils/captitalize";
 import { redirect } from 'next/navigation'
 import { AnimatedHamburgerButton } from "@/components/(animations)/hamburgerMenu";
-
 export default async function Home() {
  //------------------------------------------------------------------------
   // Authentication: Get the current user

@@ -1,51 +1,42 @@
 "use client";
-import React, { FC } from "react";
-
-interface CustomCheckboxProps {
-  label: string;
-  checked: boolean;
-  onChange: (checked: boolean) => void;
+export interface CheckboxProps {
   disabled?: boolean;
+  defaultChecked?: boolean;
+  id: string;
+  name: string;
+  label: string;
+  onChange?: (e: any) => Promise<void>
 }
 
-const CustomCheckbox: FC<CustomCheckboxProps> = ({ label, checked, onChange, disabled = false }) => {
-  return (
-    <label className="flex items-center space-x-3 cursor-pointer select-none">
-      {/* Hidden Checkbox */}
-      <input
-        type="checkbox"
-        checked={checked}
-        onChange={(e) => onChange(e.target.checked)}
-        disabled={disabled}
-        className="hidden"
-      />
-      {/* Custom Styled Checkbox */}
-      <div
-        className={`w-5 h-5 flex items-center justify-center border-2 rounded-md transition-all ${
-          checked ? "bg-blue-500 border-blue-500" : "border-gray-300"
-        } ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+const Checkbox = (props: CheckboxProps) => (
+  <div className="w-full flex gap-2">
+    <input
+      className="
+      peer relative appearance-none shrink-0 w-16 h-16 border-4 border-black mt-1 bg-white shadow-[8px_8px_0px_grey] rounded-[10px]
+      focus:outline-none focus:ring-offset-0 focus:ring-1 focus:ring-blue-100
+      checked:bg-app-green checked:border-4 rounded-[10px]
+      disabled:border-steel-400 disabled:bg-steel-400
+      "
+      type="checkbox"
+      {...props}
+    />
+    <svg
+      className="absolute w-16 h-16 pointer-events-none hidden peer-checked:block stroke-black mt-1 outline-none animate-wave"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      
       >
-        {checked && (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-4 w-4 text-white"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fillRule="evenodd"
-              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-              clipRule="evenodd"
-            />
-          </svg>
-        )}
-      </div>
-      {/* Checkbox Label */}
-      <span className={`text-sm ${disabled ? "text-gray-500" : "text-gray-800"}`}>
-        {label}
-      </span>
+      <polyline points="20 6 9 17 4 12"></polyline>
+    </svg>
+    <label htmlFor={props.id}>
+      {props.label}
     </label>
-  );
-};
+  </div>
+);
 
-export default CustomCheckbox;
+export default Checkbox;
