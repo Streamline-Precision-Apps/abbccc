@@ -14,6 +14,7 @@ import { signIn } from "next-auth/react";
 import { setLocale } from "@/actions/cookieActions";
 import { Forms } from "@/components/(reusable)/forms";
 import { Holds } from "@/components/(reusable)/holds";
+import Checkbox from "@/components/(inputs)/checkBox";
 
 
 type props = {
@@ -111,13 +112,7 @@ return (
                     <Texts size="p2">{t("Spanish")}</Texts>
                 </Holds>
                 <Holds size={"30"}>
-                    <Inputs  
-                    name="locale" 
-                    type="checkbox" 
-                    value="true" 
-                    onChange={(e) => LocaleHandler(e)}
-                    className="w-10 h-10"
-                    />
+                    <Checkbox id={"1"} label={""} onChange={(e) => LocaleHandler(e)} name="locale"  />
                 </Holds>
             </Holds>
         </Forms>

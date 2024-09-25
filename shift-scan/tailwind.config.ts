@@ -1,23 +1,29 @@
-import {nextui} from '@nextui-org/theme';
 import type { Config } from "tailwindcss";
-import fluid, { extract } from "fluid-tailwind";
-
 const config: Config = {
-  content: [
-    "./node_modules/@nextui-org/theme/dist/components/(checkbox|input).js"
-],
   content: {
     files : [
       "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
       "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
       "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     ],
-    extract
   },
   theme: {
     extend: {
       animation: {
         'spin-custom': 'spin 1.1s linear infinite', // Adjust '2s' to make it slower or faster
+        'wave': 'wave 1s linear',
+      },
+      keyframes: {
+        wave: {
+          '0%': { transform: 'rotate(0.0deg)' },
+          '10%': { transform: 'rotate(14deg)' },
+          '20%': { transform: 'rotate(-8deg)' },
+          '30%': { transform: 'rotate(14deg)' },
+          '40%': { transform: 'rotate(-4deg)' },
+          '50%': { transform: 'rotate(10.0deg)' },
+          '60%': { transform: 'rotate(0.0deg)' },
+          '100%': { transform: 'rotate(0.0deg)' },
+        },
       },
       colors: {
         'app-blue': '#57BDE9',
@@ -34,6 +40,6 @@ const config: Config = {
       },
     },
   },
-  plugins: [fluid,nextui()],
+  plugins: [],
 };
 export default config;
