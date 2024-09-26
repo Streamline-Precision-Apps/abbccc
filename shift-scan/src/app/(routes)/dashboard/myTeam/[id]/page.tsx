@@ -66,48 +66,57 @@ export default function Content({ params }: { params: { id: string } }) {
   return (
     <Bases>
       <Contents>
-        <Holds size="titleBox">
-          <TitleBoxes
-            title={`${t('MyTeams-Title')}`}
-            titleImg="/new/team.svg"
-            titleImgAlt={`${t('Teams-Logo-Title')}`}
-            variant="default"
-            size="default"
-          />
-        </Holds>
+          <Holds 
+            background={"white"}
+            className="mb-3">
+                <TitleBoxes
+                 title={`${t('MyTeams-Title')}`}
+                 titleImg="/team.svg"
+                 titleImgAlt={`${t('Teams-Logo-Title')}`}
+                />
+          </Holds>
 
-        <Holds size="dynamic">
-          {isLoading ? (
-            <Contents variant="row" size="listTitle">
-              <Titles size="h1"></Titles>
-              <Spinner />
-            </Contents>
-          ) : (
-            crew.map((user) => (
+          {isLoading ? 
+            <>
+            <Holds background={"white"}>
+              <Contents width={"section"}>
+                <Holds>
+                <Spinner />
+                </Holds>
+              </Contents>
+              </Holds>
+            </> : 
+            <Holds background={"white"}>
+            <Contents width={"section"}>
+            {crew.map((user) => (
+              <Holds className="my-3">
               <Buttons
                 key={user.id}
                 href={`/dashboard/myTeam/${params.id}/employee/${user.id}`}
-                variant="lightBlue"
-                size={null}
+                background="lightBlue"
               >
-                <Contents variant="image" size="listImage">
+                <Holds position={"row"}>
+                <Holds size={"30"}>
                   <Images
-                    titleImg={user.image ?? "/new/default-profile.svg"}
+                    titleImg={user.image ?? "/default-profile.svg"}
                     titleImgAlt="profile picture"
-                    variant="icon"
-                    size="default"
                     loading="lazy"
+                    className="rounded-xl"
+
                   />
-                </Contents>
-                <Contents variant="row" size="listTitle">
-                  <Titles size="h1">
+                </Holds>
+                <Holds>
+                  <Titles size="h2">
                     {user.firstName} {user.lastName}
                   </Titles>
-                </Contents>
+                  </Holds>
+                </Holds>
               </Buttons>
-            ))
-          )}
+              </Holds>
+            ))}
+          </Contents>
         </Holds>
+        }
       </Contents>
     </Bases>
   );
