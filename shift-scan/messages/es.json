@@ -25,6 +25,7 @@
             "DA-Today": "Hoy",
             "TimeSheet-Label": "Ver Mis Hojas de Tiempo",
             "Clock-btn": "Fichar",
+            "Clock-break-btn": "Volver al trabajo",
             "MyTeam-btn": "Equipos",
             "Qr-btn": "Generador QR"
     },
@@ -34,7 +35,8 @@
         "ScanEquipment": "Escanee el equipo",
         "Cancel": "Cancelar",
         "TroubleScanning": "¿Problemas para escanear?",
-        "ReturnToJobsite": "¿Cambiar Código de coste?",
+        "ReturnToJobsite": "¿Volver y trabajar con el mismo código?",
+        "ChangeJobsite": "Cambiar sitio de trabajo",
         "Title-jobsite": "Seleccione el sitio ",
         "Title-equipment": "Seleccione el equipo",
         "Title-costcode": "Seleccione el Código de coste",

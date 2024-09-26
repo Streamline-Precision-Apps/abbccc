@@ -13,6 +13,7 @@ import { Titles } from "../(reusable)/titles";
 import { Buttons } from "../(reusable)/buttons";
 import { setAuthStep } from "@/app/api/auth";
 import { Equipment } from "@/lib/types";
+import useFetchAllData from "@/app/(content)/FetchData";
 type clockProcessProps = {
     scannerType: string;
     type: string;
@@ -33,6 +34,7 @@ equipment
 }
 : clockProcessProps
 ){
+useFetchAllData();
 const t = useTranslations("Clock");
 const [step, setStep] = useState(1);
 const [useQrCode, setUseQrCode] = useState(true);
@@ -41,7 +43,6 @@ const { scanResult, setScanResult } = useScanData();
 const { scanEQResult } = useEQScanData();
 const [path, setPath] = useState("");
 const [scanner, setScanner] = useState("");
-
 
 
 
