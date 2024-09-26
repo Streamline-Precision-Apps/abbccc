@@ -4,6 +4,8 @@ import { Modals } from '@/components/(reusable)/modals';
 import { Buttons } from '@/components/(reusable)/buttons';
 import { useTranslations } from 'next-intl';
 import { redirect } from 'next/navigation';
+import { Holds } from '@/components/(reusable)/holds';
+import { Contents } from '@/components/(reusable)/contents';
 
 export default function SignOutModal() {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,14 +16,16 @@ export default function SignOutModal() {
   };
 
   return (
-    <div>
-      <Buttons onClick={() => setIsOpen(true)} variant="red" size="default">
-        <p>{t("SignOut")}</p>
-      </Buttons>
+    <Holds>
+      <Holds size={"full"}>
+        <Buttons onClick={() => setIsOpen(true)} background={"red"} size={"full"}>
+          <p>{t("SignOut")}</p>
+        </Buttons>
+      </Holds>
 
       <Modals handleClose={signoutHandler} isOpen={isOpen} type="signOut" variant={"default"} size={"sm"}>
         {t("SignOutConfirmation")}
       </Modals>
-    </div>
+    </Holds>
   );
 }

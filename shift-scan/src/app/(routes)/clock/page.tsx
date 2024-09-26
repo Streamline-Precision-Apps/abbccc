@@ -14,16 +14,14 @@ const lang = cookies().get("locale");
 const locale = lang ? lang.value : "en"; // Default to English
 return (
 <Bases>
-<Contents size={"default"} variant={"default"}>
-<Holds size={"default"}>
-<ClockProcessor
+    <Contents>
+        <ClockProcessor
         type={"jobsite"}
         scannerType={"jobsite"}
         locale={locale}
         returnpath="/"
         />
-</Holds>
-</Contents>
+    </Contents>
 </Bases>
 )
 }

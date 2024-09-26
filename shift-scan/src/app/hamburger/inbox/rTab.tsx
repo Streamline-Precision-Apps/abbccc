@@ -1,7 +1,6 @@
 "use client"
 import User from "@/app/(routes)/dashboard/user";
 import { Buttons } from "@/components/(reusable)/buttons";
-import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { inboxContent } from "@/lib/types";
 import { redirect } from "next/navigation";
@@ -27,7 +26,7 @@ export default function RTab({sentContent, session, receivedContent: recievedCon
     return (
         <>
         {pending.map((item) => (
-        <Buttons variant={"orange"} size={"fill"} key={item.id} href={`/hamburger/inbox/recieved/${item.id}`}>
+        <Buttons background={"orange"} key={item.id} href={`/hamburger/inbox/recieved/${item.id}`}>
         <Titles>
             {item.requestType} 
         </Titles>

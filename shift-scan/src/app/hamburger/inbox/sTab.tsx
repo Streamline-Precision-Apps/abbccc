@@ -1,6 +1,5 @@
 "use client"
 import { Buttons } from "@/components/(reusable)/buttons";
-import { Contents } from "@/components/(reusable)/contents";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { inboxContent } from "@/lib/types";
@@ -13,7 +12,7 @@ return (
 <>
 {/*This map show all approved requests on top */}
 {approved.map((item) => (
-    <Buttons variant={"green"} size={null} key={item.id} href={`/hamburger/inbox/sent/approved/${item.id}`}>      
+    <Buttons background={"green"} key={item.id} href={`/hamburger/inbox/sent/approved/${item.id}`}>      
         <Titles>
             {item.requestType} 
         </Titles>
@@ -29,7 +28,7 @@ return (
 ))}
 {/*This map show pending requests in the middle*/}
 {pending.map((item) => (
-    <Buttons variant={"orange"} size={null} key={item.id} href={`/hamburger/inbox/sent/${item.id}`}>
+    <Buttons background={"orange"} key={item.id} href={`/hamburger/inbox/sent/${item.id}`}>
     <Titles>
         {item.requestType} 
     </Titles>
@@ -46,7 +45,7 @@ return (
 
 {/*This map show denined requests on the bottom*/}
 {denied.map((item) => (
-    <Buttons variant={"red"} size={null} key={item.id} href={`/hamburger/inbox/sent/denied/${item.id}`}>
+    <Buttons background={"red"} key={item.id} href={`/hamburger/inbox/sent/denied/${item.id}`}>
     <Titles>
         {item.requestType} 
     </Titles>
@@ -61,15 +60,12 @@ return (
     </Buttons>
 ))}
 
-{/*This is the request button*/}
-<Buttons 
+    {/*This is the request button*/}
+    <Buttons 
     href="/hamburger/inbox/form" 
-    size={null}
-    variant={"green"}
+    background={"green"}
     >
-    <Texts variant={"default"} size={"p2"}>
-        Request
-        </Texts>
+        <Texts size={"p2"}>Request</Texts>
     </Buttons>
 </>
 )}
