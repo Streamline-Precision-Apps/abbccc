@@ -13,7 +13,7 @@ import { Images } from "@/components/(reusable)/images";
 import Capitalize from "@/utils/captitalize";
 import { redirect } from 'next/navigation'
 import { AnimatedHamburgerButton } from "@/components/(animations)/hamburgerMenu";
-
+import capitalizeAll from "@/utils/capitalizeAll";
 export default async function Home() {
  //------------------------------------------------------------------------
   // Authentication: Get the current user
@@ -43,8 +43,8 @@ export default async function Home() {
   // Pass the fetched data to the client-side Content component
   return (
     <Bases>
-      <Contents className="h-[90%] mt-10">
-      <Holds background={"white"} className="h-full">
+      <Contents className="h-dvh mt-10"> 
+      <Holds background={"white"} className="h-full mx-auto">
       <Holds position={"row"} className="mb-5">
       <Holds size={"30"}>
       <Images 
@@ -61,10 +61,10 @@ export default async function Home() {
               <Holds className="mb-10">
               <Banners position={"flex"}>
               <Titles text={"black"} size={"p1"}>{t("Banner")}</Titles>
-              <Texts text={"black"} size={"p4"}>{t("Date", { date: Capitalize(date) })}</Texts>
+              <Texts text={"black"} size={"p4"}>{t("Date", { date: capitalizeAll(date) })}</Texts>
             </Banners>
               </Holds>
-              <Holds>
+              <Holds size={"full"}>
               <Texts text={"black"} size={"p2"}>
                 {t("Name", {
                   firstName: Capitalize(user.firstName),
@@ -72,7 +72,7 @@ export default async function Home() {
                 })}
               </Texts>
                 </Holds>
-          <WidgetSection session={session}/> 
+                  <WidgetSection session={session}/> 
       </Holds>
       </Contents>
     </Bases>

@@ -1,124 +1,81 @@
 import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
-import Content from "./content";
 import { auth } from "@/auth";
+import { Bases } from "@/components/(reusable)/bases";
+import { Contents } from "@/components/(reusable)/contents";
+import { Holds } from "@/components/(reusable)/holds";
+import { Images } from "@/components/(reusable)/images";
+import { AnimatedHamburgerButton } from "@/components/(animations)/hamburgerMenu";
+import { Banners } from "@/components/(reusable)/banners";
+import { Titles } from "@/components/(reusable)/titles";
+import { Texts } from "@/components/(reusable)/texts";
+import capitalizeAll from "@/utils/capitalizeAll";
+import Capitalize from "@/utils/captitalize";
+import WidgetSection from "@/components/widgetSection";
+import { getTranslations } from "next-intl/server";
+import { redirect } from "next/navigation";
+import DbWidgetSection from "./dbWidgetSection";
 
 export default async function Dashboard() {
+ //------------------------------------------------------------------------
+  // Authentication: Get the current user
   const session = await auth();
-  
-  const userId = session?.user.id;
+  const t = await getTranslations("Home");
+  if (!session) {
+    // Redirect or return an error if the user is not authenticated
+    redirect('/signin');
+  }
 
-  // Fetch all records
-  const jobCodes = await prisma.jobsites.findMany({
-    select: {
-      id: true,
-      qrId: true,
-      name: true,
-    },
-  });
+  const user = session.user;
+  const userId = session.user.id;
+  const permission = session.user.permission;
 
-  const costCodes = await prisma.costCodes.findMany({
-    select: {
-      id: true,
-      name: true,
-      description: true,
-    },
-  });
-
-  const equipment = await prisma.equipment.findMany({
-    select: {
-      id: true,
-      qrId: true,
-      name: true,
-    },
-  });
-
-  // Fetch recent records
-  const recentJobSites = await prisma.jobsites.findMany({
-    select: {
-      id: true,
-      qrId: true,
-      name: true,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-    take: 5,
-  });
-
-  const recentCostCodes = await prisma.costCodes.findMany({
-    select: {
-      id: true,
-      name: true,
-      description: true,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-    take: 5,
-  });
-
-  const recentEquipment = await prisma.equipment.findMany({
-    select: {
-      id: true,
-      qrId: true,
-      name: true,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-    take: 5,
-  });
-
+  // Get the current language from cookies
   const lang = cookies().get("locale");
-  const locale = lang ? lang.value : "en"; // Default to English
+  const locale = lang ? lang.value : "en";
 
-  const currentDate = new Date();
-  const past24Hours = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
-
-  let logs;
-
-  logs = await prisma.employeeEquipmentLogs.findMany({
-    where: {
-      employeeId: userId,
-      createdAt: { lte: currentDate, gte: past24Hours },
-      isSubmitted: false,
-    },
-    include: {
-      Equipment: {
-        select: {
-          id: true,
-          qrId: true,
-          name: true,
-        },
-      },
-    },
+  const date = new Date().toLocaleDateString(locale, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    weekday: "long",
   });
-
-  logs = logs.map((log) => ({
-    id: log.id.toString(),
-    userId: log.employeeId, // Add this line
-    equipment: log.Equipment?.id
-      ? {
-          id: log.Equipment.id,
-          qrId: log.Equipment.qrId,
-          name: log.Equipment.name,
-        }
-      : null,
-    submitted: log.isSubmitted,
-  }));
 
   return (
-    <Content
-      locale={locale}
-      jobCodes={jobCodes}
-      costCodes={costCodes}
-      equipment={equipment}
-      recentJobSites={recentJobSites}
-      recentCostCodes={recentCostCodes}
-      recentEquipment={recentEquipment}
-      logs={logs} session={undefined} 
-      
-      />
+<Bases>
+      <Contents className="h-[90%] mt-10">
+      <Holds background={"white"} size={"first"} className="h-fit mx-auto">
+      <Holds position={"row"} className="mb-5">
+      <Holds size={"30"}>
+      <Images 
+                titleImg="/logo.svg" 
+                titleImgAlt="logo" 
+                position={"left"} 
+                background={"none"} 
+                size={"full"} />
+              </Holds>
+              <Holds size={"70"}>
+                <AnimatedHamburgerButton/> {/* come back to this */}
+              </Holds>
+              </Holds>
+              <Holds className="mb-10">
+              <Banners position={"flex"}>
+              <Titles text={"black"} size={"p1"}>{t("Banner")}</Titles>
+              <Texts text={"black"} size={"p4"}>{t("Date", { date: capitalizeAll(date) })}</Texts>
+            </Banners>
+              </Holds>
+              <Holds size={"full"}>
+              <Texts text={"black"} size={"p2"}>
+                {t("Name", {
+                  firstName: Capitalize(user.firstName),
+                  lastName: Capitalize(user.lastName),
+                })}
+              </Texts>
+                </Holds>
+                  <DbWidgetSection session={session} locale={locale}/> 
+      </Holds>
+      </Contents>
+    </Bases>
+  
   );
 }

@@ -23,8 +23,9 @@
             "DA-ScrollRight": "Scroll Right",
             "DA-Return": "Return",
             "DA-Today": "Today",
+            "TimeSheet-Label": "View my Timesheet",
             "Clock-btn": "Clock In",
-            "MyTeam-btn": "My Team",
+            "MyTeam-btn": "Teams",
             "Qr-btn": "Qr Generator",
             "Copyright": "Copyright © 2024. All rights reserved."
     },
@@ -235,6 +236,10 @@
         "Cancel": "Cancel"
     },
     "MyTeam": {
+        "Teams-Title": "My Teams",
+        "Teams-Logo-Title": "Team Icon",
+        "MyTeams-Title": "My Teams",
+        "Teams-Button-Name": "Equipo",
         "Timesheets": "Timesheets",
         "Duration": "Duration",
         "Duration-Comment": "The duration updates when editing changes are saved.",
@@ -247,6 +252,14 @@
         "EQTotalTime" : "Total Time",
         "NoData": "No Data Found",
         "EquipmentLogs": "Equipment Logs",
+        "PhoneNumber": "Phone Number",
+        "Email": "Email",
+        "EmergencyContact": "Emergency Contact Name",
+        "EmergencyContactNumber": "Emergency Contact Number",
+        "DOB": "Date of Birth",
+        "Edit": "Edit",
+        "Delete": "Delete",
+        "SelectDate": "Select Date",
         "NoEquipmentLogs": "No logs found for the day selected."
     },
     "admin": {

@@ -4,7 +4,6 @@ import { useTranslations } from "next-intl";
 import LocaleToggleSwitch from "@/components/(inputs)/toggleSwitch";
 import { Holds } from "@/components/(reusable)/holds";
 import { Buttons } from "@/components/(reusable)/buttons";
-import SwitchWithLabel from "@/components/(inputs)/switchWithLabel";
 import { Titles } from "@/components/(reusable)/titles";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Bases } from "@/components/(reusable)/bases";
@@ -44,90 +43,116 @@ export default function Index({ data }: { data: UserSettings }) {
   return (
     <div>
       <Bases>
-        <Holds size={"titleBox"}>
-          <TitleBoxes
-            title={t("Title")}
-            titleImg="/Settings.svg"
-            titleImgAlt="Settings"
-            variant={"default"}
-            size={"default"}
-          />
-        </Holds>
+        <Contents>
+          <Holds background={"white"}
+          className="mb-3 px-3">
+            <TitleBoxes
+              title={t("Title")}
+              titleImg="/Settings.svg"
+              titleImgAlt="Settings"
+              variant={"default"}
+              size={"default"}
+            />
+          </Holds>
+          <Holds background={"white"}
+          className="mb-3 p-3">
+            <Titles>{t("Notifications")}</Titles>
+            <Holds position={"row"}>
+              <Holds size={"70"}>
+                <Texts position={"left"}>{t("ApprovedRequests")}</Texts>
+              </Holds>
+              <Holds size={"30"}>
+                  <LocaleToggleSwitch
+                    data={updatedData.approvedRequests || false}
+                    onChange={(value: boolean) =>
+                      handleChange("approvedRequests", value)
+                    }
+                  />
+              </Holds>
+            </Holds>
+            <Holds position={"row"}>
+              <Holds size={"70"}>
+                <Texts position={"left"}>{t("TimeOffRequests")}</Texts>
+              </Holds>
+              <Holds size={"30"}>
+                <LocaleToggleSwitch
+                  data={updatedData.timeOffRequests || false}
+                  onChange={(value: boolean) =>
+                    handleChange("timeOffRequests", value)
+                  }
+                />
+              </Holds>
+            </Holds>
+            <Holds position={"row"}>
+              <Holds size={"70"}>
+                <Texts position={"left"}>{t("GeneralReminders")}</Texts>
+              </Holds>
+              <Holds size={"30"}>
+                <LocaleToggleSwitch
+                  data={updatedData.generalReminders || false}
+                  onChange={(value: boolean) =>
+                    handleChange("generalReminders", value)
+                  }
+                />
+              </Holds>
+            </Holds>
+          </Holds>
 
-        <Holds size={"dynamic"}>
-          <Titles>{t("Notifications")}</Titles>
-          <SwitchWithLabel>
-            <Texts size={"left"}>{t("ApprovedRequests")}</Texts>
-            <LocaleToggleSwitch
-              data={updatedData.approvedRequests || false}
-              onChange={(value: boolean) =>
-                handleChange("approvedRequests", value)
-              }
-            />
-          </SwitchWithLabel>
-          <SwitchWithLabel>
-            <Texts>{t("TimeOffRequests")}</Texts>
-            <LocaleToggleSwitch
-              data={updatedData.timeOffRequests || false}
-              onChange={(value: boolean) =>
-                handleChange("timeOffRequests", value)
-              }
-            />
-          </SwitchWithLabel>
-          <SwitchWithLabel>
-            <Texts>{t("GeneralReminders")}</Texts>
-            <LocaleToggleSwitch
-              data={updatedData.generalReminders || false}
-              onChange={(value: boolean) =>
-                handleChange("generalReminders", value)
-              }
-            />
-          </SwitchWithLabel>
-        </Holds>
+          <Holds background={"white"} className="mb-3 px-3">
+            <Titles>{t("Security")}</Titles>
+            <Holds position={"row"}>
+              <Holds size={"70"}>
+                <Texts position={"left"}>{t("Biometrics")}</Texts>
+              </Holds>
+              <Holds size={"30"}>
+                <LocaleToggleSwitch
+                  data={updatedData.biometric || false}
+                  onChange={(value: boolean) => handleChange("biometric", value)}
+                />
+              </Holds>
+            </Holds>
+            <Holds position={"row"}>
+              <Holds size={"70"}>
+                <Texts position={"left"}>{t("CameraAccess")}</Texts>
+              </Holds>
+              <Holds size={"30"}>
+                <LocaleToggleSwitch
+                  data={updatedData.cameraAccess || false}
+                  onChange={(value: boolean) => handleChange("cameraAccess", value)}
+                />
+              </Holds>
+            </Holds>
+            <Holds position={"row"}>
+              <Holds size={"70"}>
+                <Texts position={"left"}>{t("LocationAccess")}</Texts>
+              </Holds>
+              <Holds size={"30"}>
+                <LocaleToggleSwitch
+                  data={updatedData.LocationAccess || false}
+                  onChange={(value: boolean) =>
+                    handleChange("LocationAccess", value)
+                  }
+                />
+              </Holds>
+            </Holds>
+          </Holds>
 
-        <Holds size={"dynamic"}>
-          <Titles>{t("Security")}</Titles>
-          <SwitchWithLabel>
-            <Texts>{t("Biometrics")}</Texts>
-            <LocaleToggleSwitch
-              data={updatedData.biometric || false}
-              onChange={(value: boolean) => handleChange("biometric", value)}
-            />
-          </SwitchWithLabel>
-          <SwitchWithLabel>
-            <Texts>{t("CameraAccess")}</Texts>
-            <LocaleToggleSwitch
-              data={updatedData.cameraAccess || false}
-              onChange={(value: boolean) => handleChange("cameraAccess", value)}
-            />
-          </SwitchWithLabel>
-          <SwitchWithLabel>
-            <Texts>{t("LocationAccess")}</Texts>
-            <LocaleToggleSwitch
-              data={updatedData.LocationAccess || false}
-              onChange={(value: boolean) =>
-                handleChange("LocationAccess", value)
-              }
-            />
-          </SwitchWithLabel>
-        </Holds>
-
-        <Buttons
-          onClick={() => setIsModalOpen(true)}
-          variant={"orange"}
-          size={null}
-        >
-          <Titles>{t("ChangePassword")}</Titles>
-        </Buttons>
+          <Buttons
+            onClick={() => setIsModalOpen(true)}
+            background={"orange"}
+          >
+            <Titles>{t("ChangePassword")}</Titles>
+          </Buttons>
+        </Contents>
       </Bases>
 
       <Modals isOpen={isModalOpen} handleClose={handleCancel} size="clock">
-        <Holds size={"dynamic"} className="p-4">
+        <Holds>
           <h2>{t("SaveChanges")}</h2>
-          <Buttons onClick={handleSave} variant={"green"} size={null}>
+          <Buttons onClick={handleSave} background={"green"}>
             <Titles>{t("Yes")}</Titles>
           </Buttons>
-          <Buttons onClick={handleCancel} variant={"red"} size={null}>
+          <Buttons onClick={handleCancel} background={"red"}>
             <Titles>{t("Cancel")}</Titles>
           </Buttons>
         </Holds>

@@ -4,11 +4,12 @@ import Spinner from "@/components/(animations)/spinner";
 import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
+import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
-import { Sections } from "@/components/(reusable)/sections";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { useSession } from "next-auth/react";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
 type CrewMember = {
@@ -28,6 +29,7 @@ export default function Content({ params }: { params: { id: string } }) {
   const { data: session, status } = useSession();
   const { id } = params;
   const crewId = Number(id);
+  const t = useTranslations("MyTeam");
 
   useEffect(() => {
     const fetchCrew = async () => {
@@ -64,48 +66,57 @@ export default function Content({ params }: { params: { id: string } }) {
   return (
     <Bases>
       <Contents>
-        <Sections size="titleBox">
-          <TitleBoxes
-            title="My Team"
-            titleImg="/new/team.svg"
-            titleImgAlt="Team"
-            variant="default"
-            size="default"
-          />
-        </Sections>
+          <Holds 
+            background={"white"}
+            className="mb-3">
+                <TitleBoxes
+                 title={`${t('MyTeams-Title')}`}
+                 titleImg="/team.svg"
+                 titleImgAlt={`${t('Teams-Logo-Title')}`}
+                />
+          </Holds>
 
-        <Sections size="dynamic">
-          {isLoading ? (
-            <Contents variant="row" size="listTitle">
-              <Titles size="h1"></Titles>
-              <Spinner />
-            </Contents>
-          ) : (
-            crew.map((user) => (
+          {isLoading ? 
+            <>
+            <Holds background={"white"}>
+              <Contents width={"section"}>
+                <Holds>
+                <Spinner />
+                </Holds>
+              </Contents>
+              </Holds>
+            </> : 
+            <Holds background={"white"}>
+            <Contents width={"section"}>
+            {crew.map((user) => (
+              <Holds className="my-3">
               <Buttons
                 key={user.id}
                 href={`/dashboard/myTeam/${params.id}/employee/${user.id}`}
-                variant="lightBlue"
-                size={null}
+                background="lightBlue"
               >
-                <Contents variant="image" size="listImage">
+                <Holds position={"row"}>
+                <Holds size={"30"}>
                   <Images
-                    titleImg={user.image ?? "/new/default-profile.svg"}
+                    titleImg={user.image ?? "/default-profile.svg"}
                     titleImgAlt="profile picture"
-                    variant="icon"
-                    size="default"
                     loading="lazy"
+                    className="rounded-xl"
+
                   />
-                </Contents>
-                <Contents variant="row" size="listTitle">
-                  <Titles size="h1">
+                </Holds>
+                <Holds>
+                  <Titles size="h2">
                     {user.firstName} {user.lastName}
                   </Titles>
-                </Contents>
+                  </Holds>
+                </Holds>
               </Buttons>
-            ))
-          )}
-        </Sections>
+              </Holds>
+            ))}
+          </Contents>
+        </Holds>
+        }
       </Contents>
     </Bases>
   );

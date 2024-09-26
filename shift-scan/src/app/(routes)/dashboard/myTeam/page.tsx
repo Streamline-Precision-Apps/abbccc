@@ -9,9 +9,11 @@ import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 
 export default function Content() {
+const t = useTranslations("MyTeam");
 const [myTeams,  setMyTeams] = useState<any[]>([]);
 const [isLoading, setIsLoading] = useState(true);
 const { data: session, status } = useSession();
@@ -49,40 +51,42 @@ if (status === "authenticated") {
 }, [status]);
 
 return (
-<Bases variant="default">
-    <Contents size="default">
-    <Holds size="titleBox">
+<Bases>
+<Contents>
+    <Holds 
+            background={"white"}
+            className="mb-3">
         <TitleBoxes
-        title="My Teams"
-        titleImg="/new/team.svg"
-        titleImgAlt="Team"
-        variant="default"
-        size="default"
+        title={`${t('Teams-Title')}`}
+        titleImg="/team.svg"
+        titleImgAlt={`${t('Teams-Logo-Title')}`}
         />
     </Holds>
     {isLoading ? <>
-        <Holds size="dynamic">
-            <Contents variant="row" size="listTitle">
-            <Titles size="h1">
-            </Titles>
+        <Holds background={"white"}>
+            <Contents width={"section"}>
             <Spinner />
             </Contents>
         </Holds>
     </> :
-    <Holds size="dynamic">
+    <Holds background={"white"}>
+        <Contents width={"section"}>
         {myTeams.map((teams) => (
+            <Holds className="my-3">
             <Buttons
-            variant="lightBlue"
+            background="lightBlue"
             href={`/dashboard/myTeam/${teams.id}`}
             key={teams.id}
             >
-            <Contents variant="row" size="listTitle">
+            <Holds>
             <Titles size="h1">
-                Team {teams.id}
+            {teams.name} ({teams.totalMembers})
             </Titles>
-            </Contents>
+            </Holds>
             </Buttons>
+            </Holds>
         ))}
+        </Contents>
     </Holds>
     }
         </Contents>

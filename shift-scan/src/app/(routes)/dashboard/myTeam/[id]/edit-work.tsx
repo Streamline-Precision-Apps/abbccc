@@ -261,7 +261,7 @@
               <>
                 <Buttons onClick={editHandler} className={edit ? "bg-app-red" : "bg-app-orange"}>
                   <Images
-                    titleImg={edit ? "/new/undo-edit.svg" : "/new/edit-form.svg"}
+                    titleImg={edit ? "/undo-edit.svg" : "/edit-form.svg"}
                     titleImgAlt={edit ? "Undo Edit" : "Edit Form"}
                     variant={"icon"}
                     size={"backButton"}
@@ -271,7 +271,7 @@
                 {edit ? (
                   <Buttons className="flex bg-app-green text-white font-bold p-2 rounded" onClick={handleSaveChanges}>
                     <Images
-                      titleImg={"/new/save-edit.svg"}
+                      titleImg={"/save-edit.svg"}
                       titleImgAlt={"Save Changes"}
                       variant={"icon"}
                       size={"backButton"}
