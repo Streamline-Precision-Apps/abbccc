@@ -24,22 +24,23 @@ export const AddJobsiteContent = () => {
   };
   return (
     <Bases>
-    <Contents>
-      <Holds size={"titleBox"}>
+    <Contents height={"page"}>
+
+      <Holds background={"white"} className="my-3" >
         <TitleBoxes
           title={t("Title")}
-          titleImg="/profile.svg"
+          titleImg="/jobsite.svg"
           titleImgAlt="Team"
           variant={"default"}
           size={"default"}
           />
       </Holds>
-      { banner &&
-      <Contents variant="green" size={"listTitle"}>
-      <Texts>{bannerText}</Texts>
-    </Contents>
-    }
-      <Holds size={"dynamic"}>
+          { banner &&
+          <Holds background="green" className="my-3">
+          <Texts>{bannerText}</Texts>
+        </Holds>
+        }
+      <Holds background={"white"}>
         <AddJobsiteForm setBanner={setBanner} setBannerText={setBannerText} handler={()=> handleBanner} />
       </Holds>
     </Contents>

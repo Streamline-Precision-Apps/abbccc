@@ -124,7 +124,9 @@
     },
     
     "equipmentPicture": {
-        "Button": "Take Picture"
+       "TakePicture": "Take a Picture",
+        "ResetCamera": "Reset Camera",
+        "startCamera": "Start Camera"
     },
     "EquipmentContent" : {
         "Title": "Checked Out",
@@ -167,15 +169,27 @@
     },
 
     "addJobsiteForm": {
+        "Temporary": "Temporary Jobsite",
         "Name": "Name",
+        "NameExample": "Enter a name for the site",
+        "Address": "Address Information",
         "StreetNumber": "Street Number",
+        "StreetNumberDirection": "Street Number",
         "StreetName": "Street Name",
+        "StreetNameDirection": "Street Name",
         "City": "City",
+        "CityTitle": "Burley",
+        "ZipCode": "Zip Code",
+        "ZipCodeTitle": "83318",
         "State": "State",
+        "StateTitle": "ID",
         "Country": "Country",
+        "purpose": "This is for describing the site, where it is located, and other details for the site.",
+        "DescriptionTitle": "Description",
         "Description": "Jobsite Description",
         "Comments": "Jobsite Comments",
-        "Submit": "Submit"
+        "CommentsPurpose": "This is for justifying the need for a new site, to decide if it should be accepted or rejected.",
+        "Submit": "Create New Jobsite"
     },
 
     "clock-out": {

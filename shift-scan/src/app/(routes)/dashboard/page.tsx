@@ -60,7 +60,7 @@ export default async function Dashboard() {
               </Holds>
               <Holds className="mb-10">
               <Banners position={"flex"}>
-              <Titles text={"black"} size={"p1"}>{t("Banner")}</Titles>
+              <Titles text={"black"} size={"h1"}>{t("Banner")}</Titles>
               <Texts text={"black"} size={"p4"}>{t("Date", { date: capitalizeAll(date) })}</Texts>
             </Banners>
               </Holds>

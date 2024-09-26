@@ -129,7 +129,7 @@ return (
     (
       <>
       {/* Component that will render */}
-        <Grids variant={"widgets"} size={"default"}>
+        <Grids size={"widgets"}>
 {/* Checks if a user has a permission of "USER" it won't render any manager buttons below */}
         {(permission !=="USER") && !additionalButtonsType && (
             <>

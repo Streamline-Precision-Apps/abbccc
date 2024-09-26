@@ -82,14 +82,24 @@ export default function QrJobsiteContent() {
     <>
       {loading ? (
         <>
+        <Holds size={"first"}>
         <Selects>
           <Options>
-            Loading job codes...
+            {t("Loading")}
           </Options>
         </Selects>
+        <Holds position={"row"} size={"full"} className="justify-between items-center p-4">
+        <Buttons background={"orange"} onClick={handleGenerate} size={"50"} className="p-4 mr-4">
+            <Titles size={"h2"}>{t("Generate")}</Titles>
+          </Buttons>
+          <Buttons background={"green"} onClick={handleNew} size={"50"} className="p-4 ml-4">
+            <Titles  size={"h2"}>{t("New")}</Titles>
+          </Buttons>
+        </Holds>
+        </Holds>
         </>
       ) : (
-        <Holds size={"half"}>
+        <Holds  size={"first"}>
         <Selects value={selectedJobSite} onChange={handleOptionSelect}>
           <Options variant={"default"} value="">
             Select One
@@ -104,28 +114,30 @@ export default function QrJobsiteContent() {
             </Options>
           ))}
         </Selects>
-        <Contents variant={"rowCenter"} size={null}>
-          <Buttons variant={"orange"} onClick={handleGenerate} size={null}>
-            <Titles variant={"default"} size={"h1"}>{t("Generate")}</Titles>
+        
+       <Holds position={"row"} size={"full"} className="justify-between items-center p-4">
+          <Buttons background={"orange"} onClick={handleGenerate} size={"50"} className="p-4 mr-4">
+            <Titles size={"h2"}>{t("Generate")}</Titles>
           </Buttons>
-          <Buttons variant={"green"} onClick={handleNew} size={null}>
-            <Titles variant={"default"} size={"h1"}>{t("New")}</Titles>
+          <Buttons background={"green"} onClick={handleNew} size={"50"} className="p-4 ml-4">
+            <Titles  size={"h2"}>{t("New")}</Titles>
           </Buttons>
-        </Contents>
+        </Holds>
+
         <Modals
           isOpen={isModalOpen}
           handleClose={() => setIsModalOpen(false)}
-          size="default"
+          size="sm"
         >
           {selectedJobSite && (
-            <>
-              <Texts variant={"default"}>
+            <Holds className="p-4">
+              <Texts>
                 {selectedJobSiteName} {t("QR Code")}
               </Texts>
-              <Contents variant={"rowCenter"} size={"default"}>
-                <Images titleImg="" titleImgAlt="QR Code" src={qrCodeUrl} />
+              <Contents>
+                <Images titleImg={qrCodeUrl} titleImgAlt="QR Code" />
               </Contents>
-            </>
+            </Holds>
           )}
         </Modals>
       </Holds>
