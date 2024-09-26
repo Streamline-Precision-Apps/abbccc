@@ -77,16 +77,16 @@
       } else {
         setMessage(null);
         const initializedTimesheets = timesheetData.map((timesheet) => {
-          const start_date = timesheet.startTime
+          const startDate = timesheet.startTime
             ? new Date(timesheet.startTime).toISOString().split("T")[0]
             : "";
-          const start_time = timesheet.startTime
+          const startTime = timesheet.startTime
             ? new Date(timesheet.startTime).toISOString().split("T")[1].split(":").slice(0, 2).join(":")
             : "";
-          const end_date = timesheet.endTime
+          const endDate = timesheet.endTime
             ? new Date(timesheet.endTime).toISOString().split("T")[0]
             : "";
-          const end_time = timesheet.endTime
+          const endTime = timesheet.endTime
             ? new Date(timesheet.endTime).toISOString().split("T")[1].split(":").slice(0, 2).join(":")
             : "";
   
@@ -98,10 +98,10 @@
   
           return {
             ...timesheet,
-            start_date,
-            start_time,
-            end_date,
-            end_time,
+            startDate,
+            startTime,
+            endDate,
+            endTime,
             duration: timesheet.duration ?? durationBackup,
           };
         });
@@ -119,7 +119,7 @@
     const handleInputChangeDate = (
       e: React.ChangeEvent<HTMLInputElement>,
       id: string,
-      field: "start_date" | "start_time" | "end_date" | "end_time"
+      field: "startDate" | "startTime" | "endDate" | "endTime"
     ) => {
       const value = e.target.value;
       setTimesheets((prevTimesheets) =>
@@ -160,19 +160,19 @@
         for (const timesheet of timesheets) {
           const formData = new FormData();
           formData.append("id", timesheet.id ?? "");
-          formData.append("submit_date", timesheet.submitDate?.toISOString() ?? "");
+          formData.append("submitDate", timesheet.submitDate?.toISOString() ?? "");
           formData.append("employeeId", employeeId);
           formData.append("costcode", timesheet.costcode ?? "");
-          formData.append("start_time", `${timesheet.startDate}T${timesheet.startTime}`);
-          formData.append("end_time", `${timesheet.endDate}T${timesheet.endTime}`);
-          formData.append("jobsite_id", timesheet.jobsiteId ?? "");
+          formData.append("startTime", `${timesheet.startDate}T${timesheet.startTime}`);
+          formData.append("endTime", `${timesheet.endDate}T${timesheet.endTime}`);
+          formData.append("jobsiteId", timesheet.jobsiteId ?? "");
           await editTimeSheet(formData);
         }
   
         for (const log of updatedLogs) {
           const formData1 = new FormData();
           formData1.append("id", log.id.toString());
-          formData1.append("qr_id", log.Equipment.qrId ?? "");
+          formData1.append("qrId", log.Equipment.qrId ?? "");
           formData1.append("duration", (log.duration || 0).toString());
           formData1.append("employeeId", employeeId);
           await updateEq(formData1);
@@ -195,12 +195,12 @@
         setMessage(null);
         const initializedTimesheets = timesheetData.map((timesheet) => ({
           ...timesheet,
-          start_date: timesheet.startTime ? new Date(timesheet.startTime).toISOString().split("T")[0] : "",
-          start_time: timesheet.startTime
+          startDate: timesheet.startTime ? new Date(timesheet.startTime).toISOString().split("T")[0] : "",
+          startTime: timesheet.startTime
             ? new Date(timesheet.startTime).toISOString().split("T")[1].split(":").slice(0, 2).join(":")
             : "",
-          end_date: timesheet.endTime ? new Date(timesheet.endTime).toISOString().split("T")[0] : "",
-          end_time: timesheet.endTime
+          endDate: timesheet.endTime ? new Date(timesheet.endTime).toISOString().split("T")[0] : "",
+          endTime: timesheet.endTime
             ? new Date(timesheet.endTime).toISOString().split("T")[1].split(":").slice(0, 2).join(":")
             : "",
         }));
@@ -222,22 +222,21 @@
                 ...log.Equipment,
                 id: log.Equipment?.id ?? "Unknown",
                 name: log.Equipment?.name ?? "Unknown",
-                qr_id: log.Equipment?.qr_id ?? "Unknown",
+                qrId: log.Equipment?.qrId ?? "Unknown",
                 description: log.Equipment?.description ?? "",
                 status: log.Equipment?.status ?? "UNKNOWN",
-                equipment_tag: log.Equipment?.equipment_tag ?? "UNKNOWN",
-                last_inspection: log.Equipment?.last_inspection ?? null,
-                last_repair: log.Equipment?.last_repair ?? null,
-                equipment_status: log.Equipment?.equipment_status ?? "UNKNOWN",
+                equipmentTag: log.Equipment?.equipmentTag ?? "UNKNOWN",
+                lastInspection: log.Equipment?.lastInspection ?? null,
+                lastRepair: log.Equipment?.lastRepair ?? null,
                 createdAt: log.Equipment?.createdAt ?? new Date(),
                 updatedAt: log.Equipment?.updatedAt ?? new Date(),
                 make: log.Equipment?.make ?? "Unknown",
                 model: log.Equipment?.model ?? "Unknown",
                 year: log.Equipment?.year ?? "Unknown",
-                license_plate: log.Equipment?.license_plate ?? "Unknown",
-                registration_expiration: log.Equipment?.registration_expiration ?? null,
+                licensePlate: log.Equipment?.licensePlate ?? "Unknown",
+                registrationExpiration: log.Equipment?.registrationExpiration ?? null,
                 mileage: log.Equipment?.mileage ?? 0,
-                is_active: log.Equipment?.is_active ?? false,
+                isActive: log.Equipment?.isActive ?? false,
               },
             }));
           setEquipmentLogs(filteredEquipmentLogs);
@@ -303,7 +302,7 @@
                     </Titles>
                     <Inputs
                       variant={"default"}
-                      id="submit_date"
+                      id="submitDate"
                       type="date"
                       value={timesheet.submitDate ? new Date(timesheet.submitDate).toISOString().split("T")[0] : ""}
                       hidden
@@ -328,18 +327,18 @@
                       <>
                         <Inputs
                           variant={"default"}
-                          id="start_date"
+                          id="startDate"
                           type="date"
                           value={timesheet.startDate?.toString() || ""}
-                          onChange={(e) => handleInputChangeDate(e, timesheet.id ?? "", "start_date")}
+                          onChange={(e) => handleInputChangeDate(e, timesheet.id ?? "", "startDate")}
                           readOnly={!edit}
                         />
                         <Inputs
                           variant={"default"}
-                          id="start_time"
+                          id="startTime"
                           type="time"
                           value={timesheet.startTime?.toString() || ""}
-                          onChange={(e) => handleInputChangeDate(e, timesheet.id ?? "", "start_time")}
+                          onChange={(e) => handleInputChangeDate(e, timesheet.id ?? "", "startTime")}
                           readOnly={!edit}
                         />
                       </>
@@ -349,18 +348,18 @@
                       <>
                         <Inputs
                           variant={"default"}
-                          id="end_date"
+                          id="endDate"
                           type="date"
                           value={timesheet.endDate?.toString() || ""}
-                          onChange={(e) => handleInputChangeDate(e, timesheet.id ?? "", "end_date")}
+                          onChange={(e) => handleInputChangeDate(e, timesheet.id ?? "", "endDate")}
                           readOnly={!edit}
                         />
                         <Inputs
                           variant={"default"}
-                          id="end_time"
+                          id="endTime"
                           type="time"
                           value={timesheet.endTime?.toString() || ""}
-                          onChange={(e) => handleInputChangeDate(e, timesheet.id ?? "", "end_time")}
+                          onChange={(e) => handleInputChangeDate(e, timesheet.id ?? "", "endTime")}
                           readOnly={!edit}
                         />
                       </>
@@ -372,7 +371,7 @@
                     </Labels>
                     <Selects
                       variant={"default"}
-                      id="jobsite_id"
+                      id="jobsiteId"
                       value={timesheet.jobsiteId ?? ""}
                       onChange={(e) => handleCodeChange(e, timesheet.id ?? "", "jobsiteId")}
                       disabled={!edit}

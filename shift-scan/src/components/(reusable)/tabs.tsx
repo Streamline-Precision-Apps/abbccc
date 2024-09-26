@@ -6,7 +6,7 @@ import React, { useEffect } from 'react'
 import { useState } from "react";
 import {Tab} from "@/components/(reusable)/tab";
 import { getUserSentContent } from '@/actions/inboxSentActions';
-import { Holds } from '../(reusable)/Holds';
+import { Holds } from '../(reusable)/holds';
 import { Buttons } from '../(reusable)/buttons';
 import { Contents } from "./contents";
 import { Titles } from "./titles";
