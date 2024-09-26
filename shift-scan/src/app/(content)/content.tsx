@@ -175,8 +175,8 @@ export default function Content({
   return (
     <>
       <Bases>
-        <Contents className="h-[90%] mt-10">
-          <Holds background={"white"} className="h-full">
+        <Contents>
+          <Holds background={"white"}>
             <Holds position={"row"} className="mb-5">
               <Holds size={"30"}>
                 <Images 
@@ -192,7 +192,7 @@ export default function Content({
             </Holds>
             <Holds className="mb-10">
             <Banners position={"flex"}>
-              <Titles text={"black"} size={"p1"}>{t("Banner")}</Titles>
+              <Titles text={"black"} size={"h1"}>{t("Banner")}</Titles>
               <Texts text={"black"} size={"p4"}>{t("Date", { date: Capitalize(date) })}</Texts>
             </Banners>
             {/* {toggle ? */}
@@ -212,7 +212,7 @@ export default function Content({
               <>
                 {/* A ternary statement to display the break widget or view hours */}
                 {toggle ? (
-                  <Grids variant={"widgets"} size={"default"}>
+                  <Grids>
                     <DisplayBreakTime
                       setToggle={handleToggle}
                       display={toggle}
@@ -234,7 +234,7 @@ False -> display hours                    */
               <>
                 {/* A ternary statement to display the total clocked hours widget or view hours */}
                 {toggle ? (
-                  <Grids variant={"widgets"} size={"sm"}>
+                  <Grids>
                     <Hours setToggle={handleToggle} display={toggle} />
                     <WidgetSection
                       user={user}

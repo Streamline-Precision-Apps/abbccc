@@ -1,8 +1,6 @@
 "use server";
 import Index from "@/app/hamburger/settings/content";
 import prisma from "@/lib/prisma";
-import { cookies } from "next/headers";
-import { Bases } from "@/components/(reusable)/bases";
 import { auth } from "@/auth";
 
 export default async function Settings() {

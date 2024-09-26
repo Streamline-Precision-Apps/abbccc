@@ -22,6 +22,6 @@ export default async function SignInPage() {
             <Password locale={locale}/>
           </Holds>
       </Contents>
-    </Bases>
+    </Bases> 
   );
 }

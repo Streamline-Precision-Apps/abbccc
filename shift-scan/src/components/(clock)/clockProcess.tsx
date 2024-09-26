@@ -142,10 +142,10 @@ return (
         )}
         {step === 4 && (
         <>
-            <Titles variant={"default"} size={"h1"}>
+            <Titles size={"h1"}>
             {t("Confirmation-eq-message-1")}
             </Titles>
-            <Titles variant={"default"} size={"h4"}>
+            <Titles size={"h4"}>
             {t("Confirmation-eq-message-2")}
             </Titles>
             <RedirectAfterDelay delay={5000} to="/dashboard" /> {/* In Order for bug to be overcomed, the refresh must occur otherwise the unmounted qr code wont work*
@@ -196,25 +196,25 @@ return (
 
     {step === 5 && path === "jobsite" && (
         <div >
-        <Titles variant={"default"} size={"h1"}>
+        <Titles size={"h1"}>
         {t("Confirmation-job-message-1")}
         </Titles>
         {option === "break" ? (
-            <Titles variant={"default"} size={"h4"}>Hope you enjoyed your Break!</Titles>
+            <Titles size={"h4"}>Hope you enjoyed your Break!</Titles>
         ) : null}
         {(type === "switchJobs") ? 
-        (<><Titles variant={"default"} size={"h4"}>{t("Confirmation-job-message-3")}</Titles>
-        <Titles variant={"default"} size={"h4"}>{t("Confirmation-job-message-4")}</Titles>
+        (<><Titles size={"h4"}>{t("Confirmation-job-message-3")}</Titles>
+        <Titles size={"h4"}>{t("Confirmation-job-message-4")}</Titles>
         </>
         )
         : (
-            <Titles variant={"default"} size={"h4"}>{t("Confirmation-job-message-2")}</Titles>
+            <Titles size={"h4"}>{t("Confirmation-job-message-2")}</Titles>
         )
         }
-            <Titles variant={"default"} size={"h2"}>{t("JobSite-label")} {scanResult?.data}</Titles>
+            <Titles size={"h2"}>{t("JobSite-label")} {scanResult?.data}</Titles>
             
-            <Titles variant={"default"} size={"h2"}>{t("CostCode-label")} {savedCostCode} </Titles>
-            <Titles variant={"default"} size={"h2"}>
+            <Titles size={"h2"}>{t("CostCode-label")} {savedCostCode} </Titles>
+            <Titles size={"h2"}>
             {t("Confirmation-time")}{" "}
             {new Date().toLocaleDateString( locale, {
                 hour: "numeric",

@@ -6,6 +6,7 @@ import prisma from "@/lib/prisma";
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
 import { Employee, Contact, UserTraining } from '@/lib/types';
+import { Contents } from '@/components/(reusable)/contents';
 
 export default async function EmployeeProfile() {
     const session = await auth();

@@ -37,92 +37,88 @@ const router = useRouter();
     }
     return (
     <Bases>
-    <Contents>
-    <Holds size={"titleBox"} variant={"green"}>
-        <TitleBoxes
-        title="Leave Request Form" 
-        titleImg="/new/Inbox.svg"
-        titleImgAlt="Inbox"
-        type="noIcon"
-        />
-    </Holds>
-    {
-    closeBanner && (
-    <Titles>{message}</Titles>
-    )
-    }
-        <Forms action={createLeaveRequest} onSubmit={handleSubmit}>
-    <Holds size={"dynamic"}>
-        <Labels >Start Date
-        <Inputs
-        type="date"
-        name="startDate"
-        id="startDate"
-        required
-        />
-        </Labels>
-
-        <Labels >End Date
-        <Inputs
-        type="date"
-        name="endDate"
-        id="endDate"
-        required
-        />
-        </Labels>
-
-        <Labels >Request Type
-        <Selects
-        id="requestType"
-        name="requestType"
-        defaultValue=""
-        required
-        >
-        <option value="">Choose a request</option>
-        <option value="Vacation">Vacation</option>
-        <option value="Medical">Family/Medical Leave</option>
-        <option value="Military">Military Leave</option>
-        <option value="Personal">Non Paid Personal Leave</option>
-        <option value="Sick">Sick Time</option>
-        </Selects>
-        </Labels>
-        <Labels>Comments
-        <TextAreas 
-        name="description"
-        id="description"
-        rows={5}
-        maxLength={40}
-        required
-        />
-        </Labels>
-        <Inputs type="hidden" name="user_id" value={session?.user?.id} />
-        <Inputs type="hidden" name="status" value="PENDING" />
-        <Inputs type="hidden" name="date" value={new Date().toISOString()} />
-        {sign ? (
-            <Buttons variant={"lightBlue"} size={null} onClick={(event) => {event.preventDefault(); setSign(false) }}>
-                <Images titleImg={""} titleImgAlt="signature" />
-            </Buttons>
-        ):
-        (
-            <Buttons variant={"lightBlue"} size={null} onClick={(event) => {event.preventDefault(); setSign(true) }}>
-            <Titles variant={"default"} size={"h1"}>
-                Tap to sign
-            </Titles>
-            
-            </Buttons>
-        
-)}
-        <Texts variant={"default"} size={"p4"}>
-            *By Signing I acknowledge that time leave request are subject to management approval and company policy. *
-        </Texts>
-        </Holds>
-        <Buttons type="submit" variant={"green"} size={null}>
-            <Titles variant={"default"} size={"h1"}>
-                Submit
-            </Titles>
-        </Buttons>
-        </Forms>
-    </Contents>
+        <Contents>
+            <Holds 
+            background={"green"}
+            className="mb-3">
+                <TitleBoxes
+                title="Leave Request Form" 
+                titleImg="/new/Inbox.svg"
+                titleImgAlt="Inbox"
+                type="noIcon"
+                />
+            </Holds>
+            {
+            closeBanner && (
+            <Titles>{message}</Titles>
+            )
+            }
+            <Forms action={createLeaveRequest} onSubmit={handleSubmit}>
+                <Holds background={"white"} className="mb-3">
+                    <Contents width="section">
+                        <Holds>
+                            <Labels >Start Date</Labels>
+                            <Inputs
+                            type="date"
+                            name="startDate"
+                            id="startDate"
+                            required
+                            />
+                            <Labels >End Date</Labels>
+                            <Inputs
+                            type="date"
+                            name="endDate"
+                            id="endDate"
+                            required
+                            />
+                            <Labels >Request Type</Labels>
+                            <Selects
+                            id="requestType"
+                            name="requestType"
+                            defaultValue=""
+                            required
+                            >
+                            <option value="">Choose a request</option>
+                            <option value="Vacation">Vacation</option>
+                            <option value="Medical">Family/Medical Leave</option>
+                            <option value="Military">Military Leave</option>
+                            <option value="Personal">Non Paid Personal Leave</option>
+                            <option value="Sick">Sick Time</option>
+                            </Selects>
+                            <Labels>Comments</Labels>
+                            <TextAreas 
+                            name="description"
+                            id="description"
+                            rows={5}
+                            maxLength={40}
+                            required
+                            />
+                            <Inputs type="hidden" name="user_id" value={session?.user?.id} />
+                            <Inputs type="hidden" name="status" value="PENDING" />
+                            <Inputs type="hidden" name="date" value={new Date().toISOString()} />
+                        </Holds>
+                        {sign ? (
+                        <Buttons background={"lightBlue"} onClick={(event) => {event.preventDefault(); setSign(false) }}>
+                            <Images titleImg={""} titleImgAlt="signature" />
+                        </Buttons>
+                        ):
+                        (
+                        <Buttons background={"lightBlue"} onClick={(event) => {event.preventDefault(); setSign(true) }}>
+                        <Titles size={"h2"}>
+                            Tap to sign
+                        </Titles>
+                        </Buttons>
+                        )}
+                        <Texts size={"p4"}>
+                            *By Signing I acknowledge that time leave request are subject to management approval and company policy. *
+                        </Texts>
+                    </Contents>
+                </Holds>
+                <Buttons type="submit" background={"green"}>
+                    <Titles size={"h2"}>Submit</Titles>
+                </Buttons>
+            </Forms>
+        </Contents>
     </Bases>
     )
 }

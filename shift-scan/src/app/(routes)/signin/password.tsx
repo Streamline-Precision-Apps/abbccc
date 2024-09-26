@@ -61,7 +61,7 @@ if (result?.error) {
 };
 
 return (
-    <Contents height={"page"}>
+    <Contents width={"section"}>
         <Forms onSubmit={handleSubmit} className="pt-3">
             <Labels>{t("Username")}</Labels>
             <Inputs variant="default" name="username" type="text" required />

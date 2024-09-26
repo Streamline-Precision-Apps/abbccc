@@ -5,6 +5,7 @@ import { Buttons } from "../(reusable)/buttons";
 import { Titles } from "../(reusable)/titles";
 import { Images } from "../(reusable)/images";
 import { Contents } from "./contents";
+import { Holds } from "./holds";
 
 const TitleBoxVariants = cva(
   "relative flex items-center justify-center w-full mx-auto", //this applies to all variants
@@ -43,14 +44,22 @@ const TitleBoxes: FC<TitleBoxProps> = ({className, variant, size, type, title, t
     if (type === "profilePic") {
         return (
             <div className={cn(TitleBoxVariants({variant, size, className}))} {...props}>
-                <Buttons href='back' variant={"icon"} size={"backButton"}>
-                    <Images titleImg="/backArrow.svg" titleImgAlt={titleImgAlt} variant={"icon"} size={"backButton"}/>
-                </Buttons>
-                    {props.children}
-                <Contents variant={"image"} size={"profilePic"}>
-                    <Images titleImg={titleImg} titleImgAlt={titleImgAlt} variant={"icon"} size={"default"}/>
-                </Contents>
-                <Titles variant={"default"} size={"titlebox"}>{title}</Titles>
+                <Holds position={"absolute"}>
+                    <Buttons href='back' background={"none"} size={"30"}>
+                        <Images titleImg="/turnBack.svg" titleImgAlt={titleImgAlt} size={"30"}/>
+                    </Buttons>
+                </Holds>
+                {props.children}
+                <Holds
+                size={"30"}
+                className="rounded-full bg-blue-400">
+                    <Images 
+                    titleImg={titleImg} 
+                    titleImgAlt={titleImgAlt}
+                    className="rounded-full"
+                    size={"full"}/>
+                </Holds>
+                <Titles>{title}</Titles>
             </div>
 
         )  
@@ -67,10 +76,12 @@ const TitleBoxes: FC<TitleBoxProps> = ({className, variant, size, type, title, t
     if (type === "noIcon") {
         return (
             <div className={cn(TitleBoxVariants({variant, size, className}))} {...props}>
-                <Buttons href='back' variant={"icon"} size={"backButton"}>
-                    <Images titleImg="/backArrow.svg" titleImgAlt="back arrow" variant={"icon"} size={"backButton"}/>
-                </Buttons>
-                <Titles variant={"default"} size={"h1"}>{title}</Titles>
+                <Holds position={"absolute"}>
+                    <Buttons href='back' background={"none"} size={"30"}>
+                        <Images titleImg="/turnBack.svg" titleImgAlt={titleImgAlt} size={"30"}/>
+                    </Buttons>
+                </Holds>
+                <Titles size={"h2"}>{title}</Titles>
             </div>
         )
     }
@@ -108,12 +119,13 @@ const TitleBoxes: FC<TitleBoxProps> = ({className, variant, size, type, title, t
     
     else return (
         <div className={cn(TitleBoxVariants({variant, size, className}))} {...props}>
-            
-            <Buttons href='back' variant={"icon"} size={"backButton"}>
-                <Images titleImg="/backArrow.svg" titleImgAlt={titleImgAlt} variant={"icon"} size={"backButton"}/>
-            </Buttons>
-            <Images titleImg={titleImg} titleImgAlt={titleImgAlt} variant={"icon"} size={"iconMed"}/>
-            <Titles variant={"default"} size={"titlebox"}>{title}</Titles>
+            <Holds position={"absolute"}>
+                <Buttons href='back' background={"none"} size={"30"}>
+                    <Images titleImg="/turnBack.svg" titleImgAlt={titleImgAlt} size={"30"}/>
+                </Buttons>
+            </Holds>
+            <Images titleImg={titleImg} titleImgAlt={titleImgAlt} size={"20"}/>
+            <Titles size={"h1"}>{title}</Titles>
         </div>
     )
 }
