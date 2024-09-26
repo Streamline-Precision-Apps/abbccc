@@ -47,7 +47,7 @@ if (datatype === 'costcode') {
     setCostCode(option.code);
 
     // Add to recently used cost codes
-    const selectedCode = costcodeResults.find((c) => c.cost_code === option.code);
+    const selectedCode = costcodeResults.find((c) => c.name === option.code); {/* this will break if we change it*/}
     if (selectedCode) addRecentlyUsedCostCode(selectedCode);
 }
 if (datatype === 'jobsite') {

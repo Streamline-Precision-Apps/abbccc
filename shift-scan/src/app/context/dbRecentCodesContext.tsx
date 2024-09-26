@@ -52,7 +52,10 @@ interface RecentCostCodeContextType {
   
     const addRecentlyUsedCostCode = (code: CostCodes) => {
       setRecentlyUsedCostCodes((prev) => {
-        const updatedList = [code, ...prev.filter((c) => c.name !== code.name)];
+        const updatedList = [
+          code,
+          ...prev.filter((c) => c !== null && c.name !== code.name) // Check if c is not null
+        ];
         return updatedList.slice(0, 5);
       });
     };

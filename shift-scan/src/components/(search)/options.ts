@@ -19,25 +19,28 @@ const { recentlyUsedEquipment } = useRecentDBEquipment();
 let options: Option[] = [];
 
 switch (dataType) {
-case 'costcode':
-    if (!costcodeResults) {
-    throw new Error('costcodeResults is undefined');
-    }
-    // Use recent codes if no search term
-    options = searchTerm === ''
-        ? recentlyUsedCostCodes
-            .filter((costcode: CostCodes | null) => costcode !== null) // Check for null
-            .map((costcode: CostCodes) => ({
-              code: costcode.name,
-              label: costcode.description
-            }))
-        : costcodeResults
-            .filter((costcode: CostCodes | null) => costcode !== null) // Check for null
-            .map((costcode: CostCodes) => ({
-              code: costcode.name,
-              label: costcode.description
-            }));
-      break;
+    case 'costcode':
+        if (!costcodeResults) {
+          throw new Error('costcodeResults is undefined');
+        }
+      
+        // Check if recentlyUsedCostCodes contains any null values
+        const hasNullInRecent = recentlyUsedCostCodes.some((costcode) => costcode === null);
+      
+        // Use recent codes if no search term and no nulls, otherwise use costcodeResults
+        options = (searchTerm === '' && !hasNullInRecent)
+          ? recentlyUsedCostCodes
+              .map((costcode: CostCodes) => ({
+                code: costcode.name,
+                label: costcode.name + ' - ' + costcode.description,
+              }))
+          : costcodeResults
+              .filter((costcode: CostCodes | null) => costcode !== null) // Check for null in costcodeResults
+              .map((costcode: CostCodes) => ({
+                code: costcode.name,
+                label: costcode.name + ' - ' + costcode.description,
+              }));
+        break;
 
 case 'jobsite':
     if (!jobsiteResults) {
