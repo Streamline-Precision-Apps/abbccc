@@ -33,7 +33,7 @@ const Inputs: FC<InputProps> = ({className, variant, size, state, data, ...props
   else {
       return (
           <>
-              <input className={cn(InputVariants({variant, className}))} {...props} placeholder="" />
+              <input className={cn(InputVariants({variant, className}))} {...props} />
           </>
       )
   }

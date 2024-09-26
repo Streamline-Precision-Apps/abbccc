@@ -78,23 +78,50 @@ export default function QrEquipmentContent() {
   };
 
   return (
-    <>
+<>
     {loading ? (
         <>
-        <Selects>
-          <Options>
-            Loading Equipment codes...
-          </Options>
-        </Selects>
+          <Holds size={"first"} >
+          <Selects>
+            <Options>
+              {t("Loading")}
+            </Options>
+          </Selects>
+          <Holds 
+          position={"row"} 
+          size={"full"} 
+          className="justify-between items-center p-4"
+          >
+          <Buttons 
+          background={"orange"} 
+          onClick={handleGenerate} 
+          size={"50"}
+          className="p-4 mr-4"
+          >
+            <Titles size={"h2"}>{t("Generate")}</Titles>
+          </Buttons>
+          <Buttons 
+          background={"green"} 
+          onClick={handleNew} 
+          size={"50"}
+          className="p-4 ml-4"
+          >
+            <Titles size={"h2"}>{t("New")}</Titles>
+          </Buttons>
+          </Holds>
+          </Holds>
         </>
-      ) : (
+      ) : 
+      (
+      <>
+      <Holds size={"first"}>
       <Selects value={selectedEquipment} onChange={handleOptionSelect}>
-      <Options variant={"default"} value="">
+      <Options  value="">
             Select One
           </Options>
           {generatedList.map((option) => (
             <Options
-              variant={"default"}
+              
               key={option.qrId}
               value={option.qrId}
             >
@@ -102,14 +129,22 @@ export default function QrEquipmentContent() {
             </Options>
           ))}
       </Selects>
-      )}
-      <Holds variant={"row"}>
-        <Buttons variant={"orange"} onClick={handleGenerate} size={"half"}>
-          <Titles variant={"default"} size={"h1"}>{t("Generate")}</Titles>
+
+      <Holds position={"row"} size={"full"} className="justify-between items-center p-4">
+        <Buttons 
+        background={"orange"} 
+        onClick={handleGenerate} 
+        size={"50"}
+        className="p-4 mr-4">
+          <Titles  size={"h2"}>{t("Generate")}</Titles>
         </Buttons>
-        <Buttons variant={"green"} onClick={handleNew} size={"half"}
+        <Buttons 
+        background={"green"} 
+        onClick={handleNew} 
+        size={"50"}
+        className="p-4 ml-4"
         >
-          <Titles variant={"default"} size={"h1"}>{t("New")}</Titles>
+          <Titles size={"h2"}>{t("New")}</Titles>
         </Buttons>
         </Holds>
       <Modals
@@ -118,16 +153,19 @@ export default function QrEquipmentContent() {
         size="sm"
       >
         {selectedEquipment && (
-          <>
-            <Texts variant={"default"}>
+            <Holds className="p-4">
+            <Texts >
               {selectedEquipmentName} {t("QRCode")}
             </Texts>
-            <Contents variant={"rowCenter"} size={"default"}>
+            <Contents position={"row"}>
               <Images titleImg={qrCodeUrl} titleImgAlt={"QR Code"} />
-            </Contents>
-          </>
-        )}
-      </Modals>
-    </>
+              </Contents>
+            </Holds>
+          )}
+        </Modals>
+      </Holds>
+      </>
+    )}
+</>
   );
 }

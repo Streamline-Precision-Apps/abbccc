@@ -11,6 +11,7 @@ import { Options } from "@/components/(reusable)/options";
 import { Contents } from "@/components/(reusable)/contents";
 import { Texts } from "@/components/(reusable)/texts";
 import { Bases } from "@/components/(reusable)/bases";
+import { Titles } from "@/components/(reusable)/titles";
 
 type AddEquipmentFormProps = {
   base64String: string | null;
@@ -77,140 +78,143 @@ export default function AddEquipmentForm({ base64String, setBannerText, handler,
     }, 3000);
   }
 
-  return (
-    <Forms action={createEquipment} onSubmit={() => {setBanner(true); setBannerText("Added Temporary Equipment Successfully"); handler(); handleRoute()}}>
-      <Labels variant="default" size="default">Temporary QR ID </Labels>
-      <Inputs name="qrId" type="text" disabled value={eqCode} />
-        <Labels variant="default" size="default">
-          {t("Tag")}
-        </Labels>
-        <Selects
-          id="equipmentTag"
-          name="equipmentTag"
-          onChange={handleChange}
-          >
+return (
+<Forms action={createEquipment} onSubmit={() => {setBanner(true); setBannerText("Added Temporary Equipment Successfully"); handler(); handleRoute()}}>
+  <Labels>{t("Temporary")} 
+    <Inputs 
+        name="qrId" 
+        type="text" 
+        value={eqCode}
+        disabled 
+    />
+  </Labels>
+  
+  <Labels>
+    {t("Tag")}
+      <Selects
+        id="equipmentTag"
+        name="equipmentTag"
+        onChange={handleChange}
+      >
           <Options value="">{t("Select")}</Options>
           <Options value="TRUCK">{t("Truck")}</Options>
           <Options value="TRAILER">{t("Trailer")}</Options>
           <Options value="EQUIPMENT">{t("Equipment")}</Options>
         </Selects>
-      
-      
-        <Labels variant="default" size="default">
-          {t("Name")}
-        </Labels>
-        <Inputs
-          id="name"
-          name="name"
-          type="text"
-          
-          />
-      
-      
-        <Labels variant="default" size="default">
-          {t("Description")}
-        </Labels>
+  </Labels>
+  
+  <Labels>
+    {t("Name")}
+      <Inputs
+        id="name"
+        name="name"
+        type="text"
+        />
+  </Labels>
+  
+  <Labels>
+      {t("Description")}
         <TextAreas
           id="description"
           name="description"
-          
-          />
-      
-      
-        <Labels variant="default" size="default">
-          {t("Status")}
-        </Labels>
+        />
+  </Labels>
+  
+  <Labels>
+      {t("Status")}
         <Selects
           id="status"
           name="status"
-          >
+        >
           <Options value="">{t("Select")}</Options>
           <Options value="OPERATIONAL">{t("Operational")}</Options>
           <Options value="NEEDS_REPAIR">{t("NeedsRepair")}</Options>
         </Selects>
+  </Labels>
       
-      {equipmentTag === "TRUCK" || equipmentTag === "TRAILER" ? (
-        <>
-          
-            <Labels variant="default" size="default">
-              {t("Make")}
-            </Labels>
-            <Inputs
-              id="make"
-              name="make"
-              type="text"
-              
-              />
-          
-          
-            <Labels variant="default" size="default">
-              {t("Model")}
-            </Labels>
-            <Inputs
-              id="model"
-              name="model"
-              type="text"
-              
-              />
-          
-          
-            <Labels variant="default" size="default">
-              {t("Year")}
-            </Labels>
-            <Inputs
-              id="year"
-              name="year"
-              type="text"
-              
-              />
-          
-          
-            <Labels variant="default" size="default">
-              {t("LicensePlate")}
-            </Labels>
-            <Inputs
-              id="licensePlate"
-              name="licensePlate"
-              type="text"
-              
-              />
-          
-          
-            <Labels variant="default" size="default">
-              {t("RegistrationExpiration")}
-            </Labels>
-            <Inputs
-              id="registrationExpiration"
-              name="registrationExpiration"
-              type="date"
-              
-              />
-          
-          
-            <Labels variant="default" size="default">
-              {t("Mileage")}
-            </Labels>
-            <Inputs
-              id="mileage"
-              name="mileage"
-              type="number"
-              
-              />
-          
-        </>
-      ) : null}
+{equipmentTag === "TRUCK" || equipmentTag === "TRAILER" ? (
+<>          
+  <Labels>
+    {t("Make")}
+      <Inputs
+        id="make"
+        name="make"
+        type="text"
+      />
+  </Labels>
+
+
+  <Labels >
+    {t("Model")}
+    <Inputs
+      id="model"
+      name="model"
+      type="text"
       
-        <Inputs
-          id="image"
-          name="image"
-          type="hidden"
-          value={base64String || ""}
-          />
-        <Inputs id="qrId" name="qrId" type="hidden" value={eqCode} />
-      
-      <Buttons variant={"green"} size={null} type="submit">
-        {t("Submit")}
-      </Buttons>
-    </Forms>
-  );
+      />
+  </Labels>
+
+  <Labels >
+    {t("Year")}
+      <Inputs
+        id="year"
+        name="year"
+        type="text"
+      />
+  </Labels>
+
+  <Labels>
+    {t("LicensePlate")}
+    <Inputs
+      id="licensePlate"
+      name="licensePlate"
+      type="text"
+      />
+  </Labels>
+
+  <Labels>
+    {t("RegistrationExpiration")}
+      <Inputs
+        id="registrationExpiration"
+        name="registrationExpiration"
+        type="date"
+      />
+  </Labels>
+
+  <Labels>
+    {t("Mileage")}
+      <Inputs
+      id="mileage"
+      name="mileage"
+      type="number"  
+      />
+  </Labels>
+</>
+) : null}
+
+<Inputs
+  id="image"
+  name="image"
+  type="hidden"
+  value={base64String || ""}
+/>
+<Inputs 
+id="qrId" 
+name="qrId" 
+type="hidden" 
+value={eqCode} 
+/>
+
+<Buttons 
+background={"green"} 
+size={"full"} 
+type="submit"
+className="p-3 my-5"
+>
+<Titles size={"h1"}>
+{t("Submit")}
+</Titles>
+</Buttons>
+</Forms>
+);
 };

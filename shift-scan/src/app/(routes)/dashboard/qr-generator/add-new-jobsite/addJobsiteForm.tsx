@@ -7,6 +7,10 @@
   import { Inputs } from "@/components/(reusable)/inputs";
   import { TextAreas } from "@/components/(reusable)/textareas";
   import { useRouter } from 'next/navigation';
+import { Contents } from "@/components/(reusable)/contents";
+import { Holds } from "@/components/(reusable)/holds";
+import { Texts } from "@/components/(reusable)/texts";
+import { Titles } from "@/components/(reusable)/titles";
 
 type Props = {
   handler:() => void
@@ -58,105 +62,127 @@ function handleRoute() {
 
   return (
     <Forms action={createJobsite} 
-      onSubmit={() => { 
-        setBanner(true);
-        setBannerText("Created Jobsite Successfully");
+    onSubmit={() => { 
+      setBanner(true);
+      setBannerText("Created Jobsite Successfully");
         handler();
         handleRoute();
       }} 
-      variant="default" 
-      size="default"
-    >
-      <Labels variant="default" size="default" > Temporary Site ID </Labels>
+      >
+      <Labels>{t("Temporary")}
       <Inputs id="id" name="id" type="text" value={qrCode} disabled />
+      </Labels>
 
-        <Labels variant="default" size="default" >
+      <Labels>
           {t("Name")}
-          </Labels> 
         <Inputs
           id="name"
           name="name"
           type="text"
-        
-        />
-      
-      <Labels variant="default" size="default" >
-          {t("StreetNumber")}
+          placeholder={t("NameExample")}
+          />
           </Labels> 
-        <Inputs
-          variant={"default"}
-          id="streetNumber"
-          name="streetNumber"
-        />
-      
-      
-      <Labels variant="default" size="default" >
-          {t("StreetName")}
-          </Labels> 
+
+    <Texts position={"left"} size={"p1"} className="mb-2 mt-4">{t("Address")}</Texts>
+
+      <Holds position={"row"} size={"full"} className="justify-between mb-4">
+      <Holds size={"30"} className="mr-4">
+        <Labels> 
+            {t("StreetNumber")}
+            <Inputs
+                variant={"default"}
+                id="streetNumber"
+                name="streetNumber"
+                placeholder={`${t("StreetNumberDirection")} `}
+              />
+        </Labels> 
+      </Holds>
+
+      <Holds size={"70"}>
+      <Labels> 
+      {t("StreetName")}
           <Inputs
-          variant={"default"}
+          className="text-black"
           id="streetName"
           name="streetName"
-        
-        />
-      
-      
-        <Labels variant="default" size="default" > 
+          placeholder={t("StreetNameDirection")}
+          />
+      </Labels> 
+      </Holds>
+    </Holds>
+
+      <Holds position={"row"} size={"full"}>
+      <Holds size={"40"} className="mr-4">
+        <Labels>
           {t("City")}
-        </Labels>
           <Inputs
           variant={"default"}
           id="city"
           name="city"
-        
-        />
-      
-      
-        <Labels variant="default" size="default" >
+          placeholder={t("CityTitle")}
+          />
+          </Labels>
+      </Holds>
+      <Holds size={"20"} className="mr-4">
+        <Labels>
+          {t("ZipCode")}
+          <Inputs
+          variant={"default"}
+          id="zipCode"
+          name="zipCode"
+          placeholder={t("ZipCodeTitle")}
+          />
+          </Labels>
+      </Holds>
+      <Holds size={"20"}>
+        <Labels>
           {t("State")}
-        </Labels>
           <Inputs
           variant={"default"}
           id="state"
           name="state"
-        
-        />
-      
-      
-        <Labels variant="default" size="default" >
+          placeholder={t("StateTitle")}
+          />
+          </Labels>
+      </Holds>
+      </Holds>
+      {/* <Holds size={"full"} className="mr-4">
+        <Labels>
           {t("Country")}
-        </Labels>
           <Inputs
           variant={"default"}
           id="country"
           name="country"
-          
-        />
-      
-      
-        <Labels variant="default" size="default" > 
-          {t("Description")}
+          />
+          </Labels>
+          </Holds> */}
+          <Texts position={"left"} size={"p1"} className="mb-4 mt-6">{t("Description")}</Texts>
+        <Labels>
+          {t("DescriptionTitle")}
+            <TextAreas
+              variant={"default"}
+              id="description"
+              rows={4}
+              name="description"
+              placeholder={t("purpose")}
+              />
         </Labels>
-        <TextAreas
-          variant={"default"}
-          id="description"
-          name="description"
-          placeholder="Provide a description of the jobsite and the purpose for adding it."
-        />
       
       
-        <Labels variant="default" size="default" > 
+        <Labels>
           {t("Comments")}
-        </Labels>
           <TextAreas
           id="comment"
           name="comment"
-        
-        />
-      
-      <Buttons variant={"green"} size={null} type="submit">
-        {t("Submit")}
+          rows={4}
+          placeholder={t("CommentsPurpose")}
+          />
+          </Labels>
+      <Holds size={"full"} position={"center"} className="m-2">
+      <Buttons background={"green"} size={"80"} type="submit" className="p-3 ">
+        <Titles size={"h1"}>{t("Submit")}</Titles>
       </Buttons>
+      </Holds>
     </Forms>
   );
   };
