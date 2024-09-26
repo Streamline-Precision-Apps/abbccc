@@ -7,12 +7,14 @@ import { Titles } from "@/components/(reusable)/titles";
 import { fetchEq } from "@/actions/equipmentActions";
 import { Contents } from "@/components/(reusable)/contents";
 import { Inputs } from "@/components/(reusable)/inputs";
+import { useTranslations } from "next-intl";
 
 type Props = {
 employeeId: string;
 };
 
 export const EmployeeTimeSheets = ({ employeeId }: Props) => {
+const t = useTranslations("MyTeam");
 const [timesheets, setTimesheets] = useState<any[]>([]);
 const [filteredEquipmentData, setFilteredEquipmentData] = useState<any[]>([]);
 const [message, setMessage] = useState("");
@@ -75,7 +77,7 @@ return (
 
     <Holds size={"dynamic"} variant={"default"}>
     <Holds size={"titleBox"} variant={"darkBlue"}>
-        <Titles variant={"left"} >Select Date</Titles>
+        <Titles variant={"left"} >{t("SelectDate")}</Titles>
         <form ref={formRef} onChange={handleFormChange} onSubmit={handleFormSubmit}>
         <Inputs type="date" name="date" id="date" className="flex justify-center m-auto text-black text-2xl bg-white p-2 rounded border-2 border-black rounded-2xl" />
         <Inputs type="hidden" name="id" value={employeeId} />

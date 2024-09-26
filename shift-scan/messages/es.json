@@ -1,10 +1,10 @@
 {   
     "PortalLogin": {
         "Title": "El Portal de Inicio de sesión",
-        "lN1": "ID de Empleado",
-        "lN2": "Contraseña",
+        "Username": "Usuario",
+        "Password": "Contraseña",
         "btn-signIn": "Iniciar Sesion",
-        "lN3": "Speak English?",
+        "Spanish": "Speak English?",
         "btn-forgot": "olvides mi contraseña?",
         "Error": "Nombre de usuario o contraseña no válido",
         "lN4": "Copyright © 2024. Todos los derechos reservados."
@@ -14,18 +14,20 @@
             "Name": "{firstName} {lastName}",
             "Date": "{date}",
             "DailyHours": "Horas Totalales:",
-            "PayPeriodHours": "Total de horas del período",
+            "PayPeriodHours": "Horas del pago",
             "Break": " El tiempo de descanso:",
-            "Unit": "hras.",
-            "DA-Time-Label" : "Horas",
-            "DA-PayPeriod-Label" : "Total de horas del período",
+            "Unit": "",
+            "DA-Time-Label" : "H",
+            "DA-PayPeriod-Label" : "Horas del pago",
             "DA-ScrollLeft": "Desplazamiento a la izquierda",
             "DA-ScrollRight": "Desplácese a la derecha",
             "DA-Return": " Volver",
             "DA-Today": "Hoy",
-            "Clock-btn": "Ficharme",
-            "MyTeam-btn": "Mi equipo",
-            "Qr-btn": "Generador de QR "
+            "TimeSheet-Label": "Ver Mis Hojas de Tiempo",
+            "Clock-btn": "Fichar",
+            "Clock-break-btn": "Volver al trabajo",
+            "MyTeam-btn": "Equipos",
+            "Qr-btn": "Generador QR"
     },
     "Clock": {
         "ScanJobSite": "Escanear el sitio de trabajo",
@@ -33,7 +35,8 @@
         "ScanEquipment": "Escanee el equipo",
         "Cancel": "Cancelar",
         "TroubleScanning": "¿Problemas para escanear?",
-        "ReturnToJobsite": "¿Cambiar Código de coste?",
+        "ReturnToJobsite": "¿Volver y trabajar con el mismo código?",
+        "ChangeJobsite": "Cambiar sitio de trabajo",
         "Title-jobsite": "Seleccione el sitio ",
         "Title-equipment": "Seleccione el equipo",
         "Title-costcode": "Seleccione el Código de coste",
@@ -75,14 +78,14 @@
     
     "ManagerButtons": {
         "SwitchJobs": "Cambiar trabajo",
-        "Equipment": "El equipo",
+        "Equipment": "Herramientas",
         "ClockOut": "Fichar al salir",
-        "Forms" : "Formularios de trabajo",
-        "QrGenerator": "Generador de QR",
-        "MyTeam": "Mi Equipo",
-        "GoHome": "Volver a la pantalla antes",
-        "LogNew": "Iniciar un equipo",
-        "Current": "Equipos actuales revisados",
+        "Forms" : "Formas",
+        "QrGenerator": "Generador QR",
+        "MyTeam": "Mi Equipos",
+        "GoHome": "Volver al panel",
+        "LogNew": "Registrar",
+        "Current": "Devolver",
         "Break": "Tomar un descanso",
         "Submit": "Es necesario enviar los registros del equipo.",
         "CurrEQ": "Ver el equipo actual",
@@ -213,7 +216,11 @@
         "Cancel": "Cancelar"
     },
     "MyTeam": {
-        "Timesheets": "Timesheets",
+        "Teams-Title": "Mis equipos",
+        "Teams-Logo-Title": "Icon de equipo",
+        "MyTeams-Title": "Mi equipo",
+        "Teams-Button-Name": "Equipo",
+        "Timesheets": "Reportes de horas",
         "Duration": "Duración",
         "Duration-Comment": "La duración se actualiza cuando se guardan los cambios de edición.",
         "ClockIn" : "Ficharme",
@@ -224,6 +231,15 @@
         "Equipment" : "Equipo",
         "EQTotalTime" : "Tiempo total: ",
         "NoData": "No hay datos",
-        "EquipmentLogs": "Equipos registrados"
+        "EquipmentLogs": "Equipos registrados",
+        "PhoneNumber": "Numero de telefono",
+        "Email": "Correo electronico",
+        "EmergencyContact": "Contacto de emergencia",
+        "EmergencyContactNumber": "Numero de contacto de emergencia",
+        "DOB": "Fecha de nacimiento",
+        "Edit": "Editar",
+        "Delete": "Eliminar",
+        "SelectDate": "Seleccionar fecha",
+        "NoEquipmentLogs": "No hay registros para el día seleccionado."
     }
 }

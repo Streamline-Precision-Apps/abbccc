@@ -131,8 +131,7 @@ export default function ControlComponent({ toggle } : ControlComponentProps) {
   };
 
   return (
-<>
-<Holds className="flex flex-col justify-start">
+<Holds size={"full"} className="gap-x-5 gap-y-5" >
         {/* Th */}
         <ViewComponent
           scrollLeft={scrollLeft}
@@ -141,9 +140,11 @@ export default function ControlComponent({ toggle } : ControlComponentProps) {
           currentDate={currentDate}
           />
         {/* This is the start of the bar chart componnet and the previous day */}
-          <Holds className="flex flex-row justify-center rounded-2xl shadow-[8px_8px_0px_grey] p-4 border-4 border-black w-full h-fit bg-white mt-4">
+        
+          <Holds className="flex justify-center rounded-2xl shadow-[8px_8px_0px_grey] border-4 border-black w-full bg-white mt-4">
           {/* Contexts gives base styles for background app-dark-blue bars */}
-          <Holds className="bg-app-dark-blue w-[100px] h-[300px] mx-auto rounded-2xl pt-3 pb-3 px-2 flex flex-col justify-end">
+          <Holds className="flex flex-row justify-center ">
+          <Holds size={"30"} className="bg-app-dark-blue h-[300px] mx-auto rounded-t-2xl  pt-3 pb-3 px-2 flex flex-col justify-end">
             {/* - Contexts gives base styles for green bar with dark-blue background
     it also provides the height of the green bar, based on the value and the color of the bar based on the value
     - If the value is less than 8 hours are orange, greater than or equal to 8 hours are green
@@ -151,12 +152,12 @@ export default function ControlComponent({ toggle } : ControlComponentProps) {
     */}
             <Holds
              
-              /*
-              1. ternary is used for height evavulation based on the value, it uses caluclate bar to get it in px 
+             /*
+             1. ternary is used for height evavulation based on the value, it uses caluclate bar to get it in px 
               2. ternary is used for color evavulation based on the value, it uses caluclate bar to get it in px
               3. ternary is used to show blank non working days as a clear background rather then show any status
               */
-             className={`w-full rounded-2xl flex flex-col justify-end h-fit max-w-lg mx-auto pt-10
+             className={`w-full rounded-t-2xl  flex flex-col justify-end h-fit max-w-lg mx-auto pt-10
               ${
                 currentData.valuePrev === 0
                 ? "bg-clear"
@@ -166,7 +167,7 @@ export default function ControlComponent({ toggle } : ControlComponentProps) {
                 ${currentData.valuePrev !== 0 ? "" : "bg-clear"}
                 `}
                 >
-              <Texts variant={"default"} size={"p3"}>
+              <Texts size={"p3"}>
                 {currentData.valuePrev !== 0
                   ? `${currentData.valuePrev.toFixed(1)} ${t("DA-Time-Label")}`
                   : ""}
@@ -174,9 +175,9 @@ export default function ControlComponent({ toggle } : ControlComponentProps) {
             </Holds>
             </Holds>
           {/* This is the current day bar same as the previous with styling */}
-          <Holds className="bg-app-dark-blue w-[100px] h-[300px] mx-auto rounded-2xl pt-3 pb-3 px-2 flex flex-col justify-end">
+          <Holds size={"30"} className="bg-app-dark-blue h-[300px] mx-auto rounded-t-2xl pt-3 pb-3 px-2 flex flex-col justify-end">
             <Holds
-              className={` w-full flex flex-col justify-end rounded-2xl h-fit max-w-lg mx-auto pt-10
+              className={` w-full flex flex-col justify-end rounded-t-2xl h-fit max-w-lg mx-auto pt-10
                 ${
                   currentData.value === 0
                   ? "bg-clear"
@@ -186,7 +187,7 @@ export default function ControlComponent({ toggle } : ControlComponentProps) {
                   ${currentData.value !== 0 ? "" : "bg-clear"}
                   `}
                   >
-              <Texts variant={"default"} size={"p3"}>
+              <Texts size={"p3"}>
                 {currentData.value !== 0
                   ? `${currentData.value.toFixed(1)} ${t("DA-Time-Label")}`
                   : ""}
@@ -196,9 +197,9 @@ export default function ControlComponent({ toggle } : ControlComponentProps) {
 
 
           {/* This is the next day bar same as the previous with styling */}
-          <Holds className="bg-app-dark-blue w-[100px] h-[300px] mx-auto rounded-2xl pt-3 pb-3 px-2 flex flex-col justify-end">
+          <Holds size={"30"} className="bg-app-dark-blue h-[300px] mx-auto rounded-t-2xl pt-3 pb-3 px-2 flex flex-col justify-end">
             <Holds
-              className={`h-fit max-w-lg mx-auto pt-10 w-full flex flex-col justify-end rounded-2xl 
+              className={`h-fit max-w-lg mx-auto pt-10 w-full flex flex-col justify-end rounded-t-2xl 
                 ${
                   currentData.valueNext === 0
                   ? "bg-clear"
@@ -208,22 +209,23 @@ export default function ControlComponent({ toggle } : ControlComponentProps) {
                   ${currentData.valueNext !== 0 ? "" : "bg-clear"}
                   `}
                   >
-              <Texts variant={"default"} size={"p3"}>
+              <Texts  size={"p3"}>
                 {currentData.valueNext !== 0
                   ? `${currentData.valueNext.toFixed(1)} ${t("DA-Time-Label")}`
                   : ""}
               </Texts>
             </Holds>
           </Holds>
-        </Holds>
-
-          <Buttons href="/timesheets" variant={"green"} size={"fill"}>
-            <Texts variant={"default"} size={"p3"}>
-              View My Timesheets
+          </Holds>
+          <Holds size={"full"} position="center" className="mt-1" >
+          <Buttons href={"/timesheets"} background={"green"} size={"full"}>
+            <Texts size={"p3"}>
+            {t("TimeSheet-Label")}
             </Texts>
           </Buttons>
           </Holds>
-        </>
+          </Holds>
+        </Holds>
   );
 };
 

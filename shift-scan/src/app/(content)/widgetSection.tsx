@@ -20,6 +20,7 @@ type props = {
     session: Session;
 }
 export default function WidgetSection( {session} : props) {
+const [loading, setLoading] = useState(true);
 const router = useRouter();
 const t = useTranslations("ManagerButtons");
 const f = useTranslations("Home");
@@ -33,64 +34,9 @@ const { setPayPeriodHours } = usePayPeriodHours();
 const { setPayPeriodTimeSheets} = usePayPeriodTimeSheet();
 const [payPeriodSheets, setPayPeriodSheets] = useState([]);
 
-
-const { jobsiteResults, setJobsiteResults } = useDBJobsite();
-  const { recentlyUsedJobCodes, setRecentlyUsedJobCodes } = useRecentDBJobsite();
-  const { costcodeResults, setCostcodeResults } = useDBCostcode();
-  const { recentlyUsedCostCodes, setRecentlyUsedCostCodes } = useRecentDBCostcode();
-  const { equipmentResults, setEquipmentResults } = useDBEquipment();
-  const { recentlyUsedEquipment, setRecentlyUsedEquipment } = useRecentDBEquipment();
-//---------------------Fetches-------------------------------------------
-  // Fetch job sites, cost codes, equipment, and timesheet data from the API
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [jobsiteResponse, recentJobsiteResponse, costcodeResponse, recentCostcodeResponse, equipmentResponse, recentEquipmentResponse] = await Promise.all([
-          fetch("/api/getJobsites"),
-          fetch("/api/getRecentJobsites"),
-          fetch("/api/getCostCodes"),
-          fetch("/api/getRecentCostCodes"),
-          fetch("/api/getEquipment"),
-          fetch("/api/getRecentEquipment"),
-        ]);
-
-        const [jobSites, recentJobSites, costCodes, recentCostCodes, equipment, recentEquipment] = await Promise.all([
-          jobsiteResponse.json(),
-          recentJobsiteResponse.json(),
-          costcodeResponse.json(),
-          recentCostcodeResponse.json(),
-          equipmentResponse.json(),
-          recentEquipmentResponse.json(),
-
-        ]);
-
-        setJobsiteResults(jobSites);
-        setRecentlyUsedJobCodes(recentJobSites);
-        setCostcodeResults(costCodes);
-        setRecentlyUsedCostCodes(recentCostCodes);
-        setEquipmentResults(equipment);
-        setRecentlyUsedEquipment(recentEquipment);
-
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, [
-    setJobsiteResults,
-    setRecentlyUsedJobCodes,
-    setCostcodeResults,
-    setRecentlyUsedCostCodes,
-    setEquipmentResults,
-    setRecentlyUsedEquipment,
-  ]);
-
-//---------------------------------------------------------------------
-
 useEffect(() => {
   const fetchData = async () => {
+    setLoading(true);
     try {
       const response = await fetch("/api/getPayPeriodTimeSheets");
       const data = await response.json();
@@ -98,6 +44,9 @@ useEffect(() => {
       setPayPeriodTimeSheets(data); // Update the context after fetching
     } catch (error) {
       console.error("Error fetching pay period sheets:", error);
+    }
+    finally {
+    setLoading(false);
     }
   };
 
@@ -147,13 +96,13 @@ return (
       display={toggle}
 />
     ) : (
-      <Hours setToggle={handleToggle} display={toggle} />
+      <Hours setToggle={handleToggle} display={toggle} loading={loading} />
     )}
     </>
 ) :
 (
     <>
-    <Hours setToggle={handleToggle} display={toggle}  />
+    <Hours setToggle={handleToggle} display={toggle}  loading={loading}  />
 </>
 )
 }
@@ -164,19 +113,32 @@ return (
     <Buttons href="/dashboard/qr-generator" background={"lightBlue"} size={"full"}>
         <Holds className="justify-center items-center py-5">
             <Images titleImg="/qr.svg" titleImgAlt="QR Code" size={"40"}/>
-            <Texts>{t("QrGenerator")}</Texts>
+            <Texts>{f("Qr-btn")}</Texts>
         </Holds>
     </Buttons>
     <Buttons href="/dashboard/myTeam" background={"lightBlue"} size={"full"}>
     <Holds className="justify-center items-center py-5">
             <Images titleImg="/team.svg" titleImgAlt="my team" size={"40"}/>
-                <Texts >{t("MyTeam")}</Texts>
+                <Texts >{f("MyTeam-btn")}</Texts>
         </Holds>
     </Buttons> 
     </>
 ) :(null)
 }
+{authStep === "break" ? (
     <Buttons 
+        background={"orange"} 
+        size={"full"} // this eliminated the big if statement
+        href="/break"
+        className="col-span-2" // added this if they are
+        >
+            <Holds className="justify-center items-center py-5">
+            <Images titleImg="/clock-in.svg" titleImgAlt="QR Code" size={"40"}  />
+            <Texts>{f("Clock-break-btn")}</Texts>
+            </Holds>
+        </Buttons>
+      ) : (
+        <Buttons 
         background={"green"} 
         size={"full"} // this eliminated the big if statement
         href="/clock"
@@ -186,9 +148,11 @@ return (
             <Images titleImg="/clock-in.svg" titleImgAlt="QR Code" size={"40"}  />
             <Texts>{f("Clock-btn")}</Texts>
             </Holds>
-        </Buttons>
+    </Buttons>)
+}
+
     </Grids>
-        ) : (null)
+        ) : ( null)
       }
       </Holds>
     );

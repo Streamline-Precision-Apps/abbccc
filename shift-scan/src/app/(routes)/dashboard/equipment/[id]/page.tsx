@@ -4,7 +4,7 @@ import Content from "./content";
 import { auth } from "@/auth";
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 
 export default async function Page({ params }: { params: { form: string } }) {
@@ -17,9 +17,9 @@ export default async function Page({ params }: { params: { form: string } }) {
         return (
         <Bases>
         <Contents>
-        <Sections size={"dynamic"}>
+        <Holds>
         <Content userId={userId} formId={params.form}  />
-        </Sections>
+        </Holds>
         </Contents>
         </Bases>
         )
