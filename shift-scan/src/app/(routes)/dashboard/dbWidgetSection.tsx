@@ -116,7 +116,8 @@ const handleShowManagerButtons = () => {
 
 
 return (
-    <>
+<>
+{/* Loading Spinner */}
     {loading ? (
             <>
             <Holds className="my-2">
@@ -126,11 +127,13 @@ return (
             </>
         ):
     (
-        <>
+      <>
+      {/* Component that will render */}
         <Grids variant={"widgets"} size={"default"}>
+{/* Checks if a user has a permission of "USER" it won't render any manager buttons below */}
         {(permission !=="USER") && !additionalButtonsType && (
             <>
-             <Buttons href="/dashboard/qr-generator" background={"lightBlue"}>
+            <Buttons href="/dashboard/qr-generator" background={"lightBlue"}>
             <Holds className="my-2">
               <Images titleImg="/qr.svg" titleImgAlt="QR Code" background={"none"} size={"50"}/>
               <Texts size={"p4"}>{t("QrGenerator")}</Texts>
@@ -145,6 +148,7 @@ return (
             </>
           )
         }
+{/* This section includes the buttons within equipment */}
         {additionalButtonsType === "equipment" ? (
             <>
             <Buttons
@@ -190,8 +194,10 @@ return (
             </Holds>
           </Buttons>
         </>
-        ) : additionalButtonsType === "clockOut" ? (
-            <>
+        ) :
+        additionalButtonsType === "clockOut" ? (
+          <>
+{/* this ternary show all the buttons within ClockOut toggle */}
               <Buttons
                 background={"lightBlue"}
                 size={null}
@@ -254,7 +260,7 @@ return (
               </Buttons>
             </>
         ) :
-        //all pages get these buttons except models
+        //all pages get these buttons except for the additional button type sections
         (
             <>
             <Buttons
