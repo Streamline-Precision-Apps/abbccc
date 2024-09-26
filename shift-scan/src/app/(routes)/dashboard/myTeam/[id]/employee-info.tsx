@@ -26,29 +26,36 @@ export default async function employeeInfo({ params }: Params) {
 
   return (
 <Contents>
-        <Holds size={"titleBox"}>
+        <Holds 
+        background={"white"}
+        className="mb-3">
             <TitleBoxes
               title={`${employee?.firstName} ${employee?.lastName}`}
               titleImg={employee?.image ?? "/johnDoe.webp"}
               titleImgAlt="Team"
-              variant={"default"}
-              size={"default"}
               type="profilePic"
             />
         </Holds>
-        <Holds size={"dynamic"}>
-          <Forms>
-            <Labels variant="default">Phone Number</Labels>
-            <Inputs variant="default" type="default" state="disabled" data={contacts?.phoneNumber}></Inputs>
-            <Labels variant="default">Email</Labels>
-            <Inputs variant="default" type="default" state="disabled" data={contacts?.email}></Inputs>
-            <Labels variant="default">Emergency Contact</Labels>
-            <Inputs variant="default" type="default" state="disabled" data={contacts?.emergencyContact}></Inputs>
-            <Labels variant="default">Emergency Contact Number</Labels>
-            <Inputs variant="default" type="default" state="disabled" data={contacts?.emergencyContactNumber}></Inputs>
-            <Labels variant="default">Date of Birth</Labels>
-            <Inputs variant="default" type="default" state="disabled" data={employee?.DOB}></Inputs>
-          </Forms>
+        <Holds background={"white"}>
+          <Contents width={"section"}>
+            <Forms>
+              <Labels>Phone Number
+                <Inputs state="disabled" data={contacts?.phoneNumber}></Inputs>
+              </Labels>
+              <Labels>Email
+                <Inputs state="disabled" data={contacts?.email}></Inputs>
+              </Labels>
+              <Labels>Emergency Contact
+                <Inputs state="disabled" data={contacts?.emergencyContact}></Inputs>
+              </Labels>
+              <Labels>Emergency Contact Number
+                <Inputs state="disabled" data={contacts?.emergencyContactNumber}></Inputs>
+              </Labels>
+              <Labels>Date of Birth
+                <Inputs state="disabled" data={employee?.DOB}></Inputs>
+              </Labels>
+            </Forms>
+          </Contents>
         </Holds>
     </Contents>
   );

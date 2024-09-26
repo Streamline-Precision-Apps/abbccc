@@ -47,67 +47,70 @@ if (status === "authenticated") {
 }, [status]);
 
 return (
-<Bases variant="default">
-    <Contents size="default">
-    <Holds size="titleBox">
-        <TitleBoxes
-        title="My Team"
-        titleImg="/new/team.svg"
-        titleImgAlt="Team"
-        variant="default"
-        size="default"
-        />
-    </Holds>
-    {isLoading ? <>
-        <Holds size="dynamic">
-        <Buttons
-            variant="lightBlue"
-            size={null}
-            >
-            <Contents variant="row" size="listTitle">
-            <Titles size="h1">
-            </Titles>
-            <Images 
-            titleImg="/new/ongoing.svg"
-            titleImgAlt="loading icon"
-            variant="icon"
-            size={"default"}
-            className="animate-spin"
-            />
-            </Contents>
-        </Buttons>
-        </Holds>
-    </> :
-    <Holds size="dynamic">
-        {crew.map((userCrewId) => (
-            <Buttons
-            key={userCrewId.user.id}
-            id={userCrewId.user.id}
-            href={`/dashboard/myTeam/${userCrewId.user.id}`}
-            variant="lightBlue"
-            size={null}
-            >
-            <Contents variant="image" size="listImage">
-            <Images
-            titleImg={
-                userCrewId.user.image ?? "./new/default-profile.svg"
+    <Bases>
+        <Contents>
+            <Holds 
+            background={"white"}
+            className="mb-3">
+                <TitleBoxes
+                title="My Team"
+                titleImg="/team.svg"
+                titleImgAlt="Team"
+                />
+            </Holds>
+            {isLoading ? <>
+                <Holds background={"white"}>
+                    <Contents width={"section"}>
+                        <Buttons>
+                            <Holds>
+                                <Titles size="h4">Loading...</Titles>
+                                <Images 
+                                titleImg="/ongoing.svg"
+                                titleImgAlt="loading icon"
+                                size={"20"}
+                                className="animate-spin"
+                                />
+                            </Holds>
+                        </Buttons>
+                    </Contents> 
+                </Holds>
+                </> :
+                <Holds background={"white"}>
+                    <Contents width={"section"}>
+                        {crew.map((userCrewId) => (
+                            <Holds className="my-3">
+                                <Buttons
+                                key={userCrewId.user.id}
+                                id={userCrewId.user.id}
+                                href={`/dashboard/myTeam/${userCrewId.user.id}`}
+                                background="lightBlue"
+                                >
+                                    <Holds 
+                                    position={"row"}>
+                                        <Holds size={"30"}>
+                                            <Images
+                                            titleImg={
+                                                userCrewId.user.image ?? "./default-profile.svg"
+                                            }
+                                            titleImgAlt="profile picture"
+                                            size="full"
+                                            loading="lazy"
+                                            className="rounded-xl"
+                                            />
+                                        </Holds>
+                                        <Holds>
+                                            <Titles size="h2">
+                                                {userCrewId.user.firstName} {userCrewId.user.lastName}
+                                            </Titles>
+                                        </Holds>
+                                    </Holds>
+                                </Buttons>
+                            </Holds>
+                        ))}
+                    </Contents>
+                </Holds>
             }
-            titleImgAlt="profile picture"
-            variant="icon"
-            size="default"
-            loading="lazy"
-            />
             </Contents>
-            <Contents variant="row" size="listTitle">
-            <Titles size="h1">
-            {userCrewId.user.firstName} {userCrewId.user.lastName}
-            </Titles>
-            </Contents>
-            </Buttons>
-        ))}
-        </Holds>
-    }
-        </Contents>
         </Bases>
     );
 }

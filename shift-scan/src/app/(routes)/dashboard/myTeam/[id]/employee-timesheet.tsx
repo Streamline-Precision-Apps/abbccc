@@ -57,17 +57,20 @@ setMessage("");
 return (
 <>
 <Contents>
-
-    <Holds size={"dynamic"} variant={"default"}>
-    <Holds size={"titleBox"} variant={"darkBlue"}>
-        <Titles variant={"left"} >Select Date</Titles>
+    <Holds>
+    <Holds 
+    background={"darkBlue"}
+    className="mb-3">
+        <Holds>
+            <Titles>Select Date</Titles>{/* Make this a label? */}
+        </Holds>
         <form ref={formRef} onChange={handleFormChange} onSubmit={handleFormSubmit}>
-        <Inputs type="date" name="date" id="date" className="flex justify-center m-auto text-black text-2xl bg-white p-2 rounded border-2 border-black rounded-2xl" />
-        <Inputs type="hidden" name="id" value={employeeId} />
+            <Inputs type="date" name="date" id="date" className="flex justify-center m-auto text-black text-2xl bg-white p-2 rounded border-2 border-black rounded-2xl" />
+            <Inputs type="hidden" name="id" value={employeeId} />
         </form>
-        <Titles variant={"green"}>{message}</Titles>
+        <Titles>{message}</Titles>
     </Holds>
-    <Holds size={"dynamic"}>
+    <Holds background={"white"}>
         <EditWork
         timesheetData={timesheets}
         edit={edit}

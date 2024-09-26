@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import Content from "@/app/(content)/content";
 import { PayPeriodTimesheets } from "@/lib/types";
 import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
 
 export default async function Home() {
@@ -13,7 +14,7 @@ export default async function Home() {
 const session = await auth();
 if (!session) {
   // Redirect or return an error if the user is not authenticated
-  return { redirect: { destination: '/signin', permanent: false } };
+  redirect('/signin');
 }
 // passes the session to the content component
 

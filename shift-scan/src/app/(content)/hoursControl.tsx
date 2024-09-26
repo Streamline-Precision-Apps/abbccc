@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { Contents } from "@/components/(reusable)/contents";
 import { Texts } from "@/components/(reusable)/texts";
 import { Buttons } from "@/components/(reusable)/buttons";
+import { Holds } from "@/components/(reusable)/holds";
 
 type ControlComponentProps = {
   toggle: (toggle: boolean) => void;
@@ -131,8 +132,7 @@ export default function ControlComponent({ toggle } : ControlComponentProps) {
   return (
     <>
       <Contents
-        variant={"hoursDisplay"}
-        size={null}
+      width={"section"}
         title={t("DA-Control-Title")}
       >
         {/* Th */}
@@ -143,23 +143,21 @@ export default function ControlComponent({ toggle } : ControlComponentProps) {
           currentDate={currentDate}
         />
         {/* This is the start of the bar chart componnet and the previous day */}
-        <Contents variant={"barChartWrapper"} size={null}>
+        <Holds className="bg-red-300">
           {/* Contexts gives base styles for background app-dark-blue bars */}
-          <Contents variant={"navy"} size={"defaultHours"}>
+          <Holds className="bg-green-300">
             {/* - Contexts gives base styles for green bar with dark-blue background
     it also provides the height of the green bar, based on the value and the color of the bar based on the value
     - If the value is less than 8 hours are orange, greater than or equal to 8 hours are green
     - Text Component is neccessary to give high to the content while having a blank space
 */}
-            <Contents
-              variant={"default"}
-              size={null}
+            <Holds
               /*
 1. ternary is used for height evavulation based on the value, it uses caluclate bar to get it in px 
 2. ternary is used for color evavulation based on the value, it uses caluclate bar to get it in px
 3. ternary is used to show blank non working days as a clear background rather then show any status
 */
-              className={`w-full rounded-2xl flex flex-col justify-end
+              className={`w-full rounded-2xl flex flex-col justify-end bg-orange-300
           ${
             currentData.valuePrev === 0
               ? "bg-clear"
@@ -174,11 +172,11 @@ export default function ControlComponent({ toggle } : ControlComponentProps) {
                   ? `${currentData.valuePrev.toFixed(1)} ${t("DA-Time-Label")}`
                   : ""}
               </Texts>
-            </Contents>
-          </Contents>
+            </Holds>
+          </Holds>
           {/* This is the current day bar same as the previous with styling */}
-          <Contents variant={"navy"} size={"defaultHours"}>
-            <Contents
+          <Holds variant={"navy"} size={"defaultHours"}>
+            <Holds
               variant={"default"}
               size={null}
               className={` w-full flex flex-col justify-end rounded-2xl 
@@ -196,11 +194,11 @@ export default function ControlComponent({ toggle } : ControlComponentProps) {
                   ? `${currentData.value.toFixed(1)} ${t("DA-Time-Label")}`
                   : ""}
               </Texts>
-            </Contents>
-          </Contents>
+            </Holds>
+          </Holds>
           {/* This is the next day bar same as the previous with styling */}
-          <Contents variant={"navy"} size={"defaultHours"}>
-            <Contents
+          <Holds variant={"navy"} size={"defaultHours"}>
+            <Holds
               variant={"default"}
               size={null}
               className={` w-full flex flex-col justify-end rounded-2xl 
@@ -218,16 +216,16 @@ export default function ControlComponent({ toggle } : ControlComponentProps) {
                   ? `${currentData.valueNext.toFixed(1)} ${t("DA-Time-Label")}`
                   : ""}
               </Texts>
-            </Contents>
-          </Contents>
-        </Contents>
-        <Contents variant={null} size={null}>
+            </Holds>
+          </Holds>
+        </Holds>
+        <Holds variant={null} size={null}>
           <Buttons href="/timesheets" variant={"green"} size={"fill"}>
             <Texts variant={"default"} size={"p3"}>
               View My Timesheets
             </Texts>
           </Buttons>
-        </Contents>
+        </Holds>
       </Contents>
     </>
   );

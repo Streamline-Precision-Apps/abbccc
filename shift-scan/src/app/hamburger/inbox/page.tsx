@@ -1,7 +1,6 @@
 "use server";
 import Content from "@/app/hamburger/inbox/content";
 import { auth } from "@/auth";
-import UserId from "@/components/userId";
 import prisma from "@/lib/prisma";
 
 export default async function Inbox() {
