@@ -5,8 +5,10 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Forms } from "@/components/(reusable)/forms";
 import { Labels } from "@/components/(reusable)/labels";
 import { Inputs } from "@/components/(reusable)/inputs";
+import { getTranslations } from "next-intl/server";
 
 export default async function employeeInfo({ params }: { params: { employeeId: string } }) {
+  const t = await getTranslations("MyTeam");
   const id = params.employeeId;
   const employee = await prisma.users.findUnique({
     where: {
@@ -25,29 +27,36 @@ export default async function employeeInfo({ params }: { params: { employeeId: s
 
   return (
 <Contents>
-        <Holds size={"titleBox"}>
+        <Holds 
+        background={"white"}
+        className="mb-3">
             <TitleBoxes
               title={`${employee?.firstName} ${employee?.lastName}`}
               titleImg={employee?.image ?? "/johnDoe.webp"}
               titleImgAlt="Team"
-              variant={"default"}
-              size={"default"}
               type="profilePic"
             />
         </Holds>
-        <Holds size={"dynamic"}>
-          <Forms>
-            <Labels variant="default">Phone Number</Labels>
-            <Inputs variant="default" type="default" state="disabled" data={contacts?.phoneNumber}></Inputs>
-            <Labels variant="default">Email</Labels>
-            <Inputs variant="default" type="default" state="disabled" data={contacts?.email}></Inputs>
-            <Labels variant="default">Emergency Contact</Labels>
-            <Inputs variant="default" type="default" state="disabled" data={contacts?.emergencyContact}></Inputs>
-            <Labels variant="default">Emergency Contact Number</Labels>
-            <Inputs variant="default" type="default" state="disabled" data={contacts?.emergencyContactNumber}></Inputs>
-            <Labels variant="default">Date of Birth</Labels>
-            <Inputs variant="default" type="default" state="disabled" data={employee?.DOB}></Inputs>
-          </Forms>
+        <Holds background={"white"}>
+          <Contents width={"section"}>
+            <Forms>
+              <Labels>{t("PhoneNumber")}
+                <Inputs state="disabled" data={contacts?.phoneNumber}></Inputs>
+              </Labels>
+              <Labels>{t("Email")}
+                <Inputs state="disabled" data={contacts?.email}></Inputs>
+              </Labels>
+              <Labels>{t("EmergencyContact")}
+                <Inputs state="disabled" data={contacts?.emergencyContact}></Inputs>
+              </Labels>
+              <Labels>{t("EmergencyContactNumber")}
+                <Inputs state="disabled" data={contacts?.emergencyContactNumber}></Inputs>
+              </Labels>
+              <Labels>{t("DOB")}
+                <Inputs state="disabled" data={employee?.DOB}></Inputs>
+              </Labels>
+            </Forms>
+          </Contents>
         </Holds>
     </Contents>
   );

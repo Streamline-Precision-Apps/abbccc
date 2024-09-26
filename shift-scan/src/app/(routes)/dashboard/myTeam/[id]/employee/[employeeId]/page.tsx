@@ -5,7 +5,7 @@ import { EmployeeTimeSheets } from "./employee-timesheet";
 import prisma from "@/lib/prisma";
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
-import { Sections } from "@/components/(reusable)/sections";
+import { Holds } from "@/components/(reusable)/holds";
 
 
 export default async function crewMember({ params }: { params: { employeeId: string } }) {
@@ -14,9 +14,9 @@ export default async function crewMember({ params }: { params: { employeeId: str
         <Bases>
         <Contents>
             <EmployeeInfo params={params} />
-            <Sections size={"dynamic"} variant={"default"}>
+            <Holds>
             <EmployeeTimeSheets employeeId={params.employeeId}/>
-            </Sections>
+            </Holds>
         </Contents>
         </Bases>
     );
