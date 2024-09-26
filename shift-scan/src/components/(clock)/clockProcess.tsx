@@ -34,7 +34,7 @@ equipment
 }
 : clockProcessProps
 ){
-useFetchAllData();
+useFetchAllData(); //  the data fetching call
 const t = useTranslations("Clock");
 const [step, setStep] = useState(1);
 const [useQrCode, setUseQrCode] = useState(true);
