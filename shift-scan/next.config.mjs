@@ -4,7 +4,7 @@ const withNextIntl = createNextIntlPlugin();
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     experimental: {
-        serverComponentsExternalPackages: ['@prisma/client', 'bcryptjs'],
+        serverComponentsExternalPackages: ['@prisma/client', 'bcryptjs'], // replace bcryptjs with zod
         
     }
 };
