@@ -4,7 +4,6 @@ import ClockProcessor from "@/components/(clock)/clockProcess";
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";
-import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
 
 export default async function Clock() {
@@ -19,7 +18,7 @@ return (
 <ClockProcessor
         type={"jobsite"}
         scannerType={"jobsite"}
-        option="clockin"
+        option="break"
         locale={locale}
         returnpath="/"
         />

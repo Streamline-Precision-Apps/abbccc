@@ -34,68 +34,9 @@ const { setPayPeriodHours } = usePayPeriodHours();
 const { setPayPeriodTimeSheets} = usePayPeriodTimeSheet();
 const [payPeriodSheets, setPayPeriodSheets] = useState([]);
 
-
-const { jobsiteResults, setJobsiteResults } = useDBJobsite();
-  const { recentlyUsedJobCodes, setRecentlyUsedJobCodes } = useRecentDBJobsite();
-  const { costcodeResults, setCostcodeResults } = useDBCostcode();
-  const { recentlyUsedCostCodes, setRecentlyUsedCostCodes } = useRecentDBCostcode();
-  const { equipmentResults, setEquipmentResults } = useDBEquipment();
-  const { recentlyUsedEquipment, setRecentlyUsedEquipment } = useRecentDBEquipment();
-//---------------------Fetches-------------------------------------------
-  // Fetch job sites, cost codes, equipment, and timesheet data from the API
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const [jobsiteResponse, recentJobsiteResponse, costcodeResponse, recentCostcodeResponse, equipmentResponse, recentEquipmentResponse] = await Promise.all([
-          fetch("/api/getJobsites"),
-          fetch("/api/getRecentJobsites"),
-          fetch("/api/getCostCodes"),
-          fetch("/api/getRecentCostCodes"),
-          fetch("/api/getEquipment"),
-          fetch("/api/getRecentEquipment"),
-        ]);
-
-        const [jobSites, recentJobSites, costCodes, recentCostCodes, equipment, recentEquipment] = await Promise.all([
-          jobsiteResponse.json(),
-          recentJobsiteResponse.json(),
-          costcodeResponse.json(),
-          recentCostcodeResponse.json(),
-          equipmentResponse.json(),
-          recentEquipmentResponse.json(),
-
-        ]);
-
-        setJobsiteResults(jobSites);
-        setRecentlyUsedJobCodes(recentJobSites);
-        setCostcodeResults(costCodes);
-        setRecentlyUsedCostCodes(recentCostCodes);
-        setEquipmentResults(equipment);
-        setRecentlyUsedEquipment(recentEquipment);
-
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-      finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [
-    setJobsiteResults,
-    setRecentlyUsedJobCodes,
-    setCostcodeResults,
-    setRecentlyUsedCostCodes,
-    setEquipmentResults,
-    setRecentlyUsedEquipment,
-  ]);
-
-//---------------------------------------------------------------------
-
 useEffect(() => {
   const fetchData = async () => {
+    setLoading(true);
     try {
       const response = await fetch("/api/getPayPeriodTimeSheets");
       const data = await response.json();
@@ -103,6 +44,9 @@ useEffect(() => {
       setPayPeriodTimeSheets(data); // Update the context after fetching
     } catch (error) {
       console.error("Error fetching pay period sheets:", error);
+    }
+    finally {
+    setLoading(false);
     }
   };
 
@@ -181,7 +125,20 @@ return (
     </>
 ) :(null)
 }
+{authStep === "break" ? (
     <Buttons 
+        background={"orange"} 
+        size={"full"} // this eliminated the big if statement
+        href="/break"
+        className="col-span-2" // added this if they are
+        >
+            <Holds className="justify-center items-center py-5">
+            <Images titleImg="/clock-in.svg" titleImgAlt="QR Code" size={"40"}  />
+            <Texts>{f("Clock-break-btn")}</Texts>
+            </Holds>
+        </Buttons>
+      ) : (
+        <Buttons 
         background={"green"} 
         size={"full"} // this eliminated the big if statement
         href="/clock"
@@ -191,7 +148,9 @@ return (
             <Images titleImg="/clock-in.svg" titleImgAlt="QR Code" size={"40"}  />
             <Texts>{f("Clock-btn")}</Texts>
             </Holds>
-        </Buttons>
+    </Buttons>)
+}
+
     </Grids>
         ) : ( null)
       }

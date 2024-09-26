@@ -36,15 +36,15 @@ export default function QRStep({option, handleReturn, handleAlternativePath, han
             <QR handleNextStep={handleNextStep} url={url}  />  
             </>)}
         </div>
-        <Buttons  onClick={handleAlternativePath}>
+        <Buttons onClick={handleAlternativePath}>
           <Texts size={"p4"}>{t('TroubleScanning')}</Texts>
         </Buttons>
         {option === "break" ? ( <Buttons onClick={handleReturn}  background={'red'}>
-              {"Return To Previous Job and cost code"}
+              {t("ReturnToJobsite")}
               </Buttons>)
                 : (null)}
-        { type !== 'equipment' && ( <Buttons onClick={handleChangeJobsite} background={'green'} >
-              {t('ReturnToJobsite')}
+        { type !== 'equipment' && option !== "clockin" &&  option !== "break" && ( <Buttons onClick={handleChangeJobsite} background={'green'} >
+              {t('ChangeJobsite')}
               </Buttons>)
         }
     </>

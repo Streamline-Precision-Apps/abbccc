@@ -17,6 +17,7 @@ import DashboardButtons from "@/components/dashboard-buttons";
 import Spinner from "@/components/(animations)/spinner";
 import { updateTimeSheetBySwitch } from "@/actions/timeSheetActions";
 import { Modals } from "@/components/(reusable)/modals";
+import { set } from "zod";
 type props = {
     session: Session;
     locale: string;
@@ -44,69 +45,21 @@ const handleShowManagerButtons = () => {
     setAdditionalButtonsType(type);
   };
 
-
-const { jobsiteResults, setJobsiteResults } = useDBJobsite();
-  const { recentlyUsedJobCodes, setRecentlyUsedJobCodes } = useRecentDBJobsite();
-  const { costcodeResults, setCostcodeResults } = useDBCostcode();
-  const { recentlyUsedCostCodes, setRecentlyUsedCostCodes } = useRecentDBCostcode();
-  const { equipmentResults, setEquipmentResults } = useDBEquipment();
-  const { recentlyUsedEquipment, setRecentlyUsedEquipment } = useRecentDBEquipment();
-//---------------------Fetches-------------------------------------------
-  // Fetch job sites, cost codes, equipment, and timesheet data from the API
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const [jobsiteResponse, recentJobsiteResponse, costcodeResponse, recentCostcodeResponse, equipmentResponse, recentEquipmentResponse] = await Promise.all([
-          fetch("/api/getJobsites"),
-          fetch("/api/getRecentJobsites"),
-          fetch("/api/getCostCodes"),
-          fetch("/api/getRecentCostCodes"),
-          fetch("/api/getEquipment"),
-          fetch("/api/getRecentEquipment"),
-        ]);
-
-        const [jobSites, recentJobSites, costCodes, recentCostCodes, equipment, recentEquipment] = await Promise.all([
-          jobsiteResponse.json(),
-          recentJobsiteResponse.json(),
-          costcodeResponse.json(),
-          recentCostcodeResponse.json(),
-          equipmentResponse.json(),
-          recentEquipmentResponse.json(),
-        ]);
-
-        setJobsiteResults(jobSites);
-        setRecentlyUsedJobCodes(recentJobSites);
-        setCostcodeResults(costCodes);
-        setRecentlyUsedCostCodes(recentCostCodes);
-        setEquipmentResults(equipment);
-        setRecentlyUsedEquipment(recentEquipment);
-
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-      finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [
-    setJobsiteResults,
-    setRecentlyUsedJobCodes,
-    setCostcodeResults,
-    setRecentlyUsedCostCodes,
-    setEquipmentResults,
-    setRecentlyUsedEquipment,
-  ]);
-
   useEffect(() => {
     const fetchLogs = async () => {
-    const recentLogsResponse = await fetch("/api/getLogs");
-   const logs = await recentLogsResponse.json();
-    setLogs(logs);
+    setLoading(true);
+    try{
+      const recentLogsResponse = await fetch("/api/getLogs");
+      const logs = await recentLogsResponse.json();
+      setLogs(logs);
     }
+    catch {
+      console.error("Error fetching logs:", error);
+    }
+    finally{
+      setLoading(false);
+    }
+  }
     fetchLogs();
 },[]);
 
