@@ -7,7 +7,7 @@ import { cn } from "@/components/(reusable)/utils";
 
 //This determines styles of all buttons
 const ButtonVariants = cva(
-  "border-[3px] border-black rounded-[10px] shadow-[8px_8px_0px_grey]", //this applies to all variants
+  "border-[3px] border-black rounded-[10px] shadow-[8px_8px_0px_grey] ", //this applies to all variants
   {
     variants: {
       background: {//only background attributes

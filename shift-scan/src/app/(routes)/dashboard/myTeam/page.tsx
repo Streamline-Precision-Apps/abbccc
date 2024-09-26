@@ -51,40 +51,42 @@ if (status === "authenticated") {
 }, [status]);
 
 return (
-<Bases variant="default">
-    <Contents size="default">
-    <Holds size="titleBox">
+<Bases>
+<Contents>
+    <Holds 
+            background={"white"}
+            className="mb-3">
         <TitleBoxes
         title={`${t('Teams-Title')}`}
-        titleImg="/new/team.svg"
+        titleImg="/team.svg"
         titleImgAlt={`${t('Teams-Logo-Title')}`}
-        variant="default"
-        size="default"
         />
     </Holds>
     {isLoading ? <>
-        <Holds size="dynamic">
-            <Contents variant="row" size="listTitle">
-            <Titles size="h1">
-            </Titles>
+        <Holds background={"white"}>
+            <Contents width={"section"}>
             <Spinner />
             </Contents>
         </Holds>
     </> :
-    <Holds size="dynamic">
+    <Holds background={"white"}>
+        <Contents width={"section"}>
         {myTeams.map((teams) => (
+            <Holds className="my-3">
             <Buttons
-            variant="lightBlue"
+            background="lightBlue"
             href={`/dashboard/myTeam/${teams.id}`}
             key={teams.id}
             >
-            <Contents variant="row" size="listTitle">
+            <Holds>
             <Titles size="h1">
             {teams.name} ({teams.totalMembers})
             </Titles>
-            </Contents>
+            </Holds>
             </Buttons>
+            </Holds>
         ))}
+        </Contents>
     </Holds>
     }
         </Contents>
