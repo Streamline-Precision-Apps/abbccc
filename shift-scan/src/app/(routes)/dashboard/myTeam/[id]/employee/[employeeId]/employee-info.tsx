@@ -27,29 +27,36 @@ export default async function employeeInfo({ params }: { params: { employeeId: s
 
   return (
 <Contents>
-        <Holds size={"titleBox"}>
+        <Holds 
+        background={"white"}
+        className="mb-3">
             <TitleBoxes
               title={`${employee?.firstName} ${employee?.lastName}`}
               titleImg={employee?.image ?? "/johnDoe.webp"}
               titleImgAlt="Team"
-              variant={"default"}
-              size={"default"}
               type="profilePic"
             />
         </Holds>
-        <Holds size={"dynamic"}>
-          <Forms>
-            <Labels variant="default">{t("PhoneNumber")}</Labels>
-            <Inputs variant="default" type="default" state="disabled" data={contacts?.phoneNumber}></Inputs>
-            <Labels variant="default">{t("Email")}</Labels>
-            <Inputs variant="default" type="default" state="disabled" data={contacts?.email}></Inputs>
-            <Labels variant="default">{t("EmergencyContact")}</Labels>
-            <Inputs variant="default" type="default" state="disabled" data={contacts?.emergencyContact}></Inputs>
-            <Labels variant="default">{t("EmergencyContactNumber")}</Labels>
-            <Inputs variant="default" type="default" state="disabled" data={contacts?.emergencyContactNumber}></Inputs>
-            <Labels variant="default">{t("DOB")}</Labels>
-            <Inputs variant="default" type="default" state="disabled" data={employee?.DOB}></Inputs>
-          </Forms>
+        <Holds background={"white"}>
+          <Contents width={"section"}>
+            <Forms>
+              <Labels>{t("PhoneNumber")}
+                <Inputs state="disabled" data={contacts?.phoneNumber}></Inputs>
+              </Labels>
+              <Labels>{t("Email")}
+                <Inputs state="disabled" data={contacts?.email}></Inputs>
+              </Labels>
+              <Labels>{t("EmergencyContact")}
+                <Inputs state="disabled" data={contacts?.emergencyContact}></Inputs>
+              </Labels>
+              <Labels>{t("EmergencyContactNumber")}
+                <Inputs state="disabled" data={contacts?.emergencyContactNumber}></Inputs>
+              </Labels>
+              <Labels>{t("DOB")}
+                <Inputs state="disabled" data={employee?.DOB}></Inputs>
+              </Labels>
+            </Forms>
+          </Contents>
         </Holds>
     </Contents>
   );

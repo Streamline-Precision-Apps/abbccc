@@ -26,18 +26,18 @@ const TitleVariants = cva(
         right: "text-end",
       },
       size: {//only text size
-        p1: "text-3xl sm:text-3xl md:text-4xl lg:text-5xl",
-        p2: "text-2xl sm:text-2xl md:text-3xl lg:text-4xl",
-        p3: "text-xl",
-        p4: "text-lg",
-        p5: "text-med",
-        p6: "text-sm",
+        h1: "text-3xl sm:text-3xl md:text-4xl lg:text-5xl",
+        h2: "text-2xl sm:text-2xl md:text-3xl lg:text-4xl",
+        h3: "text-xl",
+        h4: "text-lg",
+        h5: "text-med",
+        h6: "text-sm",
       }
     },
     defaultVariants: {
       text: "black",
       position: "center",
-      size: "p2",
+      size: "h2",
     },
   }
 )
