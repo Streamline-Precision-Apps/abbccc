@@ -4,11 +4,11 @@ import { cn } from "@/components/(reusable)/utils";
 
 //this component determines the size aloted to the content of the page.
 const ContentVariants = cva(
-  "", //this applies to all variants
+  "mx-auto", //this applies to all variants
   {
     variants: {
       position: {//only position attributes
-        col: "flex flex-col self-center",
+        col: "flex flex-col self-center items-center",
         row: "flex flex-row items-center",
       },
       width: {//only width
@@ -18,6 +18,7 @@ const ContentVariants = cva(
       height: {//only height
         none: "",
         page: "h-[90%]",
+      },
     },
     defaultVariants: {
       position: "col",
@@ -25,7 +26,6 @@ const ContentVariants = cva(
       height: "none",
     },
   }
-}
 )
 
 // this extends the capability of HTMLAttributes or the VariantProps that it can hold, specify your props here

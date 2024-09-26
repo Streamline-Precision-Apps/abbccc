@@ -49,43 +49,62 @@ if (status === "authenticated") {
 }, [status]);
 
 return (
-<Bases variant="default">
-    <Contents size="default">
-    <Holds size="titleBox">
-        <TitleBoxes
-        title="My Teams"
-        titleImg="/new/team.svg"
-        titleImgAlt="Team"
-        variant="default"
-        size="default"
-        />
-    </Holds>
-    {isLoading ? <>
-        <Holds size="dynamic">
-            <Contents variant="row" size="listTitle">
-            <Titles size="h1">
-            </Titles>
-            <Spinner />
+    <Bases>
+        <Contents>
+            <Holds 
+            background={"white"}
+            className="mb-3">
+                <TitleBoxes
+                title="My TeamS"
+                titleImg="/team.svg"
+                titleImgAlt="Team"
+                />
+            </Holds>
+            {isLoading ? <>
+                <Holds background={"white"}>
+                    <Contents width={"section"}>
+                        <Buttons>
+                            <Holds>
+                                <Titles size="h4">Loading...</Titles>
+                                <Spinner/>
+                            </Holds>
+                        </Buttons>
+                    </Contents> 
+                </Holds>
+                </> :
+                <Holds background={"white"}>
+                    <Contents width={"section"}>
+                        {myTeams.map((teams) => (
+                            <Holds className="my-3">
+                                <Buttons
+                                href={`/dashboard/myTeam/${teams.id}`}
+                                key={teams.id}
+                                background="lightBlue"
+                                >
+                                    <Holds 
+                                    position={"row"}>
+                                        <Holds size={"30"}>
+                                            <Images
+                                            titleImg="/profile.svg"
+                                            titleImgAlt="profile picture"
+                                            size="full"
+                                            loading="lazy"
+                                            className="rounded-xl"
+                                            />
+                                        </Holds>
+                                        <Holds>
+                                            <Titles size="h2">
+                                                Team {teams.id}
+                                            </Titles>
+                                        </Holds>
+                                    </Holds>
+                                </Buttons>
+                            </Holds>
+                        ))}
+                    </Contents>
+                </Holds>
+            }
             </Contents>
-        </Holds>
-    </> :
-    <Holds size="dynamic">
-        {myTeams.map((teams) => (
-            <Buttons
-            variant="lightBlue"
-            href={`/dashboard/myTeam/${teams.id}`}
-            key={teams.id}
-            >
-            <Contents variant="row" size="listTitle">
-            <Titles size="h1">
-                Team {teams.id}
-            </Titles>
-            </Contents>
-            </Buttons>
-        ))}
-    </Holds>
-    }
-        </Contents>
         </Bases>
     );
 }

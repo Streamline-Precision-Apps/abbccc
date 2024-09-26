@@ -12,6 +12,7 @@ import SignOutModal from './signOutModal';
 import { Modals } from "@/components/(reusable)/modals";
 import { Images } from "@/components/(reusable)/images";
 import { Employee } from "@/lib/types";
+import { Buttons } from "@/components/(reusable)/buttons";
 
 type Props = {
   employee: Employee;
@@ -35,51 +36,67 @@ export default function EmployeeInfo({ employee, contacts, training }: Props ) {
 //Testing v v v
   // const completionPercentage = (90).toFixed(0);
   return (
-  <Contents size={"default"} variant={"default"}>
-  <Holds size={"titleBox"}>
-{/*This Title box allows the profile pic to default as a base profile picture*/}
-      <TitleBoxes type="profilePic" title={`${employee?.firstName} ${employee?.lastName}`} titleImg={employee?.image !== null ? `${employee?.image}` : "/profile.svg"}  titleImgAlt={"image"}  >
-        <Contents size={"editBtn"} variant={"clear"} onClick={() => setIsOpen(true) } >
-        <Images titleImg={"/edit.svg"} titleImgAlt={"Edit tool"} variant={"editIcon"} size={"editIcon"} onClick={() => setIsOpen(true)}/>
-        </Contents>
-      </TitleBoxes>
-  </Holds>
+  <Contents>
+    <Holds 
+    background={"white"} 
+    className="mb-3">
+        {/*This Title box allows the profile pic to default as a base profile picture*/}
+        <TitleBoxes 
+        type="profilePic" 
+        title={`${employee?.firstName} ${employee?.lastName}`} 
+        titleImg={employee?.image !== null ? `${employee?.image}` : "/profile.svg"}  
+        titleImgAlt={"image"}>
+          <Buttons size={"50"} background={"none"} onClick={() => setIsOpen(true) } >
+            <Images 
+            titleImg={"/edit.svg"} 
+            titleImgAlt={"Edit tool"} 
+            onClick={() => setIsOpen(true)}/>
+          </Buttons>
+        </TitleBoxes>
+    </Holds>
   
-  <Modals 
-  handleClose={() => {setIsOpen(false); setBase64String('');}} 
-  type="base64" variant={"default"} size={"lg"} isOpen={isOpen}>
-    <Base64Encoder employee={employee} base64String={base64String} setBase64String={setBase64String} setIsOpen={setIsOpen}  />
-  </Modals>
-    <Holds size={"default"}>
-      <Forms>
-        <Labels variant="default">{t("EmployeeID")}</Labels>
-          <Inputs
-            disabled
-            type="text"
-            defaultValue={employee?.id?.toString() ?? ''}
-          />
-        <Labels>{t("ContactEmail")}</Labels>
-          <Inputs
-            disabled
-            type="email"
-            defaultValue={contacts?.email ?? ''}
-          />
-        <Labels>{t("ContactPhone#")}</Labels>
-          <Inputs
-            disabled
-            type="tel"
-            defaultValue={contacts?.phone_number ?? ''}
-          />
-          {/* Todo: Version1.1 add saftey training status here */}
-        {/* <Labels>{t("SafetyTraining")}</Labels> */}
-        {/* <Contents size={null} variant={"safetyTrainingBar"}>
-          <Contents size={null} style={{ width: `${completionPercentage}%`}} className={Number(completionPercentage) === 100 ? "bg-app-green rounded-r-lg border-2 border-app-green" : "bg-app-orange rounded-r-lg border-2 border-app-orange"}>
-            <Texts size={"p3"}>{completionPercentage}%</Texts>
-          </Contents>
-        </Contents> */}
-      </Forms>
-        <SignOutModal />
-      </Holds>
+    <Modals 
+    handleClose={() => {setIsOpen(false); setBase64String('');}} 
+    type="base64" variant={"default"} size={"lg"} isOpen={isOpen}>
+      <Base64Encoder employee={employee} base64String={base64String} setBase64String={setBase64String} setIsOpen={setIsOpen}  />
+    </Modals>
+    <Holds 
+    background={"white"} 
+    className="mb-3">
+      <Contents width={"section"}>
+        <Forms>
+          <Labels>{t("EmployeeID")}
+            <Inputs
+              disabled
+              type="text"
+              defaultValue={employee?.id?.toString() ?? ''}
+            />
+          </Labels>
+          <Labels>{t("ContactEmail")}
+            <Inputs
+              disabled
+              type="email"
+              defaultValue={contacts?.email ?? ''}
+            />
+          </Labels>
+          <Labels>{t("ContactPhone#")}
+            <Inputs
+              disabled
+              type="tel"
+              defaultValue={contacts?.phone_number ?? ''}
+            />
+          </Labels>
+            {/* Todo: Version1.1 add saftey training status here */}
+          {/* <Labels>{t("SafetyTraining")}</Labels> */}
+          {/* <Contents size={null} variant={"safetyTrainingBar"}>
+            <Contents size={null} style={{ width: `${completionPercentage}%`}} className={Number(completionPercentage) === 100 ? "bg-app-green rounded-r-lg border-2 border-app-green" : "bg-app-orange rounded-r-lg border-2 border-app-orange"}>
+              <Texts size={"p3"}>{completionPercentage}%</Texts>
+            </Contents>
+          </Contents> */}
+        </Forms>
+      </Contents>
+    </Holds>
+    <SignOutModal /> 
   </Contents>
 );
 }
