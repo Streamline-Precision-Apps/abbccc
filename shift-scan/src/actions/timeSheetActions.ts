@@ -40,15 +40,14 @@ export async function fetchTimesheets(employeeId: string, date: string) {
 // used at each login and will retain that timesheetId until the user logs out with switch jobsite
 export async function CreateTimeSheet(formData: FormData) {
     try {
-        console.log("Creating Timesheet...");
-        console.log(formData);
-
+        console.log("entered CreateTimeSheet:");
+        console.log("formData:", formData);
         const parseDate = (timestamp: string) => {
-            const date = new Date(timestamp); // Directly parse the string as a date
+            const date = new Date(timestamp);
             if (isNaN(date.getTime())) {
                 throw new RangeError(`Invalid time value: ${timestamp}`);
             }
-            date.setMinutes(date.getMinutes() - date.getTimezoneOffset()); // Adjust for the timezone offset
+            date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
             return date;
         };
 
@@ -67,19 +66,18 @@ export async function CreateTimeSheet(formData: FormData) {
                 leftIdaho: null,
                 equipmentHauled: null,
                 materialsHauled: null,
-                hauledLoadsQuantity:  null,
-                refuelingGallons:  null,
+                hauledLoadsQuantity: null,
+                refuelingGallons: null,
                 timeSheetComments: null,
                 user: { connect: { id: formData.get("userId") as string } },
             },
         });
-        console.log("Timesheet created successfully.");
+
         return newTimeSheet;
-        
-} catch (error) {
-    console.error("Error creating timesheet:", error);
-    throw error;
-}
+    } catch (error) {
+        console.error("Error creating timesheet:", error);
+        throw error;
+    }
 }
 
 // Create TimeSheet

@@ -1,7 +1,7 @@
 // This stores the previous 5 cost codes, jobsites, and equipment that the user has selected. This will make it easier to change cost codes.
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { JobCodes, CostCode, EquipmentCodes } from '@/lib/types';
+import { JobCodes, CostCodes, EquipmentCodes } from '@/lib/types';
 
 type RecentJobSiteContextType = {
   recentlyUsedJobCodes: JobCodes[];
@@ -20,7 +20,7 @@ export const RecentJobSiteProvider = ({ children }: { children: ReactNode }) => 
 
   const addRecentlyUsedJobCode = (code: JobCodes) => {
     setRecentlyUsedJobCodes((prev) => {
-      const updatedList = [code, ...prev.filter((c) => c.id !== code.id)];
+      const updatedList = [code, ...prev.filter((c) => c.qrId !== code.qrId)];
       return updatedList.slice(0, 5);
     });
   };
@@ -36,9 +36,9 @@ export const useRecentDBJobsite = () => useContext(RecentJobSiteContext);
 
 
 interface RecentCostCodeContextType {
-    recentlyUsedCostCodes: CostCode[];
-    setRecentlyUsedCostCodes: React.Dispatch<React.SetStateAction<CostCode[]>>;
-    addRecentlyUsedCostCode: (code: CostCode) => void;
+    recentlyUsedCostCodes: CostCodes[];
+    setRecentlyUsedCostCodes: React.Dispatch<React.SetStateAction<CostCodes[]>>;
+    addRecentlyUsedCostCode: (code: CostCodes) => void;
   }
   
   const RecentCostCodeContext = createContext<RecentCostCodeContextType>({
@@ -48,11 +48,11 @@ interface RecentCostCodeContextType {
   });
   
   export const RecentCostCodeProvider = ({ children }: { children: ReactNode }) => {
-    const [recentlyUsedCostCodes, setRecentlyUsedCostCodes] = useState<CostCode[]>([]);
+    const [recentlyUsedCostCodes, setRecentlyUsedCostCodes] = useState<CostCodes[]>([]);
   
-    const addRecentlyUsedCostCode = (code: CostCode) => {
+    const addRecentlyUsedCostCode = (code: CostCodes) => {
       setRecentlyUsedCostCodes((prev) => {
-        const updatedList = [code, ...prev.filter((c) => c.id !== code.id)];
+        const updatedList = [code, ...prev.filter((c) => c.name !== code.name)];
         return updatedList.slice(0, 5);
       });
     };
@@ -84,7 +84,7 @@ interface RecentCostCodeContextType {
   
     const addRecentlyUsedEquipment = (equipment: EquipmentCodes) => {
       setRecentlyUsedEquipment((prev) => {
-        const updatedList = [equipment, ...prev.filter((e) => e.id !== equipment.id)];
+        const updatedList = [equipment, ...prev.filter((e) => e.qrId !== equipment.qrId)];
         return updatedList.slice(0, 5);
       });
     };

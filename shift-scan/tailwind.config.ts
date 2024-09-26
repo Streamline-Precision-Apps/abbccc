@@ -12,6 +12,9 @@ const config: Config = {
   },
   theme: {
     extend: {
+      animation: {
+        'spin-custom': 'spin 1.1s linear infinite', // Adjust '2s' to make it slower or faster
+      },
       colors: {
         'app-blue': '#57BDE9',
         'app-dark-blue': '#233861',

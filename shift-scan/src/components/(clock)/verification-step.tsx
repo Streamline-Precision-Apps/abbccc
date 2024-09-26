@@ -31,10 +31,8 @@ export default function VerificationStep({ type, handleNextStep, option} : Verif
   const { savedTimeSheetData, setTimeSheetData } = useTimeSheetData();
   const [date] = useState(new Date());
   const { data: session } = useSession();
-  if (!session) {
-    return null;
-  }
-  const { id } = session.user;
+  if (!session) return null;
+  const { id } = session.user ;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     try {

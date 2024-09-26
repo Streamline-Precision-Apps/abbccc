@@ -1,4 +1,5 @@
 "use client";
+import Spinner from "@/components/(animations)/spinner";
 import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
@@ -9,17 +10,9 @@ import { Titles } from "@/components/(reusable)/titles";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
-type CrewMember = {
-    user: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    image: string | null;
-};
-};
 
 export default function Content() {
-const [crew, setCrew] = useState<CrewMember[]>([]);
+const [myTeams,  setMyTeams] = useState<any[]>([]);
 const [isLoading, setIsLoading] = useState(true);
 const { data: session, status } = useSession();
 
@@ -27,10 +20,10 @@ useEffect(() => {
 const fetchCrew = async () => {
     try {
     setIsLoading(true);
-    const response = await fetch("/api/getCrew");
+    const response = await fetch("/api/getTeam");
     if (response.ok) {
-        const crewData = await response.json();
-        setCrew(crewData);
+        const myTeams = await response.json();
+        setMyTeams(myTeams);
     } else {
         console.error("Failed to fetch crew data");
     }
@@ -42,8 +35,17 @@ const fetchCrew = async () => {
 };
 
 if (status === "authenticated") {
-    fetchCrew();
-}
+    // Check if data is already in local storage
+    const storedTeams = localStorage.getItem("myTeams");
+    if (storedTeams) {
+      // Parse and set local data
+      setMyTeams(JSON.parse(storedTeams));
+      setIsLoading(false); // Stop loading
+    } else {
+      // Fetch from server if no data in local storage
+      fetchCrew();
+    }
+  }
 }, [status]);
 
 return (
@@ -53,7 +55,7 @@ return (
             background={"white"}
             className="mb-3">
                 <TitleBoxes
-                title="My Team"
+                title="My TeamS"
                 titleImg="/team.svg"
                 titleImgAlt="Team"
                 />
@@ -64,12 +66,7 @@ return (
                         <Buttons>
                             <Holds>
                                 <Titles size="h4">Loading...</Titles>
-                                <Images 
-                                titleImg="/ongoing.svg"
-                                titleImgAlt="loading icon"
-                                size={"20"}
-                                className="animate-spin"
-                                />
+                                <Spinner/>
                             </Holds>
                         </Buttons>
                     </Contents> 
@@ -77,21 +74,18 @@ return (
                 </> :
                 <Holds background={"white"}>
                     <Contents width={"section"}>
-                        {crew.map((userCrewId) => (
+                        {myTeams.map((teams) => (
                             <Holds className="my-3">
                                 <Buttons
-                                key={userCrewId.user.id}
-                                id={userCrewId.user.id}
-                                href={`/dashboard/myTeam/${userCrewId.user.id}`}
+                                href={`/dashboard/myTeam/${teams.id}`}
+                                key={teams.id}
                                 background="lightBlue"
                                 >
                                     <Holds 
                                     position={"row"}>
                                         <Holds size={"30"}>
                                             <Images
-                                            titleImg={
-                                                userCrewId.user.image ?? "./default-profile.svg"
-                                            }
+                                            titleImg="/profile.svg"
                                             titleImgAlt="profile picture"
                                             size="full"
                                             loading="lazy"
@@ -100,7 +94,7 @@ return (
                                         </Holds>
                                         <Holds>
                                             <Titles size="h2">
-                                                {userCrewId.user.firstName} {userCrewId.user.lastName}
+                                                Team {teams.id}
                                             </Titles>
                                         </Holds>
                                     </Holds>
