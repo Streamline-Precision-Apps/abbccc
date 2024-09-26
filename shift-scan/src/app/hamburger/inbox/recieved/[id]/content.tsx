@@ -31,7 +31,7 @@ type Props = {
 export default function Content({ params,  receivedContent, session, name, manager } : Props) {
     const t = useTranslations("Hamburger");
     const router = useRouter();
-    const user_Id = session?.user.id;
+    const userId = session?.user.id;
     const [decision, setDecision] = useState("APPROVED")
     const [managerComment, setManagerComment] = useState('');
 
@@ -86,7 +86,7 @@ const handleManagerCommentChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
                 className="mb-3" 
                 key={item.id}>
                     <Inputs type="hidden" name="date" value={item.date.toString()} disabled/>
-                    <Inputs type="hidden" name="employee_id" value={item.employeeId} disabled/>
+                    <Inputs type="hidden" name="employeeId" value={item.employeeId} disabled/>
                     <Labels>
                         Employee
                         <Inputs

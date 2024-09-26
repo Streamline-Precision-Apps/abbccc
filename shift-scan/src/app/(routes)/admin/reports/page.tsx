@@ -33,46 +33,44 @@ export default function Reports() {
 
     // Define the headers for the CSV
     const headers = [
-        { label: "Submit Date", key: "submit_date" },
+        { label: "Submit Date", key: "submitDate" },
         { label: "Date", key: "date" },
         { label: "Cost Code", key: "costcode" },
-        { label: "Vehicle ID", key: "vehicle_id" },
-        { label: "Start Time", key: "start_time" },
-        { label: "End Time", key: "end_time" },
+        { label: "Vehicle ID", key: "vehicleId" },
+        { label: "Start Time", key: "startTime" },
+        { label: "End Time", key: "endTime" },
         { label: "Duration", key: "duration" },
-        { label: "Starting Mileage", key: "starting_mileage" },
-        { label: "Ending Mileage", key: "ending_mileage" },
-        { label: "Left Idaho", key: "left_idaho" },
-        { label: "Equipment Hauled", key: "equipment_hauled" },
-        { label: "Materials Hauled", key: "materials_hauled" },
-        { label: "Hauled Loads Quantity", key: "hauled_loads_quantity" },
-        { label: "Refueling Gallons", key: "refueling_gallons" },
-        { label: "Timesheet Comments", key: "timesheet_comments" },
-        { label: "App Comment", key: "app_comment" },
+        { label: "Starting Mileage", key: "startingMileage" },
+        { label: "Ending Mileage", key: "endingMileage" },
+        { label: "Left Idaho", key: "leftIdaho" },
+        { label: "Equipment Hauled", key: "equipmentHauled" },
+        { label: "Materials Hauled", key: "materialsHauled" },
+        { label: "Hauled Loads Quantity", key: "hauledLoadsQuantity" },
+        { label: "Refueling Gallons", key: "refuelingGallons" },
+        { label: "Timesheet Comments", key: "timeSheetComments" },
         { label: "User ID", key: "userId" },
-        { label: "Jobsite ID", key: "jobsite_id" }
+        { label: "Jobsite ID", key: "jobsiteId" }
     ];
 
     // Convert the timesheets to a format that the CSVLink can use
     const csvData = timeSheets.map(sheet => ({
-        submit_date: new Date(sheet.submit_date).toLocaleDateString(),
+        submitDate: new Date(sheet.submitDate).toLocaleDateString(),
         date: new Date(sheet.date).toLocaleDateString(),
         costcode: sheet.costcode,
-        vehicle_id: sheet.vehicle_id,
-        start_time: sheet.start_time ? new Date(sheet.start_time).toLocaleTimeString() : '',
-        end_time: sheet.end_time ? new Date(sheet.end_time).toLocaleTimeString() : '',
+        vehicleId: sheet.vehicleId,
+        startTime: sheet.startTime ? new Date(sheet.startTime).toLocaleTimeString() : '',
+        endTime: sheet.endTime ? new Date(sheet.endTime).toLocaleTimeString() : '',
         duration: sheet.duration,
-        starting_mileage: sheet.starting_mileage,
-        ending_mileage: sheet.ending_mileage,
-        left_idaho: sheet.left_idaho ? "Yes" : "No",
-        equipment_hauled: sheet.equipment_hauled,
-        materials_hauled: sheet.materials_hauled,
-        hauled_loads_quantity: sheet.hauled_loads_quantity,
-        refueling_gallons: sheet.refueling_gallons,
-        timesheet_comments: sheet.timesheet_comments,
-        app_comment: sheet.app_comment,
+        startingMileage: sheet.startingMileage,
+        endingMileage: sheet.endingMileage,
+        leftIdaho: sheet.leftIdaho ? "Yes" : "No",
+        equipmentHauled: sheet.equipmentHauled,
+        materialsHauled: sheet.materialsHauled,
+        hauledLoadsQuantity: sheet.hauledLoadsQuantity,
+        refuelingGallons: sheet.refuelingGallons,
+        timeSheetComments: sheet.timeSheetComments,
         userId: sheet.userId,
-        jobsite_id: sheet.jobsite_id
+        jobsiteId: sheet.jobsiteId
     }));
 
     return (
@@ -143,24 +141,23 @@ export default function Reports() {
                             <tbody>
                                 {timeSheets.map((sheet, index) => (
                                     <tr key={index}>
-                                        <td>{new Date(sheet.submit_date).toLocaleDateString()}</td>
+                                        <td>{new Date(sheet.submitDate).toLocaleDateString()}</td>
                                         <td>{new Date(sheet.date).toLocaleDateString()}</td>
                                         <td>{sheet.costcode}</td>
-                                        <td>{sheet.vehicle_id}</td>
-                                        <td>{sheet.start_time ? new Date(sheet.start_time).toLocaleTimeString() : ''}</td>
-                                        <td>{sheet.end_time ? new Date(sheet.end_time).toLocaleTimeString() : ''}</td>
+                                        <td>{sheet.vehicleId}</td>
+                                        <td>{sheet.startTime ? new Date(sheet.startTime).toLocaleTimeString() : ''}</td>
+                                        <td>{sheet.endTime ? new Date(sheet.endTime).toLocaleTimeString() : ''}</td>
                                         <td>{sheet.duration}</td>
-                                        <td>{sheet.starting_mileage}</td>
-                                        <td>{sheet.ending_mileage}</td>
-                                        <td>{sheet.left_idaho ? "Yes" : "No"}</td>
-                                        <td>{sheet.equipment_hauled}</td>
-                                        <td>{sheet.materials_hauled}</td>
-                                        <td>{sheet.hauled_loads_quantity}</td>
-                                        <td>{sheet.refueling_gallons}</td>
-                                        <td>{sheet.timesheet_comments}</td>
-                                        <td>{sheet.app_comment}</td>
+                                        <td>{sheet.startingMileage}</td>
+                                        <td>{sheet.endingMileage}</td>
+                                        <td>{sheet.leftIdaho ? "Yes" : "No"}</td>
+                                        <td>{sheet.equipmentHauled}</td>
+                                        <td>{sheet.materialsHauled}</td>
+                                        <td>{sheet.hauledLoadsQuantity}</td>
+                                        <td>{sheet.refuelingGallons}</td>
+                                        <td>{sheet.timeSheetComments}</td>
                                         <td>{sheet.userId}</td>
-                                        <td>{sheet.jobsite_id}</td>
+                                        <td>{sheet.jobsiteId}</td>
                                     </tr>
                                 ))}
                             </tbody>

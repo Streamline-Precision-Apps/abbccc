@@ -2,7 +2,7 @@
 
 import { useState, ChangeEvent, SetStateAction, Dispatch } from "react";
 import { Buttons } from "../(reusable)/buttons";
-import { Holds } from "../(reusable)/Holds";
+import { Holds } from "../(reusable)/holds";
 import {uploadImage} from "@/actions/userActions";
 import {Forms} from "../(reusable)/forms";
 import {Inputs} from "../(reusable)/inputs";

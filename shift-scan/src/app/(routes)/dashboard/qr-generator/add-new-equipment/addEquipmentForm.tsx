@@ -80,13 +80,13 @@ export default function AddEquipmentForm({ base64String, setBannerText, handler,
   return (
     <Forms action={createEquipment} onSubmit={() => {setBanner(true); setBannerText("Added Temporary Equipment Successfully"); handler(); handleRoute()}}>
       <Labels variant="default" size="default">Temporary QR ID </Labels>
-      <Inputs name="qr_id" type="text" disabled value={eqCode} />
+      <Inputs name="qrId" type="text" disabled value={eqCode} />
         <Labels variant="default" size="default">
           {t("Tag")}
         </Labels>
         <Selects
-          id="equipment_tag"
-          name="equipment_tag"
+          id="equipmentTag"
+          name="equipmentTag"
           onChange={handleChange}
           >
           <Options value="">{t("Select")}</Options>
@@ -121,8 +121,8 @@ export default function AddEquipmentForm({ base64String, setBannerText, handler,
           {t("Status")}
         </Labels>
         <Selects
-          id="equipment_status"
-          name="equipment_status"
+          id="status"
+          name="status"
           >
           <Options value="">{t("Select")}</Options>
           <Options value="OPERATIONAL">{t("Operational")}</Options>
@@ -169,8 +169,8 @@ export default function AddEquipmentForm({ base64String, setBannerText, handler,
               {t("LicensePlate")}
             </Labels>
             <Inputs
-              id="license_plate"
-              name="license_plate"
+              id="licensePlate"
+              name="licensePlate"
               type="text"
               
               />
@@ -180,8 +180,8 @@ export default function AddEquipmentForm({ base64String, setBannerText, handler,
               {t("RegistrationExpiration")}
             </Labels>
             <Inputs
-              id="registration_expiration"
-              name="registration_expiration"
+              id="registrationExpiration"
+              name="registrationExpiration"
               type="date"
               
               />
@@ -206,7 +206,7 @@ export default function AddEquipmentForm({ base64String, setBannerText, handler,
           type="hidden"
           value={base64String || ""}
           />
-        <Inputs id="qr_id" name="qr_id" type="hidden" value={eqCode} />
+        <Inputs id="qrId" name="qrId" type="hidden" value={eqCode} />
       
       <Buttons variant={"green"} size={null} type="submit">
         {t("Submit")}

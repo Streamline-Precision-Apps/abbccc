@@ -42,10 +42,10 @@ export default function UserManagement({ users }: Props) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [DOB, setDOB] = useState("");
-  const [truck_view, setTruck_view] = useState<boolean | null>(null);
-  const [tasco_view, setTasco_view] = useState<boolean | null>(null);
-  const [labor_view, setLabor_view] = useState<boolean | null>(null);
-  const [mechanic_view, setMechanic_view] = useState<boolean | null>(null);
+  const [truckView, setTruckView] = useState<boolean | null>(null);
+  const [tascoView, setTascoView] = useState<boolean | null>(null);
+  const [laborView, setLaborView] = useState<boolean | null>(null);
+  const [mechanicView, setMechanicView] = useState<boolean | null>(null);
   const [permission, setPermission] = useState<string | null>("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -57,10 +57,10 @@ export default function UserManagement({ users }: Props) {
     setUsername("");
     setPassword("");
     setDOB("");
-    setTruck_view(null);
-    setTasco_view(null);
-    setLabor_view(null);
-    setMechanic_view(null);
+    setTruckView(null);
+    setTascoView(null);
+    setLaborView(null);
+    setMechanicView(null);
     setPermission("");
     setEmail("");
     setPhone("");
@@ -98,11 +98,11 @@ export default function UserManagement({ users }: Props) {
       setLastName(response.lastName);
       setUsername(response.username);
       setDOB(response.DOB || "");
-      setTruck_view(response.truck_view !== null ? response.truck_view : null);
-      setTasco_view(response.tasco_view !== null ? response.tasco_view : null);
-      setLabor_view(response.labor_view !== null ? response.labor_view : null);
-      setMechanic_view(
-        response.mechanic_view !== null ? response.mechanic_view : null
+      setTruckView(response.truckView !== null ? response.truckView : null);
+      setTascoView(response.tascoView !== null ? response.tascoView : null);
+      setLaborView(response.laborView !== null ? response.laborView : null);
+      setMechanicView(
+        response.mechanicView !== null ? response.mechanicView : null
       );
       setPermission(response.permission || "");
       setEmail(response.email || "");
@@ -143,21 +143,21 @@ export default function UserManagement({ users }: Props) {
 
   const handleSubmitEdit = async (formData: FormData) => {
     // Convert the boolean fields
-    const truck_view = convertToBoolean(formData.get("truck_view") as string | null);
-    const tasco_view = convertToBoolean(formData.get("tasco_view") as string | null);
-    const labor_view = convertToBoolean(formData.get("labor_view") as string | null);
-    const mechanic_view = convertToBoolean(formData.get("mechanic_view") as string | null);
+    const truckView = convertToBoolean(formData.get("truckView") as string | null);
+    const tascoView = convertToBoolean(formData.get("tascoView") as string | null);
+    const laborView = convertToBoolean(formData.get("laborView") as string | null);
+    const mechanicView = convertToBoolean(formData.get("mechanicView") as string | null);
 
     // Delete the original string values and append the boolean values
-    formData.delete("truck_view");
-    formData.delete("tasco_view");
-    formData.delete("labor_view");
-    formData.delete("mechanic_view");
+    formData.delete("truckView");
+    formData.delete("tascoView");
+    formData.delete("laborView");
+    formData.delete("mechanicView");
 
-    if (truck_view !== null) formData.append("truck_view", String(truck_view));
-    if (tasco_view !== null) formData.append("tasco_view", String(tasco_view));
-    if (labor_view !== null) formData.append("labor_view", String(labor_view));
-    if (mechanic_view !== null) formData.append("mechanic_view", String(mechanic_view));
+    if (truckView !== null) formData.append("truckView", String(truckView));
+    if (tascoView !== null) formData.append("tascoView", String(tascoView));
+    if (laborView !== null) formData.append("laborView", String(laborView));
+    if (mechanicView !== null) formData.append("mechanicView", String(mechanicView));
 
     await updateUser(formData);
     handleBanner("User was updated successfully");
@@ -236,10 +236,10 @@ export default function UserManagement({ users }: Props) {
               {t("TruckView")}
             </Labels>
             <Selects
-              id="truck_view"
-              name="truck_view"
-              value={truck_view !== null ? String(truck_view).toUpperCase() : ""}
-              onChange={handleSelectChange(setTruck_view)}
+              id="truckView"
+              name="truckView"
+              value={truckView !== null ? String(truckView).toUpperCase() : ""}
+              onChange={handleSelectChange(setTruckView)}
             >
               <Options value="">{t("Select")}</Options>
               <Options value="TRUE">{t("True")}</Options>
@@ -250,10 +250,10 @@ export default function UserManagement({ users }: Props) {
               {t("TascoView")}
             </Labels>
             <Selects
-              id="tasco_view"
-              name="tasco_view"
-              value={tasco_view !== null ? String(tasco_view).toUpperCase() : ""}
-              onChange={handleSelectChange(setTasco_view)}
+              id="tascoView"
+              name="tascoView"
+              value={tascoView !== null ? String(tascoView).toUpperCase() : ""}
+              onChange={handleSelectChange(setTascoView)}
             >
               <Options value="">{t("Select")}</Options>
               <Options value="TRUE">{t("True")}</Options>
@@ -264,10 +264,10 @@ export default function UserManagement({ users }: Props) {
               {t("LaborView")}
             </Labels>
             <Selects
-              id="labor_view"
-              name="labor_view"
-              value={labor_view !== null ? String(labor_view).toUpperCase() : ""}
-              onChange={handleSelectChange(setLabor_view)}
+              id="laborView"
+              name="laborView"
+              value={laborView !== null ? String(laborView).toUpperCase() : ""}
+              onChange={handleSelectChange(setLaborView)}
             >
               <Options value="">{t("Select")}</Options>
               <Options value="TRUE">{t("True")}</Options>
@@ -278,12 +278,12 @@ export default function UserManagement({ users }: Props) {
               {t("MechanicView")}
             </Labels>
             <Selects
-              id="mechanic_view"
-              name="mechanic_view"
+              id="mechanicView"
+              name="mechanicView"
               value={
-                mechanic_view !== null ? String(mechanic_view).toUpperCase() : ""
+                mechanicView !== null ? String(mechanicView).toUpperCase() : ""
               }
-              onChange={handleSelectChange(setMechanic_view)}
+              onChange={handleSelectChange(setMechanicView)}
             >
               <Options value="">{t("Select")}</Options>
               <Options value="TRUE">{t("True")}</Options>
@@ -420,10 +420,10 @@ export default function UserManagement({ users }: Props) {
                 {t("TruckView")}
               </Labels>
               <Selects
-                id="truck_view"
-                name="truck_view"
-                defaultValue={truck_view !== null ? String(truck_view).toUpperCase() : ""}
-                onChange={handleSelectChange(setTruck_view)}
+                id="truckView"
+                name="truckView"
+                defaultValue={truckView !== null ? String(truckView).toUpperCase() : ""}
+                onChange={handleSelectChange(setTruckView)}
               >
                 <Options value="">{t("Select")}</Options>
                 <Options value="TRUE">{t("True")}</Options>
@@ -434,10 +434,10 @@ export default function UserManagement({ users }: Props) {
                 {t("TascoView")}
               </Labels>
               <Selects
-                id="tasco_view"
-                name="tasco_view"
-                defaultValue={tasco_view !== null ? String(tasco_view).toUpperCase() : ""}
-                onChange={handleSelectChange(setTasco_view)}
+                id="tascoView"
+                name="tascoView"
+                defaultValue={tascoView !== null ? String(tascoView).toUpperCase() : ""}
+                onChange={handleSelectChange(setTascoView)}
               >
                 <Options value="">{t("Select")}</Options>
                 <Options value="TRUE">{t("True")}</Options>
@@ -448,10 +448,10 @@ export default function UserManagement({ users }: Props) {
                 {t("LaborView")}
               </Labels>
               <Selects
-                id="labor_view"
-                name="labor_view"
-                defaultValue={labor_view !== null ? String(labor_view).toUpperCase() : ""}
-                onChange={handleSelectChange(setLabor_view)}
+                id="laborView"
+                name="laborView"
+                defaultValue={laborView !== null ? String(laborView).toUpperCase() : ""}
+                onChange={handleSelectChange(setLaborView)}
               >
                 <Options value="">{t("Select")}</Options>
                 <Options value="TRUE">{t("True")}</Options>
@@ -462,10 +462,10 @@ export default function UserManagement({ users }: Props) {
                 {t("MechanicView")}
               </Labels>
               <Selects
-                id="mechanic_view"
-                name="mechanic_view"
-                defaultValue={mechanic_view !== null ? String(mechanic_view).toUpperCase() : ""}
-                onChange={handleSelectChange(setMechanic_view)}
+                id="mechanicView"
+                name="mechanicView"
+                defaultValue={mechanicView !== null ? String(mechanicView).toUpperCase() : ""}
+                onChange={handleSelectChange(setMechanicView)}
               >
                 <Options value="">{t("Select")}</Options>
                 <Options value="TRUE">{t("True")}</Options>

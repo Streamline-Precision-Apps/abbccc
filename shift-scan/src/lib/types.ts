@@ -137,7 +137,7 @@ export type sentContent = {
   
   
   export type TimeSheets = {
-      start_time: Date;
+      startTime: Date;
       duration: number | null;
   };
 

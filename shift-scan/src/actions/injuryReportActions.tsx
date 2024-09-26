@@ -106,27 +106,26 @@ function parseUTC(dateString: any) {
 //     console.log("formData:", formData);
 //     console.log("Updating Timesheet...");
 //     const id = Number(formData.get("id"));
-//     const end_time = parseUTC(formData.get("end_time"));
-//     const start_time = parseUTC(formData.get("start_time"));
+//     const endTime = parseUTC(formData.get("endTime"));
+//     const startTime = parseUTC(formData.get("startTime"));
 //     const duration =
-//       Math.floor(end_time.getSeconds() - start_time.getSeconds()) / 3600; // Duration in hours
+//       Math.floor(endTime.getSeconds() - startTime.getSeconds()) / 3600; // Duration in hours
 //     const updatedTimeSheet = await prisma.timeSheet.update({
 //       where: { id },
 //       data: {
-//         vehicle_id: Number(formData.get("vehicle_id")) || null,
-//         end_time: parseDate(formData.get("end_time") as string).toISOString(),
+//         vehicleId: Number(formData.get("vehicleId")) || null,
+//         endTime: parseDate(formData.get("endTime") as string).toISOString(),
 //         total_break_time: Number(formData.get("total_break_time") as string),
 //         duration: duration || null,
-//         starting_mileage: Number(formData.get("starting_mileage")) || null,
-//         ending_mileage: Number(formData.get("ending_mileage")) || null,
-//         left_idaho: Boolean(formData.get("left_idaho")) || null,
-//         equipment_hauled: (formData.get("equipment_hauled") as string) || null,
-//         materials_hauled: (formData.get("materials_hauled") as string) || null,
-//         hauled_loads_quantity:
-//           Number(formData.get("hauled_loads_quantity")) || null,
-//         refueling_gallons: Number(formData.get("refueling_gallons")) || null,
-//         timesheet_comments: formData.get("timesheet_comments") as string,
-//         app_comment: formData.get("app_comment") as string,
+//         startingMileage: Number(formData.get("startingMileage")) || null,
+//         endingMileage: Number(formData.get("endingMileage")) || null,
+//         leftIdaho: Boolean(formData.get("leftIdaho")) || null,
+//         equipmentHauled: (formData.get("equipmentHauled") as string) || null,
+//         materialsHauled: (formData.get("materialsHauled") as string) || null,
+//         hauledLoadsQuantity:
+//           Number(formData.get("hauledLoadsQuantity")) || null,
+//         refuelingGallons: Number(formData.get("refuelingGallons")) || null,
+//         timeSheetComments: formData.get("timeSheetComments") as string,
 //       },
 //     });
 //     console.log("Timesheet updated successfully.");

@@ -46,7 +46,7 @@ export default function Equipment({
   );
   const [equipmentTag, setEquipmentTag] = useState<string>("EQUIPMENT");
   const t = useTranslations("addEquipmentForm");
-  const [qrId, setQr_id] = useState<string>("");
+  const [qrId, setQrId] = useState<string>("");
   const [name, setName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [status, setStatus] = useState<string>("");
@@ -60,7 +60,7 @@ export default function Equipment({
 
   // Handle form changes mainly the search feature for getting the equipment by name and setting the target value to that equipment
   const resetForm = () => {
-    setQr_id("");
+    setQrId("");
     setEquipmentTag("EQUIPMENT");
     setName("");
     setDescription("");
@@ -139,7 +139,7 @@ export default function Equipment({
               type="default"
               name="qrId"
               value={qrId}
-              onChange={(e) => setQr_id(e.target.value)}
+              onChange={(e) => setQrId(e.target.value)}
               state="default"
             />
             <Labels variant="default" type="title">
@@ -241,8 +241,8 @@ export default function Equipment({
                 <Inputs
                   variant="default"
                   type="default"
-                  id="license_plate"
-                  name="license_plate"
+                  id="licensePlate"
+                  name="licensePlate"
                   value={licensePlate}
                   onChange={(e) => setLicensePlate(e.target.value)}
                   state="default"
@@ -423,8 +423,8 @@ export default function Equipment({
                   <Inputs
                     variant="default"
                     type="default"
-                    id="license_plate"
-                    name="license_plate"
+                    id="licensePlate"
+                    name="licensePlate"
                     defaultValue={equipmentResponse.licensePlate || ""}
                     state="default"
                   />
@@ -482,7 +482,7 @@ export default function Equipment({
                 <Buttons
                   key={item.id}
                   onClick={() => {
-                    setQr_id(item.qrId);
+                    setQrId(item.qrId);
                     setEquipmentResponse(item);
                   }}
                 >
