@@ -51,6 +51,7 @@ export default function DashboardButtons({ logs, locale }: DashboardButtonsProps
   } else {
     return (
       <>
+      
         <User
           additionalButtonsType={additionalButtonsType}
           handleShowManagerButtons={handleShowManagerButtons}

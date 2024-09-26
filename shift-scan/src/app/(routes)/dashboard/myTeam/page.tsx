@@ -9,9 +9,11 @@ import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 
 export default function Content() {
+const t = useTranslations("MyTeam");
 const [myTeams,  setMyTeams] = useState<any[]>([]);
 const [isLoading, setIsLoading] = useState(true);
 const { data: session, status } = useSession();
@@ -49,62 +51,45 @@ if (status === "authenticated") {
 }, [status]);
 
 return (
-    <Bases>
-        <Contents>
-            <Holds 
+<Bases>
+<Contents>
+    <Holds 
             background={"white"}
             className="mb-3">
-                <TitleBoxes
-                title="My TeamS"
-                titleImg="/team.svg"
-                titleImgAlt="Team"
-                />
-            </Holds>
-            {isLoading ? <>
-                <Holds background={"white"}>
-                    <Contents width={"section"}>
-                        <Buttons>
-                            <Holds>
-                                <Titles size="h4">Loading...</Titles>
-                                <Spinner/>
-                            </Holds>
-                        </Buttons>
-                    </Contents> 
-                </Holds>
-                </> :
-                <Holds background={"white"}>
-                    <Contents width={"section"}>
-                        {myTeams.map((teams) => (
-                            <Holds className="my-3">
-                                <Buttons
-                                href={`/dashboard/myTeam/${teams.id}`}
-                                key={teams.id}
-                                background="lightBlue"
-                                >
-                                    <Holds 
-                                    position={"row"}>
-                                        <Holds size={"30"}>
-                                            <Images
-                                            titleImg="/profile.svg"
-                                            titleImgAlt="profile picture"
-                                            size="full"
-                                            loading="lazy"
-                                            className="rounded-xl"
-                                            />
-                                        </Holds>
-                                        <Holds>
-                                            <Titles size="h2">
-                                                Team {teams.id}
-                                            </Titles>
-                                        </Holds>
-                                    </Holds>
-                                </Buttons>
-                            </Holds>
-                        ))}
-                    </Contents>
-                </Holds>
-            }
+        <TitleBoxes
+        title={`${t('Teams-Title')}`}
+        titleImg="/team.svg"
+        titleImgAlt={`${t('Teams-Logo-Title')}`}
+        />
+    </Holds>
+    {isLoading ? <>
+        <Holds background={"white"}>
+            <Contents width={"section"}>
+            <Spinner />
             </Contents>
+        </Holds>
+    </> :
+    <Holds background={"white"}>
+        <Contents width={"section"}>
+        {myTeams.map((teams) => (
+            <Holds className="my-3">
+            <Buttons
+            background="lightBlue"
+            href={`/dashboard/myTeam/${teams.id}`}
+            key={teams.id}
+            >
+            <Holds>
+            <Titles size="h1">
+            {teams.name} ({teams.totalMembers})
+            </Titles>
+            </Holds>
+            </Buttons>
+            </Holds>
+        ))}
+        </Contents>
+    </Holds>
+    }
+        </Contents>
         </Bases>
     );
 }

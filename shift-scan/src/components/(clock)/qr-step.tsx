@@ -20,7 +20,6 @@ type QRStepProps = {
 
 export default function QRStep({option, handleReturn, handleAlternativePath, handleNextStep, handleChangeJobsite, type, url }: QRStepProps) {
   const t = useTranslations("Clock");
-  const validation = localStorage.getItem("jobSite");
   const router = useRouter();
   return (
     <>
@@ -37,17 +36,17 @@ export default function QRStep({option, handleReturn, handleAlternativePath, han
             <QR handleNextStep={handleNextStep} url={url}  />  
             </>)}
         </div>
-        <Buttons variant={"icon"}  onClick={handleAlternativePath}>
-          <Texts variant={"link"} size={"p4"}>{t('TroubleScanning')}</Texts>
+        <Buttons onClick={handleAlternativePath}>
+          <Texts size={"p4"}>{t('TroubleScanning')}</Texts>
         </Buttons>
-        {option === "break" ? ( <Buttons onClick={handleReturn} variant={'red'}>
-              {"Return To Previous Job and cost code"}
+        {option === "break" ? ( <Buttons onClick={handleReturn}  background={'red'}>
+              {t("ReturnToJobsite")}
               </Buttons>)
                 : (null)}
-        {validation && type !== 'equipment' ? ( <Buttons onClick={handleChangeJobsite} variant={'green'} >
-              {t('ReturnToJobsite')}
+        { type !== 'equipment' && option !== "clockin" &&  option !== "break" && ( <Buttons onClick={handleChangeJobsite} background={'green'} >
+              {t('ChangeJobsite')}
               </Buttons>)
-                : (null)} 
+        }
     </>
   );
 };

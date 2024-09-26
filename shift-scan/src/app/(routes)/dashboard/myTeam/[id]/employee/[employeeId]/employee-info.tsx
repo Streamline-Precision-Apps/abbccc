@@ -5,8 +5,10 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Forms } from "@/components/(reusable)/forms";
 import { Labels } from "@/components/(reusable)/labels";
 import { Inputs } from "@/components/(reusable)/inputs";
+import { getTranslations } from "next-intl/server";
 
 export default async function employeeInfo({ params }: { params: { employeeId: string } }) {
+  const t = await getTranslations("MyTeam");
   const id = params.employeeId;
   const employee = await prisma.users.findUnique({
     where: {
@@ -38,19 +40,19 @@ export default async function employeeInfo({ params }: { params: { employeeId: s
         <Holds background={"white"}>
           <Contents width={"section"}>
             <Forms>
-              <Labels>Phone Number
+              <Labels>{t("PhoneNumber")}
                 <Inputs state="disabled" data={contacts?.phoneNumber}></Inputs>
               </Labels>
-              <Labels>Email
+              <Labels>{t("Email")}
                 <Inputs state="disabled" data={contacts?.email}></Inputs>
               </Labels>
-              <Labels>Emergency Contact
+              <Labels>{t("EmergencyContact")}
                 <Inputs state="disabled" data={contacts?.emergencyContact}></Inputs>
               </Labels>
-              <Labels>Emergency Contact Number
+              <Labels>{t("EmergencyContactNumber")}
                 <Inputs state="disabled" data={contacts?.emergencyContactNumber}></Inputs>
               </Labels>
-              <Labels>Date of Birth
+              <Labels>{t("DOB")}
                 <Inputs state="disabled" data={employee?.DOB}></Inputs>
               </Labels>
             </Forms>
