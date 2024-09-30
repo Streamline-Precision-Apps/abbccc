@@ -8,10 +8,9 @@ import { TextAreas } from "@/components/(reusable)/textareas";
 import { Labels } from "@/components/(reusable)/labels";
 import { Selects } from "@/components/(reusable)/selects";
 import { Options } from "@/components/(reusable)/options";
-import { Contents } from "@/components/(reusable)/contents";
-import { Texts } from "@/components/(reusable)/texts";
-import { Bases } from "@/components/(reusable)/bases";
 import { Titles } from "@/components/(reusable)/titles";
+import { Holds } from "@/components/(reusable)/holds";
+import { date } from "zod";
 
 type AddEquipmentFormProps = {
   base64String: string | null;
@@ -49,7 +48,7 @@ export default function AddEquipmentForm({ base64String, setBannerText, handler,
           return generateQrCode();
         }
       } catch (error) {
-        console.error("Failed to generate QR code:", error);
+        console.error(`${t("GenerateError")}`, error);
       }
     }
     generateQrCode();
@@ -63,11 +62,6 @@ export default function AddEquipmentForm({ base64String, setBannerText, handler,
     setEquipmentTag(e.target.value);
   };
 
-  useEffect(() => {
-    console.log("Base64 String:", base64String);
-  }, [base64String]);
-
-
 
   function handleRoute() {
     window.scrollTo({ top: 0, behavior: "smooth" })
@@ -79,8 +73,8 @@ export default function AddEquipmentForm({ base64String, setBannerText, handler,
   }
 
 return (
-<Forms action={createEquipment} onSubmit={() => {setBanner(true); setBannerText("Added Temporary Equipment Successfully"); handler(); handleRoute()}}>
-  <Labels>{t("Temporary")} 
+<Forms action={createEquipment} onSubmit={() => {setBanner(true); setBannerText(`${t("Banner-Text")}`); handler(); handleRoute()}}>
+  <Labels size={"p3"}>{t("Temporary")} 
     <Inputs 
         name="qrId" 
         type="text" 
@@ -88,13 +82,13 @@ return (
         disabled 
     />
   </Labels>
-  
-  <Labels>
+  <Labels size={"p3"}>
     {t("Tag")}
       <Selects
         id="equipmentTag"
         name="equipmentTag"
         onChange={handleChange}
+        required
       >
           <Options value="">{t("Select")}</Options>
           <Options value="TRUCK">{t("Truck")}</Options>
@@ -103,28 +97,34 @@ return (
         </Selects>
   </Labels>
   
-  <Labels>
+  <Labels size={"p3"}>
     {t("Name")}
       <Inputs
         id="name"
         name="name"
         type="text"
+        placeholder={`${t("NamePlaceholder")}`}
+        required
+        pattern="^[A-Za-z0-9\s]+$"
         />
   </Labels>
   
-  <Labels>
+  <Labels size={"p3"}>
       {t("Description")}
         <TextAreas
           id="description"
           name="description"
+          placeholder={`${t("DescriptionPlaceholder")}`}
+          required
         />
   </Labels>
   
-  <Labels>
+  <Labels size={"p3"}>
       {t("Status")}
         <Selects
           id="status"
           name="status"
+          required
         >
           <Options value="">{t("Select")}</Options>
           <Options value="OPERATIONAL">{t("Operational")}</Options>
@@ -134,59 +134,73 @@ return (
       
 {equipmentTag === "TRUCK" || equipmentTag === "TRAILER" ? (
 <>          
-  <Labels>
+  <Labels size={"p3"}>
     {t("Make")}
       <Inputs
         id="make"
         name="make"
         type="text"
+        placeholder={`${t("MakePlaceholder")}`}
+        required = {equipmentTag === "TRUCK" || equipmentTag === "TRAILER" ? true : false} 
       />
   </Labels>
 
 
-  <Labels >
+  <Labels size={"p3"} >
     {t("Model")}
     <Inputs
       id="model"
       name="model"
       type="text"
-      
+      placeholder={`${t("ModelPlaceholder")}`}
+      required = {equipmentTag === "TRUCK" || equipmentTag === "TRAILER" ? true : false} 
       />
   </Labels>
 
-  <Labels >
+  <Labels size={"p3"} >
     {t("Year")}
       <Inputs
         id="year"
         name="year"
-        type="text"
+        type="number"
+        min="1900"
+        max="2099"
+        defaultValue={new Date().getFullYear()}
+        step="1"
+        placeholder={`${t("YearPlaceholder")}`}
+        required = {equipmentTag === "TRUCK" || equipmentTag === "TRAILER" ? true : false} 
       />
   </Labels>
 
-  <Labels>
+  <Labels size={"p3"}>
     {t("LicensePlate")}
     <Inputs
       id="licensePlate"
       name="licensePlate"
       type="text"
+      placeholder={`${t("LicensePlatePlaceholder")}`}
+      required = {equipmentTag === "TRUCK" || equipmentTag === "TRAILER" ? true : false} 
       />
   </Labels>
 
-  <Labels>
+  <Labels size={"p3"}>
     {t("RegistrationExpiration")}
       <Inputs
         id="registrationExpiration"
         name="registrationExpiration"
         type="date"
+        required = {equipmentTag === "TRUCK" || equipmentTag === "TRAILER" ? true : false} 
       />
   </Labels>
 
-  <Labels>
+  <Labels size={"p3"}>
     {t("Mileage")}
       <Inputs
       id="mileage"
       name="mileage"
-      type="number"  
+      type="number"
+      placeholder={`${t("MileagePlaceholder")}`} 
+      required = {equipmentTag === "TRUCK" || equipmentTag === "TRAILER" ? true : false} 
       />
   </Labels>
 </>
@@ -204,17 +218,18 @@ name="qrId"
 type="hidden" 
 value={eqCode} 
 />
-
+<Holds size={"full"} position={"center"}>
 <Buttons 
 background={"green"} 
-size={"full"} 
+size={"50"} 
 type="submit"
 className="p-3 my-5"
 >
-<Titles size={"h1"}>
+<Titles size={"h3"}>
 {t("Submit")}
 </Titles>
 </Buttons>
+</Holds>
 </Forms>
 );
 };

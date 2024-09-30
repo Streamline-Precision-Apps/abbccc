@@ -153,23 +153,33 @@
     },
     
     "addEquipmentForm": {
+        "GenerateError": "Failed to generate QR code.",
+        "Banner-Text": "Added Temporary Equipment Successfully",
         "Tag": "Equipment Tag",
         "Select": "Select One",
         "Truck": "TRUCK",
         "Trailer": "TRAILER",
         "Equipment": "EQUIPMENT",
         "Name": "Name",
+        "NamePlaceholder": "Enter Equipment Name",
         "Description": "Description",
+        "DescriptionPlaceholder": "Enter a Description in less than 40 characters",
         "Status": "Equipment status",
         "Operational": "OPERATIONAL",
         "NeedsRepair": "NEEDS REPAIR",
         "Make": "Make",
+        "MakePlaceholder": "Enter Make of Vehicle ",
         "Model": "Model",
+        "ModelPlaceholder": "Enter Model of Vehicle",
         "Year": "Year",
+        "YearPlaceholder": "Enter Year of Vehicle (YYYY)",
         "LicensePlate": "License Plate",
+        "LicensePlatePlaceholder": "Enter License Plate Number",
         "RegistrationExpiration": "Registration Expiration",
         "Mileage": "Mileage",
-        "Submit": "Submit"
+        "MileagePlaceholder": "Enter Current Mileage of Vehicle",
+        "Submit": "Submit",
+        "Temporary": "Temporary Equipment"
     },
     
     "addJobsiteContent": {

@@ -1,3 +1,4 @@
+"use server";
 import "@/app/globals.css";
 import { AddJobsiteContent } from "./addJobsiteContent";
 import { Holds } from "@/components/(reusable)/holds";

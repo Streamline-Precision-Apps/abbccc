@@ -28,31 +28,22 @@ export const AddEquipmentContent = () => {
   };
 
   return (
-    <Bases>
-    <Contents height={"page"}>
-      <Holds size={"first"} background="white" className="my-3" >
-        <TitleBoxes
-          title={t("Title")}
-          titleImg="/equipment.svg"
-          titleImgAlt="Team"
-          />
-      </Holds>
+   <Holds>
     { banner &&
       <Holds background="green" className="my-3">
       <Texts>{bannerText}</Texts>
     </Holds>
     }
       <Holds size={"first"}>
-      <Holds background="white"  className="h-fit mb-3">
+      <Holds background="white" size={"full"}  className="h-fit mb-3">
         <Titles size={"h3"}>{t("Picture")}</Titles>
-        <Images titleImg={"/camera.svg"} titleImgAlt={"camera"} size={"20"} className="my-3" />
+        <Images titleImg={"/camera.svg"} titleImgAlt={"camera"} size={"10"} className="my-3" />
         <EquipmentPicture setBase64String={setBase64String} />
       </Holds>
       <Holds background="white">
         <AddEquipmentForm base64String={base64String} setBanner={setBanner} setBannerText={setBannerText} handler={()=> handleBanner} />
       </Holds>
       </Holds>
-    </Contents>
-    </Bases>
+    </Holds>
   );
 };

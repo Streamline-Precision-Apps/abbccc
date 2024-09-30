@@ -1,12 +1,13 @@
-  import React, { useState, useEffect, SetStateAction, Dispatch } from "react";
-  import { Buttons } from "@/components/(reusable)/buttons";
-  import { createJobsite, jobExists } from "@/actions/jobsiteActions";
-  import { useTranslations } from "next-intl";
-  import { Forms } from "@/components/(reusable)/forms";
-  import { Labels } from "@/components/(reusable)/labels";
-  import { Inputs } from "@/components/(reusable)/inputs";
-  import { TextAreas } from "@/components/(reusable)/textareas";
-  import { useRouter } from 'next/navigation';
+"use client";
+import React, { useState, useEffect, SetStateAction, Dispatch } from "react";
+import { Buttons } from "@/components/(reusable)/buttons";
+import { createJobsite, jobExists } from "@/actions/jobsiteActions";
+import { useTranslations } from "next-intl";
+import { Forms } from "@/components/(reusable)/forms";
+import { Labels } from "@/components/(reusable)/labels";
+import { Inputs } from "@/components/(reusable)/inputs";
+import { TextAreas } from "@/components/(reusable)/textareas";
+import { useRouter } from 'next/navigation';
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
@@ -70,11 +71,11 @@ function handleRoute() {
         handleRoute();
       }} 
       >
-      <Labels>{t("Temporary")}
+      <Labels size={"p4"}>{t("Temporary")}
       <Inputs id="id" name="id" type="text" value={qrCode} disabled />
       </Labels>
 
-      <Labels>
+      <Labels size={"p4"}>
           {t("Name")}
         <Inputs
           id="name"
@@ -82,11 +83,12 @@ function handleRoute() {
           type="text"
           placeholder={t("NameExample")}
           />
-          </Labels> 
-    <Texts position={"left"} size={"p1"} className="mb-2 mt-4">{t("Address")}</Texts>
+      </Labels> 
+          
+    <Texts position={"center"} size={"p3"} className="mt-6" >{t("Address")}</Texts>
     <Dividers />
       <Holds size={"full"} className="mr-4">
-        <Labels> 
+        <Labels size={"p4"} > 
             {t("StreetNumber")}
             <Inputs
                 variant={"default"}
@@ -98,7 +100,7 @@ function handleRoute() {
       </Holds>
 
       <Holds size={"full"}>
-      <Labels> 
+      <Labels size={"p4"}> 
       {t("StreetName")}
           <Inputs
           className="text-black"
@@ -110,7 +112,7 @@ function handleRoute() {
       </Holds>
 
       <Holds size={"full"} className="mr-4">
-        <Labels>
+        <Labels size={"p4"}>
           {t("City")}
           <Inputs
           variant={"default"}
@@ -122,7 +124,7 @@ function handleRoute() {
       </Holds>
       <Holds position={"row"} size={"full"}>
       <Holds size={"50"} className="mr-4">
-        <Labels>
+        <Labels size={"p4"}>
           {t("ZipCode")}
           <Inputs
           variant={"default"}
@@ -133,7 +135,7 @@ function handleRoute() {
           </Labels>
       </Holds>
       <Holds size={"50"}>
-        <Labels>
+        <Labels size={"p4"}>
           {t("State")}
           <Inputs
           variant={"default"}
@@ -155,9 +157,9 @@ function handleRoute() {
           />
           </Labels>
           </Holds> */}
-          <Texts position={"left"} size={"p1"} className="mb-4 mt-6">{t("Description")}</Texts>
+          <Texts position={"center"} size={"p3"} className="mt-6">{t("Description")}</Texts>
         <Dividers />
-        <Labels>
+        <Labels size={"p4"}>
           {t("DescriptionTitle")}
             <TextAreas
               variant={"default"}
@@ -168,7 +170,7 @@ function handleRoute() {
               />
         </Labels>
       
-        <Labels>
+        <Labels size={"p4"}>
           {t("Comments")}
           <TextAreas
           id="comment"
@@ -179,8 +181,8 @@ function handleRoute() {
           </Labels>
         
       <Holds size={"full"} position={"center"} className="my-4">
-      <Buttons background={"green"} size={"full"} type="submit" className="p-3 ">
-        <Titles size={"h1"}>{t("Submit")}</Titles>
+      <Buttons background={"green"} size={"50"} type="submit" className="p-2">
+        <Titles size={"h3"}>{t("Submit")}</Titles>
       </Buttons>
       </Holds>
     </Forms>

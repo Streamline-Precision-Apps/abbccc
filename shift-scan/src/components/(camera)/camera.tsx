@@ -68,7 +68,7 @@ const CameraComponent: React.FC<CameraComponentProps> = ({ setBase64String }) =>
 
   return (
     <>
-      <Contents>
+      <Holds color="black" >
         <video
           ref={videoRef}
           autoPlay
@@ -101,8 +101,8 @@ const CameraComponent: React.FC<CameraComponentProps> = ({ setBase64String }) =>
             }}
           />
         )}
-      </Contents>
-      <Holds position={"row"}>
+      </Holds>
+      <Holds position={"row"} className="mt-4">
       <Buttons
         background={cameraActive ? "red" : "green"}
         onClick={toggleCamera}
