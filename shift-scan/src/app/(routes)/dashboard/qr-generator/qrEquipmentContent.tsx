@@ -12,8 +12,9 @@ import { Texts } from "@/components/(reusable)/texts";
 import { Images } from "@/components/(reusable)/images";
 import { Selects } from "@/components/(reusable)/selects";
 import { Options } from "@/components/(reusable)/options";
-import { EquipmentCodes } from "@/lib/types";
+import { EquipmentCodes, JobCodes } from "@/lib/types";
 import { Holds } from "@/components/(reusable)/holds";
+import SearchSelect from "@/components/(search)/searchSelect";
 
 
 export default function QrEquipmentContent() {
@@ -23,7 +24,7 @@ export default function QrEquipmentContent() {
   const [selectedEquipment, setSelectedEquipment] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState("");
-  const [loading, setLoading] = useState(true);  // Loading state
+  const [loading, setLoading] = useState(true); // Loading state
   const t = useTranslations("qrEquipmentContent");
 
   useEffect(() => {
@@ -32,15 +33,15 @@ export default function QrEquipmentContent() {
         const equipmentResponse = await fetch("/api/getEquipment");
 
         if (!equipmentResponse.ok) {
-          throw new Error("Failed to fetch job sites");
+          throw new Error("Failed to fetch equipment");
         }
 
         const equipment = await equipmentResponse.json();
         setGeneratedList(equipment);
-        setLoading(false);  // Set loading to false after data is fetched
+        setLoading(false); // Set loading to false after data is fetched
       } catch (error) {
         console.error("Error fetching data:", error);
-        setLoading(false);  // Set loading to false even if there is an error
+        setLoading(false); // Set loading to false even if there is an error
       }
     };
 
@@ -65,108 +66,56 @@ export default function QrEquipmentContent() {
     router.push("/dashboard/qr-generator/add-new-equipment");
   };
 
-  const handleOptionSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedId = event.target.value;
-    const selectedOption = generatedList.find(
-      (option) => option.qrId === selectedId
-    );
-
-    if (selectedOption) {
-      setSelectedEquipment(selectedOption.qrId);
-      setSelectedEquipmentName(selectedOption.name);
-    }
+  const handleSelectEquipment = (selectedOption: EquipmentCodes) => {
+    setSelectedEquipment(selectedOption.qrId);
+    setSelectedEquipmentName(selectedOption.name);
   };
 
   return (
-<>
-    {loading ? (
-        <>
-          <Holds size={"first"} >
+    <>
+      {loading ? (
+        <Holds size={"first"}>
           <Selects>
-            <Options>
-              {t("Loading")}
-            </Options>
+            <Options>{t("Loading")}</Options>
           </Selects>
-          <Holds 
-          position={"row"} 
-          size={"full"} 
-          className="justify-between items-center p-4"
-          >
-          <Buttons 
-          background={"orange"} 
-          onClick={handleGenerate} 
-          size={"50"}
-          className="p-4 mr-4"
-          >
-            <Titles size={"h2"}>{t("Generate")}</Titles>
-          </Buttons>
-          <Buttons 
-          background={"green"} 
-          onClick={handleNew} 
-          size={"50"}
-          className="p-4 ml-4"
-          >
-            <Titles size={"h2"}>{t("New")}</Titles>
-          </Buttons>
+          <Holds position={"row"} size={"full"} className="justify-between items-center p-4">
+            <Buttons background={"orange"} onClick={handleGenerate} size={"50"} className="p-4 mr-4">
+              <Titles size={"h2"}>{t("Generate")}</Titles>
+            </Buttons>
+            <Buttons background={"green"} onClick={handleNew} size={"50"} className="p-4 ml-4">
+              <Titles size={"h2"}>{t("New")}</Titles>
+            </Buttons>
           </Holds>
-          </Holds>
-        </>
-      ) : 
-      (
-      <>
-      <Holds size={"first"}>
-      <Selects value={selectedEquipment} onChange={handleOptionSelect}>
-      <Options  value="" className="w-full max-h-32 overflow-y-auto text-sm">
-            Select One
-          </Options>
-          {generatedList.map((option) => (
-            <Options
-              
-              key={option.qrId}
-              value={option.qrId}
-              className="text-sm"
-            >
-              {option.name}
-            </Options>
-          ))}
-      </Selects>
-
-      <Holds position={"row"} size={"full"} className="justify-between items-center p-4">
-        <Buttons 
-        background={"orange"} 
-        onClick={handleGenerate} 
-        size={"50"}
-        className="p-4 mr-4">
-          <Titles  size={"h2"}>{t("Generate")}</Titles>
-        </Buttons>
-        <Buttons 
-        background={"green"} 
-        onClick={handleNew} 
-        size={"50"}
-        className="p-4 ml-4"
-        >
-          <Titles size={"h2"}>{t("New")}</Titles>
-        </Buttons>
         </Holds>
-      <Modals
-        isOpen={isModalOpen}
-        handleClose={() => setIsModalOpen(false)}
-        size="sm"
-      >
-        {selectedEquipment && (
-            <Holds className="p-4">
-            <Texts >
-              {selectedEquipmentName} {t("QRCode")}
-            </Texts>
-            <Contents position={"row"}>
-              <Images titleImg={qrCodeUrl} titleImgAlt={"QR Code"} />
-              </Contents>
-            </Holds>
-          )}
-        </Modals>
-      </Holds>
-      </>
-    )}
-</>
+      ) : (
+        <Holds size={"first"}>
+          {/* Use SearchSelect for equipment */}
+          <SearchSelect 
+            datatype="equipment" 
+            options={generatedList} 
+            onSelect={handleSelectEquipment} 
+          />
+
+          <Holds position={"row"} size={"full"} className="justify-between items-center p-4">
+            <Buttons background={"orange"} onClick={handleGenerate} size={"50"} className="p-4 mr-4">
+              <Titles size={"h2"}>{t("Generate")}</Titles>
+            </Buttons>
+            <Buttons background={"green"} onClick={handleNew} size={"50"} className="p-4 ml-4">
+              <Titles size={"h2"}>{t("New")}</Titles>
+            </Buttons>
+          </Holds>
+          <Modals isOpen={isModalOpen} handleClose={() => setIsModalOpen(false)} size="sm">
+            {selectedEquipment && (
+              <Holds className="p-4">
+                <Texts>{selectedEquipmentName} {t("QRCode")}</Texts>
+                <Contents position={"row"}>
+                  <Images titleImg={qrCodeUrl} titleImgAlt={"QR Code"} />
+                </Contents>
+              </Holds>
+            )}
+          </Modals>
+        </Holds>
+      )}
+    </>
   );
 }
