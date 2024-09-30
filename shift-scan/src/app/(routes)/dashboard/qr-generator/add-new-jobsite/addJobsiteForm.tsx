@@ -7,10 +7,11 @@
   import { Inputs } from "@/components/(reusable)/inputs";
   import { TextAreas } from "@/components/(reusable)/textareas";
   import { useRouter } from 'next/navigation';
-import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
+import { Divider } from "@nextui-org/react";
+import { Dividers} from "@/components/(reusable)/dividers";
 
 type Props = {
   handler:() => void
@@ -82,11 +83,9 @@ function handleRoute() {
           placeholder={t("NameExample")}
           />
           </Labels> 
-
     <Texts position={"left"} size={"p1"} className="mb-2 mt-4">{t("Address")}</Texts>
-
-      <Holds position={"row"} size={"full"} className="justify-between mb-4">
-      <Holds size={"30"} className="mr-4">
+    <Dividers />
+      <Holds size={"full"} className="mr-4">
         <Labels> 
             {t("StreetNumber")}
             <Inputs
@@ -98,7 +97,7 @@ function handleRoute() {
         </Labels> 
       </Holds>
 
-      <Holds size={"70"}>
+      <Holds size={"full"}>
       <Labels> 
       {t("StreetName")}
           <Inputs
@@ -109,10 +108,8 @@ function handleRoute() {
           />
       </Labels> 
       </Holds>
-    </Holds>
 
-      <Holds position={"row"} size={"full"}>
-      <Holds size={"40"} className="mr-4">
+      <Holds size={"full"} className="mr-4">
         <Labels>
           {t("City")}
           <Inputs
@@ -123,7 +120,8 @@ function handleRoute() {
           />
           </Labels>
       </Holds>
-      <Holds size={"20"} className="mr-4">
+      <Holds position={"row"} size={"full"}>
+      <Holds size={"50"} className="mr-4">
         <Labels>
           {t("ZipCode")}
           <Inputs
@@ -134,7 +132,7 @@ function handleRoute() {
           />
           </Labels>
       </Holds>
-      <Holds size={"20"}>
+      <Holds size={"50"}>
         <Labels>
           {t("State")}
           <Inputs
@@ -146,6 +144,7 @@ function handleRoute() {
           </Labels>
       </Holds>
       </Holds>
+      {/* Commented out foreign country becaus its not that big of a concern right now*/}
       {/* <Holds size={"full"} className="mr-4">
         <Labels>
           {t("Country")}
@@ -157,6 +156,7 @@ function handleRoute() {
           </Labels>
           </Holds> */}
           <Texts position={"left"} size={"p1"} className="mb-4 mt-6">{t("Description")}</Texts>
+        <Dividers />
         <Labels>
           {t("DescriptionTitle")}
             <TextAreas
@@ -168,7 +168,6 @@ function handleRoute() {
               />
         </Labels>
       
-      
         <Labels>
           {t("Comments")}
           <TextAreas
@@ -178,8 +177,9 @@ function handleRoute() {
           placeholder={t("CommentsPurpose")}
           />
           </Labels>
-      <Holds size={"full"} position={"center"} className="m-2">
-      <Buttons background={"green"} size={"80"} type="submit" className="p-3 ">
+        
+      <Holds size={"full"} position={"center"} className="my-4">
+      <Buttons background={"green"} size={"full"} type="submit" className="p-3 ">
         <Titles size={"h1"}>{t("Submit")}</Titles>
       </Buttons>
       </Holds>

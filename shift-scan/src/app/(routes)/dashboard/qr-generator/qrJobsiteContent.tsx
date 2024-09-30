@@ -15,6 +15,7 @@ import { Selects } from "@/components/(reusable)/selects";
 import { Options } from "@/components/(reusable)/options";
 import { JobCodes } from "@/lib/types";
 import { Labels } from "@/components/(reusable)/labels";
+import SearchBar from "@/components/(search)/searchbar";
 
 export default function QrJobsiteContent() {
   const [selectedJobSiteName, setSelectedJobSiteName] = useState<string>("");
@@ -23,6 +24,7 @@ export default function QrJobsiteContent() {
   const [generatedList, setGeneratedList] = useState<JobCodes[]>([]);
   const [loading, setLoading] = useState(true);  // Loading state
   const [qrCodeUrl, setQrCodeUrl] = useState("");
+  
   const router = useRouter();
   const t = useTranslations("QrJobsiteContent");
 
@@ -100,22 +102,31 @@ export default function QrJobsiteContent() {
         </>
       ) : (
         <Holds  size={"first"}>
-        <Selects value={selectedJobSite} onChange={handleOptionSelect}>
-          <Options variant={"default"} value="">
+        <Selects 
+          value={selectedJobSite} 
+          onChange={handleOptionSelect} 
+          className="relative w-full"
+        >
+          <Options 
+            variant="default" 
+            value="" 
+            className="w-full h-5"
+          >
             Select One
           </Options>
           {generatedList.map((option) => (
             <Options
-              variant={"default"}
+              variant="default"
               key={option.qrId}
               value={option.qrId}
+              className="w-full max-h-18 overflow-y-auto text-sm"
             >
               {option.name}
             </Options>
           ))}
         </Selects>
         
-       <Holds position={"row"} size={"full"} className="justify-between items-center p-4">
+      <Holds position={"row"} size={"full"} className="justify-between items-center p-4">
           <Buttons background={"orange"} onClick={handleGenerate} size={"50"} className="p-4 mr-4">
             <Titles size={"h2"}>{t("Generate")}</Titles>
           </Buttons>

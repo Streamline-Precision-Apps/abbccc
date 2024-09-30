@@ -116,7 +116,7 @@ export default function QrEquipmentContent() {
       <>
       <Holds size={"first"}>
       <Selects value={selectedEquipment} onChange={handleOptionSelect}>
-      <Options  value="">
+      <Options  value="" className="w-full max-h-32 overflow-y-auto text-sm">
             Select One
           </Options>
           {generatedList.map((option) => (
@@ -124,6 +124,7 @@ export default function QrEquipmentContent() {
               
               key={option.qrId}
               value={option.qrId}
+              className="text-sm"
             >
               {option.name}
             </Options>

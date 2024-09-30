@@ -15,7 +15,7 @@ export default function CodeStep({ datatype, handleNextStep} : CodeStepProps){
 
     return (
         <>
-            <Titles variant={"qrText"} size={"h1"}>{t(`Title-${datatype}`)}</Titles>
+            <Titles size={"h1"}>{t(`Title-${datatype}`)}</Titles>
             <CodeFinder datatype={datatype} />
             <StepButtons handleNextStep={handleNextStep}/>
         </>

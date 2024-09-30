@@ -13,7 +13,7 @@ type SearchBarProps = {
 export default function SearchBar({ searchTerm, onSearchChange, placeholder }: SearchBarProps) {
   return (
     <div className="flex border-2 border-black rounded w-5/6 flex-row p-2 w-full">
-    <Images titleImg="/search.svg" titleImgAlt="search" variant={"icon"} size={"icon"}/>
+    <Images titleImg="/search.svg" titleImgAlt="search"/>
     <input 
       type="text"
       value={searchTerm}
