@@ -12,14 +12,14 @@ type SearchBarProps = {
 // defines the searchbar component and what the input should look like
 export default function SearchBar({ searchTerm, onSearchChange, placeholder }: SearchBarProps) {
   return (
-    <div className="flex border-2 border-black rounded w-5/6 flex-row p-2 w-full">
-    <Images titleImg="/search.svg" titleImgAlt="search"/>
+    <div className="flex border-2 border-black rounded w-full flex-row p-2 w-full">
+    <Images titleImg="/magnifyingGlass.svg" titleImgAlt="search" size={"10"} />
     <input 
       type="text"
       value={searchTerm}
       onChange={onSearchChange}
       placeholder={placeholder}
-      className="w-full" 
+      className="w-full ml-2 p-2 placeholder-gray-500 border-none focus:outline-none" 
     />
     </div>
   );
