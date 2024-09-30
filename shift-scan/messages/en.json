@@ -29,6 +29,10 @@
             "Qr-btn": "Qr Generator",
             "Copyright": "Copyright © 2024. All rights reserved."
     },
+    "SearchBar": {
+        "Search": "Search for",
+        "NoResults": "No Results Found"
+    },
     "Clock": {
         "ScanJobSite": "Scan Job Site",
         "ScanQR": "Scan QR Code",
@@ -105,7 +109,9 @@
         "QRCode": "QR Code",
         "Placeholder": "Select One",
         "New": "New",
-        "Generate": "Generate"
+        "Generate": "Generate",
+        "Loading": "Loading Job Sites...",
+        "JobSiteDatatype": "Search for a Job Site"
     },
 
     "qrEquipmentContent": {
@@ -114,7 +120,9 @@
         "Placeholder": "Select One",
         "New": "New",
         "Generate": "Generate",
-        "Select": "Select One"
+        "Select": "Select One",
+        "Loading": "Loading Equipment...",
+        "EquipmentDatatype": "Search for an Equipment"
     },
 
     "addEquipmentContent": {

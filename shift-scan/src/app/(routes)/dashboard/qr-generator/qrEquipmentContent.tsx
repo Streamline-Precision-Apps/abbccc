@@ -75,9 +75,11 @@ export default function QrEquipmentContent() {
     <>
       {loading ? (
         <Holds size={"first"}>
-          <Selects>
-            <Options>{t("Loading")}</Options>
-          </Selects>
+          <SearchSelect 
+            datatype={`${t("Loading")}`}
+            options={generatedList} 
+            onSelect={handleSelectEquipment} 
+          />
           <Holds position={"row"} size={"full"} className="justify-between items-center p-4">
             <Buttons background={"orange"} onClick={handleGenerate} size={"50"} className="p-4 mr-4">
               <Titles size={"h2"}>{t("Generate")}</Titles>
@@ -91,7 +93,7 @@ export default function QrEquipmentContent() {
         <Holds size={"first"}>
           {/* Use SearchSelect for equipment */}
           <SearchSelect 
-            datatype="equipment" 
+            datatype={`${t("EquipmentDatatype")}`}
             options={generatedList} 
             onSelect={handleSelectEquipment} 
           />

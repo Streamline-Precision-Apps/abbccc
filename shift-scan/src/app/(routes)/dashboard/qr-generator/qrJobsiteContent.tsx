@@ -77,11 +77,11 @@ export default function QrJobsiteContent() {
     <>
       {loading ? (
         <Holds size={"first"}>
-          <Selects>
-            <Options>
-              {t("Loading")}
-            </Options>
-          </Selects>
+          <SearchSelect 
+            datatype={`${t("Loading")}`} 
+            options={generatedList} 
+            onSelect={handleSearchSelectChange} // Pass the selection handler
+          />
           <Holds position={"row"} size={"full"} className="justify-between items-center p-4">
             <Buttons background={"orange"} onClick={handleGenerate} size={"50"} className="p-4 mr-4">
               <Titles size={"h2"}>{t("Generate")}</Titles>
@@ -95,7 +95,7 @@ export default function QrJobsiteContent() {
         <Holds size={"first"}>
           {/* Replace the old Selects component with the new SearchSelect */}
           <SearchSelect 
-            datatype={"JobSite"} 
+            datatype={`${t("JobSiteDatatype")}`} 
             options={generatedList} 
             onSelect={handleSearchSelectChange} // Pass the selection handler
           />
