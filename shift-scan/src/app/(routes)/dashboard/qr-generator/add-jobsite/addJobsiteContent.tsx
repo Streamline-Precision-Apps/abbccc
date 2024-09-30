@@ -18,7 +18,7 @@ export const AddJobsiteContent = () => {
     }, 5000);
   };
   return (
-    <>
+    <Holds>
     {/* Displays a banner with the bannerText and disappears after 5 seconds to show submissions and errors.*/}
         { banner &&
           <Holds background="green" className="my-3">
@@ -28,6 +28,6 @@ export const AddJobsiteContent = () => {
       <Holds background={"white"}>
         <AddJobsiteForm setBanner={setBanner} setBannerText={setBannerText} handler={()=> handleBanner} />
       </Holds>
-   </>
+    </Holds>
   );
 };

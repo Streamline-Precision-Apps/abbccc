@@ -63,7 +63,7 @@ export default function QrEquipmentContent() {
   };
 
   const handleNew = () => {
-    router.push("/dashboard/qr-generator/add-new-equipment");
+    router.push("/dashboard/qr-generator/add-equipment");
   };
 
   const handleSelectEquipment = (selectedOption: EquipmentCodes) => {

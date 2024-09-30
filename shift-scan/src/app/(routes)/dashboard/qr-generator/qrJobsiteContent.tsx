@@ -64,7 +64,7 @@ export default function QrJobsiteContent() {
   }, []);
 
   const handleNew = () => {
-    router.push("/dashboard/qr-generator/add-new-jobsite");
+    router.push("/dashboard/qr-generator/add-jobsite");
   };
 
   // Handle the selection from SearchSelect
