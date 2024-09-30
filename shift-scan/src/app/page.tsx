@@ -1,4 +1,4 @@
-import prisma from "@/lib/prisma";
+"use server";
 import { cookies } from "next/headers";
 import { auth } from "@/auth";
 import { getTranslations } from "next-intl/server";
