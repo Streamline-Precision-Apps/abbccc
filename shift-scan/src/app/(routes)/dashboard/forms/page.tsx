@@ -5,23 +5,28 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import Content from "@/app/(routes)/dashboard/forms/content";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
 export default async function Forms() {
-// TODO: import Forms from database here and pass to Content
-
+    const session = await auth();
+    if (!session) {
+        redirect('/signin');
+    }
+    
     return (
     <Bases>
-    <Contents>
-        <Holds size={"titleBox"}>
+    <Contents height="page">
+        <Holds size={"full"} background={"white"}>
             <TitleBoxes
             title="Forms"
-            titleImg="/new/form.svg"
+            titleImg="/form.svg"
             titleImgAlt="Forms"
             variant="default"
             size="default"
             />
         </Holds>
-        <Content/>
+        <Content />
     </Contents>
     </Bases>
 );

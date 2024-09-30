@@ -77,7 +77,20 @@
         "FormDefault" : "Select A Form",
         "Form1" : "Injury Report",
         "Form2" : "JSA",
-        "Form3" : "Report App Bug"
+        "Form3" : "Report App Bug",
+        "Continue": "Start Form",
+        "Form3Q1" : "When did the bug happen?",
+        "Form3Q1Placeholder" : "DD-MM-YYYY",
+        "Form3Q2": "Where did you find the bug?",
+        "Form3Q2Placeholder" : "It was in the equipment section",
+        "Form3Q3" : "Explain the problem and send the error code if possible:",
+        "Form3Q3Placeholder" : "I tried clocking out equipment and it didn't work, I got an error code OF XXXXX", 
+        "Form3Q4" : "Are other people affected? If so, who?", 
+        "Form3Q4Placeholder" : "no, only I was affected",
+        "Form3Submit" : "Submit form"
+
+    
+        
     },
     
     "ManagerButtons": {
