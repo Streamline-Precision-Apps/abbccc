@@ -5,6 +5,7 @@ import React, { useState, useEffect, ChangeEvent } from "react";
 import SearchBar from "@/components/(search)/searchbar";
 import { Holds } from "@/components/(reusable)/holds";
 import { JobCodes, EquipmentCodes } from "@/lib/types";
+import { useTranslations } from "next-intl";
 
 type Props<T> = {
   datatype: string;
@@ -16,6 +17,7 @@ function SearchSelect<T extends JobCodes | EquipmentCodes>({ datatype, options, 
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredOptions, setFilteredOptions] = useState<T[]>(options);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const t = useTranslations('SearchBar');
 
   // Update `filteredOptions` when `searchTerm` changes
   useEffect(() => {
@@ -51,24 +53,24 @@ function SearchSelect<T extends JobCodes | EquipmentCodes>({ datatype, options, 
       <SearchBar
         searchTerm={searchTerm}
         onSearchChange={handleSearchChange}
-        placeholder={`Search ${datatype}...`}
+        placeholder={`${datatype}...`}
       />
 
       {/* Dropdown menu that displays when `isMenuOpen` is true */}
       {isMenuOpen && (
-       <ul className="absolute z-10 w-full max-h-24 mt-14 overflow-y-auto bg-white border-2 border-black rounded shadow-lg no-scrollbar">
+       <ul className="absolute z-10 w-full max-h-28 mt-14 overflow-y-auto bg-white border-2 border-black rounded-b rounded-y shadow-lg no-scrollbar">
           {filteredOptions.length > 0 ? (
             filteredOptions.map((option) => (
               <li
                 key={option.qrId}
                 onClick={() => handleOptionSelect(option)}
-                className="py-2 cursor-pointer text-center even:bg-gray-200 border-b-2 border-black last:border-0"
+                className="py-3 cursor-pointer text-center text-lg even:bg-gray-200 border-b-2 border-black last:border-0"
               >
                 {option.name} - {option.qrId}
               </li>
             ))
           ) : (
-            <li className="p-2 text-gray-500">No results found</li>
+            <li className="p-2 h-28 text-black text-center flex items-center justify-center text-xl">{t("NoResults")}</li>
           )}
         </ul>
       )}
