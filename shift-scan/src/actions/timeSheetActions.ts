@@ -1,4 +1,5 @@
 "use server";
+import { setAuthStep } from "@/app/api/auth";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
@@ -185,10 +186,10 @@ export async function editTimeSheet(formData: FormData) {
 
 // provides a way to update a timesheet and will give supervisor access to all timesheets
 // and provide a way to alter them as needed by employee accuracy. 
-export async function updateTimeSheet(formData: FormData, id?: string) {
+export async function updateTimeSheet(formData: FormData) {
     try {
         console.log("formData:", formData);
-        const id = Number(formData.get("id"));
+        const id = Number(formData.get("id")); // Removed the second id parameter from the function
         
         // Fetch the startTime from the database to prevent irregular dates
         const start = await prisma.timeSheets.findUnique({
@@ -201,28 +202,31 @@ export async function updateTimeSheet(formData: FormData, id?: string) {
             throw new Error("Start time not found for the given timesheet ID.");
         }
 
+        // Parse endTime from the formData
         const parseDate = (timestamp: string) => {
             const date = new Date(timestamp);
             if (isNaN(date.getTime())) {
                 throw new RangeError(`Invalid time value: ${timestamp}`);
             }
-            date.setMinutes(date.getMinutes() - date.getTimezoneOffset()); // Adjust for the timezone offset
-            return date;
+            return date; // Removed manual timezone adjustment
         };
+
         const endTime = parseDate(formData.get("endTime") as string);
 
+        // Calculate duration between start and end times
         const durationMs = endTime.getTime() - new Date(startTime).getTime();
-        const durationHours = (durationMs / (1000 * 60 * 60));
-        const duration = (durationHours);
+        const durationHours = durationMs / (1000 * 60 * 60); // Convert ms to hours
+        const duration = Number.isNaN(durationHours) ? null : durationHours;
 
         console.log(`{endTime}: ${endTime} - {startTime}: ${startTime} = duration: ${durationHours}`);
 
+        // Update the timesheet with new data
         const updatedTimeSheet = await prisma.timeSheets.update({
             where: { id },
             data: {
                 vehicleId: Number(formData.get("vehicleId")) || null,
                 endTime: endTime.toISOString(),
-                duration: Number(duration) || null,
+                duration: duration,
                 startingMileage: Number(formData.get("startingMileage")) || null,
                 endingMileage: Number(formData.get("endingMileage")) || null,
                 leftIdaho: Boolean(formData.get("leftIdaho")) || null,
@@ -237,14 +241,14 @@ export async function updateTimeSheet(formData: FormData, id?: string) {
         console.log("Timesheet updated successfully.");
         console.log(updatedTimeSheet);
 
-        // Revalidate the path
+        // Optionally, you can handle revalidation of paths here or elsewhere
         revalidatePath(`/`);
-        return updatedTimeSheet;
 
     } catch (error) {
-        console.log(error);
-    }
+        console.error("Error updating timesheet:", error);    }
 }
+
+
 export async function updateTimeSheetBySwitch(formData: FormData) {
     try {
 

@@ -1,8 +1,13 @@
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 import ClockOutContent from "./clockOutContent";
+import { cookies } from "next/headers";
 
 export default async function AdminDashboard() {
+
+    const lang = cookies().get("locale");
+    const locale = lang ? lang.value : "en"; // Default to English
+
     const session = await auth().catch((err) => {
         console.error("Error in authentication:", err);
         return null;
@@ -23,5 +28,5 @@ export default async function AdminDashboard() {
     });
 
 
-  return <ClockOutContent id={userId ?? ""} signature={user?.signature ?? null} />;
+  return <ClockOutContent id={userId ?? ""} signature={user?.signature ?? null} locale={locale}/>;
 }

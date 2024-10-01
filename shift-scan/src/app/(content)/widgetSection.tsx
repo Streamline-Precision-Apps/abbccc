@@ -14,8 +14,6 @@ import { usePayPeriodHours } from "../context/PayPeriodHoursContext";
 import { usePayPeriodTimeSheet } from "../context/PayPeriodTimeSheetsContext";
 import { useRouter } from "next/navigation";
 import { Session } from "next-auth";
-import { useRecentDBCostcode, useRecentDBEquipment, useRecentDBJobsite } from "../context/dbRecentCodesContext";
-import { useDBCostcode, useDBEquipment, useDBJobsite } from "../context/dbCodeContext";
 type props = {
     session: Session;
 }

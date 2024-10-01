@@ -14,14 +14,14 @@ import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
 import { useRouter } from "next/navigation";
-import { updateTimeSheet, GetAllTimeSheets } from "@/actions/timeSheetActions";
+import { updateTimeSheet } from "@/actions/timeSheetActions"; // Make sure to update import if the function was renamed or relocated
 import { Banners } from "@/components/(reusable)/banners";
-import { setAuthStep } from "@/app/api/auth";
 import { Texts } from "@/components/(reusable)/texts";
 import { Clock } from "@/components/clock";
-import { uploadFirstSignature } from "@/actions/userActions";
 import { Forms } from "@/components/(reusable)/forms";
 import { Inputs } from "@/components/(reusable)/inputs";
+import { Images } from "@/components/(reusable)/images";
+import { uploadFirstSignature } from "@/actions/userActions";
 
 // Custom hook for managing banners
 function useBanner(initialMessage = "") {
@@ -41,11 +41,13 @@ function useBanner(initialMessage = "") {
 type ClockOutContentProps = {
   id: string;
   signature: string | null;
+  locale: string;
 };
 
 export default function ClockOutContent({
   id,
   signature,
+  locale,
 }: ClockOutContentProps) {
   const [step, incrementStep] = useState(1);
   const [path, setPath] = useState("ClockOut");
@@ -57,18 +59,20 @@ export default function ClockOutContent({
   const { scanResult } = useScanData();
   const { savedCostCode } = useSavedCostCode();
   const { savedTimeSheetData } = useTimeSheetData();
+  const [date] = useState(new Date());
 
-  const localStorageData = {
-    jobsite: localStorage.getItem("jobSite"),
-    costCode: localStorage.getItem("costCode"),
-    timesheet: JSON.parse(localStorage.getItem("savedtimeSheetData") || "{}"),
-    breakTimeSec: localStorage.getItem("breakTime"),
-  };
+  // Checking if window exists before accessing localStorage
+  const localStorageData =
+    typeof window !== "undefined"
+      ? {
+          jobsite: localStorage.getItem("jobSite"),
+          costCode: localStorage.getItem("costCode"),
+          timesheet: JSON.parse(
+            localStorage.getItem("savedtimeSheetData") || "{}"
+          ),
+        }
+      : {};
 
-  const breakTimeTotal = localStorageData.breakTimeSec
-    ? parseFloat(localStorageData.breakTimeSec) / 3600
-    : null;
-  const time = new Date().getTime();
   const [base64String, setBase64String] = useState<string>(signature || "");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
@@ -89,7 +93,7 @@ export default function ClockOutContent({
 
     setIsSubmitting(true);
     try {
-      await uploadFirstSignature(formData);
+      await uploadFirstSignature(formData); // This assumes you have an uploadFirstSignature function elsewhere
     } catch (error) {
       console.error("Error uploading signature:", error);
       setBannerMessage(
@@ -101,41 +105,14 @@ export default function ClockOutContent({
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault(); // Prevent default form submission behavior
+
     try {
-      let duration = 0.0;
-      const formData = new FormData();
-      formData.append(
-        "id",
-        savedTimeSheetData?.id || localStorageData.timesheet.id.toString()
-      );
-      formData.append("endTime", new Date().toString());
-      formData.append("timesheetComments", "");
-
-      const date = await updateTimeSheet(formData);
-      const retrieve = date?.date?.toString();
-      if (retrieve) {
-        const data = await GetAllTimeSheets(retrieve);
-        duration = data?.reduce(
-          (total, timeSheet) => total + (timeSheet.duration ?? 0),
-          0
-        );
-      }
-
-      setAuthStep("");
-      setBannerMessage(
-        `Timecard Submitted! ${duration?.toFixed(
-          2
-        )} total hours && ${breakTimeTotal?.toFixed(
-          2
-        )} total break time used. You will be redirected soon!`
-      );
-
-      setTimeout(() => {
-        router.push("/");
-        localStorage.removeItem("breakTime");
-        setAuthStep("removeLocalStorage");
-      }, 5000);
+      const formData = new FormData(event.currentTarget); // Use event.currentTarget instead of event.target
+      await updateTimeSheet(formData); // Assuming updateTimeSheet is a server action
+      localStorage.clear();
+      router.push("/"); // Redirect to the homepage after form submission
     } catch (error) {
       console.error("Failed to submit the time sheet:", error);
       setBannerMessage(
@@ -151,21 +128,24 @@ export default function ClockOutContent({
       setPath("Injury");
       incrementStep(2);
     } else {
-      await handleSubmit(); // Submit timesheet when the user confirms no injury
+      incrementStep(2); // Submit timesheet when the user confirms no injury
     }
+  };
+
+  const handleNextStep = () => {
+    incrementStep(step + 1);
   };
 
   if (step === 1) {
     return (
-      <Bases variant={"default"}>
-        <Contents size={"default"}>
-          <Holds size={"default"}>
+      <Bases>
+        <Contents>
+          <Holds>
             <TitleBoxes
               title={t("InjuryVerification")}
               titleImg="/new/end-day.svg"
               titleImgAlt="Team"
               variant={"row"}
-              size={"default"}
               type="row"
             />
             {showBanner && (
@@ -177,10 +157,10 @@ export default function ClockOutContent({
                   zIndex: 1000,
                 }}
               >
-                <Banners variant="red">{bannerMessage}</Banners>
+                <Banners background="red">{bannerMessage}</Banners>
               </div>
             )}
-            <Holds size={"titleBox"}>
+            <Holds>
               <Titles size={"h3"}>{t("SignBelow")}</Titles>
               <Signature
                 setBase64String={setBase64String}
@@ -188,17 +168,18 @@ export default function ClockOutContent({
                 handleSubmitImage={handleSubmitImage}
               />
             </Holds>
-            <Holds size={"titleBox"}>
-              <Contents variant={"rowCenter"}>
+            <Holds>
+              <Contents>
                 <Titles size={"h4"}>{t("SignatureVerify")}</Titles>
                 <Checkbox checked={checked} onChange={handleCheckboxChange} />
               </Contents>
             </Holds>
             {/* Button changes based on checkbox state */}
             <Buttons
-              variant={checked ? "green" : "red"} // Green for Continue, Red for Report an Injury
+              background={checked ? "green" : "red"} // Green for Continue, Red for Report an Injury
               size={null}
               onClick={handleNextStepAndSubmit}
+              disabled={isSubmitting} // Disable button while submitting
             >
               <Titles size={"h3"}>
                 {checked ? t("Continue") : t("ReportInjury")}{" "}
@@ -211,22 +192,22 @@ export default function ClockOutContent({
     );
   } else if (step === 2 && path === "Injury") {
     return (
-      <Bases variant={"default"}>
-        <Contents size={"default"}>
-          <Holds size={"titleBox"}>
+      <Bases>
+        <Contents>
+          <Holds>
             <TitleBoxes
               title={t("InjuryVerification")}
               titleImg="/new/injury.svg"
               titleImgAlt="Team"
               variant={"row"}
-              size={"default"}
               type="row"
-            />          </Holds>
-          <Holds size={"dynamic"}>
+            />
+          </Holds>
+          <Holds>
             <InjuryReportContent
               base64String={base64String}
               setBase64String={setBase64String}
-              handleComplete={handleSubmit} // Ensure handleComplete does the right thing
+              handleComplete={handleNextStep} // Ensure handleComplete does the right thing
               handleSubmitImage={handleSubmitImage}
             />
           </Holds>
@@ -239,14 +220,25 @@ export default function ClockOutContent({
   ) {
     return (
       <Bases>
-        <Banners variant={bannerMessage.length > 0 ? "green" : "default"}>
+        <Banners background={bannerMessage.length > 0 ? "green" : "default"}>
           {bannerMessage}
         </Banners>
         <Contents>
-        <Holds size={"dynamic"}>
-        <TitleBoxes title={t("Bye")} titleImg={"/new/end-day.svg"} titleImgAlt={""} variant={"row"} size={"default"} type="row" />
-
-            <Contents variant={"default"}>
+          <Holds>
+            <TitleBoxes
+              title={t("Bye")}
+              titleImg={"/new/end-day.svg"}
+              titleImgAlt={""}
+              variant={"row"}
+              type="row"
+            />
+            <Contents>
+              <Buttons size={null} type="submit">
+                <Images
+                  titleImg={"/new/downArrow.svg"}
+                  titleImgAlt={"downArrow"}
+                />
+              </Buttons>
               <Texts>
                 {t("ClockOutDate")} {new Date().toLocaleDateString()}
               </Texts>
@@ -256,24 +248,38 @@ export default function ClockOutContent({
               <Texts>
                 {t("CostCode")} {savedCostCode || localStorageData?.costCode}
               </Texts>
-
-        <Forms onSubmit={handleSubmit}>
-        <Buttons
-        variant={"green"}
-        size={"widgetLg"}
-        >
-        <Clock time={time} />
-        </Buttons>
-        {/* Hidden inputs */}
-        <Inputs type="hidden" name="id" value={savedTimeSheetData?.id || localStorageData?.timesheet} readOnly/>
-        <Inputs type="hidden" name="endTime" value={new Date().toString()} readOnly/>
-        <Inputs type="hidden" name="timeSheetComments" value={""} readOnly />
-        {/* uses this to verfy the person clocking out in server action */}
-        <Inputs type="hidden" name="userId" value={ id || ""} readOnly />
-        </Forms>
-
-        </Contents>
-        </Holds>
+              <Forms onSubmit={handleSubmit}>
+                <Inputs
+                  type="hidden"
+                  name="id"
+                  value={(
+                    savedTimeSheetData?.id || localStorageData?.timesheet.id
+                  )?.toString()} // Convert id to string
+                  readOnly
+                />
+                <Inputs
+                  type="hidden"
+                  name="endTime"
+                  value={new Date().toISOString()}
+                  readOnly
+                />
+                <Inputs
+                  type="hidden"
+                  name="timeSheetComments"
+                  value={""}
+                  readOnly
+                />
+                <Inputs type="hidden" name="userId" value={id || ""} readOnly />
+                <Buttons
+                  type="submit"
+                  className="bg-app-red mx-auto flex justify-center w-full h-full py-4 px-5 rounded-lg text-black font-bold mt-5"
+                  disabled={isSubmitting} // Disable while submitting
+                >
+                  <Clock time={date.getTime()} />
+                </Buttons>
+              </Forms>
+            </Contents>
+          </Holds>
         </Contents>
       </Bases>
     );
