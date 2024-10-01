@@ -1,19 +1,24 @@
-// lets employee view there hours for each day recored day. 
 "use server";
 import { auth } from "@/auth";
-import prisma from "@/lib/prisma";
 import ViewTimeSheets from "@/app/(routes)/timesheets/view-timesheets";
-import { TimeSheet } from "@/lib/types";
+import { Bases } from "@/components/(reusable)/bases";
+import { Contents } from "@/components/(reusable)/contents";
+import { Holds } from "@/components/(reusable)/holds";
+import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 
 export default async function Timesheets() {
     const session = await auth();
     const id = session?.user.id;
     
-    const timesheets = await prisma.timeSheets.findMany({ 
-        where: { userId: id },
-    }) as TimeSheet[];
     
     return (
-        <ViewTimeSheets timesheets={timesheets} user={id} />
+        <Bases>
+        <Contents height={"page"}>
+            <Holds background={"white"} size={"full"} className="mb-10">
+                <TitleBoxes title={"View Timesheets"} titleImg={"/form.svg"} titleImgAlt={"Timesheets"}  size={"default"} />
+            </Holds>
+        <ViewTimeSheets user={id} />
+        </Contents>
+        </Bases>
     )
 }
