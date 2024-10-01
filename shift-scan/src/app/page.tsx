@@ -1,4 +1,3 @@
-import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { auth } from "@/auth";
 import { getTranslations } from "next-intl/server";
@@ -25,8 +24,6 @@ export default async function Home() {
   }
 
   const user = session.user;
-  const userId = session.user.id;
-  const permission = session.user.permission;
 
   // Get the current language from cookies
   const lang = cookies().get("locale");
