@@ -3,11 +3,11 @@ import { HTMLAttributes, FC } from "react";
 import { cn } from "@/components/(reusable)/utils";
 // add mt-24 to banner to bring it down lower
 const BannerVariants = cva(
-  "rounded-xl p-3", //this applies to all variants
+  "p-3", //this applies to all variants
   {
     variants: {
       background: {
-        default: "bg-app-blue shadow-[0px_8px_0px_grey]",
+        default: "bg-none",
         green: "bg-green-500",
         red: "bg-red-500",
       },

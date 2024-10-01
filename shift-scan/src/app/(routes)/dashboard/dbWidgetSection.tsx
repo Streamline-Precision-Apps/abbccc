@@ -129,22 +129,32 @@ return (
     (
       <>
       {/* Component that will render */}
-        <Grids variant={"widgets"} size={"default"}>
+        <Grids >
 {/* Checks if a user has a permission of "USER" it won't render any manager buttons below */}
         {(permission !=="USER") && !additionalButtonsType && (
             <>
-            <Buttons href="/dashboard/qr-generator" background={"lightBlue"}>
-            <Holds className="my-2">
-              <Images titleImg="/qr.svg" titleImgAlt="QR Code" background={"none"} size={"50"}/>
-              <Texts size={"p4"}>{t("QrGenerator")}</Texts>
-            </Holds>
-          </Buttons>
-          <Buttons href="/dashboard/myTeam" background={"lightBlue"}>
-            <Holds className="my-2">
-              <Images titleImg="/team.svg" titleImgAlt="my team" background={"none"} size={"50"}/>
-              <Texts size={"p4"}>{t("MyTeam")}</Texts>
-            </Holds>
-          </Buttons>
+            <Holds 
+            position={"row"}
+            className="row-span-1 col-span-2">
+              <Buttons 
+              href="/dashboard/qr-generator" 
+              background={"lightBlue"}
+              size={"widgetSm"}>
+              <Holds className="my-2">
+                <Images titleImg="/qr.svg" titleImgAlt="QR Code" background={"none"} size={"40"}/>
+                <Texts size={"p4"}>{t("QrGenerator")}</Texts>
+              </Holds>
+            </Buttons>
+            <Buttons 
+            href="/dashboard/myTeam" 
+            background={"lightBlue"}
+            size={"widgetSm"}>
+              <Holds className="my-2">
+                <Images titleImg="/team.svg" titleImgAlt="my team" background={"none"} size={"40"}/>
+                <Texts size={"p4"}>{t("MyTeam")}</Texts>
+              </Holds>
+            </Buttons>
+          </Holds>
             </>
           )
         }
@@ -153,43 +163,43 @@ return (
             <>
             <Buttons
              background={"lightBlue"}
-            size={null}
+            size={"widgetMed"}
             onClick={handleShowManagerButtons}
           >
             <Holds className="my-2">
-              <Texts>{t("GoHome")}</Texts>
+              <Texts size={"p4"}>{t("GoHome")}</Texts>
               <Images
                   titleImg="/home.svg"
                   titleImgAlt="Home Icon"
-                  size={"50"}
+                  size={"20"}
               />
             </Holds>
           </Buttons>
           <Buttons
             background={"green"}
-            size={null}
+            size={"widgetMed"}
             href="/dashboard/log-new"
           >
              <Holds className="my-2">
-              <Texts>{t("LogNew")}</Texts>
+              <Texts size={"p4"}>{t("LogNew")}</Texts>
               <Images
                 titleImg="/equipment.svg"
                 titleImgAlt="Equipment Icon"
-                size={"50"}
+                size={"20"}
               />
             </Holds>
           </Buttons>
           <Buttons
              background={"orange"}
-            size={null}
+             size={"widgetMed"}
             href="/dashboard/equipment"
           >
              <Holds className="my-2">
-              <Texts>{t("Current")}</Texts>
+              <Texts size={"p4"}>{t("Current")}</Texts>
               <Images
                 titleImg="/current-equipment.svg"
                 titleImgAlt="Equipment Icon"
-                size={"50"}
+                size={"20"}
               />
             </Holds>
           </Buttons>
@@ -204,11 +214,11 @@ return (
                 onClick={handleShowManagerButtons}
               >
                  <Holds className="my-2">
-                  <Texts >{t("GoHome")}</Texts>
+                  <Texts size={"p4"}>{t("GoHome")}</Texts>
                   <Images
                     titleImg="/home.svg"
                     titleImgAlt="Home Icon"
-                    size={"50"}
+                    size={"40"}
                   />
                </Holds>
               </Buttons>
@@ -218,11 +228,11 @@ return (
                 onClick={handleCOButton2}
               >
                 <Holds className="my-2">
-                  <Texts>{t("Break")}</Texts>
+                  <Texts size={"p4"}>{t("Break")}</Texts>
                   <Images
                     titleImg="/break.svg"
                     titleImgAlt="Break Icon"
-                    size={"50"}
+                    size={"40"}
                   />
                 </Holds>
               </Buttons>
@@ -254,7 +264,7 @@ return (
                   <Images
                     titleImg="/end-day.svg"
                     titleImgAlt="End Icon"
-                    size={"50"}
+                    size={"40"}
                   />
                 </Holds>
               </Buttons>
@@ -263,64 +273,73 @@ return (
         //all pages get these buttons except for the additional button type sections
         (
             <>
-            <Buttons
-              background={"orange"}
-              size={"full"}
-              href="/dashboard/switch-jobs"
-            >
-              <Holds className="my-2">
-                <Images
-                  titleImg="/jobsite.svg"
-                  titleImgAlt="Jobsite Icon"
-                  size={"50"}
-                ></Images>
-                <Texts>{t("SwitchJobs")}</Texts>
-              </Holds>
-            </Buttons>
-            <Buttons
-              href="/dashboard/equipment"
-              background={"green"}
-              size={"full"}
-              onClick={() => handleShowAdditionalButtons("equipment")}
-            >
-              <Holds className="my-2">
-                <Images
-                  titleImg="/equipment.svg"
-                  titleImgAlt="Equipment Icon"
-                  size={"50"}
-                ></Images>
-                <Texts>{t("Equipment")}</Texts>
-              </Holds>
-            </Buttons>
-            <Buttons
-              href="/dashboard/forms"
-              background={"green"}
-              size={"full"}
-            >
-              <Holds className="my-2">
-                <Images
-                  titleImg="/form.svg"
-                  titleImgAlt="Forms Icon"
-                  size={"50"}
-                ></Images>
-                <Texts>{t("Forms")}</Texts>
-              </Holds>
-            </Buttons>
-            <Buttons
-              href="/dashboard/clock-out"
-              background={"red"}
-              size={"full"}
-              onClick={() => handleShowAdditionalButtons("clockOut")}
-            >
-              <Holds className="my-2">
-                <Images
-                  titleImg="/clock-out.svg"
-                  titleImgAlt="Clock Out Icon"
-                  size={"50"}
-                ></Images>
-                <Texts >{t("ClockOut")}</Texts>
-              </Holds>
-            </Buttons>
+            <Holds 
+            position={"row"}
+            className="row-span-1 col-span-2">
+              <Buttons
+                background={"orange"}
+                size={"widgetSm"}
+                href="/dashboard/switch-jobs"
+                
+              >
+                <Holds className="my-2">
+                  <Images
+                    titleImg="/jobsite.svg"
+                    titleImgAlt="Jobsite Icon"
+                    size={"40"}
+                  ></Images>
+                  <Texts size={"p4"}>{t("SwitchJobs")}</Texts>
+                </Holds>
+              </Buttons>
+              <Buttons
+                href="/dashboard/equipment"
+                background={"green"}
+                size={"widgetSm"}
+                onClick={() => handleShowAdditionalButtons("equipment")}
+              >
+                <Holds className="my-2">
+                  <Images
+                    titleImg="/equipment.svg"
+                    titleImgAlt="Equipment Icon"
+                    size={"40"}
+                  ></Images>
+                  <Texts size={"p4"}>{t("Equipment")}</Texts>
+                </Holds>
+              </Buttons>
+            </Holds>
+            <Holds 
+            position={"row"}
+            className="row-span-1 col-span-2">
+              <Buttons
+                href="/dashboard/forms"
+                background={"green"}
+                size={"widgetSm"}
+              >
+                <Holds className="my-2">
+                  <Images
+                    titleImg="/form.svg"
+                    titleImgAlt="Forms Icon"
+                    size={"40"}
+                  ></Images>
+                  <Texts size={"p4"}>{t("Forms")}</Texts>
+                </Holds>
+              </Buttons>
+              <Buttons
+                href="/dashboard/clock-out"
+                background={"red"}
+                size={"widgetSm"}
+                onClick={() => handleShowAdditionalButtons("clockOut")}
+              >
+                <Holds className="my-2">
+                  <Images
+                    titleImg="/clock-out.svg"
+                    titleImgAlt="Clock Out Icon"
+                    size={"40"}
+                  ></Images>
+                  <Texts size={"p4"}>{t("ClockOut")}</Texts>
+                </Holds>
+              </Buttons>
+            </Holds>
           </>
         )}  
         </Grids>
