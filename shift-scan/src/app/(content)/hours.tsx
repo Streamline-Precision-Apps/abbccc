@@ -3,10 +3,7 @@ import { useTranslations } from "next-intl";
 import ViewHoursComponent from "@/app/(content)/hoursControl";
 import { usePayPeriodHours } from "../context/PayPeriodHoursContext";
 import { Buttons } from "@/components/(reusable)/buttons";
-import { Titles } from "@/components/(reusable)/titles";
-import { Contents } from "@/components/(reusable)/contents";
 import { Texts } from "@/components/(reusable)/texts";
-import { Holds } from "@/components/(reusable)/holds";
 import Spinner from "@/components/(animations)/spinner";
 
 // Assuming User has at least these fields, adjust accordingly
