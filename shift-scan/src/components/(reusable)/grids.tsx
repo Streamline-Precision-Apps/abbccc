@@ -7,7 +7,7 @@ const GridVariants = cva(
   {
     variants: {
       size: {
-        widgets: "grid-cols-2 gap-x-5 gap-y-5",
+        widgets: "grid-cols-2 grid-rows-3 gap-x-3 gap-y-3",
       },
     },
     defaultVariants: {
