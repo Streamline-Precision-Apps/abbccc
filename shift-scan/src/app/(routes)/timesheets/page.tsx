@@ -5,9 +5,13 @@ import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
+import { redirect } from "next/navigation";
 
 export default async function Timesheets() {
     const session = await auth();
+    if (!session) {
+        redirect('/signin');
+    }
     const id = session?.user.id;
     
     
