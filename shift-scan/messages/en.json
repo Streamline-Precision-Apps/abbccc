@@ -366,5 +366,24 @@
     },
     "admin-assets-costcode": {
         "submit": "Submit"
+    },
+
+    "TimesheetsContent": {
+        "Title": "View Timesheets",
+        "Header1":"Please enter a date to search for your timesheets.",
+        "Label1": "Enter Date",
+        "Submit": "Search Timesheets now",
+        "FirstMessage": "Enter a Date and Submit to have a look at your timesheets records.",
+        "NoData": "No Timesheets Found",
+        "NoDataMessage": "Try again with a different date.",
+        "Loading": "Loading...",
+        "Results": "Results",
+        "DataMessage":"Timesheets Found",
+        "LabelID": "Timesheet ID",
+        "LabelStart": "Start Time",
+        "LabelEnd": "End Time",
+        "LabelDuration": "Duration",
+        "LabelJobsite": "Jobsite",
+        "LabelCostCode": "Cost Code"
     }
 }
