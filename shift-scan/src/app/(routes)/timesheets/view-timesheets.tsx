@@ -1,9 +1,7 @@
 "use client";
-
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Holds } from "@/components/(reusable)/holds";
-import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { Forms } from "@/components/(reusable)/forms";
 import { Texts } from "@/components/(reusable)/texts";
@@ -15,7 +13,7 @@ import Spinner from "@/components/(animations)/spinner";
 import { formatTime } from "@/utils/formatDateAMPMS";
 
 type Props = {
-    user: string | undefined;
+    user: string;
 };
 
 export default function ViewTimesheets({ user }: Props) {
