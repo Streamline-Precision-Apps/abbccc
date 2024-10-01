@@ -25,7 +25,7 @@ const HoldVariants = cva(
       },
       size: {//only width and height
         full: "w-full",
-        first: "w-[90%]",//use on first use holding all content in Holds
+        "90": "w-[90%]",
         "80": "w-[80%]",
         "70": "w-[70%]",
         "60": "w-[60%]",

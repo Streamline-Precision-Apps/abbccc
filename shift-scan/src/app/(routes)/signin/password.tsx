@@ -14,7 +14,8 @@ import { signIn } from "next-auth/react";
 import { setLocale } from "@/actions/cookieActions";
 import { Forms } from "@/components/(reusable)/forms";
 import { Holds } from "@/components/(reusable)/holds";
-import Checkbox from "@/components/(inputs)/checkbox";
+import Checkbox from "@/components/(inputs)/checkBox";
+import Link from "next/link";
 
 
 type props = {
@@ -79,9 +80,9 @@ return (
             <Inputs variant="default" name="password" type={viewSecret ? "text" : "password"} required />
             {error && <Texts>{error}</Texts>}
             <Holds className="mb-10">
-                <Buttons background="none" position="right" onClick={() => router.push("/login/forgotpassword")}>
+                <Link href="/login/forgotpassword">
                     <Texts text={"link"} size={"p5"} position={"right"}>{t("btn-forgot")}</Texts>
-                </Buttons>
+                </Link>
             </Holds>
             <Holds position={"row"} className="mb-10">
                 <Holds size={"30"}>
