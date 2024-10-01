@@ -133,3 +133,10 @@ rewrote timesheet with gina from hr seeing if it works bigest problem was equipm
 9/10/2024
 - did my first code review got files condensed
 - worked on the inbox page
+
+10/01/2024
+- updated the db to have better and more straight forward naming convention with Team.
+- Updated the translations of the application
+- learned more on app Architecture and the blessing of following clean code app development
+- created Api endpoints for receiving data calls with a Prisma update
+- debugging code that is slow and has latency due to complex queries. 
