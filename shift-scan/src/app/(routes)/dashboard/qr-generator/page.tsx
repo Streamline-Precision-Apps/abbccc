@@ -5,7 +5,6 @@ import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import QrJobsiteContent from "./qrJobsiteContent";
 import QrEquipmentContent from "./qrEquipmentContent";
-import prisma from "@/lib/prisma";
 import { Contents } from "@/components/(reusable)/contents";
 import { getTranslations } from "next-intl/server";
 import { Images } from "@/components/(reusable)/images";
@@ -17,30 +16,51 @@ export default async function QrGeneratorDashboard() {
   const t = await getTranslations("QrJobsiteContent");
   const u = await getTranslations("qrEquipmentContent");
 
-  return (
-    <Bases>
-    <Contents>
-    <Holds size={"half"}>
-        <TitleBoxes
-          title={q("Title")}
-          titleImg="/new/qr.svg"
-          titleImgAlt="Team"
-          variant={"default"}
-          size={"default"}
-          />
-    </Holds>
-
-    <Holds size={"half"}>
-      <Holds className="w-full">
-        <Images titleImg="/new/jobsite.svg" titleImgAlt="jobsite" variant={"icon"} size={"iconMed"}/>
-        <Titles variant={"default"} size={"default"}>{t("Jobsite")}</Titles>
-        <QrJobsiteContent />
-        <Images titleImg="/new/equipment.svg" titleImgAlt="equipment" variant={"icon"} size={"iconMed"}/>
-          <Titles variant={"default"} size={"default"}>{u("Equipment")}</Titles>
-        <QrEquipmentContent />
+return (
+  <Bases>
+    <Contents height={"page"}>
+      <Holds
+        background={"white"}
+        className="m-3 "
+      >
+          <TitleBoxes
+              title={q("Title")}
+              titleImg="/qr.svg"
+              titleImgAlt="Team"
+            />
       </Holds>
-    </Holds>
+{/*-----------------------------------------------------*/}
+{/* This is the jobsite content */}
+        <Holds background={"white"} 
+        className="mb-3"
+        >
+          <Contents width={"section"}>
+        <Holds size={"10"}>
+            <Images 
+            titleImg="/jobsite.svg" 
+            titleImgAlt="jobsite" 
+            size={"full"} 
+            />
+        </Holds>
+            <Titles 
+            size={"h2"}
+            >
+              {t("Jobsite")}
+            </Titles>
+
+            <QrJobsiteContent />
+          </Contents>
+        </Holds>
+{/*-----------------------------------------------------*/}
+{/* This is the equipment content */}
+        <Holds background={"white"} >
+        <Contents width={"section"}>
+            <Images titleImg="/equipment.svg" titleImgAlt="equipment" size={"10"}/>
+            <Titles size={"h2"}>{u("Equipment")}</Titles>
+          <QrEquipmentContent />
+        </Contents>
+        </Holds>
     </Contents>
-    </Bases>
+  </Bases>
   );
 }

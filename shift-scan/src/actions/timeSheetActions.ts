@@ -332,20 +332,24 @@ export async function findTimesheetsforDay(formData: FormData) {
     console.log("formData:", formData);
     
     const id = formData.get("id") as string;
-    const date = new Date(formData.get("date") as string).toISOString(); 
+    const dateString = formData.get("date") as string;
 
+    // Create a full local ISO string (including time)
+    const localDateISO = new Date(dateString).toISOString();
+
+    // Query for timesheets where the full ISO string matches
     const timeSheets = await prisma.timeSheets.findMany({
         where: {
             userId: id,
             date: {
-                equals: date
+                equals: localDateISO, // Match the full ISO string
             }
         }
     });
+
     if (timeSheets.length === 0) {
         return null;
-    }
-    else {
-    return timeSheets;
+    } else {
+        return timeSheets;
     }
 }

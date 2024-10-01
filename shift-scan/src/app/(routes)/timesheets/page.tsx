@@ -1,19 +1,28 @@
-// lets employee view there hours for each day recored day. 
 "use server";
 import { auth } from "@/auth";
-import prisma from "@/lib/prisma";
 import ViewTimeSheets from "@/app/(routes)/timesheets/view-timesheets";
-import { TimeSheet } from "@/lib/types";
+import { Bases } from "@/components/(reusable)/bases";
+import { Contents } from "@/components/(reusable)/contents";
+import { Holds } from "@/components/(reusable)/holds";
+import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
+import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 export default async function Timesheets() {
     const session = await auth();
+    if (!session) {
+        redirect('/signin');
+    }
     const id = session?.user.id;
-    
-    const timesheets = await prisma.timeSheets.findMany({ 
-        where: { userId: id },
-    }) as TimeSheet[];
-    
+    const t = await getTranslations("TimesheetsContent");
     return (
-        <ViewTimeSheets timesheets={timesheets} user={id} />
+        <Bases>
+        <Contents height={"page"}>
+            <Holds background={"white"} size={"full"} className="mb-10">
+                <TitleBoxes title={`${t("Title")}`} titleImg={"/form.svg"} titleImgAlt={`${t("Title")}`} size={"default"} />
+            </Holds>
+        <ViewTimeSheets user={id} />
+        </Contents>
+        </Bases>
     )
 }

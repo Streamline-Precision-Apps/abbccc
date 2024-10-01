@@ -10,6 +10,7 @@ import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
+import React from "react";
 import { useEffect, useState } from "react";
 
 type CrewMember = {

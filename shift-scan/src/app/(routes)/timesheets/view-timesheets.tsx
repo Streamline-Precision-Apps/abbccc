@@ -1,76 +1,157 @@
 "use client";
 import React, { useState } from "react";
-import { Bases } from "@/components/(reusable)/bases";
-import { Contents } from "@/components/(reusable)/contents";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Holds } from "@/components/(reusable)/holds";
-import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { Forms } from "@/components/(reusable)/forms";
-import { findTimesheetsforDay } from "@/actions/timeSheetActions";
 import { Texts } from "@/components/(reusable)/texts";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Labels } from "@/components/(reusable)/labels";
 import { TimeSheet } from "@/lib/types";
+import { Dividers } from "@/components/(reusable)/dividers";
+import Spinner from "@/components/(animations)/spinner";
+import { formatTime } from "@/utils/formatDateAMPMS";
+import { useTranslations } from "next-intl";
 
 type Props = {
-    timesheets: TimeSheet[]
-    user : string | undefined
-}
-export default function ViewTimesheets({ timesheets, user }: Props) {
-    const [showTimesheets, setShowTimesheets] = useState(false);
-    const [timesheetData, setTimesheetData] = useState<TimeSheet[]>([]);
+    user: string;
+};
 
-    const handleSubmit = async (formData: FormData) => {
-        const result = await findTimesheetsforDay(formData);
-        if (result && result.length > 0) {
-            setTimesheetData(result);
+export default function ViewTimesheets({ user }: Props) {
+    const [showTimesheets, setShowTimesheets] = useState(false);
+    const [startingEntry, setStartingEntry] = useState(false);
+    const [timesheetData, setTimesheetData] = useState<TimeSheet[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const t = useTranslations("TimesheetsContent");
+
+    // Fetch timesheets from the API
+    const fetchTimesheets = async (date?: string) => {
+        setLoading(true);
+        try {
+            const queryParam = date ? `?date=${date}` : '';
+            const response = await fetch(`/api/getTimesheets${queryParam}`); // Include the query parameter if provided
+    
+            if (!response.ok) {
+                throw new Error('Failed to fetch timesheets');
+            }
+    
+            const data: TimeSheet[] = await response.json();
+            setTimesheetData(data);
             setShowTimesheets(true);
+        } catch (error) {
+            setError('Error fetching timesheets');
+            console.error(error);
+        } finally {
+            setLoading(false);
         }
-        else {
-            setShowTimesheets(false);
-            setTimesheetData([]);
-        }
+    };
+
+    // Handle form submission
+    const handleSubmit = async (event: React.FormEvent) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget as HTMLFormElement);
+        const date = formData.get('date')?.toString(); // Get the selected date from the form
+        await fetchTimesheets(date);
     };
 
     const currentDate = new Date().toISOString().split("T")[0]; // Format date as YYYY-MM-DD
 
     return (
-        <Bases>
-            <Contents size={"default"} variant={"default"}>
-                <Holds size={"titleBox"} variant={"default"}>
-                    <TitleBoxes title={"View Timesheets"} titleImg={"/"} titleImgAlt={"no image"} type="noIcon" />
+        <Holds>
+            <Holds background={"white"} className="mb-10 p-4">
+                <Texts>{t("Header1")}</Texts>
+                <Forms onSubmit={handleSubmit}>
+                    <Inputs type="hidden" name="id" value={user} readOnly />
+                    <Labels>{t("Label1")}</Labels>
+                    <Inputs type="date" name="date" defaultValue={currentDate} />
+                    <Buttons type="submit" background={"lightBlue"}>
+                        {t("Submit")}
+                    </Buttons>
+                </Forms>
+            </Holds>
+            {loading ? 
+            (<>
+            <Holds 
+            background={"white"} 
+            size={"full"}>
+                <Holds position={"center"} size={"50"} className="my-10">
+                    <Spinner />
+                    <Titles size={"h3"}>{t("Loading")}</Titles>
                 </Holds>
-                <Holds size={"dynamic"}>
-                    <Contents variant={"default"} size={null}>
-                        <Texts>Please enter a date to search for your timesheets.</Texts>
-                        <Forms action={handleSubmit}>
-                            <Inputs type="hidden" name="id" value={user} readOnly />
-                            <Labels size="default" type="title">Enter Date</Labels>
-                            <Inputs type="date" name="date" defaultValue={currentDate} />
-                            <Buttons type="submit" variant={"lightBlue"} size={null}>Submit</Buttons>
-                        </Forms>
-                    </Contents>
-                    {showTimesheets ? (
-                        <Contents variant={"default"} size={null}>
-                            {timesheetData.length > 0 ? (
-                                timesheetData.map((timesheet) => (
-                                    <Contents key={timesheet.id} variant={"green"} size={null}>
-                                        <Texts>Timesheet ID: {timesheet.id}</Texts>
-                                        <Texts>Start Time: {timesheet.startTime?.toLocaleString()}</Texts>
-                                        <Texts>End Time: {timesheet.endTime?.toLocaleString() || "N/A"}</Texts>
-                                        <Texts>Duration: {(timesheet.duration)?.toFixed(2)}</Texts>
-                                        <Texts>Jobsite ID: {timesheet.jobsiteId}</Texts>
-                                        <Texts>Cost Code: {timesheet.costcode}</Texts>
-                                    </Contents>
-                                ))
-                            ): null}
-                        </Contents>
-                    ): (
-                        <Texts>You were not working a shift that day. No Timesheets Found. </Texts>
+            </Holds> 
+            </>
+            )
+            : 
+            (
+            <>
+            {showTimesheets ? (
+                <Holds background={"white"} size={"full"}>
+                    {timesheetData.length > 0 ? <Titles size={"h2"} className="pt-8">{`Timesheets Found (${timesheetData.length })` }
+                    </Titles>
+                    : <Titles size={"h2"} className="pt-8">{t("NoData")}</Titles>}
+                    {timesheetData.length > 0 ? (
+                        timesheetData.map((timesheet) => (
+                            <Holds key={timesheet.id} size={"full"} className="odd:bg-app-blue ro">
+                                <Holds size={"70"} className="p-4 py-8">
+                                    <Labels>
+                                    {t("LabelID")}
+                                        <Inputs value={timesheet.id} readOnly />
+                                    </Labels>
+                                    <Labels>
+                                    {t("LabelStart")}
+                                        <Inputs
+                                            value={
+                                                timesheet.startTime
+                                                    ? formatTime(timesheet.startTime.toString()) // Format to 12-hour time with seconds and AM/PM
+                                                    : "N/A"
+                                            }
+                                            readOnly
+                                        />
+                                </Labels>
+                                <Labels>
+                                {t("LabelEnd")}
+                                    <Inputs
+                                        value={
+                                            timesheet.endTime
+                                                ? formatTime(timesheet.endTime.toString()) // Format to 12-hour time with seconds and AM/PM
+                                                : "N/A"
+                                        }
+                                        readOnly
+                                    />
+                                </Labels>
+                                    <Labels>
+                                    {t("LabelDuration")}
+                                        <Inputs value={timesheet.duration?.toFixed(2) || "N/A"} readOnly />
+                                    </Labels>
+                                    <Labels>
+                                    {t("LabelJobsite")}
+                                        <Inputs value={timesheet.jobsiteId} readOnly />
+                                    </Labels>
+                                    <Labels>
+                                    {t("LabelCostCode")}
+                                        <Inputs value={timesheet.costcode} readOnly />
+                                    </Labels>
+                                </Holds>
+                            </Holds>
+                        ))
+                    ) : (
+                        <Texts size={"p3"} className="py-8">{t("NoDataMessage")}</Texts>
                     )}
                 </Holds>
-            </Contents>
-        </Bases>
+            ) : (
+                <Holds background={"white"} className="pb-10">
+                    {startingEntry ? (
+                        null
+                    ) : (
+                        <Holds position={"center"} size={"70"} className="my-10">
+                            <Texts size={"p3"}>{t("FirstMessage")}</Texts>
+                        </Holds>
+                    )}
+                </Holds>
+            )}
+            {error && <Texts className="text-red-500">{error}</Texts>}
+            </>)}
+        </Holds>
     );
 }

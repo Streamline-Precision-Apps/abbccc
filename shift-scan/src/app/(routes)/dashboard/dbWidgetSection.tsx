@@ -1,6 +1,5 @@
 "use client";
 import { Buttons } from "@/components/(reusable)/buttons";
-import { Contents } from "@/components/(reusable)/contents";
 import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
 import { useTranslations } from "next-intl";
@@ -10,14 +9,11 @@ import { Holds } from "@/components/(reusable)/holds";
 
 import { useRouter } from "next/navigation";
 import { Session } from "next-auth";
-import { useRecentDBCostcode, useRecentDBEquipment, useRecentDBJobsite } from "../../context/dbRecentCodesContext";
-import { useDBCostcode, useDBEquipment, useDBJobsite } from "../../context/dbCodeContext";
 import { getAuthStep, setAuthStep } from "@/app/api/auth";
-import DashboardButtons from "@/components/dashboard-buttons";
 import Spinner from "@/components/(animations)/spinner";
 import { updateTimeSheetBySwitch } from "@/actions/timeSheetActions";
 import { Modals } from "@/components/(reusable)/modals";
-import { set } from "zod";
+import React from "react";
 type props = {
     session: Session;
     locale: string;
@@ -120,7 +116,7 @@ return (
 {/* Loading Spinner */}
     {loading ? (
             <>
-            <Holds className="my-2">
+            <Holds >
             <Spinner
             />
             </Holds>
@@ -160,7 +156,8 @@ return (
         }
 {/* This section includes the buttons within equipment */}
         {additionalButtonsType === "equipment" ? (
-            <>
+          <>
+           <Holds size={"full"} className="col-span-1">
             <Buttons
              background={"lightBlue"}
             size={"widgetMed"}
@@ -175,6 +172,8 @@ return (
               />
             </Holds>
           </Buttons>
+        </Holds>
+        <Holds size={"full"} className="col-span-1">
           <Buttons
             background={"green"}
             size={"widgetMed"}
@@ -189,6 +188,8 @@ return (
               />
             </Holds>
           </Buttons>
+        </Holds>
+        <Holds size={"full"} className="col-span-2">
           <Buttons
              background={"orange"}
              size={"widgetMed"}
@@ -203,14 +204,17 @@ return (
               />
             </Holds>
           </Buttons>
+        </Holds>
         </>
         ) :
         additionalButtonsType === "clockOut" ? (
           <>
 {/* this ternary show all the buttons within ClockOut toggle */}
+          <Holds size={"full"} className="col-span-1">
               <Buttons
                 background={"lightBlue"}
-                size={null}
+                 size={"full"}
+                className="p-4"
                 onClick={handleShowManagerButtons}
               >
                  <Holds className="my-2">
@@ -222,9 +226,12 @@ return (
                   />
                </Holds>
               </Buttons>
+            </Holds>
+            <Holds size={"full"} className="col-span-1">
               <Buttons
                 background={"orange"}
-                size={null}
+                size={"full"}
+                className="p-4"
                 onClick={handleCOButton2}
               >
                 <Holds className="my-2">
@@ -236,6 +243,7 @@ return (
                   />
                 </Holds>
               </Buttons>
+            </Holds>
               <Modals
                 isOpen={isModalOpen}
                 handleClose={handleCloseModal}
@@ -248,19 +256,22 @@ return (
                   <Buttons
                     background={"orange"}
                     size={"full"}
+                     className="p-4"
                     href={`/dashboard/equipment`}
                   >
-                    <Texts>{t("CurrEQ")}</Texts>
+                    <Texts size={"p3"}>{t("CurrEQ")}</Texts>
                   </Buttons>
                 </div>
               </Modals>
+              <Holds size={"full"} className="col-span-2">
               <Buttons 
                 background={"red"} 
                 size={"full"}
                 onClick={handleCOButton3}
+                 className="p-4"
               >
-                 <Holds className="my-2">
-                  <Texts>{t("End")}</Texts>
+                 <Holds position={"row"} className="justify-between space-x-4" >
+                  <Texts size={"p2"}>{t("End")}</Texts>
                   <Images
                     titleImg="/end-day.svg"
                     titleImgAlt="End Icon"
@@ -268,6 +279,7 @@ return (
                   />
                 </Holds>
               </Buttons>
+            </Holds>
             </>
         ) :
         //all pages get these buttons except for the additional button type sections
