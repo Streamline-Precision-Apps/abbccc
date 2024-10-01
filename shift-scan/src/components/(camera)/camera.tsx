@@ -2,6 +2,8 @@ import React, { useState, useRef, Dispatch, SetStateAction } from "react";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { useTranslations } from "next-intl";
 import { Contents } from "../(reusable)/contents";
+import { Holds } from "../(reusable)/holds";
+import { Images } from "../(reusable)/images";
 
 interface CameraComponentProps {
   setBase64String: Dispatch<SetStateAction<string>>;
@@ -66,7 +68,7 @@ const CameraComponent: React.FC<CameraComponentProps> = ({ setBase64String }) =>
 
   return (
     <>
-      <Contents>
+      <Holds color="black" >
         <video
           ref={videoRef}
           autoPlay
@@ -99,20 +101,20 @@ const CameraComponent: React.FC<CameraComponentProps> = ({ setBase64String }) =>
             }}
           />
         )}
-      </Contents>
-      <Contents variant={"rowCenter"}>
+      </Holds>
+      <Holds position={"row"} className="mt-4">
       <Buttons
-        variant={cameraActive ? "red" : "green"}
+        background={cameraActive ? "red" : "green"}
         onClick={toggleCamera}
       >
-        {cameraActive ? "Restart Camera" : "Start Camera"}
+      {cameraActive ? `${t("ResetCamera")}` : `${t("startCamera")}`}
       </Buttons>
       {cameraActive && (
-        <Buttons variant="green"  onClick={takePicture}>
-          {t("Button")}
+        <Buttons background="green" onClick={takePicture}>
+          {t("TakePicture")}
         </Buttons>
       )}
-      </Contents>
+      </Holds>
     </>
   );
 };

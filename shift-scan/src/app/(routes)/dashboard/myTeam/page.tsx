@@ -10,6 +10,7 @@ import { Titles } from "@/components/(reusable)/titles";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import React from "react";
 
 
 export default function Content() {

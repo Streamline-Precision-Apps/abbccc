@@ -105,7 +105,8 @@
         "QRCode": "el código QR",
         "Placeholder": "Seleccione uno",
         "New": "Nuevo",
-        "Generate": "Generarlo"
+        "Generate": "Generarlo",
+        "Loading": "Cargando..."
     },
 
     "qrEquipmentContent": {
@@ -122,27 +123,30 @@
     },
     
     "equipmentPicture": {
-        "Button": "Tomar una foto"
+        "TakePicture": "Tomar una foto",
+        "ResetCamera": "Reiniciar la camara",
+        "startCamera": "Comenzar la camara"
     },
     
     "addEquipmentForm": {
-        "Tag": "Etiqueta de equipo",
+        "Temporary": "QR temporal",
+        "Tag": "Etiqueta",
         "Select": "Seleccione uno",
         "Truck": "CAMIÓN",
         "Trailer": "TRÁILER",
         "Equipment": "EQUIPO",
-        "Name": "NOMBRE",
-        "Description": "DESCRIPCIÓN",
+        "Name": "Nombre",
+        "Description": "Descripción",
         "Status": "Estado del equipo",
         "Operational": "OPERATIVO",
         "NeedsRepair": "NECESITA REPARACIÓN",
-        "Make": "la Marca",
-        "Model": "el Modelo",
-        "Year": "el Año",
-        "LicensePlate": "la matrícula",
+        "Make": "Marca",
+        "Model": "Modelo",
+        "Year": "Año",
+        "LicensePlate": "Matrícula",
         "RegistrationExpiration": "Caducidad del registro",
-        "Mileage": "el Millaje",
-        "Submit": "Entregar"
+        "Mileage": "Millaje",
+        "Submit": "Crear Nuevo Equipo"
     },
     
     "addJobsiteContent": {
@@ -150,15 +154,27 @@
     },
 
     "addJobsiteForm": {
-        "Name": "Nombre",
-        "StreetNumber": "Número de calle",
-        "StreetName": "nombre en la calle",
-        "City": "la ciudad",
-        "State": "el estado",
+        "Temporary": "Sitio Temporal",
+        "Name": "Nombre del Sitio",
+        "NameExample": "Escribe un nombre para el sitio aquí",
+        "Address": "La Dirrection del Sitio",
+        "StreetNumberDirection": "120",
+        "StreetNumber": "Número",
+        "StreetNameDirection": "S 100 W",
+        "StreetName": "Nombre",
+        "City": "Ciudad",
+        "CityTitle": "Burley",
+        "ZipCode": "C.P.",
+        "ZipCodeTitle": "83318",
+        "State": "Estado",
+        "StateTitle": "ID",
         "Country": "el país",
         "Description": "Descripción del Sitio",
+        "DescriptionTitle": "Descripción ",
+        "purpose": "Esto es para describir el sitio de trabajo, dónde se encuentra y otros detalles para La oficina.",
         "Comments": "Comentarios del Sitio",
-        "Submit": "Entregar"
+        "CommentsPurpose": "Esta sección es para justificar la necesidad de un nuevo sitio, para que la oficina decida aceptarlo o rechazarlo.",
+        "Submit": "Crear Nuevo Sitio"
     },
 
     "clock-out": {
