@@ -11,6 +11,7 @@ import { TimeSheet } from "@/lib/types";
 import { Dividers } from "@/components/(reusable)/dividers";
 import Spinner from "@/components/(animations)/spinner";
 import { formatTime } from "@/utils/formatDateAMPMS";
+import { useTranslations } from "next-intl";
 
 type Props = {
     user: string;
@@ -22,6 +23,7 @@ export default function ViewTimesheets({ user }: Props) {
     const [timesheetData, setTimesheetData] = useState<TimeSheet[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const t = useTranslations("TimesheetsContent");
 
     // Fetch timesheets from the API
     const fetchTimesheets = async (date?: string) => {
@@ -58,13 +60,13 @@ export default function ViewTimesheets({ user }: Props) {
     return (
         <Holds>
             <Holds background={"white"} className="mb-10 p-4">
-                <Texts>Please enter a date to search for your timesheets.</Texts>
+                <Texts>{t("Header1")}</Texts>
                 <Forms onSubmit={handleSubmit}>
                     <Inputs type="hidden" name="id" value={user} readOnly />
-                    <Labels>Enter Date</Labels>
+                    <Labels>{t("Label1")}</Labels>
                     <Inputs type="date" name="date" defaultValue={currentDate} />
                     <Buttons type="submit" background={"lightBlue"}>
-                        Submit
+                        {t("Submit")}
                     </Buttons>
                 </Forms>
             </Holds>
@@ -75,7 +77,7 @@ export default function ViewTimesheets({ user }: Props) {
             size={"full"}>
                 <Holds position={"center"} size={"50"} className="my-10">
                     <Spinner />
-                    <Titles size={"h3"}>Loading...</Titles>
+                    <Titles size={"h3"}>{t("Loading")}</Titles>
                 </Holds>
             </Holds> 
             </>
@@ -87,17 +89,17 @@ export default function ViewTimesheets({ user }: Props) {
                 <Holds background={"white"} size={"full"}>
                     {timesheetData.length > 0 ? <Titles size={"h2"} className="pt-8">{`Timesheets Found (${timesheetData.length })` }
                     </Titles>
-                    : <Titles size={"h2"} className="pt-8">No Timesheets Found</Titles>}
+                    : <Titles size={"h2"} className="pt-8">{t("NoData")}</Titles>}
                     {timesheetData.length > 0 ? (
                         timesheetData.map((timesheet) => (
                             <Holds key={timesheet.id} size={"full"} className="odd:bg-app-blue ro">
                                 <Holds size={"70"} className="p-4 py-8">
                                     <Labels>
-                                        Timesheet ID:
+                                    {t("LabelID")}
                                         <Inputs value={timesheet.id} readOnly />
                                     </Labels>
                                     <Labels>
-                                    Start Time:
+                                    {t("LabelStart")}
                                         <Inputs
                                             value={
                                                 timesheet.startTime
@@ -108,7 +110,7 @@ export default function ViewTimesheets({ user }: Props) {
                                         />
                                 </Labels>
                                 <Labels>
-                                    End Time:
+                                {t("LabelEnd")}
                                     <Inputs
                                         value={
                                             timesheet.endTime
@@ -119,36 +121,32 @@ export default function ViewTimesheets({ user }: Props) {
                                     />
                                 </Labels>
                                     <Labels>
-                                        Duration:
+                                    {t("LabelDuration")}
                                         <Inputs value={timesheet.duration?.toFixed(2) || "N/A"} readOnly />
                                     </Labels>
                                     <Labels>
-                                        Jobsite ID:
+                                    {t("LabelJobsite")}
                                         <Inputs value={timesheet.jobsiteId} readOnly />
                                     </Labels>
                                     <Labels>
-                                        Cost Code:
+                                    {t("LabelCostCode")}
                                         <Inputs value={timesheet.costcode} readOnly />
                                     </Labels>
                                 </Holds>
                             </Holds>
                         ))
                     ) : (
-                        <Texts size={"p3"} className="py-8">Try again with a different date.</Texts>
+                        <Texts size={"p3"} className="py-8">{t("NoDataMessage")}</Texts>
                     )}
                 </Holds>
             ) : (
                 <Holds background={"white"} className="pb-10">
                     {startingEntry ? (
-                        <>
-                            <Titles size={"h2"}>Results</Titles>
-                            <Dividers />
-                            <Texts>No timesheets found for this period.</Texts>
-                        </>
+                        null
                     ) : (
-                        <>
-                            <Texts size={"p3"}>Enter a date and Submit to search for your Timesheets.</Texts>
-                        </>
+                        <Holds position={"center"} size={"70"} className="my-10">
+                            <Texts size={"p3"}>{t("FirstMessage")}</Texts>
+                        </Holds>
                     )}
                 </Holds>
             )}
