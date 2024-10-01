@@ -4,12 +4,13 @@ import { cn } from "@/components/(reusable)/utils";
 
 //This component determines the size aloted to a certain item. Focusing on width.
 //Counterpart to Holds.
-const HoldVariants = cva(
-  "flex", //this applies to all variants
+const DividerVariants = cva(
+  "flex mb-10", //this applies to all variants
   {
     variants: {
       background: {//only variant attributes
         none: "bg-none",
+        black: "bg-black rounded-2xl border border-black border-2 ",
         white: "bg-white rounded-2xl border border-white border-8",
         red: "bg-app-red rounded-2xl border border-app-red border-8",
         green: "bg-app-green rounded-2xl border border-app-green border-8",
@@ -25,7 +26,7 @@ const HoldVariants = cva(
       },
       size: {//only width and height
         full: "w-full",
-        "90": "w-[90%]",
+        first: "w-[90%]",//use on first use holding all content in Holds
         "80": "w-[80%]",
         "70": "w-[70%]",
         "60": "w-[60%]",
@@ -37,7 +38,7 @@ const HoldVariants = cva(
       }
     },
     defaultVariants: {
-      background: "none",
+      background: "black",
       position: "center",
       size: "full",
     },
@@ -45,13 +46,13 @@ const HoldVariants = cva(
 )
 
 // this extends the capability of HTMLAttributes or the VariantProps that it can hold, specify your props here
-interface HoldProps extends HTMLAttributes<HTMLElement>, VariantProps<typeof HoldVariants> {
+interface DividerProps extends HTMLAttributes<HTMLElement>, VariantProps<typeof DividerVariants> {
 }
 
-const Holds: FC<HoldProps> = ({className, background, position, size, ...props}) => {
+const Dividers: FC<DividerProps> = ({className, background, position, size, ...props}) => {
     return (
-      <div className={cn(HoldVariants({background, position, size, className}))} {...props}/>
+      <div className={cn(DividerVariants({background, position, size, className}))} {...props}/>
     )
 }
 
-export {Holds, HoldVariants}
+export {Dividers, DividerVariants}

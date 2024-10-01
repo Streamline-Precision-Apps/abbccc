@@ -12,8 +12,9 @@ import { Texts } from "@/components/(reusable)/texts";
 import { Images } from "@/components/(reusable)/images";
 import { Selects } from "@/components/(reusable)/selects";
 import { Options } from "@/components/(reusable)/options";
-import { EquipmentCodes } from "@/lib/types";
+import { EquipmentCodes, JobCodes } from "@/lib/types";
 import { Holds } from "@/components/(reusable)/holds";
+import SearchSelect from "@/components/(search)/searchSelect";
 
 
 export default function QrEquipmentContent() {
@@ -23,7 +24,7 @@ export default function QrEquipmentContent() {
   const [selectedEquipment, setSelectedEquipment] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState("");
-  const [loading, setLoading] = useState(true);  // Loading state
+  const [loading, setLoading] = useState(true); // Loading state
   const t = useTranslations("qrEquipmentContent");
 
   useEffect(() => {
@@ -32,15 +33,15 @@ export default function QrEquipmentContent() {
         const equipmentResponse = await fetch("/api/getEquipment");
 
         if (!equipmentResponse.ok) {
-          throw new Error("Failed to fetch job sites");
+          throw new Error("Failed to fetch equipment");
         }
 
         const equipment = await equipmentResponse.json();
         setGeneratedList(equipment);
-        setLoading(false);  // Set loading to false after data is fetched
+        setLoading(false); // Set loading to false after data is fetched
       } catch (error) {
         console.error("Error fetching data:", error);
-        setLoading(false);  // Set loading to false even if there is an error
+        setLoading(false); // Set loading to false even if there is an error
       }
     };
 
@@ -62,72 +63,61 @@ export default function QrEquipmentContent() {
   };
 
   const handleNew = () => {
-    router.push("/dashboard/qr-generator/add-new-equipment");
+    router.push("/dashboard/qr-generator/add-equipment");
   };
 
-  const handleOptionSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedId = event.target.value;
-    const selectedOption = generatedList.find(
-      (option) => option.qrId === selectedId
-    );
-
-    if (selectedOption) {
-      setSelectedEquipment(selectedOption.qrId);
-      setSelectedEquipmentName(selectedOption.name);
-    }
+  const handleSelectEquipment = (selectedOption: EquipmentCodes) => {
+    setSelectedEquipment(selectedOption.qrId);
+    setSelectedEquipmentName(selectedOption.name);
   };
 
   return (
     <>
-    {loading ? (
-        <>
-        <Selects>
-          <Options>
-            Loading Equipment codes...
-          </Options>
-        </Selects>
-        </>
-      ) : (
-      <Selects value={selectedEquipment} onChange={handleOptionSelect}>
-      <Options variant={"default"} value="">
-            Select One
-          </Options>
-          {generatedList.map((option) => (
-            <Options
-              variant={"default"}
-              key={option.qrId}
-              value={option.qrId}
-            >
-              {option.name}
-            </Options>
-          ))}
-      </Selects>
-      )}
-      <Holds variant={"row"}>
-        <Buttons variant={"orange"} onClick={handleGenerate} size={"half"}>
-          <Titles variant={"default"} size={"h1"}>{t("Generate")}</Titles>
-        </Buttons>
-        <Buttons variant={"green"} onClick={handleNew} size={"half"}
-        >
-          <Titles variant={"default"} size={"h1"}>{t("New")}</Titles>
-        </Buttons>
+      {loading ? (
+        <Holds size={"first"}>
+          <SearchSelect 
+            datatype={`${t("Loading")}`}
+            options={generatedList} 
+            onSelect={handleSelectEquipment} 
+          />
+          <Holds position={"row"} size={"full"} className="justify-between items-center p-4">
+            <Buttons background={"orange"} onClick={handleGenerate} size={"50"} className="p-4 mr-4">
+              <Titles size={"h2"}>{t("Generate")}</Titles>
+            </Buttons>
+            <Buttons background={"green"} onClick={handleNew} size={"50"} className="p-4 ml-4">
+              <Titles size={"h2"}>{t("New")}</Titles>
+            </Buttons>
+          </Holds>
         </Holds>
-      <Modals
-        isOpen={isModalOpen}
-        handleClose={() => setIsModalOpen(false)}
-        size="sm"
-      >
-        {selectedEquipment && (
-          <>
-            <Texts variant={"default"}>
-              {selectedEquipmentName} {t("QRCode")}
-            </Texts>
-            <Contents variant={"rowCenter"} size={"default"}>
-              <Images titleImg={qrCodeUrl} titleImgAlt={"QR Code"} />
-            </Contents>
-          </>
-        )}
-      </Modals>
+      ) : (
+        <Holds size={"first"}>
+          {/* Use SearchSelect for equipment */}
+          <SearchSelect 
+            datatype={`${t("EquipmentDatatype")}`}
+            options={generatedList} 
+            onSelect={handleSelectEquipment} 
+          />
+
+          <Holds position={"row"} size={"full"} className="justify-between items-center p-4">
+            <Buttons background={"orange"} onClick={handleGenerate} size={"50"} className="p-4 mr-4">
+              <Titles size={"h2"}>{t("Generate")}</Titles>
+            </Buttons>
+            <Buttons background={"green"} onClick={handleNew} size={"50"} className="p-4 ml-4">
+              <Titles size={"h2"}>{t("New")}</Titles>
+            </Buttons>
+          </Holds>
+          <Modals isOpen={isModalOpen} handleClose={() => setIsModalOpen(false)} size="sm">
+            {selectedEquipment && (
+              <Holds className="p-4">
+                <Texts>{selectedEquipmentName} {t("QRCode")}</Texts>
+                <Contents position={"row"}>
+                  <Images titleImg={qrCodeUrl} titleImgAlt={"QR Code"} />
+                </Contents>
+              </Holds>
+            )}
+          </Modals>
+        </Holds>
+      )}
     </>
   );
 }

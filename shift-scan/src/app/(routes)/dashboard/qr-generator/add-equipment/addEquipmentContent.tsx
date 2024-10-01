@@ -10,6 +10,7 @@ import { useTranslations } from "next-intl";
 import { Titles } from "@/components/(reusable)/titles";
 import { Contents } from "@/components/(reusable)/contents";
 import { Texts } from "@/components/(reusable)/texts";
+import { Images } from "@/components/(reusable)/images";
 
 export const AddEquipmentContent = () => {
   const [base64String, setBase64String] = useState<string>("");
@@ -27,28 +28,22 @@ export const AddEquipmentContent = () => {
   };
 
   return (
-    <>
-      <Holds size={"titleBox"}>
-        <TitleBoxes
-          title={t("Title")}
-          titleImg="/profile.svg"
-          titleImgAlt="Team"
-          variant={"default"}
-          size={"default"}
-        />
-      </Holds>
+   <Holds>
     { banner &&
-      <Contents variant="green" size={"listTitle"}>
+      <Holds background="green" className="my-3">
       <Texts>{bannerText}</Texts>
-    </Contents>
+    </Holds>
     }
-      <Holds size={null}>
-        <Titles variant={"default"} size={"h1"}>{t("Picture")}</Titles>
+      <Holds size={"first"}>
+      <Holds background="white" size={"full"}  className="h-fit mb-3">
+        <Titles size={"h3"}>{t("Picture")}</Titles>
+        <Images titleImg={"/camera.svg"} titleImgAlt={"camera"} size={"10"} className="my-3" />
         <EquipmentPicture setBase64String={setBase64String} />
       </Holds>
-      <Holds size={null}>
+      <Holds background="white">
         <AddEquipmentForm base64String={base64String} setBanner={setBanner} setBannerText={setBannerText} handler={()=> handleBanner} />
       </Holds>
-    </>
+      </Holds>
+    </Holds>
   );
 };
