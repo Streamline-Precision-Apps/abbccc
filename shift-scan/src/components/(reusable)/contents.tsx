@@ -8,16 +8,16 @@ const ContentVariants = cva(
   {
     variants: {
       position: {//only position attributes
-        col: "flex flex-col self-center items-center",
+        col: "flex flex-col",
         row: "flex flex-row items-center",
       },
       width: {//only width
         responsive: "w-[90%] sm:w-[85%] md:w-[75%] lg:w-[50%] xl:w-[40%] 2xl:w-[30%]",
-        section: "w-[90%]",
+        section: "w-[95%]",
       },
       height: {//only height
         none: "",
-        page: "h-[90%]",
+        page: "",
       },
     },
     defaultVariants: {

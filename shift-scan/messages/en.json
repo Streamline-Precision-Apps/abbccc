@@ -29,6 +29,10 @@
             "Qr-btn": "Qr Generator",
             "Copyright": "Copyright © 2024. All rights reserved."
     },
+    "SearchBar": {
+        "Search": "Search for",
+        "NoResults": "No Results Found"
+    },
     "Clock": {
         "ScanJobSite": "Scan Job Site",
         "ScanQR": "Scan QR Code",
@@ -73,15 +77,28 @@
         "FormDefault" : "Select A Form",
         "Form1" : "Injury Report",
         "Form2" : "JSA",
-        "Form3" : "Report App Bug"
+        "Form3" : "Report App Bug",
+        "Continue": "Start Form",
+        "Form3Q1" : "When did the bug happen?",
+        "Form3Q1Placeholder" : "DD-MM-YYYY",
+        "Form3Q2": "Where did you find the bug?",
+        "Form3Q2Placeholder" : "It was in the equipment section",
+        "Form3Q3" : "Explain the problem and send the error code if possible:",
+        "Form3Q3Placeholder" : "I tried clocking out equipment and it didn't work, I got an error code OF XXXXX", 
+        "Form3Q4" : "Are other people affected? If so, who?", 
+        "Form3Q4Placeholder" : "no, only I was affected",
+        "Form3Submit" : "Submit form"
+
+    
+        
     },
     
     "ManagerButtons": {
         "SwitchJobs": "Switch Job",
         "Equipment": "Equipment",
         "ClockOut": "Clock Out",
-        "Forms" : "Work Forms",
-        "QrGenerator": "QR Generator",
+        "Forms" : "Forms",
+        "QrGenerator": "Generator",
         "MyTeam": "My Team",
         "GoHome": "Go Home",
         "LogNew": "Log New",
@@ -105,7 +122,9 @@
         "QRCode": "QR Code",
         "Placeholder": "Select One",
         "New": "New",
-        "Generate": "Generate"
+        "Generate": "Generate",
+        "Loading": "Loading Job Sites...",
+        "JobSiteDatatype": "Search for a Job Site"
     },
 
     "qrEquipmentContent": {
@@ -114,7 +133,9 @@
         "Placeholder": "Select One",
         "New": "New",
         "Generate": "Generate",
-        "Select": "Select One"
+        "Select": "Select One",
+        "Loading": "Loading Equipment...",
+        "EquipmentDatatype": "Search for an Equipment"
     },
 
     "addEquipmentContent": {
@@ -124,7 +145,9 @@
     },
     
     "equipmentPicture": {
-        "Button": "Take Picture"
+       "TakePicture": "Take a Picture",
+        "ResetCamera": "Reset Camera",
+        "startCamera": "Start Camera"
     },
     "EquipmentContent" : {
         "Title": "Checked Out",
@@ -143,23 +166,33 @@
     },
     
     "addEquipmentForm": {
+        "GenerateError": "Failed to generate QR code.",
+        "Banner-Text": "Added Temporary Equipment Successfully",
         "Tag": "Equipment Tag",
         "Select": "Select One",
         "Truck": "TRUCK",
         "Trailer": "TRAILER",
         "Equipment": "EQUIPMENT",
         "Name": "Name",
+        "NamePlaceholder": "Enter Equipment Name",
         "Description": "Description",
+        "DescriptionPlaceholder": "Enter a Description in less than 40 characters",
         "Status": "Equipment status",
         "Operational": "OPERATIONAL",
         "NeedsRepair": "NEEDS REPAIR",
         "Make": "Make",
+        "MakePlaceholder": "Enter Make of Vehicle ",
         "Model": "Model",
+        "ModelPlaceholder": "Enter Model of Vehicle",
         "Year": "Year",
+        "YearPlaceholder": "Enter Year of Vehicle (YYYY)",
         "LicensePlate": "License Plate",
+        "LicensePlatePlaceholder": "Enter License Plate Number",
         "RegistrationExpiration": "Registration Expiration",
         "Mileage": "Mileage",
-        "Submit": "Submit"
+        "MileagePlaceholder": "Enter Current Mileage of Vehicle",
+        "Submit": "Submit",
+        "Temporary": "Temporary Equipment"
     },
     
     "addJobsiteContent": {
@@ -167,15 +200,27 @@
     },
 
     "addJobsiteForm": {
+        "Temporary": "Temporary Jobsite",
         "Name": "Name",
+        "NameExample": "Enter a name for the site",
+        "Address": "Address Information",
         "StreetNumber": "Street Number",
+        "StreetNumberDirection": "Street Number",
         "StreetName": "Street Name",
+        "StreetNameDirection": "Street Name",
         "City": "City",
+        "CityTitle": "Burley",
+        "ZipCode": "Zip Code",
+        "ZipCodeTitle": "83318",
         "State": "State",
+        "StateTitle": "ID",
         "Country": "Country",
+        "purpose": "This is for describing the site, where it is located, and other details for the site.",
+        "DescriptionTitle": "Description",
         "Description": "Jobsite Description",
         "Comments": "Jobsite Comments",
-        "Submit": "Submit"
+        "CommentsPurpose": "This is for justifying the need for a new site, to decide if it should be accepted or rejected.",
+        "Submit": "Create New Jobsite"
     },
 
     "clock-out": {
@@ -321,5 +366,24 @@
     },
     "admin-assets-costcode": {
         "submit": "Submit"
+    },
+
+    "TimesheetsContent": {
+        "Title": "View Timesheets",
+        "Header1":"Please enter a date to search for your timesheets.",
+        "Label1": "Enter Date",
+        "Submit": "Search Timesheets now",
+        "FirstMessage": "Enter a Date and Submit to have a look at your timesheets records.",
+        "NoData": "No Timesheets Found",
+        "NoDataMessage": "Try again with a different date.",
+        "Loading": "Loading...",
+        "Results": "Results",
+        "DataMessage":"Timesheets Found",
+        "LabelID": "Timesheet ID",
+        "LabelStart": "Start Time",
+        "LabelEnd": "End Time",
+        "LabelDuration": "Duration",
+        "LabelJobsite": "Jobsite",
+        "LabelCostCode": "Cost Code"
     }
 }
