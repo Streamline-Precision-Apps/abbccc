@@ -3,15 +3,18 @@ import { HTMLAttributes, FC } from "react";
 import { cn } from "@/components/(reusable)/utils";
 
 const GridVariants = cva(
-  "grid", //this applies to all variants
+  "grid h-full", //this applies to all variants
   {
     variants: {
       size: {
-        widgets: "grid-cols-2 grid-rows-3 gap-x-3 gap-y-3",
+        widgets: "grid-cols-2 grid-rows-3 gap-5",
+        dashboard: "grid-rows-7",
+        settings: "grid-rows-6",
+
       },
     },
     defaultVariants: {
-      size: "widgets",
+      size: "dashboard",
     },
   }
 )

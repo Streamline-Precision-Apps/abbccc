@@ -10,8 +10,8 @@
         "lN4": "Copyright © 2024. All rights reserved."
     },
         "Home" : {
-            "Banner": "Welcome back!",
-            "Name": "{firstName} {lastName}",
+            "Banner": "Welcome back, ",
+            "Name": "{firstName}",
             "Date": "{date}",
             "DailyHours": "Total Hours Today",
             "PayPeriodHours": "Total Hours",
