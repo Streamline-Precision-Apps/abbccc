@@ -26,7 +26,7 @@ export default async function Index() {
           <Holds
             background={"white"}
             size={"full"}
-            className="row-span-1 p-4 h-full"
+            className="row-span-2 p-4 h-full"
           >
             <TitleBoxes
               title="Change Password"
