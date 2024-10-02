@@ -18,7 +18,7 @@ export function AnimatedHamburgerButton(){
         <motion.button
         animate={active ? "open" : "closed"} 
         onClick={() => setActive(!active)}
-        className="relative m-2 mr-0 mt-1 h-20 w-20  rounded-none transition-colors"
+        className="relative mb-2 mt-1 h-20 w-20  rounded-none transition-colors"
         >
             <Holds>
                 <motion.span

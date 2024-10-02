@@ -53,7 +53,7 @@ useEffect(() => {
 
 //---------------------------------------------------------------------
  // Redirect to dashboard if authStep is success
- useEffect(() => {
+useEffect(() => {
     if (authStep === "success") {
       router.push("/dashboard");
     }
