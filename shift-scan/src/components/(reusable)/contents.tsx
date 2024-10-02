@@ -12,18 +12,18 @@ const ContentVariants = cva(
         row: "flex flex-row items-center",
       },
       width: {//only width
-        responsive: "w-[90%] sm:w-[85%] md:w-[75%] lg:w-[50%] xl:w-[40%] 2xl:w-[30%]",
-        section: "w-[95%]",
+        responsive: "w-[95%] sm:w-[85%] md:w-[75%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%]",
+        section: "w-[90%]",
       },
       height: {//only height
         none: "",
-        page: "",
+        page: "h-full",
       },
     },
     defaultVariants: {
       position: "col",
       width: "responsive",
-      height: "none",
+      height: "page",
     },
   }
 )
