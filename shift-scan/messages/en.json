@@ -385,5 +385,27 @@
         "LabelDuration": "Duration",
         "LabelJobsite": "Jobsite",
         "LabelCostCode": "Cost Code"
+    },
+
+    "btn":{
+        "Cancel": "Cancel",
+        "Save": "Save"
     }
+    ,
+    "Info":{
+        "Title": "Personal Information",
+        "FirstName": "First Name",
+        "LastName": "Last Name",
+        "Username": "Username",
+        "Password": "Password",
+        "Email": "Email",
+        "Phone": "Phone"
+    },
+
+    "formLabel":{
+        "Submit": "Submit"
+    }
+
+
+
 }
