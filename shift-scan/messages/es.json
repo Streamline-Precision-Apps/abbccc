@@ -10,8 +10,8 @@
         "lN4": "Copyright © 2024. Todos los derechos reservados."
     },
         "Home" : {
-            "Banner": "¡Bienvenido de vuelta!",
-            "Name": "{firstName} {lastName}",
+            "Banner": "Bienvenido de vuelta, ",
+            "Name": "{firstName}",
             "Date": "{date}",
             "DailyHours": "Horas Totalales:",
             "PayPeriodHours": "Horas del pago",
