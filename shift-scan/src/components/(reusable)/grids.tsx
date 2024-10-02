@@ -9,24 +9,23 @@ const GridVariants = cva(
       size: {
         widgets: "grid-cols-2 grid-rows-3 gap-5",
         dashboard: "grid-rows-7",
-        settings: "grid-rows-6",
-
+        settings: "grid-rows-6 gap-5",
+        toggles: "grid-rows-3 ",
       },
     },
     defaultVariants: {
       size: "dashboard",
     },
   }
-)
+);
 
 // this extends the capability of HTMLAttributes or the VariantProps that it can hold, specify your props here
-interface GridProps extends HTMLAttributes<HTMLElement>, VariantProps<typeof GridVariants> {
-}
+interface GridProps
+  extends HTMLAttributes<HTMLElement>,
+    VariantProps<typeof GridVariants> {}
 
-const Grids: FC<GridProps> = ({className, size, ...props}) => {
-    return (
-      <div className={cn(GridVariants({size, className}))} {...props}/>
-    )
-}
+const Grids: FC<GridProps> = ({ className, size, ...props }) => {
+  return <div className={cn(GridVariants({ size, className }))} {...props} />;
+};
 
-export {Grids, GridVariants}
+export { Grids, GridVariants };
