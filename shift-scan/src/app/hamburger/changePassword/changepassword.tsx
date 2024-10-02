@@ -12,6 +12,10 @@ import { FormEvent, useEffect, useState } from "react";
 import { setUserPassword } from "@/actions/userActions";
 import { hash } from "bcryptjs";
 import { useRouter } from "next/navigation";
+import { Contents } from "@/components/(reusable)/contents";
+import { Texts } from "@/components/(reusable)/texts";
+import { Titles } from "@/components/(reusable)/titles";
+import { Images } from "@/components/(reusable)/images";
 
 export default function ChangePassword({ userId }: { userId: string }) {
   const t = useTranslations("Hamburger");
@@ -59,55 +63,97 @@ export default function ChangePassword({ userId }: { userId: string }) {
   };
 
   return (
-    <Holds background={"white"} className="row-span-5 h-full">
+    <Holds className="row-span-7 h-full">
       <Forms
         onSubmit={handleSubmit}
         className="h-full flex flex-col items-center justify-between my-5"
       >
-        {showBanner ? (
-          <Holds
-            background={"green"}
-            className="row-span-1"
-            position={"center"}
-            size={"full"}
-          >
-            <Labels>{bannerMessage}</Labels>
+        <Grids size={"settings"}>
+          {showBanner ? (
+            <Holds
+              background={"red"}
+              className="row-span-1"
+              position={"center"}
+              size={"full"}
+            >
+              <Labels>{bannerMessage}</Labels>
+            </Holds>
+          ) : null}
+          <Holds className="h-full row-span-4" background={"white"}>
+            <Contents width={"section"}>
+              <Holds className="mt-auto mb-2 ">
+                <Labels htmlFor="new-password">
+                  {t("NewPassword")}
+                  <Inputs
+                    type="password"
+                    id="new-password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                  />
+                </Labels>
+              </Holds>
+              <Holds position={"row"} className="mb-auto grid grid-cols-10">
+                <Holds className="col-span-2">
+                  <Texts size={"p6"} position={"left"}>
+                    Strength:
+                  </Texts>
+                </Holds>
+                <Holds className="col-span-8 gap-1">
+                  <Holds className="w-full">
+                    <Holds
+                      className="h-fit"
+                      background={
+                        newPassword.length < 8
+                          ? "red"
+                          : newPassword.length < 12
+                          ? "orange"
+                          : "green"
+                      }
+                      size={
+                        newPassword.length < 8
+                          ? "40"
+                          : newPassword.length < 12
+                          ? "60"
+                          : "full"
+                      }
+                      position={"left"}
+                    >
+                      <Texts size={"p6"} position={"center"}>
+                        {newPassword.length < 8
+                          ? "Weak"
+                          : newPassword.length < 12
+                          ? "Medium"
+                          : "Strong"}
+                      </Texts>
+                    </Holds>
+                  </Holds>
+                </Holds>
+              </Holds>
+            </Contents>
           </Holds>
-        ) : (
-          <Holds
-            background={"white"}
-            className="row-span-1"
-            position={"center"}
-            size={"full"}
-          >
-            <Labels></Labels>
+          <Holds className="h-full row-span-3" background={"white"}>
+            <Contents width={"section"}>
+              <Holds className="my-auto">
+                <Labels htmlFor="confirm-password">
+                  {t("ConfirmPassword")}
+                </Labels>
+                <Inputs
+                  type="password"
+                  id="confirm-password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+              </Holds>
+            </Contents>
           </Holds>
-        )}
-        <Holds size={"80"} className=" ">
-          <Labels htmlFor="new-password">
-            {t("NewPassword")}
-            <Inputs
-              type="password"
-              id="new-password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-            />
-          </Labels>
-        </Holds>
-        <Holds size={"80"} className="">
-          <Labels htmlFor="confirm-password">{t("ConfirmPassword")}</Labels>
-          <Inputs
-            type="password"
-            id="confirm-password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
-        </Holds>
-        <Holds size={"40"} position={"center"} className="">
-          <Buttons background={"orange"} className="p-2" type="submit">
-            {t("ChangePassword")}
-          </Buttons>
-        </Holds>
+          <Holds className="h-full row-span-1">
+            <Contents width={"section"}>
+              <Buttons background={"orange"} className="p-2" type="submit">
+                <Titles>{t("ChangePassword")}</Titles>
+              </Buttons>
+            </Contents>
+          </Holds>
+        </Grids>
       </Forms>
     </Holds>
   );

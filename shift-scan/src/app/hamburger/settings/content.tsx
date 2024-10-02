@@ -70,7 +70,7 @@ export default function Index() {
   if (!data)
     return (
       <>
-        <Holds background={"white"} className="row-span-2 p-4 h-full">
+        <Holds background={"white"} className="row-span-7 p-4 h-full">
           <Titles>{t("loading")}</Titles>
           <Spinner />
         </Holds>
@@ -80,7 +80,7 @@ export default function Index() {
   return (
     <>
       {/* Render UI elements with toggles and modals */}
-      <Holds background={"white"} className="row-span-2 p-4 h-full">
+      <Holds background={"white"} className="row-span-3 p-4 h-full">
         <Titles>{t("Notifications")}</Titles>
         {/*-------------------------Approved Requests------------------------------*/}
         <Grids size={"toggles"}>
@@ -131,7 +131,7 @@ export default function Index() {
       </Holds>
 
       {/*---------------------Start of security------------------------------*/}
-      <Holds background={"white"} className=" row-span-2 p-4 h-full">
+      <Holds background={"white"} className=" row-span-3 p-4 h-full">
         <Titles>{t("Security")}</Titles>
         <Grids size={"toggles"}>
           <Holds position={"row"}>
@@ -177,18 +177,13 @@ export default function Index() {
 
       {/*---------------------Change Password------------------------------*/}
 
-      <Holds background={"white"} className="row-span-1 h-full">
-        <Grids size={"toggles"}>
-          <Buttons
-            onClick={() => router.push("/hamburger/changePassword")}
-            background={"orange"}
-            position={"center"}
-            size={"50"}
-            className="row-span-3 mx-auto"
-          >
-            <Titles>{t("ChangePassword")}</Titles>
-          </Buttons>
-        </Grids>
+      <Holds className="row-span-1 h-full px-1">
+        <Buttons
+          onClick={() => router.push("/hamburger/changePassword")}
+          background={"orange"}
+        >
+          <Titles>{t("ChangePassword")}</Titles>
+        </Buttons>
       </Holds>
 
       {/* Modal for confirming save changes */}

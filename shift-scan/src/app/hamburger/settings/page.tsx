@@ -22,7 +22,7 @@ export default async function Settings() {
         <Grids size={"settings"}>
           <Holds
             background={"white"}
-            className="row-span-1 px-4 justify-center h-full"
+            className="row-span-2 justify-center h-full"
           >
             <TitleBoxes
               title={t("Title")}
