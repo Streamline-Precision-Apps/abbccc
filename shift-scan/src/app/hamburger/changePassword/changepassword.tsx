@@ -167,36 +167,35 @@ export default function ChangePassword({ userId }: { userId: string }) {
                     background={"darkBlue"}
                     className="p-2"
                   >
-                    <Holds size={"80"}>
+                    <Holds size={"60"}>
                       <PasswordStrengthIndicator password={newPassword} />
                     </Holds>
-                    <Holds
-                      size={"20"}
-                      position={"row"}
-                      className="justify-end space-x-2"
-                    >
-                      <Holds
-                        background={eightChar ? "green" : "red"}
-                        className="w-2 h-2 rounded-full justify-center items-center"
-                      >
-                        <Texts size={"p6"} className="p-1">
-                          A
+                    <Holds size={"40"} position={"row"} className="justify-end">
+                      <Holds>
+                        <Holds
+                          background={eightChar ? "green" : "red"}
+                          className="w-1 rounded-full my-auto items-center justify-center"
+                        ></Holds>
+                        <Texts text={"white"} size={"p6"}>
+                          8+ Chars
                         </Texts>
                       </Holds>
-                      <Holds
-                        background={oneNumber ? "green" : "red"}
-                        className="w-2 h-2 rounded-full justify-center items-center"
-                      >
-                        <Texts size={"p6"} className="p-1">
-                          1
+                      <Holds>
+                        <Holds
+                          background={oneNumber ? "green" : "red"}
+                          className="w-1 rounded-full justify-center items-center"
+                        ></Holds>
+                        <Texts text={"white"} size={"p6"}>
+                          123
                         </Texts>
                       </Holds>
-                      <Holds
-                        background={oneSymbol ? "green" : "red"}
-                        className="w-2 h-2 rounded-full justify-center items-center"
-                      >
-                        <Texts size={"p6"} className="p-1">
-                          #
+                      <Holds>
+                        <Holds
+                          background={oneSymbol ? "green" : "red"}
+                          className="w-1 rounded-full justify-center items-center"
+                        ></Holds>
+                        <Texts text={"white"} size={"p6"}>
+                          symbol
                         </Texts>
                       </Holds>
                     </Holds>
