@@ -1,4 +1,5 @@
 "use client";
+import "@/app/globals.css";
 import React from "react";
 
 type PasswordStrengthIndicatorProps = {
@@ -9,7 +10,7 @@ const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps> = ({
   password,
 }) => {
   const getStrength = () => {
-    const minLength = 6;
+    const minLength = 8;
     const hasNumber = /\d/;
     const hasSymbol = /[!@#$%^&*(),.?":{}|<>]/;
 
@@ -42,40 +43,54 @@ const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps> = ({
   const getStrengthColor = () => {
     switch (strength) {
       case 0:
-        return "red";
+        return "bg-app-red";
       case 1:
-        return "orange";
+        return "bg-app-orange";
       case 2:
-        return "yellow";
+        return "bg-app-yellow";
       case 3:
-        return "green";
+        return "bg-app-green";
       default:
-        return "gray";
+        return "bg-gray-300";
     }
   };
 
-  const strengthColor = getStrengthColor();
-  const strengthValue =
-    strengthColor === "green"
-      ? "100%"
-      : strengthColor === "yellow"
-      ? "75%"
-      : strengthColor === "orange"
-      ? "40%"
-      : "20%";
+  const getStrengthLabelColor = () => {
+    switch (strength) {
+      case 0:
+        return "text-app-red";
+      case 1:
+        return "text-app-orange";
+      case 2:
+        return "text-app-yellow";
+      case 3:
+        return "text-app-green";
+      default:
+        return "text-gray-300";
+    }
+  };
+
+  const getStrengthWidthClass = () => {
+    switch (strength) {
+      case 0:
+        return "w-1/12";
+      case 1:
+        return "w-1/5";
+      case 2:
+        return "w-1/2";
+      case 3:
+        return "w-full";
+      default:
+        return "w-0";
+    }
+  };
 
   return (
     <div>
       <div
-        style={{
-          width: strengthValue,
-          height: "10px",
-          backgroundColor: getStrengthColor(),
-          marginTop: "2px",
-          borderRadius: "5px",
-        }}
-      />
-      <p style={{ color: getStrengthColor(), marginTop: "5px" }}>
+        className={`h-2 mt-2 rounded ${getStrengthColor()} ${getStrengthWidthClass()}`}
+      ></div>
+      <p className={`text-xs ${getStrengthLabelColor()}  mt-1`}>
         {getStrengthLabel()}
       </p>
     </div>

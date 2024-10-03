@@ -16,7 +16,22 @@ export async function GET(request: Request) {
   const type = searchParams.get("type");
 
   try {
+    // Find the crews that the current user supervises
+    const supervisedCrews = await prisma.crewMembers.findMany({
+      where: {
+        employeeId: userId,
+        supervisor: true, // Make sure the user is a supervisor
+      },
+      select: {
+        crewId: true, // Only select the crewId for further querying
+      },
+    });
+
+    // Extract crew IDs from the results
+    const crewIds = supervisedCrews.map((crewMember) => crewMember.crewId);
+
     if (type === "sent") {
+      // Fetch time-off requests sent by the current user
       const sentContent = await prisma.timeoffRequestForms.findMany({
         where: {
           employeeId: userId,
@@ -27,9 +42,17 @@ export async function GET(request: Request) {
     }
 
     if (type === "received") {
+      // Fetch time-off requests from employees of the crews managed by the current user
       const receivedContent = await prisma.timeoffRequestForms.findMany({
         where: {
-          status: "PENDING",
+          employee: {
+            crewMembers: {
+              some: {
+                crewId: { in: crewIds }, // Only include requests from managed crews
+              },
+            },
+          },
+          status: "PENDING", // Only fetch PENDING requests
         },
       });
 
