@@ -1,10 +1,13 @@
-import React from 'react';
+"use client";
+import React from "react";
 
 type PasswordStrengthIndicatorProps = {
   password: string;
-}
+};
 
-const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps> = ({ password }) => {
+const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps> = ({
+  password,
+}) => {
   const getStrength = () => {
     const minLength = 6;
     const hasNumber = /\d/;
@@ -24,45 +27,55 @@ const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps> = ({ p
   const getStrengthLabel = () => {
     switch (strength) {
       case 0:
-        return 'Too Weak';
+        return "Too Weak";
       case 1:
-        return 'Weak';
+        return "Weak";
       case 2:
-        return 'Medium';
+        return "Medium";
       case 3:
-        return 'Strong';
+        return "Strong";
       default:
-        return '';
+        return "";
     }
   };
 
   const getStrengthColor = () => {
     switch (strength) {
       case 0:
-        return 'red';
+        return "red";
       case 1:
-        return 'orange';
+        return "orange";
       case 2:
-        return 'yellow';
+        return "yellow";
       case 3:
-        return 'green';
+        return "green";
       default:
-        return 'gray';
+        return "gray";
     }
   };
+
+  const strengthColor = getStrengthColor();
+  const strengthValue =
+    strengthColor === "green"
+      ? "100%"
+      : strengthColor === "yellow"
+      ? "75%"
+      : strengthColor === "orange"
+      ? "40%"
+      : "20%";
 
   return (
     <div>
       <div
         style={{
-          width: '100%',
-          height: '10px',
+          width: strengthValue,
+          height: "10px",
           backgroundColor: getStrengthColor(),
-          marginTop: '5px',
-          borderRadius: '5px'
+          marginTop: "2px",
+          borderRadius: "5px",
         }}
       />
-      <p style={{ color: getStrengthColor(), marginTop: '5px' }}>
+      <p style={{ color: getStrengthColor(), marginTop: "5px" }}>
         {getStrengthLabel()}
       </p>
     </div>

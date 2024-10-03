@@ -16,6 +16,7 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { Images } from "@/components/(reusable)/images";
+import PasswordStrengthIndicator from "@/components/(signup)/passwordStrengthIndicator";
 
 export default function ChangePassword({ userId }: { userId: string }) {
   const t = useTranslations("Hamburger");
@@ -39,9 +40,22 @@ export default function ChangePassword({ userId }: { userId: string }) {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (!validatePassword(newPassword)) {
+      setBannerMessage(
+        "Password must be at least 6 characters long, contain at least 1 number, 1 symbol."
+      );
+      setShowBanner(true);
+      setNewPassword("");
+      setConfirmPassword("");
+      return;
+    }
+
     if (newPassword !== confirmPassword) {
       setBannerMessage("Passwords do not match!");
       setShowBanner(true);
+      setNewPassword("");
+      setConfirmPassword("");
       return;
     }
     const formData = new FormData(event.currentTarget);
@@ -61,27 +75,54 @@ export default function ChangePassword({ userId }: { userId: string }) {
       setShowBanner(true);
     }
   };
+  const validatePassword = (password: string) => {
+    const minLength = 6;
+    const hasNumber = /\d/;
+    const hasSymbol = /[!@#$%^&*(),.?":{}|<>]/;
+
+    return (
+      password.length >= minLength &&
+      hasNumber.test(password) &&
+      hasSymbol.test(password)
+    );
+  };
 
   return (
     <Holds className="row-span-7 h-full">
       <Forms
         onSubmit={handleSubmit}
-        className="h-full flex flex-col items-center justify-between my-5"
+        className="h-full flex flex-col items-center justify-between"
       >
-        <Grids size={"settings"}>
+        <Grids className="grid grid-rows-10 gap-4 w-full">
+          {/* Start of grid container 1 rows - 10 */}
           {showBanner ? (
             <Holds
               background={"red"}
-              className="row-span-1"
               position={"center"}
               size={"full"}
+              className="py-2"
             >
-              <Labels>{bannerMessage}</Labels>
+              <Texts size={"p6"}>{bannerMessage}</Texts>
             </Holds>
-          ) : null}
-          <Holds className="h-full row-span-4" background={"white"}>
+          ) : (
+            <Holds position={"center"} size={"full"} className="row-span-1">
+              <Texts size={"p6"}></Texts>
+            </Holds>
+          )}
+          <Holds className="h-full row-span-5" background={"white"}>
             <Contents width={"section"}>
-              <Holds className="mt-auto mb-2 ">
+              <Holds>
+                <Holds className="py-4">
+                  <Titles>Secure your account</Titles>
+                </Holds>
+                <Holds>
+                  <Texts size={"p5"}>
+                    Password must be at least 8 characters long, and include 1
+                    symbol and 1 number.
+                  </Texts>
+                </Holds>
+              </Holds>
+              <Holds className="my-auto">
                 <Labels htmlFor="new-password">
                   {t("NewPassword")}
                   <Inputs
@@ -91,46 +132,15 @@ export default function ChangePassword({ userId }: { userId: string }) {
                     onChange={(e) => setNewPassword(e.target.value)}
                   />
                 </Labels>
-              </Holds>
-              <Holds position={"row"} className="mb-auto grid grid-cols-10">
-                <Holds className="col-span-2">
-                  <Texts size={"p6"} position={"left"}>
-                    Strength:
-                  </Texts>
-                </Holds>
-                <Holds className="col-span-8 gap-1">
-                  <Holds className="w-full">
-                    <Holds
-                      className="h-fit"
-                      background={
-                        newPassword.length < 8
-                          ? "red"
-                          : newPassword.length < 12
-                          ? "orange"
-                          : "green"
-                      }
-                      size={
-                        newPassword.length < 8
-                          ? "40"
-                          : newPassword.length < 12
-                          ? "60"
-                          : "full"
-                      }
-                      position={"left"}
-                    >
-                      <Texts size={"p6"} position={"center"}>
-                        {newPassword.length < 8
-                          ? "Weak"
-                          : newPassword.length < 12
-                          ? "Medium"
-                          : "Strong"}
-                      </Texts>
-                    </Holds>
+                <Holds>
+                  <Holds>
+                    <PasswordStrengthIndicator password={newPassword} />
                   </Holds>
                 </Holds>
               </Holds>
             </Contents>
           </Holds>
+
           <Holds className="h-full row-span-3" background={"white"}>
             <Contents width={"section"}>
               <Holds className="my-auto">
@@ -148,11 +158,12 @@ export default function ChangePassword({ userId }: { userId: string }) {
           </Holds>
           <Holds className="h-full row-span-1">
             <Contents width={"section"}>
-              <Buttons background={"orange"} className="p-2" type="submit">
-                <Titles>{t("ChangePassword")}</Titles>
+              <Buttons background={"orange"} className="py-2" type="submit">
+                <Titles size={"h6"}>{t("ChangePassword")}</Titles>
               </Buttons>
             </Contents>
           </Holds>
+          {/* End of grid container 1 rows - 10 */}
         </Grids>
       </Forms>
     </Holds>
