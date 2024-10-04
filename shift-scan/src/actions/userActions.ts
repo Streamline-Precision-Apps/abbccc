@@ -49,9 +49,13 @@ export async function updateUser(formData: FormData) {
 
 
 export async function deleteUser(formData: FormData) {
+    const date = new Date();
     const id = formData.get('id') as string;
-    await prisma.users.delete({
+    await prisma.users.update({
         where: { id },
+        data: {
+            terminationDate: date.toISOString(),
+        }
     });
 }
 

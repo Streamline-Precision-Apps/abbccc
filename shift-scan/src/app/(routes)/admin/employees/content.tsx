@@ -64,20 +64,19 @@ export default function AddEmployeeContent({ permission , users }: AddEmployeeCo
   }, [session]);
 
   return session ? (
-    <Bases variant={"default"}>
-        <Holds
-        size={"titleBox"}>
+    <Bases>
+        <Holds>
             <TitleBoxes
             title="Assets"
             titleImg="/assets.svg"
             titleImgAlt="Assests"
-            variant={"default"}
+           
             size={"default"}
             type="noIcon"
             />
         </Holds>
-      <Holds size={"dynamic"}>
-        <Contents size={"listTitle"} variant={"default"}>
+      <Holds>
+        <Contents>
         <Tab 
         onClick={() => setActiveTab(1)}
         tabLabel= {t("ModifyEmployee")} 
