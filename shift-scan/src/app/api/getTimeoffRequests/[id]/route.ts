@@ -50,7 +50,7 @@ export async function GET(
       return NextResponse.json(sentContent);
     }
 
-    if (type === "recieved") {
+    if (type === "received") {
       // Fetch received requests based on `id` and `userId`
 
       const receivedContent = await prisma.timeoffRequestForms.findMany({

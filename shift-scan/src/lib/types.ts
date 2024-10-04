@@ -170,7 +170,6 @@ export type EquipmentLog = {
 
 export type RequestForm = {
   session: Session | null;
-  signature: string | null;
 };
 
 // This is used in the admin section for assets.
