@@ -15,7 +15,14 @@ import { Titles } from "@/components/(reusable)/titles";
 import { sentContent } from "@/lib/types";
 import { Session } from "next-auth";
 import { useTranslations } from "next-intl";
-import { startTransition, use, useEffect, useRef, useState } from "react";
+import {
+  FormEvent,
+  startTransition,
+  use,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   DeleteLeaveRequest,
   EditLeaveRequest,
@@ -35,7 +42,6 @@ type Props = {
 export default function Content({ params, session }: Props) {
   const t = useTranslations("Hamburger");
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [edit, setEdit] = useState(false);
   const [cardDate, setCardDate] = useState<string>("");
   const [sentContent, setSentContent] = useState<sentContent[]>([]);
@@ -46,7 +52,6 @@ export default function Content({ params, session }: Props) {
     const fetchSentContent = async () => {
       try {
         setLoading(true);
-        setError(null);
         const response = await fetch(
           `/api/getTimeoffRequests/${params.id}?type=sent`
         );
@@ -54,14 +59,14 @@ export default function Content({ params, session }: Props) {
           throw new Error("Failed to fetch sent content");
         }
         const data = await response.json();
-        setCardDate(
-          new Date(data[0].date).getMonth().toString() +
-            "/" +
-            new Date(data[0].date).getDate().toString() +
-            "/" +
-            new Date(data[0].date).getFullYear().toString()
-        );
-        setSentContent(data);
+        if (data.length > 0) {
+          setCardDate(
+            `${new Date(data[0].date).getMonth() + 1}/${new Date(
+              data[0].date
+            ).getDate()}/${new Date(data[0].date).getFullYear()}`
+          );
+          setSentContent(data);
+        }
       } catch (err) {
         console.error("Error fetching sent content:", err);
       } finally {
@@ -73,8 +78,23 @@ export default function Content({ params, session }: Props) {
   }, [params.id]);
 
   const handleEdit = () => {
-    setEdit(false); // Optionally exit edit mode
+    setEdit(!edit);
   };
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    await EditLeaveRequest(new FormData(event.currentTarget));
+    setEdit(false);
+    router.push("/hamburger/inbox");
+  };
+
+  const handleDelete = async () => {
+    const isDeleted = await DeleteLeaveRequest(params.id, userId);
+    if (isDeleted) {
+      router.push("/hamburger/inbox");
+    }
+  };
+
   if (loading)
     return (
       <>
@@ -84,7 +104,7 @@ export default function Content({ params, session }: Props) {
             titleImg="/Inbox.svg"
             titleImgAlt="Inbox"
             type="noIcon"
-          ></TitleBoxes>
+          />
           <Holds className="py-2">
             <Titles>Loading...</Titles>
           </Holds>
@@ -108,19 +128,20 @@ export default function Content({ params, session }: Props) {
           titleImg="/Inbox.svg"
           titleImgAlt="Inbox"
           type="noIcon"
-        ></TitleBoxes>
+        />
         <Holds className="py-2">
-          <Titles>{cardDate}</Titles>
+          <Titles size={"h3"}> Created on {cardDate}</Titles>
         </Holds>
       </Holds>
 
       <Holds background={"white"} className="h-full mt-5">
         <Contents height={"page"} width={"section"}>
-          <Forms action={EditLeaveRequest}>
+          <Forms onSubmit={handleSubmit}>
+            <Inputs type="hidden" name="id" value={params.id} />
             <Holds className="my-3">
               {!edit && (
                 <Holds size={"20"}>
-                  <Buttons background={"orange"} onClick={() => setEdit(!edit)}>
+                  <Buttons background={"orange"} onClick={handleEdit}>
                     <Holds className="py-2">
                       <Images
                         size={"50"}
@@ -135,12 +156,12 @@ export default function Content({ params, session }: Props) {
               {edit && (
                 <Holds position={"row"} className="justify-between px-5">
                   <Holds size={"20"}>
-                    <Buttons background={"red"} onClick={() => handleEdit()}>
+                    <Buttons background={"red"} onClick={handleEdit}>
                       <Holds className="py-2">
                         <Images
                           size={"50"}
                           titleImg={"/undo-edit.svg"}
-                          titleImgAlt={"delete form"}
+                          titleImgAlt={"undo edit"}
                         />
                       </Holds>
                     </Buttons>
@@ -151,7 +172,7 @@ export default function Content({ params, session }: Props) {
                         <Images
                           size={"50"}
                           titleImg={"/save-edit.svg"}
-                          titleImgAlt={"delete form"}
+                          titleImgAlt={"save edit"}
                         />
                       </Holds>
                     </Buttons>
@@ -159,6 +180,7 @@ export default function Content({ params, session }: Props) {
                 </Holds>
               )}
             </Holds>
+
             {sentContent.map((item) => (
               <Holds key={item.id}>
                 <Inputs type="hidden" name="id" value={item.id} disabled />
@@ -174,40 +196,33 @@ export default function Content({ params, session }: Props) {
                   value={item.date.toString()}
                   disabled
                 />
-                <Inputs
-                  type="hidden"
-                  name="employee_id"
-                  value={item.employeeId}
-                  disabled
-                />
+                <Inputs type="hidden" name="userId" value={userId} disabled />
                 <Labels>
-                  {" "}
                   Start Date
                   <Inputs
                     type="date"
                     name="startDate"
                     defaultValue={formatDate(item.requestedStartDate)}
-                    disabled={edit ? false : true}
+                    disabled={!edit}
                   />
                 </Labels>
 
                 <Labels>
-                  {" "}
                   End Date
                   <Inputs
                     type="date"
                     name="endDate"
                     defaultValue={formatDate(item.requestedEndDate)}
-                    disabled={edit ? false : true}
+                    disabled={!edit}
                   />
                 </Labels>
                 <Labels>
-                  {" "}
                   Request Type
                   <Selects
                     name="requestType"
                     defaultValue={item.requestType}
-                    disabled={edit ? false : true}
+                    disabled={!edit}
+                    key={item.requestType}
                   >
                     <option value="">Choose a request</option>
                     <option value="Vacation">Vacation</option>
@@ -223,33 +238,30 @@ export default function Content({ params, session }: Props) {
                 </Labels>
 
                 <Labels>
-                  {" "}
                   Comments
                   <TextAreas
                     name="description"
                     defaultValue={item.comment}
-                    disabled={edit ? false : true}
+                    disabled={!edit}
                     rows={5}
                   />
                 </Labels>
-                {item.status === "APPROVED" ||
-                  (item.status === "DENIED" && (
-                    <Labels>
-                      {" "}
-                      Managers Comments
-                      <TextAreas
-                        name="mangerComments"
-                        defaultValue={item.managerComment ?? ""}
-                        disabled
-                      />
-                    </Labels>
-                  ))}
+                {(item.status === "APPROVED" || item.status === "DENIED") && (
+                  <Labels>
+                    Managers Comments
+                    <TextAreas
+                      name="managerComments"
+                      defaultValue={item.managerComment ?? ""}
+                      disabled
+                    />
+                  </Labels>
+                )}
 
                 <Texts size={"p2"}>Signature here</Texts>
 
                 <Texts size={"p5"}>
-                  By Signing I acknowledge that time leave request are subject
-                  to management approval & company policy.
+                  By Signing I acknowledge that time leave request is subject to
+                  management approval & company policy.
                 </Texts>
               </Holds>
             ))}
@@ -257,17 +269,9 @@ export default function Content({ params, session }: Props) {
         </Contents>
       </Holds>
 
-      {/* This button deletes the request from the db */}
       {edit && (
         <Holds position={"row"} className="mt-5">
-          <Buttons
-            onClick={() => {
-              DeleteLeaveRequest(params.id, userId);
-              setEdit(!edit);
-            }}
-            background={"red"}
-            className="p-2"
-          >
+          <Buttons onClick={handleDelete} background={"red"} className="p-2">
             <Titles size={"h3"}>Delete Request</Titles>
           </Buttons>
         </Holds>

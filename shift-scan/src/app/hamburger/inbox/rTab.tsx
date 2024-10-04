@@ -9,8 +9,9 @@ import { useRouter } from "next/navigation";
 import React from "react";
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
-import { Spinner } from "@nextui-org/react";
+
 import { Contents } from "@/components/(reusable)/contents";
+import Spinner from "@/components/(animations)/spinner";
 
 export default function RTab() {
   const { data: session } = useSession(); // Use `useSession` to fetch session
@@ -95,7 +96,7 @@ export default function RTab() {
             <Buttons
               background={"orange"}
               key={item.id}
-              href={`/hamburger/inbox/recieved/${item.id}`}
+              href={`/hamburger/inbox/received/${item.id}`}
             >
               <Titles>{item.requestType}</Titles>
               {new Date(item.date).toLocaleString("en-US", {

@@ -31,10 +31,14 @@ export async function GET(request: Request) {
     const crewIds = supervisedCrews.map((crewMember) => crewMember.crewId);
 
     if (type === "sent") {
+      const today = new Date();
       // Fetch time-off requests sent by the current user
       const sentContent = await prisma.timeoffRequestForms.findMany({
         where: {
           employeeId: userId,
+          requestedEndDate: {
+            gte: today, // any request later then today will be gone
+          },
         },
       });
 

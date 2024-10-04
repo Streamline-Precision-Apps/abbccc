@@ -47,7 +47,7 @@ export default function Content({ params, session }: Props) {
       setLoading(true);
       try {
         const result = await fetch(
-          `/api/getTimeoffRequests/${params.id}?type=recieved` // Ensure this matches
+          `/api/getTimeoffRequests/${params.id}?type=received` // Ensure this matches
         );
         const data = await result.json();
 
@@ -79,11 +79,9 @@ export default function Content({ params, session }: Props) {
     setManagerComment(e.target.value); // Update the state with the new comment
   };
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function handleApproval(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    console.log(formData);
-    EditLeaveRequest(formData);
+    router.push("/hamburger/inbox");
   }
   if (loading) {
     return (
@@ -223,7 +221,10 @@ export default function Content({ params, session }: Props) {
                     </Texts>
                   </Holds>
                   <Holds position={"row"} className="row-span-1">
-                    <Forms action={ManagerLeaveRequest}>
+                    <Forms
+                      action={ManagerLeaveRequest}
+                      onSubmit={handleApproval}
+                    >
                       <Inputs type="hidden" name="id" value={item.id} />
                       <Inputs type="hidden" name="decision" value="DENIED" />
                       <Inputs type="hidden" name="decidedBy" value={manager} />
@@ -255,7 +256,10 @@ export default function Content({ params, session }: Props) {
                       </Holds>
                     </Forms>
                     {/*Manger Approves his request with button */}
-                    <Forms action={ManagerLeaveRequest}>
+                    <Forms
+                      action={ManagerLeaveRequest}
+                      onSubmit={handleApproval}
+                    >
                       <Inputs type="hidden" name="id" value={item.id} />
                       <Inputs type="hidden" name="decision" value="APPROVED" />
                       <Inputs type="hidden" name="decidedBy" value={manager} />
