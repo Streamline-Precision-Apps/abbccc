@@ -10,6 +10,7 @@ import React from "react";
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 import { Spinner } from "@nextui-org/react";
+import { Contents } from "@/components/(reusable)/contents";
 
 export default function RTab() {
   const { data: session } = useSession(); // Use `useSession` to fetch session
@@ -87,21 +88,25 @@ export default function RTab() {
 
   // Render received requests
   return (
-    <>
-      {pending.map((item) => (
-        <Buttons
-          background={"orange"}
-          key={item.id}
-          href={`/hamburger/inbox/received/${item.id}`}
-        >
-          <Titles>{item.requestType}</Titles>
-          {new Date(item.date).toLocaleString("en-US", {
-            day: "numeric",
-            month: "numeric",
-            year: "numeric",
-          })}
-        </Buttons>
-      ))}
-    </>
+    <Holds>
+      <Contents width={"section"}>
+        {pending.map((item) => (
+          <Holds className="my-2" key={item.id}>
+            <Buttons
+              background={"orange"}
+              key={item.id}
+              href={`/hamburger/inbox/recieved/${item.id}`}
+            >
+              <Titles>{item.requestType}</Titles>
+              {new Date(item.date).toLocaleString("en-US", {
+                day: "numeric",
+                month: "numeric",
+                year: "numeric",
+              })}
+            </Buttons>
+          </Holds>
+        ))}
+      </Contents>
+    </Holds>
   );
 }

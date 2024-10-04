@@ -2,21 +2,18 @@
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 import Content from "@/app/hamburger/inbox/sent/[id]/content";
+import { Bases } from "@/components/(reusable)/bases";
+import { Contents } from "@/components/(reusable)/contents";
 
 export default async function Page({ params }: { params: { id: string } }) {
-    const session = await auth();
-    const userId = session?.user.id;
+  const session = await auth();
+  if (!session) return null;
 
-    const sentContent = await prisma.timeoffRequestForms.findMany({
-        where: {
-            id : Number(params.id),
-            employeeId: userId,
-        }
-    })
-    
-    return (
-        <>
-            <Content sentContent={sentContent} session={session} params={params}/>
-        </>
-    )
+  return (
+    <Bases size={"scroll"} className="py-5">
+      <Contents height="page">
+        <Content session={session} params={params} />
+      </Contents>
+    </Bases>
+  );
 }
