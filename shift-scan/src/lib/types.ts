@@ -82,6 +82,7 @@ export type inboxContent = {
 };
 
 export type receivedContent = {
+  employeeName: string | number | readonly string[] | undefined;
   id: number;
   date: Date;
   requestedStartDate: Date;

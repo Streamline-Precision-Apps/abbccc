@@ -60,65 +60,74 @@ export default function STab() {
   }
 
   return (
-    <Holds className="h-full">
+    <Holds>
+      {/* Request button */}
+
       <Contents width={"section"}>
-        <Grids className="grid-rows-10 py-5">
-          <Holds position={"left"} className="row-span-9 ">
-            {/* Display approved requests */}
-            {approved.map((item) => (
-              <Buttons
-                background={"green"}
-                key={item.id}
-                href={`/hamburger/inbox/sent/approved/${item.id}`}
-              >
-                <Titles>{item.requestType}</Titles>
-                {new Date(item.date).toLocaleString("en-US", {
-                  day: "numeric",
-                  month: "numeric",
-                  year: "numeric",
-                })}
-              </Buttons>
-            ))}
-
-            {/* Display pending requests */}
-            {pending.map((item) => (
-              <Buttons
-                background={"orange"}
-                key={item.id}
-                href={`/hamburger/inbox/sent/${item.id}`}
-              >
-                <Titles>{item.requestType}</Titles>
-                {new Date(item.date).toLocaleString("en-US", {
-                  day: "numeric",
-                  month: "numeric",
-                  year: "numeric",
-                })}
-              </Buttons>
-            ))}
-
-            {/* Display denied requests */}
-            {denied.map((item) => (
-              <Buttons
-                background={"red"}
-                key={item.id}
-                href={`/hamburger/inbox/sent/denied/${item.id}`}
-              >
-                <Titles>{item.requestType}</Titles>
-                {new Date(item.date).toLocaleString("en-US", {
-                  day: "numeric",
-                  month: "numeric",
-                  year: "numeric",
-                })}
-              </Buttons>
-            ))}
-          </Holds>
-          {/* Request button */}
-          <Holds position={"row"} className="row-span-1 h-full">
-            <Buttons href="/hamburger/inbox/form" background={"green"}>
-              <Titles>Request</Titles>
+        <Holds size={"full"}>
+          <Buttons
+            href="/hamburger/inbox/form"
+            background={"green"}
+            className="h-full py-2"
+          >
+            <Titles size={"h2"}>Request</Titles>
+          </Buttons>
+        </Holds>
+      </Contents>
+      <Contents width={"section"}>
+        {/* Display approved requests */}
+        {approved.map((item) => (
+          <Holds key={item.id} className="py-4">
+            <Buttons
+              background={"green"}
+              key={item.id}
+              href={`/hamburger/inbox/sent/approved/${item.id}`}
+            >
+              <Titles>{item.requestType}</Titles>
+              {new Date(item.date).toLocaleString("en-US", {
+                day: "numeric",
+                month: "numeric",
+                year: "numeric",
+              })}
             </Buttons>
           </Holds>
-        </Grids>
+        ))}
+
+        {/* Display pending requests */}
+        {pending.map((item) => (
+          <Holds key={item.id} className="py-4">
+            <Buttons
+              background={"orange"}
+              key={item.id}
+              href={`/hamburger/inbox/sent/${item.id}`}
+            >
+              <Titles>{item.requestType}</Titles>
+              {new Date(item.date).toLocaleString("en-US", {
+                day: "numeric",
+                month: "numeric",
+                year: "numeric",
+              })}
+            </Buttons>
+          </Holds>
+        ))}
+
+        {/* Display denied requests */}
+        {denied.map((item) => (
+          <Holds key={item.id} className="py-4">
+            <Buttons
+              background={"red"}
+              key={item.id}
+              href={`/hamburger/inbox/sent/denied/${item.id}`}
+            >
+              <Titles>{item.requestType}</Titles>
+              {new Date(item.date).toLocaleString("en-US", {
+                day: "numeric",
+                month: "numeric",
+                year: "numeric",
+              })}
+            </Buttons>
+          </Holds>
+        ))}
       </Contents>
     </Holds>
   );
