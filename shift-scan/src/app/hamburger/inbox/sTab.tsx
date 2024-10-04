@@ -63,7 +63,7 @@ export default function STab() {
     <Holds>
       {/* Request button */}
 
-      <Contents width={"section"}>
+      <Contents width={"section"} className="mb-5">
         <Holds size={"full"}>
           <Buttons
             href="/hamburger/inbox/form"
@@ -77,7 +77,7 @@ export default function STab() {
       <Contents width={"section"}>
         {/* Display approved requests */}
         {approved.map((item) => (
-          <Holds key={item.id} className="py-4">
+          <Holds key={item.id} className="py-2">
             <Buttons
               background={"green"}
               key={item.id}
@@ -95,7 +95,7 @@ export default function STab() {
 
         {/* Display pending requests */}
         {pending.map((item) => (
-          <Holds key={item.id} className="py-4">
+          <Holds key={item.id} className="py-2">
             <Buttons
               background={"orange"}
               key={item.id}
@@ -113,7 +113,7 @@ export default function STab() {
 
         {/* Display denied requests */}
         {denied.map((item) => (
-          <Holds key={item.id} className="py-4">
+          <Holds key={item.id} className="py-2">
             <Buttons
               background={"red"}
               key={item.id}
