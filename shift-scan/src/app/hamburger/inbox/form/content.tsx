@@ -22,6 +22,7 @@ export default function Form( { signature, session } : RequestForm) {
 const [sign, setSign] = useState(false);
 const [message, setMessage] = useState("");
 const [closeBanner, showBanner] = useState(false);
+
 const router = useRouter();
     const handleSubmit = async () => {
     showBanner(true);

@@ -248,6 +248,9 @@ export default function ClockOutContent({
               <Texts>
                 {t("CostCode")} {savedCostCode || localStorageData?.costCode}
               </Texts>
+              <Texts>
+                {t("ClockInTime")} {}
+              </Texts>
               <Forms onSubmit={handleSubmit}>
                 <Inputs
                   type="hidden"
@@ -269,7 +272,6 @@ export default function ClockOutContent({
                   value={""}
                   readOnly
                 />
-                <Inputs type="hidden" name="userId" value={id || ""} readOnly />
                 <Buttons
                   type="submit"
                   className="bg-app-red mx-auto flex justify-center w-full h-full py-4 px-5 rounded-lg text-black font-bold mt-5"

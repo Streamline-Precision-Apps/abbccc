@@ -274,3 +274,4 @@ I finished some more prisma DB research and Created the clock out dashboard page
 ## 9/24/2024
 
 - server actions fix for db changes.
+

@@ -60,6 +60,7 @@ export type SearchUser = {
   laborView: boolean;
   tascoView: boolean;
   image: string | null,
+  terminationDate: Date | null,
 };
   
   export type CustomSession = {
