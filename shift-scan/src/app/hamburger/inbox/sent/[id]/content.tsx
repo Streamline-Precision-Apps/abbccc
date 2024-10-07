@@ -33,6 +33,7 @@ import { revalidatePath } from "next/cache";
 import { formatDate } from "@/utils/formatDateYMD";
 import React from "react";
 import Spinner from "@/components/(animations)/spinner";
+import { Grids } from "@/components/(reusable)/grids";
 
 type Props = {
   session: Session | null;
@@ -121,161 +122,166 @@ export default function Content({ params, session }: Props) {
     );
 
   return (
-    <Holds className="h-full">
-      <Holds background={"orange"}>
-        <TitleBoxes
-          title="leave request"
-          titleImg="/Inbox.svg"
-          titleImgAlt="Inbox"
-          type="noIcon"
-        />
-        <Holds className="py-2">
-          <Titles size={"h3"}> Created on {cardDate}</Titles>
+    <Holds>
+      <Grids className="grid-rows-10 gap-5">
+        <Holds background={"orange"} className="row-span-2">
+          <TitleBoxes
+            title="leave request"
+            titleImg="/Inbox.svg"
+            titleImgAlt="Inbox"
+            type="noIcon"
+          />
+          <Holds className="py-2">
+            <Titles size={"h3"}> Created on {cardDate}</Titles>
+          </Holds>
         </Holds>
-      </Holds>
 
-      <Holds background={"white"} className="h-full mt-5">
-        <Contents height={"page"} width={"section"}>
-          <Forms onSubmit={handleSubmit}>
-            <Inputs type="hidden" name="id" value={params.id} />
-            <Holds className="my-3">
-              {!edit && (
-                <Holds size={"20"}>
-                  <Buttons background={"orange"} onClick={handleEdit}>
-                    <Holds className="py-2">
-                      <Images
-                        size={"50"}
-                        titleImg={"/edit-form.svg"}
-                        titleImgAlt={"edit form"}
-                      />
-                    </Holds>
-                  </Buttons>
-                </Holds>
-              )}
-
-              {edit && (
-                <Holds position={"row"} className="justify-between px-5">
+        <Holds background={"white"} className="row-span-8">
+          <Contents height={"page"} width={"section"}>
+            <Forms onSubmit={handleSubmit}>
+              <Inputs type="hidden" name="id" value={params.id} />
+              <Holds className="my-3">
+                {!edit && (
                   <Holds size={"20"}>
-                    <Buttons background={"red"} onClick={handleEdit}>
+                    <Buttons background={"orange"} onClick={handleEdit}>
                       <Holds className="py-2">
                         <Images
                           size={"50"}
-                          titleImg={"/undo-edit.svg"}
-                          titleImgAlt={"undo edit"}
+                          titleImg={"/edit-form.svg"}
+                          titleImgAlt={"edit form"}
                         />
                       </Holds>
                     </Buttons>
                   </Holds>
-                  <Holds size={"20"}>
-                    <Buttons background={"green"} type="submit">
-                      <Holds className="py-2">
-                        <Images
-                          size={"50"}
-                          titleImg={"/save-edit.svg"}
-                          titleImgAlt={"save edit"}
-                        />
-                      </Holds>
-                    </Buttons>
-                  </Holds>
-                </Holds>
-              )}
-            </Holds>
-
-            {sentContent.map((item) => (
-              <Holds key={item.id}>
-                <Inputs type="hidden" name="id" value={item.id} disabled />
-                <Inputs
-                  type="hidden"
-                  name="status"
-                  value={item.status}
-                  disabled
-                />
-                <Inputs
-                  type="hidden"
-                  name="date"
-                  value={item.date.toString()}
-                  disabled
-                />
-                <Inputs type="hidden" name="userId" value={userId} disabled />
-                <Labels>
-                  Start Date
-                  <Inputs
-                    type="date"
-                    name="startDate"
-                    defaultValue={formatDate(item.requestedStartDate)}
-                    disabled={!edit}
-                  />
-                </Labels>
-
-                <Labels>
-                  End Date
-                  <Inputs
-                    type="date"
-                    name="endDate"
-                    defaultValue={formatDate(item.requestedEndDate)}
-                    disabled={!edit}
-                  />
-                </Labels>
-                <Labels>
-                  Request Type
-                  <Selects
-                    name="requestType"
-                    defaultValue={item.requestType}
-                    disabled={!edit}
-                    key={item.requestType}
-                  >
-                    <option value="">Choose a request</option>
-                    <option value="Vacation">Vacation</option>
-                    <option value="Family/Medical Leave">
-                      Family/Medical Leave
-                    </option>
-                    <option value="Military Leave">Military Leave</option>
-                    <option value="Non Paid Personal Leave">
-                      Non Paid Personal Leave
-                    </option>
-                    <option value="Sick Time">Sick Time</option>
-                  </Selects>
-                </Labels>
-
-                <Labels>
-                  Comments
-                  <TextAreas
-                    name="description"
-                    defaultValue={item.comment}
-                    disabled={!edit}
-                    rows={5}
-                  />
-                </Labels>
-                {(item.status === "APPROVED" || item.status === "DENIED") && (
-                  <Labels>
-                    Managers Comments
-                    <TextAreas
-                      name="managerComments"
-                      defaultValue={item.managerComment ?? ""}
-                      disabled
-                    />
-                  </Labels>
                 )}
 
-                <Texts size={"p2"}>Signature here</Texts>
-
-                <Texts size={"p5"}>
-                  By Signing I acknowledge that time leave request is subject to
-                  management approval & company policy.
-                </Texts>
+                {edit && (
+                  <Holds position={"row"} className="justify-between px-5">
+                    <Holds size={"20"}>
+                      <Buttons background={"red"} onClick={handleEdit}>
+                        <Holds className="py-2">
+                          <Images
+                            size={"50"}
+                            titleImg={"/undo-edit.svg"}
+                            titleImgAlt={"undo edit"}
+                          />
+                        </Holds>
+                      </Buttons>
+                    </Holds>
+                    <Holds size={"20"}>
+                      <Buttons background={"green"} type="submit">
+                        <Holds className="py-2">
+                          <Images
+                            size={"50"}
+                            titleImg={"/save-edit.svg"}
+                            titleImgAlt={"save edit"}
+                          />
+                        </Holds>
+                      </Buttons>
+                    </Holds>
+                  </Holds>
+                )}
               </Holds>
-            ))}
-          </Forms>
-        </Contents>
-      </Holds>
 
-      {edit && (
-        <Holds position={"row"} className="mt-5">
-          <Buttons onClick={handleDelete} background={"red"} className="p-2">
-            <Titles size={"h3"}>Delete Request</Titles>
-          </Buttons>
+              {sentContent.map((item) => (
+                <Holds key={item.id}>
+                  <Inputs type="hidden" name="id" value={item.id} disabled />
+                  <Inputs
+                    type="hidden"
+                    name="status"
+                    value={item.status}
+                    disabled
+                  />
+                  <Inputs
+                    type="hidden"
+                    name="date"
+                    value={item.date.toString()}
+                    disabled
+                  />
+                  <Inputs type="hidden" name="userId" value={userId} disabled />
+                  <Labels>
+                    Start Date
+                    <Inputs
+                      type="date"
+                      name="startDate"
+                      defaultValue={formatDate(item.requestedStartDate)}
+                      disabled={!edit}
+                    />
+                  </Labels>
+
+                  <Labels>
+                    End Date
+                    <Inputs
+                      type="date"
+                      name="endDate"
+                      defaultValue={formatDate(item.requestedEndDate)}
+                      disabled={!edit}
+                    />
+                  </Labels>
+                  <Labels>
+                    Request Type
+                    <Selects
+                      name="requestType"
+                      defaultValue={item.requestType}
+                      disabled={!edit}
+                      key={item.requestType}
+                    >
+                      <option value="">Choose a request</option>
+                      <option value="Vacation">Vacation</option>
+                      <option value="Family/Medical Leave">
+                        Family/Medical Leave
+                      </option>
+                      <option value="Military Leave">Military Leave</option>
+                      <option value="Non Paid Personal Leave">
+                        Non Paid Personal Leave
+                      </option>
+                      <option value="Sick Time">Sick Time</option>
+                    </Selects>
+                  </Labels>
+
+                  <Labels>
+                    Comments
+                    <TextAreas
+                      name="description"
+                      defaultValue={item.comment}
+                      disabled={!edit}
+                      rows={5}
+                    />
+                  </Labels>
+                  {(item.status === "APPROVED" || item.status === "DENIED") && (
+                    <Labels>
+                      Managers Comments
+                      <TextAreas
+                        name="managerComments"
+                        defaultValue={item.managerComment ?? ""}
+                        disabled
+                      />
+                    </Labels>
+                  )}
+
+                  <Texts size={"p2"}>Signature here</Texts>
+
+                  <Texts size={"p5"}>
+                    By Signing I acknowledge that time leave request is subject
+                    to management approval & company policy.
+                  </Texts>
+                </Holds>
+              ))}
+            </Forms>
+            {edit && (
+              <Holds position={"row"} className="mt-5">
+                <Buttons
+                  onClick={handleDelete}
+                  background={"red"}
+                  className="p-2"
+                >
+                  <Titles size={"h3"}>Delete Request</Titles>
+                </Buttons>
+              </Holds>
+            )}
+          </Contents>
         </Holds>
-      )}
+      </Grids>
     </Holds>
   );
 }
