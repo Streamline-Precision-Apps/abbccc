@@ -35,7 +35,7 @@ export default function Content({ params, session }: Props) {
   const t = useTranslations("Hamburger");
   const router = useRouter();
   const userId = session?.user.id;
-  const [decision, setDecision] = useState("APPROVED");
+  const [decision, setDecision] = useState(null);
   const [cardDate, setCardDate] = useState("");
   const [manager, setManager] = useState("");
   const [managerComment, setManagerComment] = useState("");
@@ -62,7 +62,6 @@ export default function Content({ params, session }: Props) {
         const employee = data[0].employee;
         setEmployeeName(employee?.firstName + " " + employee?.lastName || "");
         // Update states based on the fetched data
-        setDecision(data[0]?.decision);
         setManager(data[0]?.manager);
         setManagerComment(data[0]?.managerComment || ""); // Handle null or undefined comments
         setReceivedContent(data);
@@ -78,10 +77,26 @@ export default function Content({ params, session }: Props) {
   const handleManagerCommentChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setManagerComment(e.target.value); // Update the state with the new comment
   };
+  useEffect(() => {
+    if (decision !== null) {
+      setDecision(null);
+      router.push("/hamburger/inbox");
+    }
+  }, [decision]);
 
   function handleApproval(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    router.push("/hamburger/inbox");
+    event.preventDefault(); // Prevent default form submission
+
+    const formData = new FormData(event.currentTarget); // Gather form data
+    ManagerLeaveRequest(formData) // Call your action to process the form
+      .then(() => {
+        // Redirect to the inbox once submission is successful
+        router.replace("/hamburger/inbox");
+      })
+      .catch((error) => {
+        // Handle any error in form submission
+        console.error("Failed to submit form:", error);
+      });
   }
   if (loading) {
     return (
@@ -255,7 +270,7 @@ export default function Content({ params, session }: Props) {
                         </Buttons>
                       </Holds>
                     </Forms>
-                    {/*Manger Approves his request with button */}
+
                     <Forms
                       action={ManagerLeaveRequest}
                       onSubmit={handleApproval}

@@ -14,7 +14,7 @@ export default async function Inbox() {
   const t = await getTranslations("Hamburger");
 
   return (
-    <Bases>
+    <Bases size={"scroll"}>
       <Contents>
         <Grids className="grid-rows-10">
           <Holds background={"white"} className="row-span-2">

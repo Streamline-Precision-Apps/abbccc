@@ -147,7 +147,10 @@
     "equipmentPicture": {
        "TakePicture": "Take a Picture",
         "ResetCamera": "Reset Camera",
-        "startCamera": "Start Camera"
+        "startCamera": "Start Camera",
+        "HideCamera": "Hide Camera",
+        "ShowCamera": "Show Camera"
+
     },
     "EquipmentContent" : {
         "Title": "Checked Out",
