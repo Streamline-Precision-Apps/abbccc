@@ -14,7 +14,7 @@ const GridVariants = cva(
       },
     },
     defaultVariants: {
-      size: "dashboard",
+      size: null,
     },
   }
 );

@@ -60,93 +60,96 @@ export default function STab() {
   }
 
   return (
-    <Holds>
-      {/* Request button */}
+    <Contents width={"section"} className="mb-5">
+      <Grids className="grid-rows-10 py-5">
+        {/* Request button */}
+        <Holds className="overflow-auto h-full no-scrollbar gap-5 row-span-8">
+          {/* Display approved requests */}
+          {approved.map((item) => (
+            <Holds key={item.id}>
+              <Buttons
+                background={"green"}
+                key={item.id}
+                href={`/hamburger/inbox/sent/approved/${item.id}`}
+                size={"90"}
+              >
+                <Titles>{item.requestType}</Titles>
+                {new Date(item.requestedStartDate).toLocaleString("en-US", {
+                  day: "numeric",
+                  month: "numeric",
+                  year: "numeric",
+                })}
+                {" - "}
+                {new Date(item.requestedEndDate).toLocaleString("en-US", {
+                  day: "numeric",
+                  month: "numeric",
+                  year: "numeric",
+                })}
+              </Buttons>
+            </Holds>
+          ))}
 
-      <Contents width={"section"} className="mb-5">
-        <Holds size={"full"}>
+          {/* Display pending requests */}
+          {pending.map((item) => (
+            <Holds key={item.id}>
+              <Buttons
+                background={"orange"}
+                key={item.id}
+                href={`/hamburger/inbox/sent/${item.id}`}
+                size={"90"}
+              >
+                <Titles>{item.requestType}</Titles>
+                {new Date(item.requestedStartDate).toLocaleString("en-US", {
+                  day: "numeric",
+                  month: "numeric",
+                  year: "numeric",
+                })}
+                {" - "}
+                {new Date(item.requestedEndDate).toLocaleString("en-US", {
+                  day: "numeric",
+                  month: "numeric",
+                  year: "numeric",
+                })}
+              </Buttons>
+            </Holds>
+          ))}
+
+          {/* Display denied requests */}
+          {denied.map((item) => (
+            <Holds key={item.id} className="py-2">
+              <Buttons
+                background={"red"}
+                key={item.id}
+                href={`/hamburger/inbox/sent/denied/${item.id}`}
+                size={"90"}
+              >
+                <Titles>{item.requestType}</Titles>
+                {new Date(item.requestedStartDate).toLocaleString("en-US", {
+                  day: "numeric",
+                  month: "numeric",
+                  year: "numeric",
+                })}
+                {" - "}
+                {new Date(item.requestedEndDate).toLocaleString("en-US", {
+                  day: "numeric",
+                  month: "numeric",
+                  year: "numeric",
+                })}
+              </Buttons>
+            </Holds>
+          ))}
+        </Holds>
+        <Holds size={"full"} className="row-span-2 ">
           <Buttons
             href="/hamburger/inbox/form"
             background={"green"}
+            size={"90"}
             className="h-full py-2"
           >
             <Titles size={"h2"}>Request</Titles>
           </Buttons>
         </Holds>
-      </Contents>
-      <Contents width={"section"}>
-        {/* Display approved requests */}
-        {approved.map((item) => (
-          <Holds key={item.id} className="py-2">
-            <Buttons
-              background={"green"}
-              key={item.id}
-              href={`/hamburger/inbox/sent/approved/${item.id}`}
-            >
-              <Titles>{item.requestType}</Titles>
-              {new Date(item.requestedStartDate).toLocaleString("en-US", {
-                day: "numeric",
-                month: "numeric",
-                year: "numeric",
-              })}
-              {" - "}
-              {new Date(item.requestedEndDate).toLocaleString("en-US", {
-                day: "numeric",
-                month: "numeric",
-                year: "numeric",
-              })}
-            </Buttons>
-          </Holds>
-        ))}
-
-        {/* Display pending requests */}
-        {pending.map((item) => (
-          <Holds key={item.id} className="py-2">
-            <Buttons
-              background={"orange"}
-              key={item.id}
-              href={`/hamburger/inbox/sent/${item.id}`}
-            >
-              <Titles>{item.requestType}</Titles>
-              {new Date(item.requestedStartDate).toLocaleString("en-US", {
-                day: "numeric",
-                month: "numeric",
-                year: "numeric",
-              })}
-              {" - "}
-              {new Date(item.requestedEndDate).toLocaleString("en-US", {
-                day: "numeric",
-                month: "numeric",
-                year: "numeric",
-              })}
-            </Buttons>
-          </Holds>
-        ))}
-
-        {/* Display denied requests */}
-        {denied.map((item) => (
-          <Holds key={item.id} className="py-2">
-            <Buttons
-              background={"red"}
-              key={item.id}
-              href={`/hamburger/inbox/sent/denied/${item.id}`}
-            >
-              <Titles>{item.requestType}</Titles>
-              {new Date(item.requestedStartDate).toLocaleString("en-US", {
-                day: "numeric",
-                month: "numeric",
-                year: "numeric",
-              })}
-              {" - "}
-              {new Date(item.requestedEndDate).toLocaleString("en-US", {
-                day: "numeric",
-                month: "numeric",
-                year: "numeric",
-              })}
-            </Buttons>
-          </Holds>
-        ))}
-      </Contents>
-    </Holds>
+      </Grids>
+    </Contents>
   );
 }

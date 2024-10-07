@@ -22,6 +22,7 @@ import { Forms } from "@/components/(reusable)/forms";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Images } from "@/components/(reusable)/images";
 import { uploadFirstSignature } from "@/actions/userActions";
+import { Grids } from "@/components/(reusable)/grids";
 
 // Custom hook for managing banners
 function useBanner(initialMessage = "") {
@@ -149,15 +150,8 @@ export default function ClockOutContent({ id }: ClockOutContentProps) {
 
   if (step === 1) {
     return (
-      <Holds>
-        <TitleBoxes
-          title={t("InjuryVerification")}
-          titleImg="/new/end-day.svg"
-          titleImgAlt="Team"
-          variant={"row"}
-          type="row"
-        />
-        {showBanner && (
+      <>
+        {/* {showBanner && (
           <div
             style={{
               position: "fixed",
@@ -167,35 +161,60 @@ export default function ClockOutContent({ id }: ClockOutContentProps) {
             }}
           >
             <Banners background="red">{bannerMessage}</Banners>
-          </div>
-        )}
-        <Holds>
-          <Titles size={"h3"}>{t("SignBelow")}</Titles>
-          <Signature
-            setBase64String={setBase64String}
-            base64string={base64String}
-            handleSubmitImage={handleSubmitImage}
-          />
-        </Holds>
-        <Holds>
-          <Contents>
-            <Titles size={"h4"}>{t("SignatureVerify")}</Titles>
-            <Checkbox checked={checked} onChange={handleCheckboxChange} />
-          </Contents>
-        </Holds>
-        {/* Button changes based on checkbox state */}
-        <Buttons
-          background={checked ? "green" : "red"} // Green for Continue, Red for Report an Injury
-          size={null}
-          onClick={handleNextStepAndSubmit}
-          disabled={isSubmitting} // Disable button while submitting
-        >
-          <Titles size={"h3"}>
-            {checked ? t("Continue") : t("ReportInjury")}{" "}
-            {/* Button text changes */}
-          </Titles>
-        </Buttons>
-      </Holds>
+            </div>
+        )} */}
+        <Grids className="grid-rows-4 gap-5">
+          <Holds background={"white"} className="row-span-1 h-full">
+            <Contents width={"section"}>
+              <TitleBoxes
+                title={t("InjuryVerification")}
+                titleImg="/end-day.svg"
+                titleImgAlt="Team"
+              />
+            </Contents>
+          </Holds>
+          <Holds background={"white"} className="row-span-3 h-full">
+            <Contents width={"section"}>
+              <Grids className="grid-rows-3">
+                <Holds className="row-span-2 h-full">
+                  <Titles size={"h3"}>{t("SignBelow")}</Titles>
+                  <Holds>
+                    <Signature
+                      setBase64String={setBase64String}
+                      base64string={base64String}
+                      handleSubmitImage={handleSubmitImage}
+                    />
+                  </Holds>
+
+                  <Holds position={"row"}>
+                    <Titles size={"h4"}>{t("SignatureVerify")}</Titles>
+
+                    <Checkbox
+                      checked={checked}
+                      onChange={handleCheckboxChange}
+                    />
+                  </Holds>
+                </Holds>
+                {/* Button changes based on checkbox state */}
+                <Holds size={"70"} className="row-span-1 mx-auto">
+                  <Contents width={"section"}>
+                    <Buttons
+                      background={checked ? "green" : "red"} // Green for Continue, Red for Report an Injury
+                      onClick={handleNextStepAndSubmit}
+                      disabled={isSubmitting} // Disable button while submitting
+                    >
+                      <Titles size={"h3"}>
+                        {checked ? t("Continue") : t("ReportInjury")}{" "}
+                        {/* Button text changes */}
+                      </Titles>
+                    </Buttons>
+                  </Contents>
+                </Holds>
+              </Grids>
+            </Contents>
+          </Holds>
+        </Grids>
+      </>
     );
   } else if (step === 2 && path === "Injury") {
     return (
