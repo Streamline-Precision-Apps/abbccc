@@ -84,7 +84,13 @@ export default function STab() {
               href={`/hamburger/inbox/sent/approved/${item.id}`}
             >
               <Titles>{item.requestType}</Titles>
-              {new Date(item.date).toLocaleString("en-US", {
+              {new Date(item.requestedStartDate).toLocaleString("en-US", {
+                day: "numeric",
+                month: "numeric",
+                year: "numeric",
+              })}
+              {" - "}
+              {new Date(item.requestedEndDate).toLocaleString("en-US", {
                 day: "numeric",
                 month: "numeric",
                 year: "numeric",
@@ -102,7 +108,13 @@ export default function STab() {
               href={`/hamburger/inbox/sent/${item.id}`}
             >
               <Titles>{item.requestType}</Titles>
-              {new Date(item.date).toLocaleString("en-US", {
+              {new Date(item.requestedStartDate).toLocaleString("en-US", {
+                day: "numeric",
+                month: "numeric",
+                year: "numeric",
+              })}
+              {" - "}
+              {new Date(item.requestedEndDate).toLocaleString("en-US", {
                 day: "numeric",
                 month: "numeric",
                 year: "numeric",
@@ -120,7 +132,13 @@ export default function STab() {
               href={`/hamburger/inbox/sent/denied/${item.id}`}
             >
               <Titles>{item.requestType}</Titles>
-              {new Date(item.date).toLocaleString("en-US", {
+              {new Date(item.requestedStartDate).toLocaleString("en-US", {
+                day: "numeric",
+                month: "numeric",
+                year: "numeric",
+              })}
+              {" - "}
+              {new Date(item.requestedEndDate).toLocaleString("en-US", {
                 day: "numeric",
                 month: "numeric",
                 year: "numeric",
