@@ -78,26 +78,28 @@ const TitleBoxes: FC<TitleBoxProps> = ({
           position={"center"}
           onClick={() => modalTitle(modal)}
         >
-          <Holds size={"30"} className="rounded-full relative">
+          <Holds size={"50"} className="rounded-full relative">
             <Images
               titleImg={titleImg}
               titleImgAlt={titleImgAlt}
-              className="rounded-full border-4 border-black"
+              className="rounded-full border-[3px] border-black"
               size={"full"}
             />
-            <Holds position={"center"}>
+            <Holds>
               <Holds
                 position={"absolute"}
-                size={"30"}
-                className="absolute p-2 rounded-full top-[65%] left-[65%]"
-                background={"white"}
+                size={"40"}
+                className="absolute  border-[3px] border-black rounded-full h-[40%] top-[60%] left-[65%] my-auto "
+                background={"lightBlue"}
               >
-                <Images
-                  titleImg="/camera.svg"
-                  titleImgAlt="camera"
-                  size={"full"}
-                  className="mx-auto"
-                />
+                <Holds className="h-full ">
+                  <Images
+                    titleImg="/camera.svg"
+                    titleImgAlt="camera"
+                    size={"50"}
+                    className="my-auto"
+                  />
+                </Holds>
               </Holds>
             </Holds>
           </Holds>
@@ -169,11 +171,30 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         className={cn(TitleBoxVariants({ variant, size, className }))}
         {...props}
       >
-        <Buttons href="back">
-          <Images titleImg="/backArrow.svg" titleImgAlt="back arrow" />
-        </Buttons>
-        <Titles size={"h1"}>{title}</Titles>
-        <Images titleImg={titleImg} titleImgAlt={titleImgAlt} />
+        <Holds position={"absolute"}>
+          <Buttons href="back" background={"none"} size={"30"}>
+            <Images
+              titleImg="/turnBack.svg"
+              titleImgAlt="back arrow"
+              size={"30"}
+            />
+          </Buttons>
+        </Holds>
+        <Holds position={"row"}>
+          <Holds size={"60"}>
+            <Titles size={"h1"} position={"right"} className="px-5">
+              {title}
+            </Titles>
+          </Holds>
+          <Holds size={"40"}>
+            <Images
+              titleImg={titleImg}
+              titleImgAlt={titleImgAlt}
+              position={"left"}
+              size={"30"}
+            />
+          </Holds>
+        </Holds>
       </div>
     );
   } else

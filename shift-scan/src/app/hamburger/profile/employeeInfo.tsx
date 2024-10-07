@@ -91,7 +91,7 @@ export default function EmployeeInfo() {
 
   if (loading) {
     return (
-      <Grids className="grid-rows-10 gap-5 ">
+      <Grids className="grid-rows-7 gap-5 ">
         <Holds
           size={"full"}
           background={"white"}
@@ -100,7 +100,7 @@ export default function EmployeeInfo() {
         <Holds
           size={"full"}
           background={"white"}
-          className="row-span-8 h-full "
+          className="row-span-5 h-full "
         >
           <Contents width={"section"}>
             <Texts> Loading </Texts>
@@ -113,8 +113,8 @@ export default function EmployeeInfo() {
 
   return (
     <>
-      <Grids className="grid-rows-5 gap-5 ">
-        <Holds background={"white"} className="row-span-2 h-full p-4">
+      <Grids className="grid-rows-4 gap-5 ">
+        <Holds background={"white"} className="row-span-1 h-full">
           {/*This Title box allows the profile pic to default as a base profile picture*/}
           <TitleBoxes
             type="profilePic"
@@ -126,60 +126,55 @@ export default function EmployeeInfo() {
             modalTitle={setIsOpen}
             modal={true}
           ></TitleBoxes>
-        </Holds>
 
-        <Modals
-          handleClose={() => {
-            setIsOpen(false);
-            setBase64String("");
-          }}
-          type="base64"
-          variant={"default"}
-          size={"fullPage"}
-          isOpen={isOpen}
-        >
-          <Base64Encoder
-            employee={employee && employee}
-            base64String={base64String}
-            setBase64String={setBase64String}
-            setIsOpen={setIsOpen}
-          />
-        </Modals>
-        <Holds background={"white"} className="row-span-3 h-full ">
+          <Modals
+            handleClose={() => {
+              setIsOpen(false);
+              setBase64String("");
+            }}
+            type="base64"
+            variant={"default"}
+            size={"fullPage"}
+            isOpen={isOpen}
+          >
+            <Base64Encoder
+              employee={employee && employee}
+              base64String={base64String}
+              setBase64String={setBase64String}
+              setIsOpen={setIsOpen}
+            />
+          </Modals>
+        </Holds>
+        <Holds background={"white"} className="row-span-3 h-full">
           <Contents width={"section"}>
-            <Grids className="grid-rows-4">
-              <Forms className="row-span-3">
-                <Labels>
-                  {t("EmployeeID")}
-                  <Inputs
-                    disabled
-                    type="text"
-                    defaultValue={employee?.id?.toString() ?? ""}
-                  />
-                </Labels>
-                <Labels>
-                  {t("ContactEmail")}
-                  <Inputs
-                    disabled
-                    type="email"
-                    defaultValue={contacts?.email ?? ""}
-                  />
-                </Labels>
-                <Labels>
-                  {t("ContactPhone#")}
-                  <Inputs
-                    disabled
-                    type="tel"
-                    defaultValue={contacts?.phoneNumber ?? ""}
-                  />
-                </Labels>
-              </Forms>
-              <Holds className="row-span-1">
-                <Contents>
-                  <SignOutModal />
-                </Contents>
-              </Holds>
-            </Grids>
+            <Labels>
+              {t("EmployeeID")}
+              <Inputs
+                disabled
+                type="text"
+                defaultValue={employee?.id?.toString() ?? ""}
+              />
+            </Labels>
+            <Labels>
+              {t("ContactEmail")}
+              <Inputs
+                disabled
+                type="email"
+                defaultValue={contacts?.email ?? ""}
+              />
+            </Labels>
+            <Labels>
+              {t("ContactPhone#")}
+              <Inputs
+                disabled
+                type="tel"
+                defaultValue={contacts?.phoneNumber ?? ""}
+              />
+            </Labels>
+
+            <Holds>
+              <SignOutModal />
+            </Holds>
           </Contents>
         </Holds>
       </Grids>
