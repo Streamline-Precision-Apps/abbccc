@@ -1,32 +1,24 @@
-import prisma from "@/lib/prisma";
+"use server";
 import { auth } from "@/auth";
 import ClockOutContent from "./clockOutContent";
-import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { Bases } from "@/components/(reusable)/bases";
+import { Contents } from "@/components/(reusable)/contents";
 
 export default async function AdminDashboard() {
+  const session = await auth();
 
-    const lang = cookies().get("locale");
-    const locale = lang ? lang.value : "en"; // Default to English
+  if (!session) {
+    redirect("/signin");
+  }
 
-    const session = await auth().catch((err) => {
-        console.error("Error in authentication:", err);
-        return null;
-      });
-  const userId = session?.user.id;
+  const userId = session.user.id;
 
-  const user = await prisma.users.findUnique({
-    where: {
-        id: userId,
-      },
-      select: {
-        signature: true,
-      },
-    })
-    .catch((err) => {
-      console.error("Error fetching user:", err);
-      return null;
-    });
-
-
-  return <ClockOutContent id={userId ?? ""} signature={user?.signature ?? null} locale={locale}/>;
+  return (
+    <Bases>
+      <Contents>
+        <ClockOutContent id={userId} />;
+      </Contents>
+    </Bases>
+  );
 }

@@ -82,25 +82,38 @@ export async function EditLeaveRequest(formData: FormData) {
 
 export async function ManagerLeaveRequest(formData: FormData) {
   try {
-    console.log(formData);
-    const managerComment = formData.get("managerComment") as string;
+    // Correct the form field names
+    const managerComment = formData.get("mangerComments") as string;
     const status = formData.get("decision") as string;
     const name = formData.get("decidedBy") as string;
-    console.log(managerComment, status, name);
-    if (status) {
+    const id = formData.get("id");
+
+    console.log("Form Data:", { managerComment, status, name, id });
+
+    if (id && status && managerComment) {
+      // Perform the Prisma update
       const result = await prisma.timeoffRequestForms.update({
-        where: { id: Number(formData.get("id") as string) },
+        where: { id: Number(id) },
         data: {
           managerComment: managerComment,
           status: status as FormStatus,
           decidedBy: name,
         },
       });
-      console.log(result);
+
+      console.log("Update Result:", result);
+
+      // Revalidate the path to update the data
       revalidatePath("/hamburger/inbox");
+    } else {
+      console.error("Missing form data fields:", {
+        id,
+        status,
+        managerComment,
+      });
     }
   } catch (error) {
-    console.log(error);
+    console.error("Error in ManagerLeaveRequest:", error);
   }
 }
 
