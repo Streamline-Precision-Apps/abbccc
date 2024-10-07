@@ -10,7 +10,7 @@ export default async function Page({ params }: { params: { id: string } }) {
   if (!session) return null;
 
   return (
-    <Bases size={"scroll"} className="py-5">
+    <Bases size={"scroll"}>
       <Contents height="page">
         <Content session={session} params={params} />
       </Contents>
