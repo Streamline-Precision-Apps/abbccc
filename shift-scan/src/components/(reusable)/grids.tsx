@@ -38,24 +38,63 @@ const GridVariants = cva(
         "4": "gap-4",
         "5": "gap-5",
         "6": "gap-6",
+      cols: {
+        "1": "grid-cols-1",
+        "2": "grid-cols-2",
+        "3": "grid-cols-3",
+        "4": "grid-cols-4",
+        "5": "grid-cols-5",
+      },
+      rows: {
+        "1": "grid-rows-1",
+        "2": "grid-rows-2",
+        "3": "grid-rows-3",
+        "4": "grid-rows-4",
+        "5": "grid-rows-5",
+        "6": "grid-rows-6",
+        "7": "grid-rows-7",
+        "8": "grid-rows-8",
+        "9": "grid-rows-9",
+        "10": "grid-rows-10",
+        "11": "grid-rows-11",
+        "12": "grid-rows-12",
+        "13": "grid-rows-13",
+        "14": "grid-rows-14",
+        "15": "grid-rows-15",
+      },
+      gap: {
+        "0": "gap-0",
+        "1": "gap-1",
+        "2": "gap-2",
+        "3": "gap-3",
+        "4": "gap-4",
+        "5": "gap-5",
+        "6": "gap-6",
       },
     },
     defaultVariants: {
       cols: "1",
       rows: "1",
       gap: "0",
+      cols: "1",
+      rows: "1",
+      gap: "0",
     },
   }
-)
+);
 
 // this extends the capability of HTMLAttributes or the VariantProps that it can hold, specify your props here
-interface GridProps extends HTMLAttributes<HTMLElement>, VariantProps<typeof GridVariants> {
-}
+interface GridProps
+  extends HTMLAttributes<HTMLElement>,
+    VariantProps<typeof GridVariants> {}
 
-const Grids: FC<GridProps> = ({className, cols, rows, gap, ...props}) => {
-    return (
-      <div className={cn(GridVariants({cols, rows, gap, className}))} {...props}/>
-    )
-}
+const Grids: FC<GridProps> = ({ className, cols, rows, gap, ...props }) => {
+  return (
+    <div
+      className={cn(GridVariants({ cols, rows, gap, className }))}
+      {...props}
+    />
+  );
+};
 
-export {Grids, GridVariants}
+export { Grids, GridVariants };

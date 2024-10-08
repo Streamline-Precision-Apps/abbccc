@@ -147,7 +147,10 @@
     "equipmentPicture": {
        "TakePicture": "Take a Picture",
         "ResetCamera": "Reset Camera",
-        "startCamera": "Start Camera"
+        "startCamera": "Start Camera",
+        "HideCamera": "Hide Camera",
+        "ShowCamera": "Show Camera"
+
     },
     "EquipmentContent" : {
         "Title": "Checked Out",
@@ -268,17 +271,18 @@
         "Security": "Security",
         "Biometrics": "Biometrics",
         "CameraAccess": "Camera Access",
-        "LocationAccess": "Location Access",
+        "locationAccess": "Location Access",
         "Inbox": "Inbox",
         "EmployeeID": "Employee ID",
-        "ContactEmail": "Contact Email",
-        "ContactPhone#": "Contact Phone #",
+        "PersonalEmail": "Personal Email",
+        "EmergencyContact": "Emergency Contact Number",
         "SafetyTraining": "Safety Training",
         "SignOut": "Sign Out",
         "SignOutConfirmation": "Are you sure you want to sign out of your account?",
         "SaveChanges": "Would you like to Save Changes?",
         "Yes": "Yes",
-        "Cancel": "Cancel"
+        "Cancel": "Cancel",
+        "PhoneNumber": "Phone Number"
     },
     "MyTeam": {
         "Teams-Title": "My Teams",
@@ -385,5 +389,27 @@
         "LabelDuration": "Duration",
         "LabelJobsite": "Jobsite",
         "LabelCostCode": "Cost Code"
+    },
+
+    "btn":{
+        "Cancel": "Cancel",
+        "Save": "Save"
     }
+    ,
+    "Info":{
+        "Title": "Personal Information",
+        "FirstName": "First Name",
+        "LastName": "Last Name",
+        "Username": "Username",
+        "Password": "Password",
+        "Email": "Email",
+        "Phone": "Phone"
+    },
+
+    "formLabel":{
+        "Submit": "Submit"
+    }
+
+
+
 }
