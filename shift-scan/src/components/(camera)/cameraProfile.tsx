@@ -22,6 +22,7 @@ import { set } from "zod";
 
 interface CameraComponentProps {
   setBase64String: Dispatch<SetStateAction<string>>;
+  reloadEmployeeData: () => void;
 }
 const VIDEO_DIMENSIONS = 300;
 const DIMENSIONS = 150;
@@ -29,6 +30,7 @@ const ASPECT_RATIO = 1 / 1;
 
 const CameraComponent: React.FC<CameraComponentProps> = ({
   setBase64String,
+  reloadEmployeeData,
 }) => {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);

@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, ChangeEvent, SetStateAction, Dispatch } from "react";
 import { Buttons } from "../(reusable)/buttons";
 import { Holds } from "../(reusable)/holds";
@@ -18,6 +16,7 @@ type Props = {
   base64String: string;
   setBase64String: Dispatch<SetStateAction<string>>;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
+  reloadEmployeeData: () => void;
 };
 
 export default function Base64Encoder({
@@ -25,10 +24,12 @@ export default function Base64Encoder({
   base64String,
   setBase64String,
   setIsOpen,
+  reloadEmployeeData,
 }: Props) {
   if (employee === undefined) {
     return;
   }
+
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -40,19 +41,40 @@ export default function Base64Encoder({
     }
   };
 
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    // Prevent default form submission
+    event.preventDefault();
+
+    try {
+      // Perform the upload action first
+      const result = await uploadImage(new FormData(event.currentTarget));
+      console.log(result);
+
+      // After the action completes, proceed with closing the modal and reloading the data
+      setIsOpen(false);
+      reloadEmployeeData();
+    } catch (error) {
+      console.error("Failed to upload image", error);
+    }
+  };
+
   return (
     <Holds className="py-5">
       <Contents>
-        <Forms action={uploadImage} onSubmit={() => setIsOpen(false)}>
+        <Forms onSubmit={handleSubmit}>
           <Contents>
-            {/* file enables user to use a file image upload */}
+            {/* File enables user to use a file image upload */}
             <ImageCropper
               setBase64String={setBase64String}
               handleFileChange={handleFileChange}
+              reloadEmployeeData={reloadEmployeeData}
             />
             <Labels>
               <Texts>or</Texts>
-              <CameraComponent setBase64String={setBase64String} />
+              <CameraComponent
+                setBase64String={setBase64String}
+                reloadEmployeeData={reloadEmployeeData}
+              />
             </Labels>
           </Contents>
           <Inputs type="hidden" name="image" value={base64String} readOnly />

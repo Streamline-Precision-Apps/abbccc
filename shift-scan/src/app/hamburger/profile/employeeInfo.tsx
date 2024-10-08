@@ -18,6 +18,8 @@ import { Trainings } from "@prisma/client";
 import { Grids } from "@/components/(reusable)/grids";
 import { Texts } from "@/components/(reusable)/texts";
 import Spinner from "@/components/(animations)/spinner";
+import { set } from "zod";
+import useFetchAllData from "@/app/(content)/FetchData";
 
 type Props = {
   contacts: Contact;
@@ -30,53 +32,7 @@ export default function EmployeeInfo() {
   const [training, setTraining] = useState<Trainings[]>([]); // Assuming `training` is an array
   const [userTrainings, setUserTrainings] = useState<UserTraining[]>([]);
   const [isOpen, setIsOpen] = useState(false);
-
-  useEffect(() => {
-    const fetchProfile = async () => {
-      setLoading(true);
-      try {
-        // Make parallel requests if possible
-        const [employeeRes, contactsRes, trainingRes, userTrainingsRes] =
-          await Promise.all([
-            fetch("/api/getEmployee"), // A separate endpoint for employee
-            fetch("/api/getContacts"), // A separate endpoint for contacts
-            fetch("/api/getTraining"), // A separate endpoint for training
-            fetch("/api/getUserTrainings"), // A separate endpoint for user trainings
-          ]);
-
-        // Parse responses in parallel
-        const [employee, contacts, training, userTrainings] = await Promise.all(
-          [
-            employeeRes.json(),
-            contactsRes.json(),
-            trainingRes.json(),
-            userTrainingsRes.json(),
-          ]
-        );
-
-        // Set the data in the state
-        setEmployee(employee);
-        setContacts(contacts);
-        setTraining(training);
-        setUserTrainings(userTrainings);
-
-        if (
-          employee?.error ||
-          contacts?.error ||
-          training?.error ||
-          userTrainings?.error
-        ) {
-          console.log("An error occurred in one of the responses.");
-        }
-      } catch (error) {
-        console.error("Failed to fetch profile data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProfile();
-  }, []);
+  const [editImg, setEditImg] = useState(false);
 
   const t = useTranslations("Hamburger");
   const [base64String, setBase64String] = useState<string>("");
@@ -88,6 +44,71 @@ export default function EmployeeInfo() {
   // Logic to get completion percentage
   const completionStatus = total > 0 ? completed / total : 0;
   const completionPercentage = (completionStatus * 100).toFixed(0);
+
+  //----------------------------Data Fetching-------------------------------------
+  const fetchEmployee = async () => {
+    setLoading(true);
+    try {
+      const employeeRes = await fetch("/api/getEmployee");
+      const employeeData = await employeeRes.json();
+      setEmployee(employeeData);
+    } catch (error) {
+      console.error("Failed to fetch employee data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchProfile = async () => {
+    setLoading(true);
+    try {
+      const [contactsRes, trainingRes, userTrainingsRes] = await Promise.all([
+        fetch("/api/getContacts"),
+        fetch("/api/getTraining"),
+        fetch("/api/getUserTrainings"),
+      ]);
+
+      const [contactsData, trainingData, userTrainingsData] = await Promise.all(
+        [contactsRes.json(), trainingRes.json(), userTrainingsRes.json()]
+      );
+
+      setContacts(contactsData);
+      setTraining(trainingData);
+      setUserTrainings(userTrainingsData);
+
+      if (
+        contactsData?.error ||
+        trainingData?.error ||
+        userTrainingsData?.error
+      ) {
+        console.log("An error occurred in one of the responses.");
+      }
+    } catch (error) {
+      console.error("Failed to fetch profile data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const fetchAllData = async () => {
+    setLoading(true);
+    try {
+      await Promise.all([fetchProfile(), fetchEmployee()]);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAllData();
+  }, []);
+
+  const reloadEmployeeData = () => {
+    const data = fetchEmployee(); // Directly fetch the updated employee data
+
+    console.log("Employee data reloaded");
+  };
 
   if (loading) {
     return (
@@ -144,12 +165,35 @@ export default function EmployeeInfo() {
               size={"fullPage"}
               isOpen={isOpen}
             >
-              <Base64Encoder
-                employee={employee && employee}
-                base64String={base64String}
-                setBase64String={setBase64String}
-                setIsOpen={setIsOpen}
-              />
+              {!editImg && (
+                <Holds size={"full"} background={"white"} className="my-5">
+                  <Holds size={"50"} className="rounded-full">
+                    <img
+                      src={employee?.image ?? ""}
+                      alt={"image"}
+                      className="rounded-full"
+                    />
+                  </Holds>
+                  <Buttons
+                    size={"50"}
+                    className="my-5"
+                    onClick={() => setEditImg(true)}
+                  >
+                    <Texts>Change Profile Picture</Texts>
+                  </Buttons>
+                </Holds>
+              )}
+              {editImg && (
+                <Holds size={"full"} background={"white"} className="my-5">
+                  <Base64Encoder
+                    employee={employee && employee}
+                    base64String={base64String}
+                    setBase64String={setBase64String}
+                    setIsOpen={setIsOpen}
+                    reloadEmployeeData={reloadEmployeeData}
+                  />
+                </Holds>
+              )}
             </Modals>
           </Holds>
           <Holds background={"white"} className="row-span-7 h-full ">
