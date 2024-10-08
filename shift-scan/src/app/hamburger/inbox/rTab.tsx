@@ -75,7 +75,7 @@ export default function RTab() {
   // If loading, show a loading message
   if (loading) {
     return (
-      <Holds>
+      <Holds className="py-5">
         <Texts>Loading...</Texts>
         <Spinner />
       </Holds>
@@ -100,7 +100,7 @@ export default function RTab() {
   return (
     <Contents width={"section"} className="mb-5">
       <Grids rows={"1"} gap={"5"} className="py-5">
-        <Holds className="row-span-1 h-full">
+        <Holds className="row-span-1 h-full gap-5 overflow-auto no-scrollbar">
           {pending.map((item) => (
             <Holds key={item.id}>
               <Buttons
