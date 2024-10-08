@@ -7,6 +7,8 @@ import { redirect } from "next/navigation";
 import { Holds } from "@/components/(reusable)/holds";
 import { Contents } from "@/components/(reusable)/contents";
 
+import { Titles } from "@/components/(reusable)/titles";
+
 export default function SignOutModal() {
   const [isOpen, setIsOpen] = useState(false);
   const t = useTranslations("Hamburger");
@@ -16,15 +18,15 @@ export default function SignOutModal() {
   };
 
   return (
-    <Holds className="py-5">
-      <Holds size={"full"}>
+    <>
+      <Holds className=" mt-10 ">
         <Buttons
           onClick={() => setIsOpen(true)}
           background={"red"}
           size={"full"}
-          className="py-2"
+          className="p-3 "
         >
-          <p>{t("SignOut")}</p>
+          <Titles size={"h4"}>{t("SignOut")}</Titles>
         </Buttons>
       </Holds>
 
@@ -37,6 +39,6 @@ export default function SignOutModal() {
       >
         {t("SignOutConfirmation")}
       </Modals>
-    </Holds>
+    </>
   );
 }

@@ -113,71 +113,80 @@ export default function EmployeeInfo() {
 
   return (
     <>
-      <Grids className="grid-rows-4 gap-5 ">
-        <Holds background={"white"} className="row-span-1 h-full">
-          {/*This Title box allows the profile pic to default as a base profile picture*/}
-          <TitleBoxes
-            type="profilePic"
-            title={`${employee?.firstName} ${employee?.lastName}`}
-            titleImg={
-              employee?.image !== null ? `${employee?.image}` : "/profile.svg"
-            }
-            titleImgAlt={"image"}
-            modalTitle={setIsOpen}
-            modal={true}
-          ></TitleBoxes>
+      <Contents width={"section"}>
+        <Grids rows={"10"} gap={"5"}>
+          <Holds background={"white"} className="row-span-3 h-full">
+            {/*This Title box allows the profile pic to default as a base profile picture*/}
+            <Contents width={"section"}>
+              <TitleBoxes
+                type="profilePic"
+                title={`${employee?.firstName} ${employee?.lastName} `}
+                title2={`#ID: ${employee?.id}`}
+                titleImg={
+                  employee?.image !== null
+                    ? `${employee?.image}`
+                    : "/profile.svg"
+                }
+                titleImgAlt={"image"}
+                modalTitle={setIsOpen}
+                modal={true}
+                className="h-full relative"
+              />
+            </Contents>
 
-          <Modals
-            handleClose={() => {
-              setIsOpen(false);
-              setBase64String("");
-            }}
-            type="base64"
-            variant={"default"}
-            size={"fullPage"}
-            isOpen={isOpen}
-          >
-            <Base64Encoder
-              employee={employee && employee}
-              base64String={base64String}
-              setBase64String={setBase64String}
-              setIsOpen={setIsOpen}
-            />
-          </Modals>
-        </Holds>
-        <Holds background={"white"} className="row-span-3 h-full">
-          <Contents width={"section"}>
-            <Labels>
-              {t("EmployeeID")}
-              <Inputs
-                disabled
-                type="text"
-                defaultValue={employee?.id?.toString() ?? ""}
+            <Modals
+              handleClose={() => {
+                setIsOpen(false);
+                setBase64String("");
+              }}
+              type="base64"
+              variant={"default"}
+              size={"fullPage"}
+              isOpen={isOpen}
+            >
+              <Base64Encoder
+                employee={employee && employee}
+                base64String={base64String}
+                setBase64String={setBase64String}
+                setIsOpen={setIsOpen}
               />
-            </Labels>
-            <Labels>
-              {t("ContactEmail")}
-              <Inputs
-                disabled
-                type="email"
-                defaultValue={contacts?.email ?? ""}
-              />
-            </Labels>
-            <Labels>
-              {t("ContactPhone#")}
-              <Inputs
-                disabled
-                type="tel"
-                defaultValue={contacts?.phoneNumber ?? ""}
-              />
-            </Labels>
+            </Modals>
+          </Holds>
+          <Holds background={"white"} className="row-span-7 h-full ">
+            <Holds className="h-full">
+              <Contents width={"section"}>
+                <Labels size={"p4"}>
+                  {t("PhoneNumber")}
+                  <Inputs
+                    disabled
+                    type="tel"
+                    defaultValue={contacts?.phoneNumber ?? ""}
+                  />
+                </Labels>
 
-            <Holds>
-              <SignOutModal />
+                <Labels size={"p4"}>
+                  {t("PersonalEmail")}
+                  <Inputs
+                    disabled
+                    type="email"
+                    defaultValue={contacts?.email}
+                  />
+                </Labels>
+                <Labels size={"p4"}>
+                  {t("EmergencyContact")}
+                  <Inputs
+                    disabled
+                    type="tel"
+                    defaultValue={contacts?.emergencyContactNumber ?? ""}
+                  />
+                </Labels>
+
+                <SignOutModal />
+              </Contents>
             </Holds>
-          </Contents>
-        </Holds>
-      </Grids>
+          </Holds>
+        </Grids>
+      </Contents>
     </>
   );
 }

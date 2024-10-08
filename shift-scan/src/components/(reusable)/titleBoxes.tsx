@@ -38,6 +38,7 @@ interface TitleBoxProps
     VariantProps<typeof TitleBoxVariants> {
   type?: string;
   title: string;
+  title2?: string;
   titleImg: string;
   titleImgAlt: string;
   src?: string;
@@ -51,6 +52,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
   size,
   type,
   title,
+  title2,
   titleImg,
   titleImgAlt,
   modal,
@@ -73,38 +75,40 @@ const TitleBoxes: FC<TitleBoxProps> = ({
           </Buttons>
         </Holds>
         {props.children}
-        <Holds
-          size={"full"}
-          position={"center"}
-          onClick={() => modalTitle(modal)}
-        >
-          <Holds size={"50"} className="rounded-full relative">
+        <Holds size={"full"} position={"center"} className=" cursor-pointer ">
+          <Holds
+            size={"40"}
+            className="rounded-full relative "
+            onClick={() => modalTitle(modal)}
+          >
             <Images
               titleImg={titleImg}
               titleImgAlt={titleImgAlt}
               className="rounded-full border-[3px] border-black"
               size={"full"}
             />
-            <Holds>
-              <Holds
-                position={"absolute"}
-                size={"40"}
-                className="absolute  border-[3px] border-black rounded-full h-[40%] top-[60%] left-[65%] my-auto "
-                background={"lightBlue"}
-              >
-                <Holds className="h-full ">
-                  <Images
-                    titleImg="/camera.svg"
-                    titleImgAlt="camera"
-                    size={"50"}
-                    className="my-auto"
-                  />
-                </Holds>
-              </Holds>
+            <Holds className="absolute rounded-full h-5 w-5 md:h-10 md:w-10 left-[75%] top-[80%] transform -translate-x-1/2 -translate-y-1/2  px-1  md:px-2 md:py-3 border-[3px] border-black bg-white">
+              <Images
+                titleImg="/camera.svg"
+                titleImgAlt="camera"
+                size={"full"}
+                className="my-auto"
+              />
             </Holds>
           </Holds>
         </Holds>
-        <Titles>{title}</Titles>
+        <Titles size={"h3"}>{title}</Titles>
+        <Holds
+          size={"30"}
+          position={"absolute"}
+          className="left-[70%] top-[5%] "
+        >
+          <Holds size={"90"} position={"center"}>
+            <Titles position={"right"} size={"h6"}>
+              {title2}
+            </Titles>
+          </Holds>
+        </Holds>
       </div>
     );
   }

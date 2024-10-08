@@ -8,6 +8,7 @@ import { redirect } from "next/navigation";
 import { Employee, Contact, UserTraining } from "@/lib/types";
 import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";
+import { Grids } from "@/components/(reusable)/grids";
 
 export default async function EmployeeProfile() {
   const session = await auth();
@@ -20,7 +21,7 @@ export default async function EmployeeProfile() {
   return (
     <Bases>
       <Contents>
-        <Holds>
+        <Holds className="h-full row-span-1">
           <EmployeeInfo />
         </Holds>
       </Contents>
