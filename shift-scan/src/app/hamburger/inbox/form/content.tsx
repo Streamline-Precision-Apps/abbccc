@@ -13,9 +13,12 @@ import { Texts } from "@/components/(reusable)/texts";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { RequestForm } from "@/lib/types";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { createLeaveRequest } from "@/actions/inboxSentActions";
 import { useRouter } from "next/navigation";
+import React from "react";
+import { Grids } from "@/components/(reusable)/grids";
+
 import { uploadFirstSignature } from "@/actions/userActions";
 import {  Signature } from "@/app/(routes)/dashboard/clock-out/(components)/injury-verification/Signature";
 
@@ -33,9 +36,48 @@ function useBanner(initialMessage = "") {
   return { showBanner, bannerMessage, setShowBanner, setBannerMessage };
 }
 
-export default function Form({ signature, session }: RequestForm) {
+export default function Form({ session }: RequestForm) {
   const [sign, setSign] = useState(false);
   const [message, setMessage] = useState("");
+  const [closeBanner, showBanner] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const router = useRouter();
+  const [signature, setSignature] = useState("");
+
+  // Fetch the signature image when the component is mounted
+  useEffect(() => {
+    const fetchSignature = async () => {
+      const response = await fetch("/api/getSignature");
+      const json = await response.json();
+      setSignature(json.signature);
+    };
+    fetchSignature();
+  }, []);
+
+  // Handle form submission
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    // Check if signed before submitting
+    if (!sign) {
+      setErrorMessage("Please provide your signature before submitting.");
+      return;
+    }
+    const formData = new FormData(event.target as HTMLFormElement);
+    createLeaveRequest(formData);
+
+    showBanner(true);
+    setMessage("Time off request submitted");
+
+    // Redirect and reset form after a delay
+    const timer = setTimeout(() => {
+      showBanner(false);
+      setMessage("");
+      clearTimeout(timer);
+      router.replace("/hamburger/inbox");
+    }, 5000);
+  };
+
   const [base64String, setBase64String] = useState<string>(signature || "");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const id = session?.user.id;
@@ -72,34 +114,19 @@ export default function Form({ signature, session }: RequestForm) {
     }
   };
 
-  const router = useRouter();
-  const handleSubmit = async () => {
-    setShowBanner(true);
-    setBannerMessage("Time off request submitted");
-
-    const timer = setTimeout(() => {
-      setShowBanner(false);
-      setMessage("");
-      clearTimeout(timer);
-      router.replace("/hamburger/inbox");
-    }, 5000);
-  };
   return (
-    <Bases>
-      <Contents>
-        <Holds background={"green"} className="mb-3">
-          <TitleBoxes
-            title="Leave Request Form"
-            titleImg="/new/Inbox.svg"
-            titleImgAlt="Inbox"
-            type="noIcon"
-          />
-        </Holds>
-        {showBanner && <Titles>{bannerMessage}</Titles>}
-        <Forms action={createLeaveRequest} onSubmit={handleSubmit}>
-          <Holds background={"white"} className="mb-3">
-            <Contents width="section">
-              <Holds>
+    <>
+      {/* Display banner message */}
+      {closeBanner && <Titles>{message}</Titles>}
+
+      {/* Display error message if not signed */}
+      {errorMessage && <Titles>{errorMessage}</Titles>}
+
+      <Forms onSubmit={handleSubmit}>
+        <Holds background={"white"} className="mb-3">
+          <Contents width="section">
+            <Grids className="grid-rows-7">
+              <Holds className="row-span-4">
                 <Labels>Start Date</Labels>
                 <Inputs type="date" name="startDate" id="startDate" required />
                 <Labels>End Date</Labels>
@@ -134,45 +161,64 @@ export default function Form({ signature, session }: RequestForm) {
                   value={new Date().toISOString()}
                 />
               </Holds>
-              {sign ? (
-                  <Holds size="titleBox">
-                    <Signature
-                      setBase64String={setBase64String}
-                      base64string={base64String}
-                      handleSubmitImage={handleSubmitImage}
-                    />
-                <Buttons
-                  background={"lightBlue"}
-                  onClick={(event) => {
-                    event.preventDefault();
-                    setSign(false);
-                  }}
-                >
-                <Titles size="h4">Cancel</Titles>
+
+              {/* Signature Section */}
+              <Holds className="row-span-2">
+                {sign ? (
+                  <Buttons
+                    background={"lightBlue"}
+                    className="p-4"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      setSign(false); // Unsigned
+                      setErrorMessage(""); // Clear any existing error message
+                    }}
+                  >
+                    <Holds
+                      background={"white"}
+                      size={"full"}
+                      position={"center"}
+                    >
+                      <Holds size={"30"}>
+                        <Images
+                          titleImg={`${signature}`}
+                          titleImgAlt="Loading Signature"
+                        />
+                      </Holds>
+                    </Holds>
+                  </Buttons>
+                ) : (
+                  <Buttons
+                    background={"lightBlue"}
+                    className="p-5"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      setSign(true); // Signed
+                    }}
+                  >
+                    <Holds>
+                      <Holds size={"30"} position={"center"}>
+                        <Titles size={"h1"}>Sign Here</Titles>
+                      </Holds>
+                    </Holds>
+                  </Buttons>
+                )}
+                <Texts size={"p4"}>
+                  *By Signing I acknowledge that time leave request is subject
+                  to management approval and company policy. *
+                </Texts>
+              </Holds>
+
+              {/* Submit Section */}
+              <Holds className="row-span-1">
+                <Buttons type="submit" background={"green"} disabled={!sign}>
+                  <Titles size={"h2"}>Submit</Titles>
                 </Buttons>
-                  </Holds>
-              ) : (
-                <Buttons
-                  background={"lightBlue"}
-                  onClick={(event) => {
-                    event.preventDefault();
-                    setSign(true);
-                  }}
-                >
-                  <Titles size={"h2"}>Tap to sign</Titles>
-                </Buttons>
-              )}
-              <Texts size={"p4"}>
-                *By Signing I acknowledge that time leave request are subject to
-                management approval and company policy. *
-              </Texts>
-            </Contents>
-          </Holds>
-          <Buttons type="submit" background={"green"}>
-            <Titles size={"h2"}>Submit</Titles>
-          </Buttons>
-        </Forms>
-      </Contents>
-    </Bases>
+              </Holds>
+            </Grids>
+          </Contents>
+        </Holds>
+      </Forms>
+    </>
   );
 }

@@ -4,7 +4,7 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { Signature } from "./(components)/injury-verification/Signature";
 import { Checkbox } from "./(components)/injury-verification/checkBox";
 import { useTranslations } from "next-intl";
@@ -22,6 +22,7 @@ import { Forms } from "@/components/(reusable)/forms";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Images } from "@/components/(reusable)/images";
 import { uploadFirstSignature } from "@/actions/userActions";
+import { Grids } from "@/components/(reusable)/grids";
 
 // Custom hook for managing banners
 function useBanner(initialMessage = "") {
@@ -40,15 +41,10 @@ function useBanner(initialMessage = "") {
 
 type ClockOutContentProps = {
   id: string;
-  signature: string | null;
-  locale: string;
 };
 
-export default function ClockOutContent({
-  id,
-  signature,
-  locale,
-}: ClockOutContentProps) {
+export default function ClockOutContent({ id }: ClockOutContentProps) {
+  const [loading, setLoading] = useState(false);
   const [step, incrementStep] = useState(1);
   const [path, setPath] = useState("ClockOut");
   const router = useRouter();
@@ -60,6 +56,7 @@ export default function ClockOutContent({
   const { savedCostCode } = useSavedCostCode();
   const { savedTimeSheetData } = useTimeSheetData();
   const [date] = useState(new Date());
+  const [base64String, setBase64String] = useState<string>("");
 
   // Checking if window exists before accessing localStorage
   const localStorageData =
@@ -73,7 +70,22 @@ export default function ClockOutContent({
         }
       : {};
 
-  const [base64String, setBase64String] = useState<string>(signature || "");
+  useEffect(() => {
+    const fetch = async () => {
+      setLoading(true);
+      try {
+        const response = await window.fetch("/api/getSignature");
+        const json = await response.json();
+        setBase64String(json.signature);
+      } catch (error) {
+        console.error("Error fetching signature:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetch();
+  }, []);
+
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const handleCheckboxChange = (newChecked: boolean) => {
@@ -138,88 +150,100 @@ export default function ClockOutContent({
 
   if (step === 1) {
     return (
-      <Bases>
-        <Contents>
-          <Holds>
-            <TitleBoxes
-              title={t("InjuryVerification")}
-              titleImg="/new/end-day.svg"
-              titleImgAlt="Team"
-              variant={"row"}
-              type="row"
-            />
-            {showBanner && (
-              <div
-                style={{
-                  position: "fixed",
-                  top: 0,
-                  width: "100%",
-                  zIndex: 1000,
-                }}
-              >
-                <Banners background="red">{bannerMessage}</Banners>
-              </div>
-            )}
-            <Holds>
-              <Titles size={"h3"}>{t("SignBelow")}</Titles>
-              <Signature
-                setBase64String={setBase64String}
-                base64string={base64String}
-                handleSubmitImage={handleSubmitImage}
+      <>
+        {/* {showBanner && (
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              width: "100%",
+              zIndex: 1000,
+            }}
+          >
+            <Banners background="red">{bannerMessage}</Banners>
+            </div>
+        )} */}
+        <Grids className="grid-rows-4 gap-5">
+          <Holds background={"white"} className="row-span-1 h-full">
+            <Contents width={"section"}>
+              <TitleBoxes
+                title={t("InjuryVerification")}
+                titleImg="/end-day.svg"
+                titleImgAlt="Team"
               />
-            </Holds>
-            <Holds>
-              <Contents>
-                <Titles size={"h4"}>{t("SignatureVerify")}</Titles>
-                <Checkbox checked={checked} onChange={handleCheckboxChange} />
-              </Contents>
-            </Holds>
-            {/* Button changes based on checkbox state */}
-            <Buttons
-              background={checked ? "green" : "red"} // Green for Continue, Red for Report an Injury
-              size={null}
-              onClick={handleNextStepAndSubmit}
-              disabled={isSubmitting} // Disable button while submitting
-            >
-              <Titles size={"h3"}>
-                {checked ? t("Continue") : t("ReportInjury")}{" "}
-                {/* Button text changes */}
-              </Titles>
-            </Buttons>
+            </Contents>
           </Holds>
-        </Contents>
-      </Bases>
+          <Holds background={"white"} className="row-span-3 h-full">
+            <Contents width={"section"}>
+              <Grids className="grid-rows-3">
+                <Holds className="row-span-2 h-full">
+                  <Titles size={"h3"}>{t("SignBelow")}</Titles>
+                  <Holds>
+                    <Signature
+                      setBase64String={setBase64String}
+                      base64string={base64String}
+                      handleSubmitImage={handleSubmitImage}
+                    />
+                  </Holds>
+
+                  <Holds position={"row"}>
+                    <Titles size={"h4"}>{t("SignatureVerify")}</Titles>
+
+                    <Checkbox
+                      checked={checked}
+                      onChange={handleCheckboxChange}
+                    />
+                  </Holds>
+                </Holds>
+                {/* Button changes based on checkbox state */}
+                <Holds size={"70"} className="row-span-1 mx-auto">
+                  <Contents width={"section"}>
+                    <Buttons
+                      background={checked ? "green" : "red"} // Green for Continue, Red for Report an Injury
+                      onClick={handleNextStepAndSubmit}
+                      disabled={isSubmitting} // Disable button while submitting
+                    >
+                      <Titles size={"h3"}>
+                        {checked ? t("Continue") : t("ReportInjury")}{" "}
+                        {/* Button text changes */}
+                      </Titles>
+                    </Buttons>
+                  </Contents>
+                </Holds>
+              </Grids>
+            </Contents>
+          </Holds>
+        </Grids>
+      </>
     );
   } else if (step === 2 && path === "Injury") {
     return (
-      <Bases>
-        <Contents>
-          <Holds>
-            <TitleBoxes
-              title={t("InjuryVerification")}
-              titleImg="/new/injury.svg"
-              titleImgAlt="Team"
-              variant={"row"}
-              type="row"
-            />
-          </Holds>
-          <Holds>
-            <InjuryReportContent
-              base64String={base64String}
-              setBase64String={setBase64String}
-              handleComplete={handleNextStep} // Ensure handleComplete does the right thing
-              handleSubmitImage={handleSubmitImage}
-            />
-          </Holds>
-        </Contents>
-      </Bases>
+      <>
+        <Holds>
+          <TitleBoxes
+            title={t("InjuryVerification")}
+            titleImg="/new/injury.svg"
+            titleImgAlt="Team"
+            variant={"row"}
+            type="row"
+          />
+        </Holds>
+        <Holds>
+          <InjuryReportContent
+            base64String={base64String}
+            setBase64String={setBase64String}
+            handleComplete={handleNextStep} // Ensure handleComplete does the right thing
+            handleSubmitImage={handleSubmitImage}
+          />
+        </Holds>
+      </>
     );
   } else if (
     (step === 2 && path === "ClockOut") ||
     (step === 3 && path === "Injury")
   ) {
     return (
-      <Bases>
+      <>
         <Banners background={bannerMessage.length > 0 ? "green" : "default"}>
           {bannerMessage}
         </Banners>
@@ -283,7 +307,7 @@ export default function ClockOutContent({
             </Contents>
           </Holds>
         </Contents>
-      </Bases>
+      </>
     );
   } else {
     return null;

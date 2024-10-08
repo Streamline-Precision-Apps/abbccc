@@ -12,6 +12,8 @@ import { Forms } from "@/components/(reusable)/forms";
 import { Options } from "@/components/(reusable)/options";
 import { Contents } from "@/components/(reusable)/contents";
 import { Texts } from "@/components/(reusable)/texts";
+import { Holds } from "@/components/(reusable)/holds";
+import { Grids } from "@/components/(reusable)/grids";
 
 type Props = {
   users: SearchUser[];
@@ -86,101 +88,110 @@ export default function UserManagement({ users }: Props) {
   return (
     <>
       {showBanner && (
-        <Contents>
+        <Holds className="bg-red-500">
           <Texts>{banner}</Texts>
-        </Contents>
+        </Holds>
       )}
-      <Contents>
-        {/* Checkbox for including terminated employees */}
-        <div className="checkbox-container">
-          <label>
-            <input
-              type="checkbox"
-              checked={includeTerminated}
-              onChange={handleIncludeTerminatedChange}
-            />
-            {t("Include Terminated Employees")}
-          </label>
-        </div>
+      <Holds background={"white"} className="rounded-t-none h-full">
+        <Contents width={"section"} className="py-5">
+          <Grids rows={"6"} gap={"5"}>
+            <Holds className="row-span-1 h-full p-3">
+            {/* Checkbox for including terminated employees */}
+              <label>
+                <input
+                  type="checkbox"
+                  checked={includeTerminated}
+                  onChange={handleIncludeTerminatedChange}
+                />
+                {t("Include Terminated Employees")}
+              </label>
+            </Holds>
+            <Holds className="row-span-5 h-full">
+            {/* Search for new user. */}
+            <Expands title="Create New User" divID={"1"}>
+              {/* User creation form */}
+              <Forms
+                action={createUser}
+                onSubmit={() => handleBanner("User was created successfully")}
+              >
+                {/* Rest of the form fields */}
+                {/* First name, Last name, Username, Password, etc. */}
+              </Forms>
+            </Expands>
 
-        <Expands title="Create New User" divID={"1"}>
-          {/* User creation form */}
-          <Forms
-            action={createUser}
-            onSubmit={() => handleBanner("User was created successfully")}
-          >
-            {/* Rest of the form fields */}
-            {/* First name, Last name, Username, Password, etc. */}
-          </Forms>
-        </Expands>
-      </Contents>
 
-      <Contents>
-        {/* Search for existing user. */}
-        <Expands title="Edit Existing User" divID={"2"}>
-          <Contents>
-            <SearchBar
-              searchTerm={searchTerm1}
-              onSearchChange={(e) => handleSearchChange(e, "1")}
-              placeholder="Search user..."
-            />
-          </Contents>
-          {searchTerm1 && editForm && (
-            <ul>
-              {userList.map((item) => (
-                <Buttons
-                  onClick={() => {
-                    setSearchTerm1(item.firstName);
-                    setEditForm(false);
-                  }}
-                  key={item.id}
+
+          <Holds>
+            {/* Search for existing user. */}
+            <Expands title="Edit Existing User" divID={"2"}>
+              <Holds>
+                <SearchBar
+                  searchTerm={searchTerm1}
+                  onSearchChange={(e) => handleSearchChange(e, "1")}
+                  placeholder="Search user..."
+                />
+              </Holds>
+              {searchTerm1 && editForm && (
+                <ul>
+                  {userList.map((item) => (
+                    <Buttons
+                      onClick={() => {
+                        setSearchTerm1(item.firstName);
+                        setEditForm(false);
+                      }}
+                      key={item.id}
+                    >
+                      {item.firstName} {item.lastName} ({item.username})
+                    </Buttons>
+                  ))}
+                </ul>
+              )}
+              {/* Rest of the edit user form */}
+            </Expands>
+          </Holds>
+
+
+          <Holds>
+            <Expands title="Delete User" divID={"4"}>
+              <Holds>
+                <SearchBar
+                  searchTerm={searchTerm2}
+                  onSearchChange={(e) => handleSearchChange(e, "2")}
+                  placeholder="Search user..."
+                />
+              </Holds>
+              {searchTerm2 && editForm && (
+                <ul>
+                  {userList.map((item) => (
+                    <Buttons
+                      onClick={() => {
+                        setSearchTerm2(item.id);
+                        setEditForm(false);
+                      }}
+                      key={item.id}
+                    >
+                      {item.firstName} {item.lastName} ({item.username})
+                    </Buttons>
+                  ))}
+                </ul>
+              )}
+              {searchTerm2 && (
+                <Forms
+                  action={deleteUser}
+                  onSubmit={() => handleBanner("User was deleted successfully")}
                 >
-                  {item.firstName} {item.lastName} ({item.username})
-                </Buttons>
-              ))}
-            </ul>
-          )}
-          {/* Rest of the edit user form */}
-        </Expands>
-      </Contents>
-
-      <Contents>
-        <Expands title="Delete User" divID={"4"}>
-          <Contents>
-            <SearchBar
-              searchTerm={searchTerm2}
-              onSearchChange={(e) => handleSearchChange(e, "2")}
-              placeholder="Search user..."
-            />
-          </Contents>
-          {searchTerm2 && editForm && (
-            <ul>
-              {userList.map((item) => (
-                <Buttons
-                  onClick={() => {
-                    setSearchTerm2(item.id);
-                    setEditForm(false);
-                  }}
-                  key={item.id}
-                >
-                  {item.firstName} {item.lastName} ({item.username})
-                </Buttons>
-              ))}
-            </ul>
-          )}
-          {searchTerm2 && (
-            <Forms
-              action={deleteUser}
-              onSubmit={() => handleBanner("User was deleted successfully")}
-            >
-              <Inputs type="hidden" name="id" defaultValue={searchTerm2} />
-              <Buttons background="red" type="submit">
-                <Texts>Delete</Texts>
-              </Buttons>
-            </Forms>
-          )}
-        </Expands>
-      </Contents>
+                  <Inputs type="hidden" name="id" defaultValue={searchTerm2} />
+                  <Buttons background="red" type="submit">
+                    <Texts>Delete</Texts>
+                  </Buttons>
+                </Forms>
+              )}
+            </Expands>
+          </Holds>
+          </Holds>
+          </Grids>
+        </Contents>
+      </Holds>
     </>
   );
 }

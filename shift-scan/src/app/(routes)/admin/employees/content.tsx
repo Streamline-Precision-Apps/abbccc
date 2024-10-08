@@ -8,6 +8,7 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Titles } from "@/components/(reusable)/titles";
 import { Banners } from "@/components/(reusable)/banners";
 import { Footers } from "@/components/(reusable)/footers";
+import { Grids } from "@/components/(reusable)/grids";
 import {
   setAuthStep,
 } from "@/app/api/auth";
@@ -64,8 +65,11 @@ export default function AddEmployeeContent({ permission , users }: AddEmployeeCo
   }, [session]);
 
   return session ? (
-    <Bases>
-        <Holds>
+    <>
+      <Grids rows={"10"} gap={"5"}>
+        <Holds 
+        background={"white"}
+        className="row-span-1 h-full">
             <TitleBoxes
             title="Assets"
             titleImg="/assets.svg"
@@ -75,24 +79,26 @@ export default function AddEmployeeContent({ permission , users }: AddEmployeeCo
             type="noIcon"
             />
         </Holds>
-      <Holds>
-        <Contents>
-        <Tab 
-        onClick={() => setActiveTab(1)}
-        tabLabel= {t("ModifyEmployee")} 
-        isTabActive= {activeTab === 1}
-        />
-        <Tab
-        onClick={() => setActiveTab(2)} 
-        tabLabel= {t("ViewEmployees")}
-        isTabActive= {activeTab === 2}
-        />  
-            {activeTab === 1 && <UserManagement users={users}/> }
-            {activeTab === 2 && <UserCards users={users}/>}
-        <Footers>{t("lN1")}</Footers>
-        </Contents>
-      </Holds>
-    </Bases>
+
+        <Holds 
+        className="row-span-9 h-full">
+          <Holds position={"row"}>
+            <Tab 
+            onClick={() => setActiveTab(1)}
+            tabLabel= {t("ModifyEmployee")} 
+            isTabActive= {activeTab === 1}
+            />
+            <Tab
+            onClick={() => setActiveTab(2)} 
+            tabLabel= {t("ViewEmployees")}
+            isTabActive= {activeTab === 2}
+            /> 
+          </Holds>
+          {activeTab === 1 && <UserManagement users={users}/> }
+          {activeTab === 2 && <UserCards users={users}/>}
+        </Holds>
+      </Grids>
+    </>
   ) : (
     <></>
   );

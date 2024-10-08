@@ -3,31 +3,33 @@ import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
 import { getSession } from "next-auth/react";
 import Content from "@/app/hamburger/inbox/form/content";
-import { cookies } from "next/headers";
+import { Bases } from "@/components/(reusable)/bases";
+import { Contents } from "@/components/(reusable)/contents";
+import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
+import { Holds } from "@/components/(reusable)/holds";
+import { Grids } from "@/components/(reusable)/grids";
 
 export default async function Form() {
-  const lang = cookies().get("locale");
-  const locale = lang ? lang.value : "en"; // Default to English
+  const session = await auth();
+  if (!session) return null;
 
-  const session = await auth().catch((err) => {
-    console.error("Error in authentication:", err);
-    return null;
-  });
-  const userId = session?.user.id;
-
-  const user = await prisma.users
-    .findUnique({
-      where: {
-        id: userId,
-      },
-      select: {
-        signature: true,
-      },
-    })
-    .catch((err) => {
-      console.error("Error fetching user:", err);
-      return null;
-    });
-
-  return user ? <Content signature={user.signature} session={session} /> : null;
+  return (
+    <Bases size={"scroll"}>
+      <Contents className="my-5">
+        <Grids className="grid-rows-10 gap-5">
+          <Holds background={"green"} className="row-span-2 h-full">
+            <TitleBoxes
+              title="Leave Request Form"
+              titleImg="/Inbox.svg"
+              titleImgAlt="Inbox"
+              type="noIcon"
+            />
+          </Holds>
+          <Holds className="row-span-8 h-full">
+            <Content session={session} />
+          </Holds>
+        </Grids>
+      </Contents>
+    </Bases>
+  );
 }

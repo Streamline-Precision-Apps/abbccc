@@ -1,43 +1,35 @@
 "use server";
 import Content from "@/app/hamburger/inbox/content";
 import { auth } from "@/auth";
-import prisma from "@/lib/prisma";
+import { Bases } from "@/components/(reusable)/bases";
+import { Contents } from "@/components/(reusable)/contents";
+import { Grids } from "@/components/(reusable)/grids";
+import { Holds } from "@/components/(reusable)/holds";
+import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
+import { getTranslations } from "next-intl/server";
 
 export default async function Inbox() {
-    const session = await auth();
-    if (!session) return null
-    const userId = session?.user.id;
-    const permission = session?.user.permission
+  const session = await auth();
+  if (!session) return null;
+  const t = await getTranslations("Hamburger");
 
-    // gives you all the inbox of the user with no filter so well come back here later.
-    const sentContent = await prisma.timeoffRequestForms.findMany({
-        where: {
-            employeeId: userId,   
-        }
-    })
-
-    const myTeamnumber = await prisma.crewMembers.findMany({
-        where: {
-            employeeId: userId,
-        }
-    })
-    const crewMembers = prisma.crewMembers.findMany({
-        where: {
-            crewId: myTeamnumber[0].crewId,
-            supervisor: false
-        }
-        
-    })
-
-    // get all the time request forms
-    const recievedContent = await prisma.timeoffRequestForms.findMany({
-        where :{
-            status : "PENDING"
-        }
-    })
-
-    const pending = sentContent.filter((item) => item.status === "PENDING" );
-        return (
-            <Content sentContent={sentContent} receivedContent={recievedContent} session={session} />
-        )
-    }
+  return (
+    <Bases>
+      <Contents height={"page"}>
+        <Grids rows={"10"} gap={"5"}>
+          <Holds background={"white"} className="row-span-2 h-full">
+            <TitleBoxes
+              title={t("Inbox")}
+              titleImg="/Inbox.svg"
+              titleImgAlt="Inbox"
+              className="my-auto"
+            />
+          </Holds>
+          <Holds className="row-span-8 h-full">
+            <Content />
+          </Holds>
+        </Grids>
+      </Contents>
+    </Bases>
+  );
+}
