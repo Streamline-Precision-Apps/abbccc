@@ -16,12 +16,13 @@ export default async function Inbox() {
   return (
     <Bases>
       <Contents height={"page"}>
-        <Grids className="grid-rows-10">
-          <Holds background={"white"} className="row-span-2">
+        <Grids rows={"10"} gap={"5"}>
+          <Holds background={"white"} className="row-span-2 h-full">
             <TitleBoxes
               title={t("Inbox")}
               titleImg="/Inbox.svg"
               titleImgAlt="Inbox"
+              className="my-auto"
             />
           </Holds>
           <Holds className="row-span-8 h-full">

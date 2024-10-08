@@ -56,12 +56,24 @@ export default function STab() {
 
   // If there's an error, show an error message
   if (error) {
-    return <div>{error}</div>;
+    return (
+      <Holds>
+        <Texts>{error}</Texts>
+      </Holds>
+    );
+  }
+  // If there are no pending requests, show a message
+  if (pending.length === 0 && approved.length === 0 && denied.length === 0) {
+    return (
+      <Holds>
+        <Titles>There Are No Requests Currently</Titles>
+      </Holds>
+    );
   }
 
   return (
     <Contents width={"section"} className="mb-5">
-      <Grids className="grid-rows-10 py-5">
+      <Grids rows={"1"} gap={"5"} className="pt-5">
         {/* Request button */}
         <Holds className="overflow-auto h-full no-scrollbar gap-5 row-span-8">
           {/* Display approved requests */}
