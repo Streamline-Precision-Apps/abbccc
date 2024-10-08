@@ -43,7 +43,7 @@ export default async function Dashboard() {
   return (
     <Bases>
       <Contents>
-        <Grids>
+        <Grids rows={"7"}>
           <Holds 
           position={"row"}
           background={"white"}

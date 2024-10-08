@@ -9,27 +9,27 @@ import { Holds } from "./holds";
 
 const TitleBoxVariants = cva(
   "relative flex items-center justify-center w-full mx-auto", //this applies to all variants
-  {
+{
     variants: {
-      variant: {
-        default: "flex-col",
-        row: "flex-row py-7 items-end",
-        red: "bg-red-500",
-        orange: "bg-orange-500",
-        green: "bg-app-green",
-      },
-      size: {
-        default: "",
-        sm: "p-2 w-30 h-30",
-        med: "p-10 w-40 h-40",
-        lg: "p-10 w-50 h-50"
-      }
+        variant: {
+            default: "flex-col",
+            row: "flex-row py-7 items-end",
+            red: "bg-red-500",
+            orange: "bg-orange-500",
+            green: "bg-app-green",
+        },
+        size: {
+            default: "",
+            sm: "p-2 w-30 h-30",
+            med: "p-10 w-40 h-40",
+            lg: "p-10 w-50 h-50"
+        }
     },
     defaultVariants: {
-      variant: "default",
-      size: "default",
+        variant: "default",
+        size: "default",
     },
-  }
+}
 )
 
 interface TitleBoxProps extends HTMLAttributes<HTMLElement>, VariantProps<typeof TitleBoxVariants> {
@@ -108,7 +108,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({className, variant, size, type, title, t
     if (type === "row") {
         return (
             <div className={cn(TitleBoxVariants({variant, size, className}))} {...props}>
-                <Buttons href='back' variant={"icon"} size={"backButton"}>
+                <Buttons href='back' background={"none"} size={"30"}>
                     <Images titleImg="/backArrow.svg" titleImgAlt="back arrow" variant={"icon"} size={"backButton"}/>
                 </Buttons>
                 <Titles variant={"default"} size={"h1"}>{title}</Titles>
@@ -124,7 +124,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({className, variant, size, type, title, t
                     <Images titleImg="/turnBack.svg" titleImgAlt={titleImgAlt} size={"30"}/>
                 </Buttons>
             </Holds>
-            <Images titleImg={titleImg} titleImgAlt={titleImgAlt} size={"20"}/>
+            <Images titleImg={titleImg} titleImgAlt={titleImgAlt} size={"30"}/>
             <Titles size={"h1"}>{title}</Titles>
         </div>
     )

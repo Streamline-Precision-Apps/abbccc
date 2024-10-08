@@ -2,10 +2,12 @@ import React, { useState, ChangeEvent } from "react";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Images } from "@/components/(reusable)/images";
 import { Titles } from "@/components/(reusable)/titles";
-import { Contents } from "@/components/(reusable)/contents";
+import { Holds } from "@/components/(reusable)/holds";
 import SearchBar from "@/components/(search)/searchbar"; // Importing SearchBar
+import { Grids } from "@/components/(reusable)/grids";
 
 import { SearchUser } from "@/lib/types";
+import { Contents } from "@/components/(reusable)/contents";
 
 type UserCardsProps = {
   users: SearchUser[];
@@ -26,52 +28,43 @@ export default function UserCards({ users }: UserCardsProps) {
   };
 
   return (
-    <div>
-      <SearchBar
-        searchTerm={searchTerm}
-        onSearchChange={handleSearchChange}
-        placeholder="Search users..."
-      />
-      <div>
-        {filteredUsers.map((user) => (
-          <Buttons
-            key={user.id}
-            id={user.id}
-            href={`/admin/employees/${user.id}`}
-          >
-            <Contents variant={"image"} size={"listImage"}>
-              <Images
-                titleImg={user.image ?? "/johnDoe.webp"}
-                titleImgAlt="profile picture"
-                variant={"icon"}
-                size={"default"}
-              />
+        <Grids rows={"6"} gap={"5"}>
+          <Holds background={"white"} className="row-span-1 h-full rounded-t-none">
+            <Contents width={"section"}>
+              <Holds className="my-auto">
+                <SearchBar
+                searchTerm={searchTerm}
+                onSearchChange={handleSearchChange}
+                placeholder="Search users..."/>
+              </Holds>
             </Contents>
-            <Contents variant={"row"} size={"listTitle"}>
-              <Titles size={"h1"}>
-                {user.firstName} {user.lastName}
-              </Titles>
-            </Contents>
-          </Buttons>
-        ))}
-        {/* Example of a static button */}
-        <Buttons
-          id="{someStaticId}"
-          href="/dashboard/myTeam/{someStaticId}"
-        >
-          <Contents variant={"image"} size={"listImage"}>
-            <Images
-              titleImg="/johnDoe.webp"
-              titleImgAlt="my team"
-              variant={"icon"}
-              size={"default"}
-            />
-          </Contents>
-          <Contents variant={"row"} size={"listTitle"}>
-            <Titles size={"h1"}>Jose Felipe Perez Alverado</Titles>
-          </Contents>
-        </Buttons>
-      </div>
-    </div>
+          </Holds>
+          <Holds 
+          background={"white"}
+          className="row-span-5 h-full">
+            <Contents width={"section"} className="py-5">
+            {filteredUsers.map((user) => ( //---------------Replace this with new teams code
+              <Buttons
+                key={user.id}
+                id={user.id}
+                href={`/admin/employees/${user.id}`}
+              >
+                <Holds>
+                  <Images
+                    titleImg={user.image ?? "/johnDoe.webp"}
+                    titleImgAlt="profile picture"
+                    size={"20"}
+                  />
+                </Holds>
+                <Holds>
+                  <Titles size={"h1"}>
+                    {user.firstName} {user.lastName}
+                  </Titles>
+                </Holds>
+              </Buttons>
+            ))}
+          </Contents> 
+          </Holds>
+    </Grids>
   );
 }

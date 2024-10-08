@@ -83,75 +83,118 @@ useEffect(() => {
   }, [totalPayPeriodHours, setPayPeriodHours]);
 
 return (
-<Holds className="">
+<Contents width={"section"} className="py-5">
+<Grids rows={"5"} cols={"2"} gap={"5"}>
 {authStep === "break" ? (
 <>
 
 {/* A ternary statement to display the break widget or view hours */}
     {toggle ? (
-      <DisplayBreakTime
-      setToggle={handleToggle}
-      display={toggle}
-/>
+      <Holds className={toggle ? "col-span-2 row-span-1 gap-5 h-full" : "col-span-2 row-span-5 gap-5 h-full"}>
+        <DisplayBreakTime
+        setToggle={handleToggle}
+        display={toggle}/>
+      </Holds>
     ) : (
-      <Hours setToggle={handleToggle} display={toggle} loading={loading} />
+      <Holds className="bg-pink-700 col-span-2 row-span-5 gap-5 h-full">
+        <Hours //----------------------active hour viewer on break
+        setToggle={handleToggle} 
+        display={toggle} 
+        loading={loading}/>
+      </Holds>
     )}
     </>
 ) :
 (
     <>
-    <Hours setToggle={handleToggle} display={toggle}  loading={loading}  />
+      <Holds 
+      className={toggle ? "col-span-2 row-span-1 gap-5 h-full" : "col-span-2 row-span-5 gap-5 h-full"}>
+        <Hours //----------------------This is the view hours widget while clocked out
+        setToggle={handleToggle} 
+        display={toggle} 
+        loading={loading}/>
+      </Holds>
 </>
 )
 }
 {toggle ? (
-  <Grids variant={"widgets"} size={"sm"}>
+<>
     { permission === "ADMIN" || permission === "SUPERADMIN" || permission === "MANAGER"  ? (
       <>
-    <Buttons href="/dashboard/qr-generator" background={"lightBlue"} size={"full"}>
-        <Holds className="justify-center items-center py-5">
-            <Images titleImg="/qr.svg" titleImgAlt="QR Code" size={"40"}/>
-            <Texts>{f("Qr-btn")}</Texts>
+    <Holds position={"row"} className="col-span-2 row-span-2 gap-5 h-full">
+      <Buttons //----------------------This is the qr generator widget
+      background={"lightBlue"}
+      href="/dashboard/qr-generator">
+        <Holds>
+          <Images 
+          titleImg="/qr.svg" 
+          titleImgAlt="QR Code"
+          size={"40"}/>
         </Holds>
-    </Buttons>
-    <Buttons href="/dashboard/myTeam" background={"lightBlue"} size={"full"}>
-    <Holds className="justify-center items-center py-5">
-            <Images titleImg="/team.svg" titleImgAlt="my team" size={"40"}/>
-                <Texts >{f("MyTeam-btn")}</Texts>
+        <Holds>
+          <Texts size={"p3"}>{f("Qr-btn")}</Texts>
         </Holds>
-    </Buttons> 
+      </Buttons>
+      <Buttons //----------------------This is the my team widget
+      background={"lightBlue"}
+      href="/dashboard/myTeam">
+        <Holds>
+          <Images 
+          titleImg="/team.svg" 
+          titleImgAlt="my team" 
+          size={"40"}/>
+        </Holds>
+        <Holds>
+          <Texts size={"p3"}>{f("MyTeam-btn")}</Texts>
+        </Holds>
+      </Buttons> 
+    </Holds>
     </>
 ) :(null)
 }
 {authStep === "break" ? (
-    <Buttons 
-        background={"orange"} 
-        size={"full"} // this eliminated the big if statement
-        href="/break"
-        className="col-span-2" // added this if they are
-        >
-            <Holds className="justify-center items-center py-5">
-            <Images titleImg="/clock-in.svg" titleImgAlt="QR Code" size={"40"}  />
-            <Texts>{f("Clock-break-btn")}</Texts>
+        <Holds className="col-span-2 row-span-2 gap-5 h-full">
+          <Buttons //----------------------This is the clock in widget while on break
+          background={"orange"} 
+          href="/break">
+            <Holds position={"row"} className="my-auto">
+              <Holds size={"70"}>
+                <Texts size={"p1"}>{f("Clock-btn")}</Texts>
+              </Holds>
+              <Holds size={"30"}>
+                <Images 
+                titleImg="/clock-in.svg" 
+                titleImgAlt="Clock In Icon" 
+                size={"50"}/>
+              </Holds>
             </Holds>
-        </Buttons>
+          </Buttons>
+        </Holds>
       ) : (
-        <Buttons 
-        background={"green"} 
-        size={"full"} // this eliminated the big if statement
-        href="/clock"
-        className="col-span-2" // added this if they are
-        >
-            <Holds className="justify-center items-center py-5">
-            <Images titleImg="/clock-in.svg" titleImgAlt="QR Code" size={"40"}  />
-            <Texts>{f("Clock-btn")}</Texts>
+        <Holds className="col-span-2 row-span-2 gap-5 h-full">
+          <Buttons //----------------------This is the clock in widget while clocked out
+          background={"green"} 
+          href="/clock">
+            <Holds position={"row"} className="my-auto">
+              <Holds size={"60"}>
+                <Texts size={"p1"}>{f("Clock-btn")}</Texts>
+              </Holds>
+              <Holds size={"40"}>
+                <Images 
+                titleImg="/clock-in.svg" 
+                titleImgAlt="Clock In Icon"
+                size={"70"}/>
+              </Holds>
             </Holds>
-    </Buttons>)
+          </Buttons>
+        </Holds>)
 }
+    </>
 
-    </Grids>
         ) : ( null)
       }
-      </Holds>
+          </Grids>
+      </Contents>
+      
     );
   }
