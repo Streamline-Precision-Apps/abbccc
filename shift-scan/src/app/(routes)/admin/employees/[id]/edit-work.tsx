@@ -296,7 +296,6 @@ const EditWork = ({
   useEffect(() => {
     const fetchData = async () => {
       if (date) {
-        const equipmentLogs = await fetchEq(employeeId, date);
         const filteredEquipmentLogs = equipmentLogs
           .filter((log: any) => log.duration !== null && log.Equipment !== null)
           .map((log: any) => ({
@@ -340,8 +339,8 @@ const EditWork = ({
   }, [edit]);
 
   return (
-    <Contents variant={"default"} size={"default"}>
-      <Holds size={"dynamic"}>
+    <Contents>
+      <Holds>
         {timesheetData.length === 0 ? null : (
           <>
             <Buttons onClick={editHandler}></Buttons>
@@ -353,8 +352,6 @@ const EditWork = ({
                 <Images
                   titleImg={"/save.svg"}
                   titleImgAlt={"Save Changes"}
-                  variant={"icon"}
-                  size={"backButton"}
                 />
               </Buttons>
             ) : null}
@@ -371,7 +368,7 @@ const EditWork = ({
             {timesheets.map((timesheet) => (
               <li key={timesheet.id}>
                 <>
-                  <Titles size={"default"} variant={"default"}>
+                  <Titles>
                     {timesheet.submitDate
                       ? new Date(timesheet.submitDate).toLocaleDateString()
                       : ""}
@@ -391,7 +388,7 @@ const EditWork = ({
                   />
                 </>
                 <>
-                  <Labels size={"default"} variant={"default"}>
+                  <Labels>
                     {t("Duration")}{" "}
                     {edit ? <span>{t("Duration-Comment")}</span> : null}
                   </Labels>
@@ -407,7 +404,7 @@ const EditWork = ({
                   />
                 </>
                 <>
-                  <Labels size={"default"} variant={"default"}>
+                  <Labels>
                     {t("ClockIn")}
                     <>
                       <Inputs
@@ -424,7 +421,7 @@ const EditWork = ({
                         variant={"default"}
                         id="startDate"
                         type="date"
-                        value={timesheet.startDate.toISOString().split("T")[0]}
+                        value={timesheet.startDate}
                         onChange={(e) =>
                           handleInputChangeDate(e, timesheet.id, "startDate")
                         }
@@ -432,7 +429,7 @@ const EditWork = ({
                       />{" "}
                     </>
                   </Labels>
-                  <Labels size={"default"} variant={"default"}>
+                  <Labels>
                     {t("ClockOut")}
                     <>
                       <Inputs
@@ -450,7 +447,7 @@ const EditWork = ({
                         id="startDate"
                         type="date"
                         value={
-                          timesheet.startDate?.toISOString().split("T")[0] || ""
+                          timesheet.startDate
                         }
                         onChange={(e) =>
                           handleInputChangeDate(e, timesheet.id, "startDate")
@@ -461,7 +458,7 @@ const EditWork = ({
                   </Labels>
                 </>
                 <>
-                  <Labels size={"default"} variant={"default"}>
+                  <Labels>
                     {t("JobSites")}
                   </Labels>
                   <Selects
@@ -479,7 +476,7 @@ const EditWork = ({
                       </option>
                     ))}
                   </Selects>
-                  <Labels size={"default"} variant={"default"}>
+                  <Labels>
                     {t("CostCode")}
                   </Labels>
                   <Selects
@@ -506,8 +503,8 @@ const EditWork = ({
           </ul>
         )}
       </Holds>
-      <Holds size={"dynamic"}>
-        <Titles size={"default"} variant={"default"}>
+      <Holds>
+        <Titles>
           {t("EquipmentLogs")}
         </Titles>
         <ul>
@@ -525,7 +522,7 @@ const EditWork = ({
                   </option>
                 ))}
               </Selects>
-              <Labels size={"default"} variant={"default"}>
+              <Labels>
                 {t("Duration")}{" "}
               </Labels>
               <Inputs
