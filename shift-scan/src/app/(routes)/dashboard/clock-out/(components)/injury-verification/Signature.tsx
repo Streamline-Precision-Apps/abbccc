@@ -6,9 +6,13 @@ type SignatureProps = {
   setBase64String: (base64string: string) => void;
   base64string?: string | null;
   handleSubmitImage: () => void;
-}
+};
 
-export const Signature = ({ setBase64String, base64string, handleSubmitImage }: SignatureProps) => {
+export const Signature = ({
+  setBase64String,
+  base64string,
+  handleSubmitImage,
+}: SignatureProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null); // Ref for context optimization
   const [isDrawing, setIsDrawing] = useState(false);
@@ -18,7 +22,7 @@ export const Signature = ({ setBase64String, base64string, handleSubmitImage }: 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (canvas) {
-      canvas.width = canvas.parentElement!.offsetWidth; // Set canvas width dynamically
+      canvas.width = canvas.parentElement!.offsetWidth - 30; // Set canvas width dynamically
       canvas.height = 150;
       ctxRef.current = canvas.getContext("2d");
       if (ctxRef.current) {
@@ -49,7 +53,10 @@ export const Signature = ({ setBase64String, base64string, handleSubmitImage }: 
 
   const handleMouseMove = (event: React.MouseEvent<HTMLCanvasElement>) => {
     if (isDrawing && ctxRef.current) {
-      ctxRef.current.lineTo(event.nativeEvent.offsetX, event.nativeEvent.offsetY);
+      ctxRef.current.lineTo(
+        event.nativeEvent.offsetX,
+        event.nativeEvent.offsetY
+      );
       ctxRef.current.stroke();
     }
   };
@@ -103,5 +110,3 @@ export const Signature = ({ setBase64String, base64string, handleSubmitImage }: 
     </div>
   );
 };
-
-

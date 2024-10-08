@@ -9,15 +9,15 @@ const BaseVariants = cva(
     {
         variants: {
             background: {//only background attributes
-                default: "flex bg-gradient-to-b from-app-dark-blue to-app-blue", //will let data fill screen vertically
+                default: "bg-gradient-to-b from-app-dark-blue to-app-blue",
                 modal: "bg-neutral-800 opacity-50", //will create the gray background for modals
             },
             position: {//only position attributes
-                center: "content-center items-center justify-center",
+                center: "",
                 start: "fixed top-0 left-0",//use for modals
             },
             size: {//only width and height
-                default: "h-dvh", //use if data fits on screen
+                default: "pb-3 pt-7 h-dvh", //use if data fits on screen
                 scroll: "h-full", //use if data exceeds screen size
                 screen: "h-screen w-screen", //use for modals
             }
