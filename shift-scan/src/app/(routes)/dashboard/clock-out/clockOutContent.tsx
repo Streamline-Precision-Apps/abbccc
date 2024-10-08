@@ -247,63 +247,66 @@ export default function ClockOutContent({ id }: ClockOutContentProps) {
         <Banners background={bannerMessage.length > 0 ? "green" : "default"}>
           {bannerMessage}
         </Banners>
-
-        <Holds>
-          <TitleBoxes
-            title={t("Bye")}
-            titleImg={"/new/end-day.svg"}
-            titleImgAlt={""}
-            variant={"row"}
-            type="row"
-          />
-          <Contents>
-            <Buttons size={null} type="submit">
-              <Images
-                titleImg={"/new/downArrow.svg"}
-                titleImgAlt={"downArrow"}
-              />
-            </Buttons>
-            <Texts>
-              {t("ClockOutDate")} {new Date().toLocaleDateString()}
-            </Texts>
-            <Texts>
-              {t("Jobsite")} {scanResult?.data || localStorageData?.jobsite}
-            </Texts>
-            <Texts>
-              {t("CostCode")} {savedCostCode || localStorageData?.costCode}
-            </Texts>
-            <Forms onSubmit={handleSubmit}>
-              <Inputs
-                type="hidden"
-                name="id"
-                value={(
-                  savedTimeSheetData?.id || localStorageData?.timesheet.id
-                )?.toString()} // Convert id to string
-                readOnly
-              />
-              <Inputs
-                type="hidden"
-                name="endTime"
-                value={new Date().toISOString()}
-                readOnly
-              />
-              <Inputs
-                type="hidden"
-                name="timeSheetComments"
-                value={""}
-                readOnly
-              />
-              <Inputs type="hidden" name="userId" value={id || ""} readOnly />
-              <Buttons
-                type="submit"
-                className="bg-app-red mx-auto flex justify-center w-full h-full py-4 px-5 rounded-lg text-black font-bold mt-5"
-                disabled={isSubmitting} // Disable while submitting
-              >
-                <Clock time={date.getTime()} />
+        <Contents>
+          <Holds>
+            <TitleBoxes
+              title={t("Bye")}
+              titleImg={"/new/end-day.svg"}
+              titleImgAlt={""}
+              variant={"row"}
+              type="row"
+            />
+            <Contents>
+              <Buttons size={null} type="submit">
+                <Images
+                  titleImg={"/new/downArrow.svg"}
+                  titleImgAlt={"downArrow"}
+                />
               </Buttons>
-            </Forms>
-          </Contents>
-        </Holds>
+              <Texts>
+                {t("ClockOutDate")} {new Date().toLocaleDateString()}
+              </Texts>
+              <Texts>
+                {t("Jobsite")} {scanResult?.data || localStorageData?.jobsite}
+              </Texts>
+              <Texts>
+                {t("CostCode")} {savedCostCode || localStorageData?.costCode}
+              </Texts>
+              <Texts>
+                {t("ClockInTime")} {}
+              </Texts>
+              <Forms onSubmit={handleSubmit}>
+                <Inputs
+                  type="hidden"
+                  name="id"
+                  value={(
+                    savedTimeSheetData?.id || localStorageData?.timesheet.id
+                  )?.toString()} // Convert id to string
+                  readOnly
+                />
+                <Inputs
+                  type="hidden"
+                  name="endTime"
+                  value={new Date().toISOString()}
+                  readOnly
+                />
+                <Inputs
+                  type="hidden"
+                  name="timeSheetComments"
+                  value={""}
+                  readOnly
+                />
+                <Buttons
+                  type="submit"
+                  className="bg-app-red mx-auto flex justify-center w-full h-full py-4 px-5 rounded-lg text-black font-bold mt-5"
+                  disabled={isSubmitting} // Disable while submitting
+                >
+                  <Clock time={date.getTime()} />
+                </Buttons>
+              </Forms>
+            </Contents>
+          </Holds>
+        </Contents>
       </>
     );
   } else {

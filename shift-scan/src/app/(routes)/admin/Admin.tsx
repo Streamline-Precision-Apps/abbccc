@@ -47,12 +47,23 @@ export default function Admin({
           <Buttons variant={"orange"} size={"widgetSm"} href="/admin/employees">
           <Contents variant={"widgetButton"} size={null}>
             <Images
-              titleImg="/new/equipment.svg"
-              titleImgAlt="Equipment Icon"
+              titleImg="/person.svg"
+              titleImgAlt="profile Icon"
               variant={"icon"}
               size={"default"}
             />
             <Texts>{t("ManageEmployees")}</Texts>
+          </Contents>
+          </Buttons>
+          <Buttons variant={"orange"} size={"widgetSm"} href="/admin/teamManagement">
+          <Contents variant={"widgetButton"} size={null}>
+            <Images
+              titleImg="/team.svg"
+              titleImgAlt="team Icon"
+              variant={"icon"}
+              size={"default"}
+            />
+            <Texts>{t("ManageTeams")}</Texts>
           </Contents>
           </Buttons>
         </>

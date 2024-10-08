@@ -83,33 +83,16 @@ export const EmployeeTimeSheets = ({
   return (
     <>
       <Holds size={"dynamic"} variant={"default"}>
-        <Holds size={"titleBox"} variant={"default"}>
-          <h1>Select Date</h1>
-          <form
-            ref={formRef}
-            onChange={handleFormChange}
-            onSubmit={handleFormSubmit}
-            >
-            <input
-              type="date"
-              name="date"
-              id="date"
-              className="flex justify-center m-auto text-black text-2xl bg-white p-2 rounded border-2 border-black rounded-2xl"
-              />
-            <input type="hidden" name="id" value={employeeId} />
-          </form>
-          <Titles variant={"green"}>{message}</Titles>
-        </Holds>
         <Holds size={"dynamic"}>
           <Contents size={"listTitle"} variant={"default"}>
             <Tab
               onClick={() => setActiveTab(1)}
-              tabLabel={t("ViewTimeSheets")}
+              tabLabel={t("AddTimeSheet")}
               isTabActive={activeTab === 1}
               />
             <Tab
               onClick={() => setActiveTab(2)}
-              tabLabel={t("AddTimeSheet")}
+              tabLabel={t("ViewTimeSheets")}
               isTabActive={activeTab === 2}
               />
             {activeTab === 1 && (
@@ -120,6 +103,22 @@ export const EmployeeTimeSheets = ({
               />
             )}
             {activeTab === 2 && (
+            <Holds size={"titleBox"} variant={"default"}>
+              <h1>Select Date</h1>
+              <form
+                ref={formRef}
+                onChange={handleFormChange}
+                onSubmit={handleFormSubmit}
+                >
+                <input
+                  type="date"
+                  name="date"
+                  id="date"
+                  className="flex justify-center m-auto text-black text-2xl bg-white p-2 rounded border-2 border-black rounded-2xl"
+                  />
+                <input type="hidden" name="id" value={employeeId} />
+              </form>
+              <Titles variant={"green"}>{message}</Titles>
               <EditWork
               timesheetData={timesheets}
               edit={edit}
@@ -132,6 +131,7 @@ export const EmployeeTimeSheets = ({
               date={date}
               equipment={equipment}
               />
+              </Holds>
             )}
           </Contents>
         </Holds>

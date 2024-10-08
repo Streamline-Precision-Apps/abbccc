@@ -2,7 +2,7 @@
 
 import { auth } from "@/auth";
 import { cookies } from "next/headers";
-import Content from "../../../../components/(signup)/content";
+import Content from "./(signup)/content";
 
 
 export default async function SignUpPage() {

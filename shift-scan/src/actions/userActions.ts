@@ -50,10 +50,14 @@ export async function updateUser(formData: FormData) {
 }
 
 export async function deleteUser(formData: FormData) {
-  const id = formData.get("id") as string;
-  await prisma.users.delete({
-    where: { id },
-  });
+    const date = new Date();
+    const id = formData.get('id') as string;
+    await prisma.users.update({
+        where: { id },
+        data: {
+            terminationDate: date.toISOString(),
+        }
+    });
 }
 
 export async function uploadImage(formdata: FormData) {

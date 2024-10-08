@@ -32,6 +32,7 @@ export default async function AdminDashboard() {
       laborView: true,
       tascoView: true,
       image: true,
+      terminationDate: true
     },
   });
 
