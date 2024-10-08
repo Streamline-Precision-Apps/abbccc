@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 export async function updateSettings(data: any) {
   const { userId, ...settings } = data;
 
-  await prisma.userSettings.update({
+  const result = await prisma.userSettings.update({
     where: { userId: userId },
     data: settings,
   });

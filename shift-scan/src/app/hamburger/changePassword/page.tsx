@@ -22,7 +22,7 @@ export default async function Index() {
   return (
     <Bases>
       <Contents>
-        <Grids size={"settings"}>
+        <Grids rows={"10"} gap={"5"}>
           <Holds
             background={"white"}
             size={"full"}
@@ -34,7 +34,9 @@ export default async function Index() {
               titleImgAlt="Change Password Icon"
             />
           </Holds>
-          <ChangePassword userId={userId} />
+          <Holds className=" row-span-8 h-full ">
+            <ChangePassword userId={userId} />
+          </Holds>
         </Grids>
       </Contents>
     </Bases>
