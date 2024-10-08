@@ -16,6 +16,7 @@ const useFetchAllData = () => {
   const { setRecentlyUsedEquipment } = useRecentDBEquipment();
 
   useEffect(() => {
+
     const fetchData = async () => {
       setLoading(true);
       try {

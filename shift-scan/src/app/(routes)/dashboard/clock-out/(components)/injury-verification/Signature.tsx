@@ -92,11 +92,17 @@ export const Signature = ({
         onMouseUp={handleMouseUp}
       />
       <div className="flex flex-row gap-4">
-        <Buttons background={"red"} size={null} onClick={handleClear}>
+        <Buttons size={null} onClick={(event) => {
+                    event.preventDefault();
+                    handleClear();
+                  }}>
           {t("Clear")}
         </Buttons>
         {showSaveButton && (
-          <Buttons background={"green"} size={null} onClick={handleSave}>
+          <Buttons size={null} onClick={(event) => {
+            event.preventDefault();
+            handleSave();
+          }}>
             {t("Save")}
           </Buttons>
         )}

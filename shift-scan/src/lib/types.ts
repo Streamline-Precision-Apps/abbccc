@@ -58,7 +58,8 @@ export type SearchUser = {
   mechanicView: boolean;
   laborView: boolean;
   tascoView: boolean;
-  image: string | null;
+  image: string | null,
+  terminationDate: Date | null,
 };
 
 export type CustomSession = {

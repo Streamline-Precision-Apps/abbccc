@@ -274,3 +274,19 @@ I finished some more prisma DB research and Created the clock out dashboard page
 ## 9/24/2024
 
 - server actions fix for db changes.
+- Worked on team manager section for admin.
+- Worked on section for admin to remove or edit team pictures.
+
+## 9/25/2024
+
+- fixed server action for edit work to be in the right location.
+- Moved the signup components folder location.
+- work on save button for settings.
+
+## 10/4/2024
+
+- added filter for user search in admin page to show terminated or not.
+
+## 10/7/2024
+
+- Watched videos on ZOD Data validation.
