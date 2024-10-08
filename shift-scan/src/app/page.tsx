@@ -42,7 +42,7 @@ export default async function Home() {
   return (
     <Bases>
       <Contents> 
-        <Grids>
+        <Grids rows={"7"}>
           <Holds
           position={"row"} 
           background={"white"} 

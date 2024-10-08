@@ -4,6 +4,7 @@ import Spinner from "@/components/(animations)/spinner";
 import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
+import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
@@ -67,57 +68,60 @@ export default function Content({ params }: { params: { id: string } }) {
   return (
     <Bases>
       <Contents>
+        <Grids rows={"8"} gap={"5"}>
           <Holds 
-            background={"white"}
-            className="mb-3">
-                <TitleBoxes
-                 title={`${t('MyTeams-Title')}`}
-                 titleImg="/team.svg"
-                 titleImgAlt={`${t('Teams-Logo-Title')}`}
-                />
+          background={"white"}
+          className="row-span-2 h-full">
+            <TitleBoxes
+            title={`${t('MyTeams-Title')}`}
+            titleImg="/team.svg"
+            titleImgAlt={`${t('Teams-Logo-Title')}`}
+            className="my-auto"/>
           </Holds>
-
-          {isLoading ? 
-            <>
-            <Holds background={"white"}>
+          {isLoading ? <>
+            <Holds 
+            background={"white"}
+            className="row-span-6 h-full">
               <Contents width={"section"}>
-                <Holds>
-                <Spinner />
-                </Holds>
-              </Contents>
-              </Holds>
-            </> : 
-            <Holds background={"white"}>
-            <Contents width={"section"}>
-            {crew.map((user) => (
-              <Holds className="my-3">
-              <Buttons
-                key={user.id}
-                href={`/dashboard/myTeam/${params.id}/employee/${user.id}`}
-                background="lightBlue"
-              >
-                <Holds position={"row"}>
-                <Holds size={"30"}>
-                  <Images
-                    titleImg={user.image ?? "/default-profile.svg"}
-                    titleImgAlt="profile picture"
-                    loading="lazy"
-                    className="rounded-xl"
-
-                  />
-                </Holds>
-                <Holds>
-                  <Titles size="h2">
-                    {user.firstName} {user.lastName}
-                  </Titles>
+                  <Holds className="my-auto">
+                    <Spinner/>
                   </Holds>
-                </Holds>
-              </Buttons>
-              </Holds>
-            ))}
-          </Contents>
+              </Contents>
+            </Holds>
+            </> : 
+            <Holds 
+            background={"white"}
+            className="row-span-6 h-full">
+              <Contents width={"section"}>
+                <Grids rows={"4"} gap={"5"} className="my-5">
+                {crew.map((user) => (
+                  <Holds className="row-span-1 h-full">
+                  <Buttons
+                  key={user.id}
+                  href={`/dashboard/myTeam/${params.id}/employee/${user.id}`}
+                  background="lightBlue">
+                    <Holds position={"row"}>
+                    <Holds size={"30"}>
+                      <Images
+                        titleImg={user.image ?? "/default-profile.svg"}
+                        titleImgAlt="profile picture"
+                        loading="lazy"
+                        className="rounded-xl"/>
+                    </Holds>
+                    <Holds>
+                      <Titles size="h2">
+                        {user.firstName} {user.lastName}
+                      </Titles>
+                      </Holds>
+                    </Holds>
+                  </Buttons>
+                  </Holds>
+                ))}
+                </Grids>
+              </Contents>
         </Holds>
         }
+        </Grids>
       </Contents>
     </Bases>
   );

@@ -60,8 +60,7 @@ export default function DisplayBreakTime({
     <>
       <Buttons 
         onClick={handler} 
-        background={"darkBlue"} 
-        size={"widgetMed"}
+        background={"orange"} 
       >
         <Texts text={"white"} size={"p3"}>{t('Break')}</Texts>
         <Holds >

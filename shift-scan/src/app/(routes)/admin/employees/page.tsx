@@ -3,6 +3,8 @@ import { cookies } from "next/headers";
 import AddEmployeeContent from "./content";
 import { auth } from "@/auth";
 import { SearchUser } from "@/lib/types";
+import { Bases } from "@/components/(reusable)/bases";
+import { Contents } from "@/components/(reusable)/contents";
 
 export default async function AdminDashboard() {
   const session = await auth();
@@ -33,5 +35,11 @@ export default async function AdminDashboard() {
     },
   });
 
-  return <AddEmployeeContent permission={User?.permission} users={users} />;
+  return (
+    <Bases>
+      <Contents>
+        <AddEmployeeContent permission={User?.permission} users={users} />
+      </Contents>
+    </Bases>
+  );
 }

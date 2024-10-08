@@ -7,13 +7,14 @@ import React, { useState }from 'react';
 import { Texts } from "./texts";
 import { Titles } from "./titles";
 import { Images } from "./images";
+import { Holds } from "./holds";
  
 const ExpandVariants = cva(
   " rounded-2xl", //this applies to all variants
   {
     variants: {
       variant: {
-        default: "bg-blue-300",
+        default: "bg-none",
         green: "bg-green-500",
         red: "bg-red-500",
       },
@@ -52,15 +53,23 @@ function expandFunction() {
 }
 return (
     <div className={cn(ExpandVariants({variant, size, className}))} {...props}>
-    <Contents variant={"row"} size={"test"}>
-        <Titles>{title}</Titles>
-        <Buttons onClick={expandFunction}>
-            <Images titleImg="/ongoing.svg" titleImgAlt="expand"/>
-        </Buttons>
-    </Contents>
-    <Contents variant={"hidden"} size={null} id={divID}>
+    <Holds size={"full"}>
+      <Holds position={"row"} className="py-3">
+        <Holds size={"60"}>
+          <Titles position={"left"} size={"h3"}>{title}</Titles>
+        </Holds>
+        <Holds size={"40"}>
+          <Buttons className="py-2" onClick={expandFunction}>
+              <Holds>
+                <Images titleImg="/ongoing.svg" titleImgAlt="expand" size={"20"}/>
+              </Holds>
+          </Buttons>
+        </Holds>
+      </Holds>
+    </Holds>
+    <Holds className="hidden" id={divID}>
         <Texts>{props.children}</Texts>
-    </Contents>
+    </Holds>
 
     </div>
 )

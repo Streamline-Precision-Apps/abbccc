@@ -10,18 +10,18 @@ const HoldVariants = cva(
     variants: {
       background: {//only variant attributes
         none: "bg-none",
-        white: "bg-white rounded-xl",
-        red: "bg-app-red rounded-xl border border-app-red border-8",
-        green: "bg-app-green rounded-xl border border-app-green border-8",
-        orange: "bg-app-orange rounded-xl border border-app-orange border-8",
-        darkBlue: "bg-app-dark-blue rounded-xl border border-app-dark-blue border-8",
+        white: "bg-white rounded-[10px] ",
+        red: "bg-app-red rounded-[10px]  border border-app-red border-8",
+        green: "bg-app-green rounded-[10px]  border border-app-green border-8",
+        orange: "bg-app-orange rounded-[10px]  border border-app-orange border-8",
+        darkBlue: "bg-app-dark-blue rounded-[10px] ",
       },
       position: {//only position attributes
         row: "flex flex-row items-center",
         center: "flex flex-col self-center content-center",
         left: "flex flex-col self-start",
         right: "flex flex-col self-end ",
-        absolute: "absolute top-1 left-0",
+        absolute: "absolute top-1 left-5",
       },
       size: {//only width and height
         full: "w-full",

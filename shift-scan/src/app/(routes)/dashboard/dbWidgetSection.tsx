@@ -60,7 +60,7 @@ const handleShowManagerButtons = () => {
 },[]);
 
  // Redirect to dashboard if authStep is success
- useEffect(() => {
+useEffect(() => {
     if (authStep !== "success") {
         
     router.push("/");
@@ -116,7 +116,7 @@ return (
 {/* Loading Spinner */}
     {loading ? (
             <>
-            <Holds >
+            <Holds className="my-auto">
             <Spinner
             />
             </Holds>
@@ -125,8 +125,8 @@ return (
     (
       <>
       {/* Component that will render */}
-      <Contents width={"section"} className="py-4">
-        <Grids size={"widgets"}>
+      <Contents width={"section"} className="py-5">
+        <Grids cols={"2"} rows={"3"} gap={"5"}>
 {/* This section includes the buttons within equipment */}
         {additionalButtonsType === "equipment" ? (
           <>
@@ -372,7 +372,6 @@ return (
                   <Texts size={"p3"}>{t("SwitchJobs")}</Texts>
                 </Holds>
               </Buttons>
-              
               <Buttons //----------------------This is the Clock Out Widget
               href="/dashboard/clock-out"
               background={"red"}
