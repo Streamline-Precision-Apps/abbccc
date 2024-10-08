@@ -27,10 +27,10 @@ const TextVariants = cva(
       size: {//only text size
         p1: "text-3xl sm:text-3xl md:text-4xl lg:text-5xl",
         p2: "text-2xl sm:text-2xl md:text-3xl lg:text-4xl",
-        p3: "text-xl",
-        p4: "text-lg",
-        p5: "text-med",
-        p6: "text-sm",
+        p3: "text-xl sm:text-xl md:text-2xl lg:text-3xl",
+        p4: "text-lg sm:text-lg md:text-xl lg:text-2xl",
+        p5: "text-med sm:text-med md:text-lg lg:text-xl",
+        p6: "text-sm sm:text-sm md:text-med lg:text-lg",
       }
     },
     defaultVariants: {
