@@ -19,9 +19,9 @@ export async function GET(request: Request) {
       },
       select: {
         phoneNumber: true,
-        email: true,
         emergencyContact: true,
         emergencyContactNumber: true,
+        email: true,
       },
     });
 
