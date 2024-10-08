@@ -9,7 +9,7 @@ const BaseVariants = cva(
     {
         variants: {
             background: {//only background attributes
-                default: "", //will let data fill screen vertically
+                default: "bg-gradient-to-b from-app-dark-blue to-app-blue",
                 modal: "bg-neutral-800 opacity-50", //will create the gray background for modals
             },
             position: {//only position attributes
