@@ -85,11 +85,17 @@ export const Signature = ({ setBase64String, base64string, handleSubmitImage }: 
         onMouseUp={handleMouseUp}
       />
       <div className="flex flex-row gap-4">
-        <Buttons variant={"red"} size={null} onClick={handleClear}>
+        <Buttons variant={"red"} size={null} onClick={(event) => {
+                    event.preventDefault();
+                    handleClear();
+                  }}>
           {t("Clear")}
         </Buttons>
         {showSaveButton && (
-          <Buttons variant={"green"} size={null} onClick={handleSave}>
+          <Buttons variant={"green"} size={null} onClick={(event) => {
+            event.preventDefault();
+            handleSave();
+          }}>
             {t("Save")}
           </Buttons>
         )}
