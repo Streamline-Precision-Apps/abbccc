@@ -47,7 +47,7 @@ export default function STab() {
   // If loading, show a loading message
   if (loading) {
     return (
-      <Holds>
+      <Holds className="py-5">
         <Texts>Loading...</Texts>
         <Spinner />
       </Holds>
