@@ -3,6 +3,7 @@ import Spinner from "@/components/(animations)/spinner";
 import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
+import { Grids } from "@/components/(reusable)/grids";
 import { Images } from "@/components/(reusable)/images";
 import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
@@ -42,55 +43,64 @@ if (status === "authenticated") {
     const storedTeams = localStorage.getItem("myTeams");
     if (storedTeams) {
       // Parse and set local data
-      setMyTeams(JSON.parse(storedTeams));
+    setMyTeams(JSON.parse(storedTeams));
       setIsLoading(false); // Stop loading
     } else {
       // Fetch from server if no data in local storage
-      fetchCrew();
+    fetchCrew();
     }
-  }
+}
 }, [status]);
 
 return (
-<Bases>
-<Contents>
-    <Holds 
-            background={"white"}
-            className="mb-3">
-        <TitleBoxes
-        title={`${t('Teams-Title')}`}
-        titleImg="/team.svg"
-        titleImgAlt={`${t('Teams-Logo-Title')}`}
-        />
-    </Holds>
-    {isLoading ? <>
-        <Holds background={"white"}>
-            <Contents width={"section"}>
-            <Spinner />
-            </Contents>
-        </Holds>
-    </> :
-    <Holds background={"white"}>
-        <Contents width={"section"}>
-        {myTeams.map((teams) => (
-            <Holds className="my-3">
-            <Buttons
-            background="lightBlue"
-            href={`/dashboard/myTeam/${teams.id}`}
-            key={teams.id}
-            >
-            <Holds>
-            <Titles size="h1">
-            {teams.name} ({teams.totalMembers})
-            </Titles>
-            </Holds>
-            </Buttons>
-            </Holds>
-        ))}
+    <Bases>
+        <Contents>
+            <Grids rows={"8"} gap={"5"}>
+                <Holds 
+                background={"white"}
+                className="row-span-2 h-full">
+                    <TitleBoxes
+                    title={`${t('Teams-Title')}`}
+                    titleImg="/team.svg"
+                    titleImgAlt={`${t('Teams-Logo-Title')}`}
+                    className="my-auto"/>
+                </Holds>
+                {isLoading ? <>
+                <Holds 
+                background={"white"}
+                className="row-span-6 h-full">
+                    <Contents width={"section"}>
+                        <Holds className="my-auto">
+                            <Spinner />
+                        </Holds>
+                    </Contents>
+                </Holds>
+                </> :
+                <Holds 
+                background={"white"}
+                className="row-span-6 h-full">
+                    <Contents width={"section"}>
+                        <Grids gap={"5"} rows={"4"} className="py-5">
+                        {myTeams.map((teams) => (
+                            <Holds className="row-span-1 h-full">
+                                <Buttons
+                                background="lightBlue"
+                                href={`/dashboard/myTeam/${teams.id}`}
+                                key={teams.id}>
+                                    <Holds>
+                                        <Titles size="h1">
+                                        {teams.name} ({teams.totalMembers})
+                                        </Titles>
+                                    </Holds>
+                                </Buttons>
+                            </Holds>
+                        ))}
+                        </Grids>
+                    </Contents>
+                </Holds>
+                }
+            </Grids>
         </Contents>
-    </Holds>
-    }
-        </Contents>
-        </Bases>
+    </Bases>
     );
 }
