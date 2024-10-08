@@ -12,6 +12,8 @@ import { Texts } from "@/components/(reusable)/texts";
 
 import { Contents } from "@/components/(reusable)/contents";
 import Spinner from "@/components/(animations)/spinner";
+import { Images } from "@/components/(reusable)/images";
+import { Grids } from "@/components/(reusable)/grids";
 
 export default function RTab() {
   const { data: session } = useSession(); // Use `useSession` to fetch session
@@ -56,7 +58,14 @@ export default function RTab() {
   // Check if user has appropriate permissions
   const userPermission = session.user.permission;
   if (session && !["SUPERADMIN", "MANAGER", "ADMIN"].includes(userPermission)) {
-    return <Titles>Coming Soon</Titles>;
+    return (
+      <Holds className="h-full justify-center">
+        <Titles>Coming Soon</Titles>
+        <Holds>
+          <Images size={"30"} titleImg="/logo.svg" titleImgAlt="coming soon" />
+        </Holds>
+      </Holds>
+    );
   }
 
   // Filter out requests made by the current user
@@ -89,25 +98,28 @@ export default function RTab() {
 
   // Render received requests
   return (
-    <Holds>
-      <Contents width={"section"}>
-        {pending.map((item) => (
-          <Holds className="my-2" key={item.id}>
-            <Buttons
-              background={"orange"}
-              key={item.id}
-              href={`/hamburger/inbox/received/${item.id}`}
-            >
-              <Titles>{item.requestType}</Titles>
-              {new Date(item.date).toLocaleString("en-US", {
-                day: "numeric",
-                month: "numeric",
-                year: "numeric",
-              })}
-            </Buttons>
-          </Holds>
-        ))}
-      </Contents>
-    </Holds>
+    <Contents width={"section"} className="mb-5">
+      <Grids rows={"1"} gap={"5"} className="py-5">
+        <Holds className="row-span-1 h-full">
+          {pending.map((item) => (
+            <Holds key={item.id}>
+              <Buttons
+                background={"orange"}
+                key={item.id}
+                href={`/hamburger/inbox/received/${item.id}`}
+                size={"90"}
+              >
+                <Titles>{item.requestType}</Titles>
+                {new Date(item.date).toLocaleString("en-US", {
+                  day: "numeric",
+                  month: "numeric",
+                  year: "numeric",
+                })}
+              </Buttons>
+            </Holds>
+          ))}
+        </Holds>
+      </Grids>
+    </Contents>
   );
 }

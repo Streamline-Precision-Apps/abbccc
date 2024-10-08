@@ -14,7 +14,7 @@ import { Grids } from "@/components/(reusable)/grids";
 
 export default function Content() {
   const t = useTranslations("Hamburger");
-  const [activeTab, setActiveTab] = useState(1);
+  const [activeTab, setActiveTab] = useState(1); // change back to one
 
   return (
     <Holds className="h-full">
@@ -33,7 +33,7 @@ export default function Content() {
         </Holds>
         <Holds
           background={"white"}
-          className="rounded-t-none row-span-9 h-full"
+          className="rounded-t-none  row-span-9 h-full"
         >
           {activeTab === 1 && <STab />}
           {activeTab === 2 && <RTab />}
