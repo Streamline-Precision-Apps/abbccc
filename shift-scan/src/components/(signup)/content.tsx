@@ -54,7 +54,7 @@ export default function Content({
     try {
       setAuthStep("");
       // Use the callbackUrl for redirect to avoid double navigation
-      signOut({ callbackUrl: '/signin' });
+      signOut({ callbackUrl: "/signin" });
     } catch (error) {
       console.log(error);
     }
@@ -65,40 +65,37 @@ export default function Content({
   };
 
   return (
-    <>
-      <Bases variant={"default"}>
-        <Header />
-        <Contents>
-          <Holds size={"homepage"}>
-            <Contents variant={"name"} size={"test"}>
-              {step === 1 && <ShiftScanIntro handleNextStep={handleNextStep} />}
-              {step === 2 && (
-                <ResetPassword id={userId} handleNextStep={handleNextStep} />
-              )}
-              {step === 3 && (
-                <ProfilePictureSetup
-                  id={userId}
-                  handleNextStep={handleNextStep}
-                />
-              )}
-              {step === 4 && (
-                <SignatureSetup id={userId} handleNextStep={handleNextStep} />
-              )}
-              {step === 5 && (
-                <NotificationSettings
-                  id={userId}
-                  handleNextStep={handleNextStep}
-                />
-                
-              )}
-              {step === 6 && (
-                <Permissions id={userId} handleAccept={handleComplete} />
-              )}
-              <Footers>{f("Copyright")}</Footers>
-            </Contents>
-          </Holds>
-        </Contents>
-      </Bases>
-    </>
+    <Bases>
+      <Header />
+      <Contents>
+        <Holds>
+          <Contents>
+            {step === 1 && <ShiftScanIntro handleNextStep={handleNextStep} />}
+            {step === 2 && (
+              <ResetPassword id={userId} handleNextStep={handleNextStep} />
+            )}
+            {step === 3 && (
+              <ProfilePictureSetup
+                id={userId}
+                handleNextStep={handleNextStep}
+              />
+            )}
+            {step === 4 && (
+              <SignatureSetup id={userId} handleNextStep={handleNextStep} />
+            )}
+            {step === 5 && (
+              <NotificationSettings
+                id={userId}
+                handleNextStep={handleNextStep}
+              />
+            )}
+            {step === 6 && (
+              <Permissions id={userId} handleAccept={handleComplete} />
+            )}
+            <Footers>{f("Copyright")}</Footers>
+          </Contents>
+        </Holds>
+      </Contents>
+    </Bases>
   );
 }

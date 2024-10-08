@@ -1,7 +1,6 @@
 "use server";
-import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
-import Content from "@/app/hamburger/inbox/sent/[id]/content";
+import Content from "@/app/hamburger/inbox/received/[id]/content";
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
 
