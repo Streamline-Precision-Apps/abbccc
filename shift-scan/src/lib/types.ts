@@ -182,7 +182,7 @@ export type UserSettings = {
   generalReminders?: boolean;
   biometric?: boolean;
   cameraAccess?: boolean;
-  LocationAccess?: boolean;
+  locationAccess?: boolean;
 };
 
 // --------------------------------------

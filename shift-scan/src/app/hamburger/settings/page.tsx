@@ -19,7 +19,7 @@ export default async function Settings() {
   return (
     <Bases>
       <Contents>
-        <Grids size={"settings"}>
+        <Grids rows={"10"} gap={"5"}>
           <Holds
             background={"white"}
             className="row-span-2 justify-center h-full"
@@ -32,7 +32,9 @@ export default async function Settings() {
               size={"default"}
             />
           </Holds>
-          <Index />
+          <Holds className="row-span-8 h-full">
+            <Index />
+          </Holds>
         </Grids>
       </Contents>
     </Bases>

@@ -271,7 +271,7 @@
         "Security": "Security",
         "Biometrics": "Biometrics",
         "CameraAccess": "Camera Access",
-        "LocationAccess": "Location Access",
+        "locationAccess": "Location Access",
         "Inbox": "Inbox",
         "EmployeeID": "Employee ID",
         "PersonalEmail": "Personal Email",

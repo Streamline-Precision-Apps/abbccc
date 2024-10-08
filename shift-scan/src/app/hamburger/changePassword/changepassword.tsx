@@ -82,7 +82,6 @@ export default function ChangePassword({ userId }: { userId: string }) {
 
     const formData = new FormData(event.currentTarget);
     const hashed = await hash(newPassword, 10);
-    console.log(formData);
     formData.append("id", userId);
     formData.append("password", hashed);
 
@@ -97,6 +96,7 @@ export default function ChangePassword({ userId }: { userId: string }) {
       setShowBanner(true);
     }
   };
+
   const validatePassword = (password: string) => {
     const minLength = 8;
     const hasNumber = /\d/;
@@ -115,29 +115,46 @@ export default function ChangePassword({ userId }: { userId: string }) {
     setOneSymbol(/[!@#$%^&*(),.?":{}|<>]/.test(password));
   };
 
+  const PasswordCriteria = ({
+    passed,
+    label,
+  }: {
+    passed: boolean;
+    label: string;
+  }) => (
+    <Holds position="row" className="space-x-4">
+      <Holds
+        background={passed ? "green" : "red"}
+        className="w-1 rounded-full my-auto"
+      ></Holds>
+      <Texts size="p6">{label}</Texts>
+    </Holds>
+  );
+
   return (
-    <Holds className="row-span-7 h-full">
+    <Holds className="h-full">
       <Forms
         onSubmit={handleSubmit}
         className="h-full flex flex-col items-center justify-between"
       >
-        {showBanner ? (
+        {showBanner && (
           <Holds
-            background={"red"}
-            position={"absolute"}
-            size={"full"}
+            background="red"
+            position="absolute"
+            size="full"
             className="rounded-none"
           >
-            <Texts size={"p6"}>{bannerMessage}</Texts>
+            <Texts size="p6">{bannerMessage}</Texts>
           </Holds>
-        ) : null}
-        {/* Start of grid container 1 rows - 10 */}
-        <Grids className="grid grid-rows-10 gap-4 w-full">
-          <Holds className="h-full row-span-6" background={"white"}>
-            {/*^^^ Start of new password holds ^^^*/}
-            <Contents width={"section"}>
-              <Holds className="my-auto w-full">
-                <Holds position={"row"}>
+        )}
+
+        {/* Start of grid container */}
+        <Grids className="grid grid-rows-7 gap-4 w-full">
+          {/* New password section */}
+          <Holds className="row-span-3 h-full" background="white">
+            <Contents width="section">
+              <Holds className="my-auto h-full">
+                <Holds position="row">
                   <Labels htmlFor="new-password" className="py-2">
                     {t("NewPassword")}
                   </Labels>
@@ -158,55 +175,29 @@ export default function ChangePassword({ userId }: { userId: string }) {
                     setNewPassword(e.target.value);
                   }}
                 />
-                <Holds className="mt-2">
-                  <Texts position={"left"} size={"p6"}>
-                    Password strength:
+                <Holds background={"darkBlue"}>
+                  <Texts position="left" text={"white"} size="p3">
+                    Password Strength:
                   </Texts>
-                  <Holds
-                    position={"row"}
-                    background={"darkBlue"}
-                    className="border-4 border-black p-2"
-                  >
-                    <Holds size={"70"}>
-                      <Holds position={"left"} size={"80"}>
-                        <PasswordStrengthIndicator password={newPassword} />
-                      </Holds>
-                    </Holds>
 
-                    <Holds background={"white"} size={"30"} className="px-2">
-                      <Holds position={"row"} className="space-x-4">
-                        <Holds
-                          background={eightChar ? "green" : "red"}
-                          className="w-1 rounded-full my-auto items-center justify-center"
-                        ></Holds>
-                        <Texts size={"p6"}>Min Length (8)</Texts>
-                      </Holds>
-                      <Holds position={"row"} className="space-x-4">
-                        <Holds
-                          background={oneNumber ? "green" : "red"}
-                          className="w-1 rounded-full justify-center items-center"
-                        ></Holds>
-                        <Texts size={"p6"}>123</Texts>
-                      </Holds>
-                      <Holds position={"row"} className="space-x-4">
-                        <Holds
-                          background={oneSymbol ? "green" : "red"}
-                          className="w-1 rounded-full justify-center items-center"
-                        ></Holds>
-                        <Texts size={"p6"}>Symbol</Texts>
-                      </Holds>
-                    </Holds>
+                  <Holds
+                    background="white"
+                    className="justify-between my-auto p-2 rounded"
+                  >
+                    <PasswordCriteria passed={oneNumber} label="123" />
+                    <PasswordCriteria passed={oneSymbol} label="Symbol" />
+                    <PasswordCriteria passed={eightChar} label="(8) Length" />
                   </Holds>
                 </Holds>
               </Holds>
-              {/* ^^^ CLOSING OF NEW PASSWORD HOLDS ^^^ */}
             </Contents>
           </Holds>
 
-          <Holds className="h-full row-span-3" background={"white"}>
-            <Contents width={"section"}>
-              <Holds>
-                <Holds position={"row"}>
+          {/* Confirm password section */}
+          <Holds className="row-span-2 h-full" background="white">
+            <Contents width="section">
+              <Holds className="my-auto w-full">
+                <Holds position="row" className="h-full">
                   <Labels htmlFor="confirm-password">
                     {t("ConfirmPassword")}
                   </Labels>
@@ -227,14 +218,17 @@ export default function ChangePassword({ userId }: { userId: string }) {
               </Holds>
             </Contents>
           </Holds>
-          <Holds className="h-full row-span-2">
-            <Contents width={"section"}>
-              <Buttons background={"orange"} type="submit">
-                <Titles size={"h4"}>{t("ChangePassword")}</Titles>
-              </Buttons>
-            </Contents>
+
+          {/* Submit button section */}
+          <Holds className="row-span-2 h-full">
+            <Holds className="my-auto">
+              <Contents width="section">
+                <Buttons background="orange" type="submit" className="py-2">
+                  <Titles size="h4">{t("ChangePassword")}</Titles>
+                </Buttons>
+              </Contents>
+            </Holds>
           </Holds>
-          {/* End of grid container 1 rows - 10 */}
         </Grids>
       </Forms>
     </Holds>
