@@ -8,6 +8,7 @@ import { Texts } from "@/components/(reusable)/texts";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Holds } from "@/components/(reusable)/holds";
 import { Titles } from "@/components/(reusable)/titles";
+import { Grids } from "@/components/(reusable)/grids";
 
 type ControlComponentProps = {
   toggle: (toggle: boolean) => void;
@@ -131,40 +132,28 @@ export default function ControlComponent({ toggle } : ControlComponentProps) {
   };
 
   return (
-<Holds size={"full"} className="gap-x-5 gap-y-5" >
-        {/* Th */}
-        <ViewComponent
+      <Grids rows={"7"} gap={"5"}>
+        <Holds background={"darkBlue"} className="row-span-2 h-full border-black border-[3px] shadow-[8px_8px_0px_grey]">
+          <ViewComponent
           scrollLeft={scrollLeft}
           scrollRight={scrollRight}
           returnToMain={returnToMain}
-          currentDate={currentDate}
-          />
-        {/* This is the start of the bar chart componnet and the previous day */}
-        
-          <Holds className="flex justify-center rounded-2xl shadow-[8px_8px_0px_grey] border-4 border-black w-full bg-white mt-4">
-          {/* Contexts gives base styles for background app-dark-blue bars */}
-          <Holds className="flex flex-row justify-center ">
-          <Holds size={"30"} className="bg-app-dark-blue h-[300px] mx-auto rounded-t-2xl  pt-3 pb-3 px-2 flex flex-col justify-end">
-            {/* - Contexts gives base styles for green bar with dark-blue background
-    it also provides the height of the green bar, based on the value and the color of the bar based on the value
-    - If the value is less than 8 hours are orange, greater than or equal to 8 hours are green
-    - Text Component is neccessary to give high to the content while having a blank space
-    */}
-            <Holds
-             
-             /*
-             1. ternary is used for height evavulation based on the value, it uses caluclate bar to get it in px 
-              2. ternary is used for color evavulation based on the value, it uses caluclate bar to get it in px
-              3. ternary is used to show blank non working days as a clear background rather then show any status
-              */
-             className={`w-full rounded-t-2xl  flex flex-col justify-end h-fit max-w-lg mx-auto pt-10
+          currentDate={currentDate}/>
+        </Holds> 
+        <Holds background={"white"} position={"row"} className="row-span-4 border-black border-[3px] shadow-[8px_8px_0px_grey]">
+          <Holds //------------------------------------ First Bar
+          className="h-full">
+            <Contents width={"section"} className="p-3 py-5">
+            <Holds background={"darkBlue"} className="h-full border-black border-[3px] rounded-[10px] p-1 flex">
+            <div
+            className={`border-black border-[3px] rounded-[10px]
               ${
                 currentData.valuePrev === 0
                 ? "bg-clear"
                 : `h-[${calculateBarHeight(currentData.valuePrev)}px]`
                 }
-                ${currentData.valuePrev > 8 ? "bg-app-green" : "bg-app-orange"}
-                ${currentData.valuePrev !== 0 ? "" : "bg-clear"}
+                ${currentData.valuePrev > 8 ? "bg-app-green border-black border-[3px] rounded-[10px]" : "bg-app-orange border-black border-[3px] rounded-[10px]"}
+                ${currentData.valuePrev !== 0 ? "" : "bg-clear  border-none"}
                 `}
                 >
               <Texts size={"p3"}>
@@ -172,19 +161,23 @@ export default function ControlComponent({ toggle } : ControlComponentProps) {
                   ? `${currentData.valuePrev.toFixed(1)} ${t("DA-Time-Label")}`
                   : ""}
               </Texts>
+            </div>
             </Holds>
-            </Holds>
-          {/* This is the current day bar same as the previous with styling */}
-          <Holds size={"30"} className="bg-app-dark-blue h-[300px] mx-auto rounded-t-2xl pt-3 pb-3 px-2 flex flex-col justify-end">
+            </Contents>
+          </Holds>
+          <Holds //------------------------------------ Second Bar
+          className="h-full">
+            <Contents width={"section"} className="py-2">
+            <Holds background={"darkBlue"} className="h-full border-black border-[3px] rounded-[10px] p-1 flex">
             <Holds
-              className={` w-full flex flex-col justify-end rounded-t-2xl h-fit max-w-lg mx-auto pt-10
+              className={`
                 ${
                   currentData.value === 0
                   ? "bg-clear"
                   : `h-[${calculateBarHeight(currentData.value)}px]`
                   }  
-                  ${currentData.value > 8 ? "bg-app-green" : "bg-app-orange"}
-                  ${currentData.value !== 0 ? "" : "bg-clear"}
+                  ${currentData.value > 8 ? "bg-app-green border-black border-[3px] rounded-[10px]" : "bg-app-orange border-black border-[3px] rounded-[10px]"}
+                  ${currentData.value !== 0 ? "" : "bg-clear border-none"}
                   `}
                   >
               <Texts size={"p3"}>
@@ -193,20 +186,22 @@ export default function ControlComponent({ toggle } : ControlComponentProps) {
                   : ""}
               </Texts>
             </Holds>
+            </Holds>
+            </Contents>
           </Holds>
-
-
-          {/* This is the next day bar same as the previous with styling */}
-          <Holds size={"30"} className="bg-app-dark-blue h-[300px] mx-auto rounded-t-2xl pt-3 pb-3 px-2 flex flex-col justify-end">
+          <Holds //------------------------------------ Third Bar 
+          className="h-full">
+            <Contents width={"section"} className="p-3 py-5">
+            <Holds background={"darkBlue"} className="h-full border-black border-[3px] rounded-[10px] p-1 flex">
             <Holds
-              className={`h-fit max-w-lg mx-auto pt-10 w-full flex flex-col justify-end rounded-t-2xl 
+              className={`border-black border-[3px] rounded-[10px]
                 ${
                   currentData.valueNext === 0
                   ? "bg-clear"
                   : `h-[${calculateBarHeight(currentData.valueNext)}px] `
                   }
-                  ${currentData.valueNext > 8 ? "bg-app-green" : "bg-app-orange"}
-                  ${currentData.valueNext !== 0 ? "" : "bg-clear"}
+                  ${currentData.valueNext > 8 ? "bg-app-green border-black border-[3px] rounded-[10px]" : "bg-app-orange border-black border-[3px] rounded-[10px]"}
+                  ${currentData.valueNext !== 0 ? "" : "bg-clear  border-none"}
                   `}
                   >
               <Texts  size={"p3"}>
@@ -215,17 +210,18 @@ export default function ControlComponent({ toggle } : ControlComponentProps) {
                   : ""}
               </Texts>
             </Holds>
-          </Holds>
-          </Holds>
-          <Holds size={"full"} position="center" className="mt-1" >
-          <Buttons href={"/timesheets"} background={"green"} size={"full"}>
-            <Texts size={"p3"}>
-            {t("TimeSheet-Label")}
-            </Texts>
-          </Buttons>
-          </Holds>
+            </Holds>
+            </Contents>
           </Holds>
         </Holds>
+        <Holds className="row-span-1 h-full">
+          <Buttons href={"/timesheets"} background={"green"}>
+            <Texts size={"p3"}>
+              {t("TimeSheet-Label")}
+            </Texts>
+          </Buttons>
+        </Holds>
+      </Grids>
   );
 };
 

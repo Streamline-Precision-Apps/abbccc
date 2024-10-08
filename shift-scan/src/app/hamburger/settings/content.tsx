@@ -14,6 +14,7 @@ import { Modals } from "@/components/(reusable)/modals";
 import { updateSettings } from "@/actions/hamburgerActions";
 import { Contents } from "@/components/(reusable)/contents";
 import { UserSettings } from "@/lib/types";
+import { Grids } from "@/components/(reusable)/grids";
 
 export default function Index({ data }: { data: UserSettings }) {
   const t = useTranslations("Hamburger");
@@ -41,108 +42,115 @@ export default function Index({ data }: { data: UserSettings }) {
   };
 
   return (
-    <div>
+    <>
       <Bases>
         <Contents>
-          <Holds background={"white"}
-          className="mb-3 px-3">
-            <TitleBoxes
+          <Grids size={"settings"}>
+            <Holds 
+            background={"white"}
+            className="row-span-1 h-full">
+              <TitleBoxes
               title={t("Title")}
               titleImg="/Settings.svg"
               titleImgAlt="Settings"
               variant={"default"}
               size={"default"}
-            />
-          </Holds>
-          <Holds background={"white"}
-          className="mb-3 p-3">
-            <Titles>{t("Notifications")}</Titles>
-            <Holds position={"row"}>
-              <Holds size={"70"}>
-                <Texts position={"left"}>{t("ApprovedRequests")}</Texts>
+              />
+            </Holds>
+            <Holds 
+            background={"white"}
+            className="row-span-2 h-full">
+              <Titles>{t("Notifications")}</Titles>
+              <Holds position={"row"}>
+                <Holds size={"70"}>
+                  <Texts position={"left"}>{t("ApprovedRequests")}</Texts>
+                </Holds>
+                <Holds size={"30"}>
+                    <LocaleToggleSwitch
+                      data={updatedData.approvedRequests || false}
+                      onChange={(value: boolean) =>
+                        handleChange("approvedRequests", value)
+                      }
+                    />
+                </Holds>
               </Holds>
-              <Holds size={"30"}>
+              <Holds position={"row"}>
+                <Holds size={"70"}>
+                  <Texts position={"left"}>{t("TimeOffRequests")}</Texts>
+                </Holds>
+                <Holds size={"30"}>
                   <LocaleToggleSwitch
-                    data={updatedData.approvedRequests || false}
+                    data={updatedData.timeOffRequests || false}
                     onChange={(value: boolean) =>
-                      handleChange("approvedRequests", value)
+                      handleChange("timeOffRequests", value)
                     }
                   />
+                </Holds>
+              </Holds>
+              <Holds position={"row"}>
+                <Holds size={"70"}>
+                  <Texts position={"left"}>{t("GeneralReminders")}</Texts>
+                </Holds>
+                <Holds size={"30"}>
+                  <LocaleToggleSwitch
+                    data={updatedData.generalReminders || false}
+                    onChange={(value: boolean) =>
+                      handleChange("generalReminders", value)
+                    }
+                  />
+                </Holds>
               </Holds>
             </Holds>
-            <Holds position={"row"}>
-              <Holds size={"70"}>
-                <Texts position={"left"}>{t("TimeOffRequests")}</Texts>
-              </Holds>
-              <Holds size={"30"}>
-                <LocaleToggleSwitch
-                  data={updatedData.timeOffRequests || false}
-                  onChange={(value: boolean) =>
-                    handleChange("timeOffRequests", value)
-                  }
-                />
-              </Holds>
-            </Holds>
-            <Holds position={"row"}>
-              <Holds size={"70"}>
-                <Texts position={"left"}>{t("GeneralReminders")}</Texts>
-              </Holds>
-              <Holds size={"30"}>
-                <LocaleToggleSwitch
-                  data={updatedData.generalReminders || false}
-                  onChange={(value: boolean) =>
-                    handleChange("generalReminders", value)
-                  }
-                />
-              </Holds>
-            </Holds>
-          </Holds>
 
-          <Holds background={"white"} className="mb-3 px-3">
-            <Titles>{t("Security")}</Titles>
-            <Holds position={"row"}>
-              <Holds size={"70"}>
-                <Texts position={"left"}>{t("Biometrics")}</Texts>
+            <Holds 
+            background={"white"} 
+            className="row-span-2">
+              <Titles>{t("Security")}</Titles>
+              <Holds position={"row"}>
+                <Holds size={"70"}>
+                  <Texts position={"left"}>{t("Biometrics")}</Texts>
+                </Holds>
+                <Holds size={"30"}>
+                  <LocaleToggleSwitch
+                    data={updatedData.biometric || false}
+                    onChange={(value: boolean) => handleChange("biometric", value)}
+                  />
+                </Holds>
               </Holds>
-              <Holds size={"30"}>
-                <LocaleToggleSwitch
-                  data={updatedData.biometric || false}
-                  onChange={(value: boolean) => handleChange("biometric", value)}
-                />
+              <Holds position={"row"}>
+                <Holds size={"70"}>
+                  <Texts position={"left"}>{t("CameraAccess")}</Texts>
+                </Holds>
+                <Holds size={"30"}>
+                  <LocaleToggleSwitch
+                    data={updatedData.cameraAccess || false}
+                    onChange={(value: boolean) => handleChange("cameraAccess", value)}
+                  />
+                </Holds>
+              </Holds>
+              <Holds position={"row"}>
+                <Holds size={"70"}>
+                  <Texts position={"left"}>{t("LocationAccess")}</Texts>
+                </Holds>
+                <Holds size={"30"}>
+                  <LocaleToggleSwitch
+                    data={updatedData.LocationAccess || false}
+                    onChange={(value: boolean) =>
+                      handleChange("LocationAccess", value)
+                    }
+                  />
+                </Holds>
               </Holds>
             </Holds>
-            <Holds position={"row"}>
-              <Holds size={"70"}>
-                <Texts position={"left"}>{t("CameraAccess")}</Texts>
-              </Holds>
-              <Holds size={"30"}>
-                <LocaleToggleSwitch
-                  data={updatedData.cameraAccess || false}
-                  onChange={(value: boolean) => handleChange("cameraAccess", value)}
-                />
-              </Holds>
-            </Holds>
-            <Holds position={"row"}>
-              <Holds size={"70"}>
-                <Texts position={"left"}>{t("LocationAccess")}</Texts>
-              </Holds>
-              <Holds size={"30"}>
-                <LocaleToggleSwitch
-                  data={updatedData.LocationAccess || false}
-                  onChange={(value: boolean) =>
-                    handleChange("LocationAccess", value)
-                  }
-                />
-              </Holds>
-            </Holds>
-          </Holds>
-
-          <Buttons
+            <Holds 
+            className="row-span-1">
+            <Buttons
             onClick={() => setIsModalOpen(true)}
-            background={"orange"}
-          >
-            <Titles>{t("ChangePassword")}</Titles>
-          </Buttons>
+            background={"orange"}>
+              <Titles>{t("ChangePassword")}</Titles>
+            </Buttons>
+            </Holds>
+          </Grids>
         </Contents>
       </Bases>
 
@@ -157,6 +165,6 @@ export default function Index({ data }: { data: UserSettings }) {
           </Buttons>
         </Holds>
       </Modals>
-    </div>
+    </>
   );
 }

@@ -25,7 +25,7 @@ const ButtonVariants = cva(
         right: "self-end",
       },
       size: {//only width and height
-        full: "w-[100%]",
+        full: "w-[100%] h-[100%]",
         "90": "w-[90%]",
         "80": "w-[80%]",
         "70": "w-[70%]",
@@ -35,8 +35,6 @@ const ButtonVariants = cva(
         "30": "w-[30%]",
         "20": "w-[20%]",
         "10": "w-[10%]",
-        widgetMed: "grid col-span-2 w-full",
-        widgetSm: "grid h-full w-full min-h-[100px]",
       }
     },
     defaultVariants: {

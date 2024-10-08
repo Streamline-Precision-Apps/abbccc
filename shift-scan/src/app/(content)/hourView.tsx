@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { Holds } from "@/components/(reusable)/holds";
 import Capitalize from "@/utils/captitalize";
 import CapitalizeAll from "@/utils/capitalizeAll";
+import { Grids } from "@/components/(reusable)/grids";
 
 type ViewComponentProps = {
     scrollLeft: () => void;
@@ -39,27 +40,26 @@ export default function ViewComponent({ scrollLeft, scrollRight, returnToMain, c
     
 
     return (
-
-        <Holds position={"row"} className="w-full bg-app-dark-blue rounded-2xl py-2">
-            <Holds size={"20"} >
-                <Buttons background={"lightBlue"} position={"left"} className=" shadow-none" onClick={scrollLeft} >
-                    <Images titleImg={"/backArrow.svg"} titleImgAlt="left" size={"70"} className="mx-auto p-2" />
-                </Buttons>
-            </Holds>
-                    <Holds size={"60"} >
-                    <Holds size={"40"} >
-                        <Buttons background={"red"} size={"70"} onClick={returnToMain}>
+        <Contents width={"section"}>
+            <Grids cols={"5"}>
+                <Holds className="col-span-1 relative">
+                    <Buttons background={"lightBlue"} position={"left"} className="shadow-none py-2" onClick={scrollLeft} >
+                        <Images titleImg={"/backArrow.svg"} titleImgAlt="left" size={"80"} className="mx-auto p-2" />
+                    </Buttons>
+                </Holds>
+                <Holds className="col-span-3 mb-8" >
+                    <Buttons background={"red"} size={"30"} className="mb-2" onClick={returnToMain}>
                         <Images titleImg={"/turnBack.svg"} titleImgAlt="return" size={"full"} className="mx-auto p-2" />
-                        </Buttons>
-                        </Holds>
-                        <Texts text={"white"} size={"p3"} className="pt-4 px-0">{Capitalize(Weekday)}</Texts>
-                        <Texts text={"white"} size={"p4"}>{CapitalizeAll(dateToday)}</Texts>
-                    </Holds>
-                    <Holds size={"20"} >
-                <Buttons background={"lightBlue"} position={"center"} className="shadow-none" onClick={scrollRight}  >
-                <Images titleImg={"/forwardArrow.svg"} titleImgAlt="right" size={"70"} className="mx-auto p-2" />
-            </Buttons>
-            </Holds>
-        </Holds>
+                    </Buttons>
+                    <Texts text={"white"} size={"p2"} className="">{Capitalize(Weekday)}</Texts>
+                    <Texts text={"white"} size={"p4"}>{CapitalizeAll(dateToday)}</Texts>
+                </Holds>
+                <Holds  className="col-span-1">
+                    <Buttons background={"lightBlue"} position={"center"} className="shadow-none py-2" onClick={scrollRight}  >
+                        <Images titleImg={"/forwardArrow.svg"} titleImgAlt="right" size={"80"} className="mx-auto p-2" />
+                    </Buttons>
+                </Holds>
+            </Grids>
+        </Contents>
     );
 };
