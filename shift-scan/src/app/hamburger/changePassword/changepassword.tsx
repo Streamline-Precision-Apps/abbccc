@@ -1,7 +1,5 @@
 "use client";
-
 import { useTranslations } from "next-intl";
-
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Buttons } from "@/components/(reusable)/buttons";
@@ -16,7 +14,6 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { Images } from "@/components/(reusable)/images";
-import PasswordStrengthIndicator from "@/components/(signup)/passwordStrengthIndicator";
 
 export default function ChangePassword({ userId }: { userId: string }) {
   const t = useTranslations("Hamburger");
