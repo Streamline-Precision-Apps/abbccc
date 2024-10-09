@@ -216,8 +216,12 @@ const TitleBoxes: FC<TitleBoxProps> = ({
             />
           </Buttons>
         </Holds>
-        <Images titleImg={titleImg} titleImgAlt={titleImgAlt} size={"20"} />
-        <Titles size={"h1"}>{title}</Titles>
+        <Holds>
+          <Holds size={"50"} className="my-auto">
+            <Images titleImg={titleImg} titleImgAlt={titleImgAlt} size={"30"} />
+          </Holds>
+          <Titles size={"h2"}>{title}</Titles>
+        </Holds>
       </div>
     );
 };
