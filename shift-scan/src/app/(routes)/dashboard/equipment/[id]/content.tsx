@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Bases } from "@/components/(reusable)/bases";
 import { Holds } from "@/components/(reusable)/holds";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
-import { DeleteLogs, updateEmployeeEquipmentLog } from "@/actions/equipmentActions";
-import { useRouter } from 'next/navigation';
+import {
+  DeleteLogs,
+  updateEmployeeEquipmentLog,
+} from "@/actions/equipmentActions";
+import { useRouter } from "next/navigation";
 import { Banners } from "@/components/(reusable)/banners";
 import { useTranslations } from "next-intl";
 import { Forms } from "@/components/(reusable)/forms";
@@ -15,75 +17,77 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 
-type EquipmentLog = {
-  userId: string | undefined;
-  formId: string | undefined;
-};
-
-export default function CombinedForm({
-  userId,
-  formId,
-}: EquipmentLog) {
+export default function CombinedForm({ formId }: { formId: string }) {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   const [logs, setLogs] = useState<any[]>([]);
   const [refueled, setRefueled] = useState<boolean>(false);
   const [fuel, setFuel] = useState<number>(0);
   const [notes, setNotes] = useState<string>("");
   const [characterCount, setCharacterCount] = useState<number>(40);
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
-  const [completed, setCompleted] = useState<boolean>(false); // For handling completion status
+  const [completed, setCompleted] = useState<boolean>(false);
+  const [startTime, setStartTime] = useState<string>("");
+  const [endTime, setEndTime] = useState<string>("");
+
+  const [changedDuration, setChangedDuration] = useState<string>("");
   const t = useTranslations("EquipmentContent");
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
+
       try {
-        const response = await fetch(`/api/getLogs/${formId}`);
-        if (response.ok) {
-          const data = await response.json();
-          setLogs(data.usersLogs);
-          setRefueled(data.equipmentform?.refueled ?? false);
-          setFuel(data.equipmentform?.fuel_used ?? 0);
-          setNotes(data.equipmentform?.equipment_notes || "");
-          setCompleted(data.equipmentform?.completed ?? false);
-          setCharacterCount(40 - (data.equipmentform?.equipment_notes?.length || 0));
-        } else {
-          console.error("Failed to fetch logs");
+        const response = await fetch(`/api/getEQFormById/${formId}`);
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch logs: ${response.statusText}`);
         }
+
+        const data = await response.json();
+
+        if (!data) {
+          throw new Error("No data returned from server");
+        }
+
+        // Destructure the necessary fields from the response
+        const { equipmentform, userNotes } = data;
+
+        // Update state based on the response structure
+        setStartTime(userNotes.startTime ?? "");
+        setEndTime(userNotes.endTime ?? "");
+        setLogs(userNotes || []);
+        setRefueled(userNotes.isRefueled ?? false);
+        setFuel(userNotes.fuelUsed ?? 0);
+        setNotes(userNotes.comment || "");
+        setCompleted(userNotes.isCompleted ?? false);
+        setCharacterCount(40 - (userNotes?.comment?.length || 0));
+        setChangedDuration(userNotes?.duration ?? "");
       } catch (error) {
+        setError((error as Error).message);
         console.error("Error fetching logs:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    fetchData();
-  }, [formId]); // Fetch data when formId changes
-
-  const handleSaveClick = async (e: React.FormEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    // Form data handling and saving
-  };
-
-  const handleEditClick = () => {
-    setIsEditMode(true);
-  };
-
-
+    if (formId) {
+      fetchData();
+    }
+  }, [formId]);
   useEffect(() => {
-    console.log('Completed:', completed);
-    console.log('Users Logs:', usersLogs);
-  
     if (completed) {
       setIsEditMode(false);
     }
-  
-    // Check if usersLogs has valid data
-    if (usersLogs && usersLogs.length > 0) {
-      const log = usersLogs[0]; // Ensure that usersLogs contains the expected data
-      setRefueled(log.refueled);
+    if (logs.length > 0) {
+      const log = logs[0]; // Example: Set data based on the first log entry
+      setRefueled(log.isRefueled);
       setFuel(log.fuelUsed ?? 0);
       setNotes(log.comment || "");
-      console.log('Equipment Notes from Log:', log.comment); // Debug log to check the notes value
     }
-  }, [completed, usersLogs]);
+  }, [completed, logs]);
 
   const handleRefueledChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRefueled(event.target.checked);
@@ -106,18 +110,12 @@ export default function CombinedForm({
     setIsEditMode(true);
   };
 
-  const handleSaveClick = async (e: React.FormEvent<HTMLButtonElement>) => {
+  const handleSaveClick = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append('endTime', endTime.toString());
-    formData.append('id', eqid ?? "");
-    formData.append('completed', "true");
-    if (setChangedDuration !== undefined) {
-      formData.append('duration', changedDuration);
-    }
-    formData.append('refueled', refueled.toString());
-    formData.append('fuelUsed', fuel.toString());
-    formData.append('comment', notes);
+    const formData = new FormData(e.currentTarget);
+    formData.append("endTime", new Date().toISOString());
+    formData.append("id", formId ?? "");
+    formData.append("completed", "true");
 
     try {
       await updateEmployeeEquipmentLog(formData);
@@ -127,94 +125,81 @@ export default function CombinedForm({
     }
   };
 
-  const deleteHandler = async (e: React.FormEvent<HTMLButtonElement>) => {
+  const deleteHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData1 = new FormData();
-    formData1.append('id', eqid ?? "");
+    const formData = new FormData(e.currentTarget);
     try {
-      await DeleteLogs(formData1);
+      await DeleteLogs(formData);
       router.replace("/dashboard/equipment");
     } catch (error) {
       console.error("Error deleting log:", error);
     }
   };
 
-  const confirmation = async (e: React.FormEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    const formData = new FormData();
-    formData.append('endTime', endTime.toString());
-    formData.append('id', eqid ?? "");
-    formData.append('completed', "true");
-    formData.append('duration', duration);
-    formData.append('refueled', refueled.toString());
-    formData.append('fuelUsed', fuel.toString());
-    formData.append('comment', notes);
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
-    try {
-      await updateEmployeeEquipmentLog(formData);
-    } catch (error) {
-      console.error("Error submitting equipment log:", error);
-    }
-  };
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
   return (
     <>
-      {completed ? (
-        <Banners variant={"green"}>
-          {t("Banner")}
-        </Banners>
-      ) : null}
+      {completed && <Banners background="green">{t("Banner")}</Banners>}
 
-      <Holds size={"titleBox"}>
+      <Holds>
         <TitleBoxes
-          title={`${name}`}
+          title="Equipment Log"
           type="noIcon"
           titleImg="/current.svg"
           titleImgAlt="Current"
-          variant={"default"}
-          size={"default"}
+          variant="default"
+          size="default"
         />
       </Holds>
+      <Texts>
+        {startTime} - {endTime}
+      </Texts>
 
-      <Forms action={updateEmployeeEquipmentLog}>
-        <Holds size={"dynamic"}>
-          <Labels variant={"default"} size={"default"} />
+      <Forms onSubmit={handleSaveClick}>
+        <Holds>
+          <Labels />
           {t("Refueled")}
           <Inputs
             name="refueled"
             type="checkbox"
-            defaultChecked={refueled}
+            checked={refueled}
             onChange={handleRefueledChange}
             readOnly={!isEditMode && completed}
           />
         </Holds>
 
-        {refueled ? (
-          <Holds size={"dynamic"}>
-            <Labels variant={"default"} size={"default"} />
+        {refueled && (
+          <Holds>
+            <Labels />
             {t("Gallons")}
             <Inputs
               type="number"
               name="fuelUsed"
-              defaultValue={fuel}
+              value={fuel.toString()}
               onChange={handleFuelValue}
               readOnly={!isEditMode && completed}
             />
           </Holds>
-        ) : (
-          <Inputs type="hidden" name="fuelUsed" value="0" />
         )}
 
-        <Holds size={"dynamic"}>
-          <Labels variant={"default"} size={"default"} />
+        <Holds>
+          <Labels />
           {t("CheckedTime")}
           <Inputs
-            name={"duration"}
-            value={completed ? changedDuration : duration}
+            name="duration"
+            value={completed ? changedDuration : ""}
             onChange={handleDurationChange}
             readOnly={!isEditMode && completed}
           />
 
-          <Labels variant={"default"} size={"default"} />
+          <Labels />
           {t("Notes")}
           <TextAreas
             name="comment"
@@ -224,58 +209,61 @@ export default function CombinedForm({
             readOnly={!isEditMode && completed}
           />
 
-          {characterCount === 0 ? (
-            <Texts size={"p3"} className={"text-red-400 text-right"}>
+          {characterCount <= 0 ? (
+            <Texts size="p3" className="text-red-400 text-right">
               "You have reached the maximum number of characters for this note"
             </Texts>
           ) : null}
 
-          <Texts size={"p3"} className={characterCount > 0 ? "text-green-800  text-right" : "text-red-400 text-right"}>
+          <Texts
+            size="p3"
+            className={
+              characterCount > 0
+                ? "text-green-800 text-right"
+                : "text-red-400 text-right"
+            }
+          >
             {`${characterCount} Characters`}
           </Texts>
         </Holds>
 
-        <Inputs type="hidden" name="endTime" value={endTime.toString()} />
-        <Inputs type="hidden" name="id" value={eqid} />
+        <Inputs type="hidden" name="endTime" value={new Date().toISOString()} />
+        <Inputs type="hidden" name="id" value={formId ?? ""} />
         <Inputs type="hidden" name="completed" value="true" />
-
-        {completed ? (
-          isEditMode ? (
-            <Buttons
-              type="submit"
-              onClick={handleSaveClick}
-              variant={"green"}
-              size={"minBtn"}
-              value="Save"
-            >
-              {t("Save")}
-            </Buttons>
-          ) : (
+        <Holds position="row">
+          <Holds>
+            {completed ? (
+              isEditMode ? (
+                <Buttons type="submit" background="green">
+                  {t("Save")}
+                </Buttons>
+              ) : (
+                <Buttons
+                  type="button"
+                  onClick={handleEditClick}
+                  background="orange"
+                  size={"90"}
+                >
+                  {t("Edit")}
+                </Buttons>
+              )
+            ) : (
+              <Buttons type="submit" background="green" size={"90"}>
+                {t("Submit")}
+              </Buttons>
+            )}
+          </Holds>
+          <Holds>
             <Buttons
               type="button"
-              onClick={handleEditClick}
-              variant={"orange"}
-              size={"minBtn"}
-              value="Edit"
+              onClick={(e) => deleteHandler(e as any)}
+              background="red"
+              size={"90"}
             >
-              {t("Edit")}
+              {t("Delete")}
             </Buttons>
-          )
-        ) : (
-          <Buttons
-            type="submit"
-            onClick={confirmation}
-            variant={"green"}
-            size={"minBtn"}
-            value="Submit"
-          >
-            {t("Submit")}
-          </Buttons>
-        )}
-
-        <Buttons href="/dashboard/equipment" variant={"red"} size={"minBtn"} onClick={deleteHandler}>
-          {t("Delete")}
-        </Buttons>
+          </Holds>
+        </Holds>
       </Forms>
     </>
   );
