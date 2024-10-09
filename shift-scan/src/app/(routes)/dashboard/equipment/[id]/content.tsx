@@ -16,8 +16,10 @@ import { Labels } from "@/components/(reusable)/labels";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
+import { useParams } from "next/navigation";
+import { calculateDuration } from "@/utils/calculateDuration";
 
-export default function CombinedForm({ formId }: { formId: string }) {
+export default function CombinedForm({ params }: { params: { id: string } }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -28,55 +30,54 @@ export default function CombinedForm({ formId }: { formId: string }) {
   const [characterCount, setCharacterCount] = useState<number>(40);
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [completed, setCompleted] = useState<boolean>(false);
-  const [startTime, setStartTime] = useState<string>("");
-  const [endTime, setEndTime] = useState<string>("");
+  const [startTime, setStartTime] = useState();
+  const [endTime, setEndTime] = useState();
 
   const [changedDuration, setChangedDuration] = useState<string>("");
   const t = useTranslations("EquipmentContent");
 
+  // Fetch Equipment Form Details
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchEquipmentForm = async () => {
       setIsLoading(true);
       setError(null);
 
       try {
-        const response = await fetch(`/api/getEQFormById/${formId}`);
-
+        const response = await fetch(`/api/getEqUserLogs/${params.id}`);
         if (!response.ok) {
-          throw new Error(`Failed to fetch logs: ${response.statusText}`);
+          throw new Error(
+            `Failed to fetch equipment form: ${response.statusText}`
+          );
         }
 
-        const data = await response.json();
-
-        if (!data) {
-          throw new Error("No data returned from server");
-        }
-
-        // Destructure the necessary fields from the response
-        const { equipmentform, userNotes } = data;
-
-        // Update state based on the response structure
-        setStartTime(userNotes.startTime ?? "");
-        setEndTime(userNotes.endTime ?? "");
-        setLogs(userNotes || []);
-        setRefueled(userNotes.isRefueled ?? false);
-        setFuel(userNotes.fuelUsed ?? 0);
-        setNotes(userNotes.comment || "");
-        setCompleted(userNotes.isCompleted ?? false);
-        setCharacterCount(40 - (userNotes?.comment?.length || 0));
-        setChangedDuration(userNotes?.duration ?? "");
+        const recievedData = await response.json();
+        const data = recievedData[0];
+        console.log(data);
+        setLogs(data); // saves first data entry to be able to revert bac to
+        setRefueled(data.isRefueled ?? false);
+        setFuel(data.fuelUsed ?? 0);
+        setNotes(data.comment || "");
+        setCompleted(data.isCompleted ?? false);
+        setStartTime(data.startTime);
+        setEndTime(data.endTime ?? new Date().toISOString());
+        setCharacterCount(40 - (data.comment?.length || 0));
+        setChangedDuration(
+          data.duration ??
+            calculateDuration(
+              data.startTime,
+              data.endTime ?? new Date().toISOString()
+            )
+        );
       } catch (error) {
         setError((error as Error).message);
-        console.error("Error fetching logs:", error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    if (formId) {
-      fetchData();
-    }
-  }, [formId]);
+    fetchEquipmentForm();
+  }, [params.id]);
+
   useEffect(() => {
     if (completed) {
       setIsEditMode(false);
@@ -114,7 +115,7 @@ export default function CombinedForm({ formId }: { formId: string }) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     formData.append("endTime", new Date().toISOString());
-    formData.append("id", formId ?? "");
+    formData.append("id", params.id.toString());
     formData.append("completed", "true");
 
     try {
@@ -158,9 +159,6 @@ export default function CombinedForm({ formId }: { formId: string }) {
           size="default"
         />
       </Holds>
-      <Texts>
-        {startTime} - {endTime}
-      </Texts>
 
       <Forms onSubmit={handleSaveClick}>
         <Holds>
@@ -193,8 +191,9 @@ export default function CombinedForm({ formId }: { formId: string }) {
           <Labels />
           {t("CheckedTime")}
           <Inputs
+            type="text"
             name="duration"
-            value={completed ? changedDuration : ""}
+            value={changedDuration}
             onChange={handleDurationChange}
             readOnly={!isEditMode && completed}
           />
@@ -228,7 +227,7 @@ export default function CombinedForm({ formId }: { formId: string }) {
         </Holds>
 
         <Inputs type="hidden" name="endTime" value={new Date().toISOString()} />
-        <Inputs type="hidden" name="id" value={formId ?? ""} />
+        <Inputs type="hidden" name="id" value={params.id ?? ""} />
         <Inputs type="hidden" name="completed" value="true" />
         <Holds position="row">
           <Holds>

@@ -10,12 +10,14 @@ import { useEffect, useState } from "react";
 import Spinner from "@/components/(animations)/spinner";
 import { Titles } from "@/components/(reusable)/titles";
 import { Contents } from "@/components/(reusable)/contents";
+import { useRouter } from "next/navigation";
 
 type EquipmentLogs = {
   userId: string | undefined;
 };
 
 export default function EquipmentLogContent({ userId }: EquipmentLogs) {
+  const Router = useRouter();
   const [loading, setLoading] = useState(true);
   const [logs, setLogs] = useState<any[]>([]);
   const t = useTranslations("EquipmentContent");
@@ -44,7 +46,9 @@ export default function EquipmentLogContent({ userId }: EquipmentLogs) {
     };
 
     fetchData();
-  }, [userId]); // Dependency on userId
+  }, [Router]); // Dependency on userId
+
+  useEffect(() => {}, []);
 
   if (loading) {
     return (
@@ -68,17 +72,25 @@ export default function EquipmentLogContent({ userId }: EquipmentLogs) {
         )}
         <Holds className="mt-5">
           {green === 0 && total !== 0 ? (
-            <Forms action={Submit}>
-              <Buttons
-                size={"30"}
-                type="submit"
-                background={"lightBlue"}
-                className="py-2"
-              >
-                {t("SubmitAll")}
-              </Buttons>
-              <Inputs type="hidden" name="id" value={userId} />
-              <Inputs type="hidden" name="submitted" value={"true"} />
+            <Forms
+              action={Submit}
+              onSubmit={(e) => {
+                e.preventDefault();
+                Router.refresh();
+              }}
+            >
+              <Holds>
+                <Buttons
+                  size={"30"}
+                  type="submit"
+                  background={"lightBlue"}
+                  className="py-2 mx-auto"
+                >
+                  {t("SubmitAll")}
+                </Buttons>
+                <Inputs type="hidden" name="id" value={userId} />
+                <Inputs type="hidden" name="submitted" value={"true"} />
+              </Holds>
             </Forms>
           ) : (
             <Buttons size={"30"} type="submit" className="bg-gray-400 py-2">

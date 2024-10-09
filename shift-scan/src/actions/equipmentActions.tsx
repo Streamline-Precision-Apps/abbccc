@@ -34,16 +34,16 @@ enum Status {
 
 export async function equipmentTagExists(id: string) {
   try {
-  const equipment = await prisma.equipment.findUnique({
-    where: {
-      id: id,
-    },
-  });
-  return equipment;
-} catch (error) {
-  console.error("Error checking if equipment exists:", error);
-  throw error;
-}
+    const equipment = await prisma.equipment.findUnique({
+      where: {
+        id: id,
+      },
+    });
+    return equipment;
+  } catch (error) {
+    console.error("Error checking if equipment exists:", error);
+    throw error;
+  }
 }
 
 export async function fetchEq(employeeId: string, date: string) {
@@ -199,11 +199,11 @@ export async function deleteEquipment(id: string) {
 export async function deleteEquipmentbyId(formData: FormData) {
   try {
     const deletedEquipment = await prisma.equipment.delete({
-      where: { id : formData.get("id") as string },
+      where: { id: formData.get("id") as string },
     });
-    
-  revalidatePath("/admin/assets");
-  return true;
+
+    revalidatePath("/admin/assets");
+    return true;
   } catch (error) {
     console.error("Error deleting equipment:", error);
     throw error;
@@ -262,9 +262,7 @@ export async function findEquipmentLog(id: Number) {
     return log;
   } catch (error: any) {
     console.error("Error finding employee equipment log:", error);
-    throw new Error(
-      `Failed to find employee equipment log: ${error.message}`
-    );
+    throw new Error(`Failed to find employee equipment log: ${error.message}`);
   }
 }
 
@@ -284,8 +282,8 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
         isCompleted: true,
       },
     });
-
-    revalidatePath("/");
+    revalidatePath("dashboard/equipment/" + id);
+    revalidatePath("/dashboard/equipment");
     return log;
   } catch (error: any) {
     console.error("Error updating employee equipment log:", error);
@@ -314,29 +312,31 @@ export async function updateEquipment(formData: FormData) {
   try {
     console.log(formData);
     const id = formData.get("id") as string;
-    const converted = new Date(formData.get("registrationExpiration") as string).toISOString();
+    const converted = new Date(
+      formData.get("registrationExpiration") as string
+    ).toISOString();
     const statusValue = formData.get("status") as string;
     const equipmentTagValue = formData.get("equipmentTag") as string;
     const equipmentStatusValue = formData.get("status") as string;
     const equipmentTag = toEnumValue(Tags, equipmentTagValue);
     const equipmentStatus = toEnumValue(EquipmentStatus, equipmentStatusValue);
-    const status = toEnumValue( Status, statusValue);
+    const status = toEnumValue(Status, statusValue);
 
     const log = await prisma.equipment.update({
       where: { id: id },
       data: {
-        qrId: formData.get("qrId") as string,        
-        name: formData.get("name") as string,   
-        description: formData.get("description") as string,       
-        equipmentTag:  equipmentTag || undefined,        
-        lastInspection: formData.get("lastInspection") as string,      
-        lastRepair: formData.get("lastRepair") as string,           
-        status: equipmentStatus || undefined,       
-        make: formData.get("make") as string,                    
-        model: formData.get("model") as string,                   
-        year: formData.get("year") as string,                   
-        licensePlate: formData.get("licensePlate") as string,           
-        registrationExpiration: converted || null, 
+        qrId: formData.get("qrId") as string,
+        name: formData.get("name") as string,
+        description: formData.get("description") as string,
+        equipmentTag: equipmentTag || undefined,
+        lastInspection: formData.get("lastInspection") as string,
+        lastRepair: formData.get("lastRepair") as string,
+        status: equipmentStatus || undefined,
+        make: formData.get("make") as string,
+        model: formData.get("model") as string,
+        year: formData.get("year") as string,
+        licensePlate: formData.get("licensePlate") as string,
+        registrationExpiration: converted || null,
       },
     });
     revalidatePath("/admin/assets");
@@ -355,7 +355,7 @@ export async function updateEquipmentID(formData: FormData) {
       where: { id: id },
       data: {
         qrId: formData.get("qrId") as string,
-        name: formData.get("name") as string,        
+        name: formData.get("name") as string,
       },
     });
     revalidatePath("/admin/assets");
