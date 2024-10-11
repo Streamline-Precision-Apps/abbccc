@@ -4,7 +4,9 @@ import Content from "./content";
 import { auth } from "@/auth";
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
+import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
+import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 
 // Parameters are passed as props in Next.js server components.
 export default async function Page({ params }: { params: { id: string } }) {
@@ -13,11 +15,11 @@ export default async function Page({ params }: { params: { id: string } }) {
 
   // Render the content based on the formId.
   return (
-    <Bases>
+    <Bases className="relative">
       <Contents>
-        <Holds>
+        <Grids rows={"10"} gap={"5"}>
           <Content params={params} />
-        </Holds>
+        </Grids>
       </Contents>
     </Bases>
   );

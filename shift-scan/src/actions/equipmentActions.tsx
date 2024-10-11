@@ -270,18 +270,24 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
   try {
     console.log(formData);
     const id = formData.get("id") as string;
+    const duration = formData.get("duration") as string;
+    const hours = Number(duration.split(":")[0]);
+    const minutes = Number(duration.split(":")[1]);
+    const seconds = Number(duration.split(":")[2]);
+    const totalHours = hours + minutes / 60 + seconds / 3600;
 
     const log = await prisma.employeeEquipmentLogs.update({
       where: { id: Number(id) },
       data: {
         endTime: new Date(formData.get("endTime") as string).toISOString(),
-        duration: Number(formData.get("duration") as string),
+        duration: totalHours,
         comment: formData.get("comment") as string,
         isRefueled: Boolean(formData.get("isRefueled") as string),
         fuelUsed: Number(formData.get("fuelUsed") as string),
         isCompleted: true,
       },
     });
+    console.log(log);
     revalidatePath("dashboard/equipment/" + id);
     revalidatePath("/dashboard/equipment");
     return log;
@@ -380,7 +386,7 @@ export async function Submit(formData: FormData) {
     });
 
     // Revalidate the path to reflect changes
-    revalidatePath("/dashboard/equipment/current");
+    revalidatePath("/dashboard/equipment");
     return logs;
   } catch (error: any) {
     console.error("Error updating employee equipment log:", error);
@@ -400,7 +406,7 @@ export async function DeleteLogs(formData: FormData) {
     });
     console.log(deletedLog);
     // Revalidate the path to reflect changes
-    revalidatePath("/dashboard/equipment/current");
+    revalidatePath("/dashboard/equipment");
   } catch (error: any) {
     console.error("Error updating employee equipment log:", error);
     throw new Error(
