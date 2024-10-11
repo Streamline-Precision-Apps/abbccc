@@ -41,6 +41,7 @@ interface TitleBoxProps
   title2?: string;
   titleImg: string;
   titleImgAlt: string;
+  href?: string;
   src?: string;
   modal?: boolean;
   modalTitle?: any;
@@ -55,6 +56,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
   title2,
   titleImg,
   titleImgAlt,
+  href,
   modal,
   modalTitle,
   ...props
@@ -66,7 +68,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         {...props}
       >
         <Holds position={"absolute"}>
-          <Buttons href="back" background={"none"} size={"30"}>
+          <Buttons href={href} background={"none"} size={"30"}>
             <Images
               titleImg="/turnBack.svg"
               titleImgAlt={titleImgAlt}
@@ -131,7 +133,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         {...props}
       >
         <Holds position={"absolute"}>
-          <Buttons href="back" background={"none"} size={"30"}>
+          <Buttons href={href} background={"none"} size={"30"}>
             <Images
               titleImg="/turnBack.svg"
               titleImgAlt={titleImgAlt}
@@ -149,7 +151,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         className={cn(TitleBoxVariants({ variant, size, className }))}
         {...props}
       >
-        <Buttons href="back">
+        <Buttons href={href}>
           <Images titleImg="/backArrow.svg" titleImgAlt="back arrow" />
         </Buttons>
         <Titles size={"h1"}>{title}</Titles>
@@ -162,7 +164,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         className={cn(TitleBoxVariants({ variant, size, className }))}
         {...props}
       >
-        <Buttons href="back">
+        <Buttons href={href}>
           <Images titleImg="/backArrow.svg" titleImgAlt="back arrow" />
         </Buttons>
         <Titles size={"h1"}>{title}</Titles>
@@ -176,7 +178,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         {...props}
       >
         <Holds position={"absolute"}>
-          <Buttons href="back" background={"none"} size={"30"}>
+          <Buttons href={href} background={"none"} size={"30"}>
             <Images
               titleImg="/turnBack.svg"
               titleImgAlt="back arrow"
@@ -208,7 +210,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         {...props}
       >
         <Holds position={"absolute"}>
-          <Buttons href="back" background={"none"} size={"30"}>
+          <Buttons href={href} background={"none"} size={"30"}>
             <Images
               titleImg="/turnBack.svg"
               titleImgAlt={titleImgAlt}

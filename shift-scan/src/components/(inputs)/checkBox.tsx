@@ -5,11 +5,11 @@ export interface CheckboxProps {
   id: string;
   name: string;
   label: string;
-  onChange?: (e: any) => Promise<void>
+  onChange?: (e: any) => Promise<void>;
 }
 
 const Checkbox = (props: CheckboxProps) => (
-  <div className="w-full flex gap-2">
+  <div className="w-full flex">
     <input
       className="
       peer relative appearance-none shrink-0 w-16 h-16 border-4 border-black mt-1 bg-white shadow-[8px_8px_0px_grey] rounded-[10px]
@@ -29,13 +29,10 @@ const Checkbox = (props: CheckboxProps) => (
       strokeWidth="4"
       strokeLinecap="round"
       strokeLinejoin="round"
-      
-      >
+    >
       <polyline points="20 6 9 17 4 12"></polyline>
     </svg>
-    <label htmlFor={props.id}>
-      {props.label}
-    </label>
+    <label htmlFor={props.id}>{props.label}</label>
   </div>
 );
 

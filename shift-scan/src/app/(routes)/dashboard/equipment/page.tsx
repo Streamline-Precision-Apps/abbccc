@@ -30,7 +30,8 @@ export default async function Current() {
               titleImgAlt="Current"
               variant={"default"}
               size={"default"}
-              className="my-auto"
+              className="my-auto relative"
+              href="/dashboard"
             />
           </Holds>
           <Holds background={"white"} className="row-span-8 h-full">
