@@ -23,6 +23,8 @@ import { set } from "zod";
 import { Grids } from "@/components/(reusable)/grids";
 import Spinner from "@/components/(animations)/spinner";
 import Link from "next/link";
+import { m } from "framer-motion";
+import { Titles } from "@/components/(reusable)/titles";
 
 export default function CombinedForm({ params }: { params: { id: string } }) {
   const router = useRouter();
@@ -175,8 +177,11 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
 
   if (isLoading) {
     return (
-      <>
-        <Holds background={"white"} className="`row-span-1 h-full">
+      <Grids rows={"10"} gap={"5"}>
+        <Holds
+          background={"white"}
+          className="row-span-2 h-full my-auto animate-pulse "
+        >
           <TitleBoxes
             title="Loading..."
             type="noIcon"
@@ -184,60 +189,46 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
             titleImgAlt="Current"
             variant="default"
             size="default"
+            className="my-auto"
           />
         </Holds>
-        <Holds background={"white"} className=" row-span-9 h-full ">
-          <Holds>
-            <Texts size={"p2"}>{t("Loading")}</Texts>
+        <Holds
+          background={"white"}
+          className=" row-span-2 h-full my-auto animate-pulse "
+        >
+          <Holds className="my-auto">
+            <Spinner />
           </Holds>
-          <Spinner />
         </Holds>
-      </>
-    );
-  }
-
-  if (error) {
-    return (
-      <Holds background={"white"} className="h-full ">
-        <Holds>
-          <Texts color={"red"} size={"p2"}>
-            Error: {error}
-          </Texts>
+        <Holds
+          background={"white"}
+          className=" row-span-2 h-full my-auto animate-pulse  "
+        >
+          <Holds></Holds>
         </Holds>
-        <Holds>
-          <Buttons
-            size={"50"}
-            onClick={() => {
-              setError("");
-              router.refresh();
-            }}
-          >
-            Try again
-          </Buttons>
+        <Holds
+          background={"white"}
+          className=" row-span-3 h-full my-auto animate-pulse  "
+        >
+          <Holds></Holds>
         </Holds>
-      </Holds>
+        <Holds className=" row-span-1 h-full my-auto  ">
+          <Holds position={"row"} className="gap-4">
+            <Buttons disabled className="h-full py-2">
+              <Titles></Titles>
+            </Buttons>
+            <Buttons disabled className="h-full py-6">
+              <Titles></Titles>
+            </Buttons>
+          </Holds>
+        </Holds>
+      </Grids>
     );
   }
 
   return (
-    <>
-      {completed && (
-        <Banners
-          position={"absolute"}
-          background="green"
-          className="z-10 h-7 top-0 p-1"
-        >
-          <Texts
-            position={"center"}
-            text={"white"}
-            size={"p6"}
-            className=" py-0"
-          >
-            {t("Banner")}
-          </Texts>
-        </Banners>
-      )}
-      <Holds background={"white"} className="my-auto row-span-1 h-full">
+    <Grids rows={"10"} gap={"5"}>
+      <Holds background={"white"} className="my-auto row-span-2 h-full">
         <Contents width={"section"}>
           <TitleBoxes
             title={productName}
@@ -246,103 +237,120 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
             titleImgAlt="Current"
             variant="default"
             size="default"
+            href="/dashboard/equipment"
           />
+          {completed && (
+            <Banners background="green" className="my-auto">
+              <Texts
+                position={"center"}
+                text={"white"}
+                size={"p6"}
+                className=" py-0"
+              >
+                {t("Banner")}
+              </Texts>
+            </Banners>
+          )}
         </Contents>
       </Holds>
-      <Holds className=" row-span-9 h-full ">
-        <Grids rows={"10"} gap={"5"}>
-          <Holds background={"white"} className="row-span-3 h-full ">
-            <Contents width={"section"}>
-              {/* Edit Form */}
-              <Labels size={"p1"}>{t("Duration")}</Labels>
+
+      <Holds background={"white"} className="row-span-2 h-full">
+        <Contents width={"section"}>
+          <Holds position={"row"} className="my-auto">
+            <Holds size={"80"}>
+              <Texts position={"left"}>{t("Refueled")}</Texts>
+            </Holds>
+            <Holds size={"20"}>
+              <Checkbox
+                id={"1"}
+                name={"refueled"}
+                label={""}
+                defaultChecked={refueled}
+                disabled={isEditMode || !completed ? false : true}
+                onChange={(e) => {
+                  setRefueled(e.target.checked);
+                  return Promise.resolve();
+                }}
+              />
+            </Holds>
+          </Holds>
+
+          {refueled && (
+            <Holds position={"row"} className="my-auto">
+              <Holds size={"80"}>
+                <Texts position={"left"}>{t("Gallons")}</Texts>
+              </Holds>
+              <Holds size={"20"}>
+                <Inputs
+                  type="number"
+                  name="fuelUsed"
+                  value={fuel}
+                  onChange={(e) => setFuel(e.target.valueAsNumber)}
+                  disabled={isEditMode || !completed ? false : true}
+                  placeholder="Enter gallons"
+                />
+              </Holds>
+            </Holds>
+          )}
+        </Contents>
+      </Holds>
+
+      <Holds background={"white"} className=" row-span-5 h-full ">
+        <Contents width={"section"}>
+          {/* Edit Form */}
+          <Grids rows={"3"}>
+            <Holds className="row-span-1">
+              <Labels>{t("Duration")}</Labels>
               <Holds
                 position={"row"}
-                className="space-x-5 justify-between my-auto"
+                className=" border-[3px] border-black rounded-2xl space-x-4 p-2 my-auto justify-between"
               >
-                <Holds size={"20"}>
+                <Holds>
                   <Holds>
-                    <Labels position={"center"}>Hrs</Labels>
                     <Inputs
-                      type="text"
+                      type="number"
                       name="duration-hrs"
                       value={changedDurationHours}
                       onChange={handleDurationHrsChange}
                       disabled={isEditMode || !completed ? false : true}
+                      className="border-0 text-center "
                     />
                   </Holds>
                 </Holds>
-                <Holds size={"20"}>
+
+                <Texts size={"p6"}>:</Texts>
+                <Holds>
                   <Holds>
-                    <Labels position={"center"}>Min</Labels>
                     <Inputs
-                      type="text"
+                      type="number"
                       name="duration-min"
                       value={changedDurationMinutes}
                       onChange={handleDurationMinChange}
                       disabled={isEditMode || !completed ? false : true}
+                      className="border-0 text-center"
                     />
                   </Holds>
                 </Holds>
-                <Holds size={"20"}>
+
+                <Texts size={"p6"}>:</Texts>
+
+                <Holds>
                   <Holds>
-                    <Labels position={"center"}>Sec</Labels>
                     <Inputs
-                      type="text"
+                      type="number"
                       name="duration-sec"
                       value={changedDurationSeconds}
                       onChange={handleDurationSecChange}
                       disabled={isEditMode || !completed ? false : true}
+                      className="border-0 text-center"
                     />
                   </Holds>
                 </Holds>
               </Holds>
-            </Contents>
-          </Holds>
-          <Holds background={"white"} className="row-span-3 h-full py-2">
-            <Contents width={"section"}>
-              <Holds position={"row"} className="space-x-4 my-auto">
-                <Holds size={"80"}>
-                  <Labels>{t("Refueled")}</Labels>
-                </Holds>
-                <Holds size={"20"}>
-                  <Checkbox
-                    id={"1"}
-                    name={"refueled"}
-                    label={""}
-                    defaultChecked={refueled}
-                    disabled={isEditMode || !completed ? false : true}
-                    onChange={(e) => {
-                      setRefueled(e.target.checked);
-                      return Promise.resolve();
-                    }}
-                  />
-                </Holds>
-              </Holds>
+            </Holds>
 
-              {refueled && (
-                <Holds position={"row"} className="space-x-4 my-auto">
-                  <Holds size={"70"}>
-                    <Labels>{t("Gallons")}</Labels>
-                  </Holds>
-                  <Holds size={"30"}>
-                    <Inputs
-                      type="number"
-                      name="fuelUsed"
-                      value={fuel}
-                      onChange={(e) => setFuel(e.target.valueAsNumber)}
-                      disabled={isEditMode || !completed ? false : true}
-                      placeholder="Enter gallons"
-                      className="h-10"
-                    />
-                  </Holds>
-                </Holds>
-              )}
-            </Contents>
-          </Holds>
-
-          <Holds background={"white"} className="row-span-3 h-full">
-            <Contents width={"section"}>
-              <Holds className="my-auto">
+            <Holds position={"row"} className="row-span-2 h-full">
+              <Holds className=" relative">
                 <Labels>{t("Notes")}</Labels>
                 <TextAreas
                   name="comment"
@@ -352,49 +360,61 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                     setCharacterCount(40 - e.target.value.length);
                   }}
                   maxLength={40}
+                  minLength={1}
+                  rows={5}
                   placeholder="Enter notes here"
                   disabled={isEditMode || !completed ? false : true}
                 />
-                <Texts position={"right"} color="gray" size="p6">
-                  {characterCount} Characters
-                </Texts>
+                <Holds className="absolute bottom-4 right-4">
+                  <Texts position={"right"} size="p6" text={"black"}>
+                    {characterCount}
+                  </Texts>
+                </Holds>
               </Holds>
-            </Contents>
-          </Holds>
+            </Holds>
+          </Grids>
+        </Contents>
+      </Holds>
 
-          <Holds position={"row"} className=" my-auto row-span-1 h-full">
+      <Holds position={"row"} className=" row-span-1 my-auto h-full">
+        {/* Delete Form */}
+        <Contents width={"section"}>
+          <Holds position={"row"} className="my-auto gap-4 h-full">
+            <Forms
+              onSubmit={deleteHandler}
+              className="my-auto space-x-4 h-full"
+            >
+              <Buttons type="submit" background="red">
+                <Titles>{t("Delete")}</Titles>
+              </Buttons>
+            </Forms>
+
             {/* Submit Form */}
             {!completed && (
-              <Forms onSubmit={handleSaveClick}>
+              <Forms onSubmit={handleSaveClick} className="my-auto h-full">
                 <Buttons type="submit" background="green">
-                  {t("Submit")}
+                  <Titles>{t("Submit")}</Titles>
                 </Buttons>
               </Forms>
             )}
             {isEditMode && completed && (
-              <Forms onSubmit={handleSaveClick}>
+              <Forms onSubmit={handleSaveClick} className="my-auto h-full">
                 <Buttons type="submit" background="green">
-                  {t("Submit")}
+                  <Titles>{t("Save")}</Titles>
                 </Buttons>
               </Forms>
             )}
             {/* Edit Toggle */}
             {!isEditMode && completed && (
-              <Forms>
+              <Forms className="my-auto h-full">
                 <Buttons onClick={handleEditClick} background="orange">
-                  {t("Edit")}
+                  <Titles>{t("Edit")}</Titles>
                 </Buttons>
               </Forms>
             )}
-            {/* Delete Form */}
-            <Forms onSubmit={deleteHandler}>
-              <Buttons type="submit" background="red" className="">
-                {t("Delete")}
-              </Buttons>
-            </Forms>
           </Holds>
-        </Grids>
+        </Contents>
       </Holds>
-    </>
+    </Grids>
   );
 }

@@ -20,6 +20,7 @@ export default function EquipmentLogContent({ userId }: EquipmentLogs) {
   const Router = useRouter();
   const [loading, setLoading] = useState(true);
   const [logs, setLogs] = useState<any[]>([]);
+  const [banner, setBanner] = useState("");
   const t = useTranslations("EquipmentContent");
   const total = logs.length;
   const completed = logs.filter((log) => log.isCompleted).length;
@@ -45,6 +46,13 @@ export default function EquipmentLogContent({ userId }: EquipmentLogs) {
 
     fetchData();
   }, [Router, useRouter]);
+  const handleSubmit = () => {
+    setLogs([]);
+    setBanner("Submitted all logs!");
+    setTimeout(() => {
+      setBanner("");
+    }, 4000);
+  };
 
   if (loading) {
     return (
@@ -56,6 +64,20 @@ export default function EquipmentLogContent({ userId }: EquipmentLogs) {
 
   return (
     <>
+      {banner && (
+        <Holds
+          position={"absolute"}
+          background={"green"}
+          className="h-10 w-full rounded-none top-[0%]"
+        >
+          <Texts
+            size={"p6"}
+            className="h-full flex justify-center items-center"
+          >
+            {banner}
+          </Texts>
+        </Holds>
+      )}
       <Contents width={"section"}>
         {total === 0 ? (
           <Holds className="mt-5">
@@ -68,13 +90,7 @@ export default function EquipmentLogContent({ userId }: EquipmentLogs) {
         )}
         <Holds className="mt-5">
           {green === 0 && total !== 0 ? (
-            <Forms
-              action={Submit}
-              onSubmit={(e) => {
-                e.preventDefault();
-                Router.refresh();
-              }}
-            >
+            <Forms action={Submit} onSubmit={handleSubmit}>
               <Holds>
                 <Buttons
                   size={"30"}
@@ -89,7 +105,7 @@ export default function EquipmentLogContent({ userId }: EquipmentLogs) {
               </Holds>
             </Forms>
           ) : (
-            <Buttons size={"30"} type="submit" className="bg-gray-400 py-2">
+            <Buttons size={"30"} disabled className="bg-gray-400 py-2">
               {t("SubmitAll")}
             </Buttons>
           )}

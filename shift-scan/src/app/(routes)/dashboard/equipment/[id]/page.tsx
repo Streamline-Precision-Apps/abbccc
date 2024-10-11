@@ -15,11 +15,9 @@ export default async function Page({ params }: { params: { id: string } }) {
 
   // Render the content based on the formId.
   return (
-    <Bases className="relative">
+    <Bases>
       <Contents>
-        <Grids rows={"10"} gap={"5"}>
-          <Content params={params} />
-        </Grids>
+        <Content params={params} />
       </Contents>
     </Bases>
   );
