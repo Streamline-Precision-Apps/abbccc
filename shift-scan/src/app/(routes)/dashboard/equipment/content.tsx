@@ -26,8 +26,6 @@ export default function EquipmentLogContent({ userId }: EquipmentLogs) {
   const green = total - completed;
 
   useEffect(() => {
-    if (!userId) return; // Only fetch data if userId is available
-
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -46,9 +44,7 @@ export default function EquipmentLogContent({ userId }: EquipmentLogs) {
     };
 
     fetchData();
-  }, [Router]); // Dependency on userId
-
-  useEffect(() => {}, []);
+  }, [Router, useRouter]);
 
   if (loading) {
     return (

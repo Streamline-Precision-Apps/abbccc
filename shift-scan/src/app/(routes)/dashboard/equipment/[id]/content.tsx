@@ -16,8 +16,13 @@ import { Labels } from "@/components/(reusable)/labels";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
-import { useParams } from "next/navigation";
 import { calculateDuration } from "@/utils/calculateDuration";
+import { Contents } from "@/components/(reusable)/contents";
+import Checkbox from "@/components/(inputs)/checkbox";
+import { set } from "zod";
+import { Grids } from "@/components/(reusable)/grids";
+import Spinner from "@/components/(animations)/spinner";
+import Link from "next/link";
 
 export default function CombinedForm({ params }: { params: { id: string } }) {
   const router = useRouter();
@@ -32,8 +37,15 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
   const [completed, setCompleted] = useState<boolean>(false);
   const [startTime, setStartTime] = useState();
   const [endTime, setEndTime] = useState();
+  const [productName, setProductName] = useState("");
 
   const [changedDuration, setChangedDuration] = useState<string>("");
+  const [changedDurationHours, setChangedDurationHours] = useState<string>("");
+  const [changedDurationMinutes, setChangedDurationMinutes] =
+    useState<string>("");
+  const [changedDurationSeconds, setChangedDurationSeconds] =
+    useState<string>("");
+
   const t = useTranslations("EquipmentContent");
 
   // Fetch Equipment Form Details
@@ -61,13 +73,22 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
         setStartTime(data.startTime);
         setEndTime(data.endTime ?? new Date().toISOString());
         setCharacterCount(40 - (data.comment?.length || 0));
-        setChangedDuration(
-          data.duration ??
-            calculateDuration(
+        setProductName(data.Equipment.name);
+        // Use the stored duration (as a float) or calculate it if not available
+        const durationString = data.duration
+          ? calculateDuration(data.duration, data.startTime, data.endTime)
+          : calculateDuration(
+              null,
               data.startTime,
               data.endTime ?? new Date().toISOString()
-            )
-        );
+            );
+
+        // Split the duration string into hours, minutes, and seconds
+        const [hours, minutes, seconds] = durationString.split(":");
+        setChangedDurationHours(hours);
+        setChangedDurationMinutes(minutes);
+        setChangedDurationSeconds(seconds);
+        setChangedDuration(durationString);
       } catch (error) {
         setError((error as Error).message);
       } finally {
@@ -90,23 +111,32 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
     }
   }, [completed, logs]);
 
-  const handleRefueledChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRefueled(event.target.checked);
+  const handleDurationHrsChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setChangedDurationHours(event.target.value);
+    setChangedDuration(
+      `${event.target.value}:${changedDurationMinutes}:${changedDurationSeconds}`
+    );
   };
 
-  const handleFuelValue = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFuel(event.target.valueAsNumber);
+  const handleDurationMinChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setChangedDurationMinutes(event.target.value);
+    setChangedDuration(
+      `${changedDurationHours}:${event.target.value}:${changedDurationSeconds}`
+    );
   };
 
-  const handleNotesChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setCharacterCount(40 - event.target.value.length);
-    setNotes(event.target.value);
+  const handleDurationSecChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setChangedDurationSeconds(event.target.value);
+    setChangedDuration(
+      `${changedDurationHours}:${changedDurationMinutes}:${event.target.value}`
+    );
   };
-
-  const handleDurationChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setChangedDuration(event.target.value);
-  };
-
   const handleEditClick = () => {
     setIsEditMode(true);
   };
@@ -117,10 +147,15 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
     formData.append("endTime", new Date().toISOString());
     formData.append("id", params.id.toString());
     formData.append("completed", "true");
+    formData.append("comment", notes);
+    formData.append("isRefueled", refueled.toString());
+    formData.append("fuelUsed", fuel.toString());
+    formData.append("duration", changedDuration);
 
     try {
       await updateEmployeeEquipmentLog(formData);
       setIsEditMode(false);
+      router.replace("/dashboard/equipment");
     } catch (error) {
       console.error("Error updating equipment log:", error);
     }
@@ -129,6 +164,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
   const deleteHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    formData.append("id", params.id.toString());
     try {
       await DeleteLogs(formData);
       router.replace("/dashboard/equipment");
@@ -138,132 +174,227 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <>
+        <Holds background={"white"} className="`row-span-1 h-full">
+          <TitleBoxes
+            title="Loading..."
+            type="noIcon"
+            titleImg="/current.svg"
+            titleImgAlt="Current"
+            variant="default"
+            size="default"
+          />
+        </Holds>
+        <Holds background={"white"} className=" row-span-9 h-full ">
+          <Holds>
+            <Texts size={"p2"}>{t("Loading")}</Texts>
+          </Holds>
+          <Spinner />
+        </Holds>
+      </>
+    );
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return (
+      <Holds background={"white"} className="h-full ">
+        <Holds>
+          <Texts color={"red"} size={"p2"}>
+            Error: {error}
+          </Texts>
+        </Holds>
+        <Holds>
+          <Buttons
+            size={"50"}
+            onClick={() => {
+              setError("");
+              router.refresh();
+            }}
+          >
+            Try again
+          </Buttons>
+        </Holds>
+      </Holds>
+    );
   }
 
   return (
     <>
-      {completed && <Banners background="green">{t("Banner")}</Banners>}
-
-      <Holds>
-        <TitleBoxes
-          title="Equipment Log"
-          type="noIcon"
-          titleImg="/current.svg"
-          titleImgAlt="Current"
-          variant="default"
-          size="default"
-        />
-      </Holds>
-
-      <Forms onSubmit={handleSaveClick}>
-        <Holds>
-          <Labels />
-          {t("Refueled")}
-          <Inputs
-            name="refueled"
-            type="checkbox"
-            checked={refueled}
-            onChange={handleRefueledChange}
-            readOnly={!isEditMode && completed}
-          />
-        </Holds>
-
-        {refueled && (
-          <Holds>
-            <Labels />
-            {t("Gallons")}
-            <Inputs
-              type="number"
-              name="fuelUsed"
-              value={fuel.toString()}
-              onChange={handleFuelValue}
-              readOnly={!isEditMode && completed}
-            />
-          </Holds>
-        )}
-
-        <Holds>
-          <Labels />
-          {t("CheckedTime")}
-          <Inputs
-            type="text"
-            name="duration"
-            value={changedDuration}
-            onChange={handleDurationChange}
-            readOnly={!isEditMode && completed}
-          />
-
-          <Labels />
-          {t("Notes")}
-          <TextAreas
-            name="comment"
-            value={notes}
-            maxLength={40}
-            onChange={handleNotesChange}
-            readOnly={!isEditMode && completed}
-          />
-
-          {characterCount <= 0 ? (
-            <Texts size="p3" className="text-red-400 text-right">
-              "You have reached the maximum number of characters for this note"
-            </Texts>
-          ) : null}
-
+      {completed && (
+        <Banners
+          position={"absolute"}
+          background="green"
+          className="z-10 h-7 top-0 p-1"
+        >
           <Texts
-            size="p3"
-            className={
-              characterCount > 0
-                ? "text-green-800 text-right"
-                : "text-red-400 text-right"
-            }
+            position={"center"}
+            text={"white"}
+            size={"p6"}
+            className=" py-0"
           >
-            {`${characterCount} Characters`}
+            {t("Banner")}
           </Texts>
-        </Holds>
+        </Banners>
+      )}
+      <Holds background={"white"} className="my-auto row-span-1 h-full">
+        <Contents width={"section"}>
+          <TitleBoxes
+            title={productName}
+            type="noIcon"
+            titleImg="/current.svg"
+            titleImgAlt="Current"
+            variant="default"
+            size="default"
+          />
+        </Contents>
+      </Holds>
+      <Holds className=" row-span-9 h-full ">
+        <Grids rows={"10"} gap={"5"}>
+          <Holds background={"white"} className="row-span-3 h-full ">
+            <Contents width={"section"}>
+              {/* Edit Form */}
+              <Labels size={"p1"}>{t("Duration")}</Labels>
+              <Holds
+                position={"row"}
+                className="space-x-5 justify-between my-auto"
+              >
+                <Holds size={"20"}>
+                  <Holds>
+                    <Labels position={"center"}>Hrs</Labels>
+                    <Inputs
+                      type="text"
+                      name="duration-hrs"
+                      value={changedDurationHours}
+                      onChange={handleDurationHrsChange}
+                      disabled={isEditMode || !completed ? false : true}
+                    />
+                  </Holds>
+                </Holds>
+                <Holds size={"20"}>
+                  <Holds>
+                    <Labels position={"center"}>Min</Labels>
+                    <Inputs
+                      type="text"
+                      name="duration-min"
+                      value={changedDurationMinutes}
+                      onChange={handleDurationMinChange}
+                      disabled={isEditMode || !completed ? false : true}
+                    />
+                  </Holds>
+                </Holds>
+                <Holds size={"20"}>
+                  <Holds>
+                    <Labels position={"center"}>Sec</Labels>
+                    <Inputs
+                      type="text"
+                      name="duration-sec"
+                      value={changedDurationSeconds}
+                      onChange={handleDurationSecChange}
+                      disabled={isEditMode || !completed ? false : true}
+                    />
+                  </Holds>
+                </Holds>
+              </Holds>
+            </Contents>
+          </Holds>
+          <Holds background={"white"} className="row-span-3 h-full py-2">
+            <Contents width={"section"}>
+              <Holds position={"row"} className="space-x-4 my-auto">
+                <Holds size={"80"}>
+                  <Labels>{t("Refueled")}</Labels>
+                </Holds>
+                <Holds size={"20"}>
+                  <Checkbox
+                    id={"1"}
+                    name={"refueled"}
+                    label={""}
+                    defaultChecked={refueled}
+                    disabled={isEditMode || !completed ? false : true}
+                    onChange={(e) => {
+                      setRefueled(e.target.checked);
+                      return Promise.resolve();
+                    }}
+                  />
+                </Holds>
+              </Holds>
 
-        <Inputs type="hidden" name="endTime" value={new Date().toISOString()} />
-        <Inputs type="hidden" name="id" value={params.id ?? ""} />
-        <Inputs type="hidden" name="completed" value="true" />
-        <Holds position="row">
-          <Holds>
-            {completed ? (
-              isEditMode ? (
+              {refueled && (
+                <Holds position={"row"} className="space-x-4 my-auto">
+                  <Holds size={"70"}>
+                    <Labels>{t("Gallons")}</Labels>
+                  </Holds>
+                  <Holds size={"30"}>
+                    <Inputs
+                      type="number"
+                      name="fuelUsed"
+                      value={fuel}
+                      onChange={(e) => setFuel(e.target.valueAsNumber)}
+                      disabled={isEditMode || !completed ? false : true}
+                      placeholder="Enter gallons"
+                      className="h-10"
+                    />
+                  </Holds>
+                </Holds>
+              )}
+            </Contents>
+          </Holds>
+
+          <Holds background={"white"} className="row-span-3 h-full">
+            <Contents width={"section"}>
+              <Holds className="my-auto">
+                <Labels>{t("Notes")}</Labels>
+                <TextAreas
+                  name="comment"
+                  value={notes}
+                  onChange={(e) => {
+                    setNotes(e.target.value);
+                    setCharacterCount(40 - e.target.value.length);
+                  }}
+                  maxLength={40}
+                  placeholder="Enter notes here"
+                  disabled={isEditMode || !completed ? false : true}
+                />
+                <Texts position={"right"} color="gray" size="p6">
+                  {characterCount} Characters
+                </Texts>
+              </Holds>
+            </Contents>
+          </Holds>
+
+          <Holds position={"row"} className=" my-auto row-span-1 h-full">
+            {/* Submit Form */}
+            {!completed && (
+              <Forms onSubmit={handleSaveClick}>
                 <Buttons type="submit" background="green">
-                  {t("Save")}
+                  {t("Submit")}
                 </Buttons>
-              ) : (
-                <Buttons
-                  type="button"
-                  onClick={handleEditClick}
-                  background="orange"
-                  size={"90"}
-                >
+              </Forms>
+            )}
+            {isEditMode && completed && (
+              <Forms onSubmit={handleSaveClick}>
+                <Buttons type="submit" background="green">
+                  {t("Submit")}
+                </Buttons>
+              </Forms>
+            )}
+            {/* Edit Toggle */}
+            {!isEditMode && completed && (
+              <Forms>
+                <Buttons onClick={handleEditClick} background="orange">
                   {t("Edit")}
                 </Buttons>
-              )
-            ) : (
-              <Buttons type="submit" background="green" size={"90"}>
-                {t("Submit")}
-              </Buttons>
+              </Forms>
             )}
+            {/* Delete Form */}
+            <Forms onSubmit={deleteHandler}>
+              <Buttons type="submit" background="red" className="">
+                {t("Delete")}
+              </Buttons>
+            </Forms>
           </Holds>
-          <Holds>
-            <Buttons
-              type="button"
-              onClick={(e) => deleteHandler(e as any)}
-              background="red"
-              size={"90"}
-            >
-              {t("Delete")}
-            </Buttons>
-          </Holds>
-        </Holds>
-      </Forms>
+        </Grids>
+      </Holds>
     </>
   );
 }

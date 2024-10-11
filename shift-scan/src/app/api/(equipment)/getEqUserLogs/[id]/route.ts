@@ -33,14 +33,16 @@ export async function GET(
         },
         isSubmitted: false,
       },
-    });
-
-    return NextResponse.json(usersLogs, {
-      headers: {
-        "Cache-Control":
-          "public, max-age=60, s-maxage=60, stale-while-revalidate=30",
+      include: {
+        Equipment: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
+
+    return NextResponse.json(usersLogs);
   } catch (error) {
     console.error("Error fetching users logs:", error);
     return NextResponse.json(

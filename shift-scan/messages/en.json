@@ -154,10 +154,10 @@
     },
     "EquipmentContent" : {
         "Title": "Checked Out",
-        "Banner": "Form Submitted",
+        "Banner": "Checked In",
         "Refueled": " Did you refuel?",
         "Gallons": "Total gallons refueled",
-        "CheckedTime": "Total Time used",
+        "Duration": "Total Time on Equipment",
         "Notes": "Additional notes",
         "Save": "Save",
         "Delete": "Delete",
@@ -165,8 +165,8 @@
         "Submit": "Submit",
         "SubmitAll": "Submit All",
         "NoCurrent": "No Equipment Currently In Use",
-        "Current": "Current Equipment"
-
+        "Current": "Current Equipment",
+        "Loading": "Loading..."
     },
     
     "addEquipmentForm": {
