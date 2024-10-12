@@ -8,23 +8,37 @@ export interface CheckboxProps {
   id: string;
   name: string;
   label: string;
+  size?: number;
   onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
-const Checkbox = (props: CheckboxProps) => (
-  <div className="w-full flex">
+const Checkbox = ({
+  disabled,
+  defaultChecked,
+  id,
+  name,
+  label,
+  size = 4,
+  onChange,
+}: CheckboxProps) => (
+  <div className="w-full flex justify-center">
     <input
-      className="
-      peer relative appearance-none shrink-0 w-16 h-16 border-4 border-black mt-1 bg-white shadow-[8px_8px_0px_grey] rounded-[10px]
+      className={`
+      peer relative appearance-none shrink-0 border-4 border-black mt-1 bg-white shadow-[8px_8px_0px_grey] rounded-[10px]
       focus:outline-none focus:ring-offset-0 focus:ring-1 focus:ring-blue-100
       checked:bg-app-green checked:border-4 rounded-[10px]
       disabled:border-steel-400 disabled:bg-steel-400
-      "
+      `}
       type="checkbox"
-      {...props}
+      id={id}
+      name={name}
+      defaultChecked={defaultChecked}
+      disabled={disabled}
+      onChange={onChange}
+      style={{ width: `${size}em`, height: `${size}em` }} // Dynamically setting size with inline styles
     />
     <svg
-      className="absolute w-16 h-16 pointer-events-none hidden peer-checked:block stroke-black mt-1 outline-none animate-wave"
+      className="absolute pointer-events-none hidden peer-checked:block stroke-black mt-1 outline-none animate-wave"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
       fill="none"
@@ -32,10 +46,11 @@ const Checkbox = (props: CheckboxProps) => (
       strokeWidth="4"
       strokeLinecap="round"
       strokeLinejoin="round"
+      style={{ width: `${size}em`, height: `${size}em` }} // Dynamically setting size for SVG
     >
       <polyline points="20 6 9 17 4 12"></polyline>
     </svg>
-    <label htmlFor={props.id}>{props.label}</label>
+    {/* <label htmlFor={id}>{label}</label> */}
   </div>
 );
 
