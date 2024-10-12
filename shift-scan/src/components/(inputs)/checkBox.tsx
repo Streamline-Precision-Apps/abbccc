@@ -1,11 +1,14 @@
 "use client";
+
+import { ChangeEvent } from "react";
+
 export interface CheckboxProps {
   disabled?: boolean;
   defaultChecked?: boolean;
   id: string;
   name: string;
   label: string;
-  onChange?: (e: any) => Promise<void>;
+  onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
 const Checkbox = (props: CheckboxProps) => (

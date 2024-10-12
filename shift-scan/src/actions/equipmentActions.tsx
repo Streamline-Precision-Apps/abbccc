@@ -275,6 +275,8 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
     const minutes = Number(duration.split(":")[1]);
     const seconds = Number(duration.split(":")[2]);
     const totalHours = hours + minutes / 60 + seconds / 3600;
+    const refueled =
+      (formData.get("isRefueled") as string) === "true" ? true : false;
 
     const log = await prisma.employeeEquipmentLogs.update({
       where: { id: Number(id) },
@@ -282,7 +284,7 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
         endTime: new Date(formData.get("endTime") as string).toISOString(),
         duration: totalHours,
         comment: formData.get("comment") as string,
-        isRefueled: Boolean(formData.get("isRefueled") as string),
+        isRefueled: Boolean(refueled),
         fuelUsed: Number(formData.get("fuelUsed") as string),
         isCompleted: true,
       },
