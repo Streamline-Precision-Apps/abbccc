@@ -11,6 +11,8 @@ import Spinner from "@/components/(animations)/spinner";
 import { Titles } from "@/components/(reusable)/titles";
 import { Contents } from "@/components/(reusable)/contents";
 import { useRouter } from "next/navigation";
+import { Grids } from "@/components/(reusable)/grids";
+import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 
 type EquipmentLogs = {
   userId: string | undefined;
@@ -56,77 +58,113 @@ export default function EquipmentLogContent({ userId }: EquipmentLogs) {
 
   if (loading) {
     return (
-      <Holds className="mt-5">
-        <Spinner />
-      </Holds>
+      <Grids rows={"10"} gap={"5"}>
+        <Holds background={"white"} size={"full"} className="row-span-2 h-full">
+          <TitleBoxes
+            title={t("Title")}
+            titleImg="/equipment.svg"
+            titleImgAlt="Current"
+            variant={"default"}
+            size={"default"}
+            className="my-auto"
+            href="/dashboard"
+          />
+        </Holds>
+
+        <Holds background={"white"} className="row-span-8 h-full ">
+          <Contents width={"section"}>
+            <Holds className="mt-5 row-span-1 h-full">
+              <Texts size={"p6"} className="h-full my-auto ">
+                {t("Loading")}
+              </Texts>
+              <Spinner />
+            </Holds>
+            <Holds className="row-span-8 h-full"></Holds>
+          </Contents>
+        </Holds>
+      </Grids>
     );
   }
 
   return (
     <>
-      {banner && (
-        <Holds
-          position={"absolute"}
-          background={"green"}
-          className="h-10 w-full rounded-none top-[0%]"
-        >
-          <Texts
-            size={"p6"}
-            className="h-full flex justify-center items-center"
-          >
-            {banner}
-          </Texts>
-        </Holds>
-      )}
-      <Contents width={"section"}>
-        {total === 0 ? (
-          <Holds className="mt-5">
-            <Texts>{t("NoCurrent")}</Texts>
-          </Holds>
-        ) : (
-          <Holds className="mt-5">
-            <Titles>{t("Current")}</Titles>
-          </Holds>
-        )}
-        <Holds className="mt-5">
-          {green === 0 && total !== 0 ? (
-            <Forms action={Submit} onSubmit={handleSubmit}>
-              <Holds>
-                <Buttons
-                  size={"30"}
-                  type="submit"
-                  background={"lightBlue"}
-                  className="py-2 mx-auto"
-                  href={`/dashboard/equipment`}
-                >
-                  {t("SubmitAll")}
-                </Buttons>
-                <Inputs type="hidden" name="id" value={userId} />
-                <Inputs type="hidden" name="submitted" value={"true"} />
-              </Holds>
-            </Forms>
-          ) : (
-            <Buttons size={"30"} disabled className="bg-gray-400 py-2">
-              {t("SubmitAll")}
-            </Buttons>
+      <Grids rows={"10"} gap={"5"} className=" relative">
+        <Holds background={"white"} className="row-span-2 h-full">
+          <TitleBoxes
+            title={t("Title")}
+            titleImg="/equipment.svg"
+            titleImgAlt="Current"
+            variant={"default"}
+            size={"default"}
+            className="my-auto"
+            href="/dashboard"
+          />
+
+          {banner && (
+            <Holds background={"green"} className="h-8 w-full rounded-xl ">
+              <Texts
+                size={"p6"}
+                className="h-full my-auto flex justify-center items-center"
+              >
+                {banner}
+              </Texts>
+            </Holds>
           )}
         </Holds>
-        <Holds className="mt-5 h-full overflow-y-auto no-scrollbar">
-          {logs.map((log) => (
-            <Holds key={log.id} className="pb-5">
-              <Buttons
-                size={"80"}
-                background={log.isCompleted ? "green" : "orange"}
-                href={`/dashboard/equipment/${log.id}`}
-                key={log.id}
-                className="py-2"
-              >
-                {log.Equipment?.name}
-              </Buttons>
+
+        {/* This section is a group of ternary operations that determine the content of the page. */}
+        <Holds background={"white"} className="row-span-8 h-full">
+          <Contents width={"section"}>
+            {total === 0 ? (
+              <Holds className="mt-5">
+                <Texts>{t("NoCurrent")}</Texts>
+              </Holds>
+            ) : (
+              <Holds className="mt-5">
+                <Titles>{t("Current")}</Titles>
+              </Holds>
+            )}
+            <Holds className="mt-5">
+              {green === 0 && total !== 0 ? (
+                <Forms action={Submit} onSubmit={handleSubmit}>
+                  <Holds>
+                    <Buttons
+                      size={"30"}
+                      type="submit"
+                      background={"lightBlue"}
+                      className="py-2 mx-auto"
+                      href={`/dashboard/equipment`}
+                    >
+                      {t("SubmitAll")}
+                    </Buttons>
+                    <Inputs type="hidden" name="id" value={userId} />
+                    <Inputs type="hidden" name="submitted" value={"true"} />
+                  </Holds>
+                </Forms>
+              ) : (
+                <Buttons size={"30"} disabled className="bg-gray-400 py-2">
+                  {t("SubmitAll")}
+                </Buttons>
+              )}
             </Holds>
-          ))}
+            <Holds className="mt-5 h-full overflow-y-auto no-scrollbar">
+              {logs.map((log) => (
+                <Holds key={log.id} className="pb-5">
+                  <Buttons
+                    size={"80"}
+                    background={log.isCompleted ? "green" : "orange"}
+                    href={`/dashboard/equipment/${log.id}`}
+                    key={log.id}
+                    className="py-2"
+                  >
+                    {log.Equipment?.name}
+                  </Buttons>
+                </Holds>
+              ))}
+            </Holds>
+          </Contents>
         </Holds>
-      </Contents>
+      </Grids>
     </>
   );
 }

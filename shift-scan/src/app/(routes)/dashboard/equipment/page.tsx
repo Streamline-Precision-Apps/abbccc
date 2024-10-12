@@ -18,26 +18,7 @@ export default async function Current() {
   return (
     <Bases>
       <Contents>
-        <Grids rows={"10"} gap={"5"}>
-          <Holds
-            background={"white"}
-            size={"full"}
-            className="row-span-2 h-full "
-          >
-            <TitleBoxes
-              title={t("Title")}
-              titleImg="/equipment.svg"
-              titleImgAlt="Current"
-              variant={"default"}
-              size={"default"}
-              className="my-auto relative"
-              href="/dashboard"
-            />
-          </Holds>
-          <Holds background={"white"} className="row-span-8 h-full">
-            <EquipmentLogContent userId={userId} />
-          </Holds>
-        </Grids>
+        <EquipmentLogContent userId={userId} />
       </Contents>
     </Bases>
   );

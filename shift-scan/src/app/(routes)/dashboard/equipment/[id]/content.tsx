@@ -244,56 +244,75 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
             size="default"
             href="/dashboard/equipment"
           />
-          {completed && (
-            <Banners background="green" className="my-auto">
-              <Texts
-                position={"center"}
-                text={"white"}
-                size={"p6"}
-                className=" py-0"
-              >
-                {t("Banner")}
-              </Texts>
-            </Banners>
-          )}
         </Contents>
+        {completed && (
+          <Banners background={"green"} className=" rounded-b-xl h-1/2">
+            <Texts position={"center"} text={"white"} size={"p6"} className="">
+              {t("Banner")}
+            </Texts>
+          </Banners>
+        )}
+        {error && (
+          <Banners background={"red"} className=" rounded-b-xl h-1/2">
+            <Texts position={"center"} text={"white"} size={"p6"} className="">
+              {error}
+            </Texts>
+          </Banners>
+        )}
       </Holds>
 
       <Holds background={"white"} className="row-span-2 h-full">
-        <Contents width={"section"}>
-          <Holds position={"row"} className="my-auto">
-            <Holds size={"80"}>
-              <Texts position={"left"}>{t("Refueled")}</Texts>
+        <Contents width={"section"} className="h-full">
+          <Grids rows={"2"} cols={"4"} className="h-full ">
+            <Holds
+              className={`my-auto col-span-3 ${
+                refueled ? "row-span-1" : "row-span-2"
+              } `}
+            >
+              <Holds>
+                <Texts size={"p2"} position={"left"}>
+                  {t("Refueled")}
+                </Texts>
+              </Holds>
             </Holds>
-            <Holds size={"20"}>
+            <Holds
+              position={"right"}
+              className={`row-span-1 col-span-1 my-auto ${
+                refueled ? "row-span-1" : "row-span-2"
+              }`}
+            >
               <Checkbox
                 id={"1"}
                 name={"refueled"}
                 label={""}
+                size={refueled ? 2 : 3}
                 defaultChecked={refueled}
                 disabled={isEditMode || !completed ? false : true}
                 onChange={handleRefueledChange}
               />
             </Holds>
-          </Holds>
 
-          {refueled && (
-            <Holds position={"row"} className="my-auto">
-              <Holds size={"80"}>
-                <Texts position={"left"}>{t("Gallons")}</Texts>
-              </Holds>
-              <Holds size={"20"}>
-                <Inputs
-                  type="number"
-                  name="fuelUsed"
-                  value={fuel}
-                  onChange={(e) => setFuel(e.target.valueAsNumber)}
-                  disabled={isEditMode || !completed ? false : true}
-                  placeholder="Enter gallons"
-                />
-              </Holds>
-            </Holds>
-          )}
+            {refueled && (
+              <>
+                <Holds className="my-auto row-span-1 col-span-3">
+                  <Texts size={"p2"} position={"left"}>
+                    {t("Gallons")}
+                  </Texts>
+                </Holds>
+                <Holds className="my-auto row-span-1 col-span-1 ">
+                  <Inputs
+                    type="number"
+                    name="fuelUsed"
+                    value={fuel}
+                    min={0}
+                    onChange={(e) => setFuel(e.target.valueAsNumber)}
+                    disabled={isEditMode || !completed ? false : true}
+                    className="border-[3px] text-center "
+                  />
+                </Holds>
+              </>
+            )}
+          </Grids>
         </Contents>
       </Holds>
 
@@ -301,17 +320,25 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
         <Contents width={"section"}>
           {/* Edit Form */}
           <Grids rows={"3"}>
-            <Holds className="row-span-1">
-              <Labels>{t("Duration")}</Labels>
+            <Holds position={"row"} className="row-span-1  h-full">
+              <Holds size={"50"}>
+                <Texts position={"left"} size={"p2"}>
+                  {t("Duration")}
+                </Texts>
+              </Holds>
               <Holds
                 position={"row"}
-                className=" border-[3px] border-black rounded-2xl space-x-4 p-2 my-auto justify-between"
+                size={"50"}
+                className={`${
+                  !isEditMode && completed ? "bg-gray-400" : "bg-white"
+                } border-[3px] border-black rounded-2xl py-1 my-auto justify-between`}
               >
                 <Holds>
                   <Holds>
                     <Inputs
                       type="number"
                       name="duration-hrs"
+                      min={0}
                       value={changedDurationHours}
                       onChange={handleDurationHrsChange}
                       disabled={isEditMode || !completed ? false : true}
@@ -320,12 +347,14 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                   </Holds>
                 </Holds>
 
-                <Texts size={"p6"}>:</Texts>
+                <Texts size={"p4"}>:</Texts>
                 <Holds>
                   <Holds>
                     <Inputs
                       type="number"
                       name="duration-min"
+                      min={0}
+                      max={59}
                       value={changedDurationMinutes}
                       onChange={handleDurationMinChange}
                       disabled={isEditMode || !completed ? false : true}
@@ -334,13 +363,15 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                   </Holds>
                 </Holds>
 
-                <Texts size={"p6"}>:</Texts>
+                <Texts size={"p4"}>:</Texts>
 
                 <Holds>
                   <Holds>
                     <Inputs
                       type="number"
                       name="duration-sec"
+                      min={0}
+                      max={59}
                       value={changedDurationSeconds}
                       onChange={handleDurationSecChange}
                       disabled={isEditMode || !completed ? false : true}
@@ -366,6 +397,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                   rows={5}
                   placeholder="Enter notes here"
                   disabled={isEditMode || !completed ? false : true}
+                  style={{ resize: "none", width: "100%", height: "100%" }} // Disable resizing
                 />
                 <Holds className="absolute bottom-4 right-4">
                   <Texts position={"right"} size="p6" text={"black"}>
