@@ -31,7 +31,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [logs, setLogs] = useState<any[]>([]);
-  const [refueled, setRefueled] = useState<boolean>(false);
+  const [refueled, setRefueled] = useState(false);
   const [fuel, setFuel] = useState<number>(0);
   const [notes, setNotes] = useState<string>("");
   const [characterCount, setCharacterCount] = useState<number>(40);
@@ -68,7 +68,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
         const data = recievedData[0];
         console.log(data);
         setLogs(data); // saves first data entry to be able to revert bac to
-        setRefueled(data.isRefueled ?? false);
+        setRefueled(data.isRefueled);
         setFuel(data.fuelUsed ?? 0);
         setNotes(data.comment || "");
         setCompleted(data.isCompleted ?? false);
@@ -101,13 +101,21 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
     fetchEquipmentForm();
   }, [params.id]);
 
+  const handleRefueledChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRefueled(event.target.checked);
+  };
+
+  useEffect(() => {
+    console.log("Fueling status updated: refueled is", refueled);
+  }, [refueled]);
+
   useEffect(() => {
     if (completed) {
       setIsEditMode(false);
     }
-    if (logs.length > 0) {
+    if (logs.length > 0 && !isEditMode) {
+      console.log("I am here causing the bug");
       const log = logs[0]; // Example: Set data based on the first log entry
-      setRefueled(log.isRefueled);
       setFuel(log.fuelUsed ?? 0);
       setNotes(log.comment || "");
     }
@@ -267,10 +275,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                 label={""}
                 defaultChecked={refueled}
                 disabled={isEditMode || !completed ? false : true}
-                onChange={(e) => {
-                  setRefueled(e.target.checked);
-                  return Promise.resolve();
-                }}
+                onChange={handleRefueledChange}
               />
             </Holds>
           </Holds>
