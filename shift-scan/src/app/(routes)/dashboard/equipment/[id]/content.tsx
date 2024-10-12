@@ -66,7 +66,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
 
         const recievedData = await response.json();
         const data = recievedData[0];
-        console.log(data);
+
         setLogs(data); // saves first data entry to be able to revert bac to
         setRefueled(data.isRefueled);
         setFuel(data.fuelUsed ?? 0);
@@ -103,19 +103,16 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
 
   const handleRefueledChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRefueled(event.target.checked);
+    setFuel(0);
   };
-
-  useEffect(() => {
-    console.log("Fueling status updated: refueled is", refueled);
-  }, [refueled]);
 
   useEffect(() => {
     if (completed) {
       setIsEditMode(false);
     }
-    if (logs.length > 0 && !isEditMode) {
-      console.log("I am here causing the bug");
-      const log = logs[0]; // Example: Set data based on the first log entry
+    if (Array.isArray(logs) && logs.length > 0 && !isEditMode) {
+      const log = logs[0];
+      setRefueled(log.isRefueled ?? false);
       setFuel(log.fuelUsed ?? 0);
       setNotes(log.comment || "");
     }

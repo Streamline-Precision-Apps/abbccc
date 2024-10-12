@@ -97,6 +97,7 @@ export default function EquipmentLogContent({ userId }: EquipmentLogs) {
                   type="submit"
                   background={"lightBlue"}
                   className="py-2 mx-auto"
+                  href={`/dashboard/equipment`}
                 >
                   {t("SubmitAll")}
                 </Buttons>
