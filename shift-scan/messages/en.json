@@ -1,61 +1,140 @@
-{   
-    "PortalLogin": {
-        "Title": "Portal Login",
-        "Username": "Employee ID",
+{ 
+    "Login":{
+        "LogoAlt" :"Logo",
+        "EmployeeID": "Employee ID",
         "Password": "Password",
-        "btn-signIn": "Sign in",
+        "Btn-signIn": "Sign In",
+        "Btn-forgot": "Forgot Password?",
         "Spanish": "Habla Español?",
-        "btn-forgot": "Forgot Password?",
-        "Error": "Invalid username or password",
-        "lN4": "Copyright © 2024. All rights reserved."
+        "Err": "Invalid Attempt"
     },
-        "Home" : {
-            "Banner": "Welcome back, ",
-            "Name": "{firstName}",
-            "Date": "{date}",
-            "DailyHours": "Total Hours Today",
-            "PayPeriodHours": "Total Hours",
-            "Break": "Break Time",
-            "Unit": "hrs",
-            "DA-Time-Label" : "Hrs",
-            "DA-PayPeriod-Label" : "Current Pay Period Total",
-            "DA-ScrollLeft": "Scroll Left",
-            "DA-ScrollRight": "Scroll Right",
-            "DA-Return": "Return",
-            "DA-Today": "Today",
-            "TimeSheet-Label": "View my Timesheet",
-            "Clock-btn": "Clock In",
-            "MyTeam-btn": "Teams",
-            "Qr-btn": "Qr Generator",
-            "Copyright": "Copyright © 2024. All rights reserved."
+
+    "Home" : {
+        "Banner": "Welcome back, ",
+        "Name": "{firstName}",
+        "Date": "{date}",
+        "PayPeriodHours": "Total Hours",
+        "Break": "Break Time",
+        "Unit": "hrs",
+        "DA-Time-Label" : "Hrs",
+        "DA-Today": "Today",
+        "TimeSheet-Label": "View my Timesheet",
+        "Clock-btn": "Clock In",
+        "Title": "View Timesheets",
+        "Header1":"Please enter a date to search for your timesheets.",
+        "EnterDate": "Enter Date",
+        "SearchTimesheets": "Search Timesheets",
+        "FirstMessage": "Enter a Date and Submit to have a look at your timesheets records.",
+        "NoData": "No Timesheets Found",
+        "NoDataMessage": "Try again with a different date.",
+        "Loading": "Loading...",
+        "Results": "Results",
+        "DataMessage":"Timesheets Found",
+        "LabelID": "Timesheet ID",
+        "StartTime": "Start Time",
+        "EndTime": "End Time",
+        "Duration": "Duration",
+        "Jobsite": "Jobsite",
+        "CostCode": "Cost Code"
     },
-    "SearchBar": {
-        "Search": "Search for",
-        "NoResults": "No Results Found"
+
+"Widgets":{
+"QR": "Generator",
+"MyTeam": "Teams",
+"Equipment": "Equipment",
+"Forms" : "Forms",
+"Switch": "Switch Job",
+"ClockOut": "Clock Out",
+"Break": "Start Break",
+"EndDay": "End Work Day",
+"Return": "Return",
+"LogNew":"Log New",
+"LogOut": "Log Out",
+"Settings": "Settings",
+"Inbox":"Inbox",
+"Profile":"Profile",
+"Admin":"Admin"
+},
+"ManagerButtons": {
+    "SwitchJobs": "Switch Job",
+    "Equipment": "Equipment",
+    "ClockOut": "Clock Out",
+    "Forms" : "Forms",
+    "QrGenerator": "Generator",
+    "MyTeam": "My Team",
+    "GoHome": "Go Home",
+    "LogNew": "Log New",
+    "Current": "Log Out",
+    "Break": "Start Break",
+    "Submit": "Equipment logs need to be submitted.",
+    "CurrEQ": "View Borrowed Equipment",
+    "End": "End Work Day"
+},
+
+"Forms":{
+},
+
+"Generator":{
+
+},
+"Equipment":{
+
+},
+
+"MyTeam": {
+        "Teams-Title": "My Teams",
+        "Teams-Logo-Title": "Team Icon",
+        "MyTeams-Title": "My Teams",
+        "Teams-Button-Name": "Team",
+        "Timesheets": "Timesheets",
+        "Duration": "Total hours worked:",
+        "Duration-Comment": "The duration updates when editing changes are saved.",
+        "ClockIn" : "Recorded Clock In",
+        "ClockOut" : "Recorded Clock Out",
+        "Breaktime" : "Total Break Time",
+        "JobSites" : "Recorded Job Site ID",
+        "CostCode" : "Recorded Cost Code",
+        "Equipment" : "Equipment",
+        "EQTotalTime" : "Total Time",
+        "NoData": "No Data Found",
+        "EquipmentLogs": "Equipment Logs",
+        "PhoneNumber": "Phone Number",
+        "Email": "Email",
+        "EmergencyContact": "Emergency Contact",
+        "EmergencyContactNumber": "Emergency Contact #",
+        "DOB": "Date of Birth",
+        "Edit": "Edit",
+        "Delete": "Delete",
+        "SelectDate": "Select Date",
+        "NoEquipmentLogs": "No logs found for the day selected."
     },
-    "Clock": {
+"Clock": {
         "ScanJobSite": "Scan Job Site",
+        "TroubleScanning": "Trouble Scanning?",
+        "Title-jobsite": "Select Job Site",
+        "Title-equipment": "Select Equipment",
+        "SearchedCodes" : "Current Results",
+        "noResults" : "No results found",
+        "Continue": "Continue",
+        "Title-costcode": "Select Cost Code",
+        "VerifyJobSite": "Clock In",
+        "Date-label": "Date",
+        "JobSite-label": "Job Site #",
+        "CostCode-label": "Cost Code",
+        "Confirmation-job-message-1": "Process Completed",
+        "Confirmation-job-message-2": "Thank you! Your timesheet has been successfully created.",
+
+        "search": "Type here",
+        
+
         "ScanQR": "Scan QR Code",
         "ScanEquipment": "Scan Equipment",
         "Cancel": "Cancel",
-        "TroubleScanning": "Trouble Scanning?",
         "ReturnToJobsite": "Switching CostCode?",
-        "Title-jobsite": "Select Job Site",
-        "Title-equipment": "Select Equipment",
-        "Title-costcode": "Select Cost Code",
-        "search-jobsite": "Type here",
-        "search-equipment": "Type here",
-        "search-costcode": "Type here",
-        "VerifyJobSite": "Clock In",
         "VerifyEquipment": "Verify Equipment",
-        "Date-label": "Date",
-        "JobSite-label": "Job Site #",
         "Equipment-label": "Equipment Found",
-        "CostCode-label": "Cost Code",
         "ClockIn-btn": "Clock In",
         "Confirmation-time": "Clocked in at",
-        "Confirmation-job-message-1": "Process Completed",
-        "Confirmation-job-message-2": "Thank you! Your timesheet has been successfully created.",
         "Confirmation-job-message-3": "Successfully Switched Sites",
         "Confirmation-job-message-4": "Your timesheet has been Submitted and a new one created.",
         "Confirmation-eq-message-1": "Process Completed",
@@ -63,16 +142,34 @@
         "Equipment-result": "Equipment Found",
         "Equipment-notes-title": "Notes",
         "Next-btn": "Next",
-        "recentlyUsed" : "Recently Used",
-        "SearchedCodes" : "Current Results",
-        "noResults" : "No results found"
+        "recentlyUsed" : "Recently Used"
     },
+"ClockOut":{
+
+},
+"Err-Msg":{
+    "PayPeriod-Fetch:" : "Error fetching pay period sheets:", 
+    "PayPeriod:" : "Error Rendering Pay Period Sheets:",
+    "CalculatePayPeriod": "Failed to calculate pay period start date"
+
+},
+
+
+
+
+
+
+      
+    "SearchBar": {
+        "Search": "Search for",
+        "NoResults": "No Results Found"
+    },
+    
     
     "dashboard": {
         "Banner": "Working towards success!",
         "Name": "{firstName} {lastName}",
         "Date": "{date}",
-        "lN1": "Copyright © 2024.Streamline Precision LLC. All rights reserved.",
         "Forms" : "Select A Form",
         "FormDefault" : "Select A Form",
         "Form1" : "Injury Report",
@@ -87,27 +184,10 @@
         "Form3Q3Placeholder" : "I tried clocking out equipment and it didn't work, I got an error code OF XXXXX", 
         "Form3Q4" : "Are other people affected? If so, who?", 
         "Form3Q4Placeholder" : "no, only I was affected",
-        "Form3Submit" : "Submit form"
+        "Form3Submit" : "Submit form"    
+    },
+    
 
-    
-        
-    },
-    
-    "ManagerButtons": {
-        "SwitchJobs": "Switch Job",
-        "Equipment": "Equipment",
-        "ClockOut": "Clock Out",
-        "Forms" : "Forms",
-        "QrGenerator": "Generator",
-        "MyTeam": "My Team",
-        "GoHome": "Go Home",
-        "LogNew": "Log New",
-        "Current": "Log Out",
-        "Break": "Start Break",
-        "Submit": "Equipment logs need to be submitted.",
-        "CurrEQ": "View Borrowed Equipment",
-        "End": "End Work Day"
-    },
 
     "Clock-out": {
         "Title": "Clock Out"
@@ -285,33 +365,7 @@
         "Cancel": "Cancel",
         "PhoneNumber": "Phone Number"
     },
-    "MyTeam": {
-        "Teams-Title": "My Teams",
-        "Teams-Logo-Title": "Team Icon",
-        "MyTeams-Title": "My Teams",
-        "Teams-Button-Name": "Equipo",
-        "Timesheets": "Timesheets",
-        "Duration": "Total hours worked:",
-        "Duration-Comment": "The duration updates when editing changes are saved.",
-        "ClockIn" : "Recorded Clock In",
-        "ClockOut" : "Recorded Clock Out",
-        "Breaktime" : "Total Break Time",
-        "JobSites" : "Recorded Job Site ID",
-        "CostCode" : "Recorded Cost Code",
-        "Equipment" : "Equipment",
-        "EQTotalTime" : "Total Time",
-        "NoData": "No Data Found",
-        "EquipmentLogs": "Equipment Logs",
-        "PhoneNumber": "Phone Number",
-        "Email": "Email",
-        "EmergencyContact": "Emergency Contact",
-        "EmergencyContactNumber": "Emergency Contact #",
-        "DOB": "Date of Birth",
-        "Edit": "Edit",
-        "Delete": "Delete",
-        "SelectDate": "Select Date",
-        "NoEquipmentLogs": "No logs found for the day selected."
-    },
+    
     "admin": {
         "Banner": "Admin Dashboard",
         "Name": "{firstName} {lastName}",
