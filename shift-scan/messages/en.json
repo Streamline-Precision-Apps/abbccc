@@ -134,7 +134,30 @@
         "recentlyUsed" : "Recently Used"
     },
 "ClockOut":{
-
+        "SignBelow": "By Checking the box below I certify I suffered no injuries this day.",
+        "Jobsite" : "Job site # ",
+        "CostCode" : "Cost Code ",
+        "BreakTime" : "Break Time ",
+        "ClockOutDate" : "Date",
+        "ClockOutTime" : "Clock Out Time: ",
+        "ClockOutSuccess": "Successfully Clocked Out!",
+        "SubmitButton": "Submit Report",
+        "InjuryReport": "Injury Report",
+        "FailedToSubmit": "Failed to submit the form. Please try again.",
+        "ContactedSupervisor": "I contacted my supervisor ",
+        "Comment": "Describe What Happend ",
+        "Signature": "Signature: ",
+        "SignatureFailure": "Failed to capture signature. Please try again.",
+        "NavError": "Failed to navigate. Please try again.",
+        "InjuryVerification": "End Work Day",
+        "SignatureCaptured": "Signature captured! ",
+        "SignatureVerify": "This is my signature",
+        "Continue": "Continue",
+        "ReportInjury": "Report an Injury",
+        "EquipmentVerification": "I have completed and logged all forms, equipment, and all other items required of me today. ",
+        "Return": "Return to Dashboard",
+        "Bye": "See You Soon",
+        "incidentDescription" : "Describe the Incident"
 },
 "Err-Msg":{
     "PayPeriod-Fetch:" : "Error fetching pay period sheets:", 
@@ -176,11 +199,6 @@
         "Form3Submit" : "Submit form"    
     },
     
-
-
-    "Clock-out": {
-        "Title": "Clock Out"
-    },
 
     "qr-Generator": {
         "Title": "QR Generator"
@@ -296,32 +314,6 @@
         "Submit": "Create New Jobsite"
     },
 
-    "clock-out": {
-        "ClockOut": "Clock Out",
-        "Jobsite" : "Job site # ",
-        "CostCode" : "Cost Code ",
-        "BreakTime" : "Break Time ",
-        "ClockOutDate" : "Date",
-        "ClockOutTime" : "Clock Out Time: ",
-        "ClockOutSuccess": "Successfully Clocked Out!",
-        "SubmitButton": "Submit Report",
-        "InjuryReport": "Injury Report",
-        "FailedToSubmit": "Failed to submit the form. Please try again.",
-        "ContactedSupervisor": "I contacted my supervisor ",
-        "Comment": "Describe What Happend ",
-        "Signature": "Signature: ",
-        "SignatureFailure": "Failed to capture signature. Please try again.",
-        "NavError": "Failed to navigate. Please try again.",
-        "InjuryVerification": "End Work Day",
-        "SignBelow": "By signing below I certify I suffered no injuries this day.",
-        "SignatureCaptured": "Signature captured! ",
-        "SignatureVerify": "This is my signature",
-        "Continue": "Continue",
-        "ReportInjury": "Report an Injury",
-        "EquipmentVerification": "I have completed and logged all forms, equipment, and all other items required of me today. ",
-        "Return": "Return to Dashboard",
-        "Bye": "See You Soon"
-    },
 
     "Signature": {
         "Save": "Save",

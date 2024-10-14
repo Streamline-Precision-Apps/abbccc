@@ -1,7 +1,6 @@
 "use client";
 import "@/app/globals.css";
 import { useState, ChangeEvent } from "react";
-import { Checkbox } from "../injury-verification/checkBox";
 import { Signature } from "../injury-verification/Signature";
 import { CreateInjuryForm } from "@/actions/injuryReportActions";
 import { useTranslations } from "next-intl";
@@ -10,6 +9,10 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Titles } from "@/components/(reusable)/titles";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { useSession } from "next-auth/react";
+import Checkbox from "@/components/(inputs)/checkbox";
+import { Spinner } from "@nextui-org/react";
+import { Grids } from "@/components/(reusable)/grids";
+import { TextAreas } from "@/components/(reusable)/textareas";
 
 type FormProps = {
   base64String: string | null;
@@ -27,19 +30,23 @@ export const InjuryReportContent = ({
   const [supervisorChecked, setSupervisorChecked] = useState<boolean>(false);
   const [signatureChecked, setSignatureChecked] = useState<boolean>(false);
   const [textarea, setTextarea] = useState<string>("");
-  const [error, setError] = useState<string | null>(null);
-  const t = useTranslations("clock-out");
+  const [error, setError] = useState<string | undefined>(undefined);
+  const t = useTranslations("ClockOut");
   const { data: session } = useSession();
   if (!session) {
     return null;
   }
   const { id } = session.user;
 
-  const handleSupervisorCheckboxChange = (newChecked: boolean) => {
-    setSupervisorChecked(newChecked);
+  const handleSupervisorCheckboxChange = (
+    event: ChangeEvent<HTMLInputElement>
+  ) => {
+    setSupervisorChecked(event.currentTarget.checked);
   };
-  const handleSignatureCheckboxChange = (newChecked: boolean) => {
-    setSignatureChecked(newChecked);
+  const handleSignatureCheckboxChange = (
+    event: ChangeEvent<HTMLInputElement>
+  ) => {
+    setSignatureChecked(event.currentTarget.checked);
   };
 
   const handleSubmit = async () => {
@@ -67,7 +74,7 @@ export const InjuryReportContent = ({
 
     try {
       await CreateInjuryForm(formData);
-      setError(null);
+      setError(undefined);
       handleComplete();
     } catch (error) {
       setError(t("FaildToSubmit"));
@@ -80,35 +87,80 @@ export const InjuryReportContent = ({
 
   return (
     <>
-      <Holds size="titleBox">
-        <Titles size="h4">{t("ContactedSupervisor")}</Titles>
-        <Checkbox checked={supervisorChecked} onChange={handleSupervisorCheckboxChange} />
-      </Holds>
+      <Contents width={"section"}>
+        <Grids rows={"10"} gap={"5"}>
+          <Holds position={"row"} className="h-full row-span-2 my-auto">
+            <Holds size={"70"}>
+              <Titles position={"left"} size="h3">
+                {t("ContactedSupervisor")}
+              </Titles>
+            </Holds>
+            <Holds size={"30"}>
+              <Checkbox
+                defaultChecked={supervisorChecked}
+                onChange={handleSupervisorCheckboxChange}
+                id={"1"}
+                name={""}
+                size={2}
+              />
+            </Holds>
+          </Holds>
 
-      <Holds size="titleBox">
-        <label htmlFor="incidentDescription">
-          <Titles size="h4">{t("incidentDescription")}</Titles>
-        </label>
-        <textarea
-          id="incidentDescription"
-          value={textarea}
-          onChange={handleChange}
-          placeholder="Describe the incident"
-          className="border p-2 w-full"
-        />
-        {error && <p className="text-red-500">{error}</p>}
-      </Holds>
+          <Holds className="row-span-4">
+            <label htmlFor="incidentDescription">
+              <Titles position={"left"} size="h3">
+                {t("incidentDescription")}
+              </Titles>
+            </label>
+            <TextAreas
+              id="incidentDescription"
+              value={textarea}
+              onChange={handleChange}
+              rows={5}
+              minLength={1}
+              maxLength={40}
+              style={{ resize: "none", width: "100%", height: "100%" }}
+              className="border-[3px] border-black"
+            />
+            {error && <p className="text-red-500">{error ?? ""}</p>}
+          </Holds>
 
-      <Holds size="titleBox">
-        <Titles size="h4">{t("Signature")}</Titles>
-        <Signature setBase64String={setBase64String} base64string={base64String} handleSubmitImage={handleSubmitImage}/>
-      </Holds>
-      <Holds size="titleBox">
-        <Titles size="h4">{t("VerifySignatureStatement")}</Titles>
-        <Checkbox checked={signatureChecked} onChange={handleSignatureCheckboxChange} />
-      </Holds>
-
-      <Buttons onClick={handleSubmit}>{t("SubmitButton")}</Buttons>
+          <Holds className="row-span-2">
+            <Holds className="my-auto border-[3px] border-black">
+              {base64String ? (
+                <img
+                  src={base64String}
+                  alt="Loading signature"
+                  className="w-[30%] mx-auto"
+                />
+              ) : (
+                <p>No Signature </p>
+              )}
+            </Holds>
+          </Holds>
+          <Holds position={"row"}>
+            <Holds size={"70"}>
+              <Titles position={"left"} size="h3">
+                {t("SignatureVerify")}
+              </Titles>
+            </Holds>
+            <Holds size={"30"}>
+              <Checkbox
+                defaultChecked={signatureChecked}
+                onChange={handleSignatureCheckboxChange}
+                id={"2"}
+                name={""}
+                size={2}
+              />
+            </Holds>
+          </Holds>
+          <Holds className="row-span-2">
+            <Buttons onClick={handleSubmit}>
+              <Titles>{t("SubmitButton")}</Titles>
+            </Buttons>
+          </Holds>
+        </Grids>
+      </Contents>
     </>
   );
 };

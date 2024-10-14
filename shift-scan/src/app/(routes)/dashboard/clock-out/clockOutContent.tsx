@@ -4,9 +4,9 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
-import { use, useEffect, useState } from "react";
+import { ChangeEvent, use, useEffect, useState } from "react";
 import { Signature } from "./(components)/injury-verification/Signature";
-import { Checkbox } from "./(components)/injury-verification/checkBox";
+
 import { useTranslations } from "next-intl";
 import { InjuryReportContent } from "./(components)/injury-report/injuryReportContent";
 import { Titles } from "@/components/(reusable)/titles";
@@ -23,6 +23,8 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Images } from "@/components/(reusable)/images";
 import { uploadFirstSignature } from "@/actions/userActions";
 import { Grids } from "@/components/(reusable)/grids";
+import Spinner from "@/components/(animations)/spinner";
+import Checkbox from "@/components/(inputs)/checkbox";
 
 // Custom hook for managing banners
 function useBanner(initialMessage = "") {
@@ -44,11 +46,11 @@ type ClockOutContentProps = {
 };
 
 export default function ClockOutContent({ id }: ClockOutContentProps) {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [step, incrementStep] = useState(1);
   const [path, setPath] = useState("ClockOut");
   const router = useRouter();
-  const t = useTranslations("clock-out");
+  const t = useTranslations("ClockOut");
   const [checked, setChecked] = useState(false); // Checkbox state
   const { showBanner, bannerMessage, setShowBanner, setBannerMessage } =
     useBanner();
@@ -88,8 +90,8 @@ export default function ClockOutContent({ id }: ClockOutContentProps) {
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  const handleCheckboxChange = (newChecked: boolean) => {
-    setChecked(newChecked);
+  const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setChecked(event.currentTarget.checked);
   };
 
   const handleSubmitImage = async () => {
@@ -151,18 +153,6 @@ export default function ClockOutContent({ id }: ClockOutContentProps) {
   if (step === 1) {
     return (
       <>
-        {/* {showBanner && (
-          <div
-            style={{
-              position: "fixed",
-              top: 0,
-              width: "100%",
-              zIndex: 1000,
-            }}
-          >
-            <Banners background="red">{bannerMessage}</Banners>
-            </div>
-        )} */}
         <Grids className="grid-rows-4 gap-5">
           <Holds background={"white"} className="row-span-1 h-full">
             <Contents width={"section"}>
@@ -175,37 +165,48 @@ export default function ClockOutContent({ id }: ClockOutContentProps) {
           </Holds>
           <Holds background={"white"} className="row-span-3 h-full">
             <Contents width={"section"}>
-              <Grids className="grid-rows-3">
-                <Holds className="row-span-2 h-full">
-                  <Titles size={"h3"}>{t("SignBelow")}</Titles>
-                  <Holds>
-                    <Signature
-                      setBase64String={setBase64String}
-                      base64string={base64String}
-                      handleSubmitImage={handleSubmitImage}
-                    />
+              <Grids rows={"5"} gap={"5"}>
+                <Holds className="row-span-2 h-full my-auto">
+                  <Texts size={"p2"}>{t("SignBelow")}</Texts>
+                  <Holds className="border-[3px] border-black h-full ">
+                    {loading ? (
+                      <Holds className="my-auto">
+                        <Spinner />
+                      </Holds>
+                    ) : (
+                      <Holds className="my-auto">
+                        <img
+                          src={base64String}
+                          alt="Loading signature"
+                          className="w-[40%] mx-auto"
+                        />
+                      </Holds>
+                    )}
                   </Holds>
-
-                  <Holds position={"row"}>
-                    <Titles size={"h4"}>{t("SignatureVerify")}</Titles>
-
+                </Holds>
+                <Holds position={"row"} className="row-span-2 h-full my-auto">
+                  <Holds size={"70"}>
+                    <Titles size={"h2"}>{t("SignatureVerify")}</Titles>
+                  </Holds>
+                  <Holds size={"30"}>
                     <Checkbox
-                      checked={checked}
-                      onChange={handleCheckboxChange}
+                      id="injury-checkbox"
+                      name="injury-verify"
+                      onChange={handleCheckboxChange} // Use state handler
+                      defaultChecked={checked} // Pass state value
                     />
                   </Holds>
                 </Holds>
-                {/* Button changes based on checkbox state */}
-                <Holds size={"70"} className="row-span-1 mx-auto">
+
+                <Holds className="row-span-1 mx-auto">
                   <Contents width={"section"}>
                     <Buttons
-                      background={checked ? "green" : "red"} // Green for Continue, Red for Report an Injury
+                      background={checked ? "green" : "red"}
                       onClick={handleNextStepAndSubmit}
-                      disabled={isSubmitting} // Disable button while submitting
+                      disabled={loading} // Disable while loading
                     >
                       <Titles size={"h3"}>
-                        {checked ? t("Continue") : t("ReportInjury")}{" "}
-                        {/* Button text changes */}
+                        {checked ? t("Continue") : t("ReportInjury")}
                       </Titles>
                     </Buttons>
                   </Contents>
@@ -218,17 +219,15 @@ export default function ClockOutContent({ id }: ClockOutContentProps) {
     );
   } else if (step === 2 && path === "Injury") {
     return (
-      <>
-        <Holds>
+      <Grids rows={"10"} gap={"5"}>
+        <Holds background={"white"} className="h-full row-span-2">
           <TitleBoxes
             title={t("InjuryVerification")}
-            titleImg="/new/injury.svg"
+            titleImg="/injury.svg"
             titleImgAlt="Team"
-            variant={"row"}
-            type="row"
           />
         </Holds>
-        <Holds>
+        <Holds background={"white"} className="h-full row-span-8">
           <InjuryReportContent
             base64String={base64String}
             setBase64String={setBase64String}
@@ -236,7 +235,7 @@ export default function ClockOutContent({ id }: ClockOutContentProps) {
             handleSubmitImage={handleSubmitImage}
           />
         </Holds>
-      </>
+      </Grids>
     );
   } else if (
     (step === 2 && path === "ClockOut") ||
