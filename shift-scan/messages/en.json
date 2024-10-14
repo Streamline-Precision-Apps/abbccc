@@ -28,9 +28,8 @@
         "NoData": "No Timesheets Found",
         "NoDataMessage": "Try again with a different date.",
         "Loading": "Loading...",
-        "Results": "Results",
         "DataMessage":"Timesheets Found",
-        "LabelID": "Timesheet ID",
+        "TimesheetID": "Timesheet ID",
         "StartTime": "Start Time",
         "EndTime": "End Time",
         "Duration": "Duration",
@@ -38,38 +37,28 @@
         "CostCode": "Cost Code"
     },
 
-"Widgets":{
-"QR": "Generator",
-"MyTeam": "Teams",
-"Equipment": "Equipment",
-"Forms" : "Forms",
-"Switch": "Switch Job",
-"ClockOut": "Clock Out",
-"Break": "Start Break",
-"EndDay": "End Work Day",
-"Return": "Return",
-"LogNew":"Log New",
-"LogOut": "Log Out",
-"Settings": "Settings",
-"Inbox":"Inbox",
-"Profile":"Profile",
-"Admin":"Admin"
-},
-"ManagerButtons": {
-    "SwitchJobs": "Switch Job",
-    "Equipment": "Equipment",
-    "ClockOut": "Clock Out",
-    "Forms" : "Forms",
-    "QrGenerator": "Generator",
-    "MyTeam": "My Team",
-    "GoHome": "Go Home",
-    "LogNew": "Log New",
-    "Current": "Log Out",
-    "Break": "Start Break",
-    "Submit": "Equipment logs need to be submitted.",
-    "CurrEQ": "View Borrowed Equipment",
-    "End": "End Work Day"
-},
+        "Widgets":{
+        "QR": "Generator",
+        "MyTeam": "Teams",
+        "Equipment": "Equipment",
+        "Forms" : "Forms",
+        "Switch": "Switch Job",
+        "ClockOut": "Clock Out",
+        "Break": "Start Break",
+        "EndDay": "End Work Day",
+        "Return": "Return",
+        "LogNew":"Log New",
+        "LogOut": "Log Out",
+        "Settings": "Settings",
+        "Inbox":"Inbox",
+        "Profile":"Profile",
+        "Admin":"Admin",
+        "GoHome": "Home",
+        "Whoops": "Whoops!",
+        "ReturnToLogOut":"You forgot to Clock out Equipment!",
+        "ClickToLogOut":"Click Here to fix it."
+        
+        },
 
 "Forms":{
 },
@@ -150,8 +139,8 @@
 "Err-Msg":{
     "PayPeriod-Fetch:" : "Error fetching pay period sheets:", 
     "PayPeriod:" : "Error Rendering Pay Period Sheets:",
-    "CalculatePayPeriod": "Failed to calculate pay period start date"
-
+    "CalculatePayPeriod": "Failed to calculate pay period start date",
+    "Logs-Fetch": "Error fetching logs:"
 },
 
 
