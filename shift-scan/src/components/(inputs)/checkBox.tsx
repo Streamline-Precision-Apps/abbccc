@@ -7,7 +7,7 @@ export interface CheckboxProps {
   defaultChecked?: boolean;
   id: string;
   name: string;
-  label: string;
+  label?: string;
   size?: number;
   onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
 }
@@ -50,7 +50,7 @@ const Checkbox = ({
     >
       <polyline points="20 6 9 17 4 12"></polyline>
     </svg>
-    {/* <label htmlFor={id}>{label}</label> */}
+    {label && <label htmlFor={id}>{label}</label>}
   </div>
 );
 
