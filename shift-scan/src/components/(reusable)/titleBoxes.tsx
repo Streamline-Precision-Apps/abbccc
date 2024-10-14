@@ -6,7 +6,6 @@ import { Titles } from "../(reusable)/titles";
 import { Images } from "../(reusable)/images";
 import { Contents } from "./contents";
 import { Holds } from "./holds";
-import { Button } from "@nextui-org/react";
 
 const TitleBoxVariants = cva(
   "relative flex items-center justify-center w-full mx-auto", //this applies to all variants
@@ -68,7 +67,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         {...props}
       >
         <Holds position={"absolute"}>
-          <Buttons href={href} background={"none"} size={"30"}>
+          <Buttons href="back" background={"none"} size={"30"}>
             <Images
               titleImg="/turnBack.svg"
               titleImgAlt={titleImgAlt}
@@ -121,7 +120,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         {...props}
       >
         <Holds position={"absolute"}>
-          <Buttons href={href} background={"none"} size={"30"}>
+          <Buttons href="back" background={"none"} size={"30"}>
             <Images
               titleImg="/turnBack.svg"
               titleImgAlt={titleImgAlt}
@@ -174,7 +173,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         {...props}
       >
         <Holds position={"absolute"}>
-          <Buttons href={href} background={"none"} size={"30"}>
+          <Buttons href="back" background={"none"} size={"30"}>
             <Images
               titleImg="/turnBack.svg"
               titleImgAlt={titleImgAlt}
@@ -192,7 +191,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         className={cn(TitleBoxVariants({ variant, size, className }))}
         {...props}
       >
-        <Buttons href={href}>
+        <Buttons href="back">
           <Images titleImg="/backArrow.svg" titleImgAlt="back arrow" />
         </Buttons>
         <Titles size={"h1"}>{title}</Titles>
@@ -205,7 +204,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         className={cn(TitleBoxVariants({ variant, size, className }))}
         {...props}
       >
-        <Buttons href={href}>
+        <Buttons href="back">
           <Images titleImg="/backArrow.svg" titleImgAlt="back arrow" />
         </Buttons>
         <Titles size={"h1"}>{title}</Titles>
@@ -219,7 +218,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         {...props}
       >
         <Holds position={"absolute"}>
-          <Buttons href={href} background={"none"} size={"30"}>
+          <Buttons href="back" background={"none"} size={"30"}>
             <Images
               titleImg="/turnBack.svg"
               titleImgAlt="back arrow"
@@ -251,7 +250,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         {...props}
       >
         <Holds position={"absolute"}>
-          <Buttons href={href} background={"none"} size={"30"}>
+          <Buttons href="back" background={"none"} size={"30"}>
             <Images
               titleImg="/turnBack.svg"
               titleImgAlt={titleImgAlt}

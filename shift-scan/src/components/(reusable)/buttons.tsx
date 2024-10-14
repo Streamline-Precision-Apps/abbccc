@@ -66,9 +66,11 @@ const Buttons: FC<ButtonProps> = ({
 }) => {
   const router = useRouter();
   const pageAction = () => {
-    if (href === undefined) {
-      router.back();
-    } else router.push(href);
+    if (href) {
+      if (href === "back") {
+        router.back();
+      } else router.push(href);
+    }
   };
   return (
     <button
