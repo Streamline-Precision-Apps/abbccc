@@ -77,10 +77,12 @@ export const EmployeeTimeSheets = ({ employeeId }: Props) => {
 
   return (
     <>
-      <Contents>
-        <Holds>
+      <Holds background={"darkBlue"}>
+        <Contents width={"section"}>
           <Holds>
-            <Titles>{t("SelectDate")}</Titles>
+            <Titles text={"white"} position={"left"}>
+              {t("SelectDate")}
+            </Titles>
             <form
               ref={formRef}
               onChange={handleFormChange}
@@ -97,7 +99,7 @@ export const EmployeeTimeSheets = ({ employeeId }: Props) => {
             <Titles>{message}</Titles>
           </Holds>
           {date && (
-            <Holds size={"full"}>
+            <Holds size={"full"} background={"white"} className="my-5">
               <EditWork
                 timesheetData={timesheets}
                 edit={edit}
@@ -112,8 +114,8 @@ export const EmployeeTimeSheets = ({ employeeId }: Props) => {
               />
             </Holds>
           )}
-        </Holds>
-      </Contents>
+        </Contents>
+      </Holds>
     </>
   );
 };

@@ -28,7 +28,9 @@ export async function GET(
     return NextResponse.json({ error: "Employee not found" }, { status: 404 });
   }
 
-  return NextResponse.json(employee, {
+  const { password, signature, permission, accountSetup, ...rest } = employee; // Exclude the password from the response using spread operator
+
+  return NextResponse.json(rest, {
     headers: {
       "Cache-Control":
         "public, max-age=60, s-maxage=60, stale-while-revalidate=30",

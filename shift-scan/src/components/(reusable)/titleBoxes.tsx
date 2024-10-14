@@ -114,6 +114,47 @@ const TitleBoxes: FC<TitleBoxProps> = ({
       </div>
     );
   }
+  if (type === "profilePics") {
+    return (
+      <div
+        className={cn(TitleBoxVariants({ variant, size, className }))}
+        {...props}
+      >
+        <Holds position={"absolute"}>
+          <Buttons href={href} background={"none"} size={"30"}>
+            <Images
+              titleImg="/turnBack.svg"
+              titleImgAlt={titleImgAlt}
+              size={"30"}
+            />
+          </Buttons>
+        </Holds>
+        {props.children}
+        <Holds size={"full"} position={"center"}>
+          <Holds size={"40"} className="rounded-full relative ">
+            <Images
+              titleImg={titleImg}
+              titleImgAlt={titleImgAlt}
+              className="rounded-full border-[3px] border-black"
+              size={"full"}
+            />
+          </Holds>
+        </Holds>
+        <Titles size={"h3"}>{title}</Titles>
+        <Holds
+          size={"30"}
+          position={"absolute"}
+          className="left-[70%] top-[5%] "
+        >
+          <Holds size={"90"} position={"center"}>
+            <Titles position={"right"} size={"h6"}>
+              {title2}
+            </Titles>
+          </Holds>
+        </Holds>
+      </div>
+    );
+  }
 
   if (type === "titleOnly") {
     return (
