@@ -112,11 +112,11 @@ export default function ViewTimesheets({ user }: Props) {
                   <Holds
                     key={timesheet.id}
                     size={"full"}
-                    className="odd:bg-app-blue "
+                    className="odd:bg-app-blue rounded"
                   >
                     <Holds size={"70"} className="p-4 py-8">
                       <Labels>
-                        {t("LabelID")}
+                        {t("TimesheetID")}
                         <Inputs value={timesheet.id} readOnly />
                       </Labels>
                       <Labels>
