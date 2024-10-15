@@ -243,6 +243,30 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         </Holds>
       </div>
     );
+  }
+  if (type === "route") {
+    return (
+      <div
+        className={cn(TitleBoxVariants({ variant, size, className }))}
+        {...props}
+      >
+        <Holds position={"absolute"}>
+          <Buttons href={href} background={"none"} size={"30"}>
+            <Images
+              titleImg="/turnBack.svg"
+              titleImgAlt={titleImgAlt}
+              size={"30"}
+            />
+          </Buttons>
+        </Holds>
+        <Holds>
+          <Holds size={"50"} className="my-auto">
+            <Images titleImg={titleImg} titleImgAlt={titleImgAlt} size={"30"} />
+          </Holds>
+          <Titles size={"h2"}>{title}</Titles>
+        </Holds>
+      </div>
+    );
   } else
     return (
       <div

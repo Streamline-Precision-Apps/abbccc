@@ -68,6 +68,7 @@ export default function EquipmentLogContent({ userId }: EquipmentLogs) {
             size={"default"}
             className="my-auto"
             href="/dashboard"
+            type="route"
           />
         </Holds>
 
