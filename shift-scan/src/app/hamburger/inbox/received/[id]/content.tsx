@@ -63,6 +63,7 @@ export default function Content({ params, session }: Props) {
         );
 
         const employee = data[0].employee;
+        console.log(employee);
         setEmployeeName(employee?.firstName + " " + employee?.lastName || "");
         // Update states based on the fetched data
         setSignature(employee?.signature || "");
@@ -79,7 +80,7 @@ export default function Content({ params, session }: Props) {
   }, [params.id]);
 
   useEffect(() => {
-    const fetchSigantureData = async () => {
+    const fetchSignatureData = async () => {
       try {
         const result = await fetch(`/api/getSignature`);
         const data = await result.json();
@@ -88,7 +89,7 @@ export default function Content({ params, session }: Props) {
         console.log(error);
       }
     };
-    fetchSigantureData();
+    fetchSignatureData();
   }, [params.id]);
 
   const handleManagerCommentChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -250,9 +251,19 @@ export default function Content({ params, session }: Props) {
                       Employee signature
                     </Texts>
                     <Holds className="border-2 border-black rounded-xl">
-                      <Holds size={"20"} position={"center"} className="">
-                        <img src={signature} alt="signature" className="py-2" />
-                      </Holds>
+                      {!signed ? (
+                        <Holds position={"center"} className="py-2">
+                          <Texts size={"p5"}>Signature is not setup</Texts>
+                        </Holds>
+                      ) : (
+                        <Holds size={"20"} position={"center"} className="">
+                          <img
+                            src={signature}
+                            alt="signature"
+                            className="py-2"
+                          />
+                        </Holds>
+                      )}
                     </Holds>
                     {signed ? (
                       <>
