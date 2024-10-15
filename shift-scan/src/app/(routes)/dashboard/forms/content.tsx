@@ -42,7 +42,7 @@ export default function Content() {
 
   return (
     <Contents width={"section"}>
-      <Holds size={"full"} background="white" className="my-5">
+      <Holds size={"full"} background="white" className="my-auto">
         <Forms onSubmit={handleRoute} className="my-5">
           <Labels className="my-2">
             {t("Forms")}
@@ -54,9 +54,8 @@ export default function Content() {
               required
               className="my-2"
             >
+              {/* Add your options here */}
               <Options value="">{t("FormDefault")}</Options>
-              <Options value="1">{t("Form1")}</Options>
-              <Options value="2">{t("Form2")}</Options>
               <Options value="report-bug">{t("Form3")}</Options>
             </Selects>
           </Labels>

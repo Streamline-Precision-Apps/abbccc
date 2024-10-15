@@ -29,7 +29,9 @@ export default async function Forms() {
               titleImg="/form.svg"
               titleImgAlt="Forms"
               variant="default"
+              href="/dashboard"
               size="default"
+              type="route"
             />
           </Holds>
           <Holds
