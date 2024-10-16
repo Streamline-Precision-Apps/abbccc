@@ -7,7 +7,7 @@ const createWrapperAndAppendToBody = (wrapperId: string) =>{
     wrapperElement.setAttribute("id", wrapperId);
     document.body.appendChild(wrapperElement);
     return wrapperElement;
-  }
+}
 
 function ReactPortal({ children, wrapperId}: { children: React.ReactNode; wrapperId: string }) {
     const [wrapperElement, setWrapperElement] = useState<HTMLElement>();

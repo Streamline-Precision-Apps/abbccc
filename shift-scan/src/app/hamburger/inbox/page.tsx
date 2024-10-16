@@ -26,7 +26,7 @@ export default async function Inbox() {
             />
           </Holds>
           <Holds className="row-span-8 h-full">
-            <Content />
+            <Content/>
           </Holds>
         </Grids>
       </Contents>

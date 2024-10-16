@@ -146,7 +146,7 @@ return (
         )}
         {step === 4 && (
         <>
-            <Titles size={"h1"}>
+            <Titles size={"h1"} className="bg-red-500">
             {t("Confirmation-eq-message-1")}
             </Titles>
             <Titles size={"h4"}>

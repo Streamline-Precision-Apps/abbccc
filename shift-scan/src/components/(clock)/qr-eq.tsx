@@ -73,6 +73,6 @@ export default function QR_EQ ({ handleNextStep } : QrReaderProps) {
   }, [scanCount, router]);
 
   return (
-      <video ref={videoRef} className="w-full h-[400px] rounded-2xl border-4 bg-gray-300 border-black"></video>
+      <video ref={videoRef} className=" rounded-2xl bg-green-300 border-black"></video>
   );
 };
