@@ -37,26 +37,26 @@
 // }
 
 "use client";
-import { useState } from 'react';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { Menu, Transition } from '@headlessui/react';
-import { Fragment } from 'react';
-import { DotsVerticalIcon } from '@heroicons/react/outline';
+import { useState } from "react";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+// import { Menu, Transition } from '@headlessui/react';
+import { Fragment } from "react";
+// import { DotsVerticalIcon } from '@heroicons/react/outline';
 
 const initialCards = [
-  { id: '1', name: 'John Doe' },
-  { id: '2', name: 'Jane Smith' },
-  { id: '3', name: 'Sam Johnson' },
+  { id: "1", name: "John Doe" },
+  { id: "2", name: "Jane Smith" },
+  { id: "3", name: "Sam Johnson" },
 ];
 
 export default function Home() {
   const [columns, setColumns] = useState({
     box1: {
-      name: 'Box 1',
+      name: "Box 1",
       items: initialCards,
     },
     box2: {
-      name: 'Box 2',
+      name: "Box 2",
       items: [],
     },
   });
@@ -118,11 +118,15 @@ export default function Home() {
                   {...provided.droppableProps}
                   ref={provided.innerRef}
                   className={`p-4 bg-white rounded shadow-md min-h-[200px] ${
-                    snapshot.isDraggingOver ? 'bg-blue-50' : ''
+                    snapshot.isDraggingOver ? "bg-blue-50" : ""
                   }`}
                 >
                   {column.items.map((item, index) => (
-                    <Draggable key={item.id} draggableId={item.id} index={index}>
+                    <Draggable
+                      key={item.id}
+                      draggableId={item.id}
+                      index={index}
+                    >
                       {(provided) => (
                         <div
                           ref={provided.innerRef}
@@ -131,7 +135,10 @@ export default function Home() {
                           className="flex justify-between items-center p-4 mb-2 bg-gray-200 rounded"
                         >
                           <span>{item.name}</span>
-                          <Menu as="div" className="relative inline-block text-left">
+                          <Menu
+                            as="div"
+                            className="relative inline-block text-left"
+                          >
                             <Menu.Button className="flex items-center justify-center">
                               <DotsVerticalIcon className="w-5 h-5" />
                             </Menu.Button>
@@ -149,9 +156,11 @@ export default function Home() {
                                   <Menu.Item>
                                     {({ active }) => (
                                       <button
-                                        onClick={() => duplicateCard(columnId, item)}
+                                        onClick={() =>
+                                          duplicateCard(columnId, item)
+                                        }
                                         className={`${
-                                          active ? 'bg-gray-100' : ''
+                                          active ? "bg-gray-100" : ""
                                         } group flex items-center w-full px-4 py-2 text-sm`}
                                       >
                                         Duplicate
@@ -161,9 +170,11 @@ export default function Home() {
                                   <Menu.Item>
                                     {({ active }) => (
                                       <button
-                                        onClick={() => deleteCard(columnId, item.id)}
+                                        onClick={() =>
+                                          deleteCard(columnId, item.id)
+                                        }
                                         className={`${
-                                          active ? 'bg-gray-100' : ''
+                                          active ? "bg-gray-100" : ""
                                         } group flex items-center w-full px-4 py-2 text-sm`}
                                       >
                                         Delete
