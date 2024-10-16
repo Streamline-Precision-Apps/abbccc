@@ -26,7 +26,7 @@ export default function QrJobsiteContent() {
   const [qrCodeUrl, setQrCodeUrl] = useState("");
 
   const router = useRouter();
-  const t = useTranslations("QrJobsiteContent");
+  const t = useTranslations("Generator");
 
   const handleGenerate = async () => {
     if (selectedJobSite) {
@@ -76,35 +76,63 @@ export default function QrJobsiteContent() {
   return (
     <>
       {loading ? (
-        <Holds size={"first"}>
-          <SearchSelect 
-            datatype={`${t("Loading")}`} 
-            options={generatedList} 
+        <Holds>
+          <SearchSelect
+            datatype={`${t("Loading")}`}
+            options={generatedList}
             onSelect={handleSearchSelectChange} // Pass the selection handler
           />
-          <Holds position={"row"} size={"full"} className="justify-between items-center p-4">
-            <Buttons background={"orange"} onClick={handleGenerate} size={"50"} className="p-4 mr-4">
+          <Holds
+            position={"row"}
+            size={"full"}
+            className="justify-between items-center p-4"
+          >
+            <Buttons
+              background={"orange"}
+              onClick={handleGenerate}
+              size={"50"}
+              className="p-4 mr-4"
+            >
               <Titles size={"h2"}>{t("Generate")}</Titles>
             </Buttons>
-            <Buttons background={"green"} onClick={handleNew} size={"50"} className="p-4 ml-4">
+            <Buttons
+              background={"green"}
+              onClick={handleNew}
+              size={"50"}
+              className="p-4 ml-4"
+            >
               <Titles size={"h2"}>{t("New")}</Titles>
             </Buttons>
           </Holds>
         </Holds>
       ) : (
-        <Holds size={"first"}>
+        <Holds>
           {/* Replace the old Selects component with the new SearchSelect */}
-          <SearchSelect 
-            datatype={`${t("JobSiteDatatype")}`} 
-            options={generatedList} 
+          <SearchSelect
+            datatype={`${t("SearchForAJobSite")}`}
+            options={generatedList}
             onSelect={handleSearchSelectChange} // Pass the selection handler
           />
 
-          <Holds position={"row"} size={"full"} className="justify-between items-center p-4">
-            <Buttons background={"orange"} onClick={handleGenerate} size={"50"} className="p-4 mr-4">
+          <Holds
+            position={"row"}
+            size={"full"}
+            className="justify-between items-center p-4"
+          >
+            <Buttons
+              background={"orange"}
+              onClick={handleGenerate}
+              size={"50"}
+              className="p-4 mr-4"
+            >
               <Titles size={"h2"}>{t("Generate")}</Titles>
             </Buttons>
-            <Buttons background={"green"} onClick={handleNew} size={"50"} className="p-4 ml-4">
+            <Buttons
+              background={"green"}
+              onClick={handleNew}
+              size={"50"}
+              className="p-4 ml-4"
+            >
               <Titles size={"h2"}>{t("New")}</Titles>
             </Buttons>
           </Holds>

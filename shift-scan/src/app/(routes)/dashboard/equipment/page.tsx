@@ -12,7 +12,7 @@ import { Grids } from "@/components/(reusable)/grids";
 export default async function Current() {
   const session = await auth();
   const userId = session?.user?.id;
-  const t = await getTranslations("EquipmentContent");
+  const t = await getTranslations("Equipment");
 
   // use translate breaks here for what ever reason
   return (

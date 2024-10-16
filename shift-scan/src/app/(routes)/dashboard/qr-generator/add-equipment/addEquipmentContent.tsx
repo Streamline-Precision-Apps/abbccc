@@ -14,7 +14,7 @@ import { Images } from "@/components/(reusable)/images";
 
 export const AddEquipmentContent = () => {
   const [base64String, setBase64String] = useState<string>("");
-  const t = useTranslations("addEquipmentContent");
+  const t = useTranslations("Generator");
   const [banner, setBanner] = useState(false);
   const [bannerText, setBannerText] = useState("");
 
@@ -28,21 +28,31 @@ export const AddEquipmentContent = () => {
   };
 
   return (
-   <Holds>
-    { banner &&
-      <Holds background="green" className="my-3">
-      <Texts>{bannerText}</Texts>
-    </Holds>
-    }
-      <Holds size={"first"}>
-      <Holds background="white" size={"full"}  className="h-fit mb-3">
-        <Titles size={"h3"}>{t("Picture")}</Titles>
-        <Images titleImg={"/camera.svg"} titleImgAlt={"camera"} size={"10"} className="my-3" />
-        <EquipmentPicture setBase64String={setBase64String} />
-      </Holds>
-      <Holds background="white">
-        <AddEquipmentForm base64String={base64String} setBanner={setBanner} setBannerText={setBannerText} handler={()=> handleBanner} />
-      </Holds>
+    <Holds>
+      {banner && (
+        <Holds background="green" className="my-3">
+          <Texts>{bannerText}</Texts>
+        </Holds>
+      )}
+      <Holds>
+        <Holds background="white" size={"full"} className="h-fit mb-3">
+          <Titles size={"h3"}>{t("Picture")}</Titles>
+          <Images
+            titleImg={"/camera.svg"}
+            titleImgAlt={"camera"}
+            size={"10"}
+            className="my-3"
+          />
+          <EquipmentPicture setBase64String={setBase64String} />
+        </Holds>
+        <Holds background="white">
+          <AddEquipmentForm
+            base64String={base64String}
+            setBanner={setBanner}
+            setBannerText={setBannerText}
+            handler={() => handleBanner}
+          />
+        </Holds>
       </Holds>
     </Holds>
   );

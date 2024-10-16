@@ -23,7 +23,8 @@ export default function EquipmentLogContent({ userId }: EquipmentLogs) {
   const [loading, setLoading] = useState(true);
   const [logs, setLogs] = useState<any[]>([]);
   const [banner, setBanner] = useState("");
-  const t = useTranslations("EquipmentContent");
+  const t = useTranslations("Equipment");
+  const b = useTranslations("Widgets");
   const total = logs.length;
   const completed = logs.filter((log) => log.isCompleted).length;
   const green = total - completed;
@@ -61,7 +62,7 @@ export default function EquipmentLogContent({ userId }: EquipmentLogs) {
       <Grids rows={"10"} gap={"5"}>
         <Holds background={"white"} size={"full"} className="row-span-2 h-full">
           <TitleBoxes
-            title={t("Title")}
+            title={t("Current")}
             titleImg="/equipment.svg"
             titleImgAlt="Current"
             variant={"default"}
@@ -92,12 +93,13 @@ export default function EquipmentLogContent({ userId }: EquipmentLogs) {
       <Grids rows={"10"} gap={"5"} className=" relative">
         <Holds background={"white"} className="row-span-2 h-full">
           <TitleBoxes
-            title={t("Title")}
+            title={t("Current")}
             titleImg="/equipment.svg"
             titleImgAlt="Current"
             variant={"default"}
             size={"default"}
             className="my-auto"
+            type="route"
             href="/dashboard"
           />
 
@@ -120,11 +122,7 @@ export default function EquipmentLogContent({ userId }: EquipmentLogs) {
               <Holds className="mt-5">
                 <Texts>{t("NoCurrent")}</Texts>
               </Holds>
-            ) : (
-              <Holds className="mt-5">
-                <Titles>{t("Current")}</Titles>
-              </Holds>
-            )}
+            ) : null}
             <Holds className="mt-5">
               {green === 0 && total !== 0 ? (
                 <Forms action={Submit} onSubmit={handleSubmit}>
@@ -136,7 +134,7 @@ export default function EquipmentLogContent({ userId }: EquipmentLogs) {
                       className="py-2 mx-auto"
                       href={`/dashboard/equipment`}
                     >
-                      {t("SubmitAll")}
+                      {b("SubmitAll")}
                     </Buttons>
                     <Inputs type="hidden" name="id" value={userId} />
                     <Inputs type="hidden" name="submitted" value={"true"} />
@@ -144,7 +142,7 @@ export default function EquipmentLogContent({ userId }: EquipmentLogs) {
                 </Forms>
               ) : (
                 <Buttons size={"30"} disabled className="bg-gray-400 py-2">
-                  {t("SubmitAll")}
+                  {b("SubmitAll")}
                 </Buttons>
               )}
             </Holds>

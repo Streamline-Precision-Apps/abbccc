@@ -16,16 +16,16 @@ import { EquipmentCodes, JobCodes } from "@/lib/types";
 import { Holds } from "@/components/(reusable)/holds";
 import SearchSelect from "@/components/(search)/searchSelect";
 
-
 export default function QrEquipmentContent() {
   const router = useRouter();
   const [generatedList, setGeneratedList] = useState<EquipmentCodes[]>([]);
-  const [selectedEquipmentName, setSelectedEquipmentName] = useState<string>("");
+  const [selectedEquipmentName, setSelectedEquipmentName] =
+    useState<string>("");
   const [selectedEquipment, setSelectedEquipment] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState("");
   const [loading, setLoading] = useState(true); // Loading state
-  const t = useTranslations("qrEquipmentContent");
+  const t = useTranslations("Generator");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -74,42 +74,76 @@ export default function QrEquipmentContent() {
   return (
     <>
       {loading ? (
-        <Holds size={"first"}>
-          <SearchSelect 
+        <Holds>
+          <SearchSelect
             datatype={`${t("Loading")}`}
-            options={generatedList} 
-            onSelect={handleSelectEquipment} 
+            options={generatedList}
+            onSelect={handleSelectEquipment}
           />
-          <Holds position={"row"} size={"full"} className="justify-between items-center p-4">
-            <Buttons background={"orange"} onClick={handleGenerate} size={"50"} className="p-4 mr-4">
+          <Holds
+            position={"row"}
+            size={"full"}
+            className="justify-between items-center p-4"
+          >
+            <Buttons
+              background={"orange"}
+              onClick={handleGenerate}
+              size={"50"}
+              className="p-4 mr-4"
+            >
               <Titles size={"h2"}>{t("Generate")}</Titles>
             </Buttons>
-            <Buttons background={"green"} onClick={handleNew} size={"50"} className="p-4 ml-4">
+            <Buttons
+              background={"green"}
+              onClick={handleNew}
+              size={"50"}
+              className="p-4 ml-4"
+            >
               <Titles size={"h2"}>{t("New")}</Titles>
             </Buttons>
           </Holds>
         </Holds>
       ) : (
-        <Holds size={"first"}>
+        <Holds>
           {/* Use SearchSelect for equipment */}
-          <SearchSelect 
+          <SearchSelect
             datatype={`${t("EquipmentDatatype")}`}
-            options={generatedList} 
-            onSelect={handleSelectEquipment} 
+            options={generatedList}
+            onSelect={handleSelectEquipment}
           />
 
-          <Holds position={"row"} size={"full"} className="justify-between items-center p-4">
-            <Buttons background={"orange"} onClick={handleGenerate} size={"50"} className="p-4 mr-4">
+          <Holds
+            position={"row"}
+            size={"full"}
+            className="justify-between items-center p-4"
+          >
+            <Buttons
+              background={"orange"}
+              onClick={handleGenerate}
+              size={"50"}
+              className="p-4 mr-4"
+            >
               <Titles size={"h2"}>{t("Generate")}</Titles>
             </Buttons>
-            <Buttons background={"green"} onClick={handleNew} size={"50"} className="p-4 ml-4">
+            <Buttons
+              background={"green"}
+              onClick={handleNew}
+              size={"50"}
+              className="p-4 ml-4"
+            >
               <Titles size={"h2"}>{t("New")}</Titles>
             </Buttons>
           </Holds>
-          <Modals isOpen={isModalOpen} handleClose={() => setIsModalOpen(false)} size="sm">
+          <Modals
+            isOpen={isModalOpen}
+            handleClose={() => setIsModalOpen(false)}
+            size="sm"
+          >
             {selectedEquipment && (
               <Holds className="p-4">
-                <Texts>{selectedEquipmentName} {t("QRCode")}</Texts>
+                <Texts>
+                  {selectedEquipmentName} {t("QRCode")}
+                </Texts>
                 <Contents position={"row"}>
                   <Images titleImg={qrCodeUrl} titleImgAlt={"QR Code"} />
                 </Contents>

@@ -9,13 +9,15 @@ interface CameraComponentProps {
   setBase64String: Dispatch<SetStateAction<string>>;
 }
 
-const CameraComponent: React.FC<CameraComponentProps> = ({ setBase64String }) => {
+const CameraComponent: React.FC<CameraComponentProps> = ({
+  setBase64String,
+}) => {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [cameraActive, setCameraActive] = useState(false);
-  const t = useTranslations("equipmentPicture");
+  const t = useTranslations("Widgets");
 
   const startCamera = async () => {
     const constraints = {
@@ -23,7 +25,9 @@ const CameraComponent: React.FC<CameraComponentProps> = ({ setBase64String }) =>
     };
 
     try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
+      const mediaStream = await navigator.mediaDevices.getUserMedia(
+        constraints
+      );
       setStream(mediaStream);
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
@@ -68,7 +72,7 @@ const CameraComponent: React.FC<CameraComponentProps> = ({ setBase64String }) =>
 
   return (
     <>
-      <Holds color="black" >
+      <Holds color="black">
         <video
           ref={videoRef}
           autoPlay
@@ -86,34 +90,33 @@ const CameraComponent: React.FC<CameraComponentProps> = ({ setBase64String }) =>
           style={{ display: "none" }}
           width="300"
           height="300"
-          
         ></canvas>
         {imageSrc && (
           <img
             src={imageSrc}
             alt="Captured"
-            style={{ 
-              width: "300px", 
-              height: "300px",  
+            style={{
+              width: "300px",
+              height: "300px",
               margin: "0 auto",
               borderRadius: "10px",
-              border: "5px solid #ccc" 
+              border: "5px solid #ccc",
             }}
           />
         )}
       </Holds>
       <Holds position={"row"} className="mt-4">
-      <Buttons
-        background={cameraActive ? "red" : "green"}
-        onClick={toggleCamera}
-      >
-      {cameraActive ? `${t("ResetCamera")}` : `${t("startCamera")}`}
-      </Buttons>
-      {cameraActive && (
-        <Buttons background="green" onClick={takePicture}>
-          {t("TakePicture")}
+        <Buttons
+          background={cameraActive ? "red" : "green"}
+          onClick={toggleCamera}
+        >
+          {cameraActive ? `${t("ResetCamera")}` : `${t("startCamera")}`}
         </Buttons>
-      )}
+        {cameraActive && (
+          <Buttons background="green" onClick={takePicture}>
+            {t("TakePicture")}
+          </Buttons>
+        )}
       </Holds>
     </>
   );

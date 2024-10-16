@@ -12,18 +12,18 @@ import { Titles } from "@/components/(reusable)/titles";
 import { Buttons } from "@/components/(reusable)/buttons";
 
 export default async function QrGeneratorDashboard() {
-  const q = await getTranslations("qr-Generator");
-  const t = await getTranslations("QrJobsiteContent");
-  const u = await getTranslations("qrEquipmentContent");
+  const t = await getTranslations("Generator");
 
   return (
     <Bases>
       <Contents height={"page"}>
         <Holds background={"white"} className="m-3 ">
           <TitleBoxes
-            title={q("Title")}
+            title={t("QrGenerator")}
             titleImg="/qr.svg"
             titleImgAlt="Team"
+            type="route"
+            href="/dashboard"
           />
         </Holds>
         {/*-----------------------------------------------------*/}
@@ -51,7 +51,7 @@ export default async function QrGeneratorDashboard() {
               titleImgAlt="equipment"
               size={"10"}
             />
-            <Titles size={"h2"}>{u("Equipment")}</Titles>
+            <Titles size={"h2"}>{t("Equipment")}</Titles>
             <QrEquipmentContent />
           </Contents>
         </Holds>

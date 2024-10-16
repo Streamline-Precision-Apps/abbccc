@@ -8,21 +8,21 @@ import { Bases } from "@/components/(reusable)/bases";
 import { getTranslations } from "next-intl/server";
 
 export default async function NewJobsite() {
-  const t = await getTranslations("addJobsiteContent");
+  const t = await getTranslations("Generator");
   return (
     <Bases>
-    <Contents height={"page"}>
-      <Holds background={"white"} className="my-3" >
-        <TitleBoxes
-          title={t("Title")}
-          titleImg="/jobsite.svg"
-          titleImgAlt="Team"
-          variant={"default"}
-          size={"default"}
+      <Contents height={"page"}>
+        <Holds background={"white"} className="my-3">
+          <TitleBoxes
+            title={`${t("CreateNew")} ${t("Jobsite")}`}
+            titleImg="/jobsite.svg"
+            titleImgAlt="Team"
+            type="route"
+            href="/dashboard/qr-generator"
           />
-      </Holds>
-      <AddJobsiteContent />
-    </Contents>
+        </Holds>
+        <AddJobsiteContent />
+      </Contents>
     </Bases>
   );
 }
