@@ -86,7 +86,7 @@ export async function uploadFirstSignature(formdata: FormData) {
   await prisma.users.update({
     where: { id: formdata.get("id") as string },
     data: {
-      signature: formdata.get("Signature") as string,
+      signature: formdata.get("signature") as string,
     },
   });
 }

@@ -19,23 +19,6 @@ import { useRouter } from "next/navigation";
 import React from "react";
 import { Grids } from "@/components/(reusable)/grids";
 
-import { uploadFirstSignature } from "@/actions/userActions";
-import { Signature } from "@/app/(routes)/dashboard/clock-out/(components)/injury-verification/Signature";
-
-function useBanner(initialMessage = "") {
-  const [showBanner, setShowBanner] = useState(false);
-  const [bannerMessage, setBannerMessage] = useState(initialMessage);
-
-  useEffect(() => {
-    if (showBanner) {
-      const timer = setTimeout(() => setShowBanner(false), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [showBanner]);
-
-  return { showBanner, bannerMessage, setShowBanner, setBannerMessage };
-}
-
 export default function Form({ session }: RequestForm) {
   const [sign, setSign] = useState(false);
   const [message, setMessage] = useState("");
@@ -76,42 +59,6 @@ export default function Form({ session }: RequestForm) {
       clearTimeout(timer);
       router.replace("/hamburger/inbox");
     }, 5000);
-  };
-
-  const [base64String, setBase64String] = useState<string>(signature || "");
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const id = session?.user.id;
-  const { showBanner, bannerMessage, setShowBanner, setBannerMessage } =
-    useBanner();
-
-  const handleSubmitImage = async () => {
-    if (!base64String) {
-      setBannerMessage("Please capture a signature before proceeding.");
-      setShowBanner(true);
-      return;
-    }
-    if (!id) {
-      setBannerMessage("Invalid session. Please try again.");
-      setShowBanner(true);
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("id", id);
-    formData.append("Signature", base64String);
-
-    setIsSubmitting(true);
-    try {
-      await uploadFirstSignature(formData); // This assumes you have an uploadFirstSignature function elsewhere
-    } catch (error) {
-      console.error("Error uploading signature:", error);
-      setBannerMessage(
-        "There was an error uploading your signature. Please try again."
-      );
-      setShowBanner(true);
-    } finally {
-      setIsSubmitting(false);
-    }
   };
 
   return (

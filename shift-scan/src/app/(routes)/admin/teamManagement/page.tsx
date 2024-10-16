@@ -1,19 +1,63 @@
-// import prisma from "@/lib/prisma";
-// import { cookies } from "next/headers";
-// import TeamManagementContent from "./content";
-// import { auth } from "@/auth";
-// import { SearchUser } from "@/lib/types";
+// // import prisma from "@/lib/prisma";
+// // import { cookies } from "next/headers";
+// // import TeamManagementContent from "./content";
+// // import { auth } from "@/auth";
+// // import { SearchUser } from "@/lib/types";
 
-// export default async function AdminDashboard() {
-//   const session = await auth();
-//   const userId = session?.user.id;
+// // export default async function AdminDashboard() {
+// //   const session = await auth();
+// //   const userId = session?.user.id;
 
-//   const User = await prisma.users.findUnique({
-//     where: {
-//       id: userId,
+// //   const User = await prisma.users.findUnique({
+// //     where: {
+// //       id: userId,
+// //     },
+// //     select: {
+// //       permission: true,
+// //     },
+// //   });
+
+// //   const users: SearchUser[] = await prisma.users.findMany({
+// //     select: {
+// //       id: true,
+// //       firstName: true,
+// //       lastName: true,
+// //       username: true,
+// //       permission: true,
+// //       DOB: true,
+// //       truckView: true,
+// //       mechanicView: true,
+// //       laborView: true,
+// //       tascoView: true,
+// //       image: true,
+// //     },
+// //   });
+
+// //   return <TeamManagementContentContent permission={User?.permission} users={users} />;
+// // }
+
+// "use client";
+// import { useState } from 'react';
+// // import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+// // import { Menu, Transition } from '@headlessui/react';
+// import { Fragment } from 'react';
+// // import { DotsVerticalIcon } from '@heroicons/react/outline';
+
+// const initialCards = [
+//   { id: '1', name: 'John Doe' },
+//   { id: '2', name: 'Jane Smith' },
+//   { id: '3', name: 'Sam Johnson' },
+// ];
+
+// export default function Home() {
+//   const [columns, setColumns] = useState({
+//     box1: {
+//       name: 'Box 1',
+//       items: initialCards,
 //     },
-//     select: {
-//       permission: true,
+//     box2: {
+//       name: 'Box 2',
+//       items: [],
 //     },
 //   });
 
@@ -64,47 +108,47 @@ export default function Home() {
   const onDragEnd = (result) => {
     if (!result.destination) return;
 
-    const { source, destination } = result;
+//     const { source, destination } = result;
 
-    if (source.droppableId !== destination.droppableId) {
-      const sourceColumn = columns[source.droppableId];
-      const destColumn = columns[destination.droppableId];
-      const sourceItems = [...sourceColumn.items];
-      const destItems = [...destColumn.items];
-      const [removed] = sourceItems.splice(source.index, 1);
-      destItems.splice(destination.index, 0, removed);
+//     if (source.droppableId !== destination.droppableId) {
+//       const sourceColumn = columns[source.droppableId];
+//       const destColumn = columns[destination.droppableId];
+//       const sourceItems = [...sourceColumn.items];
+//       const destItems = [...destColumn.items];
+//       const [removed] = sourceItems.splice(source.index, 1);
+//       destItems.splice(destination.index, 0, removed);
 
-      setColumns({
-        ...columns,
-        [source.droppableId]: {
-          ...sourceColumn,
-          items: sourceItems,
-        },
-        [destination.droppableId]: {
-          ...destColumn,
-          items: destItems,
-        },
-      });
-    }
-  };
+//       setColumns({
+//         ...columns,
+//         [source.droppableId]: {
+//           ...sourceColumn,
+//           items: sourceItems,
+//         },
+//         [destination.droppableId]: {
+//           ...destColumn,
+//           items: destItems,
+//         },
+//       });
+//     }
+//   };
 
-  const duplicateCard = (columnId, card) => {
-    const column = columns[columnId];
-    const newItems = [...column.items, { ...card, id: Date.now().toString() }];
-    setColumns({
-      ...columns,
-      [columnId]: { ...column, items: newItems },
-    });
-  };
+//   const duplicateCard = (columnId, card) => {
+//     const column = columns[columnId];
+//     const newItems = [...column.items, { ...card, id: Date.now().toString() }];
+//     setColumns({
+//       ...columns,
+//       [columnId]: { ...column, items: newItems },
+//     });
+//   };
 
-  const deleteCard = (columnId, cardId) => {
-    const column = columns[columnId];
-    const newItems = column.items.filter((card) => card.id !== cardId);
-    setColumns({
-      ...columns,
-      [columnId]: { ...column, items: newItems },
-    });
-  };
+//   const deleteCard = (columnId, cardId) => {
+//     const column = columns[columnId];
+//     const newItems = column.items.filter((card) => card.id !== cardId);
+//     setColumns({
+//       ...columns,
+//       [columnId]: { ...column, items: newItems },
+//     });
+//   };
 
   return (
     <div className="flex space-x-4 p-8">

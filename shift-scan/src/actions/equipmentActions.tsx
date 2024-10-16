@@ -20,7 +20,7 @@ enum Tags {
   EQUIPMENT = "EQUIPMENT",
 }
 
-// Enum for equipment status
+// Enum for equipment statusOPERATIONAL
 enum EquipmentStatus {
   OPERATIONAL = "OPERATIONAL",
   NEEDS_REPAIR = "NEEDS_REPAIR",
@@ -144,7 +144,6 @@ export async function createEquipment(formData: FormData) {
     console.log("Creating equipment...");
     console.log(formData);
 
-    const statusValue = formData.get("status") as string;
     const equipmentTagValue = formData.get("equipmentTag") as string;
     const equipmentStatusValue = formData.get("status") as string;
     const qrId = formData.get("qrId") as string;

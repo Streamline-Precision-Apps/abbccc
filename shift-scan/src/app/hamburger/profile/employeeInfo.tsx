@@ -20,6 +20,8 @@ import { Texts } from "@/components/(reusable)/texts";
 import Spinner from "@/components/(animations)/spinner";
 import { set } from "zod";
 import useFetchAllData from "@/app/(content)/FetchData";
+import { Signature } from "@/app/(routes)/dashboard/clock-out/(components)/injury-verification/Signature";
+import { uploadFirstSignature } from "@/actions/userActions";
 
 type Props = {
   contacts: Contact;
@@ -29,13 +31,16 @@ export default function EmployeeInfo() {
   const [loading, setLoading] = useState(true);
   const [employee, setEmployee] = useState<Employee>();
   const [contacts, setContacts] = useState<Contact>();
-  const [training, setTraining] = useState<Trainings[]>([]); // Assuming `training` is an array
+  const [training, setTraining] = useState<Trainings[]>([]);
   const [userTrainings, setUserTrainings] = useState<UserTraining[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [editImg, setEditImg] = useState(false);
+  const [editSignatureModalOpen, setEditSignatureModalOpen] = useState(false); // State for signature modal
 
   const t = useTranslations("Hamburger");
   const [base64String, setBase64String] = useState<string>("");
+  const [signatureBase64String, setSignatureBase64String] =
+    useState<string>("");
 
   // Logic to get number of completed trainings
   const total = Number(training);
@@ -52,6 +57,8 @@ export default function EmployeeInfo() {
       const employeeRes = await fetch("/api/getEmployee");
       const employeeData = await employeeRes.json();
       setEmployee(employeeData);
+      setSignatureBase64String(employeeData.signature);
+      console.log(signatureBase64String);
     } catch (error) {
       console.error("Failed to fetch employee data:", error);
     } finally {
@@ -110,6 +117,25 @@ export default function EmployeeInfo() {
     console.log("Employee data reloaded");
   };
 
+  const handleSubmitImage = async () => {
+    if (employee) {
+      const formData = new FormData();
+      formData.append("id", employee.id);
+      formData.append("signature", signatureBase64String);
+
+      setLoading(true);
+      try {
+        await uploadFirstSignature(formData); // This assumes you have an uploadFirstSignature function elsewhere
+      } catch (error) {
+        console.error("Error uploading signature:", error);
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      console.error("Employee is not defined");
+    }
+  };
+
   if (loading) {
     return (
       <Grids className="grid-rows-7 gap-5 ">
@@ -137,7 +163,6 @@ export default function EmployeeInfo() {
       <Contents width={"section"}>
         <Grids rows={"10"} gap={"5"}>
           <Holds background={"white"} className="row-span-3 h-full">
-            {/*This Title box allows the profile pic to default as a base profile picture*/}
             <Contents width={"section"}>
               <TitleBoxes
                 type="profilePic"
@@ -224,6 +249,19 @@ export default function EmployeeInfo() {
                     defaultValue={contacts?.emergencyContactNumber ?? ""}
                   />
                 </Labels>
+                <Labels size={"p4"}>
+                  {t("Signature")}
+                  {/* Signature Image */}
+                  <Images
+                    titleImg={signatureBase64String}
+                    titleImgAlt={t("Signature")}
+                    className="rounded-full border-[3px] border-black"
+                    size={"full"}
+                  />
+                  <Buttons onClick={() => setEditSignatureModalOpen(true)}>
+                    {t("EditSignature")}
+                  </Buttons>
+                </Labels>
 
                 <SignOutModal />
               </Contents>
@@ -231,6 +269,24 @@ export default function EmployeeInfo() {
           </Holds>
         </Grids>
       </Contents>
+
+      {/* Modal for editing signature */}
+      <Modals
+        handleClose={() => setEditSignatureModalOpen(false)}
+        type="signature"
+        variant={"default"}
+        size={"fullPage"}
+        isOpen={editSignatureModalOpen}
+      >
+        <Signature
+          setBase64String={setSignatureBase64String}
+          base64string={signatureBase64String}
+          handleSubmitImage={() => {
+            handleSubmitImage();
+            setEditSignatureModalOpen(false); // Close the modal after saving
+          }}
+        />
+      </Modals>
     </>
   );
 }

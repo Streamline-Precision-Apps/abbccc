@@ -19,6 +19,8 @@ import { Selects } from "@/components/(reusable)/selects";
 import { Options } from "@/components/(reusable)/options";
 import { Titles } from "@/components/(reusable)/titles";
 import { Holds } from "@/components/(reusable)/holds";
+import { date } from "zod";
+import { Contents } from "@/components/(reusable)/contents";
 
 type AddEquipmentFormProps = {
   base64String: string | null;
@@ -81,7 +83,7 @@ export default function AddEquipmentForm({
       setBanner(false);
       setBannerText("");
       window.history.back();
-    }, 3000);
+    }, 1000);
   }
 
   return (
@@ -94,55 +96,58 @@ export default function AddEquipmentForm({
         handleRoute();
       }}
     >
-      <Labels size={"p3"}>
-        {t("Temporary")}
-        <Inputs name="qrId" type="text" value={eqCode} disabled />
-      </Labels>
-      <Labels size={"p3"}>
-        {t("Tag")}
-        <Selects
-          id="equipmentTag"
-          name="equipmentTag"
-          onChange={handleChange}
-          required
-        >
-          <Options value="">{t("Select")}</Options>
-          <Options value="TRUCK">{t("Truck")}</Options>
-          <Options value="TRAILER">{t("Trailer")}</Options>
-          <Options value="EQUIPMENT">{t("Equipment")}</Options>
-        </Selects>
-      </Labels>
-
-      <Labels size={"p3"}>
-        {t("Name")}
-        <Inputs
-          id="name"
-          name="name"
-          type="text"
-          placeholder={`${t("NamePlaceholder")}`}
-          required
-          pattern="^[A-Za-z0-9\s]+$"
-        />
-      </Labels>
-
-      <Labels size={"p3"}>
-        {t("Description")}
-        <TextAreas
-          id="description"
-          name="description"
-          placeholder={`${t("DescriptionPlaceholder")}`}
-          required
-        />
-      </Labels>
-
-      <Labels size={"p3"}>
-        {t("Status")}
-        <Selects id="status" name="status" required>
-          <Options value="">{t("Select")}</Options>
-          <Options value="OPERATIONAL">{t("Operational")}</Options>
-          <Options value="NEEDS_REPAIR">{t("NeedsRepair")}</Options>
-        </Selects>
-      </Labels>
+      <Holds background={"white"} className="my-5">
+        <Contents width={"section"} className="mt-2 mb-5">
+          <Labels size={"p4"}>
+            {t("Temporary")}
+            <Inputs name="qrId" type="text" value={eqCode} disabled />
+          </Labels>
+          <Holds>
+            <Labels size={"p4"}>
+              {t("Tag")}
+              <Selects
+                id="equipmentTag"
+                name="equipmentTag"
+                onChange={handleChange}
+                required
+              >
+                <Options value="">{t("Select")}</Options>
+                <Options value="TRUCK">{t("Truck")}</Options>
+                <Options value="TRAILER">{t("Trailer")}</Options>
+                <Options value="EQUIPMENT">{t("Equipment")}</Options>
+              </Selects>
+            </Labels>
+          </Holds>
+          <Labels size={"p4"}>
+            {t("Name")}
+            <Inputs
+              id="name"
+              name="name"
+              type="text"
+              placeholder={`${t("NamePlaceholder")}`}
+              required
+              pattern="^[A-Za-z0-9\s]+$"
+            />
+          </Labels>
+          <Labels size={"p4"}>
+            {t("Description")}
+            <TextAreas
+              id="description"
+              name="description"
+              placeholder={`${t("DescriptionPlaceholder")}`}
+              required
+            />
+          </Labels>
+          <Labels size={"p4"}>
+            {t("Status")}
+            <Selects id="status" name="status" required>
+              <Options value="">{t("Select")}</Options>
+              <Options value="OPERATIONAL">{t("Operational")}</Options>
+              <Options value="NEEDS_REPAIR">{t("NeedsRepair")}</Options>
+            </Selects>
+          </Labels>
+        </Contents>
+      </Holds>
 
       {equipmentTag === "TRUCK" || equipmentTag === "TRAILER" ? (
         <>
@@ -248,15 +253,12 @@ export default function AddEquipmentForm({
         value={base64String || ""}
       />
       <Inputs id="qrId" name="qrId" type="hidden" value={eqCode} />
-      <Holds size={"full"} position={"center"}>
-        <Buttons
-          background={"green"}
-          size={"50"}
-          type="submit"
-          className="p-3 my-5"
-        >
-          <Titles size={"h3"}>{t("CreateNew")}</Titles>
-        </Buttons>
+      <Holds>
+        <Contents width={"section"} className="my-5">
+          <Buttons background={"green"} type="submit" className="p-2">
+            <Titles size={"h3"}>{t("Submit")}</Titles>
+          </Buttons>
+        </Contents>
       </Holds>
     </Forms>
   );

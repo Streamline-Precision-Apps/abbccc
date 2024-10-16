@@ -1,4 +1,6 @@
+import { Button } from '@nextui-org/react';
 import React from 'react';
+import { Buttons } from '../(reusable)/buttons';
 
 interface StepButtonsProps {
     handleNextStep: () => void;
@@ -7,10 +9,8 @@ interface StepButtonsProps {
 
 export default function StepButtons({ handleNextStep, isLastStep}: StepButtonsProps) {
     return (
-        <div className="flex justify-center w-full mt-5">
-            <button className="bg-app-orange text-black font-bold py-6 px-4 text-4xl rounded-lg" onClick={handleNextStep}>
+            <Buttons background={'orange'} onClick={handleNextStep}>
                 {isLastStep ? 'Submit' : 'Continue'}
-            </button>
-        </div>
+            </Buttons>
     );
 };

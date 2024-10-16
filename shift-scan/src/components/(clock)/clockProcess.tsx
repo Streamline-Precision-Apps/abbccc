@@ -131,7 +131,9 @@ export default function ClockProcessor({
         )}
         {step === 4 && (
           <>
-            <Titles size={"h1"}>{t("Confirmation-eq-message-1")}</Titles>
+            <Titles size={"h1"} className="bg-red-500">
+              {t("Confirmation-eq-message-1")}
+            </Titles>
             <Titles size={"h4"}>{t("Confirmation-eq-message-2")}</Titles>
             <RedirectAfterDelay delay={5000} to="/dashboard" />{" "}
             {/* In Order for bug to be overcomed, the refresh must occur otherwise the unmounted qr code wont work*

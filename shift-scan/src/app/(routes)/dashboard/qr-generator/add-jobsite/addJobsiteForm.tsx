@@ -13,6 +13,7 @@ import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { Divider } from "@nextui-org/react";
 import { Dividers } from "@/components/(reusable)/dividers";
+import { Contents } from "@/components/(reusable)/contents";
 
 type Props = {
   handler: () => void;
@@ -76,85 +77,84 @@ export default function AddJobsiteForm({
         handleRoute();
       }}
     >
-      <Labels size={"p4"}>
-        {t("Temporary")}
-        <Inputs id="id" name="id" type="text" value={qrCode} disabled />
-      </Labels>
-
-      <Labels size={"p4"}>
-        {t("Name")}
-        <Inputs
-          id="name"
-          name="name"
-          type="text"
-          placeholder={t("NameExample")}
-        />
-      </Labels>
-
-      <Texts position={"center"} size={"p3"} className="mt-6">
-        {t("Address")}
-      </Texts>
-      <Dividers />
-      <Holds size={"full"} className="mr-4">
-        <Labels size={"p4"}>
-          {t("StreetNumber")}
-          <Inputs
-            variant={"default"}
-            id="streetNumber"
-            name="streetNumber"
-            placeholder={`${t("StreetNumberDirection")} `}
-          />
-        </Labels>
-      </Holds>
-
-      <Holds size={"full"}>
-        <Labels size={"p4"}>
-          {t("StreetName")}
-          <Inputs
-            className="text-black"
-            id="streetName"
-            name="streetName"
-            placeholder={t("StreetNameDirection")}
-          />
-        </Labels>
-      </Holds>
-
-      <Holds size={"full"} className="mr-4">
-        <Labels size={"p4"}>
-          {t("City")}
-          <Inputs
-            variant={"default"}
-            id="city"
-            name="city"
-            placeholder={t("CityTitle")}
-          />
-        </Labels>
-      </Holds>
-      <Holds position={"row"} size={"full"}>
-        <Holds size={"50"} className="mr-4">
+      <Holds background={"white"} className="my-5">
+        <Contents width={"section"} className="mt-2 mb-5">
           <Labels size={"p4"}>
-            {t("ZipCode")}
+            {t("Temporary")}
+            <Inputs id="id" name="id" type="text" value={qrCode} disabled />
+          </Labels>
+          <Labels size={"p4"}>
+            {t("Name")}
             <Inputs
-              variant={"default"}
-              id="zipCode"
-              name="zipCode"
-              placeholder={t("ZipCodeTitle")}
+              id="name"
+              name="name"
+              type="text"
+              placeholder={t("NameExample")}
             />
           </Labels>
-        </Holds>
-        <Holds size={"50"}>
+        </Contents>
+      </Holds>
+      <Holds background={"white"} className="my-5">
+        <Contents width={"section"} className="mt-2 mb-5">
+          <Titles size={"h3"} className="my-2">
+            {t("Address")}
+          </Titles>
           <Labels size={"p4"}>
-            {t("State")}
+            {t("StreetNumber")}
             <Inputs
               variant={"default"}
-              id="state"
-              name="state"
-              placeholder={t("StateTitle")}
+              id="streetNumber"
+              name="streetNumber"
+              placeholder={`${t("StreetNumberDirection")} `}
             />
           </Labels>
-        </Holds>
+
+          <Labels size={"p4"}>
+            {t("StreetName")}
+            <Inputs
+              className="text-black"
+              id="streetName"
+              name="streetName"
+              placeholder={t("StreetNameDirection")}
+            />
+          </Labels>
+
+          <Labels size={"p4"}>
+            {t("City")}
+            <Inputs
+              variant={"default"}
+              id="city"
+              name="city"
+              placeholder={t("CityTitle")}
+            />
+          </Labels>
+          <Holds position={"row"} className="gap-3">
+            <Holds>
+              <Labels size={"p4"}>
+                {t("ZipCode")}
+                <Inputs
+                  variant={"default"}
+                  id="zipCode"
+                  name="zipCode"
+                  placeholder={t("ZipCodeTitle")}
+                />
+              </Labels>
+            </Holds>
+            <Holds>
+              <Labels size={"p4"}>
+                {t("State")}
+                <Inputs
+                  variant={"default"}
+                  id="state"
+                  name="state"
+                  placeholder={t("StateTitle")}
+                />
+              </Labels>
+            </Holds>
+          </Holds>
+        </Contents>
       </Holds>
-      {/* Commented out foreign country becaus its not that big of a concern right now*/}
+      {/* Commented out foreign country because its not that big of a concern right now*/}
       {/* <Holds size={"full"} className="mr-4">
         <Labels>
           {t("Country")}
@@ -165,35 +165,39 @@ export default function AddJobsiteForm({
           />
           </Labels>
           </Holds> */}
-      <Texts position={"center"} size={"p3"} className="mt-6">
-        {t("Description")}
-      </Texts>
-      <Dividers />
-      <Labels size={"p4"}>
-        {t("DescriptionTitle")}
-        <TextAreas
-          variant={"default"}
-          id="description"
-          rows={4}
-          name="description"
-          placeholder={t("purpose")}
-        />
-      </Labels>
+      <Holds background={"white"} className="my-5">
+        <Contents width={"section"} className="mt-2 mb-5">
+          <Titles size={"h3"} className="my-2">
+            {t("Description")}
+          </Titles>
+          <Labels size={"p4"}>
+            {t("DescriptionTitle")}
+            <TextAreas
+              variant={"default"}
+              id="description"
+              rows={4}
+              name="description"
+              placeholder={t("purpose")}
+            />
+          </Labels>
 
-      <Labels size={"p4"}>
-        {t("Comments")}
-        <TextAreas
-          id="comment"
-          name="comment"
-          rows={4}
-          placeholder={t("CommentsPurpose")}
-        />
-      </Labels>
-
-      <Holds size={"full"} position={"center"} className="my-4">
-        <Buttons background={"green"} size={"50"} type="submit" className="p-2">
-          <Titles size={"h3"}>{t("Submit")}</Titles>
-        </Buttons>
+          <Labels size={"p4"}>
+            {t("Comments")}
+            <TextAreas
+              id="comment"
+              name="comment"
+              rows={4}
+              placeholder={t("CommentsPurpose")}
+            />
+          </Labels>
+        </Contents>
+      </Holds>
+      <Holds>
+        <Contents width={"section"} className="my-5">
+          <Buttons background={"green"} type="submit" className="p-2">
+            <Titles size={"h3"}>{t("Submit")}</Titles>
+          </Buttons>
+        </Contents>
       </Holds>
     </Forms>
   );

@@ -292,6 +292,8 @@
         "SaveChanges": "Would you like to Save Changes?",
         "Yes": "Yes",
         "Cancel": "Cancel",
+        "Signature": "Signature",
+        "EditSignature": "Edit Signature",
         "PhoneNumber": "Phone Number"
     },
     
@@ -337,6 +339,12 @@
         "GallonsRefueled": "Gallons Refueled",
         "Comments": "Comments",
         "AppComments": "App Comments",
+        "Loading": "Loading...",
+        "SearchUser": "Search user...",
+        "Delete": "Delete",
+        "ExcludeTerminatedEmployees": "Exclude Terminated Employees",
+        "ModifyEmployee": "Modify Employee",
+        "ViewEmployees": "View Employees",
         "Date": "Date"
     },
 

@@ -6,6 +6,8 @@ import { Titles } from "../(reusable)/titles";
 import { Images } from "../(reusable)/images";
 import { Contents } from "./contents";
 import { Holds } from "./holds";
+import { Button } from "@nextui-org/react";
+import { Grids } from "./grids";
 
 const TitleBoxVariants = cva(
   "relative flex items-center justify-center w-full mx-auto", //this applies to all variants
@@ -273,21 +275,24 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         className={cn(TitleBoxVariants({ variant, size, className }))}
         {...props}
       >
-        <Holds position={"absolute"}>
-          <Buttons href="back" background={"none"} size={"30"}>
-            <Images
-              titleImg="/turnBack.svg"
-              titleImgAlt={titleImgAlt}
-              size={"30"}
-            />
-          </Buttons>
-        </Holds>
-        <Holds>
-          <Holds size={"50"} className="my-auto">
-            <Images titleImg={titleImg} titleImgAlt={titleImgAlt} size={"30"} />
+        <Grids cols={"4"} rows={"3"} className="w-full">
+          <Holds className="col-span-1 row-span-1">
+            <Buttons
+              href="back"
+              background={"none"}
+              position={"left"}
+              size={"50"}
+            >
+              <Images titleImg="/turnBack.svg" titleImgAlt={titleImgAlt} />
+            </Buttons>
           </Holds>
-          <Titles size={"h2"}>{title}</Titles>
-        </Holds>
+          <Holds className="col-span-2 row-span-2 ">
+            <Images titleImg={titleImg} titleImgAlt={titleImgAlt} size={"40"} />
+          </Holds>
+          <Holds className="col-span-4 row-span-1">
+            <Titles size={"h1"}>{title}</Titles>
+          </Holds>
+        </Grids>
       </div>
     );
 };
