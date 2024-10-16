@@ -186,23 +186,48 @@ export default function WidgetSection({ session }: props) {
                 </Buttons>
               </Holds>
             ) : (
-              <Holds className="col-span-2 row-span-2 gap-5 h-full">
+              <Holds
+                className={
+                  permission === "ADMIN" ||
+                  permission === "SUPERADMIN" ||
+                  permission === "MANAGER"
+                    ? `col-span-2 row-span-2 gap-5 h-full` //if you have permission smaller widget
+                    : `col-span-2 row-span-4 gap-5 h-full` // else bigger widget
+                }
+              >
                 <Buttons //----------------------This is the clock in widget while clocked out
                   background={"green"}
                   href="/clock"
                 >
-                  <Holds position={"row"} className="my-auto">
-                    <Holds size={"60"}>
-                      <Texts size={"p1"}>{f("Clock-btn")}</Texts>
+                  {permission === "ADMIN" ||
+                  permission === "SUPERADMIN" ||
+                  permission === "MANAGER" ? (
+                    <Holds position={"row"} className="my-auto">
+                      <Holds size={"60"}>
+                        <Texts size={"p1"}>{f("Clock-btn")}</Texts>
+                      </Holds>
+                      <Holds size={"40"}>
+                        <Images
+                          titleImg="/clock-in.svg"
+                          titleImgAlt="Clock In Icon"
+                          size={"70"}
+                        />
+                      </Holds>
                     </Holds>
-                    <Holds size={"40"}>
-                      <Images
-                        titleImg="/clock-in.svg"
-                        titleImgAlt="Clock In Icon"
-                        size={"70"}
-                      />
+                  ) : (
+                    <Holds className="my-auto">
+                      <Holds size={"50"}>
+                        <Images
+                          titleImg="/clock-in.svg"
+                          titleImgAlt="Clock In Icon"
+                          size={"70"}
+                        />
+                      </Holds>
+                      <Holds size={"60"}>
+                        <Texts size={"p1"}>{f("Clock-btn")}</Texts>
+                      </Holds>
                     </Holds>
-                  </Holds>
+                  )}
                 </Buttons>
               </Holds>
             )}
