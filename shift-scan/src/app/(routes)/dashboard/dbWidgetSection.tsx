@@ -123,7 +123,17 @@ export default function DbWidgetSection({ session, locale }: props) {
         <>
           {/* Component that will render */}
           <Contents width={"section"} className="py-5">
-            <Grids cols={"2"} rows={"3"} gap={"5"}>
+            <Grids
+              cols={"2"}
+              rows={
+                permission === "ADMIN" ||
+                permission === "SUPERADMIN" ||
+                permission === "MANAGER"
+                  ? "3"
+                  : "3"
+              }
+              gap={"5"}
+            >
               {/* This section includes the buttons within equipment */}
               {additionalButtonsType === "equipment" ? (
                 <>
@@ -338,7 +348,13 @@ export default function DbWidgetSection({ session, locale }: props) {
                   )}
                   <Holds
                     position={"row"}
-                    className="row-span-1 col-span-2 gap-5"
+                    className={
+                      permission === "ADMIN" ||
+                      permission === "SUPERADMIN" ||
+                      permission === "MANAGER"
+                        ? "row-span-1 col-span-1 gap-5"
+                        : "row-span-1 col-span-1 gap-5"
+                    }
                   >
                     <Buttons //----------------------This is the Equipment Widget
                       background={"green"}
@@ -346,36 +362,65 @@ export default function DbWidgetSection({ session, locale }: props) {
                       onClick={() => handleShowAdditionalButtons("equipment")}
                     >
                       <Holds>
-                        <Images
-                          titleImg="/equipment.svg"
-                          titleImgAlt="Equipment Icon"
-                          size={"40"}
-                        />
-                      </Holds>
-                      <Holds>
-                        <Texts size={"p3"}>{t("Equipment")}</Texts>
-                      </Holds>
-                    </Buttons>
-                    <Buttons //----------------------This is the Forms Widget
-                      background={"green"}
-                      href="/dashboard/forms"
-                    >
-                      <Holds>
-                        <Images
-                          titleImg="/form.svg"
-                          titleImgAlt="Forms Icon"
-                          size={"40"}
-                          className="ml-2"
-                        />
-                      </Holds>
-                      <Holds>
-                        <Texts size={"p3"}>{t("Forms")}</Texts>
+                        <Holds>
+                          <Images
+                            titleImg="/equipment.svg"
+                            titleImgAlt="Equipment Icon"
+                            size={"40"}
+                          />
+                        </Holds>
+                        <Holds>
+                          <Texts size={"p3"}>{t("Equipment")}</Texts>
+                        </Holds>
                       </Holds>
                     </Buttons>
                   </Holds>
                   <Holds
                     position={"row"}
-                    className="row-span-1 col-span-2 gap-5"
+                    className={
+                      permission === "ADMIN" ||
+                      permission === "SUPERADMIN" ||
+                      permission === "MANAGER"
+                        ? "row-span-1 col-span-1 gap-5"
+                        : "row-start-2 col-span-2 gap-5"
+                    }
+                  >
+                    <Buttons //----------------------This is the Forms Widget
+                      background={"green"}
+                      href="/dashboard/forms"
+                    >
+                      <Holds
+                        position={
+                          permission === "ADMIN" ||
+                          permission === "SUPERADMIN" ||
+                          permission === "MANAGER"
+                            ? undefined
+                            : "row"
+                        }
+                      >
+                        <Holds>
+                          <Images
+                            titleImg="/form.svg"
+                            titleImgAlt="Forms Icon"
+                            size={"40"}
+                            className="ml-2"
+                          />
+                        </Holds>
+                        <Holds>
+                          <Texts size={"p3"}>{t("Forms")}</Texts>
+                        </Holds>
+                      </Holds>
+                    </Buttons>
+                  </Holds>
+                  <Holds
+                    position={"row"}
+                    className={
+                      permission === "ADMIN" ||
+                      permission === "SUPERADMIN" ||
+                      permission === "MANAGER"
+                        ? "row-span-1 col-span-1 gap-5"
+                        : "row-span-1 col-span-1 gap-5"
+                    }
                   >
                     <Buttons //----------------------This is the Switch Jobs Widget
                       background={"orange"}
@@ -392,20 +437,41 @@ export default function DbWidgetSection({ session, locale }: props) {
                         <Texts size={"p3"}>{t("Switch")}</Texts>
                       </Holds>
                     </Buttons>
+                  </Holds>
+                  <Holds
+                    position={"row"}
+                    className={
+                      permission === "ADMIN" ||
+                      permission === "SUPERADMIN" ||
+                      permission === "MANAGER"
+                        ? "row-span-1 col-span-1 gap-5"
+                        : "row-span-1 col-span-2 gap-5"
+                    }
+                  >
                     <Buttons //----------------------This is the Clock Out Widget
                       href="/dashboard/clock-out"
                       background={"red"}
                       onClick={() => handleShowAdditionalButtons("clockOut")}
                     >
-                      <Holds>
-                        <Images
-                          titleImg="/clock-out.svg"
-                          titleImgAlt="Clock Out Icon"
-                          size={"40"}
-                        />
-                      </Holds>
-                      <Holds>
-                        <Texts size={"p3"}>{t("ClockOut")}</Texts>
+                      <Holds
+                        position={
+                          permission === "ADMIN" ||
+                          permission === "SUPERADMIN" ||
+                          permission === "MANAGER"
+                            ? undefined
+                            : "row"
+                        }
+                      >
+                        <Holds>
+                          <Images
+                            titleImg="/clock-out.svg"
+                            titleImgAlt="Clock Out Icon"
+                            size={"40"}
+                          />
+                        </Holds>
+                        <Holds>
+                          <Texts size={"p3"}>{t("ClockOut")}</Texts>
+                        </Holds>
                       </Holds>
                     </Buttons>
                   </Holds>

@@ -17,7 +17,7 @@ import { TextAreas } from "@/components/(reusable)/textareas";
 import { useRouter } from "next/navigation";
 
 export default function Content() {
-  const t = useTranslations("dashboard");
+  const t = useTranslations("Forms");
   const router = useRouter();
   const [displayForm, setDisplayForm] = useState(false);
   const { data: session } = useSession();
