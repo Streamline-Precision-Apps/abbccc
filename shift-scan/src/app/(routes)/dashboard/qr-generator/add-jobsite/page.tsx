@@ -9,22 +9,23 @@ import { getTranslations } from "next-intl/server";
 import { Grids } from "@/components/(reusable)/grids";
 
 export default async function NewJobsite() {
-  const t = await getTranslations("addJobsiteContent");
+  const t = await getTranslations("Generator");
   return (
     <Bases size={"scroll"}>
       <Contents>
         <Grids rows={"8"}>
-          <Holds background={"white"} className="row-span-1 h-full" >
+          <Holds background={"white"} className="row-span-1 h-full">
             <Contents width={"section"}>
               <TitleBoxes
-              title={t("Title")}
-              titleImg="/jobsite.svg"
-              titleImgAlt="Team"
-              className="my-auto"/>
+                title={t("Title")}
+                titleImg="/jobsite.svg"
+                titleImgAlt="Team"
+                className="my-auto"
+              />
             </Contents>
           </Holds>
           <Holds className="row-span-7 h-full">
-            <AddJobsiteContent/>
+            <AddJobsiteContent />
           </Holds>
         </Grids>
       </Contents>

@@ -14,10 +14,11 @@ import { Titles } from "@/components/(reusable)/titles";
 import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { TextAreas } from "@/components/(reusable)/textareas";
+import { useRouter } from "next/navigation";
 
 export default function Content() {
-  const t = useTranslations("dashboard");
-  const [form, setForm] = useState(0);
+  const t = useTranslations("Forms");
+  const router = useRouter();
   const [displayForm, setDisplayForm] = useState(false);
   const { data: session } = useSession();
   if (!session) {
@@ -25,95 +26,54 @@ export default function Content() {
   }
   const userId = session.user.id;
 
-
   const handleRoute = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const selectedForm = e.currentTarget.form.value;
-    setForm(selectedForm);
-    setDisplayForm(selectedForm !== 0);
-  };
+    console.log(selectedForm);
 
-  // TODO: Create a form component for each form
-  // current colors are here to show the forms
-  const formComponents: { [key: string]: JSX.Element } = {
-    "1": (
-      <Holds size={"full"} background={"green"} className="my-10">
-        <p>{form}</p>
-      </Holds>
-    ),
-    "2": (
-      <Holds size={"full"} background={"darkBlue"} className="my-10">
-        <p>{form}</p>
-      </Holds>
-    ),
-    "3": (
-      <Holds size={"full"} className="my-10">
-        <Titles>{t("Form3")}</Titles>
-        <Forms action="">
-            <Inputs type="hidden" name="userId" value={userId}></Inputs> 
-          <Labels>{t("Form3Q1")}
-          <Inputs type="date" name="q1" id="q1" required placeholder={`${t("Form3Q1Placeholder")}`} />
-          </Labels>
-
-          <Labels>{t("Form3Q2")}
-          <Inputs type="text" name="q2" id="q2" required placeholder={`${t("Form3Q2Placeholder")}`} />
-          </Labels>
-
-          <Labels>{t("Form3Q3")}
-          <TextAreas name="q3" id="q3" required placeholder={`${t("Form3Q3Placeholder")}`} />
-          </Labels>
-
-          <Labels>{t("Form3Q4")}
-          <Inputs type="text" name="q4" id="q4" required placeholder={`${t("Form3Q4Placeholder")}`} />
-          </Labels>
-        <Holds size={"full"} className="py-4">
-          <Buttons
-          type="submit"
-          background={"orange"}
-          className="rounded-lg p-3"
-          size={"50"}
-          >
-        <Titles text={"black"} size={"h2"}>
-          {t("Form3Submit")}
-        </Titles>
-        </Buttons>
-          </Holds>
-
-        </Forms>
-      </Holds>
-    ),
+    if (selectedForm === "1") {
+      router.push("/dashboard/forms/1");
+    } else if (selectedForm === "2") {
+      router.push("/dashboard/forms/2");
+    } else if (selectedForm === "report-bug") {
+      router.push("/dashboard/forms/report-bug");
+    }
   };
 
   return (
-    <Holds size={"full"} background="white" className="my-10">
-      <Forms onSubmit={handleRoute} className="my-5">
-        <Labels className="my-2">
-          {t("Forms")}
-          <Selects
-          onChange={() => setDisplayForm(false)}
-          name="form" id="form" defaultValue="" required className="my-2">
-            <Options value="">{t("FormDefault")}</Options>
-            <Options value="1">{t("Form1")}</Options>
-            <Options value="2">{t("Form2")}</Options>
-            <Options value="3">{t("Form3")}</Options>
-          </Selects>
-        </Labels>
-        <Holds size={"full"} className="py-4">
-        {!displayForm &&
-        <Buttons 
-        className="bg-app-orange rounded-lg p-3"
-        size={"50"}
-        type="submit">
-            <Titles text={"black"} size={"h2"}>
-          {t("Continue")}
-        </Titles>
-        </Buttons>
-        }
-        </Holds>
-      </Forms>
-
-      {/* Display the selected form if available */}
-      {displayForm && formComponents[form]}
-    </Holds>
+    <Contents width={"section"}>
+      <Holds size={"full"} background="white" className="my-auto">
+        <Forms onSubmit={handleRoute} className="my-5">
+          <Labels className="my-2">
+            {t("Forms")}
+            <Selects
+              onChange={() => setDisplayForm(false)}
+              name="form"
+              id="form"
+              defaultValue=""
+              required
+              className="my-2"
+            >
+              {/* Add your options here */}
+              <Options value="">{t("FormDefault")}</Options>
+              <Options value="report-bug">{t("Form3")}</Options>
+            </Selects>
+          </Labels>
+          <Holds size={"full"} className="py-4">
+            {!displayForm && (
+              <Buttons
+                className="bg-app-orange rounded-lg p-3"
+                size={"50"}
+                type="submit"
+              >
+                <Titles text={"black"} size={"h2"}>
+                  {t("Continue")}
+                </Titles>
+              </Buttons>
+            )}
+          </Holds>
+        </Forms>
+      </Holds>
+    </Contents>
   );
 }
