@@ -6,22 +6,28 @@ import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Contents } from "@/components/(reusable)/contents";
 import { Bases } from "@/components/(reusable)/bases";
 import { getTranslations } from "next-intl/server";
+import { Grids } from "@/components/(reusable)/grids";
 
 export default async function NewJobsite() {
   const t = await getTranslations("Generator");
   return (
-    <Bases>
-      <Contents height={"page"}>
-        <Holds background={"white"} className="my-3">
-          <TitleBoxes
-            title={`${t("CreateNew")} ${t("Jobsite")}`}
-            titleImg="/jobsite.svg"
-            titleImgAlt="Team"
-            type="route"
-            href="/dashboard/qr-generator"
-          />
-        </Holds>
-        <AddJobsiteContent />
+    <Bases size={"scroll"}>
+      <Contents>
+        <Grids rows={"8"}>
+          <Holds background={"white"} className="row-span-1 h-full">
+            <Contents width={"section"}>
+              <TitleBoxes
+                title={t("Title")}
+                titleImg="/jobsite.svg"
+                titleImgAlt="Team"
+                className="my-auto"
+              />
+            </Contents>
+          </Holds>
+          <Holds className="row-span-7 h-full">
+            <AddJobsiteContent />
+          </Holds>
+        </Grids>
       </Contents>
     </Bases>
   );

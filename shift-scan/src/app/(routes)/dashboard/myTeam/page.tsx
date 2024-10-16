@@ -54,18 +54,20 @@ export default function Content() {
   return (
     <Bases>
       <Contents>
-        <Grids rows={"8"} gap={"5"}>
-          <Holds background={"white"} className="row-span-2 h-full">
-            <TitleBoxes
-              title={`${t("Teams-Title")}`}
-              titleImg="/team.svg"
-              titleImgAlt={`${t("Teams-Logo-Title")}`}
-              className="my-auto"
-            />
+        <Grids rows={"5"} gap={"3"}>
+          <Holds background={"white"} className="row-span-1 h-full">
+            <Contents width={"section"}>
+              <TitleBoxes
+                title={`${t("Teams-Title")}`}
+                titleImg="/team.svg"
+                titleImgAlt={`${t("Teams-Logo-Title")}`}
+                className="my-auto"
+              />
+            </Contents>
           </Holds>
           {isLoading ? (
             <>
-              <Holds background={"white"} className="row-span-6 h-full">
+              <Holds background={"white"} className="row-span-4 h-full">
                 <Contents width={"section"}>
                   <Holds className="my-auto">
                     <Spinner />

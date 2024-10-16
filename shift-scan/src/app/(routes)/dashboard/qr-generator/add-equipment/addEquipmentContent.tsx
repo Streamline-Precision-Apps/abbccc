@@ -34,8 +34,8 @@ export const AddEquipmentContent = () => {
           <Texts>{bannerText}</Texts>
         </Holds>
       )}
-      <Holds>
-        <Holds background="white" size={"full"} className="h-fit mb-3">
+      <Holds background="white" className="mt-5">
+        <Contents width={"section"} className="mt-2 mb-5">
           <Titles size={"h3"}>{t("Picture")}</Titles>
           <Images
             titleImg={"/camera.svg"}
@@ -44,16 +44,14 @@ export const AddEquipmentContent = () => {
             className="my-3"
           />
           <EquipmentPicture setBase64String={setBase64String} />
-        </Holds>
-        <Holds background="white">
-          <AddEquipmentForm
-            base64String={base64String}
-            setBanner={setBanner}
-            setBannerText={setBannerText}
-            handler={() => handleBanner}
-          />
-        </Holds>
+        </Contents>
       </Holds>
+      <AddEquipmentForm
+        base64String={base64String}
+        setBanner={setBanner}
+        setBannerText={setBannerText}
+        handler={() => handleBanner}
+      />
     </Holds>
   );
 };

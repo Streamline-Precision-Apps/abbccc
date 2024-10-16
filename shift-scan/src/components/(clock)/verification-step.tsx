@@ -99,13 +99,13 @@ export default function VerificationStep({ type, handleNextStep, option} : Verif
     <>
       <TitleBoxes
         title={t("VerifyJobSite")}
-        titleImg="/new/clock-in.svg"
+        titleImg="/clock-in.svg"
         titleImgAlt="Verify"
         variant="row"
         size="default"
         type="row"
       />
-      <Forms size={"fit"} onSubmit={handleSubmit}>
+      <Forms onSubmit={handleSubmit}>
         {/* <Bases variant={"pinkCard"} size={"pinkCard"} className="relative"> */}
           <Buttons variant={"icon"} size={null} type="submit">
             <Images

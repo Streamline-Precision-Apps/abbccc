@@ -13,19 +13,20 @@ import { Holds } from "./holds";
 import { signOut } from "next-auth/react";
 
 const ModalVariants = cva(
-  "flex flex-col", //this applies to all variants
+  "", //this applies to all variants
   {
     variants: {
-      variant: {
+      background: {
         default: "bg-white rounded-2xl",
-        gradient: "bg-gradient-to-b from-white to-app-blue",
-        test: "bg-red-300",
+      },
+      position: {
+        center: "relative",
       },
       size: {
         default:
           "fixed rounded p-1 bg-white top-1/4 left-3/4 -translate-x-1/4 -translate-y-1/2 flex flex-col",
-        sm: "fixed rounded p-1 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col",
-        med: "p-10 w-40 h-40",
+        sm: "absolute left-[50%] top-[50%]",
+        med: "",
         lg: " fixed rounded-3xl p-1 bg-white h-fit w-2/3 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col justify-normal mt-16",
         clock:
           "fixed rounded top-1/3 -translate-y-1/3 flex flex-col w-full h-[100%] ",
@@ -34,7 +35,8 @@ const ModalVariants = cva(
       },
     },
     defaultVariants: {
-      variant: "default",
+      background: "default",
+      position: "center",
       size: "default",
     },
   }
@@ -51,7 +53,8 @@ interface ModalProps
 
 const Modals: FC<ModalProps> = ({
   className,
-  variant,
+  background,
+  position,
   size,
   type,
   isOpen,
@@ -79,7 +82,7 @@ const Modals: FC<ModalProps> = ({
         <div className="modal ">
           <div className="fixed top-0 left-0 w-screen h-screen bg-neutral-800 opacity-50" />
           <div
-            className={cn(ModalVariants({ variant, size, className }))}
+            className={cn(ModalVariants({ background, position, size, className }))}
             {...props}
           >
             <div className="modal-content">{props.children}</div>
@@ -112,7 +115,7 @@ const Modals: FC<ModalProps> = ({
     return (
       <ReactPortal wrapperId="react-portal-modal-container">
         <div
-          className={cn(ModalVariants({ variant, size, className }))}
+          className={cn(ModalVariants({ background, position, size, className }))}
           {...props}
         >
           <Buttons
@@ -146,7 +149,7 @@ const Modals: FC<ModalProps> = ({
       <ReactPortal wrapperId="react-portal-modal-container">
         <div className="fixed top-0 left-0 w-screen h-screen bg-neutral-800 opacity-50" />
         <div
-          className={cn(ModalVariants({ variant, size, className }))}
+          className={cn(ModalVariants({ background, position, size, className }))}
           {...props}
         >
           <Buttons
@@ -167,21 +170,46 @@ const Modals: FC<ModalProps> = ({
         </div>
       </ReactPortal>
     );
+  else if (type === "signature")
+    return (
+      <ReactPortal wrapperId="react-portal-modal-container">
+        <div className="fixed top-0 left-0 w-screen h-screen bg-neutral-800 opacity-50" />
+        <div
+          className={cn(ModalVariants({ variant, size, className }))}
+          {...props}
+        >
+          <Buttons
+            onClick={handleClose}
+            background={"red"}
+            className="close-btn"
+            size={"10"}
+          >
+            <Images
+              titleImg="/backArrow.svg"
+              titleImgAlt="x"
+              className="mx-auto"
+            />
+          </Buttons>
+          <div className="modal-content-wrapper max-h-[80vh] overflow-y-auto scrollbar-hide">
+            {props.children}
+          </div>
+        </div>
+      </ReactPortal>
+    );
   else
     return (
       <ReactPortal wrapperId="react-portal-modal-container">
-        <div className="modal ">
-          <div className="fixed top-0  w-screen h-screen bg-neutral-800 opacity-50" />
-          <div
-            className={cn(ModalVariants({ variant, size, className }))}
-            {...props}
-          >
+          <Bases background={"modal"} position={"start"} size={"screen"}>
+          <div className={cn(ModalVariants({ background, position, size, className }))}{...props}>
             <Buttons onClick={handleClose} className="close-btn" size={"full"}>
               <Images titleImg="/x.svg" titleImgAlt="x" />
             </Buttons>
-            <div className="modal-content">{props.children}</div>
+            <Holds>
+              <Titles>Hello</Titles>
+            </Holds>
+            {/* <div className="modal-content">{props.children}</div> */}
           </div>
-        </div>
+          </Bases>
       </ReactPortal>
     );
 };
