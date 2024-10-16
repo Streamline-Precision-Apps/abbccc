@@ -18,7 +18,7 @@ export default function QR({ handleNextStep, url  } : QrReaderProps){
   const [scanCount, setScanCount] = useState(0);
   const { setScanResult } = useScanData();
   const router = useRouter();
-  const SCAN_THRESHOLD = 200; // Number of scans before redirecting Zach change this for working on clock in modals
+  const SCAN_THRESHOLD = 342342345343453453453423432200; // Number of scans before redirecting Zach change this for working on clock in modals
 
   const onScanSuccess = (result: QrScanner.ScanResult) => {
     try {
@@ -79,6 +79,6 @@ export default function QR({ handleNextStep, url  } : QrReaderProps){
   }, [scanCount, router]);
 
   return (
-    <video ref={videoRef} className="w-full h-[400px] rounded-2xl border-4 bg-gray-300 border-black"/>
+    <video ref={videoRef} className="h-full rounded-2xl border-4 bg-gray-300 border-black"/>
   );
 };
