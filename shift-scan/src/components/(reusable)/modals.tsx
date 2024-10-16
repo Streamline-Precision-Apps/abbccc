@@ -167,6 +167,32 @@ const Modals: FC<ModalProps> = ({
         </div>
       </ReactPortal>
     );
+  else if (type === "signature")
+    return (
+      <ReactPortal wrapperId="react-portal-modal-container">
+        <div className="fixed top-0 left-0 w-screen h-screen bg-neutral-800 opacity-50" />
+        <div
+          className={cn(ModalVariants({ variant, size, className }))}
+          {...props}
+        >
+          <Buttons
+            onClick={handleClose}
+            background={"red"}
+            className="close-btn"
+            size={"10"}
+          >
+            <Images
+              titleImg="/backArrow.svg"
+              titleImgAlt="x"
+              className="mx-auto"
+            />
+          </Buttons>
+          <div className="modal-content-wrapper max-h-[80vh] overflow-y-auto scrollbar-hide">
+            {props.children}
+          </div>
+        </div>
+      </ReactPortal>
+    );
   else
     return (
       <ReactPortal wrapperId="react-portal-modal-container">

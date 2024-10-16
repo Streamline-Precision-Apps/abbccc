@@ -27,21 +27,43 @@ export default function UserManagement({ users }: Props) {
   const [showBanner, setShowBanner] = useState<boolean>(false);
   const [banner, setBanner] = useState("");
   const [userResponse, setUserResponse] = useState<SearchUser | null>(null);
-  const [includeTerminated, setIncludeTerminated] = useState<boolean>(false); // New state for the checkbox
+  const [excludeTerminated, setExcludeTerminated] = useState<boolean>(false); // New state for the checkbox
   const [filteredUsers, setFilteredUsers] = useState<SearchUser[]>(users); // New state for filtered users
   const t = useTranslations("admin");
+  const [userId, setUserId] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [DOB, setDOB] = useState("");
+  const [truckView, setTruckView] = useState<boolean | null>(null);
+  const [tascoView, setTascoView] = useState<boolean | null>(null);
+  const [laborView, setLaborView] = useState<boolean | null>(null);
+  const [mechanicView, setMechanicView] = useState<boolean | null>(null);
+  const [permission, setPermission] = useState<string | null>("");
 
   const resetForm = () => {
     setSearchTerm1("");
     setSearchTerm2("");
     setEditForm(true);
     setFilteredUsers(users);
+    setUserId("");
+    setFirstName("");
+    setLastName("");
+    setUsername("");
+    setPassword("");
+    setDOB("");
+    setTruckView(null);
+    setTascoView(null);
+    setLaborView(null);
+    setMechanicView(null);
+    setPermission("");
   };
 
   // Filter users based on the terminationDate and checkbox state
   const filterUsers = () => {
-    if (includeTerminated) {
-      setFilteredUsers(users); // Include all users if checkbox is checked
+    if (excludeTerminated) {
+      setFilteredUsers(users); // Exclude all users if checkbox is checked
     } else {
       // Exclude users with terminationDate not null
       const filtered = users.filter(user => user.terminationDate === null);
@@ -50,8 +72,8 @@ export default function UserManagement({ users }: Props) {
   };
 
   // Handle checkbox change for including terminated employees
-  const handleIncludeTerminatedChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setIncludeTerminated(e.target.checked);
+  const handleExcludeTerminatedChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setExcludeTerminated(e.target.checked);
     filterUsers(); // Filter users when the checkbox is toggled
   };
 
@@ -85,6 +107,48 @@ export default function UserManagement({ users }: Props) {
     }, 10000);
   };
 
+  async function handleEditForm(id: string) {
+    setEditForm(false);
+    let response = null;
+    if (id === "2") {
+      response = await fetchByNameUser(searchTerm2);
+    } else {
+      response = await fetchByNameUser(searchTerm1);
+    }
+    if (response) {
+      setUserResponse(response as SearchUser);
+      setUserId(response.id);
+      setFirstName(response.firstName);
+      setLastName(response.lastName);
+      setUsername(response.username);
+      setDOB(response.DOB || "");
+      setTruckView(response.truckView !== null ? response.truckView : null);
+      setTascoView(response.tascoView !== null ? response.tascoView : null);
+      setLaborView(response.laborView !== null ? response.laborView : null);
+      setMechanicView(
+        response.mechanicView !== null ? response.mechanicView : null
+      );
+      setPermission(response.permission || "");
+    } else {
+      console.log("Error fetching user.");
+    }
+  }
+
+  const handleSelectChange =
+  (setter: React.Dispatch<React.SetStateAction<boolean | null>>) =>
+  (event: ChangeEvent<HTMLSelectElement>) => {
+    const value = event.target.value;
+    setter(convertToBoolean(value));
+  };
+
+    // Function to handle the conversion of string "TRUE"/"FALSE" to boolean true/false
+    const convertToBoolean = (value: string | null): boolean | null => {
+      if (value === "TRUE") return true;
+      if (value === "FALSE") return false;
+      return null;
+    };
+  
+
   return (
     <>
       {showBanner && (
@@ -100,10 +164,10 @@ export default function UserManagement({ users }: Props) {
               <label>
                 <input
                   type="checkbox"
-                  checked={includeTerminated}
-                  onChange={handleIncludeTerminatedChange}
+                  checked={excludeTerminated}
+                  onChange={handleExcludeTerminatedChange}
                 />
-                {t("Include Terminated Employees")}
+                {t("ExcludeTerminatedEmployees")}
               </label>
             </Holds>
             <Holds className="row-span-5 h-full">
@@ -114,8 +178,139 @@ export default function UserManagement({ users }: Props) {
                 action={createUser}
                 onSubmit={() => handleBanner("User was created successfully")}
               >
-                {/* Rest of the form fields */}
-                {/* First name, Last name, Username, Password, etc. */}
+            <Labels type="title">
+              {t("FirstName")}
+            </Labels>
+            <Inputs
+             
+              type="default"
+              name="firstName"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              state="default"
+            />
+            <Labels type="title">
+              {t("LastName")}
+            </Labels>
+            <Inputs
+             
+              type="default"
+              name="lastName"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              state="default"
+            />
+            <Labels type="title">
+              {t("Username")}
+            </Labels>
+            <Inputs
+             
+              type="default"
+              name="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              state="default"
+            />
+            <Labels type="title">
+              {t("Password")}
+            </Labels>
+            <Inputs
+             
+              type="password"
+              name="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              state="default"
+            />
+            <Labels type="title">
+              {t("DOB")}
+            </Labels>
+            <Inputs
+             
+              type="date"
+              name="DOB"
+              value={DOB}
+              onChange={(e) => setDOB(e.target.value)}
+              state="default"
+            />
+            <Labels type="title">
+              {t("TruckView")}
+            </Labels>
+            <Selects
+              id="truckView"
+              name="truckView"
+              value={truckView !== null ? String(truckView).toUpperCase() : ""}
+              onChange={handleSelectChange(setTruckView)}
+            >
+              <Options value="">{t("Select")}</Options>
+              <Options value="TRUE">{t("True")}</Options>
+              <Options value="FALSE">{t("False")}</Options>
+            </Selects>
+
+            <Labels type="title">
+              {t("TascoView")}
+            </Labels>
+            <Selects
+              id="tascoView"
+              name="tascoView"
+              value={tascoView !== null ? String(tascoView).toUpperCase() : ""}
+              onChange={handleSelectChange(setTascoView)}
+            >
+              <Options value="">{t("Select")}</Options>
+              <Options value="TRUE">{t("True")}</Options>
+              <Options value="FALSE">{t("False")}</Options>
+            </Selects>
+
+            <Labels type="title">
+              {t("LaborView")}
+            </Labels>
+            <Selects
+              id="laborView"
+              name="laborView"
+              value={laborView !== null ? String(laborView).toUpperCase() : ""}
+              onChange={handleSelectChange(setLaborView)}
+            >
+              <Options value="">{t("Select")}</Options>
+              <Options value="TRUE">{t("True")}</Options>
+              <Options value="FALSE">{t("False")}</Options>
+            </Selects>
+
+            <Labels type="title">
+              {t("MechanicView")}
+            </Labels>
+            <Selects
+              id="mechanicView"
+              name="mechanicView"
+              value={
+                mechanicView !== null ? String(mechanicView).toUpperCase() : ""
+              }
+              onChange={handleSelectChange(setMechanicView)}
+            >
+              <Options value="">{t("Select")}</Options>
+              <Options value="TRUE">{t("True")}</Options>
+              <Options value="FALSE">{t("False")}</Options>
+            </Selects>
+            <Labels type="title">
+              {t("Permission")}
+            </Labels>
+            <Selects
+             
+              id="permission"
+              name="permission"
+              value={permission ?? ""}
+              onChange={(e) => setPermission(e.target.value)}
+              className="block w-full border border-black rounded p-2"
+            >
+              <Options value="">{t("Select")}</Options>
+              <Options value="USER">{t("User")}</Options>
+              <Options value="MANAGER">{t("Manager")}</Options>
+              <Options value="PROJECTMANAGER">{t("ProjectManager")}</Options>
+              <Options value="ADMIN">{t("Admin")}</Options>
+              <Options value="SUPERADMIN">{t("SuperAdmin")}</Options>
+            </Selects>
+            <Buttons background="green" type="submit">
+              {t("Submit")}
+            </Buttons>
               </Forms>
             </Expands>
 
@@ -128,7 +323,7 @@ export default function UserManagement({ users }: Props) {
                 <SearchBar
                   searchTerm={searchTerm1}
                   onSearchChange={(e) => handleSearchChange(e, "1")}
-                  placeholder="Search user..."
+                  placeholder={t("SearchUser")}
                 />
               </Holds>
               {searchTerm1 && editForm && (
@@ -157,7 +352,7 @@ export default function UserManagement({ users }: Props) {
                 <SearchBar
                   searchTerm={searchTerm2}
                   onSearchChange={(e) => handleSearchChange(e, "2")}
-                  placeholder="Search user..."
+                  placeholder={t("SearchUser")}
                 />
               </Holds>
               {searchTerm2 && editForm && (
@@ -165,7 +360,7 @@ export default function UserManagement({ users }: Props) {
                   {userList.map((item) => (
                     <Buttons
                       onClick={() => {
-                        setSearchTerm2(item.id);
+                        setSearchTerm2(item.firstName);
                         setEditForm(false);
                       }}
                       key={item.id}
@@ -182,7 +377,7 @@ export default function UserManagement({ users }: Props) {
                 >
                   <Inputs type="hidden" name="id" defaultValue={searchTerm2} />
                   <Buttons background="red" type="submit">
-                    <Texts>Delete</Texts>
+                    <Texts>{t("Delete")}</Texts>
                   </Buttons>
                 </Forms>
               )}
