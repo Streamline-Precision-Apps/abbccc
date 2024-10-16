@@ -48,7 +48,8 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
   const [changedDurationSeconds, setChangedDurationSeconds] =
     useState<string>("");
 
-  const t = useTranslations("EquipmentContent");
+  const t = useTranslations("Equipment");
+  const b = useTranslations("Widgets");
 
   // Fetch Equipment Form Details
   useEffect(() => {
@@ -419,7 +420,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
               className="my-auto space-x-4 h-full"
             >
               <Buttons type="submit" background="red">
-                <Titles>{t("Delete")}</Titles>
+                <Titles>{b("Delete")}</Titles>
               </Buttons>
             </Forms>
 
@@ -427,14 +428,14 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
             {!completed && (
               <Forms onSubmit={handleSaveClick} className="my-auto h-full">
                 <Buttons type="submit" background="green">
-                  <Titles>{t("Submit")}</Titles>
+                  <Titles>{b("Submit")}</Titles>
                 </Buttons>
               </Forms>
             )}
             {isEditMode && completed && (
               <Forms onSubmit={handleSaveClick} className="my-auto h-full">
                 <Buttons type="submit" background="green">
-                  <Titles>{t("Save")}</Titles>
+                  <Titles>{b("Save")}</Titles>
                 </Buttons>
               </Forms>
             )}
@@ -442,7 +443,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
             {!isEditMode && completed && (
               <Forms className="my-auto h-full">
                 <Buttons onClick={handleEditClick} background="orange">
-                  <Titles>{t("Edit")}</Titles>
+                  <Titles>{b("Edit")}</Titles>
                 </Buttons>
               </Forms>
             )}

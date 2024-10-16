@@ -6,20 +6,21 @@ import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Holds } from "@/components/(reusable)/holds";
 import { getTranslations } from "next-intl/server";
 export default async function NewEquipment() {
-  const t = await getTranslations("addEquipmentContent");
+  const t = await getTranslations("Generator");
   return (
     <Bases>
-    <Contents height={"page"}>
-      <Holds size={"first"} background="white" className="my-3" >
-        <TitleBoxes
-          title={t("Title")}
-          titleImg="/equipment.svg"
-          titleImgAlt="Team"
+      <Contents height={"page"}>
+        <Holds background="white" className="my-3">
+          <TitleBoxes
+            title={`${t("CreateNew")} ${t("Equipment")}`}
+            titleImg="/equipment.svg"
+            titleImgAlt="Team"
+            type="route"
+            href="/dashboard/qr-generator"
           />
-      </Holds>
-      <AddEquipmentContent />
-    </Contents>
+        </Holds>
+        <AddEquipmentContent />
+      </Contents>
     </Bases>
   );
-
 }

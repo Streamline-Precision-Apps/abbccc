@@ -37,7 +37,7 @@
         "CostCode": "Cost Code"
     },
 
-        "Widgets":{
+    "Widgets":{
         "QR": "Generator",
         "MyTeam": "Teams",
         "Equipment": "Equipment",
@@ -56,129 +56,97 @@
         "GoHome": "Home",
         "Whoops": "Whoops!",
         "ReturnToLogOut":"You forgot to Clock out Equipment!",
-        "ClickToLogOut":"Click Here to fix it."
-        
-        },
-
-"Forms":{
-},
-
-"Generator":{
-
-},
-"Equipment":{
-
-},
-
-"MyTeam": {
-        "Teams-Title": "My Teams",
-        "Teams-Logo-Title": "Team Icon",
-        "MyTeams-Title": "My Teams",
-        "Teams-Button-Name": "Team",
-        "Timesheets": "Timesheets",
-        "Duration": "Total hours worked:",
-        "Duration-Comment": "The duration updates when editing changes are saved.",
-        "ClockIn" : "Recorded Clock In",
-        "ClockOut" : "Recorded Clock Out",
-        "Breaktime" : "Total Break Time",
-        "JobSites" : "Recorded Job Site ID",
-        "CostCode" : "Recorded Cost Code",
-        "Equipment" : "Equipment",
-        "EQTotalTime" : "Total Time",
-        "NoData": "No Data Found",
-        "EquipmentLogs": "Equipment Logs",
-        "PhoneNumber": "Phone Number",
-        "Email": "Email",
-        "EmergencyContact": "Emergency Contact",
-        "EmergencyContactNumber": "Emergency Contact #",
-        "DOB": "Date of Birth",
-        "Edit": "Edit",
+        "ClickToLogOut":"Click Here to fix it.",
+        "Save": "Save Changes",
         "Delete": "Delete",
-        "SelectDate": "Select Date",
-        "NoEquipmentLogs": "No logs found for the day selected."
-    },
-"Clock": {
-        "ScanJobSite": "Scan Job Site",
-        "TroubleScanning": "Trouble Scanning?",
-        "Title-jobsite": "Select Job Site",
-        "Title-equipment": "Select Equipment",
-        "SearchedCodes" : "Current Results",
-        "noResults" : "No results found",
-        "Continue": "Continue",
-        "Title-costcode": "Select Cost Code",
-        "VerifyJobSite": "Clock In",
-        "Date-label": "Date",
-        "JobSite-label": "Job Site #",
-        "CostCode-label": "Cost Code",
-        "Confirmation-job-message-1": "Process Completed",
-        "Confirmation-job-message-2": "Thank you! Your timesheet has been successfully created.",
-
-        "search": "Type here",
-        
-
-        "ScanQR": "Scan QR Code",
-        "ScanEquipment": "Scan Equipment",
+        "Edit": "Edit",
+        "Submit": "Submit",
         "Cancel": "Cancel",
-        "ReturnToJobsite": "Switching CostCode?",
-        "VerifyEquipment": "Verify Equipment",
-        "Equipment-label": "Equipment Found",
-        "ClockIn-btn": "Clock In",
-        "Confirmation-time": "Clocked in at",
-        "Confirmation-job-message-3": "Successfully Switched Sites",
-        "Confirmation-job-message-4": "Your timesheet has been Submitted and a new one created.",
-        "Confirmation-eq-message-1": "Process Completed",
-        "Confirmation-eq-message-2": " Thank you! Your Equipment has been successfully Logged.",
-        "Equipment-result": "Equipment Found",
-        "Equipment-notes-title": "Notes",
-        "Next-btn": "Next",
-        "recentlyUsed" : "Recently Used"
+        "SubmitAll": "Submit All",
+        "TakePicture": "Take a Picture",
+        "ResetCamera": "Reset Camera",
+        "startCamera": "Start Camera",
+        "HideCamera": "Hide Camera",
+        "ShowCamera": "Show Camera",
+        "NoCamera": "No Camera Available"
     },
-"ClockOut":{
-        "SignBelow": "By Checking the box below I certify I suffered no injuries this day.",
-        "Jobsite" : "Job site # ",
-        "CostCode" : "Cost Code ",
-        "BreakTime" : "Break Time ",
-        "ClockOutDate" : "Date",
-        "ClockOutTime" : "Clock Out Time: ",
-        "ClockOutSuccess": "Successfully Clocked Out!",
-        "SubmitButton": "Submit Report",
-        "InjuryReport": "Injury Report",
-        "FailedToSubmit": "Failed to submit the form. Please try again.",
-        "ContactedSupervisor": "I contacted my supervisor ",
-        "Comment": "Describe What Happend ",
-        "Signature": "Signature: ",
-        "SignatureFailure": "Failed to capture signature. Please try again.",
-        "NavError": "Failed to navigate. Please try again.",
-        "InjuryVerification": "End Work Day",
-        "SignatureCaptured": "Signature captured! ",
-        "SignatureVerify": "This is my signature",
-        "Continue": "Continue",
-        "ReportInjury": "Report an Injury",
-        "EquipmentVerification": "I have completed and logged all forms, equipment, and all other items required of me today. ",
-        "Return": "Return to Dashboard",
-        "Bye": "See You Soon",
-        "incidentDescription" : "Describe the Incident"
-},
-"Err-Msg":{
-    "PayPeriod-Fetch:" : "Error fetching pay period sheets:", 
-    "PayPeriod:" : "Error Rendering Pay Period Sheets:",
-    "CalculatePayPeriod": "Failed to calculate pay period start date",
-    "Logs-Fetch": "Error fetching logs:"
-},
 
 
+    "Equipment":{
+        "NoCurrent": "No Equipment Currently In Use",
+        "Current": "Current Equipment",
+        "Loading": "Loading...",
+        "Refueled": " Did you refuel?",
+        "Gallons": "Total gallons refueled",
+        "Duration": "Total Time used",
+        "Notes": "Additional notes"
+    },
 
+    "Generator":{
+        "Loading": "Loading...",
+        "Create": "Create",
+        "Picture": "Picture of Equipment",
+        "Select": "Select One",
+        "CheckedOut": "Checked Out",
+        "Banner": "Checked In",
+        "JobsiteName": "Jobsite Name",
+        "StreetNumber": "Street Number",
+        "StreetName": "Street Name",
+        "City": "City",
+        "State": "State",
+        "Country": "Country",
+        "Description": "Jobsite Description",
+        "Comments": "Additional Comments",
+        "IsActive": "Is Site Active?",
+        "Temporary": "Temporary",
+        "NameExample": "Enter a name for the site",
+        "Address": "Address Information",
+        "StreetNumberDirection": "Street Number",
+        "StreetNameDirection": "Street Name",
+        "CityTitle": "Burley",
+        "ZipCode": "Zip Code",
+        "ZipCodeTitle": "83318",
+        "StateTitle": "ID",
+        "purpose": "This is for describing the site, where it is located, and other details for the site.",
+        "DescriptionTitle": "Description",
+        "CommentsPurpose": "This is for justifying the need for a new site, to decide if it should be accepted or rejected.",
+        "CreateNew": "Create New",
+        "GenerateError": "Failed to generate QR code.",
+        "Banner-Text": "Added Temporary Equipment Successfully",
+        "Tag": "Equipment Tag",
+        "Truck": "TRUCK",
+        "Trailer": "TRAILER",
+        "Equipment": "EQUIPMENT",
+        "Name": "Name",
+        "NamePlaceholder": "Enter Equipment Name",
+        "DescriptionPlaceholder": "Enter a Description in less than 40 characters",
+        "Status": "Equipment status",
+        "Operational": "OPERATIONAL",
+        "NeedsRepair": "NEEDS REPAIR",
+        "Make": "Make",
+        "MakePlaceholder": "Enter Make of Vehicle ",
+        "Model": "Model",
+        "ModelPlaceholder": "Enter Model of Vehicle",
+        "Year": "Year",
+        "YearPlaceholder": "Enter Year of Vehicle (YYYY)",
+        "LicensePlate": "License Plate",
+        "LicensePlatePlaceholder": "Enter License Plate Number",
+        "RegistrationExpiration": "Registration Expiration",
+        "Mileage": "Mileage",
+        "MileagePlaceholder": "Enter Current Mileage of Vehicle",
+        "Jobsite": "Jobsite",
+        "QRCode": "QR Code",
+        "SelectOne": "Select One",
+        "New": "New",
+        "Generate": "Generate",
+        "SearchForAJobSite": "Search for a Job Site",
+        "QrGenerator": "QR Generator",
+        "EquipmentDatatype": "Search for an Equipment"
+    },
 
-
-
-      
-    "SearchBar": {
+    "Forms":{
         "Search": "Search for",
-        "NoResults": "No Results Found"
-    },
-    
-    
-    "dashboard": {
+        "NoResults": "No Results Found",
         "Banner": "Working towards success!",
         "Name": "{firstName} {lastName}",
         "Date": "{date}",
@@ -197,128 +165,106 @@
         "Form3Q4" : "Are other people affected? If so, who?", 
         "Form3Q4Placeholder" : "no, only I was affected",
         "Form3Submit" : "Submit form"    
-    },
-    
-
-    "qr-Generator": {
-        "Title": "QR Generator"
-    },
-
-    "QrJobsiteContent": {
-        "Jobsite": "Jobsite",
-        "QRCode": "QR Code",
-        "Placeholder": "Select One",
-        "New": "New",
-        "Generate": "Generate",
-        "Loading": "Loading Job Sites...",
-        "JobSiteDatatype": "Search for a Job Site"
-    },
-
-    "qrEquipmentContent": {
-        "Equipment": "Equipment",
-        "QRCode": "QR Code",
-        "Placeholder": "Select One",
-        "New": "New",
-        "Generate": "Generate",
-        "Select": "Select One",
-        "Loading": "Loading Equipment...",
-        "EquipmentDatatype": "Search for an Equipment"
-    },
-
-    "addEquipmentContent": {
-        "Title": "Create Equipment",
-        "Picture": "Picture of Equipment",
-        "Select": "Select One"
-    },
-    
-    "equipmentPicture": {
-       "TakePicture": "Take a Picture",
-        "ResetCamera": "Reset Camera",
-        "startCamera": "Start Camera",
-        "HideCamera": "Hide Camera",
-        "ShowCamera": "Show Camera"
 
     },
-    "EquipmentContent" : {
-        "Title": "Checked Out",
-        "Banner": "Checked In",
-        "Refueled": " Did you refuel?",
-        "Gallons": "Total gallons refueled",
-        "Duration": "Total Time used",
-        "Notes": "Additional notes",
-        "Save": "Save Changes",
-        "Delete": "Delete",
-        "Edit": "Edit",
-        "Submit": "Submit",
-        "SubmitAll": "Submit All",
-        "NoCurrent": "No Equipment Currently In Use",
-        "Current": "Current Equipment",
-        "Loading": "Loading..."
-    },
-    
-    "addEquipmentForm": {
-        "GenerateError": "Failed to generate QR code.",
-        "Banner-Text": "Added Temporary Equipment Successfully",
-        "Tag": "Equipment Tag",
-        "Select": "Select One",
-        "Truck": "TRUCK",
-        "Trailer": "TRAILER",
-        "Equipment": "EQUIPMENT",
-        "Name": "Name",
-        "NamePlaceholder": "Enter Equipment Name",
-        "Description": "Description",
-        "DescriptionPlaceholder": "Enter a Description in less than 40 characters",
-        "Status": "Equipment status",
-        "Operational": "OPERATIONAL",
-        "NeedsRepair": "NEEDS REPAIR",
-        "Make": "Make",
-        "MakePlaceholder": "Enter Make of Vehicle ",
-        "Model": "Model",
-        "ModelPlaceholder": "Enter Model of Vehicle",
-        "Year": "Year",
-        "YearPlaceholder": "Enter Year of Vehicle (YYYY)",
-        "LicensePlate": "License Plate",
-        "LicensePlatePlaceholder": "Enter License Plate Number",
-        "RegistrationExpiration": "Registration Expiration",
-        "Mileage": "Mileage",
-        "MileagePlaceholder": "Enter Current Mileage of Vehicle",
-        "Submit": "Submit",
-        "Temporary": "Temporary Equipment"
-    },
-    
-    "addJobsiteContent": {
-        "Title": "Create Jobsite"
-    },
 
-    "addJobsiteForm": {
-        "Temporary": "Temporary Jobsite",
-        "Name": "Name",
-        "NameExample": "Enter a name for the site",
-        "Address": "Address Information",
-        "StreetNumber": "Street Number",
-        "StreetNumberDirection": "Street Number",
-        "StreetName": "Street Name",
-        "StreetNameDirection": "Street Name",
-        "City": "City",
-        "CityTitle": "Burley",
-        "ZipCode": "Zip Code",
-        "ZipCodeTitle": "83318",
-        "State": "State",
-        "StateTitle": "ID",
-        "Country": "Country",
-        "purpose": "This is for describing the site, where it is located, and other details for the site.",
-        "DescriptionTitle": "Description",
-        "Description": "Jobsite Description",
-        "Comments": "Jobsite Comments",
-        "CommentsPurpose": "This is for justifying the need for a new site, to decide if it should be accepted or rejected.",
-        "Submit": "Create New Jobsite"
-    },
+    "MyTeam": {
+            "Teams-Title": "My Teams",
+            "Teams-Logo-Title": "Team Icon",
+            "MyTeams-Title": "My Teams",
+            "Teams-Button-Name": "Team",
+            "Timesheets": "Timesheets",
+            "Duration": "Total hours worked:",
+            "Duration-Comment": "The duration updates when editing changes are saved.",
+            "ClockIn" : "Recorded Clock In",
+            "ClockOut" : "Recorded Clock Out",
+            "Breaktime" : "Total Break Time",
+            "JobSites" : "Recorded Job Site ID",
+            "CostCode" : "Recorded Cost Code",
+            "Equipment" : "Equipment",
+            "EQTotalTime" : "Total Time",
+            "NoData": "No Data Found",
+            "EquipmentLogs": "Equipment Logs",
+            "PhoneNumber": "Phone Number",
+            "Email": "Email",
+            "EmergencyContact": "Emergency Contact",
+            "EmergencyContactNumber": "Emergency Contact #",
+            "DOB": "Date of Birth",
+            "Edit": "Edit",
+            "Delete": "Delete",
+            "SelectDate": "Select Date",
+            "NoEquipmentLogs": "No logs found for the day selected."
+        },
 
+    "Clock": {
+        "ScanJobSite": "Scan Job Site",
+        "TroubleScanning": "Trouble Scanning?",
+        "Title-jobsite": "Select Job Site",
+        "Title-equipment": "Select Equipment",
+        "SearchedCodes" : "Current Results",
+        "noResults" : "No results found",
+        "Continue": "Continue",
+        "Title-costcode": "Select Cost Code",
+        "VerifyJobSite": "Clock In",
+        "Date-label": "Date",
+        "JobSite-label": "Job Site #",
+        "CostCode-label": "Cost Code",
+        "Confirmation-job-message-1": "Process Completed",
+        "Confirmation-job-message-2": "Thank you! Your timesheet has been successfully created.",
+        "search": "Type here",
+        "ScanQR": "Scan QR Code",
+        "ScanEquipment": "Scan Equipment",
+        "Cancel": "Cancel",
+        "ReturnToJobsite": "Switching CostCode?",
+        "VerifyEquipment": "Verify Equipment",
+        "Equipment-label": "Equipment Found",
+        "ClockIn-btn": "Clock In",
+        "Confirmation-time": "Clocked in at",
+        "Confirmation-job-message-3": "Successfully Switched Sites",
+        "Confirmation-job-message-4": "Your timesheet has been Submitted and a new one created.",
+        "Confirmation-eq-message-1": "Process Completed",
+        "Confirmation-eq-message-2": " Thank you! Your Equipment has been successfully Logged.",
+        "Equipment-result": "Equipment Found",
+        "Equipment-notes-title": "Notes",
+        "Next-btn": "Next",
+        "recentlyUsed" : "Recently Used"
+        },
 
-    "Signature": {
+    "ClockOut":{
+        "SignBelow": "By Checking the box below I certify I suffered no injuries this day.",
+        "Jobsite" : "Job site # ",
+        "CostCode" : "Cost Code ",
+        "BreakTime" : "Break Time ",
+        "ClockOutDate" : "Date",
+        "ClockOutTime" : "Clock Out Time: ",
+        "ClockOutSuccess": "Successfully Clocked Out!",
+        "SubmitButton": "Submit Report",
+        "InjuryReport": "Injury Report",
+        "FailedToSubmit": "Failed to submit the form. Please try again.",
+        "ContactedSupervisor": "I contacted my supervisor ",
+        "Comment": "Describe What Happened",
+        "Signature": "Signature: ",
+        "SignatureFailure": "Failed to capture signature. Please try again.",
+        "NavError": "Failed to navigate. Please try again.",
+        "InjuryVerification": "End Work Day",
+        "SignatureCaptured": "Signature captured! ",
+        "SignatureVerify": "This is my signature",
+        "Continue": "Continue",
+        "ReportInjury": "Report an Injury",
+        "EquipmentVerification": "I have completed and logged all forms, equipment, and all other items required of me today. ",
+        "Return": "Return to Dashboard",
+        "Bye": "See You Soon",
+        "incidentDescription" : "Describe the Incident",
         "Save": "Save",
         "Saved": "Saved signature",
         "Clear": "Clear"
+    },
+
+    "Err-Msg":{
+        "PayPeriod-Fetch:" : "Error fetching pay period sheets:", 
+        "PayPeriod:" : "Error Rendering Pay Period Sheets:",
+        "CalculatePayPeriod": "Failed to calculate pay period start date",
+        "Logs-Fetch": "Error fetching logs:"
     },
 
     "Hamburger": {
@@ -354,7 +300,6 @@
         "Assets": "Assets",
         "reports": "Reports",
         "Home": "Return Home",
-        "lN1": "Copyright © 2024.Streamline Precision LLC. All rights reserved.",
         "ManageEmployees": "Manage Employee",
         "FirstName": "First Name",
         "LastName": "Last Name",
@@ -392,21 +337,7 @@
         "AppComments": "App Comments",
         "Date": "Date"
     },
-    "admin-assets-jobsite": {
-        "submit": "Submit",
-        "JobsiteName": "Jobsite Name",
-        "StreetNumber": "Street Number",
-        "StreetName": "Street Name",
-        "City": "City",
-        "State": "State",
-        "Country": "Country",
-        "Description": "Jobsite Description",
-        "Comments": "Additional Comments",
-        "IsActive": "Is Site Active?"
-    },
-    "admin-assets-costcode": {
-        "submit": "Submit"
-    },
+
 
     "TimesheetsContent": {
         "Title": "View Timesheets",
@@ -425,27 +356,5 @@
         "LabelDuration": "Duration",
         "LabelJobsite": "Jobsite",
         "LabelCostCode": "Cost Code"
-    },
-
-    "btn":{
-        "Cancel": "Cancel",
-        "Save": "Save"
     }
-    ,
-    "Info":{
-        "Title": "Personal Information",
-        "FirstName": "First Name",
-        "LastName": "Last Name",
-        "Username": "Username",
-        "Password": "Password",
-        "Email": "Email",
-        "Phone": "Phone"
-    },
-
-    "formLabel":{
-        "Submit": "Submit"
-    }
-
-
-
 }
