@@ -24,13 +24,15 @@ export default async function Settings() {
             background={"white"}
             className="row-span-2 justify-center h-full"
           >
-            <TitleBoxes
-              title={t("Title")}
-              titleImg="/Settings.svg"
-              titleImgAlt="Settings"
-              variant={"default"}
-              size={"default"}
-            />
+            <Contents width={"section"}>
+              <TitleBoxes
+                title={t("Title")}
+                titleImg="/Settings.svg"
+                titleImgAlt="Settings"
+                variant={"default"}
+                size={"default"}
+              />
+            </Contents>
           </Holds>
           <Holds className="row-span-8 h-full">
             <Index />

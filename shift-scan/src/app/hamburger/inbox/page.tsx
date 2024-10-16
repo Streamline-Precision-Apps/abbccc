@@ -18,15 +18,17 @@ export default async function Inbox() {
       <Contents height={"page"}>
         <Grids rows={"10"} gap={"5"}>
           <Holds background={"white"} className="row-span-2 h-full">
-            <TitleBoxes
-              title={t("Inbox")}
-              titleImg="/Inbox.svg"
-              titleImgAlt="Inbox"
-              className="my-auto"
-            />
+            <Contents width={"section"}>
+              <TitleBoxes
+                title={t("Inbox")}
+                titleImg="/Inbox.svg"
+                titleImgAlt="Inbox"
+                className="my-auto"
+              />
+            </Contents>
           </Holds>
           <Holds className="row-span-8 h-full">
-            <Content/>
+            <Content />
           </Holds>
         </Grids>
       </Contents>
