@@ -13,6 +13,7 @@ import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { Divider } from "@nextui-org/react";
 import { Dividers} from "@/components/(reusable)/dividers";
+import { Contents } from "@/components/(reusable)/contents";
 
 type Props = {
   handler:() => void
@@ -63,43 +64,50 @@ function handleRoute() {
 }
 
   return (
-    <Forms action={createJobsite} 
+    <Forms 
+    action={createJobsite}
     onSubmit={() => { 
-      setBanner(true);
-      setBannerText("Created Jobsite Successfully");
-        handler();
-        handleRoute();
-      }} 
-      >
-      <Labels size={"p4"}>{t("Temporary")}
-      <Inputs id="id" name="id" type="text" value={qrCode} disabled />
-      </Labels>
-
-      <Labels size={"p4"}>
+    setBanner(true);
+    setBannerText("Created Jobsite Successfully");
+    handler();
+    handleRoute();
+    }} 
+    >
+      <Holds background={"white"} className="my-5">
+        <Contents width={"section"} className="mt-2 mb-5">
+          <Labels size={"p4"}>{t("Temporary")}
+            <Inputs 
+            id="id" 
+            name="id" 
+            type="text" 
+            value={qrCode} 
+            disabled/>
+          </Labels>
+          <Labels size={"p4"}>
           {t("Name")}
-        <Inputs
-          id="name"
-          name="name"
-          type="text"
-          placeholder={t("NameExample")}
-          />
-      </Labels> 
-          
-    <Texts position={"center"} size={"p3"} className="mt-6" >{t("Address")}</Texts>
-    <Dividers />
-      <Holds size={"full"} className="mr-4">
-        <Labels size={"p4"} > 
-            {t("StreetNumber")}
             <Inputs
-                variant={"default"}
-                id="streetNumber"
-                name="streetNumber"
-                placeholder={`${t("StreetNumberDirection")} `}
-              />
-        </Labels> 
+            id="name"
+            name="name"
+            type="text"
+            placeholder={t("NameExample")}
+            />
+          </Labels> 
+        </Contents>
       </Holds>
+      <Holds background={"white"} className="my-5">
+        <Contents width={"section"} className="mt-2 mb-5">
+          <Titles size={"h3"} className="my-2">{t("Address")}</Titles>
+          <Labels size={"p4"} > 
+              {t("StreetNumber")}
+              <Inputs
+                  variant={"default"}
+                  id="streetNumber"
+                  name="streetNumber"
+                  placeholder={`${t("StreetNumberDirection")} `}
+                />
+          </Labels>
 
-      <Holds size={"full"}>
+
       <Labels size={"p4"}> 
       {t("StreetName")}
           <Inputs
@@ -109,9 +117,7 @@ function handleRoute() {
           placeholder={t("StreetNameDirection")}
           />
       </Labels> 
-      </Holds>
 
-      <Holds size={"full"} className="mr-4">
         <Labels size={"p4"}>
           {t("City")}
           <Inputs
@@ -121,32 +127,31 @@ function handleRoute() {
           placeholder={t("CityTitle")}
           />
           </Labels>
-      </Holds>
-      <Holds position={"row"} size={"full"}>
-      <Holds size={"50"} className="mr-4">
-        <Labels size={"p4"}>
-          {t("ZipCode")}
-          <Inputs
-          variant={"default"}
-          id="zipCode"
-          name="zipCode"
-          placeholder={t("ZipCodeTitle")}
-          />
+      <Holds position={"row"} className="gap-3">
+        <Holds>
+          <Labels size={"p4"}>
+            {t("ZipCode")}
+            <Inputs
+            variant={"default"}
+            id="zipCode"
+            name="zipCode"
+            placeholder={t("ZipCodeTitle")}/>
           </Labels>
-      </Holds>
-      <Holds size={"50"}>
-        <Labels size={"p4"}>
-          {t("State")}
-          <Inputs
-          variant={"default"}
-          id="state"
-          name="state"
-          placeholder={t("StateTitle")}
-          />
+        </Holds>
+        <Holds>
+          <Labels size={"p4"}>
+            {t("State")}
+            <Inputs
+            variant={"default"}
+            id="state"
+            name="state"
+            placeholder={t("StateTitle")}/>
           </Labels>
+        </Holds>
       </Holds>
+      </Contents> 
       </Holds>
-      {/* Commented out foreign country becaus its not that big of a concern right now*/}
+      {/* Commented out foreign country because its not that big of a concern right now*/}
       {/* <Holds size={"full"} className="mr-4">
         <Labels>
           {t("Country")}
@@ -157,8 +162,9 @@ function handleRoute() {
           />
           </Labels>
           </Holds> */}
-          <Texts position={"center"} size={"p3"} className="mt-6">{t("Description")}</Texts>
-        <Dividers />
+      <Holds background={"white"} className="my-5">
+        <Contents width={"section"} className="mt-2 mb-5">
+        <Titles size={"h3"} className="my-2">{t("Description")}</Titles>
         <Labels size={"p4"}>
           {t("DescriptionTitle")}
             <TextAreas
@@ -179,11 +185,14 @@ function handleRoute() {
           placeholder={t("CommentsPurpose")}
           />
           </Labels>
-        
-      <Holds size={"full"} position={"center"} className="my-4">
-      <Buttons background={"green"} size={"50"} type="submit" className="p-2">
-        <Titles size={"h3"}>{t("Submit")}</Titles>
-      </Buttons>
+          </Contents>  
+          </Holds>
+      <Holds>
+        <Contents width={"section"} className="my-5">
+          <Buttons background={"green"} type="submit" className="p-2">
+            <Titles size={"h3"}>{t("Submit")}</Titles>
+          </Buttons>
+        </Contents>
       </Holds>
     </Forms>
   );

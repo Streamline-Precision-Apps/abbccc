@@ -21,7 +21,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   const t = useTranslations('Clock');
 
   return (
-    <div className="w-full overflow-y-auto text-center p-4 border-2 border-black mt-5 ">
+    <div className=" overflow-y-auto text-center ">
       {options.length > 0 && (
         <div>
           <h2>{t("SearchedCodes")}</h2>
