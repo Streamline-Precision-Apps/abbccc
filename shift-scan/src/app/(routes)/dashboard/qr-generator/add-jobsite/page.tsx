@@ -17,7 +17,7 @@ export default async function NewJobsite() {
           <Holds background={"white"} className="row-span-1 h-full">
             <Contents width={"section"}>
               <TitleBoxes
-                title={t("Title")}
+                title={`${t("CreateNew")} ${t("Jobsite")} `}
                 titleImg="/jobsite.svg"
                 titleImgAlt="Team"
                 className="my-auto"

@@ -117,6 +117,7 @@
         "Truck": "TRUCK",
         "Trailer": "TRAILER",
         "Equipment": "EQUIPMENT",
+        "EquipmentTitle": "Equipment",
         "Name": "Name",
         "NamePlaceholder": "Enter Equipment Name",
         "DescriptionPlaceholder": "Enter a Description in less than 40 characters",
@@ -193,7 +194,8 @@
             "Edit": "Edit",
             "Delete": "Delete",
             "SelectDate": "Select Date",
-            "NoEquipmentLogs": "No logs found for the day selected."
+            "NoEquipmentLogs": "No logs found for the day selected.",
+            "ID": "Id: #"
         },
 
     "Clock": {

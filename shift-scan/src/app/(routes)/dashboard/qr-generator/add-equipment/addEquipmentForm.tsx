@@ -146,117 +146,117 @@ export default function AddEquipmentForm({
               <Options value="NEEDS_REPAIR">{t("NeedsRepair")}</Options>
             </Selects>
           </Labels>
+
+          {equipmentTag === "TRUCK" || equipmentTag === "TRAILER" ? (
+            <>
+              <Labels size={"p3"}>
+                {t("Make")}
+                <Inputs
+                  id="make"
+                  name="make"
+                  type="text"
+                  placeholder={`${t("MakePlaceholder")}`}
+                  required={
+                    equipmentTag === "TRUCK" || equipmentTag === "TRAILER"
+                      ? true
+                      : false
+                  }
+                />
+              </Labels>
+
+              <Labels size={"p3"}>
+                {t("Model")}
+                <Inputs
+                  id="model"
+                  name="model"
+                  type="text"
+                  placeholder={`${t("ModelPlaceholder")}`}
+                  required={
+                    equipmentTag === "TRUCK" || equipmentTag === "TRAILER"
+                      ? true
+                      : false
+                  }
+                />
+              </Labels>
+
+              <Labels size={"p3"}>
+                {t("Year")}
+                <Inputs
+                  id="year"
+                  name="year"
+                  type="number"
+                  min="1900"
+                  max="2099"
+                  defaultValue={new Date().getFullYear()}
+                  step="1"
+                  placeholder={`${t("YearPlaceholder")}`}
+                  required={
+                    equipmentTag === "TRUCK" || equipmentTag === "TRAILER"
+                      ? true
+                      : false
+                  }
+                />
+              </Labels>
+
+              <Labels size={"p3"}>
+                {t("LicensePlate")}
+                <Inputs
+                  id="licensePlate"
+                  name="licensePlate"
+                  type="text"
+                  placeholder={`${t("LicensePlatePlaceholder")}`}
+                  required={
+                    equipmentTag === "TRUCK" || equipmentTag === "TRAILER"
+                      ? true
+                      : false
+                  }
+                />
+              </Labels>
+
+              <Labels size={"p3"}>
+                {t("RegistrationExpiration")}
+                <Inputs
+                  id="registrationExpiration"
+                  name="registrationExpiration"
+                  type="date"
+                  required={
+                    equipmentTag === "TRUCK" || equipmentTag === "TRAILER"
+                      ? true
+                      : false
+                  }
+                />
+              </Labels>
+
+              <Labels size={"p3"}>
+                {t("Mileage")}
+                <Inputs
+                  id="mileage"
+                  name="mileage"
+                  type="number"
+                  placeholder={`${t("MileagePlaceholder")}`}
+                  required={
+                    equipmentTag === "TRUCK" || equipmentTag === "TRAILER"
+                      ? true
+                      : false
+                  }
+                />
+              </Labels>
+            </>
+          ) : null}
+
+          <Inputs
+            id="image"
+            name="image"
+            type="hidden"
+            value={base64String || ""}
+          />
+          <Inputs id="qrId" name="qrId" type="hidden" value={eqCode} />
         </Contents>
       </Holds>
-
-      {equipmentTag === "TRUCK" || equipmentTag === "TRAILER" ? (
-        <>
-          <Labels size={"p3"}>
-            {t("Make")}
-            <Inputs
-              id="make"
-              name="make"
-              type="text"
-              placeholder={`${t("MakePlaceholder")}`}
-              required={
-                equipmentTag === "TRUCK" || equipmentTag === "TRAILER"
-                  ? true
-                  : false
-              }
-            />
-          </Labels>
-
-          <Labels size={"p3"}>
-            {t("Model")}
-            <Inputs
-              id="model"
-              name="model"
-              type="text"
-              placeholder={`${t("ModelPlaceholder")}`}
-              required={
-                equipmentTag === "TRUCK" || equipmentTag === "TRAILER"
-                  ? true
-                  : false
-              }
-            />
-          </Labels>
-
-          <Labels size={"p3"}>
-            {t("Year")}
-            <Inputs
-              id="year"
-              name="year"
-              type="number"
-              min="1900"
-              max="2099"
-              defaultValue={new Date().getFullYear()}
-              step="1"
-              placeholder={`${t("YearPlaceholder")}`}
-              required={
-                equipmentTag === "TRUCK" || equipmentTag === "TRAILER"
-                  ? true
-                  : false
-              }
-            />
-          </Labels>
-
-          <Labels size={"p3"}>
-            {t("LicensePlate")}
-            <Inputs
-              id="licensePlate"
-              name="licensePlate"
-              type="text"
-              placeholder={`${t("LicensePlatePlaceholder")}`}
-              required={
-                equipmentTag === "TRUCK" || equipmentTag === "TRAILER"
-                  ? true
-                  : false
-              }
-            />
-          </Labels>
-
-          <Labels size={"p3"}>
-            {t("RegistrationExpiration")}
-            <Inputs
-              id="registrationExpiration"
-              name="registrationExpiration"
-              type="date"
-              required={
-                equipmentTag === "TRUCK" || equipmentTag === "TRAILER"
-                  ? true
-                  : false
-              }
-            />
-          </Labels>
-
-          <Labels size={"p3"}>
-            {t("Mileage")}
-            <Inputs
-              id="mileage"
-              name="mileage"
-              type="number"
-              placeholder={`${t("MileagePlaceholder")}`}
-              required={
-                equipmentTag === "TRUCK" || equipmentTag === "TRAILER"
-                  ? true
-                  : false
-              }
-            />
-          </Labels>
-        </>
-      ) : null}
-
-      <Inputs
-        id="image"
-        name="image"
-        type="hidden"
-        value={base64String || ""}
-      />
-      <Inputs id="qrId" name="qrId" type="hidden" value={eqCode} />
       <Holds>
         <Contents width={"section"} className="my-5">
           <Buttons background={"green"} type="submit" className="p-2">
-            <Titles size={"h3"}>{t("Submit")}</Titles>
+            <Titles size={"h3"}>{t("CreateNew")}</Titles>
           </Buttons>
         </Contents>
       </Holds>
