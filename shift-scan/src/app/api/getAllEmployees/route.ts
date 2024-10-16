@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
+import { SearchUser } from "@/lib/types";
 
 export async function GET(request: Request) {
   const session = await auth();
@@ -13,21 +14,25 @@ export async function GET(request: Request) {
 
   try {
     // Fetch employee details
-    const employee = await prisma.users.findUnique({
-      where: {
-        id: userId.toString(),
-      },
+    const employees : SearchUser[] = await prisma.users.findMany({
       select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        image: true,
-        signature: true,
+          id: true,
+          firstName: true,
+          lastName: true,
+          username: true,
+          permission: true,
+          DOB: true,
+          truckView: true,
+          mechanicView: true,
+          laborView: true,
+          tascoView: true,
+          image: true,
+          terminationDate: true
       },
     });
 
     // Return the fetched data as a response
-    return NextResponse.json(employee);
+    return NextResponse.json(employees);
   } catch (error) {
     console.error("Error fetching profile data:", error);
     return NextResponse.json(
