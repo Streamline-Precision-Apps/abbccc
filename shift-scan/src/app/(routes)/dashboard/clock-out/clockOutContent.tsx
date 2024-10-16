@@ -166,7 +166,6 @@ export default function ClockOutContent({ id }: ClockOutContentProps) {
                 title={t("InjuryVerification")}
                 titleImg="/end-day.svg"
                 titleImgAlt="Team"
-                type="route"
                 href="/dashboard"
               />
             </Contents>

@@ -34,9 +34,6 @@ export default function ReportBug() {
                 title={`${t("Form3")}`}
                 titleImg="/form.svg"
                 titleImgAlt="Forms"
-                variant="default"
-                size="default"
-                className="my-auto"
               />
             </Contents>
           </Holds>

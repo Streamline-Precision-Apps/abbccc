@@ -61,16 +61,17 @@ export default function EquipmentLogContent({ userId }: EquipmentLogs) {
     return (
       <Grids rows={"10"} gap={"5"}>
         <Holds background={"white"} size={"full"} className="row-span-2 h-full">
-          <TitleBoxes
-            title={t("Current")}
-            titleImg="/equipment.svg"
-            titleImgAlt="Current"
-            variant={"default"}
-            size={"default"}
-            className="my-auto"
-            href="/dashboard"
-            type="route"
-          />
+          <Contents width={"section"}>
+            <TitleBoxes
+              title={t("Current")}
+              titleImg="/equipment.svg"
+              titleImgAlt="Current"
+              variant={"default"}
+              size={"default"}
+              className="my-auto"
+              href="/dashboard"
+            />
+          </Contents>
         </Holds>
 
         <Holds background={"white"} className="row-span-8 h-full ">
@@ -92,17 +93,17 @@ export default function EquipmentLogContent({ userId }: EquipmentLogs) {
     <>
       <Grids rows={"10"} gap={"5"} className=" relative">
         <Holds background={"white"} className="row-span-2 h-full">
-          <TitleBoxes
-            title={t("Current")}
-            titleImg="/equipment.svg"
-            titleImgAlt="Current"
-            variant={"default"}
-            size={"default"}
-            className="my-auto"
-            type="route"
-            href="/dashboard"
-          />
-
+          <Contents width={"section"}>
+            <TitleBoxes
+              title={t("Current")}
+              titleImg="/equipment.svg"
+              titleImgAlt="Current"
+              variant={"default"}
+              size={"default"}
+              className="my-auto"
+              href="/dashboard"
+            />
+          </Contents>
           {banner && (
             <Holds background={"green"} className="h-8 w-full rounded-xl ">
               <Texts

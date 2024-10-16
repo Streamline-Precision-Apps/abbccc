@@ -21,7 +21,7 @@ export default async function EmployeeProfile() {
   return (
     <Bases>
       <Contents>
-        <Holds className="h-full row-span-1">
+        <Holds className="h-full ">
           <EmployeeInfo />
         </Holds>
       </Contents>
