@@ -127,7 +127,7 @@ export default function QrJobsiteContent() {
           <Holds className="row-span-4 col-span-2 h-full ">
             {/* Replace the old Selects component with the new SearchSelect */}
             <SearchSelect
-              datatype={`${t("JobSiteDatatype")}`}
+              datatype={`${t("SearchForAJobSite")}`}
               options={generatedList}
               recentOptions={generatedRecentList}
               onSelect={handleSearchSelectChange} // Pass the selection handler

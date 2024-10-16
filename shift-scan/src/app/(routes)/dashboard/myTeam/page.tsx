@@ -54,7 +54,7 @@ export default function Content() {
   return (
     <Bases>
       <Contents>
-        <Grids rows={"5"} gap={"3"}>
+        <Grids rows={"5"} gap={"5"}>
           <Holds background={"white"} className="row-span-1 h-full">
             <Contents width={"section"}>
               <TitleBoxes

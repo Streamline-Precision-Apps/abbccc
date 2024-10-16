@@ -57,7 +57,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
   title2,
   titleImg,
   titleImgAlt,
-  href,
+  href = "back",
   modal,
   modalTitle,
   ...props
@@ -69,7 +69,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         {...props}
       >
         <Holds position={"absolute"}>
-          <Buttons href="back" background={"none"} size={"30"}>
+          <Buttons href={href} background={"none"} size={"30"}>
             <Images
               titleImg="/turnBack.svg"
               titleImgAlt={titleImgAlt}
@@ -115,44 +115,48 @@ const TitleBoxes: FC<TitleBoxProps> = ({
       </div>
     );
   }
-  if (type === "profilePics") {
+  if (type === "myTeamProfile") {
     return (
       <div
         className={cn(TitleBoxVariants({ variant, size, className }))}
         {...props}
       >
-        <Holds position={"absolute"}>
-          <Buttons href="back" background={"none"} size={"30"}>
-            <Images
-              titleImg="/turnBack.svg"
-              titleImgAlt={titleImgAlt}
-              size={"30"}
-            />
-          </Buttons>
-        </Holds>
-        {props.children}
-        <Holds size={"full"} position={"center"}>
-          <Holds size={"40"} className="rounded-full relative ">
-            <Images
-              titleImg={titleImg}
-              titleImgAlt={titleImgAlt}
-              className="rounded-full border-[3px] border-black"
-              size={"full"}
-            />
+        <Grids cols={"4"} rows={"3"} className="w-full">
+          <Holds className="col-span-1 row-span-1">
+            <Buttons
+              href={href}
+              background={"none"}
+              position={"left"}
+              size={"50"}
+            >
+              <Images titleImg="/turnBack.svg" titleImgAlt={titleImgAlt} />
+            </Buttons>
           </Holds>
-        </Holds>
-        <Titles size={"h3"}>{title}</Titles>
-        <Holds
-          size={"30"}
-          position={"absolute"}
-          className="left-[70%] top-[5%] "
-        >
-          <Holds size={"90"} position={"center"}>
-            <Titles position={"right"} size={"h6"}>
-              {title2}
-            </Titles>
+          <Holds className="col-span-2 row-span-2 ">
+            {props.children}
+            <Holds size={"full"} position={"center"}>
+              <Holds size={"40"} className="rounded-full relative ">
+                <Images
+                  titleImg={titleImg}
+                  titleImgAlt={titleImgAlt}
+                  className="rounded-full border-[3px] border-black"
+                  size={"full"}
+                />
+              </Holds>
+            </Holds>
           </Holds>
-        </Holds>
+
+          <Holds className="col-span-4 row-span-1">
+            <Titles size={"h1"}>{title}</Titles>
+          </Holds>
+          <Holds className="col-start-4 col-span-1 row-start-1 row-span-1">
+            <Holds size={"90"} position={"center"}>
+              <Titles position={"right"} size={"h6"}>
+                {title2}
+              </Titles>
+            </Holds>
+          </Holds>
+        </Grids>
       </div>
     );
   }
@@ -175,7 +179,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         {...props}
       >
         <Holds position={"absolute"}>
-          <Buttons href="back" background={"none"} size={"30"}>
+          <Buttons href={href} background={"none"} size={"30"}>
             <Images
               titleImg="/turnBack.svg"
               titleImgAlt={titleImgAlt}
@@ -193,7 +197,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         className={cn(TitleBoxVariants({ variant, size, className }))}
         {...props}
       >
-        <Buttons href="back">
+        <Buttons href={href}>
           <Images titleImg="/backArrow.svg" titleImgAlt="back arrow" />
         </Buttons>
         <Titles size={"h1"}>{title}</Titles>
@@ -206,7 +210,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         className={cn(TitleBoxVariants({ variant, size, className }))}
         {...props}
       >
-        <Buttons href="back">
+        <Buttons href={href}>
           <Images titleImg="/backArrow.svg" titleImgAlt="back arrow" />
         </Buttons>
         <Titles size={"h1"}>{title}</Titles>
@@ -220,7 +224,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         {...props}
       >
         <Holds position={"absolute"}>
-          <Buttons href="back" background={"none"} size={"30"}>
+          <Buttons href={href} background={"none"} size={"30"}>
             <Images
               titleImg="/turnBack.svg"
               titleImgAlt="back arrow"
@@ -245,30 +249,6 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         </Holds>
       </div>
     );
-  }
-  if (type === "route") {
-    return (
-      <div
-        className={cn(TitleBoxVariants({ variant, size, className }))}
-        {...props}
-      >
-        <Holds position={"absolute"}>
-          <Buttons href={href} background={"none"} size={"30"}>
-            <Images
-              titleImg="/turnBack.svg"
-              titleImgAlt={titleImgAlt}
-              size={"30"}
-            />
-          </Buttons>
-        </Holds>
-        <Holds>
-          <Holds size={"50"} className="my-auto">
-            <Images titleImg={titleImg} titleImgAlt={titleImgAlt} size={"30"} />
-          </Holds>
-          <Titles size={"h2"}>{title}</Titles>
-        </Holds>
-      </div>
-    );
   } else
     return (
       <div
@@ -278,7 +258,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         <Grids cols={"4"} rows={"3"} className="w-full">
           <Holds className="col-span-1 row-span-1">
             <Buttons
-              href="back"
+              href={href}
               background={"none"}
               position={"left"}
               size={"50"}
