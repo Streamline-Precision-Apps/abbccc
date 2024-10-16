@@ -4,7 +4,7 @@ import { fetchEq, updateEq } from "@/actions/equipmentActions";
 import { Images } from "@/components/(reusable)/images";
 import { useTranslations } from "next-intl";
 import React from "react";
-import { useState, useEffect} from "react";
+import { useState, useEffect } from "react";
 import { Holds } from "@/components/(reusable)/holds";
 import { Contents } from "@/components/(reusable)/contents";
 import { Selects } from "@/components/(reusable)/selects";
@@ -14,6 +14,7 @@ import { Titles } from "@/components/(reusable)/titles";
 import { Texts } from "@/components/(reusable)/texts";
 import { Labels } from "@/components/(reusable)/labels";
 import { CostCodes, Jobsites, EquipmentLog, Equipment } from "@/lib/types";
+import Spinner from "@/components/(animations)/spinner";
 
 type EditWorkProps = {
   edit: boolean;
@@ -21,7 +22,11 @@ type EditWorkProps = {
   jobsitesData: Jobsites[];
   timesheetData: TimeSheet[];
   equipmentData: EquipmentLog[];
-  handleFormSubmit: (employeeId: string, date: string, message?: string) => void;
+  handleFormSubmit: (
+    employeeId: string,
+    date: string,
+    message?: string
+  ) => void;
   setEdit: (edit: boolean) => void;
   employeeId: string;
   date: string;
@@ -68,6 +73,7 @@ const EditWork = ({
   const [timesheets, setTimesheets] = useState<TimeSheet[]>([]);
   const [equipmentLogs, setEquipmentLogs] = useState<EquipmentLog[]>([]);
   const [message, setMessage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const t = useTranslations("MyTeam");
 
@@ -81,18 +87,29 @@ const EditWork = ({
           ? new Date(timesheet.startTime).toISOString().split("T")[0]
           : "";
         const startTime = timesheet.startTime
-          ? new Date(timesheet.startTime).toISOString().split("T")[1].split(":").slice(0, 2).join(":")
+          ? new Date(timesheet.startTime)
+              .toISOString()
+              .split("T")[1]
+              .split(":")
+              .slice(0, 2)
+              .join(":")
           : "";
         const endDate = timesheet.endTime
           ? new Date(timesheet.endTime).toISOString().split("T")[0]
           : "";
         const endTime = timesheet.endTime
-          ? new Date(timesheet.endTime).toISOString().split("T")[1].split(":").slice(0, 2).join(":")
+          ? new Date(timesheet.endTime)
+              .toISOString()
+              .split("T")[1]
+              .split(":")
+              .slice(0, 2)
+              .join(":")
           : "";
 
         const durationBackup =
           timesheet.startTime && timesheet.endTime
-            ? (new Date(timesheet.endTime).getTime() - new Date(timesheet.startTime).getTime()) /
+            ? (new Date(timesheet.endTime).getTime() -
+                new Date(timesheet.startTime).getTime()) /
               (1000 * 60 * 60)
             : 0;
 
@@ -109,10 +126,35 @@ const EditWork = ({
     }
   }, [timesheetData]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, id: string, field: keyof TimeSheet) => {
+  useEffect(() => {
+    const fetchEquipmentLogs = async () => {
+      try {
+        setLoading(true);
+        console.log(date);
+        const data = await fetch(
+          `/api/getEmployeeEquipmentByDate?date=${date}`
+        );
+        const res = await data.json();
+        console.log(res); // Logs filtered by date
+        setEquipmentLogs(res);
+      } catch {
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchEquipmentLogs();
+  }, [date]);
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    id: string,
+    field: keyof TimeSheet
+  ) => {
     const value = e.target.value;
     setTimesheets((prevData) =>
-      prevData.map((timesheet) => (timesheet.id === id ? { ...timesheet, [field]: value } : timesheet))
+      prevData.map((timesheet) =>
+        timesheet.id === id ? { ...timesheet, [field]: value } : timesheet
+      )
     );
   };
 
@@ -129,21 +171,37 @@ const EditWork = ({
     );
   };
 
-  const handleCodeChange = (e: React.ChangeEvent<HTMLSelectElement>, id: string, field: keyof TimeSheet) => {
+  const handleCodeChange = (
+    e: React.ChangeEvent<HTMLSelectElement>,
+    id: string,
+    field: keyof TimeSheet
+  ) => {
     const value = e.target.value;
     setTimesheets((prevTimesheets) =>
-      prevTimesheets.map((timesheet) => (timesheet.id === id ? { ...timesheet, [field]: value } : timesheet))
+      prevTimesheets.map((timesheet) =>
+        timesheet.id === id ? { ...timesheet, [field]: value } : timesheet
+      )
     );
   };
 
-  const handleEquipmentChange = (e: React.ChangeEvent<HTMLSelectElement>, id: number) => {
+  const handleEquipmentChange = (
+    e: React.ChangeEvent<HTMLSelectElement>,
+    id: number
+  ) => {
     const value = e.target.value;
     setEquipmentLogs((prevLogs) =>
-      prevLogs.map((log) => (log.id === id ? { ...log, Equipment: { ...log.Equipment, name: value } } : log))
+      prevLogs.map((log) =>
+        log.id === id
+          ? { ...log, Equipment: { ...log.Equipment, name: value } }
+          : log
+      )
     );
   };
 
-  const handleDurationChange = (e: React.ChangeEvent<HTMLInputElement>, id: number) => {
+  const handleDurationChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    id: number
+  ) => {
     const value = e.target.value;
     setEquipmentLogs((prevLogs) =>
       prevLogs.map((log) => (log.id === id ? { ...log, duration: value } : log))
@@ -154,16 +212,25 @@ const EditWork = ({
     try {
       const updatedLogs = equipmentLogs.map((log) => ({
         ...log,
-        duration: log.duration !== null ? parseFloat(log.duration as unknown as string) : null,
+        duration:
+          log.duration !== null
+            ? parseFloat(log.duration as unknown as string)
+            : null,
       }));
 
       for (const timesheet of timesheets) {
         const formData = new FormData();
         formData.append("id", timesheet.id ?? "");
-        formData.append("submitDate", timesheet.submitDate?.toISOString() ?? "");
+        formData.append(
+          "submitDate",
+          timesheet.submitDate?.toISOString() ?? ""
+        );
         formData.append("employeeId", employeeId);
         formData.append("costcode", timesheet.costcode ?? "");
-        formData.append("startTime", `${timesheet.startDate}T${timesheet.startTime}`);
+        formData.append(
+          "startTime",
+          `${timesheet.startDate}T${timesheet.startTime}`
+        );
         formData.append("endTime", `${timesheet.endDate}T${timesheet.endTime}`);
         formData.append("jobsiteId", timesheet.jobsiteId ?? "");
         await editTimeSheet(formData);
@@ -195,21 +262,38 @@ const EditWork = ({
       setMessage(null);
       const initializedTimesheets = timesheetData.map((timesheet) => ({
         ...timesheet,
-        startDate: timesheet.startTime ? new Date(timesheet.startTime).toISOString().split("T")[0] : "",
+        startDate: timesheet.startTime
+          ? new Date(timesheet.startTime).toISOString().split("T")[0]
+          : "",
         startTime: timesheet.startTime
-          ? new Date(timesheet.startTime).toISOString().split("T")[1].split(":").slice(0, 2).join(":")
+          ? new Date(timesheet.startTime)
+              .toISOString()
+              .split("T")[1]
+              .split(":")
+              .slice(0, 2)
+              .join(":")
           : "",
-        endDate: timesheet.endTime ? new Date(timesheet.endTime).toISOString().split("T")[0] : "",
+        endDate: timesheet.endTime
+          ? new Date(timesheet.endTime).toISOString().split("T")[0]
+          : "",
         endTime: timesheet.endTime
-          ? new Date(timesheet.endTime).toISOString().split("T")[1].split(":").slice(0, 2).join(":")
+          ? new Date(timesheet.endTime)
+              .toISOString()
+              .split("T")[1]
+              .split(":")
+              .slice(0, 2)
+              .join(":")
           : "",
-          jobsiteId: (timesheet.jobsiteId?.toString() || jobsitesData[0]?.id || "").toString(),
-          costcode: timesheet.costcode || costcodesData[0]?.name || "",
+        jobsiteId: (
+          timesheet.jobsiteId?.toString() ||
+          jobsitesData[0]?.id ||
+          ""
+        ).toString(),
+        costcode: timesheet.costcode || costcodesData[0]?.name || "",
       }));
       setTimesheets(initializedTimesheets);
     }
   }, [timesheetData]);
-
 
   const editHandler = () => {
     setEdit(!edit);
@@ -219,40 +303,77 @@ const EditWork = ({
     setMessage("");
   }, [edit]);
 
-  return (
-    <Contents>
-      <Holds>
+  return loading ? (
+    <>
+      <Contents width={"section"}>
         <Holds>
+          <Holds className="my-5">
+            <Titles>{t("Timesheets")}</Titles>
+            <br />
+            <Spinner />
+          </Holds>
+
+          <div className="border border-black"></div>
+          <Holds className="my-5">
+            <Titles>{t("EquipmentLogs")}</Titles>
+            <br />
+            <div className="border border-black"></div>
+            <br />
+            <Spinner />
+          </Holds>
+        </Holds>
+      </Contents>
+    </>
+  ) : (
+    <Contents width={"section"} className="my-5">
+      <Holds>
+        <Holds position={"row"} className="my-5">
           {timesheetData.length === 0 ? null : (
             <>
-              <Buttons onClick={editHandler} className={edit ? "bg-app-red" : "bg-app-orange"}>
-                <Images
-                  titleImg={edit ? "/new/undo-edit.svg" : "/new/edit-form.svg"}
-                  titleImgAlt={edit ? "Undo Edit" : "Edit Form"}
-                  className="p-2"
-                />
-              </Buttons>
-              {edit ? (
-                <Buttons className="flex bg-app-green text-white font-bold p-2 rounded" onClick={handleSaveChanges}>
+              <Holds>
+                <Buttons
+                  onClick={editHandler}
+                  className={edit ? "bg-app-red" : "bg-app-orange"}
+                  size={edit ? "30" : "20"}
+                >
                   <Images
-                    titleImg={"/new/save-edit.svg"}
-                    titleImgAlt={"Save Changes"}
+                    titleImg={edit ? "/undo-edit.svg" : "/edit-form.svg"}
+                    titleImgAlt={edit ? "Undo Edit" : "Edit Form"}
+                    className="mx-auto p-2"
                   />
                 </Buttons>
+              </Holds>
+              {edit ? (
+                <Holds>
+                  <Buttons
+                    className="bg-app-green"
+                    onClick={handleSaveChanges}
+                    size={"30"}
+                  >
+                    <Images
+                      titleImg={"/save-edit.svg"}
+                      titleImgAlt={"Save Changes"}
+                      className="mx-auto p-2"
+                    />
+                  </Buttons>
+                </Holds>
               ) : null}
             </>
           )}
         </Holds>
         {message ? (
           <>
+            <Titles>{t("Timesheets")}</Titles>
+            <br />
             <Texts>{message}</Texts>
+            <br />
+            <div className="border border-black"></div>
+            <br />
           </>
         ) : (
           <ul>
             <br />
-            <Titles>
-              {t("Timesheets")}
-            </Titles>
+            <Titles>{t("Timesheets")}</Titles>
             <br />
             <div className="border border-black"></div>
             <br />
@@ -266,20 +387,33 @@ const EditWork = ({
                     variant={"default"}
                     id="submitDate"
                     type="date"
-                    value={timesheet.submitDate ? new Date(timesheet.submitDate).toISOString().split("T")[0] : ""}
+                    value={
+                      timesheet.submitDate
+                        ? new Date(timesheet.submitDate)
+                            .toISOString()
+                            .split("T")[0]
+                        : ""
+                    }
                     hidden
                   />
                 </>
                 <>
                   <Labels>
-                    {t("Duration")} {edit ? <span>{t("Duration-Comment")}</span> : null}
+                    {t("Duration")}
+                    {edit ? <span>{t("Duration-Comment")}</span> : null}
                   </Labels>
                   <Inputs
                     id="duration"
                     type="text"
-                    value={timesheet.duration ? timesheet.duration.toString() : ""}
-                    onChange={(e) => handleInputChange(e, timesheet.id ?? "", "duration")}
-                    readOnly={!edit}
+                    value={
+                      timesheet.duration
+                        ? timesheet.duration.toFixed(2).toString()
+                        : ""
+                    }
+                    onChange={(e) =>
+                      handleInputChange(e, timesheet.id ?? "", "duration")
+                    }
+                    disabled={!edit}
                   />
                 </>
                 <>
@@ -291,16 +425,28 @@ const EditWork = ({
                         id="startDate"
                         type="date"
                         value={timesheet.startDate?.toString() || ""}
-                        onChange={(e) => handleInputChangeDate(e, timesheet.id ?? "", "startDate")}
-                        readOnly={!edit}
+                        onChange={(e) =>
+                          handleInputChangeDate(
+                            e,
+                            timesheet.id ?? "",
+                            "startDate"
+                          )
+                        }
+                        disabled={!edit}
                       />
                       <Inputs
                         variant={"default"}
                         id="startTime"
                         type="time"
                         value={timesheet.startTime?.toString() || ""}
-                        onChange={(e) => handleInputChangeDate(e, timesheet.id ?? "", "startTime")}
-                        readOnly={!edit}
+                        onChange={(e) =>
+                          handleInputChangeDate(
+                            e,
+                            timesheet.id ?? "",
+                            "startTime"
+                          )
+                        }
+                        disabled={!edit}
                       />
                     </>
                   </Labels>
@@ -312,29 +458,41 @@ const EditWork = ({
                         id="endDate"
                         type="date"
                         value={timesheet.endDate?.toString() || ""}
-                        onChange={(e) => handleInputChangeDate(e, timesheet.id ?? "", "endDate")}
-                        readOnly={!edit}
+                        onChange={(e) =>
+                          handleInputChangeDate(
+                            e,
+                            timesheet.id ?? "",
+                            "endDate"
+                          )
+                        }
+                        disabled={!edit}
                       />
                       <Inputs
                         variant={"default"}
                         id="endTime"
                         type="time"
                         value={timesheet.endTime?.toString() || ""}
-                        onChange={(e) => handleInputChangeDate(e, timesheet.id ?? "", "endTime")}
-                        readOnly={!edit}
+                        onChange={(e) =>
+                          handleInputChangeDate(
+                            e,
+                            timesheet.id ?? "",
+                            "endTime"
+                          )
+                        }
+                        disabled={!edit}
                       />
                     </>
                   </Labels>
                 </>
                 <>
-                  <Labels >
-                    {t("JobSites")}
-                  </Labels>
+                  <Labels>{t("JobSites")}</Labels>
                   <Selects
                     variant={"default"}
                     id="jobsiteId"
                     value={timesheet.jobsiteId ?? ""}
-                    onChange={(e) => handleCodeChange(e, timesheet.id ?? "", "jobsiteId")}
+                    onChange={(e) =>
+                      handleCodeChange(e, timesheet.id ?? "", "jobsiteId")
+                    }
                     disabled={!edit}
                   >
                     {jobsitesData.map((jobsite) => (
@@ -343,14 +501,14 @@ const EditWork = ({
                       </option>
                     ))}
                   </Selects>
-                  <Labels >
-                    {t("CostCode")}
-                  </Labels>
+                  <Labels>{t("CostCode")}</Labels>
                   <Selects
                     variant={"default"}
                     id="costcode"
                     value={timesheet.costcode ?? ""}
-                    onChange={(e) => handleCodeChange(e, timesheet.id ?? "", "costcode")}
+                    onChange={(e) =>
+                      handleCodeChange(e, timesheet.id ?? "", "costcode")
+                    }
                     disabled={!edit}
                   >
                     {costcodesData.map((costcode) => (
@@ -369,12 +527,14 @@ const EditWork = ({
         )}
       </Holds>
       <Holds>
-        <Titles >
-          {t("EquipmentLogs")}
-        </Titles>
+        <Titles>{t("EquipmentLogs")}</Titles>
         <ul>
           {equipmentLogs.map((log) => (
-            <li key={log.id}>
+            <li key={log.id} className="my-5">
+              <br />
+              <div className="border border-black"></div>
+              <br />
+              <Labels> Equipment Used</Labels>
               <Selects
                 variant={"default"}
                 value={log.Equipment.name}
@@ -383,31 +543,31 @@ const EditWork = ({
               >
                 {equipment.map((equipmentLog) => (
                   <option key={equipmentLog.id} value={equipmentLog.name}>
-                    {equipmentLog.name.slice(0, 10)} - {equipmentLog.qrId}
+                    {equipmentLog.name.slice(0, 10)} {equipmentLog.qrId}
                   </option>
                 ))}
               </Selects>
-              <Labels >
-                {t("Duration")}
-              </Labels>
+              <Labels>{t("Duration")}</Labels>
               <Inputs
                 variant={"default"}
                 type="text"
                 name="eq-duration"
-                value={log.duration !== null ? log.duration.toString() : ""}
+                value={
+                  log.duration !== null
+                    ? Number(log.duration).toFixed(2).toString()
+                    : ""
+                }
                 onChange={(e) => handleDurationChange(e, log.id)}
-                readOnly={!edit}
+                disabled={!edit}
               />
             </li>
           ))}
           <br />
-          <div className="border border-black"></div>
-          <br />
           {equipmentLogs.length === 0 && (
-            <Texts >
-              {t("NoEquipmentLogs")}
-            </Texts>
+            <div className="border border-black"></div>
           )}
+          <br />
+          {equipmentLogs.length === 0 && <Texts>{t("NoEquipmentLogs")}</Texts>}
         </ul>
       </Holds>
     </Contents>

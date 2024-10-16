@@ -12,13 +12,14 @@ import { Grids } from "@/components/(reusable)/grids";
 
 type ControlComponentProps = {
   toggle: (toggle: boolean) => void;
-}
+};
 
-export default function ControlComponent({ toggle } : ControlComponentProps) {
+export default function ControlComponent({ toggle }: ControlComponentProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentDate, setCurrentDate] = useState(new Date());
   const { payPeriodTimeSheet } = usePayPeriodTimeSheet();
   const t = useTranslations("Home");
+  const e = useTranslations("Err-Msg");
 
   const calculatePayPeriodStart = () => {
     try {
@@ -30,7 +31,7 @@ export default function ControlComponent({ toggle } : ControlComponentProps) {
         startDate.getTime() + diffWeeks * 2 * 7 * 24 * 60 * 60 * 1000
       );
     } catch {
-      throw new Error("Failed to calculate pay period start date");
+      throw new Error(e("CalculatePayPeriod"));
     }
   };
 
@@ -132,96 +133,129 @@ export default function ControlComponent({ toggle } : ControlComponentProps) {
   };
 
   return (
-      <Grids rows={"7"} gap={"5"}>
-        <Holds background={"darkBlue"} className="row-span-2 h-full border-black border-[3px] shadow-[8px_8px_0px_grey]">
-          <ViewComponent
+    <Grids rows={"7"} gap={"5"}>
+      <Holds
+        background={"darkBlue"}
+        className="row-span-2 h-full border-black border-[3px] shadow-[8px_8px_0px_grey]"
+      >
+        <ViewComponent
           scrollLeft={scrollLeft}
           scrollRight={scrollRight}
           returnToMain={returnToMain}
-          currentDate={currentDate}/>
-        </Holds> 
-        <Holds background={"white"} position={"row"} className="row-span-4 border-black border-[3px] shadow-[8px_8px_0px_grey]">
-          <Holds //------------------------------------ First Bar
-          className="h-full">
-            <Contents width={"section"} className="p-3 py-5">
-            <Holds background={"darkBlue"} className="h-full border-black border-[3px] rounded-[10px] p-1 flex">
-            <div
-            className={`border-black border-[3px] rounded-[10px]
+          currentDate={currentDate}
+        />
+      </Holds>
+      <Holds
+        background={"white"}
+        position={"row"}
+        className="row-span-4 border-black border-[3px] shadow-[8px_8px_0px_grey]"
+      >
+        <Holds //------------------------------------ First Bar
+          className="h-full"
+        >
+          <Contents width={"section"} className="p-3 py-5">
+            <Holds
+              background={"darkBlue"}
+              className="h-full border-black border-[3px] rounded-[10px] p-1 flex"
+            >
+              <div
+                className={`border-black border-[3px] rounded-[10px]
               ${
                 currentData.valuePrev === 0
-                ? "bg-clear"
-                : `h-[${calculateBarHeight(currentData.valuePrev)}px]`
+                  ? "bg-clear"
+                  : `h-[${calculateBarHeight(currentData.valuePrev)}px]`
+              }
+                ${
+                  currentData.valuePrev > 8
+                    ? "bg-app-green border-black border-[3px] rounded-[10px]"
+                    : "bg-app-orange border-black border-[3px] rounded-[10px]"
                 }
-                ${currentData.valuePrev > 8 ? "bg-app-green border-black border-[3px] rounded-[10px]" : "bg-app-orange border-black border-[3px] rounded-[10px]"}
                 ${currentData.valuePrev !== 0 ? "" : "bg-clear  border-none"}
                 `}
-                >
-              <Texts size={"p3"}>
-                {currentData.valuePrev !== 0
-                  ? `${currentData.valuePrev.toFixed(1)} ${t("DA-Time-Label")}`
-                  : ""}
-              </Texts>
-            </div>
+              >
+                <Texts size={"p3"}>
+                  {currentData.valuePrev !== 0
+                    ? `${currentData.valuePrev.toFixed(1)} ${t(
+                        "DA-Time-Label"
+                      )}`
+                    : ""}
+                </Texts>
+              </div>
             </Holds>
-            </Contents>
-          </Holds>
-          <Holds //------------------------------------ Second Bar
-          className="h-full">
-            <Contents width={"section"} className="py-2">
-            <Holds background={"darkBlue"} className="h-full border-black border-[3px] rounded-[10px] p-1 flex">
+          </Contents>
+        </Holds>
+        <Holds //------------------------------------ Second Bar
+          className="h-full"
+        >
+          <Contents width={"section"} className="py-2">
             <Holds
-              className={`
+              background={"darkBlue"}
+              className="h-full border-black border-[3px] rounded-[10px] p-1 flex"
+            >
+              <Holds
+                className={`
                 ${
                   currentData.value === 0
-                  ? "bg-clear"
-                  : `h-[${calculateBarHeight(currentData.value)}px]`
-                  }  
-                  ${currentData.value > 8 ? "bg-app-green border-black border-[3px] rounded-[10px]" : "bg-app-orange border-black border-[3px] rounded-[10px]"}
+                    ? "bg-clear"
+                    : `h-[${calculateBarHeight(currentData.value)}px]`
+                }  
+                  ${
+                    currentData.value > 8
+                      ? "bg-app-green border-black border-[3px] rounded-[10px]"
+                      : "bg-app-orange border-black border-[3px] rounded-[10px]"
+                  }
                   ${currentData.value !== 0 ? "" : "bg-clear border-none"}
                   `}
-                  >
-              <Texts size={"p3"}>
-                {currentData.value !== 0
-                  ? `${currentData.value.toFixed(1)} ${t("DA-Time-Label")}`
-                  : ""}
-              </Texts>
+              >
+                <Texts size={"p3"}>
+                  {currentData.value !== 0
+                    ? `${currentData.value.toFixed(1)} ${t("DA-Time-Label")}`
+                    : ""}
+                </Texts>
+              </Holds>
             </Holds>
-            </Holds>
-            </Contents>
-          </Holds>
-          <Holds //------------------------------------ Third Bar 
-          className="h-full">
-            <Contents width={"section"} className="p-3 py-5">
-            <Holds background={"darkBlue"} className="h-full border-black border-[3px] rounded-[10px] p-1 flex">
+          </Contents>
+        </Holds>
+        <Holds //------------------------------------ Third Bar
+          className="h-full"
+        >
+          <Contents width={"section"} className="p-3 py-5">
             <Holds
-              className={`border-black border-[3px] rounded-[10px]
+              background={"darkBlue"}
+              className="h-full border-black border-[3px] rounded-[10px] p-1 flex"
+            >
+              <Holds
+                className={`border-black border-[3px] rounded-[10px]
                 ${
                   currentData.valueNext === 0
-                  ? "bg-clear"
-                  : `h-[${calculateBarHeight(currentData.valueNext)}px] `
+                    ? "bg-clear"
+                    : `h-[${calculateBarHeight(currentData.valueNext)}px] `
+                }
+                  ${
+                    currentData.valueNext > 8
+                      ? "bg-app-green border-black border-[3px] rounded-[10px]"
+                      : "bg-app-orange border-black border-[3px] rounded-[10px]"
                   }
-                  ${currentData.valueNext > 8 ? "bg-app-green border-black border-[3px] rounded-[10px]" : "bg-app-orange border-black border-[3px] rounded-[10px]"}
                   ${currentData.valueNext !== 0 ? "" : "bg-clear  border-none"}
                   `}
-                  >
-              <Texts  size={"p3"}>
-                {currentData.valueNext !== 0
-                  ? `${currentData.valueNext.toFixed(1)} ${t("DA-Time-Label")}`
-                  : ""}
-              </Texts>
+              >
+                <Texts size={"p3"}>
+                  {currentData.valueNext !== 0
+                    ? `${currentData.valueNext.toFixed(1)} ${t(
+                        "DA-Time-Label"
+                      )}`
+                    : ""}
+                </Texts>
+              </Holds>
             </Holds>
-            </Holds>
-            </Contents>
-          </Holds>
+          </Contents>
         </Holds>
-        <Holds className="row-span-1 h-full">
-          <Buttons href={"/timesheets"} background={"green"}>
-            <Texts size={"p3"}>
-              {t("TimeSheet-Label")}
-            </Texts>
-          </Buttons>
-        </Holds>
-      </Grids>
+      </Holds>
+      <Holds className="row-span-1 h-full">
+        <Buttons href={"/timesheets"} background={"green"}>
+          <Texts size={"p3"}>{t("TimeSheet-Label")}</Texts>
+        </Buttons>
+      </Holds>
+    </Grids>
   );
-};
-
+}

@@ -19,11 +19,10 @@ import { useRouter } from "next/navigation";
 import React from "react";
 import { Grids } from "@/components/(reusable)/grids";
 
-
 export default function Form({ session }: RequestForm) {
   const [sign, setSign] = useState(false);
   const [message, setMessage] = useState("");
-  const [closeBanner, showBanner] = useState(false);
+  const [closeBanner, setCloseBanner] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
   const [signature, setSignature] = useState("");
@@ -50,12 +49,12 @@ export default function Form({ session }: RequestForm) {
     const formData = new FormData(event.target as HTMLFormElement);
     createLeaveRequest(formData);
 
-    showBanner(true);
+    setCloseBanner(true);
     setMessage("Time off request submitted");
 
     // Redirect and reset form after a delay
     const timer = setTimeout(() => {
-      showBanner(false);
+      setCloseBanner(false);
       setMessage("");
       clearTimeout(timer);
       router.replace("/hamburger/inbox");

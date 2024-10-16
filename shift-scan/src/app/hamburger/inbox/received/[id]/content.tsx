@@ -40,6 +40,9 @@ export default function Content({ params, session }: Props) {
   const [manager, setManager] = useState("");
   const [managerComment, setManagerComment] = useState("");
   const [employeeName, setEmployeeName] = useState("");
+  const [signature, setSignature] = useState("");
+  const [managerSignature, setManagerSignature] = useState("");
+  const [signed, setSigned] = useState(false);
   const [receivedContent, setReceivedContent] = useState<receivedContent[]>([]);
 
   useEffect(() => {
@@ -60,8 +63,10 @@ export default function Content({ params, session }: Props) {
         );
 
         const employee = data[0].employee;
+        console.log(employee);
         setEmployeeName(employee?.firstName + " " + employee?.lastName || "");
         // Update states based on the fetched data
+        setSignature(employee?.signature || "");
         setManager(data[0]?.manager);
         setManagerComment(data[0]?.managerComment || ""); // Handle null or undefined comments
         setReceivedContent(data);
@@ -72,6 +77,19 @@ export default function Content({ params, session }: Props) {
       }
     };
     fetchData();
+  }, [params.id]);
+
+  useEffect(() => {
+    const fetchSignatureData = async () => {
+      try {
+        const result = await fetch(`/api/getSignature`);
+        const data = await result.json();
+        setManagerSignature(data.signature);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchSignatureData();
   }, [params.id]);
 
   const handleManagerCommentChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -111,11 +129,12 @@ export default function Content({ params, session }: Props) {
               type="noIcon"
             />
 
-            <Titles size={"h3"}>{cardDate}</Titles>
+            <Holds className=""></Holds>
+            <Titles size={"h3"}>loading date...</Titles>
           </Holds>
           {/* end of title holds */}
 
-          <Holds background={"white"} className="row-span-9 h-screen ">
+          <Holds background={"white"} className="row-span-9 h-full ">
             <Holds size={"full"} className="mt-5">
               <Spinner />
             </Holds>
@@ -127,7 +146,7 @@ export default function Content({ params, session }: Props) {
 
   return (
     <>
-      <Grids className="grid-rows-10 gap-5 my-5">
+      <Grids rows={"10"} gap={"5"} className="my-5">
         {/*start of title holds */}
         <Holds background={"orange"} className="row-span-1 h-full">
           <TitleBoxes
@@ -227,84 +246,145 @@ export default function Content({ params, session }: Props) {
                       />
                     </Labels>
                   </Holds>
-                  <Holds className="row-span-1 space-y-5 mb-5">
-                    <Texts size={"p2"}>Employee signature</Texts>
-                    <Texts size={"p2"}>Manager signature here</Texts>
-                    <Texts size={"p6"}>
-                      *By Signing I acknowledge that time leave request are
-                      subject to management approval and company policy. *
+                  <Holds className="row-span-1 pb-5 ">
+                    <Texts position={"left"} size={"p5"}>
+                      Employee signature
                     </Texts>
-                  </Holds>
-                  <Holds position={"row"} className="row-span-1">
-                    <Forms
-                      action={ManagerLeaveRequest}
-                      onSubmit={handleApproval}
-                    >
-                      <Inputs type="hidden" name="id" value={item.id} />
-                      <Inputs type="hidden" name="decision" value="DENIED" />
-                      <Inputs type="hidden" name="decidedBy" value={manager} />
-                      <TextAreas
-                        name="mangerComments"
-                        value={managerComment}
-                        hidden
-                      />
-                      <Holds position={"row"} className="row-span-2">
-                        <Buttons
-                          background={"red"}
-                          type="submit"
-                          size={"80"}
-                          className="p-1"
-                        >
-                          <Holds position={"row"}>
-                            <Holds>
-                              <Titles>Deny</Titles>
-                            </Holds>
-                            <Holds>
-                              <Images
-                                titleImg={"/undo-edit.svg"}
-                                titleImgAlt={"delete form"}
-                                size={"30"}
-                              />
+                    <Holds className="border-2 border-black rounded-xl">
+                      {!signed ? (
+                        <Holds position={"center"} className="py-2">
+                          <Texts size={"p5"}>Signature is not setup</Texts>
+                        </Holds>
+                      ) : (
+                        <Holds size={"20"} position={"center"} className="">
+                          <img
+                            src={signature}
+                            alt="signature"
+                            className="py-2"
+                          />
+                        </Holds>
+                      )}
+                    </Holds>
+                    {signed ? (
+                      <>
+                        <Holds className="my-5">
+                          <Holds
+                            background={"lightBlue"}
+                            position={"row"}
+                            className=""
+                          >
+                            <Holds background={"white"} className="">
+                              <Holds size={"20"}>
+                                <img
+                                  src={managerSignature}
+                                  alt="Manager signature"
+                                  className="py-2 "
+                                />
+                              </Holds>
                             </Holds>
                           </Holds>
-                        </Buttons>
-                      </Holds>
-                    </Forms>
+                        </Holds>
 
-                    <Forms
-                      action={ManagerLeaveRequest}
-                      onSubmit={handleApproval}
-                    >
-                      <Inputs type="hidden" name="id" value={item.id} />
-                      <Inputs type="hidden" name="decision" value="APPROVED" />
-                      <Inputs type="hidden" name="decidedBy" value={manager} />
-                      <TextAreas
-                        name="mangerComments"
-                        value={managerComment}
-                        hidden
-                      />
-                      <Holds>
+                        <Holds position={"row"} className="row-span-1">
+                          <Forms
+                            action={ManagerLeaveRequest}
+                            onSubmit={handleApproval}
+                          >
+                            <Inputs type="hidden" name="id" value={item.id} />
+                            <Inputs
+                              type="hidden"
+                              name="decision"
+                              value="DENIED"
+                            />
+                            <Inputs
+                              type="hidden"
+                              name="decidedBy"
+                              value={manager}
+                            />
+                            <TextAreas
+                              name="mangerComments"
+                              value={managerComment}
+                              hidden
+                            />
+                            <Holds position={"row"} className="row-span-2">
+                              <Buttons
+                                background={"red"}
+                                type="submit"
+                                size={"80"}
+                                className="p-1"
+                              >
+                                <Holds position={"row"}>
+                                  <Holds>
+                                    <Titles>Deny</Titles>
+                                  </Holds>
+                                  <Holds>
+                                    <Images
+                                      titleImg={"/undo-edit.svg"}
+                                      titleImgAlt={"delete form"}
+                                      size={"30"}
+                                    />
+                                  </Holds>
+                                </Holds>
+                              </Buttons>
+                            </Holds>
+                          </Forms>
+
+                          <Forms
+                            action={ManagerLeaveRequest}
+                            onSubmit={handleApproval}
+                          >
+                            <Inputs type="hidden" name="id" value={item.id} />
+                            <Inputs
+                              type="hidden"
+                              name="decision"
+                              value="APPROVED"
+                            />
+                            <Inputs
+                              type="hidden"
+                              name="decidedBy"
+                              value={manager}
+                            />
+                            <TextAreas
+                              name="mangerComments"
+                              value={managerComment}
+                              hidden
+                            />
+                            <Holds>
+                              <Buttons
+                                background={"green"}
+                                type="submit"
+                                size={"80"}
+                                className="p-1"
+                              >
+                                <Holds position={"row"}>
+                                  <Holds>
+                                    <Titles>Approve</Titles>
+                                  </Holds>
+                                  <Holds>
+                                    <Images
+                                      titleImg={"/save-edit.svg"}
+                                      titleImgAlt={"delete form"}
+                                      size={"30"}
+                                    />
+                                  </Holds>
+                                </Holds>
+                              </Buttons>
+                            </Holds>
+                          </Forms>
+                        </Holds>
+                      </>
+                    ) : (
+                      <Holds className="mt-5">
+                        <Texts>I agree to this request</Texts>
                         <Buttons
-                          background={"green"}
-                          type="submit"
-                          size={"80"}
-                          className="p-1"
+                          background={"lightBlue"}
+                          className="py-3 mt-5"
+                          onClick={() => setSigned(!signed)}
                         >
-                          <Holds position={"row"}>
-                            <Holds>
-                              <Titles>Approve</Titles>
-                            </Holds>
-                            <Holds>
-                              <Images
-                                titleImg={"/save-edit.svg"}
-                                titleImgAlt={"delete form"}
-                                size={"30"}
-                              />
-                            </Holds>
-                          </Holds>
+                          <Titles size={"h2"}>Sign Now</Titles>
                         </Buttons>
                       </Holds>
-                    </Forms>
+                    )}
                   </Holds>
                 </Holds>
               </Grids>
