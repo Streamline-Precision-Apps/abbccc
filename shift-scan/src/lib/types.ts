@@ -29,6 +29,7 @@ export type Employee = {
   id: string;
   firstName: string;
   lastName: string;
+  signature?: string | null;
   image: string | null;
   imageUrl?: string | null;
 };
@@ -230,19 +231,18 @@ export type Equipment = {
 };
 
 export type Jobsites = {
-  id: number;
+  id: string;
   qrId: string;
+  isActive?: boolean;
+  status?: string;
   name: string;
   streetNumber?: string | null;
   streetName?: string;
   city?: string;
   state?: string | null;
   country?: string;
-  phone?: string;
   description?: string | null;
-  active: boolean;
-  comments?: string | null;
-  status?: string;
+  comment?: string | null;
 };
 
 export type costCodes = {

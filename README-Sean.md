@@ -290,3 +290,23 @@ I finished some more prisma DB research and Created the clock out dashboard page
 ## 10/7/2024
 
 - Watched videos on ZOD Data validation.
+
+## 10/8/2024
+
+- Researched ZOD. Work on formatting for data through ZOD.
+
+## 10/9/2024
+
+- Fixed signature section in profile.
+
+## 10/10/2024
+
+- Made API and zod for admin.
+
+## 10/14/2024
+
+- Worked on API for admin.
+
+## 10/15/2024
+
+- Worked on API and ZOD for admin.
