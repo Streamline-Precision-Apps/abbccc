@@ -16,7 +16,7 @@ import { useTranslations } from "next-intl";
 import { redirect } from "next/navigation";
 
 export default function ReportBug() {
-  const t = useTranslations("dashboard");
+  const t = useTranslations("Forms");
 
   const { data: session } = useSession();
   if (!session) {
