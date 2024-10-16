@@ -202,6 +202,9 @@
         "ChangeCostCode": "Change Cost Code",
         "ScanJobSite": "Scan Job Site",
         "SwitchSites": "Switch Sites",
+        "search-jobsite": "Search for Job Site",
+        "search-equipment": "Search for Equipment",
+        "search-costcode": "Search for Cost Code",
         "TroubleScanning": "Trouble Scanning?",
         "Title-jobsite": "Select Job Site",
         "Title-equipment": "Select Equipment",
@@ -272,6 +275,7 @@
     },
 
     "Hamburger": {
+        "loading": "Loading...",
         "NewPassword": "New Password",
         "ConfirmPassword": "Confirm New Password",
         "ChangePassword": "Change Password",
