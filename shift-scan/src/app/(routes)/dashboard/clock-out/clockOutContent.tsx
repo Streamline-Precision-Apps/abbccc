@@ -4,9 +4,9 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
-import { use, useEffect, useState } from "react";
+import { ChangeEvent, use, useEffect, useMemo, useRef, useState } from "react";
 import { Signature } from "./(components)/injury-verification/Signature";
-import { Checkbox } from "./(components)/injury-verification/checkBox";
+
 import { useTranslations } from "next-intl";
 import { InjuryReportContent } from "./(components)/injury-report/injuryReportContent";
 import { Titles } from "@/components/(reusable)/titles";
@@ -23,6 +23,8 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Images } from "@/components/(reusable)/images";
 import { uploadFirstSignature } from "@/actions/userActions";
 import { Grids } from "@/components/(reusable)/grids";
+import Spinner from "@/components/(animations)/spinner";
+import Checkbox from "@/components/(inputs)/checkbox";
 
 // Custom hook for managing banners
 function useBanner(initialMessage = "") {
@@ -44,12 +46,14 @@ type ClockOutContentProps = {
 };
 
 export default function ClockOutContent({ id }: ClockOutContentProps) {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [step, incrementStep] = useState(1);
   const [path, setPath] = useState("ClockOut");
   const router = useRouter();
-  const t = useTranslations("clock-out");
+  const t = useTranslations("ClockOut");
   const [checked, setChecked] = useState(false); // Checkbox state
+  const formRef = useRef<HTMLFormElement>(null);
+  const hasSubmitted = useRef(false);
   const { showBanner, bannerMessage, setShowBanner, setBannerMessage } =
     useBanner();
   const { scanResult } = useScanData();
@@ -58,9 +62,9 @@ export default function ClockOutContent({ id }: ClockOutContentProps) {
   const [date] = useState(new Date());
   const [base64String, setBase64String] = useState<string>("");
 
-  // Checking if window exists before accessing localStorage
-  const localStorageData =
-    typeof window !== "undefined"
+  // Optimizing localStorage access using useMemo
+  const localStorageData = useMemo(() => {
+    return typeof window !== "undefined"
       ? {
           jobsite: localStorage.getItem("jobSite"),
           costCode: localStorage.getItem("costCode"),
@@ -69,9 +73,11 @@ export default function ClockOutContent({ id }: ClockOutContentProps) {
           ),
         }
       : {};
+  }, []);
 
+  // Fetching the signature only once
   useEffect(() => {
-    const fetch = async () => {
+    const fetchSignature = async () => {
       setLoading(true);
       try {
         const response = await window.fetch("/api/getSignature");
@@ -83,13 +89,13 @@ export default function ClockOutContent({ id }: ClockOutContentProps) {
         setLoading(false);
       }
     };
-    fetch();
+    fetchSignature();
   }, []);
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  const handleCheckboxChange = (newChecked: boolean) => {
-    setChecked(newChecked);
+  const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setChecked(event.currentTarget.checked);
   };
 
   const handleSubmitImage = async () => {
@@ -105,64 +111,54 @@ export default function ClockOutContent({ id }: ClockOutContentProps) {
 
     setIsSubmitting(true);
     try {
-      await uploadFirstSignature(formData); // This assumes you have an uploadFirstSignature function elsewhere
+      await uploadFirstSignature(formData);
     } catch (error) {
       console.error("Error uploading signature:", error);
-      setBannerMessage(
-        "There was an error uploading your signature. Please try again."
-      );
+      setBannerMessage("There was an error uploading your signature.");
       setShowBanner(true);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); // Prevent default form submission behavior
+  const handleSubmit = async () => {
+    if (isSubmitting || hasSubmitted.current) return; // Prevent multiple submissions
 
     try {
-      const formData = new FormData(event.currentTarget); // Use event.currentTarget instead of event.target
-      await updateTimeSheet(formData); // Assuming updateTimeSheet is a server action
+      setIsSubmitting(true);
+      hasSubmitted.current = true;
+
+      const formData = new FormData(formRef.current as HTMLFormElement); // Get form data manually
+      console.log("FormData:", formData);
+      await updateTimeSheet(formData);
       localStorage.clear();
-      router.push("/"); // Redirect to the homepage after form submission
+      router.push("/");
     } catch (error) {
       console.error("Failed to submit the time sheet:", error);
-      setBannerMessage(
-        "There was an error submitting the time sheet. Please try again."
-      );
+      setBannerMessage("There was an error submitting the time sheet.");
       setShowBanner(true);
+    } finally {
+      setIsSubmitting(false);
+      hasSubmitted.current = false;
     }
   };
 
   const handleNextStepAndSubmit = async () => {
     if (!checked) {
-      // When checkbox is not checked, set the path to "Injury" and move to the next step
       setPath("Injury");
       incrementStep(2);
     } else {
-      incrementStep(2); // Submit timesheet when the user confirms no injury
+      incrementStep(2); // Proceed if no injury
     }
   };
 
-  const handleNextStep = () => {
-    incrementStep(step + 1);
+  const handleButtonClick = () => {
+    handleSubmit(); // Directly call the handleSubmit function to submit the form
   };
 
   if (step === 1) {
     return (
       <>
-        {/* {showBanner && (
-          <div
-            style={{
-              position: "fixed",
-              top: 0,
-              width: "100%",
-              zIndex: 1000,
-            }}
-          >
-            <Banners background="red">{bannerMessage}</Banners>
-            </div>
-        )} */}
         <Grids className="grid-rows-4 gap-5">
           <Holds background={"white"} className="row-span-1 h-full">
             <Contents width={"section"}>
@@ -170,42 +166,54 @@ export default function ClockOutContent({ id }: ClockOutContentProps) {
                 title={t("InjuryVerification")}
                 titleImg="/end-day.svg"
                 titleImgAlt="Team"
+                type="route"
+                href="/dashboard"
               />
             </Contents>
           </Holds>
           <Holds background={"white"} className="row-span-3 h-full">
             <Contents width={"section"}>
-              <Grids className="grid-rows-3">
-                <Holds className="row-span-2 h-full">
-                  <Titles size={"h3"}>{t("SignBelow")}</Titles>
-                  <Holds>
-                    <Signature
-                      setBase64String={setBase64String}
-                      base64string={base64String}
-                      handleSubmitImage={handleSubmitImage}
-                    />
+              <Grids rows={"5"} gap={"5"}>
+                <Holds className="row-span-2 h-full my-auto">
+                  <Texts size={"p2"}>{t("SignBelow")}</Texts>
+                  <Holds className="border-[3px] border-black h-full">
+                    {loading ? (
+                      <Holds className="my-auto">
+                        <Spinner />
+                      </Holds>
+                    ) : (
+                      <Holds className="my-auto">
+                        <img
+                          src={base64String}
+                          alt="Loading signature"
+                          className="w-[40%] mx-auto"
+                        />
+                      </Holds>
+                    )}
                   </Holds>
-
-                  <Holds position={"row"}>
-                    <Titles size={"h4"}>{t("SignatureVerify")}</Titles>
-
+                </Holds>
+                <Holds position={"row"} className="row-span-2 h-full my-auto">
+                  <Holds size={"70"}>
+                    <Titles size={"h2"}>{t("SignatureVerify")}</Titles>
+                  </Holds>
+                  <Holds size={"30"}>
                     <Checkbox
-                      checked={checked}
+                      id="injury-checkbox"
+                      name="injury-verify"
                       onChange={handleCheckboxChange}
+                      defaultChecked={checked}
                     />
                   </Holds>
                 </Holds>
-                {/* Button changes based on checkbox state */}
-                <Holds size={"70"} className="row-span-1 mx-auto">
+                <Holds className="row-span-1 mx-auto">
                   <Contents width={"section"}>
                     <Buttons
-                      background={checked ? "green" : "red"} // Green for Continue, Red for Report an Injury
+                      background={checked ? "green" : "red"}
                       onClick={handleNextStepAndSubmit}
-                      disabled={isSubmitting} // Disable button while submitting
+                      disabled={loading}
                     >
                       <Titles size={"h3"}>
-                        {checked ? t("Continue") : t("ReportInjury")}{" "}
-                        {/* Button text changes */}
+                        {checked ? t("Continue") : t("ReportInjury")}
                       </Titles>
                     </Buttons>
                   </Contents>
@@ -218,95 +226,107 @@ export default function ClockOutContent({ id }: ClockOutContentProps) {
     );
   } else if (step === 2 && path === "Injury") {
     return (
-      <>
-        <Holds>
+      <Grids rows={"10"} gap={"5"}>
+        <Holds background={"white"} className="h-full row-span-2">
           <TitleBoxes
             title={t("InjuryVerification")}
-            titleImg="/new/injury.svg"
-            titleImgAlt="Team"
-            variant={"row"}
-            type="row"
+            titleImg="/injury.svg"
+            titleImgAlt={"injury icon"}
           />
         </Holds>
-        <Holds>
-          <InjuryReportContent
-            base64String={base64String}
-            setBase64String={setBase64String}
-            handleComplete={handleNextStep} // Ensure handleComplete does the right thing
-            handleSubmitImage={handleSubmitImage}
-          />
+        <Holds background={"white"} className="h-full row-span-8">
+          {/* Injury Report Content */}
         </Holds>
-      </>
+      </Grids>
     );
-  } else if (
-    (step === 2 && path === "ClockOut") ||
-    (step === 3 && path === "Injury")
-  ) {
+  } else if (step === 2 && path === "ClockOut") {
     return (
       <>
-        <Banners background={bannerMessage.length > 0 ? "green" : "default"}>
-          {bannerMessage}
-        </Banners>
-        <Contents>
-          <Holds>
-            <TitleBoxes
-              title={t("Bye")}
-              titleImg={"/new/end-day.svg"}
-              titleImgAlt={""}
-              variant={"row"}
-              type="row"
-            />
-            <Contents>
-              <Buttons size={null} type="submit">
-                <Images
-                  titleImg={"/new/downArrow.svg"}
-                  titleImgAlt={"downArrow"}
-                />
-              </Buttons>
-              <Texts>
-                {t("ClockOutDate")} {new Date().toLocaleDateString()}
-              </Texts>
-              <Texts>
-                {t("Jobsite")} {scanResult?.data || localStorageData?.jobsite}
-              </Texts>
-              <Texts>
-                {t("CostCode")} {savedCostCode || localStorageData?.costCode}
-              </Texts>
-              <Texts>
-                {t("ClockInTime")} {}
-              </Texts>
-              <Forms onSubmit={handleSubmit}>
-                <Inputs
-                  type="hidden"
-                  name="id"
-                  value={(
-                    savedTimeSheetData?.id || localStorageData?.timesheet.id
-                  )?.toString()} // Convert id to string
-                  readOnly
-                />
-                <Inputs
-                  type="hidden"
-                  name="endTime"
-                  value={new Date().toISOString()}
-                  readOnly
-                />
-                <Inputs
-                  type="hidden"
-                  name="timeSheetComments"
-                  value={""}
-                  readOnly
-                />
-                <Buttons
-                  type="submit"
-                  className="bg-app-red mx-auto flex justify-center w-full h-full py-4 px-5 rounded-lg text-black font-bold mt-5"
-                  disabled={isSubmitting} // Disable while submitting
-                >
-                  <Clock time={date.getTime()} />
-                </Buttons>
-              </Forms>
+        <Grids rows={"4"} gap={"5"}>
+          <Holds background={"white"} className="row-span-1 h-full">
+            <Contents width={"section"}>
+              <TitleBoxes
+                title={t("Bye")}
+                titleImg={"/end-day.svg"}
+                titleImgAlt={"End of Day Icon"}
+              />
+              <Banners
+                background={bannerMessage.length > 0 ? "green" : "default"}
+              >
+                {bannerMessage}
+              </Banners>
             </Contents>
           </Holds>
-        </Contents>
+          <Holds background={"white"} className="row-span-3 h-full">
+            <Contents width={"section"} className="py-5">
+              <Holds background={"orange"} className="h-full">
+                <Grids rows={"6"} gap={"5"}>
+                  <Holds className="row-span-1 h-full my-auto">
+                    <Holds position={"right"} size={"20"}>
+                      <Buttons type="button" onClick={handleButtonClick}>
+                        <Images
+                          titleImg={"/downArrow.svg"}
+                          titleImgAlt={"downArrow"}
+                          size={"80"}
+                          className="mx-auto p-2"
+                        />
+                      </Buttons>
+                    </Holds>
+                  </Holds>
+                  <Holds className="row-span-1 h-full my-auto">
+                    <Texts>
+                      {t("ClockOutDate")} {new Date().toLocaleDateString()}
+                    </Texts>
+                  </Holds>
+                  <Holds className="row-span-1 h-full my-auto">
+                    <Texts>
+                      {t("Jobsite")}{" "}
+                      {scanResult?.data || localStorageData?.jobsite}
+                    </Texts>
+                  </Holds>
+                  <Holds className="row-span-1 h-full my-auto">
+                    <Texts>
+                      {t("CostCode")}{" "}
+                      {savedCostCode || localStorageData?.costCode}
+                    </Texts>
+                  </Holds>
+                  <Holds className="row-span-1 h-full my-auto">
+                    <form ref={formRef}>
+                      <Inputs
+                        type="hidden"
+                        name="id"
+                        value={(
+                          savedTimeSheetData?.id ||
+                          localStorageData?.timesheet.id
+                        )?.toString()}
+                        readOnly
+                      />
+                      <Inputs
+                        type="hidden"
+                        name="endTime"
+                        value={new Date().toISOString()}
+                        readOnly
+                      />
+                      <Inputs
+                        type="hidden"
+                        name="timeSheetComments"
+                        value={""}
+                        readOnly
+                      />
+                      <Buttons
+                        onClick={handleButtonClick}
+                        className="bg-app-red mx-auto flex justify-center w-full h-full py-4 px-5 rounded-lg text-black font-bold mt-5"
+                        disabled={isSubmitting}
+                      >
+                        <Clock time={date.getTime()} />
+                      </Buttons>
+                    </form>
+                  </Holds>
+                </Grids>
+              </Holds>
+            </Contents>
+          </Holds>
+        </Grids>
       </>
     );
   } else {

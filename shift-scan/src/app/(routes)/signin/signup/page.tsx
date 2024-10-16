@@ -2,8 +2,7 @@
 
 import { auth } from "@/auth";
 import { cookies } from "next/headers";
-import Content from "./(signup)/content";
-
+import Content from "@/app/(routes)/signin/signup/(signup)/content";
 
 export default async function SignUpPage() {
   const session = await auth();
@@ -11,9 +10,13 @@ export default async function SignUpPage() {
   const accountSetup = session?.user?.accountSetup;
 
   const lang = cookies().get("locale");
-  const locale = lang ? lang.value : "en";  
-  
+  const locale = lang ? lang.value : "en";
+
   return (
-    <Content userId={userid ?? ""} accountSetup={accountSetup ?? true} locale={locale} />
+    <Content
+      userId={userid ?? ""}
+      accountSetup={accountSetup ?? true}
+      locale={locale}
+    />
   );
 }

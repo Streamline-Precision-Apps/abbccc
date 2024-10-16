@@ -9,20 +9,27 @@ import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 
 export default async function Timesheets() {
-    const session = await auth();
-    if (!session) {
-        redirect('/signin');
-    }
-    const id = session?.user.id;
-    const t = await getTranslations("TimesheetsContent");
-    return (
-        <Bases>
-        <Contents height={"page"}>
-            <Holds background={"white"} size={"full"} className="mb-10">
-                <TitleBoxes title={`${t("Title")}`} titleImg={"/form.svg"} titleImgAlt={`${t("Title")}`} size={"default"} />
-            </Holds>
-        <ViewTimeSheets user={id} />
-        </Contents>
-        </Bases>
-    )
+  const session = await auth();
+  if (!session) {
+    redirect("/signin");
+  }
+  const id = session?.user.id;
+  const t = await getTranslations("Home");
+  return (
+    <Bases size={"scroll"} className="min-h-screen">
+      <Contents>
+        <Holds background={"white"} size={"full"} className=" mt-7 h-full">
+          <TitleBoxes
+            title={`${t("Title")}`}
+            titleImg={"/form.svg"}
+            titleImgAlt={`${t("Title")}`}
+            size={"default"}
+          />
+        </Holds>
+        <Holds className="mb-3 h-full">
+          <ViewTimeSheets user={id} />
+        </Holds>
+      </Contents>
+    </Bases>
+  );
 }

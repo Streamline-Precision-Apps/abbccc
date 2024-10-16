@@ -16,7 +16,7 @@ import SearchBar from "@/components/(search)/searchbar";
 import SearchSelect from "@/components/(search)/searchSelect";
 import { Selects } from "@/components/(reusable)/selects";
 import { Options } from "@/components/(reusable)/options";
-import { Grids } from "@/components/(reusable)/grids"; 
+import { Grids } from "@/components/(reusable)/grids";
 import { log } from "console";
 
 export default function QrJobsiteContent() {
@@ -24,12 +24,14 @@ export default function QrJobsiteContent() {
   const [selectedJobSite, setSelectedJobSite] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [generatedList, setGeneratedList] = useState<JobCodes[]>([]);
-  const [generatedRecentList, setGeneratedRecentList] = useState<JobCodes[]>([]);
+  const [generatedRecentList, setGeneratedRecentList] = useState<JobCodes[]>(
+    []
+  );
   const [loading, setLoading] = useState(true); // Loading state
   const [qrCodeUrl, setQrCodeUrl] = useState("");
 
   const router = useRouter();
-  const t = useTranslations("QrJobsiteContent");
+  const t = useTranslations("Generator");
 
   const handleGenerate = async () => {
     if (selectedJobSite) {
@@ -63,9 +65,8 @@ export default function QrJobsiteContent() {
       }
     };
 
-  fetchData();
+    fetchData();
   }, []);
-
 
   useEffect(() => {
     const fetchRecentJobsites = async () => {
@@ -88,7 +89,6 @@ export default function QrJobsiteContent() {
     fetchRecentJobsites();
   }, []);
 
-
   const handleNew = () => {
     router.push("/dashboard/qr-generator/add-jobsite");
   };
@@ -102,13 +102,13 @@ export default function QrJobsiteContent() {
   return (
     <>
       {loading ? (
-        <Grids rows={"5"}  gap={"5"} cols={"2"}>
+        <Grids rows={"5"} gap={"5"} cols={"2"}>
           <Holds className="row-span-4 col-span-2 h-full">
-            <SearchSelect 
-            datatype={`${t("Loading")}`} 
-            options={generatedList} 
-            recentOptions={generatedRecentList}
-            onSelect={handleSearchSelectChange} // Pass the selection handler
+            <SearchSelect
+              datatype={`${t("Loading")}`}
+              options={generatedList}
+              recentOptions={generatedRecentList}
+              onSelect={handleSearchSelectChange} // Pass the selection handler
             />
           </Holds>
           <Holds size={"full"} className="row-span-1 col-span-1 h-full">
@@ -116,7 +116,7 @@ export default function QrJobsiteContent() {
               <Titles size={"h2"}>{t("Generate")}</Titles>
             </Buttons>
           </Holds>
-          <Holds  size={"full"} className="row-span-1 col-span-1 h-full">
+          <Holds size={"full"} className="row-span-1 col-span-1 h-full">
             <Buttons background={"green"} onClick={handleNew}>
               <Titles size={"h2"}>{t("New")}</Titles>
             </Buttons>
@@ -124,32 +124,31 @@ export default function QrJobsiteContent() {
         </Grids>
       ) : (
         <Grids rows={"5"} gap={"5"} cols={"2"}>
-        <Holds className="row-span-4 col-span-2 h-full ">
-          {/* Replace the old Selects component with the new SearchSelect */}
-          <SearchSelect 
-            datatype={`${t("JobSiteDatatype")}`} 
-            options={generatedList} 
-            recentOptions={generatedRecentList}
-            onSelect={handleSearchSelectChange} // Pass the selection handler
-          />
-        </Holds>
-        <Holds size={"full"} className="row-span-1 col-span-1 h-full">
+          <Holds className="row-span-4 col-span-2 h-full ">
+            {/* Replace the old Selects component with the new SearchSelect */}
+            <SearchSelect
+              datatype={`${t("JobSiteDatatype")}`}
+              options={generatedList}
+              recentOptions={generatedRecentList}
+              onSelect={handleSearchSelectChange} // Pass the selection handler
+            />
+          </Holds>
+          <Holds size={"full"} className="row-span-1 col-span-1 h-full">
             <Buttons background={"orange"} onClick={handleGenerate}>
               <Titles size={"h2"}>{t("Generate")}</Titles>
             </Buttons>
           </Holds>
-          <Holds  size={"full"} className="row-span-1 col-span-1 h-full">
+          <Holds size={"full"} className="row-span-1 col-span-1 h-full">
             <Buttons background={"green"} onClick={handleNew}>
               <Titles size={"h2"}>{t("New")}</Titles>
             </Buttons>
           </Holds>
           <Modals
-          isOpen={isModalOpen}
-          handleClose={() => setIsModalOpen(false)}
-          size="sm"
-          className=""
+            isOpen={isModalOpen}
+            handleClose={() => setIsModalOpen(false)}
+            size="sm"
+            className=""
           >
-
             {/* {selectedJobSite && (
               <Holds className="p-4 absolute  ">
                 <Texts>

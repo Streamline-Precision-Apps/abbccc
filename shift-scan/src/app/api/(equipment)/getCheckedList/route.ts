@@ -26,13 +26,12 @@ export async function GET() {
       },
     });
 
-    return NextResponse.json(logs, {
-      headers: {
-        "Cache-Control": "public, max-age=60, s-maxage=60, stale-while-revalidate=30",
-      },
-    });
+    return NextResponse.json(logs);
   } catch (error) {
     console.error("Error fetching logs:", error);
-    return NextResponse.json({ error: "Failed to fetch logs" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch logs" },
+      { status: 500 }
+    );
   }
 }
