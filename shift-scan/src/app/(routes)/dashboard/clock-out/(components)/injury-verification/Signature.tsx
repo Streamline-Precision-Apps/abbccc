@@ -16,7 +16,6 @@ export const Signature = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null); // Ref for context optimization
   const [isDrawing, setIsDrawing] = useState(false);
-  const [showSaveButton, setShowSaveButton] = useState(!base64string);
   const t = useTranslations("");
 
   useEffect(() => {
@@ -69,7 +68,6 @@ export const Signature = ({
     const canvas = canvasRef.current;
     if (canvas && ctxRef.current) {
       ctxRef.current.clearRect(0, 0, canvas.width, canvas.height);
-      setShowSaveButton(true);
     }
   };
 
@@ -98,14 +96,12 @@ export const Signature = ({
                   }}>
           {t("Clear")}
         </Buttons>
-        {showSaveButton && (
-          <Buttons size={null} onClick={(event) => {
+        <Buttons size={null} onClick={(event) => {
             event.preventDefault();
             handleSave();
           }}>
-            {t("Save")}
-          </Buttons>
-        )}
+          {t("Save")}
+        </Buttons>
       </div>
     </div>
   );

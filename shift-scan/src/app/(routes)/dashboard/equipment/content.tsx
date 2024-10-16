@@ -46,7 +46,7 @@ export default function EquipmentLogContent({ userId }: EquipmentLogs) {
     }, [userId]); // Dependency on userId
 
     return (
-        <Holds size={"default"}>
+        <Holds>
             {loading ? (
                 // animated spinner
                 <Spinner />
@@ -54,7 +54,7 @@ export default function EquipmentLogContent({ userId }: EquipmentLogs) {
                 <>
                     {green === 0 && total !== 0 ? (
                         <Forms action={Submit}>
-                            <Buttons type="submit" variant={"lightBlue"} size={null}>
+                            <Buttons type="submit" background={"lightBlue"} size={null}>
                                 {t("SubmitAll")}
                             </Buttons>
                             <Inputs type="hidden" name="id" value={userId} />
@@ -64,7 +64,7 @@ export default function EquipmentLogContent({ userId }: EquipmentLogs) {
                     {total === 0 ? <Texts>{t("NoCurrent")}</Texts> : null}
                     {logs.map((log) => (
                         <Buttons
-                            variant={log.isCompleted ? "green" : "orange"}
+                            background={log.isCompleted ? "green" : "orange"}
                             size={null}
                             href={`/dashboard/equipment/${log.id}`}
                             key={log.id}
