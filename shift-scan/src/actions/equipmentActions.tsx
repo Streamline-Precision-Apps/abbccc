@@ -20,7 +20,7 @@ enum Tags {
   EQUIPMENT = "EQUIPMENT",
 }
 
-// Enum for equipment status
+// Enum for equipment statusOPERATIONAL
 enum EquipmentStatus {
   OPERATIONAL = "OPERATIONAL",
   NEEDS_REPAIR = "NEEDS_REPAIR",
