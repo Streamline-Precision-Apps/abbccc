@@ -27,7 +27,7 @@ export default function SignInForm({ locale }: props) {
   const [animation, setAnimation] = useState(false);
   const router = useRouter();
 
-  const t = useTranslations("PortalLogin");
+  const t = useTranslations("Login");
 
   const viewPasscode = () => {
     setViewSecret(!viewSecret);
@@ -50,8 +50,9 @@ export default function SignInForm({ locale }: props) {
     });
 
     if (result?.error) {
-      setError("Invalid credentials. Please try again.");
+      setError(t("Err"));
       setAnimation(false);
+      setTimeout(() => setError(""), 3000);
     } else {
       router.push("/");
       setAnimation(false);
@@ -61,7 +62,7 @@ export default function SignInForm({ locale }: props) {
   return (
     <Contents width={"section"}>
       <Forms onSubmit={handleSubmit} className="pt-3">
-        <Labels>{t("Username")}</Labels>
+        <Labels>{t("EmployeeID")}</Labels>
         <Inputs variant="default" name="username" type="text" required />
         <Holds position={"row"}>
           <Labels>{t("Password")}</Labels>
@@ -79,14 +80,23 @@ export default function SignInForm({ locale }: props) {
           type={viewSecret ? "text" : "password"}
           required
         />
-        {error && <Texts>{error}</Texts>}
-        <Holds className="mb-10">
-          <Link href="/login/forgotpassword">
-            <Texts text={"link"} size={"p5"} position={"right"}>
-              {t("btn-forgot")}
-            </Texts>
-          </Link>
+        <Holds position={"row"}>
+          {error && (
+            <Holds position={"left"}>
+              <Texts text={"red"} size={"p4"}>
+                {error}
+              </Texts>
+            </Holds>
+          )}
+          <Holds className="mb-10 ">
+            <Link href="/login/forgotpassword">
+              <Texts text={"link"} size={"p5"} position={"right"}>
+                {t("Btn-forgot")}
+              </Texts>
+            </Link>
+          </Holds>
         </Holds>
+
         <Holds position={"row"} className="mb-10">
           <Holds size={"30"}>
             <Images
@@ -107,7 +117,7 @@ export default function SignInForm({ locale }: props) {
                   className="animate-spin"
                 />
               )}
-              {!animation && <Titles className="p-3">{t("btn-signIn")}</Titles>}
+              {!animation && <Titles className="p-3">{t("Btn-signIn")}</Titles>}
             </Buttons>
           </Holds>
         </Holds>

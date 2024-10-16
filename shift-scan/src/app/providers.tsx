@@ -20,6 +20,7 @@ import {
 } from "./context/dbRecentCodesContext";
 import { PayPeriodTimeSheetProvider } from "./context/PayPeriodTimeSheetsContext";
 import React from "react";
+import { EquipmentListProvider } from "./context/dbCompleteEquipmentList";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -33,19 +34,21 @@ export function Providers({ children }: { children: React.ReactNode }) {
                 <TimeSheetDataProvider>
                   <SessionProvider>
                     <EquipmentProvider>
-                      <JobSiteProvider>
-                        <CostCodeProvider>
-                          <RecentCostCodeProvider>
-                            <RecentJobSiteProvider>
-                              <PayPeriodTimeSheetProvider>
-                                <RecentEquipmentProvider>
-                                  {children}
-                                </RecentEquipmentProvider>
-                              </PayPeriodTimeSheetProvider>
-                            </RecentJobSiteProvider>
-                          </RecentCostCodeProvider>
-                        </CostCodeProvider>
-                      </JobSiteProvider>
+                      <EquipmentListProvider>
+                        <JobSiteProvider>
+                          <CostCodeProvider>
+                            <RecentCostCodeProvider>
+                              <RecentJobSiteProvider>
+                                <PayPeriodTimeSheetProvider>
+                                  <RecentEquipmentProvider>
+                                    {children}
+                                  </RecentEquipmentProvider>
+                                </PayPeriodTimeSheetProvider>
+                              </RecentJobSiteProvider>
+                            </RecentCostCodeProvider>
+                          </CostCodeProvider>
+                        </JobSiteProvider>
+                      </EquipmentListProvider>
                     </EquipmentProvider>
                   </SessionProvider>
                 </TimeSheetDataProvider>
