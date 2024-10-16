@@ -11,27 +11,26 @@ import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
 
 export default async function SwitchJobs() {
-const session = await auth();
-const userId = session?.user.id;
+  const session = await auth();
+  const userId = session?.user.id;
 
-// Fetch all records
+  // Fetch all records
 
+  const lang = cookies().get("locale");
+  const locale = lang ? lang.value : "en"; // Default to English
 
-const lang = cookies().get("locale");
-const locale = lang ? lang.value : "en"; // Default to English
-
-    return (
-        <Bases size={"scroll"} >
-        <Contents>
+  return (
+    <Bases size={"scroll"} className="min-h-screen">
+      <Contents>
         <Holds>
-        <ClockProcessor
+          <ClockProcessor
             type={"switchJobs"}
             scannerType={"jobsite"}
             locale={locale}
             returnpath="/dashboard"
-        />
+          />
         </Holds>
-        </Contents>
-        </Bases>
-    )
+      </Contents>
+    </Bases>
+  );
 }

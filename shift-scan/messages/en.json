@@ -197,7 +197,9 @@
         },
 
     "Clock": {
+        "ChangeCostCode": "Change Cost Code",
         "ScanJobSite": "Scan Job Site",
+        "SwitchSites": "Switch Sites",
         "TroubleScanning": "Trouble Scanning?",
         "Title-jobsite": "Select Job Site",
         "Title-equipment": "Select Equipment",
