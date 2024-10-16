@@ -9,7 +9,6 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Forms } from "@/components/(reusable)/forms";
 import { Labels } from "@/components/(reusable)/labels";
 import { Inputs } from "@/components/(reusable)/inputs";
-import SignOutModal from "./signOutModal";
 import { Modals } from "@/components/(reusable)/modals";
 import { Images } from "@/components/(reusable)/images";
 import { Contact, Employee, UserTraining } from "@/lib/types";
@@ -22,6 +21,7 @@ import { set } from "zod";
 import useFetchAllData from "@/app/(content)/FetchData";
 import { Signature } from "@/app/(routes)/dashboard/clock-out/(components)/injury-verification/Signature";
 import { uploadFirstSignature } from "@/actions/userActions";
+import { Titles } from "@/components/(reusable)/titles";
 
 type Props = {
   contacts: Contact;
@@ -34,6 +34,7 @@ export default function EmployeeInfo() {
   const [training, setTraining] = useState<Trainings[]>([]);
   const [userTrainings, setUserTrainings] = useState<UserTraining[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [isOpen2, setIsOpen2] = useState(false);
   const [editImg, setEditImg] = useState(false);
   const [editSignatureModalOpen, setEditSignatureModalOpen] = useState(false); // State for signature modal
 
@@ -157,12 +158,15 @@ export default function EmployeeInfo() {
       </Grids>
     );
   }
+  const signoutHandler = () => {
+    setIsOpen(false);
+  };
 
   return (
     <>
       <Contents width={"section"}>
         <Grids rows={"10"} gap={"5"}>
-          <Holds background={"white"} className="row-span-3 h-full">
+          <Holds background={"white"} className="row-span-2 h-full">
             <Contents width={"section"}>
               <TitleBoxes
                 type="profilePic"
@@ -186,7 +190,6 @@ export default function EmployeeInfo() {
                 setBase64String("");
               }}
               type="base64"
-              variant={"default"}
               size={"fullPage"}
               isOpen={isOpen}
             >
@@ -221,72 +224,101 @@ export default function EmployeeInfo() {
               )}
             </Modals>
           </Holds>
-          <Holds background={"white"} className="row-span-7 h-full ">
+          <Holds background={"white"} className="row-span-8 h-full">
             <Holds className="h-full">
               <Contents width={"section"}>
-                <Labels size={"p4"}>
-                  {t("PhoneNumber")}
-                  <Inputs
-                    disabled
-                    type="tel"
-                    defaultValue={contacts?.phoneNumber ?? ""}
-                  />
-                </Labels>
+                <Grids rows={"7"}>
+                  <Holds className=" row-span-1 h-full">
+                    <Labels size={"p4"}>
+                      {t("PhoneNumber")}
+                      <Inputs
+                        disabled
+                        type="tel"
+                        defaultValue={contacts?.phoneNumber ?? ""}
+                      />
+                    </Labels>
+                  </Holds>
+                  <Holds className=" row-span-1 h-full">
+                    <Labels size={"p4"}>
+                      {t("PersonalEmail")}
+                      <Inputs
+                        disabled
+                        type="email"
+                        defaultValue={contacts?.email}
+                      />
+                    </Labels>
+                  </Holds>
+                  <Holds className=" row-span-1 h-full">
+                    <Labels size={"p4"}>
+                      {t("EmergencyContact")}
+                      <Inputs
+                        disabled
+                        type="tel"
+                        defaultValue={contacts?.emergencyContactNumber ?? ""}
+                      />
+                    </Labels>
+                  </Holds>
+                  <Holds className=" row-span-2 h-full ">
+                    <Holds className="h-full">
+                      <Labels size={"p4"}>
+                        {t("Signature")}
+                        <Holds
+                          className="w-full rounded-3xl border-[3px] border-black cursor-pointer"
+                          onClick={() => setEditSignatureModalOpen(true)}
+                          size={"20"}
+                        >
+                          <Images
+                            titleImg={signatureBase64String}
+                            titleImgAlt={t("Signature")}
+                            className="mx-auto p-5 "
+                          />
+                        </Holds>
+                      </Labels>
+                    </Holds>
+                    {/* Modal for editing signature */}
+                    <Modals
+                      handleClose={() => setEditSignatureModalOpen(false)}
+                      type="signature"
+                      size={"fullPage"}
+                      isOpen={editSignatureModalOpen}
+                    >
+                      <Signature
+                        setBase64String={setSignatureBase64String}
+                        base64string={signatureBase64String}
+                        handleSubmitImage={() => {
+                          handleSubmitImage();
+                          setEditSignatureModalOpen(false); // Close the modal after saving
+                        }}
+                      />
+                    </Modals>
+                  </Holds>
+                  <Holds className="row-span-2 h-full my-auto">
+                    <Holds className="my-auto">
+                      <Buttons
+                        onClick={() => setIsOpen2(true)}
+                        background={"red"}
+                        size={"full"}
+                        className="p-3 "
+                      >
+                        <Titles size={"h4"}>{t("SignOut")}</Titles>
+                      </Buttons>
+                    </Holds>
 
-                <Labels size={"p4"}>
-                  {t("PersonalEmail")}
-                  <Inputs
-                    disabled
-                    type="email"
-                    defaultValue={contacts?.email}
-                  />
-                </Labels>
-                <Labels size={"p4"}>
-                  {t("EmergencyContact")}
-                  <Inputs
-                    disabled
-                    type="tel"
-                    defaultValue={contacts?.emergencyContactNumber ?? ""}
-                  />
-                </Labels>
-                <Labels size={"p4"}>
-                  {t("Signature")}
-                  {/* Signature Image */}
-                  <Images
-                    titleImg={signatureBase64String}
-                    titleImgAlt={t("Signature")}
-                    className="rounded-full border-[3px] border-black"
-                    size={"full"}
-                  />
-                  <Buttons onClick={() => setEditSignatureModalOpen(true)}>
-                    {t("EditSignature")}
-                  </Buttons>
-                </Labels>
-
-                <SignOutModal />
+                    <Modals
+                      handleClose={signoutHandler}
+                      isOpen={isOpen2}
+                      type="signOut"
+                      size={"sm"}
+                    >
+                      {t("SignOutConfirmation")}
+                    </Modals>
+                  </Holds>
+                </Grids>
               </Contents>
             </Holds>
           </Holds>
         </Grids>
       </Contents>
-
-      {/* Modal for editing signature */}
-      <Modals
-        handleClose={() => setEditSignatureModalOpen(false)}
-        type="signature"
-        variant={"default"}
-        size={"fullPage"}
-        isOpen={editSignatureModalOpen}
-      >
-        <Signature
-          setBase64String={setSignatureBase64String}
-          base64string={signatureBase64String}
-          handleSubmitImage={() => {
-            handleSubmitImage();
-            setEditSignatureModalOpen(false); // Close the modal after saving
-          }}
-        />
-      </Modals>
     </>
   );
 }

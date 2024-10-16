@@ -68,50 +68,55 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         className={cn(TitleBoxVariants({ variant, size, className }))}
         {...props}
       >
-        <Holds position={"absolute"}>
-          <Buttons href={href} background={"none"} size={"30"}>
-            <Images
-              titleImg="/turnBack.svg"
-              titleImgAlt={titleImgAlt}
-              size={"30"}
-            />
-          </Buttons>
-        </Holds>
-        {props.children}
-        <Holds size={"full"} position={"center"} className=" cursor-pointer ">
-          <Holds
-            size={"40"}
-            className="rounded-full relative "
-            onClick={() => modalTitle(modal)}
-          >
-            <Images
-              titleImg={titleImg}
-              titleImgAlt={titleImgAlt}
-              className="rounded-full border-[3px] border-black"
-              size={"full"}
-            />
-            <Holds className="absolute rounded-full h-5 w-5 md:h-10 md:w-10 left-[75%] top-[80%] transform -translate-x-1/2 -translate-y-1/2  px-1  md:px-2 md:py-3 border-[3px] border-black bg-white">
+        <Grids cols={"4"} rows={"3"} className="w-full">
+          <Holds className="col-span-1 row-span-1">
+            <Buttons
+              href={href}
+              background={"none"}
+              position={"left"}
+              size={"50"}
+            >
+              <Images titleImg="/turnBack.svg" titleImgAlt={titleImgAlt} />
+            </Buttons>
+          </Holds>
+          {props.children}
+          <Holds className="col-span-2 row-span-2 cursor-pointer">
+            <Holds
+              size={"60"}
+              className="rounded-full relative "
+              onClick={() => modalTitle(modal)}
+            >
               <Images
-                titleImg="/camera.svg"
-                titleImgAlt="camera"
+                titleImg={titleImg}
+                titleImgAlt={titleImgAlt}
+                className="rounded-full border-[3px] border-black"
                 size={"full"}
-                className="my-auto"
               />
+              <Holds className="absolute rounded-full h-7 w-7 md:h-10 md:w-10 left-[75%] top-[85%] transform -translate-x-1/2 -translate-y-1/2  px-1  md:px-2 md:py-3 border-[3px] border-black bg-white">
+                <Images
+                  titleImg="/camera.svg"
+                  titleImgAlt="camera"
+                  size={"full"}
+                  className="my-auto"
+                />
+              </Holds>
             </Holds>
           </Holds>
-        </Holds>
-        <Titles size={"h3"}>{title}</Titles>
-        <Holds
-          size={"30"}
-          position={"absolute"}
-          className="left-[70%] top-[5%] "
-        >
-          <Holds size={"90"} position={"center"}>
-            <Titles position={"right"} size={"h6"}>
-              {title2}
-            </Titles>
+          <Holds className="col-span-4 row-span-1">
+            <Titles size={"h2"}>{title}</Titles>
           </Holds>
-        </Holds>
+          <Holds
+            size={"30"}
+            position={"absolute"}
+            className="left-[70%] top-[5%] "
+          >
+            <Holds className="col-span-4 row-span-1">
+              <Titles position={"right"} size={"h6"}>
+                {title2}
+              </Titles>
+            </Holds>
+          </Holds>
+        </Grids>
       </div>
     );
   }
