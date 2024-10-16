@@ -50,7 +50,13 @@ setScanResult({ data: jobSiteId || "" });
 
 return (
 <>
-<TitleBoxes title= {t("VerifyEquipment")} titleImg="/new/equipment.svg" titleImgAlt="Equipment icon" variant="row" size="default" type="row" />
+<TitleBoxes 
+    title={t("VerifyEquipment")} 
+    titleImg="/equipment.svg" 
+    titleImgAlt="Equipment icon" 
+    variant="row" 
+    size="default" 
+    type="row"/>
 <Forms action={CreateEmployeeEquipmentLog} onSubmit={()=> handleNextStep()}>
     <Labels variant="default" size="default">
     {t("Equipment-result")}

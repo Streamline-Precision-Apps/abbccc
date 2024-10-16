@@ -28,7 +28,7 @@ const TitleVariants = cva(
       size: {//only text size
         h1: "text-3xl sm:text-3xl md:text-4xl lg:text-5xl",
         h2: "text-2xl sm:text-2xl md:text-3xl lg:text-4xl",
-        h3: "text-xl",
+        h3: "text-xl sm:text-xl md:text-2xl lg:text-3xl",
         h4: "text-lg",
         h5: "text-med",
         h6: "text-sm",

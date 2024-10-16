@@ -74,7 +74,6 @@ export default function AddEmployeeContent({ permission , users }: AddEmployeeCo
             title="Assets"
             titleImg="/assets.svg"
             titleImgAlt="Assests"
-           
             size={"default"}
             type="noIcon"
             />

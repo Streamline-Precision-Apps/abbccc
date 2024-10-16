@@ -18,7 +18,7 @@ const BaseVariants = cva(
             },
             size: {//only width and height
                 default: "pb-3 pt-7 h-dvh", //use if data fits on screen
-                scroll: "h-full", //use if data exceeds screen size
+                scroll: "pb-3 pt-7 h-full no-scrollbar overflow-y-auto", //use if data exceeds screen size
                 screen: "h-screen w-screen", //use for modals
             }
         },
