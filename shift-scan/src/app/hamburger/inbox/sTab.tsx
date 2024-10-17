@@ -5,16 +5,20 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
+import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { sentContent } from "@/lib/types"; // Define appropriate type for your content
-import React from "react";
+import React, { use } from "react";
 import { useState, useEffect } from "react";
 
 export default function STab() {
   const [sentContent, setSentContent] = useState<sentContent[]>([]);
   const [loading, setLoading] = useState(true); // To track loading state
   const [error, setError] = useState<string | null>(null); // To track error state
+  const [pending, setPending] = useState<sentContent[]>([]);
+  const [approved, setApproved] = useState<sentContent[]>([]);
+  const [denied, setDenied] = useState<sentContent[]>([]);
 
   // Fetch data on component mount
   useEffect(() => {
@@ -40,9 +44,12 @@ export default function STab() {
   }, []);
 
   // Filter the content based on status
-  const approved = sentContent.filter((item) => item.status === "APPROVED");
-  const pending = sentContent.filter((item) => item.status === "PENDING");
-  const denied = sentContent.filter((item) => item.status === "DENIED");
+  useEffect(() => {
+    console.log(sentContent);
+    setApproved(sentContent.filter((item) => item.status === "APPROVED"));
+    setPending(sentContent.filter((item) => item.status === "PENDING"));
+    setDenied(sentContent.filter((item) => item.status === "DENIED"));
+  }, [sentContent]);
 
   // If loading, show a loading message
   if (loading) {
@@ -65,17 +72,35 @@ export default function STab() {
   // If there are no pending requests, show a message
   if (pending.length === 0 && approved.length === 0 && denied.length === 0) {
     return (
-      <Holds>
-        <Titles>There Are No Requests Currently</Titles>
-      </Holds>
+      <Contents width={"section"}>
+        <Grids rows={"5"} cols={"3"} gap={"5"} className="py-5">
+          <Holds className="row-start-1 row-end-5 col-span-3 h-full mt-5">
+            <Titles>There Are No Requests Currently</Titles>
+          </Holds>
+
+          <Holds
+            size={"full"}
+            className="row-start-5 row-end-6 col-start-3 col-end-4 h-full my-auto "
+          >
+            <Buttons href="/hamburger/inbox/form" background={"green"}>
+              {/*plus icon*/}
+              <Holds className="h-full my-auto">
+                <Holds size={"80"} className="my-auto">
+                  <Images titleImg={"/Plus.svg"} titleImgAlt={"plus"} />
+                </Holds>
+              </Holds>
+            </Buttons>
+          </Holds>
+        </Grids>
+      </Contents>
     );
   }
 
   return (
-    <Contents width={"section"} className="mb-5">
-      <Grids rows={"1"} gap={"5"} className="pt-5">
+    <Contents width={"section"}>
+      <Grids rows={"5"} cols={"3"} gap={"5"} className="py-5 ">
         {/* Request button */}
-        <Holds className="overflow-auto h-full no-scrollbar gap-5 row-span-8">
+        <Holds className="row-start-1 row-end-5 col-span-3 h-full mt-5 pb-5 overflow-auto no-scrollbar gap-5">
           {/* Display approved requests */}
           {approved.map((item) => (
             <Holds key={item.id}>
@@ -151,14 +176,21 @@ export default function STab() {
             </Holds>
           ))}
         </Holds>
-        <Holds size={"full"} className="row-span-2 ">
+        <Holds
+          size={"full"}
+          className="row-start-5 row-end-6 col-start-3 col-end-4   "
+        >
           <Buttons
             href="/hamburger/inbox/form"
             background={"green"}
-            size={"90"}
-            className="h-full py-2"
+            size={"70"}
+            className="h-full my-auto"
           >
-            <Titles size={"h2"}>Request</Titles>
+            {/*plus icon*/}
+
+            <Holds className="">
+              <Images titleImg={"/Plus.svg"} titleImgAlt={"plus"} />
+            </Holds>
           </Buttons>
         </Holds>
       </Grids>
