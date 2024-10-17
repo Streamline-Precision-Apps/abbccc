@@ -16,6 +16,7 @@ import { EquipmentCodes, JobCodes } from "@/lib/types";
 import { Holds } from "@/components/(reusable)/holds";
 import SearchSelect from "@/components/(search)/searchSelect";
 import { Grids } from "@/components/(reusable)/grids";
+import Spinner from "@/components/(animations)/spinner";
 
 export default function QrEquipmentContent() {
   const router = useRouter();
@@ -99,44 +100,58 @@ export default function QrEquipmentContent() {
   return (
     <>
       {loading ? (
-        <Grids rows={"5"} cols={"2"} gap={"5"}>
-          <Holds className="row-span-4 col-span-2 h-full">
+        <Grids rows={"5"} cols={"3"} gap={"5"}>
+          <Holds className="row-span-4 col-span-3 h-full">
             <SearchSelect
+              loading={true}
               datatype={`${t("Loading")}`}
               options={generatedList}
+              handleGenerate={handleGenerate}
               recentOptions={generatedRecentList}
               onSelect={handleSelectEquipment} // Pass the selection handler
             />
           </Holds>
-          <Holds size={"full"} className="row-span-1 col-span-1 h-full">
-            <Buttons background={"orange"} onClick={handleGenerate}>
-              <Titles size={"h2"}>{t("Generate")}</Titles>
-            </Buttons>
-          </Holds>
-          <Holds size={"full"} className="row-span-1 col-span-1 h-full">
+
+          <Holds
+            size={"full"}
+            className="row-span-1 col-start-3 col-end-4 h-full"
+          >
             <Buttons background={"green"} onClick={handleNew}>
-              <Titles size={"h2"}>{t("New")}</Titles>
+              <Holds className="">
+                <Images
+                  titleImg={"/Plus.svg"}
+                  titleImgAlt={"plus"}
+                  size={"40"}
+                />
+              </Holds>
             </Buttons>
           </Holds>
         </Grids>
       ) : (
-        <Grids rows={"5"} cols={"2"} gap={"5"}>
-          <Holds className="row-span-4 col-span-2 h-full">
+        <Grids rows={"5"} cols={"3"} gap={"5"}>
+          <Holds className="row-span-4 col-span-3 h-full">
             <SearchSelect
+              loading={false}
               datatype={`${t("EquipmentDatatype")}`}
               options={generatedList}
+              handleGenerate={handleGenerate}
               recentOptions={generatedRecentList}
               onSelect={handleSelectEquipment} // Pass the selection handler
             />
           </Holds>
-          <Holds size={"full"} className="row-span-1 col-span-1 h-full">
-            <Buttons background={"orange"} onClick={handleGenerate}>
-              <Titles size={"h2"}>{t("Generate")}</Titles>
-            </Buttons>
-          </Holds>
-          <Holds size={"full"} className="row-span-1 col-span-1 h-full">
+
+          <Holds
+            size={"full"}
+            className="row-span-1 col-start-3 col-end-4 h-full"
+          >
             <Buttons background={"green"} onClick={handleNew}>
-              <Titles size={"h2"}>{t("New")}</Titles>
+              <Holds className="">
+                <Images
+                  titleImg={"/Plus.svg"}
+                  titleImgAlt={"plus"}
+                  size={"40"}
+                />
+              </Holds>
             </Buttons>
           </Holds>
           <Modals

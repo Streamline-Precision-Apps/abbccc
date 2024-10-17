@@ -111,6 +111,7 @@
         "DescriptionTitle": "Description",
         "CommentsPurpose": "This is for justifying the need for a new site, to decide if it should be accepted or rejected.",
         "CreateNew": "Create New",
+        "GenerateCode": "Generate Qr Code",
         "GenerateError": "Failed to generate QR code.",
         "Banner-Text": "Added Temporary Equipment Successfully",
         "Tag": "Equipment Tag",
