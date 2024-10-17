@@ -88,12 +88,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   session: {
     strategy: "jwt",
   },
-  providers: [
-    // Resend({
-    //   apiKey: process.env.AUTH_RESEND_KEY,
-    //   from: "no-reply@StreamlinePrecision.com",
-    // }),
-  ],
+  providers,
   // trustHost: true,
   callbacks: {
     jwt: async ({ token, user }) => {

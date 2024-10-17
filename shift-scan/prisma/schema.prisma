@@ -54,7 +54,7 @@ model PasswordResetTokens {
   token      String   @unique
   expiration DateTime
   usersId    String?
-  Users      Users?   @relation(fields: [usersId], references: [id])
+  Users      Users?   @relation(fields: [email], references: [email])
 
   @@unique([email, token])
 }
@@ -65,7 +65,7 @@ model Users {
   firstName       String
   lastName        String
   username        String     @unique
-  email           String // need this for email verification/ password reset
+  email           String     @unique
   password        String
   signature       String?    @db.Text
   DOB             String

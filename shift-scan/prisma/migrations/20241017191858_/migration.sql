@@ -17,11 +17,23 @@ CREATE TYPE "IsActive" AS ENUM ('ACTIVE', 'INACTIVE');
 CREATE TYPE "FormType" AS ENUM ('MEDICAL', 'INSPECTION', 'MANAGER', 'LEAVE', 'SAFETY', 'INJURY');
 
 -- CreateTable
+CREATE TABLE "PasswordResetTokens" (
+    "id" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "token" TEXT NOT NULL,
+    "expiration" TIMESTAMP(3) NOT NULL,
+    "usersId" TEXT,
+
+    CONSTRAINT "PasswordResetTokens_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Users" (
     "id" TEXT NOT NULL,
     "firstName" TEXT NOT NULL,
     "lastName" TEXT NOT NULL,
     "username" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "signature" TEXT,
     "DOB" TEXT NOT NULL,
@@ -35,6 +47,7 @@ CREATE TABLE "Users" (
     "startDate" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "terminationDate" TIMESTAMP(3),
     "accountSetup" BOOLEAN NOT NULL DEFAULT false,
+    "passwordResetTokensId" TEXT,
 
     CONSTRAINT "Users_pkey" PRIMARY KEY ("id")
 );
@@ -288,7 +301,16 @@ CREATE TABLE "_AddressesToJobsites" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "PasswordResetTokens_token_key" ON "PasswordResetTokens"("token");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "PasswordResetTokens_email_token_key" ON "PasswordResetTokens"("email", "token");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Users_username_key" ON "Users"("username");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Users_email_key" ON "Users"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "UserSettings_userId_key" ON "UserSettings"("userId");
@@ -301,6 +323,9 @@ CREATE UNIQUE INDEX "Jobsites_qrId_key" ON "Jobsites"("qrId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Equipment_qrId_key" ON "Equipment"("qrId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "CostCodes_name_key" ON "CostCodes"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Contacts_employeeId_key" ON "Contacts"("employeeId");
@@ -316,6 +341,9 @@ CREATE UNIQUE INDEX "_AddressesToJobsites_AB_unique" ON "_AddressesToJobsites"("
 
 -- CreateIndex
 CREATE INDEX "_AddressesToJobsites_B_index" ON "_AddressesToJobsites"("B");
+
+-- AddForeignKey
+ALTER TABLE "PasswordResetTokens" ADD CONSTRAINT "PasswordResetTokens_email_fkey" FOREIGN KEY ("email") REFERENCES "Users"("email") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UserSettings" ADD CONSTRAINT "UserSettings_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
