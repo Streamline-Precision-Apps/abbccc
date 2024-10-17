@@ -122,6 +122,7 @@
         "DescriptionTitle": "Descripción",
         "CommentsPurpose": "Esto es para justificar la necesidad de un nuevo sitio, para decidir si debe ser aceptado o rechazado.",
         "CreateNew": "Crear Nuevo",
+        "GenerateCode": "Generar Código QR",
         "GenerateError": "No se pudo generar el código QR.",
         "Banner-Text": "Equipo Temporal Agregado Exitosamente",
         "Tag": "Etiqueta de Equipo",
