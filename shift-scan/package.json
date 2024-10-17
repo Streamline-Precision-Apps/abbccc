@@ -44,8 +44,10 @@
     "react-image-crop": "^11.0.6",
     "react-modal": "^3.16.1",
     "react-useportal": "^1.0.19",
+    "resend": "^4.0.0",
     "tailwind-merge": "^2.4.0",
     "tsconfig-paths": "^4.2.0",
+    "uuid": "^10.0.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
