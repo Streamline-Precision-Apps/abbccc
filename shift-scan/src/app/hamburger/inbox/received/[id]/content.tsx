@@ -82,7 +82,7 @@ export default function Content({ params, session }: Props) {
   useEffect(() => {
     const fetchSignatureData = async () => {
       try {
-        const result = await fetch(`/api/getSignature`);
+        const result = await fetch(`/api/getUserSignature`);
         const data = await result.json();
         setManagerSignature(data.signature);
       } catch (error) {

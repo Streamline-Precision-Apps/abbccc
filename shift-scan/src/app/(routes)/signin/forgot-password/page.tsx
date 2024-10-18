@@ -16,6 +16,7 @@ import { Forms } from "@/components/(reusable)/forms";
 import { Reset } from "@/actions/reset";
 import { useState } from "react";
 import { set } from "zod";
+import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 
 export default function ForgotPassword() {
   const [message, setMessage] = useState<string>("");
@@ -42,77 +43,60 @@ export default function ForgotPassword() {
     }, 3000);
   };
   return (
-    <Bases className="h-full min-h-screen">
+    <Bases>
       <Contents>
         <Grids rows={"5"} gap={"5"}>
-          <Holds>
-            <Images
-              titleImg="/logo.svg"
-              titleImgAlt={`logo`}
-              background="white"
-              size="40"
-              className="mb-5 p-3 row-span-1"
-            />
+          <Holds background={"white"} className="row-span-1 ">
+            <Contents width={"section"}>
+              <TitleBoxes
+                title={"Return to sign in"}
+                titleImg={"/key.svg"}
+                titleImgAlt={"key"}
+                href="/signin"
+              />
+            </Contents>
           </Holds>
+
           <Holds background={"white"} className="h-full row-span-4">
             <Contents width={"section"}>
-              <Holds className="row-span-1 ">
-                <Holds size={"80"}>
-                  <Titles size={"h2"}>Return to sign in</Titles>
+              <Grids rows={"4"} gap={"5"}>
+                <Holds className="row-span-1">
+                  <Texts size={"p3"}>
+                    Enter your email and we will send you a link to reset your
+                    password.
+                  </Texts>
                 </Holds>
-                <Holds size={"20"} className="mx-auto">
-                  <Buttons href="/signin" size={"90"}>
-                    <Images
-                      titleImg="/backArrow.svg"
-                      titleImgAlt={`back`}
-                      className="mx-auto"
-                    />
-                  </Buttons>
+                <Holds className="row-span-3 h-full my-auto">
+                  <Forms onSubmit={handlePasswordReset} className="h-full">
+                    <Labels>
+                      Email
+                      <Inputs
+                        type="email"
+                        name="email"
+                        id="email"
+                        placeholder="Email"
+                      />
+                    </Labels>
+                    <Holds>
+                      <Texts
+                        size={"p3"}
+                        className={
+                          color === "green"
+                            ? "text-emerald-600/80"
+                            : " text-red-600"
+                        }
+                      >
+                        {message}
+                      </Texts>
+                    </Holds>
+                    <Holds className="mt-5">
+                      <Buttons type="submit" className="py-5">
+                        <Titles size={"h2"}> Send email</Titles>
+                      </Buttons>
+                    </Holds>
+                  </Forms>
                 </Holds>
-              </Holds>
-              <Holds className="row-span-1">
-                <Holds size={"20"} className="my-auto">
-                  <Images titleImg="/key.svg" titleImgAlt={`key`} />
-                </Holds>
-                <Holds size={"80"} className="my-auto">
-                  <Titles size={"h1"}>Forgot Password?</Titles>
-                </Holds>
-              </Holds>
-              <Holds className="row-span-1">
-                <Texts size={"p3"}>
-                  Enter your email and we will send you a link to reset your
-                  password.
-                </Texts>
-              </Holds>
-              <Holds
-                className={
-                  color === "green"
-                    ? "row-span-1 bg-app-green"
-                    : color === "red"
-                    ? "row-span-1 bg-app-red"
-                    : `row-span-1`
-                }
-              >
-                <Texts size={"p3"}>{message}</Texts>
-              </Holds>
-              <Holds className="row-span-1 h-full">
-                <Forms onSubmit={handlePasswordReset} className="h-full">
-                  <Labels>
-                    Email
-                    <Inputs
-                      type="email"
-                      name="email"
-                      id="email"
-                      placeholder="Email"
-                    />
-                  </Labels>
-                  <Holds className="mt-5">
-                    <Buttons type="submit" className="py-5">
-                      <Titles size={"h2"}> Send email</Titles>
-                    </Buttons>
-                  </Holds>
-                </Forms>
-              </Holds>
+              </Grids>
             </Contents>
           </Holds>
         </Grids>
