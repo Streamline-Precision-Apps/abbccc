@@ -133,7 +133,7 @@ const EditWork = ({
     id: string,
     field: keyof TimeSheet
   ) => {
-    let value = e.target.value;
+    const value = e.target.value;
     setTimesheets((prevData) =>
       prevData.map((timesheet) =>
         timesheet.id === id ? { ...timesheet, [field]: value } : timesheet

@@ -59,8 +59,8 @@ export type SearchUser = {
   mechanicView: boolean;
   laborView: boolean;
   tascoView: boolean;
-  image: string | null,
-  terminationDate: Date | null,
+  image: string | null;
+  terminationDate: Date | null;
 };
 
 export type CustomSession = {
@@ -96,7 +96,7 @@ export type receivedContent = {
   employeeId: string;
   createdAt: Date;
   updatedAt: Date;
-  decidedBy: String | null;
+  decidedBy: string | null;
 };
 
 export type sentContent = {
@@ -114,53 +114,9 @@ export type sentContent = {
   decidedBy: string | null;
 };
 
-export type clockProcessProps = {
-  session: any;
-  locale: string;
-  jobCodes: JobCodes[];
-  costCodes: CostCodes[];
-  equipment: EquipmentCodes[];
-  recentJobSites: JobCodes[];
-  recentCostCodes: CostCodes[];
-  recentEquipment: EquipmentCodes[];
-  payPeriodSheets?: TimeSheets[];
-  logs: Logs[];
-};
-export type clockProcess = {
-  payPeriodSheets?: TimeSheets[];
-  session: any;
-  locale: string;
-  logs: Logs[];
-};
-
 export type TimeSheets = {
   startTime: Date;
   duration: number | null;
-};
-
-export type TimeSheet = {
-  startDate: any;
-  submitDate?: Date;
-  id?: number;
-  userId?: string;
-  date?: Date;
-  jobsiteId?: string;
-  costcode?: string;
-  nu?: string;
-  Fp?: string;
-  vehicleId?: number | null;
-  startTime?: Date | string | undefined;
-  endTime?: Date | string | null;
-  duration?: number | null;
-  startingMileage?: number | null;
-  endingMileage?: number | null;
-  leftIdaho?: boolean | null;
-  equipmentHauled?: string | null;
-  materialsHauled?: string | null;
-  hauledLoadsQuantity?: number | null;
-  refuelingGallons?: number | null;
-  timeSheetComments?: string | null;
-  status?: string;
 };
 
 export type EquipmentLog = {

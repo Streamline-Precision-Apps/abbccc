@@ -14,6 +14,7 @@ import { usePayPeriodHours } from "../context/PayPeriodHoursContext";
 import { usePayPeriodTimeSheet } from "../context/PayPeriodTimeSheetsContext";
 import { useRouter } from "next/navigation";
 import { Session } from "next-auth";
+import { PayPeriodTimesheets } from "@/lib/types";
 type props = {
   session: Session;
 };
@@ -64,15 +65,18 @@ export default function WidgetSection({ session }: props) {
     if (!accountSetup) {
       router.push("/signin/signup");
     }
-  }, [authStep, router]);
+  }, [authStep, router, accountSetup]);
 
   //-----------------------------------------------------------------------
   // Calculate total pay period hours
   const totalPayPeriodHours = useMemo(() => {
     if (!payPeriodSheets.length) return 0;
     return payPeriodSheets
-      .filter((sheet: any) => sheet.duration !== null)
-      .reduce((total, sheet: any) => total + (sheet.duration ?? 0), 0);
+      .filter((sheet: PayPeriodTimesheets) => sheet.duration !== null)
+      .reduce(
+        (total, sheet: PayPeriodTimesheets) => total + (sheet.duration ?? 0),
+        0
+      );
   }, [payPeriodSheets]);
 
   useEffect(() => {

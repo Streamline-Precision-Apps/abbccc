@@ -1,3 +1,4 @@
+"use client";
 import { cva, type VariantProps } from "class-variance-authority";
 import { InputHTMLAttributes, FC } from "react";
 import { cn } from "@/components/(reusable)/utils";
@@ -26,7 +27,7 @@ interface InputProps
   extends InputHTMLAttributes<HTMLInputElement>,
     VariantProps<typeof InputVariants> {
   state?: string;
-  data?: any;
+  data?: string | null | undefined;
 }
 
 const Inputs: FC<InputProps> = ({

@@ -258,7 +258,6 @@ export default function DbWidgetSection({ session, locale }: props) {
                   <Modals //----------before clock out equipment check
                     isOpen={isModalOpen}
                     handleClose={handleCloseModal}
-                    variant={"default"}
                     size={"clock"}
                   >
                     <Bases>

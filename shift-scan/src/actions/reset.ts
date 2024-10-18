@@ -1,18 +1,7 @@
 "use server";
 import prisma from "@/lib/prisma";
-import * as z from "zod";
 import { sendPasswordResetEmail } from "@/lib/mail";
 import { generatePasswordResetToken } from "@/lib/tokens";
-
-const parseUTC = (timestamp: string): Date => {
-  const date = new Date(timestamp);
-  if (isNaN(date.getTime())) {
-    throw new RangeError(`Invalid time value: ${timestamp}`);
-  }
-  date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
-  console.log("Parse UTC date:", date);
-  return date;
-};
 
 export const Reset = async (formData: FormData) => {
   const email = formData.get("email") as string;
@@ -57,9 +46,6 @@ export async function resetUserPassword(formData: FormData) {
   if (verify.expiration < new Date()) {
     throw new Error("Token expired");
   }
-  const expires = new Date(
-    parseUTC(verify.expiration.toString())
-  ).toISOString();
 
   // Fetch the user by email
   const user = await prisma.users.findUnique({

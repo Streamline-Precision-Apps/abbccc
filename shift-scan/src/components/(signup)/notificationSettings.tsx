@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import { Buttons } from "../(reusable)/buttons";
 import { setUserSettings } from "@/actions/userActions";
@@ -7,7 +8,7 @@ const NotificationSettings = ({
   handleNextStep,
 }: {
   id: string;
-  handleNextStep: any;
+  handleNextStep: () => void;
 }) => {
   const [approvedRequests, setApprovedRequests] = useState(false);
   const [timeoffRequests, setTimeoffRequests] = useState(false);

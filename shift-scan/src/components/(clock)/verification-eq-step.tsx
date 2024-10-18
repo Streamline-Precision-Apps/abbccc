@@ -12,11 +12,9 @@ import { TextAreas } from "../(reusable)/textareas";
 import { Labels } from "../(reusable)/labels";
 import { Inputs } from "../(reusable)/inputs";
 import { Images } from "../(reusable)/images";
-import { Texts } from "../(reusable)/texts";
 import { TitleBoxes } from "../(reusable)/titleBoxes";
 import { Equipment } from "@/lib/types";
 import { useSession } from "next-auth/react";
-import { useDBCompleteEquipmentList } from "@/app/context/dbCompleteEquipmentList";
 import { Holds } from "../(reusable)/holds";
 import Spinner from "../(animations)/spinner";
 import { Grids } from "../(reusable)/grids";
@@ -28,13 +26,8 @@ type VerifyProcessProps = {
 };
 
 const VerificationEQStep: React.FC<VerifyProcessProps> = ({
-  type,
   handleNextStep,
-  option,
 }) => {
-  const [filteredEquipmentName, setFilteredEquipmentName] = useState<
-    string | null
-  >(null);
   const t = useTranslations("Clock");
   const { scanEQResult } = useEQScanData();
   const [loading, setLoading] = useState(true);
@@ -54,7 +47,6 @@ const VerificationEQStep: React.FC<VerifyProcessProps> = ({
   }
 
   useEffect(() => {
-    setLoading(true);
     const fetchEquipmentList = async () => {
       setLoading(true);
       try {
