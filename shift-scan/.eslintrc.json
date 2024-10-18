@@ -10,23 +10,9 @@
   "parserOptions": {
     "project": "./tsconfig.json",
     "sourceType": "module",
-    "ecmaVersion": 2020
+    "ecmaVersion": "latest"
   },
   "rules": {
-    "camelcase": ["error", { "properties": "always" }],
-    "@typescript-eslint/naming-convention": [
-      "error",
-      {
-        "selector": "variableLike",
-        "format": ["camelCase"]
-      },
-      {
-        "selector": "variable",
-        "format": ["camelCase"],
-        "leadingUnderscore": "forbid"
-      }
-    ],
-    "quotes": ["error", "double", { "avoidEscape": true }],
-    "no-console": ["error", { "allow": ["warn", "error"] }]
+    // "no-console": ["error", { "allow": ["warn", "error"] }]
   }
 }

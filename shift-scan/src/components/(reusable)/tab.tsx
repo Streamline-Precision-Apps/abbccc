@@ -1,4 +1,4 @@
-import { button } from "@nextui-org/react";
+"use client";
 import React from "react";
 import classNames from "classnames";
 import { Texts } from "../(reusable)/texts";

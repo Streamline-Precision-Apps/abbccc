@@ -1,12 +1,13 @@
+"use client";
 import { cva, type VariantProps } from "class-variance-authority";
 import { HTMLAttributes, FC } from "react";
 import { cn } from "@/components/(reusable)/utils";
 import { Buttons } from "../(reusable)/buttons";
 import { Titles } from "../(reusable)/titles";
 import { Images } from "../(reusable)/images";
-import { Contents } from "./contents";
+
 import { Holds } from "./holds";
-import { Button } from "@nextui-org/react";
+
 import { Grids } from "./grids";
 
 const TitleBoxVariants = cva(
@@ -45,7 +46,7 @@ interface TitleBoxProps
   href?: string;
   src?: string;
   modal?: boolean;
-  modalTitle?: any;
+  modalTitle?: string;
 }
 
 const TitleBoxes: FC<TitleBoxProps> = ({

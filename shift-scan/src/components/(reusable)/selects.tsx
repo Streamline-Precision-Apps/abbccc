@@ -1,45 +1,59 @@
+"use client";
 import { cva, type VariantProps } from "class-variance-authority";
 import { SelectHTMLAttributes, FC, ChangeEventHandler } from "react";
 import { cn } from "@/components/(reusable)/utils";
 
-const SelectsVariants = cva(
-"text-lg rounded-[10px]",
-{
-variants: {
+const SelectsVariants = cva("text-lg rounded-[10px]", {
+  variants: {
     variant: {
-        default: "border border-[3px] border-black disabled:bg-gray-400 mb-3 last:mb-0 w-full p-3",
+      default:
+        "border border-[3px] border-black disabled:bg-gray-400 mb-3 last:mb-0 w-full p-3",
     },
-},
-defaultVariants: {
+  },
+  defaultVariants: {
     variant: "default",
-},
-}
-)
+  },
+});
 
 // this extends the capability of HTMLAttributes or the VariantProps that it can hold, specify your props here
-interface SelectsProps extends SelectHTMLAttributes<HTMLSelectElement>, VariantProps<typeof SelectsVariants> {
-    onChange?: ChangeEventHandler<HTMLSelectElement>;
-    data?: any;
+interface SelectsProps
+  extends SelectHTMLAttributes<HTMLSelectElement>,
+    VariantProps<typeof SelectsVariants> {
+  onChange?: ChangeEventHandler<HTMLSelectElement>;
+  data?: string[];
 }
 
-const Selects: FC<SelectsProps> = ({className, variant, onChange, data, ...props}) => {
-if (data) {
+const Selects: FC<SelectsProps> = ({
+  className,
+  variant,
+  onChange,
+  data,
+  ...props
+}) => {
+  if (data) {
     return (
-        <select className={cn(SelectsVariants({variant, className}))} onChange={onChange} {...props}>
-            {data.map((item: any) => (
-                <option key={item} value={item}>{item}</option>
-            ))}
-        </select>
-    )
-}
-return (
-    <select className={cn(SelectsVariants({variant, className}))} onChange={onChange} {...props}>
-        {props.children}
+      <select
+        className={cn(SelectsVariants({ variant, className }))}
+        onChange={onChange}
+        {...props}
+      >
+        {data.map((item: string) => (
+          <option key={item} value={item}>
+            {item}
+          </option>
+        ))}
+      </select>
+    );
+  }
+  return (
+    <select
+      className={cn(SelectsVariants({ variant, className }))}
+      onChange={onChange}
+      {...props}
+    >
+      {props.children}
     </select>
-)
-}
+  );
+};
 
-export {Selects, SelectsVariants}
-
-
-
+export { Selects, SelectsVariants };

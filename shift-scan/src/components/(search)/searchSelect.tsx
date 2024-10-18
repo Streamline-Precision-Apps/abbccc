@@ -11,7 +11,6 @@ import { Texts } from "../(reusable)/texts";
 import { Buttons } from "../(reusable)/buttons";
 import { Contents } from "../(reusable)/contents";
 import { Titles } from "../(reusable)/titles";
-import { set } from "zod";
 import Spinner from "../(animations)/spinner";
 
 type Props<T> = {

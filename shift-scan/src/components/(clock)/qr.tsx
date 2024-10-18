@@ -1,19 +1,17 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import QrScanner from "qr-scanner";
-import { useRouter } from 'next/navigation';
-import { useScanData } from '@/app/context/JobSiteScanDataContext';
-import { Texts } from "../(reusable)/texts";
-import { Buttons } from "../(reusable)/buttons";
-import { Contents } from "../(reusable)/contents";
+import { useRouter } from "next/navigation";
+import { useScanData } from "@/app/context/JobSiteScanDataContext";
 
 type QrReaderProps = {
   handleNextStep: () => void;
-  url : string;
-}
+  url: string;
+};
 
-export default function QR({ handleNextStep, url  } : QrReaderProps){
-  const videoRef: React.MutableRefObject<HTMLVideoElement | null> = useRef(null);
+export default function QR({ handleNextStep, url }: QrReaderProps) {
+  const videoRef: React.MutableRefObject<HTMLVideoElement | null> =
+    useRef(null);
   const qrScannerRef: React.MutableRefObject<QrScanner | null> = useRef(null);
   const [scanCount, setScanCount] = useState(0);
   const { setScanResult } = useScanData();
@@ -23,24 +21,24 @@ export default function QR({ handleNextStep, url  } : QrReaderProps){
   const onScanSuccess = (result: QrScanner.ScanResult) => {
     try {
       console.log(result.data);
-      console.log('I scanned using jobsite QR');
+      console.log("I scanned using jobsite QR");
       setScanResult({ data: result.data });
       qrScannerRef.current?.stop();
       handleNextStep();
     } catch (error) {
-      console.error('Error processing QR code:', error);
-      alert('Invalid QR code');
+      console.error("Error processing QR code:", error);
+      alert("Invalid QR code");
       qrScannerRef.current?.stop();
       router.back();
       setTimeout(() => {
-        alert('Invalid QR code');
+        alert("Invalid QR code");
       }, 100); // Delay the alert by 100 milliseconds
     }
   };
 
   const onScanFail = (err: string | Error) => {
     setScanCount((prevCount) => prevCount + 1);
-    console.warn('Scan failed:', err);
+    console.warn("Scan failed:", err);
   };
 
   useEffect(() => {
@@ -58,9 +56,13 @@ export default function QR({ handleNextStep, url  } : QrReaderProps){
 
       QrScanner.hasCamera().then((hasCamera: boolean) => {
         if (hasCamera) {
-          scanner.start().catch((error: Error) => console.error('Scanner start error:', error));
+          scanner
+            .start()
+            .catch((error: Error) =>
+              console.error("Scanner start error:", error)
+            );
         } else {
-          console.error('No camera found');
+          console.error("No camera found");
         }
       });
 
@@ -69,7 +71,7 @@ export default function QR({ handleNextStep, url  } : QrReaderProps){
         scanner.destroy();
       };
     }
-  }, []);
+  }, [onScanSuccess]); // added this for build errors
 
   useEffect(() => {
     if (scanCount >= SCAN_THRESHOLD) {
@@ -79,6 +81,9 @@ export default function QR({ handleNextStep, url  } : QrReaderProps){
   }, [scanCount, router]);
 
   return (
-    <video ref={videoRef} className="h-full rounded-2xl border-4 bg-gray-300 border-black"/>
+    <video
+      ref={videoRef}
+      className="h-full rounded-2xl border-4 bg-gray-300 border-black"
+    />
   );
-};
+}

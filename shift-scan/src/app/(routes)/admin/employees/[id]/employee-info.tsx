@@ -1,3 +1,4 @@
+"use server";
 import prisma from "@/lib/prisma";
 import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
@@ -8,7 +9,6 @@ import { Labels } from "@/components/(reusable)/labels";
 import { Inputs } from "@/components/(reusable)/inputs";
 
 export default async function employeeInfo({ params }: Params) {
-  
   const id = params.id;
   const employee = await prisma.users.findUnique({
     where: {
@@ -26,31 +26,47 @@ export default async function employeeInfo({ params }: Params) {
   });
 
   return (
-<Contents>
-        <Holds size={"titleBox"}>
-            <TitleBoxes
-              title={`${employee?.firstName} ${employee?.lastName}`}
-              titleImg={employee?.image ?? "/johnDoe.webp"}
-              titleImgAlt="Team"
-              variant={"default"}
-              size={"default"}
-              type="profilePic"
-            />
-        </Holds>
-        <Holds size={"dynamic"}>
-          <Forms>
-            <Labels variant="default">Phone Number</Labels>
-            <Inputs variant="default" type="default" state="disabled" data={contacts?.phoneNumber}></Inputs>
-            <Labels variant="default">Email</Labels>
-            <Inputs variant="default" type="default" state="disabled" data={contacts?.email}></Inputs>
-            <Labels variant="default">Emergency Contact</Labels>
-            <Inputs variant="default" type="default" state="disabled" data={contacts?.emergencyContact}></Inputs>
-            <Labels variant="default">Emergency Contact Number</Labels>
-            <Inputs variant="default" type="default" state="disabled" data={contacts?.emergencyContactNumber}></Inputs>
-            <Labels variant="default">Date of Birth</Labels>
-            <Inputs variant="default" type="default" state="disabled" data={employee?.DOB}></Inputs>
-          </Forms>
-        </Holds>
+    <Contents>
+      <Holds>
+        <TitleBoxes
+          title={`${employee?.firstName} ${employee?.lastName}`}
+          titleImg={employee?.image ?? "/profile-default.svg"}
+          titleImgAlt="Team"
+          variant={"default"}
+          size={"default"}
+          type="profilePic"
+        />
+      </Holds>
+      <Holds>
+        <Forms>
+          <Labels>Phone Number</Labels>
+          <Inputs
+            type="default"
+            state="disabled"
+            data={contacts?.phoneNumber}
+          ></Inputs>
+          <Labels>Email</Labels>
+          <Inputs
+            type="default"
+            state="disabled"
+            data={contacts?.email}
+          ></Inputs>
+          <Labels>Emergency Contact</Labels>
+          <Inputs
+            type="default"
+            state="disabled"
+            data={contacts?.emergencyContact}
+          ></Inputs>
+          <Labels>Emergency Contact Number</Labels>
+          <Inputs
+            type="default"
+            state="disabled"
+            data={contacts?.emergencyContactNumber}
+          ></Inputs>
+          <Labels>Date of Birth</Labels>
+          <Inputs type="default" state="disabled" data={employee?.DOB}></Inputs>
+        </Forms>
+      </Holds>
     </Contents>
   );
 }

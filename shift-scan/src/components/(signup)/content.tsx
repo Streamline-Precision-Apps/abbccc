@@ -8,8 +8,8 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Bases } from "@/components/(reusable)/bases";
 import { Header } from "@/components/header";
 import { Contents } from "@/components/(reusable)/contents";
-import { Grids } from "@/components/(reusable)/grids";
-import { clearAuthStep, getAuthStep, setAuthStep } from "@/app/api/auth";
+
+import { getAuthStep, setAuthStep } from "@/app/api/auth";
 import ShiftScanIntro from "./shiftScanIntro";
 import ResetPassword from "./resetPassword";
 import ProfilePictureSetup from "./profilePictureSetup";
@@ -21,16 +21,13 @@ import { signOut } from "next-auth/react";
 export default function Content({
   userId,
   accountSetup,
-  locale,
 }: {
   userId: string;
   accountSetup: boolean;
-  locale: string;
 }) {
   const t = useTranslations("Home");
   const f = useTranslations("Footer");
-  const [toggle, setToggle] = useState(true);
-  const router = useRouter();
+
   const [step, setStep] = useState(1);
 
   useEffect(() => {

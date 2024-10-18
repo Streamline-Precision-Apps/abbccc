@@ -80,7 +80,7 @@ export default function ClockOutContent({ id }: ClockOutContentProps) {
     const fetchSignature = async () => {
       setLoading(true);
       try {
-        const response = await window.fetch("/api/getSignature");
+        const response = await window.fetch("/api/getUserSignature");
         const json = await response.json();
         setBase64String(json.signature);
       } catch (error) {
