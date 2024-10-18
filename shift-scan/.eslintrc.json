@@ -4,12 +4,13 @@
     "plugin:@typescript-eslint/recommended"
   ],
   "plugins": [
-    "next",
     "@typescript-eslint"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "project": "./tsconfig.json"
+    "project": "./tsconfig.json",
+    "sourceType": "module",
+    "ecmaVersion": 2020
   },
   "rules": {
     "camelcase": ["error", { "properties": "always" }],
@@ -29,4 +30,3 @@
     "no-console": ["error", { "allow": ["warn", "error"] }]
   }
 }
-
