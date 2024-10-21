@@ -294,6 +294,9 @@
         "Cancel": "Cancel",
         "Signature": "Signature",
         "EditSignature": "Edit Signature",
+        "Language": "Language",
+        "English": "English",
+        "Spanish": "Spanish",
         "PhoneNumber": "Phone Number"
     },
     
