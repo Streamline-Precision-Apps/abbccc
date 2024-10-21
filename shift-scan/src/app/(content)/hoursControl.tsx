@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import ViewComponent from "../(content)/hourView";
 import { usePayPeriodTimeSheet } from "../context/PayPeriodTimeSheetsContext";
 import { useTranslations } from "next-intl";
@@ -34,8 +34,8 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
     }
   };
 
-  // Calculate daily hours from the timesheets
-  const dailyHours = useMemo(() => {
+  // Calculate daily hours from the timesheets (no memoization)
+  const calculateDailyHours = () => {
     const startDate = calculatePayPeriodStart();
     const endDate = new Date(startDate);
     endDate.setDate(endDate.getDate() + 13); // Two-week period
@@ -54,9 +54,11 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
     // Accumulate the timesheet durations into the initialized dates
     if (payPeriodTimeSheet) {
       payPeriodTimeSheet.forEach((sheet) => {
-        const dateKey = new Date(sheet.startTime).toISOString().split("T")[0];
-        if (hoursMap[dateKey] !== undefined) {
-          hoursMap[dateKey] += sheet.duration ?? 0;
+        const sheetDateKey = new Date(sheet.startTime)
+          .toISOString()
+          .split("T")[0];
+        if (hoursMap[sheetDateKey] !== undefined) {
+          hoursMap[sheetDateKey] += sheet.duration ?? 0;
         }
       });
     }
@@ -65,7 +67,10 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
     return Object.entries(hoursMap)
       .map(([date, hours]) => ({ date, hours }))
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  }, [payPeriodTimeSheet, calculatePayPeriodStart]);
+  };
+
+  // Dynamically calculate daily hours whenever current date or index changes
+  const dailyHours = calculateDailyHours();
 
   // Set the initial index based on the current date
   useEffect(() => {
@@ -77,21 +82,11 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
   }, [dailyHours]);
 
   // Current data based on index
-  const currentData = useMemo(() => {
-    const currentDay = dailyHours[currentIndex];
-    const prevDay = dailyHours[currentIndex - 1];
-    const nextDay = dailyHours[currentIndex + 1];
-
-    return {
-      day: currentIndex + 1,
-      value: currentDay ? currentDay.hours : 0,
-      valuePrev: prevDay ? prevDay.hours : 0,
-      valueNext: nextDay ? nextDay.hours : 0,
-    };
-  }, [currentIndex, dailyHours]);
+  const currentData = dailyHours[currentIndex] || { date: "", hours: 0 };
+  const prevData = dailyHours[currentIndex - 1] || { date: "", hours: 0 };
+  const nextData = dailyHours[currentIndex + 1] || { date: "", hours: 0 };
 
   // Function to calculate the bar height in px
-  // max px=300
   const calculateBarHeight = (value: number) => {
     if (value === 0) return 0;
     if (value > 0 && value <= 1) return 10;
@@ -105,25 +100,23 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
     if (value > 8) return 300;
   };
 
+  // Scroll left
   const scrollLeft = () => {
     if (currentIndex > 0) {
       setCurrentIndex((prevIndex) => prevIndex - 1);
-      setCurrentDate((prevDate) => {
-        const newDate = new Date(prevDate);
-        newDate.setDate(prevDate.getDate() - 1);
-        return newDate;
-      });
+      setCurrentDate(
+        (prevDate) => new Date(prevDate.setDate(prevDate.getDate() - 1))
+      );
     }
   };
 
+  // Scroll right
   const scrollRight = () => {
     if (currentIndex < dailyHours.length - 1) {
       setCurrentIndex((prevIndex) => prevIndex + 1);
-      setCurrentDate((prevDate) => {
-        const newDate = new Date(prevDate);
-        newDate.setDate(prevDate.getDate() + 1);
-        return newDate;
-      });
+      setCurrentDate(
+        (prevDate) => new Date(prevDate.setDate(prevDate.getDate() + 1))
+      );
     }
   };
 
@@ -144,105 +137,77 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
           currentDate={currentDate}
         />
       </Holds>
+
       <Holds
         background={"white"}
         position={"row"}
         className="row-span-4 border-black border-[3px] shadow-[8px_8px_0px_grey]"
       >
-        <Holds //------------------------------------ First Bar
-          className="h-full"
-        >
+        {/* Bar for Previous Day */}
+        <Holds className="h-full">
           <Contents width={"section"} className="p-3 py-5">
             <Holds
               background={"darkBlue"}
               className="h-full border-black border-[3px] rounded-[10px] p-1 flex"
             >
               <div
-                className={`border-black border-[3px] rounded-[10px]
-              ${
-                currentData.valuePrev === 0
-                  ? "bg-clear"
-                  : `h-[${calculateBarHeight(currentData.valuePrev)}px]`
-              }
-                ${
-                  currentData.valuePrev > 8
-                    ? "bg-app-green border-black border-[3px] rounded-[10px]"
-                    : "bg-app-orange border-black border-[3px] rounded-[10px]"
-                }
-                ${currentData.valuePrev !== 0 ? "" : "bg-clear  border-none"}
-                `}
+                className={`border-black border-[3px] rounded-[10px] ${
+                  prevData.hours === 0
+                    ? "bg-clear"
+                    : `h-[${calculateBarHeight(prevData.hours)}px]`
+                } ${prevData.hours > 8 ? "bg-app-green" : "bg-app-orange"}`}
               >
                 <Texts size={"p3"}>
-                  {currentData.valuePrev !== 0
-                    ? `${currentData.valuePrev.toFixed(1)} ${t(
-                        "DA-Time-Label"
-                      )}`
+                  {prevData.hours !== 0
+                    ? `${prevData.hours.toFixed(1)} ${t("DA-Time-Label")}`
                     : ""}
                 </Texts>
               </div>
             </Holds>
           </Contents>
         </Holds>
-        <Holds //------------------------------------ Second Bar
-          className="h-full"
-        >
+
+        {/* Bar for Current Day */}
+        <Holds className="h-full">
           <Contents width={"section"} className="py-2">
             <Holds
               background={"darkBlue"}
               className="h-full border-black border-[3px] rounded-[10px] p-1 flex"
             >
               <Holds
-                className={`
-                ${
-                  currentData.value === 0
+                className={`border-black border-[3px] rounded-[10px] ${
+                  currentData.hours === 0
                     ? "bg-clear"
-                    : `h-[${calculateBarHeight(currentData.value)}px]`
-                }  
-                  ${
-                    currentData.value > 8
-                      ? "bg-app-green border-black border-[3px] rounded-[10px]"
-                      : "bg-app-orange border-black border-[3px] rounded-[10px]"
-                  }
-                  ${currentData.value !== 0 ? "" : "bg-clear border-none"}
-                  `}
+                    : `h-[${calculateBarHeight(currentData.hours)}px]`
+                } ${currentData.hours > 8 ? "bg-app-green" : "bg-app-orange"}`}
               >
                 <Texts size={"p3"}>
-                  {currentData.value !== 0
-                    ? `${currentData.value.toFixed(1)} ${t("DA-Time-Label")}`
+                  {currentData.hours !== 0
+                    ? `${currentData.hours.toFixed(1)} ${t("DA-Time-Label")}`
                     : ""}
                 </Texts>
               </Holds>
             </Holds>
           </Contents>
         </Holds>
-        <Holds //------------------------------------ Third Bar
-          className="h-full"
-        >
+
+        {/* Bar for Next Day */}
+        <Holds className="h-full">
           <Contents width={"section"} className="p-3 py-5">
             <Holds
               background={"darkBlue"}
               className="h-full border-black border-[3px] rounded-[10px] p-1 flex"
             >
               <Holds
-                className={`border-black border-[3px] rounded-[10px]
-                ${
-                  currentData.valueNext === 0
+                className={`border-black border-[3px] rounded-[10px] ${
+                  nextData.hours === 0
                     ? "bg-clear"
-                    : `h-[${calculateBarHeight(currentData.valueNext)}px] `
-                }
-                  ${
-                    currentData.valueNext > 8
-                      ? "bg-app-green border-black border-[3px] rounded-[10px]"
-                      : "bg-app-orange border-black border-[3px] rounded-[10px]"
-                  }
-                  ${currentData.valueNext !== 0 ? "" : "bg-clear  border-none"}
-                  `}
+                    : `h-[${calculateBarHeight(nextData.hours)}px]`
+                } ${nextData.hours > 8 ? "bg-app-green" : "bg-app-orange"}`}
               >
                 <Texts size={"p3"}>
-                  {currentData.valueNext !== 0
-                    ? `${currentData.valueNext.toFixed(1)} ${t(
-                        "DA-Time-Label"
-                      )}`
+                  {nextData.hours !== 0
+                    ? `${nextData.hours.toFixed(1)} ${t("DA-Time-Label")}`
                     : ""}
                 </Texts>
               </Holds>
@@ -250,6 +215,7 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
           </Contents>
         </Holds>
       </Holds>
+
       <Holds className="row-span-1 h-full">
         <Buttons href={"/timesheets"} background={"green"}>
           <Texts size={"p3"}>{t("TimeSheet-Label")}</Texts>
