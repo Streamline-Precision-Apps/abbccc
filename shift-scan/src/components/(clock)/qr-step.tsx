@@ -46,7 +46,7 @@ export default function QRStep({
           <Holds className="row-span-5 ">
             <div className="">
               {type === "equipment" ? (
-                <QR_EQ handleNextStep={handleNextStep} url={url} />
+                <QR_EQ handleNextStep={handleNextStep} />
               ) : (
                 <>
                   <QR handleNextStep={handleNextStep} url={url} />
