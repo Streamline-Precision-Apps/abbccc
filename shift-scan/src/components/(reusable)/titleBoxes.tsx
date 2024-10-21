@@ -1,12 +1,13 @@
+"use client";
 import { cva, type VariantProps } from "class-variance-authority";
 import { HTMLAttributes, FC } from "react";
 import { cn } from "@/components/(reusable)/utils";
 import { Buttons } from "../(reusable)/buttons";
 import { Titles } from "../(reusable)/titles";
 import { Images } from "../(reusable)/images";
-import { Contents } from "./contents";
+
 import { Holds } from "./holds";
-import { Button } from "@nextui-org/react";
+
 import { Grids } from "./grids";
 
 const TitleBoxVariants = cva(
@@ -45,7 +46,7 @@ interface TitleBoxProps
   href?: string;
   src?: string;
   modal?: boolean;
-  modalTitle?: any;
+  modalTitle?: string;
 }
 
 const TitleBoxes: FC<TitleBoxProps> = ({
@@ -57,7 +58,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
   title2,
   titleImg,
   titleImgAlt,
-  href,
+  href = "back",
   modal,
   modalTitle,
   ...props
@@ -68,91 +69,100 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         className={cn(TitleBoxVariants({ variant, size, className }))}
         {...props}
       >
-        <Holds position={"absolute"}>
-          <Buttons href="back" background={"none"} size={"30"}>
-            <Images
-              titleImg="/turnBack.svg"
-              titleImgAlt={titleImgAlt}
-              size={"30"}
-            />
-          </Buttons>
-        </Holds>
-        {props.children}
-        <Holds size={"full"} position={"center"} className=" cursor-pointer ">
-          <Holds
-            size={"40"}
-            className="rounded-full relative "
-            onClick={() => modalTitle(modal)}
-          >
-            <Images
-              titleImg={titleImg}
-              titleImgAlt={titleImgAlt}
-              className="rounded-full border-[3px] border-black"
-              size={"full"}
-            />
-            <Holds className="absolute rounded-full h-5 w-5 md:h-10 md:w-10 left-[75%] top-[80%] transform -translate-x-1/2 -translate-y-1/2  px-1  md:px-2 md:py-3 border-[3px] border-black bg-white">
+        <Grids cols={"4"} rows={"3"} className="w-full">
+          <Holds className="col-span-1 row-span-1">
+            <Buttons
+              href={href}
+              background={"none"}
+              position={"left"}
+              size={"50"}
+            >
+              <Images titleImg="/turnBack.svg" titleImgAlt={titleImgAlt} />
+            </Buttons>
+          </Holds>
+          {props.children}
+          <Holds className="col-span-2 row-span-2 cursor-pointer">
+            <Holds
+              size={"60"}
+              className="rounded-full relative "
+              onClick={() => modalTitle(modal)}
+            >
               <Images
-                titleImg="/camera.svg"
-                titleImgAlt="camera"
+                titleImg={titleImg}
+                titleImgAlt={titleImgAlt}
+                className="rounded-full border-[3px] border-black"
                 size={"full"}
-                className="my-auto"
               />
+              <Holds className="absolute rounded-full h-7 w-7 md:h-10 md:w-10 left-[75%] top-[85%] transform -translate-x-1/2 -translate-y-1/2  px-1  md:px-2 md:py-3 border-[3px] border-black bg-white">
+                <Images
+                  titleImg="/camera.svg"
+                  titleImgAlt="camera"
+                  size={"full"}
+                  className="my-auto"
+                />
+              </Holds>
             </Holds>
           </Holds>
-        </Holds>
-        <Titles size={"h3"}>{title}</Titles>
-        <Holds
-          size={"30"}
-          position={"absolute"}
-          className="left-[70%] top-[5%] "
-        >
-          <Holds size={"90"} position={"center"}>
-            <Titles position={"right"} size={"h6"}>
-              {title2}
-            </Titles>
+          <Holds className="col-span-4 row-span-1">
+            <Titles size={"h2"}>{title}</Titles>
           </Holds>
-        </Holds>
+          <Holds
+            size={"30"}
+            position={"absolute"}
+            className="left-[70%] top-[5%] "
+          >
+            <Holds className="col-span-4 row-span-1">
+              <Titles position={"right"} size={"h6"}>
+                {title2}
+              </Titles>
+            </Holds>
+          </Holds>
+        </Grids>
       </div>
     );
   }
-  if (type === "profilePics") {
+  if (type === "myTeamProfile") {
     return (
       <div
         className={cn(TitleBoxVariants({ variant, size, className }))}
         {...props}
       >
-        <Holds position={"absolute"}>
-          <Buttons href="back" background={"none"} size={"30"}>
-            <Images
-              titleImg="/turnBack.svg"
-              titleImgAlt={titleImgAlt}
-              size={"30"}
-            />
-          </Buttons>
-        </Holds>
-        {props.children}
-        <Holds size={"full"} position={"center"}>
-          <Holds size={"40"} className="rounded-full relative ">
-            <Images
-              titleImg={titleImg}
-              titleImgAlt={titleImgAlt}
-              className="rounded-full border-[3px] border-black"
-              size={"full"}
-            />
+        <Grids cols={"4"} rows={"3"} className="w-full">
+          <Holds className="col-span-1 row-span-1">
+            <Buttons
+              href={href}
+              background={"none"}
+              position={"left"}
+              size={"50"}
+            >
+              <Images titleImg="/turnBack.svg" titleImgAlt={titleImgAlt} />
+            </Buttons>
           </Holds>
-        </Holds>
-        <Titles size={"h3"}>{title}</Titles>
-        <Holds
-          size={"30"}
-          position={"absolute"}
-          className="left-[70%] top-[5%] "
-        >
-          <Holds size={"90"} position={"center"}>
-            <Titles position={"right"} size={"h6"}>
-              {title2}
-            </Titles>
+          <Holds className="col-span-2 row-span-2 ">
+            {props.children}
+            <Holds size={"full"} position={"center"}>
+              <Holds size={"40"} className="rounded-full relative ">
+                <Images
+                  titleImg={titleImg}
+                  titleImgAlt={titleImgAlt}
+                  className="rounded-full border-[3px] border-black"
+                  size={"full"}
+                />
+              </Holds>
+            </Holds>
           </Holds>
-        </Holds>
+
+          <Holds className="col-span-4 row-span-1">
+            <Titles size={"h1"}>{title}</Titles>
+          </Holds>
+          <Holds className="col-start-4 col-span-1 row-start-1 row-span-1">
+            <Holds size={"90"} position={"center"}>
+              <Titles position={"right"} size={"h6"}>
+                {title2}
+              </Titles>
+            </Holds>
+          </Holds>
+        </Grids>
       </div>
     );
   }
@@ -175,7 +185,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         {...props}
       >
         <Holds position={"absolute"}>
-          <Buttons href="back" background={"none"} size={"30"}>
+          <Buttons href={href} background={"none"} size={"30"}>
             <Images
               titleImg="/turnBack.svg"
               titleImgAlt={titleImgAlt}
@@ -193,7 +203,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         className={cn(TitleBoxVariants({ variant, size, className }))}
         {...props}
       >
-        <Buttons href="back">
+        <Buttons href={href}>
           <Images titleImg="/backArrow.svg" titleImgAlt="back arrow" />
         </Buttons>
         <Titles size={"h1"}>{title}</Titles>
@@ -206,7 +216,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         className={cn(TitleBoxVariants({ variant, size, className }))}
         {...props}
       >
-        <Buttons href="back">
+        <Buttons href={href}>
           <Images titleImg="/backArrow.svg" titleImgAlt="back arrow" />
         </Buttons>
         <Titles size={"h1"}>{title}</Titles>
@@ -220,7 +230,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         {...props}
       >
         <Holds position={"absolute"}>
-          <Buttons href="back" background={"none"} size={"30"}>
+          <Buttons href={href} background={"none"} size={"30"}>
             <Images
               titleImg="/turnBack.svg"
               titleImgAlt="back arrow"
@@ -245,30 +255,6 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         </Holds>
       </div>
     );
-  }
-  if (type === "route") {
-    return (
-      <div
-        className={cn(TitleBoxVariants({ variant, size, className }))}
-        {...props}
-      >
-        <Holds position={"absolute"}>
-          <Buttons href={href} background={"none"} size={"30"}>
-            <Images
-              titleImg="/turnBack.svg"
-              titleImgAlt={titleImgAlt}
-              size={"30"}
-            />
-          </Buttons>
-        </Holds>
-        <Holds>
-          <Holds size={"50"} className="my-auto">
-            <Images titleImg={titleImg} titleImgAlt={titleImgAlt} size={"30"} />
-          </Holds>
-          <Titles size={"h2"}>{title}</Titles>
-        </Holds>
-      </div>
-    );
   } else
     return (
       <div
@@ -278,7 +264,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         <Grids cols={"4"} rows={"3"} className="w-full">
           <Holds className="col-span-1 row-span-1">
             <Buttons
-              href="back"
+              href={href}
               background={"none"}
               position={"left"}
               size={"50"}

@@ -47,12 +47,25 @@ enum Permission {
   SUPERADMIN
 }
 
+// password reset token
+model PasswordResetTokens {
+  id         String   @id @default(cuid())
+  email      String
+  token      String   @unique
+  expiration DateTime
+  usersId    String?
+  Users      Users?   @relation(fields: [email], references: [email])
+
+  @@unique([email, token])
+}
+
 // Holds the login and general app data of employee but not all the data
 model Users {
   id              String     @id @default(cuid())
   firstName       String
   lastName        String
   username        String     @unique
+  email           String     @unique
   password        String
   signature       String?    @db.Text
   DOB             String
@@ -67,14 +80,17 @@ model Users {
   terminationDate DateTime?
   accountSetup    Boolean    @default(false)
 
-  crewMembers         CrewMembers[]
-  timeSheet           TimeSheets[]
-  equipmentLogs       EmployeeEquipmentLogs[]
-  contacts            Contacts[]
-  userSettings        UserSettings[]
-  userTrainings       UserTrainings[]
-  injuryForms         InjuryForms[]
-  timeoffRequestForms timeoffRequestForms[]
+  passwordResetToken PasswordResetTokens[]
+
+  crewMembers           CrewMembers[]
+  timeSheet             TimeSheets[]
+  equipmentLogs         EmployeeEquipmentLogs[]
+  contacts              Contacts[]
+  userSettings          UserSettings[]
+  userTrainings         UserTrainings[]
+  injuryForms           InjuryForms[]
+  timeoffRequestForms   timeoffRequestForms[]
+  passwordResetTokensId String?
 }
 
 model UserSettings {

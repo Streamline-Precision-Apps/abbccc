@@ -11,7 +11,7 @@ import { Contents } from "@/components/(reusable)/contents";
 
 type UserCardsProps = {
   users: SearchUser[];
-}
+};
 
 export default function UserCards({ users }: UserCardsProps) {
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -28,22 +28,25 @@ export default function UserCards({ users }: UserCardsProps) {
   };
 
   return (
-        <Grids rows={"6"} gap={"5"}>
-          <Holds background={"white"} className="row-span-1 h-full rounded-t-none">
-            <Contents width={"section"}>
-              <Holds className="my-auto">
-                <SearchBar
-                searchTerm={searchTerm}
-                onSearchChange={handleSearchChange}
-                placeholder="Search users..."/>
-              </Holds>
-            </Contents>
+    <Grids rows={"6"} gap={"5"}>
+      <Holds background={"white"} className="row-span-1 h-full rounded-t-none">
+        <Contents width={"section"}>
+          <Holds className="my-auto">
+            <SearchBar
+              selected={false}
+              searchTerm={searchTerm}
+              onSearchChange={handleSearchChange}
+              placeholder="Search users..."
+            />
           </Holds>
-          <Holds 
-          background={"white"}
-          className="row-span-5 h-full">
-            <Contents width={"section"} className="py-5">
-            {filteredUsers.map((user) => ( //---------------Replace this with new teams code
+        </Contents>
+      </Holds>
+      <Holds background={"white"} className="row-span-5 h-full">
+        <Contents width={"section"} className="py-5">
+          {filteredUsers.map(
+            (
+              user //---------------Replace this with new teams code
+            ) => (
               <Buttons
                 key={user.id}
                 id={user.id}
@@ -51,7 +54,7 @@ export default function UserCards({ users }: UserCardsProps) {
               >
                 <Holds>
                   <Images
-                    titleImg={user.image ?? "/johnDoe.webp"}
+                    titleImg={user.image ?? "/profile-default.svg"}
                     titleImgAlt="profile picture"
                     size={"20"}
                   />
@@ -62,9 +65,10 @@ export default function UserCards({ users }: UserCardsProps) {
                   </Titles>
                 </Holds>
               </Buttons>
-            ))}
-          </Contents> 
-          </Holds>
+            )
+          )}
+        </Contents>
+      </Holds>
     </Grids>
   );
 }

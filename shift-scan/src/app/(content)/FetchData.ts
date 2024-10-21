@@ -11,11 +11,11 @@ import {
   useRecentDBCostcode,
   useRecentDBEquipment,
 } from "@/app/context/dbRecentCodesContext";
-import { JobCodes, CostCodes, EquipmentCodes } from "@/lib/types";
+
 import { useDBCompleteEquipmentList } from "../context/dbCompleteEquipmentList";
 
 const useFetchAllData = () => {
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
 
   const { setJobsiteResults } = useDBJobsite();
   const { setRecentlyUsedJobCodes } = useRecentDBJobsite();
@@ -90,6 +90,7 @@ const useFetchAllData = () => {
     setRecentlyUsedCostCodes,
     setEquipmentResults,
     setRecentlyUsedEquipment,
+    setEquipmentListResults,
   ]);
 };
 

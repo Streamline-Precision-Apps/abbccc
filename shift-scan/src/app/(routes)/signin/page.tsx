@@ -10,7 +10,7 @@ import { getTranslations } from "next-intl/server";
 
 export default async function SignInPage() {
   const locale = cookies().get("locale")?.value || "en";
-  const t = await getTranslations("login");
+  const t = await getTranslations("Login");
   return (
     <Bases>
       <Contents>

@@ -195,7 +195,7 @@ export default function AddJobsiteForm({
       <Holds>
         <Contents width={"section"} className="my-5">
           <Buttons background={"green"} type="submit" className="p-2">
-            <Titles size={"h3"}>{t("Submit")}</Titles>
+            <Titles size={"h3"}>{t("CreateNew")}</Titles>
           </Buttons>
         </Contents>
       </Holds>

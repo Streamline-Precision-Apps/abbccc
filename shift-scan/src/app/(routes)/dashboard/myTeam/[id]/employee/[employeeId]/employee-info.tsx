@@ -46,17 +46,20 @@ export default function employeeInfo({
 
   return (
     <>
-      <Holds background={"white"} className=" mt-7 mb-5">
-        <TitleBoxes
-          title={
-            loading
-              ? "loading..."
-              : `${employee?.firstName} ${employee?.lastName}`
-          }
-          titleImg={employee?.image ?? "/profile-default.svg"}
-          titleImgAlt="Team"
-          type="profilePics"
-        />
+      <Holds background={"white"} className="mb-5">
+        <Contents width={"section"}>
+          <TitleBoxes
+            title={
+              loading
+                ? "loading..."
+                : `${employee?.firstName} ${employee?.lastName}`
+            }
+            titleImg={employee?.image ?? "/profile-default.svg"}
+            titleImgAlt="Team"
+            type="myTeamProfile"
+            title2={loading ? "" : `${t("ID")}${employee?.id}`}
+          />
+        </Contents>
       </Holds>
       {loading ? (
         <>

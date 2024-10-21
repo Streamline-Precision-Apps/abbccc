@@ -109,14 +109,10 @@ export default function AddTimesheetsForm({
         type="hidden"
         value={localDateTime}
       />
-      <Labels size="default" type="title">
-        {t("Date")}
-      </Labels>
+      <Labels type="title">{t("Date")}</Labels>
       <Inputs variant="default" id="date" name="date" type="date" />
 
-      <Labels size="default" type="title">
-        {t("JobsiteID")}
-      </Labels>
+      <Labels type="title">{t("JobsiteID")}</Labels>
       <Selects
         id="jobsiteId"
         name="jobsiteId"
@@ -131,9 +127,7 @@ export default function AddTimesheetsForm({
         ))}
       </Selects>
 
-      <Labels size="default" type="title">
-        {t("CostCode")}
-      </Labels>
+      <Labels type="title">{t("CostCode")}</Labels>
       <Selects id="costcode" name="costcode">
         <Options value="">{t("Select Cost Code")}</Options>
         {filteredCostCodes.map((costcode) => (
@@ -143,9 +137,7 @@ export default function AddTimesheetsForm({
         ))}
       </Selects>
 
-      <Labels size="default" type="title">
-        {t("StartTime")}
-      </Labels>
+      <Labels type="title">{t("StartTime")}</Labels>
       <Inputs
         variant="default"
         id="startTime"
@@ -155,9 +147,7 @@ export default function AddTimesheetsForm({
         onChange={(e) => setStartTime(e.target.value)} // Update startTime state
       />
 
-      <Labels size="default" type="title">
-        {t("EndTime")}
-      </Labels>
+      <Labels type="title">{t("EndTime")}</Labels>
       <Inputs
         variant="default"
         id="endTime"
@@ -167,14 +157,12 @@ export default function AddTimesheetsForm({
         onChange={(e) => setEndTime(e.target.value)} // Update endTime state
       />
 
-      <Labels size="default" type="title">
+      <Labels type="title">
         {t("Duration (Hours): ", { duration: duration.toFixed(2) })}
       </Labels>
 
       {/* Vehicle Search Section */}
-      <Labels size="default" type="title">
-        {t("Vehicle (by Name or QR ID)")}
-      </Labels>
+      <Labels type="title">{t("Vehicle (by Name or QR ID)")}</Labels>
 
       <div className="relative w-full">
         {/* Input field with search icon */}
@@ -182,8 +170,6 @@ export default function AddTimesheetsForm({
           <Images
             titleImg="/search.svg"
             titleImgAlt="search"
-            variant={"icon"}
-            size={"icon"}
             className="w-6 h-6 ml-2"
           />
           <Inputs
@@ -223,9 +209,7 @@ export default function AddTimesheetsForm({
       {/* Conditional rendering based on vehicle selection */}
       {selectedVehicleId && (
         <>
-          <Labels size="default" type="title">
-            {t("StartingMileage")}
-          </Labels>
+          <Labels type="title">{t("StartingMileage")}</Labels>
           <Inputs
             variant="default"
             id="startingMileage"
@@ -233,9 +217,7 @@ export default function AddTimesheetsForm({
             type="number"
           />
 
-          <Labels size="default" type="title">
-            {t("Ending Mileage")}
-          </Labels>
+          <Labels type="title">{t("Ending Mileage")}</Labels>
           <Inputs
             variant="default"
             id="endingMileage"
@@ -243,18 +225,14 @@ export default function AddTimesheetsForm({
             type="number"
           />
 
-          <Labels size="default" type="title">
-            {t("Left Idaho")}
-          </Labels>
+          <Labels type="title">{t("Left Idaho")}</Labels>
           <Selects id="leftIdaho" name="leftIdaho">
             <Options value="">{t("Select")}</Options>
             <Options value="true">{t("True")}</Options>
             <Options value="false">{t("False")}</Options>
           </Selects>
 
-          <Labels size="default" type="title">
-            {t("Equipment Hauled")}
-          </Labels>
+          <Labels type="title">{t("Equipment Hauled")}</Labels>
           <Inputs
             variant="default"
             id="equipmentHauled"
@@ -262,9 +240,7 @@ export default function AddTimesheetsForm({
             type="text"
           />
 
-          <Labels size="default" type="title">
-            {t("Materials Hauled")}
-          </Labels>
+          <Labels type="title">{t("Materials Hauled")}</Labels>
           <Inputs
             variant="default"
             id="materialsHauled"
@@ -272,9 +248,7 @@ export default function AddTimesheetsForm({
             type="text"
           />
 
-          <Labels size="default" type="title">
-            {t("HauledLoadsQuantity")}
-          </Labels>
+          <Labels type="title">{t("HauledLoadsQuantity")}</Labels>
           <Inputs
             variant="default"
             id="hauledLoadsQuantity"
@@ -282,9 +256,7 @@ export default function AddTimesheetsForm({
             type="number"
           />
 
-          <Labels size="default" type="title">
-            {t("GallonsRefueled")}
-          </Labels>
+          <Labels type="title">{t("GallonsRefueled")}</Labels>
           <Inputs
             variant="default"
             id="refuelingGallons"
@@ -294,15 +266,18 @@ export default function AddTimesheetsForm({
         </>
       )}
 
-      <Labels size="default" type="title">
-        {t("Comments")}
-      </Labels>
-      <Inputs variant="default" type="text" id="timeSheetComments" name="timeSheetComments" />
+      <Labels type="title">{t("Comments")}</Labels>
+      <Inputs
+        variant="default"
+        type="text"
+        id="timeSheetComments"
+        name="timeSheetComments"
+      />
 
       {/* Hidden userId field */}
       <Inputs type="hidden" id="userId" name="userId" value={employeeId} />
 
-      <Buttons variant="green" type="submit">
+      <Buttons background={"green"} type="submit">
         {t("Submit")}
       </Buttons>
     </Forms>

@@ -1,10 +1,14 @@
 "use server";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 import Signature from "@/components/(signup)/signature";
-
-export async function GET({ params }: { params: { employeeId: string } }) {
+type Params = {
+  params: {
+    id: string;
+  };
+};
+export async function GET(request: NextRequest, { params }: Params) {
   const session = await auth();
   const manager = session?.user.permission;
   if (manager === "USER") {
@@ -14,7 +18,7 @@ export async function GET({ params }: { params: { employeeId: string } }) {
   try {
     const Signature = await prisma.users.findUnique({
       where: {
-        id: params.employeeId,
+        id: params.id,
       },
       select: {
         signature: true,

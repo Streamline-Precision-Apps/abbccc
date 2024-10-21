@@ -1,5 +1,4 @@
 "use server";
-import { setAuthStep } from "@/app/api/auth";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
@@ -159,7 +158,6 @@ export async function editTimeSheet(formData: FormData) {
   console.log(formData);
 
   const id = formData.get("id");
-  const employeeId = formData.get("employeeId");
   const costcode = formData.get("costcode");
   const endTime = parseUTC(formData.get("endTime") as string);
   const startTime = parseUTC(formData.get("startTime") as string);
