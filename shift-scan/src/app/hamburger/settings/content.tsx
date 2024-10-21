@@ -185,6 +185,33 @@ export default function Index() {
             {/*---------------------End of security------------------------------*/}
           </Contents>
         </Holds>
+        {/*---------------------Start of language------------------------------*/}
+        <Holds background={"white"} className="row-span-2 h-full py-4">
+          <Contents width={"section"}>
+            <Grids rows={"4"} gap={"5"}>
+              <Holds className="row-span-1 ">
+                <Titles>{t("Language")}</Titles>
+              </Holds>
+              <Holds position={"row"} className="row-span-1">
+                <Holds size={"70"}>
+                  <Texts position={"left"}>{t("English")}</Texts>
+                </Holds>
+                <Holds size={"30"}>
+                  <LocaleToggleSwitch
+                    data={updatedData?.language === "en" || false}
+                    onChange={(value: boolean) =>
+                      handleChange("language", value)
+                    }
+                  />
+                </Holds>
+                <Holds size={"70"}>
+                  <Texts position={"right"}>{t("Spanish")}</Texts>
+                </Holds>
+              </Holds>
+            </Grids>
+            {/*---------------------End of language------------------------------*/}
+          </Contents>
+        </Holds>
 
         {/*---------------------Change Password------------------------------*/}
 
