@@ -11,8 +11,31 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { timecardData } from "@/actions/adminActions";
 import { Texts } from "@/components/(reusable)/texts";
 
+type TimeSheets = {
+  submitDate: string;
+  id: string;
+  userId: string;
+  date: string;
+  jobsiteId: string;
+  costcode: string;
+  nu: string;
+  Fp: string;
+  vehicleId: string;
+  startTime: string;
+  endTime: string;
+  duration: string;
+  startingMileage: string;
+  endingMileage: string;
+  leftIdaho: string;
+  equipmentHauled: string;
+  materialsHauled: string;
+  hauledLoadsQuantity: string;
+  refuelingGallons: string;
+  timeSheetComments: string;
+  status: string;
+};
 export default function Reports() {
-  const [timeSheets, setTimeSheets] = useState<any[]>([]);
+  const [timeSheets, setTimeSheets] = useState<TimeSheets[]>([]);
   const [loading, setLoading] = useState(false); // Add loading state
   const [showPayroll, setShowPayroll] = useState(true);
 
@@ -25,7 +48,26 @@ export default function Reports() {
     setLoading(true); // Start loading
     setShowPayroll(false);
     const data = await timecardData(formData);
-    setTimeSheets(data);
+    const formattedData = data.map((sheet) => ({
+      ...sheet,
+      id: sheet.id.toString(), // Convert id to string
+      submitDate: sheet.submitDate.toLocaleDateString(),
+      date: sheet.date.toLocaleDateString(),
+      vehicleId: sheet.vehicleId?.toString() || "",
+      startTime: sheet.startTime.toLocaleTimeString(),
+      endTime: sheet.endTime?.toLocaleTimeString() || "",
+      duration: sheet.duration === null ? "" : sheet.duration.toString(),
+      startingMileage: sheet.startingMileage?.toString() || "",
+      endingMileage: sheet.endingMileage?.toString() || "",
+      leftIdaho: sheet.leftIdaho?.toString() || "",
+      equipmentHauled: sheet.equipmentHauled || "",
+      materialsHauled: sheet.materialsHauled || "",
+      hauledLoadsQuantity: sheet.hauledLoadsQuantity?.toString() || "",
+      refuelingGallons: sheet.refuelingGallons?.toString() || "",
+      timeSheetComments: sheet.timeSheetComments || "",
+    }));
+
+    setTimeSheets(formattedData);
     setInterval(() => {
       setLoading(false); // End loading
     }, 4000);

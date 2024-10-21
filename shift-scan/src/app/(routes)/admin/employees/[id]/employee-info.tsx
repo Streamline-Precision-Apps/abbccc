@@ -43,28 +43,32 @@ export default async function employeeInfo({ params }: Params) {
           <Inputs
             type="default"
             state="disabled"
-            data={contacts?.phoneNumber}
+            data={contacts?.phoneNumber ?? ""}
           ></Inputs>
           <Labels>Email</Labels>
           <Inputs
             type="default"
             state="disabled"
-            data={contacts?.email}
+            data={contacts?.email ?? ""}
           ></Inputs>
           <Labels>Emergency Contact</Labels>
           <Inputs
             type="default"
             state="disabled"
-            data={contacts?.emergencyContact}
+            data={contacts?.emergencyContact ?? ""}
           ></Inputs>
           <Labels>Emergency Contact Number</Labels>
           <Inputs
             type="default"
             state="disabled"
-            data={contacts?.emergencyContactNumber}
+            data={contacts?.emergencyContactNumber ?? ""}
           ></Inputs>
           <Labels>Date of Birth</Labels>
-          <Inputs type="default" state="disabled" data={employee?.DOB}></Inputs>
+          <Inputs
+            type="default"
+            state="disabled"
+            data={employee?.DOB ?? ""}
+          ></Inputs>
         </Forms>
       </Holds>
     </Contents>

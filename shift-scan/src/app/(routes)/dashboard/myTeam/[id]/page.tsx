@@ -15,20 +15,18 @@ import React from "react";
 import { useEffect, useState } from "react";
 
 type CrewMember = {
-  user: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    image: string | null;
-  };
+  id: string;
+  image: string | null;
+  firstName: string;
+  lastName: string;
 };
 
 type CrewResponse = CrewMember[];
 
 export default function Content({ params }: { params: { id: string } }) {
-  const [crew, setCrew] = useState<any[]>([]);
+  const [crew, setCrew] = useState<CrewMember[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { data: session, status } = useSession();
+  const { status: status } = useSession();
   const { id } = params;
   const crewId = Number(id);
   const t = useTranslations("MyTeam");
@@ -63,7 +61,7 @@ export default function Content({ params }: { params: { id: string } }) {
         fetchCrew(); // If no data in localStorage, fetch from API
       }
     }
-  }, [status, id]);
+  }, [crewId, status, id]);
 
   return (
     <Bases>
@@ -94,7 +92,7 @@ export default function Content({ params }: { params: { id: string } }) {
               <Contents width={"section"}>
                 <Grids rows={"4"} gap={"5"} className="my-5">
                   {crew.map((user) => (
-                    <Holds className="row-span-1 h-full">
+                    <Holds key={user.id} className="row-span-1 h-full">
                       <Buttons
                         key={user.id}
                         href={`/dashboard/myTeam/${params.id}/employee/${user.id}`}

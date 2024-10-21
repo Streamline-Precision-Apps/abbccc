@@ -9,10 +9,7 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { useRouter } from "next/navigation";
 import { Holds } from "@/components/(reusable)/holds";
-import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import { Divider } from "@nextui-org/react";
-import { Dividers } from "@/components/(reusable)/dividers";
 import { Contents } from "@/components/(reusable)/contents";
 
 type Props = {

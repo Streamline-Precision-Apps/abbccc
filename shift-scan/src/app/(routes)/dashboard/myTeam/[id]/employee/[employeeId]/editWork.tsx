@@ -1,6 +1,6 @@
 "use client";
 import { editTimeSheet } from "@/actions/timeSheetActions";
-import { fetchEq, updateEq } from "@/actions/equipmentActions";
+import { updateEq } from "@/actions/equipmentActions";
 import { Images } from "@/components/(reusable)/images";
 import { useTranslations } from "next-intl";
 import React from "react";
@@ -34,8 +34,8 @@ type EditWorkProps = {
 };
 
 export type TimeSheet = {
-  endDate: any;
-  startDate: any;
+  endDate: string | undefined;
+  startDate: string | null;
   submitDate?: Date;
   id?: string;
   userId?: string;

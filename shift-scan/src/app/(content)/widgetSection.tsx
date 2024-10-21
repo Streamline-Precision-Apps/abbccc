@@ -50,7 +50,7 @@ export default function WidgetSection({ session }: props) {
     };
 
     fetchData();
-  }, [setPayPeriodTimeSheets]);
+  }, [e, setPayPeriodTimeSheets]);
 
   //---------------------------------------------------------------------
   // Redirect to dashboard if authStep is success

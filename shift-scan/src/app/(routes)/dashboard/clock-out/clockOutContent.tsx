@@ -1,14 +1,10 @@
 "use client";
-import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
-import { ChangeEvent, use, useEffect, useMemo, useRef, useState } from "react";
-import { Signature } from "./(components)/injury-verification/Signature";
-
+import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { InjuryReportContent } from "./(components)/injury-report/injuryReportContent";
 import { Titles } from "@/components/(reusable)/titles";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
@@ -18,10 +14,8 @@ import { updateTimeSheet } from "@/actions/timeSheetActions"; // Make sure to up
 import { Banners } from "@/components/(reusable)/banners";
 import { Texts } from "@/components/(reusable)/texts";
 import { Clock } from "@/components/clock";
-import { Forms } from "@/components/(reusable)/forms";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Images } from "@/components/(reusable)/images";
-import { uploadFirstSignature } from "@/actions/userActions";
 import { Grids } from "@/components/(reusable)/grids";
 import Spinner from "@/components/(animations)/spinner";
 import Checkbox from "@/components/(inputs)/checkbox";
@@ -41,11 +35,7 @@ function useBanner(initialMessage = "") {
   return { showBanner, bannerMessage, setShowBanner, setBannerMessage };
 }
 
-type ClockOutContentProps = {
-  id: string;
-};
-
-export default function ClockOutContent({ id }: ClockOutContentProps) {
+export default function ClockOutContent() {
   const [loading, setLoading] = useState(true);
   const [step, incrementStep] = useState(1);
   const [path, setPath] = useState("ClockOut");
@@ -54,8 +44,7 @@ export default function ClockOutContent({ id }: ClockOutContentProps) {
   const [checked, setChecked] = useState(false); // Checkbox state
   const formRef = useRef<HTMLFormElement>(null);
   const hasSubmitted = useRef(false);
-  const { showBanner, bannerMessage, setShowBanner, setBannerMessage } =
-    useBanner();
+  const { bannerMessage, setShowBanner, setBannerMessage } = useBanner();
   const { scanResult } = useScanData();
   const { savedCostCode } = useSavedCostCode();
   const { savedTimeSheetData } = useTimeSheetData();
@@ -96,29 +85,6 @@ export default function ClockOutContent({ id }: ClockOutContentProps) {
 
   const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
     setChecked(event.currentTarget.checked);
-  };
-
-  const handleSubmitImage = async () => {
-    if (!base64String) {
-      setBannerMessage("Please capture a signature before proceeding.");
-      setShowBanner(true);
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("id", id);
-    formData.append("Signature", base64String);
-
-    setIsSubmitting(true);
-    try {
-      await uploadFirstSignature(formData);
-    } catch (error) {
-      console.error("Error uploading signature:", error);
-      setBannerMessage("There was an error uploading your signature.");
-      setShowBanner(true);
-    } finally {
-      setIsSubmitting(false);
-    }
   };
 
   const handleSubmit = async () => {

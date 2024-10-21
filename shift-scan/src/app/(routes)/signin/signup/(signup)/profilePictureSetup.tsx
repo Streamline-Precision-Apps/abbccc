@@ -9,7 +9,7 @@ const ProfilePictureSetup = ({
   handleNextStep,
 }: {
   id: string;
-  handleNextStep: any;
+  handleNextStep: () => void;
 }) => {
   const [base64String, setBase64String] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);

@@ -8,11 +8,11 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Forms } from "@/components/(reusable)/forms";
 import { useEffect, useState } from "react";
 import Spinner from "@/components/(animations)/spinner";
-import { Titles } from "@/components/(reusable)/titles";
 import { Contents } from "@/components/(reusable)/contents";
 import { useRouter } from "next/navigation";
 import { Grids } from "@/components/(reusable)/grids";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
+import { EmployeeEquipmentLogs } from "@/lib/types";
 
 type EquipmentLogs = {
   userId: string | undefined;
@@ -21,7 +21,7 @@ type EquipmentLogs = {
 export default function EquipmentLogContent({ userId }: EquipmentLogs) {
   const Router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [logs, setLogs] = useState<any[]>([]);
+  const [logs, setLogs] = useState<EmployeeEquipmentLogs[]>([]);
   const [banner, setBanner] = useState("");
   const t = useTranslations("Equipment");
   const b = useTranslations("Widgets");
@@ -48,7 +48,7 @@ export default function EquipmentLogContent({ userId }: EquipmentLogs) {
     };
 
     fetchData();
-  }, [Router, useRouter]);
+  }, [Router]);
   const handleSubmit = () => {
     setLogs([]);
     setBanner("Submitted all logs!");

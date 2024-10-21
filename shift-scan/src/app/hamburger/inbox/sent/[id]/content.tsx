@@ -1,6 +1,5 @@
 "use client";
 
-import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Forms } from "@/components/(reusable)/forms";
@@ -14,22 +13,13 @@ import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { sentContent } from "@/lib/types";
 import { Session } from "next-auth";
-import { useTranslations } from "next-intl";
-import {
-  FormEvent,
-  startTransition,
-  use,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { FormEvent, useEffect, useState } from "react";
 import {
   DeleteLeaveRequest,
   EditLeaveRequest,
 } from "@/actions/inboxSentActions";
 import { Images } from "@/components/(reusable)/images";
 import { useRouter } from "next/navigation";
-import { revalidatePath } from "next/cache";
 import { formatDate } from "@/utils/formatDateYMD";
 import React from "react";
 import Spinner from "@/components/(animations)/spinner";
@@ -41,7 +31,6 @@ type Props = {
 };
 
 export default function Content({ params, session }: Props) {
-  const t = useTranslations("Hamburger");
   const [loading, setLoading] = useState(true);
   const [edit, setEdit] = useState(false);
   const [cardDate, setCardDate] = useState<string>("");

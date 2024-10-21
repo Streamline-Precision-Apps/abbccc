@@ -9,7 +9,7 @@ import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { sentContent } from "@/lib/types"; // Define appropriate type for your content
-import React, { use } from "react";
+import React from "react";
 import { useState, useEffect } from "react";
 
 export default function STab() {

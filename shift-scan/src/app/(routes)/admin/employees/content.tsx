@@ -1,20 +1,12 @@
 "use client";
 import { useTranslations } from "next-intl";
 import "@/app/globals.css";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Bases } from "@/components/(reusable)/bases";
 import { Holds } from "@/components/(reusable)/holds";
-import { Titles } from "@/components/(reusable)/titles";
-import { Banners } from "@/components/(reusable)/banners";
-import { Footers } from "@/components/(reusable)/footers";
 import { Grids } from "@/components/(reusable)/grids";
-import { setAuthStep } from "@/app/api/auth";
-import { CustomSession, SearchUser, User } from "@/lib/types";
+import { CustomSession, SearchUser, User, Permission } from "@/lib/types";
 import { useSession } from "next-auth/react";
-import AddEmployeeForm from "./addEmployee";
 import UserManagement from "./(components)/userManagement";
-
 import { Tab } from "@/components/(reusable)/tab";
 import { Contents } from "@/components/(reusable)/contents";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
@@ -26,16 +18,16 @@ import { z } from "zod";
 export default function AddEmployeeContent() {
   const t = useTranslations("admin");
   const [loading, setLoading] = useState(true);
-  const [employees, setEmployees] = useState<any>([]);
-  const router = useRouter();
-  const [user, setData] = useState<User>({
+  const [employees, setEmployees] = useState<SearchUser[]>([]);
+
+  const [, setData] = useState<User>({
     id: "",
     firstName: "",
     lastName: "",
     permission: undefined,
   });
   const { data: session } = useSession() as { data: CustomSession | null };
-  const date = new Date().toLocaleDateString("en-US", {
+  new Date().toLocaleDateString("en-US", {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -61,8 +53,8 @@ export default function AddEmployeeContent() {
       firstName: z.string(),
       lastName: z.string(),
       username: z.string(),
-      permission: z.string(),
-      DOB: z.string(),
+      permission: z.nativeEnum(Permission),
+      DOB: z.string(), // Updated this line to parse DOB as a Date
       truckView: z.boolean(),
       mechanicView: z.boolean(),
       laborView: z.boolean(),
@@ -104,7 +96,7 @@ export default function AddEmployeeContent() {
 
   useEffect(() => {
     fetchEmployees();
-  }, []);
+  }, [fetchEmployees]);
 
   if (loading) {
     return (

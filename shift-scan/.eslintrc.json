@@ -12,6 +12,15 @@
     "sourceType": "module",
     "ecmaVersion": "latest"
   },
+  "overrides": [
+    {
+      "files": ["**/*.js", "**/*.jsx"],  // Add this override for JS/JSX files
+      "rules": {
+        "@typescript-eslint/no-unused-vars": "off",  // Turn off TypeScript-specific rules
+        "@typescript-eslint/no-var-requires": "off"
+      }
+    }
+  ],
   "rules": {
     // "no-console": ["error", { "allow": ["warn", "error"] }]
   }

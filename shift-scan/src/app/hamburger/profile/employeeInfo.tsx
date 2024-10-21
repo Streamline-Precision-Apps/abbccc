@@ -6,7 +6,6 @@ import { useTranslations } from "next-intl";
 import Base64Encoder from "@/components/(camera)/Base64Encoder";
 import { useEffect, useState } from "react";
 import { Contents } from "@/components/(reusable)/contents";
-import { Forms } from "@/components/(reusable)/forms";
 import { Labels } from "@/components/(reusable)/labels";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Modals } from "@/components/(reusable)/modals";
@@ -17,22 +16,16 @@ import { Trainings } from "@prisma/client";
 import { Grids } from "@/components/(reusable)/grids";
 import { Texts } from "@/components/(reusable)/texts";
 import Spinner from "@/components/(animations)/spinner";
-import { set } from "zod";
-import useFetchAllData from "@/app/(content)/FetchData";
 import { Signature } from "@/app/(routes)/dashboard/clock-out/(components)/injury-verification/Signature";
 import { uploadFirstSignature } from "@/actions/userActions";
 import { Titles } from "@/components/(reusable)/titles";
-
-type Props = {
-  contacts: Contact;
-};
 
 export default function EmployeeInfo() {
   const [loading, setLoading] = useState(true);
   const [employee, setEmployee] = useState<Employee>();
   const [contacts, setContacts] = useState<Contact>();
-  const [training, setTraining] = useState<Trainings[]>([]);
-  const [userTrainings, setUserTrainings] = useState<UserTraining[]>([]);
+  const [, setTraining] = useState<Trainings[]>([]);
+  const [, setUserTrainings] = useState<UserTraining[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isOpen2, setIsOpen2] = useState(false);
   const [editImg, setEditImg] = useState(false);
@@ -42,14 +35,6 @@ export default function EmployeeInfo() {
   const [base64String, setBase64String] = useState<string>("");
   const [signatureBase64String, setSignatureBase64String] =
     useState<string>("");
-
-  // Logic to get number of completed trainings
-  const total = Number(training);
-  const completed = userTrainings.filter((ut) => ut.isCompleted).length;
-
-  // Logic to get completion percentage
-  const completionStatus = total > 0 ? completed / total : 0;
-  const completionPercentage = (completionStatus * 100).toFixed(0);
 
   //----------------------------Data Fetching-------------------------------------
   const fetchEmployee = async () => {
@@ -110,10 +95,10 @@ export default function EmployeeInfo() {
 
   useEffect(() => {
     fetchAllData();
-  }, []);
+  }, [fetchAllData]);
 
   const reloadEmployeeData = () => {
-    const data = fetchEmployee(); // Directly fetch the updated employee data
+    fetchEmployee(); // Directly fetch the updated employee data
 
     console.log("Employee data reloaded");
   };

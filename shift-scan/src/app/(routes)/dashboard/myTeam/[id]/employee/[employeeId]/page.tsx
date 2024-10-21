@@ -2,7 +2,6 @@
 
 import EmployeeInfo from "./employee-info";
 import { EmployeeTimeSheets } from "./employee-timesheet";
-import prisma from "@/lib/prisma";
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";

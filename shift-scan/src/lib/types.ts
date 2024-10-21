@@ -1,5 +1,5 @@
 // This file holds all the types that will be used in the app
-import { FormStatus, Permission } from "@prisma/client";
+import { EquipmentStatus, FormStatus, Permission, Tags } from "@prisma/client";
 // this imports the session types for the app, it works client and server-side
 import { Session } from "next-auth";
 
@@ -74,6 +74,26 @@ export type Logs = {
   submitted: boolean;
 };
 
+export type EmployeeEquipmentLogs = {
+  id: number;
+  date: Date;
+  equipmentId: string;
+  jobsiteId: string;
+  employeeId: string;
+  startTime: Date;
+  endTime?: Date | null;
+  duration?: number | null;
+  isRefueled: boolean;
+  fuelUsed?: number | null;
+  comment?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  isCompleted: boolean;
+  isSubmitted: boolean;
+  status: FormStatus;
+  Equipment?: Equipment | null;
+};
+
 export type PayPeriodTimesheets = {
   startTime: Date; // Correct field name
   duration: number | null;
@@ -126,6 +146,21 @@ export type EquipmentLog = {
   Equipment: EquipmentCodes;
 };
 
+export type EquipmentFetchEQ = {
+  Equipment: {
+    id: string;
+    status: EquipmentStatus;
+    name: string;
+    createdAt: Date;
+    updatedAt: Date;
+    qrId: string;
+    description: string;
+    equipmentTag: Tags;
+    inUse: boolean;
+  } | null;
+  duration: number | null;
+};
+
 export type RequestForm = {
   session: Session | null;
 };
@@ -159,6 +194,20 @@ export type CostCodes = {
 };
 
 export type EquipmentCodes = {
+  isActive: boolean;
+  mileage: number;
+  registrationExpiration: Date | null;
+  licensePlate: string;
+  year: string;
+  model: string;
+  make: string;
+  updatedAt: Date;
+  createdAt: Date;
+  lastRepair: Date | null;
+  lastInspection: Date | null;
+  equipmentTag: string;
+  description: string;
+  status: string;
   id: string;
   qrId: string;
   name: string;
@@ -187,6 +236,23 @@ export type Equipment = {
 };
 
 export type Jobsites = {
+  selectedJobsite: CostCodes;
+  costCode: CostCodes[]; // Array of CostCodes
+  id: string;
+  qrId: string;
+  isActive: boolean;
+  status: string;
+  name: string;
+  streetNumber: string | null;
+  streetName: string;
+  city: string;
+  state: string | null;
+  country: string;
+  description: string | null;
+  comment: string | null;
+};
+
+export type JobsiteWithCost = {
   id: string;
   qrId: string;
   isActive?: boolean;
@@ -199,11 +265,16 @@ export type Jobsites = {
   country?: string;
   description?: string | null;
   comment?: string | null;
+  costCode: {
+    id: number;
+    name: string;
+  };
 };
-
 export type costCodes = {
   id: number;
   name: string;
   description: string;
   type: string;
+  isActive?: boolean;
 };
+export { Permission };

@@ -1,28 +1,16 @@
 "use client";
 
 import { Bases } from "@/components/(reusable)/bases";
-import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
-import { Forms } from "@/components/(reusable)/forms";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
 import { Holds } from "@/components/(reusable)/holds";
-import { Selects } from "@/components/(reusable)/selects";
 import { TextAreas } from "@/components/(reusable)/textareas";
-import { Texts } from "@/components/(reusable)/texts";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { sentContent } from "@/lib/types";
 import { Session } from "next-auth";
-import { useTranslations } from "next-intl";
-import { startTransition, useEffect, useRef, useState } from "react";
-import {
-  DeleteLeaveRequest,
-  EditLeaveRequest,
-} from "@/actions/inboxSentActions";
-import { Images } from "@/components/(reusable)/images";
-import { useRouter } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { useEffect, useState } from "react";
 import { formatDate } from "@/utils/formatDateYMD";
 
 type Props = {
@@ -31,16 +19,8 @@ type Props = {
   params: { id: string };
 };
 
-export default function Content({ params, sentContent, session }: Props) {
-  const t = useTranslations("Hamburger");
-  const router = useRouter();
-  const userId = session?.user.id;
-
-  const [initialContent, setInitialContent] =
-    useState<sentContent[]>(sentContent);
-  const [currentContent, setCurrentContent] =
-    useState<sentContent[]>(sentContent);
-
+export default function Content({ sentContent, session }: Props) {
+  const [, setInitialContent] = useState<sentContent[]>(sentContent);
   useEffect(() => {
     setInitialContent(sentContent); // Store initial values
   }, [sentContent]);
@@ -111,7 +91,6 @@ export default function Content({ params, sentContent, session }: Props) {
                   disabled
                 />
                 <Labels>
-                  {" "}
                   Start Date
                   <Inputs
                     type="date"
@@ -122,7 +101,6 @@ export default function Content({ params, sentContent, session }: Props) {
                 </Labels>
 
                 <Labels>
-                  {" "}
                   End Date
                   <Inputs
                     type="date"
@@ -132,7 +110,6 @@ export default function Content({ params, sentContent, session }: Props) {
                   />
                 </Labels>
                 <Labels>
-                  {" "}
                   Request Type
                   <Inputs
                     type="text"
@@ -143,7 +120,6 @@ export default function Content({ params, sentContent, session }: Props) {
                 </Labels>
 
                 <Labels>
-                  {" "}
                   Comments
                   <TextAreas
                     name="description"
@@ -156,7 +132,6 @@ export default function Content({ params, sentContent, session }: Props) {
 
               <Holds>
                 <Labels>
-                  {" "}
                   Managers Comments
                   <TextAreas
                     name="mangerComments"

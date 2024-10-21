@@ -1,13 +1,18 @@
+"use server";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
+import { NextRequest } from "next/server";
 
+// Corrected GET function
 export async function GET(
-  request: Request,
+  req: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  console.log(req);
   const userId = params.id;
   console.log("userId", userId);
+
   // Authenticate the user
   const session = await auth();
   if (!session?.user?.id) {
@@ -19,8 +24,21 @@ export async function GET(
     where: {
       id: userId,
     },
-    include: {
-      contacts: true,
+    select: {
+      id: true,
+      firstName: true,
+      lastName: true,
+      DOB: true,
+      contacts: {
+        select: {
+          phoneNumber: true,
+          emergencyContact: true,
+          emergencyContactNumber: true,
+          email: true,
+        },
+      },
+      // Exclude fields like password, signature, etc.
+      // We select only the fields that are needed
     },
   });
 
@@ -28,9 +46,9 @@ export async function GET(
     return NextResponse.json({ error: "Employee not found" }, { status: 404 });
   }
 
-  const { password, signature, permission, accountSetup, ...rest } = employee; // Exclude the password from the response using spread operator
+  // Exclude sensitive fields
 
-  return NextResponse.json(rest, {
+  return NextResponse.json(employee, {
     headers: {
       "Cache-Control":
         "public, max-age=60, s-maxage=60, stale-while-revalidate=30",
