@@ -5,7 +5,6 @@ import QR from "./qr";
 import QR_EQ from "./qr-eq";
 import { Buttons } from "../(reusable)/buttons";
 import { Texts } from "../(reusable)/texts";
-import { useRouter } from "next/navigation";
 import { Titles } from "../(reusable)/titles";
 import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
@@ -47,7 +46,7 @@ export default function QRStep({
           <Holds className="row-span-5 ">
             <div className="">
               {type === "equipment" ? (
-                <QR_EQ handleNextStep={handleNextStep} />
+                <QR_EQ handleNextStep={handleNextStep} url={url} />
               ) : (
                 <>
                   <QR handleNextStep={handleNextStep} url={url} />

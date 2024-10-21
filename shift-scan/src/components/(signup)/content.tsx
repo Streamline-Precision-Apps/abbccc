@@ -2,7 +2,6 @@
 import "@/app/globals.css";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { Footers } from "@/components/(reusable)/footers";
 import { Holds } from "@/components/(reusable)/holds";
 import { Bases } from "@/components/(reusable)/bases";
@@ -25,7 +24,6 @@ export default function Content({
   userId: string;
   accountSetup: boolean;
 }) {
-  const t = useTranslations("Home");
   const f = useTranslations("Footer");
 
   const [step, setStep] = useState(1);

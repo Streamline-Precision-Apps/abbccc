@@ -5,30 +5,22 @@ import { Modals } from "@/components/(reusable)/modals";
 import QRCode from "qrcode";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Titles } from "@/components/(reusable)/titles";
-import { Contents } from "@/components/(reusable)/contents";
-import { Texts } from "@/components/(reusable)/texts";
 import { Images } from "@/components/(reusable)/images";
 import { Holds } from "@/components/(reusable)/holds";
-import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { JobCodes } from "@/lib/types";
-import SearchBar from "@/components/(search)/searchbar";
 import SearchSelect from "@/components/(search)/searchSelect";
-import { Selects } from "@/components/(reusable)/selects";
-import { Options } from "@/components/(reusable)/options";
 import { Grids } from "@/components/(reusable)/grids";
-import { log } from "console";
 
 export default function QrJobsiteContent() {
-  const [selectedJobSiteName, setSelectedJobSiteName] = useState<string>("");
+  const [, setSelectedJobSiteName] = useState<string>("");
   const [selectedJobSite, setSelectedJobSite] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [generatedList, setGeneratedList] = useState<JobCodes[]>([]);
   const [generatedRecentList, setGeneratedRecentList] = useState<JobCodes[]>(
     []
   );
-  const [loading, setLoading] = useState(true); // Loading state
-  const [qrCodeUrl, setQrCodeUrl] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [, setQrCodeUrl] = useState("");
 
   const router = useRouter();
   const t = useTranslations("Generator");

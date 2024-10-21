@@ -4,7 +4,6 @@ import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
-import { Images } from "@/components/(reusable)/images";
 import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
@@ -12,12 +11,17 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import React from "react";
+type Teams = {
+  id: string;
+  name: string;
+  totalMembers: number;
+};
 
 export default function Content() {
   const t = useTranslations("MyTeam");
-  const [myTeams, setMyTeams] = useState<any[]>([]);
+  const [myTeams, setMyTeams] = useState<Teams[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { data: session, status } = useSession();
+  const { status: sessionStatus } = useSession();
 
   useEffect(() => {
     const fetchCrew = async () => {
@@ -37,7 +41,7 @@ export default function Content() {
       }
     };
 
-    if (status === "authenticated") {
+    if (sessionStatus === "authenticated") {
       // Check if data is already in local storage
       const storedTeams = localStorage.getItem("myTeams");
       if (storedTeams) {
@@ -80,7 +84,7 @@ export default function Content() {
               <Contents width={"section"}>
                 <Grids gap={"5"} rows={"4"} className="py-5">
                   {myTeams.map((teams) => (
-                    <Holds className="row-span-1 h-full">
+                    <Holds key={teams.id} className="row-span-1 h-full">
                       <Buttons
                         background="lightBlue"
                         href={`/dashboard/myTeam/${teams.id}`}

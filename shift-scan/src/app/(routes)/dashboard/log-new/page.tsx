@@ -2,19 +2,18 @@
 import { auth } from "@/auth";
 import ClockProcessor from "@/components/(clock)/clockProcess";
 import { Bases } from "@/components/(reusable)/bases";
-import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
-import { Images } from "@/components/(reusable)/images";
 import { Holds } from "@/components/(reusable)/holds";
-import { Texts } from "@/components/(reusable)/texts";
-import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { Grids } from "@/components/(reusable)/grids";
+import { redirect } from "next/navigation";
 
 export default async function SwitchJobs() {
   const session = await auth();
-  const userId = session?.user.id;
 
+  if (!session) {
+    redirect("/signin");
+  }
   //   const equipment = await prisma.equipment.findMany();
 
   const lang = cookies().get("locale");

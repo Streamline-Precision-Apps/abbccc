@@ -14,14 +14,12 @@ export default async function AdminDashboard() {
     redirect("/signin");
   }
 
-  const userId = session.user.id;
-
   return (
     <Bases>
       <Contents>
         <Grids rows={"1"}>
           <Holds className="h-full row-span-1  ">
-            <ClockOutContent id={userId} />;
+            <ClockOutContent />;
           </Holds>
         </Grids>
       </Contents>

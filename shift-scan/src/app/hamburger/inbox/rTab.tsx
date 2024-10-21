@@ -9,30 +9,33 @@ import { useRouter } from "next/navigation";
 import React from "react";
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
-
 import { Contents } from "@/components/(reusable)/contents";
 import Spinner from "@/components/(animations)/spinner";
 import { Images } from "@/components/(reusable)/images";
 import { Grids } from "@/components/(reusable)/grids";
 
 export default function RTab() {
-  const { data: session } = useSession(); // Use `useSession` to fetch session
-  const router = useRouter(); // Use router for redirect
+  const { data: session, status } = useSession(); // Use `useSession` to fetch session
+  const router = useRouter();
   const [receivedContent, setReceivedContent] = useState<receivedContent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  if (!session) return null;
+
   // Redirect if there's no session
   useEffect(() => {
+    if (status === "loading") return; // Wait for session to be loaded
     if (!session) {
       router.push("/signin");
     }
-  }, [session, router]);
+  }, [session, status, router]);
 
-  // Fetch `receivedContent` from API
+  // Fetch receivedContent when session exists
   useEffect(() => {
+    if (!session) return; // Exit early if no session is available
+
     const fetchReceivedContent = async () => {
       try {
+        setLoading(true);
         const response = await fetch("/api/getTimeoffRequests?type=received");
 
         if (!response.ok) {
@@ -45,19 +48,19 @@ export default function RTab() {
       } catch (err) {
         console.error("Error fetching received content:", err);
         setError("An error occurred while fetching received content");
+      } finally {
         setLoading(false);
       }
     };
 
-    // Only fetch data if session is available
-    if (session) {
-      fetchReceivedContent();
-    }
+    fetchReceivedContent();
   }, [session]);
 
   // Check if user has appropriate permissions
+  if (!session) return null;
+
   const userPermission = session.user.permission;
-  if (session && !["SUPERADMIN", "MANAGER", "ADMIN"].includes(userPermission)) {
+  if (!["SUPERADMIN", "MANAGER", "ADMIN"].includes(userPermission)) {
     return (
       <Holds className="h-full justify-center">
         <Titles>Coming Soon</Titles>

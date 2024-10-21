@@ -35,21 +35,11 @@ const VerificationEQStep: React.FC<VerifyProcessProps> = ({
   const [equipment, setEquipmentList] = useState<Equipment[]>([]);
   //   const [selectedEquipment, setEquipment] = useState<Equipment | null>(null);
   const { data: session } = useSession();
-  if (!session) {
-    return null;
-  }
-  const { id } = session.user;
-
-  // if the jobsite is not in the case it will be stored in local storage
-  if (!scanResult?.data) {
-    const jobSiteId = localStorage.getItem("jobSite");
-    setScanResult({ data: jobSiteId || "" });
-  }
 
   useEffect(() => {
     const fetchEquipmentList = async () => {
-      setLoading(true);
       try {
+        setLoading(true);
         const response = await fetch("/api/getEquipmentList");
         const data = await response.json();
         setEquipmentList(data);
@@ -61,6 +51,25 @@ const VerificationEQStep: React.FC<VerifyProcessProps> = ({
     };
     fetchEquipmentList();
   }, []);
+
+  // Handle local storage logic after hooks
+  useEffect(() => {
+    if (!scanResult?.data) {
+      const jobSiteId = localStorage.getItem("jobSite");
+      setScanResult({ data: jobSiteId || "" });
+    }
+  }, [scanResult, setScanResult]);
+
+  // If no session, show a loading state instead of returning early
+  if (!session) {
+    return (
+      <Holds>
+        <Spinner />
+      </Holds>
+    );
+  }
+
+  const { id } = session.user;
 
   if (loading) {
     return (

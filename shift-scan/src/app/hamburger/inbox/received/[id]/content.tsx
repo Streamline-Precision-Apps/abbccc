@@ -1,5 +1,4 @@
 "use client";
-import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Forms } from "@/components/(reusable)/forms";
@@ -12,12 +11,8 @@ import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { receivedContent } from "@/lib/types";
 import { Session } from "next-auth";
-import { useTranslations } from "next-intl";
-import { ChangeEvent, FormEvent, use, useEffect, useState } from "react";
-import {
-  EditLeaveRequest,
-  ManagerLeaveRequest,
-} from "@/actions/inboxSentActions";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { ManagerLeaveRequest } from "@/actions/inboxSentActions";
 import { Images } from "@/components/(reusable)/images";
 import { useRouter } from "next/navigation";
 import { formatDate } from "@/utils/formatDateYMD";
@@ -30,11 +25,9 @@ type Props = {
   session: Session | null;
 };
 
-export default function Content({ params, session }: Props) {
+export default function Content({ params }: Props) {
   const [loading, setLoading] = useState(true);
-  const t = useTranslations("Hamburger");
   const router = useRouter();
-  const userId = session?.user.id;
   const [decision, setDecision] = useState(null);
   const [cardDate, setCardDate] = useState("");
   const [manager, setManager] = useState("");
@@ -100,7 +93,7 @@ export default function Content({ params, session }: Props) {
       setDecision(null);
       router.push("/hamburger/inbox");
     }
-  }, [decision]);
+  }, [router, decision]);
 
   function handleApproval(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); // Prevent default form submission

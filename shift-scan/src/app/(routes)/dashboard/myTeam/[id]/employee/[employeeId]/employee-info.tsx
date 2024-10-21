@@ -2,24 +2,38 @@
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Holds } from "@/components/(reusable)/holds";
 import { Contents } from "@/components/(reusable)/contents";
-import { Forms } from "@/components/(reusable)/forms";
 import { Labels } from "@/components/(reusable)/labels";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import { set } from "zod";
 import { Grids } from "@/components/(reusable)/grids";
 import Spinner from "@/components/(animations)/spinner";
 
-export default function employeeInfo({
+type Employee = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  image?: string;
+  DOB?: string;
+  contacts?: Contact[]; // Employee can have a list of contacts
+};
+
+type Contact = {
+  phoneNumber: string;
+  email: string;
+  emergencyContact?: string;
+  emergencyContactNumber?: string;
+};
+
+export default function EmployeeInfo({
   params,
 }: {
   params: { employeeId: string };
 }) {
-  const t = useTranslations("MyTeam");
-  const [employee, setEmployee] = useState<any>({});
-  const [contacts, setContacts] = useState<any>({});
+  const [employee, setEmployee] = useState<Employee | null>(null);
+  const [contacts, setContacts] = useState<Contact | null>(null);
   const [loading, setLoading] = useState(true);
+  const t = useTranslations("MyTeam");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -62,59 +76,52 @@ export default function employeeInfo({
         </Contents>
       </Holds>
       {loading ? (
-        <>
-          <Holds background={"white"} className="h-full ">
-            <Contents width={"section"}>
-              <Grids rows={"5"} className="my-5 h-full">
-                <Holds className="h-full row-span-1">
-                  <Holds className="h-[20px] row-span-1"></Holds>
-                  <Spinner />
-                  <Holds className="h-[20px] row-span-1"></Holds>
-                  <Holds className="h-[20px] row-span-1"></Holds>
-                  <Holds className="h-[20px] row-span-1"></Holds>
-                </Holds>
-              </Grids>
-            </Contents>
-          </Holds>
-        </>
+        <Holds background={"white"} className="h-full ">
+          <Contents width={"section"}>
+            <Grids rows={"5"} className="my-5 h-full">
+              <Holds className="h-full row-span-1">
+                <Holds className="h-[20px] row-span-1"></Holds>
+                <Spinner />
+                <Holds className="h-[20px] row-span-1"></Holds>
+                <Holds className="h-[20px] row-span-1"></Holds>
+                <Holds className="h-[20px] row-span-1"></Holds>
+              </Holds>
+            </Grids>
+          </Contents>
+        </Holds>
       ) : (
-        <>
-          <Holds background={"white"} className="h-full my-auto">
-            <Contents width={"section"}>
-              <Grids rows={"5"} gap={"5"} className="my-5">
-                <Labels className="row-span-1 h-full">
-                  {t("PhoneNumber")}
-                  <Inputs
-                    state="disabled"
-                    data={contacts?.phoneNumber}
-                  ></Inputs>
-                </Labels>
-                <Labels className="row-span-1 h-full">
-                  {t("Email")}
-                  <Inputs state="disabled" data={contacts?.email}></Inputs>
-                </Labels>
-                <Labels className="row-span-1 h-full">
-                  {t("EmergencyContact")}
-                  <Inputs
-                    state="disabled"
-                    data={contacts?.emergencyContact}
-                  ></Inputs>
-                </Labels>
-                <Labels className="row-span-1 h-full">
-                  {t("EmergencyContactNumber")}
-                  <Inputs
-                    state="disabled"
-                    data={contacts?.emergencyContactNumber}
-                  ></Inputs>
-                </Labels>
-                <Labels className="row-span-1 h-full">
-                  {t("DOB")}
-                  <Inputs state="disabled" data={employee?.DOB}></Inputs>
-                </Labels>
-              </Grids>
-            </Contents>
-          </Holds>
-        </>
+        <Holds background={"white"} className="h-full my-auto">
+          <Contents width={"section"}>
+            <Grids rows={"5"} gap={"5"} className="my-5">
+              <Labels className="row-span-1 h-full">
+                {t("PhoneNumber")}
+                <Inputs state="disabled" data={contacts?.phoneNumber}></Inputs>
+              </Labels>
+              <Labels className="row-span-1 h-full">
+                {t("Email")}
+                <Inputs state="disabled" data={contacts?.email}></Inputs>
+              </Labels>
+              <Labels className="row-span-1 h-full">
+                {t("EmergencyContact")}
+                <Inputs
+                  state="disabled"
+                  data={contacts?.emergencyContact}
+                ></Inputs>
+              </Labels>
+              <Labels className="row-span-1 h-full">
+                {t("EmergencyContactNumber")}
+                <Inputs
+                  state="disabled"
+                  data={contacts?.emergencyContactNumber}
+                ></Inputs>
+              </Labels>
+              <Labels className="row-span-1 h-full">
+                {t("DOB")}
+                <Inputs state="disabled" data={employee?.DOB}></Inputs>
+              </Labels>
+            </Grids>
+          </Contents>
+        </Holds>
       )}
     </>
   );

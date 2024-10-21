@@ -19,26 +19,24 @@ import { Texts } from "@/components/(reusable)/texts";
 import { calculateDuration } from "@/utils/calculateDuration";
 import { Contents } from "@/components/(reusable)/contents";
 import Checkbox from "@/components/(inputs)/checkbox";
-import { set } from "zod";
 import { Grids } from "@/components/(reusable)/grids";
 import Spinner from "@/components/(animations)/spinner";
-import Link from "next/link";
-import { m } from "framer-motion";
 import { Titles } from "@/components/(reusable)/titles";
+import { EmployeeEquipmentLogs } from "@/lib/types";
 
 export default function CombinedForm({ params }: { params: { id: string } }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [logs, setLogs] = useState<any[]>([]);
+  const [logs, setLogs] = useState<EmployeeEquipmentLogs[]>([]);
   const [refueled, setRefueled] = useState(false);
   const [fuel, setFuel] = useState<number>(0);
   const [notes, setNotes] = useState<string>("");
   const [characterCount, setCharacterCount] = useState<number>(40);
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [completed, setCompleted] = useState<boolean>(false);
-  const [startTime, setStartTime] = useState();
-  const [endTime, setEndTime] = useState();
+  const [, setStartTime] = useState();
+  const [, setEndTime] = useState();
   const [productName, setProductName] = useState("");
 
   const [changedDuration, setChangedDuration] = useState<string>("");
@@ -117,7 +115,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
       setFuel(log.fuelUsed ?? 0);
       setNotes(log.comment || "");
     }
-  }, [completed, logs]);
+  }, [isEditMode, completed, logs]);
 
   const handleDurationHrsChange = (
     event: React.ChangeEvent<HTMLInputElement>

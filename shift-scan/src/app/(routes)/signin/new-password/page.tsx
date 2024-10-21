@@ -3,16 +3,12 @@
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
 import { Images } from "@/components/(reusable)/images";
-
-import { cookies } from "next/headers";
 import { Holds } from "@/components/(reusable)/holds";
 import { getTranslations } from "next-intl/server";
-import { auth } from "@/auth";
 
 import ChangePassword from "./changePassword";
 
 export default async function SignInPage() {
-  const locale = cookies().get("locale")?.value || "en";
   const t = await getTranslations("login");
 
   return (

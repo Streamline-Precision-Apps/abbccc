@@ -1,6 +1,6 @@
 "use client";
 import { cva, type VariantProps } from "class-variance-authority";
-import { HTMLAttributes, FC } from "react";
+import { HTMLAttributes, FC, SetStateAction, Dispatch } from "react";
 import { cn } from "@/components/(reusable)/utils";
 import { Buttons } from "../(reusable)/buttons";
 import { Titles } from "../(reusable)/titles";
@@ -46,7 +46,7 @@ interface TitleBoxProps
   href?: string;
   src?: string;
   modal?: boolean;
-  modalTitle?: string;
+  modalTitle?: Dispatch<SetStateAction<boolean>> | undefined;
 }
 
 const TitleBoxes: FC<TitleBoxProps> = ({
@@ -85,7 +85,11 @@ const TitleBoxes: FC<TitleBoxProps> = ({
             <Holds
               size={"60"}
               className="rounded-full relative "
-              onClick={() => modalTitle(modal)}
+              onClick={() => {
+                if (modalTitle) {
+                  modalTitle(modal ? false : true);
+                }
+              }}
             >
               <Images
                 titleImg={titleImg}

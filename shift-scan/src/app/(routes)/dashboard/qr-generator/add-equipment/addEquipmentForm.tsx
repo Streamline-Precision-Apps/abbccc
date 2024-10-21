@@ -1,10 +1,5 @@
-import React, {
-  useState,
-  useEffect,
-  FormEvent,
-  SetStateAction,
-  Dispatch,
-} from "react";
+"use client";
+import React, { useState, useEffect, SetStateAction, Dispatch } from "react";
 import { Buttons } from "@/components/(reusable)/buttons";
 import {
   createEquipment,
@@ -19,7 +14,6 @@ import { Selects } from "@/components/(reusable)/selects";
 import { Options } from "@/components/(reusable)/options";
 import { Titles } from "@/components/(reusable)/titles";
 import { Holds } from "@/components/(reusable)/holds";
-import { date } from "zod";
 import { Contents } from "@/components/(reusable)/contents";
 
 type AddEquipmentFormProps = {
@@ -67,7 +61,7 @@ export default function AddEquipmentForm({
       }
     }
     generateQrCode();
-  }, []);
+  }, [t]);
 
   const handleChange = (
     e: React.ChangeEvent<

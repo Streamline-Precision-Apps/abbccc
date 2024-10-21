@@ -4,7 +4,7 @@ import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
 import { useTranslations } from "next-intl";
 import { Grids } from "@/components/(reusable)/grids";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Holds } from "@/components/(reusable)/holds";
 import { Contents } from "@/components/(reusable)/contents";
 import { useRouter } from "next/navigation";
@@ -20,19 +20,15 @@ type props = {
   session: Session;
   locale: string;
 };
-export default function DbWidgetSection({ session, locale }: props) {
+export default function DbWidgetSection({ session }: props) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const t = useTranslations("Widgets");
-  const f = useTranslations("Home");
   const e = useTranslations("Err-Msg");
-  const [toggle, setToggle] = useState(true);
-  const handleToggle = () => setToggle(!toggle);
   const authStep = getAuthStep();
   const permission = session.user.permission;
-  const accountSetup = session.user.accountSetup;
   const [logs, setLogs] = useState([]);
-  const [error, setError] = useState(null);
+  const [error] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [additionalButtonsType, setAdditionalButtonsType] = useState<
     string | null
@@ -60,7 +56,7 @@ export default function DbWidgetSection({ session, locale }: props) {
       }
     };
     fetchLogs();
-  }, []);
+  }, [e, error]);
 
   // Redirect to dashboard if authStep is success
   useEffect(() => {
@@ -68,10 +64,6 @@ export default function DbWidgetSection({ session, locale }: props) {
       router.push("/");
     }
   }, [authStep, router]);
-
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
