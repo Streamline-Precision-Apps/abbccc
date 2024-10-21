@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import QRStep from "@/components/(clock)/qr-step";
 import CodeStep from "@/components/(clock)/code-step";
@@ -10,9 +10,9 @@ import RedirectAfterDelay from "@/components/redirectAfterDelay";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useEQScanData } from "@/app/context/equipmentContext";
 import { Titles } from "../(reusable)/titles";
-import { Buttons } from "../(reusable)/buttons";
+
 import { setAuthStep } from "@/app/api/auth";
-import { Equipment } from "@/lib/types";
+
 import useFetchAllData from "@/app/(content)/FetchData";
 import { useDBCompleteEquipmentList } from "@/app/context/dbCompleteEquipmentList";
 type clockProcessProps = {
@@ -63,7 +63,7 @@ export default function ClockProcessor({
 
   useEffect(() => {
     if (scanner) {
-      let processFilter = scanner.slice(0, 1).toUpperCase();
+      const processFilter = scanner.slice(0, 1).toUpperCase();
       if (processFilter === "J") {
         setPath("jobsite");
       }

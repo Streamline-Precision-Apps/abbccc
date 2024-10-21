@@ -30,7 +30,7 @@ export default function Form({ session }: RequestForm) {
   // Fetch the signature image when the component is mounted
   useEffect(() => {
     const fetchSignature = async () => {
-      const response = await fetch("/api/getSignature");
+      const response = await fetch("/api/getUserSignature");
       const json = await response.json();
       setSignature(json.signature);
     };

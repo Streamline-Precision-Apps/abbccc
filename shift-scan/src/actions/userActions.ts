@@ -12,6 +12,7 @@ export async function createUser(formData: FormData) {
         firstName: formData.get("firstName") as string,
         lastName: formData.get("lastName") as string,
         username: formData.get("username") as string,
+        email: formData.get("email") as string,
         password: formData.get("password") as string,
         DOB: formData.get("DOB") as string,
         truckView: Boolean(formData.get("truckView")) as unknown as boolean,
@@ -50,14 +51,14 @@ export async function updateUser(formData: FormData) {
 }
 
 export async function deleteUser(formData: FormData) {
-    const date = new Date();
-    const id = formData.get('id') as string;
-    await prisma.users.update({
-        where: { id },
-        data: {
-            terminationDate: date.toISOString(),
-        }
-    });
+  const date = new Date();
+  const id = formData.get("id") as string;
+  await prisma.users.update({
+    where: { id },
+    data: {
+      terminationDate: date.toISOString(),
+    },
+  });
 }
 
 export async function uploadImage(formdata: FormData) {

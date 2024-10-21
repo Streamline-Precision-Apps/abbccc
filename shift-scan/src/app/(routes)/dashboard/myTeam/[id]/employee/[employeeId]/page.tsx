@@ -13,7 +13,7 @@ export default async function crewMember({
   params: { employeeId: string };
 }) {
   return (
-    <Bases size={"scroll"}>
+    <Bases>
       <Contents>
         <EmployeeInfo params={params} />
         <Holds className="mt-5">

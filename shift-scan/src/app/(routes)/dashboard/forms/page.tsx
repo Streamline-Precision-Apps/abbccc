@@ -18,21 +18,22 @@ export default async function Forms() {
   return (
     <Bases>
       <Contents>
-        <Grids rows={"5"} gap={"5"} className="mt-7 mb-3">
+        <Grids rows={"5"} gap={"5"}>
           <Holds
             size={"full"}
             background={"white"}
             className="my-auto row-span-1 h-full "
           >
-            <TitleBoxes
-              title="Forms"
-              titleImg="/form.svg"
-              titleImgAlt="Forms"
-              variant="default"
-              href="/dashboard"
-              size="default"
-              type="route"
-            />
+            <Contents width={"section"}>
+              <TitleBoxes
+                title="Forms"
+                titleImg="/form.svg"
+                titleImgAlt="Forms"
+                variant="default"
+                href="/dashboard"
+                size="default"
+              />
+            </Contents>
           </Holds>
           <Holds
             size={"full"}

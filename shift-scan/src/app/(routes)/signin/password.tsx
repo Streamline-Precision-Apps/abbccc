@@ -89,7 +89,7 @@ export default function SignInForm({ locale }: props) {
             </Holds>
           )}
           <Holds className="mb-10 ">
-            <Link href="/login/forgotpassword">
+            <Link href="/signin/forgot-password">
               <Texts text={"link"} size={"p5"} position={"right"}>
                 {t("Btn-forgot")}
               </Texts>

@@ -7,7 +7,6 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Texts } from "@/components/(reusable)/texts";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Holds } from "@/components/(reusable)/holds";
-import { Titles } from "@/components/(reusable)/titles";
 import { Grids } from "@/components/(reusable)/grids";
 
 type ControlComponentProps = {
@@ -45,7 +44,7 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
 
     // Initialize daily hours with zeros for each date in the pay period
     const hoursMap: { [key: string]: number } = {};
-    let currentDate = new Date(startDate);
+    const currentDate = new Date(startDate);
 
     while (currentDate <= endDate) {
       hoursMap[dateKey(currentDate)] = 0;
@@ -66,7 +65,7 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
     return Object.entries(hoursMap)
       .map(([date, hours]) => ({ date, hours }))
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  }, [payPeriodTimeSheet]);
+  }, [payPeriodTimeSheet, calculatePayPeriodStart]);
 
   // Set the initial index based on the current date
   useEffect(() => {

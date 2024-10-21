@@ -1,5 +1,5 @@
 "use client";
-import { Holds } from "@/components/(reusable)/holds";
+
 import { Texts } from "@/components/(reusable)/texts";
 import { Forms } from "@/components/(reusable)/forms";
 import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
@@ -15,11 +15,11 @@ import {
   updateEquipmentID,
 } from "@/actions/equipmentActions";
 import SearchBar from "@/components/(search)/searchbar";
-import { Content } from "next/font/google";
+
 import { Contents } from "@/components/(reusable)/contents";
-import { Banners } from "@/components/(reusable)/banners";
+
 import { Titles } from "@/components/(reusable)/titles";
-import { Modals } from "@/components/(reusable)/modals";
+
 import { Expands } from "@/components/(reusable)/expands";
 import { Selects } from "@/components/(reusable)/selects";
 import { Options } from "@/components/(reusable)/options";
@@ -125,26 +125,21 @@ export default function Equipment({
 
   return (
     <>
-      <Contents variant={"default"} size={null}>
+      <Contents>
         <Expands title="Create New Equipment" divID={"1"}>
           <Forms
             action={createEquipment}
             onSubmit={() => handleBanner("Equipment was created successfully")}
           >
-            <Labels variant="default" type="title">
-              Equipment Code *
-            </Labels>
+            <Labels type="title">Equipment Code *</Labels>
             <Inputs
-              variant="default"
               type="default"
               name="qrId"
               value={qrId}
               onChange={(e) => setQrId(e.target.value)}
               state="default"
             />
-            <Labels variant="default" type="title">
-              {t("Tag")} *
-            </Labels>
+            <Labels type="title">{t("Tag")} *</Labels>
             <Selects
               id="equipmentTag"
               name="equipmentTag"
@@ -158,11 +153,8 @@ export default function Equipment({
               <Options value="EQUIPMENT">{t("Equipment")}</Options>
             </Selects>
 
-            <Labels variant="default" type="title">
-              {t("Name")} *
-            </Labels>
+            <Labels type="title">{t("Name")} *</Labels>
             <Inputs
-              variant="default"
               type="default"
               id="name"
               name="name"
@@ -171,9 +163,7 @@ export default function Equipment({
               state="default"
             />
 
-            <Labels variant="default" type="title">
-              {t("Description")}
-            </Labels>
+            <Labels type="title">{t("Description")}</Labels>
             <TextAreas
               id="description"
               name="description"
@@ -182,9 +172,7 @@ export default function Equipment({
               className="block w-full border border-black rounded p-2"
             />
 
-            <Labels variant="default" type="title">
-              {t("Status")} *
-            </Labels>
+            <Labels type="title">{t("Status")} *</Labels>
             <Selects
               id="equipmentStatus"
               name="equipmentStatus"
@@ -199,11 +187,8 @@ export default function Equipment({
 
             {equipmentTag === "TRUCK" || equipmentTag === "TRAILER" ? (
               <>
-                <Labels variant="default" type="title">
-                  {t("Make")} *
-                </Labels>
+                <Labels type="title">{t("Make")} *</Labels>
                 <Inputs
-                  variant="default"
                   type="default"
                   id="make"
                   name="make"
@@ -211,11 +196,8 @@ export default function Equipment({
                   onChange={(e) => setMake(e.target.value)}
                   state="default"
                 />
-                <Labels variant="default" type="title">
-                  {t("Model")} *
-                </Labels>
+                <Labels type="title">{t("Model")} *</Labels>
                 <Inputs
-                  variant="default"
                   type="default"
                   id="model"
                   name="model"
@@ -223,11 +205,8 @@ export default function Equipment({
                   onChange={(e) => setModel(e.target.value)}
                   state="default"
                 />
-                <Labels variant="default" type="title">
-                  {t("Year")} *
-                </Labels>
+                <Labels type="title">{t("Year")} *</Labels>
                 <Inputs
-                  variant="default"
                   type="default"
                   id="year"
                   name="year"
@@ -235,11 +214,8 @@ export default function Equipment({
                   onChange={(e) => setYear(e.target.value)}
                   state="default"
                 />
-                <Labels variant="default" type="title">
-                  {t("LicensePlate")} *
-                </Labels>
+                <Labels type="title">{t("LicensePlate")} *</Labels>
                 <Inputs
-                  variant="default"
                   type="default"
                   id="licensePlate"
                   name="licensePlate"
@@ -247,11 +223,8 @@ export default function Equipment({
                   onChange={(e) => setLicensePlate(e.target.value)}
                   state="default"
                 />
-                <Labels variant="default" type="title">
-                  {t("RegistrationExpiration")} *
-                </Labels>
+                <Labels type="title">{t("RegistrationExpiration")} *</Labels>
                 <Inputs
-                  variant="default"
                   type="date"
                   id="registrationExpiration"
                   name="registrationExpiration"
@@ -259,11 +232,8 @@ export default function Equipment({
                   onChange={(e) => setRegistrationExpiration(e.target.value)}
                   state="default"
                 />
-                <Labels variant="default" type="title">
-                  {t("Mileage")} *
-                </Labels>
+                <Labels type="title">{t("Mileage")} *</Labels>
                 <Inputs
-                  variant="default"
                   type="default"
                   id="mileage"
                   name="mileage"
@@ -274,20 +244,19 @@ export default function Equipment({
               </>
             ) : null}
 
-            <Buttons variant="green" size={"minBtn"} type="submit">
-              <Contents variant={"center"} size={"listTitle"}>
-                <Titles variant={"default"} size={"h2"}>
-                  Create Equipment
-                </Titles>
+            <Buttons background={"green"} type="submit">
+              <Contents>
+                <Titles size={"h2"}>Create Equipment</Titles>
               </Contents>
             </Buttons>
           </Forms>
         </Expands>
       </Contents>
-      <Contents variant={"default"} size={null}>
+      <Contents>
         <Expands title="Edit Existing Equipment" divID={"2"}>
-          <Contents variant={"default"} size={null}>
+          <Contents>
             <SearchBar
+              selected={false}
               searchTerm={searchTerm1}
               onSearchChange={(e) => handleSearchChange(e, "1")}
               placeholder="Search equipment..."
@@ -302,10 +271,9 @@ export default function Equipment({
                     setEditForm(false);
                   }}
                   key={item.id}
-                  variant={"orange"}
-                  size={"listLg"}
+                  background={"orange"}
                 >
-                  <Texts variant={"default"} size={"left"}>
+                  <Texts position={"left"}>
                     {item.name} ({item.qrId}){" "}
                   </Texts>
                 </Buttons>
@@ -313,14 +281,8 @@ export default function Equipment({
             </ul>
           )}
           {equipmentResponse === null && (
-            <Buttons
-              variant={"orange"}
-              size={"minBtn"}
-              onClick={() => handleEditForm("1")}
-            >
-              <Titles variant={"default"} size={"h2"}>
-                Edit Equipment
-              </Titles>
+            <Buttons background={"orange"} onClick={() => handleEditForm("1")}>
+              <Titles size={"h2"}>Edit Equipment</Titles>
             </Buttons>
           )}
 
@@ -337,38 +299,28 @@ export default function Equipment({
                 name="id"
                 defaultValue={equipmentResponse.id}
               />
-              <Labels variant="default" type="title">
-                Equipment Code *
-              </Labels>
+              <Labels type="title">Equipment Code *</Labels>
               <Inputs
-                variant="default"
                 type="default"
                 name="qrId"
                 defaultValue={equipmentResponse.qrId}
                 state="default"
               />
-              <Labels variant="default" type="title">
-                {t("Name")}
-              </Labels>
+              <Labels type="title">{t("Name")}</Labels>
               <Inputs
-                variant="default"
                 type="default"
                 name="name"
                 defaultValue={equipmentResponse.name}
                 state="default"
               />
-              <Labels variant="default" type="title">
-                {t("Description")}
-              </Labels>
+              <Labels type="title">{t("Description")}</Labels>
               <textarea
                 id="description"
                 name="description"
                 className="block w-full border border-black rounded p-2"
                 defaultValue={equipmentResponse.description || ""}
               />
-              <Labels variant="default" type="title">
-                {t("Status")}
-              </Labels>
+              <Labels type="title">{t("Status")}</Labels>
               <Selects
                 id="equipmentStatus"
                 name="equipmentStatus"
@@ -384,55 +336,40 @@ export default function Equipment({
               {equipmentResponse.equipmentTag === "TRUCK" ||
               equipmentResponse.equipmentTag === "TRAILER" ? (
                 <>
-                  <Labels variant="default" type="title">
-                    {t("Make")}
-                  </Labels>
+                  <Labels type="title">{t("Make")}</Labels>
                   <Inputs
-                    variant="default"
                     type="default"
                     id="make"
                     name="make"
                     defaultValue={equipmentResponse.make || ""}
                     state="default"
                   />
-                  <Labels variant="default" type="title">
-                    {t("Model")}
-                  </Labels>
+                  <Labels type="title">{t("Model")}</Labels>
                   <Inputs
-                    variant="default"
                     type="default"
                     id="model"
                     name="model"
                     defaultValue={equipmentResponse.model || ""}
                     state="default"
                   />
-                  <Labels variant="default" type="title">
-                    {t("Year")}
-                  </Labels>
+                  <Labels type="title">{t("Year")}</Labels>
                   <Inputs
-                    variant="default"
                     type="default"
                     id="year"
                     name="year"
                     defaultValue={equipmentResponse.year || ""}
                     state="default"
                   />
-                  <Labels variant="default" type="title">
-                    {t("LicensePlate")}
-                  </Labels>
+                  <Labels type="title">{t("LicensePlate")}</Labels>
                   <Inputs
-                    variant="default"
                     type="default"
                     id="licensePlate"
                     name="licensePlate"
                     defaultValue={equipmentResponse.licensePlate || ""}
                     state="default"
                   />
-                  <Labels variant="default" type="title">
-                    {t("RegistrationExpiration")}
-                  </Labels>
+                  <Labels type="title">{t("RegistrationExpiration")}</Labels>
                   <Inputs
-                    variant="default"
                     type="date"
                     id="registrationExpiration"
                     name="registrationExpiration"
@@ -443,11 +380,8 @@ export default function Equipment({
                     }
                     state="default"
                   />
-                  <Labels variant="default" type="title">
-                    {t("Mileage")}
-                  </Labels>
+                  <Labels type="title">{t("Mileage")}</Labels>
                   <Inputs
-                    variant="default"
                     type="default"
                     id="mileage"
                     name="mileage"
@@ -457,19 +391,19 @@ export default function Equipment({
                 </>
               ) : null}
 
-              <Buttons variant="orange" size="default" type="submit">
+              <Buttons background={"green"} type="submit">
                 Edit Equipment
               </Buttons>
             </Forms>
           )}
         </Expands>
       </Contents>
-      <Contents variant={"default"} size={null}>
+      <Contents>
         <Expands title="Temporary Equipment" divID={"3"}>
-          {equipment.filter((item) => item.qrId.slice(0, 4) === "EQ-T")
-            .length > 0 ? (
+          {equipment.filter((item) => item.qrId.slice(0, 4) === "EQ-T").length >
+          0 ? (
             <>
-              <Texts variant="default" className="bg-app-orange">
+              <Texts className="bg-app-orange">
                 Banner appears when Equipment is Created. Please Edit the
                 Temporary Equipment to a Permanent Equipment.
               </Texts>
@@ -491,8 +425,8 @@ export default function Equipment({
               ) : null
             )}
           </ul>
-          {equipment.filter((item) => item.qrId.slice(0, 4) === "EQ-T")
-            .length > 0 ? (
+          {equipment.filter((item) => item.qrId.slice(0, 4) === "EQ-T").length >
+          0 ? (
             <>
               <Forms
                 action={updateEquipmentID}
@@ -505,7 +439,7 @@ export default function Equipment({
                   name="id"
                   defaultValue={equipmentResponse?.id}
                 />
-                <Labels variant="default" type="title">
+                <Labels type="title">
                   Current Equipment ID{" "}
                   <span className="text-red-500 text-xs">
                     4 Charater cannot be capital T{" "}
@@ -517,18 +451,14 @@ export default function Equipment({
                   defaultValue={equipmentResponse?.qrId}
                   state="disabled"
                 />
-                <Labels variant="default" type="title">
-                  New Equipment ID
-                </Labels>
+                <Labels type="title">New Equipment ID</Labels>
                 <Inputs
                   type="text"
                   name="qrId"
                   defaultValue={equipmentResponse?.qrId}
                 />
 
-                <Labels variant="default" type="title">
-                  Current Equipment Name
-                </Labels>
+                <Labels type="title">Current Equipment Name</Labels>
                 <Inputs
                   type="text"
                   readOnly
@@ -536,29 +466,28 @@ export default function Equipment({
                   defaultValue={equipmentResponse?.name}
                 />
 
-                <Labels variant="default" type="title">
-                  New Equipment name
-                </Labels>
+                <Labels type="title">New Equipment name</Labels>
                 <Inputs
                   type="text"
                   name="name"
                   defaultValue={equipmentResponse?.name}
                 />
 
-                <Buttons variant="orange" size="default" type="submit">
+                <Buttons background={"green"} type="submit">
                   Edit Equipment ID
                 </Buttons>
               </Forms>
             </>
           ) : (
-            <Texts variant="default">No Equipment with Temporary ID</Texts>
+            <Texts>No Equipment with Temporary ID</Texts>
           )}
         </Expands>
       </Contents>
-      <Contents variant={"default"} size={null}>
+      <Contents>
         <Expands title="Delete Equipment" divID={"4"}>
-          <Contents variant={"default"} size={null}>
+          <Contents>
             <SearchBar
+              selected={false}
               searchTerm={searchTerm2}
               onSearchChange={(e) => handleSearchChange(e, "2")}
               placeholder="Search equipment..."
@@ -568,15 +497,14 @@ export default function Equipment({
             <ul>
               {equipmentList.map((item) => (
                 <Buttons
-                  variant={"orange"}
-                  size={"listLg"}
+                  background={"orange"}
                   onClick={() => {
                     setSearchTerm2(item.id);
                     setEditForm(false);
                   }}
                   key={item.id}
                 >
-                  <Texts variant={"default"} size={"left"}>
+                  <Texts position={"left"}>
                     {item.name} ({item.qrId})
                   </Texts>
                 </Buttons>
@@ -591,7 +519,7 @@ export default function Equipment({
               }
             >
               <Inputs type="hidden" name="id" defaultValue={searchTerm2} />
-              <Buttons variant="red" size={"minBtn"} type="submit">
+              <Buttons background="red" type="submit">
                 <Texts>Delete</Texts>
               </Buttons>
             </Forms>

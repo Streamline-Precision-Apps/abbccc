@@ -93,7 +93,11 @@ export default function RTab() {
 
   // If there are no pending requests, show a message
   if (!pending || pending.length === 0) {
-    return <Titles>There Are No Requests Currently</Titles>;
+    return (
+      <Holds className="mt-10">
+        <Titles>There Are No Requests Currently</Titles>
+      </Holds>
+    );
   }
 
   // Render received requests

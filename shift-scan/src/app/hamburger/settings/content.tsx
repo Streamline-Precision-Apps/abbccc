@@ -5,17 +5,16 @@ import LocaleToggleSwitch from "@/components/(inputs)/toggleSwitch";
 import { Holds } from "@/components/(reusable)/holds";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
-import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
-import { Bases } from "@/components/(reusable)/bases";
+
 import "@/app/globals.css";
-import { Images } from "@/components/(reusable)/images";
+
 import { Texts } from "@/components/(reusable)/texts";
 import { Modals } from "@/components/(reusable)/modals";
 import { updateSettings } from "@/actions/hamburgerActions";
 import { Contents } from "@/components/(reusable)/contents";
 import { UserSettings } from "@/lib/types";
 import { Grids } from "@/components/(reusable)/grids";
-import { Content } from "next/font/google";
+
 import Spinner from "@/components/(animations)/spinner";
 import { useRouter } from "next/navigation";
 

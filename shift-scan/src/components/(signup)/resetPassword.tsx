@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect } from "react";
 import { Buttons } from "../(reusable)/buttons";
 import { setUserPassword } from "@/actions/userActions";
@@ -10,7 +11,7 @@ const ResetPassword = ({
   handleNextStep,
 }: {
   id: string;
-  handleNextStep: any;
+  handleNextStep: () => void;
 }) => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
