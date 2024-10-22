@@ -1,15 +1,30 @@
 "use client";
+
 import { Buttons } from "@/components/(reusable)/buttons";
 import React, { useState, useEffect } from "react";
 import { Modals } from "@/components/(reusable)/modals";
 import QRCode from "qrcode";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { Texts } from "@/components/(reusable)/texts";
 import { Images } from "@/components/(reusable)/images";
 import { Holds } from "@/components/(reusable)/holds";
-import { JobCodes } from "@/lib/types";
 import SearchSelect from "@/components/(search)/searchSelect";
 import { Grids } from "@/components/(reusable)/grids";
+import { z } from "zod";
+import { Contents } from "@/components/(reusable)/contents";
+
+// Zod schema for JobCodes
+const JobCodesSchema = z.object({
+  id: z.string(),
+  qrId: z.string(),
+  name: z.string(),
+});
+
+// Zod schema for the jobsite list response
+const JobsiteListSchema = z.array(JobCodesSchema);
+
+type JobCodes = z.infer<typeof JobCodesSchema>;
 
 export default function QrJobsiteContent() {
   const [, setSelectedJobSiteName] = useState<string>("");
@@ -20,7 +35,7 @@ export default function QrJobsiteContent() {
     []
   );
   const [loading, setLoading] = useState(true);
-  const [, setQrCodeUrl] = useState("");
+  const [qrCodeUrl, setQrCodeUrl] = useState("");
 
   const router = useRouter();
   const t = useTranslations("Generator");
@@ -48,12 +63,23 @@ export default function QrJobsiteContent() {
           throw new Error("Failed to fetch job sites");
         }
 
-        const jobSites = await jobsiteResponse.json();
-        setGeneratedList(jobSites);
-        setLoading(false); // Set loading to false after data is fetched
+        const jobSitesData = await jobsiteResponse.json();
+
+        // Validate fetched job site data with Zod
+        try {
+          JobsiteListSchema.parse(jobSitesData);
+          setGeneratedList(jobSitesData);
+        } catch (error) {
+          if (error instanceof z.ZodError) {
+            console.error("Validation error in job site data:", error.errors);
+            return;
+          }
+        }
+
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
-        setLoading(false); // Set loading to false even if there is an error
+        setLoading(false);
       }
     };
 
@@ -66,15 +92,29 @@ export default function QrJobsiteContent() {
         const jobsiteResponse = await fetch("/api/getRecentJobsites");
 
         if (!jobsiteResponse.ok) {
-          throw new Error("Failed to fetch Jobsites");
+          throw new Error("Failed to fetch recent job sites");
         }
 
-        const jobSites = await jobsiteResponse.json();
-        setGeneratedRecentList(jobSites);
-        setLoading(false); // Set loading to false after data is fetched
+        const recentJobSitesData = await jobsiteResponse.json();
+
+        // Validate fetched recent job site data with Zod
+        try {
+          JobsiteListSchema.parse(recentJobSitesData);
+          setGeneratedRecentList(recentJobSitesData);
+        } catch (error) {
+          if (error instanceof z.ZodError) {
+            console.error(
+              "Validation error in recent job site data:",
+              error.errors
+            );
+            return;
+          }
+        }
+
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
-        setLoading(false); // Set loading to false even if there is an error
+        setLoading(false);
       }
     };
 
@@ -102,7 +142,7 @@ export default function QrJobsiteContent() {
               options={generatedList}
               handleGenerate={handleGenerate}
               recentOptions={generatedRecentList}
-              onSelect={handleSearchSelectChange} // Pass the selection handler
+              onSelect={handleSearchSelectChange}
             />
           </Holds>
 
@@ -111,7 +151,7 @@ export default function QrJobsiteContent() {
             className="row-span-1 col-start-3 col-end-4 h-full"
           >
             <Buttons background={"green"} onClick={handleNew}>
-              <Holds className="">
+              <Holds>
                 <Images
                   titleImg={"/Plus.svg"}
                   titleImgAlt={"plus"}
@@ -123,15 +163,14 @@ export default function QrJobsiteContent() {
         </Grids>
       ) : (
         <Grids rows={"5"} gap={"5"} cols={"3"}>
-          <Holds className="row-span-4 col-span-3 h-full ">
-            {/* Replace the old Selects component with the new SearchSelect */}
+          <Holds className="row-span-4 col-span-3 h-full">
             <SearchSelect
               loading={false}
               datatype={`${t("SearchForAJobSite")}`}
               options={generatedList}
               handleGenerate={handleGenerate}
               recentOptions={generatedRecentList}
-              onSelect={handleSearchSelectChange} // Pass the selection handler
+              onSelect={handleSearchSelectChange}
             />
           </Holds>
 
@@ -140,7 +179,7 @@ export default function QrJobsiteContent() {
             className="row-span-1 col-start-3 col-end-4 h-full"
           >
             <Buttons background={"green"} onClick={handleNew}>
-              <Holds className="">
+              <Holds>
                 <Images
                   titleImg={"/Plus.svg"}
                   titleImgAlt={"plus"}
@@ -149,22 +188,22 @@ export default function QrJobsiteContent() {
               </Holds>
             </Buttons>
           </Holds>
+
           <Modals
             isOpen={isModalOpen}
             handleClose={() => setIsModalOpen(false)}
             size="sm"
-            className=""
           >
-            {/* {selectedJobSite && (
-              <Holds className="p-4 absolute  ">
+            {selectedJobSite && (
+              <Holds className="p-4">
                 <Texts>
-                  {selectedJobSiteName} {t("QR Code")}
+                  {selectedJobSiteName} {t("QRCode")}
                 </Texts>
                 <Contents>
                   <Images titleImg={qrCodeUrl} titleImgAlt="QR Code" />
                 </Contents>
               </Holds>
-            )} */}
+            )}
           </Modals>
         </Grids>
       )}

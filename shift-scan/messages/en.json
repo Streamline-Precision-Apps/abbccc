@@ -301,6 +301,9 @@
         "Cancel": "Cancel",
         "Signature": "Click to Edit Signature",
         "EditSignature": "Edit Signature",
+        "Language": "Language",
+        "English": "English",
+        "Spanish": "Spanish",
         "PhoneNumber": "Phone Number"
     },
     
