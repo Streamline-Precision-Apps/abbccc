@@ -1,10 +1,11 @@
+"use client";
 import React, { useState } from "react";
 import { Buttons } from "@/components/(reusable)/buttons"; // Adjust the import path as needed
 
 const RequestPermissions = ({
   handlePermissionsGranted,
 }: {
-  handlePermissionsGranted: any;
+  handlePermissionsGranted: () => void;
 }) => {
   const [permissionsGranted, setPermissionsGranted] = useState({
     location: false,

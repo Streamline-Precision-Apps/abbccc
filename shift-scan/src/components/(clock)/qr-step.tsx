@@ -31,7 +31,6 @@ export default function QRStep({
   url,
 }: QRStepProps) {
   const t = useTranslations("Clock");
-  const router = useRouter();
   return (
     <>
       <Contents width={"section"}>

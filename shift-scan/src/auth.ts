@@ -1,5 +1,6 @@
 import NextAuth, { CredentialsSignin, type DefaultSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import Resend from "next-auth/providers/resend";
 import bcrypt from "bcryptjs";
 import prisma from "./lib/prisma";
 import type { Provider } from "next-auth/providers";
@@ -123,5 +124,4 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   pages: {
     signIn: "/signin", // Custom sign-in page
   },
-  
 });

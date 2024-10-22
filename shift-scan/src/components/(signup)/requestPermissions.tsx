@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import { Buttons } from "../(reusable)/buttons"; // Adjust the import path as needed
 
@@ -15,7 +16,7 @@ const RequestPermissions = ({
   const requestLocationPermission = () => {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        () => {
           setPermissionsGranted((prev) => ({ ...prev, location: true }));
         },
         (error) => {
@@ -69,8 +70,6 @@ const RequestPermissions = ({
 
       <Buttons
         onClick={handleRequestPermissions}
-        variant={"default"}
-        size={"widgetMed"}
         style={{
           backgroundColor: "limegreen",
           color: "black",
@@ -83,8 +82,6 @@ const RequestPermissions = ({
 
       <Buttons
         onClick={handlePermissionsGranted}
-        variant={"default"}
-        size={"widgetMed"}
         style={{ backgroundColor: "orange", color: "black" }}
         disabled={!allPermissionsGranted}
       >

@@ -82,7 +82,9 @@ const Modals: FC<ModalProps> = ({
         <div className="modal ">
           <div className="fixed top-0 left-0 w-screen h-screen bg-neutral-800 opacity-50" />
           <div
-            className={cn(ModalVariants({ background, position, size, className }))}
+            className={cn(
+              ModalVariants({ background, position, size, className })
+            )}
             {...props}
           >
             <div className="modal-content">{props.children}</div>
@@ -115,7 +117,9 @@ const Modals: FC<ModalProps> = ({
     return (
       <ReactPortal wrapperId="react-portal-modal-container">
         <div
-          className={cn(ModalVariants({ background, position, size, className }))}
+          className={cn(
+            ModalVariants({ background, position, size, className })
+          )}
           {...props}
         >
           <Buttons
@@ -149,7 +153,9 @@ const Modals: FC<ModalProps> = ({
       <ReactPortal wrapperId="react-portal-modal-container">
         <div className="fixed top-0 left-0 w-screen h-screen bg-neutral-800 opacity-50" />
         <div
-          className={cn(ModalVariants({ background, position, size, className }))}
+          className={cn(
+            ModalVariants({ background, position, size, className })
+          )}
           {...props}
         >
           <Buttons
@@ -174,10 +180,7 @@ const Modals: FC<ModalProps> = ({
     return (
       <ReactPortal wrapperId="react-portal-modal-container">
         <div className="fixed top-0 left-0 w-screen h-screen bg-neutral-800 opacity-50" />
-        <div
-          className={cn(ModalVariants({ variant, size, className }))}
-          {...props}
-        >
+        <div className={cn(ModalVariants({ size, className }))} {...props}>
           <Buttons
             onClick={handleClose}
             background={"red"}
@@ -199,8 +202,13 @@ const Modals: FC<ModalProps> = ({
   else
     return (
       <ReactPortal wrapperId="react-portal-modal-container">
-          <Bases background={"modal"} position={"start"} size={"screen"}>
-          <div className={cn(ModalVariants({ background, position, size, className }))}{...props}>
+        <Bases background={"modal"} position={"start"} size={"screen"}>
+          <div
+            className={cn(
+              ModalVariants({ background, position, size, className })
+            )}
+            {...props}
+          >
             <Buttons onClick={handleClose} className="close-btn" size={"full"}>
               <Images titleImg="/x.svg" titleImgAlt="x" />
             </Buttons>
@@ -209,7 +217,7 @@ const Modals: FC<ModalProps> = ({
             </Holds>
             {/* <div className="modal-content">{props.children}</div> */}
           </div>
-          </Bases>
+        </Bases>
       </ReactPortal>
     );
 };

@@ -17,7 +17,7 @@ import QRGeneratorContent from "./content";
 import { SearchUser } from "@/lib/types";
 
 export default async function QrGeneratorDashboard() {
-  const q = await getTranslations("qr-Generator");
+  const q = await getTranslations("Generator");
 
   return (
     <Bases>
@@ -26,7 +26,7 @@ export default async function QrGeneratorDashboard() {
           <Holds background={"white"} className="row-span-1 h-full">
             <Contents width={"section"}>
               <TitleBoxes
-                title={q("Title")}
+                title={q("QrGenerator")}
                 titleImg="/qr.svg"
                 titleImgAlt="Team"
                 className="my-auto"

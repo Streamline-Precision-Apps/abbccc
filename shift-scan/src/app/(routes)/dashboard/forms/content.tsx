@@ -6,14 +6,14 @@ import { Labels } from "@/components/(reusable)/labels";
 import { Options } from "@/components/(reusable)/options";
 import { Holds } from "@/components/(reusable)/holds";
 import { Selects } from "@/components/(reusable)/selects";
-import { Texts } from "@/components/(reusable)/texts";
+
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
-import { Session } from "next-auth";
+
 import { useSession } from "next-auth/react";
-import { TextAreas } from "@/components/(reusable)/textareas";
+
 import { useRouter } from "next/navigation";
 
 export default function Content() {
@@ -42,7 +42,7 @@ export default function Content() {
 
   return (
     <Contents width={"section"}>
-      <Holds size={"full"} background="white" className="my-auto">
+      <Holds size={"full"} background="white" className="">
         <Forms onSubmit={handleRoute} className="my-5">
           <Labels className="my-2">
             {t("Forms")}

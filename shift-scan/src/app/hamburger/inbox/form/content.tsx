@@ -1,4 +1,5 @@
 "use client";
+
 import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
@@ -13,11 +14,29 @@ import { Texts } from "@/components/(reusable)/texts";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { RequestForm } from "@/lib/types";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { createLeaveRequest } from "@/actions/inboxSentActions";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { Grids } from "@/components/(reusable)/grids";
+import { z } from "zod";
+
+// Zod schema for form validation
+const leaveRequestSchema = z.object({
+  startDate: z.string().nonempty({ message: "Start date is required" }),
+  endDate: z.string().nonempty({ message: "End date is required" }),
+  requestType: z.enum([
+    "Vacation",
+    "Medical",
+    "Military",
+    "Personal",
+    "Sick",
+  ]),
+  description: z.string().max(40, { message: "Max 40 characters" }),
+  userId: z.string().nonempty({ message: "User ID is required" }),
+  status: z.literal("PENDING"),
+  date: z.string().nonempty({ message: "Date is required" }),
+});
 
 export default function Form({ session }: RequestForm) {
   const [sign, setSign] = useState(false);
@@ -30,7 +49,7 @@ export default function Form({ session }: RequestForm) {
   // Fetch the signature image when the component is mounted
   useEffect(() => {
     const fetchSignature = async () => {
-      const response = await fetch("/api/getSignature");
+      const response = await fetch("/api/getUserSignature");
       const json = await response.json();
       setSignature(json.signature);
     };
@@ -41,24 +60,44 @@ export default function Form({ session }: RequestForm) {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    // Check if signed before submitting
     if (!sign) {
       setErrorMessage("Please provide your signature before submitting.");
       return;
     }
+
     const formData = new FormData(event.target as HTMLFormElement);
-    createLeaveRequest(formData);
+    const formValues = {
+      startDate: formData.get("startDate") as string,
+      endDate: formData.get("endDate") as string,
+      requestType: formData.get("requestType") as string,
+      description: formData.get("description") as string,
+      userId: formData.get("userId") as string,
+      status: formData.get("status") as string,
+      date: formData.get("date") as string,
+    };
 
-    setCloseBanner(true);
-    setMessage("Time off request submitted");
+    // Validate form data using Zod
+    try {
+      leaveRequestSchema.parse(formValues);
+      await createLeaveRequest(formData);
 
-    // Redirect and reset form after a delay
-    const timer = setTimeout(() => {
-      setCloseBanner(false);
-      setMessage("");
-      clearTimeout(timer);
-      router.replace("/hamburger/inbox");
-    }, 5000);
+      setCloseBanner(true);
+      setMessage("Time off request submitted");
+
+      // Redirect and reset form after a delay
+      const timer = setTimeout(() => {
+        setCloseBanner(false);
+        setMessage("");
+        clearTimeout(timer);
+        router.replace("/hamburger/inbox");
+      }, 5000);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        setErrorMessage(error.errors[0].message);
+      } else {
+        console.error("Error creating leave request:", error);
+      }
+    }
   };
 
   return (
@@ -117,8 +156,8 @@ export default function Form({ session }: RequestForm) {
                     className="p-4"
                     onClick={(event) => {
                       event.preventDefault();
-                      setSign(false); // Unsigned
-                      setErrorMessage(""); // Clear any existing error message
+                      setSign(false);
+                      setErrorMessage("");
                     }}
                   >
                     <Holds
@@ -140,7 +179,7 @@ export default function Form({ session }: RequestForm) {
                     className="p-5"
                     onClick={(event) => {
                       event.preventDefault();
-                      setSign(true); // Signed
+                      setSign(true);
                     }}
                   >
                     <Holds>
@@ -151,8 +190,8 @@ export default function Form({ session }: RequestForm) {
                   </Buttons>
                 )}
                 <Texts size={"p4"}>
-                  *By Signing I acknowledge that time leave request is subject
-                  to management approval and company policy. *
+                  *By signing, I acknowledge that the time leave request is
+                  subject to management approval and company policy.*
                 </Texts>
               </Holds>
 

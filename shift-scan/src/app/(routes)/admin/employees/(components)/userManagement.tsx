@@ -1,6 +1,12 @@
+"use client";
 import { ChangeEvent, useState } from "react";
 import { SearchUser } from "@/lib/types";
-import { createUser, deleteUser, fetchByNameUser, updateUser } from "@/actions/userActions";
+import {
+  createUser,
+  deleteUser,
+  fetchByNameUser,
+  updateUser,
+} from "@/actions/userActions";
 import SearchBar from "@/components/(search)/searchbar";
 import { useTranslations } from "next-intl";
 import { Inputs } from "@/components/(reusable)/inputs";
@@ -34,6 +40,7 @@ export default function UserManagement({ users }: Props) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [DOB, setDOB] = useState("");
   const [truckView, setTruckView] = useState<boolean | null>(null);
@@ -66,7 +73,7 @@ export default function UserManagement({ users }: Props) {
       setFilteredUsers(users); // Exclude all users if checkbox is checked
     } else {
       // Exclude users with terminationDate not null
-      const filtered = users.filter(user => user.terminationDate === null);
+      const filtered = users.filter((user) => user.terminationDate === null);
       setFilteredUsers(filtered);
     }
   };
@@ -121,6 +128,7 @@ export default function UserManagement({ users }: Props) {
       setFirstName(response.firstName);
       setLastName(response.lastName);
       setUsername(response.username);
+      setEmail(response.email);
       setDOB(response.DOB || "");
       setTruckView(response.truckView !== null ? response.truckView : null);
       setTascoView(response.tascoView !== null ? response.tascoView : null);
@@ -135,19 +143,18 @@ export default function UserManagement({ users }: Props) {
   }
 
   const handleSelectChange =
-  (setter: React.Dispatch<React.SetStateAction<boolean | null>>) =>
-  (event: ChangeEvent<HTMLSelectElement>) => {
-    const value = event.target.value;
-    setter(convertToBoolean(value));
-  };
-
-    // Function to handle the conversion of string "TRUE"/"FALSE" to boolean true/false
-    const convertToBoolean = (value: string | null): boolean | null => {
-      if (value === "TRUE") return true;
-      if (value === "FALSE") return false;
-      return null;
+    (setter: React.Dispatch<React.SetStateAction<boolean | null>>) =>
+    (event: ChangeEvent<HTMLSelectElement>) => {
+      const value = event.target.value;
+      setter(convertToBoolean(value));
     };
-  
+
+  // Function to handle the conversion of string "TRUE"/"FALSE" to boolean true/false
+  const convertToBoolean = (value: string | null): boolean | null => {
+    if (value === "TRUE") return true;
+    if (value === "FALSE") return false;
+    return null;
+  };
 
   return (
     <>
@@ -160,7 +167,7 @@ export default function UserManagement({ users }: Props) {
         <Contents width={"section"} className="py-5">
           <Grids rows={"6"} gap={"5"}>
             <Holds className="row-span-1 h-full p-3">
-            {/* Checkbox for including terminated employees */}
+              {/* Checkbox for including terminated employees */}
               <label>
                 <input
                   type="checkbox"
@@ -171,219 +178,218 @@ export default function UserManagement({ users }: Props) {
               </label>
             </Holds>
             <Holds className="row-span-5 h-full">
-            {/* Search for new user. */}
-            <Expands title="Create New User" divID={"1"}>
-              {/* User creation form */}
-              <Forms
-                action={createUser}
-                onSubmit={() => handleBanner("User was created successfully")}
-              >
-            <Labels type="title">
-              {t("FirstName")}
-            </Labels>
-            <Inputs
-             
-              type="default"
-              name="firstName"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              state="default"
-            />
-            <Labels type="title">
-              {t("LastName")}
-            </Labels>
-            <Inputs
-             
-              type="default"
-              name="lastName"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              state="default"
-            />
-            <Labels type="title">
-              {t("Username")}
-            </Labels>
-            <Inputs
-             
-              type="default"
-              name="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              state="default"
-            />
-            <Labels type="title">
-              {t("Password")}
-            </Labels>
-            <Inputs
-             
-              type="password"
-              name="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              state="default"
-            />
-            <Labels type="title">
-              {t("DOB")}
-            </Labels>
-            <Inputs
-             
-              type="date"
-              name="DOB"
-              value={DOB}
-              onChange={(e) => setDOB(e.target.value)}
-              state="default"
-            />
-            <Labels type="title">
-              {t("TruckView")}
-            </Labels>
-            <Selects
-              id="truckView"
-              name="truckView"
-              value={truckView !== null ? String(truckView).toUpperCase() : ""}
-              onChange={handleSelectChange(setTruckView)}
-            >
-              <Options value="">{t("Select")}</Options>
-              <Options value="TRUE">{t("True")}</Options>
-              <Options value="FALSE">{t("False")}</Options>
-            </Selects>
-
-            <Labels type="title">
-              {t("TascoView")}
-            </Labels>
-            <Selects
-              id="tascoView"
-              name="tascoView"
-              value={tascoView !== null ? String(tascoView).toUpperCase() : ""}
-              onChange={handleSelectChange(setTascoView)}
-            >
-              <Options value="">{t("Select")}</Options>
-              <Options value="TRUE">{t("True")}</Options>
-              <Options value="FALSE">{t("False")}</Options>
-            </Selects>
-
-            <Labels type="title">
-              {t("LaborView")}
-            </Labels>
-            <Selects
-              id="laborView"
-              name="laborView"
-              value={laborView !== null ? String(laborView).toUpperCase() : ""}
-              onChange={handleSelectChange(setLaborView)}
-            >
-              <Options value="">{t("Select")}</Options>
-              <Options value="TRUE">{t("True")}</Options>
-              <Options value="FALSE">{t("False")}</Options>
-            </Selects>
-
-            <Labels type="title">
-              {t("MechanicView")}
-            </Labels>
-            <Selects
-              id="mechanicView"
-              name="mechanicView"
-              value={
-                mechanicView !== null ? String(mechanicView).toUpperCase() : ""
-              }
-              onChange={handleSelectChange(setMechanicView)}
-            >
-              <Options value="">{t("Select")}</Options>
-              <Options value="TRUE">{t("True")}</Options>
-              <Options value="FALSE">{t("False")}</Options>
-            </Selects>
-            <Labels type="title">
-              {t("Permission")}
-            </Labels>
-            <Selects
-             
-              id="permission"
-              name="permission"
-              value={permission ?? ""}
-              onChange={(e) => setPermission(e.target.value)}
-              className="block w-full border border-black rounded p-2"
-            >
-              <Options value="">{t("Select")}</Options>
-              <Options value="USER">{t("User")}</Options>
-              <Options value="MANAGER">{t("Manager")}</Options>
-              <Options value="PROJECTMANAGER">{t("ProjectManager")}</Options>
-              <Options value="ADMIN">{t("Admin")}</Options>
-              <Options value="SUPERADMIN">{t("SuperAdmin")}</Options>
-            </Selects>
-            <Buttons background="green" type="submit">
-              {t("Submit")}
-            </Buttons>
-              </Forms>
-            </Expands>
-
-
-
-          <Holds>
-            {/* Search for existing user. */}
-            <Expands title="Edit Existing User" divID={"2"}>
-              <Holds>
-                <SearchBar
-                  searchTerm={searchTerm1}
-                  onSearchChange={(e) => handleSearchChange(e, "1")}
-                  placeholder={t("SearchUser")}
-                />
-              </Holds>
-              {searchTerm1 && editForm && (
-                <ul>
-                  {userList.map((item) => (
-                    <Buttons
-                      onClick={() => {
-                        setSearchTerm1(item.firstName);
-                        setEditForm(false);
-                      }}
-                      key={item.id}
-                    >
-                      {item.firstName} {item.lastName} ({item.username})
-                    </Buttons>
-                  ))}
-                </ul>
-              )}
-              {/* Rest of the edit user form */}
-            </Expands>
-          </Holds>
-
-
-          <Holds>
-            <Expands title="Delete User" divID={"4"}>
-              <Holds>
-                <SearchBar
-                  searchTerm={searchTerm2}
-                  onSearchChange={(e) => handleSearchChange(e, "2")}
-                  placeholder={t("SearchUser")}
-                />
-              </Holds>
-              {searchTerm2 && editForm && (
-                <ul>
-                  {userList.map((item) => (
-                    <Buttons
-                      onClick={() => {
-                        setSearchTerm2(item.firstName);
-                        setEditForm(false);
-                      }}
-                      key={item.id}
-                    >
-                      {item.firstName} {item.lastName} ({item.username})
-                    </Buttons>
-                  ))}
-                </ul>
-              )}
-              {searchTerm2 && (
+              {/* Search for new user. */}
+              <Expands title="Create New User" divID={"1"}>
+                {/* User creation form */}
                 <Forms
-                  action={deleteUser}
-                  onSubmit={() => handleBanner("User was deleted successfully")}
+                  action={createUser}
+                  onSubmit={() => handleBanner("User was created successfully")}
                 >
-                  <Inputs type="hidden" name="id" defaultValue={searchTerm2} />
-                  <Buttons background="red" type="submit">
-                    <Texts>{t("Delete")}</Texts>
+                  <Labels type="title">{t("FirstName")}</Labels>
+                  <Inputs
+                    type="default"
+                    name="firstName"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    state="default"
+                  />
+                  <Labels type="title">{t("LastName")}</Labels>
+                  <Inputs
+                    type="default"
+                    name="lastName"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    state="default"
+                  />
+                  <Labels type="title">{t("Username")}</Labels>
+                  <Inputs
+                    type="default"
+                    name="username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    state="default"
+                  />
+
+                  <Labels type="title">{t("Email")}</Labels>
+                  <Inputs
+                    type="default"
+                    name="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    state="default"
+                  />
+
+                  <Labels type="title">{t("Password")}</Labels>
+                  <Inputs
+                    type="password"
+                    name="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    state="default"
+                  />
+                  <Labels type="title">{t("DOB")}</Labels>
+                  <Inputs
+                    type="date"
+                    name="DOB"
+                    value={DOB}
+                    onChange={(e) => setDOB(e.target.value)}
+                    state="default"
+                  />
+                  <Labels type="title">{t("TruckView")}</Labels>
+                  <Selects
+                    id="truckView"
+                    name="truckView"
+                    value={
+                      truckView !== null ? String(truckView).toUpperCase() : ""
+                    }
+                    onChange={handleSelectChange(setTruckView)}
+                  >
+                    <Options value="">{t("Select")}</Options>
+                    <Options value="TRUE">{t("True")}</Options>
+                    <Options value="FALSE">{t("False")}</Options>
+                  </Selects>
+
+                  <Labels type="title">{t("TascoView")}</Labels>
+                  <Selects
+                    id="tascoView"
+                    name="tascoView"
+                    value={
+                      tascoView !== null ? String(tascoView).toUpperCase() : ""
+                    }
+                    onChange={handleSelectChange(setTascoView)}
+                  >
+                    <Options value="">{t("Select")}</Options>
+                    <Options value="TRUE">{t("True")}</Options>
+                    <Options value="FALSE">{t("False")}</Options>
+                  </Selects>
+
+                  <Labels type="title">{t("LaborView")}</Labels>
+                  <Selects
+                    id="laborView"
+                    name="laborView"
+                    value={
+                      laborView !== null ? String(laborView).toUpperCase() : ""
+                    }
+                    onChange={handleSelectChange(setLaborView)}
+                  >
+                    <Options value="">{t("Select")}</Options>
+                    <Options value="TRUE">{t("True")}</Options>
+                    <Options value="FALSE">{t("False")}</Options>
+                  </Selects>
+
+                  <Labels type="title">{t("MechanicView")}</Labels>
+                  <Selects
+                    id="mechanicView"
+                    name="mechanicView"
+                    value={
+                      mechanicView !== null
+                        ? String(mechanicView).toUpperCase()
+                        : ""
+                    }
+                    onChange={handleSelectChange(setMechanicView)}
+                  >
+                    <Options value="">{t("Select")}</Options>
+                    <Options value="TRUE">{t("True")}</Options>
+                    <Options value="FALSE">{t("False")}</Options>
+                  </Selects>
+                  <Labels type="title">{t("Permission")}</Labels>
+                  <Selects
+                    id="permission"
+                    name="permission"
+                    value={permission ?? ""}
+                    onChange={(e) => setPermission(e.target.value)}
+                    className="block w-full border border-black rounded p-2"
+                  >
+                    <Options value="">{t("Select")}</Options>
+                    <Options value="USER">{t("User")}</Options>
+                    <Options value="MANAGER">{t("Manager")}</Options>
+                    <Options value="PROJECTMANAGER">
+                      {t("ProjectManager")}
+                    </Options>
+                    <Options value="ADMIN">{t("Admin")}</Options>
+                    <Options value="SUPERADMIN">{t("SuperAdmin")}</Options>
+                  </Selects>
+                  <Buttons background="green" type="submit">
+                    {t("Submit")}
                   </Buttons>
                 </Forms>
-              )}
-            </Expands>
-          </Holds>
-          </Holds>
+              </Expands>
+
+              <Holds>
+                {/* Search for existing user. */}
+                <Expands title="Edit Existing User" divID={"2"}>
+                  <Holds>
+                    <SearchBar
+                      selected={false}
+                      searchTerm={searchTerm1}
+                      onSearchChange={(e) => handleSearchChange(e, "1")}
+                      placeholder={t("SearchUser")}
+                    />
+                  </Holds>
+                  {searchTerm1 && editForm && (
+                    <ul>
+                      {userList.map((item) => (
+                        <Buttons
+                          onClick={() => {
+                            setSearchTerm1(item.firstName);
+                            setEditForm(false);
+                          }}
+                          key={item.id}
+                        >
+                          {item.firstName} {item.lastName} ({item.username})
+                        </Buttons>
+                      ))}
+                    </ul>
+                  )}
+                  {/* Rest of the edit user form */}
+                </Expands>
+              </Holds>
+
+              <Holds>
+                <Expands title="Delete User" divID={"4"}>
+                  <Holds>
+                    <SearchBar
+                      selected={false}
+                      searchTerm={searchTerm2}
+                      onSearchChange={(e) => handleSearchChange(e, "2")}
+                      placeholder={t("SearchUser")}
+                    />
+                  </Holds>
+                  {searchTerm2 && editForm && (
+                    <ul>
+                      {userList.map((item) => (
+                        <Buttons
+                          onClick={() => {
+                            setSearchTerm2(item.firstName);
+                            setEditForm(false);
+                          }}
+                          key={item.id}
+                        >
+                          {item.firstName} {item.lastName} ({item.username})
+                        </Buttons>
+                      ))}
+                    </ul>
+                  )}
+                  {searchTerm2 && (
+                    <Forms
+                      action={deleteUser}
+                      onSubmit={() =>
+                        handleBanner("User was deleted successfully")
+                      }
+                    >
+                      <Inputs
+                        type="hidden"
+                        name="id"
+                        defaultValue={searchTerm2}
+                      />
+                      <Buttons background="red" type="submit">
+                        <Texts>{t("Delete")}</Texts>
+                      </Buttons>
+                    </Forms>
+                  )}
+                </Expands>
+              </Holds>
+            </Holds>
           </Grids>
         </Contents>
       </Holds>

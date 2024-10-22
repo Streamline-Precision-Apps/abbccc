@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import "@/app/globals.css";
-import { Checkbox } from "./checkBox";
+import Checkbox from "@/components/(inputs)/checkbox";
 import { useRouter } from "next/navigation";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Bases } from "@/components/(reusable)/bases";
@@ -25,8 +25,8 @@ export default function InjuryVerification() {
   const [signatureBlob, setSignatureBlob] = useState<Blob | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const handleCheckboxChange = (newChecked: boolean) => {
-    setChecked(newChecked);
+  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setChecked(event.target.checked);
   };
 
   const handleSignatureEnd = (blob: Blob) => {
@@ -47,37 +47,45 @@ export default function InjuryVerification() {
   };
 
   return (
-    <Bases variant={"default"}>
-      <Contents size={"default"}>
-      <Holds size={"dynamic"}>
-      <TitleBoxes
-        title={t("InjuryVerification")}
-        titleImg="/endDay.svg"
-        titleImgAlt="Team"
-        variant={"default"}
-        size={"default"}
-        type="row"
-      />
-      <h1>{t("SignBelow")}</h1>
-      {/* <Signature onEnd={handleSignatureEnd} /> */}
-      {signatureBlob && <p>{t("SignatureCaptured")}</p>}
-      <Holds size={"titleBox"} className="flex-row gap-2">
-        <h1>{t("SignatureVerify")}</h1>
-        <Checkbox checked={checked} onChange={handleCheckboxChange} />
+    <Bases>
+      <Contents>
+        <Holds>
+          <TitleBoxes
+            title={t("InjuryVerification")}
+            titleImg="/endDay.svg"
+            titleImgAlt="Team"
+            type="row"
+          />
+          <h1>{t("SignBelow")}</h1>
+          {/* <Signature onEnd={handleSignatureEnd} /> */}
+          {signatureBlob && <p>{t("SignatureCaptured")}</p>}
+          <Holds className="flex-row gap-2">
+            <h1>{t("SignatureVerify")}</h1>
+            <Checkbox
+              defaultChecked={checked}
+              onChange={handleCheckboxChange}
+              id={"injury"}
+              name={"injuryCheckbox"}
+              size={2}
+            />
+          </Holds>
+          {error && <div className="text-red-500">{error}</div>}
+          <div>
+            {checked ? (
+              <Buttons background={"green"} size={null}>
+                {t("Continue")}
+              </Buttons>
+            ) : (
+              <Buttons
+                background={"red"}
+                size={null}
+                onClick={handleReportInjury}
+              >
+                {t("ReportInjury")}
+              </Buttons>
+            )}
+          </div>
         </Holds>
-      {error && <div className="text-red-500">{error}</div>}
-      <div>
-        {checked ? (
-          <Buttons variant={"green"} size={null} >
-              {t("Continue")}
-            </Buttons>
-        ) : (
-          <Buttons variant={"red"} size={null}  onClick={handleReportInjury} >
-            {t("ReportInjury")}
-        </Buttons>
-        )}
-      </div>
-      </Holds>
       </Contents>
     </Bases>
   );

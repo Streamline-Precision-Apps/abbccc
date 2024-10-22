@@ -1,33 +1,38 @@
 "use client";
+
 import { Buttons } from "@/components/(reusable)/buttons";
 import React, { useState, useEffect } from "react";
 import { Modals } from "@/components/(reusable)/modals";
 import QRCode from "qrcode";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Titles } from "@/components/(reusable)/titles";
-import { Contents } from "@/components/(reusable)/contents";
 import { Texts } from "@/components/(reusable)/texts";
 import { Images } from "@/components/(reusable)/images";
 import { Holds } from "@/components/(reusable)/holds";
-import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
-import { JobCodes } from "@/lib/types";
-import SearchBar from "@/components/(search)/searchbar";
 import SearchSelect from "@/components/(search)/searchSelect";
-import { Selects } from "@/components/(reusable)/selects";
-import { Options } from "@/components/(reusable)/options";
 import { Grids } from "@/components/(reusable)/grids";
-import { log } from "console";
+import { z } from "zod";
+import { Contents } from "@/components/(reusable)/contents";
+
+// Zod schema for JobCodes
+const JobCodesSchema = z.object({
+  id: z.string(),
+  qrId: z.string(),
+  name: z.string(),
+});
+
+// Zod schema for the jobsite list response
+const JobsiteListSchema = z.array(JobCodesSchema);
+
+type JobCodes = z.infer<typeof JobCodesSchema>;
 
 export default function QrJobsiteContent() {
   const [selectedJobSiteName, setSelectedJobSiteName] = useState<string>("");
   const [selectedJobSite, setSelectedJobSite] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [generatedList, setGeneratedList] = useState<JobCodes[]>([]);
-  const [generatedRecentList, setGeneratedRecentList] = useState<JobCodes[]>(
-    []
-  );
-  const [loading, setLoading] = useState(true); // Loading state
+  const [generatedRecentList, setGeneratedRecentList] = useState<JobCodes[]>([]);
+  const [loading, setLoading] = useState(true);
   const [qrCodeUrl, setQrCodeUrl] = useState("");
 
   const router = useRouter();
@@ -56,12 +61,23 @@ export default function QrJobsiteContent() {
           throw new Error("Failed to fetch job sites");
         }
 
-        const jobSites = await jobsiteResponse.json();
-        setGeneratedList(jobSites);
-        setLoading(false); // Set loading to false after data is fetched
+        const jobSitesData = await jobsiteResponse.json();
+
+        // Validate fetched job site data with Zod
+        try {
+          JobsiteListSchema.parse(jobSitesData);
+          setGeneratedList(jobSitesData);
+        } catch (error) {
+          if (error instanceof z.ZodError) {
+            console.error("Validation error in job site data:", error.errors);
+            return;
+          }
+        }
+
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
-        setLoading(false); // Set loading to false even if there is an error
+        setLoading(false);
       }
     };
 
@@ -74,15 +90,29 @@ export default function QrJobsiteContent() {
         const jobsiteResponse = await fetch("/api/getRecentJobsites");
 
         if (!jobsiteResponse.ok) {
-          throw new Error("Failed to fetch Jobsites");
+          throw new Error("Failed to fetch recent job sites");
         }
 
-        const jobSites = await jobsiteResponse.json();
-        setGeneratedRecentList(jobSites);
-        setLoading(false); // Set loading to false after data is fetched
+        const recentJobSitesData = await jobsiteResponse.json();
+
+        // Validate fetched recent job site data with Zod
+        try {
+          JobsiteListSchema.parse(recentJobSitesData);
+          setGeneratedRecentList(recentJobSitesData);
+        } catch (error) {
+          if (error instanceof z.ZodError) {
+            console.error(
+              "Validation error in recent job site data:",
+              error.errors
+            );
+            return;
+          }
+        }
+
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
-        setLoading(false); // Set loading to false even if there is an error
+        setLoading(false);
       }
     };
 
@@ -102,63 +132,62 @@ export default function QrJobsiteContent() {
   return (
     <>
       {loading ? (
-        <Grids rows={"5"} gap={"5"} cols={"2"}>
-          <Holds className="row-span-4 col-span-2 h-full">
+        <Grids rows={"5"} gap={"5"} cols={"3"}>
+          <Holds className="row-span-4 col-span-3 h-full">
             <SearchSelect
+              loading={true}
               datatype={`${t("Loading")}`}
               options={generatedList}
+              handleGenerate={handleGenerate}
               recentOptions={generatedRecentList}
-              onSelect={handleSearchSelectChange} // Pass the selection handler
+              onSelect={handleSearchSelectChange}
             />
           </Holds>
-          <Holds size={"full"} className="row-span-1 col-span-1 h-full">
-            <Buttons background={"orange"} onClick={handleGenerate}>
-              <Titles size={"h2"}>{t("Generate")}</Titles>
-            </Buttons>
-          </Holds>
-          <Holds size={"full"} className="row-span-1 col-span-1 h-full">
+
+          <Holds size={"full"} className="row-span-1 col-start-3 col-end-4 h-full">
             <Buttons background={"green"} onClick={handleNew}>
-              <Titles size={"h2"}>{t("New")}</Titles>
+              <Holds>
+                <Images titleImg={"/Plus.svg"} titleImgAlt={"plus"} size={"50"} />
+              </Holds>
             </Buttons>
           </Holds>
         </Grids>
       ) : (
-        <Grids rows={"5"} gap={"5"} cols={"2"}>
-          <Holds className="row-span-4 col-span-2 h-full ">
-            {/* Replace the old Selects component with the new SearchSelect */}
+        <Grids rows={"5"} gap={"5"} cols={"3"}>
+          <Holds className="row-span-4 col-span-3 h-full">
             <SearchSelect
-              datatype={`${t("JobSiteDatatype")}`}
+              loading={false}
+              datatype={`${t("SearchForAJobSite")}`}
               options={generatedList}
+              handleGenerate={handleGenerate}
               recentOptions={generatedRecentList}
-              onSelect={handleSearchSelectChange} // Pass the selection handler
+              onSelect={handleSearchSelectChange}
             />
           </Holds>
-          <Holds size={"full"} className="row-span-1 col-span-1 h-full">
-            <Buttons background={"orange"} onClick={handleGenerate}>
-              <Titles size={"h2"}>{t("Generate")}</Titles>
-            </Buttons>
-          </Holds>
-          <Holds size={"full"} className="row-span-1 col-span-1 h-full">
+
+          <Holds size={"full"} className="row-span-1 col-start-3 col-end-4 h-full">
             <Buttons background={"green"} onClick={handleNew}>
-              <Titles size={"h2"}>{t("New")}</Titles>
+              <Holds>
+                <Images titleImg={"/Plus.svg"} titleImgAlt={"plus"} size={"40"} />
+              </Holds>
             </Buttons>
           </Holds>
+
           <Modals
             isOpen={isModalOpen}
             handleClose={() => setIsModalOpen(false)}
             size="sm"
-            className=""
           >
-            {/* {selectedJobSite && (
-              <Holds className="p-4 absolute  ">
+            {selectedJobSite && (
+              <Holds className="p-4">
                 <Texts>
-                  {selectedJobSiteName} {t("QR Code")}
+                  {selectedJobSiteName} {t("QRCode")}
                 </Texts>
                 <Contents>
                   <Images titleImg={qrCodeUrl} titleImgAlt="QR Code" />
                 </Contents>
               </Holds>
-            )} */}
+            )}
           </Modals>
         </Grids>
       )}

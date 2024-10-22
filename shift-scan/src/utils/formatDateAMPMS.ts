@@ -1,6 +1,7 @@
+"use server";
 export const formatTime = (timestamp: string): string => {
   const date = new Date(timestamp);
-  let hours = date.getHours(); // Use local hours instead of UTC
+  const hours = date.getHours(); // Use local hours instead of UTC
   const minutes = date.getMinutes(); // Use local minutes
   const seconds = date.getSeconds(); // Use local seconds
   const isPM = hours >= 12;
