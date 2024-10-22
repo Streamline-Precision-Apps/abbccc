@@ -28,11 +28,13 @@ export default async function Index() {
             size={"full"}
             className="row-span-2 p-4 h-full"
           >
-            <TitleBoxes
-              title="Change Password"
-              titleImg="/settings.svg"
-              titleImgAlt="Change Password Icon"
-            />
+            <Contents width={"section"}>
+              <TitleBoxes
+                title="Change Password"
+                titleImg="/settings.svg"
+                titleImgAlt="Change Password Icon"
+              />
+            </Contents>
           </Holds>
           <Holds className=" row-span-8 h-full ">
             <ChangePassword userId={userId} />

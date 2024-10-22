@@ -3,7 +3,6 @@ import { useTranslations } from "next-intl";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
-import { setAuthStep } from "@/app/api/auth";
 import { useRouter } from "next/navigation";
 import { Contents } from "@/components/(reusable)/contents";
 
@@ -11,13 +10,13 @@ type AdminProps = {
   additionalButtonsType: string | null;
   handleResetButtons: () => void;
   handleShowAdditionalButtons: (type: string) => void;
-}
+};
 
 export default function Admin({
   additionalButtonsType,
   handleResetButtons,
   handleShowAdditionalButtons,
-} : AdminProps) {
+}: AdminProps) {
   const t = useTranslations("admin");
   const Router = useRouter();
 
@@ -29,170 +28,104 @@ export default function Admin({
     <>
       {additionalButtonsType === "recruitment" ? (
         <>
-          <Buttons
-            variant={"default"}
-            size={"widgetSm"}
-            onClick={handleResetButtons}
-          >
-              <Contents variant={"widgetButton"} size={null}>
-            <Images
-              titleImg="/new/home.svg"
-              titleImgAlt="Home Icon"
-              variant={"icon"}
-              size={"default"}
-              />
-            <Texts>{t("Home")}</Texts>
-              </Contents>
+          <Buttons background={"lightBlue"} onClick={handleResetButtons}>
+            <Contents width={"section"}>
+              <Images titleImg="/new/home.svg" titleImgAlt="Home Icon" />
+              <Texts>{t("Home")}</Texts>
+            </Contents>
           </Buttons>
-          <Buttons variant={"orange"} size={"widgetSm"} href="/admin/employees">
-          <Contents variant={"widgetButton"} size={null}>
-            <Images
-              titleImg="/person.svg"
-              titleImgAlt="profile Icon"
-              variant={"icon"}
-              size={"default"}
-            />
-            <Texts>{t("ManageEmployees")}</Texts>
-          </Contents>
+          <Buttons background={"orange"} href="/admin/employees">
+            <Contents>
+              <Images titleImg="/person.svg" titleImgAlt="profile Icon" />
+              <Texts>{t("ManageEmployees")}</Texts>
+            </Contents>
           </Buttons>
-          <Buttons variant={"orange"} size={"widgetSm"} href="/admin/teamManagement">
-          <Contents variant={"widgetButton"} size={null}>
-            <Images
-              titleImg="/team.svg"
-              titleImgAlt="team Icon"
-              variant={"icon"}
-              size={"default"}
-            />
-            <Texts>{t("ManageTeams")}</Texts>
-          </Contents>
+          <Buttons background={"orange"} href="/admin/teamManagement">
+            <Contents>
+              <Images titleImg="/team.svg" titleImgAlt="team Icon" />
+              <Texts>{t("ManageTeams")}</Texts>
+            </Contents>
           </Buttons>
         </>
       ) : additionalButtonsType === "asset" ? (
         <>
-          <Buttons
-            variant={"default"}
-            size={"widgetSm"}
-            onClick={handleResetButtons}
-          >
-             <Contents variant={"widgetButton"} size={null}>
-            <Images
-              titleImg="/new/home.svg"
-              titleImgAlt="Home Icon"
-              variant={"icon"}
-              size={"default"}
-            />
-            <Texts>{t("Home")}</Texts>
-             </Contents>
+          <Buttons background={"lightBlue"} onClick={handleResetButtons}>
+            <Contents>
+              <Images titleImg="/new/home.svg" titleImgAlt="Home Icon" />
+              <Texts>{t("Home")}</Texts>
+            </Contents>
           </Buttons>
-          <Buttons variant={"orange"} size={"widgetSm"} href="/admin/assets">
-          <Contents variant={"widgetButton"} size={null}>
-            <Images
-              titleImg="/new/equipment.svg"
-              titleImgAlt="Home Icon"
-              variant={"icon"}
-              size={"default"}
-            />
-            <Texts>Manage Assest</Texts>
-          </Contents>
+          <Buttons background={"orange"} href="/admin/assets">
+            <Contents>
+              <Images titleImg="/new/equipment.svg" titleImgAlt="Home Icon" />
+              <Texts>Manage Assest</Texts>
+            </Contents>
           </Buttons>
         </>
       ) : additionalButtonsType === "reports" ? (
         <>
-          <Buttons
-            variant={"default"}
-            size={"widgetSm"}
-            onClick={handleResetButtons}
-          >
-            <Contents variant={"widgetButton"} size={null}>
-            <Images
-              titleImg="/new/home.svg"
-              titleImgAlt="Home Icon"
-              variant={"icon"}
-              size={"default"}
-              />
-            <Texts>{t("Home")}</Texts>
-              </Contents>
+          <Buttons background={"lightBlue"} onClick={handleResetButtons}>
+            <Contents>
+              <Images titleImg="/new/home.svg" titleImgAlt="Home Icon" />
+              <Texts>{t("Home")}</Texts>
+            </Contents>
           </Buttons>
-          <Buttons variant={"orange"} size={"widgetSm"} href="/admin/reports">
-          <Contents variant={"widgetButton"} size={null}>
-            <Images
-              titleImg="/new/forms.svg"
-              titleImgAlt="Home Icon"
-              variant={"icon"}
-              size={"default"}
-            />
-            <Texts>Extract Reports</Texts>
-          </Contents>
+          <Buttons background={"orange"} href="/admin/reports">
+            <Contents>
+              <Images titleImg="/new/forms.svg" titleImgAlt="Home Icon" />
+              <Texts>Extract Reports</Texts>
+            </Contents>
           </Buttons>
         </>
       ) : (
         <>
           <Buttons
             href=""
-            variant={"default"}
-            size={"widgetSm"}
+            background={"lightBlue"}
             onClick={() => handleShowAdditionalButtons("recruitment")}
           >
-            <Contents variant={"widgetButton"} size={null}>
-            <Images
-              titleImg="/new/myTeam.svg"
-              titleImgAlt="my team"
-              variant={"icon"}
-              size={"widgetSm"}
-              ></Images>
-            <Texts>{t("Recruitment")}</Texts>
-              </Contents>
+            <Contents>
+              <Images titleImg="/new/myTeam.svg" titleImgAlt="my team"></Images>
+              <Texts>{t("Recruitment")}</Texts>
+            </Contents>
           </Buttons>
           <Buttons
             href=""
-            variant={"green"}
-            size={"widgetSm"}
+            background={"green"}
             onClick={() => handleShowAdditionalButtons("asset")}
           >
-            <Contents variant={"widgetButton"} size={null}>
-            <Images
-              titleImg="/new/equipment.svg"
-              titleImgAlt="Equipment Icon"
-              variant={"icon"}
-              size={"widgetSm"}
+            <Contents>
+              <Images
+                titleImg="/new/equipment.svg"
+                titleImgAlt="Equipment Icon"
               ></Images>
-            <Texts>{t("Assets")}</Texts>
-              </Contents>
+              <Texts>{t("Assets")}</Texts>
+            </Contents>
           </Buttons>
           <Buttons
-            variant={"red"}
-            size={"widgetSm"}
+            background={"red"}
             onClick={() => handleShowAdditionalButtons("reports")}
           >
-            <Contents variant={"widgetButton"} size={null}>
-
-            <Images
-              titleImg="/new/clockOut.svg"
-              titleImgAlt="Clock Out Icon"
-              variant={"icon"}
-              size={"widgetSm"}
+            <Contents>
+              <Images
+                titleImg="/new/clockOut.svg"
+                titleImgAlt="Clock Out Icon"
               ></Images>
-            <Texts>{t("reports")}</Texts>
-              </Contents>
+              <Texts>{t("reports")}</Texts>
+            </Contents>
           </Buttons>
 
-          <Buttons
-            variant={"orange"}
-            size={"widgetSm"}
-            onClick={() => switchToDashboard()}
-          >
-          <Contents variant={"widgetButton"} size={null}>
-            <Images
-              titleImg="/new/home.svg"
-              titleImgAlt="Clock Out Icon"
-              variant={"icon"}
-              size={"widgetSm"}
+          <Buttons background={"orange"} onClick={() => switchToDashboard()}>
+            <Contents>
+              <Images
+                titleImg="/new/home.svg"
+                titleImgAlt="Clock Out Icon"
               ></Images>
-            <Texts>Return to Home</Texts>
-              </Contents>
+              <Texts>Return to Home</Texts>
+            </Contents>
           </Buttons>
         </>
       )}
     </>
   );
-};
+}

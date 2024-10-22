@@ -16,7 +16,7 @@ export default async function NewEquipment() {
           <Holds background="white" className="row-span-1 h-full">
             <Contents width={"section"}>
               <TitleBoxes
-                title={t("Title")}
+                title={`${t("CreateNew")} ${t("EquipmentTitle")} `}
                 titleImg="/equipment.svg"
                 titleImgAlt="Team"
                 className="my-auto"

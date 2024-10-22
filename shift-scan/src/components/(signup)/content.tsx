@@ -8,8 +8,7 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Bases } from "@/components/(reusable)/bases";
 import { Header } from "@/components/header";
 import { Contents } from "@/components/(reusable)/contents";
-import { Grids } from "@/components/(reusable)/grids";
-import { clearAuthStep, getAuthStep, setAuthStep } from "@/app/api/auth";
+import { getAuthStep, setAuthStep } from "@/app/api/auth";
 import ShiftScanIntro from "./shiftScanIntro";
 import ResetPassword from "./resetPassword";
 import ProfilePictureSetup from "./profilePictureSetup";
@@ -17,20 +16,31 @@ import SignatureSetup from "./signatureSetup";
 import NotificationSettings from "./notificationSettings";
 import Permissions from "./permissions";
 import { signOut } from "next-auth/react";
+import { z } from "zod";
+
+// Define Zod schema for validating props
+const propsSchema = z.object({
+  userId: z.string().nonempty("User ID is required"),
+  accountSetup: z.boolean(),
+});
 
 export default function Content({
   userId,
   accountSetup,
-  locale,
 }: {
   userId: string;
   accountSetup: boolean;
-  locale: string;
 }) {
+  // Validate props using Zod
+  try {
+    propsSchema.parse({ userId, accountSetup });
+  } catch (error) {
+    console.error("Invalid props:", error);
+    return null; // Don't render if props are invalid
+  }
+
   const t = useTranslations("Home");
   const f = useTranslations("Footer");
-  const [toggle, setToggle] = useState(true);
-  const router = useRouter();
   const [step, setStep] = useState(1);
 
   useEffect(() => {
@@ -53,7 +63,6 @@ export default function Content({
   const handleComplete = () => {
     try {
       setAuthStep("");
-      // Use the callbackUrl for redirect to avoid double navigation
       signOut({ callbackUrl: "/signin" });
     } catch (error) {
       console.log(error);

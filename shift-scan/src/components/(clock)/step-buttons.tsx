@@ -1,16 +1,19 @@
-import { Button } from '@nextui-org/react';
-import React from 'react';
-import { Buttons } from '../(reusable)/buttons';
+"use client";
+import React from "react";
+import { Buttons } from "../(reusable)/buttons";
 
 interface StepButtonsProps {
-    handleNextStep: () => void;
-    isLastStep?: boolean;
+  handleNextStep: () => void;
+  isLastStep?: boolean;
 }
 
-export default function StepButtons({ handleNextStep, isLastStep}: StepButtonsProps) {
-    return (
-            <Buttons background={'orange'} onClick={handleNextStep}>
-                {isLastStep ? 'Submit' : 'Continue'}
-            </Buttons>
-    );
-};
+export default function StepButtons({
+  handleNextStep,
+  isLastStep,
+}: StepButtonsProps) {
+  return (
+    <Buttons background={"orange"} onClick={handleNextStep}>
+      {isLastStep ? "Submit" : "Continue"}
+    </Buttons>
+  );
+}

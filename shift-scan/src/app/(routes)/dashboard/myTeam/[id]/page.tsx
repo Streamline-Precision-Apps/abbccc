@@ -11,22 +11,42 @@ import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { z } from "zod";
 
-type CrewMember = {
-  user: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    image: string | null;
-  };
-};
+// Zod schema for params
+const ParamsSchema = z.object({
+  id: z.string(),
+});
+
+// Zod schema for CrewMember type
+const CrewMemberSchema = z.object({
+  user: z.object({
+    id: z.string(),
+    firstName: z.string(),
+    lastName: z.string(),
+    image: z.string().nullable(),
+  }),
+});
+
+// Zod schema for the response containing an array of CrewMember
+const CrewResponseSchema = z.array(CrewMemberSchema);
+
+type CrewMember = z.infer<typeof CrewMemberSchema>;
 
 type CrewResponse = CrewMember[];
 
 export default function Content({ params }: { params: { id: string } }) {
-  const [crew, setCrew] = useState<any[]>([]);
+  // Validate params using Zod
+  try {
+    ParamsSchema.parse(params);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      console.error("Validation error in params:", error.errors);
+    }
+  }
+
+  const [crew, setCrew] = useState<CrewMember[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { data: session, status } = useSession();
   const { id } = params;
@@ -38,10 +58,21 @@ export default function Content({ params }: { params: { id: string } }) {
       try {
         setIsLoading(true);
         const response = await fetch(`/api/getCrewById/${crewId}`);
+
         if (response.ok) {
           const crewData: CrewResponse = await response.json();
+
+          // Validate fetched crew data using Zod
+          try {
+            CrewResponseSchema.parse(crewData);
+          } catch (error) {
+            if (error instanceof z.ZodError) {
+              console.error("Validation error in crew data:", error.errors);
+              return;
+            }
+          }
+
           setCrew(crewData);
-          // Store the crew data in localStorage
           localStorage.setItem(`crew-${crewId}`, JSON.stringify(crewData));
         } else {
           console.error("Failed to fetch crew data");
@@ -54,13 +85,23 @@ export default function Content({ params }: { params: { id: string } }) {
     };
 
     if (status === "authenticated") {
-      // First, try to load data from localStorage
       const storedCrew = localStorage.getItem(`crew-${crewId}`);
       if (storedCrew) {
-        setCrew(JSON.parse(storedCrew));
-        setIsLoading(false); // Data loaded from localStorage, no need to fetch
+        const parsedCrew = JSON.parse(storedCrew);
+
+        // Validate stored crew data using Zod
+        try {
+          CrewResponseSchema.parse(parsedCrew);
+          setCrew(parsedCrew);
+          setIsLoading(false);
+        } catch (error) {
+          if (error instanceof z.ZodError) {
+            console.error("Validation error in stored crew data:", error.errors);
+            fetchCrew(); // Fetch fresh data if stored data is invalid
+          }
+        }
       } else {
-        fetchCrew(); // If no data in localStorage, fetch from API
+        fetchCrew();
       }
     }
   }, [status, id]);
@@ -68,40 +109,40 @@ export default function Content({ params }: { params: { id: string } }) {
   return (
     <Bases>
       <Contents>
-        <Grids rows={"8"} gap={"5"}>
-          <Holds background={"white"} className="row-span-2 h-full">
-            <TitleBoxes
-              title={`${t("MyTeams-Title")}`}
-              titleImg="/team.svg"
-              titleImgAlt={`${t("Teams-Logo-Title")}`}
-              className="my-auto"
-            />
+        <Grids rows={"5"} gap={"5"}>
+          <Holds background={"white"} className="row-span-1 h-full">
+            <Contents width={"section"}>
+              <TitleBoxes
+                title={`${t("MyTeams-Title")}`}
+                titleImg="/team.svg"
+                titleImgAlt={`${t("Teams-Logo-Title")}`}
+                className="my-auto"
+              />
+            </Contents>
           </Holds>
+
           {isLoading ? (
-            <>
-              <Holds background={"white"} className="row-span-6 h-full">
-                <Contents width={"section"}>
-                  <Holds className="my-auto">
-                    <Spinner />
-                  </Holds>
-                </Contents>
-              </Holds>
-            </>
+            <Holds background={"white"} className="row-span-4 h-full">
+              <Contents width={"section"}>
+                <Holds className="my-auto">
+                  <Spinner />
+                </Holds>
+              </Contents>
+            </Holds>
           ) : (
             <Holds background={"white"} className="row-span-6 h-full">
               <Contents width={"section"}>
                 <Grids rows={"4"} gap={"5"} className="my-5">
-                  {crew.map((user) => (
-                    <Holds className="row-span-1 h-full">
+                  {crew.map((member) => (
+                    <Holds className="row-span-1 h-full" key={member.user.id}>
                       <Buttons
-                        key={user.id}
-                        href={`/dashboard/myTeam/${params.id}/employee/${user.id}`}
+                        href={`/dashboard/myTeam/${params.id}/employee/${member.user.id}`}
                         background="lightBlue"
                       >
                         <Holds position={"row"}>
                           <Holds size={"30"}>
                             <Images
-                              titleImg={user.image ?? "/default-profile.svg"}
+                              titleImg={member.user.image ?? "/default-profile.svg"}
                               titleImgAlt="profile picture"
                               loading="lazy"
                               className="rounded-xl"
@@ -109,7 +150,7 @@ export default function Content({ params }: { params: { id: string } }) {
                           </Holds>
                           <Holds>
                             <Titles size="h2">
-                              {user.firstName} {user.lastName}
+                              {member.user.firstName} {member.user.lastName}
                             </Titles>
                           </Holds>
                         </Holds>

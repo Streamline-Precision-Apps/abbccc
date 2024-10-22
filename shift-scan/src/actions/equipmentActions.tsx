@@ -1,7 +1,6 @@
 "use server";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 // Utility function to convert string to enum value
 function toEnumValue<T extends Record<string, string>>(
@@ -87,7 +86,7 @@ export async function updateEq(formData1: FormData) {
 
     console.log(alter);
 
-    const log = await prisma.employeeEquipmentLogs.update({
+    await prisma.employeeEquipmentLogs.update({
       where: {
         id: Number(id),
       },
@@ -145,7 +144,7 @@ export async function createEquipment(formData: FormData) {
     console.log(formData);
 
     const equipmentTagValue = formData.get("equipmentTag") as string;
-    const equipmentStatusValue = formData.get("status") as string;
+    const equipmentStatusValue = formData.get("equipmentStatus") as string;
     const qrId = formData.get("qrId") as string;
     const image = formData.get("image") as string;
     const equipmentTag = toEnumValue(Tags, equipmentTagValue);
@@ -197,7 +196,7 @@ export async function deleteEquipment(id: string) {
 
 export async function deleteEquipmentbyId(formData: FormData) {
   try {
-    const deletedEquipment = await prisma.equipment.delete({
+    await prisma.equipment.delete({
       where: { id: formData.get("id") as string },
     });
 
@@ -245,23 +244,21 @@ export async function CreateEmployeeEquipmentLog(formData: FormData) {
 
     revalidatePath("/");
     return log;
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error creating employee equipment log:", error);
-    throw new Error(
-      `Failed to create employee equipment log: ${error.message}`
-    );
+    throw new Error(`Failed to create employee equipment log: ${error}`);
   }
 }
 
-export async function findEquipmentLog(id: Number) {
+export async function findEquipmentLog(id: number) {
   try {
     const log = await prisma.employeeEquipmentLogs.findUnique({
       where: { id: Number(id) },
     });
     return log;
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error finding employee equipment log:", error);
-    throw new Error(`Failed to find employee equipment log: ${error.message}`);
+    throw new Error(`Failed to find employee equipment log: ${error}`);
   }
 }
 
@@ -292,11 +289,9 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
     revalidatePath("dashboard/equipment/" + id);
     revalidatePath("/dashboard/equipment");
     return log;
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error updating employee equipment log:", error);
-    throw new Error(
-      `Failed to update employee equipment log: ${error.message}`
-    );
+    throw new Error(`Failed to update employee equipment log: ${error}`);
   }
 }
 export async function updateEmployeeEquipment(formData: FormData) {
@@ -304,13 +299,13 @@ export async function updateEmployeeEquipment(formData: FormData) {
     console.log(formData);
     const id = formData.get("id") as string;
 
-    const log = await prisma.employeeEquipmentLogs.update({
+    await prisma.employeeEquipmentLogs.update({
       where: { id: Number(id) },
       data: {
         isCompleted: true,
       },
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error updating employee equipment log:", error);
   }
 }
@@ -322,12 +317,11 @@ export async function updateEquipment(formData: FormData) {
     const converted = new Date(
       formData.get("registrationExpiration") as string
     ).toISOString();
-    const statusValue = formData.get("status") as string;
+
     const equipmentTagValue = formData.get("equipmentTag") as string;
     const equipmentStatusValue = formData.get("status") as string;
     const equipmentTag = toEnumValue(Tags, equipmentTagValue);
     const equipmentStatus = toEnumValue(EquipmentStatus, equipmentStatusValue);
-    const status = toEnumValue(Status, statusValue);
 
     const log = await prisma.equipment.update({
       where: { id: id },
@@ -349,7 +343,7 @@ export async function updateEquipment(formData: FormData) {
     revalidatePath("/admin/assets");
     console.log(log);
     return log;
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error updating employee equipment log:", error);
   }
 }
@@ -358,7 +352,7 @@ export async function updateEquipmentID(formData: FormData) {
     console.log(formData);
     const id = formData.get("id") as string;
 
-    const log = await prisma.equipment.update({
+    await prisma.equipment.update({
       where: { id: id },
       data: {
         qrId: formData.get("qrId") as string,
@@ -366,7 +360,7 @@ export async function updateEquipmentID(formData: FormData) {
       },
     });
     revalidatePath("/admin/assets");
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error updating employee equipment log:", error);
   }
 }
@@ -389,11 +383,9 @@ export async function Submit(formData: FormData) {
     // Revalidate the path to reflect changes
     revalidatePath("/dashboard/equipment");
     return logs;
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error updating employee equipment log:", error);
-    throw new Error(
-      `Failed to update employee equipment log: ${error.message}`
-    );
+    throw new Error(`Failed to update employee equipment log: ${error}`);
   }
 }
 
@@ -408,10 +400,8 @@ export async function DeleteLogs(formData: FormData) {
     console.log(deletedLog);
     // Revalidate the path to reflect changes
     revalidatePath("/dashboard/equipment");
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error updating employee equipment log:", error);
-    throw new Error(
-      `Failed to update employee equipment log: ${error.message}`
-    );
+    throw new Error(`Failed to update employee equipment log: ${error}`);
   }
 }

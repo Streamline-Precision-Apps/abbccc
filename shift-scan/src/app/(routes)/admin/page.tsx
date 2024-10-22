@@ -1,4 +1,4 @@
-import prisma from "@/lib/prisma";
+"use client";
 import AdminContent from "./adminContent";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
@@ -7,13 +7,16 @@ export const dynamic = "force-dynamic";
 export default async function AdminDashboard() {
   const session = await auth();
   const userId = session?.user.id;
-  
+
   if (!userId) {
     redirect("/signin");
   }
-  if (session.user.permission !== "ADMIN" && session.user.permission !== "SUPERADMIN") {
+  if (
+    session.user.permission !== "ADMIN" &&
+    session.user.permission !== "SUPERADMIN"
+  ) {
     redirect("/");
   }
 
-  return <AdminContent/>;
+  return <AdminContent />;
 }

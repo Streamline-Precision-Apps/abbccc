@@ -82,55 +82,55 @@ export const EmployeeTimeSheets = ({
 
   return (
     <>
-      <Holds size={"dynamic"} variant={"default"}>
-        <Holds size={"dynamic"}>
-          <Contents size={"listTitle"} variant={"default"}>
+      <Holds>
+        <Holds>
+          <Contents>
             <Tab
               onClick={() => setActiveTab(1)}
               tabLabel={t("AddTimeSheet")}
               isTabActive={activeTab === 1}
-              />
+            />
             <Tab
               onClick={() => setActiveTab(2)}
               tabLabel={t("ViewTimeSheets")}
               isTabActive={activeTab === 2}
-              />
+            />
             {activeTab === 1 && (
               <AddTimeSheet
-              jobsites={jobsiteData}
-              equipment={equipment}
-              employeeId={employeeId}
+                jobsites={jobsiteData}
+                equipment={equipment}
+                employeeId={employeeId}
               />
             )}
             {activeTab === 2 && (
-            <Holds size={"titleBox"} variant={"default"}>
-              <h1>Select Date</h1>
-              <form
-                ref={formRef}
-                onChange={handleFormChange}
-                onSubmit={handleFormSubmit}
+              <Holds>
+                <h1>Select Date</h1>
+                <form
+                  ref={formRef}
+                  onChange={handleFormChange}
+                  onSubmit={handleFormSubmit}
                 >
-                <input
-                  type="date"
-                  name="date"
-                  id="date"
-                  className="flex justify-center m-auto text-black text-2xl bg-white p-2 rounded border-2 border-black rounded-2xl"
+                  <input
+                    type="date"
+                    name="date"
+                    id="date"
+                    className="flex justify-center m-auto text-black text-2xl bg-white p-2 rounded border-2 border-black rounded-2xl"
                   />
-                <input type="hidden" name="id" value={employeeId} />
-              </form>
-              <Titles variant={"green"}>{message}</Titles>
-              <EditWork
-              timesheetData={timesheets}
-              edit={edit}
-              costcodesData={costcodeData}
-              jobsitesData={jobsiteData}
-              equipmentData={filteredEquipmentData}
-              handleFormSubmit={handleFormSubmitFromEditWork}
-              setEdit={setEdit}
-              employeeId={employeeId}
-              date={date}
-              equipment={equipment}
-              />
+                  <input type="hidden" name="id" value={employeeId} />
+                </form>
+                <Titles>{message}</Titles>
+                <EditWork
+                  timesheetData={timesheets}
+                  edit={edit}
+                  costcodesData={costcodeData}
+                  jobsitesData={jobsiteData}
+                  equipmentData={filteredEquipmentData}
+                  handleFormSubmit={handleFormSubmitFromEditWork}
+                  setEdit={setEdit}
+                  employeeId={employeeId}
+                  date={date}
+                  equipment={equipment}
+                />
               </Holds>
             )}
           </Contents>

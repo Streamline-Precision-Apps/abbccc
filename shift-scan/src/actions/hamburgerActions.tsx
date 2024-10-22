@@ -2,11 +2,11 @@
 
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-
-export async function updateSettings(data: any) {
+import { UserSettings } from "@/lib/types";
+export async function updateSettings(data: UserSettings) {
   const { userId, ...settings } = data;
 
-  const result = await prisma.userSettings.update({
+  await prisma.userSettings.update({
     where: { userId: userId },
     data: settings,
   });

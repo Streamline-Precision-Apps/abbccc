@@ -1,10 +1,11 @@
+"use client";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { useTranslations } from "next-intl";
 import React, { useRef, useState, useEffect } from "react";
 
 type SignatureProps = {
   setBase64String: (base64string: string) => void;
-}
+};
 
 export default function Signature({ setBase64String }: SignatureProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -76,13 +77,13 @@ export default function Signature({ setBase64String }: SignatureProps) {
         onMouseUp={handleMouseUp}
       />
       <div className="flex flex-row gap-4">
-        <Buttons variant={"red"} size={"widgetSm"} onClick={handleClear}>
+        <Buttons background={"red"} onClick={handleClear}>
           Clear
         </Buttons>
-        <Buttons variant={"green"} size={"widgetSm"} onClick={handleSave}>
+        <Buttons background={"green"} onClick={handleSave}>
           Save
         </Buttons>
       </div>
     </div>
   );
-};
+}

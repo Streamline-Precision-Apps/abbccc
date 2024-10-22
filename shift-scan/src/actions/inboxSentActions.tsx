@@ -3,7 +3,6 @@
 import prisma from "@/lib/prisma";
 import { FormStatus } from "@prisma/client";
 import { revalidatePath } from "next/cache";
-import { start } from "repl";
 
 export async function getUserSentContent(user_id: string | undefined) {
   if (!user_id) return;
@@ -48,9 +47,9 @@ export async function EditLeaveRequest(formData: FormData) {
   try {
     console.log(formData);
     const id = formData.get("id") as string;
-    const userId = formData.get("userId") as string;
+
     const requestType = formData.get("requestType") as string;
-    const status = formData.get("status") as string;
+
     const today = new Date();
 
     // Parse the start and end dates as local dates to avoid timezone shift
@@ -62,7 +61,7 @@ export async function EditLeaveRequest(formData: FormData) {
 
     console.log(startDate, endDate);
 
-    const result = await prisma.timeoffRequestForms.update({
+    await prisma.timeoffRequestForms.update({
       where: { id: Number(id) },
       data: {
         date: new Date(today),
