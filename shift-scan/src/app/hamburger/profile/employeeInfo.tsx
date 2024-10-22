@@ -42,9 +42,9 @@ export default function EmployeeInfo() {
     try {
       const employeeRes = await fetch("/api/getEmployee");
       const employeeData = await employeeRes.json();
+      console.log(employeeData);
       setEmployee(employeeData);
-      setSignatureBase64String(employeeData.signature);
-      console.log(signatureBase64String);
+      setSignatureBase64String(employeeData);
     } catch (error) {
       console.error("Failed to fetch employee data:", error);
     } finally {
@@ -107,11 +107,17 @@ export default function EmployeeInfo() {
     if (employee) {
       const formData = new FormData();
       formData.append("id", employee.id);
-      formData.append("signature", signatureBase64String);
+      if (typeof signatureBase64String === "object") {
+        formData.append("signature", JSON.stringify(signatureBase64String));
+      } else {
+        formData.append("signature", signatureBase64String);
+      }
+      console.log(formData);
 
       setLoading(true);
       try {
-        await uploadFirstSignature(formData); // This assumes you have an uploadFirstSignature function elsewhere
+        const response = await uploadFirstSignature(formData); // This assumes you have an uploadFirstSignature function elsewhere
+        console.log(response);
       } catch (error) {
         console.error("Error uploading signature:", error);
       } finally {
