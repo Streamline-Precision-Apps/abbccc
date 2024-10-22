@@ -83,7 +83,7 @@ const ResetPassword = ({
       )}
 
       <form onSubmit={handleSubmit}>
-        <p>Let's Reset Your password!</p>
+        <p>{`Let's Reset Your password!`}</p>
         <p>
           Make a password with a minimum of 6 characters and 1 number and symbol
         </p>

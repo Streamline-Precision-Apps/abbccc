@@ -1,6 +1,5 @@
 "use server";
 import Index from "@/app/hamburger/settings/content";
-import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
@@ -12,7 +11,6 @@ import { getTranslations } from "next-intl/server";
 export default async function Settings() {
   const session = await auth();
   if (!session) return null;
-  const userId = session.user.id;
 
   const t = await getTranslations("Hamburger");
 

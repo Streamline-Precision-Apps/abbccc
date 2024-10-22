@@ -1,6 +1,5 @@
 "use client";
 
-import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Forms } from "@/components/(reusable)/forms";
@@ -9,14 +8,15 @@ import { Labels } from "@/components/(reusable)/labels";
 import { Holds } from "@/components/(reusable)/holds";
 import { Selects } from "@/components/(reusable)/selects";
 import { TextAreas } from "@/components/(reusable)/textareas";
-import { Texts } from "@/components/(reusable)/texts";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { sentContent } from "@/lib/types";
 import { Session } from "next-auth";
-import { useTranslations } from "next-intl";
 import { FormEvent, useEffect, useState } from "react";
-import { DeleteLeaveRequest, EditLeaveRequest } from "@/actions/inboxSentActions";
+import {
+  DeleteLeaveRequest,
+  EditLeaveRequest,
+} from "@/actions/inboxSentActions";
 import { Images } from "@/components/(reusable)/images";
 import { useRouter } from "next/navigation";
 import { formatDate } from "@/utils/formatDateYMD";
@@ -39,7 +39,6 @@ type Props = {
 };
 
 export default function Content({ params, session }: Props) {
-  const t = useTranslations("Hamburger");
   const [loading, setLoading] = useState(true);
   const [edit, setEdit] = useState(false);
   const [cardDate, setCardDate] = useState<string>("");
@@ -51,9 +50,7 @@ export default function Content({ params, session }: Props) {
     const fetchSentContent = async () => {
       try {
         setLoading(true);
-        const response = await fetch(
-          `/api/getTimeoffRequests/${params.id}?type=sent`
-        );
+        const response = await fetch(`/api/getTimeoffRequests/?type=sent`);
         if (!response.ok) {
           throw new Error("Failed to fetch sent content");
         }
@@ -245,9 +242,13 @@ export default function Content({ params, session }: Props) {
                     >
                       <option value="">Choose a request</option>
                       <option value="Vacation">Vacation</option>
-                      <option value="Family/Medical Leave">Family/Medical Leave</option>
+                      <option value="Family/Medical Leave">
+                        Family/Medical Leave
+                      </option>
                       <option value="Military Leave">Military Leave</option>
-                      <option value="Non Paid Personal Leave">Non Paid Personal Leave</option>
+                      <option value="Non Paid Personal Leave">
+                        Non Paid Personal Leave
+                      </option>
                       <option value="Sick Time">Sick Time</option>
                     </Selects>
                   </Labels>
@@ -276,7 +277,11 @@ export default function Content({ params, session }: Props) {
             </Forms>
             {edit && (
               <Holds position={"row"} className="mt-5">
-                <Buttons onClick={handleDelete} background={"red"} className="p-2">
+                <Buttons
+                  onClick={handleDelete}
+                  background={"red"}
+                  className="p-2"
+                >
                   <Titles size={"h3"}>Delete Request</Titles>
                 </Buttons>
               </Holds>

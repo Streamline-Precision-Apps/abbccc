@@ -1,5 +1,4 @@
 "use client";
-import { useFormStatus } from "react-dom";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Images } from "@/components/(reusable)/images";
@@ -17,11 +16,7 @@ import { Holds } from "@/components/(reusable)/holds";
 import Checkbox from "@/components/(inputs)/checkBox";
 import Link from "next/link";
 
-type props = {
-  locale: string;
-};
-
-export default function SignInForm({ locale }: props) {
+export default function SignInForm() {
   const [viewSecret, setViewSecret] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [animation, setAnimation] = useState(false);

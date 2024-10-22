@@ -2,21 +2,22 @@
 import { auth } from "@/auth";
 import ClockProcessor from "@/components/(clock)/clockProcess";
 import { Bases } from "@/components/(reusable)/bases";
-import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
-import { Images } from "@/components/(reusable)/images";
 import { Holds } from "@/components/(reusable)/holds";
-import { Texts } from "@/components/(reusable)/texts";
-import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export default async function SwitchJobs() {
   const session = await auth();
-  const userId = session?.user.id;
+
+  if (!session) {
+    // Redirect or return an error if the user is not authenticated
+    redirect("/signin");
+  }
 
   // Fetch all records
 
-  const lang = cookies().get("locale");
+  const lang = (await cookies()).get("locale");
   const locale = lang ? lang.value : "en"; // Default to English
 
   return (

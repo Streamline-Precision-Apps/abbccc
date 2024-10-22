@@ -11,7 +11,6 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Selects } from "@/components/(reusable)/selects";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
-import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { RequestForm } from "@/lib/types";
 import { useEffect, useState } from "react";
@@ -25,13 +24,7 @@ import { z } from "zod";
 const leaveRequestSchema = z.object({
   startDate: z.string().nonempty({ message: "Start date is required" }),
   endDate: z.string().nonempty({ message: "End date is required" }),
-  requestType: z.enum([
-    "Vacation",
-    "Medical",
-    "Military",
-    "Personal",
-    "Sick",
-  ]),
+  requestType: z.enum(["Vacation", "Medical", "Military", "Personal", "Sick"]),
   description: z.string().max(40, { message: "Max 40 characters" }),
   userId: z.string().nonempty({ message: "User ID is required" }),
   status: z.literal("PENDING"),

@@ -9,7 +9,7 @@ import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { sentContent } from "@/lib/types";
-import React, { use } from "react";
+import React from "react";
 import { useState, useEffect } from "react";
 import { z } from "zod";
 

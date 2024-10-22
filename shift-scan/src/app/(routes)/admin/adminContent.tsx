@@ -1,7 +1,6 @@
 "use client";
 import { useTranslations } from "next-intl";
 import "@/app/globals.css";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Bases } from "@/components/(reusable)/bases";
 import { Holds } from "@/components/(reusable)/holds";
@@ -13,6 +12,7 @@ import { CustomSession, User } from "@/lib/types";
 import { useSession } from "next-auth/react";
 import AdminButtons from "@/components/adminButtons";
 import { Contents } from "@/components/(reusable)/contents";
+export const dynamic = "force-dynamic";
 
 export default function AdminContent() {
   const t = useTranslations("admin");

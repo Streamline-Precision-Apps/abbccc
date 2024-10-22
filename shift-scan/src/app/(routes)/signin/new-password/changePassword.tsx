@@ -16,10 +16,6 @@ import { Images } from "@/components/(reusable)/images";
 import { useSearchParams } from "next/navigation";
 import { resetUserPassword } from "@/actions/reset";
 
-type Props = {
-  userId: string | null;
-  token: string;
-};
 export default function ChangePassword() {
   const t = useTranslations("Hamburger");
   const searchParams = useSearchParams();

@@ -1,15 +1,14 @@
 "use server";
 import prisma from "@/lib/prisma";
-import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Holds } from "@/components/(reusable)/holds";
 import { Contents } from "@/components/(reusable)/contents";
 import { Forms } from "@/components/(reusable)/forms";
 import { Labels } from "@/components/(reusable)/labels";
 import { Inputs } from "@/components/(reusable)/inputs";
-
-export default async function employeeInfo({ params }: Params) {
-  const id = params.id;
+type Params = Promise<{ id: string }>;
+export default async function employeeInfo({ params }: { params: Params }) {
+  const id = (await params).id;
   const employee = await prisma.users.findUnique({
     where: {
       id: id.toString(),
@@ -43,28 +42,32 @@ export default async function employeeInfo({ params }: Params) {
           <Inputs
             type="default"
             state="disabled"
-            data={contacts?.phoneNumber}
+            data={contacts?.phoneNumber ?? ""}
           ></Inputs>
           <Labels>Email</Labels>
           <Inputs
             type="default"
             state="disabled"
-            data={contacts?.email}
+            data={contacts?.email ?? ""}
           ></Inputs>
           <Labels>Emergency Contact</Labels>
           <Inputs
             type="default"
             state="disabled"
-            data={contacts?.emergencyContact}
+            data={contacts?.emergencyContact ?? ""}
           ></Inputs>
           <Labels>Emergency Contact Number</Labels>
           <Inputs
             type="default"
             state="disabled"
-            data={contacts?.emergencyContactNumber}
+            data={contacts?.emergencyContactNumber ?? ""}
           ></Inputs>
           <Labels>Date of Birth</Labels>
-          <Inputs type="default" state="disabled" data={employee?.DOB}></Inputs>
+          <Inputs
+            type="default"
+            state="disabled"
+            data={employee?.DOB ?? ""}
+          ></Inputs>
         </Forms>
       </Holds>
     </Contents>

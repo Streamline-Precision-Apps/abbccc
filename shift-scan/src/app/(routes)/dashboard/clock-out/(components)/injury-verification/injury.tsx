@@ -29,13 +29,18 @@ export default function InjuryVerification() {
     setChecked(event.target.checked);
   };
 
-  const handleSignatureEnd = (blob: Blob) => {
-    if (blob) {
-      setSignatureBlob(blob);
-    } else {
-      setError(t("SignatureFailure"));
-    }
-  };
+  useEffect(() => {
+    const getSignature = async () => {
+      try {
+        const response = await fetch("/api/signature");
+        const blob = await response.blob();
+        setSignatureBlob(blob);
+      } catch (err) {
+        console.error("Error fetching signature:", err);
+      }
+    };
+    getSignature();
+  }, []);
 
   const handleReportInjury = async () => {
     try {

@@ -52,7 +52,6 @@ interface ButtonProps
   extends ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof ButtonVariants> {
   href?: string;
-  id?: string;
 }
 
 const Buttons: FC<ButtonProps> = ({
@@ -61,7 +60,6 @@ const Buttons: FC<ButtonProps> = ({
   position,
   size,
   href,
-  id,
   ...props
 }) => {
   const router = useRouter();

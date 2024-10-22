@@ -1,6 +1,6 @@
 "use client";
-
 import React, { useState, useEffect } from "react";
+
 import { useTranslations } from "next-intl";
 import LocaleToggleSwitch from "@/components/(inputs)/toggleSwitch";
 import { Holds } from "@/components/(reusable)/holds";
@@ -48,14 +48,14 @@ export default function Index({ id }: Props) {
         const response = await fetch("/api/getSettings");
         if (response.ok) {
           const settings = await response.json();
-  
+
           // Validate the fetched data using Zod
           const validatedSettings = userSettingsSchema.parse(settings);
-  
+
           // Add the userId property to the validatedSettings object
           const userId = id; // Replace "your_user_id_here" with the actual user ID
           const updatedSettings = { ...validatedSettings, userId };
-  
+
           setData(updatedSettings);
           setUpdatedData(updatedSettings);
           setInitialData(updatedSettings); // Store initial data

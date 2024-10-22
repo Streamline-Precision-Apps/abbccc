@@ -8,6 +8,7 @@ import { fetchEq } from "@/actions/equipmentActions";
 import { Contents } from "@/components/(reusable)/contents";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { useTranslations } from "next-intl";
+import { EquipmentLog } from "@/lib/types";
 import { z } from "zod";
 
 // Zod schema for props
@@ -38,6 +39,31 @@ const EquipmentSchema = z.array(
 );
 
 type Props = z.infer<typeof PropsSchema>;
+export type TimeSheet = {
+  endDate: string | undefined;
+  startDate: string;
+  submitDate?: Date;
+  id: string;
+  userId?: string;
+  date?: Date;
+  jobsiteId?: string;
+  costcode?: string;
+  nu?: string;
+  Fp?: string;
+  vehicleId?: number | null;
+  startTime?: Date | string;
+  endTime?: Date | string | null;
+  duration?: number | null;
+  startingMileage?: number | null;
+  endingMileage?: number | null;
+  leftIdaho?: boolean | null;
+  equipmentHauled?: string | null;
+  materialsHauled?: string | null;
+  hauledLoadsQuantity?: number | null;
+  refuelingGallons?: number | null;
+  timeSheetComments?: string | null;
+  status?: string;
+};
 
 export const EmployeeTimeSheets = ({ employeeId }: Props) => {
   // Validate props using Zod
@@ -50,15 +76,16 @@ export const EmployeeTimeSheets = ({ employeeId }: Props) => {
   }
 
   const t = useTranslations("MyTeam");
-  const [timesheets, setTimesheets] = useState<any[]>([]);
-  const [filteredEquipmentData, setFilteredEquipmentData] = useState<any[]>([]);
+  const [timesheets, setTimesheets] = useState<TimeSheet[]>([]);
+  const [filteredEquipmentData, setFilteredEquipmentData] = useState<
+    EquipmentLog[]
+  >([]);
   const [message, setMessage] = useState("");
   const [edit, setEdit] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const [date, setDate] = useState("");
   const [costcodesData, setCostcodesData] = useState([]);
   const [jobsitesData, setJobsitesData] = useState([]);
-  const [equipmentData, setEquipmentData] = useState([]);
   const [equipment, setEquipment] = useState([]);
 
   useEffect(() => {
@@ -102,7 +129,10 @@ export const EmployeeTimeSheets = ({ employeeId }: Props) => {
         EquipmentSchema.parse(eqResults);
       } catch (error) {
         if (error instanceof z.ZodError) {
-          console.error("Validation error in timesheet/equipment data:", error.errors);
+          console.error(
+            "Validation error in timesheet/equipment data:",
+            error.errors
+          );
         }
       }
 
@@ -127,7 +157,6 @@ export const EmployeeTimeSheets = ({ employeeId }: Props) => {
   };
 
   const handleFormSubmitFromEditWork = async (
-    employeeId: string,
     date: string,
     message?: string
   ) => {
@@ -155,7 +184,7 @@ export const EmployeeTimeSheets = ({ employeeId }: Props) => {
                 type="date"
                 name="date"
                 id="date"
-                className="flex justify-center m-auto text-black text-2xl bg-white p-2 rounded border-2 border-black rounded-2xl"
+                className="flex justify-center m-auto text-black text-2xl bg-white p-2 border-2 border-black rounded-2xl"
               />
               <Inputs type="hidden" name="id" value={employeeId} />
             </form>
