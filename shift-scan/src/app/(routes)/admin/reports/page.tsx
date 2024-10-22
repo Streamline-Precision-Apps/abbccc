@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { CSVLink } from "react-csv";
 import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
@@ -53,7 +53,10 @@ export default function Reports() {
   const handleSubmit = async (formData: FormData) => {
     setLoading(true); // Start loading
     setShowPayroll(false);
-    const data = await timecardData(formData);
+    console.log(formData);
+    const res = await fetch(`/api/getTimesheetsRange?start=${formData.get("start")}&end=${formData.get("end")}`);
+    const data = await res.json();
+    console.log(data);
     setTimeSheets(data);
     setInterval(() => {
       setLoading(false); // End loading
