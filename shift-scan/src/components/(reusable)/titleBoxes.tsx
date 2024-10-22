@@ -87,7 +87,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
               className="rounded-full relative "
               onClick={() => {
                 if (modalTitle) {
-                  modalTitle(modal ? false : true);
+                  modalTitle(modal ? true : false);
                 }
               }}
             >
