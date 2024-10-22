@@ -12,7 +12,7 @@ export default async function Clock() {
   if (!session) {
     redirect("/signin");
   }
-  const lang = cookies().get("locale");
+  const lang = (await cookies()).get("locale");
   const locale = lang ? lang.value : "en"; // Default to English
   return (
     <Bases>

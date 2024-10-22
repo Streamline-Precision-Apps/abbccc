@@ -107,7 +107,7 @@ export default function ViewTimesheets({ user }: Props) {
                 </Titles>
               )}
               {timesheetData.length > 0 ? (
-                timesheetData.map((timesheet) => (
+                timesheetData.map(async (timesheet) => (
                   <Holds
                     key={timesheet.id}
                     size={"full"}
@@ -120,10 +120,13 @@ export default function ViewTimesheets({ user }: Props) {
                       </Labels>
                       <Labels>
                         {t("StartTime")}
+
                         <Inputs
                           value={
-                            timesheet.startTime
-                              ? formatTime(timesheet.startTime.toString()) // Format to 12-hour time with seconds and AM/PM
+                            timesheet.endTime && timesheet.startTime?.toString()
+                              ? await formatTime(
+                                  timesheet.startTime?.toString()
+                                )
                               : "N/A"
                           }
                           readOnly
@@ -134,7 +137,7 @@ export default function ViewTimesheets({ user }: Props) {
                         <Inputs
                           value={
                             timesheet.endTime
-                              ? formatTime(timesheet.endTime.toString()) // Format to 12-hour time with seconds and AM/PM
+                              ? await formatTime(timesheet.endTime.toString()) // Format to 12-hour time with seconds and AM/PM
                               : "N/A"
                           }
                           readOnly

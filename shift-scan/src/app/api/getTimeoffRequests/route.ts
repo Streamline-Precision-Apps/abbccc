@@ -3,61 +3,86 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 
-export async function GET(request: Request) {
+type Params = Promise<{ id: string }>;
+type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
+
+export async function GET(
+  request: Request,
+  props: {
+    params: Params;
+    searchParams: SearchParams;
+  }
+) {
   const session = await auth();
   const userId = session?.user?.id;
+  const manager = `${session?.user?.firstName} ${session?.user?.lastName}`;
 
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   // Extract query parameters
-  const { searchParams } = new URL(request.url);
-  const type = searchParams.get("type");
+  const searchParams = await props.searchParams;
+  const type = searchParams.type;
+  const params = await props.params;
 
   try {
-    // Find the crews that the current user supervises
-    const supervisedCrews = await prisma.crewMembers.findMany({
-      where: {
-        employeeId: userId,
-        supervisor: true, // Make sure the user is a supervisor
-      },
-      select: {
-        crewId: true, // Only select the crewId for further querying
-      },
-    });
+    // Validate `params.id`
+    const requestId = Number(params.id);
+    if (isNaN(requestId)) {
+      return NextResponse.json(
+        { error: "Invalid ID parameter" },
+        { status: 400 }
+      );
+    }
 
-    // Extract crew IDs from the results
-    const crewIds = supervisedCrews.map((crewMember) => crewMember.crewId);
-
+    // Fetch time-off requests /getTimeoffRequests/5?type=sent
     if (type === "sent") {
-      // Fetch time-off requests sent by the current user
+      // Fetch received requests based on `id` and `userId`
       const sentContent = await prisma.timeoffRequestForms.findMany({
         where: {
+          id: requestId,
           employeeId: userId,
-          status: "PENDING",
         },
       });
+
+      // If no content is found, return a 404 response use this to redirect
+      if (sentContent.length === 0) {
+        return NextResponse.json(
+          { error: "No content found" },
+          { status: 404 }
+        );
+      }
 
       return NextResponse.json(sentContent);
     }
 
     if (type === "received") {
-      // Fetch time-off requests from employees of the crews managed by the current user
+      // Fetch received requests based on `id` and `userId`
+
       const receivedContent = await prisma.timeoffRequestForms.findMany({
         where: {
-          employee: {
-            crewMembers: {
-              some: {
-                crewId: { in: crewIds }, // Only include requests from managed crews
-              },
-            },
-          },
-          status: "PENDING", // Only fetch PENDING requests
+          id: requestId,
+          status: "PENDING",
+        },
+        include: {
+          employee: true,
         },
       });
 
-      return NextResponse.json(receivedContent);
+      // If no content is found, return a 404 response use this to redirect
+      if (receivedContent.length === 0) {
+        return NextResponse.json(
+          { error: "No content found" },
+          { status: 404 }
+        );
+      }
+      const receivedContentWManager = receivedContent.map((request) => ({
+        manager: manager,
+        ...request,
+      }));
+
+      return NextResponse.json(receivedContentWManager);
     }
 
     // If type is not recognized, return an error

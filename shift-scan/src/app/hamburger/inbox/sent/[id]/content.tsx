@@ -42,9 +42,7 @@ export default function Content({ params, session }: Props) {
     const fetchSentContent = async () => {
       try {
         setLoading(true);
-        const response = await fetch(
-          `/api/getTimeoffRequests/${params.id}?type=sent`
-        );
+        const response = await fetch(`/api/getTimeoffRequests/?type=sent`);
         if (!response.ok) {
           throw new Error("Failed to fetch sent content");
         }

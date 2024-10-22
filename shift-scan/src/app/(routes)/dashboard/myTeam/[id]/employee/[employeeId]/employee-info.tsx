@@ -25,11 +25,7 @@ type Contact = {
   emergencyContactNumber?: string;
 };
 
-export default function EmployeeInfo({
-  params,
-}: {
-  params: { employeeId: string };
-}) {
+export default function EmployeeInfo({ employeeId }: { employeeId: string }) {
   const [employee, setEmployee] = useState<Employee | null>(null);
   const [contacts, setContacts] = useState<Contact | null>(null);
   const [loading, setLoading] = useState(true);
@@ -39,7 +35,7 @@ export default function EmployeeInfo({
     const fetchData = async () => {
       setLoading(true);
       try {
-        const data = await fetch(`/api/getUserInfo/${params.employeeId}`);
+        const data = await fetch(`/api/getUserInfo/${employeeId}`);
         const res = await data.json();
         if (res.error) {
           console.error(res.error);
@@ -56,7 +52,7 @@ export default function EmployeeInfo({
       }
     };
     fetchData();
-  }, [params.employeeId]);
+  }, [employeeId]);
 
   return (
     <>

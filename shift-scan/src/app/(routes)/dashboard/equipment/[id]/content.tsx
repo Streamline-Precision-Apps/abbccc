@@ -24,7 +24,7 @@ import Spinner from "@/components/(animations)/spinner";
 import { Titles } from "@/components/(reusable)/titles";
 import { EmployeeEquipmentLogs } from "@/lib/types";
 
-export default function CombinedForm({ params }: { params: { id: string } }) {
+export default function CombinedForm({ id }: { id: string }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -56,7 +56,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
       setError(null);
 
       try {
-        const response = await fetch(`/api/getEqUserLogs/${params.id}`);
+        const response = await fetch(`/api/getEqUserLogs/${id}`);
         if (!response.ok) {
           throw new Error(
             `Failed to fetch equipment form: ${response.statusText}`
@@ -98,7 +98,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
     };
 
     fetchEquipmentForm();
-  }, [params.id]);
+  }, [id]);
 
   const handleRefueledChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRefueled(event.target.checked);
@@ -151,7 +151,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     formData.append("endTime", new Date().toISOString());
-    formData.append("id", params.id.toString());
+    formData.append("id", id.toString());
     formData.append("completed", "true");
     formData.append("comment", notes);
     formData.append("isRefueled", refueled.toString());
@@ -170,7 +170,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
   const deleteHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    formData.append("id", params.id.toString());
+    formData.append("id", id.toString());
     try {
       await DeleteLogs(formData);
       router.replace("/dashboard/equipment");

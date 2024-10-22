@@ -43,7 +43,7 @@ export default function Content({ params }: Props) {
       setLoading(true);
       try {
         const result = await fetch(
-          `/api/getTimeoffRequests/${params.id}?type=received` // Ensure this matches
+          `/api/getTimeoffRequests/?type=received` // Ensure this matches
         );
         const data = await result.json();
 
