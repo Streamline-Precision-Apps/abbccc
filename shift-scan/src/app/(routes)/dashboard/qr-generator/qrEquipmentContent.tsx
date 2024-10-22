@@ -17,17 +17,19 @@ import { Holds } from "@/components/(reusable)/holds";
 import SearchSelect from "@/components/(search)/searchSelect";
 import { Grids } from "@/components/(reusable)/grids";
 
-
 export default function QrEquipmentContent() {
   const router = useRouter();
   const [generatedList, setGeneratedList] = useState<EquipmentCodes[]>([]);
-  const [generatedRecentList, setGeneratedRecentList] = useState<EquipmentCodes[]>([]);
-  const [selectedEquipmentName, setSelectedEquipmentName] = useState<string>("");
+  const [generatedRecentList, setGeneratedRecentList] = useState<
+    EquipmentCodes[]
+  >([]);
+  const [selectedEquipmentName, setSelectedEquipmentName] =
+    useState<string>("");
   const [selectedEquipment, setSelectedEquipment] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState("");
   const [loading, setLoading] = useState(true); // Loading state
-  const t = useTranslations("qrEquipmentContent");
+  const t = useTranslations("Generator");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -99,11 +101,11 @@ export default function QrEquipmentContent() {
       {loading ? (
         <Grids rows={"5"} cols={"2"} gap={"5"}>
           <Holds className="row-span-4 col-span-2 h-full">
-            <SearchSelect 
-            datatype={`${t("Loading")}`} 
-            options={generatedList} 
-            recentOptions={generatedRecentList}
-            onSelect={handleSelectEquipment} // Pass the selection handler
+            <SearchSelect
+              datatype={`${t("Loading")}`}
+              options={generatedList}
+              recentOptions={generatedRecentList}
+              onSelect={handleSelectEquipment} // Pass the selection handler
             />
           </Holds>
           <Holds size={"full"} className="row-span-1 col-span-1 h-full">
@@ -111,7 +113,7 @@ export default function QrEquipmentContent() {
               <Titles size={"h2"}>{t("Generate")}</Titles>
             </Buttons>
           </Holds>
-          <Holds  size={"full"} className="row-span-1 col-span-1 h-full">
+          <Holds size={"full"} className="row-span-1 col-span-1 h-full">
             <Buttons background={"green"} onClick={handleNew}>
               <Titles size={"h2"}>{t("New")}</Titles>
             </Buttons>
@@ -120,11 +122,11 @@ export default function QrEquipmentContent() {
       ) : (
         <Grids rows={"5"} cols={"2"} gap={"5"}>
           <Holds className="row-span-4 col-span-2 h-full">
-            <SearchSelect 
-            datatype={`${t("EquipmentDatatype")}`}
-            options={generatedList} 
-            recentOptions={generatedRecentList}
-            onSelect={handleSelectEquipment} // Pass the selection handler
+            <SearchSelect
+              datatype={`${t("EquipmentDatatype")}`}
+              options={generatedList}
+              recentOptions={generatedRecentList}
+              onSelect={handleSelectEquipment} // Pass the selection handler
             />
           </Holds>
           <Holds size={"full"} className="row-span-1 col-span-1 h-full">
@@ -132,18 +134,21 @@ export default function QrEquipmentContent() {
               <Titles size={"h2"}>{t("Generate")}</Titles>
             </Buttons>
           </Holds>
-          <Holds  size={"full"} className="row-span-1 col-span-1 h-full">
+          <Holds size={"full"} className="row-span-1 col-span-1 h-full">
             <Buttons background={"green"} onClick={handleNew}>
               <Titles size={"h2"}>{t("New")}</Titles>
             </Buttons>
           </Holds>
-          <Modals 
-          isOpen={isModalOpen} 
-          handleClose={() => setIsModalOpen(false)} 
-          size="sm">
+          <Modals
+            isOpen={isModalOpen}
+            handleClose={() => setIsModalOpen(false)}
+            size="sm"
+          >
             {selectedEquipment && (
               <Holds className="p-4">
-                <Texts>{selectedEquipmentName} {t("QRCode")}</Texts>
+                <Texts>
+                  {selectedEquipmentName} {t("QRCode")}
+                </Texts>
                 <Contents position={"row"}>
                   <Images titleImg={qrCodeUrl} titleImgAlt={"QR Code"} />
                 </Contents>

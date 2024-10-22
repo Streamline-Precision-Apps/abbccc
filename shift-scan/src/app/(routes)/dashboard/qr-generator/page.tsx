@@ -19,24 +19,25 @@ import { SearchUser } from "@/lib/types";
 export default async function QrGeneratorDashboard() {
   const q = await getTranslations("qr-Generator");
 
-return (
-  <Bases>
-    <Contents>
-      <Grids rows={"5"} gap={"5"}>
-        <Holds background={"white"} className="row-span-1 h-full">
-          <Contents width={"section"}>
-            <TitleBoxes
-            title={q("Title")}
-            titleImg="/qr.svg"
-            titleImgAlt="Team"
-            className="my-auto"/>
-          </Contents>
-        </Holds>
-        <Holds className="row-span-4 h-full">
-          <QRGeneratorContent/>
-        </Holds>
-      </Grids>
-    </Contents>
-  </Bases>
+  return (
+    <Bases>
+      <Contents>
+        <Grids rows={"5"} gap={"5"}>
+          <Holds background={"white"} className="row-span-1 h-full">
+            <Contents width={"section"}>
+              <TitleBoxes
+                title={q("Title")}
+                titleImg="/qr.svg"
+                titleImgAlt="Team"
+                className="my-auto"
+              />
+            </Contents>
+          </Holds>
+          <Holds className="row-span-4 h-full">
+            <QRGeneratorContent />
+          </Holds>
+        </Grids>
+      </Contents>
+    </Bases>
   );
 }

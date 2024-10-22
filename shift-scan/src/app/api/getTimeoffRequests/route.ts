@@ -39,6 +39,7 @@ export async function GET(request: Request) {
           requestedEndDate: {
             gte: today, // any request later then today will be gone
           },
+          status: "PENDING", // Only fetch PENDING requests
         },
       });
 

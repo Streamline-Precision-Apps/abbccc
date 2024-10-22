@@ -2,9 +2,12 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   const userId = params.id;
-
+  console.log("userId", userId);
   // Authenticate the user
   const session = await auth();
   if (!session?.user?.id) {
@@ -12,7 +15,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
   }
 
   // Fetch the employee and related contact information
-  const employee = await prisma.user.findUnique({
+  const employee = await prisma.users.findUnique({
     where: {
       id: userId,
     },
@@ -25,9 +28,12 @@ export async function GET(request: Request, { params }: { params: { id: string }
     return NextResponse.json({ error: "Employee not found" }, { status: 404 });
   }
 
-  return NextResponse.json(employee, {
+  const { password, signature, permission, accountSetup, ...rest } = employee; // Exclude the password from the response using spread operator
+
+  return NextResponse.json(rest, {
     headers: {
-      'Cache-Control': 'public, max-age=60, s-maxage=60, stale-while-revalidate=30',
+      "Cache-Control":
+        "public, max-age=60, s-maxage=60, stale-while-revalidate=30",
     },
   });
 }

@@ -8,26 +8,26 @@ import { getTranslations } from "next-intl/server";
 import { Grids } from "@/components/(reusable)/grids";
 
 export default async function NewEquipment() {
-  const t = await getTranslations("addEquipmentContent");
+  const t = await getTranslations("Generator");
   return (
     <Bases size={"scroll"}>
       <Contents>
         <Grids rows={"6"}>
-          <Holds background="white" className="row-span-1 h-full" >
+          <Holds background="white" className="row-span-1 h-full">
             <Contents width={"section"}>
               <TitleBoxes
-              title={t("Title")}
-              titleImg="/equipment.svg"
-              titleImgAlt="Team"
-              className="my-auto"/>
+                title={t("Title")}
+                titleImg="/equipment.svg"
+                titleImgAlt="Team"
+                className="my-auto"
+              />
             </Contents>
           </Holds>
           <Holds className="row-span-5 h-full">
-            <AddEquipmentContent/>
+            <AddEquipmentContent />
           </Holds>
         </Grids>
       </Contents>
     </Bases>
   );
-
 }
