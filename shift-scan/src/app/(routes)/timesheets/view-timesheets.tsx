@@ -8,7 +8,6 @@ import { Texts } from "@/components/(reusable)/texts";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Labels } from "@/components/(reusable)/labels";
 import { TimeSheet } from "@/lib/types";
-import { Dividers } from "@/components/(reusable)/dividers";
 import Spinner from "@/components/(animations)/spinner";
 import { formatTime } from "@/utils/formatDateAMPMS";
 import { useTranslations } from "next-intl";
