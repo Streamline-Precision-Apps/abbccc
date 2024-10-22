@@ -1,4 +1,5 @@
 "use client";
+
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Submit } from "@/actions/equipmentActions";
 import { useTranslations } from "next-intl";
@@ -12,6 +13,27 @@ import { Contents } from "@/components/(reusable)/contents";
 import { useRouter } from "next/navigation";
 import { Grids } from "@/components/(reusable)/grids";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
+import { z } from "zod";
+
+// Zod schema for EquipmentLogs props
+const EquipmentLogsSchema = z.object({
+  userId: z.string().optional(),
+});
+
+// Zod schema for individual log entry
+const LogEntrySchema = z.object({
+  id: z.string(),
+  isCompleted: z.boolean(),
+  Equipment: z
+    .object({
+      name: z.string(),
+    })
+    .nullable()
+    .optional(),
+});
+
+// Zod schema for the array of logs
+const LogsArraySchema = z.array(LogEntrySchema);
 import { EmployeeEquipmentLogs } from "@/lib/types";
 
 type EquipmentLogs = {
@@ -19,6 +41,15 @@ type EquipmentLogs = {
 };
 
 export default function EquipmentLogContent({ userId }: EquipmentLogs) {
+  // Validate userId prop using Zod
+  try {
+    EquipmentLogsSchema.parse({ userId });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      console.error("Validation error in userId prop:", error.errors);
+    }
+  }
+
   const Router = useRouter();
   const [loading, setLoading] = useState(true);
   const [logs, setLogs] = useState<EmployeeEquipmentLogs[]>([]);
@@ -36,6 +67,16 @@ export default function EquipmentLogContent({ userId }: EquipmentLogs) {
         const response = await fetch("/api/getCheckedList");
         if (response.ok) {
           const data = await response.json();
+
+          // Validate fetched data with Zod
+          try {
+            LogsArraySchema.parse(data);
+          } catch (error) {
+            if (error instanceof z.ZodError) {
+              console.error("Validation error in fetched logs:", error.errors);
+            }
+          }
+
           setLogs(data);
         } else {
           console.error("Failed to fetch logs");
@@ -74,10 +115,10 @@ export default function EquipmentLogContent({ userId }: EquipmentLogs) {
           </Contents>
         </Holds>
 
-        <Holds background={"white"} className="row-span-8 h-full ">
+        <Holds background={"white"} className="row-span-8 h-full">
           <Contents width={"section"}>
             <Holds className="mt-5 row-span-1 h-full">
-              <Texts size={"p6"} className="h-full my-auto ">
+              <Texts size={"p6"} className="h-full my-auto">
                 {t("Loading")}
               </Texts>
               <Spinner />
@@ -90,81 +131,78 @@ export default function EquipmentLogContent({ userId }: EquipmentLogs) {
   }
 
   return (
-    <>
-      <Grids rows={"10"} gap={"5"} className=" relative">
-        <Holds background={"white"} className="row-span-2 h-full">
-          <Contents width={"section"}>
-            <TitleBoxes
-              title={t("Current")}
-              titleImg="/equipment.svg"
-              titleImgAlt="Current"
-              variant={"default"}
-              size={"default"}
-              className="my-auto"
-              href="/dashboard"
-            />
-          </Contents>
-          {banner && (
-            <Holds background={"green"} className="h-8 w-full rounded-xl ">
-              <Texts
-                size={"p6"}
-                className="h-full my-auto flex justify-center items-center"
-              >
-                {banner}
-              </Texts>
-            </Holds>
-          )}
-        </Holds>
+    <Grids rows={"10"} gap={"5"} className="relative">
+      <Holds background={"white"} className="row-span-2 h-full">
+        <Contents width={"section"}>
+          <TitleBoxes
+            title={t("Current")}
+            titleImg="/equipment.svg"
+            titleImgAlt="Current"
+            variant={"default"}
+            size={"default"}
+            className="my-auto"
+            href="/dashboard"
+          />
+        </Contents>
+        {banner && (
+          <Holds background={"green"} className="h-8 w-full rounded-xl">
+            <Texts
+              size={"p6"}
+              className="h-full my-auto flex justify-center items-center"
+            >
+              {banner}
+            </Texts>
+          </Holds>
+        )}
+      </Holds>
 
-        {/* This section is a group of ternary operations that determine the content of the page. */}
-        <Holds background={"white"} className="row-span-8 h-full">
-          <Contents width={"section"}>
-            {total === 0 ? (
-              <Holds className="mt-5">
-                <Texts>{t("NoCurrent")}</Texts>
-              </Holds>
-            ) : null}
+      <Holds background={"white"} className="row-span-8 h-full">
+        <Contents width={"section"}>
+          {total === 0 ? (
             <Holds className="mt-5">
-              {green === 0 && total !== 0 ? (
-                <Forms action={Submit} onSubmit={handleSubmit}>
-                  <Holds>
-                    <Buttons
-                      size={"30"}
-                      type="submit"
-                      background={"lightBlue"}
-                      className="py-2 mx-auto"
-                      href={`/dashboard/equipment`}
-                    >
-                      {b("SubmitAll")}
-                    </Buttons>
-                    <Inputs type="hidden" name="id" value={userId} />
-                    <Inputs type="hidden" name="submitted" value={"true"} />
-                  </Holds>
-                </Forms>
-              ) : (
-                <Buttons size={"30"} disabled className="bg-gray-400 py-2">
-                  {b("SubmitAll")}
-                </Buttons>
-              )}
+              <Texts>{t("NoCurrent")}</Texts>
             </Holds>
-            <Holds className="mt-5 h-full overflow-y-auto no-scrollbar">
-              {logs.map((log) => (
-                <Holds key={log.id} className="pb-5">
+          ) : null}
+          <Holds className="mt-5">
+            {green === 0 && total !== 0 ? (
+              <Forms action={Submit} onSubmit={handleSubmit}>
+                <Holds>
                   <Buttons
-                    size={"80"}
-                    background={log.isCompleted ? "green" : "orange"}
-                    href={`/dashboard/equipment/${log.id}`}
-                    key={log.id}
-                    className="py-2"
+                    size={"30"}
+                    type="submit"
+                    background={"lightBlue"}
+                    className="py-2 mx-auto"
+                    href={`/dashboard/equipment`}
                   >
-                    {log.Equipment?.name}
+                    {b("SubmitAll")}
                   </Buttons>
+                  <Inputs type="hidden" name="id" value={userId} />
+                  <Inputs type="hidden" name="submitted" value={"true"} />
                 </Holds>
-              ))}
-            </Holds>
-          </Contents>
-        </Holds>
-      </Grids>
-    </>
+              </Forms>
+            ) : (
+              <Buttons size={"30"} disabled className="bg-gray-400 py-2">
+                {b("SubmitAll")}
+              </Buttons>
+            )}
+          </Holds>
+          <Holds className="mt-5 h-full overflow-y-auto no-scrollbar">
+            {logs.map((log) => (
+              <Holds key={log.id} className="pb-5">
+                <Buttons
+                  size={"80"}
+                  background={log.isCompleted ? "green" : "orange"}
+                  href={`/dashboard/equipment/${log.id}`}
+                  key={log.id}
+                  className="py-2"
+                >
+                  {log.Equipment?.name}
+                </Buttons>
+              </Holds>
+            ))}
+          </Holds>
+        </Contents>
+      </Holds>
+    </Grids>
   );
 }

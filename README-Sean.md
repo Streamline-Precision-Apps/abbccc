@@ -310,3 +310,11 @@ I finished some more prisma DB research and Created the clock out dashboard page
 ## 10/15/2024
 
 - Worked on API and ZOD for admin.
+
+## 10/18/2024
+
+- Worked on API calls.
+
+## 10/22/2024
+
+- Added many API calls and ZOD.

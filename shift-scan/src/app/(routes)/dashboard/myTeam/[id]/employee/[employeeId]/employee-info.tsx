@@ -8,6 +8,31 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { Grids } from "@/components/(reusable)/grids";
 import Spinner from "@/components/(animations)/spinner";
+import { z } from "zod";
+
+// Zod schema for params
+const ParamsSchema = z.object({
+  employeeId: z.string(),
+});
+
+// Zod schema for employee data
+const EmployeeSchema = z.object({
+  id: z.string(),
+  firstName: z.string(),
+  lastName: z.string(),
+  DOB: z.string().optional(),
+  image: z.string().nullable().optional(),
+  contacts: z
+    .array(
+      z.object({
+        phoneNumber: z.string().optional(),
+        email: z.string().optional(),
+        emergencyContact: z.string().optional(),
+        emergencyContactNumber: z.string().optional(),
+      })
+    )
+    .optional(),
+});
 
 type Employee = {
   id: string;
@@ -25,11 +50,20 @@ type Contact = {
   emergencyContactNumber?: string;
 };
 
-export default function EmployeeInfo({ employeeId }: { employeeId: string }) {
+export default function employeeInfo({ employeeId }: { employeeId: string }) {
+  // Validate params using Zod
+  try {
+    ParamsSchema.parse(employeeId);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      console.error("Validation error in params:", error.errors);
+    }
+  }
+
+  const t = useTranslations("MyTeam");
   const [employee, setEmployee] = useState<Employee | null>(null);
   const [contacts, setContacts] = useState<Contact | null>(null);
   const [loading, setLoading] = useState(true);
-  const t = useTranslations("MyTeam");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,6 +71,16 @@ export default function EmployeeInfo({ employeeId }: { employeeId: string }) {
       try {
         const data = await fetch(`/api/getUserInfo/${employeeId}`);
         const res = await data.json();
+
+        // Validate fetched data using Zod
+        try {
+          EmployeeSchema.parse(res);
+        } catch (error) {
+          if (error instanceof z.ZodError) {
+            console.error("Validation error in employee data:", error.errors);
+          }
+        }
+
         if (res.error) {
           console.error(res.error);
         } else {
@@ -51,6 +95,7 @@ export default function EmployeeInfo({ employeeId }: { employeeId: string }) {
         setLoading(false);
       }
     };
+
     fetchData();
   }, [employeeId]);
 
@@ -71,15 +116,14 @@ export default function EmployeeInfo({ employeeId }: { employeeId: string }) {
           />
         </Contents>
       </Holds>
+
       {loading ? (
-        <Holds background={"white"} className="h-full ">
+        <Holds background={"white"} className="h-full">
           <Contents width={"section"}>
             <Grids rows={"5"} className="my-5 h-full">
               <Holds className="h-full row-span-1">
                 <Holds className="h-[20px] row-span-1"></Holds>
                 <Spinner />
-                <Holds className="h-[20px] row-span-1"></Holds>
-                <Holds className="h-[20px] row-span-1"></Holds>
                 <Holds className="h-[20px] row-span-1"></Holds>
               </Holds>
             </Grids>

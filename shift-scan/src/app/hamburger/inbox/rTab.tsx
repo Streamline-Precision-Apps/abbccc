@@ -13,21 +13,33 @@ import { Contents } from "@/components/(reusable)/contents";
 import Spinner from "@/components/(animations)/spinner";
 import { Images } from "@/components/(reusable)/images";
 import { Grids } from "@/components/(reusable)/grids";
+import { z } from "zod";
+
+// Define Zod schema for received content
+const receivedContentSchema = z.object({
+  id: z.string(),
+  requestType: z.string(),
+  date: z.string().refine((date) => !isNaN(Date.parse(date)), {
+    message: "Invalid date format",
+  }),
+  employeeId: z.string(),
+});
 
 export default function RTab() {
-  const { data: session, status } = useSession(); // Use `useSession` to fetch session
-  const router = useRouter();
+  const { data: session } = useSession(); // Use `useSession` to fetch session
+  const router = useRouter(); // Use router for redirect
   const [receivedContent, setReceivedContent] = useState<receivedContent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  if (!session) return null;
+
   // Redirect if there's no session
   useEffect(() => {
-    if (status === "loading") return; // Wait for session to be loaded
     if (!session) {
       router.push("/signin");
     }
-  }, [session, status, router]);
+  }, [session, router]);
 
   // Fetch receivedContent when session exists
   useEffect(() => {
@@ -43,7 +55,18 @@ export default function RTab() {
         }
 
         const data = await response.json();
-        setReceivedContent(data); // Update state with the received content
+
+        // Validate the fetched data with Zod
+        const validatedData = data.map((item: any) => {
+          try {
+            return receivedContentSchema.parse(item);
+          } catch (e) {
+            console.error("Validation error:", e);
+            throw new Error("Invalid data format");
+          }
+        });
+
+        setReceivedContent(validatedData);
         setLoading(false);
       } catch (err) {
         console.error("Error fetching received content:", err);
@@ -57,10 +80,8 @@ export default function RTab() {
   }, [session]);
 
   // Check if user has appropriate permissions
-  if (!session) return null;
-
-  const userPermission = session.user.permission;
-  if (!["SUPERADMIN", "MANAGER", "ADMIN"].includes(userPermission)) {
+  const userPermission = session?.user?.permission;
+  if (session && !["SUPERADMIN", "MANAGER", "ADMIN"].includes(userPermission)) {
     return (
       <Holds className="h-full justify-center">
         <Titles>Coming Soon</Titles>

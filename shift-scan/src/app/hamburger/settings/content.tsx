@@ -1,24 +1,38 @@
 "use client";
 import React, { useState, useEffect } from "react";
+
 import { useTranslations } from "next-intl";
 import LocaleToggleSwitch from "@/components/(inputs)/toggleSwitch";
 import { Holds } from "@/components/(reusable)/holds";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
-
 import "@/app/globals.css";
-
 import { Texts } from "@/components/(reusable)/texts";
 import { Modals } from "@/components/(reusable)/modals";
 import { updateSettings } from "@/actions/hamburgerActions";
 import { Contents } from "@/components/(reusable)/contents";
 import { UserSettings } from "@/lib/types";
 import { Grids } from "@/components/(reusable)/grids";
-
 import Spinner from "@/components/(animations)/spinner";
 import { useRouter } from "next/navigation";
+import { z } from "zod"; // Import Zod for validation
 
-export default function Index() {
+// Define Zod schema for UserSettings
+const userSettingsSchema = z.object({
+  approvedRequests: z.boolean().optional(),
+  timeOffRequests: z.boolean().optional(),
+  generalReminders: z.boolean().optional(),
+  biometric: z.boolean().optional(),
+  cameraAccess: z.boolean().optional(),
+  locationAccess: z.boolean().optional(),
+  language: z.string().optional(),
+});
+
+type Props = {
+  id: string;
+};
+
+export default function Index({ id }: Props) {
   const router = useRouter();
   const t = useTranslations("Hamburger");
   const [data, setData] = useState<UserSettings | null>(null);
@@ -27,15 +41,24 @@ export default function Index() {
   const [initialData, setInitialData] = useState<UserSettings | null>(null);
 
   // Fetch data on component mount
+  // Fetch data on component mount
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch("/api/getSettings");
         if (response.ok) {
           const settings = await response.json();
-          setData(settings);
-          setUpdatedData(settings);
-          setInitialData(settings); // Store initial data
+
+          // Validate the fetched data using Zod
+          const validatedSettings = userSettingsSchema.parse(settings);
+
+          // Add the userId property to the validatedSettings object
+          const userId = id; // Replace "your_user_id_here" with the actual user ID
+          const updatedSettings = { ...validatedSettings, userId };
+
+          setData(updatedSettings);
+          setUpdatedData(updatedSettings);
+          setInitialData(updatedSettings); // Store initial data
         } else {
           console.error("Failed to fetch settings", response.statusText);
         }
@@ -44,7 +67,7 @@ export default function Index() {
       }
     };
     fetchData();
-  }, []); // Dependency array to ensure it runs once
+  }, []);
 
   // Handle save function for updating settings
   const handleSave = async () => {
@@ -66,25 +89,24 @@ export default function Index() {
     setIsModalOpen(false);
   };
 
-  if (!data)
+  if (!data) {
     return (
-      <>
-        <Holds background={"white"} className="row-span-7 p-4 h-full">
-          <Titles>{t("loading")}</Titles>
-          <Spinner />
-        </Holds>
-      </>
+      <Holds background={"white"} className="row-span-7 p-4 h-full">
+        <Titles>{t("loading")}</Titles>
+        <Spinner />
+      </Holds>
     );
+  }
 
   return (
     <>
       {/* Render UI elements with toggles and modals */}
-      <Grids rows={"5"} gap={"3"} className="">
+      <Grids rows={"5"} gap={"3"}>
         <Holds background={"white"} className="row-span-2 h-full py-4">
           {/*-------------------------Approved Requests------------------------------*/}
           <Contents width={"section"}>
             <Grids rows={"4"} gap={"5"}>
-              <Holds className="row-span-1 ">
+              <Holds className="row-span-1">
                 <Titles>{t("Notifications")}</Titles>
               </Holds>
               <Holds position={"row"}>
@@ -101,7 +123,6 @@ export default function Index() {
                 </Holds>
               </Holds>
               {/*----------------------Time Off Requests--------------------------------*/}
-
               <Holds position={"row"}>
                 <Holds size={"70"}>
                   <Texts position={"left"}>{t("TimeOffRequests")}</Texts>
@@ -130,7 +151,6 @@ export default function Index() {
                 </Holds>
               </Holds>
             </Grids>
-            {/*---------------------end of notifications------------------------------*/}
           </Contents>
         </Holds>
 
@@ -138,10 +158,10 @@ export default function Index() {
         <Holds background={"white"} className="row-span-2 h-full py-4">
           <Contents width={"section"}>
             <Grids rows={"4"} gap={"5"}>
-              <Holds className="row-span-1 ">
+              <Holds className="row-span-1">
                 <Titles>{t("Security")}</Titles>
               </Holds>
-              <Holds position={"row"} className="row-span-1">
+              <Holds position={"row"}>
                 <Holds size={"70"}>
                   <Texts position={"left"}>{t("Biometrics")}</Texts>
                 </Holds>
@@ -154,7 +174,7 @@ export default function Index() {
                   />
                 </Holds>
               </Holds>
-              <Holds position={"row"} className="row-span-1">
+              <Holds position={"row"}>
                 <Holds size={"70"}>
                   <Texts position={"left"}>{t("CameraAccess")}</Texts>
                 </Holds>
@@ -167,9 +187,9 @@ export default function Index() {
                   />
                 </Holds>
               </Holds>
-              <Holds position={"row"} className="row-span-1">
+              <Holds position={"row"}>
                 <Holds size={"70"}>
-                  <Texts position={"left"}>{t("locationAccess")}</Texts>
+                  <Texts position={"left"}>{t("LocationAccess")}</Texts>
                 </Holds>
                 <Holds size={"30"}>
                   <LocaleToggleSwitch
@@ -181,12 +201,37 @@ export default function Index() {
                 </Holds>
               </Holds>
             </Grids>
-            {/*---------------------End of security------------------------------*/}
+          </Contents>
+        </Holds>
+
+        {/*---------------------Start of language------------------------------*/}
+        <Holds background={"white"} className="row-span-2 h-full py-4">
+          <Contents width={"section"}>
+            <Grids rows={"4"} gap={"5"}>
+              <Holds className="row-span-1">
+                <Titles>{t("Language")}</Titles>
+              </Holds>
+              <Holds position={"row"}>
+                <Holds size={"70"}>
+                  <Texts position={"left"}>{t("English")}</Texts>
+                </Holds>
+                <Holds size={"30"}>
+                  <LocaleToggleSwitch
+                    data={updatedData?.language === "en" || false}
+                    onChange={(value: boolean) =>
+                      handleChange("language", value)
+                    }
+                  />
+                </Holds>
+                <Holds size={"70"}>
+                  <Texts position={"right"}>{t("Spanish")}</Texts>
+                </Holds>
+              </Holds>
+            </Grids>
           </Contents>
         </Holds>
 
         {/*---------------------Change Password------------------------------*/}
-
         <Holds className="row-span-1 h-full">
           <Buttons
             onClick={() => router.push("/hamburger/changePassword")}
@@ -197,8 +242,6 @@ export default function Index() {
         </Holds>
 
         {/* Modal for confirming save changes */}
-        {/*---------------------Change Password------------------------------*/}
-
         <Modals isOpen={isModalOpen} handleClose={handleCancel} size="sm">
           <Holds size={"full"} background={"white"}>
             <Holds size={"full"} className="p-3 py-5 justify-center">

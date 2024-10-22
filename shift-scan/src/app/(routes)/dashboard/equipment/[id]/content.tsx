@@ -22,6 +22,37 @@ import Checkbox from "@/components/(inputs)/checkbox";
 import { Grids } from "@/components/(reusable)/grids";
 import Spinner from "@/components/(animations)/spinner";
 import { Titles } from "@/components/(reusable)/titles";
+import { z } from "zod";
+
+// Zod schema for params
+const ParamsSchema = z.object({
+  id: z.string(),
+});
+
+// Zod schema for log data
+const LogDataSchema = z.object({
+  id: z.string(),
+  isRefueled: z.boolean().nullable().optional(),
+  fuelUsed: z.number().nullable().optional(),
+  comment: z.string().nullable().optional(),
+  isCompleted: z.boolean().nullable().optional(),
+  startTime: z.string(),
+  endTime: z.string().nullable().optional(),
+  duration: z.string().nullable().optional(),
+  Equipment: z.object({
+    name: z.string(),
+  }),
+});
+
+// Zod schema for form data
+const FormDataSchema = z.object({
+  id: z.string(),
+  completed: z.string(),
+  comment: z.string(),
+  isRefueled: z.string(),
+  fuelUsed: z.string(),
+  duration: z.string(),
+});
 import { EmployeeEquipmentLogs } from "@/lib/types";
 
 export default function CombinedForm({ id }: { id: string }) {
@@ -40,6 +71,7 @@ export default function CombinedForm({ id }: { id: string }) {
   const [productName, setProductName] = useState("");
 
   const [changedDuration, setChangedDuration] = useState<string>("");
+
   const [changedDurationHours, setChangedDurationHours] = useState<string>("");
   const [changedDurationMinutes, setChangedDurationMinutes] =
     useState<string>("");
@@ -66,8 +98,20 @@ export default function CombinedForm({ id }: { id: string }) {
         const recievedData = await response.json();
         const data = recievedData[0];
 
-        setLogs(data); // saves first data entry to be able to revert bac to
-        setRefueled(data.isRefueled);
+        // Validate fetched data with Zod
+        try {
+          LogDataSchema.parse(data);
+        } catch (error) {
+          if (error instanceof z.ZodError) {
+            console.error(
+              "Validation error in fetched log data:",
+              error.errors
+            );
+          }
+        }
+
+        setLogs(data);
+        setRefueled(data.isRefueled ?? false);
         setFuel(data.fuelUsed ?? 0);
         setNotes(data.comment || "");
         setCompleted(data.isCompleted ?? false);
@@ -75,7 +119,7 @@ export default function CombinedForm({ id }: { id: string }) {
         setEndTime(data.endTime ?? new Date().toISOString());
         setCharacterCount(40 - (data.comment?.length || 0));
         setProductName(data.Equipment.name);
-        // Use the stored duration (as a float) or calculate it if not available
+
         const durationString = data.duration
           ? calculateDuration(data.duration, data.startTime, data.endTime)
           : calculateDuration(
@@ -84,7 +128,6 @@ export default function CombinedForm({ id }: { id: string }) {
               data.endTime ?? new Date().toISOString()
             );
 
-        // Split the duration string into hours, minutes, and seconds
         const [hours, minutes, seconds] = durationString.split(":");
         setChangedDurationHours(hours);
         setChangedDurationMinutes(minutes);
@@ -143,6 +186,7 @@ export default function CombinedForm({ id }: { id: string }) {
       `${changedDurationHours}:${changedDurationMinutes}:${event.target.value}`
     );
   };
+
   const handleEditClick = () => {
     setIsEditMode(true);
   };
@@ -157,6 +201,23 @@ export default function CombinedForm({ id }: { id: string }) {
     formData.append("isRefueled", refueled.toString());
     formData.append("fuelUsed", fuel.toString());
     formData.append("duration", changedDuration);
+
+    // Validate form data with Zod
+    try {
+      FormDataSchema.parse({
+        id: id.toString(),
+        completed: "true",
+        comment: notes,
+        isRefueled: refueled.toString(),
+        fuelUsed: fuel.toString(),
+        duration: changedDuration,
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        console.error("Validation error in form data:", error.errors);
+        return;
+      }
+    }
 
     try {
       await updateEmployeeEquipmentLog(formData);

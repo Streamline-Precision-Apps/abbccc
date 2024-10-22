@@ -8,7 +8,6 @@ import { Labels } from "@/components/(reusable)/labels";
 import { Holds } from "@/components/(reusable)/holds";
 import { Selects } from "@/components/(reusable)/selects";
 import { TextAreas } from "@/components/(reusable)/textareas";
-import { Texts } from "@/components/(reusable)/texts";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { sentContent } from "@/lib/types";
@@ -21,9 +20,18 @@ import {
 import { Images } from "@/components/(reusable)/images";
 import { useRouter } from "next/navigation";
 import { formatDate } from "@/utils/formatDateYMD";
-import React from "react";
-import Spinner from "@/components/(animations)/spinner";
 import { Grids } from "@/components/(reusable)/grids";
+import { z } from "zod";
+import Spinner from "@/components/(animations)/spinner";
+
+// Define Zod schema for form validation
+const editLeaveRequestSchema = z.object({
+  id: z.string().nonempty("Request ID is required"),
+  startDate: z.string().nonempty("Start date is required"),
+  endDate: z.string().nonempty("End date is required"),
+  requestType: z.string().nonempty("Request type is required"),
+  description: z.string().max(200, "Comments must be at most 200 characters"),
+});
 
 type Props = {
   session: Session | null;
@@ -71,9 +79,29 @@ export default function Content({ params, session }: Props) {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    await EditLeaveRequest(new FormData(event.currentTarget));
-    setEdit(false);
-    router.push("/hamburger/inbox");
+
+    const formData = new FormData(event.currentTarget);
+    const formValues = {
+      id: formData.get("id") as string,
+      startDate: formData.get("startDate") as string,
+      endDate: formData.get("endDate") as string,
+      requestType: formData.get("requestType") as string,
+      description: formData.get("description") as string,
+    };
+
+    // Validate using Zod
+    try {
+      editLeaveRequestSchema.parse(formValues);
+      await EditLeaveRequest(formData);
+      setEdit(false);
+      router.push("/hamburger/inbox");
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        console.error("Validation error:", error.errors[0].message);
+      } else {
+        console.error("Failed to submit form:", error);
+      }
+    }
   };
 
   const handleDelete = async () => {
@@ -83,12 +111,12 @@ export default function Content({ params, session }: Props) {
     }
   };
 
-  if (loading)
+  if (loading) {
     return (
       <>
         <Holds background={"orange"}>
           <TitleBoxes
-            title="leave request"
+            title="Leave Request"
             titleImg="/Inbox.svg"
             titleImgAlt="Inbox"
             type="noIcon"
@@ -107,19 +135,20 @@ export default function Content({ params, session }: Props) {
         </Holds>
       </>
     );
+  }
 
   return (
     <Holds>
       <Grids className="grid-rows-10 gap-5">
         <Holds background={"orange"} className="row-span-2">
           <TitleBoxes
-            title="leave request"
+            title="Leave Request"
             titleImg="/Inbox.svg"
             titleImgAlt="Inbox"
             type="noIcon"
           />
           <Holds className="py-2">
-            <Titles size={"h3"}> Created on {cardDate}</Titles>
+            <Titles size={"h3"}>Created on {cardDate}</Titles>
           </Holds>
         </Holds>
 
@@ -128,29 +157,27 @@ export default function Content({ params, session }: Props) {
             <Forms onSubmit={handleSubmit}>
               <Inputs type="hidden" name="id" value={params.id} />
               <Holds className="my-3">
-                {!edit && (
+                {!edit ? (
                   <Holds size={"20"}>
                     <Buttons background={"orange"} onClick={handleEdit}>
                       <Holds className="py-2">
                         <Images
                           size={"50"}
-                          titleImg={"/edit-form.svg"}
-                          titleImgAlt={"edit form"}
+                          titleImg="/edit-form.svg"
+                          titleImgAlt="Edit form"
                         />
                       </Holds>
                     </Buttons>
                   </Holds>
-                )}
-
-                {edit && (
+                ) : (
                   <Holds position={"row"} className="justify-between px-5">
                     <Holds size={"20"}>
                       <Buttons background={"red"} onClick={handleEdit}>
                         <Holds className="py-2">
                           <Images
                             size={"50"}
-                            titleImg={"/undo-edit.svg"}
-                            titleImgAlt={"undo edit"}
+                            titleImg="/undo-edit.svg"
+                            titleImgAlt="Undo edit"
                           />
                         </Holds>
                       </Buttons>
@@ -160,8 +187,8 @@ export default function Content({ params, session }: Props) {
                         <Holds className="py-2">
                           <Images
                             size={"50"}
-                            titleImg={"/save-edit.svg"}
-                            titleImgAlt={"save edit"}
+                            titleImg="/save-edit.svg"
+                            titleImgAlt="Save edit"
                           />
                         </Holds>
                       </Buttons>
@@ -237,7 +264,7 @@ export default function Content({ params, session }: Props) {
                   </Labels>
                   {(item.status === "APPROVED" || item.status === "DENIED") && (
                     <Labels>
-                      Managers Comments
+                      Manager's Comments
                       <TextAreas
                         name="managerComments"
                         defaultValue={item.managerComment ?? ""}
@@ -245,13 +272,6 @@ export default function Content({ params, session }: Props) {
                       />
                     </Labels>
                   )}
-
-                  <Texts size={"p2"}>Signature here</Texts>
-
-                  <Texts size={"p5"}>
-                    By Signing I acknowledge that time leave request is subject
-                    to management approval & company policy.
-                  </Texts>
                 </Holds>
               ))}
             </Forms>
