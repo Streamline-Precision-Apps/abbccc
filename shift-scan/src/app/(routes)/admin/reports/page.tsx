@@ -10,6 +10,35 @@ import { Labels } from "@/components/(reusable)/labels";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { timecardData } from "@/actions/adminActions";
 import { Texts } from "@/components/(reusable)/texts";
+import { z } from "zod";
+
+// Zod schema for timesheet data
+const TimesheetSchema = z.object({
+  submitDate: z.string().refine((date) => !isNaN(new Date(date).getTime()), {
+    message: "Invalid date format",
+  }),
+  date: z.string().refine((date) => !isNaN(new Date(date).getTime()), {
+    message: "Invalid date format",
+  }),
+  costcode: z.string(),
+  vehicleId: z.string(),
+  startTime: z.string().nullable().optional(),
+  endTime: z.string().nullable().optional(),
+  duration: z.number().nullable().optional(),
+  startingMileage: z.number().nullable().optional(),
+  endingMileage: z.number().nullable().optional(),
+  leftIdaho: z.boolean().optional(),
+  equipmentHauled: z.string().optional(),
+  materialsHauled: z.string().optional(),
+  hauledLoadsQuantity: z.number().nullable().optional(),
+  refuelingGallons: z.number().nullable().optional(),
+  timeSheetComments: z.string().optional(),
+  userId: z.string(),
+  jobsiteId: z.string(),
+});
+
+// Zod schema for timesheet array
+const TimesheetsArraySchema = z.array(TimesheetSchema);
 
 export default function Reports() {
   const [timeSheets, setTimeSheets] = useState<any[]>([]);
@@ -146,7 +175,6 @@ export default function Reports() {
                   <th>LoadQty</th>
                   <th>FuelGallons</th>
                   <th>Comments</th>
-                  <th>App Comment</th>
                   <th>User ID</th>
                   <th>Jobsite ID</th>
                 </tr>

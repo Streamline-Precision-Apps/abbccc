@@ -1,4 +1,5 @@
 "use client";
+
 import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
@@ -13,7 +14,7 @@ import { Titles } from "@/components/(reusable)/titles";
 import { receivedContent } from "@/lib/types";
 import { Session } from "next-auth";
 import { useTranslations } from "next-intl";
-import { ChangeEvent, FormEvent, use, useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import {
   EditLeaveRequest,
   ManagerLeaveRequest,
@@ -21,9 +22,22 @@ import {
 import { Images } from "@/components/(reusable)/images";
 import { useRouter } from "next/navigation";
 import { formatDate } from "@/utils/formatDateYMD";
-import React from "react";
-import Spinner from "@/components/(animations)/spinner";
 import { Grids } from "@/components/(reusable)/grids";
+import { z } from "zod";
+import Spinner from "@/components/(animations)/spinner";
+
+// Define Zod schema for validation
+const managerLeaveRequestSchema = z.object({
+  id: z.string().nonempty({ message: "Request ID is required" }),
+  decision: z.enum(["APPROVED", "DENIED"], {
+    errorMap: () => ({ message: "Invalid decision" }),
+  }),
+  decidedBy: z.string().nonempty({ message: "Manager ID is required" }),
+  managerComments: z.string().max(40, {
+    message: "Manager comments must be at most 40 characters",
+  }),
+  signature: z.string().nonempty({ message: "Manager signature is required" }),
+});
 
 type Props = {
   params: { id: string };
@@ -35,13 +49,13 @@ export default function Content({ params, session }: Props) {
   const t = useTranslations("Hamburger");
   const router = useRouter();
   const userId = session?.user.id;
-  const [decision, setDecision] = useState(null);
-  const [cardDate, setCardDate] = useState("");
-  const [manager, setManager] = useState("");
-  const [managerComment, setManagerComment] = useState("");
-  const [employeeName, setEmployeeName] = useState("");
-  const [signature, setSignature] = useState("");
-  const [managerSignature, setManagerSignature] = useState("");
+  const [decision, setDecision] = useState<string | null>(null);
+  const [cardDate, setCardDate] = useState<string>("");
+  const [manager, setManager] = useState<string>("");
+  const [managerComment, setManagerComment] = useState<string>("");
+  const [employeeName, setEmployeeName] = useState<string>("");
+  const [signature, setSignature] = useState<string>("");
+  const [managerSignature, setManagerSignature] = useState<string>("");
   const [signed, setSigned] = useState(false);
   const [receivedContent, setReceivedContent] = useState<receivedContent[]>([]);
 
@@ -50,25 +64,21 @@ export default function Content({ params, session }: Props) {
       setLoading(true);
       try {
         const result = await fetch(
-          `/api/getTimeoffRequests/${params.id}?type=received` // Ensure this matches
+          `/api/getTimeoffRequests/${params.id}?type=received`
         );
         const data = await result.json();
 
         setCardDate(
-          new Date(data[0].date).getMonth().toString() +
-            "/" +
-            new Date(data[0].date).getDate().toString() +
-            "/" +
-            new Date(data[0].date).getFullYear().toString()
+          `${new Date(data[0].date).getMonth() + 1}/${
+            new Date(data[0].date).getDate()
+          }/${new Date(data[0].date).getFullYear()}`
         );
 
         const employee = data[0].employee;
-        console.log(employee);
         setEmployeeName(employee?.firstName + " " + employee?.lastName || "");
-        // Update states based on the fetched data
         setSignature(employee?.signature || "");
-        setManager(data[0]?.manager);
-        setManagerComment(data[0]?.managerComment || ""); // Handle null or undefined comments
+        setManager(data[0]?.manager || "");
+        setManagerComment(data[0]?.managerComment || "");
         setReceivedContent(data);
       } catch (error) {
         console.log(error);
@@ -93,8 +103,9 @@ export default function Content({ params, session }: Props) {
   }, [params.id]);
 
   const handleManagerCommentChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    setManagerComment(e.target.value); // Update the state with the new comment
+    setManagerComment(e.target.value);
   };
+
   useEffect(() => {
     if (decision !== null) {
       setDecision(null);
@@ -102,296 +113,197 @@ export default function Content({ params, session }: Props) {
     }
   }, [decision]);
 
-  function handleApproval(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault(); // Prevent default form submission
+  const handleApproval = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
-    const formData = new FormData(event.currentTarget); // Gather form data
-    ManagerLeaveRequest(formData) // Call your action to process the form
-      .then(() => {
-        // Redirect to the inbox once submission is successful
-        router.replace("/hamburger/inbox");
-      })
-      .catch((error) => {
-        // Handle any error in form submission
+    const formData = new FormData(event.currentTarget);
+    const formValues = {
+      id: formData.get("id") as string,
+      decision: formData.get("decision") as string,
+      decidedBy: formData.get("decidedBy") as string,
+      managerComments: managerComment,
+      signature: managerSignature,
+    };
+
+    // Validate using Zod
+    try {
+      managerLeaveRequestSchema.parse(formValues);
+      await ManagerLeaveRequest(formData);
+      router.replace("/hamburger/inbox");
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        console.error("Validation error:", error.errors[0].message);
+      } else {
         console.error("Failed to submit form:", error);
-      });
-  }
+      }
+    }
+  };
+
   if (loading) {
     return (
-      <>
-        <Grids className="grid-rows-10 gap-5 my-5">
-          {/*start of title holds */}
-          <Holds background={"orange"} className="row-span-1 h-full">
-            <TitleBoxes
-              title="leave request"
-              titleImg="/Inbox.svg"
-              titleImgAlt="Inbox"
-              type="noIcon"
-            />
-
-            <Holds className=""></Holds>
-            <Titles size={"h3"}>loading date...</Titles>
-          </Holds>
-          {/* end of title holds */}
-
-          <Holds background={"white"} className="row-span-9 h-full ">
-            <Holds size={"full"} className="mt-5">
-              <Spinner />
-            </Holds>
-          </Holds>
-        </Grids>
-      </>
-    );
-  }
-
-  return (
-    <>
-      <Grids rows={"10"} gap={"5"} className="my-5">
-        {/*start of title holds */}
+      <Grids className="grid-rows-10 gap-5 my-5">
         <Holds background={"orange"} className="row-span-1 h-full">
           <TitleBoxes
-            title="leave request"
+            title="Leave Request"
             titleImg="/Inbox.svg"
             titleImgAlt="Inbox"
             type="noIcon"
           />
-
-          <Titles size={"h3"}>{cardDate}</Titles>
+          <Titles size={"h3"}>Loading date...</Titles>
         </Holds>
-        {/* end of title holds */}
-        {receivedContent.map((item) => (
-          <Holds
-            background={"white"}
-            className="row-span-9 h-full"
-            key={item.id}
-          >
-            <Contents width={"section"}>
-              <Grids className="grid-rows-1 py-5 ">
-                {/* end of title holds */}
-                <Inputs
-                  type="hidden"
-                  name="date"
-                  value={item.date.toString()}
-                  disabled
-                />
-                <Inputs
-                  type="hidden"
-                  name="employeeId"
-                  value={item.employeeId}
-                  disabled
-                />
-                <Holds className="row-span-1 ">
-                  <Labels>
-                    Employee
-                    <Inputs type="text" defaultValue={employeeName} disabled />
-                  </Labels>
-                </Holds>
-                <Holds className="row-span-1">
-                  <Labels>
-                    {" "}
-                    Start Date
-                    <Inputs
-                      type="date"
-                      name="startDate"
-                      defaultValue={formatDate(item.requestedStartDate)}
-                      disabled
-                    />
-                  </Labels>
-                </Holds>
-                <Holds className="row-span-1">
-                  <Labels>
-                    {" "}
-                    End Date
-                    <Inputs
-                      type="date"
-                      name="endDate"
-                      defaultValue={formatDate(item.requestedEndDate)}
-                      disabled
-                    />
-                  </Labels>
-                </Holds>
-                <Holds className="row-span-1">
-                  <Labels>
-                    {" "}
-                    Request Type
-                    <Inputs
-                      type="text"
-                      name="requestType"
-                      defaultValue={item?.requestType}
-                      disabled
-                    />
-                  </Labels>
-                </Holds>
-                <Holds className="row-span-1">
-                  <Labels>
-                    Comments
-                    <TextAreas
-                      name="description"
-                      defaultValue={item.comment}
-                      disabled
-                      rows={2}
-                    />
-                  </Labels>
-                </Holds>
-                <Holds className="row-span-1">
-                  <Holds>
-                    <Labels>
-                      Managers Comments
-                      <TextAreas
-                        name="mangerComments"
-                        value={managerComment}
-                        rows={2}
-                        onChange={handleManagerCommentChange}
-                        maxLength={40}
-                      />
-                    </Labels>
-                  </Holds>
-                  <Holds className="row-span-1 pb-5 ">
-                    <Texts position={"left"} size={"p5"}>
-                      Employee signature
-                    </Texts>
-                    <Holds className="border-2 border-black rounded-xl">
-                      {!signed ? (
-                        <Holds position={"center"} className="py-2">
-                          <Texts size={"p5"}>Signature is not setup</Texts>
-                        </Holds>
-                      ) : (
-                        <Holds size={"20"} position={"center"} className="">
-                          <img
-                            src={signature}
-                            alt="signature"
-                            className="py-2"
-                          />
-                        </Holds>
-                      )}
-                    </Holds>
-                    {signed ? (
-                      <>
-                        <Holds className="my-5">
-                          <Holds
-                            background={"lightBlue"}
-                            position={"row"}
-                            className=""
-                          >
-                            <Holds background={"white"} className="">
-                              <Holds size={"20"}>
-                                <img
-                                  src={managerSignature}
-                                  alt="Manager signature"
-                                  className="py-2 "
-                                />
-                              </Holds>
-                            </Holds>
-                          </Holds>
-                        </Holds>
-
-                        <Holds position={"row"} className="row-span-1">
-                          <Forms
-                            action={ManagerLeaveRequest}
-                            onSubmit={handleApproval}
-                          >
-                            <Inputs type="hidden" name="id" value={item.id} />
-                            <Inputs
-                              type="hidden"
-                              name="decision"
-                              value="DENIED"
-                            />
-                            <Inputs
-                              type="hidden"
-                              name="decidedBy"
-                              value={manager}
-                            />
-                            <TextAreas
-                              name="mangerComments"
-                              value={managerComment}
-                              hidden
-                            />
-                            <Holds position={"row"} className="row-span-2">
-                              <Buttons
-                                background={"red"}
-                                type="submit"
-                                size={"80"}
-                                className="p-1"
-                              >
-                                <Holds position={"row"}>
-                                  <Holds>
-                                    <Titles>Deny</Titles>
-                                  </Holds>
-                                  <Holds>
-                                    <Images
-                                      titleImg={"/undo-edit.svg"}
-                                      titleImgAlt={"delete form"}
-                                      size={"30"}
-                                    />
-                                  </Holds>
-                                </Holds>
-                              </Buttons>
-                            </Holds>
-                          </Forms>
-
-                          <Forms
-                            action={ManagerLeaveRequest}
-                            onSubmit={handleApproval}
-                          >
-                            <Inputs type="hidden" name="id" value={item.id} />
-                            <Inputs
-                              type="hidden"
-                              name="decision"
-                              value="APPROVED"
-                            />
-                            <Inputs
-                              type="hidden"
-                              name="decidedBy"
-                              value={manager}
-                            />
-                            <TextAreas
-                              name="mangerComments"
-                              value={managerComment}
-                              hidden
-                            />
-                            <Holds>
-                              <Buttons
-                                background={"green"}
-                                type="submit"
-                                size={"80"}
-                                className="p-1"
-                              >
-                                <Holds position={"row"}>
-                                  <Holds>
-                                    <Titles>Approve</Titles>
-                                  </Holds>
-                                  <Holds>
-                                    <Images
-                                      titleImg={"/save-edit.svg"}
-                                      titleImgAlt={"delete form"}
-                                      size={"30"}
-                                    />
-                                  </Holds>
-                                </Holds>
-                              </Buttons>
-                            </Holds>
-                          </Forms>
-                        </Holds>
-                      </>
-                    ) : (
-                      <Holds className="mt-5">
-                        <Texts>I agree to this request</Texts>
-                        <Buttons
-                          background={"lightBlue"}
-                          className="py-3 mt-5"
-                          onClick={() => setSigned(!signed)}
-                        >
-                          <Titles size={"h2"}>Sign Now</Titles>
-                        </Buttons>
-                      </Holds>
-                    )}
-                  </Holds>
-                </Holds>
-              </Grids>
-            </Contents>
+        <Holds background={"white"} className="row-span-9 h-full">
+          <Holds size={"full"} className="mt-5">
+            <Spinner />
           </Holds>
-        ))}
+        </Holds>
       </Grids>
-    </>
+    );
+  }
+
+  return (
+    <Grids rows={"10"} gap={"5"} className="my-5">
+      <Holds background={"orange"} className="row-span-1 h-full">
+        <TitleBoxes
+          title="Leave Request"
+          titleImg="/Inbox.svg"
+          titleImgAlt="Inbox"
+          type="noIcon"
+        />
+        <Titles size={"h3"}>{cardDate}</Titles>
+      </Holds>
+
+      {receivedContent.map((item) => (
+        <Holds background={"white"} className="row-span-9 h-full" key={item.id}>
+          <Contents width={"section"}>
+            <Grids className="grid-rows-1 py-5">
+              <Inputs type="hidden" name="date" value={item.date.toString()} />
+              <Inputs type="hidden" name="employeeId" value={item.employeeId} />
+
+              <Holds className="row-span-1">
+                <Labels>
+                  Employee
+                  <Inputs type="text" defaultValue={employeeName} disabled />
+                </Labels>
+              </Holds>
+
+              <Holds className="row-span-1">
+                <Labels>
+                  Start Date
+                  <Inputs
+                    type="date"
+                    name="startDate"
+                    defaultValue={formatDate(item.requestedStartDate)}
+                    disabled
+                  />
+                </Labels>
+              </Holds>
+
+              <Holds className="row-span-1">
+                <Labels>
+                  End Date
+                  <Inputs
+                    type="date"
+                    name="endDate"
+                    defaultValue={formatDate(item.requestedEndDate)}
+                    disabled
+                  />
+                </Labels>
+              </Holds>
+
+              <Holds className="row-span-1">
+                <Labels>
+                  Request Type
+                  <Inputs
+                    type="text"
+                    name="requestType"
+                    defaultValue={item?.requestType}
+                    disabled
+                  />
+                </Labels>
+              </Holds>
+
+              <Holds className="row-span-1">
+                <Labels>
+                  Comments
+                  <TextAreas
+                    name="description"
+                    defaultValue={item.comment}
+                    disabled
+                    rows={2}
+                  />
+                </Labels>
+              </Holds>
+
+              <Holds className="row-span-1">
+                <Labels>
+                  Manager Comments
+                  <TextAreas
+                    name="managerComments"
+                    value={managerComment}
+                    rows={2}
+                    onChange={handleManagerCommentChange}
+                    maxLength={40}
+                  />
+                </Labels>
+              </Holds>
+
+              <Holds className="row-span-1 pb-5">
+                <Texts position={"left"} size={"p5"}>
+                  Employee signature
+                </Texts>
+                <Holds className="border-2 border-black rounded-xl">
+                  {signature ? (
+                    <Holds size={"20"} position={"center"}>
+                      <img src={signature} alt="Employee signature" />
+                    </Holds>
+                  ) : (
+                    <Holds position={"center"} className="py-2">
+                      <Texts size={"p5"}>Signature is not set up</Texts>
+                    </Holds>
+                  )}
+                </Holds>
+              </Holds>
+
+              <Holds position={"row"} className="row-span-1">
+                <Forms onSubmit={handleApproval}>
+                  <Inputs type="hidden" name="id" value={item.id} />
+                  <Inputs type="hidden" name="decidedBy" value={manager} />
+
+                  <Buttons
+                    background={"red"}
+                    type="submit"
+                    onClick={() => setDecision("DENIED")}
+                    size={"80"}
+                  >
+                    <Holds position={"row"}>
+                      <Titles>Deny</Titles>
+                      <Images
+                        titleImg="/undo-edit.svg"
+                        titleImgAlt="Deny request"
+                      />
+                    </Holds>
+                  </Buttons>
+
+                  <Buttons
+                    background={"green"}
+                    type="submit"
+                    onClick={() => setDecision("APPROVED")}
+                    size={"80"}
+                  >
+                    <Holds position={"row"}>
+                      <Titles>Approve</Titles>
+                      <Images
+                        titleImg="/save-edit.svg"
+                        titleImgAlt="Approve request"
+                      />
+                    </Holds>
+                  </Buttons>
+                </Forms>
+              </Holds>
+            </Grids>
+          </Contents>
+        </Holds>
+      ))}
+    </Grids>
   );
 }

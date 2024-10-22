@@ -35,7 +35,7 @@ export default async function Settings() {
             </Contents>
           </Holds>
           <Holds className="row-span-8 h-full">
-            <Index />
+            <Index id={userId} />
           </Holds>
         </Grids>
       </Contents>
