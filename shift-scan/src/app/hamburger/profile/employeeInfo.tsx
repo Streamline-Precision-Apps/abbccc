@@ -6,7 +6,6 @@ import { useTranslations } from "next-intl";
 import Base64Encoder from "@/components/(camera)/Base64Encoder";
 import { useEffect, useState } from "react";
 import { Contents } from "@/components/(reusable)/contents";
-import { Forms } from "@/components/(reusable)/forms";
 import { Labels } from "@/components/(reusable)/labels";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Modals } from "@/components/(reusable)/modals";
@@ -43,7 +42,7 @@ const trainingSchema = z.array(
   z.object({
     id: z.string(),
     name: z.string(),
-    description: z.string().optional().default(''), // add a default value for optional properties
+    description: z.string().optional().default(""), // add a default value for optional properties
     createdAt: z.date().optional().default(new Date()), // add a default value for optional properties
     updatedAt: z.date().optional().default(new Date()), // add a default value for optional properties
   })
@@ -61,7 +60,10 @@ const userTrainingSchema = z.array(
 export default function EmployeeInfo() {
   const [loading, setLoading] = useState(true);
   const [employee, setEmployee] = useState<Employee>();
-  const [contacts, setContacts] = useState<Contact | Partial<Contact> | undefined>();  const [training, setTraining] = useState<Trainings[]>([]);
+  const [contacts, setContacts] = useState<
+    Contact | Partial<Contact> | undefined
+  >();
+  const [training, setTraining] = useState<Trainings[]>([]);
   const [userTrainings, setUserTrainings] = useState<UserTraining[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isOpen2, setIsOpen2] = useState(false);
@@ -70,8 +72,10 @@ export default function EmployeeInfo() {
 
   const t = useTranslations("Hamburger");
   const [base64String, setBase64String] = useState<string>("");
-  const [signatureBase64String, setSignatureBase64String] = useState<string>("");
+  const [signatureBase64String, setSignatureBase64String] =
+    useState<string>("");
 
+  //----------------------------Data Fetching-------------------------------------
   // Logic to get number of completed trainings
   const total = training.length;
   const completed = userTrainings.filter((ut) => ut.isCompleted).length;
@@ -115,10 +119,12 @@ export default function EmployeeInfo() {
       // Validate data using Zod
       const validatedContacts = contactSchema.parse(contactsData);
       const validatedTraining = trainingSchema.parse(trainingData);
-      const validatedUserTrainings = userTrainingSchema.parse(userTrainingsData).map((userTraining) => ({
-        ...userTraining,
-        userId: employee?.id ?? '',
-      }));
+      const validatedUserTrainings = userTrainingSchema
+        .parse(userTrainingsData)
+        .map((userTraining) => ({
+          ...userTraining,
+          userId: employee?.id ?? "",
+        }));
 
       setContacts(validatedContacts);
       setTraining(validatedTraining);
@@ -154,11 +160,17 @@ export default function EmployeeInfo() {
     if (employee) {
       const formData = new FormData();
       formData.append("id", employee.id);
-      formData.append("signature", signatureBase64String);
+      if (typeof signatureBase64String === "object") {
+        formData.append("signature", JSON.stringify(signatureBase64String));
+      } else {
+        formData.append("signature", signatureBase64String);
+      }
+      console.log(formData);
 
       setLoading(true);
       try {
-        await uploadFirstSignature(formData); // This assumes you have an uploadFirstSignature function elsewhere
+        const response = await uploadFirstSignature(formData); // This assumes you have an uploadFirstSignature function elsewhere
+        console.log(response);
       } catch (error) {
         console.error("Error uploading signature:", error);
       } finally {

@@ -20,7 +20,6 @@ import { Labels } from "@/components/(reusable)/labels";
 import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
 import SearchBar from "@/components/(search)/searchbar";
-import { useTranslations } from "next-intl";
 import {
   ChangeEvent,
   Dispatch,
@@ -42,8 +41,6 @@ export default function CostCodes({
   setBanner,
   setShowBanner,
 }: Props) {
-  const t = useTranslations("admin-assets-costcode");
-
   // edit costcode state
   const [searchTerm1, setSearchTerm1] = useState<string>("");
   // delete costcode state
@@ -53,7 +50,6 @@ export default function CostCodes({
   const [editForm, setEditForm] = useState<boolean>(true);
   // helps search bar component show items based on user input and filter all items
   const [costCodeList, setCostCodeList] = useState<costCodesTypes[]>(costCodes);
-  const [jobsiteList, setJobsiteList] = useState<Jobsites[]>(jobsites);
   const [costCodeSelections, setCostCodeSelections] = useState([
     { id: Date.now(), jobsiteId: "", type: "" },
   ]);
@@ -173,7 +169,7 @@ export default function CostCodes({
     formData.append("jobsiteId", jobsiteId);
     formData.append("types", costCodes.filter((code) => code !== "").join(","));
 
-    const response = await AddlistToJobsite(formData);
+    await AddlistToJobsite(formData);
   };
 
   const disconnect = async (event: FormEvent<HTMLFormElement>) => {
@@ -185,7 +181,7 @@ export default function CostCodes({
     formData.append("jobsiteId", jobsiteId);
     formData.append("types", costCodes.filter((code) => code !== "").join(","));
 
-    const response = await RemovelistToJobsite(formData);
+    await RemovelistToJobsite(formData);
   };
 
   return (

@@ -1,13 +1,7 @@
-import React, {
-  useState,
-  useRef,
-  Dispatch,
-  SetStateAction,
-  ChangeEvent,
-} from "react";
+"use client";
+import React, { useState, useRef, Dispatch, SetStateAction } from "react";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { useTranslations } from "next-intl";
-import { Contents } from "../(reusable)/contents";
 import "react-image-crop/dist/ReactCrop.css";
 import ReactCrop, {
   centerCrop,
@@ -18,7 +12,6 @@ import ReactCrop, {
 import SetCanvasPreview from "./setCanvasPreview"; // Import your canvas preview function
 import { Texts } from "../(reusable)/texts";
 import { Holds } from "../(reusable)/holds";
-import { set } from "zod";
 
 interface CameraComponentProps {
   setBase64String: Dispatch<SetStateAction<string>>;
@@ -30,7 +23,6 @@ const ASPECT_RATIO = 1 / 1;
 
 const CameraComponent: React.FC<CameraComponentProps> = ({
   setBase64String,
-  reloadEmployeeData,
 }) => {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);

@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Holds } from "@/components/(reusable)/holds";
 import AddJobsiteForm from "./addJobsiteForm";
 import { Texts } from "@/components/(reusable)/texts";
-import { Contents } from "@/components/(reusable)/contents";
 
 export const AddJobsiteContent = () => {
   const [banner, setBanner] = useState(false);
@@ -20,13 +19,17 @@ export const AddJobsiteContent = () => {
   };
   return (
     <Holds>
-    {/* Displays a banner with the bannerText and disappears after 5 seconds to show submissions and errors.*/}
-        { banner &&
+      {/* Displays a banner with the bannerText and disappears after 5 seconds to show submissions and errors.*/}
+      {banner && (
         <Holds background="green" className="my-3">
           <Texts>{bannerText}</Texts>
         </Holds>
-        }
-        <AddJobsiteForm setBanner={setBanner} setBannerText={setBannerText} handler={()=> handleBanner} />
+      )}
+      <AddJobsiteForm
+        setBanner={setBanner}
+        setBannerText={setBannerText}
+        handler={() => handleBanner}
+      />
     </Holds>
   );
 };

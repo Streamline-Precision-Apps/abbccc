@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import RequestPermissions from "@/app/(routes)/signin/signup/(signup)/requestPermissions";
 import { finishUserSetup } from "@/actions/userActions";

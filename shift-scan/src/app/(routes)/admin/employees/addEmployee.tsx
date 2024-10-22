@@ -1,23 +1,23 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { useTranslations } from "next-intl";
 import { createUser } from "@/actions/userActions";
 import { Forms } from "@/components/(reusable)/forms";
 import { Labels } from "@/components/(reusable)/labels";
 import { Inputs } from "@/components/(reusable)/inputs";
-import { TextAreas } from "@/components/(reusable)/textareas";
+
 import { Selects } from "@/components/(reusable)/selects";
 import { Options } from "@/components/(reusable)/options";
 
 const AddEmployeeForm = () => {
   const t = useTranslations("admin");
 
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
-  ) => {};
+  // const handleChange = (
+  //   e: React.ChangeEvent<
+  //     HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+  //   >
+  // ) => {};
 
   return (
     <Forms action={createUser}>
@@ -40,40 +40,35 @@ const AddEmployeeForm = () => {
       <Inputs variant="default" id="DOB" name="DOB" type="date" />
 
       <Labels type="title">{t("TruckView")}</Labels>
-      <Selects id="truckView" name="truckView" onChange={handleChange}>
+      <Selects id="truckView" name="truckView">
         <Options value="">{t("Select")}</Options>
         <Options value="TRUE">{t("True")}</Options>
         <Options value="FALSE">{t("False")}</Options>
       </Selects>
 
       <Labels type="title">{t("TascoView")}</Labels>
-      <Selects id="tascoView" name="tascoView" onChange={handleChange}>
+      <Selects id="tascoView" name="tascoView">
         <Options value="">{t("Select")}</Options>
         <Options value="TRUE">{t("True")}</Options>
         <Options value="FALSE">{t("False")}</Options>
       </Selects>
 
       <Labels type="title">{t("LaborView")}</Labels>
-      <Selects id="laborView" name="laborView" onChange={handleChange}>
+      <Selects id="laborView" name="laborView">
         <Options value="">{t("Select")}</Options>
         <Options value="TRUE">{t("True")}</Options>
         <Options value="FALSE">{t("False")}</Options>
       </Selects>
 
       <Labels type="title">{t("MechanicView")}</Labels>
-      <Selects id="mechanicView" name="mechanicView" onChange={handleChange}>
+      <Selects id="mechanicView" name="mechanicView">
         <Options value="">{t("Select")}</Options>
         <Options value="TRUE">{t("True")}</Options>
         <Options value="FALSE">{t("False")}</Options>
       </Selects>
 
       <Labels type="title">{t("Permission")}</Labels>
-      <Selects
-        variant="default"
-        id="permission"
-        name="permission"
-        onChange={handleChange}
-      >
+      <Selects variant="default" id="permission" name="permission">
         <Options value="">{t("Select")}</Options>
         <Options value="USER">{t("User")}</Options>
         <Options value="MANAGER">{t("Manager")}</Options>

@@ -27,11 +27,13 @@ const JobsiteListSchema = z.array(JobCodesSchema);
 type JobCodes = z.infer<typeof JobCodesSchema>;
 
 export default function QrJobsiteContent() {
-  const [selectedJobSiteName, setSelectedJobSiteName] = useState<string>("");
+  const [, setSelectedJobSiteName] = useState<string>("");
   const [selectedJobSite, setSelectedJobSite] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [generatedList, setGeneratedList] = useState<JobCodes[]>([]);
-  const [generatedRecentList, setGeneratedRecentList] = useState<JobCodes[]>([]);
+  const [generatedRecentList, setGeneratedRecentList] = useState<JobCodes[]>(
+    []
+  );
   const [loading, setLoading] = useState(true);
   const [qrCodeUrl, setQrCodeUrl] = useState("");
 
@@ -144,10 +146,17 @@ export default function QrJobsiteContent() {
             />
           </Holds>
 
-          <Holds size={"full"} className="row-span-1 col-start-3 col-end-4 h-full">
+          <Holds
+            size={"full"}
+            className="row-span-1 col-start-3 col-end-4 h-full"
+          >
             <Buttons background={"green"} onClick={handleNew}>
               <Holds>
-                <Images titleImg={"/Plus.svg"} titleImgAlt={"plus"} size={"50"} />
+                <Images
+                  titleImg={"/Plus.svg"}
+                  titleImgAlt={"plus"}
+                  size={"50"}
+                />
               </Holds>
             </Buttons>
           </Holds>
@@ -165,10 +174,17 @@ export default function QrJobsiteContent() {
             />
           </Holds>
 
-          <Holds size={"full"} className="row-span-1 col-start-3 col-end-4 h-full">
+          <Holds
+            size={"full"}
+            className="row-span-1 col-start-3 col-end-4 h-full"
+          >
             <Buttons background={"green"} onClick={handleNew}>
               <Holds>
-                <Images titleImg={"/Plus.svg"} titleImgAlt={"plus"} size={"40"} />
+                <Images
+                  titleImg={"/Plus.svg"}
+                  titleImgAlt={"plus"}
+                  size={"40"}
+                />
               </Holds>
             </Buttons>
           </Holds>

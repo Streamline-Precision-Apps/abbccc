@@ -1,6 +1,5 @@
 // Form.tsx
 "use client";
-import { useRef } from "react";
 import { CreateInjuryForm } from "@/actions/injuryReportActions";
 import { useTranslations } from "next-intl";
 
@@ -9,15 +8,10 @@ type FormProps = {
   onFormSubmit: (date: string) => void;
   checked: boolean; // Add checked prop
   signature: string | null;
-}
+};
 
-export const Form = ({ userId, onFormSubmit, checked, signature }: FormProps) => {
-  const ref = useRef<HTMLFormElement>(null);
+export const Form = ({ userId, checked, signature }: FormProps) => {
   const t = useTranslations("clock-out");
-
-  const button = () => {
-    ref.current?.requestSubmit();
-  };
 
   return (
     <form action={CreateInjuryForm}>

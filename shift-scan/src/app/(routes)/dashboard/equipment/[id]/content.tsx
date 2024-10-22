@@ -53,39 +53,30 @@ const FormDataSchema = z.object({
   fuelUsed: z.string(),
   duration: z.string(),
 });
+import { EmployeeEquipmentLogs } from "@/lib/types";
 
-export default function CombinedForm({ params }: { params: { id: string } }) {
-  // Validate params with Zod
-  try {
-    ParamsSchema.parse(params);
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      console.error("Validation error in params:", error.errors);
-    }
-  }
-
+export default function CombinedForm({ id }: { id: string }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [logs, setLogs] = useState<any[]>([]);
+  const [logs, setLogs] = useState<EmployeeEquipmentLogs[]>([]);
   const [refueled, setRefueled] = useState(false);
   const [fuel, setFuel] = useState<number>(0);
   const [notes, setNotes] = useState<string>("");
   const [characterCount, setCharacterCount] = useState<number>(40);
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [completed, setCompleted] = useState<boolean>(false);
-  const [startTime, setStartTime] = useState<string>();
-  const [endTime, setEndTime] = useState<string>();
-  const [productName, setProductName] = useState<string>("");
+  const [, setStartTime] = useState();
+  const [, setEndTime] = useState();
+  const [productName, setProductName] = useState("");
+
   const [changedDuration, setChangedDuration] = useState<string>("");
 
   const [changedDurationHours, setChangedDurationHours] = useState<string>("");
-  const [changedDurationMinutes, setChangedDurationMinutes] = useState<string>(
-    ""
-  );
-  const [changedDurationSeconds, setChangedDurationSeconds] = useState<string>(
-    ""
-  );
+  const [changedDurationMinutes, setChangedDurationMinutes] =
+    useState<string>("");
+  const [changedDurationSeconds, setChangedDurationSeconds] =
+    useState<string>("");
 
   const t = useTranslations("Equipment");
   const b = useTranslations("Widgets");
@@ -97,7 +88,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
       setError(null);
 
       try {
-        const response = await fetch(`/api/getEqUserLogs/${params.id}`);
+        const response = await fetch(`/api/getEqUserLogs/${id}`);
         if (!response.ok) {
           throw new Error(
             `Failed to fetch equipment form: ${response.statusText}`
@@ -112,7 +103,10 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
           LogDataSchema.parse(data);
         } catch (error) {
           if (error instanceof z.ZodError) {
-            console.error("Validation error in fetched log data:", error.errors);
+            console.error(
+              "Validation error in fetched log data:",
+              error.errors
+            );
           }
         }
 
@@ -147,12 +141,24 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
     };
 
     fetchEquipmentForm();
-  }, [params.id]);
+  }, [id]);
 
   const handleRefueledChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRefueled(event.target.checked);
     setFuel(0);
   };
+
+  useEffect(() => {
+    if (completed) {
+      setIsEditMode(false);
+    }
+    if (Array.isArray(logs) && logs.length > 0 && !isEditMode) {
+      const log = logs[0];
+      setRefueled(log.isRefueled ?? false);
+      setFuel(log.fuelUsed ?? 0);
+      setNotes(log.comment || "");
+    }
+  }, [isEditMode, completed, logs]);
 
   const handleDurationHrsChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -189,7 +195,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     formData.append("endTime", new Date().toISOString());
-    formData.append("id", params.id.toString());
+    formData.append("id", id.toString());
     formData.append("completed", "true");
     formData.append("comment", notes);
     formData.append("isRefueled", refueled.toString());
@@ -199,7 +205,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
     // Validate form data with Zod
     try {
       FormDataSchema.parse({
-        id: params.id.toString(),
+        id: id.toString(),
         completed: "true",
         comment: notes,
         isRefueled: refueled.toString(),
@@ -225,8 +231,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
   const deleteHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    formData.append("id", params.id.toString());
-
+    formData.append("id", id.toString());
     try {
       await DeleteLogs(formData);
       router.replace("/dashboard/equipment");

@@ -1,20 +1,14 @@
 "use client";
 
 import { editTimeSheet } from "@/actions/timeSheetActions";
-import { fetchEq, updateEq } from "@/actions/equipmentActions";
-import { Images } from "@/components/(reusable)/images";
 import { useTranslations } from "next-intl";
 import React, { useState, useEffect } from "react";
 import { Holds } from "@/components/(reusable)/holds";
 import { Contents } from "@/components/(reusable)/contents";
-import { Selects } from "@/components/(reusable)/selects";
-import { Inputs } from "@/components/(reusable)/inputs";
-import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
-import { Texts } from "@/components/(reusable)/texts";
-import { Labels } from "@/components/(reusable)/labels";
 import Spinner from "@/components/(animations)/spinner";
 import { CostCodes, Jobsites, EquipmentLog, Equipment } from "@/lib/types";
+
 import { z } from "zod";
 
 // Zod schema for TimeSheet type
@@ -74,7 +68,10 @@ const EditWorkPropsSchema = z.object({
       }),
     })
   ),
-  handleFormSubmit: z.function().args(z.string(), z.string(), z.string().optional()).returns(z.void()),
+  handleFormSubmit: z
+    .function()
+    .args(z.string(), z.string(), z.string().optional())
+    .returns(z.void()),
   setEdit: z.function().args(z.boolean()).returns(z.void()),
   employeeId: z.string(),
   date: z.string(),
@@ -289,9 +286,7 @@ const EditWork = ({
     </Contents>
   ) : (
     <Contents width={"section"} className="my-5">
-      <Holds>
-        {/* Render timesheets and equipment logs */}
-      </Holds>
+      <Holds>{/* Render timesheets and equipment logs */}</Holds>
     </Contents>
   );
 };

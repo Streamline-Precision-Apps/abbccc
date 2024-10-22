@@ -1,25 +1,15 @@
 "use client";
 import { useTranslations } from "next-intl";
 import "@/app/globals.css";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Bases } from "@/components/(reusable)/bases";
+import { useState } from "react";
 import { Holds } from "@/components/(reusable)/holds";
-import { Titles } from "@/components/(reusable)/titles";
-import { Banners } from "@/components/(reusable)/banners";
-import { Footers } from "@/components/(reusable)/footers";
 import { Grids } from "@/components/(reusable)/grids";
-import { setAuthStep } from "@/app/api/auth";
-import { CustomSession, SearchUser, User } from "@/lib/types";
-import { useSession } from "next-auth/react";
 import { Tab } from "@/components/(reusable)/tab";
 import { Contents } from "@/components/(reusable)/contents";
-import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import QrJobsiteContent from "./qrJobsiteContent";
 import QrEquipmentContent from "./qrEquipmentContent";
 
 export default function QRGeneratorContent() {
-  const router = useRouter();
   const [activeTab, setActiveTab] = useState(1);
   const t = useTranslations("Generator");
   const u = useTranslations("Generator");

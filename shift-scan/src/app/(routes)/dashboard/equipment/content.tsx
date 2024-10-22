@@ -9,7 +9,6 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Forms } from "@/components/(reusable)/forms";
 import { useEffect, useState } from "react";
 import Spinner from "@/components/(animations)/spinner";
-import { Titles } from "@/components/(reusable)/titles";
 import { Contents } from "@/components/(reusable)/contents";
 import { useRouter } from "next/navigation";
 import { Grids } from "@/components/(reusable)/grids";
@@ -25,13 +24,17 @@ const EquipmentLogsSchema = z.object({
 const LogEntrySchema = z.object({
   id: z.string(),
   isCompleted: z.boolean(),
-  Equipment: z.object({
-    name: z.string(),
-  }).nullable().optional(),
+  Equipment: z
+    .object({
+      name: z.string(),
+    })
+    .nullable()
+    .optional(),
 });
 
 // Zod schema for the array of logs
 const LogsArraySchema = z.array(LogEntrySchema);
+import { EmployeeEquipmentLogs } from "@/lib/types";
 
 type EquipmentLogs = {
   userId: string | undefined;
@@ -49,7 +52,7 @@ export default function EquipmentLogContent({ userId }: EquipmentLogs) {
 
   const Router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [logs, setLogs] = useState<any[]>([]);
+  const [logs, setLogs] = useState<EmployeeEquipmentLogs[]>([]);
   const [banner, setBanner] = useState("");
   const t = useTranslations("Equipment");
   const b = useTranslations("Widgets");
@@ -86,8 +89,7 @@ export default function EquipmentLogContent({ userId }: EquipmentLogs) {
     };
 
     fetchData();
-  }, [Router, useRouter]);
-
+  }, [Router]);
   const handleSubmit = () => {
     setLogs([]);
     setBanner("Submitted all logs!");

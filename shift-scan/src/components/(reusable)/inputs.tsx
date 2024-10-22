@@ -27,13 +27,12 @@ interface InputProps
   extends InputHTMLAttributes<HTMLInputElement>,
     VariantProps<typeof InputVariants> {
   state?: string;
-  data?: string | null | undefined;
+  data?: string | number | readonly string[] | undefined;
 }
 
 const Inputs: FC<InputProps> = ({
   className,
   variant,
-  size,
   state,
   data,
   ...props

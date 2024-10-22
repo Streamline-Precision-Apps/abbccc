@@ -1,12 +1,7 @@
 "use client";
 import { ChangeEvent, useState } from "react";
 import { SearchUser } from "@/lib/types";
-import {
-  createUser,
-  deleteUser,
-  fetchByNameUser,
-  updateUser,
-} from "@/actions/userActions";
+import { createUser, deleteUser } from "@/actions/userActions";
 import SearchBar from "@/components/(search)/searchbar";
 import { useTranslations } from "next-intl";
 import { Inputs } from "@/components/(reusable)/inputs";
@@ -32,11 +27,10 @@ export default function UserManagement({ users }: Props) {
   const [editForm, setEditForm] = useState<boolean>(true);
   const [showBanner, setShowBanner] = useState<boolean>(false);
   const [banner, setBanner] = useState("");
-  const [userResponse, setUserResponse] = useState<SearchUser | null>(null);
   const [excludeTerminated, setExcludeTerminated] = useState<boolean>(false); // New state for the checkbox
   const [filteredUsers, setFilteredUsers] = useState<SearchUser[]>(users); // New state for filtered users
   const t = useTranslations("admin");
-  const [userId, setUserId] = useState("");
+  const [, setUserId] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
@@ -114,33 +108,33 @@ export default function UserManagement({ users }: Props) {
     }, 10000);
   };
 
-  async function handleEditForm(id: string) {
-    setEditForm(false);
-    let response = null;
-    if (id === "2") {
-      response = await fetchByNameUser(searchTerm2);
-    } else {
-      response = await fetchByNameUser(searchTerm1);
-    }
-    if (response) {
-      setUserResponse(response as SearchUser);
-      setUserId(response.id);
-      setFirstName(response.firstName);
-      setLastName(response.lastName);
-      setUsername(response.username);
-      setEmail(response.email);
-      setDOB(response.DOB || "");
-      setTruckView(response.truckView !== null ? response.truckView : null);
-      setTascoView(response.tascoView !== null ? response.tascoView : null);
-      setLaborView(response.laborView !== null ? response.laborView : null);
-      setMechanicView(
-        response.mechanicView !== null ? response.mechanicView : null
-      );
-      setPermission(response.permission || "");
-    } else {
-      console.log("Error fetching user.");
-    }
-  }
+  // async function handleEditForm(id: string) {
+  //   setEditForm(false);
+  //   let response = null;
+  //   if (id === "2") {
+  //     response = await fetchByNameUser(searchTerm2);
+  //   } else {
+  //     response = await fetchByNameUser(searchTerm1);
+  //   }
+  //   if (response) {
+  //     setUserResponse(response as SearchUser);
+  //     setUserId(response.id);
+  //     setFirstName(response.firstName);
+  //     setLastName(response.lastName);
+  //     setUsername(response.username);
+  //     setEmail(response.email);
+  //     setDOB(response.DOB || "");
+  //     setTruckView(response.truckView !== null ? response.truckView : null);
+  //     setTascoView(response.tascoView !== null ? response.tascoView : null);
+  //     setLaborView(response.laborView !== null ? response.laborView : null);
+  //     setMechanicView(
+  //       response.mechanicView !== null ? response.mechanicView : null
+  //     );
+  //     setPermission(response.permission || "");
+  //   } else {
+  //     console.log("Error fetching user.");
+  //   }
+  // }
 
   const handleSelectChange =
     (setter: React.Dispatch<React.SetStateAction<boolean | null>>) =>

@@ -24,7 +24,6 @@ const MIN_DIMENSION = 150;
 export default function ImageCropper({
   setBase64String,
   handleFileChange,
-  reloadEmployeeData,
 }: Props) {
   const [imageSource, setImageSource] = useState<string>("");
   const imgRef = useRef<HTMLImageElement | null>(null);

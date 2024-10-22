@@ -1,19 +1,13 @@
 "use client";
-import { Bases } from "@/components/(reusable)/bases";
-import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
-import { useTranslations } from "next-intl";
 import React from "react";
 import { useState } from "react";
 import { Tab } from "@/components/(reusable)/tab";
-import { inboxContent } from "@/lib/types";
-import STab from "./sTab";
-import RTab from "./rTab";
-import { Contents } from "@/components/(reusable)/contents";
+import STab from "@/app/hamburger/inbox/sTab";
+import RTab from "@/app/hamburger/inbox/rTab";
 import { Holds } from "@/components/(reusable)/holds";
 import { Grids } from "@/components/(reusable)/grids";
 
 export default function Content() {
-  const t = useTranslations("Hamburger");
   const [activeTab, setActiveTab] = useState(1); // change back to one
 
   return (

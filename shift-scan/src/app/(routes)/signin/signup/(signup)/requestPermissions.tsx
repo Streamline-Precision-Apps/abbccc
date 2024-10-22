@@ -16,7 +16,7 @@ const RequestPermissions = ({
   const requestLocationPermission = () => {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        () => {
           setPermissionsGranted((prev) => ({ ...prev, location: true }));
         },
         (error) => {

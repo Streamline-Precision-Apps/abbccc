@@ -33,10 +33,10 @@ type EditWorkProps = {
 };
 
 export type TimeSheet = {
-  endDate: any;
-  startDate: any;
+  endDate: Date | string | null;
+  startDate: Date | string | null;
   submitDate?: Date;
-  id?: string;
+  id: string;
   userId?: string;
   date?: Date;
   jobsiteId?: string;
@@ -273,8 +273,8 @@ const EditWork = ({
       if (date) {
         const equipmentLogs = await fetchEq(employeeId, date);
         const filteredEquipmentLogs = equipmentLogs
-          .filter((log: any) => log.duration !== null && log.Equipment !== null)
-          .map((log: any) => ({
+          .filter((log) => log.duration !== null && log.Equipment !== null)
+          .map((log) => ({
             ...log,
             duration: log.duration ? log.duration.toString() : "0",
             id: Number(log.id),

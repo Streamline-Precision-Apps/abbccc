@@ -14,6 +14,14 @@ import { useEffect, useState } from "react";
 import { z } from "zod";
 import { Equipment as EquipmentType, Jobsites, costCodes } from "@/lib/types";
 
+// Zod schema for costCodes
+const CostCodesSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  description: z.string(),
+  type: z.string().default("DEFAULT_TYPE"), // Set a default value for `type`
+});
+
 // Zod schema for Jobsites
 const JobsitesSchema = z.object({
   id: z.string(),
@@ -28,14 +36,7 @@ const JobsitesSchema = z.object({
   country: z.string().optional(),
   description: z.string().nullable().optional(),
   comment: z.string().nullable().optional(),
-});
-
-// Zod schema for costCodes
-const CostCodesSchema = z.object({
-  id: z.number(),
-  name: z.string(),
-  description: z.string(),
-  type: z.string().default("DEFAULT_TYPE"), // Set a default value for `type`
+  costCode: z.array(CostCodesSchema).optional(), // Expecting an array
 });
 
 // Zod schema for Equipment
@@ -89,7 +90,29 @@ export default function Content() {
       ]);
 
       // Validate fetched data with Zod schemas
-      const validatedJobsites = JobsitesArraySchema.parse(jobsitesData);
+      const validatedJobsites = JobsitesArraySchema.parse(jobsitesData).map(
+        (jobsite) => ({
+          ...jobsite,
+          isActive: jobsite.isActive ?? false, // Ensure isActive is a boolean
+          costCode: Array.isArray(jobsite.costCode) ? jobsite.costCode : [], // Ensure costCode is always an array
+          status: jobsite.status ?? "unknown", // Ensure status is always a string
+          comment: jobsite.comment ?? "", // Ensure comment is always a string
+          description: jobsite.description ?? "", // Ensure description is always a string
+          qrId: jobsite.qrId ?? "",
+          streetName: jobsite.streetName ?? "",
+          streetNumber: jobsite.streetNumber ?? "",
+          city: jobsite.city ?? "",
+          state: jobsite.state ?? "",
+          country: jobsite.country ?? "",
+          selectedJobsite: {
+            id: jobsite.costCode?.map((costCode) => costCode.id)[0] ?? 0,
+            name: jobsite.costCode?.map((costCode) => costCode.name)[0] ?? "",
+            description:
+              jobsite.costCode?.map((costCode) => costCode.description)[0] ??
+              "",
+          },
+        })
+      );
       const validatedEquipment = EquipmentArraySchema.parse(equipmentData);
       const validatedCostCodes = CostCodesArraySchema.parse(costCodesData);
 

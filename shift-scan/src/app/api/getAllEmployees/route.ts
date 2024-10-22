@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 import { SearchUser } from "@/lib/types";
 
-export async function GET(request: Request) {
+export async function GET() {
   const session = await auth();
   const userId = session?.user?.id;
 
@@ -14,20 +14,20 @@ export async function GET(request: Request) {
 
   try {
     // Fetch employee details
-    const employees : SearchUser[] = await prisma.users.findMany({
+    const employees: SearchUser[] = await prisma.users.findMany({
       select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-          username: true,
-          permission: true,
-          DOB: true,
-          truckView: true,
-          mechanicView: true,
-          laborView: true,
-          tascoView: true,
-          image: true,
-          terminationDate: true
+        id: true,
+        firstName: true,
+        lastName: true,
+        username: true,
+        permission: true,
+        DOB: true,
+        truckView: true,
+        mechanicView: true,
+        laborView: true,
+        tascoView: true,
+        image: true,
+        terminationDate: true,
       },
     });
 

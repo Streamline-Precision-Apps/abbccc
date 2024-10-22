@@ -2,9 +2,6 @@
 
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
-import { Images } from "@/components/(reusable)/images";
-
-import { cookies } from "next/headers";
 import { Holds } from "@/components/(reusable)/holds";
 import { Labels } from "@/components/(reusable)/labels";
 import { Inputs } from "@/components/(reusable)/inputs";
@@ -15,7 +12,6 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Forms } from "@/components/(reusable)/forms";
 import { Reset } from "@/actions/reset";
 import { useState } from "react";
-import { set } from "zod";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 
 export default function ForgotPassword() {
@@ -26,7 +22,6 @@ export default function ForgotPassword() {
   ) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    const email = formData.get("email") as string;
     const result = await Reset(formData);
     if (result?.error) {
       SetColor("red");

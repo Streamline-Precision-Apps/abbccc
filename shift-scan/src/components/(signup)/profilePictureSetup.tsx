@@ -36,6 +36,7 @@ const ProfilePictureSetup = ({
 
     const formData = new FormData();
     formData.append("id", id);
+
     formData.append("image", base64String);
 
     setIsSubmitting(true);

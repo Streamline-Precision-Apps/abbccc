@@ -1,6 +1,4 @@
 "use client";
-
-import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Forms } from "@/components/(reusable)/forms";
@@ -13,12 +11,8 @@ import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { receivedContent } from "@/lib/types";
 import { Session } from "next-auth";
-import { useTranslations } from "next-intl";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import {
-  EditLeaveRequest,
-  ManagerLeaveRequest,
-} from "@/actions/inboxSentActions";
+import { ManagerLeaveRequest } from "@/actions/inboxSentActions";
 import { Images } from "@/components/(reusable)/images";
 import { useRouter } from "next/navigation";
 import { formatDate } from "@/utils/formatDateYMD";
@@ -44,11 +38,10 @@ type Props = {
   session: Session | null;
 };
 
-export default function Content({ params, session }: Props) {
+export default function Content({ params }: Props) {
   const [loading, setLoading] = useState(true);
-  const t = useTranslations("Hamburger");
   const router = useRouter();
-  const userId = session?.user.id;
+
   const [decision, setDecision] = useState<string | null>(null);
   const [cardDate, setCardDate] = useState<string>("");
   const [manager, setManager] = useState<string>("");
@@ -63,15 +56,13 @@ export default function Content({ params, session }: Props) {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const result = await fetch(
-          `/api/getTimeoffRequests/${params.id}?type=received`
-        );
+        const result = await fetch(`/api/getTimeoffRequests/?type=received`);
         const data = await result.json();
 
         setCardDate(
-          `${new Date(data[0].date).getMonth() + 1}/${
-            new Date(data[0].date).getDate()
-          }/${new Date(data[0].date).getFullYear()}`
+          `${new Date(data[0].date).getMonth() + 1}/${new Date(
+            data[0].date
+          ).getDate()}/${new Date(data[0].date).getFullYear()}`
         );
 
         const employee = data[0].employee;
@@ -111,7 +102,7 @@ export default function Content({ params, session }: Props) {
       setDecision(null);
       router.push("/hamburger/inbox");
     }
-  }, [decision]);
+  }, [router, decision]);
 
   const handleApproval = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

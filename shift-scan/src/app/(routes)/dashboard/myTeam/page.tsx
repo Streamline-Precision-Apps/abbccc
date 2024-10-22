@@ -5,7 +5,6 @@ import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
-import { Images } from "@/components/(reusable)/images";
 import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
@@ -31,7 +30,7 @@ export default function Content() {
   const t = useTranslations("MyTeam");
   const [myTeams, setMyTeams] = useState<Team[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { data: session, status } = useSession();
+  const { status: sessionStatus } = useSession();
 
   useEffect(() => {
     const fetchCrew = async () => {
@@ -63,7 +62,7 @@ export default function Content() {
       }
     };
 
-    if (status === "authenticated") {
+    if (sessionStatus === "authenticated") {
       // Check if data is already in local storage
       const storedTeams = localStorage.getItem("myTeams");
       if (storedTeams) {
@@ -76,7 +75,10 @@ export default function Content() {
           setIsLoading(false);
         } catch (error) {
           if (error instanceof z.ZodError) {
-            console.error("Validation error in stored team data:", error.errors);
+            console.error(
+              "Validation error in stored team data:",
+              error.errors
+            );
             fetchCrew(); // Fetch fresh data if stored data is invalid
           }
         }
@@ -113,15 +115,15 @@ export default function Content() {
             <Holds background={"white"} className="row-span-6 h-full">
               <Contents width={"section"}>
                 <Grids gap={"5"} rows={"4"} className="py-5">
-                  {myTeams.map((team) => (
-                    <Holds className="row-span-1 h-full" key={team.id}>
+                  {myTeams.map((teams) => (
+                    <Holds className="row-span-1 h-full" key={teams.id}>
                       <Buttons
                         background="lightBlue"
-                        href={`/dashboard/myTeam/${team.id}`}
+                        href={`/dashboard/myTeam/${teams.id}`}
                       >
                         <Holds>
                           <Titles size="h1">
-                            {team.name} ({team.totalMembers})
+                            {teams.name} ({teams.totalMembers})
                           </Titles>
                         </Holds>
                       </Buttons>

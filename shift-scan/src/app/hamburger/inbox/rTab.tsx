@@ -41,10 +41,13 @@ export default function RTab() {
     }
   }, [session, router]);
 
-  // Fetch `receivedContent` from API
+  // Fetch receivedContent when session exists
   useEffect(() => {
+    if (!session) return; // Exit early if no session is available
+
     const fetchReceivedContent = async () => {
       try {
+        setLoading(true);
         const response = await fetch("/api/getTimeoffRequests?type=received");
 
         if (!response.ok) {
@@ -68,14 +71,12 @@ export default function RTab() {
       } catch (err) {
         console.error("Error fetching received content:", err);
         setError("An error occurred while fetching received content");
+      } finally {
         setLoading(false);
       }
     };
 
-    // Only fetch data if session is available
-    if (session) {
-      fetchReceivedContent();
-    }
+    fetchReceivedContent();
   }, [session]);
 
   // Check if user has appropriate permissions

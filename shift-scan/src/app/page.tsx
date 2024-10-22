@@ -28,7 +28,7 @@ export default async function Home() {
   const user = session.user;
 
   // Get the current language from cookies
-  const lang = cookies().get("locale");
+  const lang = (await cookies()).get("locale");
   const locale = lang ? lang.value : "en";
 
   const date = new Date().toLocaleDateString(locale, {

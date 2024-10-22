@@ -10,7 +10,7 @@ const SignatureSetup = ({
   handleNextStep,
 }: {
   id: string;
-  handleNextStep: any;
+  handleNextStep: () => void;
 }) => {
   const [base64String, setBase64String] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -36,7 +36,12 @@ const SignatureSetup = ({
 
     const formData = new FormData();
     formData.append("id", id);
-    formData.append("Signature", base64String);
+    // add error handling to ensure that base64String is a string
+    if (typeof base64String === "object") {
+      formData.append("Signature", JSON.stringify(base64String));
+    } else {
+      formData.append("Signature", base64String);
+    }
 
     setIsSubmitting(true);
     try {

@@ -28,7 +28,6 @@ type Props = {
   setShowBanner: Dispatch<SetStateAction<boolean>>;
 };
 export default function Jobsite({ jobsites, setBanner, setShowBanner }: Props) {
-  const formRef = React.createRef<HTMLFormElement>();
   const t = useTranslations("admin-assets-jobsite");
   const [searchTerm1, setSearchTerm1] = useState<string>("");
   const [searchTerm2, setSearchTerm2] = useState<string>("");

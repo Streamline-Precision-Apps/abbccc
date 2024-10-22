@@ -1,6 +1,6 @@
 "use client";
 import { cva, type VariantProps } from "class-variance-authority";
-import { HTMLAttributes, FC, Dispatch, SetStateAction } from "react";
+import { HTMLAttributes, FC, SetStateAction, Dispatch } from "react";
 import { cn } from "@/components/(reusable)/utils";
 import { Buttons } from "../(reusable)/buttons";
 import { Titles } from "../(reusable)/titles";

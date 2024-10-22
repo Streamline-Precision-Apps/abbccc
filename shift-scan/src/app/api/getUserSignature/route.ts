@@ -2,7 +2,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
-import Signature from "@/components/(signup)/signature";
 
 export async function GET() {
   const session = await auth();

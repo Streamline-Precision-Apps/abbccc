@@ -1,19 +1,15 @@
 "use client";
 import { Contents } from "@/components/(reusable)/contents";
 import { Forms } from "@/components/(reusable)/forms";
-import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
 import { Options } from "@/components/(reusable)/options";
 import { Holds } from "@/components/(reusable)/holds";
 import { Selects } from "@/components/(reusable)/selects";
-
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
-
 import { useSession } from "next-auth/react";
-
 import { useRouter } from "next/navigation";
 
 export default function Content() {
@@ -24,7 +20,6 @@ export default function Content() {
   if (!session) {
     return null;
   }
-  const userId = session.user.id;
 
   const handleRoute = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

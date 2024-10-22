@@ -31,7 +31,8 @@ export default function QrEquipmentContent() {
   const [generatedRecentList, setGeneratedRecentList] = useState<
     EquipmentCodes[]
   >([]);
-  const [selectedEquipmentName, setSelectedEquipmentName] = useState<string>("");
+  const [selectedEquipmentName, setSelectedEquipmentName] =
+    useState<string>("");
   const [selectedEquipment, setSelectedEquipment] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState("");
@@ -87,7 +88,10 @@ export default function QrEquipmentContent() {
           setGeneratedRecentList(recentEquipmentData);
         } catch (error) {
           if (error instanceof z.ZodError) {
-            console.error("Validation error in recent equipment data:", error.errors);
+            console.error(
+              "Validation error in recent equipment data:",
+              error.errors
+            );
             return;
           }
         }
@@ -140,10 +144,17 @@ export default function QrEquipmentContent() {
             />
           </Holds>
 
-          <Holds size={"full"} className="row-span-1 col-start-3 col-end-4 h-full">
+          <Holds
+            size={"full"}
+            className="row-span-1 col-start-3 col-end-4 h-full"
+          >
             <Buttons background={"green"} onClick={handleNew}>
               <Holds>
-                <Images titleImg={"/Plus.svg"} titleImgAlt={"plus"} size={"40"} />
+                <Images
+                  titleImg={"/Plus.svg"}
+                  titleImgAlt={"plus"}
+                  size={"40"}
+                />
               </Holds>
             </Buttons>
           </Holds>
@@ -161,10 +172,17 @@ export default function QrEquipmentContent() {
             />
           </Holds>
 
-          <Holds size={"full"} className="row-span-1 col-start-3 col-end-4 h-full">
+          <Holds
+            size={"full"}
+            className="row-span-1 col-start-3 col-end-4 h-full"
+          >
             <Buttons background={"green"} onClick={handleNew}>
               <Holds>
-                <Images titleImg={"/Plus.svg"} titleImgAlt={"plus"} size={"40"} />
+                <Images
+                  titleImg={"/Plus.svg"}
+                  titleImgAlt={"plus"}
+                  size={"40"}
+                />
               </Holds>
             </Buttons>
           </Holds>

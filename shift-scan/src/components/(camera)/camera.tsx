@@ -1,9 +1,8 @@
+"use client";
 import React, { useState, useRef, Dispatch, SetStateAction } from "react";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { useTranslations } from "next-intl";
-import { Contents } from "../(reusable)/contents";
 import { Holds } from "../(reusable)/holds";
-import { Images } from "../(reusable)/images";
 
 interface CameraComponentProps {
   setBase64String: Dispatch<SetStateAction<string>>;

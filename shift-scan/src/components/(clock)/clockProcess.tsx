@@ -14,7 +14,6 @@ import { Titles } from "../(reusable)/titles";
 import { setAuthStep } from "@/app/api/auth";
 
 import useFetchAllData from "@/app/(content)/FetchData";
-import { useDBCompleteEquipmentList } from "@/app/context/dbCompleteEquipmentList";
 type clockProcessProps = {
   scannerType: string;
   type: string;
@@ -33,7 +32,7 @@ export default function ClockProcessor({
   useFetchAllData(); //  the data fetching call
   const t = useTranslations("Clock");
   const [step, setStep] = useState(1);
-  const [useQrCode, setUseQrCode] = useState(true);
+  const [, setUseQrCode] = useState(true);
   const { savedCostCode, setCostCode } = useSavedCostCode();
   const { scanResult, setScanResult } = useScanData();
   const { scanEQResult } = useEQScanData();

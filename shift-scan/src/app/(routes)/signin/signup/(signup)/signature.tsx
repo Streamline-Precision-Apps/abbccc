@@ -1,5 +1,5 @@
+"use client";
 import { Buttons } from "@/components/(reusable)/buttons";
-import { useTranslations } from "next-intl";
 import React, { useRef, useState, useEffect } from "react";
 
 type SignatureProps = {
@@ -9,8 +9,6 @@ type SignatureProps = {
 export default function Signature({ setBase64String }: SignatureProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
-  const t = useTranslations("Signature");
-
   useEffect(() => {
     if (canvasRef.current) {
       const ctx = canvasRef.current.getContext("2d");

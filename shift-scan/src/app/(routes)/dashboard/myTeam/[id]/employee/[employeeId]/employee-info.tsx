@@ -2,7 +2,6 @@
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Holds } from "@/components/(reusable)/holds";
 import { Contents } from "@/components/(reusable)/contents";
-import { Forms } from "@/components/(reusable)/forms";
 import { Labels } from "@/components/(reusable)/labels";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { useTranslations } from "next-intl";
@@ -35,14 +34,26 @@ const EmployeeSchema = z.object({
     .optional(),
 });
 
-export default function employeeInfo({
-  params,
-}: {
-  params: { employeeId: string };
-}) {
+type Employee = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  image?: string;
+  DOB?: string;
+  contacts?: Contact[]; // Employee can have a list of contacts
+};
+
+type Contact = {
+  phoneNumber: string;
+  email: string;
+  emergencyContact?: string;
+  emergencyContactNumber?: string;
+};
+
+export default function employeeInfo({ employeeId }: { employeeId: string }) {
   // Validate params using Zod
   try {
-    ParamsSchema.parse(params);
+    ParamsSchema.parse(employeeId);
   } catch (error) {
     if (error instanceof z.ZodError) {
       console.error("Validation error in params:", error.errors);
@@ -50,15 +61,15 @@ export default function employeeInfo({
   }
 
   const t = useTranslations("MyTeam");
-  const [employee, setEmployee] = useState<any>({});
-  const [contacts, setContacts] = useState<any>({});
+  const [employee, setEmployee] = useState<Employee | null>(null);
+  const [contacts, setContacts] = useState<Contact | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const data = await fetch(`/api/getUserInfo/${params.employeeId}`);
+        const data = await fetch(`/api/getUserInfo/${employeeId}`);
         const res = await data.json();
 
         // Validate fetched data using Zod
@@ -86,7 +97,7 @@ export default function employeeInfo({
     };
 
     fetchData();
-  }, [params.employeeId]);
+  }, [employeeId]);
 
   return (
     <>

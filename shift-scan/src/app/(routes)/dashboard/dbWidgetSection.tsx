@@ -9,14 +9,10 @@ import { useEffect, useState } from "react";
 import { Holds } from "@/components/(reusable)/holds";
 import { Contents } from "@/components/(reusable)/contents";
 import { useRouter } from "next/navigation";
-import { Session } from "next-auth";
 import { getAuthStep, setAuthStep } from "@/app/api/auth";
 import Spinner from "@/components/(animations)/spinner";
 import { updateTimeSheetBySwitch } from "@/actions/timeSheetActions";
-import { Modals } from "@/components/(reusable)/modals";
 import React from "react";
-import { Bases } from "@/components/(reusable)/bases";
-import { Titles } from "@/components/(reusable)/titles";
 import { z } from "zod";
 
 // Zod schema for log validation
@@ -33,33 +29,22 @@ const LogsListSchema = z.array(LogSchema);
 
 type Log = z.infer<typeof LogSchema>;
 
-type Props = {
-  session: Session;
-  locale: string;
-};
-
-export default function DbWidgetSection({ session, locale }: Props) {
+export default function DbWidgetSection() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const t = useTranslations("Widgets");
-  const f = useTranslations("Home");
   const e = useTranslations("Err-Msg");
-  const [toggle, setToggle] = useState(true);
-  const handleToggle = () => setToggle(!toggle);
   const authStep = getAuthStep();
-  const permission = session.user.permission;
-  const accountSetup = session.user.accountSetup;
+
   const [logs, setLogs] = useState<Log[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [additionalButtonsType, setAdditionalButtonsType] = useState<string | null>(null);
+  const [, setIsModalOpen] = useState(false);
+  const [additionalButtonsType, setAdditionalButtonsType] = useState<
+    string | null
+  >(null);
 
   const handleShowManagerButtons = () => {
     setAdditionalButtonsType(null);
-  };
-
-  const handleShowAdditionalButtons = (type: string) => {
-    setAdditionalButtonsType(type);
   };
 
   useEffect(() => {
@@ -92,7 +77,7 @@ export default function DbWidgetSection({ session, locale }: Props) {
       }
     };
     fetchLogs();
-  }, []);
+  }, [e, error]);
 
   // Redirect to dashboard if authStep is not 'success'
   useEffect(() => {
@@ -100,14 +85,6 @@ export default function DbWidgetSection({ session, locale }: Props) {
       router.push("/");
     }
   }, [authStep, router]);
-
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
 
   const handleCOButton2 = async () => {
     try {
@@ -150,13 +127,20 @@ export default function DbWidgetSection({ session, locale }: Props) {
             {additionalButtonsType === "equipment" ? (
               <>
                 <Holds className="col-span-2 row-span-1 gap-5 h-full">
-                  <Buttons background={"lightBlue"} onClick={handleShowManagerButtons}>
+                  <Buttons
+                    background={"lightBlue"}
+                    onClick={handleShowManagerButtons}
+                  >
                     <Holds position={"row"} className="my-auto">
                       <Holds size={"60"}>
                         <Texts size={"p1"}>{t("GoHome")}</Texts>
                       </Holds>
                       <Holds size={"40"}>
-                        <Images titleImg="/home.svg" titleImgAlt="Home Icon" size={"50"} />
+                        <Images
+                          titleImg="/home.svg"
+                          titleImgAlt="Home Icon"
+                          size={"50"}
+                        />
                       </Holds>
                     </Holds>
                   </Buttons>
@@ -168,7 +152,11 @@ export default function DbWidgetSection({ session, locale }: Props) {
                         <Texts size={"p1"}>{t("LogNew")}</Texts>
                       </Holds>
                       <Holds size={"40"}>
-                        <Images titleImg="/equipment.svg" titleImgAlt="Equipment Icon" size={"40"} />
+                        <Images
+                          titleImg="/equipment.svg"
+                          titleImgAlt="Equipment Icon"
+                          size={"40"}
+                        />
                       </Holds>
                     </Holds>
                   </Buttons>
@@ -180,7 +168,11 @@ export default function DbWidgetSection({ session, locale }: Props) {
                         <Texts size={"p1"}>{t("LogOut")}</Texts>
                       </Holds>
                       <Holds size={"40"}>
-                        <Images titleImg="/current-equipment.svg" titleImgAlt="Equipment Icon" size={"50"} />
+                        <Images
+                          titleImg="/current-equipment.svg"
+                          titleImgAlt="Equipment Icon"
+                          size={"50"}
+                        />
                       </Holds>
                     </Holds>
                   </Buttons>
@@ -190,7 +182,11 @@ export default function DbWidgetSection({ session, locale }: Props) {
               <Holds position={"row"} className="row-span-1 col-span-1 gap-5">
                 <Buttons background={"green"} href="/dashboard/forms">
                   <Holds>
-                    <Images titleImg="/form.svg" titleImgAlt="Forms Icon" size={"40"} />
+                    <Images
+                      titleImg="/form.svg"
+                      titleImgAlt="Forms Icon"
+                      size={"40"}
+                    />
                   </Holds>
                   <Holds>
                     <Texts size={"p3"}>{t("Forms")}</Texts>
