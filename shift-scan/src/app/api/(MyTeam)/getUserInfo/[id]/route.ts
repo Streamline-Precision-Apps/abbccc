@@ -3,14 +3,11 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 import { NextRequest } from "next/server";
-
+type Params = Promise<{ id: string }>;
 // Corrected GET function
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(req: NextRequest, { params }: { params: Params }) {
   console.log(req);
-  const userId = params.id;
+  const userId = (await params).id;
   console.log("userId", userId);
 
   // Authenticate the user

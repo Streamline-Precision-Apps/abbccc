@@ -11,7 +11,7 @@ import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
-import React from "react";
+import React, { use } from "react";
 import { useEffect, useState } from "react";
 
 type CrewMember = {
@@ -22,12 +22,14 @@ type CrewMember = {
 };
 
 type CrewResponse = CrewMember[];
+type Params = Promise<{ id: string }>;
 
-export default function Content({ params }: { params: { id: string } }) {
+export default function Content(Prop: { params: Params }) {
   const [crew, setCrew] = useState<CrewMember[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { status: status } = useSession();
-  const { id } = params;
+  const params = use(Prop.params);
+  const id = params.id;
   const crewId = Number(id);
   const t = useTranslations("MyTeam");
 

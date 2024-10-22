@@ -17,7 +17,7 @@ export default async function SwitchJobs() {
 
   // Fetch all records
 
-  const lang = cookies().get("locale");
+  const lang = (await cookies()).get("locale");
   const locale = lang ? lang.value : "en"; // Default to English
 
   return (

@@ -1,12 +1,12 @@
 "use server";
 
-import Content from "./content";
+import CombinedForm from "./content";
 import { auth } from "@/auth";
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
-
+type Params = Promise<{ id: string }>;
 // Parameters are passed as props in Next.js server components.
-export default async function Page({ params }: { params: { id: string } }) {
+export default async function Page(props: { params: Params }) {
   const session = await auth();
   if (!session) return null;
 
@@ -14,7 +14,7 @@ export default async function Page({ params }: { params: { id: string } }) {
   return (
     <Bases>
       <Contents>
-        <Content params={params} />
+        <CombinedForm id={(await props.params).id} />
       </Contents>
     </Bases>
   );

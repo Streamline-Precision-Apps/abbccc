@@ -1,15 +1,14 @@
 "use server";
 import prisma from "@/lib/prisma";
-import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Holds } from "@/components/(reusable)/holds";
 import { Contents } from "@/components/(reusable)/contents";
 import { Forms } from "@/components/(reusable)/forms";
 import { Labels } from "@/components/(reusable)/labels";
 import { Inputs } from "@/components/(reusable)/inputs";
-
-export default async function employeeInfo({ params }: Params) {
-  const id = params.id;
+type Params = Promise<{ id: string }>;
+export default async function employeeInfo({ params }: { params: Params }) {
+  const id = (await params).id;
   const employee = await prisma.users.findUnique({
     where: {
       id: id.toString(),
