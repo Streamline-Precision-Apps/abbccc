@@ -96,7 +96,7 @@ export default function AddEmployeeContent() {
 
   useEffect(() => {
     fetchEmployees();
-  }, [fetchEmployees]);
+  }, []);
 
   if (loading) {
     return (

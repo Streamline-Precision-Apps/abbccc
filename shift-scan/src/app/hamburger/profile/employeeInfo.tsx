@@ -95,7 +95,7 @@ export default function EmployeeInfo() {
 
   useEffect(() => {
     fetchAllData();
-  }, [fetchAllData]);
+  }, []);
 
   const reloadEmployeeData = () => {
     fetchEmployee(); // Directly fetch the updated employee data
