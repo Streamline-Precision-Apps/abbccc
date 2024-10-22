@@ -1,15 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { Buttons } from '../(reusable)/buttons';
-import { setUserPassword } from '@/actions/userActions';
-import PasswordStrengthIndicator from './passwordStrengthIndicator';
-import { hash } from 'bcryptjs';
-import { Banners } from '@/components/(reusable)/banners';
+import React, { useState, useEffect } from "react";
+import { Buttons } from "@/components/(reusable)/buttons";
+import { setUserPassword } from "@/actions/userActions";
+import PasswordStrengthIndicator from "./passwordStrengthIndicator";
+import { hash } from "bcryptjs";
+import { Banners } from "@/components/(reusable)/banners";
 
-const ResetPassword = ({ id, handleNextStep }: { id: string; handleNextStep: any }) => {
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+const ResetPassword = ({
+  id,
+  handleNextStep,
+}: {
+  id: string;
+  handleNextStep: any;
+}) => {
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showBanner, setShowBanner] = useState(false);
-  const [bannerMessage, setBannerMessage] = useState('');
+  const [bannerMessage, setBannerMessage] = useState("");
 
   useEffect(() => {
     if (showBanner) {
@@ -37,28 +43,32 @@ const ResetPassword = ({ id, handleNextStep }: { id: string; handleNextStep: any
     event.preventDefault();
 
     if (newPassword !== confirmPassword) {
-      setBannerMessage('Passwords do not match!');
+      setBannerMessage("Passwords do not match!");
       setShowBanner(true);
       return;
     }
 
     if (!validatePassword(newPassword)) {
-      setBannerMessage('Password must be at least 6 characters long, contain at least 1 number, and contain at least 1 symbol.');
+      setBannerMessage(
+        "Password must be at least 6 characters long, contain at least 1 number, and contain at least 1 symbol."
+      );
       setShowBanner(true);
       return;
     }
-    
+
     const hashed = await hash(newPassword, 10);
     const formData = new FormData();
-    formData.append('id', id);
-    formData.append('password', hashed);
+    formData.append("id", id);
+    formData.append("password", hashed);
 
     try {
       await setUserPassword(formData);
       handleNextStep(); // Move to the next step after successful submission
     } catch (error) {
-      console.error('Error updating password:', error);
-      setBannerMessage('There was an error updating your password. Please try again.');
+      console.error("Error updating password:", error);
+      setBannerMessage(
+        "There was an error updating your password. Please try again."
+      );
       setShowBanner(true);
     }
   };
@@ -66,16 +76,16 @@ const ResetPassword = ({ id, handleNextStep }: { id: string; handleNextStep: any
   return (
     <>
       {showBanner && (
-        <div style={{ position: 'fixed', top: 0, width: '100%', zIndex: 1000 }}>
-          <Banners variant="red">
-            {bannerMessage}
-          </Banners>
+        <div style={{ position: "fixed", top: 0, width: "100%", zIndex: 1000 }}>
+          <Banners background="red">{bannerMessage}</Banners>
         </div>
       )}
 
       <form onSubmit={handleSubmit}>
         <p>Let's Reset Your password!</p>
-        <p>Make a password with a minimum of 6 characters and 1 number and symbol</p>
+        <p>
+          Make a password with a minimum of 6 characters and 1 number and symbol
+        </p>
 
         <div>
           <label htmlFor="new-password">New Password</label>
@@ -102,7 +112,7 @@ const ResetPassword = ({ id, handleNextStep }: { id: string; handleNextStep: any
           />
         </div>
 
-        <Buttons type="submit" variant={'default'} size={'default'}>
+        <Buttons background={"lightBlue"} type="submit">
           Next
         </Buttons>
       </form>

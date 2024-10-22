@@ -11,146 +11,176 @@ import { TimeSheet } from "@/lib/types";
 import Spinner from "@/components/(animations)/spinner";
 import { formatTime } from "@/utils/formatDateAMPMS";
 import { useTranslations } from "next-intl";
+import { Contents } from "@/components/(reusable)/contents";
+import { Grids } from "@/components/(reusable)/grids";
 
 type Props = {
-    user: string;
+  user: string;
 };
 
 export default function ViewTimesheets({ user }: Props) {
-    const [showTimesheets, setShowTimesheets] = useState(false);
-    const [startingEntry, setStartingEntry] = useState(false);
-    const [timesheetData, setTimesheetData] = useState<TimeSheet[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const t = useTranslations("TimesheetsContent");
+  const [showTimesheets, setShowTimesheets] = useState(false);
+  const [startingEntry, setStartingEntry] = useState(false);
+  const [timesheetData, setTimesheetData] = useState<TimeSheet[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const t = useTranslations("Home");
 
-    // Fetch timesheets from the API
-    const fetchTimesheets = async (date?: string) => {
-        setLoading(true);
-        try {
-            const queryParam = date ? `?date=${date}` : '';
-            const response = await fetch(`/api/getTimesheets${queryParam}`); // Include the query parameter if provided
-    
-            if (!response.ok) {
-                throw new Error('Failed to fetch timesheets');
-            }
-    
-            const data: TimeSheet[] = await response.json();
-            setTimesheetData(data);
-            setShowTimesheets(true);
-        } catch (error) {
-            setError('Error fetching timesheets');
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
-    };
+  // Fetch timesheets from the API
+  const fetchTimesheets = async (date?: string) => {
+    setLoading(true);
+    try {
+      const queryParam = date ? `?date=${date}` : "";
+      const response = await fetch(`/api/getTimesheets${queryParam}`); // Include the query parameter if provided
 
-    // Handle form submission
-    const handleSubmit = async (event: React.FormEvent) => {
-        event.preventDefault();
-        const formData = new FormData(event.currentTarget as HTMLFormElement);
-        const date = formData.get('date')?.toString(); // Get the selected date from the form
-        await fetchTimesheets(date);
-    };
+      if (!response.ok) {
+        throw new Error("Failed to fetch timesheets");
+      }
 
-    const currentDate = new Date().toISOString().split("T")[0]; // Format date as YYYY-MM-DD
+      const data: TimeSheet[] = await response.json();
+      setTimesheetData(data);
+      setShowTimesheets(true);
+    } catch (error) {
+      setError("Error fetching timesheets");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    return (
-        <Holds>
-            <Holds background={"white"} className="mb-10 p-4">
-                <Texts>{t("Header1")}</Texts>
-                <Forms onSubmit={handleSubmit}>
-                    <Inputs type="hidden" name="id" value={user} readOnly />
-                    <Labels>{t("Label1")}</Labels>
-                    <Inputs type="date" name="date" defaultValue={currentDate} />
-                    <Buttons type="submit" background={"lightBlue"}>
-                        {t("Submit")}
-                    </Buttons>
-                </Forms>
+  // Handle form submission
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget as HTMLFormElement);
+    const date = formData.get("date")?.toString(); // Get the selected date from the form
+    await fetchTimesheets(date);
+  };
+
+  const currentDate = new Date().toISOString().split("T")[0]; // Format date as YYYY-MM-DD
+
+  return (
+    <>
+      <Holds background={"white"} className="my-5 h-full">
+        <Contents width={"section"}>
+          <Grids rows={"2"} gap={"2"} className="py-5">
+            <Forms onSubmit={handleSubmit} className="row-span-2 ">
+              <Inputs type="hidden" name="id" value={user} readOnly />
+              <Labels>{t("EnterDate")}</Labels>
+              <Inputs type="date" name="date" defaultValue={currentDate} />
+              <Buttons type="submit" background={"lightBlue"} className="py-2">
+                <Titles size={"h3"}>{t("SearchTimesheets")}</Titles>
+              </Buttons>
+            </Forms>
+          </Grids>
+        </Contents>
+      </Holds>
+      {loading ? (
+        <>
+          <Holds
+            background={"white"}
+            size={"full"}
+            className="h-full min-h-[50vh]"
+          >
+            <Holds position={"center"} size={"50"} className="my-10 ">
+              <Spinner />
+              <Titles size={"h3"} className="mt-4">
+                {t("Loading")}
+              </Titles>
             </Holds>
-            {loading ? 
-            (<>
-            <Holds 
-            background={"white"} 
-            size={"full"}>
-                <Holds position={"center"} size={"50"} className="my-10">
-                    <Spinner />
-                    <Titles size={"h3"}>{t("Loading")}</Titles>
+          </Holds>
+        </>
+      ) : (
+        <>
+          {showTimesheets ? (
+            <Holds
+              background={"white"}
+              size={"full"}
+              className="h-full min-h-[50vh]"
+            >
+              {timesheetData.length > 0 ? (
+                <Titles size={"h2"} className="pt-8">
+                  {`Timesheets Found (${timesheetData.length})`}
+                </Titles>
+              ) : (
+                <Titles size={"h2"} className="pt-8">
+                  {t("NoData")}
+                </Titles>
+              )}
+              {timesheetData.length > 0 ? (
+                timesheetData.map((timesheet) => (
+                  <Holds
+                    key={timesheet.id}
+                    size={"full"}
+                    className="odd:bg-app-blue rounded"
+                  >
+                    <Holds size={"70"} className="p-4 py-8">
+                      <Labels>
+                        {t("TimesheetID")}
+                        <Inputs value={timesheet.id} readOnly />
+                      </Labels>
+                      <Labels>
+                        {t("StartTime")}
+                        <Inputs
+                          value={
+                            timesheet.startTime
+                              ? formatTime(timesheet.startTime.toString()) // Format to 12-hour time with seconds and AM/PM
+                              : "N/A"
+                          }
+                          readOnly
+                        />
+                      </Labels>
+                      <Labels>
+                        {t("EndTime")}
+                        <Inputs
+                          value={
+                            timesheet.endTime
+                              ? formatTime(timesheet.endTime.toString()) // Format to 12-hour time with seconds and AM/PM
+                              : "N/A"
+                          }
+                          readOnly
+                        />
+                      </Labels>
+                      <Labels>
+                        {t("Duration")}
+                        <Inputs
+                          value={
+                            `${timesheet.duration?.toFixed(2)} ${t("Unit")}` ||
+                            "N/A"
+                          }
+                          readOnly
+                        />
+                      </Labels>
+                      <Labels>
+                        {t("Jobsite")}
+                        <Inputs value={timesheet.jobsiteId} readOnly />
+                      </Labels>
+                      <Labels>
+                        {t("CostCode")}
+                        <Inputs value={timesheet.costcode} readOnly />
+                      </Labels>
+                    </Holds>
+                  </Holds>
+                ))
+              ) : (
+                <Holds className="h-full ">
+                  <Texts size={"p3"} className="py-8">
+                    {t("NoDataMessage")}
+                  </Texts>
                 </Holds>
-            </Holds> 
-            </>
-            )
-            : 
-            (
-            <>
-            {showTimesheets ? (
-                <Holds background={"white"} size={"full"}>
-                    {timesheetData.length > 0 ? <Titles size={"h2"} className="pt-8">{`Timesheets Found (${timesheetData.length })` }
-                    </Titles>
-                    : <Titles size={"h2"} className="pt-8">{t("NoData")}</Titles>}
-                    {timesheetData.length > 0 ? (
-                        timesheetData.map((timesheet) => (
-                            <Holds key={timesheet.id} size={"full"} className="odd:bg-app-blue ro">
-                                <Holds size={"70"} className="p-4 py-8">
-                                    <Labels>
-                                    {t("LabelID")}
-                                        <Inputs value={timesheet.id} readOnly />
-                                    </Labels>
-                                    <Labels>
-                                    {t("LabelStart")}
-                                        <Inputs
-                                            value={
-                                                timesheet.startTime
-                                                    ? formatTime(timesheet.startTime.toString()) // Format to 12-hour time with seconds and AM/PM
-                                                    : "N/A"
-                                            }
-                                            readOnly
-                                        />
-                                </Labels>
-                                <Labels>
-                                {t("LabelEnd")}
-                                    <Inputs
-                                        value={
-                                            timesheet.endTime
-                                                ? formatTime(timesheet.endTime.toString()) // Format to 12-hour time with seconds and AM/PM
-                                                : "N/A"
-                                        }
-                                        readOnly
-                                    />
-                                </Labels>
-                                    <Labels>
-                                    {t("LabelDuration")}
-                                        <Inputs value={timesheet.duration?.toFixed(2) || "N/A"} readOnly />
-                                    </Labels>
-                                    <Labels>
-                                    {t("LabelJobsite")}
-                                        <Inputs value={timesheet.jobsiteId} readOnly />
-                                    </Labels>
-                                    <Labels>
-                                    {t("LabelCostCode")}
-                                        <Inputs value={timesheet.costcode} readOnly />
-                                    </Labels>
-                                </Holds>
-                            </Holds>
-                        ))
-                    ) : (
-                        <Texts size={"p3"} className="py-8">{t("NoDataMessage")}</Texts>
-                    )}
+              )}
+            </Holds>
+          ) : (
+            <Holds background={"white"} className="pb-10 h-full min-h-[50vh]">
+              {startingEntry ? null : (
+                <Holds position={"center"} size={"70"} className="my-10">
+                  <Texts size={"p3"}>{t("FirstMessage")}</Texts>
                 </Holds>
-            ) : (
-                <Holds background={"white"} className="pb-10">
-                    {startingEntry ? (
-                        null
-                    ) : (
-                        <Holds position={"center"} size={"70"} className="my-10">
-                            <Texts size={"p3"}>{t("FirstMessage")}</Texts>
-                        </Holds>
-                    )}
-                </Holds>
-            )}
-            {error && <Texts className="text-red-500">{error}</Texts>}
-            </>)}
-        </Holds>
-    );
+              )}
+            </Holds>
+          )}
+          {error && <Texts className="text-red-500">{error}</Texts>}
+        </>
+      )}
+    </>
+  );
 }

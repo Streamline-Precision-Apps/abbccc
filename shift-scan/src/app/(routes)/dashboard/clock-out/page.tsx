@@ -19,8 +19,8 @@ export default async function AdminDashboard() {
   return (
     <Bases>
       <Contents>
-        <Grids className="grid-rows-1">
-          <Holds className="h-full row-span-1">
+        <Grids rows={"1"}>
+          <Holds className="h-full row-span-1  ">
             <ClockOutContent id={userId} />;
           </Holds>
         </Grids>

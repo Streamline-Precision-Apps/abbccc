@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Buttons } from "../(reusable)/buttons"; // Adjust the import path as needed
+import { Buttons } from "@/components/(reusable)/buttons"; // Adjust the import path as needed
 
 const RequestPermissions = ({
   handlePermissionsGranted,
@@ -69,8 +69,6 @@ const RequestPermissions = ({
 
       <Buttons
         onClick={handleRequestPermissions}
-        variant={"default"}
-        size={"widgetMed"}
         style={{
           backgroundColor: "limegreen",
           color: "black",
@@ -83,8 +81,6 @@ const RequestPermissions = ({
 
       <Buttons
         onClick={handlePermissionsGranted}
-        variant={"default"}
-        size={"widgetMed"}
         style={{ backgroundColor: "orange", color: "black" }}
         disabled={!allPermissionsGranted}
       >
