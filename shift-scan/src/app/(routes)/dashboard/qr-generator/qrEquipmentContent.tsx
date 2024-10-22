@@ -1,22 +1,29 @@
 "use client";
+
 import { Buttons } from "@/components/(reusable)/buttons";
 import React, { useState, useEffect } from "react";
-import { CostCodeOptions } from "@/components/(search)/options";
 import { Modals } from "@/components/(reusable)/modals";
 import QRCode from "qrcode";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Titles } from "@/components/(reusable)/titles";
-import { Contents } from "@/components/(reusable)/contents";
 import { Texts } from "@/components/(reusable)/texts";
 import { Images } from "@/components/(reusable)/images";
-import { Selects } from "@/components/(reusable)/selects";
-import { Options } from "@/components/(reusable)/options";
-import { EquipmentCodes, JobCodes } from "@/lib/types";
 import { Holds } from "@/components/(reusable)/holds";
 import SearchSelect from "@/components/(search)/searchSelect";
 import { Grids } from "@/components/(reusable)/grids";
-import Spinner from "@/components/(animations)/spinner";
+import { z } from "zod";
+import { EquipmentCodes } from "@/lib/types";
+import { Contents } from "@/components/(reusable)/contents";
+
+// Zod schema for EquipmentCodes
+const EquipmentCodesSchema = z.object({
+  id: z.string(),
+  qrId: z.string(),
+  name: z.string(),
+});
+
+// Zod schema for equipment list response
+const EquipmentListSchema = z.array(EquipmentCodesSchema);
 
 export default function QrEquipmentContent() {
   const router = useRouter();
@@ -24,12 +31,11 @@ export default function QrEquipmentContent() {
   const [generatedRecentList, setGeneratedRecentList] = useState<
     EquipmentCodes[]
   >([]);
-  const [selectedEquipmentName, setSelectedEquipmentName] =
-    useState<string>("");
+  const [selectedEquipmentName, setSelectedEquipmentName] = useState<string>("");
   const [selectedEquipment, setSelectedEquipment] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState("");
-  const [loading, setLoading] = useState(true); // Loading state
+  const [loading, setLoading] = useState(true);
   const t = useTranslations("Generator");
 
   useEffect(() => {
@@ -41,12 +47,23 @@ export default function QrEquipmentContent() {
           throw new Error("Failed to fetch equipment");
         }
 
-        const equipment = await equipmentResponse.json();
-        setGeneratedList(equipment);
-        setLoading(false); // Set loading to false after data is fetched
+        const equipmentData = await equipmentResponse.json();
+
+        // Validate fetched equipment data with Zod
+        try {
+          EquipmentListSchema.parse(equipmentData);
+          setGeneratedList(equipmentData);
+        } catch (error) {
+          if (error instanceof z.ZodError) {
+            console.error("Validation error in equipment data:", error.errors);
+            return;
+          }
+        }
+
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
-        setLoading(false); // Set loading to false even if there is an error
+        setLoading(false);
       }
     };
 
@@ -59,15 +76,26 @@ export default function QrEquipmentContent() {
         const equipmentResponse = await fetch("/api/getRecentEquipment");
 
         if (!equipmentResponse.ok) {
-          throw new Error("Failed to fetch Equipment");
+          throw new Error("Failed to fetch recent equipment");
         }
 
-        const equipment = await equipmentResponse.json();
-        setGeneratedRecentList(equipment);
-        setLoading(false); // Set loading to false after data is fetched
+        const recentEquipmentData = await equipmentResponse.json();
+
+        // Validate fetched recent equipment data with Zod
+        try {
+          EquipmentListSchema.parse(recentEquipmentData);
+          setGeneratedRecentList(recentEquipmentData);
+        } catch (error) {
+          if (error instanceof z.ZodError) {
+            console.error("Validation error in recent equipment data:", error.errors);
+            return;
+          }
+        }
+
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
-        setLoading(false); // Set loading to false even if there is an error
+        setLoading(false);
       }
     };
 
@@ -108,21 +136,14 @@ export default function QrEquipmentContent() {
               options={generatedList}
               handleGenerate={handleGenerate}
               recentOptions={generatedRecentList}
-              onSelect={handleSelectEquipment} // Pass the selection handler
+              onSelect={handleSelectEquipment}
             />
           </Holds>
 
-          <Holds
-            size={"full"}
-            className="row-span-1 col-start-3 col-end-4 h-full"
-          >
+          <Holds size={"full"} className="row-span-1 col-start-3 col-end-4 h-full">
             <Buttons background={"green"} onClick={handleNew}>
-              <Holds className="">
-                <Images
-                  titleImg={"/Plus.svg"}
-                  titleImgAlt={"plus"}
-                  size={"40"}
-                />
+              <Holds>
+                <Images titleImg={"/Plus.svg"} titleImgAlt={"plus"} size={"40"} />
               </Holds>
             </Buttons>
           </Holds>
@@ -136,24 +157,18 @@ export default function QrEquipmentContent() {
               options={generatedList}
               handleGenerate={handleGenerate}
               recentOptions={generatedRecentList}
-              onSelect={handleSelectEquipment} // Pass the selection handler
+              onSelect={handleSelectEquipment}
             />
           </Holds>
 
-          <Holds
-            size={"full"}
-            className="row-span-1 col-start-3 col-end-4 h-full"
-          >
+          <Holds size={"full"} className="row-span-1 col-start-3 col-end-4 h-full">
             <Buttons background={"green"} onClick={handleNew}>
-              <Holds className="">
-                <Images
-                  titleImg={"/Plus.svg"}
-                  titleImgAlt={"plus"}
-                  size={"40"}
-                />
+              <Holds>
+                <Images titleImg={"/Plus.svg"} titleImgAlt={"plus"} size={"40"} />
               </Holds>
             </Buttons>
           </Holds>
+
           <Modals
             isOpen={isModalOpen}
             handleClose={() => setIsModalOpen(false)}

@@ -8,12 +8,47 @@ import { fetchEq } from "@/actions/equipmentActions";
 import { Contents } from "@/components/(reusable)/contents";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { useTranslations } from "next-intl";
+import { z } from "zod";
 
-type Props = {
-  employeeId: string;
-};
+// Zod schema for props
+const PropsSchema = z.object({
+  employeeId: z.string(),
+});
+
+// Zod schema for timesheet data
+const TimeSheetSchema = z.array(
+  z.object({
+    id: z.string().optional(),
+    startTime: z.union([z.string(), z.date()]).optional(),
+    endTime: z.union([z.string(), z.date(), z.null()]).optional(),
+    duration: z.number().nullable().optional(),
+    submitDate: z.date().optional(),
+    jobsiteId: z.string().optional(),
+    costcode: z.string().optional(),
+  })
+);
+
+// Zod schema for equipment data
+const EquipmentSchema = z.array(
+  z.object({
+    id: z.string(),
+    name: z.string(),
+    qrId: z.string(),
+  })
+);
+
+type Props = z.infer<typeof PropsSchema>;
 
 export const EmployeeTimeSheets = ({ employeeId }: Props) => {
+  // Validate props using Zod
+  try {
+    PropsSchema.parse({ employeeId });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      console.error("Validation error in props:", error.errors);
+    }
+  }
+
   const t = useTranslations("MyTeam");
   const [timesheets, setTimesheets] = useState<any[]>([]);
   const [filteredEquipmentData, setFilteredEquipmentData] = useState<any[]>([]);
@@ -28,27 +63,55 @@ export const EmployeeTimeSheets = ({ employeeId }: Props) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const [costcodes, jobsites, equipment] = await Promise.all([
-        fetch("/api/getCostCodes").then((res) => res.json()),
-        fetch("/api/getJobsites").then((res) => res.json()),
-        fetch("/api/getAllEquipment").then((res) => res.json()),
-      ]);
+      try {
+        const [costcodes, jobsites, equipment] = await Promise.all([
+          fetch("/api/getCostCodes").then((res) => res.json()),
+          fetch("/api/getJobsites").then((res) => res.json()),
+          fetch("/api/getAllEquipment").then((res) => res.json()),
+        ]);
 
-      setCostcodesData(costcodes);
-      setJobsitesData(jobsites);
-      setEquipment(equipment);
+        // Validate fetched data using Zod
+        try {
+          EquipmentSchema.parse(equipment);
+          TimeSheetSchema.parse(costcodes); // Reusing timesheet schema for cost codes for simplicity
+          TimeSheetSchema.parse(jobsites); // Reusing timesheet schema for jobsites for simplicity
+        } catch (error) {
+          if (error instanceof z.ZodError) {
+            console.error("Validation error in fetched data:", error.errors);
+          }
+        }
+
+        setCostcodesData(costcodes);
+        setJobsitesData(jobsites);
+        setEquipment(equipment);
+      } catch (error) {
+        console.error("Failed to fetch initial data:", error);
+      }
     };
     fetchData();
   }, []);
 
   const handleFormSubmitWrapper = async (date: string, message?: string) => {
-    const results = await fetchTimesheets(employeeId, date);
-    setTimesheets(results);
+    try {
+      const results = await fetchTimesheets(employeeId, date);
+      const eqResults = await fetchEq(employeeId, date);
 
-    const eqResults = await fetchEq(employeeId, date);
-    setFilteredEquipmentData(eqResults);
+      // Validate fetched timesheet data
+      try {
+        TimeSheetSchema.parse(results);
+        EquipmentSchema.parse(eqResults);
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          console.error("Validation error in timesheet/equipment data:", error.errors);
+        }
+      }
 
-    setMessage(message || "");
+      setTimesheets(results);
+      setFilteredEquipmentData(eqResults);
+      setMessage(message || "");
+    } catch (error) {
+      console.error("Error fetching timesheet/equipment data:", error);
+    }
   };
 
   const handleFormChange = () => {
@@ -98,6 +161,7 @@ export const EmployeeTimeSheets = ({ employeeId }: Props) => {
             </form>
             <Titles>{message}</Titles>
           </Holds>
+
           {date && (
             <Holds size={"full"} background={"white"} className="my-5">
               <EditWork

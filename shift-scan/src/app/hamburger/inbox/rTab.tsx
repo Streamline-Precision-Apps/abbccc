@@ -9,11 +9,21 @@ import { useRouter } from "next/navigation";
 import React from "react";
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
-
 import { Contents } from "@/components/(reusable)/contents";
 import Spinner from "@/components/(animations)/spinner";
 import { Images } from "@/components/(reusable)/images";
 import { Grids } from "@/components/(reusable)/grids";
+import { z } from "zod";
+
+// Define Zod schema for received content
+const receivedContentSchema = z.object({
+  id: z.string(),
+  requestType: z.string(),
+  date: z.string().refine((date) => !isNaN(Date.parse(date)), {
+    message: "Invalid date format",
+  }),
+  employeeId: z.string(),
+});
 
 export default function RTab() {
   const { data: session } = useSession(); // Use `useSession` to fetch session
@@ -21,7 +31,9 @@ export default function RTab() {
   const [receivedContent, setReceivedContent] = useState<receivedContent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
   if (!session) return null;
+
   // Redirect if there's no session
   useEffect(() => {
     if (!session) {
@@ -40,7 +52,18 @@ export default function RTab() {
         }
 
         const data = await response.json();
-        setReceivedContent(data); // Update state with the received content
+
+        // Validate the fetched data with Zod
+        const validatedData = data.map((item: any) => {
+          try {
+            return receivedContentSchema.parse(item);
+          } catch (e) {
+            console.error("Validation error:", e);
+            throw new Error("Invalid data format");
+          }
+        });
+
+        setReceivedContent(validatedData);
         setLoading(false);
       } catch (err) {
         console.error("Error fetching received content:", err);
@@ -56,7 +79,7 @@ export default function RTab() {
   }, [session]);
 
   // Check if user has appropriate permissions
-  const userPermission = session.user.permission;
+  const userPermission = session?.user?.permission;
   if (session && !["SUPERADMIN", "MANAGER", "ADMIN"].includes(userPermission)) {
     return (
       <Holds className="h-full justify-center">

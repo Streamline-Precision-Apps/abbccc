@@ -8,9 +8,23 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import { sentContent } from "@/lib/types"; // Define appropriate type for your content
+import { sentContent } from "@/lib/types";
 import React, { use } from "react";
 import { useState, useEffect } from "react";
+import { z } from "zod";
+
+// Define Zod schema for sent content
+const sentContentSchema = z.object({
+  id: z.string(),
+  requestType: z.string(),
+  status: z.enum(["APPROVED", "PENDING", "DENIED"]),
+  requestedStartDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+    message: "Invalid start date format",
+  }),
+  requestedEndDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+    message: "Invalid end date format",
+  }),
+});
 
 export default function STab() {
   const [sentContent, setSentContent] = useState<sentContent[]>([]);
@@ -31,7 +45,18 @@ export default function STab() {
         }
 
         const data = await response.json();
-        setSentContent(data); // Update state with fetched data
+
+        // Validate the fetched data with Zod
+        const validatedData = data.map((item: any) => {
+          try {
+            return sentContentSchema.parse(item);
+          } catch (e) {
+            console.error("Validation error:", e);
+            throw new Error("Invalid data format");
+          }
+        });
+
+        setSentContent(validatedData); // Update state with validated data
         setLoading(false);
       } catch (err) {
         console.error("Error fetching sent content:", err);
@@ -45,7 +70,6 @@ export default function STab() {
 
   // Filter the content based on status
   useEffect(() => {
-    console.log(sentContent);
     setApproved(sentContent.filter((item) => item.status === "APPROVED"));
     setPending(sentContent.filter((item) => item.status === "PENDING"));
     setDenied(sentContent.filter((item) => item.status === "DENIED"));
@@ -69,7 +93,8 @@ export default function STab() {
       </Holds>
     );
   }
-  // If there are no pending requests, show a message
+
+  // If there are no requests, show a message
   if (pending.length === 0 && approved.length === 0 && denied.length === 0) {
     return (
       <Contents width={"section"}>
@@ -80,10 +105,9 @@ export default function STab() {
 
           <Holds
             size={"full"}
-            className="row-start-5 row-end-6 col-start-3 col-end-4 h-full my-auto "
+            className="row-start-5 row-end-6 col-start-3 col-end-4 h-full my-auto"
           >
             <Buttons href="/hamburger/inbox/form" background={"green"}>
-              {/*plus icon*/}
               <Holds className="h-full my-auto">
                 <Holds size={"80"} className="my-auto">
                   <Images titleImg={"/Plus.svg"} titleImgAlt={"plus"} />
@@ -98,15 +122,13 @@ export default function STab() {
 
   return (
     <Contents width={"section"}>
-      <Grids rows={"5"} cols={"3"} gap={"5"} className="py-5 ">
-        {/* Request button */}
+      <Grids rows={"5"} cols={"3"} gap={"5"} className="py-5">
         <Holds className="row-start-1 row-end-5 col-span-3 h-full mt-5 pb-5 overflow-auto no-scrollbar gap-5">
           {/* Display approved requests */}
           {approved.map((item) => (
             <Holds key={item.id}>
               <Buttons
                 background={"green"}
-                key={item.id}
                 href={`/hamburger/inbox/sent/approved/${item.id}`}
                 size={"90"}
               >
@@ -131,7 +153,6 @@ export default function STab() {
             <Holds key={item.id}>
               <Buttons
                 background={"orange"}
-                key={item.id}
                 href={`/hamburger/inbox/sent/${item.id}`}
                 size={"90"}
               >
@@ -156,7 +177,6 @@ export default function STab() {
             <Holds key={item.id} className="py-2">
               <Buttons
                 background={"red"}
-                key={item.id}
                 href={`/hamburger/inbox/sent/denied/${item.id}`}
                 size={"90"}
               >
@@ -176,9 +196,10 @@ export default function STab() {
             </Holds>
           ))}
         </Holds>
+
         <Holds
           size={"full"}
-          className="row-start-5 row-end-6 col-start-3 col-end-4   "
+          className="row-start-5 row-end-6 col-start-3 col-end-4"
         >
           <Buttons
             href="/hamburger/inbox/form"
@@ -186,9 +207,7 @@ export default function STab() {
             size={"70"}
             className="h-full my-auto"
           >
-            {/*plus icon*/}
-
-            <Holds className="">
+            <Holds>
               <Images titleImg={"/Plus.svg"} titleImgAlt={"plus"} />
             </Holds>
           </Buttons>
