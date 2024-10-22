@@ -1,5 +1,5 @@
 "use server";
-export const formatTime = (timestamp: string): string => {
+export const formatTime = async (timestamp: string) => {
   const date = new Date(timestamp);
   const hours = date.getHours(); // Use local hours instead of UTC
   const minutes = date.getMinutes(); // Use local minutes

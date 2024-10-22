@@ -11,7 +11,7 @@ import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { z } from "zod";
 
 // Zod schema for params
@@ -35,11 +35,12 @@ const CrewResponseSchema = z.array(CrewMemberSchema);
 type CrewMember = z.infer<typeof CrewMemberSchema>;
 
 type CrewResponse = CrewMember[];
+type Params = Promise<{ id: string }>;
 
-export default function Content({ params }: { params: { id: string } }) {
+export default function Content(Prop: { params: Params }) {
   // Validate params using Zod
   try {
-    ParamsSchema.parse(params);
+    ParamsSchema.parse(Prop.params);
   } catch (error) {
     if (error instanceof z.ZodError) {
       console.error("Validation error in params:", error.errors);
@@ -48,8 +49,9 @@ export default function Content({ params }: { params: { id: string } }) {
 
   const [crew, setCrew] = useState<CrewMember[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { data: session, status } = useSession();
-  const { id } = params;
+  const { status: status } = useSession();
+  const params = use(Prop.params);
+  const id = params.id;
   const crewId = Number(id);
   const t = useTranslations("MyTeam");
 
@@ -96,7 +98,10 @@ export default function Content({ params }: { params: { id: string } }) {
           setIsLoading(false);
         } catch (error) {
           if (error instanceof z.ZodError) {
-            console.error("Validation error in stored crew data:", error.errors);
+            console.error(
+              "Validation error in stored crew data:",
+              error.errors
+            );
             fetchCrew(); // Fetch fresh data if stored data is invalid
           }
         }
@@ -104,7 +109,7 @@ export default function Content({ params }: { params: { id: string } }) {
         fetchCrew();
       }
     }
-  }, [status, id]);
+  }, [crewId, status, id]);
 
   return (
     <Bases>
@@ -142,7 +147,9 @@ export default function Content({ params }: { params: { id: string } }) {
                         <Holds position={"row"}>
                           <Holds size={"30"}>
                             <Images
-                              titleImg={member.user.image ?? "/default-profile.svg"}
+                              titleImg={
+                                member.user.image ?? "/default-profile.svg"
+                              }
                               titleImgAlt="profile picture"
                               loading="lazy"
                               className="rounded-xl"

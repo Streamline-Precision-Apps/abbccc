@@ -5,7 +5,7 @@ import { Buttons } from "../(reusable)/buttons"; // Adjust the import path as ne
 const RequestPermissions = ({
   handlePermissionsGranted,
 }: {
-  handlePermissionsGranted: any;
+  handlePermissionsGranted: () => void;
 }) => {
   const [permissionsGranted, setPermissionsGranted] = useState({
     location: false,

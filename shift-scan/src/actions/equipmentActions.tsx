@@ -25,12 +25,6 @@ enum EquipmentStatus {
   NEEDS_REPAIR = "NEEDS_REPAIR",
 }
 
-enum Status {
-  PENDING = "PENDING",
-  APPROVED = "APPROVED",
-  DENIED = "DENIED",
-}
-
 export async function equipmentTagExists(id: string) {
   try {
     const equipment = await prisma.equipment.findUnique({

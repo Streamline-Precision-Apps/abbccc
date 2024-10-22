@@ -1,20 +1,20 @@
+"use client";
 import React, { useState, useEffect } from "react";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { useTranslations } from "next-intl";
 import { Forms } from "@/components/(reusable)/forms";
 import { Labels } from "@/components/(reusable)/labels";
 import { Inputs } from "@/components/(reusable)/inputs";
-import { TextAreas } from "@/components/(reusable)/textareas";
 import { Selects } from "@/components/(reusable)/selects";
 import { Options } from "@/components/(reusable)/options";
 import { Images } from "@/components/(reusable)/images";
 import { AddWholeTimeSheet } from "@/actions/timeSheetActions"; // Import your server action
-import { text } from "stream/consumers";
+import { CostCodes, Equipment, Jobsites } from "@/lib/types";
 
 type AddTimeSheetProps = {
-  jobsites: any[];
+  jobsites: Jobsites[];
   employeeId: string;
-  equipment: any[]; // Equipment prop
+  equipment: Equipment[]; // Equipment prop
 };
 
 export default function AddTimesheetsForm({
@@ -37,11 +37,9 @@ export default function AddTimesheetsForm({
   const [selectedJobsiteQrId, setSelectedJobsiteQrId] = useState<string>(""); // Store qrId
   const [selectedJobsiteId, setSelectedJobsiteId] = useState<string>(""); // Store jobsite ID for filtering cost codes
   const [selectedVehicleId, setSelectedVehicleId] = useState<string>(""); // Store selected vehicle
-  const [filteredCostCodes, setFilteredCostCodes] = useState<
-    { id: string; name: string; description: string }[]
-  >([]);
+  const [filteredCostCodes, setFilteredCostCodes] = useState<CostCodes[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>(""); // Search term for vehicle ID
-  const [filteredEquipment, setFilteredEquipment] = useState<any[]>([]); // Filtered equipment
+  const [filteredEquipment, setFilteredEquipment] = useState<Equipment[]>([]); // Filtered equipment
   const [focused, setFocused] = useState(false); // State to track input focus
 
   useEffect(() => {
@@ -57,11 +55,17 @@ export default function AddTimesheetsForm({
   }, [startTime, endTime]);
 
   useEffect(() => {
-    // Filter cost codes based on selected jobsite
     const selectedJobsite = jobsites.find(
       (jobsite) => jobsite.id === selectedJobsiteId
     );
-    setFilteredCostCodes(selectedJobsite ? selectedJobsite.costCode : []);
+
+    if (!selectedJobsite) {
+      setFilteredCostCodes([]);
+      return;
+    }
+
+    // Assuming jobsites have a costCodes field or similar to filter by
+    setFilteredCostCodes(selectedJobsite.costCode);
   }, [selectedJobsiteId, jobsites]);
 
   // Filter the equipment list based on the search term and equipmentTag 'TRUCK'
@@ -130,7 +134,7 @@ export default function AddTimesheetsForm({
       <Labels type="title">{t("CostCode")}</Labels>
       <Selects id="costcode" name="costcode">
         <Options value="">{t("Select Cost Code")}</Options>
-        {filteredCostCodes.map((costcode) => (
+        {filteredCostCodes.map((costcode: CostCodes) => (
           <Options key={costcode.name} value={costcode.name}>
             {costcode.description} {/* Display costcode by description */}
           </Options>

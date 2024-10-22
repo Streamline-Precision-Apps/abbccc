@@ -1,7 +1,6 @@
 "use client";
 import "@/app/globals.css";
 import { useState, ChangeEvent } from "react";
-import { Signature } from "../injury-verification/Signature";
 import { CreateInjuryForm } from "@/actions/injuryReportActions";
 import { useTranslations } from "next-intl";
 import { Contents } from "@/components/(reusable)/contents";
@@ -10,7 +9,6 @@ import { Titles } from "@/components/(reusable)/titles";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { useSession } from "next-auth/react";
 import Checkbox from "@/components/(inputs)/checkbox";
-import { Spinner } from "@nextui-org/react";
 import { Grids } from "@/components/(reusable)/grids";
 import { TextAreas } from "@/components/(reusable)/textareas";
 
@@ -23,9 +21,7 @@ type FormProps = {
 
 export const InjuryReportContent = ({
   base64String,
-  setBase64String,
   handleComplete,
-  handleSubmitImage,
 }: FormProps) => {
   const [supervisorChecked, setSupervisorChecked] = useState<boolean>(false);
   const [signatureChecked, setSignatureChecked] = useState<boolean>(false);

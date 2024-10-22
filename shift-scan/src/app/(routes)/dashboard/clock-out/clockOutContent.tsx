@@ -1,5 +1,4 @@
 "use client";
-import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";
@@ -15,13 +14,12 @@ import { updateTimeSheet } from "@/actions/timeSheetActions";
 import { Banners } from "@/components/(reusable)/banners";
 import { Texts } from "@/components/(reusable)/texts";
 import { Clock } from "@/components/clock";
-import { Forms } from "@/components/(reusable)/forms";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Images } from "@/components/(reusable)/images";
-import { uploadFirstSignature } from "@/actions/userActions";
 import { Grids } from "@/components/(reusable)/grids";
 import Spinner from "@/components/(animations)/spinner";
 import { z } from "zod";
+import { uploadFirstSignature } from "@/actions/userActions";
 
 // Zod schema for ClockOutContentProps
 const ClockOutContentPropsSchema = z.object({
@@ -82,8 +80,7 @@ export default function ClockOutContent({ id }: ClockOutContentProps) {
   const [checked, setChecked] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const hasSubmitted = useRef(false);
-  const { showBanner, bannerMessage, setShowBanner, setBannerMessage } =
-    useBanner();
+  const { bannerMessage, setShowBanner, setBannerMessage } = useBanner();
   const { scanResult } = useScanData();
   const { savedCostCode } = useSavedCostCode();
   const { savedTimeSheetData } = useTimeSheetData();
@@ -92,15 +89,16 @@ export default function ClockOutContent({ id }: ClockOutContentProps) {
 
   // Optimize localStorage access with useMemo
   const localStorageData = useMemo(() => {
-    const data = typeof window !== "undefined"
-      ? {
-          jobsite: localStorage.getItem("jobSite"),
-          costCode: localStorage.getItem("costCode"),
-          timesheet: JSON.parse(
-            localStorage.getItem("savedtimeSheetData") || "{}"
-          ),
-        }
-      : {};
+    const data =
+      typeof window !== "undefined"
+        ? {
+            jobsite: localStorage.getItem("jobSite"),
+            costCode: localStorage.getItem("costCode"),
+            timesheet: JSON.parse(
+              localStorage.getItem("savedtimeSheetData") || "{}"
+            ),
+          }
+        : {};
     try {
       return LocalStorageDataSchema.parse(data);
     } catch (error) {

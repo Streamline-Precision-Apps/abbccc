@@ -7,12 +7,12 @@ import { Forms } from "@/components/(reusable)/forms";
 import { Texts } from "@/components/(reusable)/texts";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Labels } from "@/components/(reusable)/labels";
-import { TimeSheet } from "@/lib/types";
 import Spinner from "@/components/(animations)/spinner";
 import { formatTime } from "@/utils/formatDateAMPMS";
 import { useTranslations } from "next-intl";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
+import { TimeSheet } from "../dashboard/myTeam/[id]/employee/[employeeId]/editWork";
 
 type Props = {
   user: string;
@@ -20,7 +20,7 @@ type Props = {
 
 export default function ViewTimesheets({ user }: Props) {
   const [showTimesheets, setShowTimesheets] = useState(false);
-  const [startingEntry, setStartingEntry] = useState(false);
+  const [startingEntry] = useState(false);
   const [timesheetData, setTimesheetData] = useState<TimeSheet[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -107,7 +107,7 @@ export default function ViewTimesheets({ user }: Props) {
                 </Titles>
               )}
               {timesheetData.length > 0 ? (
-                timesheetData.map((timesheet) => (
+                timesheetData.map(async (timesheet) => (
                   <Holds
                     key={timesheet.id}
                     size={"full"}
@@ -120,10 +120,13 @@ export default function ViewTimesheets({ user }: Props) {
                       </Labels>
                       <Labels>
                         {t("StartTime")}
+
                         <Inputs
                           value={
-                            timesheet.startTime
-                              ? formatTime(timesheet.startTime.toString()) // Format to 12-hour time with seconds and AM/PM
+                            timesheet.endTime && timesheet.startTime?.toString()
+                              ? await formatTime(
+                                  timesheet.startTime?.toString()
+                                )
                               : "N/A"
                           }
                           readOnly
@@ -134,7 +137,7 @@ export default function ViewTimesheets({ user }: Props) {
                         <Inputs
                           value={
                             timesheet.endTime
-                              ? formatTime(timesheet.endTime.toString()) // Format to 12-hour time with seconds and AM/PM
+                              ? await formatTime(timesheet.endTime.toString()) // Format to 12-hour time with seconds and AM/PM
                               : "N/A"
                           }
                           readOnly

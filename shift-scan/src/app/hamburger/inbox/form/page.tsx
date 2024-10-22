@@ -1,7 +1,5 @@
 "use server";
 import { auth } from "@/auth";
-import prisma from "@/lib/prisma";
-import { getSession } from "next-auth/react";
 import Content from "@/app/hamburger/inbox/form/content";
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
