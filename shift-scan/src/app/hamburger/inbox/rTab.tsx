@@ -37,7 +37,7 @@ export default function RTab() {
     const fetchReceivedContent = async () => {
       try {
         setLoading(true);
-        const response = await fetch("/api/getTimeoffRequests?type=received");
+        const response = await fetch("/api/getTeamRequest");
 
         if (!response.ok) {
           throw new Error("Failed to fetch received content");
