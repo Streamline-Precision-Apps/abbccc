@@ -9,8 +9,8 @@ type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 export async function GET(
   request: Request,
   props: {
-    params: Params;
-    searchParams: SearchParams;
+    params: Promise<Params>;
+    searchParams: Promise<SearchParams>;
   }
 ) {
   const session = await auth();
