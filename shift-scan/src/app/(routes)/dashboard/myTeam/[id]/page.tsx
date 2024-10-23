@@ -37,10 +37,11 @@ type CrewMember = z.infer<typeof CrewMemberSchema>;
 type CrewResponse = CrewMember[];
 type Params = Promise<{ id: string }>;
 
-export default function Content(Prop: { params: Params }) {
+export default function Content(Prop: { params: Promise<Params> }) {
+  const params = use(Prop.params);
   // Validate params using Zod
   try {
-    ParamsSchema.parse(Prop.params);
+    ParamsSchema.parse(params);
   } catch (error) {
     if (error instanceof z.ZodError) {
       console.error("Validation error in params:", error.errors);
@@ -50,8 +51,7 @@ export default function Content(Prop: { params: Params }) {
   const [crew, setCrew] = useState<CrewMember[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { status: status } = useSession();
-  const p = use(Prop.params);
-  const id = p.id;
+  const id = use(Prop.params);
   const crewId = Number(id);
   const t = useTranslations("MyTeam");
 
@@ -141,7 +141,7 @@ export default function Content(Prop: { params: Params }) {
                   {crew.map((member) => (
                     <Holds className="row-span-1 h-full" key={member.user.id}>
                       <Buttons
-                        href={`/dashboard/myTeam/${p.id}/employee/${member.user.id}`}
+                        href={`/dashboard/myTeam/${id}/employee/${member.user.id}`}
                         background="lightBlue"
                       >
                         <Holds position={"row"}>
