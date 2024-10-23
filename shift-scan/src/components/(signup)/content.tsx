@@ -1,8 +1,7 @@
 "use client";
 import "@/app/globals.css";
-import { useTranslations } from "next-intl";
+
 import { useEffect, useState } from "react";
-import { Footers } from "@/components/(reusable)/footers";
 import { Holds } from "@/components/(reusable)/holds";
 import { Bases } from "@/components/(reusable)/bases";
 import { Header } from "@/components/header";
@@ -38,8 +37,6 @@ export default function Content({
     return null; // Don't render if props are invalid
   }
 
-  const t = useTranslations("Home");
-  const f = useTranslations("Footer");
   const [step, setStep] = useState(1);
 
   useEffect(() => {
@@ -100,7 +97,6 @@ export default function Content({
             {step === 6 && (
               <Permissions id={userId} handleAccept={handleComplete} />
             )}
-            <Footers>{f("Copyright")}</Footers>
           </Contents>
         </Holds>
       </Contents>
