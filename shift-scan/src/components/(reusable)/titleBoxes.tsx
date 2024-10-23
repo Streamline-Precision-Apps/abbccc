@@ -280,7 +280,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
             <Images titleImg={titleImg} titleImgAlt={titleImgAlt} size={"40"} />
           </Holds>
           <Holds className="col-span-4 row-span-1">
-            <Titles size={"h1"}>{title}</Titles>
+            <Titles size={"h3"}>{title}</Titles>
           </Holds>
         </Grids>
       </div>
