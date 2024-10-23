@@ -50,8 +50,8 @@ export default function Content(Prop: { params: Params }) {
   const [crew, setCrew] = useState<CrewMember[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { status: status } = useSession();
-  const params = use(Prop.params);
-  const id = params.id;
+  const p = use(Prop.params);
+  const id = p.id;
   const crewId = Number(id);
   const t = useTranslations("MyTeam");
 

@@ -6,7 +6,8 @@ import { Bases } from "@/components/(reusable)/bases";
 import { auth } from "@/auth";
 import { Equipment, Jobsites } from "@/lib/types";
 type Params = Promise<{ id: string }>;
-export default async function crewMember({ params }: { params: Params }) {
+export default async function crewMember(props: { params: Promise<Params> }) {
+  const params = await props.params;
   const session = await auth().catch((err) => {
     console.error("Error in authentication:", err);
     return null;
