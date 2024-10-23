@@ -141,7 +141,7 @@ export default function Content(Prop: { params: Params }) {
                   {crew.map((member) => (
                     <Holds className="row-span-1 h-full" key={member.user.id}>
                       <Buttons
-                        href={`/dashboard/myTeam/${params.id}/employee/${member.user.id}`}
+                        href={`/dashboard/myTeam/${p.id}/employee/${member.user.id}`}
                         background="lightBlue"
                       >
                         <Holds position={"row"}>
