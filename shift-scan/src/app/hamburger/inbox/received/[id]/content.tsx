@@ -49,7 +49,7 @@ export default function Content({ params }: Props) {
   const [employeeName, setEmployeeName] = useState<string>("");
   const [signature, setSignature] = useState<string>("");
   const [managerSignature, setManagerSignature] = useState<string>("");
-  const [signed, setSigned] = useState(false);
+
   const [receivedContent, setReceivedContent] = useState<receivedContent[]>([]);
 
   useEffect(() => {

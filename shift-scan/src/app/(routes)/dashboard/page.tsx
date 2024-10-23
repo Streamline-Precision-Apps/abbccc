@@ -72,7 +72,7 @@ export default async function Dashboard() {
             </Banners>
           </Holds>
           <Holds background={"white"} className="row-span-5 h-full">
-            <DbWidgetSection session={session} locale={locale} />
+            <DbWidgetSection />
           </Holds>
         </Grids>
       </Contents>

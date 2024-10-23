@@ -1,13 +1,12 @@
 "use client";
-
-import { editTimeSheet } from "@/actions/timeSheetActions";
+// import { editTimeSheet } from "@/actions/timeSheetActions";
 import { useTranslations } from "next-intl";
 import React, { useState, useEffect } from "react";
 import { Holds } from "@/components/(reusable)/holds";
 import { Contents } from "@/components/(reusable)/contents";
 import { Titles } from "@/components/(reusable)/titles";
 import Spinner from "@/components/(animations)/spinner";
-import { CostCodes, Jobsites, EquipmentLog, Equipment } from "@/lib/types";
+import { EquipmentLog } from "@/lib/types";
 
 import { z } from "zod";
 
@@ -118,9 +117,9 @@ const EditWork = ({
     }
   }
 
-  const [timesheets, setTimesheets] = useState<TimeSheet[]>([]);
-  const [equipmentLogs, setEquipmentLogs] = useState<EquipmentLog[]>([]);
-  const [message, setMessage] = useState<string | null>(null);
+  const [, setTimesheets] = useState<TimeSheet[]>([]);
+  const [, setEquipmentLogs] = useState<EquipmentLog[]>([]);
+  const [, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const t = useTranslations("MyTeam");
@@ -201,78 +200,78 @@ const EditWork = ({
     fetchEquipmentLogs();
   }, [date]);
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    id: string,
-    field: keyof TimeSheet
-  ) => {
-    const value = e.target.value;
-    setTimesheets((prevData) =>
-      prevData.map((timesheet) =>
-        timesheet.id === id ? { ...timesheet, [field]: value } : timesheet
-      )
-    );
-  };
+  // const handleInputChange = (
+  //   e: React.ChangeEvent<HTMLInputElement>,
+  //   id: string,
+  //   field: keyof TimeSheet
+  // ) => {
+  //   const value = e.target.value;
+  //   setTimesheets((prevData) =>
+  //     prevData.map((timesheet) =>
+  //       timesheet.id === id ? { ...timesheet, [field]: value } : timesheet
+  //     )
+  //   );
+  // };
 
-  const handleInputChangeDate = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    id: string,
-    field: "startDate" | "startTime" | "endDate" | "endTime"
-  ) => {
-    const value = e.target.value;
-    setTimesheets((prevTimesheets) =>
-      prevTimesheets.map((timesheet) =>
-        timesheet.id === id ? { ...timesheet, [field]: value } : timesheet
-      )
-    );
-  };
+  // const handleInputChangeDate = (
+  //   e: React.ChangeEvent<HTMLInputElement>,
+  //   id: string,
+  //   field: "startDate" | "startTime" | "endDate" | "endTime"
+  // ) => {
+  //   const value = e.target.value;
+  //   setTimesheets((prevTimesheets) =>
+  //     prevTimesheets.map((timesheet) =>
+  //       timesheet.id === id ? { ...timesheet, [field]: value } : timesheet
+  //     )
+  //   );
+  // };
 
-  const handleCodeChange = (
-    e: React.ChangeEvent<HTMLSelectElement>,
-    id: string,
-    field: keyof TimeSheet
-  ) => {
-    const value = e.target.value;
-    setTimesheets((prevTimesheets) =>
-      prevTimesheets.map((timesheet) =>
-        timesheet.id === id ? { ...timesheet, [field]: value } : timesheet
-      )
-    );
-  };
+  // const handleCodeChange = (
+  //   e: React.ChangeEvent<HTMLSelectElement>,
+  //   id: string,
+  //   field: keyof TimeSheet
+  // ) => {
+  //   const value = e.target.value;
+  //   setTimesheets((prevTimesheets) =>
+  //     prevTimesheets.map((timesheet) =>
+  //       timesheet.id === id ? { ...timesheet, [field]: value } : timesheet
+  //     )
+  //   );
+  // };
 
-  const handleSaveChanges = async () => {
-    try {
-      for (const timesheet of timesheets) {
-        const formData = new FormData();
-        formData.append("id", timesheet.id ?? "");
-        formData.append(
-          "submitDate",
-          timesheet.submitDate?.toISOString() ?? ""
-        );
-        formData.append("employeeId", employeeId);
-        formData.append("costcode", timesheet.costcode ?? "");
-        formData.append(
-          "startTime",
-          `${timesheet.startDate}T${timesheet.startTime}`
-        );
-        formData.append("endTime", `${timesheet.endDate}T${timesheet.endTime}`);
-        formData.append("jobsiteId", timesheet.jobsiteId ?? "");
-        await editTimeSheet(formData);
-      }
+  // const handleSaveChanges = async () => {
+  //   try {
+  //     for (const timesheet of timesheets) {
+  //       const formData = new FormData();
+  //       formData.append("id", timesheet.id ?? "");
+  //       formData.append(
+  //         "submitDate",
+  //         timesheet.submitDate?.toISOString() ?? ""
+  //       );
+  //       formData.append("employeeId", employeeId);
+  //       formData.append("costcode", timesheet.costcode ?? "");
+  //       formData.append(
+  //         "startTime",
+  //         `${timesheet.startDate}T${timesheet.startTime}`
+  //       );
+  //       formData.append("endTime", `${timesheet.endDate}T${timesheet.endTime}`);
+  //       formData.append("jobsiteId", timesheet.jobsiteId ?? "");
+  //       await editTimeSheet(formData);
+  //     }
 
-      handleFormSubmit(employeeId, date, "Changes saved successfully.");
-      setEdit(false);
-    } catch (error) {
-      console.error("Failed to save changes", error);
-      setMessage("Failed to save changes.");
-      setEdit(false);
-      handleFormSubmit(employeeId, date, "Changes not saved.");
-    }
-  };
+  //     handleFormSubmit(employeeId, date, "Changes saved successfully.");
+  //     setEdit(false);
+  //   } catch (error) {
+  //     console.error("Failed to save changes", error);
+  //     setMessage("Failed to save changes.");
+  //     setEdit(false);
+  //     handleFormSubmit(employeeId, date, "Changes not saved.");
+  //   }
+  // };
 
-  const editHandler = () => {
-    setEdit(!edit);
-  };
+  // const editHandler = () => {
+  //   setEdit(!edit);
+  // };
 
   return loading ? (
     <Contents width={"section"}>

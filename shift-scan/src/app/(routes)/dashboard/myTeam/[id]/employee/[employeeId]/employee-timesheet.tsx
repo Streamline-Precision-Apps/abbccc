@@ -136,8 +136,8 @@ export const EmployeeTimeSheets = ({ employeeId }: Props) => {
         }
       }
 
-      setTimesheets(results);
-      setFilteredEquipmentData(eqResults);
+      setTimesheets(results as unknown as TimeSheet[]);
+      setFilteredEquipmentData(eqResults as EquipmentLog[]);
       setMessage(message || "");
     } catch (error) {
       console.error("Error fetching timesheet/equipment data:", error);

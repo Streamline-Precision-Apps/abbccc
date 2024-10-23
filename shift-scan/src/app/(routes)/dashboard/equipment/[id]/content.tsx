@@ -25,9 +25,9 @@ import { Titles } from "@/components/(reusable)/titles";
 import { z } from "zod";
 
 // Zod schema for params
-const ParamsSchema = z.object({
-  id: z.string(),
-});
+// const ParamsSchema = z.object({
+//   id: z.string(),
+// });
 
 // Zod schema for log data
 const LogDataSchema = z.object({

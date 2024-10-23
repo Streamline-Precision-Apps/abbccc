@@ -26,25 +26,14 @@ const receivedContentSchema = z.object({
 });
 
 export default function RTab() {
-  const { data: session } = useSession(); // Use `useSession` to fetch session
-  const router = useRouter(); // Use router for redirect
+  const { data: session } = useSession();
+  const router = useRouter();
   const [receivedContent, setReceivedContent] = useState<receivedContent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  if (!session) return null;
-
-  // Redirect if there's no session
-  useEffect(() => {
-    if (!session) {
-      router.push("/signin");
-    }
-  }, [session, router]);
-
   // Fetch receivedContent when session exists
   useEffect(() => {
-    if (!session) return; // Exit early if no session is available
-
     const fetchReceivedContent = async () => {
       try {
         setLoading(true);
@@ -57,7 +46,7 @@ export default function RTab() {
         const data = await response.json();
 
         // Validate the fetched data with Zod
-        const validatedData = data.map((item: any) => {
+        const validatedData = data.map((item: typeof receivedContentSchema) => {
           try {
             return receivedContentSchema.parse(item);
           } catch (e) {
@@ -71,17 +60,27 @@ export default function RTab() {
       } catch (err) {
         console.error("Error fetching received content:", err);
         setError("An error occurred while fetching received content");
-      } finally {
         setLoading(false);
       }
     };
 
-    fetchReceivedContent();
+    if (session) {
+      fetchReceivedContent();
+    }
   }, [session]);
 
-  // Check if user has appropriate permissions
-  const userPermission = session?.user?.permission;
-  if (session && !["SUPERADMIN", "MANAGER", "ADMIN"].includes(userPermission)) {
+  // Use useEffect to handle the redirect
+  useEffect(() => {
+    if (!session) {
+      router.push("/signin");
+    }
+  }, [session, router]);
+
+  // Check if the user has appropriate permissions
+  if (
+    session &&
+    !["SUPERADMIN", "MANAGER", "ADMIN"].includes(session?.user?.permission)
+  ) {
     return (
       <Holds className="h-full justify-center">
         <Titles>Coming Soon</Titles>
