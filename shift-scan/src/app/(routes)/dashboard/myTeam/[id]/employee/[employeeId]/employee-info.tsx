@@ -50,7 +50,8 @@ type Contact = {
   emergencyContactNumber?: string;
 };
 
-export default function employeeInfo({ employeeId }: { employeeId: string }) {
+export default function EmployeeInfo({ employeeId }: { employeeId: string }) {
+  // Changed to EmployeeInfo
   // Validate params using Zod
   try {
     ParamsSchema.parse(employeeId);

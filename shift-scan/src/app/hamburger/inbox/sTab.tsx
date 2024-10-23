@@ -47,7 +47,7 @@ export default function STab() {
         const data = await response.json();
 
         // Validate the fetched data with Zod
-        const validatedData = data.map((item: any) => {
+        const validatedData = data.map((item: typeof sentContentSchema) => {
           try {
             return sentContentSchema.parse(item);
           } catch (e) {

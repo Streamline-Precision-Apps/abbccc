@@ -12,6 +12,8 @@ export default async function Settings() {
   const session = await auth();
   if (!session) return null;
 
+  const userId = session.user.id;
+
   const t = await getTranslations("Hamburger");
 
   return (

@@ -9,9 +9,9 @@ import { useEffect, useState } from "react";
 import { Holds } from "@/components/(reusable)/holds";
 import { Contents } from "@/components/(reusable)/contents";
 import { useRouter } from "next/navigation";
-import { getAuthStep, setAuthStep } from "@/app/api/auth";
+import { getAuthStep } from "@/app/api/auth";
 import Spinner from "@/components/(animations)/spinner";
-import { updateTimeSheetBySwitch } from "@/actions/timeSheetActions";
+// import { updateTimeSheetBySwitch } from "@/actions/timeSheetActions";
 import React from "react";
 import { z } from "zod";
 
@@ -27,7 +27,7 @@ const LogSchema = z.object({
 // Zod schema for logs list response
 const LogsListSchema = z.array(LogSchema);
 
-type Log = z.infer<typeof LogSchema>;
+// type Log = z.infer<typeof LogSchema>;
 
 export default function DbWidgetSection() {
   const [loading, setLoading] = useState(true);
@@ -36,9 +36,9 @@ export default function DbWidgetSection() {
   const e = useTranslations("Err-Msg");
   const authStep = getAuthStep();
 
-  const [logs, setLogs] = useState<Log[]>([]);
+  // const [logs, setLogs] = useState<Log[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [, setIsModalOpen] = useState(false);
+  // const [, setIsModalOpen] = useState(false);
   const [additionalButtonsType, setAdditionalButtonsType] = useState<
     string | null
   >(null);
@@ -62,7 +62,7 @@ export default function DbWidgetSection() {
         // Validate fetched logs data with Zod
         try {
           LogsListSchema.parse(logsData);
-          setLogs(logsData);
+          // setLogs(logsData);
         } catch (error) {
           if (error instanceof z.ZodError) {
             console.error("Validation error in logs data:", error.errors);
@@ -86,34 +86,34 @@ export default function DbWidgetSection() {
     }
   }, [authStep, router]);
 
-  const handleCOButton2 = async () => {
-    try {
-      if (logs.length === 0) {
-        const formData2 = new FormData();
-        const localeValue = localStorage.getItem("savedtimeSheetData");
-        const t_id = JSON.parse(localeValue || "{}").id;
-        formData2.append("id", t_id?.toString() || "");
-        formData2.append("endTime", new Date().toISOString());
-        formData2.append("TimeSheetComments", "");
-        await updateTimeSheetBySwitch(formData2);
+  // const handleCOButton2 = async () => {
+  //   try {
+  //     if (logs.length === 0) {
+  //       const formData2 = new FormData();
+  //       const localeValue = localStorage.getItem("savedtimeSheetData");
+  //       const t_id = JSON.parse(localeValue || "{}").id;
+  //       formData2.append("id", t_id?.toString() || "");
+  //       formData2.append("endTime", new Date().toISOString());
+  //       formData2.append("TimeSheetComments", "");
+  //       await updateTimeSheetBySwitch(formData2);
 
-        setAuthStep("break");
-        router.push("/");
-      } else {
-        setIsModalOpen(true);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  //       setAuthStep("break");
+  //       router.push("/");
+  //     } else {
+  //       setIsModalOpen(true);
+  //     }
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
 
-  const handleCOButton3 = async () => {
-    if (logs.length === 0) {
-      router.push("/dashboard/clock-out");
-    } else {
-      setIsModalOpen(true);
-    }
-  };
+  // const handleCOButton3 = async () => {
+  //   if (logs.length === 0) {
+  //     router.push("/dashboard/clock-out");
+  //   } else {
+  //     setIsModalOpen(true);
+  //   }
+  // };
 
   return (
     <>
