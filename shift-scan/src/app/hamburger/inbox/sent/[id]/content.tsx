@@ -264,7 +264,7 @@ export default function Content({ params, session }: Props) {
                   </Labels>
                   {(item.status === "APPROVED" || item.status === "DENIED") && (
                     <Labels>
-                      Manager's Comments
+                      {`Manager's Comments`}
                       <TextAreas
                         name="managerComments"
                         defaultValue={item.managerComment ?? ""}

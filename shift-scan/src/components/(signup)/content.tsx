@@ -1,6 +1,5 @@
 "use client";
 import "@/app/globals.css";
-
 import { useEffect, useState } from "react";
 import { Holds } from "@/components/(reusable)/holds";
 import { Bases } from "@/components/(reusable)/bases";
@@ -22,6 +21,17 @@ const propsSchema = z.object({
   accountSetup: z.boolean(),
 });
 
+// Validation logic outside the component
+function validateProps(userId: string, accountSetup: boolean) {
+  try {
+    propsSchema.parse({ userId, accountSetup });
+    return true; // Return true if validation passes
+  } catch (error) {
+    console.error("Invalid props:", error);
+    return false; // Return false if validation fails
+  }
+}
+
 export default function Content({
   userId,
   accountSetup,
@@ -29,28 +39,25 @@ export default function Content({
   userId: string;
   accountSetup: boolean;
 }) {
-  // Validate props using Zod
-  try {
-    propsSchema.parse({ userId, accountSetup });
-  } catch (error) {
-    console.error("Invalid props:", error);
-    return null; // Don't render if props are invalid
-  }
+  const isValid = validateProps(userId, accountSetup); // Validate before rendering
 
+  // Hooks are now called unconditionally, regardless of validation outcome
   const [step, setStep] = useState(1);
 
+  // Effect to handle authStep and localStorage clearing
   useEffect(() => {
     const authStep = getAuthStep();
+
     if (authStep === "removeLocalStorage") {
       localStorage.clear();
-      setAuthStep("");
+      setAuthStep(""); // Perform actions conditionally inside the effect
     }
-  }, []);
+  }, []); // No conditional around the useEffect hook
 
+  // Effect to handle account setup logic
   useEffect(() => {
-    console.log("Account setup:", accountSetup);
     if (accountSetup) {
-      handleComplete();
+      handleComplete(); // Conditionally call your function based on accountSetup
     } else {
       setStep(1);
     }
@@ -68,6 +75,10 @@ export default function Content({
   const handleNextStep = () => {
     setStep((prevStep) => prevStep + 1);
   };
+
+  if (!isValid) {
+    return null; // Conditionally return early only after all hooks are set up
+  }
 
   return (
     <Bases>

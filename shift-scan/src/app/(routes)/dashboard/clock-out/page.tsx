@@ -1,6 +1,6 @@
 "use server";
 import { auth } from "@/auth";
-import ClockOutContent from "./clockOutContent";
+// import ClockOutContent from "@/app/(routes)/dashboard/clock-out/clockOutContent";
 import { redirect } from "next/navigation";
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
@@ -19,7 +19,7 @@ export default async function AdminDashboard() {
       <Contents>
         <Grids rows={"1"}>
           <Holds className="h-full row-span-1  ">
-            <ClockOutContent />;
+            {/* <ClockOutContent id={session.user.id} />; */}
           </Holds>
         </Grids>
       </Contents>

@@ -10,9 +10,8 @@ import { Labels } from "@/components/(reusable)/labels";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Modals } from "@/components/(reusable)/modals";
 import { Images } from "@/components/(reusable)/images";
-import { Contact, Employee, UserTraining } from "@/lib/types";
+import { Contact, Employee } from "@/lib/types";
 import { Buttons } from "@/components/(reusable)/buttons";
-import { Trainings } from "@prisma/client";
 import { Grids } from "@/components/(reusable)/grids";
 import { Texts } from "@/components/(reusable)/texts";
 import Spinner from "@/components/(animations)/spinner";
@@ -38,24 +37,24 @@ const employeeSchema = z.object({
   signature: z.string().nullable().optional(),
 });
 
-const trainingSchema = z.array(
-  z.object({
-    id: z.string(),
-    name: z.string(),
-    description: z.string().optional().default(""), // add a default value for optional properties
-    createdAt: z.date().optional().default(new Date()), // add a default value for optional properties
-    updatedAt: z.date().optional().default(new Date()), // add a default value for optional properties
-  })
-);
+// const trainingSchema = z.array(
+//   z.object({
+//     id: z.string(),
+//     name: z.string(),
+//     description: z.string().optional().default(""), // add a default value for optional properties
+//     createdAt: z.date().optional().default(new Date()), // add a default value for optional properties
+//     updatedAt: z.date().optional().default(new Date()), // add a default value for optional properties
+//   })
+// );
 
-const userTrainingSchema = z.array(
-  z.object({
-    id: z.number(),
-    userId: z.string(),
-    trainingId: z.string(),
-    isCompleted: z.boolean(),
-  })
-);
+// const userTrainingSchema = z.array(
+//   z.object({
+//     id: z.number(),
+//     userId: z.string(),
+//     trainingId: z.string(),
+//     isCompleted: z.boolean(),
+//   })
+// );
 
 export default function EmployeeInfo() {
   const [loading, setLoading] = useState(true);
@@ -63,8 +62,7 @@ export default function EmployeeInfo() {
   const [contacts, setContacts] = useState<
     Contact | Partial<Contact> | undefined
   >();
-  const [training, setTraining] = useState<Trainings[]>([]);
-  const [userTrainings, setUserTrainings] = useState<UserTraining[]>([]);
+
   const [isOpen, setIsOpen] = useState(false);
   const [isOpen2, setIsOpen2] = useState(false);
   const [editImg, setEditImg] = useState(false);
@@ -76,14 +74,6 @@ export default function EmployeeInfo() {
     useState<string>("");
 
   //----------------------------Data Fetching-------------------------------------
-  // Logic to get number of completed trainings
-  const total = training.length;
-  const completed = userTrainings.filter((ut) => ut.isCompleted).length;
-
-  // Logic to get completion percentage
-  const completionStatus = total > 0 ? completed / total : 0;
-  const completionPercentage = (completionStatus * 100).toFixed(0);
-
   // Fetch Employee Data
   const fetchEmployee = async () => {
     setLoading(true);
@@ -106,29 +96,14 @@ export default function EmployeeInfo() {
   const fetchProfile = async () => {
     setLoading(true);
     try {
-      const [contactsRes, trainingRes, userTrainingsRes] = await Promise.all([
-        fetch("/api/getContacts"),
-        fetch("/api/getTraining"),
-        fetch("/api/getUserTrainings"),
-      ]);
+      const [contactsRes] = await Promise.all([fetch("/api/getContacts")]);
 
-      const [contactsData, trainingData, userTrainingsData] = await Promise.all(
-        [contactsRes.json(), trainingRes.json(), userTrainingsRes.json()]
-      );
+      const [contactsData] = await Promise.all([contactsRes.json()]);
 
       // Validate data using Zod
       const validatedContacts = contactSchema.parse(contactsData);
-      const validatedTraining = trainingSchema.parse(trainingData);
-      const validatedUserTrainings = userTrainingSchema
-        .parse(userTrainingsData)
-        .map((userTraining) => ({
-          ...userTraining,
-          userId: employee?.id ?? "",
-        }));
 
       setContacts(validatedContacts);
-      setTraining(validatedTraining);
-      setUserTrainings(validatedUserTrainings);
     } catch (error) {
       console.error("Failed to fetch profile data:", error);
     } finally {

@@ -27,7 +27,7 @@ const JobsiteListSchema = z.array(JobCodesSchema);
 type JobCodes = z.infer<typeof JobCodesSchema>;
 
 export default function QrJobsiteContent() {
-  const [, setSelectedJobSiteName] = useState<string>("");
+  const [selectedJobSiteName, setSelectedJobSiteName] = useState<string>("");
   const [selectedJobSite, setSelectedJobSite] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [generatedList, setGeneratedList] = useState<JobCodes[]>([]);

@@ -9,11 +9,7 @@ import { useEffect, useState } from "react";
 import { Grids } from "@/components/(reusable)/grids";
 import Spinner from "@/components/(animations)/spinner";
 import { z } from "zod";
-
-// Zod schema for params
-const ParamsSchema = z.object({
-  employeeId: z.string(),
-});
+import { useParams } from "next/navigation";
 
 // Zod schema for employee data
 const EmployeeSchema = z.object({
@@ -38,7 +34,7 @@ type Employee = {
   id: string;
   firstName: string;
   lastName: string;
-  image?: string;
+  image: string;
   DOB?: string;
   contacts?: Contact[]; // Employee can have a list of contacts
 };
@@ -50,16 +46,10 @@ type Contact = {
   emergencyContactNumber?: string;
 };
 
-export default function employeeInfo({ employeeId }: { employeeId: string }) {
+export default function EmployeeInfo() {
+  // Changed to EmployeeInfo
   // Validate params using Zod
-  try {
-    ParamsSchema.parse(employeeId);
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      console.error("Validation error in params:", error.errors);
-    }
-  }
-
+  const { employeeId } = useParams();
   const t = useTranslations("MyTeam");
   const [employee, setEmployee] = useState<Employee | null>(null);
   const [contacts, setContacts] = useState<Contact | null>(null);
@@ -71,6 +61,7 @@ export default function employeeInfo({ employeeId }: { employeeId: string }) {
       try {
         const data = await fetch(`/api/getUserInfo/${employeeId}`);
         const res = await data.json();
+        console.log(res);
 
         // Validate fetched data using Zod
         try {

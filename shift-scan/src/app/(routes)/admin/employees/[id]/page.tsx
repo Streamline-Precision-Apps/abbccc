@@ -27,9 +27,9 @@ export default async function crewMember(props: { params: Promise<Params> }) {
 
   return (
     <Bases>
-      <EmployeeInfo params={params} />
+      <EmployeeInfo params={props.params} />
       <EmployeeTimeSheets
-        employeeId={(await params).id}
+        employeeId={params.id}
         jobsiteData={jobsiteData as unknown as Jobsites[]}
         costcodeData={costcodeData}
         equipmentData={
