@@ -276,6 +276,7 @@
     },
 
     "Hamburger": {
+        "Saving": "Savings changes",
         "loading": "Loading...",
         "NewPassword": "New Password",
         "ConfirmPassword": "Confirm New Password",
@@ -288,7 +289,7 @@
         "Security": "Security",
         "Biometrics": "Biometrics",
         "CameraAccess": "Camera Access",
-        "locationAccess": "Location Access",
+        "LocationAccess": "Location Access",
         "Inbox": "Inbox",
         "EmployeeID": "Employee ID",
         "PersonalEmail": "Personal Email",

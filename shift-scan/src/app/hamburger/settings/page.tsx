@@ -19,10 +19,10 @@ export default async function Settings() {
   return (
     <Bases>
       <Contents>
-        <Grids rows={"10"} gap={"5"}>
+        <Grids rows={"10"} gap={"6"}>
           <Holds
             background={"white"}
-            className="row-span-2 justify-center h-full"
+            className="row-span-2 justify-center h-full "
           >
             <Contents width={"section"}>
               <TitleBoxes
