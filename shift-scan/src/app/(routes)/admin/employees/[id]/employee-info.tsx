@@ -7,8 +7,8 @@ import { Forms } from "@/components/(reusable)/forms";
 import { Labels } from "@/components/(reusable)/labels";
 import { Inputs } from "@/components/(reusable)/inputs";
 type Params = Promise<{ id: string }>;
-export default async function employeeInfo({ params }: { params: Params }) {
-  const id = (await params).id;
+export default async function employeeInfo(props: { params: Promise<Params> }) {
+  const id = (await props.params).id;
   const employee = await prisma.users.findUnique({
     where: {
       id: id.toString(),

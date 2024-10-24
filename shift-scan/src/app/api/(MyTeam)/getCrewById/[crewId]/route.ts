@@ -2,20 +2,23 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
-type Params = Promise<{ crewId: string }>;
 
-export async function GET(request: Request, { params }: { params: Params }) {
+export async function GET(
+  request: Request,
+  { params }: { params: { crewId: string } }
+) {
   const session = await auth();
-  const userId = session?.user.id;
+  const userId = session?.user?.id;
 
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const crewId = Number((await params).crewId);
+
+  const { crewId } = params;
 
   try {
     const crewMembers = await prisma.crewMembers.findMany({
-      where: { crewId: crewId },
+      where: { crewId: Number(crewId) },
       include: {
         crew: {
           select: {
@@ -38,7 +41,7 @@ export async function GET(request: Request, { params }: { params: Params }) {
 
     const crew = crewMembers[0].crew.crewMembers.map((member) => member.user);
 
-    // Set Cache-Control header for caching
+    // Set Cache-Control header for caching if necessary
     return NextResponse.json(crew);
   } catch (error) {
     console.error("Error fetching crew data:", error);

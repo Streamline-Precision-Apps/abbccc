@@ -12,6 +12,7 @@ const HoldVariants = cva(
         //only variant attributes
         none: "bg-none",
         white: "bg-white rounded-xl",
+        offWhite: "bg-neutral-200 rounded-xl",
         red: "bg-app-red rounded-xl border border-app-red border-8",
         green: "bg-app-green rounded-xl border border-app-green border-8",
         orange: "bg-app-orange rounded-xl border border-app-orange border-8",
