@@ -181,7 +181,7 @@ export default function QrJobsiteContent() {
             <Buttons background={"green"} onClick={handleNew}>
               <Holds>
                 <Images
-                  titleImg={"/Plus.svg"}
+                  titleImg={"/plus.svg"}
                   titleImgAlt={"plus"}
                   size={"40"}
                 />

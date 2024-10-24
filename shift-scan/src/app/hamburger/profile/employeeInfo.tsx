@@ -306,7 +306,6 @@ export default function EmployeeInfo() {
                         base64string={signatureBase64String}
                         handleSubmitImage={() => {
                           handleSubmitImage();
-                          setEditSignatureModalOpen(false); // Close the modal after saving
                         }}
                       />
                     </Modals>
