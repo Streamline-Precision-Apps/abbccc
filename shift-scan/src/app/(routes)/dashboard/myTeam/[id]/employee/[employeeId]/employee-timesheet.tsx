@@ -10,6 +10,7 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { useTranslations } from "next-intl";
 import { EquipmentLog } from "@/lib/types";
 import { z } from "zod";
+import { useParams } from "next/navigation";
 
 // Zod schema for props
 const PropsSchema = z.object({
@@ -65,8 +66,10 @@ export type TimeSheet = {
   status?: string;
 };
 
-export const EmployeeTimeSheets = ({ employeeId }: Props) => {
+export const EmployeeTimeSheets = () => {
   // Validate props using Zod
+  const { employeeId } = useParams();
+
   try {
     PropsSchema.parse({ employeeId });
   } catch (error) {

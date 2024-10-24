@@ -5,14 +5,13 @@ import { EmployeeTimeSheets } from "./employee-timesheet";
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";
-type Params = Promise<{ employeeId: string }>;
-export default async function crewMember(props: { params: Promise<Params> }) {
+export default async function crewMember() {
   return (
-    <Bases>
+    <Bases className="h-full">
       <Contents>
-        <EmployeeInfo employeeId={(await props.params).employeeId} />
+        <EmployeeInfo />
         <Holds className="mt-5">
-          <EmployeeTimeSheets employeeId={(await props.params).employeeId} />
+          <EmployeeTimeSheets />
         </Holds>
       </Contents>
     </Bases>
