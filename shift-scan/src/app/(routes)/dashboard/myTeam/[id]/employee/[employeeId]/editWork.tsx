@@ -1,5 +1,4 @@
 "use client";
-// import { editTimeSheet } from "@/actions/timeSheetActions";
 import { useTranslations } from "next-intl";
 import React, { useState, useEffect } from "react";
 import { Holds } from "@/components/(reusable)/holds";
@@ -312,6 +311,7 @@ const EditWork = ({
 
       handleFormSubmit(employeeId, date, "Changes saved successfully.");
       setEdit(false);
+      setMessage("Changes saved successfully.");
     } catch (error) {
       console.error("Failed to save changes", error);
       setMessage("Failed to save changes.");
@@ -326,298 +326,310 @@ const EditWork = ({
 
   return loading ? (
     <>
-      <Contents width={"section"}>
-        <Holds>
+      <Holds background={"white"} className="gap-4">
+        <Contents width={"section"}>
           <Holds className="my-5">
             <Titles>{t("Timesheets")}</Titles>
             <br />
+            <br />
             <Spinner />
           </Holds>
-          <div className="border border-black"></div>
-          <br />
+        </Contents>
+      </Holds>
+      <br />
+      <Holds background={"white"} className="gap-4">
+        <Contents width={"section"}>
           <Holds className="my-5">
             <Titles>{t("EquipmentLogs")}</Titles>
             <br />
-            <div className="border border-black"></div>
+
             <br />
             <Spinner />
           </Holds>
-        </Holds>
-      </Contents>
+        </Contents>
+      </Holds>
     </>
   ) : (
-    <Contents width={"section"} className="my-5">
-      <Holds>
-        <Holds position={"row"} className="my-5">
-          {timesheetData.length === 0 ? null : (
-            <>
+    <>
+      {timesheetData.length === 0 ? null : (
+        <Holds background={"white"} position={"row"} className="py-3 my-5">
+          <>
+            <Holds>
+              <Buttons
+                onClick={editHandler}
+                className={edit ? "bg-app-red" : "bg-app-orange"}
+                size={edit ? "30" : "20"}
+              >
+                <Images
+                  titleImg={edit ? "/undo-edit.svg" : "/edit-form.svg"}
+                  titleImgAlt={edit ? "Undo Edit" : "Edit Form"}
+                  className="mx-auto p-2"
+                />
+              </Buttons>
+            </Holds>
+            {edit ? (
               <Holds>
                 <Buttons
-                  onClick={editHandler}
-                  className={edit ? "bg-app-red" : "bg-app-orange"}
-                  size={edit ? "30" : "20"}
+                  className="bg-app-green"
+                  onClick={handleSaveChanges}
+                  size={"30"}
                 >
                   <Images
-                    titleImg={edit ? "/undo-edit.svg" : "/edit-form.svg"}
-                    titleImgAlt={edit ? "Undo Edit" : "Edit Form"}
+                    titleImg={"/save-edit.svg"}
+                    titleImgAlt={"Save Changes"}
                     className="mx-auto p-2"
                   />
                 </Buttons>
               </Holds>
-              {edit ? (
-                <Holds>
-                  <Buttons
-                    className="bg-app-green"
-                    onClick={handleSaveChanges}
-                    size={"30"}
-                  >
-                    <Images
-                      titleImg={"/save-edit.svg"}
-                      titleImgAlt={"Save Changes"}
-                      className="mx-auto p-2"
-                    />
-                  </Buttons>
-                </Holds>
-              ) : null}
-            </>
-          )}
-        </Holds>
-        {message ? (
-          <>
-            <Titles>{t("Timesheets")}</Titles>
-            <br />
-            <Texts>{message}</Texts>
-            <br />
-            <div className="border border-black"></div>
-            <br />
+            ) : null}
           </>
-        ) : (
-          <ul>
-            <br />
-            <Titles>{t("Timesheets")}</Titles>
-            <br />
-            <div className="border border-black"></div>
-            <br />
-            {timesheets.map((timesheet) => (
-              <li key={timesheet.id}>
-                {/* Collapsible Header */}
-                <Holds
-                  background={"lightBlue"}
-                  className="cursor-pointer my-5"
-                  onClick={() => toggleItem(timesheet.id ?? "")}
-                >
-                  <Titles>
-                    {new Date(timesheet.submitDate ?? "").toLocaleDateString()}
-                  </Titles>
-                </Holds>
+        </Holds>
+      )}
+      <Holds background={"white"}>
+        <Contents width={"section"} className="my-5">
+          {message ? (
+            <Holds className="py-3">
+              <Titles>{t("Timesheets")}</Titles>
+              <br />
+              <Texts size={"p3"}>{message}</Texts>
+              <br />
 
-                {/* Conditional Rendering of Content */}
-                {expandedItems[timesheet.id ?? ""] && (
-                  <Holds background={"offWhite"} className="py-2">
-                    <Contents width={"section"}>
-                      <Inputs
-                        variant={"default"}
-                        id="submitDate"
-                        type="date"
-                        value={
-                          timesheet.submitDate
-                            ? new Date(timesheet.submitDate)
-                                .toISOString()
-                                .split("T")[0]
-                            : ""
-                        }
-                        hidden
-                      />
-
-                      <Labels>
-                        {t("Duration")}
-                        {edit ? <span>{t("Duration-Comment")}</span> : null}
-                      </Labels>
-                      <Inputs
-                        id="duration"
-                        type="text"
-                        value={
-                          timesheet.duration
-                            ? timesheet.duration.toFixed(2).toString()
-                            : ""
-                        }
-                        onChange={(e) =>
-                          handleInputChange(e, timesheet.id ?? "", "duration")
-                        }
-                        disabled={!edit}
-                      />
-
-                      <Labels>
-                        {t("ClockIn")}
-                        <>
-                          <Inputs
-                            variant={"default"}
-                            id="startDate"
-                            type="date"
-                            value={timesheet.startDate?.toString() || ""}
-                            onChange={(e) =>
-                              handleInputChangeDate(
-                                e,
-                                timesheet.id ?? "",
-                                "startDate"
-                              )
-                            }
-                            disabled={!edit}
-                          />
-                          <Inputs
-                            variant={"default"}
-                            id="startTime"
-                            type="time"
-                            value={timesheet.startTime?.toString() || ""}
-                            onChange={(e) =>
-                              handleInputChangeDate(
-                                e,
-                                timesheet.id ?? "",
-                                "startTime"
-                              )
-                            }
-                            disabled={!edit}
-                          />
-                        </>
-                      </Labels>
-
-                      <Labels>
-                        {t("ClockOut")}
-                        <>
-                          <Inputs
-                            variant={"default"}
-                            id="endDate"
-                            type="date"
-                            value={timesheet.endDate?.toString() || ""}
-                            onChange={(e) =>
-                              handleInputChangeDate(
-                                e,
-                                timesheet.id ?? "",
-                                "endDate"
-                              )
-                            }
-                            disabled={!edit}
-                          />
-                          <Inputs
-                            variant={"default"}
-                            id="endTime"
-                            type="time"
-                            value={timesheet.endTime?.toString() || ""}
-                            onChange={(e) =>
-                              handleInputChangeDate(
-                                e,
-                                timesheet.id ?? "",
-                                "endTime"
-                              )
-                            }
-                            disabled={!edit}
-                          />
-                        </>
-                      </Labels>
-
-                      <Labels>{t("JobSites")}</Labels>
-                      <Selects
-                        variant={"default"}
-                        id="jobsiteId"
-                        value={timesheet.jobsiteId ?? ""}
-                        onChange={(e) =>
-                          handleCodeChange(e, timesheet.id ?? "", "jobsiteId")
-                        }
-                        disabled={!edit}
-                      >
-                        {jobsitesData.map((jobsite) => (
-                          <option key={jobsite.id} value={jobsite.id}>
-                            {jobsite.name}
-                          </option>
-                        ))}
-                      </Selects>
-
-                      <Labels>{t("CostCode")}</Labels>
-                      <Selects
-                        variant={"default"}
-                        id="costcode"
-                        value={timesheet.costcode ?? ""}
-                        onChange={(e) =>
-                          handleCodeChange(e, timesheet.id ?? "", "costcode")
-                        }
-                        disabled={!edit}
-                      >
-                        {costcodesData.map((costcode) => (
-                          <option key={costcode.id} value={costcode.name}>
-                            {costcode.name}
-                          </option>
-                        ))}
-                      </Selects>
-                    </Contents>
+              <br />
+            </Holds>
+          ) : (
+            <ul>
+              <Titles>{t("Timesheets")}</Titles>
+              {timesheets.map((timesheet) => (
+                <li key={timesheet.id}>
+                  {/* Collapsible Header */}
+                  <Holds
+                    background={"lightBlue"}
+                    className="cursor-pointer mt-5 mb-1"
+                    onClick={() => toggleItem(timesheet.id ?? "")}
+                  >
+                    <Titles>
+                      {new Date(
+                        timesheet.submitDate ?? ""
+                      ).toLocaleDateString()}
+                    </Titles>
                   </Holds>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
+
+                  {/* Conditional Rendering of Content */}
+                  {expandedItems[timesheet.id ?? ""] && (
+                    <Holds background={"offWhite"} className="py-2">
+                      <Contents width={"section"}>
+                        <Inputs
+                          variant={"default"}
+                          id="submitDate"
+                          type="date"
+                          value={
+                            timesheet.submitDate
+                              ? new Date(timesheet.submitDate)
+                                  .toISOString()
+                                  .split("T")[0]
+                              : ""
+                          }
+                          hidden
+                        />
+
+                        <Labels>
+                          {t("Duration")}
+                          {edit ? <span>{t("Duration-Comment")}</span> : null}
+                        </Labels>
+                        <Inputs
+                          id="duration"
+                          type="text"
+                          value={
+                            timesheet.duration
+                              ? timesheet.duration.toFixed(2).toString()
+                              : ""
+                          }
+                          onChange={(e) =>
+                            handleInputChange(e, timesheet.id ?? "", "duration")
+                          }
+                          disabled={!edit}
+                        />
+
+                        <Labels>
+                          {t("ClockIn")}
+                          <>
+                            <Inputs
+                              variant={"default"}
+                              id="startDate"
+                              type="date"
+                              value={timesheet.startDate?.toString() || ""}
+                              onChange={(e) =>
+                                handleInputChangeDate(
+                                  e,
+                                  timesheet.id ?? "",
+                                  "startDate"
+                                )
+                              }
+                              disabled={!edit}
+                            />
+                            <Inputs
+                              variant={"default"}
+                              id="startTime"
+                              type="time"
+                              value={timesheet.startTime?.toString() || ""}
+                              onChange={(e) =>
+                                handleInputChangeDate(
+                                  e,
+                                  timesheet.id ?? "",
+                                  "startTime"
+                                )
+                              }
+                              disabled={!edit}
+                            />
+                          </>
+                        </Labels>
+
+                        <Labels>
+                          {t("ClockOut")}
+                          <>
+                            <Inputs
+                              variant={"default"}
+                              id="endDate"
+                              type="date"
+                              value={timesheet.endDate?.toString() || ""}
+                              onChange={(e) =>
+                                handleInputChangeDate(
+                                  e,
+                                  timesheet.id ?? "",
+                                  "endDate"
+                                )
+                              }
+                              disabled={!edit}
+                            />
+                            <Inputs
+                              variant={"default"}
+                              id="endTime"
+                              type="time"
+                              value={timesheet.endTime?.toString() || ""}
+                              onChange={(e) =>
+                                handleInputChangeDate(
+                                  e,
+                                  timesheet.id ?? "",
+                                  "endTime"
+                                )
+                              }
+                              disabled={!edit}
+                            />
+                          </>
+                        </Labels>
+
+                        <Labels>{t("JobSites")}</Labels>
+                        <Selects
+                          variant={"default"}
+                          id="jobsiteId"
+                          value={timesheet.jobsiteId ?? ""}
+                          onChange={(e) =>
+                            handleCodeChange(e, timesheet.id ?? "", "jobsiteId")
+                          }
+                          disabled={!edit}
+                        >
+                          {jobsitesData.map((jobsite) => (
+                            <option key={jobsite.id} value={jobsite.id}>
+                              {jobsite.name}
+                            </option>
+                          ))}
+                        </Selects>
+
+                        <Labels>{t("CostCode")}</Labels>
+                        <Selects
+                          variant={"default"}
+                          id="costcode"
+                          value={timesheet.costcode ?? ""}
+                          onChange={(e) =>
+                            handleCodeChange(e, timesheet.id ?? "", "costcode")
+                          }
+                          disabled={!edit}
+                        >
+                          {costcodesData.map((costcode) => (
+                            <option key={costcode.id} value={costcode.name}>
+                              {costcode.name}
+                            </option>
+                          ))}
+                        </Selects>
+                      </Contents>
+                    </Holds>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </Contents>
       </Holds>
-      <Holds>
-        <br />
+      <Holds background={"white"} className="py-2 mt-5">
         <Titles>{t("EquipmentLogs")}</Titles>
-        <br />
-        <div className="border border-black"></div>
         <br />
         <ul>
           {equipmentLogs.map((log) => (
             <li key={log.id} className="my-5">
               {/* Collapsible Header */}
-              <Holds
-                background={"orange"}
-                className="cursor-pointer my-5"
-                onClick={() => toggleEquipmentLog(log.id)}
-                style={{ cursor: "pointer" }}
-              >
-                <Titles>
-                  {log.Equipment.name.slice(0, 10)} {log.Equipment.qrId}
-                </Titles>
-              </Holds>
+              <Contents width={"section"}>
+                <Holds
+                  background={"orange"}
+                  className="cursor-pointer  mt-5 mb-1"
+                  onClick={() => toggleEquipmentLog(log.id)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <Titles>
+                    {log.Equipment.name.slice(0, 10)} {log.Equipment.qrId}
+                  </Titles>
+                </Holds>
+              </Contents>
 
               {/* Conditional Rendering of Content */}
               {expandedEquipmentLogs[log.id] && (
-                <Holds background={"offWhite"} className="py-2">
-                  <Contents width={"section"}>
-                    <Labels> Equipment Used</Labels>
-                    <Selects
-                      variant={"default"}
-                      value={log.Equipment.name}
-                      onChange={(e) => handleEquipmentChange(e, log.id)}
-                      disabled={!edit}
-                    >
-                      {equipment.map((equipmentLog) => (
-                        <option key={equipmentLog.id} value={equipmentLog.name}>
-                          {equipmentLog.name.slice(0, 10)} {equipmentLog.qrId}
-                        </option>
-                      ))}
-                    </Selects>
+                <Contents width={"section"}>
+                  <Holds background={"offWhite"} className="py-2">
+                    <Contents width={"section"}>
+                      <Labels> Equipment Used</Labels>
+                      <Selects
+                        variant={"default"}
+                        value={log.Equipment.name}
+                        onChange={(e) => handleEquipmentChange(e, log.id)}
+                        disabled={!edit}
+                      >
+                        {equipment.map((equipmentLog) => (
+                          <option
+                            key={equipmentLog.id}
+                            value={equipmentLog.name}
+                          >
+                            {equipmentLog.name.slice(0, 10)} {equipmentLog.qrId}
+                          </option>
+                        ))}
+                      </Selects>
 
-                    <Labels>{t("Duration")}</Labels>
-                    <Inputs
-                      variant={"default"}
-                      type="text"
-                      name="eq-duration"
-                      value={
-                        log.duration !== null
-                          ? Number(log.duration).toFixed(2).toString()
-                          : ""
-                      }
-                      onChange={(e) => handleDurationChange(e, log.id)}
-                      disabled={!edit}
-                    />
-                  </Contents>
-                </Holds>
+                      <Labels>{t("Duration")}</Labels>
+                      <Inputs
+                        variant={"default"}
+                        type="text"
+                        name="eq-duration"
+                        value={
+                          log.duration !== null
+                            ? Number(log.duration).toFixed(2).toString()
+                            : ""
+                        }
+                        onChange={(e) => handleDurationChange(e, log.id)}
+                        disabled={!edit}
+                      />
+                    </Contents>
+                  </Holds>
+                </Contents>
               )}
             </li>
           ))}
 
-          {equipmentLogs.length === 0 && <Texts>{t("NoEquipmentLogs")}</Texts>}
+          {equipmentLogs.length === 0 && (
+            <Texts size={"p3"}>{t("NoEquipmentLogs")}</Texts>
+          )}
         </ul>
+        <br />
+        <br />
       </Holds>
-    </Contents>
+    </>
   );
 };
 
