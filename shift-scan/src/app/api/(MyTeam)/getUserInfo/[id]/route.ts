@@ -26,6 +26,7 @@ export async function GET(req: NextRequest, { params }: { params: Params }) {
       firstName: true,
       lastName: true,
       DOB: true,
+      image: true,
       contacts: {
         select: {
           phoneNumber: true,

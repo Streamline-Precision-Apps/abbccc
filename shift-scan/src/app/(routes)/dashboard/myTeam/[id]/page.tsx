@@ -9,15 +9,9 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
-import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import React, { useEffect, useState } from "react";
 import { z } from "zod";
-
-// Zod schema for params
-const ParamsSchema = z.object({
-  id: z.string(),
-});
 
 // Zod schema for CrewMember type
 const CrewMemberSchema = z.object({
@@ -38,17 +32,12 @@ export default function Content() {
   const [crew, setCrew] = useState<CrewMember[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [titles, setTitles] = useState<string>("");
-  const { status: status } = useSession();
+  const t = useTranslations("MyTeam");
 
   const params = useParams(); // remove typing here
   const { id } = params;
   const idParsed = z.coerce.number().safeParse(id);
-  if (!idParsed.success) {
-    console.error("Invalid crew ID", idParsed.error);
-    return;
-  }
   const crewId = idParsed.data;
-  const t = useTranslations("MyTeam");
 
   useEffect(() => {
     const fetchCrew = async () => {
@@ -56,9 +45,8 @@ export default function Content() {
         setIsLoading(true);
 
         const response = await fetch(`/api/getCrewById/${crewId}`);
-
         const crewData: CrewResponse = await response.json();
-        console.log("crewData", crewData);
+
         // Validate fetched crew data using Zod
         try {
           CrewResponseSchema.parse(crewData);
@@ -79,7 +67,7 @@ export default function Content() {
     };
 
     fetchCrew();
-  }, [crewId, status, id]);
+  }, [crewId, id]);
 
   useEffect(() => {
     const fetchCrew = async () => {
@@ -90,7 +78,7 @@ export default function Content() {
       setTitles(setName);
     };
     fetchCrew();
-  }, [crewId, status, id]);
+  }, [crewId, id]);
 
   return (
     <Bases>
