@@ -68,7 +68,7 @@ export type TimeSheet = {
 
 export const EmployeeTimeSheets = () => {
   // Validate props using Zod
-  const { employeeId } = useParams();
+  const { employeeId } = useParams<{ employeeId: string }>();
 
   try {
     PropsSchema.parse({ employeeId });
