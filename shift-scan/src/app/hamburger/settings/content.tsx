@@ -241,7 +241,7 @@ export default function Index({ id }: Props) {
                   value={updatedData?.language || "en"}
                   data={updatedData?.language}
                   onClick={() => setIsLangModalOpen(true)}
-                  className="h-[2rem] w-1/2  mx-auto text-center"
+                  className="bg-app-blue h-[2rem] w-1/2  mx-auto text-center"
                 />
               </Holds>
             </Grids>
