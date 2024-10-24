@@ -9,6 +9,13 @@ import Spinner from "@/components/(animations)/spinner";
 import { EquipmentLog } from "@/lib/types";
 
 import { z } from "zod";
+import { editTimeSheet } from "@/actions/timeSheetActions";
+import { Labels } from "@/components/(reusable)/labels";
+import { Inputs } from "@/components/(reusable)/inputs";
+import { Selects } from "@/components/(reusable)/selects";
+import { Buttons } from "@/components/(reusable)/buttons";
+import { Images } from "@/components/(reusable)/images";
+import { Texts } from "@/components/(reusable)/texts";
 
 // Zod schema for TimeSheet type
 const TimeSheetSchema = z.object({
@@ -117,9 +124,15 @@ const EditWork = ({
     }
   }
 
-  const [, setTimesheets] = useState<TimeSheet[]>([]);
-  const [, setEquipmentLogs] = useState<EquipmentLog[]>([]);
-  const [, setMessage] = useState<string | null>(null);
+  const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>(
+    {}
+  );
+  const [expandedEquipmentLogs, setExpandedEquipmentLogs] = useState<
+    Record<number, boolean>
+  >({});
+  const [timesheets, setTimesheets] = useState<TimeSheet[]>([]);
+  const [equipmentLogs, setEquipmentLogs] = useState<EquipmentLog[]>([]);
+  const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const t = useTranslations("MyTeam");
@@ -200,92 +213,410 @@ const EditWork = ({
     fetchEquipmentLogs();
   }, [date]);
 
-  // const handleInputChange = (
-  //   e: React.ChangeEvent<HTMLInputElement>,
-  //   id: string,
-  //   field: keyof TimeSheet
-  // ) => {
-  //   const value = e.target.value;
-  //   setTimesheets((prevData) =>
-  //     prevData.map((timesheet) =>
-  //       timesheet.id === id ? { ...timesheet, [field]: value } : timesheet
-  //     )
-  //   );
-  // };
+  const toggleItem = (id: string) => {
+    setExpandedItems((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
 
-  // const handleInputChangeDate = (
-  //   e: React.ChangeEvent<HTMLInputElement>,
-  //   id: string,
-  //   field: "startDate" | "startTime" | "endDate" | "endTime"
-  // ) => {
-  //   const value = e.target.value;
-  //   setTimesheets((prevTimesheets) =>
-  //     prevTimesheets.map((timesheet) =>
-  //       timesheet.id === id ? { ...timesheet, [field]: value } : timesheet
-  //     )
-  //   );
-  // };
+  const toggleEquipmentLog = (id: number) => {
+    setExpandedEquipmentLogs((prev) => ({
+      ...prev,
+      [id]: !prev[id], // Toggle the expansion state of the specific equipment log
+    }));
+  };
 
-  // const handleCodeChange = (
-  //   e: React.ChangeEvent<HTMLSelectElement>,
-  //   id: string,
-  //   field: keyof TimeSheet
-  // ) => {
-  //   const value = e.target.value;
-  //   setTimesheets((prevTimesheets) =>
-  //     prevTimesheets.map((timesheet) =>
-  //       timesheet.id === id ? { ...timesheet, [field]: value } : timesheet
-  //     )
-  //   );
-  // };
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    id: string,
+    field: keyof TimeSheet
+  ) => {
+    const value = e.target.value;
+    setTimesheets((prevData) =>
+      prevData.map((timesheet) =>
+        timesheet.id === id ? { ...timesheet, [field]: value } : timesheet
+      )
+    );
+  };
 
-  // const handleSaveChanges = async () => {
-  //   try {
-  //     for (const timesheet of timesheets) {
-  //       const formData = new FormData();
-  //       formData.append("id", timesheet.id ?? "");
-  //       formData.append(
-  //         "submitDate",
-  //         timesheet.submitDate?.toISOString() ?? ""
-  //       );
-  //       formData.append("employeeId", employeeId);
-  //       formData.append("costcode", timesheet.costcode ?? "");
-  //       formData.append(
-  //         "startTime",
-  //         `${timesheet.startDate}T${timesheet.startTime}`
-  //       );
-  //       formData.append("endTime", `${timesheet.endDate}T${timesheet.endTime}`);
-  //       formData.append("jobsiteId", timesheet.jobsiteId ?? "");
-  //       await editTimeSheet(formData);
-  //     }
+  const handleInputChangeDate = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    id: string,
+    field: "startDate" | "startTime" | "endDate" | "endTime"
+  ) => {
+    const value = e.target.value;
+    setTimesheets((prevTimesheets) =>
+      prevTimesheets.map((timesheet) =>
+        timesheet.id === id ? { ...timesheet, [field]: value } : timesheet
+      )
+    );
+  };
 
-  //     handleFormSubmit(employeeId, date, "Changes saved successfully.");
-  //     setEdit(false);
-  //   } catch (error) {
-  //     console.error("Failed to save changes", error);
-  //     setMessage("Failed to save changes.");
-  //     setEdit(false);
-  //     handleFormSubmit(employeeId, date, "Changes not saved.");
-  //   }
-  // };
+  const handleCodeChange = (
+    e: React.ChangeEvent<HTMLSelectElement>,
+    id: string,
+    field: keyof TimeSheet
+  ) => {
+    const value = e.target.value;
+    setTimesheets((prevTimesheets) =>
+      prevTimesheets.map((timesheet) =>
+        timesheet.id === id ? { ...timesheet, [field]: value } : timesheet
+      )
+    );
+  };
 
-  // const editHandler = () => {
-  //   setEdit(!edit);
-  // };
+  const handleDurationChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    id: number
+  ) => {
+    const value = e.target.value;
+    setEquipmentLogs((prevLogs) =>
+      prevLogs.map((log) => (log.id === id ? { ...log, duration: value } : log))
+    );
+  };
+
+  const handleEquipmentChange = (
+    e: React.ChangeEvent<HTMLSelectElement>,
+    id: number
+  ) => {
+    const value = e.target.value;
+    setEquipmentLogs((prevLogs) =>
+      prevLogs.map((log) =>
+        log.id === id
+          ? { ...log, Equipment: { ...log.Equipment, name: value } }
+          : log
+      )
+    );
+  };
+
+  const handleSaveChanges = async () => {
+    try {
+      for (const timesheet of timesheets) {
+        const formData = new FormData();
+        formData.append("id", timesheet.id ?? "");
+        formData.append(
+          "submitDate",
+          timesheet.submitDate?.toISOString() ?? ""
+        );
+        formData.append("employeeId", employeeId);
+        formData.append("costcode", timesheet.costcode ?? "");
+        formData.append(
+          "startTime",
+          `${timesheet.startDate}T${timesheet.startTime}`
+        );
+        formData.append("endTime", `${timesheet.endDate}T${timesheet.endTime}`);
+        formData.append("jobsiteId", timesheet.jobsiteId ?? "");
+        await editTimeSheet(formData);
+      }
+
+      handleFormSubmit(employeeId, date, "Changes saved successfully.");
+      setEdit(false);
+    } catch (error) {
+      console.error("Failed to save changes", error);
+      setMessage("Failed to save changes.");
+      setEdit(false);
+      handleFormSubmit(employeeId, date, "Changes not saved.");
+    }
+  };
+
+  const editHandler = () => {
+    setEdit(!edit);
+  };
 
   return loading ? (
-    <Contents width={"section"}>
-      <Holds>
-        <Holds className="my-5">
-          <Titles>{t("Timesheets")}</Titles>
+    <>
+      <Contents width={"section"}>
+        <Holds>
+          <Holds className="my-5">
+            <Titles>{t("Timesheets")}</Titles>
+            <br />
+            <Spinner />
+          </Holds>
+          <div className="border border-black"></div>
           <br />
-          <Spinner />
+          <Holds className="my-5">
+            <Titles>{t("EquipmentLogs")}</Titles>
+            <br />
+            <div className="border border-black"></div>
+            <br />
+            <Spinner />
+          </Holds>
         </Holds>
-      </Holds>
-    </Contents>
+      </Contents>
+    </>
   ) : (
     <Contents width={"section"} className="my-5">
-      <Holds>{/* Render timesheets and equipment logs */}</Holds>
+      <Holds>
+        <Holds position={"row"} className="my-5">
+          {timesheetData.length === 0 ? null : (
+            <>
+              <Holds>
+                <Buttons
+                  onClick={editHandler}
+                  className={edit ? "bg-app-red" : "bg-app-orange"}
+                  size={edit ? "30" : "20"}
+                >
+                  <Images
+                    titleImg={edit ? "/undo-edit.svg" : "/edit-form.svg"}
+                    titleImgAlt={edit ? "Undo Edit" : "Edit Form"}
+                    className="mx-auto p-2"
+                  />
+                </Buttons>
+              </Holds>
+              {edit ? (
+                <Holds>
+                  <Buttons
+                    className="bg-app-green"
+                    onClick={handleSaveChanges}
+                    size={"30"}
+                  >
+                    <Images
+                      titleImg={"/save-edit.svg"}
+                      titleImgAlt={"Save Changes"}
+                      className="mx-auto p-2"
+                    />
+                  </Buttons>
+                </Holds>
+              ) : null}
+            </>
+          )}
+        </Holds>
+        {message ? (
+          <>
+            <Titles>{t("Timesheets")}</Titles>
+            <br />
+            <Texts>{message}</Texts>
+            <br />
+            <div className="border border-black"></div>
+            <br />
+          </>
+        ) : (
+          <ul>
+            <br />
+            <Titles>{t("Timesheets")}</Titles>
+            <br />
+            <div className="border border-black"></div>
+            <br />
+            {timesheets.map((timesheet) => (
+              <li key={timesheet.id}>
+                {/* Collapsible Header */}
+                <Holds
+                  background={"lightBlue"}
+                  className="cursor-pointer my-5"
+                  onClick={() => toggleItem(timesheet.id ?? "")}
+                >
+                  <Titles>
+                    {new Date(timesheet.submitDate ?? "").toLocaleDateString()}
+                  </Titles>
+                </Holds>
+
+                {/* Conditional Rendering of Content */}
+                {expandedItems[timesheet.id ?? ""] && (
+                  <Holds background={"offWhite"} className="py-2">
+                    <Contents width={"section"}>
+                      <Inputs
+                        variant={"default"}
+                        id="submitDate"
+                        type="date"
+                        value={
+                          timesheet.submitDate
+                            ? new Date(timesheet.submitDate)
+                                .toISOString()
+                                .split("T")[0]
+                            : ""
+                        }
+                        hidden
+                      />
+
+                      <Labels>
+                        {t("Duration")}
+                        {edit ? <span>{t("Duration-Comment")}</span> : null}
+                      </Labels>
+                      <Inputs
+                        id="duration"
+                        type="text"
+                        value={
+                          timesheet.duration
+                            ? timesheet.duration.toFixed(2).toString()
+                            : ""
+                        }
+                        onChange={(e) =>
+                          handleInputChange(e, timesheet.id ?? "", "duration")
+                        }
+                        disabled={!edit}
+                      />
+
+                      <Labels>
+                        {t("ClockIn")}
+                        <>
+                          <Inputs
+                            variant={"default"}
+                            id="startDate"
+                            type="date"
+                            value={timesheet.startDate?.toString() || ""}
+                            onChange={(e) =>
+                              handleInputChangeDate(
+                                e,
+                                timesheet.id ?? "",
+                                "startDate"
+                              )
+                            }
+                            disabled={!edit}
+                          />
+                          <Inputs
+                            variant={"default"}
+                            id="startTime"
+                            type="time"
+                            value={timesheet.startTime?.toString() || ""}
+                            onChange={(e) =>
+                              handleInputChangeDate(
+                                e,
+                                timesheet.id ?? "",
+                                "startTime"
+                              )
+                            }
+                            disabled={!edit}
+                          />
+                        </>
+                      </Labels>
+
+                      <Labels>
+                        {t("ClockOut")}
+                        <>
+                          <Inputs
+                            variant={"default"}
+                            id="endDate"
+                            type="date"
+                            value={timesheet.endDate?.toString() || ""}
+                            onChange={(e) =>
+                              handleInputChangeDate(
+                                e,
+                                timesheet.id ?? "",
+                                "endDate"
+                              )
+                            }
+                            disabled={!edit}
+                          />
+                          <Inputs
+                            variant={"default"}
+                            id="endTime"
+                            type="time"
+                            value={timesheet.endTime?.toString() || ""}
+                            onChange={(e) =>
+                              handleInputChangeDate(
+                                e,
+                                timesheet.id ?? "",
+                                "endTime"
+                              )
+                            }
+                            disabled={!edit}
+                          />
+                        </>
+                      </Labels>
+
+                      <Labels>{t("JobSites")}</Labels>
+                      <Selects
+                        variant={"default"}
+                        id="jobsiteId"
+                        value={timesheet.jobsiteId ?? ""}
+                        onChange={(e) =>
+                          handleCodeChange(e, timesheet.id ?? "", "jobsiteId")
+                        }
+                        disabled={!edit}
+                      >
+                        {jobsitesData.map((jobsite) => (
+                          <option key={jobsite.id} value={jobsite.id}>
+                            {jobsite.name}
+                          </option>
+                        ))}
+                      </Selects>
+
+                      <Labels>{t("CostCode")}</Labels>
+                      <Selects
+                        variant={"default"}
+                        id="costcode"
+                        value={timesheet.costcode ?? ""}
+                        onChange={(e) =>
+                          handleCodeChange(e, timesheet.id ?? "", "costcode")
+                        }
+                        disabled={!edit}
+                      >
+                        {costcodesData.map((costcode) => (
+                          <option key={costcode.id} value={costcode.name}>
+                            {costcode.name}
+                          </option>
+                        ))}
+                      </Selects>
+                    </Contents>
+                  </Holds>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </Holds>
+      <Holds>
+        <br />
+        <Titles>{t("EquipmentLogs")}</Titles>
+        <br />
+        <div className="border border-black"></div>
+        <br />
+        <ul>
+          {equipmentLogs.map((log) => (
+            <li key={log.id} className="my-5">
+              {/* Collapsible Header */}
+              <Holds
+                background={"orange"}
+                className="cursor-pointer my-5"
+                onClick={() => toggleEquipmentLog(log.id)}
+                style={{ cursor: "pointer" }}
+              >
+                <Titles>
+                  {log.Equipment.name.slice(0, 10)} {log.Equipment.qrId}
+                </Titles>
+              </Holds>
+
+              {/* Conditional Rendering of Content */}
+              {expandedEquipmentLogs[log.id] && (
+                <Holds background={"offWhite"} className="py-2">
+                  <Contents width={"section"}>
+                    <Labels> Equipment Used</Labels>
+                    <Selects
+                      variant={"default"}
+                      value={log.Equipment.name}
+                      onChange={(e) => handleEquipmentChange(e, log.id)}
+                      disabled={!edit}
+                    >
+                      {equipment.map((equipmentLog) => (
+                        <option key={equipmentLog.id} value={equipmentLog.name}>
+                          {equipmentLog.name.slice(0, 10)} {equipmentLog.qrId}
+                        </option>
+                      ))}
+                    </Selects>
+
+                    <Labels>{t("Duration")}</Labels>
+                    <Inputs
+                      variant={"default"}
+                      type="text"
+                      name="eq-duration"
+                      value={
+                        log.duration !== null
+                          ? Number(log.duration).toFixed(2).toString()
+                          : ""
+                      }
+                      onChange={(e) => handleDurationChange(e, log.id)}
+                      disabled={!edit}
+                    />
+                  </Contents>
+                </Holds>
+              )}
+            </li>
+          ))}
+
+          {equipmentLogs.length === 0 && <Texts>{t("NoEquipmentLogs")}</Texts>}
+        </ul>
+      </Holds>
     </Contents>
   );
 };
