@@ -83,7 +83,7 @@ export const EmployeeTimeSheets = () => {
   const [filteredEquipmentData, setFilteredEquipmentData] = useState<
     EquipmentLog[]
   >([]);
-  const [message, setMessage] = useState("");
+  const [, setMessage] = useState("");
   const [edit, setEdit] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const [date, setDate] = useState("");
