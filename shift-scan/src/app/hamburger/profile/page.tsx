@@ -8,9 +8,8 @@ import { Holds } from "@/components/(reusable)/holds";
 
 export default async function EmployeeProfile() {
   const session = await auth();
-  const userId = session?.user.id;
 
-  if (!userId) {
+  if (!session) {
     redirect("/signin");
   }
 
