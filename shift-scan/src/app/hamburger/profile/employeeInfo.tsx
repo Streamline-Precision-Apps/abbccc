@@ -22,11 +22,10 @@ import { Titles } from "@/components/(reusable)/titles";
 
 // Define Zod schemas for validation
 const contactSchema = z.object({
-  id: z.number(),
   phoneNumber: z.string().optional(),
-  email: z.string().optional(),
   emergencyContact: z.string().optional(),
   emergencyContactNumber: z.string().optional(),
+  email: z.string().optional(),
 });
 
 const employeeSchema = z.object({
