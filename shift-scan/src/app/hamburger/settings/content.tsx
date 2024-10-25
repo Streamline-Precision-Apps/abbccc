@@ -17,9 +17,6 @@ import { useRouter } from "next/navigation";
 import { z } from "zod"; // Import Zod for validation
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Selects } from "@/components/(reusable)/selects";
-import { Options } from "@/components/(reusable)/options";
-import { Labels } from "@/components/(reusable)/labels";
-import { time } from "console";
 import { setLocale } from "@/actions/cookieActions";
 
 // Define Zod schema for UserSettings
