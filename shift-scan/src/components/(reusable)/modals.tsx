@@ -209,22 +209,26 @@ const Modals: FC<ModalProps> = ({
             )}
             {...props}
           >
-            <Holds size={"full"} className="mb-10 mr-3">
+            <Titles>{props.title}</Titles>
+            <div className="modal-content">{props.children}</div>
+            <Holds size={"full"} className="mb-10">
               <Buttons
                 onClick={handleClose}
                 className="close-btn"
-                size={"20"}
+                size={"90"}
                 background={"red"}
-                position={"right"}
+                position={"center"}
               >
                 <Holds>
-                  <Images titleImg="/x.svg" titleImgAlt="x" />
+                  <Images
+                    titleImg="/x.svg"
+                    titleImgAlt="x"
+                    size={"10"}
+                    className="my-auto"
+                  />
                 </Holds>
               </Buttons>
             </Holds>
-
-            <Titles>{props.title}</Titles>
-            <div className="modal-content">{props.children}</div>
           </div>
         </Bases>
       </ReactPortal>
