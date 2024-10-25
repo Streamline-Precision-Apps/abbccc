@@ -105,9 +105,8 @@ export default function Index({ id }: Props) {
 
   const handleSelectChange = (key: keyof UserSettings, value: string) => {
     setUpdatedData((prev) => (prev ? { ...prev, [key]: value } : null));
-    setLocale(value === "es" ? true : false);
+    setLocale(value === "en" ? false : true);
   };
-
   if (!data) {
     return (
       <Holds background={"white"} className="row-span-7 p-4 h-full">
@@ -238,7 +237,7 @@ export default function Index({ id }: Props) {
               <Holds className="row-span-1 mx-auto">
                 <Inputs
                   readOnly
-                  value={updatedData?.language || "en"}
+                  value={updatedData?.language === "en" ? "English" : "Spanish"}
                   data={updatedData?.language}
                   onClick={() => setIsLangModalOpen(true)}
                   className="bg-app-blue h-[2rem] w-1/2  mx-auto text-center"
@@ -256,14 +255,17 @@ export default function Index({ id }: Props) {
           title="Language Selection"
           background={"default"}
         >
-          <Holds size={"full"} className="h-[10rem]">
-            <Selects
-              value={updatedData?.language || "en"}
-              onChange={(e) => handleSelectChange("language", e.target.value)}
-            >
-              <option value="en">English</option>
-              <option value="es">Spanish</option>
-            </Selects>
+          <Holds size={"full"} className="h-[20rem]">
+            <Contents width={"section"} className="h-full">
+              <Selects
+                value={updatedData?.language || "en"}
+                onChange={(e) => handleSelectChange("language", e.target.value)}
+              >
+                <option value="default">Choose a Language</option>
+                <option value="en">English</option>
+                <option value="es">Spanish</option>
+              </Selects>
+            </Contents>
           </Holds>
         </Modals>
 
