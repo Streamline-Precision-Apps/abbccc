@@ -1,15 +1,16 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import QrScanner from "qr-scanner";
-import { useRouter } from 'next/navigation';
-import { useEQScanData } from '@/app/context/equipmentContext';
+import { useRouter } from "next/navigation";
+import { useEQScanData } from "@/app/context/equipmentContext";
 
 type QrReaderProps = {
   handleNextStep: () => void;
-}
+};
 
-export default function QR_EQ ({ handleNextStep } : QrReaderProps) {
-  const videoRef: React.MutableRefObject<HTMLVideoElement | null> = useRef(null);
+export default function QR_EQ({ handleNextStep }: QrReaderProps) {
+  const videoRef: React.MutableRefObject<HTMLVideoElement | null> =
+    useRef(null);
   const qrScannerRef: React.MutableRefObject<QrScanner | null> = useRef(null);
   const [scanCount, setScanCount] = useState(0);
   const { setscanEQResult } = useEQScanData();
@@ -22,19 +23,18 @@ export default function QR_EQ ({ handleNextStep } : QrReaderProps) {
       qrScannerRef.current?.stop();
       handleNextStep();
     } catch (error) {
-      console.error('Error processing QR code:', error);
-      alert('Invalid QR code');
+      console.error("Error processing QR code:", error);
+      alert("Invalid QR code");
       qrScannerRef.current?.stop();
       router.back();
       setTimeout(() => {
-        alert('Invalid QR code');
+        alert("Invalid QR code");
       }, 100); // Delay the alert by 100 milliseconds
     }
   };
 
-  const onScanFail = (err: string | Error) => {
+  const onScanFail = () => {
     setScanCount((prevCount) => prevCount + 1);
-    console.warn('Scan failed:', err);
   };
 
   useEffect(() => {
@@ -52,9 +52,13 @@ export default function QR_EQ ({ handleNextStep } : QrReaderProps) {
 
       QrScanner.hasCamera().then((hasCamera: boolean) => {
         if (hasCamera) {
-          scanner.start().catch((error: Error) => console.error('Scanner start error:', error));
+          scanner
+            .start()
+            .catch((error: Error) =>
+              console.error("Scanner start error:", error)
+            );
         } else {
-          console.error('No camera found');
+          console.error("No camera found");
         }
       });
 
@@ -68,11 +72,14 @@ export default function QR_EQ ({ handleNextStep } : QrReaderProps) {
   useEffect(() => {
     if (scanCount >= SCAN_THRESHOLD) {
       qrScannerRef.current?.stop();
-      router.push('/dashboard');
+      router.push("/dashboard");
     }
   }, [scanCount, router]);
 
   return (
-      <video ref={videoRef} className=" rounded-2xl bg-green-300 border-black"></video>
+    <video
+      ref={videoRef}
+      className=" rounded-2xl bg-green-300 border-black"
+    ></video>
   );
-};
+}

@@ -17,7 +17,7 @@ const ModalVariants = cva(
   {
     variants: {
       background: {
-        default: "bg-white rounded-2xl",
+        default: "bg-white opacity-90 rounded-2xl p-1",
       },
       position: {
         center: "relative",
@@ -27,7 +27,7 @@ const ModalVariants = cva(
           "fixed rounded p-1 bg-white top-1/4 left-3/4 -translate-x-1/4 -translate-y-1/2 flex flex-col",
         sm: "absolute left-[50%] top-[50%]",
         med: "",
-        lg: " fixed rounded-3xl p-1 bg-white h-fit w-2/3 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col justify-normal mt-16",
+        lg: " fixed rounded-3xl p-1 bg-white opacity-none h-fit w-2/3 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col justify-normal mt-16",
         clock:
           "fixed rounded top-1/3 -translate-y-1/3 flex flex-col w-full h-[100%] ",
         fullPage:
@@ -201,7 +201,7 @@ const Modals: FC<ModalProps> = ({
     );
   else
     return (
-      <ReactPortal wrapperId="react-portal-modal-container">
+      <ReactPortal wrapperId="react-portal-modal-container ">
         <Bases background={"modal"} position={"start"} size={"screen"}>
           <div
             className={cn(
@@ -209,13 +209,26 @@ const Modals: FC<ModalProps> = ({
             )}
             {...props}
           >
-            <Buttons onClick={handleClose} className="close-btn" size={"full"}>
-              <Images titleImg="/x.svg" titleImgAlt="x" />
-            </Buttons>
-            <Holds>
-              <Titles>Hello</Titles>
+            <Titles>{props.title}</Titles>
+            <div className="modal-content">{props.children}</div>
+            <Holds size={"full"} className="mb-10">
+              <Buttons
+                onClick={handleClose}
+                className="close-btn"
+                size={"90"}
+                background={"red"}
+                position={"center"}
+              >
+                <Holds>
+                  <Images
+                    titleImg="/x.svg"
+                    titleImgAlt="x"
+                    size={"10"}
+                    className="my-auto"
+                  />
+                </Holds>
+              </Buttons>
             </Holds>
-            {/* <div className="modal-content">{props.children}</div> */}
           </div>
         </Bases>
       </ReactPortal>

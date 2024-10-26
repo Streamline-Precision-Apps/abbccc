@@ -39,7 +39,7 @@ const EquipmentSchema = z.array(
   })
 );
 
-type Props = z.infer<typeof PropsSchema>;
+// type Props = z.infer<typeof PropsSchema>;
 export type TimeSheet = {
   endDate: string | undefined;
   startDate: string;
@@ -83,7 +83,7 @@ export const EmployeeTimeSheets = () => {
   const [filteredEquipmentData, setFilteredEquipmentData] = useState<
     EquipmentLog[]
   >([]);
-  const [message, setMessage] = useState("");
+  const [, setMessage] = useState("");
   const [edit, setEdit] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const [date, setDate] = useState("");
@@ -191,11 +191,10 @@ export const EmployeeTimeSheets = () => {
               />
               <Inputs type="hidden" name="id" value={employeeId} />
             </form>
-            <Titles>{message}</Titles>
           </Holds>
 
           {date && (
-            <Holds size={"full"} background={"white"} className="my-5">
+            <Holds size={"full"} className="my-5">
               <EditWork
                 timesheetData={timesheets}
                 edit={edit}

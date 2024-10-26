@@ -20,7 +20,7 @@ export default async function Index() {
           <Holds
             background={"white"}
             size={"full"}
-            className="row-span-2 p-4 h-full"
+            className="row-span-2 h-full"
           >
             <Contents width={"section"}>
               <TitleBoxes
