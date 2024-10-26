@@ -6,7 +6,8 @@
         "Btn-signIn": "Sign In",
         "Btn-forgot": "Forgot Password?",
         "Spanish": "Habla Español?",
-        "Err": "Invalid Attempt"
+        "Err": "Invalid Attempt",
+        "ChangePassword": "Change Password"
     },
 
     "Home" : {
