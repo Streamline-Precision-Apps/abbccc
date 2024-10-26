@@ -29,7 +29,8 @@ export default function ClockProcessor({
   option,
   returnpath,
 }: clockProcessProps) {
-  useFetchAllData(); //  the data fetching call
+  const data = useFetchAllData(); //  the data fetching call
+  console.log(data);
   const t = useTranslations("Clock");
   const [step, setStep] = useState(1);
   const [, setUseQrCode] = useState(true);

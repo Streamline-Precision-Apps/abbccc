@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect } from "react";
-
 import { useTranslations } from "next-intl";
 import LocaleToggleSwitch from "@/components/(inputs)/toggleSwitch";
 import { Holds } from "@/components/(reusable)/holds";
@@ -16,6 +15,9 @@ import { Grids } from "@/components/(reusable)/grids";
 import Spinner from "@/components/(animations)/spinner";
 import { useRouter } from "next/navigation";
 import { z } from "zod"; // Import Zod for validation
+import { Inputs } from "@/components/(reusable)/inputs";
+import { Selects } from "@/components/(reusable)/selects";
+import { setLocale } from "@/actions/cookieActions";
 
 // Define Zod schema for UserSettings
 const userSettingsSchema = z.object({
@@ -36,11 +38,11 @@ export default function Index({ id }: Props) {
   const router = useRouter();
   const t = useTranslations("Hamburger");
   const [data, setData] = useState<UserSettings | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [updatedData, setUpdatedData] = useState<UserSettings | null>(null);
   const [initialData, setInitialData] = useState<UserSettings | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isLangModalOpen, setIsLangModalOpen] = useState(false);
 
-  // Fetch data on component mount
   // Fetch data on component mount
   useEffect(() => {
     const fetchData = async () => {
@@ -48,12 +50,9 @@ export default function Index({ id }: Props) {
         const response = await fetch("/api/getSettings");
         if (response.ok) {
           const settings = await response.json();
-
-          // Validate the fetched data using Zod
           const validatedSettings = userSettingsSchema.parse(settings);
 
-          // Add the userId property to the validatedSettings object
-          const userId = id; // Replace "your_user_id_here" with the actual user ID
+          const userId = id;
           const updatedSettings = { ...validatedSettings, userId };
 
           setData(updatedSettings);
@@ -69,26 +68,42 @@ export default function Index({ id }: Props) {
     fetchData();
   }, []);
 
-  // Handle save function for updating settings
-  const handleSave = async () => {
-    if (updatedData) {
-      await updateSettings(updatedData);
-      setIsModalOpen(false);
-    }
-  };
+  // Automatically save settings when updated
+  useEffect(() => {
+    const saveChanges = async () => {
+      if (updatedData && updatedData !== initialData) {
+        setIsSaving(true);
+        await updateSettings(updatedData);
+
+        setTimeout(() => setIsSaving(false), 1000);
+        setInitialData(updatedData);
+      }
+    };
+    saveChanges();
+  }, [updatedData]);
+
+  // Save settings before user navigates away from the page
+  useEffect(() => {
+    const handleBeforeUnload = async () => {
+      if (updatedData && updatedData !== initialData) {
+        await updateSettings(updatedData);
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [updatedData, initialData]);
 
   // Handle setting changes
   const handleChange = (key: keyof UserSettings, value: boolean) => {
     setUpdatedData((prev) => (prev ? { ...prev, [key]: value } : null));
-    setIsModalOpen(true);
   };
 
-  // Handle cancel to revert changes
-  const handleCancel = () => {
-    setUpdatedData(initialData);
-    setIsModalOpen(false);
+  const handleSelectChange = (key: keyof UserSettings, value: string) => {
+    setUpdatedData((prev) => (prev ? { ...prev, [key]: value } : null));
+    setLocale(value === "en" ? false : true);
   };
-
   if (!data) {
     return (
       <Holds background={"white"} className="row-span-7 p-4 h-full">
@@ -100,10 +115,17 @@ export default function Index({ id }: Props) {
 
   return (
     <>
-      {/* Render UI elements with toggles and modals */}
+      {isSaving && (
+        <Holds
+          background={"green"}
+          className="h-fit text-center absolute top-[20%]"
+        >
+          {t("Saving")}
+        </Holds>
+      )}
       <Grids rows={"5"} gap={"3"}>
+        {/*-------------------------Notifications Settings------------------------------*/}
         <Holds background={"white"} className="row-span-2 h-full py-4">
-          {/*-------------------------Approved Requests------------------------------*/}
           <Contents width={"section"}>
             <Grids rows={"4"} gap={"5"}>
               <Holds className="row-span-1">
@@ -122,7 +144,6 @@ export default function Index({ id }: Props) {
                   />
                 </Holds>
               </Holds>
-              {/*----------------------Time Off Requests--------------------------------*/}
               <Holds position={"row"}>
                 <Holds size={"70"}>
                   <Texts position={"left"}>{t("TimeOffRequests")}</Texts>
@@ -136,7 +157,6 @@ export default function Index({ id }: Props) {
                   />
                 </Holds>
               </Holds>
-              {/*----------------------General Reminders--------------------------------*/}
               <Holds position={"row"}>
                 <Holds size={"70"}>
                   <Texts position={"left"}>{t("GeneralReminders")}</Texts>
@@ -154,7 +174,7 @@ export default function Index({ id }: Props) {
           </Contents>
         </Holds>
 
-        {/*---------------------Start of security------------------------------*/}
+        {/*---------------------Security Settings------------------------------*/}
         <Holds background={"white"} className="row-span-2 h-full py-4">
           <Contents width={"section"}>
             <Grids rows={"4"} gap={"5"}>
@@ -204,32 +224,47 @@ export default function Index({ id }: Props) {
           </Contents>
         </Holds>
 
-        {/*---------------------Start of language------------------------------*/}
+        {/*---------------------Language Settings------------------------------*/}
         <Holds background={"white"} className="row-span-2 h-full py-4">
           <Contents width={"section"}>
-            <Grids rows={"4"} gap={"5"}>
-              <Holds className="row-span-1">
+            <Grids rows={"2"} gap={"5"}>
+              <Holds className="row-span-1 ">
                 <Titles>{t("Language")}</Titles>
               </Holds>
-              <Holds position={"row"}>
-                <Holds size={"70"}>
-                  <Texts position={"left"}>{t("English")}</Texts>
-                </Holds>
-                <Holds size={"30"}>
-                  <LocaleToggleSwitch
-                    data={updatedData?.language === "en" || false}
-                    onChange={(value: boolean) =>
-                      handleChange("language", value)
-                    }
-                  />
-                </Holds>
-                <Holds size={"70"}>
-                  <Texts position={"right"}>{t("Spanish")}</Texts>
-                </Holds>
+              <Holds className="row-span-1 mx-auto">
+                <Inputs
+                  readOnly
+                  value={updatedData?.language === "en" ? "English" : "Spanish"}
+                  data={updatedData?.language}
+                  onClick={() => setIsLangModalOpen(true)}
+                  className="bg-app-blue h-[2rem] w-1/2  mx-auto text-center"
+                />
               </Holds>
             </Grids>
           </Contents>
         </Holds>
+
+        {/* Language Selection Modal */}
+        <Modals
+          isOpen={isLangModalOpen}
+          handleClose={() => setIsLangModalOpen(false)}
+          size={"lg"}
+          title="Language Selection"
+          background={"default"}
+        >
+          <Holds size={"full"} className="h-[20rem]">
+            <Contents width={"section"} className="h-full">
+              <Selects
+                value={updatedData?.language || "en"}
+                onChange={(e) => handleSelectChange("language", e.target.value)}
+              >
+                <option value="default">Choose a Language</option>
+                <option value="en">English</option>
+                <option value="es">Spanish</option>
+              </Selects>
+            </Contents>
+          </Holds>
+        </Modals>
 
         {/*---------------------Change Password------------------------------*/}
         <Holds className="row-span-1 h-full">
@@ -240,28 +275,6 @@ export default function Index({ id }: Props) {
             <Titles>{t("ChangePassword")}</Titles>
           </Buttons>
         </Holds>
-
-        {/* Modal for confirming save changes */}
-        <Modals isOpen={isModalOpen} handleClose={handleCancel} size="sm">
-          <Holds size={"full"} background={"white"}>
-            <Holds size={"full"} className="p-3 py-5 justify-center">
-              <Texts size={"p4"}>{t("SaveChanges")}</Texts>
-            </Holds>
-            <Holds
-              size={"full"}
-              position={"row"}
-              background={"white"}
-              className="justify-between p-3"
-            >
-              <Buttons onClick={handleSave} background={"green"} size={"40"}>
-                <Titles>{t("Yes")}</Titles>
-              </Buttons>
-              <Buttons onClick={handleCancel} background={"red"} size={"40"}>
-                <Titles>{t("Cancel")}</Titles>
-              </Buttons>
-            </Holds>
-          </Holds>
-        </Modals>
       </Grids>
     </>
   );

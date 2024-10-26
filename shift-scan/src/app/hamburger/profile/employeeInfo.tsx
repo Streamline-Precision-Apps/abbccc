@@ -22,11 +22,10 @@ import { Titles } from "@/components/(reusable)/titles";
 
 // Define Zod schemas for validation
 const contactSchema = z.object({
-  id: z.number(),
   phoneNumber: z.string().optional(),
-  email: z.string().optional(),
   emergencyContact: z.string().optional(),
   emergencyContactNumber: z.string().optional(),
+  email: z.string().optional(),
 });
 
 const employeeSchema = z.object({
@@ -186,7 +185,7 @@ export default function EmployeeInfo() {
     <>
       <Contents width={"section"}>
         <Grids rows={"10"} gap={"5"}>
-          <Holds background={"white"} className="row-span-2 h-full">
+          <Holds background={"white"} className="row-span-3 h-full">
             <Contents width={"section"}>
               <TitleBoxes
                 type="profilePic"
@@ -244,10 +243,10 @@ export default function EmployeeInfo() {
               )}
             </Modals>
           </Holds>
-          <Holds background={"white"} className="row-span-8 h-full">
+          <Holds background={"white"} className="row-span-7 h-full">
             <Holds className="h-full">
               <Contents width={"section"}>
-                <Grids rows={"7"}>
+                <Grids rows={"6"} gap={"5"}>
                   <Holds className=" row-span-1 h-full">
                     <Labels size={"p4"}>
                       {t("PhoneNumber")}
@@ -278,19 +277,19 @@ export default function EmployeeInfo() {
                       />
                     </Labels>
                   </Holds>
-                  <Holds className=" row-span-2 h-full ">
-                    <Holds className="h-full">
+                  <Holds className=" row-span-1 h-full  ">
+                    <Holds className="h-full my-auto">
                       <Labels size={"p4"}>
                         {t("Signature")}
                         <Holds
                           className="w-full rounded-3xl border-[3px] border-black cursor-pointer"
                           onClick={() => setEditSignatureModalOpen(true)}
-                          size={"20"}
                         >
                           <Images
                             titleImg={signatureBase64String}
                             titleImgAlt={t("Signature")}
-                            className="mx-auto p-5 "
+                            size={"40"}
+                            className="p-1"
                           />
                         </Holds>
                       </Labels>
@@ -306,12 +305,11 @@ export default function EmployeeInfo() {
                         base64string={signatureBase64String}
                         handleSubmitImage={() => {
                           handleSubmitImage();
-                          setEditSignatureModalOpen(false); // Close the modal after saving
                         }}
                       />
                     </Modals>
                   </Holds>
-                  <Holds className="row-span-2 h-full my-auto">
+                  <Holds className="row-span-2 h-full ">
                     <Holds className="my-auto">
                       <Buttons
                         onClick={() => setIsOpen2(true)}
