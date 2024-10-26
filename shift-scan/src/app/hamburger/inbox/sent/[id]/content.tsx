@@ -18,7 +18,7 @@ import {
   EditLeaveRequest,
 } from "@/actions/inboxSentActions";
 import { Images } from "@/components/(reusable)/images";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { formatDate } from "@/utils/formatDateYMD";
 import { Grids } from "@/components/(reusable)/grids";
 import { z } from "zod";
@@ -35,10 +35,11 @@ const editLeaveRequestSchema = z.object({
 
 type Props = {
   session: Session | null;
-  params: { id: string };
 };
 
-export default function Content({ params, session }: Props) {
+export default function Content({ session }: Props) {
+  const { id } = useParams();
+
   const [loading, setLoading] = useState(true);
   const [edit, setEdit] = useState(false);
   const [cardDate, setCardDate] = useState<string>("");
@@ -50,7 +51,7 @@ export default function Content({ params, session }: Props) {
     const fetchSentContent = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/getTimeoffRequests/?type=sent`);
+        const response = await fetch(`/api/getTimeoffPendingRequests`);
         if (!response.ok) {
           throw new Error("Failed to fetch sent content");
         }
@@ -61,7 +62,7 @@ export default function Content({ params, session }: Props) {
               data[0].date
             ).getDate()}/${new Date(data[0].date).getFullYear()}`
           );
-          setSentContent(data);
+          setSentContent([data[0]]); // Only keep the first item
         }
       } catch (err) {
         console.error("Error fetching sent content:", err);
@@ -71,7 +72,7 @@ export default function Content({ params, session }: Props) {
     };
 
     fetchSentContent();
-  }, [params.id]);
+  }, [id]);
 
   const handleEdit = () => {
     setEdit(!edit);
@@ -105,7 +106,7 @@ export default function Content({ params, session }: Props) {
   };
 
   const handleDelete = async () => {
-    const isDeleted = await DeleteLeaveRequest(params.id, userId);
+    const isDeleted = await DeleteLeaveRequest(id as string, userId);
     if (isDeleted) {
       router.push("/hamburger/inbox");
     }
@@ -155,7 +156,7 @@ export default function Content({ params, session }: Props) {
         <Holds background={"white"} className="row-span-8">
           <Contents height={"page"} width={"section"}>
             <Forms onSubmit={handleSubmit}>
-              <Inputs type="hidden" name="id" value={params.id} />
+              <Inputs type="hidden" name="id" value={id} />
               <Holds className="my-3">
                 {!edit ? (
                   <Holds size={"20"}>
@@ -197,28 +198,36 @@ export default function Content({ params, session }: Props) {
                 )}
               </Holds>
 
-              {sentContent.map((item) => (
-                <Holds key={item.id}>
-                  <Inputs type="hidden" name="id" value={item.id} disabled />
+              {sentContent.length > 0 && (
+                <Holds key={sentContent[0].id}>
+                  <Inputs
+                    type="hidden"
+                    name="id"
+                    value={sentContent[0].id}
+                    disabled
+                  />
                   <Inputs
                     type="hidden"
                     name="status"
-                    value={item.status}
+                    value={sentContent[0].status}
                     disabled
                   />
                   <Inputs
                     type="hidden"
                     name="date"
-                    value={item.date.toString()}
+                    value={sentContent[0].date.toString()}
                     disabled
                   />
                   <Inputs type="hidden" name="userId" value={userId} disabled />
+
                   <Labels>
                     Start Date
                     <Inputs
                       type="date"
                       name="startDate"
-                      defaultValue={formatDate(item.requestedStartDate)}
+                      defaultValue={formatDate(
+                        sentContent[0].requestedStartDate
+                      )}
                       disabled={!edit}
                     />
                   </Labels>
@@ -228,17 +237,18 @@ export default function Content({ params, session }: Props) {
                     <Inputs
                       type="date"
                       name="endDate"
-                      defaultValue={formatDate(item.requestedEndDate)}
+                      defaultValue={formatDate(sentContent[0].requestedEndDate)}
                       disabled={!edit}
                     />
                   </Labels>
+
                   <Labels>
                     Request Type
                     <Selects
                       name="requestType"
-                      defaultValue={item.requestType}
+                      defaultValue={sentContent[0].requestType}
                       disabled={!edit}
-                      key={item.requestType}
+                      key={sentContent[0].requestType}
                     >
                       <option value="">Choose a request</option>
                       <option value="Vacation">Vacation</option>
@@ -257,23 +267,24 @@ export default function Content({ params, session }: Props) {
                     Comments
                     <TextAreas
                       name="description"
-                      defaultValue={item.comment}
+                      defaultValue={sentContent[0].comment}
                       disabled={!edit}
                       rows={5}
                     />
                   </Labels>
-                  {(item.status === "APPROVED" || item.status === "DENIED") && (
+                  {(sentContent[0].status === "APPROVED" ||
+                    sentContent[0].status === "DENIED") && (
                     <Labels>
                       {`Manager's Comments`}
                       <TextAreas
                         name="managerComments"
-                        defaultValue={item.managerComment ?? ""}
+                        defaultValue={sentContent[0].managerComment ?? ""}
                         disabled
                       />
                     </Labels>
                   )}
                 </Holds>
-              ))}
+              )}
             </Forms>
             {edit && (
               <Holds position={"row"} className="mt-5">

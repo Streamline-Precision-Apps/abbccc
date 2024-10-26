@@ -17,7 +17,7 @@ import { z } from "zod";
 
 // Define Zod schema for received content
 const receivedContentSchema = z.object({
-  id: z.string(),
+  id: z.number(),
   requestType: z.string(),
   date: z.string().refine((date) => !isNaN(Date.parse(date)), {
     message: "Invalid date format",
@@ -127,7 +127,7 @@ export default function RTab() {
   return (
     <Contents width={"section"} className="mb-5">
       <Grids rows={"1"} gap={"5"} className="py-5">
-        <Holds className="row-span-1 h-full gap-5 overflow-auto no-scrollbar">
+        <Holds className="row-span-1  h-full gap-5 overflow-auto no-scrollbar">
           {pending.map((item) => (
             <Holds key={item.id}>
               <Buttons

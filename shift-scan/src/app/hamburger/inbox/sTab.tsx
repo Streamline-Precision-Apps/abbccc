@@ -14,7 +14,7 @@ import { z } from "zod";
 
 // Define Zod schema for sent content
 const sentContentSchema = z.object({
-  id: z.string(),
+  id: z.number(),
   requestType: z.string(),
   status: z.enum(["APPROVED", "PENDING", "DENIED"]),
   requestedStartDate: z.string(),
@@ -23,6 +23,13 @@ const sentContentSchema = z.object({
 
 export default function STab() {
   const [sentContent, setSentContent] = useState<sentContent[]>([]);
+  const [sentPendingContent, setSentPendingContent] = useState<sentContent[]>(
+    []
+  );
+  const [sentApprovedContent, setSentApprovedContent] = useState<sentContent[]>(
+    []
+  );
+  const [sentDeniedContent, setSentDeniedContent] = useState<sentContent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -39,6 +46,18 @@ export default function STab() {
         });
 
         setSentContent(validatedData);
+
+        setSentPendingContent(
+          validatedData.filter((item: sentContent) => item.status === "PENDING")
+        );
+        setSentApprovedContent(
+          validatedData.filter(
+            (item: sentContent) => item.status === "APPROVED"
+          )
+        );
+        setSentDeniedContent(
+          validatedData.filter((item: sentContent) => item.status === "DENIED")
+        );
         setLoading(false);
       } catch (err) {
         console.error("Error fetching sent content:", err);
@@ -92,9 +111,9 @@ export default function STab() {
 
   return (
     <Contents width={"section"}>
-      <Grids rows={"5"} cols={"3"} gap={"5"} className="py-5">
-        {sentContent.map((item) => (
-          <Holds key={item.id}>
+      <Holds className="py-5 h-full overflow-y-scroll no-scrollbar  ">
+        {sentApprovedContent.map((item) => (
+          <Holds key={item.id} className=" col-span-4 h-full mt-5 ">
             <Buttons
               background={"green"}
               href={item.id ? `/hamburger/inbox/sent/approved/${item.id}` : "#"}
@@ -115,18 +134,61 @@ export default function STab() {
             </Buttons>
           </Holds>
         ))}
-        <Holds className="row-start-5 col-start-3 col-end-4 h-full">
-          <Buttons background={"green"} href="/hamburger/inbox/form">
-            <Holds>
-              <Images
-                titleImg="/home.svg"
-                titleImgAlt="Home Icon"
-                size={"50"}
-              />
-            </Holds>
-          </Buttons>
-        </Holds>
-      </Grids>
+
+        {sentPendingContent.map((item) => (
+          <Holds key={item.id} className=" col-span-4 h-full mt-5 ">
+            <Buttons
+              background={"orange"}
+              href={item.id ? `/hamburger/inbox/sent/${item.id}` : "#"}
+              size={"90"}
+            >
+              <Titles>{item.requestType}</Titles>
+              {new Date(item.requestedStartDate).toLocaleString("en-US", {
+                day: "numeric",
+                month: "numeric",
+                year: "numeric",
+              })}
+              {" - "}
+              {new Date(item.requestedEndDate).toLocaleString("en-US", {
+                day: "numeric",
+                month: "numeric",
+                year: "numeric",
+              })}
+            </Buttons>
+          </Holds>
+        ))}
+
+        {sentDeniedContent.map((item) => (
+          <Holds key={item.id} className=" col-span-4 h-full mt-5 ">
+            <Buttons
+              background={"red"}
+              href={item.id ? `/hamburger/inbox/sent/denied/${item.id}` : "#"}
+              size={"90"}
+            >
+              <Titles>{item.requestType}</Titles>
+              {new Date(item.requestedStartDate).toLocaleString("en-US", {
+                day: "numeric",
+                month: "numeric",
+                year: "numeric",
+              })}
+              {" - "}
+              {new Date(item.requestedEndDate).toLocaleString("en-US", {
+                day: "numeric",
+                month: "numeric",
+                year: "numeric",
+              })}
+            </Buttons>
+          </Holds>
+        ))}
+      </Holds>
+
+      <Holds position={"right"} className="max-w-[100px] p-2 min-h-[75px] ">
+        <Buttons background={"green"} href="/hamburger/inbox/form">
+          <Holds>
+            <Images titleImg="/plus.svg" titleImgAlt="plus Icon" size={"50"} />
+          </Holds>
+        </Buttons>
+      </Holds>
     </Contents>
   );
 }

@@ -2,7 +2,6 @@
 
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
-import { Images } from "@/components/(reusable)/images";
 import { Holds } from "@/components/(reusable)/holds";
 import { getTranslations } from "next-intl/server";
 
