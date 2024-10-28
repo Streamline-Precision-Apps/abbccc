@@ -111,9 +111,9 @@ export default function STab() {
 
   return (
     <Contents width={"section"}>
-      <Holds className="py-5 h-full overflow-y-scroll no-scrollbar  ">
+      <Holds className="py-5 h-full overflow-y-scroll no-scrollbar ">
         {sentApprovedContent.map((item) => (
-          <Holds key={item.id} className=" col-span-4 h-full mt-5 ">
+          <Holds key={item.id} className=" col-span-4  mt-5 ">
             <Buttons
               background={"green"}
               href={item.id ? `/hamburger/inbox/sent/approved/${item.id}` : "#"}
@@ -136,7 +136,7 @@ export default function STab() {
         ))}
 
         {sentPendingContent.map((item) => (
-          <Holds key={item.id} className=" col-span-4 h-full mt-5 ">
+          <Holds key={item.id} className=" col-span-4  mt-5 ">
             <Buttons
               background={"orange"}
               href={item.id ? `/hamburger/inbox/sent/${item.id}` : "#"}
@@ -159,7 +159,7 @@ export default function STab() {
         ))}
 
         {sentDeniedContent.map((item) => (
-          <Holds key={item.id} className=" col-span-4 h-full mt-5 ">
+          <Holds key={item.id} className=" col-span-4 mt-5 ">
             <Buttons
               background={"red"}
               href={item.id ? `/hamburger/inbox/sent/denied/${item.id}` : "#"}
