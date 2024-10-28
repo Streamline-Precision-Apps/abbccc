@@ -4,6 +4,11 @@ import { Buttons } from "../(reusable)/buttons";
 import { uploadFirstImage } from "@/actions/userActions";
 import CameraComponent from "../(camera)/camera";
 import { Banners } from "@/components/(reusable)/banners";
+import { Holds } from "../(reusable)/holds";
+import { Grids } from "../(reusable)/grids";
+import { Images } from "../(reusable)/images";
+import { Texts } from "../(reusable)/texts";
+import { Contents } from "../(reusable)/contents";
 
 const ProfilePictureSetup = ({
   id,
@@ -58,27 +63,43 @@ const ProfilePictureSetup = ({
     <>
       {/* Show the banner at the top of the page */}
       {showBanner && (
-        <div style={{ position: "fixed", top: 0, width: "100%", zIndex: 1000 }}>
-          <Banners background={"red"}>{bannerMessage}</Banners>
-        </div>
-      )}
-
-      <div style={{ textAlign: "center", padding: "20px" }}>
-        <p>Snap A picture of Your Face for your Profile</p>
-
-        <div style={{ margin: "20px 0" }}>
-          {/* Integrating CameraComponent */}
-          <CameraComponent setBase64String={setBase64String} />
-        </div>
-
-        <Buttons
-          onClick={handleSubmitImage}
-          style={{ backgroundColor: "orange", color: "black" }}
-          disabled={isSubmitting} // Disable the button while submitting
+        <Holds
+          style={{ position: "fixed", top: 0, width: "100%", zIndex: 1000 }}
         >
-          {isSubmitting ? "Submitting..." : "Next"}
-        </Buttons>
-      </div>
+          <Banners background={"red"}>
+            <Texts size={"p6"}>{bannerMessage}</Texts>
+          </Banners>
+        </Holds>
+      )}
+      <Grids rows={"3"} gap={"5"}>
+        <Holds background={"white"} className="row-span-1 h-full">
+          <Contents width={"section"}>
+            <Texts size={"p4"}>Please take a picture of yourself</Texts>
+            <Images
+              titleImg={"/Camera.svg"}
+              titleImgAlt={"camera"}
+              size={"30"}
+              className="my-auto"
+            />
+          </Contents>
+        </Holds>
+        <Holds background={"white"} className="row-span-2 h-full">
+          <Holds size={"80"}>
+            {/* Integrating CameraComponent */}
+            <CameraComponent setBase64String={setBase64String} />
+          </Holds>
+        </Holds>
+        <Holds>
+          <Buttons
+            onClick={handleSubmitImage}
+            background={"lightBlue"}
+            size={"80"}
+            disabled={isSubmitting} // Disable the button while submitting
+          >
+            {isSubmitting ? "Submitting..." : "Next"}
+          </Buttons>
+        </Holds>
+      </Grids>
     </>
   );
 };
