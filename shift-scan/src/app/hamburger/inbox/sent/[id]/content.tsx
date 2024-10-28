@@ -51,18 +51,18 @@ export default function Content({ session }: Props) {
     const fetchSentContent = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/getTimeoffPendingRequests`);
+        const response = await fetch(`/api/getTimeoffPendingRequests/${id}`);
         if (!response.ok) {
           throw new Error("Failed to fetch sent content");
         }
         const data = await response.json();
-        if (data.length > 0) {
+        if (data) {
           setCardDate(
-            `${new Date(data[0].date).getMonth() + 1}/${new Date(
-              data[0].date
-            ).getDate()}/${new Date(data[0].date).getFullYear()}`
+            `${new Date(data.date).getMonth() + 1}/${new Date(
+              data.date
+            ).getDate()}/${new Date(data.date).getFullYear()}`
           );
-          setSentContent([data[0]]); // Only keep the first item
+          setSentContent([data]); // Wrap `data` in an array to match the component’s expectations
         }
       } catch (err) {
         console.error("Error fetching sent content:", err);
@@ -244,23 +244,35 @@ export default function Content({ session }: Props) {
 
                   <Labels>
                     Request Type
-                    <Selects
-                      name="requestType"
-                      defaultValue={sentContent[0].requestType}
-                      disabled={!edit}
-                      key={sentContent[0].requestType}
-                    >
-                      <option value="">Choose a request</option>
-                      <option value="Vacation">Vacation</option>
-                      <option value="Family/Medical Leave">
-                        Family/Medical Leave
-                      </option>
-                      <option value="Military Leave">Military Leave</option>
-                      <option value="Non Paid Personal Leave">
-                        Non Paid Personal Leave
-                      </option>
-                      <option value="Sick Time">Sick Time</option>
-                    </Selects>
+                    {!edit ? (
+                      // Display the request type as plain text when not editing
+
+                      <Inputs
+                        type="text"
+                        name="requestType"
+                        defaultValue={sentContent[0].requestType}
+                        disabled={!edit}
+                      />
+                    ) : (
+                      // Show a dropdown when in edit mode
+                      <Selects
+                        name="requestType"
+                        defaultValue={sentContent[0].requestType}
+                        disabled={!edit}
+                        key={sentContent[0].requestType}
+                      >
+                        <option value="">Choose a request</option>
+                        <option value="Vacation">Vacation</option>
+                        <option value="Family/Medical Leave">
+                          Family/Medical Leave
+                        </option>
+                        <option value="Military Leave">Military Leave</option>
+                        <option value="Non Paid Personal Leave">
+                          Non Paid Personal Leave
+                        </option>
+                        <option value="Sick Time">Sick Time</option>
+                      </Selects>
+                    )}
                   </Labels>
 
                   <Labels>
