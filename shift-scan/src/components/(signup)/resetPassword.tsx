@@ -5,6 +5,14 @@ import { setUserPassword } from "@/actions/userActions";
 import PasswordStrengthIndicator from "./passwordStrengthIndicator";
 import { hash } from "bcryptjs";
 import { Banners } from "@/components/(reusable)/banners";
+import { Holds } from "../(reusable)/holds";
+import { Contents } from "../(reusable)/contents";
+import { Grids } from "../(reusable)/grids";
+import { Forms } from "../(reusable)/forms";
+import { Titles } from "../(reusable)/titles";
+import { Texts } from "../(reusable)/texts";
+import { Inputs } from "../(reusable)/inputs";
+import { Labels } from "../(reusable)/labels";
 
 const ResetPassword = ({
   id,
@@ -77,44 +85,61 @@ const ResetPassword = ({
   return (
     <>
       {showBanner && (
-        <div style={{ position: "fixed", top: 0, width: "100%", zIndex: 1000 }}>
-          <Banners background={"red"}>{bannerMessage}</Banners>
-        </div>
+        <Holds
+          style={{ position: "fixed", top: 0, width: "100%", zIndex: 1000 }}
+        >
+          <Banners background={"red"}>
+            <Texts size={"p6"}>{bannerMessage}</Texts>
+          </Banners>
+        </Holds>
       )}
+      <Forms onSubmit={handleSubmit} className="h-full">
+        <Grids rows={"3"} gap={"5"}>
+          <Holds background={"white"} className=" row-span-1 h-full py-2 ">
+            <Titles size={"h2"}>{`Let's Reset Your password!`}</Titles>
+            <Contents width={"section"}>
+              <Texts size={"p5"} className="my-5">
+                Make a password with a minimum of 6 characters, a number and a
+                symbol
+              </Texts>
+            </Contents>
+          </Holds>
 
-      <form onSubmit={handleSubmit}>
-        <p>{`Let's Reset Your password!`}</p>
-        <p>
-          Make a password with a minimum of 6 characters and 1 number and symbol
-        </p>
+          <Holds
+            background={"white"}
+            className="my-auto row-span-2 h-full py-[1.5rem]"
+          >
+            <Contents width={"section"}>
+              <Labels>Password Strength:</Labels>
+              <PasswordStrengthIndicator password={newPassword} />
+              <Holds className="mb-4">
+                <Labels htmlFor="new-password">New Password</Labels>
+                <Inputs
+                  type="password"
+                  id="new-password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                />
+              </Holds>
 
-        <div>
-          <label htmlFor="new-password">New Password</label>
-          <input
-            type="password"
-            id="new-password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-          />
-        </div>
-
-        <div>
-          <label>Password Strength:</label>
-          <PasswordStrengthIndicator password={newPassword} />
-        </div>
-
-        <div>
-          <label htmlFor="confirm-password">Confirm Password</label>
-          <input
-            type="password"
-            id="confirm-password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
-        </div>
-
-        <Buttons type="submit">Next</Buttons>
-      </form>
+              <Holds className="mb-4">
+                <Labels htmlFor="confirm-password">Confirm Password</Labels>
+                <Inputs
+                  type="password"
+                  id="confirm-password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+              </Holds>
+            </Contents>
+          </Holds>
+          <Holds className="my-auto ">
+            <Buttons type="submit" size={"80"}>
+              Next
+            </Buttons>
+          </Holds>
+        </Grids>
+      </Forms>
     </>
   );
 };

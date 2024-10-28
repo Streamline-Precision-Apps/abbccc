@@ -108,6 +108,7 @@ const CameraComponent: React.FC<CameraComponentProps> = ({
         <Buttons
           background={cameraActive ? "red" : "green"}
           onClick={toggleCamera}
+          className="p-2"
         >
           {cameraActive ? `${t("ResetCamera")}` : `${t("startCamera")}`}
         </Buttons>
