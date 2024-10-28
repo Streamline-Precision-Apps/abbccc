@@ -20,7 +20,6 @@ type Props = {
 
 export default function ViewTimesheets({ user }: Props) {
   const [showTimesheets, setShowTimesheets] = useState(false);
-  const [startingEntry] = useState(false);
   const [timesheetData, setTimesheetData] = useState<TimeSheet[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -29,15 +28,20 @@ export default function ViewTimesheets({ user }: Props) {
   // Fetch timesheets from the API
   const fetchTimesheets = async (date?: string) => {
     setLoading(true);
+    setError(null);
     try {
-      const queryParam = date ? `?date=${date}` : "";
-      const response = await fetch(`/api/getTimesheets${queryParam}`); // Include the query parameter if provided
+      const dateIso = date
+        ? new Date(date).toISOString().slice(0, 10)
+        : undefined;
+      const queryParam = dateIso ? `?date=${dateIso}` : "";
+      const response = await fetch(`/api/getTimesheets${queryParam}`);
 
       if (!response.ok) {
         throw new Error("Failed to fetch timesheets");
       }
 
       const data: TimeSheet[] = await response.json();
+
       setTimesheetData(data);
       setShowTimesheets(true);
     } catch (error) {
@@ -52,7 +56,7 @@ export default function ViewTimesheets({ user }: Props) {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget as HTMLFormElement);
-    const date = formData.get("date")?.toString(); // Get the selected date from the form
+    const date = formData.get("date")?.toString();
     await fetchTimesheets(date);
   };
 
@@ -72,23 +76,22 @@ export default function ViewTimesheets({ user }: Props) {
               </Buttons>
             </Forms>
           </Grids>
+          {error && <Texts className="text-red-500">{error}</Texts>}
         </Contents>
       </Holds>
       {loading ? (
-        <>
-          <Holds
-            background={"white"}
-            size={"full"}
-            className="h-full min-h-[50vh]"
-          >
-            <Holds position={"center"} size={"50"} className="my-10 ">
-              <Spinner />
-              <Titles size={"h3"} className="mt-4">
-                {t("Loading")}
-              </Titles>
-            </Holds>
+        <Holds
+          background={"white"}
+          size={"full"}
+          className="h-full min-h-[50vh]"
+        >
+          <Holds position={"center"} size={"50"} className="my-10 ">
+            <Spinner />
+            <Titles size={"h3"} className="mt-4">
+              {t("Loading")}
+            </Titles>
           </Holds>
-        </>
+        </Holds>
       ) : (
         <>
           {showTimesheets ? (
@@ -107,7 +110,7 @@ export default function ViewTimesheets({ user }: Props) {
                 </Titles>
               )}
               {timesheetData.length > 0 ? (
-                timesheetData.map(async (timesheet) => (
+                timesheetData.map((timesheet) => (
                   <Holds
                     key={timesheet.id}
                     size={"full"}
@@ -120,13 +123,10 @@ export default function ViewTimesheets({ user }: Props) {
                       </Labels>
                       <Labels>
                         {t("StartTime")}
-
                         <Inputs
                           value={
-                            timesheet.endTime && timesheet.startTime?.toString()
-                              ? await formatTime(
-                                  timesheet.startTime?.toString()
-                                )
+                            timesheet.startTime
+                              ? formatTime(timesheet.startTime.toString())
                               : "N/A"
                           }
                           readOnly
@@ -137,7 +137,7 @@ export default function ViewTimesheets({ user }: Props) {
                         <Inputs
                           value={
                             timesheet.endTime
-                              ? await formatTime(timesheet.endTime.toString()) // Format to 12-hour time with seconds and AM/PM
+                              ? formatTime(timesheet.endTime.toString())
                               : "N/A"
                           }
                           readOnly
@@ -147,8 +147,10 @@ export default function ViewTimesheets({ user }: Props) {
                         {t("Duration")}
                         <Inputs
                           value={
-                            `${timesheet.duration?.toFixed(2)} ${t("Unit")}` ||
-                            "N/A"
+                            timesheet.duration !== null &&
+                            timesheet.duration !== undefined
+                              ? timesheet.duration.toFixed(2)
+                              : "N/A"
                           }
                           readOnly
                         />
@@ -174,14 +176,11 @@ export default function ViewTimesheets({ user }: Props) {
             </Holds>
           ) : (
             <Holds background={"white"} className="pb-10 h-full min-h-[50vh]">
-              {startingEntry ? null : (
-                <Holds position={"center"} size={"70"} className="my-10">
-                  <Texts size={"p3"}>{t("FirstMessage")}</Texts>
-                </Holds>
-              )}
+              <Holds position={"center"} size={"70"} className="my-10">
+                <Texts size={"p3"}>{t("FirstMessage")}</Texts>
+              </Holds>
             </Holds>
           )}
-          {error && <Texts className="text-red-500">{error}</Texts>}
         </>
       )}
     </>
