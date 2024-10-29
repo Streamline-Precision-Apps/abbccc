@@ -11,37 +11,42 @@ import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
 import { useRouter } from "next/navigation";
-import { updateTimeSheet } from "@/actions/timeSheetActions"; // Make sure to update import if the function was renamed or relocated
+import { updateTimeSheet } from "@/actions/timeSheetActions";
 import { Texts } from "@/components/(reusable)/texts";
 import { Clock } from "@/components/clock";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Images } from "@/components/(reusable)/images";
 import { Grids } from "@/components/(reusable)/grids";
 import Spinner from "@/components/(animations)/spinner";
-import Checkbox from "@/components/(inputs)/checkbox";
+import Checkbox from "@/components/(inputs)/checkBox";
+import { z } from "zod";
 
-// Custom hook for managing banners
-// function useBanner(initialMessage = "") {
-//   const [showBanner, setShowBanner] = useState(false);
-//   const [bannerMessage, setBannerMessage] = useState(initialMessage);
+// Zod schema for component state
+const ClockOutContentSchema = z.object({
+  loading: z.boolean(),
+  step: z.number(),
+  path: z.string(),
+  checked: z.boolean(),
+  base64String: z.string(),
+  isSubmitting: z.boolean(),
+  scanResult: z.object({
+    data: z.string().optional(),
+  }).nullable(),
+  savedCostCode: z.string().nullable(),
+  savedTimeSheetData: z.object({
+    id: z.union([z.string(), z.number()]).optional(),
+  }).nullable(),
+  date: z.date(),
+});
 
-//   useEffect(() => {
-//     if (showBanner) {
-//       const timer = setTimeout(() => setShowBanner(false), 5000);
-//       return () => clearTimeout(timer);
-//     }
-//   }, [showBanner]);
-
-//   return { showBanner, bannerMessage, setShowBanner, setBannerMessage };
-// }
-
+// Main component function
 export default function ClockOutContent() {
   const [loading, setLoading] = useState(true);
   const [step, incrementStep] = useState(1);
   const [path, setPath] = useState("ClockOut");
   const router = useRouter();
   const t = useTranslations("ClockOut");
-  const [checked, setChecked] = useState(false); // Checkbox state
+  const [checked, setChecked] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const hasSubmitted = useRef(false);
   const { scanResult } = useScanData();
@@ -49,6 +54,27 @@ export default function ClockOutContent() {
   const { savedTimeSheetData } = useTimeSheetData();
   const [date] = useState(new Date());
   const [base64String, setBase64String] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+  // Validate initial state with Zod schema
+  try {
+    ClockOutContentSchema.parse({
+      loading,
+      step,
+      path,
+      checked,
+      base64String,
+      isSubmitting,
+      scanResult,
+      savedCostCode,
+      savedTimeSheetData,
+      date,
+    });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      console.error("Initial state validation error:", error.errors);
+    }
+  }
 
   // Optimizing localStorage access using useMemo
   const localStorageData = useMemo(() => {
@@ -70,10 +96,7 @@ export default function ClockOutContent() {
       try {
         const response = await window.fetch("/api/getUserSignature");
         const json = await response.json();
-        console.log(json);
         const signature = json.signature;
-
-        console.log(signature);
         setBase64String(signature);
       } catch (error) {
         console.error("Error fetching signature:", error);
@@ -84,21 +107,18 @@ export default function ClockOutContent() {
     fetchSignature();
   }, []);
 
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-
   const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
     setChecked(event.currentTarget.checked);
   };
 
   const handleSubmit = async () => {
-    if (isSubmitting || hasSubmitted.current) return; // Prevent multiple submissions
+    if (isSubmitting || hasSubmitted.current) return;
 
     try {
       setIsSubmitting(true);
       hasSubmitted.current = true;
 
-      const formData = new FormData(formRef.current as HTMLFormElement); // Get form data manually
-      console.log("FormData:", formData);
+      const formData = new FormData(formRef.current as HTMLFormElement);
       await updateTimeSheet(formData);
       localStorage.clear();
       router.push("/");
@@ -115,83 +135,82 @@ export default function ClockOutContent() {
       setPath("Injury");
       incrementStep(2);
     } else {
-      incrementStep(2); // Proceed if no injury
+      incrementStep(2);
     }
   };
+
   const handleNextStep = async () => {
     incrementStep(3);
   };
 
   const handleButtonClick = () => {
-    handleSubmit(); // Directly call the handleSubmit function to submit the form
+    handleSubmit();
   };
 
   if (step === 1) {
     return (
-      <>
-        <Grids className="grid-rows-4 gap-5">
-          <Holds background={"white"} className="row-span-1 h-full">
-            <Contents width={"section"}>
-              <TitleBoxes
-                title={t("InjuryVerification")}
-                titleImg="/end-day.svg"
-                titleImgAlt="Team"
-                href="/dashboard"
-              />
-            </Contents>
-          </Holds>
-          <Holds background={"white"} className="row-span-3 h-full">
-            <Contents width={"section"}>
-              <Grids rows={"5"} gap={"5"}>
-                <Holds className="row-span-2 h-full my-auto">
-                  <Texts size={"p2"}>{t("SignBelow")}</Texts>
-                  <Holds className="border-[3px] border-black h-full">
-                    {loading ? (
-                      <Holds className="my-auto">
-                        <Spinner />
-                      </Holds>
-                    ) : (
-                      <Holds className="my-auto">
-                        <img
-                          src={base64String}
-                          alt="Loading signature"
-                          className="w-[40%] mx-auto"
-                        />
-                      </Holds>
-                    )}
-                  </Holds>
+      <Grids className="grid-rows-4 gap-5">
+        <Holds background={"white"} className="row-span-1 h-full">
+          <Contents width={"section"}>
+            <TitleBoxes
+              title={t("InjuryVerification")}
+              titleImg="/end-day.svg"
+              titleImgAlt="Team"
+              href="/dashboard"
+            />
+          </Contents>
+        </Holds>
+        <Holds background={"white"} className="row-span-3 h-full">
+          <Contents width={"section"}>
+            <Grids rows={"5"} gap={"5"}>
+              <Holds className="row-span-2 h-full my-auto">
+                <Texts size={"p2"}>{t("SignBelow")}</Texts>
+                <Holds className="border-[3px] border-black h-full">
+                  {loading ? (
+                    <Holds className="my-auto">
+                      <Spinner />
+                    </Holds>
+                  ) : (
+                    <Holds className="my-auto">
+                      <img
+                        src={base64String}
+                        alt="Loading signature"
+                        className="w-[40%] mx-auto"
+                      />
+                    </Holds>
+                  )}
                 </Holds>
-                <Holds position={"row"} className="row-span-2 h-full my-auto">
-                  <Holds size={"70"}>
-                    <Titles size={"h2"}>{t("SignatureVerify")}</Titles>
-                  </Holds>
-                  <Holds size={"30"}>
-                    <Checkbox
-                      id="injury-checkbox"
-                      name="injury-verify"
-                      onChange={handleCheckboxChange}
-                      defaultChecked={checked}
-                    />
-                  </Holds>
+              </Holds>
+              <Holds position={"row"} className="row-span-2 h-full my-auto">
+                <Holds size={"70"}>
+                  <Titles size={"h2"}>{t("SignatureVerify")}</Titles>
                 </Holds>
-                <Holds className="row-span-1 mx-auto">
-                  <Contents width={"section"}>
-                    <Buttons
-                      background={checked ? "green" : "red"}
-                      onClick={handleNextStepAndSubmit}
-                      disabled={loading}
-                    >
-                      <Titles size={"h3"}>
-                        {checked ? t("Continue") : t("ReportInjury")}
-                      </Titles>
-                    </Buttons>
-                  </Contents>
+                <Holds size={"30"}>
+                  <Checkbox
+                    id="injury-checkbox"
+                    name="injury-verify"
+                    onChange={handleCheckboxChange}
+                    defaultChecked={checked}
+                  />
                 </Holds>
-              </Grids>
-            </Contents>
-          </Holds>
-        </Grids>
-      </>
+              </Holds>
+              <Holds className="row-span-1 mx-auto">
+                <Contents width={"section"}>
+                  <Buttons
+                    background={checked ? "green" : "red"}
+                    onClick={handleNextStepAndSubmit}
+                    disabled={loading}
+                  >
+                    <Titles size={"h3"}>
+                      {checked ? t("Continue") : t("ReportInjury")}
+                    </Titles>
+                  </Buttons>
+                </Contents>
+              </Holds>
+            </Grids>
+          </Contents>
+        </Holds>
+      </Grids>
     );
   } else if (step === 2 && path === "Injury") {
     return (

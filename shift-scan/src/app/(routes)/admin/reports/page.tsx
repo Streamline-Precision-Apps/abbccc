@@ -10,59 +10,42 @@ import { Labels } from "@/components/(reusable)/labels";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { timecardData } from "@/actions/adminActions";
 import { Texts } from "@/components/(reusable)/texts";
-// import { z } from "zod";
+import { z } from "zod";
 
 // Zod schema for timesheet data
-// const TimesheetSchema = z.object({
-//   submitDate: z.string().refine((date) => !isNaN(new Date(date).getTime()), {
-//     message: "Invalid date format",
-//   }),
-//   date: z.string().refine((date) => !isNaN(new Date(date).getTime()), {
-//     message: "Invalid date format",
-//   }),
-//   costcode: z.string(),
-//   vehicleId: z.string(),
-//   startTime: z.string().nullable().optional(),
-//   endTime: z.string().nullable().optional(),
-//   duration: z.number().nullable().optional(),
-//   startingMileage: z.number().nullable().optional(),
-//   endingMileage: z.number().nullable().optional(),
-//   leftIdaho: z.boolean().optional(),
-//   equipmentHauled: z.string().optional(),
-//   materialsHauled: z.string().optional(),
-//   hauledLoadsQuantity: z.number().nullable().optional(),
-//   refuelingGallons: z.number().nullable().optional(),
-//   timeSheetComments: z.string().optional(),
-//   userId: z.string(),
-//   jobsiteId: z.string(),
-// });
+const TimesheetSchema = z.object({
+  submitDate: z.string().refine((date) => !isNaN(new Date(date).getTime()), {
+    message: "Invalid date format",
+  }),
+  id: z.string(),
+  userId: z.string(),
+  date: z.string().refine((date) => !isNaN(new Date(date).getTime()), {
+    message: "Invalid date format",
+  }),
+  jobsiteId: z.string(),
+  costcode: z.string(),
+  nu: z.string(),
+  Fp: z.string(),
+  vehicleId: z.string(),
+  startTime: z.string().nullable().optional(),
+  endTime: z.string().nullable().optional(),
+  duration: z.number().nullable().optional(),
+  startingMileage: z.number().nullable().optional(),
+  endingMileage: z.number().nullable().optional(),
+  leftIdaho: z.boolean().optional(),
+  equipmentHauled: z.string().optional(),
+  materialsHauled: z.string().optional(),
+  hauledLoadsQuantity: z.number().nullable().optional(),
+  refuelingGallons: z.number().nullable().optional(),
+  timeSheetComments: z.string().optional(),
+  status: z.string(),
+});
 
 // Zod schema for timesheet array
-// const TimesheetsArraySchema = z.array(TimesheetSchema);
+const TimesheetsArraySchema = z.array(TimesheetSchema);
 
-type TimeSheets = {
-  submitDate: string;
-  id: string;
-  userId: string;
-  date: string;
-  jobsiteId: string;
-  costcode: string;
-  nu: string;
-  Fp: string;
-  vehicleId: string;
-  startTime: string;
-  endTime: string;
-  duration: string;
-  startingMileage: string;
-  endingMileage: string;
-  leftIdaho: string;
-  equipmentHauled: string;
-  materialsHauled: string;
-  hauledLoadsQuantity: string;
-  refuelingGallons: string;
-  timeSheetComments: string;
-  status: string;
-};
+type TimeSheets = z.infer<typeof TimesheetsArraySchema>[number];
+
 export default function Reports() {
   const [timeSheets, setTimeSheets] = useState<TimeSheets[]>([]);
   const [loading, setLoading] = useState(false); // Add loading state
@@ -85,17 +68,17 @@ export default function Reports() {
       vehicleId: sheet.vehicleId?.toString() || "",
       startTime: sheet.startTime.toLocaleTimeString(),
       endTime: sheet.endTime?.toLocaleTimeString() || "",
-      duration: sheet.duration === null ? "" : sheet.duration.toString(),
-      startingMileage: sheet.startingMileage?.toString() || "",
-      endingMileage: sheet.endingMileage?.toString() || "",
-      leftIdaho: sheet.leftIdaho?.toString() || "",
+      duration: sheet.duration === null ? null : Number(sheet.duration),
+      startingMileage: sheet.startingMileage || null,
+      endingMileage: Number(sheet.endingMileage) || null,
+      leftIdaho: sheet.leftIdaho === true ? true : sheet.leftIdaho === false ? false : undefined,
       equipmentHauled: sheet.equipmentHauled || "",
       materialsHauled: sheet.materialsHauled || "",
-      hauledLoadsQuantity: sheet.hauledLoadsQuantity?.toString() || "",
-      refuelingGallons: sheet.refuelingGallons?.toString() || "",
+      hauledLoadsQuantity: sheet.hauledLoadsQuantity || null,
+      refuelingGallons: sheet.refuelingGallons || null,
       timeSheetComments: sheet.timeSheetComments || "",
     }));
-
+    
     setTimeSheets(formattedData);
     setInterval(() => {
       setLoading(false); // End loading
