@@ -8,7 +8,7 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Titles } from "@/components/(reusable)/titles";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { useSession } from "next-auth/react";
-import Checkbox from "@/components/(inputs)/checkbox";
+import Checkbox from "@/components/(inputs)/checkBox";
 import { Grids } from "@/components/(reusable)/grids";
 import { TextAreas } from "@/components/(reusable)/textareas";
 

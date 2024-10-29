@@ -1,11 +1,11 @@
 "use server";
 
 // we need this rout to search by the id of the sent request
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 
-export async function GET({ params }: { params: { id: string } }) {
+export async function GET({ params }: { params: { id: string } } & (Request | NextRequest)) {
   const session = await auth();
 
   if (!session) {
