@@ -1,7 +1,7 @@
 "use server";
 
 // we need this rout to search by the id of the sent request
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 
