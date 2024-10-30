@@ -14,13 +14,13 @@ import { Grids } from "@/components/(reusable)/grids";
 type ViewComponentProps = {
   scrollLeft: () => void;
   scrollRight: () => void;
-  returnToMain: () => void;
+
   currentDate: Date;
 };
-export default function ViewComponent({
+export default function AdminHourControls({
   scrollLeft,
   scrollRight,
-  returnToMain,
+
   currentDate,
 }: ViewComponentProps) {
   const [locale, setLocale] = useState("en-US"); // Default to 'en-US'
@@ -60,7 +60,7 @@ export default function ViewComponent({
   return (
     <Contents width={"section"}>
       <Grids cols={"5"}>
-        <Holds className="col-span-1 relative ">
+        <Holds className="col-span-1 relative">
           <Buttons
             background={"lightBlue"}
             position={"left"}
@@ -76,19 +76,6 @@ export default function ViewComponent({
           </Buttons>
         </Holds>
         <Holds className="col-span-3 mb-8">
-          <Buttons
-            background={"red"}
-            size={"30"}
-            className="mb-2"
-            onClick={returnToMain}
-          >
-            <Images
-              titleImg={"/turnBack.svg"}
-              titleImgAlt="return"
-              size={"full"}
-              className="mx-auto p-2"
-            />
-          </Buttons>
           <Texts text={"white"} size={"p2"} className="">
             {Capitalize(Weekday)}
           </Texts>

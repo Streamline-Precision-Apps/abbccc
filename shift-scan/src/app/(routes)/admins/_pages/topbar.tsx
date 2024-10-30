@@ -23,34 +23,64 @@ const Topbar = ({
       {!isOpen2 ? (
         <>
           <Holds className=" h-[15%] pb-4 w-full">
-            <Holds position={"row"} className="w-[95%] h-full m-auto">
+            <Holds position={"row"} className="w-[98%] h-full m-auto">
               {page === 0 ? (
                 <Holds
                   background={"lightBlue"}
-                  className="flex flex-row justify-center rounded border-[3px] border-black w-[90%] h-full relative"
+                  className="flex flex-row justify-center items-center rounded border-[3px] border-black w-[90%] h-full relative"
                 >
-                  <Texts className="h-full">
-                    Closed Banner messages go here
-                  </Texts>
+                  {/* Closed Banner */}
+                  <Titles className="h-full">Banner messages go here</Titles>
                 </Holds>
               ) : (
                 <>
                   <Holds
                     background={"lightBlue"}
-                    className="flex flex-row justify-center rounded border-[3px] border-black w-[90%] h-full"
+                    className="flex flex-row justify-center items-center rounded border-[3px] border-black w-[90%] h-full relative"
                   >
-                    <Holds>
-                      <Texts className="h-full">
-                        Closed Banner messages go here
-                      </Texts>
-                    </Holds>
+                    {/* Opened Banner */}
 
-                    <Images
-                      titleImg="/x.svg"
-                      titleImgAlt="Home Icon"
-                      className="my-auto  cursor-pointer mr-2 w-[2%]  md:w-[2%] lg:w-[2%]"
-                      onClick={page !== 0 ? () => setPage(0) : () => null}
-                    />
+                    <Holds className="w-[10%] absolute left-5">
+                      <Holds position={"row"} className="hidden md:flex">
+                        <Images
+                          titleImg={
+                            page === 1
+                              ? "/team.svg"
+                              : page === 2
+                              ? "/jobsite.svg"
+                              : page === 3
+                              ? "/form.svg"
+                              : ""
+                          }
+                          size={"60"}
+                          titleImgAlt="current Icon"
+                          className="my-auto cursor-pointer  "
+                        />
+
+                        <Titles size={"h4"} className="h-full ml-2 ">
+                          {page === 1
+                            ? "Personnel"
+                            : page === 2
+                            ? "Assets"
+                            : page === 3
+                            ? "Reports"
+                            : ""}
+                        </Titles>
+                      </Holds>
+                    </Holds>
+                    <Titles size={"h4"} className="h-full">
+                      Closed Banner messages go here
+                    </Titles>
+
+                    <Holds className="w-10 absolute right-5">
+                      <Images
+                        titleImg="/x.svg"
+                        titleImgAlt="Home Icon"
+                        className="my-auto cursor-pointer "
+                        size={"90"}
+                        onClick={page !== 0 ? () => setPage(0) : () => null}
+                      />
+                    </Holds>
                   </Holds>
                 </>
               )}
@@ -60,7 +90,7 @@ const Topbar = ({
                 className="col-start-4 col-end-5 w-[10%] h-[80%] flex-row rounded-l-none"
               >
                 <Holds position={"row"} className="my-auto">
-                  <Holds size={"70"}>
+                  <Holds size={"50"}>
                     <Images titleImg={"/clock.svg"} titleImgAlt={"clock"} />
                   </Holds>
                   <Holds size={"50"}>
@@ -80,7 +110,7 @@ const Topbar = ({
       ) : (
         <>
           <Holds className="h-[25%] w-full">
-            <Holds className=" w-[95%] h-full">
+            <Holds className=" w-[98%] h-full">
               <Holds
                 background={"lightBlue"}
                 className="rounded h-full w-full border-[3px] border-black"
@@ -148,8 +178,8 @@ const Topbar = ({
                   >
                     {/* we will need to add a conditional here to determine if they are clocked in or not */}
                     <Buttons
-                      background={"lightBlue"}
-                      className="w-[50px] md:w-[70px] h-12 lg:w-[100px] md:h-8 "
+                      background={"green"}
+                      className="w-[50px] p-1 md:w-[70px] h-fit lg:w-[100px] "
                     >
                       <Texts size={"p6"}>start day</Texts>
                     </Buttons>
@@ -158,7 +188,7 @@ const Topbar = ({
                     <Images
                       titleImg="/expandLeft.svg"
                       titleImgAlt="Home Icon"
-                      className="m-auto rotate-[270deg] cursor-pointer h-16 w-16"
+                      className="m-auto rotate-[270deg] cursor-pointer h-16 w-fit"
                       onClick={handleClockClick}
                       position={"right"}
                     />
