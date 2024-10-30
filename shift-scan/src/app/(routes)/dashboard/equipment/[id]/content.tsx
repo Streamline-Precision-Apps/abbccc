@@ -18,7 +18,7 @@ import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { calculateDuration } from "@/utils/calculateDuration";
 import { Contents } from "@/components/(reusable)/contents";
-import Checkbox from "@/components/(inputs)/checkbox";
+import Checkbox from "@/components/(inputs)/checkBox";
 import { Grids } from "@/components/(reusable)/grids";
 import Spinner from "@/components/(animations)/spinner";
 import { Titles } from "@/components/(reusable)/titles";

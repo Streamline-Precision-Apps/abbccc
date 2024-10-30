@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState } from "react";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Holds } from "@/components/(reusable)/holds";
@@ -13,6 +14,26 @@ import { useTranslations } from "next-intl";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { TimeSheet } from "../dashboard/myTeam/[id]/employee/[employeeId]/editWork";
+import { z } from "zod";
+
+// Zod schema for component state
+const ViewTimesheetsSchema = z.object({
+  user: z.string(),
+  showTimesheets: z.boolean(),
+  startingEntry: z.boolean(),
+  timesheetData: z.array(
+    z.object({
+      id: z.string().nullable(),
+      startTime: z.union([z.string(), z.instanceof(Date)]).nullable(),
+      endTime: z.union([z.string(), z.instanceof(Date)]).nullable(),
+      duration: z.number().nullable(),
+      jobsiteId: z.string().nullable(),
+      costcode: z.string().nullable(),
+    })
+  ),
+  loading: z.boolean(),
+  error: z.string().nullable(),
+});
 
 type Props = {
   user: string;
@@ -23,7 +44,26 @@ export default function ViewTimesheets({ user }: Props) {
   const [timesheetData, setTimesheetData] = useState<TimeSheet[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [formattedTimes, setFormattedTimes] = useState<{
+    [key: string]: { startTime: string; endTime: string };
+  }>({});
   const t = useTranslations("Home");
+
+  // Validate initial state with Zod schema
+  try {
+    ViewTimesheetsSchema.parse({
+      user,
+      showTimesheets,
+      startingEntry,
+      timesheetData,
+      loading,
+      error,
+    });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      console.error("Initial state validation error:", error.errors);
+    }
+  }
 
   // Fetch timesheets from the API
   const fetchTimesheets = async (date?: string) => {
@@ -44,6 +84,24 @@ export default function ViewTimesheets({ user }: Props) {
 
       setTimesheetData(data);
       setShowTimesheets(true);
+
+      // Format startTime and endTime asynchronously
+      const formattedData: {
+        [key: string]: { startTime: string; endTime: string };
+      } = {};
+      for (const timesheet of data) {
+        if (timesheet.id) {
+          formattedData[timesheet.id] = {
+            startTime: timesheet.startTime
+              ? await formatTime(timesheet.startTime.toString())
+              : "N/A",
+            endTime: timesheet.endTime
+              ? await formatTime(timesheet.endTime.toString())
+              : "N/A",
+          };
+        }
+      }
+      setFormattedTimes(formattedData);
     } catch (error) {
       setError("Error fetching timesheets");
       console.error(error);
@@ -67,7 +125,7 @@ export default function ViewTimesheets({ user }: Props) {
       <Holds background={"white"} className="my-5 h-full">
         <Contents width={"section"}>
           <Grids rows={"2"} gap={"2"} className="py-5">
-            <Forms onSubmit={handleSubmit} className="row-span-2 ">
+            <Forms onSubmit={handleSubmit} className="row-span-2">
               <Inputs type="hidden" name="id" value={user} readOnly />
               <Labels>{t("EnterDate")}</Labels>
               <Inputs type="date" name="date" defaultValue={currentDate} />
@@ -79,6 +137,7 @@ export default function ViewTimesheets({ user }: Props) {
           {error && <Texts className="text-red-500">{error}</Texts>}
         </Contents>
       </Holds>
+
       {loading ? (
         <Holds
           background={"white"}
@@ -109,6 +168,7 @@ export default function ViewTimesheets({ user }: Props) {
                   {t("NoData")}
                 </Titles>
               )}
+
               {timesheetData.length > 0 ? (
                 timesheetData.map((timesheet) => (
                   <Holds
@@ -167,7 +227,7 @@ export default function ViewTimesheets({ user }: Props) {
                   </Holds>
                 ))
               ) : (
-                <Holds className="h-full ">
+                <Holds className="h-full">
                   <Texts size={"p3"} className="py-8">
                     {t("NoDataMessage")}
                   </Texts>
@@ -181,6 +241,8 @@ export default function ViewTimesheets({ user }: Props) {
               </Holds>
             </Holds>
           )}
+
+          {error && <Texts className="text-red-500">{error}</Texts>}
         </>
       )}
     </>
