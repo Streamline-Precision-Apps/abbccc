@@ -2,7 +2,6 @@
 import { auth } from "@/auth";
 import Content from "@/components/(signup)/content";
 import { Bases } from "@/components/(reusable)/bases";
-import { Header } from "@/components/header";
 import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";
 
