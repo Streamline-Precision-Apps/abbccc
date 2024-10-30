@@ -10,25 +10,25 @@ import SignatureSetup from "./signatureSetup";
 import NotificationSettings from "./notificationSettings";
 import Permissions from "./permissions";
 import { setAuthStep, getAuthStep } from "@/app/api/auth";
-import { signOut } from "next-auth/react";
-import { z } from "zod";
+// import { signOut } from "next-auth/react";
+// import { z } from "zod";
 
 // Define Zod schema for validating props
-const propsSchema = z.object({
-  userId: z.string().min(1, "User ID is required"),
-  accountSetup: z.boolean(),
-});
+// const propsSchema = z.object({
+//   userId: z.string().min(1, "User ID is required"),
+//   accountSetup: z.boolean(),
+// });
 
 // Validation logic
-function validateProps(userId: string, accountSetup: boolean) {
-  try {
-    propsSchema.parse({ userId, accountSetup });
-    return true;
-  } catch (error) {
-    console.error("Invalid props:", error);
-    return false;
-  }
-}
+// function validateProps(userId: string, accountSetup: boolean) {
+//   try {
+//     propsSchema.parse({ userId, accountSetup });
+//     return true;
+//   } catch (error) {
+//     console.error("Invalid props:", error);
+//     return false;
+//   }
+// }
 
 export default function Content({
   userId,
@@ -37,7 +37,7 @@ export default function Content({
   userId: string;
   accountSetup: boolean;
 }) {
-  const isValid = validateProps(userId, accountSetup); // Validate props
+  // const isValid = validateProps(userId, accountSetup); // Validate props
 
   // Hooks setup
   const [step, setStep] = useState(4); // change to 1 after account setup is complete

@@ -1,6 +1,5 @@
 "use client";
 import { Buttons } from "@/components/(reusable)/buttons";
-import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
@@ -9,26 +8,53 @@ import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 
 const Topbar = ({
-  isOpen,
   isOpen2,
   handleClockClick,
+  page,
+  setPage,
 }: {
-  isOpen: boolean;
   isOpen2: boolean;
   handleClockClick: () => void;
+  page: number;
+  setPage: (page: number) => void;
 }) => {
   return (
     <>
       {!isOpen2 ? (
         <>
-          <Holds className=" h-[15%] py-2 w-full">
+          <Holds className=" h-[15%] pb-4 w-full">
             <Holds position={"row"} className="w-[95%] h-full m-auto">
-              <Holds
-                background={"lightBlue"}
-                className=" flex justify-center rounded border-[3px] border-black w-[90%] h-full"
-              >
-                <Texts className="h-full">Closed Banner messages go here</Texts>
-              </Holds>
+              {page === 0 ? (
+                <Holds
+                  background={"lightBlue"}
+                  className="flex flex-row justify-center rounded border-[3px] border-black w-[90%] h-full relative"
+                >
+                  <Texts className="h-full">
+                    Closed Banner messages go here
+                  </Texts>
+                </Holds>
+              ) : (
+                <>
+                  <Holds
+                    background={"lightBlue"}
+                    className="flex flex-row justify-center rounded border-[3px] border-black w-[90%] h-full"
+                  >
+                    <Holds>
+                      <Texts className="h-full">
+                        Closed Banner messages go here
+                      </Texts>
+                    </Holds>
+
+                    <Images
+                      titleImg="/x.svg"
+                      titleImgAlt="Home Icon"
+                      className="my-auto  cursor-pointer mr-2 w-[2%]  md:w-[2%] lg:w-[2%]"
+                      onClick={page !== 0 ? () => setPage(0) : () => null}
+                    />
+                  </Holds>
+                </>
+              )}
+
               <Holds
                 background={"white"}
                 className="col-start-4 col-end-5 w-[10%] h-[80%] flex-row rounded-l-none"
@@ -53,7 +79,7 @@ const Topbar = ({
         </>
       ) : (
         <>
-          <Holds className="h-[25%] py-2 w-full">
+          <Holds className="h-[25%] w-full">
             <Holds className=" w-[95%] h-full">
               <Holds
                 background={"lightBlue"}
@@ -67,54 +93,72 @@ const Topbar = ({
                 background={"white"}
                 className=" h-full py-2 w-[99%] flex justify-start flex-row rounded"
               >
-                <Holds position={"row"} className="my-auto w-[50%] ">
-                  <Holds position={"center"}>
+                <Holds
+                  position={"row"}
+                  className="ml-2 my-auto w-[70%] md:w-[70%] lg:w-[60%]"
+                >
+                  <Holds size={"20"}>
                     <Images
                       titleImg={"/clock.svg"}
                       titleImgAlt={"clock"}
-                      size={"40"}
+                      className="h-16 w-16"
+                      position={"left"}
                     />
                   </Holds>
-                  <Holds>
-                    <Labels size={"p3"} type="title">
-                      Current Jobsite
-                    </Labels>
-                    <Inputs
-                      name="jobsite"
-                      type="text"
-                      className="h-8 w-[150px]"
-                    />
-                  </Holds>
-                  <Holds>
-                    <Labels size={"p3"} type="title">
-                      Current Cost Code
-                    </Labels>
-                    <Inputs
-                      name="jobsite"
-                      type="text"
-                      className="h-8 w-[150px]"
-                    />
+                  <Holds position={"row"} size={"80"} className="lg:gap-10">
+                    <Holds
+                      size={"30"}
+                      position={"row"}
+                      className="mx-2 flex-col lg:flex-row "
+                    >
+                      <Labels size={"p3"} type="title">
+                        J#
+                      </Labels>
+                      <Inputs
+                        name="jobsite"
+                        type="text"
+                        className="h-8 w-full md:w-[100px] my-auto"
+                      />
+                    </Holds>
+                    <Holds
+                      size={"30"}
+                      position={"row"}
+                      className=" flex-col lg:flex-row "
+                    >
+                      <Labels size={"p3"} type="title">
+                        CC#
+                      </Labels>
+                      <Inputs
+                        name="jobsite"
+                        type="text"
+                        className="h-8 w-full md:w-[100px] my-auto"
+                      />
+                    </Holds>
                   </Holds>
                 </Holds>
-                <Holds className="w-[50%]"></Holds>
+                <Holds className="w-[10%] md:w-[10%] lg:w-[40%] "></Holds>
 
                 <Holds
                   position={"row"}
-                  className="my-auto mx-2 space-x-4 w-[20%]"
+                  className="my-auto mx-2 space-x-4 w-[20%] md:[30%] lg:w-[20%]"
                 >
                   <Holds
                     position={"right"}
-                    className="m-auto w-full flex justify-end"
+                    className="my-auto w-full flex justify-end"
                   >
-                    <Buttons background={"lightBlue"} className="">
+                    {/* we will need to add a conditional here to determine if they are clocked in or not */}
+                    <Buttons
+                      background={"lightBlue"}
+                      className="w-[50px] md:w-[70px] h-12 lg:w-[100px] md:h-8 "
+                    >
                       <Texts size={"p6"}>start day</Texts>
                     </Buttons>
                   </Holds>
-                  <Holds position={"right"} size={"30"}>
+                  <Holds position={"right"}>
                     <Images
                       titleImg="/expandLeft.svg"
                       titleImgAlt="Home Icon"
-                      className="m-auto rotate-[270deg] cursor-pointer"
+                      className="m-auto rotate-[270deg] cursor-pointer h-16 w-16"
                       onClick={handleClockClick}
                       position={"right"}
                     />

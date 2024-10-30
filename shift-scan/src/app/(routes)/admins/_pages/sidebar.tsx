@@ -8,9 +8,13 @@ import { Texts } from "@/components/(reusable)/texts";
 const sidebar = ({
   isOpen,
   toggle,
+  page,
+  setPage,
 }: {
   isOpen: boolean;
   toggle: () => void;
+  page: number;
+  setPage: (page: number) => void;
 }) => {
   return (
     <>
@@ -63,7 +67,11 @@ const sidebar = ({
             {/* The first button that says personal */}
             <Holds className=" row-span-5 h-full gap-5 mt-10">
               <Holds>
-                <Buttons background={"lightBlue"} className="w-[90%] h-20 ">
+                <Buttons
+                  background={"lightBlue"}
+                  className="w-[90%] h-20 "
+                  onClick={() => setPage(1)}
+                >
                   <Holds position={"row"}>
                     <Holds className="w-32 h-full ">
                       <Images
@@ -87,7 +95,11 @@ const sidebar = ({
               </Holds>
               {/* The button that says Assets */}
               <Holds className="flex items-start justify-between">
-                <Buttons background={"lightBlue"} className="w-[90%] h-20 ">
+                <Buttons
+                  background={"lightBlue"}
+                  className="w-[90%] h-20 "
+                  onClick={() => setPage(2)}
+                >
                   <Holds position={"row"}>
                     <Holds className="w-32 h-full ">
                       <Images
@@ -111,7 +123,11 @@ const sidebar = ({
               </Holds>
               {/* The button that says Reports */}
               <Holds>
-                <Buttons background={"lightBlue"} className="w-[90%] h-20 ">
+                <Buttons
+                  background={"lightBlue"}
+                  className="w-[90%] h-20 "
+                  onClick={() => setPage(3)}
+                >
                   <Holds position={"row"}>
                     <Holds className="w-32 h-full ">
                       <Images
@@ -168,8 +184,12 @@ const sidebar = ({
               </Holds>
             </Holds>
             <Holds className=" h-full gap-5 mt-10">
-              <Holds className="">
-                <Buttons background={"lightBlue"} className="w-20 h-20 ">
+              <Holds className={page === 1 ? "hidden" : ""}>
+                <Buttons
+                  background={"lightBlue"}
+                  className="w-20 h-20 "
+                  onClick={() => setPage(1)}
+                >
                   <Holds position={"row"}>
                     <Images
                       titleImg="/team.svg"
@@ -179,8 +199,12 @@ const sidebar = ({
                   </Holds>
                 </Buttons>
               </Holds>
-              <Holds>
-                <Buttons background={"lightBlue"} className="w-20 h-20 ">
+              <Holds className={page === 2 ? "hidden" : ""}>
+                <Buttons
+                  background={"lightBlue"}
+                  className="w-20 h-20 "
+                  onClick={() => setPage(2)}
+                >
                   <Holds position={"row"}>
                     <Images
                       titleImg="/jobsite.svg"
@@ -191,8 +215,12 @@ const sidebar = ({
                   </Holds>
                 </Buttons>
               </Holds>
-              <Holds>
-                <Buttons background={"lightBlue"} className="w-20 h-20 ">
+              <Holds className={page === 3 ? "hidden" : ""}>
+                <Buttons
+                  background={"lightBlue"}
+                  className="w-20 h-20 "
+                  onClick={() => setPage(3)}
+                >
                   <Holds position={"row"}>
                     <Images
                       titleImg="/form.svg"
