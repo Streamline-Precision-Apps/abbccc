@@ -13,7 +13,7 @@ const Dashboard = ({
   handleClockClick: () => void;
 }) => {
   return (
-    <Holds className={"w-[95%] h-full"}>
+    <Holds className={"w-[95%] h-full py-5"}>
       <Topbar
         isOpen={isOpen}
         isOpen2={isOpen2}
