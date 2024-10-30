@@ -150,7 +150,7 @@ const sidebar = ({
                 </Buttons>
               </Holds>
 
-              <Holds className=" w-36 h-36 ">
+              <Holds className=" w-40 h-40 ">
                 <Images
                   titleImg="/logo.svg"
                   titleImgAlt="logo"
