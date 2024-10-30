@@ -8,7 +8,7 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Titles } from "@/components/(reusable)/titles";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { useSession } from "next-auth/react";
-import Checkbox from "@/components/(inputs)/checkBox";
+import CheckBox from "@/components/(inputs)/CheckBox";
 import { Grids } from "@/components/(reusable)/grids";
 import { TextAreas } from "@/components/(reusable)/textareas";
 
@@ -95,7 +95,7 @@ export const InjuryReportContent = ({
               </Titles>
             </Holds>
             <Holds size={"30"}>
-              <Checkbox
+              <CheckBox
                 defaultChecked={supervisorChecked}
                 onChange={handleSupervisorCheckboxChange}
                 id={"1"}
@@ -144,7 +144,7 @@ export const InjuryReportContent = ({
               </Titles>
             </Holds>
             <Holds size={"30"}>
-              <Checkbox
+              <CheckBox
                 defaultChecked={signatureChecked}
                 onChange={handleSignatureCheckboxChange}
                 id={"2"}
