@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import "@/app/globals.css";
-import Checkbox from "@/components/(inputs)/checkBox";
+import Checkbox from "@/components/(inputs)/CheckBox";
 import { useRouter } from "next/navigation";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Bases } from "@/components/(reusable)/bases";

@@ -18,7 +18,7 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Images } from "@/components/(reusable)/images";
 import { Grids } from "@/components/(reusable)/grids";
 import Spinner from "@/components/(animations)/spinner";
-import Checkbox from "@/components/(inputs)/checkBox";
+import Checkbox from "@/components/(inputs)/CheckBox";
 import { z } from "zod";
 
 // Zod schema for component state
@@ -29,13 +29,17 @@ const ClockOutContentSchema = z.object({
   checked: z.boolean(),
   base64String: z.string(),
   isSubmitting: z.boolean(),
-  scanResult: z.object({
-    data: z.string().optional(),
-  }).nullable(),
+  scanResult: z
+    .object({
+      data: z.string().optional(),
+    })
+    .nullable(),
   savedCostCode: z.string().nullable(),
-  savedTimeSheetData: z.object({
-    id: z.union([z.string(), z.number()]).optional(),
-  }).nullable(),
+  savedTimeSheetData: z
+    .object({
+      id: z.union([z.string(), z.number()]).optional(),
+    })
+    .nullable(),
   date: z.date(),
 });
 
