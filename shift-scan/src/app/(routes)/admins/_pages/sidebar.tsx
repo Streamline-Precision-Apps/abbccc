@@ -61,15 +61,16 @@ const sidebar = ({
               </Grids>
             </Holds>
             {/* The first button that says personal */}
-            <Holds className=" row-span-6 h-full gap-10 mt-10">
+            <Holds className=" row-span-5 h-full gap-5 mt-10">
               <Holds>
-                <Buttons background={"lightBlue"} className="w-[90%] h-24 ">
+                <Buttons background={"lightBlue"} className="w-[90%] h-20 ">
                   <Holds position={"row"}>
                     <Holds className="w-32 h-full ">
                       <Images
                         titleImg="/team.svg"
                         titleImgAlt="Personal Icon"
                         className="m-auto"
+                        size={"50"}
                       />
                     </Holds>
                     <Texts size={"p3"}>Personnel</Texts>
@@ -78,20 +79,22 @@ const sidebar = ({
                         titleImg="/drag.svg"
                         titleImgAlt="draggable icon"
                         className="m-auto"
+                        size={"50"}
                       />
                     </Holds>
                   </Holds>
                 </Buttons>
               </Holds>
               {/* The button that says Assets */}
-              <Holds>
-                <Buttons background={"lightBlue"} className="w-[90%] h-24 ">
+              <Holds className="flex items-start justify-between">
+                <Buttons background={"lightBlue"} className="w-[90%] h-20 ">
                   <Holds position={"row"}>
                     <Holds className="w-32 h-full ">
                       <Images
                         titleImg="/jobsite.svg"
                         titleImgAlt="Home Icon"
                         className="m-auto"
+                        size={"50"}
                       />
                     </Holds>
                     <Texts size={"p3"}>Assets</Texts>
@@ -100,6 +103,7 @@ const sidebar = ({
                         titleImg="/drag.svg"
                         titleImgAlt="draggable icon"
                         className="m-auto"
+                        size={"50"}
                       />
                     </Holds>
                   </Holds>
@@ -107,13 +111,14 @@ const sidebar = ({
               </Holds>
               {/* The button that says Reports */}
               <Holds>
-                <Buttons background={"lightBlue"} className="w-[90%] h-24 ">
+                <Buttons background={"lightBlue"} className="w-[90%] h-20 ">
                   <Holds position={"row"}>
                     <Holds className="w-32 h-full ">
                       <Images
                         titleImg="/form.svg"
                         titleImgAlt="Reports Icon"
                         className="m-auto"
+                        size={"50"}
                       />
                     </Holds>
                     <Texts size={"p3"}>Reports</Texts>
@@ -121,7 +126,8 @@ const sidebar = ({
                       <Images
                         titleImg="/drag.svg"
                         titleImgAlt="draggable icon"
-                        className="m-auto"
+                        className="my-auto flex items-center justify-center "
+                        size={"50"}
                       />
                     </Holds>
                   </Holds>
@@ -132,7 +138,7 @@ const sidebar = ({
         </Holds>
       ) : (
         <Holds background={"white"} className=" h-full w-[10em] ml-5 ">
-          <Grids rows={"10"} gap={"5"} className="my-10">
+          <Grids rows={"10"} gap={"5"} className="my-5">
             <Holds className="row-span-4 h-full">
               <Holds className="w-24">
                 <Buttons background={"none"} size={"50"} onClick={toggle}>
@@ -152,7 +158,7 @@ const sidebar = ({
                 />
               </Holds>
 
-              <Holds className=" w-36 h-36 ">
+              <Holds className=" w-32 h-32 ">
                 <Images
                   titleImg="/person.svg"
                   titleImgAlt="Home Icon"
@@ -161,9 +167,9 @@ const sidebar = ({
                 />
               </Holds>
             </Holds>
-            <Holds className=" h-full gap-10 mt-10">
+            <Holds className=" h-full gap-5 mt-10">
               <Holds className="">
-                <Buttons background={"lightBlue"} className="w-24 h-24">
+                <Buttons background={"lightBlue"} className="w-20 h-20 ">
                   <Holds position={"row"}>
                     <Images
                       titleImg="/team.svg"
@@ -174,18 +180,19 @@ const sidebar = ({
                 </Buttons>
               </Holds>
               <Holds>
-                <Buttons background={"lightBlue"} className="w-24 h-24 ">
+                <Buttons background={"lightBlue"} className="w-20 h-20 ">
                   <Holds position={"row"}>
                     <Images
                       titleImg="/jobsite.svg"
-                      titleImgAlt="Home Icon"
+                      titleImgAlt="Assets Icon"
                       className="m-auto"
+                      size={"80"}
                     />
                   </Holds>
                 </Buttons>
               </Holds>
               <Holds>
-                <Buttons background={"lightBlue"} className=" w-24 h-24 ">
+                <Buttons background={"lightBlue"} className="w-20 h-20 ">
                   <Holds position={"row"}>
                     <Images
                       titleImg="/form.svg"
