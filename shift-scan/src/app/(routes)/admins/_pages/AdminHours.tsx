@@ -1,24 +1,21 @@
 "use client";
-import { useState, useEffect, useMemo } from "react";
-import ViewComponent from "../(content)/hourView";
-import { usePayPeriodTimeSheet } from "../context/PayPeriodTimeSheetsContext";
+import { useState, useEffect, useMemo, useRef } from "react";
+import { usePayPeriodTimeSheet } from "@/app/context/PayPeriodTimeSheetsContext";
 import { useTranslations } from "next-intl";
 import { Contents } from "@/components/(reusable)/contents";
 import { Texts } from "@/components/(reusable)/texts";
-import { Buttons } from "@/components/(reusable)/buttons";
 import { Holds } from "@/components/(reusable)/holds";
 import { Grids } from "@/components/(reusable)/grids";
+import AdminHourControls from "./AdminHourControls";
 
-type ControlComponentProps = {
-  toggle: (toggle: boolean) => void;
-};
-
-export default function ControlComponent({ toggle }: ControlComponentProps) {
+export default function AdminHours() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const { payPeriodTimeSheet } = usePayPeriodTimeSheet();
   const t = useTranslations("Home");
   const e = useTranslations("Err-Msg");
-
+  const dailyHoursCache = useRef<{ date: string; hours: number }[] | null>(
+    null
+  );
   const calculatePayPeriodStart = () => {
     try {
       const startDate = new Date(2024, 7, 5); // August 5, 2024
@@ -67,8 +64,15 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   };
   // calls the previous function and created a new array
-  const dailyHours = useMemo(() => calculateDailyHours(), [payPeriodTimeSheet]);
-  console.log("Daily Hours called:", dailyHours);
+  const dailyHours = useMemo(() => {
+    if (dailyHoursCache.current) {
+      return dailyHoursCache.current;
+    } else {
+      const calculatedHours = calculateDailyHours();
+      dailyHoursCache.current = calculatedHours;
+      return calculatedHours;
+    }
+  }, [payPeriodTimeSheet]);
 
   useEffect(() => {
     const today = new Date().toISOString().split("T")[0];
@@ -78,9 +82,11 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
     }
   }, [dailyHours]);
 
+  const prevData2 = dailyHours[currentIndex - 2] || { date: "", hours: 0 };
   const prevData = dailyHours[currentIndex - 1] || { date: "", hours: 0 };
   const currentData = dailyHours[currentIndex] || { date: "", hours: 0 };
   const nextData = dailyHours[currentIndex + 1] || { date: "", hours: 0 };
+  const nextData2 = dailyHours[currentIndex + 2] || { date: "", hours: 0 };
 
   const calculateBarHeight = (value: number) => {
     if (value === 0) return 0;
@@ -106,48 +112,38 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
       setCurrentIndex((prevIndex) => prevIndex + 1);
     }
   };
-  const returnToMain = () => {
-    toggle(false);
-  };
 
   return (
     <Grids rows="7" gap="5">
-      <Holds
-        background="darkBlue"
-        className="row-span-2 h-full shadow-[8px_8px_0px_grey]"
-      >
-        <ViewComponent
-          returnToMain={returnToMain}
+      <Holds background="darkBlue" className="row-span-2 h-full">
+        <AdminHourControls
           scrollLeft={scrollLeft}
           scrollRight={scrollRight}
           currentDate={new Date(currentData.date)}
         />
       </Holds>
 
-      <Holds
-        position="row"
-        className="row-span-4 border-black border-[3px] rounded-2xl shadow-[8px_8px_0px_grey]"
-      >
-        {[prevData, currentData, nextData].map((data, index) => (
-          <Holds key={index} className="h-full w-full ">
-            <Contents
-              width={"section"}
+      <Holds position="row" className="row-span-5 w-full">
+        {[prevData2, prevData, currentData, nextData, nextData2].map(
+          (data, index) => (
+            <Holds
+              key={index}
               className={`${
                 currentData.date === data.date
-                  ? "px-2 py-2 h-full w-24 "
+                  ? "px-2 py-2 h-full w-[20%] "
                   : prevData.date === data.date
-                  ? "px-2 py-6 h-full w-20"
+                  ? "px-2 py-2 h-full w-[20%]"
                   : nextData.date === data.date
-                  ? "px-2 py-6 h-full w-20 "
-                  : "px-2 py-6 h-full hidden xl:block xl:w-28"
+                  ? "px-2 py-2 h-full w-[20%]"
+                  : "px-2 py-2 h-full w-[20%]"
               }`}
             >
               <Holds
-                background="darkBlue"
-                className="h-full border-black border-[3px] rounded-[10px] p-1 flex justify-end"
+                background="grey"
+                className="h-full border-black border-[3px] p-[3px] rounded-[10px]  flex justify-end"
               >
                 <div
-                  className={`rounded-[10px] ${
+                  className={`rounded-t-[10px] rounded-b-[6px] ${
                     data.hours > 8 ? "bg-app-green" : "bg-app-orange"
                   } ${data.hours === 0 ? "bg-clear " : ""}`}
                   style={{
@@ -155,21 +151,17 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
                     border: data.hours ? "3px solid black" : "none",
                   }}
                 >
-                  <Texts size="p3">
-                    {data.hours !== 0
-                      ? `${data.hours.toFixed(1)} ${t("DA-Time-Label")}`
-                      : ""}
+                  <Texts size="p4">
+                    {data.hours !== 0 ? `${data.hours.toFixed(1)}` : ""}
+                  </Texts>
+                  <Texts size="p4">
+                    {data.hours !== 0 ? `${t("DA-Time-Label")}` : ""}
                   </Texts>
                 </div>
               </Holds>
-            </Contents>
-          </Holds>
-        ))}
-      </Holds>
-      <Holds className="row-span-1 h-full">
-        <Buttons href={"/timesheets"} background={"green"}>
-          <Texts size={"p3"}>{t("TimeSheet-Label")}</Texts>
-        </Buttons>
+            </Holds>
+          )
+        )}
       </Holds>
     </Grids>
   );
