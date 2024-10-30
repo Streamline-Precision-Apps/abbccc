@@ -41,7 +41,6 @@ type Props = {
 
 export default function ViewTimesheets({ user }: Props) {
   const [showTimesheets, setShowTimesheets] = useState(false);
-  const [startingEntry] = useState(false);
   const [timesheetData, setTimesheetData] = useState<TimeSheet[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -69,8 +68,12 @@ export default function ViewTimesheets({ user }: Props) {
   // Fetch timesheets from the API
   const fetchTimesheets = async (date?: string) => {
     setLoading(true);
+    setError(null);
     try {
-      const queryParam = date ? `?date=${date}` : "";
+      const dateIso = date
+        ? new Date(date).toISOString().slice(0, 10)
+        : undefined;
+      const queryParam = dateIso ? `?date=${dateIso}` : "";
       const response = await fetch(`/api/getTimesheets${queryParam}`);
 
       if (!response.ok) {
@@ -78,12 +81,14 @@ export default function ViewTimesheets({ user }: Props) {
       }
 
       const data: TimeSheet[] = await response.json();
+
       setTimesheetData(data);
       setShowTimesheets(true);
 
       // Format startTime and endTime asynchronously
-      const formattedData: { [key: string]: { startTime: string; endTime: string } } =
-        {};
+      const formattedData: {
+        [key: string]: { startTime: string; endTime: string };
+      } = {};
       for (const timesheet of data) {
         if (timesheet.id) {
           formattedData[timesheet.id] = {
@@ -129,6 +134,7 @@ export default function ViewTimesheets({ user }: Props) {
               </Buttons>
             </Forms>
           </Grids>
+          {error && <Texts className="text-red-500">{error}</Texts>}
         </Contents>
       </Holds>
 
@@ -138,7 +144,7 @@ export default function ViewTimesheets({ user }: Props) {
           size={"full"}
           className="h-full min-h-[50vh]"
         >
-          <Holds position={"center"} size={"50"} className="my-10">
+          <Holds position={"center"} size={"50"} className="my-10 ">
             <Spinner />
             <Titles size={"h3"} className="mt-4">
               {t("Loading")}
@@ -164,57 +170,62 @@ export default function ViewTimesheets({ user }: Props) {
               )}
 
               {timesheetData.length > 0 ? (
-                timesheetData.map((timesheet) =>
-                  timesheet.id ? (
-                    <Holds
-                      key={timesheet.id}
-                      size={"full"}
-                      className="odd:bg-app-blue rounded"
-                    >
-                      <Holds size={"70"} className="p-4 py-8">
-                        <Labels>
-                          {t("TimesheetID")}
-                          <Inputs value={timesheet.id} readOnly />
-                        </Labels>
-                        <Labels>
-                          {t("StartTime")}
-                          <Inputs
-                            value={
-                              formattedTimes[timesheet.id]?.startTime || "N/A"
-                            }
-                            readOnly
-                          />
-                        </Labels>
-                        <Labels>
-                          {t("EndTime")}
-                          <Inputs
-                            value={formattedTimes[timesheet.id]?.endTime || "N/A"}
-                            readOnly
-                          />
-                        </Labels>
-                        <Labels>
-                          {t("Duration")}
-                          <Inputs
-                            value={
-                              timesheet.duration
-                                ? `${timesheet.duration.toFixed(2)} ${t("Unit")}`
-                                : "N/A"
-                            }
-                            readOnly
-                          />
-                        </Labels>
-                        <Labels>
-                          {t("Jobsite")}
-                          <Inputs value={timesheet.jobsiteId || "N/A"} readOnly />
-                        </Labels>
-                        <Labels>
-                          {t("CostCode")}
-                          <Inputs value={timesheet.costcode || "N/A"} readOnly />
-                        </Labels>
-                      </Holds>
+                timesheetData.map((timesheet) => (
+                  <Holds
+                    key={timesheet.id}
+                    size={"full"}
+                    className="odd:bg-app-blue rounded"
+                  >
+                    <Holds size={"70"} className="p-4 py-8">
+                      <Labels>
+                        {t("TimesheetID")}
+                        <Inputs value={timesheet.id} readOnly />
+                      </Labels>
+                      <Labels>
+                        {t("StartTime")}
+                        <Inputs
+                          value={
+                            timesheet.startTime
+                              ? formatTime(timesheet.startTime.toString())
+                              : "N/A"
+                          }
+                          readOnly
+                        />
+                      </Labels>
+                      <Labels>
+                        {t("EndTime")}
+                        <Inputs
+                          value={
+                            timesheet.endTime
+                              ? formatTime(timesheet.endTime.toString())
+                              : "N/A"
+                          }
+                          readOnly
+                        />
+                      </Labels>
+                      <Labels>
+                        {t("Duration")}
+                        <Inputs
+                          value={
+                            timesheet.duration !== null &&
+                            timesheet.duration !== undefined
+                              ? timesheet.duration.toFixed(2)
+                              : "N/A"
+                          }
+                          readOnly
+                        />
+                      </Labels>
+                      <Labels>
+                        {t("Jobsite")}
+                        <Inputs value={timesheet.jobsiteId} readOnly />
+                      </Labels>
+                      <Labels>
+                        {t("CostCode")}
+                        <Inputs value={timesheet.costcode} readOnly />
+                      </Labels>
                     </Holds>
-                  ) : null
-                )
+                  </Holds>
+                ))
               ) : (
                 <Holds className="h-full">
                   <Texts size={"p3"} className="py-8">
@@ -225,11 +236,9 @@ export default function ViewTimesheets({ user }: Props) {
             </Holds>
           ) : (
             <Holds background={"white"} className="pb-10 h-full min-h-[50vh]">
-              {startingEntry ? null : (
-                <Holds position={"center"} size={"70"} className="my-10">
-                  <Texts size={"p3"}>{t("FirstMessage")}</Texts>
-                </Holds>
-              )}
+              <Holds position={"center"} size={"70"} className="my-10">
+                <Texts size={"p3"}>{t("FirstMessage")}</Texts>
+              </Holds>
             </Holds>
           )}
 

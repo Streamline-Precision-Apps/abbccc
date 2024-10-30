@@ -5,27 +5,30 @@ import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
 import { useRouter } from "next/navigation";
 import { Contents } from "@/components/(reusable)/contents";
+import { useState } from "react";
+import { Holds } from "@/components/(reusable)/holds";
 
-type AdminProps = {
-  additionalButtonsType: string | null;
-  handleResetButtons: () => void;
-  handleShowAdditionalButtons: (type: string) => void;
-};
-
-export default function Admin({
-  additionalButtonsType,
-  handleResetButtons,
-  handleShowAdditionalButtons,
-}: AdminProps) {
+export default function Admin() {
   const t = useTranslations("admin");
   const Router = useRouter();
+  const [additionalButtonsType, setAdditionalButtonsType] = useState<
+    string | null
+  >(null);
 
   function switchToDashboard(): void {
     Router.push("/");
   }
 
+  const handleResetButtons = () => {
+    setAdditionalButtonsType(null);
+  };
+
+  const handleShowAdditionalButtons = (type: string) => {
+    setAdditionalButtonsType(type);
+  };
+
   return (
-    <>
+    <Holds className="h-full">
       {additionalButtonsType === "recruitment" ? (
         <>
           <Buttons background={"lightBlue"} onClick={handleResetButtons}>
@@ -126,6 +129,6 @@ export default function Admin({
           </Buttons>
         </>
       )}
-    </>
+    </Holds>
   );
 }
