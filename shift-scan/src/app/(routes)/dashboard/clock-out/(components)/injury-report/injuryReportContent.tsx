@@ -8,7 +8,7 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Titles } from "@/components/(reusable)/titles";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { useSession } from "next-auth/react";
-import Checkbox from "@/components/(inputs)/checkbox";
+import Checkbox from "@/components/(inputs)/checkBox";
 import { Grids } from "@/components/(reusable)/grids";
 import { TextAreas } from "@/components/(reusable)/textareas";
 
@@ -17,11 +17,13 @@ type FormProps = {
   setBase64String: (base64: string) => void;
   handleComplete: () => void;
   handleSubmitImage: () => void;
+  handleNextStep: () => void;
 };
 
 export const InjuryReportContent = ({
   base64String,
   handleComplete,
+  handleNextStep,
 }: FormProps) => {
   const [supervisorChecked, setSupervisorChecked] = useState<boolean>(false);
   const [signatureChecked, setSignatureChecked] = useState<boolean>(false);
@@ -72,6 +74,7 @@ export const InjuryReportContent = ({
       await CreateInjuryForm(formData);
       setError(undefined);
       handleComplete();
+      handleNextStep();
     } catch (error) {
       setError(t("FaildToSubmit"));
     }

@@ -4,7 +4,8 @@ import Content from "@/app/hamburger/inbox/received/[id]/content";
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
 type Params = Promise<{ id: string }>;
-export default async function Page({ params }: { params: Params }) {
+export default async function Page(props: { params: Promise<Params> }) {
+  const params = await props.params;
   const session = await auth();
   if (!session) return null;
 

@@ -151,7 +151,7 @@ export default function QrEquipmentContent() {
             <Buttons background={"green"} onClick={handleNew}>
               <Holds>
                 <Images
-                  titleImg={"/Plus.svg"}
+                  titleImg={"/plus.svg"}
                   titleImgAlt={"plus"}
                   size={"40"}
                 />
@@ -179,7 +179,7 @@ export default function QrEquipmentContent() {
             <Buttons background={"green"} onClick={handleNew}>
               <Holds>
                 <Images
-                  titleImg={"/Plus.svg"}
+                  titleImg={"/plus.svg"}
                   titleImgAlt={"plus"}
                   size={"40"}
                 />

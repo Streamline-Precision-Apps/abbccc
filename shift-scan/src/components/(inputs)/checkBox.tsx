@@ -24,7 +24,7 @@ const Checkbox = ({
   <div className="w-full flex justify-center">
     <input
       className={`
-      peer relative appearance-none shrink-0 border-4 border-black mt-1 bg-white shadow-[8px_8px_0px_grey] rounded-[10px]
+      peer relative appearance-none shrink-0 border-4 border-black mt-1 bg-white shadow-[8px_8px_0px_grey]
       focus:outline-none focus:ring-offset-0 focus:ring-1 focus:ring-blue-100
       checked:bg-app-green checked:border-4 rounded-[10px]
       disabled:border-steel-400 disabled:bg-steel-400

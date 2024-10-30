@@ -16,7 +16,7 @@ import { z } from "zod";
 
 // Zod schema for Team data
 const TeamSchema = z.object({
-  id: z.string(),
+  id: z.number(),
   name: z.string(),
   totalMembers: z.number(),
 });
@@ -86,7 +86,7 @@ export default function Content() {
         fetchCrew(); // Fetch from server if no data in local storage
       }
     }
-  }, [status]);
+  }, [sessionStatus]);
 
   return (
     <Bases>

@@ -27,13 +27,19 @@ export default function ChangePassword() {
   const [oneSymbol, setOneSymbol] = useState(false);
 
   const [viewSecret1, setViewSecret1] = useState(false);
+  const [viewSecret2, setViewSecret2] = useState(false);
 
   const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const route = useRouter();
 
   const viewPasscode1 = () => {
     setViewSecret1(!viewSecret1);
+  };
+
+  const viewPasscode2 = () => {
+    setViewSecret2(!viewSecret2);
   };
 
   useEffect(() => {
@@ -48,8 +54,8 @@ export default function ChangePassword() {
 
   // add this to validate they have a token for the request
   if (!token) {
-    //     route.push("/signin");
-    //     return null;
+    route.push("/signin");
+    return null;
   }
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -59,11 +65,22 @@ export default function ChangePassword() {
       setShowBanner(true);
       return;
     }
+    if (confirmPassword.length === 0) {
+      setBannerMessage("Invalid. Confirm Password cannot be empty.");
+      setShowBanner(true);
+      return;
+    }
 
     if (!validatePassword(newPassword)) {
       setBannerMessage(
         "Invalid. Password must be at least 8 characters long, contain 1 number, and 1 symbol."
       );
+      setShowBanner(true);
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setBannerMessage("Invalid. Passwords do not match!");
       setShowBanner(true);
       return;
     }
@@ -121,7 +138,7 @@ export default function ChangePassword() {
   );
 
   return (
-    <Holds className="h-full">
+    <Holds className="h-full my-auto">
       <Forms
         onSubmit={handleSubmit}
         className="h-full flex flex-col items-center justify-between"
@@ -138,15 +155,28 @@ export default function ChangePassword() {
         )}
 
         {/* Start of grid container */}
-        <Grids className="grid grid-rows-9 gap-4 w-full">
+        <Grids rows={"5"} gap={"5"} className="h-full">
           {/* New password section */}
-          <Holds className="row-span-5 h-full" background="white">
+
+          <Holds background={"darkBlue"} className="row-span-1 h-full">
+            <Texts position="left" text={"white"} size="p4">
+              Password Strength:
+            </Texts>
+            <Holds background="white" className="rounded-xl h-full ">
+              <Contents width={"section"}>
+                <Holds position="row" className="my-auto">
+                  <PasswordCriteria passed={oneNumber} label="123" />
+                  <PasswordCriteria passed={oneSymbol} label="Symbol" />
+                  <PasswordCriteria passed={eightChar} label="(8) Length" />
+                </Holds>
+              </Contents>
+            </Holds>
+          </Holds>
+          <Holds background="white" className="row-span-2 h-full">
             <Contents width="section">
-              <Holds className="my-auto h-full">
-                <Holds position="row">
-                  <Labels htmlFor="new-password" className="py-2">
-                    {t("NewPassword")}
-                  </Labels>
+              <Holds className="my-auto w-full">
+                <Holds position="row" className="">
+                  <Labels htmlFor="new-password">{t("NewPassword")}</Labels>
                   <Images
                     titleImg={viewSecret1 ? "/eye.svg" : "/eye-slash.svg"}
                     titleImgAlt="eye"
@@ -164,26 +194,38 @@ export default function ChangePassword() {
                     setNewPassword(e.target.value);
                   }}
                 />
-                <Holds background={"darkBlue"}>
-                  <Texts position="left" text={"white"} size="p3">
-                    Password Strength:
-                  </Texts>
+              </Holds>
+            </Contents>
+          </Holds>
 
-                  <Holds
-                    background="white"
-                    className="justify-between my-auto p-2 rounded"
-                  >
-                    <PasswordCriteria passed={oneNumber} label="123" />
-                    <PasswordCriteria passed={oneSymbol} label="Symbol" />
-                    <PasswordCriteria passed={eightChar} label="(8) Length" />
-                  </Holds>
+          {/* Confirm password section */}
+          <Holds className="row-span-4 h-full" background="white">
+            <Contents width="section">
+              <Holds className="my-auto w-full">
+                <Holds position="row" className="h-full">
+                  <Labels htmlFor="confirm-password">
+                    {t("ConfirmPassword")}
+                  </Labels>
+                  <Images
+                    titleImg={viewSecret2 ? "/eye.svg" : "/eye-slash.svg"}
+                    titleImgAlt="eye"
+                    background="none"
+                    size="10"
+                    onClick={viewPasscode2}
+                  />
                 </Holds>
+                <Inputs
+                  type={viewSecret2 ? "text" : "password"}
+                  id="confirm-password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
               </Holds>
             </Contents>
           </Holds>
 
           {/* Submit button section */}
-          <Holds className="row-span-2 h-full ">
+          <Holds className="row-span-2 h-full">
             <Holds className="my-auto">
               <Contents width="section">
                 <Buttons background="orange" type="submit" className="py-2">

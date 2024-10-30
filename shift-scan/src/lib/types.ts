@@ -187,6 +187,12 @@ export type JobCodes = {
   name: string;
 };
 
+export type JobCode = {
+  id: string;
+  qrId: string;
+  name: string;
+};
+
 export type CostCodes = {
   id: number;
   name: string;

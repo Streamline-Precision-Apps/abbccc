@@ -16,12 +16,10 @@ export default function QR({ handleNextStep, url }: QrReaderProps) {
   const [scanCount, setScanCount] = useState(0);
   const { setScanResult } = useScanData();
   const router = useRouter();
-  const SCAN_THRESHOLD = 300; // Number of scans before redirecting Zach change this for working on clock in modals
+  const SCAN_THRESHOLD = 200; // Number of scans before redirecting Zach change this for working on clock in modals
 
   const onScanSuccess = (result: QrScanner.ScanResult) => {
     try {
-      console.log(result.data);
-      console.log("I scanned using jobsite QR");
       setScanResult({ data: result.data });
       qrScannerRef.current?.stop();
       handleNextStep();
@@ -36,9 +34,8 @@ export default function QR({ handleNextStep, url }: QrReaderProps) {
     }
   };
 
-  const onScanFail = (err: string | Error) => {
+  const onScanFail = () => {
     setScanCount((prevCount) => prevCount + 1);
-    console.warn("Scan failed:", err);
   };
 
   useEffect(() => {
@@ -71,7 +68,7 @@ export default function QR({ handleNextStep, url }: QrReaderProps) {
         scanner.destroy();
       };
     }
-  }, [onScanSuccess]); // added this for build errors
+  }, []);
 
   useEffect(() => {
     if (scanCount >= SCAN_THRESHOLD) {
