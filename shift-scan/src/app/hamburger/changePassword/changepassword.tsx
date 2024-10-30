@@ -119,7 +119,7 @@ export default function ChangePassword({ userId }: { userId: string }) {
     passed: boolean;
     label: string;
   }) => (
-    <Holds position="row" className="space-x-4">
+    <Holds position="row" className="space-x-2">
       <Holds
         background={passed ? "green" : "red"}
         className="w-1 rounded-full my-auto"
@@ -129,7 +129,7 @@ export default function ChangePassword({ userId }: { userId: string }) {
   );
 
   return (
-    <Holds className="h-full">
+    <Holds className="h-full my-auto">
       <Forms
         onSubmit={handleSubmit}
         className="h-full flex flex-col items-center justify-between"
@@ -146,15 +146,28 @@ export default function ChangePassword({ userId }: { userId: string }) {
         )}
 
         {/* Start of grid container */}
-        <Grids className="grid grid-rows-7 gap-4 w-full">
+        <Grids rows={"5"} gap={"5"} className="h-full">
           {/* New password section */}
-          <Holds className="row-span-3 h-full" background="white">
+
+          <Holds background={"darkBlue"} className="row-span-1 h-full">
+            <Texts position="left" text={"white"} size="p4">
+              Password Strength:
+            </Texts>
+            <Holds background="white" className="rounded-xl h-full ">
+              <Contents width={"section"}>
+                <Holds position="row" className="my-auto">
+                  <PasswordCriteria passed={oneNumber} label="123" />
+                  <PasswordCriteria passed={oneSymbol} label="Symbol" />
+                  <PasswordCriteria passed={eightChar} label="(8) Length" />
+                </Holds>
+              </Contents>
+            </Holds>
+          </Holds>
+          <Holds background="white" className="row-span-2 h-full">
             <Contents width="section">
-              <Holds className="my-auto h-full">
-                <Holds position="row">
-                  <Labels htmlFor="new-password" className="py-2">
-                    {t("NewPassword")}
-                  </Labels>
+              <Holds className="my-auto w-full">
+                <Holds position="row" className="">
+                  <Labels htmlFor="new-password">{t("NewPassword")}</Labels>
                   <Images
                     titleImg={viewSecret1 ? "/eye.svg" : "/eye-slash.svg"}
                     titleImgAlt="eye"
@@ -172,26 +185,12 @@ export default function ChangePassword({ userId }: { userId: string }) {
                     setNewPassword(e.target.value);
                   }}
                 />
-                <Holds background={"darkBlue"}>
-                  <Texts position="left" text={"white"} size="p3">
-                    Password Strength:
-                  </Texts>
-
-                  <Holds
-                    background="white"
-                    className="justify-between my-auto p-2 rounded"
-                  >
-                    <PasswordCriteria passed={oneNumber} label="123" />
-                    <PasswordCriteria passed={oneSymbol} label="Symbol" />
-                    <PasswordCriteria passed={eightChar} label="(8) Length" />
-                  </Holds>
-                </Holds>
               </Holds>
             </Contents>
           </Holds>
 
           {/* Confirm password section */}
-          <Holds className="row-span-2 h-full" background="white">
+          <Holds className="row-span-4 h-full" background="white">
             <Contents width="section">
               <Holds className="my-auto w-full">
                 <Holds position="row" className="h-full">

@@ -1,10 +1,11 @@
 "use server";
 
-import { NextResponse } from "next/server";
+// we need this rout to search by the id of the sent request
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 
-export async function GET() {
+export async function GET({ params }: { params: { id: string } } & (Request | NextRequest)) {
   const session = await auth();
 
   if (!session) {
@@ -16,6 +17,7 @@ export async function GET() {
     // Fetch sent requests based on `id` and `userId`
     const sentContent = await prisma.timeoffRequestForms.findMany({
       where: {
+        id: Number(params.id),
         employeeId: userId,
       },
     });

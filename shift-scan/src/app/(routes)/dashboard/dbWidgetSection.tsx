@@ -11,40 +11,89 @@ import { Contents } from "@/components/(reusable)/contents";
 import { useRouter } from "next/navigation";
 import { getAuthStep, setAuthStep } from "@/app/api/auth";
 import Spinner from "@/components/(animations)/spinner";
-import { updateTimeSheetBySwitch } from "@/actions/timeSheetActions";
 import React from "react";
+import { Session } from "next-auth";
+import { updateTimeSheetBySwitch } from "@/actions/timeSheetActions";
+import { Modals } from "@/components/(reusable)/modals";
+import { Bases } from "@/components/(reusable)/bases";
+import { Titles } from "@/components/(reusable)/titles";
 import { z } from "zod";
 
-// Zod schema for log validation
-const LogSchema = z.object({
-  id: z.number(),
-  name: z.string(),
-  startTime: z.string().nullable(),
-  endTime: z.string().nullable(),
-  duration: z.number().nullable(),
+// Zod schema for component state, including logs
+const DbWidgetSectionSchema = z.object({
+  session: z.object({
+    user: z.object({
+      permission: z.string(),
+    }),
+  }),
+  logs: z.array(
+    z.object({
+      id: z.string(),
+      userId: z.string(),
+      equipment: z
+        .object({
+          id: z.string(),
+          qrId: z.string(),
+          name: z.string(),
+        })
+        .nullable(),
+      submitted: z.boolean(),
+    })
+  ),
+  isModalOpen: z.boolean(),
+  loading: z.boolean(),
+  additionalButtonsType: z.string().nullable(),
 });
 
-// Zod schema for logs list response
-const LogsListSchema = z.array(LogSchema);
+type props = {
+  session: Session;
+};
 
-type Log = z.infer<typeof LogSchema>;
-
-export default function DbWidgetSection() {
+export default function DbWidgetSection({ session }: props) {
+  const permission = session.user.permission;
+  const [logs, setLogs] = useState<
+    {
+      id: string;
+      userId: string;
+      equipment: {
+        id: string;
+        qrId: string;
+        name: string;
+      } | null;
+      submitted: boolean;
+    }[]
+  >([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const t = useTranslations("Widgets");
   const e = useTranslations("Err-Msg");
   const authStep = getAuthStep();
-
-  const [logs, setLogs] = useState<Log[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [, setIsModalOpen] = useState(false);
   const [additionalButtonsType, setAdditionalButtonsType] = useState<
     string | null
   >(null);
 
+  // Validate initial state with Zod schema
+  try {
+    DbWidgetSectionSchema.parse({
+      session,
+      logs,
+      isModalOpen,
+      loading,
+      additionalButtonsType,
+    });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      console.error("Initial state validation error:", error.errors);
+    }
+  }
+
   const handleShowManagerButtons = () => {
     setAdditionalButtonsType(null);
+  };
+
+  const handleShowAdditionalButtons = (type: string) => {
+    setAdditionalButtonsType(type);
   };
 
   useEffect(() => {
@@ -52,39 +101,26 @@ export default function DbWidgetSection() {
       setLoading(true);
       try {
         const recentLogsResponse = await fetch("/api/getLogs");
-
-        if (!recentLogsResponse.ok) {
-          throw new Error("Failed to fetch logs");
-        }
-
         const logsData = await recentLogsResponse.json();
-
-        // Validate fetched logs data with Zod
-        try {
-          LogsListSchema.parse(logsData);
-          setLogs(logsData);
-        } catch (error) {
-          if (error instanceof z.ZodError) {
-            console.error("Validation error in logs data:", error.errors);
-            return;
-          }
-        }
-      } catch (err) {
-        setError(e("Logs-Fetch"));
-        console.error(e("Logs-Fetch"), err);
+        setLogs(logsData);
+      } catch {
+        console.error(e("Logs-Fetch"));
       } finally {
         setLoading(false);
       }
     };
     fetchLogs();
-  }, [e, error]);
+  }, []);
 
-  // Redirect to dashboard if authStep is not 'success'
   useEffect(() => {
     if (authStep !== "success") {
       router.push("/");
     }
   }, [authStep, router]);
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
 
   const handleCOButton2 = async () => {
     try {
@@ -123,14 +159,22 @@ export default function DbWidgetSection() {
         </Holds>
       ) : (
         <Contents width={"section"} className="py-5">
-          <Grids cols={"2"} rows={"3"} gap={"5"}>
+          <Grids
+            cols={"2"}
+            rows={
+              permission === "ADMIN" ||
+              permission === "SUPERADMIN" ||
+              permission === "MANAGER"
+                ? "3"
+                : "3"
+            }
+            gap={"5"}
+          >
+            {/* Render buttons based on state */}
             {additionalButtonsType === "equipment" ? (
               <>
                 <Holds className="col-span-2 row-span-1 gap-5 h-full">
-                  <Buttons
-                    background={"lightBlue"}
-                    onClick={handleShowManagerButtons}
-                  >
+                  <Buttons background={"lightBlue"} onClick={handleShowManagerButtons}>
                     <Holds position={"row"} className="my-auto">
                       <Holds size={"60"}>
                         <Texts size={"p1"}>{t("GoHome")}</Texts>
@@ -178,24 +222,268 @@ export default function DbWidgetSection() {
                   </Buttons>
                 </Holds>
               </>
+            ) : additionalButtonsType === "clockOut" ? (
+              <>
+                <Holds className="col-span-2 row-span-1 gap-5 h-full">
+                  <Buttons background={"lightBlue"} onClick={handleShowManagerButtons}>
+                    <Holds position={"row"} className="my-auto">
+                      <Holds size={"60"}>
+                        <Texts size={"p1"}>{t("GoHome")}</Texts>
+                      </Holds>
+                      <Holds size={"40"}>
+                        <Images
+                          titleImg="/home.svg"
+                          titleImgAlt="Home Icon"
+                          size={"50"}
+                        />
+                      </Holds>
+                    </Holds>
+                  </Buttons>
+                </Holds>
+                <Holds className="col-span-2 row-span-1 gap-5 h-full">
+                  <Buttons background={"orange"} onClick={handleCOButton2}>
+                    <Holds position={"row"} className="my-auto">
+                      <Holds size={"60"}>
+                        <Texts size={"p1"}>{t("Break")}</Texts>
+                      </Holds>
+                      <Holds size={"40"}>
+                        <Images
+                          titleImg="/break.svg"
+                          titleImgAlt="Break Icon"
+                          size={"50"}
+                        />
+                      </Holds>
+                    </Holds>
+                  </Buttons>
+                </Holds>
+                <Holds className="col-span-2 row-span-1 gap-5 h-full">
+                  <Buttons background={"red"} onClick={handleCOButton3}>
+                    <Holds position={"row"} className="my-auto">
+                      <Holds size={"70"}>
+                        <Texts size={"p1"}>{t("EndDay")}</Texts>
+                      </Holds>
+                      <Holds size={"30"}>
+                        <Images
+                          titleImg="/end-day.svg"
+                          titleImgAlt="End Icon"
+                          size={"50"}
+                        />
+                      </Holds>
+                    </Holds>
+                  </Buttons>
+                </Holds>
+                <Modals isOpen={isModalOpen} handleClose={handleCloseModal} size={"clock"}>
+                  <Bases>
+                    <Contents>
+                      <Holds background={"white"} className="h-full">
+                        <Holds className="h-full py-10">
+                          <Contents width={"section"}>
+                            <Grids rows={"4"} gap={"5"}>
+                              <Holds className="h-full span-3 my-auto">
+                                <Titles size={"h1"}>{t("Whoops")}</Titles>
+                                <br />
+                                <Texts size={"p2"}>{t("ReturnToLogOut")}</Texts>
+                              </Holds>
+                              <Holds className="h-full span-1 my-auto">
+                                <Buttons
+                                  background={"orange"}
+                                  size={"full"}
+                                  href={`/dashboard/equipment`}
+                                >
+                                  <Texts size={"p3"}>{t("ClickToLogOut")}</Texts>
+                                </Buttons>
+                              </Holds>
+                            </Grids>
+                          </Contents>
+                        </Holds>
+                      </Holds>
+                    </Contents>
+                  </Bases>
+                </Modals>
+              </>
             ) : (
-              <Holds position={"row"} className="row-span-1 col-span-1 gap-5">
-                <Buttons background={"green"} href="/dashboard/forms">
-                  <Holds>
-                    <Images
-                      titleImg="/form.svg"
-                      titleImgAlt="Forms Icon"
-                      size={"40"}
-                    />
+              <>
+                {permission !== "USER" && !additionalButtonsType && (
+                    <>
+                      <Holds
+                        position={"row"}
+                        className="row-span-1 col-span-1 gap-5"
+                      >
+                        <Buttons //----------------------This is the QR Generator Widget
+                          background={"lightBlue"}
+                          href="/dashboard/qr-generator"
+                        >
+                          <Holds>
+                            <Images
+                              titleImg="/qr.svg"
+                              titleImgAlt="QR Code"
+                              size={"40"}
+                            />
+                          </Holds>
+                          <Holds>
+                            <Texts size={"p3"}>{t("QR")}</Texts>
+                          </Holds>
+                        </Buttons>
+                      </Holds>
+                    </>
+                  )}
+                  {permission !== "USER" && !additionalButtonsType && (
+                    <>
+                      <Holds
+                        position={"row"}
+                        className="row-span-1 col-span-1 gap-5"
+                      >
+                        <Buttons //----------------------This is the My Team Widget
+                          background={"lightBlue"}
+                          href="/dashboard/myTeam"
+                        >
+                          <Holds>
+                            <Images
+                              titleImg="/team.svg"
+                              titleImgAlt={t("MyTeam")}
+                              size={"40"}
+                            />
+                          </Holds>
+                          <Holds>
+                            <Texts size={"p3"}>{t("MyTeam")}</Texts>
+                          </Holds>
+                        </Buttons>
+                      </Holds>
+                    </>
+                  )}
+                  <Holds
+                    position={"row"}
+                    className={
+                      permission === "ADMIN" ||
+                      permission === "SUPERADMIN" ||
+                      permission === "MANAGER"
+                        ? "row-span-1 col-span-1 gap-5"
+                        : "row-span-1 col-span-1 gap-5"
+                    }
+                  >
+                    <Buttons //----------------------This is the Equipment Widget
+                      background={"green"}
+                      href="/dashboard/equipment"
+                      onClick={() => handleShowAdditionalButtons("equipment")}
+                    >
+                      <Holds>
+                        <Holds>
+                          <Images
+                            titleImg="/equipment.svg"
+                            titleImgAlt="Equipment Icon"
+                            size={"40"}
+                          />
+                        </Holds>
+                        <Holds>
+                          <Texts size={"p3"}>{t("Equipment")}</Texts>
+                        </Holds>
+                      </Holds>
+                    </Buttons>
                   </Holds>
-                  <Holds>
-                    <Texts size={"p3"}>{t("Forms")}</Texts>
+                  <Holds
+                    position={"row"}
+                    className={
+                      permission === "ADMIN" ||
+                      permission === "SUPERADMIN" ||
+                      permission === "MANAGER"
+                        ? "row-span-1 col-span-1 gap-5"
+                        : "row-start-2 col-span-2 gap-5"
+                    }
+                  >
+                    <Buttons //----------------------This is the Forms Widget
+                      background={"green"}
+                      href="/dashboard/forms"
+                    >
+                      <Holds
+                        position={
+                          permission === "ADMIN" ||
+                          permission === "SUPERADMIN" ||
+                          permission === "MANAGER"
+                            ? undefined
+                            : "row"
+                        }
+                      >
+                        <Holds>
+                          <Images
+                            titleImg="/form.svg"
+                            titleImgAlt="Forms Icon"
+                            size={"40"}
+                            className="ml-2"
+                          />
+                        </Holds>
+                        <Holds>
+                          <Texts size={"p3"}>{t("Forms")}</Texts>
+                        </Holds>
+                      </Holds>
+                    </Buttons>
                   </Holds>
-                </Buttons>
-              </Holds>
-            )}
-          </Grids>
-        </Contents>
+                  <Holds
+                    position={"row"}
+                    className={
+                      permission === "ADMIN" ||
+                      permission === "SUPERADMIN" ||
+                      permission === "MANAGER"
+                        ? "row-span-1 col-span-1 gap-5"
+                        : "row-span-1 col-span-1 gap-5"
+                    }
+                  >
+                    <Buttons //----------------------This is the Switch Jobs Widget
+                      background={"orange"}
+                      href="/dashboard/switch-jobs"
+                    >
+                      <Holds>
+                        <Images
+                          titleImg="/jobsite.svg"
+                          titleImgAlt="Jobsite Icon"
+                          size={"40"}
+                        />
+                      </Holds>
+                      <Holds>
+                        <Texts size={"p3"}>{t("Switch")}</Texts>
+                      </Holds>
+                    </Buttons>
+                  </Holds>
+                  <Holds
+                    position={"row"}
+                    className={
+                      permission === "ADMIN" ||
+                      permission === "SUPERADMIN" ||
+                      permission === "MANAGER"
+                        ? "row-span-1 col-span-1 gap-5"
+                        : "row-span-1 col-span-2 gap-5"
+                    }
+                  >
+                    <Buttons //----------------------This is the Clock Out Widget
+                      href="/dashboard/clock-out"
+                      background={"red"}
+                      onClick={() => handleShowAdditionalButtons("clockOut")}
+                    >
+                      <Holds
+                        position={
+                          permission === "ADMIN" ||
+                          permission === "SUPERADMIN" ||
+                          permission === "MANAGER"
+                            ? undefined
+                            : "row"
+                        }
+                      >
+                        <Holds>
+                          <Images
+                            titleImg="/clock-out.svg"
+                            titleImgAlt="Clock Out Icon"
+                            size={"40"}
+                          />
+                        </Holds>
+                        <Holds>
+                          <Texts size={"p3"}>{t("ClockOut")}</Texts>
+                        </Holds>
+                      </Holds>
+                    </Buttons>
+                  </Holds>
+                </>
+              )}
+            </Grids>
+          </Contents>
       )}
     </>
   );

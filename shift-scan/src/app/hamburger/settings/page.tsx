@@ -12,15 +12,17 @@ export default async function Settings() {
   const session = await auth();
   if (!session) return null;
 
+  const userId = session.user.id;
+
   const t = await getTranslations("Hamburger");
 
   return (
     <Bases>
       <Contents>
-        <Grids rows={"10"} gap={"5"}>
+        <Grids rows={"10"} gap={"6"}>
           <Holds
             background={"white"}
-            className="row-span-2 justify-center h-full"
+            className="row-span-2 justify-center h-full "
           >
             <Contents width={"section"}>
               <TitleBoxes

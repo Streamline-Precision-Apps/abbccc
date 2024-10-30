@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState } from "react";
 import {
   useDBJobsite,
@@ -11,10 +12,13 @@ import {
 } from "@/app/context/dbRecentCodesContext";
 import { useDBCompleteEquipmentList } from "../context/dbCompleteEquipmentList";
 import { z } from "zod";
+import { EquipmentCodes } from "@/lib/types";
 
-// Zod schemas for the fetched data
-
-
+// Custom date parsing schema for string date formats
+const parseDate = z
+  .string()
+  .or(z.date())
+  .transform((value) => (typeof value === "string" ? new Date(value) : value));
 
 // Jobsites schema
 const JobsitesSchema = z.array(
@@ -52,14 +56,14 @@ const EquipmentSchema = z.array(
     name: z.string(),
     description: z.string().optional(),
     equipmentTag: z.string().default("EQUIPMENT"),
-    lastInspection: z.date().nullable().optional(),
-    lastRepair: z.date().nullable().optional(),
+    lastInspection: parseDate.nullable().optional(),
+    lastRepair: parseDate.nullable().optional(),
     status: z.string().optional(),
     make: z.string().nullable().optional(),
     model: z.string().nullable().optional(),
     year: z.string().nullable().optional(),
     licensePlate: z.string().nullable().optional(),
-    registrationExpiration: z.date().nullable().optional(),
+    registrationExpiration: parseDate.nullable().optional(),
     mileage: z.number().nullable().optional(),
     isActive: z.boolean().optional(),
     image: z.string().nullable().optional(),
@@ -125,18 +129,33 @@ const useFetchAllData = () => {
           const validatedJobSites = JobsitesSchema.parse(jobSites);
           const validatedRecentJobSites = JobsitesSchema.parse(recentJobSites);
           const validatedCostCodes = CostCodesSchema.parse(costCodes);
-          const validatedRecentCostCodes = CostCodesSchema.parse(recentCostCodes);
+          const validatedRecentCostCodes =
+            CostCodesSchema.parse(recentCostCodes);
           const validatedEquipment = EquipmentSchema.parse(equipment);
-          const validatedRecentEquipment = EquipmentSchema.parse(recentEquipment);
-          const validatedEquipmentList = EquipmentSchema.parse(recentEquipmentList);
-        
+          const validatedRecentEquipment =
+            EquipmentSchema.parse(recentEquipment);
+          const validatedEquipmentList =
+            EquipmentSchema.parse(recentEquipmentList);
+
           // Update state with the validated data
-          setJobsiteResults(validatedJobSites.map((jobSite) => ({ ...jobSite, toLowerCase: () => jobSite.name.toLowerCase() })));
-          setRecentlyUsedJobCodes(validatedRecentJobSites.map((jobSite) => ({ ...jobSite, toLowerCase: () => jobSite.name.toLowerCase() })));
+          setJobsiteResults(
+            validatedJobSites.map((jobSite) => ({
+              ...jobSite,
+              toLowerCase: () => jobSite.name.toLowerCase(),
+            }))
+          );
+          setRecentlyUsedJobCodes(
+            validatedRecentJobSites.map((jobSite) => ({
+              ...jobSite,
+              toLowerCase: () => jobSite.name.toLowerCase(),
+            }))
+          );
           setCostcodeResults(validatedCostCodes);
           setRecentlyUsedCostCodes(validatedRecentCostCodes);
-          setEquipmentResults(validatedEquipment);
-          setRecentlyUsedEquipment(validatedRecentEquipment);
+          setEquipmentResults(validatedEquipment as EquipmentCodes[]);
+          setRecentlyUsedEquipment(
+            validatedRecentEquipment as EquipmentCodes[]
+          );
           setEquipmentListResults(validatedEquipmentList);
         } catch (error) {
           if (error instanceof z.ZodError) {

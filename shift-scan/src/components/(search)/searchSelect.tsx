@@ -4,7 +4,7 @@
 import React, { useState, useEffect, ChangeEvent } from "react";
 import SearchBar from "@/components/(search)/searchbar";
 import { Holds } from "@/components/(reusable)/holds";
-import { JobCodes, EquipmentCodes } from "@/lib/types";
+import { JobCode, EquipmentCodes } from "@/lib/types";
 import { useTranslations } from "next-intl";
 import { Grids } from "@/components/(reusable)/grids";
 import { Texts } from "../(reusable)/texts";
@@ -22,7 +22,7 @@ type Props<T> = {
   onSelect: (option: T) => void;
 };
 
-function SearchSelect<T extends JobCodes | EquipmentCodes>({
+function SearchSelect<T extends JobCode | EquipmentCodes>({
   datatype,
   options,
   handleGenerate,

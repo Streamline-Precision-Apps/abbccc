@@ -10,6 +10,7 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { useTranslations } from "next-intl";
 import { EquipmentLog } from "@/lib/types";
 import { z } from "zod";
+import { useParams } from "next/navigation";
 
 // Zod schema for props
 const PropsSchema = z.object({
@@ -38,7 +39,7 @@ const EquipmentSchema = z.array(
   })
 );
 
-type Props = z.infer<typeof PropsSchema>;
+// type Props = z.infer<typeof PropsSchema>;
 export type TimeSheet = {
   endDate: string | undefined;
   startDate: string;
@@ -65,8 +66,10 @@ export type TimeSheet = {
   status?: string;
 };
 
-export const EmployeeTimeSheets = ({ employeeId }: Props) => {
+export const EmployeeTimeSheets = () => {
   // Validate props using Zod
+  const { employeeId } = useParams<{ employeeId: string }>();
+
   try {
     PropsSchema.parse({ employeeId });
   } catch (error) {
@@ -80,7 +83,7 @@ export const EmployeeTimeSheets = ({ employeeId }: Props) => {
   const [filteredEquipmentData, setFilteredEquipmentData] = useState<
     EquipmentLog[]
   >([]);
-  const [message, setMessage] = useState("");
+  const [, setMessage] = useState("");
   const [edit, setEdit] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const [date, setDate] = useState("");
@@ -136,8 +139,8 @@ export const EmployeeTimeSheets = ({ employeeId }: Props) => {
         }
       }
 
-      setTimesheets(results);
-      setFilteredEquipmentData(eqResults);
+      setTimesheets(results as unknown as TimeSheet[]);
+      setFilteredEquipmentData(eqResults as EquipmentLog[]);
       setMessage(message || "");
     } catch (error) {
       console.error("Error fetching timesheet/equipment data:", error);
@@ -188,11 +191,10 @@ export const EmployeeTimeSheets = ({ employeeId }: Props) => {
               />
               <Inputs type="hidden" name="id" value={employeeId} />
             </form>
-            <Titles>{message}</Titles>
           </Holds>
 
           {date && (
-            <Holds size={"full"} background={"white"} className="my-5">
+            <Holds size={"full"} className="my-5">
               <EditWork
                 timesheetData={timesheets}
                 edit={edit}

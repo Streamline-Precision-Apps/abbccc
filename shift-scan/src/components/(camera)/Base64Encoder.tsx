@@ -1,3 +1,4 @@
+"use client";
 import { ChangeEvent, SetStateAction, Dispatch } from "react";
 import { Holds } from "../(reusable)/holds";
 import { uploadImage } from "@/actions/userActions";

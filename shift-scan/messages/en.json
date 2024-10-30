@@ -6,7 +6,8 @@
         "Btn-signIn": "Sign In",
         "Btn-forgot": "Forgot Password?",
         "Spanish": "Habla Español?",
-        "Err": "Invalid Attempt"
+        "Err": "Invalid Attempt",
+        "ChangePassword": "Change Password"
     },
 
     "Home" : {
@@ -276,6 +277,7 @@
     },
 
     "Hamburger": {
+        "Saving": "Savings changes",
         "loading": "Loading...",
         "NewPassword": "New Password",
         "ConfirmPassword": "Confirm New Password",
@@ -288,7 +290,7 @@
         "Security": "Security",
         "Biometrics": "Biometrics",
         "CameraAccess": "Camera Access",
-        "locationAccess": "Location Access",
+        "LocationAccess": "Location Access",
         "Inbox": "Inbox",
         "EmployeeID": "Employee ID",
         "PersonalEmail": "Personal Email",

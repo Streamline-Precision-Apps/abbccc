@@ -23,7 +23,6 @@ export default async function Inbox() {
                 title={t("Inbox")}
                 titleImg="/Inbox.svg"
                 titleImgAlt="Inbox"
-                className="my-auto"
               />
             </Contents>
           </Holds>
