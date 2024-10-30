@@ -1,24 +1,25 @@
 "use server";
 
 // we need this rout to search by the id of the sent request
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 
-export async function GET({ params }: { params: { id: string } } & (Request | NextRequest)) {
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   const session = await auth();
 
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const userId = session.user.id;
 
   try {
     // Fetch sent requests based on `id` and `userId`
-    const sentContent = await prisma.timeoffRequestForms.findMany({
+    const sentContent = await prisma.timeoffRequestForms.findUnique({
       where: {
         id: Number(params.id),
-        employeeId: userId,
       },
     });
 

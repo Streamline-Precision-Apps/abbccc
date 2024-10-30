@@ -19,12 +19,14 @@ export default async function Timesheets() {
     <Bases size={"scroll"} className="min-h-screen">
       <Contents>
         <Holds background={"white"} size={"full"} className=" mt-7 h-full">
-          <TitleBoxes
-            title={`${t("Title")}`}
-            titleImg={"/form.svg"}
-            titleImgAlt={`${t("Title")}`}
-            size={"default"}
-          />
+          <Contents width={"section"}>
+            <TitleBoxes
+              title={`${t("Title")}`}
+              titleImg={"/form.svg"}
+              titleImgAlt={`${t("Title")}`}
+              size={"default"}
+            />
+          </Contents>
         </Holds>
         <Holds className="mb-3 h-full">
           <ViewTimeSheets user={id} />

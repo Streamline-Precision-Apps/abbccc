@@ -1,6 +1,7 @@
 "use client";
 import { Buttons } from "@/components/(reusable)/buttons";
 import React, { useRef, useState, useEffect } from "react";
+import { Holds } from "../(reusable)/holds";
 
 type SignatureProps = {
   setBase64String: (base64string: string) => void;
@@ -66,22 +67,24 @@ export default function Signature({ setBase64String }: SignatureProps) {
   };
 
   return (
-    <div>
+    <Holds>
       <canvas
         ref={canvasRef}
-        style={{ border: "1px solid black", margin: "0 auto" }}
+        width={250}
+        height={200}
+        className="m-auto border border-black rounded-xl "
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
       />
-      <div className="flex flex-row gap-4">
+      <Holds className="mt-4 flex flex-row gap-4">
         <Buttons background={"red"} onClick={handleClear}>
           Clear
         </Buttons>
         <Buttons background={"green"} onClick={handleSave}>
           Save
         </Buttons>
-      </div>
-    </div>
+      </Holds>
+    </Holds>
   );
 }

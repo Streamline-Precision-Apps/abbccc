@@ -4,6 +4,11 @@ import { Buttons } from "../(reusable)/buttons";
 import { uploadFirstSignature } from "@/actions/userActions";
 import Signature from "./signature";
 import { Banners } from "@/components/(reusable)/banners";
+import { Texts } from "../(reusable)/texts";
+import { Holds } from "../(reusable)/holds";
+import { Grids } from "../(reusable)/grids";
+import { TitleBoxes } from "../(reusable)/titleBoxes";
+import { Contents } from "../(reusable)/contents";
 
 const SignatureSetup = ({
   id,
@@ -62,30 +67,45 @@ const SignatureSetup = ({
     <>
       {/* Show the banner at the top of the page */}
       {showBanner && (
-        <div style={{ position: "fixed", top: 0, width: "100%", zIndex: 1000 }}>
-          <Banners background="red">{bannerMessage}</Banners>
-        </div>
+        <Holds
+          style={{ position: "fixed", top: 0, width: "100%", zIndex: 1000 }}
+        >
+          <Banners background="red">
+            <Texts size={"p6"}>{bannerMessage}</Texts>
+          </Banners>
+        </Holds>
       )}
+      <Grids rows={"3"} gap={"5"}>
+        <Holds background={"white"} className="row-span-1 h-full">
+          <TitleBoxes
+            title="Signature Setup"
+            titleImg="/signature.svg"
+            titleImgAlt="Signature Setup"
+            type="titleOnly"
+            className="my-auto"
+          />
+        </Holds>
+        <Holds background={"white"} className="row-span-2 h-full">
+          <Contents width={"section"}>
+            <Texts size={"p4"} className="mt-4">
+              Set up personal signature. Be sure to sign it well. It will be
+              used on every form.
+            </Texts>
 
-      <div style={{ textAlign: "center", padding: "20px" }}>
-        <p>
-          Set up personal signature. Be sure to sign it well. It will be used on
-          every form.
-        </p>
-
-        <div style={{ margin: "20px 0" }}>
-          {/* Integrating Signature component */}
-          <Signature setBase64String={setBase64String} />
-        </div>
-
+            <Holds className="my-auto">
+              {/* Integrating Signature component */}
+              <Signature setBase64String={setBase64String} />
+            </Holds>
+          </Contents>
+        </Holds>
         <Buttons
           onClick={handleSubmitImage}
-          style={{ backgroundColor: "orange", color: "black" }}
+          background={"lightBlue"}
           disabled={isSubmitting} // Disable the button while submitting
         >
           {isSubmitting ? "Submitting..." : "Next"}
         </Buttons>
-      </div>
+      </Grids>
     </>
   );
 };
