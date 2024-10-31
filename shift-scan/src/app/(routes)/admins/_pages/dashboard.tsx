@@ -3,6 +3,10 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 import Topbar from "./topbar";
 import AdminHome from "./admin-home";
+import { Modals } from "@/components/(reusable)/modals";
+import { useState } from "react";
+import AdminClock from "./AdminClock";
+import AdminSwitch from "./AdminSwitch";
 
 const Dashboard = ({
   isOpen2,
@@ -15,6 +19,14 @@ const Dashboard = ({
   page: number;
   setPage: (page: number) => void;
 }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isSwitch, setIsSwitch] = useState(false);
+  const [isBreak, setIsBreak] = useState(false);
+  const [isEndofDay, setIsEndofDay] = useState(false);
+
+  const handleClose = () => {
+    setIsOpen(false);
+  };
   return (
     <Holds className={"w-[95%] h-full"}>
       <Topbar
@@ -22,6 +34,10 @@ const Dashboard = ({
         handleClockClick={handleClockClick}
         page={page}
         setPage={setPage}
+        setIsOpen={setIsOpen}
+        setIsSwitch={setIsSwitch}
+        setIsBreak={setIsBreak}
+        setIsEndofDay={setIsEndofDay}
       />
 
       <Holds
@@ -37,6 +53,48 @@ const Dashboard = ({
 
         {page === 3 && <Texts>Report Dashboard</Texts>}
       </Holds>
+
+      {/* Include the modals here */}
+
+      {/* Start day modal */}
+      <Modals
+        isOpen={isOpen}
+        handleClose={() => setIsOpen(false)}
+        type={"StartDay"}
+        size={"lg"}
+      >
+        <AdminClock handleClose={handleClose} />
+      </Modals>
+
+      {/* Switch modal */}
+      <Modals
+        isOpen={isSwitch}
+        handleClose={() => setIsSwitch(false)}
+        type={"StartDay"}
+        size={"lg"}
+      >
+        <AdminSwitch handleClose={handleClose} />
+      </Modals>
+
+      {/* Break modal */}
+      <Modals
+        isOpen={isSwitch}
+        handleClose={() => setIsBreak(false)}
+        type={"StartDay"}
+        size={"lg"}
+      >
+        <Texts>Break Modal</Texts>
+      </Modals>
+
+      {/* End of day modal */}
+      <Modals
+        isOpen={isSwitch}
+        handleClose={() => setIsEndofDay(false)}
+        type={"StartDay"}
+        size={"lg"}
+      >
+        <Texts>End of Day Modal</Texts>
+      </Modals>
     </Holds>
   );
 };
