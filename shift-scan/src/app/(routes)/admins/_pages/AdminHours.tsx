@@ -19,12 +19,13 @@ const calculatePayPeriodStart = () => {
 
 export default function AdminHours() {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [todayIndex, setTodayIndex] = useState(0);
+
   const { payPeriodTimeSheet } = usePayPeriodTimeSheet();
   const t = useTranslations("Home");
   const dailyHoursCache = useRef<{ date: string; hours: number }[] | null>(
     null
   );
+
   const calculateDailyHours = useCallback(() => {
     const startDate = calculatePayPeriodStart();
     const endDate = new Date(startDate);
@@ -55,13 +56,9 @@ export default function AdminHours() {
   }, [payPeriodTimeSheet]);
 
   const dailyHours = useMemo(() => {
-    if (dailyHoursCache.current) {
-      return dailyHoursCache.current;
-    } else {
-      const calculatedHours = calculateDailyHours();
-      dailyHoursCache.current = calculatedHours;
-      return calculatedHours;
-    }
+    const calculatedHours = dailyHoursCache.current || calculateDailyHours();
+    dailyHoursCache.current = calculatedHours;
+    return calculatedHours;
   }, [calculateDailyHours]);
 
   useEffect(() => {
@@ -69,19 +66,17 @@ export default function AdminHours() {
     const todayIndex = dailyHours.findIndex((entry) => entry.date === today);
     if (todayIndex !== -1) {
       setCurrentIndex(todayIndex + 1);
-      setTodayIndex(todayIndex + 1);
     }
   }, [dailyHours]);
 
-  const Today = dailyHours[todayIndex] || { date: "", hours: 0 };
-  const prevData2 = dailyHours[currentIndex - 2] || { date: "", hours: 0 };
-  const prevData = dailyHours[currentIndex - 1] || { date: "", hours: 0 };
-  const currentData = dailyHours[currentIndex] || { date: "", hours: 0 };
-  const nextData = dailyHours[currentIndex + 1] || { date: "", hours: 0 };
-  const nextData2 = dailyHours[currentIndex + 2] || { date: "", hours: 0 };
+  // Calculate the slice range for a fixed window of 14 items
+  const start = Math.max(0, currentIndex - 2);
+  const end = start + 5;
+  const visibleHours = dailyHours.slice(start, end); // Slice for 14 items only
+  const placeholdersNeeded = 4 - visibleHours.length;
 
   const calculateBarHeight = (value: number) => {
-    if (value === 0) return 30;
+    if (value === 0) return 100;
     if (value > 0 && value <= 1) return 50;
     if (value > 1 && value <= 2) return 50;
     if (value > 2 && value <= 3) return 50;
@@ -107,79 +102,91 @@ export default function AdminHours() {
 
   return (
     <Grids rows="7" gap="5">
-      <Holds background="darkBlue" className="row-span-2 h-full">
+      <Holds background="darkBlue" className="row-span-2 h-[100px]">
         <AdminHourControls
           scrollLeft={scrollLeft}
           scrollRight={scrollRight}
-          currentDate={new Date(currentData.date)}
+          currentDate={new Date(dailyHours[currentIndex]?.date || "")}
+          dataRangeStart={new Date(dailyHours[0]?.date || "")}
+          dataRangeEnd={new Date(dailyHours[dailyHours.length - 1]?.date || "")}
         />
       </Holds>
 
       <Holds position="row" className="row-span-5 w-full">
-        {[prevData2, prevData, currentData, nextData, nextData2].map(
-          (data, index) => (
+        {visibleHours.map((data, index) => (
+          <Holds key={index} className="px-2 py-2 h-full w-[20%]">
             <Holds
-              key={index}
-              className={`${
-                currentData.date === data.date
-                  ? "px-2 py-2 h-full w-[20%] "
-                  : prevData.date === data.date
-                  ? "px-2 py-2 h-full w-[20%]"
-                  : nextData.date === data.date
-                  ? "px-2 py-2 h-full w-[20%]"
-                  : "px-2 py-2 h-full w-[20%]"
-              }`}
+              className={`h-full border-[3px] rounded-[10px] p-1 flex justify-end
+              ${
+                data.date === dailyHours[new Date().getDay()]?.date
+                  ? "bg-app-dark-blue border-[4px] border-white"
+                  : "bg-slate-400 border-black"
+              }
+                 ${
+                   data.date === dailyHours[currentIndex]?.date
+                     ? "border-[5px]  border-app-green "
+                     : " "
+                 } `}
             >
               <Holds
-                className={`h-full border-[3px] rounded-[10px] p-1 flex justify-end ${
-                  data.date === Today.date
-                    ? " border-[5px] border-app-green bg-app-dark-blue "
-                    : " border-[3px] border-black bg-slate-400"
+                className={`rounded-[10px] ${
+                  data.date === dailyHours[new Date().getDay()]?.date
+                    ? "justify-center"
+                    : "justify-end"
                 } ${
-                  data.hours === 0 &&
-                  data.date <= new Date().toISOString().split("T")[0]
-                    ? "bg-slate-400 "
-                    : ""
-                } 
-                    `}
+                  data.hours > 8
+                    ? "bg-app-green justify-center"
+                    : data.hours > 0
+                    ? "bg-app-orange justify-center"
+                    : " mb-5"
+                }`}
+                style={{
+                  height: `${calculateBarHeight(data.hours)}%`,
+                  border: data.hours ? "3px solid black" : "none",
+                }}
               >
-                <div
-                  className={`rounded-[10px] ${
-                    data.hours > 8 && data.hours !== 0
-                      ? "bg-app-green"
-                      : "bg-none"
-                  }
-                    ${
-                      data.hours < 8 && data.hours !== 0
-                        ? "bg-app-orange"
-                        : "bg-none"
-                    }
-                     `}
-                  style={{
-                    height: `${calculateBarHeight(data.hours)}%`,
-                    border: data.hours ? "3px solid black" : "none",
-                  }}
+                <Texts size="p4">
+                  {data.hours !== 0 ? data.hours.toFixed(1) : ""}
+                </Texts>
+                <Texts size="p4">
+                  {data.hours === 0 &&
+                  data.date <= new Date().toISOString().split("T")[0]
+                    ? `0 `
+                    : ""}
+                </Texts>
+                <Texts
+                  size="p4"
+                  className={`${
+                    data.date === dailyHours[new Date().getDay()]?.date
+                      ? "text-white"
+                      : ""
+                  }`}
                 >
-                  <Texts size="p4">
-                    {data.hours !== 0 ? data.hours.toFixed(1) : ""}
-                  </Texts>
-                  <Texts size="p2">
-                    {data.hours === 0 &&
-                    data.date <= new Date().toISOString().split("T")[0]
-                      ? `0 ${t("DA-Time-Label")}`
-                      : ""}
-                  </Texts>
-                  <Texts size="p4">
-                    {data.hours !== 0 ? `${t("DA-Time-Label")}` : ""}
-                  </Texts>
-                  <Texts size="p4" text={"white"}>
-                    {data.date === Today.date ? "Today" : null}
-                  </Texts>
-                </div>
+                  {data.date <= new Date().toISOString().split("T")[0]
+                    ? `${t("DA-Time-Label")}`
+                    : data.date === dailyHours[new Date().getDay()]?.date
+                    ? `${t("Today")}`
+                    : ""}
+                </Texts>
               </Holds>
             </Holds>
-          )
-        )}
+          </Holds>
+        ))}
+        {/* Add placeholder Holds to fill remaining spots */}
+        {Array.from({ length: placeholdersNeeded }).map((_, index) => (
+          <Holds
+            key={`placeholder-${index}`}
+            className="p-4 h-[95%] w-[38%] mx-auto bg-slate-400 rounded-[10px]"
+          >
+            <Holds className="w-full h-full bg-app-dark-blue rounded-[10px] border-2 border-black">
+              <Holds className="justify-center items-center h-full">
+                <Texts size="p4" text={"white"} className="text-center my-auto">
+                  {t("End-Pay-Period")}
+                </Texts>
+              </Holds>
+            </Holds>
+          </Holds>
+        ))}
       </Holds>
     </Grids>
   );

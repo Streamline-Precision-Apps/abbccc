@@ -6,17 +6,26 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
+import { getAuthStep } from "@/app/api/auth";
 
 const Topbar = ({
   isOpen2,
   handleClockClick,
   page,
   setPage,
+  setIsOpen,
+  setIsSwitch,
+  setIsBreak,
+  setIsEndofDay,
 }: {
   isOpen2: boolean;
   handleClockClick: () => void;
   page: number;
   setPage: (page: number) => void;
+  setIsOpen: (isOpen: boolean) => void;
+  setIsSwitch: (isOpen: boolean) => void;
+  setIsBreak: (isOpen: boolean) => void;
+  setIsEndofDay: (isOpen: boolean) => void;
 }) => {
   return (
     <>
@@ -148,6 +157,13 @@ const Topbar = ({
                         name="jobsite"
                         type="text"
                         className="h-8 w-full md:w-[100px] my-auto"
+                        value={
+                          localStorage
+                            .getItem("jobSite")
+                            ?.toString()
+                            .slice(0, 10) || "{}"
+                        }
+                        disabled
                       />
                     </Holds>
                     <Holds
@@ -162,38 +178,83 @@ const Topbar = ({
                         name="jobsite"
                         type="text"
                         className="h-8 w-full md:w-[100px] my-auto"
+                        value={
+                          localStorage.getItem("costCode")?.toString() || "{}"
+                        }
+                        disabled
                       />
                     </Holds>
                   </Holds>
                 </Holds>
-                <Holds className="w-[10%] md:w-[10%] lg:w-[40%] "></Holds>
 
-                <Holds
-                  position={"row"}
-                  className="my-auto mx-2 space-x-4 w-[20%] md:[30%] lg:w-[20%]"
-                >
-                  <Holds
-                    position={"right"}
-                    className="my-auto w-full flex justify-end"
-                  >
-                    {/* we will need to add a conditional here to determine if they are clocked in or not */}
-                    <Buttons
-                      background={"green"}
-                      className="w-[50px] p-1 md:w-[70px] h-fit lg:w-[100px] "
-                    >
-                      <Texts size={"p6"}>start day</Texts>
-                    </Buttons>
-                  </Holds>
-                  <Holds position={"right"}>
-                    <Images
-                      titleImg="/expandLeft.svg"
-                      titleImgAlt="Home Icon"
-                      className="m-auto rotate-[270deg] cursor-pointer h-16 w-fit"
-                      onClick={handleClockClick}
+                {/* we will need to add a conditional here to determine if they are clocked in or not */}
+                {getAuthStep() === "success" ? (
+                  <Holds position={"row"} className="my-auto  w-[40%] ">
+                    <Holds
+                      size={"80"}
                       position={"right"}
-                    />
+                      className="my-auto w-full flex flex-row space-x-4 justify-end"
+                    >
+                      <Buttons
+                        background={"orange"}
+                        className=""
+                        onClick={() => setIsOpen(true)}
+                      >
+                        <Texts size={"p6"}>Switch</Texts>
+                      </Buttons>
+                      <Buttons
+                        background={"lightBlue"}
+                        className=""
+                        onClick={() => setIsOpen(true)}
+                      >
+                        <Texts size={"p6"}>Break</Texts>
+                      </Buttons>
+                      <Buttons
+                        background={"red"}
+                        className="mr-2"
+                        onClick={() => setIsOpen(true)}
+                      >
+                        <Texts size={"p6"}>End Day</Texts>
+                      </Buttons>
+                    </Holds>
+                    <Holds position={"right"} size={"20"}>
+                      <Images
+                        titleImg="/expandLeft.svg"
+                        titleImgAlt="Home Icon"
+                        className="m-auto rotate-[270deg] cursor-pointer h-16 w-16"
+                        onClick={handleClockClick}
+                        position={"right"}
+                      />
+                    </Holds>
                   </Holds>
-                </Holds>
+                ) : (
+                  <Holds
+                    position={"row"}
+                    className="my-auto mx-2 space-x-4 w-[40%] md:[30%] lg:w-[40%]"
+                  >
+                    <Holds
+                      position={"right"}
+                      className="my-auto w-full flex justify-end"
+                    >
+                      <Buttons
+                        background={"green"}
+                        className="w-[50px] p-1 md:w-[70px] h-fit lg:w-[100px] "
+                        onClick={() => setIsOpen(true)}
+                      >
+                        <Texts size={"p6"}>start day</Texts>
+                      </Buttons>
+                    </Holds>
+                    <Holds position={"right"}>
+                      <Images
+                        titleImg="/expandLeft.svg"
+                        titleImgAlt="Home Icon"
+                        className="m-auto rotate-[270deg] cursor-pointer h-16 w-fit"
+                        onClick={handleClockClick}
+                        position={"right"}
+                      />
+                    </Holds>
+                  </Holds>
+                )}
               </Holds>
             </Holds>
           </Holds>
