@@ -62,16 +62,16 @@ export default function AdminHourControls({
       <Grids cols={"5"}>
         <Holds className="col-span-1 relative">
           <Buttons
-            background={"lightBlue"}
+            background={"white"}
             position={"left"}
             className="shadow-none py-2"
             onClick={scrollLeft}
           >
             <Images
-              titleImg={"/backArrow.svg"}
+              titleImg={"/expandLeft.svg"}
               titleImgAlt="left"
               size={"80"}
-              className="mx-auto p-2"
+              className="mx-auto p-2 rotate-180"
             />
           </Buttons>
         </Holds>
@@ -85,13 +85,13 @@ export default function AdminHourControls({
         </Holds>
         <Holds className="col-span-1">
           <Buttons
-            background={"lightBlue"}
+            background={"white"}
             position={"center"}
             className="shadow-none py-2"
             onClick={scrollRight}
           >
             <Images
-              titleImg={"/forwardArrow.svg"}
+              titleImg={"/expandLeft.svg"}
               titleImgAlt="right"
               size={"80"}
               className="mx-auto p-2"

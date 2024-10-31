@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { usePayPeriodTimeSheet } from "@/app/context/PayPeriodTimeSheetsContext";
 import { useTranslations } from "next-intl";
 import { Texts } from "@/components/(reusable)/texts";
@@ -7,45 +7,37 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Grids } from "@/components/(reusable)/grids";
 import AdminHourControls from "./AdminHourControls";
 
+const calculatePayPeriodStart = () => {
+  const startDate = new Date(2024, 7, 5); // August 5, 2024
+  const now = new Date();
+  const diff = now.getTime() - startDate.getTime();
+  const diffWeeks = Math.floor(diff / (2 * 7 * 24 * 60 * 60 * 1000)); // Two-week intervals
+  return new Date(
+    startDate.getTime() + diffWeeks * 2 * 7 * 24 * 60 * 60 * 1000
+  );
+};
+
 export default function AdminHours() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [todayIndex, setTodayIndex] = useState(0);
   const { payPeriodTimeSheet } = usePayPeriodTimeSheet();
   const t = useTranslations("Home");
-  const e = useTranslations("Err-Msg");
   const dailyHoursCache = useRef<{ date: string; hours: number }[] | null>(
     null
   );
-  const calculatePayPeriodStart = () => {
-    try {
-      const startDate = new Date(2024, 7, 5); // August 5, 2024
-      const now = new Date();
-      const diff = now.getTime() - startDate.getTime();
-      const diffWeeks = Math.floor(diff / (2 * 7 * 24 * 60 * 60 * 1000)); // Two-week intervals
-      const payPeriodStart = new Date(
-        startDate.getTime() + diffWeeks * 2 * 7 * 24 * 60 * 60 * 1000
-      );
-      console.log(payPeriodStart);
-      return payPeriodStart;
-    } catch {
-      throw new Error(e("CalculatePayPeriod"));
-    }
-  };
-
-  const calculateDailyHours = () => {
-    const startDate = calculatePayPeriodStart(); // we recieve the start date of the pay period here
+  const calculateDailyHours = useCallback(() => {
+    const startDate = calculatePayPeriodStart();
     const endDate = new Date(startDate);
     endDate.setDate(endDate.getDate() + 13); // Two-week period
     const dateKey = (date: Date) => date.toISOString().split("T")[0];
-    // A Record is a utility type that maps keys to values.
     const hoursMap: Record<string, number> = {};
     const currentDate = new Date(startDate);
 
-    // Initialize daily hours with zeros for each date in the pay period
     while (currentDate <= endDate) {
       hoursMap[dateKey(currentDate)] = 0;
       currentDate.setDate(currentDate.getDate() + 1);
     }
-    // Update the hoursMap with the duration of each timesheet
+
     if (payPeriodTimeSheet) {
       payPeriodTimeSheet.forEach((sheet) => {
         const sheetDateKey = new Date(sheet.startTime)
@@ -56,13 +48,12 @@ export default function AdminHours() {
         }
       });
     }
-    console.log(hoursMap);
 
     return Object.entries(hoursMap)
       .map(([date, hours]) => ({ date, hours }))
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  };
-  // calls the previous function and created a new array
+  }, [payPeriodTimeSheet]);
+
   const dailyHours = useMemo(() => {
     if (dailyHoursCache.current) {
       return dailyHoursCache.current;
@@ -71,16 +62,18 @@ export default function AdminHours() {
       dailyHoursCache.current = calculatedHours;
       return calculatedHours;
     }
-  }, [payPeriodTimeSheet]);
+  }, [calculateDailyHours]);
 
   useEffect(() => {
     const today = new Date().toISOString().split("T")[0];
     const todayIndex = dailyHours.findIndex((entry) => entry.date === today);
     if (todayIndex !== -1) {
       setCurrentIndex(todayIndex + 1);
+      setTodayIndex(todayIndex + 1);
     }
   }, [dailyHours]);
 
+  const Today = dailyHours[todayIndex] || { date: "", hours: 0 };
   const prevData2 = dailyHours[currentIndex - 2] || { date: "", hours: 0 };
   const prevData = dailyHours[currentIndex - 1] || { date: "", hours: 0 };
   const currentData = dailyHours[currentIndex] || { date: "", hours: 0 };
@@ -88,7 +81,7 @@ export default function AdminHours() {
   const nextData2 = dailyHours[currentIndex + 2] || { date: "", hours: 0 };
 
   const calculateBarHeight = (value: number) => {
-    if (value === 0) return 0;
+    if (value === 0) return 30;
     if (value > 0 && value <= 1) return 50;
     if (value > 1 && value <= 2) return 50;
     if (value > 2 && value <= 3) return 50;
@@ -138,25 +131,49 @@ export default function AdminHours() {
               }`}
             >
               <Holds
-                background="grey"
-                className="h-full border-black border-[3px] p-[3px] rounded-[10px]  flex justify-end"
+                className={`h-full border-[3px] rounded-[10px] p-1 flex justify-end ${
+                  data.date === Today.date
+                    ? " border-[5px] border-app-green bg-app-dark-blue "
+                    : " border-[3px] border-black bg-slate-400"
+                } ${
+                  data.hours === 0 &&
+                  data.date <= new Date().toISOString().split("T")[0]
+                    ? "bg-slate-400 "
+                    : ""
+                } 
+                    `}
               >
                 <div
-                  className={`rounded-t-[10px] rounded-b-[6px] ${
-                    data.hours > 8 ? "bg-app-green" : "bg-app-orange"
+                  className={`rounded-[10px] ${
+                    data.hours > 8 && data.hours !== 0
+                      ? "bg-app-green"
+                      : "bg-none"
                   }
-                   
-                     ${data.hours === 0 ? "bg-clear " : ""}`}
+                    ${
+                      data.hours < 8 && data.hours !== 0
+                        ? "bg-app-orange"
+                        : "bg-none"
+                    }
+                     `}
                   style={{
                     height: `${calculateBarHeight(data.hours)}%`,
                     border: data.hours ? "3px solid black" : "none",
                   }}
                 >
                   <Texts size="p4">
-                    {data.hours !== 0 ? `${data.hours.toFixed(1)}` : ""}
+                    {data.hours !== 0 ? data.hours.toFixed(1) : ""}
+                  </Texts>
+                  <Texts size="p2">
+                    {data.hours === 0 &&
+                    data.date <= new Date().toISOString().split("T")[0]
+                      ? `0 ${t("DA-Time-Label")}`
+                      : ""}
                   </Texts>
                   <Texts size="p4">
                     {data.hours !== 0 ? `${t("DA-Time-Label")}` : ""}
+                  </Texts>
+                  <Texts size="p4" text={"white"}>
+                    {data.date === Today.date ? "Today" : null}
                   </Texts>
                 </div>
               </Holds>
