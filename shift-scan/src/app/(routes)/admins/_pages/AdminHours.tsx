@@ -2,7 +2,6 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { usePayPeriodTimeSheet } from "@/app/context/PayPeriodTimeSheetsContext";
 import { useTranslations } from "next-intl";
-import { Contents } from "@/components/(reusable)/contents";
 import { Texts } from "@/components/(reusable)/texts";
 import { Holds } from "@/components/(reusable)/holds";
 import { Grids } from "@/components/(reusable)/grids";
@@ -145,7 +144,9 @@ export default function AdminHours() {
                 <div
                   className={`rounded-t-[10px] rounded-b-[6px] ${
                     data.hours > 8 ? "bg-app-green" : "bg-app-orange"
-                  } ${data.hours === 0 ? "bg-clear " : ""}`}
+                  }
+                   
+                     ${data.hours === 0 ? "bg-clear " : ""}`}
                   style={{
                     height: `${calculateBarHeight(data.hours)}%`,
                     border: data.hours ? "3px solid black" : "none",

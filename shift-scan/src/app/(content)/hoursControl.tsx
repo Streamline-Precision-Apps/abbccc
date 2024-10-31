@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import ViewComponent from "../(content)/hourView";
 import { usePayPeriodTimeSheet } from "../context/PayPeriodTimeSheetsContext";
 import { useTranslations } from "next-intl";
@@ -18,6 +18,9 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
   const { payPeriodTimeSheet } = usePayPeriodTimeSheet();
   const t = useTranslations("Home");
   const e = useTranslations("Err-Msg");
+  const dailyHoursCache = useRef<{ date: string; hours: number }[] | null>(
+    null
+  );
 
   const calculatePayPeriodStart = () => {
     try {
@@ -67,8 +70,15 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   };
   // calls the previous function and created a new array
-  const dailyHours = useMemo(() => calculateDailyHours(), [payPeriodTimeSheet]);
-  console.log("Daily Hours called:", dailyHours);
+  const dailyHours = useMemo(() => {
+    if (dailyHoursCache.current) {
+      return dailyHoursCache.current;
+    } else {
+      const calculatedHours = calculateDailyHours();
+      dailyHoursCache.current = calculatedHours;
+      return calculatedHours;
+    }
+  }, [payPeriodTimeSheet]);
 
   useEffect(() => {
     const today = new Date().toISOString().split("T")[0];
@@ -83,7 +93,7 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
   const nextData = dailyHours[currentIndex + 1] || { date: "", hours: 0 };
 
   const calculateBarHeight = (value: number) => {
-    if (value === 0) return 0;
+    if (value === 0) return 20;
     if (value > 0 && value <= 1) return 50;
     if (value > 1 && value <= 2) return 50;
     if (value > 2 && value <= 3) return 50;
@@ -129,40 +139,57 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
         className="row-span-4 border-black border-[3px] rounded-2xl shadow-[8px_8px_0px_grey]"
       >
         {[prevData, currentData, nextData].map((data, index) => (
-          <Holds key={index} className="h-full w-full ">
-            <Contents
-              width={"section"}
-              className={`${
-                currentData.date === data.date
-                  ? "px-2 py-2 h-full w-24 "
-                  : prevData.date === data.date
-                  ? "px-2 py-6 h-full w-20"
-                  : nextData.date === data.date
-                  ? "px-2 py-6 h-full w-20 "
-                  : "px-2 py-6 h-full hidden xl:block xl:w-28"
+          <Holds
+            key={index}
+            className={`mx-auto ${
+              currentData.date === data.date
+                ? "px-2 py-2 h-full w-[30%]"
+                : prevData.date === data.date
+                ? "px-2 py-4 h-full w-[25%]"
+                : nextData.date === data.date
+                ? "px-2 py-4 h-full w-[25%]"
+                : "px-2 py-4 h-full hidden xl:block xl:w-28"
+            }`}
+          >
+            <Holds
+              className={`h-full border-black border-[3px] rounded-[10px] p-1 flex justify-end ${
+                data.hours === 0 &&
+                data.date <= new Date().toISOString().split("T")[0]
+                  ? "bg-app-red "
+                  : "bg-app-dark-blue"
               }`}
             >
-              <Holds
-                background="darkBlue"
-                className="h-full border-black border-[3px] rounded-[10px] p-1 flex justify-end"
+              <div
+                className={`rounded-[10px] ${
+                  data.hours > 8 && data.hours !== 0
+                    ? "bg-app-green"
+                    : "bg-none"
+                }
+                    ${
+                      data.hours < 8 && data.hours !== 0
+                        ? "bg-app-orange"
+                        : "bg-none"
+                    }
+                     `}
+                style={{
+                  height: `${calculateBarHeight(data.hours)}%`,
+                  border: data.hours ? "3px solid black" : "none",
+                }}
               >
-                <div
-                  className={`rounded-[10px] ${
-                    data.hours > 8 ? "bg-app-green" : "bg-app-orange"
-                  } ${data.hours === 0 ? "bg-clear " : ""}`}
-                  style={{
-                    height: `${calculateBarHeight(data.hours)}%`,
-                    border: data.hours ? "3px solid black" : "none",
-                  }}
-                >
-                  <Texts size="p3">
-                    {data.hours !== 0
-                      ? `${data.hours.toFixed(1)} ${t("DA-Time-Label")}`
-                      : ""}
-                  </Texts>
-                </div>
-              </Holds>
-            </Contents>
+                <Texts size="p4">
+                  {data.hours !== 0 ? data.hours.toFixed(1) : ""}
+                </Texts>
+                <Texts size="p2">
+                  {data.hours === 0 &&
+                  data.date <= new Date().toISOString().split("T")[0]
+                    ? `0 ${t("DA-Time-Label")}`
+                    : ""}
+                </Texts>
+                <Texts size="p4">
+                  {data.hours !== 0 ? `${t("DA-Time-Label")}` : ""}
+                </Texts>
+              </div>
+            </Holds>
           </Holds>
         ))}
       </Holds>
