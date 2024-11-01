@@ -7,6 +7,9 @@ import { Modals } from "@/components/(reusable)/modals";
 import { useState } from "react";
 import AdminClock from "./AdminClock";
 import AdminSwitch from "./AdminSwitch";
+import AddEmployeeContent from "../../admin/employees/content";
+import Content from "@/app/(routes)/admin/assets/content";
+import Reports from "../../admin/reports/reports";
 
 const Dashboard = ({
   isOpen2,
@@ -47,11 +50,11 @@ const Dashboard = ({
         {/* Include the dashboard content here */}
         {page === 0 && <AdminHome />}
 
-        {page === 1 && <Texts>Personnel Dashboard</Texts>}
+        {page === 1 && <AddEmployeeContent />}
 
-        {page === 2 && <Texts>Assets Dashboard</Texts>}
+        {page === 2 && <Content />}
 
-        {page === 3 && <Texts>Report Dashboard</Texts>}
+        {page === 3 && <Reports />}
       </Holds>
 
       {/* Include the modals here */}
