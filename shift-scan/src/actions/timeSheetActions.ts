@@ -301,6 +301,7 @@ export async function updateTimeSheetBySwitch(formData: FormData) {
 
     // Revalidate the path
     revalidatePath(`/`);
+    return { success: true };
   } catch (error) {
     console.log(error);
   }

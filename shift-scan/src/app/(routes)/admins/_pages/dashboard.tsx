@@ -73,12 +73,12 @@ const Dashboard = ({
         type={"StartDay"}
         size={"lg"}
       >
-        <AdminSwitch handleClose={handleClose} />
+        <AdminSwitch handleClose={() => setIsSwitch(false)} />
       </Modals>
 
       {/* Break modal */}
       <Modals
-        isOpen={isSwitch}
+        isOpen={isBreak}
         handleClose={() => setIsBreak(false)}
         type={"StartDay"}
         size={"lg"}
@@ -88,7 +88,7 @@ const Dashboard = ({
 
       {/* End of day modal */}
       <Modals
-        isOpen={isSwitch}
+        isOpen={isEndofDay}
         handleClose={() => setIsEndofDay(false)}
         type={"StartDay"}
         size={"lg"}

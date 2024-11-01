@@ -1,4 +1,13 @@
 "use client";
+/**
+ * @component CodeFinder
+ * @description A search and select component for various data types like cost codes, jobsites, and equipment.
+ * Provides search and selection features for different options by datatype, storing and retrieving recent selections.
+ *
+ * @param {string} datatype - The type of data to search (e.g., 'costcode', 'jobsite', 'equipment')
+ * @param {string} [savedCode] - Optional initial code to be preloaded in the search field.
+ */
+
 import React, { useState, useEffect, ChangeEvent, useMemo } from "react";
 import CustomSelect from "@/components/(search)/customSelect";
 import SearchBar from "@/components/(search)/searchbar";
@@ -17,6 +26,7 @@ import {
   useRecentDBCostcode,
   useRecentDBEquipment,
 } from "@/app/context/dbRecentCodesContext";
+import { Holds } from "../(reusable)/holds";
 
 type Option = {
   code: string;
@@ -25,10 +35,11 @@ type Option = {
 
 type Props = {
   datatype: string;
+  savedCode?: string;
 };
 
-export default function CodeFinder({ datatype }: Props) {
-  const [searchTerm, setSearchTerm] = useState("");
+export default function CodeFinder({ datatype, savedCode }: Props) {
+  const [searchTerm, setSearchTerm] = useState(savedCode || "");
   const [filteredOptions, setFilteredOptions] = useState<Option[]>([]);
   const [selectedOption, setSelectedOption] = useState<Option | null>(null);
   const t = useTranslations("Clock");
@@ -51,6 +62,31 @@ export default function CodeFinder({ datatype }: Props) {
     () => CostCodeOptions(datatype, searchTerm),
     [datatype, searchTerm]
   );
+
+  // Set default selected option if `storedCode` is found
+  useEffect(() => {
+    if (savedCode) {
+      if (savedCode.toLowerCase().slice(0, 1) === "j") {
+        const defaultOption = jobsiteResults.find(
+          (opt) => opt.qrId === savedCode
+        );
+        if (defaultOption) {
+          setSelectedOption({
+            code: defaultOption.qrId,
+            label: defaultOption.name,
+          });
+          setSearchTerm(defaultOption.name); // Update search term to display label in the search bar
+        }
+      } else {
+        const defaultOption = options.find((opt) => opt.code === savedCode);
+        console.log(defaultOption);
+        if (defaultOption) {
+          setSelectedOption(defaultOption);
+          setSearchTerm(defaultOption.label); // Update search term to display label in the search bar
+        }
+      }
+    }
+  }, [savedCode]);
 
   useEffect(() => {
     const filtered = options;
@@ -98,7 +134,7 @@ export default function CodeFinder({ datatype }: Props) {
   };
 
   return (
-    <div>
+    <Holds className="w-full h-full">
       <SearchBar
         selected={false}
         placeholder={t(`search-${datatype}`)}
@@ -110,6 +146,6 @@ export default function CodeFinder({ datatype }: Props) {
         onOptionSelect={handleOptionSelect}
         selectedOption={selectedOption}
       />
-    </div>
+    </Holds>
   );
 }

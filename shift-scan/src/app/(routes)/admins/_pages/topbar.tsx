@@ -198,21 +198,21 @@ const Topbar = ({
                       <Buttons
                         background={"orange"}
                         className=""
-                        onClick={() => setIsOpen(true)}
+                        onClick={() => setIsSwitch(true)}
                       >
                         <Texts size={"p6"}>Switch</Texts>
                       </Buttons>
                       <Buttons
                         background={"lightBlue"}
                         className=""
-                        onClick={() => setIsOpen(true)}
+                        onClick={() => setIsBreak(true)}
                       >
                         <Texts size={"p6"}>Break</Texts>
                       </Buttons>
                       <Buttons
                         background={"red"}
                         className="mr-2"
-                        onClick={() => setIsOpen(true)}
+                        onClick={() => setIsEndofDay(true)}
                       >
                         <Texts size={"p6"}>End Day</Texts>
                       </Buttons>
