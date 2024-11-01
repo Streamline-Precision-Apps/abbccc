@@ -21,7 +21,7 @@ import { Texts } from "../(reusable)/texts";
 import { useSession } from "next-auth/react";
 
 type VerifyProcessProps = {
-  handleNextStep: () => void;
+  handleNextStep?: () => void;
   type: string;
   option?: string;
 };
@@ -76,7 +76,9 @@ export default function VerificationStep({
           setTimeSheetData(result);
           setTimeSheetData(result);
           setAuthStep("success");
-          handleNextStep();
+          if (handleNextStep) {
+            handleNextStep();
+          }
         } catch (error) {
           console.log(error);
         }
@@ -94,7 +96,9 @@ export default function VerificationStep({
         setTimeSheetData(result);
         setTimeSheetData(result);
         setAuthStep("success");
-        handleNextStep();
+        if (handleNextStep) {
+          handleNextStep();
+        }
       }
     } catch (error) {
       console.log(error);

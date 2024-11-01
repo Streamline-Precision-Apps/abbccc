@@ -2,6 +2,11 @@
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 import Topbar from "./topbar";
+import AdminHome from "./admin-home";
+import { Modals } from "@/components/(reusable)/modals";
+import { useState } from "react";
+import AdminClock from "./AdminClock";
+import AdminSwitch from "./AdminSwitch";
 
 const Dashboard = ({
   isOpen2,
@@ -14,27 +19,82 @@ const Dashboard = ({
   page: number;
   setPage: (page: number) => void;
 }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isSwitch, setIsSwitch] = useState(false);
+  const [isBreak, setIsBreak] = useState(false);
+  const [isEndofDay, setIsEndofDay] = useState(false);
+
+  const handleClose = () => {
+    setIsOpen(false);
+  };
   return (
-    <Holds className={"w-[95%] h-full "}>
+    <Holds className={"w-[95%] h-full"}>
       <Topbar
         isOpen2={isOpen2}
         handleClockClick={handleClockClick}
         page={page}
         setPage={setPage}
+        setIsOpen={setIsOpen}
+        setIsSwitch={setIsSwitch}
+        setIsBreak={setIsBreak}
+        setIsEndofDay={setIsEndofDay}
       />
 
-      <Holds className="h-full w-full mt-5">
-        <Holds background={"lightBlue"} className="w-[95%] h-full">
-          {/* Include the dashboard content here */}
-          {page === 0 && <Texts>Home Dashboard</Texts>}
+      <Holds
+        background={page === 0 ? null : "white"}
+        className={page === 0 ? "h-full w-full" : "w-[98%] h-full white mt-5"}
+      >
+        {/* Include the dashboard content here */}
+        {page === 0 && <AdminHome />}
 
-          {page === 1 && <Texts>Personnel Dashboard</Texts>}
+        {page === 1 && <Texts>Personnel Dashboard</Texts>}
 
-          {page === 2 && <Texts>Assets Dashboard</Texts>}
+        {page === 2 && <Texts>Assets Dashboard</Texts>}
 
-          {page === 3 && <Texts>Report Dashboard</Texts>}
-        </Holds>
+        {page === 3 && <Texts>Report Dashboard</Texts>}
       </Holds>
+
+      {/* Include the modals here */}
+
+      {/* Start day modal */}
+      <Modals
+        isOpen={isOpen}
+        handleClose={() => setIsOpen(false)}
+        type={"StartDay"}
+        size={"lg"}
+      >
+        <AdminClock handleClose={handleClose} />
+      </Modals>
+
+      {/* Switch modal */}
+      <Modals
+        isOpen={isSwitch}
+        handleClose={() => setIsSwitch(false)}
+        type={"StartDay"}
+        size={"lg"}
+      >
+        <AdminSwitch handleClose={() => setIsSwitch(false)} />
+      </Modals>
+
+      {/* Break modal */}
+      <Modals
+        isOpen={isBreak}
+        handleClose={() => setIsBreak(false)}
+        type={"StartDay"}
+        size={"lg"}
+      >
+        <Texts>Break Modal</Texts>
+      </Modals>
+
+      {/* End of day modal */}
+      <Modals
+        isOpen={isEndofDay}
+        handleClose={() => setIsEndofDay(false)}
+        type={"StartDay"}
+        size={"lg"}
+      >
+        <Texts>End of Day Modal</Texts>
+      </Modals>
     </Holds>
   );
 };
