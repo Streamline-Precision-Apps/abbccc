@@ -68,8 +68,10 @@ const sidebar = ({
             <Holds className=" row-span-5 h-full gap-5 mt-10">
               <Holds>
                 <Buttons
-                  background={"lightBlue"}
-                  className="w-[90%] h-20 "
+                  className={`
+                    ${
+                      page === 1 ? "bg-slate-400 " : "bg-app-blue"
+                    } w-[90%] h-20 `}
                   onClick={() => setPage(1)}
                 >
                   <Holds position={"row"}>
@@ -96,8 +98,10 @@ const sidebar = ({
               {/* The button that says Assets */}
               <Holds className="flex items-start justify-between">
                 <Buttons
-                  background={"lightBlue"}
-                  className="w-[90%] h-20 "
+                  className={`
+                    ${
+                      page === 2 ? "bg-slate-400 " : "bg-app-blue"
+                    } w-[90%] h-20 `}
                   onClick={() => setPage(2)}
                 >
                   <Holds position={"row"}>
@@ -124,8 +128,10 @@ const sidebar = ({
               {/* The button that says Reports */}
               <Holds>
                 <Buttons
-                  background={"lightBlue"}
-                  className="w-[90%] h-20 "
+                  className={`
+                    ${
+                      page === 3 ? "bg-slate-400 " : "bg-app-blue"
+                    } w-[90%] h-20 `}
                   onClick={() => setPage(3)}
                 >
                   <Holds position={"row"}>
@@ -184,10 +190,10 @@ const sidebar = ({
               </Holds>
             </Holds>
             <Holds className=" h-full gap-5 mt-10">
-              <Holds className={page === 1 ? "hidden" : ""}>
+              <Holds>
                 <Buttons
-                  background={"lightBlue"}
-                  className="w-20 h-20 "
+                  className={`
+                    ${page === 1 ? "bg-slate-400 " : "bg-app-blue"} w-20 h-20 `}
                   onClick={() => setPage(1)}
                 >
                   <Holds position={"row"}>
@@ -199,10 +205,10 @@ const sidebar = ({
                   </Holds>
                 </Buttons>
               </Holds>
-              <Holds className={page === 2 ? "hidden" : ""}>
+              <Holds>
                 <Buttons
-                  background={"lightBlue"}
-                  className="w-20 h-20 "
+                  className={`
+                    ${page === 2 ? "bg-slate-400 " : "bg-app-blue"} w-20 h-20 `}
                   onClick={() => setPage(2)}
                 >
                   <Holds position={"row"}>
@@ -215,10 +221,10 @@ const sidebar = ({
                   </Holds>
                 </Buttons>
               </Holds>
-              <Holds className={page === 3 ? "hidden" : ""}>
+              <Holds>
                 <Buttons
-                  background={"lightBlue"}
-                  className="w-20 h-20 "
+                  className={`
+                    ${page === 3 ? "bg-slate-400 " : "bg-app-blue"} w-20 h-20 `}
                   onClick={() => setPage(3)}
                 >
                   <Holds position={"row"}>

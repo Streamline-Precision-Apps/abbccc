@@ -11,6 +11,9 @@
     },
 
     "Home" : {
+        "Today": "Today",
+        "End-Pay-Period": "End of Current Pay Period",
+        "CurrentRange": "Current Pay Period",
         "Banner": "Welcome back, ",
         "Name": "{firstName}",
         "Date": "{date}",

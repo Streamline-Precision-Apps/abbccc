@@ -199,6 +199,47 @@ const Modals: FC<ModalProps> = ({
         </div>
       </ReactPortal>
     );
+  else if (type === "StartDay")
+    return (
+      <ReactPortal wrapperId="react-portal-modal-container ">
+        <Bases
+          background={"modal"}
+          position={"start"}
+          size={"screen"}
+          className="overflow-scroll"
+        >
+          <div
+            className={cn(
+              ModalVariants({ background, position, size, className })
+            )}
+            {...props}
+          >
+            <Titles>{props.title}</Titles>
+            <div className="modal-content-wrapper overflow-auto ">
+              {props.children}
+            </div>
+            <Holds size={"full"} className="pb-10">
+              <Buttons
+                onClick={handleClose}
+                className="close-btn"
+                size={"90"}
+                background={"red"}
+                position={"center"}
+              >
+                <Holds>
+                  <Images
+                    titleImg="/x.svg"
+                    titleImgAlt="x"
+                    size={"10"}
+                    className="my-auto"
+                  />
+                </Holds>
+              </Buttons>
+            </Holds>
+          </div>
+        </Bases>
+      </ReactPortal>
+    );
   else
     return (
       <ReactPortal wrapperId="react-portal-modal-container ">
