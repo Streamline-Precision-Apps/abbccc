@@ -44,9 +44,6 @@ export default function ViewTimesheets({ user }: Props) {
   const [timesheetData, setTimesheetData] = useState<TimeSheet[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [formattedTimes, setFormattedTimes] = useState<{
-    [key: string]: { startTime: string; endTime: string };
-  }>({});
   const t = useTranslations("Home");
 
   // Validate initial state with Zod schema
@@ -54,7 +51,6 @@ export default function ViewTimesheets({ user }: Props) {
     ViewTimesheetsSchema.parse({
       user,
       showTimesheets,
-      startingEntry,
       timesheetData,
       loading,
       error,
@@ -101,7 +97,6 @@ export default function ViewTimesheets({ user }: Props) {
           };
         }
       }
-      setFormattedTimes(formattedData);
     } catch (error) {
       setError("Error fetching timesheets");
       console.error(error);
