@@ -38,6 +38,25 @@ const JobsitesSchema = z.array(
   })
 );
 
+const JobsitesRecentSchema = z
+  .array(
+    z.object({
+      id: z.string(),
+      qrId: z.string(),
+      isActive: z.boolean().optional(),
+      status: z.string().optional(),
+      name: z.string(),
+      streetNumber: z.string().nullable().optional(),
+      streetName: z.string().optional(),
+      city: z.string().optional(),
+      state: z.string().nullable().optional(),
+      country: z.string().optional(),
+      description: z.string().nullable().optional(),
+      comment: z.string().nullable().optional(),
+    })
+  )
+  .nullable();
+
 // CostCodes schema
 const CostCodesSchema = z.array(
   z.object({
@@ -47,6 +66,17 @@ const CostCodesSchema = z.array(
     type: z.string().default("DEFAULT_TYPE"),
   })
 );
+
+const CostCodesRecentSchema = z
+  .array(
+    z.object({
+      id: z.number(),
+      name: z.string(),
+      description: z.string(),
+      type: z.string().default("DEFAULT_TYPE"),
+    })
+  )
+  .nullable();
 
 // Equipment schema
 const EquipmentSchema = z.array(
@@ -124,42 +154,109 @@ const useFetchAllData = () => {
           equipmentListResponse.json(),
         ]);
 
-        // Validate fetched data with Zod
+        // Validate each dataset separately with schema-specific error handling
         try {
           const validatedJobSites = JobsitesSchema.parse(jobSites);
-          const validatedRecentJobSites = JobsitesSchema.parse(recentJobSites);
-          const validatedCostCodes = CostCodesSchema.parse(costCodes);
-          const validatedRecentCostCodes =
-            CostCodesSchema.parse(recentCostCodes);
-          const validatedEquipment = EquipmentSchema.parse(equipment);
-          const validatedRecentEquipment =
-            EquipmentSchema.parse(recentEquipment);
-          const validatedEquipmentList =
-            EquipmentSchema.parse(recentEquipmentList);
-
-          // Update state with the validated data
           setJobsiteResults(
             validatedJobSites.map((jobSite) => ({
               ...jobSite,
               toLowerCase: () => jobSite.name.toLowerCase(),
             }))
           );
-          setRecentlyUsedJobCodes(
-            validatedRecentJobSites.map((jobSite) => ({
-              ...jobSite,
-              toLowerCase: () => jobSite.name.toLowerCase(),
-            }))
-          );
+        } catch (error) {
+          if (error instanceof z.ZodError) {
+            console.error("Validation error in JobSites schema:", error.errors);
+          }
+        }
+
+        try {
+          const validatedRecentJobSites =
+            JobsitesRecentSchema.parse(recentJobSites);
+          if (validatedRecentJobSites === null) {
+            setRecentlyUsedJobCodes([]);
+          } else {
+            setRecentlyUsedJobCodes(
+              validatedRecentJobSites.map((jobSite) => ({
+                ...jobSite,
+                toLowerCase: () => jobSite.name.toLowerCase(),
+              }))
+            );
+          }
+        } catch (error) {
+          if (error instanceof z.ZodError) {
+            console.error(
+              "Validation error in Recent JobSites schema:",
+              error.errors
+            );
+          }
+        }
+
+        try {
+          const validatedCostCodes = CostCodesSchema.parse(costCodes);
           setCostcodeResults(validatedCostCodes);
-          setRecentlyUsedCostCodes(validatedRecentCostCodes);
+        } catch (error) {
+          if (error instanceof z.ZodError) {
+            console.error(
+              "Validation error in CostCodes schema:",
+              error.errors
+            );
+          }
+        }
+
+        try {
+          const validatedRecentCostCodes =
+            CostCodesRecentSchema.parse(recentCostCodes);
+          if (validatedRecentCostCodes === null) {
+            setRecentlyUsedCostCodes([]);
+          } else {
+            setRecentlyUsedCostCodes(validatedRecentCostCodes);
+          }
+        } catch (error) {
+          if (error instanceof z.ZodError) {
+            console.error(
+              "Validation error in Recent CostCodes schema:",
+              error.errors
+            );
+          }
+        }
+
+        try {
+          const validatedEquipment = EquipmentSchema.parse(equipment);
           setEquipmentResults(validatedEquipment as EquipmentCodes[]);
+        } catch (error) {
+          if (error instanceof z.ZodError) {
+            console.error(
+              "Validation error in Equipment schema:",
+              error.errors
+            );
+          }
+        }
+
+        try {
+          const validatedRecentEquipment =
+            EquipmentSchema.parse(recentEquipment);
           setRecentlyUsedEquipment(
             validatedRecentEquipment as EquipmentCodes[]
           );
+        } catch (error) {
+          if (error instanceof z.ZodError) {
+            console.error(
+              "Validation error in Recent Equipment schema:",
+              error.errors
+            );
+          }
+        }
+
+        try {
+          const validatedEquipmentList =
+            EquipmentSchema.parse(recentEquipmentList);
           setEquipmentListResults(validatedEquipmentList);
         } catch (error) {
           if (error instanceof z.ZodError) {
-            console.error("Validation error:", error.errors);
+            console.error(
+              "Validation error in Equipment List schema:",
+              error.errors
+            );
           }
         }
       } catch (error) {

@@ -46,38 +46,33 @@ export default function AdminSwitch({
       e.preventDefault();
       // the endind of the job begins on an error it cancels the action
       console.log("Switch jobs starts");
+
       const localeValue = localStorage.getItem("savedtimeSheetData");
       const tId = JSON.parse(localeValue || "{}").id;
       const formData2 = new FormData();
       formData2.append("id", tId?.toString() || "");
       formData2.append("endTime", new Date().toISOString());
+      formData2.append("timesheetComments", "");
       formData2.append("appComment", "Switched jobs");
-      const response2 = await updateTimeSheetBySwitch(formData2);
-      if (!response2) {
-        throw new Error("Error updating timesheet");
-      }
 
-      // creates form data with all input fields
-      const formData = new FormData(e.currentTarget);
-      if (scanResult !== null && savedCostCode !== null) {
-        formData.append("jobsiteId", scanResult?.data || "");
-        formData.append("costcode", savedCostCode?.toString() || "");
-      } else {
-        const j = JSON.parse(localStorage.getItem("jobSite") || "{}");
-        formData.append("jobsiteId", j);
+      await updateTimeSheetBySwitch(formData2);
 
-        const cc = JSON.parse(localStorage.getItem("costCode") || "{}");
-        formData.append("costcode", cc);
-      }
+      const formData = new FormData();
+      formData.append("submitDate", new Date().toISOString());
+      formData.append("userId", id?.toString() || "");
+      formData.append("date", new Date().toISOString());
+      formData.append("jobsiteId", scanResult?.data || j || "");
+      formData.append("costcode", savedCostCode?.toString() || cc || "");
+      formData.append("startTime", new Date().toISOString());
+      formData.append("endTime", "");
+
       const response = await CreateTimeSheet(formData);
-      if (response) {
-        setAuthStep("success");
-        const result = { id: response.id.toString() };
-        setTimeSheetData(result);
-      }
+      const result = { id: response.id.toString() };
+      setTimeSheetData(result);
+      setAuthStep("success");
       handleClose();
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.log(error);
     }
   };
   const { data: session } = useSession();

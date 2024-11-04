@@ -6,7 +6,10 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import { getAuthStep } from "@/app/api/auth";
+import { getAuthStep, setAuthStep } from "@/app/api/auth";
+import { updateTimeSheetBySwitch } from "@/actions/timeSheetActions";
+
+// import { useRouter } from "next/navigation";
 
 const Topbar = ({
   isOpen2,
@@ -15,7 +18,6 @@ const Topbar = ({
   setPage,
   setIsOpen,
   setIsSwitch,
-  setIsBreak,
   setIsEndofDay,
 }: {
   isOpen2: boolean;
@@ -24,9 +26,26 @@ const Topbar = ({
   setPage: (page: number) => void;
   setIsOpen: (isOpen: boolean) => void;
   setIsSwitch: (isOpen: boolean) => void;
-  setIsBreak: (isOpen: boolean) => void;
   setIsEndofDay: (isOpen: boolean) => void;
 }) => {
+  // const router = useRouter();
+  const handleBreakClick = async () => {
+    try {
+      const formData2 = new FormData();
+      const localeValue = localStorage.getItem("savedtimeSheetData");
+      const t_id = JSON.parse(localeValue || "{}").id;
+      formData2.append("id", t_id?.toString() || "");
+      formData2.append("endTime", new Date().toISOString());
+      formData2.append("TimeSheetComments", "");
+
+      await updateTimeSheetBySwitch(formData2);
+
+      setAuthStep(""); // if we want to add a break view we could do it here
+      // router.push("/");
+    } catch (err) {
+      console.error(err);
+    }
+  };
   return (
     <>
       {!isOpen2 ? (
@@ -205,7 +224,7 @@ const Topbar = ({
                       <Buttons
                         background={"lightBlue"}
                         className=""
-                        onClick={() => setIsBreak(true)}
+                        onClick={handleBreakClick}
                       >
                         <Texts size={"p6"}>Break</Texts>
                       </Buttons>
