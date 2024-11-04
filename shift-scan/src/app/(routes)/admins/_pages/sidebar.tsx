@@ -44,7 +44,7 @@ const sidebar = ({
             </Holds>
             <Holds className=" row-span-2 h-full mb-5 flex-col">
               <Grids rows={"1"} cols={"3"}>
-                <Holds className="col-span-1 h-full">
+                <Holds className="col-span-1 h-full" onClick={() => setPage(4)}>
                   <Images
                     titleImg="/person.svg"
                     titleImgAlt="Home Icon"
@@ -180,7 +180,7 @@ const sidebar = ({
                 />
               </Holds>
 
-              <Holds className=" w-32 h-32 ">
+              <Holds className=" w-32 h-32 " onClick={() => setPage(4)}>
                 <Images
                   titleImg="/person.svg"
                   titleImgAlt="Home Icon"

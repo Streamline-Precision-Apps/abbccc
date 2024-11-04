@@ -10,6 +10,7 @@ import AddEmployeeContent from "../../admin/employees/content";
 import Content from "@/app/(routes)/admin/assets/content";
 import Reports from "../../admin/reports/reports";
 import { AdminClockOut } from "./AdminClockOut";
+import { AdminSettings } from "./AdminSettings";
 
 const Dashboard = ({
   isOpen2,
@@ -42,7 +43,7 @@ const Dashboard = ({
       />
 
       <Holds
-        background={page === 0 ? null : "white"}
+        background={page === 0 || page === 4 ? null : "white"}
         className={page === 0 ? "h-full w-full" : "w-[98%] h-full white mt-5"}
       >
         {/* Include the dashboard content here */}
@@ -53,6 +54,8 @@ const Dashboard = ({
         {page === 2 && <Content />}
 
         {page === 3 && <Reports />}
+
+        {page === 4 && <AdminSettings />}
       </Holds>
 
       {/* Include the modals here */}
