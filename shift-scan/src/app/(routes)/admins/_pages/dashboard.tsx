@@ -1,6 +1,5 @@
 "use client";
 import { Holds } from "@/components/(reusable)/holds";
-import { Texts } from "@/components/(reusable)/texts";
 import Topbar from "./topbar";
 import AdminHome from "./admin-home";
 import { Modals } from "@/components/(reusable)/modals";
@@ -10,6 +9,7 @@ import AdminSwitch from "./AdminSwitch";
 import AddEmployeeContent from "../../admin/employees/content";
 import Content from "@/app/(routes)/admin/assets/content";
 import Reports from "../../admin/reports/reports";
+import { AdminClockOut } from "./AdminClockOut";
 
 const Dashboard = ({
   isOpen2,
@@ -24,7 +24,6 @@ const Dashboard = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSwitch, setIsSwitch] = useState(false);
-  const [isBreak, setIsBreak] = useState(false);
   const [isEndofDay, setIsEndofDay] = useState(false);
 
   const handleClose = () => {
@@ -39,7 +38,6 @@ const Dashboard = ({
         setPage={setPage}
         setIsOpen={setIsOpen}
         setIsSwitch={setIsSwitch}
-        setIsBreak={setIsBreak}
         setIsEndofDay={setIsEndofDay}
       />
 
@@ -62,11 +60,11 @@ const Dashboard = ({
       {/* Start day modal */}
       <Modals
         isOpen={isOpen}
-        handleClose={() => setIsOpen(false)}
+        handleClose={handleClose}
         type={"StartDay"}
         size={"lg"}
       >
-        <AdminClock handleClose={handleClose} />
+        <AdminClock handleClose={() => setIsOpen(false)} />
       </Modals>
 
       {/* Switch modal */}
@@ -79,16 +77,6 @@ const Dashboard = ({
         <AdminSwitch handleClose={() => setIsSwitch(false)} />
       </Modals>
 
-      {/* Break modal */}
-      <Modals
-        isOpen={isBreak}
-        handleClose={() => setIsBreak(false)}
-        type={"StartDay"}
-        size={"lg"}
-      >
-        <Texts>Break Modal</Texts>
-      </Modals>
-
       {/* End of day modal */}
       <Modals
         isOpen={isEndofDay}
@@ -96,7 +84,7 @@ const Dashboard = ({
         type={"StartDay"}
         size={"lg"}
       >
-        <Texts>End of Day Modal</Texts>
+        <AdminClockOut handleClose={() => setIsEndofDay(false)} />
       </Modals>
     </Holds>
   );

@@ -86,7 +86,8 @@ export default function CodeFinder({ datatype, savedCode }: Props) {
         }
       }
     }
-  }, [savedCode]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const filtered = options;
