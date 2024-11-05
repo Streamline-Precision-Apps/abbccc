@@ -1,7 +1,6 @@
 "use client";
 
 import { Holds } from "@/components/(reusable)/holds";
-import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useTranslations } from "next-intl";
 import Base64Encoder from "@/components/(camera)/Base64Encoder";
 import { useEffect, useState } from "react";
@@ -12,7 +11,6 @@ import { Modals } from "@/components/(reusable)/modals";
 import { Images } from "@/components/(reusable)/images";
 import { Contact, Employee } from "@/lib/types";
 import { Buttons } from "@/components/(reusable)/buttons";
-import { Grids } from "@/components/(reusable)/grids";
 import { Texts } from "@/components/(reusable)/texts";
 import Spinner from "@/components/(animations)/spinner";
 import { z } from "zod"; // Import Zod for validation
@@ -49,7 +47,6 @@ export const AdminEditContact = ({
   >();
 
   const [isOpen, setIsOpen] = useState(false);
-  const [isOpen2, setIsOpen2] = useState(false);
   const [editImg, setEditImg] = useState(false);
   const [editSignatureModalOpen, setEditSignatureModalOpen] = useState(false); // State for signature modal
 
