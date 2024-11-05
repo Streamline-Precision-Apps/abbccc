@@ -1,13 +1,9 @@
 "use client";
 
 import { Holds } from "@/components/(reusable)/holds";
-import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useTranslations } from "next-intl";
-import Base64Encoder from "@/components/(camera)/Base64Encoder";
 import { useEffect, useState } from "react";
 import { Contents } from "@/components/(reusable)/contents";
-import { Labels } from "@/components/(reusable)/labels";
-import { Inputs } from "@/components/(reusable)/inputs";
 import { Modals } from "@/components/(reusable)/modals";
 import { Images } from "@/components/(reusable)/images";
 import { Contact, Employee } from "@/lib/types";
@@ -16,7 +12,6 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Texts } from "@/components/(reusable)/texts";
 import Spinner from "@/components/(animations)/spinner";
 import { z } from "zod"; // Import Zod for validation
-import { uploadFirstSignature } from "@/actions/userActions";
 import { Titles } from "@/components/(reusable)/titles";
 
 // Define Zod schemas for validation
@@ -46,15 +41,9 @@ export const AdminContact = ({
     Contact | Partial<Contact> | undefined
   >();
 
-  const [isOpen, setIsOpen] = useState(false);
   const [isOpen2, setIsOpen2] = useState(false);
-  const [editImg, setEditImg] = useState(false);
-  const [editSignatureModalOpen, setEditSignatureModalOpen] = useState(false); // State for signature modal
 
   const t = useTranslations("Hamburger");
-  const [base64String, setBase64String] = useState<string>("");
-  const [signatureBase64String, setSignatureBase64String] =
-    useState<string>("");
 
   //----------------------------Data Fetching-------------------------------------
   // Fetch Employee Data
@@ -67,7 +56,6 @@ export const AdminContact = ({
       // Validate data using Zod
       const validatedEmployee = employeeSchema.parse(employeeData);
       setEmployee(validatedEmployee as Employee);
-      setSignatureBase64String(validatedEmployee.signature ?? "");
     } catch (error) {
       console.error("Failed to fetch employee data:", error);
     } finally {
@@ -109,36 +97,6 @@ export const AdminContact = ({
     fetchAllData();
   }, []);
 
-  const reloadEmployeeData = () => {
-    fetchEmployee(); // Directly fetch the updated employee data
-    console.log("Employee data reloaded");
-  };
-
-  const handleSubmitImage = async () => {
-    if (employee) {
-      const formData = new FormData();
-      formData.append("id", employee.id);
-      if (typeof signatureBase64String === "object") {
-        formData.append("signature", JSON.stringify(signatureBase64String));
-      } else {
-        formData.append("signature", signatureBase64String);
-      }
-      console.log(formData);
-
-      setLoading(true);
-      try {
-        const response = await uploadFirstSignature(formData); // This assumes you have an uploadFirstSignature function elsewhere
-        console.log(response);
-      } catch (error) {
-        console.error("Error uploading signature:", error);
-      } finally {
-        setLoading(false);
-      }
-    } else {
-      console.error("Employee is not defined");
-    }
-  };
-
   if (loading) {
     return (
       <Grids className="grid-rows-7 gap-5 ">
@@ -162,10 +120,7 @@ export const AdminContact = ({
   }
 
   const signoutHandler = () => {
-    setIsOpen(false);
-  };
-  const handleProfilePic = () => {
-    setIsOpen(true);
+    setIsOpen2(false);
   };
 
   return (

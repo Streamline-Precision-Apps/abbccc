@@ -1,7 +1,7 @@
 "use server";
 import prisma from "@/lib/prisma";
 import { Permission } from "@prisma/client";
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidatePath } from "next/cache";
 import bcrypt from "bcryptjs";
 
 export async function createUser(formData: FormData) {
@@ -167,7 +167,7 @@ export async function setUserPassword(formData: FormData) {
 
 export async function updateContactInfo(formData: FormData) {
   console.log(formData);
-  const results = await prisma.contacts.update({
+  await prisma.contacts.update({
     where: { employeeId: formData.get("id") as string },
     data: {
       email: formData.get("email") as string,
