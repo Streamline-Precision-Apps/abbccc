@@ -17,8 +17,9 @@ import { Texts } from "@/components/(reusable)/texts";
 import Spinner from "@/components/(animations)/spinner";
 import { z } from "zod"; // Import Zod for validation
 import { Signature } from "@/app/(routes)/dashboard/clock-out/(components)/injury-verification/Signature";
-import { uploadFirstSignature } from "@/actions/userActions";
+import { updateContactInfo, uploadFirstSignature } from "@/actions/userActions";
 import { Titles } from "@/components/(reusable)/titles";
+import { Forms } from "@/components/(reusable)/forms";
 
 // Define Zod schemas for validation
 const contactSchema = z.object({
@@ -71,8 +72,6 @@ export const AdminEditContact = ({
       setSignatureBase64String(validatedEmployee.signature ?? "");
     } catch (error) {
       console.error("Failed to fetch employee data:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -90,8 +89,6 @@ export const AdminEditContact = ({
       setContacts(validatedContacts);
     } catch (error) {
       console.error("Failed to fetch profile data:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -142,207 +139,265 @@ export const AdminEditContact = ({
 
   if (loading) {
     return (
-      <Holds>
-        <Grids className="grid-rows-7 gap-5 ">
-          <Holds
-            size={"full"}
-            background={"white"}
-            className="row-span-2 h-full "
-          ></Holds>
-          <Holds
-            size={"full"}
-            background={"white"}
-            className="row-span-5 h-full "
-          >
-            <Contents width={"section"}>
-              <Texts> Loading </Texts>
+      <Holds className="h-full w-full relative ">
+        <Holds background={"orange"} className="h-[9%] w-full  ">
+          <Texts>Edit Mode</Texts>
+        </Holds>
+        <Holds className="w-[3%] h-[6%] p-1 rounded-full absolute top-1 right-1 cursor-pointer ">
+          <Images
+            titleImg="/turnBack.svg"
+            titleImgAlt="settings"
+            className="h-10 w-10 my-auto"
+            width={"10"}
+            onClick={() => editView(0)}
+          />
+        </Holds>
+        <Holds position={"row"} className="my-5 gap-5 h-full">
+          <Holds background={"white"} className="w-1/2 h-full ">
+            <Holds className="my-auto">
               <Spinner />
-            </Contents>
+            </Holds>
           </Holds>
-        </Grids>
+          <Holds background={"white"} className="w-1/2 h-full ">
+            <Holds className="my-auto">
+              <Spinner />
+            </Holds>
+          </Holds>
+        </Holds>
       </Holds>
     );
   }
+  const handleContacts = async (e: React.FormEvent<HTMLFormElement>) => {
+    try {
+      e.preventDefault();
 
-  const signoutHandler = () => {
-    setIsOpen(false);
+      const formData = new FormData(e.currentTarget);
+
+      const response = await updateContactInfo(formData);
+      if (response) {
+        // on a successful update we return to previous view
+        editView(0);
+      }
+    } catch {
+      console.error("Error updating contact info");
+    }
   };
   const handleProfilePic = () => {
     setIsOpen(true);
   };
 
   return (
-    <Holds className="h-screen">
-      <Contents width={"section"}>
-        <Grids rows={"10"} gap={"5"}>
-          <Holds background={"white"} className="row-span-3 h-full">
-            <Images
-              titleImg="/edit-form.svg"
-              titleImgAlt="settings"
-              className="absolute top-3 right-1"
-              size={"10"}
-              onClick={() => editView(0)}
-            />
-            <Contents width={"section"}>
-              <Holds className="col-span-2 row-span-2 cursor-pointer">
-                <Holds
-                  size={"60"}
-                  className="rounded-full relative "
-                  onClick={() => {
-                    handleProfilePic();
-                  }}
-                >
-                  <Images
-                    titleImg={employee?.image ?? "/profile.svg"}
-                    titleImgAlt={"profile"}
-                    className="rounded-full border-[3px] border-black"
-                    size={"full"}
-                  />
-                  <Holds className="absolute rounded-full h-7 w-7 md:h-10 md:w-10 left-[75%] top-[85%] transform -translate-x-1/2 -translate-y-1/2  px-1  md:px-2 md:py-3 border-[3px] border-black bg-white">
-                    <Images
-                      titleImg="/camera.svg"
-                      titleImgAlt="camera"
-                      size={"full"}
-                      className="my-auto"
-                    />
-                  </Holds>
-                </Holds>
+    <Holds className="h-full w-full relative ">
+      <Holds background={"orange"} className="h-[9%] w-full rounded-b-none ">
+        <Texts>Edit Mode</Texts>
+      </Holds>
+      <Holds className="w-[3%] h-[6%] p-1 rounded-full absolute top-1 right-1 cursor-pointer ">
+        <Images
+          titleImg="/turnBack.svg"
+          titleImgAlt="settings"
+          className="h-10 w-10 my-auto"
+          width={"10"}
+          onClick={() => editView(0)}
+        />
+      </Holds>
+      <Holds className="flex flex-row gap-5 h-[90%] ">
+        {/* Save button to confirm changes */}
+        <Holds background={"white"} className="h-full mt-5 gap-5 ">
+          <Holds className="w-full h-1/2 my-5 ">
+            <Holds className="relative ">
+              <Images
+                titleImg={employee?.image ?? "/profile.svg"}
+                titleImgAlt={"profile"}
+                className="rounded-full border-[3px] border-black cursor-pointer"
+                size={"50"}
+                onClick={() => {
+                  handleProfilePic();
+                }}
+              />
+              <Holds
+                className="cursor-pointer absolute rounded-full h-24 w-24 left-[65%] top-[85%] transform -translate-x-1/2 -translate-y-1/2  border-[3px] border-black bg-white"
+                onClick={() => {
+                  handleProfilePic();
+                }}
+              >
+                <Images
+                  titleImg="/camera.svg"
+                  titleImgAlt="camera"
+                  size={"full"}
+                  className="my-auto"
+                />
               </Holds>
-            </Contents>
-
-            <Modals
-              handleClose={() => {
-                setIsOpen(false);
-                setBase64String("");
-              }}
-              type="base64"
-              size={"fullPage"}
-              isOpen={isOpen}
-            >
-              {!editImg && (
-                <Holds size={"full"} background={"white"} className="my-5">
-                  <Holds size={"50"} className="rounded-full">
-                    <img
-                      src={employee?.image ?? ""}
-                      alt={"image"}
-                      className="rounded-full"
-                    />
-                  </Holds>
-                  <Buttons
-                    size={"50"}
-                    className="my-5"
-                    onClick={() => setEditImg(true)}
-                  >
-                    <Texts>Change Profile Picture</Texts>
-                  </Buttons>
-                </Holds>
-              )}
-              {editImg && (
-                <Holds size={"full"} background={"white"} className="my-5">
-                  <Base64Encoder
-                    employee={employee && employee}
-                    base64String={base64String}
-                    setBase64String={setBase64String}
-                    setIsOpen={setIsOpen}
-                    reloadEmployeeData={reloadEmployeeData}
-                  />
-                </Holds>
-              )}
-            </Modals>
-          </Holds>
-          <Holds background={"white"} className="row-span-7 h-full">
-            <Holds className="h-full">
-              <Contents width={"section"}>
-                <Grids rows={"6"} gap={"5"}>
-                  <Holds className=" row-span-1 h-full">
-                    <Labels size={"p4"}>
-                      {t("PhoneNumber")}
-                      <Inputs
-                        disabled
-                        type="tel"
-                        defaultValue={contacts?.phoneNumber ?? ""}
-                      />
-                    </Labels>
-                  </Holds>
-                  <Holds className=" row-span-1 h-full">
-                    <Labels size={"p4"}>
-                      {t("PersonalEmail")}
-                      <Inputs
-                        disabled
-                        type="email"
-                        defaultValue={contacts?.email}
-                      />
-                    </Labels>
-                  </Holds>
-                  <Holds className=" row-span-1 h-full">
-                    <Labels size={"p4"}>
-                      {t("EmergencyContact")}
-                      <Inputs
-                        disabled
-                        type="tel"
-                        defaultValue={contacts?.emergencyContactNumber ?? ""}
-                      />
-                    </Labels>
-                  </Holds>
-                  <Holds className=" row-span-1 h-full  ">
-                    <Holds className="h-full my-auto">
-                      <Labels size={"p4"}>
-                        {t("Signature")}
-                        <Holds
-                          className="w-full rounded-3xl border-[3px] border-black cursor-pointer"
-                          onClick={() => setEditSignatureModalOpen(true)}
-                        >
-                          <Images
-                            titleImg={signatureBase64String}
-                            titleImgAlt={t("Signature")}
-                            size={"40"}
-                            className="p-1"
-                          />
-                        </Holds>
-                      </Labels>
-                    </Holds>
-                    <Modals
-                      handleClose={() => setEditSignatureModalOpen(false)}
-                      type="signature"
-                      size={"fullPage"}
-                      isOpen={editSignatureModalOpen}
-                    >
-                      <Signature
-                        setBase64String={setSignatureBase64String}
-                        base64string={signatureBase64String}
-                        handleSubmitImage={() => {
-                          handleSubmitImage();
-                        }}
-                      />
-                    </Modals>
-                  </Holds>
-                  <Holds className="row-span-2 h-full ">
-                    <Holds className="my-auto">
-                      <Buttons
-                        onClick={() => setIsOpen2(true)}
-                        background={"red"}
-                        size={"full"}
-                        className="p-3 "
-                      >
-                        <Titles size={"h4"}>{t("SignOut")}</Titles>
-                      </Buttons>
-                    </Holds>
-
-                    <Modals
-                      handleClose={signoutHandler}
-                      isOpen={isOpen2}
-                      type="signOut"
-                      size={"sm"}
-                    >
-                      {t("SignOutConfirmation")}
-                    </Modals>
-                  </Holds>
-                </Grids>
-              </Contents>
             </Holds>
           </Holds>
-        </Grids>
-      </Contents>
+
+          <Modals
+            handleClose={() => {
+              setIsOpen(false);
+              setBase64String("");
+            }}
+            type="base64"
+            size={"fullPage"}
+            isOpen={isOpen}
+          >
+            {!editImg && (
+              <Holds size={"full"} background={"white"} className="my-5">
+                <Holds size={"50"} className="rounded-full">
+                  <img
+                    src={employee?.image ?? ""}
+                    alt={"image"}
+                    className="rounded-full"
+                  />
+                </Holds>
+                <Buttons
+                  size={"50"}
+                  className="my-5"
+                  onClick={() => setEditImg(true)}
+                >
+                  <Texts>Change Profile Picture</Texts>
+                </Buttons>
+              </Holds>
+            )}
+            {editImg && (
+              <Holds size={"full"} background={"white"} className="my-5">
+                <Base64Encoder
+                  employee={employee && employee}
+                  base64String={base64String}
+                  setBase64String={setBase64String}
+                  setIsOpen={setIsOpen}
+                  reloadEmployeeData={reloadEmployeeData}
+                />
+              </Holds>
+            )}
+          </Modals>
+
+          <Holds className=" h-1/2">
+            <Holds className="h-full my-5 w-11/12">
+              <Titles>{t("SignatureTitle")}</Titles>
+              <Texts position={"left"} text={"black"} size={"p6"}>
+                {t("Signature")}
+              </Texts>
+              <Holds
+                className="w-full rounded-3xl border-[3px] border-black cursor-pointer"
+                onClick={() => setEditSignatureModalOpen(true)}
+              >
+                <Images
+                  titleImg={signatureBase64String}
+                  titleImgAlt={t("Signature")}
+                  size={"40"}
+                  className="p-1"
+                />
+              </Holds>
+            </Holds>
+            <Modals
+              handleClose={() => setEditSignatureModalOpen(false)}
+              type="signature"
+              size={"fullPage"}
+              isOpen={editSignatureModalOpen}
+            >
+              <Signature
+                setBase64String={setSignatureBase64String}
+                base64string={signatureBase64String}
+                handleSubmitImage={() => {
+                  handleSubmitImage();
+                }}
+              />
+            </Modals>
+          </Holds>
+        </Holds>
+        {/* Contact details to be updated / edited easily */}
+
+        <Forms
+          onSubmit={handleContacts}
+          background={"white"}
+          className="h-full mt-5"
+        >
+          <Inputs type="hidden" name="id" defaultValue={employee?.id} />
+          <Holds className="h-full my-5">
+            <Titles size={"h2"}>{t("ContactDetails")}</Titles>
+            <Contents width={"section"} className="h-full my-16">
+              <Holds className="h-full">
+                <Holds className=" mt-5">
+                  <Holds position={"row"} className="w-full">
+                    <Holds className="w-full">
+                      <Texts position={"left"} size={"p6"}>
+                        {t("PhoneNumber")}
+                      </Texts>
+                    </Holds>
+                    <Holds className="w-full">
+                      <Texts position={"right"} size={"p6"}>
+                        {" "}
+                        Ex: (555-555-5555)
+                      </Texts>
+                    </Holds>
+                  </Holds>
+                  <Inputs
+                    type="tel"
+                    name="phoneNumber"
+                    defaultValue={contacts?.phoneNumber ?? ""}
+                    placeholder="555-555-5555"
+                    pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+                  />
+                </Holds>
+                <Holds className="mt-5">
+                  <Holds position={"row"} className="w-full">
+                    <Holds className="w-full">{t("PersonalEmail")}</Holds>
+                    <Holds className="w-full">
+                      <Texts position={"right"} size={"p6"}>
+                        {" "}
+                        Ex: email@email.com
+                      </Texts>
+                    </Holds>
+                  </Holds>
+                  <Inputs
+                    type="email"
+                    name="email"
+                    defaultValue={contacts?.email}
+                    placeholder="email@email.com"
+                  />
+                </Holds>
+                <Holds className=" row-span-1 ">
+                  <Labels size={"p4"}>
+                    {t("EmergencyContactName")}
+                    <Inputs
+                      type="text"
+                      name="emergencyContact"
+                      defaultValue={contacts?.emergencyContact ?? ""}
+                    />
+                  </Labels>
+                </Holds>
+                <Holds className=" row-span-1 mt-5 ">
+                  <Holds position={"row"} className="w-full">
+                    <Holds className="w-full">
+                      <Texts position={"left"} size={"p6"}>
+                        {t("EmergencyContact")}
+                      </Texts>
+                    </Holds>
+                    <Holds className="w-full">
+                      <Texts position={"right"} size={"p6"}>
+                        {" "}
+                        Ex: (555-555-5555)
+                      </Texts>
+                    </Holds>
+                  </Holds>
+
+                  <Inputs
+                    type="tel"
+                    name="emergencyContactNumber"
+                    defaultValue={contacts?.emergencyContactNumber ?? ""}
+                    placeholder="555-555-5555"
+                    pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+                  />
+                </Holds>
+              </Holds>
+              <Holds className="justify-end">
+                <Buttons background={"green"} className="py-3">
+                  <Texts>{t("Save")}</Texts>
+                </Buttons>
+              </Holds>
+            </Contents>
+          </Holds>
+        </Forms>
+      </Holds>
     </Holds>
   );
 };
