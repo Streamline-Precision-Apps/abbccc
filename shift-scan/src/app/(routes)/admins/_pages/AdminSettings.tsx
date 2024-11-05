@@ -3,9 +3,17 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 import { AdminContact } from "./settings/contact";
 import { AdminEditContact } from "./settings/AdminEditContact";
+import { AdminNotifications } from "./settings/AdminNotifications";
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 export const AdminSettings = () => {
   const [view, setView] = useState(0);
+  const { data: Session } = useSession();
+
+  if (!Session) {
+    return null;
+  }
+  const id = Session.user.id;
   const editView = (view: number) => {
     setView(view);
   };
@@ -20,7 +28,7 @@ export const AdminSettings = () => {
               <AdminContact editView={editView} />
             </Holds>
             <Holds background={"white"} className="h-1/2">
-              <Texts>Settings section here</Texts>
+              <AdminNotifications id={id} />
             </Holds>
           </Holds>
           <Holds background={"white"} className="h-full w-full">

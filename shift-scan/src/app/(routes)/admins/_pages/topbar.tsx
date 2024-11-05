@@ -8,6 +8,7 @@ import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { getAuthStep, setAuthStep } from "@/app/api/auth";
 import { updateTimeSheetBySwitch } from "@/actions/timeSheetActions";
+import { useSession } from "next-auth/react";
 
 // import { useRouter } from "next/navigation";
 
@@ -29,6 +30,10 @@ const Topbar = ({
   setIsEndofDay: (isOpen: boolean) => void;
 }) => {
   // const router = useRouter();
+  const { data: session } = useSession();
+  const firstName = session?.user.firstName;
+  const lastName = session?.user.lastName;
+
   const handleBreakClick = async () => {
     try {
       const formData2 = new FormData();
@@ -37,7 +42,6 @@ const Topbar = ({
       formData2.append("id", t_id?.toString() || "");
       formData2.append("endTime", new Date().toISOString());
       formData2.append("TimeSheetComments", "");
-
       await updateTimeSheetBySwitch(formData2);
 
       setAuthStep(""); // if we want to add a break view we could do it here
@@ -68,7 +72,7 @@ const Topbar = ({
                   >
                     {/* Opened Banner */}
 
-                    <Holds className="w-[10%] absolute left-5">
+                    <Holds className="w-[15%] absolute left-5">
                       <Holds position={"row"} className="hidden md:flex">
                         <Images
                           titleImg={
@@ -78,20 +82,24 @@ const Topbar = ({
                               ? "/jobsite.svg"
                               : page === 3
                               ? "/form.svg"
+                              : page === 4
+                              ? "/person.svg"
                               : ""
                           }
-                          size={"60"}
+                          size={"40"}
                           titleImgAlt="current Icon"
                           className="my-auto cursor-pointer  "
                         />
 
-                        <Titles size={"h4"} className="h-full ml-2 ">
+                        <Titles size={"h4"} className="h-full ml-4 ">
                           {page === 1
                             ? "Personnel"
                             : page === 2
                             ? "Assets"
                             : page === 3
                             ? "Reports"
+                            : page === 4
+                            ? `${firstName} ${lastName} `
                             : ""}
                         </Titles>
                       </Holds>
