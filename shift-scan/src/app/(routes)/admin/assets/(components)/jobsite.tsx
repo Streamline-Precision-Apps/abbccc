@@ -13,9 +13,7 @@ import { Expands } from "@/components/(reusable)/expands";
 import { Forms } from "@/components/(reusable)/forms";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
-
 import { Texts } from "@/components/(reusable)/texts";
-
 import SearchBar from "@/components/(search)/searchbar";
 import { useTranslations } from "next-intl";
 import React, { Dispatch, SetStateAction } from "react";
