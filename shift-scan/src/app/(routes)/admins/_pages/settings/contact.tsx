@@ -199,10 +199,9 @@ export const AdminContact = ({
               <Buttons
                 onClick={() => setIsOpen2(true)}
                 background={"red"}
-                size={"full"}
-                className="p-3 "
+                size={"80"}
               >
-                <Titles size={"h4"}>{t("SignOut")}</Titles>
+                <Titles size={"h4"}>{t("Logout")}</Titles>
               </Buttons>
             </Holds>
 
