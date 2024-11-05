@@ -30,11 +30,7 @@ const employeeSchema = z.object({
   signature: z.string().nullable().optional(),
 });
 
-export const AdminContact = ({
-  editView,
-}: {
-  editView: (view: number) => void;
-}) => {
+export const AdminContact = () => {
   const [loading, setLoading] = useState(true);
   const [employee, setEmployee] = useState<Employee>();
   const [contacts, setContacts] = useState<
@@ -133,7 +129,9 @@ export const AdminContact = ({
               titleImgAlt="settings"
               className="absolute top-3 right-1 cursor-pointer"
               size={"10"}
-              onClick={() => editView(1)}
+              onClick={() => {
+                console.log("edit profile");
+              }} // add a route to edit the profile
             />
 
             <Holds className="rounded-full h-full p-1">

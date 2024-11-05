@@ -4,23 +4,27 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
-const sidebar = ({
-  isOpen,
-  toggle,
-  page,
-  setPage,
-}: {
-  isOpen: boolean;
-  toggle: () => void;
-  page: number;
-  setPage: (page: number) => void;
-}) => {
+const sidebar = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const toggle = () => setIsOpen(!isOpen);
+  const [page, setPage] = useState(0);
+  const [username, setUsername] = useState<string>("");
+  const { data: session } = useSession();
+  const permission = session?.user.permission;
+  const router = useRouter();
+
+  useEffect(() => {
+    setUsername(`${session?.user.firstName} ${session?.user.lastName}`);
+  }, [session?.user.firstName, session?.user.lastName]);
   return (
     <>
       {/* If the side bar is closed it will show the mini menu */}
       {isOpen ? (
-        <Holds background={"white"} className=" h-full w-[28em] ml-5 ">
+        <Holds background={"white"} className=" h-full w-[20em] ml-3 ">
           <Grids rows={"10"} gap={"5"}>
             <Holds className=" row-span-2 flex-row h-full ">
               <Holds>
@@ -44,7 +48,10 @@ const sidebar = ({
             </Holds>
             <Holds className=" row-span-2 h-full mb-5 flex-col">
               <Grids rows={"1"} cols={"3"}>
-                <Holds className="col-span-1 h-full" onClick={() => setPage(4)}>
+                <Holds
+                  className="col-span-1 h-full"
+                  onClick={() => router.push("/admins/settings")}
+                >
                   <Images
                     titleImg="/person.svg"
                     titleImgAlt="Home Icon"
@@ -55,10 +62,10 @@ const sidebar = ({
                 <Holds className="col-span-2">
                   <Holds className="flex-col">
                     <Texts size={"p3"} position={"left"}>
-                      Jessica Rabbit
+                      {username}
                     </Texts>
                     <Texts size={"p5"} position={"left"}>
-                      Admin
+                      {permission}
                     </Texts>
                   </Holds>
                 </Holds>
@@ -71,11 +78,11 @@ const sidebar = ({
                   className={`
                     ${
                       page === 1 ? "bg-slate-400 " : "bg-app-blue"
-                    } w-[90%] h-20 `}
-                  onClick={() => setPage(1)}
+                    } w-[90%] h-12 `}
+                  href="/admins/employees"
                 >
-                  <Holds position={"row"}>
-                    <Holds className="w-32 h-full ">
+                  <Holds position={"row"} className="justify-evenly">
+                    <Holds className="w-1/3 h-full ">
                       <Images
                         titleImg="/team.svg"
                         titleImgAlt="Personal Icon"
@@ -83,7 +90,7 @@ const sidebar = ({
                         size={"50"}
                       />
                     </Holds>
-                    <Texts size={"p3"}>Personnel</Texts>
+                    <Texts size={"p6"}>Personnel</Texts>
                     <Holds className="hidden md:flex" size={"30"}>
                       <Images
                         titleImg="/drag.svg"
@@ -101,11 +108,11 @@ const sidebar = ({
                   className={`
                     ${
                       page === 2 ? "bg-slate-400 " : "bg-app-blue"
-                    } w-[90%] h-20 `}
-                  onClick={() => setPage(2)}
+                    } w-[90%] h-12 `}
+                  href="/admins/assets"
                 >
-                  <Holds position={"row"}>
-                    <Holds className="w-32 h-full ">
+                  <Holds position={"row"} className="justify-evenly">
+                    <Holds className="w-1/3 h-full ">
                       <Images
                         titleImg="/jobsite.svg"
                         titleImgAlt="Home Icon"
@@ -113,7 +120,7 @@ const sidebar = ({
                         size={"50"}
                       />
                     </Holds>
-                    <Texts size={"p3"}>Assets</Texts>
+                    <Texts size={"p6"}>Assets</Texts>
                     <Holds className="hidden md:flex" size={"30"}>
                       <Images
                         titleImg="/drag.svg"
@@ -131,11 +138,11 @@ const sidebar = ({
                   className={`
                     ${
                       page === 3 ? "bg-slate-400 " : "bg-app-blue"
-                    } w-[90%] h-20 `}
-                  onClick={() => setPage(3)}
+                    } w-[90%] h-12 `}
+                  href="/admins/reports"
                 >
-                  <Holds position={"row"}>
-                    <Holds className="w-32 h-full ">
+                  <Holds position={"row"} className="justify-evenly">
+                    <Holds className="w-1/3 h-full ">
                       <Images
                         titleImg="/form.svg"
                         titleImgAlt="Reports Icon"
@@ -143,7 +150,7 @@ const sidebar = ({
                         size={"50"}
                       />
                     </Holds>
-                    <Texts size={"p3"}>Reports</Texts>
+                    <Texts size={"p6"}>Reports</Texts>
                     <Holds className="hidden md:flex" size={"30"}>
                       <Images
                         titleImg="/drag.svg"
@@ -159,7 +166,7 @@ const sidebar = ({
           </Grids>
         </Holds>
       ) : (
-        <Holds background={"white"} className=" h-full w-[10em] ml-5 ">
+        <Holds background={"white"} className=" h-full w-[5em] ml-3 ">
           <Grids rows={"10"} gap={"5"} className="my-5">
             <Holds className="row-span-4 h-full">
               <Holds className="w-24">
@@ -172,7 +179,7 @@ const sidebar = ({
                 </Buttons>
               </Holds>
 
-              <Holds className=" w-40 h-40 ">
+              <Holds className=" w-24 h-24 ">
                 <Images
                   titleImg="/logo.svg"
                   titleImgAlt="logo"
@@ -180,7 +187,10 @@ const sidebar = ({
                 />
               </Holds>
 
-              <Holds className=" w-32 h-32 " onClick={() => setPage(4)}>
+              <Holds
+                className="  w-24 h-24 "
+                onClick={() => router.push("/admins/settings")}
+              >
                 <Images
                   titleImg="/person.svg"
                   titleImgAlt="Home Icon"
@@ -193,8 +203,8 @@ const sidebar = ({
               <Holds>
                 <Buttons
                   className={`
-                    ${page === 1 ? "bg-slate-400 " : "bg-app-blue"} w-20 h-20 `}
-                  onClick={() => setPage(1)}
+                    ${page === 1 ? "bg-slate-400 " : "bg-app-blue"} w-12 h-12 `}
+                  href="/admins/employees"
                 >
                   <Holds position={"row"}>
                     <Images
@@ -208,8 +218,8 @@ const sidebar = ({
               <Holds>
                 <Buttons
                   className={`
-                    ${page === 2 ? "bg-slate-400 " : "bg-app-blue"} w-20 h-20 `}
-                  onClick={() => setPage(2)}
+                    ${page === 2 ? "bg-slate-400 " : "bg-app-blue"} w-12 h-12 `}
+                  href="/admins/assets"
                 >
                   <Holds position={"row"}>
                     <Images
@@ -224,8 +234,8 @@ const sidebar = ({
               <Holds>
                 <Buttons
                   className={`
-                    ${page === 3 ? "bg-slate-400 " : "bg-app-blue"} w-20 h-20 `}
-                  onClick={() => setPage(3)}
+                    ${page === 3 ? "bg-slate-400 " : "bg-app-blue"} w-12 h-12 `}
+                  href="/admins/reports"
                 >
                   <Holds position={"row"}>
                     <Images
