@@ -10,15 +10,7 @@ export const AdminSettings = () => {
     setView(view);
   };
   if (view === 1) {
-    return (
-      <Holds background={"white"} className="h-screen w-full">
-        <Holds position={"row"} className="h-full ">
-          <Holds background={"white"} className=" ">
-            <AdminEditContact editView={editView} />
-          </Holds>
-        </Holds>
-      </Holds>
-    );
+    return <AdminEditContact editView={editView} />;
   } else {
     return (
       <>

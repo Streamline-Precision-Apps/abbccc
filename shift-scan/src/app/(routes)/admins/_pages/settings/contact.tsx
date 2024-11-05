@@ -169,10 +169,10 @@ export const AdminContact = ({
   };
 
   return (
-    <Holds className="h-full w-full my-1 ">
+    <Holds className="h-full w-full ">
       <Contents width={"section"}>
-        <Grids className="grid-rows-4 gap-5 ">
-          <Holds background={"white"} className=" row-span-1 h-full relative">
+        <Grids className="grid-rows-5 ">
+          <Holds background={"white"} className=" row-span-2 h-full relative">
             <Images
               titleImg="/edit-form.svg"
               titleImgAlt="settings"
@@ -180,29 +180,31 @@ export const AdminContact = ({
               size={"10"}
               onClick={() => editView(1)}
             />
-            <Contents width={"section"}>
-              <Holds className="col-span-2 row-span-2">
-                <Holds className="rounded-full relative ">
-                  <Images
-                    titleImg={employee?.image ?? "/profile.svg"}
-                    titleImgAlt={"profile"}
-                    className="rounded-full border-[3px] border-black"
-                    size={"40"}
-                  />
-                  <Holds className="absolute rounded-full h-10 w-10 md:h-10 md:w-10 left-[60%] top-[85%] transform -translate-x-1/2 -translate-y-1/2  px-1   border-[3px] border-black bg-white">
-                    <Images
-                      titleImg="/camera.svg"
-                      titleImgAlt="camera"
-                      size={"full"}
-                      className="my-auto"
-                    />
-                  </Holds>
-                </Holds>
-              </Holds>
-            </Contents>
+
+            <Holds className="rounded-full h-full p-1">
+              <Images
+                titleImg={employee?.image ?? "/profile.svg"}
+                titleImgAlt={"profile"}
+                className="rounded-full my-auto border-[3px] border-black"
+                size={"50"}
+              />
+            </Holds>
           </Holds>
           <Holds background={"white"} className=" row-span-2 h-full ">
             <Holds position={"row"} className=" h-full w-full">
+              <Holds>
+                <Texts position={"left"} size={"p5"}>
+                  {t("EmployeeID")}
+                </Texts>
+              </Holds>
+
+              <Holds>
+                <Texts size={"p5"} position={"right"}>
+                  {employee?.id ?? ""}
+                </Texts>
+              </Holds>
+            </Holds>
+            <Holds position={"row"} className="h-full w-full">
               <Holds>
                 <Texts position={"left"} size={"p5"}>
                   {t("PhoneNumber")}
@@ -211,7 +213,13 @@ export const AdminContact = ({
 
               <Holds>
                 <Texts size={"p5"} position={"right"}>
-                  {contacts?.phoneNumber ?? ""}
+                  {`(${contacts?.phoneNumber?.slice(
+                    0,
+                    3
+                  )})  ${contacts?.phoneNumber?.slice(
+                    4,
+                    7
+                  )}-${contacts?.phoneNumber?.slice(8, 12)}`}
                 </Texts>
               </Holds>
             </Holds>
@@ -227,33 +235,6 @@ export const AdminContact = ({
                 <Texts size={"p5"} position={"right"}>
                   {contacts?.email}
                 </Texts>
-              </Holds>
-            </Holds>
-
-            <Holds position={"row"} className="h-full w-full">
-              <Holds>
-                <Texts position={"left"} size={"p5"}>
-                  {t("EmergencyContact")}
-                </Texts>
-              </Holds>
-
-              <Holds>
-                <Texts size={"p5"} position={"right"}>
-                  {contacts?.emergencyContactNumber ?? ""}
-                </Texts>
-              </Holds>
-            </Holds>
-
-            <Holds className="  ">
-              <Holds className="h-full my-auto">
-                <Holds className="w-full rounded-3xl border-[3px] border-black ">
-                  <Images
-                    titleImg={signatureBase64String}
-                    titleImgAlt={t("Signature")}
-                    size={"40"}
-                    className="p-1"
-                  />
-                </Holds>
               </Holds>
             </Holds>
           </Holds>

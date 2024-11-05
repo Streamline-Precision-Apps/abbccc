@@ -280,7 +280,9 @@
     },
 
     "Hamburger": {
+        "ContactDetails": "Edit Contact Details",
         "Saving": "Savings changes",
+        "Save": "Save Changes",
         "loading": "Loading...",
         "NewPassword": "New Password",
         "ConfirmPassword": "Confirm New Password",
@@ -297,6 +299,7 @@
         "Inbox": "Inbox",
         "EmployeeID": "Employee ID",
         "PersonalEmail": "Personal Email",
+        "EmergencyContactName": "Emergency Contact",
         "EmergencyContact": "Emergency Contact Number",
         "SafetyTraining": "Safety Training",
         "SignOut": "Sign Out",
@@ -304,6 +307,7 @@
         "SaveChanges": "Would you like to Save Changes?",
         "Yes": "Yes",
         "Cancel": "Cancel",
+        "SignatureTitle": "Signature",
         "Signature": "Click to Edit Signature",
         "EditSignature": "Edit Signature",
         "Language": "Language",

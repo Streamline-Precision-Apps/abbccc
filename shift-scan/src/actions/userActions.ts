@@ -1,7 +1,7 @@
 "use server";
 import prisma from "@/lib/prisma";
 import { Permission } from "@prisma/client";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import bcrypt from "bcryptjs";
 
 export async function createUser(formData: FormData) {
@@ -163,4 +163,20 @@ export async function setUserPassword(formData: FormData) {
       password: formData.get("password") as string,
     },
   });
+}
+
+export async function updateContactInfo(formData: FormData) {
+  console.log(formData);
+  const results = await prisma.contacts.update({
+    where: { employeeId: formData.get("id") as string },
+    data: {
+      email: formData.get("email") as string,
+      phoneNumber: formData.get("phoneNumber") as string,
+      emergencyContact: formData.get("emergencyContact") as string,
+      emergencyContactNumber: formData.get("emergencyContactNumber") as string,
+    },
+  });
+
+  revalidatePath("/admins");
+  return true;
 }
