@@ -24,11 +24,11 @@ const LocaleToggleSwitch = ({
   return (
     <div
       onClick={handleClick}
-      className="flex w-20 h-10 bg-blue-900 border-black border-2 justify-center items-center rounded-xl self-end"
+      className="flex w-20 h-10 cursor-pointer bg-blue-900 border-black border-2 justify-center items-center rounded-xl self-end"
     >
       <span
         className={classNames(
-          "w-9 h-9 rounded-xl border-black border-2 transition-all duration-500",
+          "w-9 h-9 rounded-xl border-black border-2 transition-all duration-500 ",
           {
             "ml-10": isSelected,
             "bg-green-500": isSelected,

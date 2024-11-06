@@ -17,9 +17,8 @@ const calculatePayPeriodStart = (): Date => {
 
 export async function GET() {
   const session = await auth();
-  const userId = session?.user.id;
 
-  if (!userId) {
+  if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -31,7 +30,6 @@ export async function GET() {
     // Fetch timesheets for the current pay period
     const payPeriodSheets = await prisma.timeSheets.findMany({
       where: {
-        userId: userId,
         startTime: {
           gte: payPeriodStart, // Start of the pay period
           lte: currentDate, // Up until the current date/time

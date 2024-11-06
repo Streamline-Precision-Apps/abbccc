@@ -164,3 +164,19 @@ export async function setUserPassword(formData: FormData) {
     },
   });
 }
+
+export async function updateContactInfo(formData: FormData) {
+  console.log(formData);
+  await prisma.contacts.update({
+    where: { employeeId: formData.get("id") as string },
+    data: {
+      email: formData.get("email") as string,
+      phoneNumber: formData.get("phoneNumber") as string,
+      emergencyContact: formData.get("emergencyContact") as string,
+      emergencyContactNumber: formData.get("emergencyContactNumber") as string,
+    },
+  });
+
+  revalidatePath("/admins");
+  return true;
+}
