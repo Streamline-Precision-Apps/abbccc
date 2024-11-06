@@ -14,7 +14,7 @@ export const AdminSettings = () => {
   const id = Session.user.id;
 
   return (
-    <Holds className="h-full">
+    <Holds className="h-[90%] ">
       <Holds position={"row"} className="h-full gap-5 ">
         <Holds className="flex-col h-full w-1/3 hidden lg:flex space-y-5 ">
           <Holds background={"white"} className="h-1/2 ">
@@ -24,7 +24,7 @@ export const AdminSettings = () => {
             <AdminNotifications id={id} />
           </Holds>
         </Holds>
-        <Holds className="h-full w-full">
+        <Holds className="h-3/4 w-full">
           <AdminInbox />
         </Holds>
       </Holds>

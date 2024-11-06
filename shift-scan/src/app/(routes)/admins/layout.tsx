@@ -19,11 +19,11 @@ export default async function RootLayout({
         <Bases className="w-full h-screen">
           <Holds position={"row"} className="w-full h-full">
             <Sidebar />
-            <Holds className={"w-full h-full"}>
-              <Holds className={"w-full h-[10%]"}>
+            <Holds className={"w-full h-full relative"}>
+              <Holds className={"w-full"}>
                 <Topbar />
               </Holds>
-              <Holds className="w-full h-[90%] ">{children}</Holds>
+              <Holds className="w-full h-full ">{children}</Holds>
             </Holds>
           </Holds>
         </Bases>

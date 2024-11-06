@@ -123,7 +123,7 @@ export const AdminContact = () => {
     <Holds className="h-full w-full ">
       <Contents width={"section"}>
         <Grids className="grid-rows-5 ">
-          <Holds background={"white"} className=" row-span-2 h-full relative">
+          <Holds background={"white"} className=" row-span-2 h-full relative ">
             <Images
               titleImg="/edit-form.svg"
               titleImgAlt="settings"
@@ -132,6 +132,7 @@ export const AdminContact = () => {
               onClick={() => {
                 console.log("edit profile");
               }} // add a route to edit the profile
+              title="Edit Profile"
             />
 
             <Holds className="rounded-full h-full ">
@@ -152,7 +153,7 @@ export const AdminContact = () => {
               </Holds>
 
               <Holds>
-                <Texts size={"p5"} position={"right"}>
+                <Texts size={"p6"} position={"right"}>
                   {employee?.id ?? ""}
                 </Texts>
               </Holds>
@@ -165,7 +166,7 @@ export const AdminContact = () => {
               </Holds>
 
               <Holds>
-                <Texts size={"p5"} position={"right"}>
+                <Texts size={"p6"} position={"right"}>
                   {`(${contacts?.phoneNumber?.slice(
                     0,
                     3
@@ -185,8 +186,8 @@ export const AdminContact = () => {
               </Holds>
 
               <Holds>
-                <Texts size={"p5"} position={"right"}>
-                  {contacts?.email}
+                <Texts size={"p6"} position={"right"}>
+                  {contacts?.email?.split("@")[0]}
                 </Texts>
               </Holds>
             </Holds>
