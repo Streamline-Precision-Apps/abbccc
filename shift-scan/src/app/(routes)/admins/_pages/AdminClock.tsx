@@ -6,14 +6,16 @@ import { setAuthStep } from "@/app/api/auth";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
-import CodeStep from "@/components/(clock)/code-step";
+
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Forms } from "@/components/(reusable)/forms";
 import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
+import CodeFinder from "@/components/(search)/codeFinder";
 
 import { Clock } from "@/components/clock";
 import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
 
 export default function AdminClock({
   handleClose,
@@ -25,19 +27,23 @@ export default function AdminClock({
   const { savedCostCode } = useSavedCostCode();
   const { setTimeSheetData } = useTimeSheetData();
   const date = new Date();
+  const [J, setJ] = useState("");
+  const [CC, setCc] = useState("");
+
+  useEffect(() => {
+    const jobsite = localStorage.getItem("jobSite");
+    const costcode = localStorage.getItem("costCode");
+    if (jobsite !== null && costcode !== null) {
+      setJ(jobsite);
+      setCc(costcode);
+    }
+  }, []);
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    if (scanResult !== null && savedCostCode !== null) {
-      formData.append("jobsiteId", scanResult?.data || "");
-      formData.append("costcode", savedCostCode?.toString() || "");
-    } else {
-      const j = JSON.parse(localStorage.getItem("jobSite") || "{}");
-      formData.append("jobsiteId", j);
+    formData.append("jobsiteId", scanResult?.data || J || "");
+    formData.append("costcode", savedCostCode?.toString() || CC || "");
 
-      const cc = JSON.parse(localStorage.getItem("costCode") || "{}");
-      formData.append("costcode", cc);
-    }
     const response = await CreateTimeSheet(formData);
     if (response) {
       setAuthStep("success");
@@ -53,10 +59,10 @@ export default function AdminClock({
     <Holds className=" ">
       <Holds position={"row"}>
         <Holds>
-          <CodeStep datatype="jobsite" />
+          <CodeFinder datatype="jobsite" savedCode={J ?? undefined} />
         </Holds>
         <Holds>
-          <CodeStep datatype="costcode" />
+          <CodeFinder datatype="costcode" savedCode={CC ?? undefined} />
         </Holds>
       </Holds>
       <Holds>

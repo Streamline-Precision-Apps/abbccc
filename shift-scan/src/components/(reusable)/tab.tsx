@@ -14,7 +14,7 @@ export function Tab({ isTabActive, tabLabel, onClick }: TabType) {
     <button
       onClick={onClick}
       className={classNames(
-        "px-4 py-4 min-w-[100px] rounded-[10px] h-full flex items-center justify-center rounded-b-none font-bold  border-t-transparent border-t-4 w-full",
+        "px-4 py-4 min-w-[100px]  rounded-[10px] h-full flex items-center justify-center rounded-b-none font-bold  border-t-transparent border-t-4 w-full",
         {
           "bg-white": isTabActive,
           "bg-gray-400": !isTabActive,
