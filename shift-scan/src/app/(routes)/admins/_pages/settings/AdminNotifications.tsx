@@ -105,13 +105,13 @@ export const AdminNotifications = ({ id }: { id: string }) => {
   }
 
   return (
-    <Holds className="h-full w-full">
-      <Titles size={"h3"} className="my-2">
+    <Holds className="h-full w-full ">
+      <Titles size={"h4"} className="my-1">
         {t("Title")}
       </Titles>
       <Grids rows={"5"}>
         {/*-------------------------Notifications Settings------------------------------*/}
-        <Holds background={"white"} className="row-span-2 h-full">
+        <Holds background={"white"} className="row-span-3 ">
           <Contents width={"section"}>
             <Holds className="gap-2">
               <Holds position={"row"}>
@@ -162,30 +162,30 @@ export const AdminNotifications = ({ id }: { id: string }) => {
                   />
                 </Holds>
               </Holds>
+
+              {/*-------------------------Language Settings------------------------------*/}
+
+              <Holds position={"row"} className=" w-full my-auto">
+                <Holds position={"left"} className="w-1/2">
+                  <Texts position={"left"} size={"p5"}>
+                    {t("Language")}
+                  </Texts>
+                </Holds>
+                <Holds position={"right"} className="w-1/2 flex justify-end">
+                  <Inputs
+                    readOnly
+                    value={
+                      updatedData?.language === "en" ? "English" : "Spanish"
+                    }
+                    data={updatedData?.language}
+                    onClick={() => setIsLangModalOpen(true)}
+                    className="bg-app-blue h-[2rem]  text-center cursor-pointer"
+                  />
+                </Holds>
+              </Holds>
             </Holds>
           </Contents>
         </Holds>
-
-        {/*-------------------------Language Settings------------------------------*/}
-        <Holds className=" row-span-2 h-full">
-          <Holds className="my-auto">
-            <Holds>
-              <Texts size={"p5"} className="font-bold">
-                {t("Language")}
-              </Texts>
-            </Holds>
-            <Holds position={"right"} className="mt-2">
-              <Inputs
-                readOnly
-                value={updatedData?.language === "en" ? "English" : "Spanish"}
-                data={updatedData?.language}
-                onClick={() => setIsLangModalOpen(true)}
-                className="bg-app-blue h-[2rem] w-1/2 mx-auto text-center cursor-pointer"
-              />
-            </Holds>
-          </Holds>
-        </Holds>
-
         {/* Language Selection Modal */}
         <Modals
           isOpen={isLangModalOpen}
@@ -209,11 +209,12 @@ export const AdminNotifications = ({ id }: { id: string }) => {
         </Modals>
 
         {/*---------------------Change Password------------------------------*/}
-        <Holds className="row-span-1">
+        <Holds className="row-span-2 h-full">
           <Buttons
             onClick={() => router.push("/hamburger/changePassword")}
             background={"orange"}
             size={"80"}
+            className=" my-auto"
           >
             <Titles size={"h4"}>{t("ChangePassword")}</Titles>
           </Buttons>

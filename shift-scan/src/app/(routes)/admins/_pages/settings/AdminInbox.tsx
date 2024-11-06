@@ -19,7 +19,7 @@ export const AdminInbox = () => {
 
   return (
     <Holds className="h-full">
-      <Holds position={"row"} className="row-span-1 gap-5 w-full">
+      <Holds position={"row"} className="row-span-1 gap-5 w-full ">
         <Tab
           onClick={() => setActiveTab(1)}
           tabLabel="Sent"
@@ -34,7 +34,7 @@ export const AdminInbox = () => {
       <Holds
         position={"row"}
         background={"white"}
-        className="rounded-t-none h-full p-4 gap-5"
+        className="rounded-t-none h-full p-3 gap-5"
       >
         <Holds
           size={"40"}

@@ -134,7 +134,7 @@ export const AdminContact = () => {
               }} // add a route to edit the profile
             />
 
-            <Holds className="rounded-full h-full p-1">
+            <Holds className="rounded-full h-full ">
               <Images
                 titleImg={employee?.image ?? "/profile.svg"}
                 titleImgAlt={"profile"}

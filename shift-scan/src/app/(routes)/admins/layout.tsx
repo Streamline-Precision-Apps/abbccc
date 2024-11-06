@@ -16,14 +16,14 @@ export default async function RootLayout({
   return (
     <NextIntlClientProvider messages={messages}>
       <Providers>
-        <Bases className="pb-5">
+        <Bases className="w-full h-screen">
           <Holds position={"row"} className="w-full h-full">
             <Sidebar />
             <Holds className={"w-full h-full"}>
               <Holds className={"w-full h-[10%]"}>
                 <Topbar />
               </Holds>
-              <Holds className="w-full h-[90%]">{children}</Holds>
+              <Holds className="w-full h-[90%] ">{children}</Holds>
             </Holds>
           </Holds>
         </Bases>
