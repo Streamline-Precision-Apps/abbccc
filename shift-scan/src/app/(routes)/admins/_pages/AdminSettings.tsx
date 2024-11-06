@@ -14,17 +14,19 @@ export const AdminSettings = () => {
   const id = Session.user.id;
 
   return (
-    <Holds position={"row"} className="h-full gap-5 ">
-      <Holds className="flex-col h-full w-1/3 hidden lg:flex space-y-5 ">
-        <Holds background={"white"} className="h-1/2 ">
-          <AdminContact />
+    <Holds className="h-full">
+      <Holds position={"row"} className="h-full gap-5 ">
+        <Holds className="flex-col h-full w-1/3 hidden lg:flex space-y-5 ">
+          <Holds background={"white"} className="h-1/2 ">
+            <AdminContact />
+          </Holds>
+          <Holds background={"white"} className="h-1/2">
+            <AdminNotifications id={id} />
+          </Holds>
         </Holds>
-        <Holds background={"white"} className="h-1/2">
-          <AdminNotifications id={id} />
+        <Holds className="h-full w-full">
+          <AdminInbox />
         </Holds>
-      </Holds>
-      <Holds className="h-full w-full">
-        <AdminInbox />
       </Holds>
     </Holds>
   );

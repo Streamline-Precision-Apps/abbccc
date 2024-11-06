@@ -94,7 +94,7 @@ export const CreateRequest = () => {
   };
 
   return (
-    <Holds className="h-full">
+    <Holds className="h-full ">
       {/* Display banner message */}
       {closeBanner && <Titles>{message}</Titles>}
 
@@ -105,17 +105,17 @@ export const CreateRequest = () => {
         <Holds className="mb-5 h-full">
           <Holds
             background={"green"}
-            className="border-[3px] border-black rounded-b-none h-[15%]"
+            className="border-[3px] border-black rounded-b-none h-[15%] flex items-center justify-center"
           >
             <Titles className="">Request</Titles>
           </Holds>
           <Holds
             background={"white"}
-            className="border-[3px] rounded-t-none border-black"
+            className="border-[3px] h-full p-3 rounded-t-none border-black"
           >
             <Contents width="section">
-              <Grids className="grid-rows-8 mb-5">
-                <Holds className="row-span-7 h-full">
+              <Grids rows={"7"} gap={"5"}>
+                <Holds className="row-span-6 h-full ">
                   <Grids rows={"2"} className="">
                     <Holds position={"row"} className="space-x-4">
                       <Labels>
@@ -166,7 +166,7 @@ export const CreateRequest = () => {
                           <TextAreas
                             name="description"
                             id="description"
-                            rows={5}
+                            rows={3}
                             maxLength={40}
                             required
                           />
@@ -210,7 +210,7 @@ export const CreateRequest = () => {
                     ) : (
                       <Buttons
                         background={"lightBlue"}
-                        className="py-5"
+                        className="flex justify-center items-center"
                         onClick={(event) => {
                           event.preventDefault();
                           setSign(true);
@@ -221,7 +221,7 @@ export const CreateRequest = () => {
                     )}
                   </Holds>
                   {/* Submit Section */}
-                  <Holds className="row-span-1  h-full">
+                  <Holds className="row-span-1 h-full">
                     <Buttons
                       type="submit"
                       background={"green"}

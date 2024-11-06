@@ -6,7 +6,7 @@ import { AdminSettings } from "../_pages/AdminSettings";
 // change back to async later
 export default function Admins() {
   return (
-    <Holds className=" w-[95%] h-full">
+    <Holds className=" w-[98%] h-full">
       <AdminSettings />
     </Holds>
   );
