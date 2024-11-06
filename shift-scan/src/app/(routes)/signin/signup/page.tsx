@@ -14,12 +14,10 @@ export default async function SignUpPage() {
     <Bases>
       <Contents>
         <Holds className="h-full">
-          <Contents width={"section"}>
             <Content
               userId={userid ?? ""}
               accountSetup={accountSetup ?? true}
             />
-          </Contents>
         </Holds>
       </Contents>
     </Bases>
