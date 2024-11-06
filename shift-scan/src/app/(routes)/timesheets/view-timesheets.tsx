@@ -52,7 +52,6 @@ export default function ViewTimesheets({ user }: Props) {
     ViewTimesheetsSchema.parse({
       user,
       showTimesheets,
-      // startingEntry,
       timesheetData,
       loading,
       error,
