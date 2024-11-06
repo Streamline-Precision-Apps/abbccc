@@ -64,7 +64,7 @@ export default function Content({
   const handleComplete = () => {
     try {
       setAuthStep("");
-      // signOut({ callbackUrl: "/signin" });
+      signOut({ callbackUrl: "/signin" });
     } catch (error) {
       console.error(error);
     }
@@ -80,21 +80,21 @@ export default function Content({
   return (
     <Holds className="h-full" position={"row"}>
       <Contents width={"section"}>
-        {step === 1 && <ShiftScanIntro handleNextStep={handleNextStep} />}
+        {step === 1 && <ShiftScanIntro handleNextStep={handleNextStep}/>}
         {step === 2 && (
-          <ResetPassword id={userId} handleNextStep={handleNextStep} />
+          <ResetPassword id={userId} handleNextStep={handleNextStep}/>
         )}
         {step === 3 && (
-          <ProfilePictureSetup id={userId} handleNextStep={handleNextStep} />
+          <ProfilePictureSetup id={userId} handleNextStep={handleNextStep}/>
         )}
         {step === 4 && (
-          <SignatureSetup id={userId} handleNextStep={handleNextStep} />
+          <SignatureSetup id={userId} handleNextStep={handleNextStep}/>
         )}
         {step === 5 && (
-          <NotificationSettings id={userId} handleNextStep={handleNextStep} />
+          <NotificationSettings id={userId} handleNextStep={handleNextStep}/>
         )}
         {step === 6 && (
-          <Permissions id={userId} handleAccept={handleComplete} />
+          <Permissions id={userId} handleAccept={handleComplete}/>
         )}
       </Contents>
     </Holds>
