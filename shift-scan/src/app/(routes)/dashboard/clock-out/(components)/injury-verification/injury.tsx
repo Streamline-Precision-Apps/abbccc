@@ -2,20 +2,21 @@
 import React, { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import "@/app/globals.css";
-import Checkbox from "@/components/(inputs)/checkbox";
+import Checkbox from "@/components/(inputs)/CheckBox";
 import { useRouter } from "next/navigation";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Bases } from "@/components/(reusable)/bases";
 import { Holds } from "@/components/(reusable)/holds";
 import { Contents } from "@/components/(reusable)/contents";
 import { Buttons } from "@/components/(reusable)/buttons";
+import { z } from "zod";
 
-//Do we need this?
-
-// interface CheckboxProps {
-//   checked: boolean;
-//   onChange: (checked: boolean) => void;
-// }
+// Zod schema for component state
+const InjuryVerificationSchema = z.object({
+  checked: z.boolean(), // Represents the checkbox state
+  signatureBlob: z.instanceof(Blob).nullable(), // Represents the fetched signature Blob, which can be null
+  error: z.string().nullable(), // Represents potential error messages, can be null
+});
 
 export default function InjuryVerification() {
   const t = useTranslations("clock-out");
@@ -24,6 +25,19 @@ export default function InjuryVerification() {
   const [checked, setChecked] = useState(false);
   const [signatureBlob, setSignatureBlob] = useState<Blob | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // Validate initial state with Zod schema
+  try {
+    InjuryVerificationSchema.parse({
+      checked,
+      signatureBlob,
+      error,
+    });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      console.error("Initial state validation error:", error.errors);
+    }
+  }
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setChecked(event.target.checked);

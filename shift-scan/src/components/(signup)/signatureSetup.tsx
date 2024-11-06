@@ -7,7 +7,6 @@ import { Banners } from "@/components/(reusable)/banners";
 import { Texts } from "../(reusable)/texts";
 import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
-import { Images } from "../(reusable)/images";
 import { TitleBoxes } from "../(reusable)/titleBoxes";
 import { Contents } from "../(reusable)/contents";
 
