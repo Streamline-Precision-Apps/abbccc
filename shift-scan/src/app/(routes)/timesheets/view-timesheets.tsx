@@ -44,6 +44,7 @@ export default function ViewTimesheets({ user }: Props) {
   const [timesheetData, setTimesheetData] = useState<TimeSheet[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
   const t = useTranslations("Home");
 
   // Validate initial state with Zod schema

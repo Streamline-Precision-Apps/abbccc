@@ -36,7 +36,10 @@ const SessionSchema = z.object({
 
 // Zod schema for PayPeriodTimesheets type
 const PayPeriodTimesheetsSchema = z.object({
-  startTime: z.date(),
+  startTime: z.string().refine((date) => !isNaN(new Date(date).getTime()), {
+    message: "Invalid date format",
+  }),
+
   duration: z.number().nullable(),
 });
 
@@ -75,7 +78,9 @@ export default function WidgetSection({ session }: Props) {
 
   const { setPayPeriodHours } = usePayPeriodHours();
   const { setPayPeriodTimeSheets } = usePayPeriodTimeSheet();
-  const [payPeriodSheets, setPayPeriodSheets] = useState<PayPeriodTimesheets[]>([]);
+  const [payPeriodSheets, setPayPeriodSheets] = useState<PayPeriodTimesheets[]>(
+    []
+  );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -86,11 +91,18 @@ export default function WidgetSection({ session }: Props) {
 
         // Validate fetched data with Zod
         const validatedData = PayPeriodSheetsArraySchema.parse(data);
-        setPayPeriodSheets(validatedData);
-        setPayPeriodTimeSheets(validatedData); // Update the context after fetching
+        const transformedData = validatedData.map((item) => ({
+          ...item,
+          startTime: new Date(item.startTime),
+        }));
+        setPayPeriodSheets(transformedData);
+        setPayPeriodTimeSheets(transformedData);
       } catch (error) {
         if (error instanceof z.ZodError) {
-          console.error("Validation error in fetched pay period sheets:", error.errors);
+          console.error(
+            "Validation error in fetched pay period sheets:",
+            error.errors
+          );
         } else {
           console.error(e("PayPeriod-Fetch"), error);
         }
@@ -139,27 +151,59 @@ export default function WidgetSection({ session }: Props) {
         {authStep === "break" ? (
           <>
             {toggle ? (
-              <Holds className={toggle ? "col-span-2 row-span-1 gap-5 h-full" : "col-span-2 row-span-5 gap-5 h-full"}>
+              <Holds
+                className={
+                  toggle
+                    ? "col-span-2 row-span-1 gap-5 h-full"
+                    : "col-span-2 row-span-5 gap-5 h-full"
+                }
+              >
                 <DisplayBreakTime setToggle={handleToggle} display={toggle} />
               </Holds>
             ) : (
               <Holds className="bg-pink-700 col-span-2 row-span-5 gap-5 h-full">
-                <Hours setToggle={handleToggle} display={toggle} loading={loading} />
+                <Hours
+                  setToggle={handleToggle}
+                  display={toggle}
+                  loading={loading}
+                />
               </Holds>
             )}
           </>
         ) : (
-          <Holds className={toggle ? "col-span-2 row-span-1 gap-5 h-full" : "col-span-2 row-span-5 gap-5 h-full"}>
-            <Hours setToggle={handleToggle} display={toggle} loading={loading} />
+          <Holds
+            className={
+              toggle
+                ? "col-span-2 row-span-1 gap-5 h-full"
+                : "col-span-2 row-span-5 gap-5 h-full"
+            }
+          >
+            <Hours
+              setToggle={handleToggle}
+              display={toggle}
+              loading={loading}
+            />
           </Holds>
         )}
         {toggle ? (
           <>
-            {(permission === "ADMIN" || permission === "SUPERADMIN" || permission === "MANAGER") && (
-              <Holds position={"row"} className="col-span-2 row-span-2 gap-5 h-full">
-                <Buttons background={"lightBlue"} href="/dashboard/qr-generator">
+            {(permission === "ADMIN" ||
+              permission === "SUPERADMIN" ||
+              permission === "MANAGER") && (
+              <Holds
+                position={"row"}
+                className="col-span-2 row-span-2 gap-5 h-full"
+              >
+                <Buttons
+                  background={"lightBlue"}
+                  href="/dashboard/qr-generator"
+                >
                   <Holds>
-                    <Images titleImg="/qr.svg" titleImgAlt="QR Code" size={"40"} />
+                    <Images
+                      titleImg="/qr.svg"
+                      titleImgAlt="QR Code"
+                      size={"40"}
+                    />
                   </Holds>
                   <Holds>
                     <Texts size={"p3"}>{w("QR")}</Texts>
@@ -167,7 +211,11 @@ export default function WidgetSection({ session }: Props) {
                 </Buttons>
                 <Buttons background={"lightBlue"} href="/dashboard/myTeam">
                   <Holds>
-                    <Images titleImg="/team.svg" titleImgAlt="my team" size={"40"} />
+                    <Images
+                      titleImg="/team.svg"
+                      titleImgAlt="my team"
+                      size={"40"}
+                    />
                   </Holds>
                   <Holds>
                     <Texts size={"p3"}>{w("MyTeam")}</Texts>
@@ -183,27 +231,49 @@ export default function WidgetSection({ session }: Props) {
                       <Texts size={"p1"}>{f("Clock-btn")}</Texts>
                     </Holds>
                     <Holds size={"30"}>
-                      <Images titleImg="/clock-in.svg" titleImgAlt="Clock In Icon" size={"50"} />
+                      <Images
+                        titleImg="/clock-in.svg"
+                        titleImgAlt="Clock In Icon"
+                        size={"50"}
+                      />
                     </Holds>
                   </Holds>
                 </Buttons>
               </Holds>
             ) : (
-              <Holds className={permission === "ADMIN" || permission === "SUPERADMIN" || permission === "MANAGER" ? `col-span-2 row-span-2 gap-5 h-full` : `col-span-2 row-span-4 gap-5 h-full`}>
+              <Holds
+                className={
+                  permission === "ADMIN" ||
+                  permission === "SUPERADMIN" ||
+                  permission === "MANAGER"
+                    ? `col-span-2 row-span-2 gap-5 h-full`
+                    : `col-span-2 row-span-4 gap-5 h-full`
+                }
+              >
                 <Buttons background={"green"} href="/clock">
-                  {permission === "ADMIN" || permission === "SUPERADMIN" || permission === "MANAGER" ? (
+                  {permission === "ADMIN" ||
+                  permission === "SUPERADMIN" ||
+                  permission === "MANAGER" ? (
                     <Holds position={"row"} className="my-auto">
                       <Holds size={"60"}>
                         <Texts size={"p1"}>{f("Clock-btn")}</Texts>
                       </Holds>
                       <Holds size={"40"}>
-                        <Images titleImg="/clock-in.svg" titleImgAlt="Clock In Icon" size={"70"} />
+                        <Images
+                          titleImg="/clock-in.svg"
+                          titleImgAlt="Clock In Icon"
+                          size={"70"}
+                        />
                       </Holds>
                     </Holds>
                   ) : (
                     <Holds className="my-auto">
                       <Holds size={"50"}>
-                        <Images titleImg="/clock-in.svg" titleImgAlt="Clock In Icon" size={"70"} />
+                        <Images
+                          titleImg="/clock-in.svg"
+                          titleImgAlt="Clock In Icon"
+                          size={"70"}
+                        />
                       </Holds>
                       <Holds size={"60"}>
                         <Texts size={"p1"}>{f("Clock-btn")}</Texts>
