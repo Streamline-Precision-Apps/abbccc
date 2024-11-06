@@ -215,27 +215,26 @@ const Modals: FC<ModalProps> = ({
             {...props}
           >
             <Titles>{props.title}</Titles>
-            <div className="modal-content-wrapper overflow-auto ">
-              {props.children}
-            </div>
             <Holds size={"full"} className="pb-10">
               <Buttons
                 onClick={handleClose}
-                className="close-btn"
-                size={"90"}
+                className=" mr-2 close-btn w-10 h-10"
                 background={"red"}
-                position={"center"}
+                position={"right"}
               >
                 <Holds>
                   <Images
                     titleImg="/x.svg"
                     titleImgAlt="x"
-                    size={"10"}
-                    className="my-auto"
+                    size={"50"}
+                    className="m-auto "
                   />
                 </Holds>
               </Buttons>
             </Holds>
+            <div className="modal-content-wrapper overflow-auto ">
+              {props.children}
+            </div>
           </div>
         </Bases>
       </ReactPortal>

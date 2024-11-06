@@ -1,12 +1,16 @@
 "use client";
 import { Holds } from "@/components/(reusable)/holds";
-import { Texts } from "@/components/(reusable)/texts";
 import Topbar from "./topbar";
 import AdminHome from "./admin-home";
 import { Modals } from "@/components/(reusable)/modals";
 import { useState } from "react";
 import AdminClock from "./AdminClock";
 import AdminSwitch from "./AdminSwitch";
+import AddEmployeeContent from "../../admin/employees/content";
+import Content from "@/app/(routes)/admin/assets/content";
+import Reports from "../../admin/reports/reports";
+import { AdminClockOut } from "./AdminClockOut";
+import { AdminSettings } from "./AdminSettings";
 
 const Dashboard = ({
   isOpen2,
@@ -21,7 +25,6 @@ const Dashboard = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSwitch, setIsSwitch] = useState(false);
-  const [isBreak, setIsBreak] = useState(false);
   const [isEndofDay, setIsEndofDay] = useState(false);
 
   const handleClose = () => {
@@ -36,22 +39,23 @@ const Dashboard = ({
         setPage={setPage}
         setIsOpen={setIsOpen}
         setIsSwitch={setIsSwitch}
-        setIsBreak={setIsBreak}
         setIsEndofDay={setIsEndofDay}
       />
 
       <Holds
-        background={page === 0 ? null : "white"}
+        background={page === 0 || page === 4 ? null : "white"}
         className={page === 0 ? "h-full w-full" : "w-[98%] h-full white mt-5"}
       >
         {/* Include the dashboard content here */}
         {page === 0 && <AdminHome />}
 
-        {page === 1 && <Texts>Personnel Dashboard</Texts>}
+        {page === 1 && <AddEmployeeContent />}
 
-        {page === 2 && <Texts>Assets Dashboard</Texts>}
+        {page === 2 && <Content />}
 
-        {page === 3 && <Texts>Report Dashboard</Texts>}
+        {page === 3 && <Reports />}
+
+        {page === 4 && <AdminSettings />}
       </Holds>
 
       {/* Include the modals here */}
@@ -59,11 +63,11 @@ const Dashboard = ({
       {/* Start day modal */}
       <Modals
         isOpen={isOpen}
-        handleClose={() => setIsOpen(false)}
+        handleClose={handleClose}
         type={"StartDay"}
         size={"lg"}
       >
-        <AdminClock handleClose={handleClose} />
+        <AdminClock handleClose={() => setIsOpen(false)} />
       </Modals>
 
       {/* Switch modal */}
@@ -76,16 +80,6 @@ const Dashboard = ({
         <AdminSwitch handleClose={() => setIsSwitch(false)} />
       </Modals>
 
-      {/* Break modal */}
-      <Modals
-        isOpen={isBreak}
-        handleClose={() => setIsBreak(false)}
-        type={"StartDay"}
-        size={"lg"}
-      >
-        <Texts>Break Modal</Texts>
-      </Modals>
-
       {/* End of day modal */}
       <Modals
         isOpen={isEndofDay}
@@ -93,7 +87,7 @@ const Dashboard = ({
         type={"StartDay"}
         size={"lg"}
       >
-        <Texts>End of Day Modal</Texts>
+        <AdminClockOut handleClose={() => setIsEndofDay(false)} />
       </Modals>
     </Holds>
   );

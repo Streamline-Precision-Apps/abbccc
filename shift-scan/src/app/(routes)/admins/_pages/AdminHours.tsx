@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { usePayPeriodTimeSheet } from "@/app/context/PayPeriodTimeSheetsContext";
 import { useTranslations } from "next-intl";
 import { Texts } from "@/components/(reusable)/texts";
@@ -65,7 +65,7 @@ export default function AdminHours() {
     const today = new Date().toISOString().split("T")[0];
     const todayIndex = dailyHours.findIndex((entry) => entry.date === today);
     if (todayIndex !== -1) {
-      setCurrentIndex(todayIndex + 1);
+      setCurrentIndex(todayIndex);
     }
   }, [dailyHours]);
 
@@ -106,7 +106,7 @@ export default function AdminHours() {
         <AdminHourControls
           scrollLeft={scrollLeft}
           scrollRight={scrollRight}
-          currentDate={new Date(dailyHours[currentIndex]?.date || "")}
+          currentDate={new Date(dailyHours[currentIndex + 1]?.date || "")}
           dataRangeStart={new Date(dailyHours[0]?.date || "")}
           dataRangeEnd={new Date(dailyHours[dailyHours.length - 1]?.date || "")}
         />
@@ -118,7 +118,7 @@ export default function AdminHours() {
             <Holds
               className={`h-full border-[3px] rounded-[10px] p-1 flex justify-end
               ${
-                data.date === dailyHours[new Date().getDay()]?.date
+                data.date === new Date().toISOString().split("T")[0]
                   ? "bg-app-dark-blue border-[4px] border-white"
                   : "bg-slate-400 border-black"
               }
@@ -130,7 +130,7 @@ export default function AdminHours() {
             >
               <Holds
                 className={`rounded-[10px] ${
-                  data.date === dailyHours[new Date().getDay()]?.date
+                  data.date === new Date().toISOString().split("T")[0]
                     ? "justify-center"
                     : "justify-end"
                 } ${
@@ -157,14 +157,15 @@ export default function AdminHours() {
                 <Texts
                   size="p4"
                   className={`${
-                    data.date === dailyHours[new Date().getDay()]?.date
+                    data.date === new Date().toISOString().split("T")[0] &&
+                    data.hours === 0
                       ? "text-white"
-                      : ""
+                      : "text-black"
                   }`}
                 >
                   {data.date <= new Date().toISOString().split("T")[0]
                     ? `${t("DA-Time-Label")}`
-                    : data.date === dailyHours[new Date().getDay()]?.date
+                    : data.date === new Date().toISOString().split("T")[0]
                     ? `${t("Today")}`
                     : ""}
                 </Texts>
