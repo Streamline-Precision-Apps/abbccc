@@ -7,10 +7,10 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Titles } from "@/components/(reusable)/titles";
 import { Banners } from "@/components/(reusable)/banners";
 import { Texts } from "@/components/(reusable)/texts";
-import { Footers } from "@/components/(reusable)/footers";
+
 import { CustomSession, User } from "@/lib/types";
 import { useSession } from "next-auth/react";
-import AdminButtons from "@/components/adminButtons";
+import Admin from "@/app/(routes)/admin/Admin";
 import { Contents } from "@/components/(reusable)/contents";
 export const dynamic = "force-dynamic";
 
@@ -44,7 +44,7 @@ export default function AdminContent() {
   return session ? (
     <Bases>
       <Contents>
-        <Holds>
+        <Holds className="h-full">
           <Contents>
             <Banners>
               <Titles size={"h1"}>{t("Banner")}</Titles>
@@ -56,8 +56,7 @@ export default function AdminContent() {
                 lastName: user.lastName,
               })}
             </Texts>
-            <AdminButtons />
-            <Footers>{t("lN1")}</Footers>
+            <Admin />
           </Contents>
         </Holds>
       </Contents>
