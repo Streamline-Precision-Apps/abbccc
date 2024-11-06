@@ -7,8 +7,11 @@ import { Texts } from "@/components/(reusable)/texts";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import path from "path";
 
 const sidebar = () => {
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
   const [page, setPage] = useState(0);
@@ -77,9 +80,11 @@ const sidebar = () => {
                 <Buttons
                   className={`
                     ${
-                      page === 1 ? "bg-slate-400 " : "bg-app-blue"
+                      pathname === "/admins/personnel"
+                        ? "bg-slate-400 "
+                        : "bg-app-blue"
                     } w-[90%] h-12 `}
-                  href="/admins/employees"
+                  href="/admins/personnel"
                 >
                   <Holds position={"row"} className="justify-evenly">
                     <Holds className="w-1/3 h-full ">
@@ -107,7 +112,9 @@ const sidebar = () => {
                 <Buttons
                   className={`
                     ${
-                      page === 2 ? "bg-slate-400 " : "bg-app-blue"
+                      pathname === "/admins/assets"
+                        ? "bg-slate-400 "
+                        : "bg-app-blue"
                     } w-[90%] h-12 `}
                   href="/admins/assets"
                 >
@@ -137,7 +144,9 @@ const sidebar = () => {
                 <Buttons
                   className={`
                     ${
-                      page === 3 ? "bg-slate-400 " : "bg-app-blue"
+                      pathname === "/admins/reports"
+                        ? "bg-slate-400 "
+                        : "bg-app-blue"
                     } w-[90%] h-12 `}
                   href="/admins/reports"
                 >
@@ -203,8 +212,12 @@ const sidebar = () => {
               <Holds>
                 <Buttons
                   className={`
-                    ${page === 1 ? "bg-slate-400 " : "bg-app-blue"} w-12 h-12 `}
-                  href="/admins/employees"
+                    ${
+                      pathname === "/admins/personnel"
+                        ? "bg-slate-400 "
+                        : "bg-app-blue"
+                    } w-12 h-12 `}
+                  href="/admins/personnel"
                 >
                   <Holds position={"row"}>
                     <Images
@@ -218,7 +231,11 @@ const sidebar = () => {
               <Holds>
                 <Buttons
                   className={`
-                    ${page === 2 ? "bg-slate-400 " : "bg-app-blue"} w-12 h-12 `}
+                    ${
+                      pathname === "/admins/assets"
+                        ? "bg-slate-400 "
+                        : "bg-app-blue"
+                    } w-12 h-12 `}
                   href="/admins/assets"
                 >
                   <Holds position={"row"}>
@@ -234,7 +251,11 @@ const sidebar = () => {
               <Holds>
                 <Buttons
                   className={`
-                    ${page === 3 ? "bg-slate-400 " : "bg-app-blue"} w-12 h-12 `}
+                    ${
+                      pathname === "/admins/reports"
+                        ? "bg-slate-400 "
+                        : "bg-app-blue"
+                    } w-12 h-12 `}
                   href="/admins/reports"
                 >
                   <Holds position={"row"}>

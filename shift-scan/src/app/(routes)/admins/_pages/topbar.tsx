@@ -61,7 +61,7 @@ const Topbar = () => {
   };
 
   return (
-    <Holds className="h-full w-full">
+    <Holds className="w-full h-[10%] absolute ">
       <Modals
         isOpen={isOpen}
         handleClose={handleClose}
@@ -171,7 +171,7 @@ const Topbar = () => {
           </Holds>
         </Holds>
       ) : (
-        <Holds className="h-full w-full">
+        <Holds className="h-full w-full ">
           <Holds className="w-[98%] h-full">
             <Holds
               background={"lightBlue"}
