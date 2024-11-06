@@ -15,11 +15,8 @@ import {
   updateEquipmentID,
 } from "@/actions/equipmentActions";
 import SearchBar from "@/components/(search)/searchbar";
-
 import { Contents } from "@/components/(reusable)/contents";
-
 import { Titles } from "@/components/(reusable)/titles";
-
 import { Expands } from "@/components/(reusable)/expands";
 import { Selects } from "@/components/(reusable)/selects";
 import { Options } from "@/components/(reusable)/options";

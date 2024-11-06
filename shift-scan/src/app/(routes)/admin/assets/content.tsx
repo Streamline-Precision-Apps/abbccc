@@ -137,6 +137,7 @@ export default function Content() {
     fetchAssets();
   }, []);
 
+  
   if (loading) {
     return (
       <Grids className="grid-rows-7 gap-5">
