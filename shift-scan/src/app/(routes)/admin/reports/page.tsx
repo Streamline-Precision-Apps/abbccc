@@ -71,14 +71,19 @@ export default function Reports() {
       duration: sheet.duration === null ? null : Number(sheet.duration),
       startingMileage: sheet.startingMileage || null,
       endingMileage: Number(sheet.endingMileage) || null,
-      leftIdaho: sheet.leftIdaho === true ? true : sheet.leftIdaho === false ? false : undefined,
+      leftIdaho:
+        sheet.leftIdaho === true
+          ? true
+          : sheet.leftIdaho === false
+          ? false
+          : undefined,
       equipmentHauled: sheet.equipmentHauled || "",
       materialsHauled: sheet.materialsHauled || "",
       hauledLoadsQuantity: sheet.hauledLoadsQuantity || null,
       refuelingGallons: sheet.refuelingGallons || null,
       timeSheetComments: sheet.timeSheetComments || "",
     }));
-    
+
     setTimeSheets(formattedData);
     setInterval(() => {
       setLoading(false); // End loading

@@ -10,13 +10,11 @@ import AdminHourControls from "./AdminHourControls";
 const calculatePayPeriodStart = () => {
   const startDate = new Date(2024, 7, 5); // August 5, 2024
   const now = new Date();
-  const diffWeeks = Math.floor(
-    (now.getTime() - startDate.getTime()) / (2 * 7 * 24 * 60 * 60 * 1000)
-  );
-  const payPeriodStart = new Date(
+  const diff = now.getTime() - startDate.getTime();
+  const diffWeeks = Math.floor(diff / (2 * 7 * 24 * 60 * 60 * 1000)); // Two-week intervals
+  return new Date(
     startDate.getTime() + diffWeeks * 2 * 7 * 24 * 60 * 60 * 1000
   );
-  return payPeriodStart;
 };
 
 export default function AdminHours() {
@@ -43,9 +41,11 @@ export default function AdminHours() {
 
     if (payPeriodTimeSheet) {
       payPeriodTimeSheet.forEach((sheet) => {
-        const sheetDateKey = dateKey(new Date(sheet.startTime));
+        const sheetDateKey = new Date(sheet.startTime)
+          .toISOString()
+          .split("T")[0];
         if (hoursMap[sheetDateKey] !== undefined) {
-          hoursMap[sheetDateKey] += sheet.duration || 0;
+          hoursMap[sheetDateKey] += sheet.duration ?? 0;
         }
       });
     }
@@ -58,7 +58,6 @@ export default function AdminHours() {
   const dailyHours = useMemo(() => {
     const calculatedHours = dailyHoursCache.current || calculateDailyHours();
     dailyHoursCache.current = calculatedHours;
-    console.log(calculatedHours);
     return calculatedHours;
   }, [calculateDailyHours]);
 
@@ -69,17 +68,11 @@ export default function AdminHours() {
       setCurrentIndex(todayIndex);
     }
   }, [dailyHours]);
-
-  console.log("Daily hours map:", dailyHours);
-
-  const endDate = dailyHours[dailyHours.length - 1]?.date;
-
-  console.log("Todays index:", endDate);
+  console.log(dailyHours);
   // Calculate the slice range for a fixed window of 14 items
-  const visibleHours = dailyHours.slice(
-    Math.max(0, currentIndex),
-    Math.min(dailyHours.length, currentIndex + 5)
-  );
+  const start = Math.max(0, currentIndex - 2);
+  const end = start + 5;
+  const visibleHours = dailyHours.slice(start, end); // Slice for 14 items only
 
   const calculateBarHeight = (value: number) => {
     if (value === 0) return 100;
@@ -112,9 +105,9 @@ export default function AdminHours() {
         <AdminHourControls
           scrollLeft={scrollLeft}
           scrollRight={scrollRight}
-          currentDate={new Date(dailyHours[currentIndex + 1]?.date || "")}
-          dataRangeStart={dailyHours[0]?.date || ""}
-          dataRangeEnd={dailyHours[dailyHours.length - 1]?.date || ""}
+          currentDate={dailyHours[currentIndex]?.date}
+          dataRangeStart={dailyHours[0]?.date}
+          dataRangeEnd={dailyHours[dailyHours.length - 1]?.date}
         />
       </Holds>
 

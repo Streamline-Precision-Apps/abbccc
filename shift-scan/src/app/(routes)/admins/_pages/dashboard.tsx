@@ -8,7 +8,7 @@ import AdminClock from "./AdminClock";
 import AdminSwitch from "./AdminSwitch";
 import AddEmployeeContent from "../../admin/employees/content";
 import Content from "@/app/(routes)/admin/assets/content";
-import Reports from "../../admin/reports/reports";
+import Reports from "../../admin/reports/page.tsx";
 import { AdminClockOut } from "./AdminClockOut";
 import { AdminSettings } from "./AdminSettings";
 

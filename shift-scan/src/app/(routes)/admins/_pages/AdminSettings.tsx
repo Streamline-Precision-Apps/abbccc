@@ -24,7 +24,7 @@ export const AdminSettings = () => {
             <AdminNotifications id={id} />
           </Holds>
         </Holds>
-        <Holds className="h-3/4 w-full">
+        <Holds className="h-full w-full">
           <AdminInbox />
         </Holds>
       </Holds>
