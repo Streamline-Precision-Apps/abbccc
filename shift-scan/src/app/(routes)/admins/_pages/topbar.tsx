@@ -36,13 +36,14 @@ const Topbar = () => {
   // Fetch data from `localStorage` and `getAuthStep` on mount
   useEffect(() => {
     const localeValue = localStorage.getItem("savedtimeSheetData");
+    const cc = localStorage.getItem("costCode");
+    const j = localStorage.getItem("jobSite");
     const parsedData = JSON.parse(localeValue || "{}");
-    setJobSite(parsedData.jobSite || "");
-    setCostCode(parsedData.costCode || "");
+    setJobSite(parsedData.jobSite || j || "");
+    setCostCode(parsedData.costCode || cc || "");
     setAuthStepState(getAuthStep() || "");
-  }, []); // Empty dependency array ensures this only runs on mount
+  });
 
-  const toggle = () => setIsOpen(!isOpen);
   const handleClockClick = () => setIsOpen2(!isOpen2);
   const handleClose = () => setIsOpen(false);
 
@@ -149,7 +150,7 @@ const Topbar = () => {
         </Holds>
       ) : (
         <Holds className="h-full w-full ">
-          <Holds className="w-[98%] h-3/5">
+          <Holds className="w-[98%] h-2/3">
             <Holds
               background={"lightBlue"}
               className="rounded h-full w-full border-[3px] border-black"
@@ -210,41 +211,57 @@ const Topbar = () => {
                 </Holds>
               </Holds>
               {authStep === "success" ? (
-                <Holds position={"row"} className="my-auto w-[40%] h-full">
+                <Holds
+                  position={"row"}
+                  className="my-auto w-[40%] gap-4 h-full"
+                >
                   <Buttons
                     background={"orange"}
                     onClick={() => setIsSwitch(true)}
+                    className="h-8 "
                   >
                     <Texts size={"p6"}>Switch</Texts>
                   </Buttons>
-                  <Buttons background={"lightBlue"} onClick={handleBreakClick}>
+                  <Buttons
+                    className="h-8 "
+                    background={"lightBlue"}
+                    onClick={handleBreakClick}
+                  >
                     <Texts size={"p6"}>Break</Texts>
                   </Buttons>
                   <Buttons
+                    className="h-8 "
                     background={"red"}
-                    onClick={() => setIsEndofDay(true)}
+                    onClick={() => {
+                      setIsEndofDay(true);
+                    }}
                   >
                     <Texts size={"p6"}>End Day</Texts>
                   </Buttons>
-                  <Images
-                    titleImg="/expandLeft.svg"
-                    titleImgAlt="Home Icon"
-                    className="m-auto rotate-[270deg] cursor-pointer h-16 w-16"
-                    onClick={handleClockClick}
-                  />
+                  <Holds>
+                    <Images
+                      titleImg="/expandLeft.svg"
+                      titleImgAlt="Home Icon"
+                      className="m-auto rotate-[270deg] cursor-pointer h-16 w-16"
+                      onClick={handleClockClick}
+                    />
+                  </Holds>
                 </Holds>
               ) : (
                 <Holds
                   position={"row"}
                   className=" h-full mx-2 py-1 space-x-4 w-[40%]"
                 >
-                  <Buttons
-                    className="my-auto "
-                    background={"green"}
-                    onClick={() => setIsOpen(true)}
-                  >
-                    <Texts size={"p6"}>start day</Texts>
-                  </Buttons>
+                  <Holds>
+                    <Buttons
+                      className="my-auto h-8 "
+                      background={"green"}
+                      onClick={() => setIsOpen(true)}
+                      size={"60"}
+                    >
+                      <Texts size={"p6"}>start day</Texts>
+                    </Buttons>
+                  </Holds>
                   <Holds>
                     <Images
                       titleImg="/expandLeft.svg"
