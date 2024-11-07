@@ -10,11 +10,13 @@ import AdminHourControls from "./AdminHourControls";
 const calculatePayPeriodStart = () => {
   const startDate = new Date(2024, 7, 5); // August 5, 2024
   const now = new Date();
-  const diff = now.getTime() - startDate.getTime();
-  const diffWeeks = Math.floor(diff / (2 * 7 * 24 * 60 * 60 * 1000)); // Two-week intervals
-  return new Date(
+  const diffWeeks = Math.floor(
+    (now.getTime() - startDate.getTime()) / (2 * 7 * 24 * 60 * 60 * 1000)
+  );
+  const payPeriodStart = new Date(
     startDate.getTime() + diffWeeks * 2 * 7 * 24 * 60 * 60 * 1000
   );
+  return payPeriodStart;
 };
 
 export default function AdminHours() {
@@ -41,11 +43,9 @@ export default function AdminHours() {
 
     if (payPeriodTimeSheet) {
       payPeriodTimeSheet.forEach((sheet) => {
-        const sheetDateKey = new Date(sheet.startTime)
-          .toISOString()
-          .split("T")[0];
+        const sheetDateKey = dateKey(new Date(sheet.startTime));
         if (hoursMap[sheetDateKey] !== undefined) {
-          hoursMap[sheetDateKey] += sheet.duration ?? 0;
+          hoursMap[sheetDateKey] += sheet.duration || 0;
         }
       });
     }
@@ -58,6 +58,7 @@ export default function AdminHours() {
   const dailyHours = useMemo(() => {
     const calculatedHours = dailyHoursCache.current || calculateDailyHours();
     dailyHoursCache.current = calculatedHours;
+    console.log(calculatedHours);
     return calculatedHours;
   }, [calculateDailyHours]);
 
@@ -69,11 +70,16 @@ export default function AdminHours() {
     }
   }, [dailyHours]);
 
+  console.log("Daily hours map:", dailyHours);
+
+  const endDate = dailyHours[dailyHours.length - 1]?.date;
+
+  console.log("Todays index:", endDate);
   // Calculate the slice range for a fixed window of 14 items
-  const start = Math.max(0, currentIndex - 2);
-  const end = start + 5;
-  const visibleHours = dailyHours.slice(start, end); // Slice for 14 items only
-  const placeholdersNeeded = 4 - visibleHours.length;
+  const visibleHours = dailyHours.slice(
+    Math.max(0, currentIndex),
+    Math.min(dailyHours.length, currentIndex + 5)
+  );
 
   const calculateBarHeight = (value: number) => {
     if (value === 0) return 100;
@@ -107,8 +113,8 @@ export default function AdminHours() {
           scrollLeft={scrollLeft}
           scrollRight={scrollRight}
           currentDate={new Date(dailyHours[currentIndex + 1]?.date || "")}
-          dataRangeStart={new Date(dailyHours[0]?.date || "")}
-          dataRangeEnd={new Date(dailyHours[dailyHours.length - 1]?.date || "")}
+          dataRangeStart={dailyHours[0]?.date || ""}
+          dataRangeEnd={dailyHours[dailyHours.length - 1]?.date || ""}
         />
       </Holds>
 
@@ -168,21 +174,6 @@ export default function AdminHours() {
                     : data.date === new Date().toISOString().split("T")[0]
                     ? `${t("Today")}`
                     : ""}
-                </Texts>
-              </Holds>
-            </Holds>
-          </Holds>
-        ))}
-        {/* Add placeholder Holds to fill remaining spots */}
-        {Array.from({ length: placeholdersNeeded }).map((_, index) => (
-          <Holds
-            key={`placeholder-${index}`}
-            className="p-4 h-[95%] w-[38%] mx-auto bg-slate-400 rounded-[10px]"
-          >
-            <Holds className="w-full h-full bg-app-dark-blue rounded-[10px] border-2 border-black">
-              <Holds className="justify-center items-center h-full">
-                <Texts size="p4" text={"white"} className="text-center my-auto">
-                  {t("End-Pay-Period")}
                 </Texts>
               </Holds>
             </Holds>

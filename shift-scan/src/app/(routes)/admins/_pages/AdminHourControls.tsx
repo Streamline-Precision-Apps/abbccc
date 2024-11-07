@@ -14,8 +14,8 @@ import { Grids } from "@/components/(reusable)/grids";
 type ViewComponentProps = {
   scrollLeft: () => void;
   scrollRight: () => void;
-  dataRangeStart: Date;
-  dataRangeEnd: Date;
+  dataRangeStart: string;
+  dataRangeEnd: string;
   currentDate: Date;
 };
 export default function AdminHourControls({
@@ -33,14 +33,8 @@ export default function AdminHourControls({
       setLocale(localeCookie);
     }
   }, []);
-  const rangeStart = dataRangeStart.toLocaleDateString(locale, {
-    month: "short",
-    day: "numeric",
-  });
-  const rangeEnd = dataRangeEnd.toLocaleDateString(locale, {
-    month: "short",
-    day: "numeric",
-  });
+  const rangeStart = dataRangeStart;
+  const rangeEnd = dataRangeEnd;
 
   const t = useTranslations("Home");
   const today = new Date();
@@ -94,8 +88,8 @@ export default function AdminHourControls({
           </Texts>
           {Weekday === "Today" && (
             <Texts text={"white"} size={"p6"} className="">
-              {t("CurrentRange")}: {CapitalizeAll(rangeStart)} -{" "}
-              {CapitalizeAll(rangeEnd)}
+              {`${t("CurrentRange")}: ${CapitalizeAll(rangeStart)} -
+              ${CapitalizeAll(rangeEnd)}`}
             </Texts>
           )}
         </Holds>
