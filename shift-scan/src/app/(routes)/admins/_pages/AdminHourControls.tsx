@@ -16,7 +16,7 @@ type ViewComponentProps = {
   scrollRight: () => void;
   dataRangeStart: string;
   dataRangeEnd: string;
-  currentDate: Date;
+  currentDate: string;
 };
 export default function AdminHourControls({
   scrollLeft,
@@ -33,21 +33,34 @@ export default function AdminHourControls({
       setLocale(localeCookie);
     }
   }, []);
-  const rangeStart = dataRangeStart;
-  const rangeEnd = dataRangeEnd;
+  const rangeStart = new Date(dataRangeStart).toLocaleDateString(locale, {
+    timeZone: "UTC",
+    month: "short",
+    day: "numeric",
+  });
+  const rangeEnd = new Date(dataRangeEnd).toLocaleDateString(locale, {
+    timeZone: "UTC",
+    month: "short",
+    day: "numeric",
+  });
 
   const t = useTranslations("Home");
   const today = new Date();
-  let Weekday = currentDate.toLocaleDateString(locale, { weekday: "long" });
+  let Weekday = new Date(currentDate).toLocaleDateString(locale, {
+    timeZone: "UTC",
+    weekday: "long",
+  });
 
   if (
     Weekday === today.toLocaleDateString(locale, { weekday: "long" }) &&
-    currentDate.toLocaleDateString(locale, {
+    new Date(currentDate).toLocaleDateString(locale, {
+      timeZone: "UTC",
       month: "short",
       day: "numeric",
       year: "numeric",
     }) ===
-      today.toLocaleDateString(locale, {
+      new Date(today).toLocaleDateString(locale, {
+        timeZone: "UTC",
         month: "short",
         day: "numeric",
         year: "numeric",
@@ -55,7 +68,8 @@ export default function AdminHourControls({
   ) {
     Weekday = `${t("DA-Today")}`;
   }
-  const dateToday = currentDate.toLocaleDateString(locale, {
+  const dateToday = new Date(currentDate).toLocaleDateString(locale, {
+    timeZone: "UTC",
     month: "short",
     day: "numeric",
     year: "numeric",
@@ -88,8 +102,8 @@ export default function AdminHourControls({
           </Texts>
           {Weekday === "Today" && (
             <Texts text={"white"} size={"p6"} className="">
-              {`${t("CurrentRange")}: ${CapitalizeAll(rangeStart)} -
-              ${CapitalizeAll(rangeEnd)}`}
+              {t("CurrentRange")}: {CapitalizeAll(rangeStart)} -{" "}
+              {CapitalizeAll(rangeEnd)}
             </Texts>
           )}
         </Holds>

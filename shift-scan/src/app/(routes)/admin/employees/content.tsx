@@ -9,7 +9,7 @@ import { useSession } from "next-auth/react";
 import UserManagement from "./(components)/userManagement";
 import { Tab } from "@/components/(reusable)/tab";
 import { Contents } from "@/components/(reusable)/contents";
-import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
+
 import UserCards from "./userCards";
 import { Texts } from "@/components/(reusable)/texts";
 import Spinner from "@/components/(animations)/spinner";
@@ -76,26 +76,27 @@ export default function AddEmployeeContent() {
   );
 
   //----------------------------Data Fetching-------------------------------------
-  const fetchEmployees = async () => {
-    setLoading(true);
-    try {
-      const employeesRes = await fetch("/api/getAllEmployees");
-      const employeesData = await employeesRes.json();
-      const validatedEmployees = employeesSchema.parse(employeesData);
-      setEmployees(validatedEmployees);
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        console.error("Validation Error:", error.errors);
-      } else {
-        console.error("Failed to fetch employees data:", error);
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchEmployees = async () => {
+      setLoading(true);
+      try {
+        const employeesRes = await fetch("/api/getAllEmployees");
+        const employeesData = await employeesRes.json();
+        const validatedEmployees = employeesSchema.parse(employeesData);
+        setEmployees(validatedEmployees);
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          console.error("Validation Error:", error.errors);
+        } else {
+          console.error("Failed to fetch employees data:", error);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchEmployees();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (loading) {
@@ -122,34 +123,22 @@ export default function AddEmployeeContent() {
 
   return session ? (
     <>
-      <Grids rows={"10"} gap={"5"}>
-        <Holds background={"white"} className="row-span-1 h-full">
-          <TitleBoxes
-            title="Assets"
-            titleImg="/assets.svg"
-            titleImgAlt="Assests"
-            size={"default"}
-            type="noIcon"
+      <Holds className=" h-full">
+        <Holds position={"row"}>
+          <Tab
+            onClick={() => setActiveTab(1)}
+            tabLabel={t("ModifyEmployee")}
+            isTabActive={activeTab === 1}
+          />
+          <Tab
+            onClick={() => setActiveTab(2)}
+            tabLabel={t("ViewEmployees")}
+            isTabActive={activeTab === 2}
           />
         </Holds>
-
-        <Holds className="row-span-9 h-full">
-          <Holds position={"row"}>
-            <Tab
-              onClick={() => setActiveTab(1)}
-              tabLabel={t("ModifyEmployee")}
-              isTabActive={activeTab === 1}
-            />
-            <Tab
-              onClick={() => setActiveTab(2)}
-              tabLabel={t("ViewEmployees")}
-              isTabActive={activeTab === 2}
-            />
-          </Holds>
-          {activeTab === 1 && <UserManagement users={employees} />}
-          {activeTab === 2 && <UserCards users={employees} />}
-        </Holds>
-      </Grids>
+        {activeTab === 1 && <UserManagement users={employees} />}
+        {activeTab === 2 && <UserCards users={employees} />}
+      </Holds>
     </>
   ) : (
     <></>

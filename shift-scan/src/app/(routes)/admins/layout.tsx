@@ -5,7 +5,6 @@ import { Bases } from "@/components/(reusable)/bases";
 import { Holds } from "@/components/(reusable)/holds";
 import Sidebar from "@/app/(routes)/admins/_pages/sidebar";
 import Topbar from "./_pages/topbar";
-import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 export default async function RootLayout({
   children,
