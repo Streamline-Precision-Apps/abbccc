@@ -14,17 +14,19 @@ import { Modals } from "@/components/(reusable)/modals";
 import { AdminClockOut } from "./AdminClockOut";
 import AdminSwitch from "./AdminSwitch";
 import AdminClock from "./AdminClock";
+import { usePathname, useRouter } from "next/navigation";
 
 const Topbar = () => {
   const { data: session } = useSession();
   const firstName = session?.user.firstName;
   const lastName = session?.user.lastName;
+  const pathname = usePathname();
+  const Router = useRouter();
 
   const [isOpen, setIsOpen] = useState(false);
   const [isOpen2, setIsOpen2] = useState(false);
   const [isSwitch, setIsSwitch] = useState(false);
   const [isEndofDay, setIsEndofDay] = useState(false);
-  const [page, setPage] = useState(0);
 
   // State for data fetched from `localStorage` and `getAuthStep`
   const [jobSite, setJobSite] = useState("");
@@ -61,37 +63,12 @@ const Topbar = () => {
   };
 
   return (
-    <Holds className="w-full h-[10%] absolute ">
-      <Modals
-        isOpen={isOpen}
-        handleClose={handleClose}
-        type={"StartDay"}
-        size={"lg"}
-      >
-        <AdminClock handleClose={() => setIsOpen(false)} />
-      </Modals>
-      <Modals
-        isOpen={isSwitch}
-        handleClose={() => setIsSwitch(false)}
-        type={"StartDay"}
-        size={"lg"}
-      >
-        <AdminSwitch handleClose={() => setIsSwitch(false)} />
-      </Modals>
-      <Modals
-        isOpen={isEndofDay}
-        handleClose={() => setIsEndofDay(false)}
-        type={"StartDay"}
-        size={"lg"}
-      >
-        <AdminClockOut handleClose={() => setIsEndofDay(false)} />
-      </Modals>
-
+    <Holds className="w-full h-full pb-10">
       {/* UI Elements */}
       {!isOpen2 ? (
-        <Holds className=" h-full pb-4 w-full">
-          <Holds position={"row"} className="w-[98%] h-full m-auto">
-            {page === 0 ? (
+        <Holds className=" h-full w-full">
+          <Holds position={"row"} className="w-[98%] h-full mx-auto ">
+            {pathname === "/admins" ? (
               <Holds
                 background={"lightBlue"}
                 className="flex flex-row justify-center items-center rounded border-[3px] border-black w-[90%] h-full relative"
@@ -107,13 +84,13 @@ const Topbar = () => {
                   <Holds position={"row"} className="hidden md:flex">
                     <Images
                       titleImg={
-                        page === 1
+                        pathname === "/admins/personnel"
                           ? "/team.svg"
-                          : page === 2
+                          : pathname === "/admins/assets"
                           ? "/jobsite.svg"
-                          : page === 3
+                          : pathname === "/admins/reports"
                           ? "/form.svg"
-                          : page === 4
+                          : pathname === "/admins/settings"
                           ? "/person.svg"
                           : ""
                       }
@@ -122,13 +99,13 @@ const Topbar = () => {
                       className="my-auto cursor-pointer"
                     />
                     <Titles size={"h4"} className="h-full ml-4">
-                      {page === 1
+                      {pathname === "/admins/personnel"
                         ? "Personnel"
-                        : page === 2
+                        : pathname === "/admins/assets"
                         ? "Assets"
-                        : page === 3
+                        : pathname === "/admins/reports"
                         ? "Reports"
-                        : page === 4
+                        : pathname === "/admins/settings"
                         ? `${firstName} ${lastName}`
                         : ""}
                     </Titles>
@@ -143,7 +120,7 @@ const Topbar = () => {
                     titleImgAlt="Home Icon"
                     className="my-auto cursor-pointer"
                     size={"90"}
-                    onClick={() => setPage(0)}
+                    onClick={() => Router.push("/admins")}
                   />
                 </Holds>
               </Holds>
@@ -172,18 +149,18 @@ const Topbar = () => {
         </Holds>
       ) : (
         <Holds className="h-full w-full ">
-          <Holds className="w-[98%] h-full">
+          <Holds className="w-[98%] h-3/5">
             <Holds
               background={"lightBlue"}
               className="rounded h-full w-full border-[3px] border-black"
             >
-              <Titles className="m-auto h-full">
+              <Titles size={"h4"} className="m-auto h-full">
                 Open Banner messages go here
               </Titles>
             </Holds>
             <Holds
               background={"white"}
-              className="h-full py-2 w-[99%] flex justify-start flex-row rounded"
+              className="h-full w-[99%] flex justify-start flex-row rounded"
             >
               <Holds
                 position={"row"}
@@ -193,7 +170,7 @@ const Topbar = () => {
                   <Images
                     titleImg={"/clock.svg"}
                     titleImgAlt={"clock"}
-                    className="h-16 w-16"
+                    className="h-8 w-8 my-auto"
                     position={"left"}
                   />
                 </Holds>
@@ -233,7 +210,7 @@ const Topbar = () => {
                 </Holds>
               </Holds>
               {authStep === "success" ? (
-                <Holds position={"row"} className="my-auto w-[40%]">
+                <Holds position={"row"} className="my-auto w-[40%] h-full">
                   <Buttons
                     background={"orange"}
                     onClick={() => setIsSwitch(true)}
@@ -259,23 +236,53 @@ const Topbar = () => {
               ) : (
                 <Holds
                   position={"row"}
-                  className="my-auto mx-2 space-x-4 w-[40%]"
+                  className=" h-full mx-2 py-1 space-x-4 w-[40%]"
                 >
-                  <Buttons background={"green"} onClick={() => setIsOpen(true)}>
+                  <Buttons
+                    className="my-auto "
+                    background={"green"}
+                    onClick={() => setIsOpen(true)}
+                  >
                     <Texts size={"p6"}>start day</Texts>
                   </Buttons>
-                  <Images
-                    titleImg="/expandLeft.svg"
-                    titleImgAlt="Home Icon"
-                    className="m-auto rotate-[270deg] cursor-pointer h-16 w-16"
-                    onClick={handleClockClick}
-                  />
+                  <Holds>
+                    <Images
+                      titleImg="/expandLeft.svg"
+                      titleImgAlt="Home Icon"
+                      className="my-auto rotate-[270deg] cursor-pointer h-16 w-16"
+                      onClick={handleClockClick}
+                    />
+                  </Holds>
                 </Holds>
               )}
             </Holds>
           </Holds>
         </Holds>
       )}
+      <Modals
+        isOpen={isOpen}
+        handleClose={handleClose}
+        type={"StartDay"}
+        size={"lg"}
+      >
+        <AdminClock handleClose={() => setIsOpen(false)} />
+      </Modals>
+      <Modals
+        isOpen={isSwitch}
+        handleClose={() => setIsSwitch(false)}
+        type={"StartDay"}
+        size={"lg"}
+      >
+        <AdminSwitch handleClose={() => setIsSwitch(false)} />
+      </Modals>
+      <Modals
+        isOpen={isEndofDay}
+        handleClose={() => setIsEndofDay(false)}
+        type={"StartDay"}
+        size={"lg"}
+      >
+        <AdminClockOut handleClose={() => setIsEndofDay(false)} />
+      </Modals>
     </Holds>
   );
 };
