@@ -14,7 +14,6 @@ const sidebar = () => {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
-  const [page, setPage] = useState(0);
   const [username, setUsername] = useState<string>("");
   const { data: session } = useSession();
   const permission = session?.user.permission;

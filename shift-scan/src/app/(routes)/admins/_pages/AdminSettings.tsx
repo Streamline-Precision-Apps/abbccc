@@ -14,7 +14,7 @@ export const AdminSettings = () => {
   const id = Session.user.id;
 
   return (
-    <Holds className="h-[90%] ">
+    <Holds className="w-full h-full">
       <Holds position={"row"} className="h-full gap-5 ">
         <Holds className="flex-col h-full w-1/3 hidden lg:flex space-y-5 ">
           <Holds background={"white"} className="h-1/2 ">
