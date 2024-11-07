@@ -33,7 +33,8 @@ const Topbar = () => {
   const [costCode, setCostCode] = useState("");
   const [authStep, setAuthStepState] = useState("");
 
-  // Fetch data from `localStorage` and `getAuthStep` on mount
+  // We want to fetch data more offten to avoid unnecessary API calls
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const localeValue = localStorage.getItem("savedtimeSheetData");
     const cc = localStorage.getItem("costCode");
@@ -64,7 +65,7 @@ const Topbar = () => {
   };
 
   return (
-    <Holds className="w-full h-full pb-10">
+    <Holds className="w-full h-full pb-8">
       {/* UI Elements */}
       {!isOpen2 ? (
         <Holds className=" h-full w-full">
@@ -95,7 +96,7 @@ const Topbar = () => {
                           ? "/person.svg"
                           : ""
                       }
-                      size={"40"}
+                      size={"30"}
                       titleImgAlt="current Icon"
                       className="my-auto cursor-pointer"
                     />
@@ -133,7 +134,11 @@ const Topbar = () => {
             >
               <Holds position={"row"} className="my-auto">
                 <Holds size={"50"}>
-                  <Images titleImg={"/clock.svg"} titleImgAlt={"clock"} />
+                  <Images
+                    titleImg={"/clock.svg"}
+                    titleImgAlt={"clock"}
+                    size={"50"}
+                  />
                 </Holds>
                 <Holds size={"50"}>
                   <Images
@@ -175,7 +180,11 @@ const Topbar = () => {
                     position={"left"}
                   />
                 </Holds>
-                <Holds position={"row"} size={"80"} className="lg:gap-10">
+                <Holds
+                  position={"row"}
+                  size={"80"}
+                  className="lg:gap-10 h-full"
+                >
                   <Holds
                     size={"30"}
                     position={"row"}
@@ -187,7 +196,7 @@ const Topbar = () => {
                     <Inputs
                       name="jobsite"
                       type="text"
-                      className="h-8 w-full md:w-[100px] my-auto"
+                      className="h-8 w-full md:w-[100px] my-auto p-0"
                       value={jobSite}
                       disabled
                     />
@@ -195,15 +204,15 @@ const Topbar = () => {
                   <Holds
                     size={"30"}
                     position={"row"}
-                    className="flex-col lg:flex-row"
+                    className="flex-col lg:flex-row my-auto"
                   >
-                    <Labels size={"p3"} type="title">
+                    <Labels size={"p3"} type="title" className="pt-0">
                       CC#
                     </Labels>
                     <Inputs
                       name="jobsite"
                       type="text"
-                      className="h-8 w-full md:w-[100px] my-auto"
+                      className="h-8 w-full md:w-[100px] my-auto p-0"
                       value={costCode}
                       disabled
                     />

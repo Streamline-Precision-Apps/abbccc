@@ -18,16 +18,18 @@ export default async function PersonnelLayout({
   // side is the easiest way to get started
   const messages = await getMessages();
   return (
-    <NextIntlClientProvider messages={messages}>
-      <Providers>
-        <Holds>
-          <Grids>
-            {search}
-            {view}
-            {children}
+    <Holds className="w-full h-full ">
+      <NextIntlClientProvider messages={messages}>
+        <Providers>
+          <Grids cols={"10"} gap={"5"} className="">
+            <Holds className="col-span-3 h-full w-full">{search}</Holds>
+            <Holds background={"white"} className="col-span-7 h-full w-full">
+              {view}
+              {children}
+            </Holds>
           </Grids>
-        </Holds>
-      </Providers>
-    </NextIntlClientProvider>
+        </Providers>
+      </NextIntlClientProvider>
+    </Holds>
   );
 }
