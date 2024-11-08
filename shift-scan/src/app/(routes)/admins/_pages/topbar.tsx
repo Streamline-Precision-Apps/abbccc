@@ -63,6 +63,11 @@ const Topbar = () => {
       console.error(err);
     }
   };
+  // these statments allow the page to dynamically have icons for every router that have the correct prefix
+  const isPersonnelPage = pathname.includes("/admins/personnel");
+  const isAssetsPage = pathname.includes("/admins/assets");
+  const isReportsPage = pathname.includes("/admins/reports");
+  const settingsPage = pathname.includes("/admins/settings");
 
   return (
     <Holds className="w-full h-full pb-8">
@@ -86,13 +91,13 @@ const Topbar = () => {
                   <Holds position={"row"} className="hidden md:flex">
                     <Images
                       titleImg={
-                        pathname === "/admins/personnel"
+                        isPersonnelPage
                           ? "/team.svg"
-                          : pathname === "/admins/assets"
+                          : isAssetsPage
                           ? "/jobsite.svg"
-                          : pathname === "/admins/reports"
+                          : isReportsPage
                           ? "/form.svg"
-                          : pathname === "/admins/settings"
+                          : settingsPage
                           ? "/person.svg"
                           : ""
                       }
@@ -101,13 +106,13 @@ const Topbar = () => {
                       className="my-auto cursor-pointer"
                     />
                     <Titles size={"h4"} className="h-full ml-4">
-                      {pathname === "/admins/personnel"
+                      {isPersonnelPage
                         ? "Personnel"
-                        : pathname === "/admins/assets"
+                        : isAssetsPage
                         ? "Assets"
-                        : pathname === "/admins/reports"
+                        : isReportsPage
                         ? "Reports"
-                        : pathname === "/admins/settings"
+                        : settingsPage
                         ? `${firstName} ${lastName}`
                         : ""}
                     </Titles>
