@@ -25,7 +25,9 @@ export default async function RootLayout({
                 <Holds className={"row-span-1 h-full "}>
                   <Topbar />
                 </Holds>
-                <Holds className="h-full row-span-6 p-5">{children}</Holds>
+                <Holds className="h-full row-span-6 px-4 py-1">
+                  {children}
+                </Holds>
               </Grids>
             </Holds>
           </Holds>

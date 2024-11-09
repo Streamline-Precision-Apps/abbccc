@@ -1,6 +1,123 @@
 "use server";
 import prisma from "@/lib/prisma";
+import { Permission } from "@/lib/types";
 import { revalidatePath } from "next/cache";
+
+export async function reactivatePersonnel(formData: FormData) {
+  try {
+    console.log("Archiving personnel...");
+    console.log(formData);
+    const id = formData.get("userId") as string;
+    const activeEmployee = formData.get("active") === "true";
+
+    const result = await prisma.users.update({
+      where: { id },
+      data: {
+        activeEmployee: activeEmployee,
+        terminationDate: null,
+      },
+    });
+    console.log(result.activeEmployee);
+
+    revalidatePath(`/admins/personnel/${id}`);
+    return true;
+  } catch (error) {
+    console.error("Error archiving personnel:", error);
+    throw error;
+  }
+}
+export async function archivePersonnel(formData: FormData) {
+  try {
+    console.log("Archiving personnel...");
+    console.log(formData);
+    const id = formData.get("userId") as string;
+    const activeEmployee = formData.get("active") === "true";
+
+    const result = await prisma.users.update({
+      where: { id },
+      data: {
+        activeEmployee: activeEmployee,
+        terminationDate: new Date().toISOString(),
+      },
+    });
+    console.log(result.activeEmployee);
+
+    revalidatePath(`/admins/personnel/${id}`);
+    return true;
+  } catch (error) {
+    console.error("Error archiving personnel:", error);
+    throw error;
+  }
+}
+// Edit personnel info
+export async function editPersonnelInfo(formData: FormData) {
+  try {
+    console.log("Editing personnel info...");
+    console.log(formData);
+    // { name: 'id', value: '7' },
+    const id = formData.get("id") as string;
+    // { name: 'firstName', value: 'Devun' },
+    const firstName = formData.get("firstName") as string;
+    // { name: 'lastName', value: 'Durst' },
+    const lastName = formData.get("lastName") as string;
+    // { name: 'email', value: 'devunfox15@gmail.com' },
+    const email = formData.get("email") as string;
+    // { name: 'DOB', value: '1999-07-08' },
+    const DOB = formData.get("DOB") as string;
+
+    // { name: 'permissions', value: 'SUPERADMIN' },
+    const permission = formData.get("permissions") as string;
+
+    // { name: 'truckView', value: 'true' },
+    const truckView = Boolean(formData.get("truckView") as string);
+    // { name: 'tascoView', value: 'true' },
+    const tascoView = Boolean(formData.get("tascoView") as string);
+    // { name: 'laborView', value: 'true' },
+    const laborView = Boolean(formData.get("laborView") as string);
+    // { name: 'mechanicView', value: 'true' }
+    const mechanicView = Boolean(formData.get("mechanicView") as string);
+
+    await prisma.users.update({
+      where: { id: id },
+      data: {
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        DOB: DOB,
+        permission: permission as Permission,
+        truckView: truckView,
+        tascoView: tascoView,
+        laborView: laborView,
+        mechanicView: mechanicView,
+      },
+    });
+
+    // { name: 'phoneNumber', value: '936-230-7110' },
+    const phoneNumber = formData.get("phoneNumber") as string;
+
+    // { name: 'emergencyContact', value: 'Daphnie Goss' },
+    const emergencyContact = formData.get("emergencyContact") as string;
+    // { name: 'emergencyContactNumber', value: '936-230-7110' },
+    const emergencyContactNumber = formData.get(
+      "emergencyContactNumber"
+    ) as string;
+
+    await prisma.contacts.update({
+      where: { employeeId: id },
+      data: {
+        email: email,
+        phoneNumber: phoneNumber,
+        emergencyContact: emergencyContact,
+        emergencyContactNumber: emergencyContactNumber,
+      },
+    });
+
+    return true;
+  } catch (error) {
+    console.error("Error editing personnel info:", error);
+    return new Response("Error", { status: 500 });
+  }
+}
 
 export async function timecardData(formData: FormData) {
   const startDate = formData.get("start") as string;
