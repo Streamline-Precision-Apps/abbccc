@@ -5,6 +5,8 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
+import { Options } from "@/components/(reusable)/options";
+import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
 import { SearchUser } from "@/lib/types";
 import { useRouter } from "next/navigation";
@@ -45,7 +47,7 @@ export const Personnel = ({ employees }: Props) => {
     <Holds className="h-full w-full">
       <Grids rows="10" gap="5" className="h-full">
         {/* Search Input Section */}
-        <Holds className="row-span-9 h-full border-[3px] border-black rounded-t-[10px]">
+        <Holds className="row-span-8 h-full border-[3px] border-black rounded-t-[10px]">
           <Holds position={"row"} className="py-2 border-b-[3px] border-black">
             <Holds className="h-full w-[20%]">
               <Images titleImg="/magnifyingGlass.svg" titleImgAlt="search" />

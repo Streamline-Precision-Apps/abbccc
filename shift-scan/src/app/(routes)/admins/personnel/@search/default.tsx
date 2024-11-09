@@ -9,10 +9,13 @@ import { useEffect, useState } from "react";
 import { Personnel } from "./_components/Personnel";
 import { Permission, SearchUser } from "@/lib/types";
 import { z } from "zod";
+import { Selects } from "@/components/(reusable)/selects";
+import { Options } from "@/components/(reusable)/options";
 
 export default function Search() {
   const [activeTab, setActiveTab] = useState(1);
   const [employees, setEmployees] = useState<SearchUser[]>([]);
+  const [filter, setFilter] = useState("all");
 
   const employeesSchema = z.array(
     z.object({
@@ -44,7 +47,9 @@ export default function Search() {
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const employeesRes = await fetch("/api/getAllEmployees");
+        const employeesRes = await fetch(
+          "/api/getAllEmployees?filter=" + filter
+        );
         const employeesData = await employeesRes.json();
         const validatedEmployees = employeesSchema.parse(employeesData);
         setEmployees(validatedEmployees);
@@ -59,7 +64,7 @@ export default function Search() {
 
     fetchEmployees();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [filter]);
 
   return (
     <Holds className="h-full ">
@@ -75,6 +80,18 @@ export default function Search() {
             tabLabel={"TimeSheets"}
             isTabActive={activeTab === 2}
           />
+        </Holds>
+        <Holds className="row-span-1 bg-white h-full  pt-3">
+          <Contents width={"section"}>
+            <Selects
+              defaultValue={"all"}
+              onChange={(e) => setFilter(e.target.value)}
+            >
+              <option value="all">All</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </Selects>
+          </Contents>
         </Holds>
         <Holds
           background={"white"}

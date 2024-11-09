@@ -1,3 +1,5 @@
+import EmptyView from "../../_pages/EmptyView";
+
 export default function View() {
-  return <div>View</div>;
+  return <EmptyView />;
 }

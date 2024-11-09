@@ -17,27 +17,16 @@ export async function GET(
 
   try {
     // Fetch employee details
-    const EmployeeData = await prisma.users.findUnique({
+    const EmployeeData = await prisma.contacts.findUnique({
       where: {
-        id: employee.toString(),
+        employeeId: employee.toString(),
       },
       select: {
         id: true,
-        firstName: true,
-        lastName: true,
-        username: true,
-        email: true,
-        DOB: true,
-        image: true,
-        signature: true,
-        truckView: true,
-        tascoView: true,
-        laborView: true,
-        mechanicView: true,
-        permission: true,
-        activeEmployee: true,
-        startDate: true,
-        terminationDate: true,
+        employeeId: true,
+        phoneNumber: true,
+        emergencyContact: true,
+        emergencyContactNumber: true,
       },
     });
 
