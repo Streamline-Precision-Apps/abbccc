@@ -9,9 +9,7 @@ import { useEffect, useState } from "react";
 import { Personnel } from "./_components/Personnel";
 import { Permission, SearchUser } from "@/lib/types";
 import { z } from "zod";
-import { Selects } from "@/components/(reusable)/selects";
-import { Options } from "@/components/(reusable)/options";
-
+import { Timesheets } from "./_components/Timesheets";
 export default function Search() {
   const [activeTab, setActiveTab] = useState(1);
   const [employees, setEmployees] = useState<SearchUser[]>([]);
@@ -74,30 +72,32 @@ export default function Search() {
             onClick={() => setActiveTab(1)}
             tabLabel={"Personnel"}
             isTabActive={activeTab === 1}
+            size={"text-sm"}
           />
           <Tab
             onClick={() => setActiveTab(2)}
             tabLabel={"TimeSheets"}
             isTabActive={activeTab === 2}
           />
+          <Tab
+            onClick={() => setActiveTab(3)}
+            tabLabel={"Crews"}
+            isTabActive={activeTab === 3}
+          />
         </Holds>
-        <Holds className="bg-whiterow-span-1 h-full">
-          <Selects
-            defaultValue={"all"}
-            onChange={(e) => setFilter(e.target.value)}
-          >
-            <option value="all">All</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-          </Selects>
-        </Holds>
+
         <Holds
           background={"white"}
-          className="rounded-t-none row-span-8 h-full"
+          className="rounded-t-none row-span-9 h-full"
         >
           <Contents width={"section"} className=" pt-3 pb-5">
-            {activeTab === 1 && <Personnel employees={employees} />}
-            {activeTab === 2 && <Texts>hi</Texts>}
+            {activeTab === 1 && (
+              <Personnel employees={employees} setFilter={setFilter} />
+            )}
+            {activeTab === 2 && (
+              <Timesheets employees={employees} setFilter={setFilter} />
+            )}
+            {activeTab === 3 && <Texts>Crews</Texts>}
           </Contents>
         </Holds>
       </Grids>

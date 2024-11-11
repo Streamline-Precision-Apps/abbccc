@@ -1,5 +1,5 @@
-"use client";
 import { Buttons } from "@/components/(reusable)/buttons";
+
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
@@ -8,14 +8,13 @@ import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
 import { SearchUser } from "@/lib/types";
 import { useRouter } from "next/navigation";
-import { useState, useMemo, useCallback } from "react";
-
+import { useCallback, useMemo, useState } from "react";
 type Props = {
   employees: SearchUser[];
   setFilter: (filter: string) => void;
 };
 
-export const Personnel = ({ employees, setFilter }: Props) => {
+export const Timesheets = ({ employees, setFilter }: Props) => {
   const [term, setTerm] = useState<string>("");
   const [page, setPage] = useState(true);
   const router = useRouter();
@@ -40,11 +39,11 @@ export const Personnel = ({ employees, setFilter }: Props) => {
 
   const selectEmployee = (employee: SearchUser) => {
     setTerm(employee.firstName + " " + employee.lastName);
-    router.push(`/admins/personnel/${employee.id}`);
+    router.push(`/admins/personnel/timesheets/${employee.id}`);
   };
 
   const createEmployee = () => {
-    router.push(`/admins/personnel/new-employee`);
+    router.push(`/admins/personnel/new-timesheet`);
   };
 
   return (
@@ -126,7 +125,7 @@ export const Personnel = ({ employees, setFilter }: Props) => {
           className="row-span-1 h-full"
           onClick={createEmployee}
         >
-          <Texts size="p6">Create New Employee</Texts>
+          <Texts size="p6">Create New Timesheet</Texts>
         </Buttons>
       </Grids>
     </Holds>
