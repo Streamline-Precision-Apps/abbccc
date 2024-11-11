@@ -3,6 +3,7 @@ import { createUser } from "@/actions/userActions";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
+import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
 import { Options } from "@/components/(reusable)/options";
@@ -15,11 +16,11 @@ import { useRef } from "react";
 export default function NewEmployee() {
   const { data: session } = useSession();
   const permission = session?.user.permission;
-  const createformRef = useRef<HTMLFormElement>(null);
+  const CreateFormRef = useRef<HTMLFormElement>(null);
 
   const handleSubmitClick = () => {
     console.log("clicked");
-    createformRef.current?.dispatchEvent(
+    CreateFormRef.current?.dispatchEvent(
       new Event("submit", { bubbles: true, cancelable: true })
     );
   };
@@ -27,14 +28,16 @@ export default function NewEmployee() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const formData = new FormData(createformRef.current!);
+      const formData = new FormData(e.currentTarget as HTMLFormElement);
       const password = formData.get("password") as string;
       const hashedPassword = await hash(password, 10);
       formData.set("password", hashedPassword);
-
-      console.log("Form Data:", Object.fromEntries(formData.entries()));
-      const res = await createUser(formData);
-      console.log(res);
+      const firstName = formData.get("firstName") as string;
+      const lastName = formData.get("lastName") as string;
+      const random = Math.floor(Math.random() * (100 - 1 + 1)) + 1;
+      const userName = `${firstName}${lastName}${random}`;
+      formData.set("username", userName);
+      await createUser(formData);
     } catch (error) {
       console.error("Failed to update employee info:", error);
     }
@@ -43,29 +46,46 @@ export default function NewEmployee() {
   return (
     <Holds className="w-full h-full p-2">
       <Grids rows="10" gap="5">
-        <Holds position="row" className="row-span-2 h-full px-2">
-          <Holds className="w-1/2 h-full items-end">
-            <Holds position="row" className="w-2/3 justify-end flex gap-4">
-              <Holds>
-                <Buttons
-                  background="green"
-                  type="button"
-                  onClick={handleSubmitClick}
-                >
-                  <Titles size="h5">Create Employee</Titles>
-                </Buttons>
-              </Holds>
+        <Holds className="row-span-2 w-full h-full">
+          <Grids cols="5" rows="3" className="mx-1">
+            <Holds
+              position="left"
+              className="row-start-1 row-end-3 col-start-1 col-end-2 my-auto"
+            >
+              <Images
+                titleImg={"/person.svg"}
+                titleImgAlt="personnel"
+                className="rounded-full  "
+              />
             </Holds>
-          </Holds>
+
+            <Holds className="row-start-2 row-end-4 col-start-2 col-end-3 my-auto ">
+              <Titles size="h2" position="left">
+                New Employee
+              </Titles>
+            </Holds>
+
+            <Holds className="row-start-1 row-end-3  col-start-5 col-end- my-auto ">
+              <Buttons
+                background="green"
+                type="button"
+                onClick={handleSubmitClick}
+                className="p-1"
+              >
+                <Titles size="h4">Create Employee</Titles>
+              </Buttons>
+            </Holds>
+          </Grids>
         </Holds>
 
         <form
-          ref={createformRef}
+          ref={CreateFormRef}
           onSubmit={handleSubmit}
-          className="row-span-8 h-full"
+          className="row-span-8 h-full my-5"
         >
           <Holds position="row" className="w-full h-full p-4">
             <Holds className="w-2/3 h-full ">
+              <Titles size={"h3"}>Employee Information</Titles>
               <Holds position={"row"} className="gap-14 h-full mb-20 ">
                 <Holds className="w-1/2 h-full ">
                   <Inputs
@@ -76,33 +96,54 @@ export default function NewEmployee() {
                   />
                   <Labels size={"p6"}>
                     First Name
-                    <Inputs className="h-10" type="text" name="firstName" />
+                    <Inputs
+                      className="h-10"
+                      type="text"
+                      name="firstName"
+                      required
+                    />
                   </Labels>
                   <Labels size={"p6"}>
                     Last Name
-                    <Inputs className="h-10" type="text" name="lastName" />
+                    <Inputs
+                      className="h-10"
+                      type="text"
+                      name="lastName"
+                      required
+                    />
                   </Labels>
 
                   <Labels size={"p6"}>
                     Username
-                    <Inputs className="h-10" type="text" name="username" />
-                  </Labels>
-                  <Labels size={"p6"}>
-                    Temporary Password
-                    <Inputs className="h-10" type="text" name="password" />
+                    <Inputs
+                      className="h-10"
+                      type="text"
+                      name="username"
+                      disabled
+                    />
                   </Labels>
 
                   <Labels size={"p6"}>
                     Email
-                    <Inputs className="h-10" type="text" name="email" />
+                    <Inputs
+                      className="h-10"
+                      type="text"
+                      name="email"
+                      required
+                    />
                   </Labels>
                   <Labels size={"p6"}>
                     Date of Birth
-                    <Inputs className="h-10" type="date" name="DOB" />
+                    <Inputs className="h-10" type="date" name="DOB" required />
                   </Labels>
                   <Labels size={"p6"}>
                     Phone Number
-                    <Inputs className="h-10" type="tel" name="phoneNumber" />
+                    <Inputs
+                      className="h-10"
+                      type="tel"
+                      name="phoneNumber"
+                      required
+                    />
                   </Labels>
                 </Holds>
                 <Holds className="w-1/2 h-full">
@@ -124,6 +165,15 @@ export default function NewEmployee() {
                           name="emergencyContactNumber"
                         />
                       </Labels>
+                      <Labels size={"p6"}>
+                        Temporary Password
+                        <Inputs
+                          className="h-10"
+                          type="text"
+                          name="password"
+                          required
+                        />
+                      </Labels>
                     </Holds>
                   </Holds>
                 </Holds>
@@ -133,6 +183,7 @@ export default function NewEmployee() {
             <Holds className="w-1/3 h-full">
               {/* This section is for the permission level to display, the user will be able to change the permission level differently based on roles*/}
               {/*Super admin can change the permission level of anyone */}
+              <Titles size={"h3"}>Employee Permissions</Titles>
               {permission === "SUPERADMIN" ? (
                 <Labels size={"p6"}>
                   Permission Level
@@ -151,7 +202,7 @@ export default function NewEmployee() {
                     <Options value="SUPERADMIN">Super Admin</Options>
                     <Options value="ADMIN">Admin</Options>
                     <Options value="MANAGER">Manager</Options>
-                    <Options value=" USER"> User</Options>
+                    <Options value="USER"> User</Options>
                   </Selects>
                 </Labels>
               )}
