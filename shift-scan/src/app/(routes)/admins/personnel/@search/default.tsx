@@ -3,14 +3,13 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Tab } from "@/components/(reusable)/tab";
-import { Texts } from "@/components/(reusable)/texts";
 
 import { useEffect, useState } from "react";
-import { Personnel } from "./_components/Personnel";
+import { Timesheets } from "./_components/Timesheets";
 import { Permission, SearchUser } from "@/lib/types";
 import { z } from "zod";
-import { Selects } from "@/components/(reusable)/selects";
-import { Options } from "@/components/(reusable)/options";
+import { Personnel } from "./_components/Personnel";
+import { Texts } from "@/components/(reusable)/texts";
 
 export default function Search() {
   const [activeTab, setActiveTab] = useState(1);
@@ -77,29 +76,28 @@ export default function Search() {
           />
           <Tab
             onClick={() => setActiveTab(2)}
-            tabLabel={"TimeSheets"}
+            tabLabel={"Time Sheets"}
             isTabActive={activeTab === 2}
           />
+          <Tab
+            onClick={() => setActiveTab(3)}
+            tabLabel={"Crews"}
+            isTabActive={activeTab === 3}
+          />
         </Holds>
-        <Holds className="row-span-1 bg-white h-full  pt-3">
-          <Contents width={"section"}>
-            <Selects
-              defaultValue={"all"}
-              onChange={(e) => setFilter(e.target.value)}
-            >
-              <option value="all">All</option>
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-            </Selects>
-          </Contents>
-        </Holds>
+
         <Holds
           background={"white"}
           className="rounded-t-none row-span-9 h-full"
         >
           <Contents width={"section"} className=" pt-3 pb-5">
-            {activeTab === 1 && <Personnel employees={employees} />}
-            {activeTab === 2 && <Texts>hi</Texts>}
+            {activeTab === 1 && (
+              <Personnel employees={employees} setFilter={setFilter} />
+            )}
+            {activeTab === 2 && (
+              <Timesheets employees={employees} setFilter={setFilter} />
+            )}
+            {activeTab === 3 && <Texts>Crews</Texts>}
           </Contents>
         </Holds>
       </Grids>

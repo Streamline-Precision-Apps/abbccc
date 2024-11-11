@@ -13,6 +13,11 @@ export async function GET(req: Request) {
   }
 
   // Extract the 'filter' parameter from the query string
+  // <option value="recentlyHired">Recently Hired</option>
+  //           <option value="laborers">Laborers</option>
+  //           <option value="managers">Managers</option>
+  //           <option value="admins">Admins</option>
+  //           <option value="superAdmins">Super Admins</option>
   const url = new URL(req.url);
   const filter = url.searchParams.get("filter");
 
@@ -57,6 +62,166 @@ export async function GET(req: Request) {
           tascoView: true,
           image: true,
           terminationDate: true,
+        },
+      });
+    } else if (filter === "laborers") {
+      employees = await prisma.users.findMany({
+        where: {
+          laborView: true,
+        },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          username: true,
+          permission: true,
+          DOB: true,
+          truckView: true,
+          mechanicView: true,
+          laborView: true,
+          tascoView: true,
+          image: true,
+          terminationDate: true,
+        },
+      });
+    } else if (filter === "truckers") {
+      employees = await prisma.users.findMany({
+        where: {
+          truckView: true,
+        },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          username: true,
+          permission: true,
+          DOB: true,
+          truckView: true,
+          mechanicView: true,
+          laborView: true,
+          tascoView: true,
+          image: true,
+          terminationDate: true,
+        },
+      });
+    } else if (filter === "tasco") {
+      employees = await prisma.users.findMany({
+        where: {
+          tascoView: true,
+        },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          username: true,
+          permission: true,
+          DOB: true,
+          truckView: true,
+          mechanicView: true,
+          laborView: true,
+          tascoView: true,
+          image: true,
+          terminationDate: true,
+        },
+      });
+    } else if (filter === "mechanics") {
+      employees = await prisma.users.findMany({
+        where: {
+          mechanicView: true,
+        },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          username: true,
+          permission: true,
+          DOB: true,
+          truckView: true,
+          mechanicView: true,
+          laborView: true,
+          tascoView: true,
+          image: true,
+          terminationDate: true,
+        },
+      });
+    } else if (filter === "managers") {
+      employees = await prisma.users.findMany({
+        where: {
+          permission: "MANAGER",
+        },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          username: true,
+          permission: true,
+          DOB: true,
+          truckView: true,
+          mechanicView: true,
+          laborView: true,
+          tascoView: true,
+          image: true,
+          terminationDate: true,
+        },
+      });
+    } else if (filter === "admins") {
+      employees = await prisma.users.findMany({
+        where: {
+          permission: "ADMIN",
+        },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          username: true,
+          permission: true,
+          DOB: true,
+          truckView: true,
+          mechanicView: true,
+          laborView: true,
+          tascoView: true,
+          image: true,
+          terminationDate: true,
+        },
+      });
+    } else if (filter === "superAdmins") {
+      employees = await prisma.users.findMany({
+        where: {
+          permission: "SUPERADMIN",
+        },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          username: true,
+          permission: true,
+          DOB: true,
+          truckView: true,
+          mechanicView: true,
+          laborView: true,
+          tascoView: true,
+          image: true,
+          terminationDate: true,
+        },
+      });
+    } else if (filter === "recentlyHired") {
+      employees = await prisma.users.findMany({
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          username: true,
+          permission: true,
+          DOB: true,
+          truckView: true,
+          mechanicView: true,
+          laborView: true,
+          tascoView: true,
+          image: true,
+          terminationDate: true,
+        },
+        orderBy: {
+          startDate: "desc",
         },
       });
     } else {

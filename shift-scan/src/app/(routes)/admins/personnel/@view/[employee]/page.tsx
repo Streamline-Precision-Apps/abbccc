@@ -240,22 +240,26 @@ export default function Employee({ params }: { params: { employee: string } }) {
                   <Titles size="h5">Submit Edit</Titles>
                 </Buttons>
               </Holds>
-              {userStatus === true ? (
-                <Holds>
-                  <Buttons background="red" onClick={() => setIsOpen(true)}>
-                    <Titles size="h5">Terminate Employee</Titles>
-                  </Buttons>
-                </Holds>
-              ) : (
-                <Holds>
-                  <Buttons
-                    background="lightBlue"
-                    onClick={() => setIsOpen2(true)}
-                  >
-                    <Titles size="h5">Activate Employee</Titles>
-                  </Buttons>
-                </Holds>
-              )}
+              {userId !== user || permission === "SUPERADMIN" ? (
+                <>
+                  {userStatus === true ? (
+                    <Holds>
+                      <Buttons background="red" onClick={() => setIsOpen(true)}>
+                        <Titles size="h5">Terminate Employee</Titles>
+                      </Buttons>
+                    </Holds>
+                  ) : (
+                    <Holds>
+                      <Buttons
+                        background="lightBlue"
+                        onClick={() => setIsOpen2(true)}
+                      >
+                        <Titles size="h5">Activate Employee</Titles>
+                      </Buttons>
+                    </Holds>
+                  )}
+                </>
+              ) : null}
             </Holds>
           </Holds>
         </Holds>
@@ -411,7 +415,7 @@ export default function Employee({ params }: { params: { employee: string } }) {
             <Holds className="w-1/3 h-full">
               {/* This section is for the permission level to display, the user will be able to change the permission level differently based on roles*/}
               {/*Super admin can change the permission level of anyone */}
-              {permission === "SUPERADMIN" ? (
+              {permission === "SUPERADMIN" || permission === "ADMIN" ? (
                 <Labels size={"p6"}>
                   Permission Level
                   <Selects
@@ -420,8 +424,12 @@ export default function Employee({ params }: { params: { employee: string } }) {
                     name="permissions"
                     disabled={restrictions}
                   >
-                    <Options value="SUPERADMIN">Super Admin</Options>
-                    <Options value="ADMIN">Admin</Options>
+                    {permission === "SUPERADMIN" && (
+                      <Options value="SUPERADMIN">Super Admin</Options>
+                    )}
+                    {permission === "ADMIN" && (
+                      <Options value="ADMIN">Admin</Options>
+                    )}
                     <Options value="MANAGER">Manager</Options>
                     <Options value="USER"> User</Options>
                   </Selects>
@@ -439,7 +447,7 @@ export default function Employee({ params }: { params: { employee: string } }) {
                     <Options value="SUPERADMIN">Super Admin</Options>
                     <Options value="ADMIN">Admin</Options>
                     <Options value="MANAGER">Manager</Options>
-                    <Options value=" USER"> User</Options>
+                    <Options value="USER"> User</Options>
                   </Selects>
                 </Labels>
               )}
