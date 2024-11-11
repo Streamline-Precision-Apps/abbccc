@@ -91,6 +91,7 @@ export default function Employee({ params }: { params: { employee: string } }) {
         setUserStatus(data.activeEmployee);
         setRenderedData(data);
         setEditedData(data);
+
         setImage(data.image);
         setFirstName(data.firstName);
         setLastName(data.lastName);
@@ -191,6 +192,37 @@ export default function Employee({ params }: { params: { employee: string } }) {
     } else {
       console.log("Failed to update employee info.");
     }
+  };
+
+  const revertField = (field: keyof Data) => {
+    setEditedData((prevData) =>
+      prevData && renderedData
+        ? { ...prevData, [field]: renderedData[field] }
+        : prevData
+    );
+  };
+
+  const revertField1 = (field: keyof Data1) => {
+    setEditedData1((prevData) =>
+      prevData && renderedData1
+        ? { ...prevData, [field]: renderedData1[field] }
+        : prevData
+    );
+  };
+
+  // Utility function to check if a specific field has been modified
+  const isFieldChanged = (field: keyof Data) => {
+    return (
+      editedData && renderedData && editedData[field] !== renderedData[field]
+    );
+  };
+
+  const isFieldChanged1 = (field: keyof Data1) => {
+    return (
+      editedData1 &&
+      renderedData1 &&
+      editedData1[field] !== renderedData1[field]
+    );
   };
 
   if (!renderedData || !renderedData1) {
@@ -310,28 +342,68 @@ export default function Employee({ params }: { params: { employee: string } }) {
               ) : (
                 <Titles size={"h3"}>Employee Information</Titles>
               )}
-              <Holds position={"row"} className="gap-14 h-full mb-20 ">
-                <Holds className="w-1/2 h-full ">
-                  <Labels size={"p6"}>
-                    First Name
+              <Holds position={"row"} className="gap-16 h-full ">
+                <Holds className="w-1/2 h-full my-10 ">
+                  <Labels size={"p6"}>First Name</Labels>
+                  <Holds
+                    position={"row"}
+                    className="gap-2 h-10 border-[3px] rounded-[10px] border-black"
+                  >
                     <Inputs
-                      className="h-10"
+                      className="h-full w-5/6 border-2 border-none focus:outline-none my-auto "
                       type="text"
                       name="firstName"
                       value={editedData?.firstName || ""}
                       onChange={handleInputChange}
                     />
-                  </Labels>
-                  <Labels size={"p6"}>
-                    Last Name
+                    {isFieldChanged("firstName") && (
+                      <Buttons
+                        background={"none"}
+                        type="button"
+                        className="w-1/6"
+                        title="Revert changes"
+                        onClick={() => revertField("firstName")}
+                      >
+                        <Holds>
+                          <Images
+                            titleImg={"/turnBack.svg"}
+                            titleImgAlt={"revert"}
+                            size={"70"}
+                          />
+                        </Holds>
+                      </Buttons>
+                    )}
+                  </Holds>
+                  <Labels size={"p6"}>Last Name</Labels>
+                  <Holds
+                    position={"row"}
+                    className="gap-2 h-10  border-[3px] rounded-[10px] border-black"
+                  >
                     <Inputs
-                      className="h-10"
+                      className="h-full w-5/6 border-2 border-none focus:outline-none my-auto "
                       type="text"
                       name="lastName"
                       value={editedData?.lastName || ""}
                       onChange={handleInputChange}
                     />
-                  </Labels>
+                    {isFieldChanged("lastName") && (
+                      <Buttons
+                        background={"none"}
+                        type="button"
+                        className="w-1/6"
+                        title="Revert changes"
+                        onClick={() => revertField("lastName")}
+                      >
+                        <Holds>
+                          <Images
+                            titleImg={"/turnBack.svg"}
+                            titleImgAlt={"revert"}
+                            size={"70"}
+                          />
+                        </Holds>
+                      </Buttons>
+                    )}
+                  </Holds>
 
                   <Labels size={"p6"}>
                     Username
@@ -344,20 +416,44 @@ export default function Employee({ params }: { params: { employee: string } }) {
                       disabled
                     />
                   </Labels>
-                  <Labels size={"p6"}>
-                    Email
+                  <Labels size={"p6"}>Email </Labels>
+                  <Holds
+                    position={"row"}
+                    className="gap-2 h-10  border-[3px] rounded-[10px] border-black"
+                  >
                     <Inputs
-                      className="h-10"
+                      className="h-full w-5/6 border-2 border-none focus:outline-none my-auto "
                       type="text"
                       name="email"
                       value={editedData?.email || ""}
                       onChange={handleInputChange}
                     />
-                  </Labels>
-                  <Labels size={"p6"}>
-                    Date of Birth
+                    {isFieldChanged("email") && (
+                      <Buttons
+                        background={"none"}
+                        type="button"
+                        className="w-1/6"
+                        title="Revert changes"
+                        onClick={() => revertField("firstName")}
+                      >
+                        <Holds>
+                          <Images
+                            titleImg={"/turnBack.svg"}
+                            titleImgAlt={"revert"}
+                            size={"70"}
+                          />
+                        </Holds>
+                      </Buttons>
+                    )}
+                  </Holds>
+
+                  <Labels size={"p6"}>Date of Birth </Labels>
+                  <Holds
+                    position={"row"}
+                    className="gap-2 h-10  border-[3px] rounded-[10px] border-black"
+                  >
                     <Inputs
-                      className="h-10"
+                      className="h-full w-5/6 border-2 border-none focus:outline-none my-auto "
                       type="date"
                       name="DOB"
                       value={
@@ -367,41 +463,121 @@ export default function Employee({ params }: { params: { employee: string } }) {
                       }
                       onChange={handleInputChange}
                     />
-                  </Labels>
-                  <Labels size={"p6"}>
-                    Phone Number
+                    {isFieldChanged("DOB") && (
+                      <Buttons
+                        background={"none"}
+                        type="button"
+                        className="w-1/6"
+                        title="Revert changes"
+                        onClick={() => revertField("DOB")}
+                      >
+                        <Holds>
+                          <Images
+                            titleImg={"/turnBack.svg"}
+                            titleImgAlt={"revert"}
+                            size={"70"}
+                          />
+                        </Holds>
+                      </Buttons>
+                    )}
+                  </Holds>
+
+                  <Labels size={"p6"}>Phone Number </Labels>
+                  <Holds
+                    position={"row"}
+                    className="gap-2 h-10 border-[3px] rounded-[10px] border-black"
+                  >
                     <Inputs
-                      className="h-10"
+                      className="h-full w-5/6 border-2 border-none focus:outline-none my-auto "
                       type="tel"
                       name="phoneNumber"
                       value={editedData1?.phoneNumber || ""}
                       onChange={handleInputChange1}
                     />
-                  </Labels>
+                    {isFieldChanged1("phoneNumber") && (
+                      <Buttons
+                        title="Revert changes"
+                        type="button"
+                        className="w-1/6"
+                        background={"none"}
+                        onClick={() => revertField1("phoneNumber")}
+                      >
+                        <Holds>
+                          <Images
+                            titleImg={"/turnBack.svg"}
+                            titleImgAlt={"revert"}
+                            size={"70"}
+                          />
+                        </Holds>
+                      </Buttons>
+                    )}
+                  </Holds>
                 </Holds>
                 <Holds className="w-1/2 h-full">
-                  <Holds className="h-full  ">
+                  <Holds className="h-full  mb-20 ">
                     <Holds className="h-full flex justify-start">
-                      <Labels size={"p6"}>
-                        Emergency Contact
+                      <Labels size={"p6"}>Emergency Contact</Labels>
+                      <Holds
+                        position={"row"}
+                        className="gap-2 h-10  border-[3px] rounded-[10px] border-black"
+                      >
                         <Inputs
-                          className="h-10"
+                          className="h-full w-5/6 border-2 border-none focus:outline-none my-auto "
                           type="text"
                           name="emergencyContact"
                           value={editedData1?.emergencyContact || ""}
                           onChange={handleInputChange1}
                         />
-                      </Labels>
-                      <Labels size={"p6"}>
-                        Emergency Contact Number
+                        {isFieldChanged1("emergencyContact") && (
+                          <Buttons
+                            type="button"
+                            background={"none"}
+                            className="w-1/6"
+                            title="Revert changes"
+                            onClick={() => revertField1("emergencyContact")}
+                          >
+                            <Holds>
+                              <Images
+                                titleImg={"/turnBack.svg"}
+                                titleImgAlt={"revert"}
+                                size={"70"}
+                              />
+                            </Holds>
+                          </Buttons>
+                        )}
+                      </Holds>
+                      <Labels size={"p6"}>Emergency Contact Number</Labels>
+                      <Holds
+                        position={"row"}
+                        className="gap-2 h-10  border-[3px] rounded-[10px] border-black"
+                      >
                         <Inputs
-                          className="h-10"
+                          className="h-full w-5/6 border-2 border-none focus:outline-none my-auto "
                           type="tel"
                           name="emergencyContactNumber"
                           value={editedData1?.emergencyContactNumber || ""}
                           onChange={handleInputChange1}
                         />
-                      </Labels>
+                        {isFieldChanged1("emergencyContactNumber") && (
+                          <Buttons
+                            type="button"
+                            background={"none"}
+                            className="w-1/6"
+                            title="Revert changes"
+                            onClick={() =>
+                              revertField1("emergencyContactNumber")
+                            }
+                          >
+                            <Holds>
+                              <Images
+                                titleImg={"/turnBack.svg"}
+                                titleImgAlt={"revert"}
+                                size={"70"}
+                              />
+                            </Holds>
+                          </Buttons>
+                        )}
+                      </Holds>
                     </Holds>
                     <Labels size={"p6"}>Signature</Labels>
                     <Holds className="justify-end w-full h-[200px] border-[3px] rounded-[10px] border-black">
