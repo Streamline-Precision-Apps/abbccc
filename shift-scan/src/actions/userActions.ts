@@ -6,6 +6,28 @@ import bcrypt from "bcryptjs";
 
 export async function createUser(formData: FormData) {
   try {
+    // prevent duplicate users as long as first name, last name, and DOB are the same
+    const firstName = formData.get("firstName") as string;
+    const lastName = formData.get("lastName") as string;
+    const DOB = formData.get("DOB") as string;
+    const users = await prisma.users.findMany({
+      where: {
+        firstName,
+        lastName,
+        DOB,
+      },
+      select: {
+        id: true,
+      },
+    });
+    const existingUser = users[0]?.id;
+
+    if (users.length > 0) {
+      console.log("User already exists");
+      console.log(existingUser);
+      return;
+    }
+
     console.log("Creating user:", formData);
     await prisma.users.create({
       data: {

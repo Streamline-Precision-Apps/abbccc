@@ -66,16 +66,22 @@ export async function editPersonnelInfo(formData: FormData) {
     const DOB = formData.get("DOB") as string;
 
     // { name: 'permissions', value: 'SUPERADMIN' },
-    const permission = formData.get("permissions") as string;
+    const permission = formData.get("permission") as string;
 
     // { name: 'truckView', value: 'true' },
-    const truckView = Boolean(formData.get("truckView") as string);
+    const truckBool = formData.get("truckView") as string;
+    const truckView = Boolean(truckBool === "true");
     // { name: 'tascoView', value: 'true' },
-    const tascoView = Boolean(formData.get("tascoView") as string);
+    const tascoBool = formData.get("tascoView") as string;
+    const tascoView = Boolean(tascoBool === "true");
     // { name: 'laborView', value: 'true' },
-    const laborView = Boolean(formData.get("laborView") as string);
+    const laborBool = formData.get("laborView") as string;
+    const laborView = Boolean(laborBool === "true");
     // { name: 'mechanicView', value: 'true' }
-    const mechanicView = Boolean(formData.get("mechanicView") as string);
+    const mechanicBool = formData.get("mechanicView") as string;
+    const mechanicView = Boolean(mechanicBool === "true");
+
+    console.log(truckView, tascoView, laborView, mechanicView);
 
     await prisma.users.update({
       where: { id: id },

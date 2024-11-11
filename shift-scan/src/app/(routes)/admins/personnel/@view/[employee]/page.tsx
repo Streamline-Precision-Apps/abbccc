@@ -213,9 +213,15 @@ export default function Employee({ params }: { params: { employee: string } }) {
 
             <Holds className="w-1/2 h-1/2">
               <Holds position="right">
-                <Titles position="left">
-                  {firstName} {lastName}
-                </Titles>
+                {userId !== user ? (
+                  <Titles size="h2" position="left">
+                    {firstName} {lastName}
+                  </Titles>
+                ) : (
+                  <Titles size="h2" position="left">
+                    Your Profile
+                  </Titles>
+                )}
               </Holds>
               <Holds>
                 <Texts
@@ -299,6 +305,11 @@ export default function Employee({ params }: { params: { employee: string } }) {
           <Inputs type="hidden" name="id" value={editedData?.id || ""} />
           <Holds position="row" className="w-full h-full p-4">
             <Holds className="w-2/3 h-full ">
+              {userId === user ? (
+                <Titles size={"h3"}>Your Information</Titles>
+              ) : (
+                <Titles size={"h3"}>Employee Information</Titles>
+              )}
               <Holds position={"row"} className="gap-14 h-full mb-20 ">
                 <Holds className="w-1/2 h-full ">
                   <Labels size={"p6"}>
@@ -415,21 +426,32 @@ export default function Employee({ params }: { params: { employee: string } }) {
             <Holds className="w-1/3 h-full">
               {/* This section is for the permission level to display, the user will be able to change the permission level differently based on roles*/}
               {/*Super admin can change the permission level of anyone */}
+              <Titles size={"h3"}>Employee Permissions</Titles>
               {permission === "SUPERADMIN" || permission === "ADMIN" ? (
                 <Labels size={"p6"}>
                   Permission Level
                   <Selects
-                    value={editedData?.permission}
-                    onChange={handleInputChange}
-                    name="permissions"
+                    value={editedData?.permission || "USER"} // Set default to "USER" if no value
+                    onChange={(e) =>
+                      setEditedData((prevData) =>
+                        prevData
+                          ? {
+                              ...prevData,
+                              permission: e.target.value as Permission,
+                            }
+                          : null
+                      )
+                    }
+                    name="permission"
                     disabled={restrictions}
                   >
-                    {permission === "SUPERADMIN" && (
-                      <Options value="SUPERADMIN">Super Admin</Options>
-                    )}
-                    {permission === "ADMIN" && (
-                      <Options value="ADMIN">Admin</Options>
-                    )}
+                    <Options
+                      value="SUPERADMIN"
+                      disabled={editedData?.permission === "SUPERADMIN"}
+                    >
+                      Super Admin
+                    </Options>
+                    <Options value="ADMIN">Admin</Options>
                     <Options value="MANAGER">Manager</Options>
                     <Options value="USER"> User</Options>
                   </Selects>
@@ -442,7 +464,6 @@ export default function Employee({ params }: { params: { employee: string } }) {
                     value={editedData?.permission}
                     onChange={handleInputChange}
                     name="permission"
-                    disabled
                   >
                     <Options value="SUPERADMIN">Super Admin</Options>
                     <Options value="ADMIN">Admin</Options>
@@ -452,45 +473,85 @@ export default function Employee({ params }: { params: { employee: string } }) {
                 </Labels>
               )}
 
+              {/* Individual views with separate state bindings */}
               <Labels size={"p6"}>
                 Truck View
                 <Selects
                   name="truckView"
-                  value={editedData?.truckView.toString()}
-                  onChange={handleInputChange}
+                  value={editedData?.truckView ? "true" : "false"}
+                  onChange={(e) =>
+                    setEditedData((prevData) =>
+                      prevData
+                        ? {
+                            ...prevData,
+                            truckView: e.target.value === "true", // Convert back to boolean
+                          }
+                        : null
+                    )
+                  }
                 >
                   <Options value="true">True</Options>
                   <Options value="false">False</Options>
                 </Selects>
               </Labels>
+
               <Labels size={"p6"}>
                 Tasco View
                 <Selects
                   name="tascoView"
-                  value={editedData?.truckView.toString()}
-                  onChange={handleInputChange}
+                  value={editedData?.truckView ? "true" : "false"}
+                  onChange={(e) =>
+                    setEditedData((prevData) =>
+                      prevData
+                        ? {
+                            ...prevData,
+                            tascoView: e.target.value === "true",
+                          }
+                        : null
+                    )
+                  }
                 >
                   <Options value="true">True</Options>
                   <Options value="false">False</Options>
                 </Selects>
               </Labels>
+
               <Labels size={"p6"}>
                 Labor View
                 <Selects
-                  value={editedData?.truckView.toString()}
-                  onChange={handleInputChange}
                   name="laborView"
+                  value={editedData?.laborView ? "true" : "false"}
+                  onChange={(e) =>
+                    setEditedData((prevData) =>
+                      prevData
+                        ? {
+                            ...prevData,
+                            laborView: e.target.value === "true",
+                          }
+                        : null
+                    )
+                  }
                 >
                   <Options value="true">True</Options>
                   <Options value="false">False</Options>
                 </Selects>
               </Labels>
+
               <Labels size={"p6"}>
                 Mechanic View
                 <Selects
-                  value={editedData?.truckView.toString()}
-                  onChange={handleInputChange}
                   name="mechanicView"
+                  value={editedData?.mechanicView ? "true" : "false"}
+                  onChange={(e) =>
+                    setEditedData((prevData) =>
+                      prevData
+                        ? {
+                            ...prevData,
+                            mechanicView: e.target.value === "true",
+                          }
+                        : null
+                    )
+                  }
                 >
                   <Options value="true">True</Options>
                   <Options value="false">False</Options>
