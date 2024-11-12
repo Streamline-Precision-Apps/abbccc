@@ -3,17 +3,18 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Tab } from "@/components/(reusable)/tab";
-import { Texts } from "@/components/(reusable)/texts";
 
 import { useEffect, useState } from "react";
-import { Personnel } from "./_components/Personnel";
+import { Timesheets } from "./_components/Timesheets";
 import { Permission, SearchUser } from "@/lib/types";
 import { z } from "zod";
-import { Timesheets } from "./_components/Timesheets";
+import { Personnel } from "./_components/Personnel";
+import { Texts } from "@/components/(reusable)/texts";
+
 export default function Search() {
   const [activeTab, setActiveTab] = useState(1);
   const [employees, setEmployees] = useState<SearchUser[]>([]);
-  const [filter, setFilter] = useState<string>("all");
+  const [filter, setFilter] = useState("all");
 
   const employeesSchema = z.array(
     z.object({
@@ -62,28 +63,21 @@ export default function Search() {
 
     fetchEmployees();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [filter]);
 
   return (
     <Holds className="h-full ">
       <Grids rows={"10"}>
         <Holds position={"row"} className="row-span-1 h-full gap-2">
-          <Tab
-            onClick={() => setActiveTab(1)}
-            tabLabel={"Personnel"}
-            isTabActive={activeTab === 1}
-            size={"text-sm"}
-          />
-          <Tab
-            onClick={() => setActiveTab(2)}
-            tabLabel={"TimeSheets"}
-            isTabActive={activeTab === 2}
-          />
-          <Tab
-            onClick={() => setActiveTab(3)}
-            tabLabel={"Crews"}
-            isTabActive={activeTab === 3}
-          />
+          <Tab onClick={() => setActiveTab(1)} isActive={activeTab === 1}>
+            Personnel
+          </Tab>
+          <Tab onClick={() => setActiveTab(2)} isActive={activeTab === 2}>
+            Time Sheets
+          </Tab>
+          <Tab onClick={() => setActiveTab(3)} isActive={activeTab === 3}>
+            Crews
+          </Tab>
         </Holds>
 
         <Holds

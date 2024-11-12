@@ -1,9 +1,9 @@
 "use client";
-
 import {
   archivePersonnel,
   editPersonnelInfo,
   reactivatePersonnel,
+  removeProfilePic,
 } from "@/actions/adminActions";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
@@ -20,6 +20,8 @@ import { Permission } from "@/lib/types";
 import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import EmptyView from "../../../_pages/EmptyView";
+import Spinner from "@/components/(animations)/spinner";
 
 type Data = {
   DOB: string;
@@ -63,6 +65,8 @@ export default function Employee({ params }: { params: { employee: string } }) {
   // modal
   const [isOpen, setIsOpen] = useState(false);
   const [isOpen2, setIsOpen2] = useState(false);
+  const [isProfilePic, setIsProfilePic] = useState(false); // profile modal
+  const [isPersonalProfile, setIsPersonalProfile] = useState(false); // profile modal
 
   const handleSubmitClick = () => {
     formRef.current?.dispatchEvent(
@@ -194,6 +198,16 @@ export default function Employee({ params }: { params: { employee: string } }) {
     }
   };
 
+  const handleRemoveProfilePic = async () => {
+    const formData = new FormData();
+    formData.append("userId", user);
+    formData.append("image", "");
+    const res = await removeProfilePic(formData);
+    if (res === null) {
+      setImage("");
+    }
+  };
+
   const revertField = (field: keyof Data) => {
     setEditedData((prevData) =>
       prevData && renderedData
@@ -226,15 +240,26 @@ export default function Employee({ params }: { params: { employee: string } }) {
   };
 
   if (!renderedData || !renderedData1) {
-    return <Texts>Loading employee data...</Texts>;
+    return <EmptyView Children={<Spinner size={350} />} />;
   }
 
   return (
-    <Holds className="w-full h-full p-2">
+    <Holds className="w-full h-full">
       <Grids rows="10" gap="5">
-        <Holds position="row" className="row-span-2 h-full px-2">
-          <Holds position="row" className="w-1/2 h-full">
-            <Holds position="left" className="w-1/2 my-auto">
+        <Holds position="row" className="row-span-2 h-full w-full">
+          <Grids rows="3" cols={"8"} className="w-full">
+            {/* --------------------------------------------------------------------------------------------------------------------*/}
+            {/* -----------------------------------------------  Image section  ----------------------------------------------------*/}
+            {/* --------------------------------------------------------------------------------------------------------------------*/}
+            <Holds
+              position="left"
+              className="row-start-1 row-end-2 col-start-1 col-end-3 h-full"
+              onClick={
+                userId !== user
+                  ? () => setIsProfilePic(true)
+                  : () => setIsPersonalProfile(true)
+              }
+            >
               <Images
                 titleImg={image || "/person.svg"}
                 titleImgAlt="personnel"
@@ -243,7 +268,7 @@ export default function Employee({ params }: { params: { employee: string } }) {
               />
             </Holds>
 
-            <Holds className="w-1/2 h-1/2">
+            <Holds className="row-start-2 row-end-3 col-start-3 col-end-5 h-full">
               <Holds position="right">
                 {userId !== user ? (
                   <Titles size="h2" position="left">
@@ -265,42 +290,53 @@ export default function Employee({ params }: { params: { employee: string } }) {
                 </Texts>
               </Holds>
             </Holds>
-          </Holds>
-
-          <Holds className="w-1/2 h-full items-end">
-            <Holds position="row" className="w-2/3 justify-end flex gap-4">
-              <Holds>
-                <Buttons
-                  background="green"
-                  type="button"
-                  onClick={handleSubmitClick}
-                >
-                  <Titles size="h5">Submit Edit</Titles>
-                </Buttons>
+            {/* --------------------------------------------------------------------------------------------------------------------*/}
+            {/* -----------------------------------------------  Buttons Section   -------------------------------------------------*/}
+            {/* --------------------------------------------------------------------------------------------------------------------*/}
+            <Holds className="row-start-1 row-end-2 col-start-6 col-end-9 h-full w-full p-3">
+              <Holds position="row" className=" w-full justify-end flex gap-4 ">
+                <Holds>
+                  <Buttons
+                    background="green"
+                    type="button"
+                    onClick={handleSubmitClick}
+                    className="py-2"
+                  >
+                    <Titles size="h5">Submit Edit</Titles>
+                  </Buttons>
+                </Holds>
+                {userId !== user || permission === "SUPERADMIN" ? (
+                  <>
+                    {userStatus === true ? (
+                      <Holds>
+                        <Buttons
+                          className="py-2"
+                          background="red"
+                          onClick={() => setIsOpen(true)}
+                        >
+                          <Titles size="h5">Terminate Employee</Titles>
+                        </Buttons>
+                      </Holds>
+                    ) : (
+                      <Holds>
+                        <Buttons
+                          background="lightBlue"
+                          onClick={() => setIsOpen2(true)}
+                        >
+                          <Titles size="h5">Activate Employee</Titles>
+                        </Buttons>
+                      </Holds>
+                    )}
+                  </>
+                ) : null}
               </Holds>
-              {userId !== user || permission === "SUPERADMIN" ? (
-                <>
-                  {userStatus === true ? (
-                    <Holds>
-                      <Buttons background="red" onClick={() => setIsOpen(true)}>
-                        <Titles size="h5">Terminate Employee</Titles>
-                      </Buttons>
-                    </Holds>
-                  ) : (
-                    <Holds>
-                      <Buttons
-                        background="lightBlue"
-                        onClick={() => setIsOpen2(true)}
-                      >
-                        <Titles size="h5">Activate Employee</Titles>
-                      </Buttons>
-                    </Holds>
-                  )}
-                </>
-              ) : null}
             </Holds>
-          </Holds>
+          </Grids>
         </Holds>
+        {/* --------------------------------------------------------------------------------------------------------------------*/}
+        {/* -----------------------------------------------  Modal Section  ----------------------------------------------------*/}
+        {/* --------------------------------------------------------------------------------------------------------------------*/}
+        {/* This is the modal for reinstating  -- #update needed */}
         <Modals
           isOpen={isOpen}
           type="decision"
@@ -314,7 +350,7 @@ export default function Employee({ params }: { params: { employee: string } }) {
             Are you sure you want to terminate this employee?
           </Texts>
         </Modals>
-
+        {/* This is the modal for reinstating  -- #update needed */}
         <Modals
           isOpen={isOpen2}
           type="decision"
@@ -329,11 +365,41 @@ export default function Employee({ params }: { params: { employee: string } }) {
           </Texts>
         </Modals>
 
+        {/* This is the modal for employee profiles to allow user to upload theres -- #update needed */}
+        <Modals
+          isOpen={isProfilePic}
+          type="decision"
+          handleSubmit={() => {
+            handleRemoveProfilePic();
+            setIsProfilePic(false);
+          }}
+          handleClose={() => setIsProfilePic(false)}
+        >
+          <Texts size="p3">Remove Profile Photo</Texts>
+        </Modals>
+
+        {/* This is the modal for multiple different profile picture upload decisions -- #update needed */}
+        <Modals
+          isOpen={isPersonalProfile}
+          type="decision"
+          handleSubmit={() => {
+            setIsPersonalProfile(false);
+          }}
+          handleClose={() => setIsPersonalProfile(false)}
+        >
+          <Texts size="p3">Remove Profile Photo</Texts>
+        </Modals>
+        {/* --------------------------------------------------------------------------------------------------------------------*/}
+        {/* -----------------------------------------------  Form Section  -----------------------------------------------------*/}
+        {/* --------------------------------------------------------------------------------------------------------------------*/}
         <form
           ref={formRef}
           onSubmit={handleSubmitEdits}
           className="row-span-8 h-full"
         >
+          {/* --------------------------------------------------------------------------------------------------------------------*/}
+          {/* -----------------------------------------------  Employee Info  ----------------------------------------------------*/}
+          {/* --------------------------------------------------------------------------------------------------------------------*/}
           <Inputs type="hidden" name="id" value={editedData?.id || ""} />
           <Holds position="row" className="w-full h-full p-4">
             <Holds className="w-2/3 h-full ">
@@ -598,6 +664,10 @@ export default function Employee({ params }: { params: { employee: string } }) {
                 </Holds>
               </Holds>
             </Holds>
+            {/* --------------------------------------------------------------------------------------------------------------------*/}
+            {/* ----------------------------------------------   Employee Permissions  ---------------------------------------------*/}
+            {/* --------------------------------------------------------------------------------------------------------------------*/}
+
             <Holds className="w-[2px] h-full bg-black mx-5 border-none"></Holds>
             <Holds className="w-1/3 h-full">
               {/* This section is for the permission level to display, the user will be able to change the permission level differently based on roles*/}
@@ -633,7 +703,7 @@ export default function Employee({ params }: { params: { employee: string } }) {
                   </Selects>
                 </Labels>
               ) : (
-                //the other cannt change the permission level
+                //the other cannot change the permission level
                 <Labels size={"p6"}>
                   Permission Level
                   <Selects
