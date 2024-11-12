@@ -1,5 +1,5 @@
 import EmptyView from "../../_pages/EmptyView";
 
 export default function View() {
-  return <EmptyView />;
+  return <EmptyView Children={undefined} />;
 }
