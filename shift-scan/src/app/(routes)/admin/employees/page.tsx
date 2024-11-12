@@ -125,16 +125,12 @@ export default function AddEmployeeContent() {
     <>
       <Holds className=" h-full">
         <Holds position={"row"}>
-          <Tab
-            onClick={() => setActiveTab(1)}
-            tabLabel={t("ModifyEmployee")}
-            isTabActive={activeTab === 1}
-          />
-          <Tab
-            onClick={() => setActiveTab(2)}
-            tabLabel={t("ViewEmployees")}
-            isTabActive={activeTab === 2}
-          />
+          <Tab onClick={() => setActiveTab(1)} isActive={activeTab === 1}>
+            {t("ModifyEmployee")}
+          </Tab>
+          <Tab onClick={() => setActiveTab(2)} isActive={activeTab === 2}>
+            {t("ViewEmployees")}
+          </Tab>
         </Holds>
         {activeTab === 1 && <UserManagement users={employees} />}
         {activeTab === 2 && <UserCards users={employees} />}

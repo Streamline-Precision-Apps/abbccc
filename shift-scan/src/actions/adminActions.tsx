@@ -26,6 +26,28 @@ export async function reactivatePersonnel(formData: FormData) {
     throw error;
   }
 }
+
+export async function removeProfilePic(formData: FormData) {
+  try {
+    console.log("Removing profile pic...");
+    console.log(formData);
+    const id = formData.get("userId") as string;
+
+    const result = await prisma.users.update({
+      where: { id },
+      data: {
+        image: null,
+      },
+    });
+    revalidatePath("/admins/personnel");
+    revalidatePath("/admins/personnel/" + result.id);
+    return result.image;
+  } catch (error) {
+    console.error("Error removing profile pic:", error);
+    throw error;
+  }
+}
+
 export async function archivePersonnel(formData: FormData) {
   try {
     console.log("Archiving personnel...");
@@ -54,30 +76,28 @@ export async function editPersonnelInfo(formData: FormData) {
   try {
     console.log("Editing personnel info...");
     console.log(formData);
-    // { name: 'id', value: '7' },
+
     const id = formData.get("id") as string;
-    // { name: 'firstName', value: 'Devun' },
+
     const firstName = formData.get("firstName") as string;
-    // { name: 'lastName', value: 'Durst' },
+
     const lastName = formData.get("lastName") as string;
-    // { name: 'email', value: 'devunfox15@gmail.com' },
+
     const email = formData.get("email") as string;
-    // { name: 'DOB', value: '1999-07-08' },
+
     const DOB = formData.get("DOB") as string;
 
-    // { name: 'permissions', value: 'SUPERADMIN' },
     const permission = formData.get("permission") as string;
 
-    // { name: 'truckView', value: 'true' },
     const truckBool = formData.get("truckView") as string;
     const truckView = Boolean(truckBool === "true");
-    // { name: 'tascoView', value: 'true' },
+
     const tascoBool = formData.get("tascoView") as string;
     const tascoView = Boolean(tascoBool === "true");
-    // { name: 'laborView', value: 'true' },
+
     const laborBool = formData.get("laborView") as string;
     const laborView = Boolean(laborBool === "true");
-    // { name: 'mechanicView', value: 'true' }
+
     const mechanicBool = formData.get("mechanicView") as string;
     const mechanicView = Boolean(mechanicBool === "true");
 
@@ -98,12 +118,8 @@ export async function editPersonnelInfo(formData: FormData) {
       },
     });
 
-    // { name: 'phoneNumber', value: '936-230-7110' },
     const phoneNumber = formData.get("phoneNumber") as string;
-
-    // { name: 'emergencyContact', value: 'Daphnie Goss' },
     const emergencyContact = formData.get("emergencyContact") as string;
-    // { name: 'emergencyContactNumber', value: '936-230-7110' },
     const emergencyContactNumber = formData.get(
       "emergencyContactNumber"
     ) as string;
@@ -370,7 +386,7 @@ export async function TagCostCodeChange(formData: FormData) {
   }
 }
 
-export async function AddlistToJobsite(formData: FormData) {
+export async function AddListToJobsite(formData: FormData) {
   try {
     console.log("Adding cost codes to job site...");
     const qrId = formData.get("qrId") as string;
@@ -416,7 +432,7 @@ export async function AddlistToJobsite(formData: FormData) {
   }
 }
 
-export async function RemovelistToJobsite(formData: FormData) {
+export async function RemoveListToJobsite(formData: FormData) {
   try {
     console.log("Adding cost codes to job site...");
     const qrId = formData.get("qrId") as string;

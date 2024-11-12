@@ -1,12 +1,12 @@
 "use client";
 import {
-  AddlistToJobsite,
+  AddListToJobsite,
   createCostCode,
   deleteCostCode,
   EditCostCode,
   fetchByNameCostCode,
   findAllCostCodesByTags,
-  RemovelistToJobsite,
+  RemoveListToJobsite,
   TagCostCodeChange,
 } from "@/actions/adminActions";
 import { Buttons } from "@/components/(reusable)/buttons";
@@ -168,7 +168,7 @@ export default function CostCodes({
     formData.append("jobsiteId", jobsiteId);
     formData.append("types", costCodes.filter((code) => code !== "").join(","));
 
-    await AddlistToJobsite(formData);
+    await AddListToJobsite(formData);
   };
 
   const disconnect = async (event: FormEvent<HTMLFormElement>) => {
@@ -180,7 +180,7 @@ export default function CostCodes({
     formData.append("jobsiteId", jobsiteId);
     formData.append("types", costCodes.filter((code) => code !== "").join(","));
 
-    await RemovelistToJobsite(formData);
+    await RemoveListToJobsite(formData);
   };
 
   return (
