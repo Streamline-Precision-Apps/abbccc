@@ -69,21 +69,15 @@ export default function Search() {
     <Holds className="h-full ">
       <Grids rows={"10"}>
         <Holds position={"row"} className="row-span-1 h-full gap-2">
-          <Tab
-            onClick={() => setActiveTab(1)}
-            tabLabel={"Personnel"}
-            isTabActive={activeTab === 1}
-          />
-          <Tab
-            onClick={() => setActiveTab(2)}
-            tabLabel={"Time Sheets"}
-            isTabActive={activeTab === 2}
-          />
-          <Tab
-            onClick={() => setActiveTab(3)}
-            tabLabel={"Crews"}
-            isTabActive={activeTab === 3}
-          />
+          <Tab onClick={() => setActiveTab(1)} isActive={activeTab === 1}>
+            Personnel
+          </Tab>
+          <Tab onClick={() => setActiveTab(2)} isActive={activeTab === 2}>
+            Time Sheets
+          </Tab>
+          <Tab onClick={() => setActiveTab(3)} isActive={activeTab === 3}>
+            Crews
+          </Tab>
         </Holds>
 
         <Holds

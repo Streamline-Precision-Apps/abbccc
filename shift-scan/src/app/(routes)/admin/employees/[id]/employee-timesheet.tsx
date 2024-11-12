@@ -156,16 +156,12 @@ export const EmployeeTimeSheets = ({
       <Holds>
         <Holds>
           <Contents>
-            <Tab
-              onClick={() => setActiveTab(1)}
-              tabLabel={t("AddTimeSheet")}
-              isTabActive={activeTab === 1}
-            />
-            <Tab
-              onClick={() => setActiveTab(2)}
-              tabLabel={t("ViewTimeSheets")}
-              isTabActive={activeTab === 2}
-            />
+            <Tab onClick={() => setActiveTab(1)} isActive={activeTab === 1}>
+              {t("AddTimeSheet")}
+            </Tab>
+            <Tab onClick={() => setActiveTab(2)} isActive={activeTab === 2}>
+              {t("ViewTimeSheets")}
+            </Tab>
             {activeTab === 1 && (
               <AddTimeSheet
                 jobsites={jobsiteData}
