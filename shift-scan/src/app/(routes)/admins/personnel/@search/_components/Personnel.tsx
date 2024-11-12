@@ -17,7 +17,7 @@ type Props = {
 
 export const Personnel = ({ employees, setFilter }: Props) => {
   const [term, setTerm] = useState<string>("");
-  const [page, setPage] = useState(true);
+  // const [page, setPage] = useState(true);
   const router = useRouter();
 
   // Memoize the filtered list to avoid re-filtering on every render
@@ -55,7 +55,7 @@ export const Personnel = ({ employees, setFilter }: Props) => {
             defaultValue={"all"}
             onChange={(e) => setFilter(e.target.value)}
             className="w-full px-0 py-2 text-center"
-            onClick={() => setPage(!page)}
+            // onClick={() => setPage(!page)}
           >
             <option value="all">Select Filter</option>
             <option value="all">All</option>
@@ -73,51 +73,46 @@ export const Personnel = ({ employees, setFilter }: Props) => {
         </Holds>
         {/* Search Input Section */}
         <Holds className="row-span-8 h-full border-[3px] border-black rounded-t-[10px]">
-          {page && (
-            <>
-              <Holds
-                position={"row"}
-                className="py-2 border-b-[3px] border-black"
-              >
-                <Holds className="h-full w-[20%]">
-                  <Images
-                    titleImg="/magnifyingGlass.svg"
-                    titleImgAlt="search"
-                  />
-                </Holds>
-                <Holds className="w-[80%]">
-                  <Inputs
-                    type="search"
-                    placeholder="Search employees by name"
-                    value={term}
-                    onChange={handleSearchChange}
-                    className="border-none outline-none"
-                  />
-                </Holds>
+          <>
+            <Holds
+              position={"row"}
+              className="py-2 border-b-[3px] border-black"
+            >
+              <Holds className="h-full w-[20%]">
+                <Images titleImg="/magnifyingGlass.svg" titleImgAlt="search" />
               </Holds>
-              <Holds className=" h-full mb-4  overflow-y-auto ">
-                <Holds>
-                  {filteredList.length > 0 ? (
-                    filteredList.map((employee) => (
-                      <Holds
-                        key={employee.id}
-                        className="py-2 border-b"
-                        onClick={() => selectEmployee(employee)}
-                      >
-                        <Texts size="p6">
-                          {employee.firstName} {employee.lastName}
-                        </Texts>
-                      </Holds>
-                    ))
-                  ) : (
-                    <Texts size="p6" className="text-center">
-                      No employees found
-                    </Texts>
-                  )}
-                </Holds>
+              <Holds className="w-[80%]">
+                <Inputs
+                  type="search"
+                  placeholder="Search employees by name"
+                  value={term}
+                  onChange={handleSearchChange}
+                  className="border-none outline-none"
+                />
               </Holds>
-            </>
-          )}
+            </Holds>
+            <Holds className=" h-full mb-4  overflow-y-auto ">
+              <Holds>
+                {filteredList.length > 0 ? (
+                  filteredList.map((employee) => (
+                    <Holds
+                      key={employee.id}
+                      className="py-2 border-b"
+                      onClick={() => selectEmployee(employee)}
+                    >
+                      <Texts size="p6">
+                        {employee.firstName} {employee.lastName}
+                      </Texts>
+                    </Holds>
+                  ))
+                ) : (
+                  <Texts size="p6" className="text-center">
+                    No employees found
+                  </Texts>
+                )}
+              </Holds>
+            </Holds>
+          </>
         </Holds>
 
         {/* Create New Employee Button */}

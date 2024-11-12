@@ -6,7 +6,7 @@ import { Tab } from "@/components/(reusable)/tab";
 
 import { useEffect, useState } from "react";
 import { Timesheets } from "./_components/Timesheets";
-import { Permission, SearchUser } from "@/lib/types";
+import { SearchUser } from "@/lib/types";
 import { z } from "zod";
 import { Personnel } from "./_components/Personnel";
 import { Texts } from "@/components/(reusable)/texts";
@@ -16,33 +16,33 @@ export default function Search() {
   const [employees, setEmployees] = useState<SearchUser[]>([]);
   const [filter, setFilter] = useState("all");
 
-  const employeesSchema = z.array(
-    z.object({
-      id: z.string(),
-      firstName: z.string(),
-      lastName: z.string(),
-      username: z.string(),
-      permission: z.nativeEnum(Permission),
-      DOB: z.string(), // Updated this line to parse DOB as a Date
-      truckView: z.boolean(),
-      mechanicView: z.boolean(),
-      laborView: z.boolean(),
-      tascoView: z.boolean(),
-      image: z.string(),
-      terminationDate: z.preprocess((arg) => {
-        if (typeof arg === "string" && arg.trim() !== "") {
-          const parsedDate = new Date(arg);
-          if (!isNaN(parsedDate.getTime())) {
-            return parsedDate;
-          }
-        } else if (arg instanceof Date && !isNaN(arg.getTime())) {
-          return arg;
-        }
-        // Return null for invalid or missing dates
-        return null;
-      }, z.union([z.date(), z.null()])),
-    })
-  );
+  // const employeesSchema = z.array(
+  //   z.object({
+  //     id: z.string(),
+  //     firstName: z.string(),
+  //     lastName: z.string(),
+  //     username: z.string(),
+  //     permission: z.nativeEnum(Permission),
+  //     DOB: z.string(), // Updated this line to parse DOB as a Date
+  //     truckView: z.boolean(),
+  //     mechanicView: z.boolean(),
+  //     laborView: z.boolean(),
+  //     tascoView: z.boolean(),
+  //     image: z.string(),
+  //     terminationDate: z.preprocess((arg) => {
+  //       if (typeof arg === "string" && arg.trim() !== "") {
+  //         const parsedDate = new Date(arg);
+  //         if (!isNaN(parsedDate.getTime())) {
+  //           return parsedDate;
+  //         }
+  //       } else if (arg instanceof Date && !isNaN(arg.getTime())) {
+  //         return arg;
+  //       }
+  //       // Return null for invalid or missing dates
+  //       return null;
+  //     }, z.union([z.date(), z.null()])),
+  //   })
+  // );
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
@@ -50,8 +50,8 @@ export default function Search() {
           "/api/getAllEmployees?filter=" + filter
         );
         const employeesData = await employeesRes.json();
-        const validatedEmployees = employeesSchema.parse(employeesData);
-        setEmployees(validatedEmployees);
+        // const validatedEmployees = employeesSchema.parse(employeesData);
+        setEmployees(employeesData);
       } catch (error) {
         if (error instanceof z.ZodError) {
           console.error("Validation Error:", error.errors);
@@ -62,7 +62,6 @@ export default function Search() {
     };
 
     fetchEmployees();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter]);
 
   return (
