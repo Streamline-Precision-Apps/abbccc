@@ -11,13 +11,6 @@ export async function GET(req: Request) {
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-
-  // Extract the 'filter' parameter from the query string
-  // <option value="recentlyHired">Recently Hired</option>
-  //           <option value="laborers">Laborers</option>
-  //           <option value="managers">Managers</option>
-  //           <option value="admins">Admins</option>
-  //           <option value="superAdmins">Super Admins</option>
   const url = new URL(req.url);
   const filter = url.searchParams.get("filter");
 
