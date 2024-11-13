@@ -72,6 +72,7 @@
         "startCamera": "Start Camera",
         "HideCamera": "Hide Camera",
         "ShowCamera": "Show Camera",
+        "TruckingAssistant": "Trucking Assistant",
         "NoCamera": "No Camera Available"
     },
 
@@ -239,6 +240,7 @@
         "Equipment-result": "Equipment Found",
         "Equipment-notes-title": "Notes",
         "Next-btn": "Next",
+        "Truck-label": "Truck",
         "recentlyUsed" : "Recently Used"
         },
 
@@ -269,6 +271,7 @@
         "incidentDescription" : "Describe the Incident",
         "Save": "Save",
         "Saved": "Saved signature",
+        "Truck-label": "Truck:",
         "Clear": "Clear"
     },
 
@@ -386,5 +389,17 @@
         "LabelDuration": "Duration",
         "LabelJobsite": "Jobsite",
         "LabelCostCode": "Cost Code"
+    },
+
+    "TruckingAssistant": {
+        "TruckingAssistant": "Trucking Assistant",
+        "FailedToRetrieve": "Failed to fetch received content",
+        "ValidationError": "Validation error:",
+        "ErrorFetching": "Error fetching received content:",
+        "InvalidDataFormat": "Invalid data format",
+        "ComingSoon": "Coming Soon",
+        "Loading": "Loading...",
+        "NoDrives": "There Are No Drives Currently",
+        "FetchingError": "An error occurred while fetching received content"
     }
 }

@@ -14,6 +14,7 @@ import Spinner from "@/components/(animations)/spinner";
 import { Images } from "@/components/(reusable)/images";
 import { Grids } from "@/components/(reusable)/grids";
 import { z } from "zod";
+import { useTranslations } from "next-intl";
 
 // Define Zod schema for received content
 const receivedContentSchema = z.object({
@@ -54,6 +55,7 @@ export default function CurrentDrives() {
   const [receivedContent, setReceivedContent] = useState<receivedContent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const t = useTranslations("TruckingAssistant");
 
   // Fetch receivedContent when session exists
   useEffect(() => {
@@ -63,7 +65,7 @@ export default function CurrentDrives() {
         const response = await fetch("/api/getDrives");
 
         if (!response.ok) {
-          throw new Error("Failed to fetch received content");
+          throw new Error(t("FailedToRetrieve"));
         }
 
         const data = await response.json();
@@ -73,16 +75,16 @@ export default function CurrentDrives() {
           try {
             return receivedContentSchema.parse(item);
           } catch (e) {
-            console.error("Validation error:", e);
-            throw new Error("Invalid data format");
+            console.error(t("ValidationError:"), e);
+            throw new Error(t("Invaliddataformat"));
           }
         });
 
         setReceivedContent(validatedData);
         setLoading(false);
       } catch (err) {
-        console.error("Error fetching received content:", err);
-        setError("An error occurred while fetching received content");
+        console.error(t("ErrorFetching"), err);
+        setError(t("FetchingError"));
         setLoading(false);
       }
     };
@@ -92,7 +94,7 @@ export default function CurrentDrives() {
     }
   }, [session]);
 
-  // TODO Add this back.
+  //TODO Add this back in.
   // Use useEffect to handle the redirect
   // useEffect(() => {
   //   if (!session) {
@@ -107,7 +109,7 @@ export default function CurrentDrives() {
   ) {
     return (
       <Holds className="h-full justify-center">
-        <Titles>Coming Soon</Titles>
+        <Titles>{t("ComingSoon")}</Titles>
         <Holds>
           <Images size={"30"} titleImg="/logo.svg" titleImgAlt="coming soon" />
         </Holds>
@@ -123,7 +125,7 @@ export default function CurrentDrives() {
   if (loading) {
     return (
       <Holds className="py-5">
-        <Texts>Loading...</Texts>
+        <Texts>{t("Loading")}</Texts>
         <Spinner />
       </Holds>
     );
@@ -142,7 +144,7 @@ export default function CurrentDrives() {
   if (!pending || pending.length === 0) {
     return (
       <Holds className="mt-10">
-        <Titles>There Are No Drives Currently</Titles>
+        <Titles>{t("NoDrives")}</Titles>
       </Holds>
     );
   }

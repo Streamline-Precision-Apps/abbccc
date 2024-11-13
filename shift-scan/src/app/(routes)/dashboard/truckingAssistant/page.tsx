@@ -11,7 +11,7 @@ import Content from "./content";
 export default async function Inbox() {
   const session = await auth();
   if (!session) return null;
-  const t = await getTranslations("truckingAssistant");
+  const t = await getTranslations("TruckingAssistant");
 
   return (
     <Bases>
@@ -20,7 +20,7 @@ export default async function Inbox() {
           <Holds background={"white"} className="row-span-2 h-full">
             <Contents width={"section"}>
               <TitleBoxes
-                title={t("truckingAssistant")}
+                title={t("TruckingAssistant")}
                 titleImg="/trucking.svg"
                 titleImgAlt="Truck"
               />
