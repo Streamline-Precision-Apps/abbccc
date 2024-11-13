@@ -3,26 +3,35 @@ import React, { useEffect, useRef, useState } from "react";
 import QrScanner from "qr-scanner";
 import { useRouter } from "next/navigation";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
+import { useCurrentView } from "@/app/context/CurrentViewContext";
 
 type QrReaderProps = {
   handleNextStep: () => void;
+  handleScanTruck: () => void;
   url: string;
 };
 
-export default function QR({ handleNextStep, url }: QrReaderProps) {
-  const videoRef: React.MutableRefObject<HTMLVideoElement | null> =
-    useRef(null);
+export default function QR({ handleNextStep, handleScanTruck, url }: QrReaderProps) {
+  const videoRef: React.MutableRefObject<HTMLVideoElement | null> = useRef(null);
   const qrScannerRef: React.MutableRefObject<QrScanner | null> = useRef(null);
   const [scanCount, setScanCount] = useState(0);
   const { setScanResult } = useScanData();
   const router = useRouter();
-  const SCAN_THRESHOLD = 200; // Number of scans before redirecting Zach change this for working on clock in modals
+  const SCAN_THRESHOLD = 200;
+  const { setCurrentView } = useCurrentView();
 
   const onScanSuccess = (result: QrScanner.ScanResult) => {
     try {
-      setScanResult({ data: result.data });
-      qrScannerRef.current?.stop();
-      handleNextStep();
+      if (result.data.startsWith("EQ")) {
+        // If the scan result starts with "EQ", set the view and do not call handleNextStep
+        setCurrentView(result.data);
+        handleScanTruck();
+      } else {
+        // Proceed as usual through clock in proccess.
+        setScanResult({ data: result.data });
+        qrScannerRef.current?.stop();
+        handleNextStep();
+      }
     } catch (error) {
       console.error("Error processing QR code:", error);
       alert("Invalid QR code");

@@ -318,3 +318,34 @@ I finished some more prisma DB research and Created the clock out dashboard page
 ## 10/22/2024
 
 - Added many API calls and ZOD.
+
+## 11/5/2024
+
+- Created list for tasks needed to be complete for the trucking view.
+- Worked on some page construction for the trucking view.
+
+## 11/6/2024
+
+- Prepared for merge with team.
+- merge meeting.
+- Fixed clock in bug in bug caused by mondays changes.
+- Created context for current view.
+- Helped Devun Debugging.
+
+## 11/7/2024
+
+- Created context for trucking view.
+- Created components for form for trucking view.
+- Created some adaptations for the trucking assistant landing page.
+
+## 11/8/2024
+
+- Put components together and created server actions for the trucking view.
+
+## 11/11/2024
+
+- Minor debugging for the trucking view.
+
+## 11/12/2024
+
+- Working on bug in trucking view.

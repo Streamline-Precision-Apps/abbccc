@@ -19,6 +19,7 @@ import { Forms } from "../(reusable)/forms";
 import { Images } from "../(reusable)/images";
 import { Texts } from "../(reusable)/texts";
 import { useSession } from "next-auth/react";
+import { useCurrentView } from "@/app/context/CurrentViewContext";
 
 type VerifyProcessProps = {
   handleNextStep?: () => void;
@@ -38,6 +39,7 @@ export default function VerificationStep({
   const { data: session } = useSession();
   if (!session) return null;
   const { id } = session.user;
+  const { currentView } = useCurrentView();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
@@ -63,6 +65,9 @@ export default function VerificationStep({
           await updateTimeSheetBySwitch(formData2);
 
           const formData = new FormData();
+          if (currentView !== "") {
+            formData.append("vehicleId", currentView ?? "");
+          }
           formData.append("submitDate", new Date().toISOString());
           formData.append("userId", id?.toString() || "");
           formData.append("date", new Date().toISOString());
@@ -84,6 +89,9 @@ export default function VerificationStep({
         }
       } else {
         const formData = new FormData();
+        if (currentView !== "" || null) {
+          formData.append("vehicleId", currentView ?? "");
+        }
         formData.append("submitDate", new Date().toISOString());
         formData.append("userId", id.toString());
         formData.append("date", new Date().toISOString());
@@ -134,7 +142,21 @@ export default function VerificationStep({
               })}
             />
           </Labels>
-
+          <Labels>
+            {currentView !== "" && (
+              <React.Fragment>
+                <Texts size={"p4"} position={"left"}>
+                  {t("Truck-label")}
+                </Texts>
+                <Inputs
+                  state="disabled"
+                  name="jobsiteId"
+                  variant={"white"}
+                  data={currentView || ""}
+                />
+              </React.Fragment>
+            )}
+          </Labels>
           <Labels>
             <Texts size={"p4"} position={"left"}>
               {t("JobSite-label")}

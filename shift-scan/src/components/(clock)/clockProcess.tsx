@@ -10,10 +10,11 @@ import RedirectAfterDelay from "@/components/redirectAfterDelay";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useEQScanData } from "@/app/context/equipmentContext";
 import { Titles } from "../(reusable)/titles";
-
 import { setAuthStep } from "@/app/api/auth";
+import { useCurrentView } from "@/app/context/CurrentViewContext";
 
 import useFetchAllData from "@/app/(content)/FetchData";
+import { Banners } from "../(reusable)/banners";
 type clockProcessProps = {
   scannerType: string;
   type: string;
@@ -39,6 +40,8 @@ export default function ClockProcessor({
   const { scanEQResult } = useEQScanData();
   const [path, setPath] = useState("");
   const [scanner, setScanner] = useState("");
+  const [banner, setBanner] = useState("");
+  const {currentView} = useCurrentView()
 
   useEffect(() => {
     // sets step to 1 on mount
@@ -112,6 +115,15 @@ export default function ClockProcessor({
     }
   };
 
+  const handleScanTruck = () => {
+    setBanner("Truck Successfully Scanned. Please scan a jobsite now.");
+
+    // Clear the banner after 6 seconds.
+    setTimeout(() => {
+      setBanner("");
+    }, 6000);
+  };
+
   if (type === "equipment") {
     return (
       <>
@@ -147,15 +159,19 @@ export default function ClockProcessor({
   return (
     <>
       {step === 1 && (
-        <QRStep
-          type="jobsite"
-          handleAlternativePath={handleAlternativePath}
-          handleNextStep={handleNextStep}
-          handleChangeJobsite={handleChangeJobsite}
-          handleReturn={handleReturn}
-          url={returnpath}
-          option={option}
-        />
+        <>
+          {banner !== "" && <Banners background="green">{banner}</Banners>}
+          <QRStep
+            type="jobsite"
+            handleAlternativePath={handleAlternativePath}
+            handleNextStep={handleNextStep}
+            handleChangeJobsite={handleChangeJobsite}
+            handleReturn={handleReturn}
+            handleScanTruck={handleScanTruck}
+            url={returnpath}
+            option={option}
+          />
+        </>
       )}
       {step === 2 && (
         <CodeStep datatype="jobsite" handleNextStep={handleNextStep} />
@@ -193,6 +209,9 @@ export default function ClockProcessor({
           <Titles size={"h2"}>
             {t("CostCode-label")} {savedCostCode}{" "}
           </Titles>
+          {currentView !== "" && <Titles size={"h2"}>
+            {t("Truck-label")} {currentView}{" "}
+          </Titles>}
           <Titles size={"h2"}>
             {t("Confirmation-time")}{" "}
             {new Date().toLocaleDateString(locale, {

@@ -20,6 +20,7 @@ import { Grids } from "@/components/(reusable)/grids";
 import Spinner from "@/components/(animations)/spinner";
 import Checkbox from "@/components/(inputs)/CheckBox";
 import { z } from "zod";
+import { useCurrentView } from "@/app/context/CurrentViewContext";
 
 // Zod schema for component state
 const ClockOutContentSchema = z.object({
@@ -40,6 +41,7 @@ const ClockOutContentSchema = z.object({
       id: z.union([z.string(), z.number()]).optional(),
     })
     .nullable(),
+  savedVehicleId: z.string().nullable(),
   date: z.date(),
 });
 
@@ -56,6 +58,8 @@ export default function ClockOutContent() {
   const { scanResult } = useScanData();
   const { savedCostCode } = useSavedCostCode();
   const { savedTimeSheetData } = useTimeSheetData();
+  const { currentView } = useCurrentView();
+  const [savedVehicleId] = useState(currentView)
   const [date] = useState(new Date());
   const [base64String, setBase64String] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);

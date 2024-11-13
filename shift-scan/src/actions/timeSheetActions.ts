@@ -1,6 +1,7 @@
 "use server";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { useCurrentView } from "@/app/context/CurrentViewContext";
 
 // Parse UTC function to handle timezone conversion
 const parseUTC = (timestamp: string): Date => {
@@ -65,9 +66,7 @@ export async function CreateTimeSheet(formData: FormData) {
         date: parseUTC(formData.get("date") as string).toISOString(),
         jobsite: { connect: { qrId: formData.get("jobsiteId") as string } },
         costcode: formData.get("costcode") as string,
-        vehicleId: formData.get("vehicleId")
-          ? Number(formData.get("vehicleId"))
-          : null,
+        vehicleId: String(formData.get("vehicleId")),
         startTime: parseUTC(formData.get("startTime") as string).toISOString(),
         endTime: null,
         duration: null,
@@ -108,9 +107,7 @@ export async function AddWholeTimeSheet(formData: FormData) {
         date: parseUTC(formData.get("date") as string).toISOString(),
         jobsite: { connect: { qrId: formData.get("jobsiteId") as string } },
         costcode: formData.get("costcode") as string,
-        vehicleId: formData.get("vehicleId")
-          ? Number(formData.get("vehicleId"))
-          : null,
+        vehicleId: String(formData.get("vehicleId")),
         startTime: parseUTC(formData.get("startTime") as string).toISOString(),
         endTime: formData.get("endTime")
           ? parseUTC(formData.get("endTime") as string).toISOString()
@@ -227,7 +224,6 @@ export async function updateTimeSheet(formData: FormData) {
     const updatedTimeSheet = await prisma.timeSheets.update({
       where: { id },
       data: {
-        vehicleId: Number(formData.get("vehicleId")) || null,
         endTime: endTime.toISOString(),
         duration: duration,
         startingMileage: Number(formData.get("startingMileage")) || null,
@@ -245,6 +241,8 @@ export async function updateTimeSheet(formData: FormData) {
     console.log("Timesheet updated successfully.");
     console.log(updatedTimeSheet);
 
+    const {setCurrentView} = useCurrentView();
+    setCurrentView("")
     // Optionally, you can handle revalidation of paths here or elsewhere
     revalidatePath(`/`);
   } catch (error) {
@@ -282,7 +280,6 @@ export async function updateTimeSheetBySwitch(formData: FormData) {
     const updatedTimeSheet = await prisma.timeSheets.update({
       where: { id },
       data: {
-        vehicleId: Number(formData.get("vehicleId")) || null,
         endTime: parseUTC(formData.get("endTime") as string).toISOString(),
         duration: Number(duration) || null,
         startingMileage: Number(formData.get("startingMileage")) || null,
@@ -299,6 +296,8 @@ export async function updateTimeSheetBySwitch(formData: FormData) {
     console.log("Timesheet updated successfully.");
     console.log(updatedTimeSheet);
 
+    const {setCurrentView} = useCurrentView();
+    setCurrentView("")
     // Revalidate the path
     revalidatePath(`/`);
     return { success: true };
