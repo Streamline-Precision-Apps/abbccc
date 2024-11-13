@@ -18,6 +18,7 @@ import { Modals } from "@/components/(reusable)/modals";
 import { Bases } from "@/components/(reusable)/bases";
 import { Titles } from "@/components/(reusable)/titles";
 import { z } from "zod";
+import { useCurrentView } from "@/app/context/CurrentViewContext";
 
 // Zod schema for component state, including logs
 const DbWidgetSectionSchema = z.object({
@@ -72,6 +73,7 @@ export default function DbWidgetSection({ session }: props) {
   const [additionalButtonsType, setAdditionalButtonsType] = useState<
     string | null
   >(null);
+  const {currentView} = useCurrentView();
 
   // Validate initial state with Zod schema
   try {
@@ -303,7 +305,7 @@ export default function DbWidgetSection({ session }: props) {
               </>
             ) : (
               <>
-                {permission !== "USER" && !additionalButtonsType && (
+                {permission !== "USER" && !additionalButtonsType  && currentView === "" && (
                     <>
                       <Holds
                         position={"row"}
@@ -322,6 +324,30 @@ export default function DbWidgetSection({ session }: props) {
                           </Holds>
                           <Holds>
                             <Texts size={"p3"}>{t("QR")}</Texts>
+                          </Holds>
+                        </Buttons>
+                      </Holds>
+                    </>
+                  )}
+                {permission !== "USER" && !additionalButtonsType  && currentView !== "" && (
+                    <>
+                      <Holds
+                        position={"row"}
+                        className="row-span-1 col-span-1 gap-5"
+                      >
+                        <Buttons //----------------------This is the trucking assistant
+                          background={"lightBlue"}
+                          href="/dashboard/truckingAssistant"
+                        >
+                          <Holds>
+                            <Images
+                              titleImg="/trucking.svg"
+                              titleImgAlt="truck"
+                              size={"40"}
+                            />
+                          </Holds>
+                          <Holds>
+                            <Texts size={"p3"}>{t("TruckingAssistant")}</Texts>
                           </Holds>
                         </Buttons>
                       </Holds>

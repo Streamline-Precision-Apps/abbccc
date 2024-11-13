@@ -205,7 +205,7 @@
 
     "Clock": {
         "ChangeCostCode": "Change Cost Code",
-        "ScanJobSite": "Scan Job Site",
+        "ScanJobSiteOrTruck": "Scan Job Site or Truck",
         "SwitchSites": "Switch Sites",
         "search-jobsite": "Search for Job Site",
         "search-equipment": "Search for Equipment",
