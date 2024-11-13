@@ -65,7 +65,7 @@ export default function Search() {
   }, [filter]);
 
   return (
-    <Holds className="h-full ">
+    <Holds className="h-full">
       <Grids rows={"10"}>
         <Holds position={"row"} className="row-span-1 h-full gap-2">
           <Tab onClick={() => setActiveTab(1)} isActive={activeTab === 1}>
@@ -83,7 +83,7 @@ export default function Search() {
           background={"white"}
           className="rounded-t-none row-span-9 h-full"
         >
-          <Contents width={"section"} className=" pt-3 pb-5">
+          <Contents width={"section"}>
             {activeTab === 1 && (
               <Personnel employees={employees} setFilter={setFilter} />
             )}

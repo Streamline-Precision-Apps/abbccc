@@ -50,7 +50,7 @@ export const Personnel = ({ employees, setFilter }: Props) => {
   return (
     <Holds className="h-full w-full">
       <Grids rows="10" gap="5" className="h-full">
-        <Holds className=" bg-white h-full w-full py-3 ">
+        <Holds className=" bg-white h-full w-full  ">
           <Selects
             defaultValue={"all"}
             onChange={(e) => setFilter(e.target.value)}
@@ -91,7 +91,7 @@ export const Personnel = ({ employees, setFilter }: Props) => {
                 />
               </Holds>
             </Holds>
-            <Holds className=" h-full mb-4  overflow-y-auto ">
+            <Holds className=" h-full mb-4  overflow-y-auto no-scrollbar ">
               <Holds>
                 {filteredList.length > 0 ? (
                   filteredList.map((employee) => (
