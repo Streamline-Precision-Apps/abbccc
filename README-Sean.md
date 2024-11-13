@@ -349,3 +349,7 @@ I finished some more prisma DB research and Created the clock out dashboard page
 ## 11/12/2024
 
 - Working on bug in trucking view.
+
+## 11/13/2024
+
+- Fix error where clocking out replaces truck with null.

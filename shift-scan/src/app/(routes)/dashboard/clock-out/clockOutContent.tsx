@@ -59,7 +59,7 @@ export default function ClockOutContent() {
   const { savedCostCode } = useSavedCostCode();
   const { savedTimeSheetData } = useTimeSheetData();
   const { currentView } = useCurrentView();
-  const [savedVehicleId] = useState(currentView)
+  const [savedVehicleId] = useState(currentView);
   const [date] = useState(new Date());
   const [base64String, setBase64String] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -277,6 +277,14 @@ export default function ClockOutContent() {
                       {t("ClockOutDate")} {new Date().toLocaleDateString()}
                     </Texts>
                   </Holds>
+                  {currentView !== "" && (
+                    <Holds className="row-span-1 h-full my-auto">
+                      <Texts>
+                      {t("Truck-label")}{" "}
+                      {currentView}
+                      </Texts>
+                    </Holds>
+                  )}
                   <Holds className="row-span-1 h-full my-auto">
                     <Texts>
                       {t("Jobsite")}{" "}
@@ -362,6 +370,13 @@ export default function ClockOutContent() {
                       {t("ClockOutDate")} {new Date().toLocaleDateString()}
                     </Texts>
                   </Holds>
+                  {currentView !== "" && (
+                    <Holds className="row-span-1 h-full my-auto">
+                      <Texts>
+                      {t("Truck-label")} {currentView}{" "}
+                      </Texts>
+                    </Holds>
+                  )}
                   <Holds className="row-span-1 h-full my-auto">
                     <Texts>
                       {t("Jobsite")}{" "}
