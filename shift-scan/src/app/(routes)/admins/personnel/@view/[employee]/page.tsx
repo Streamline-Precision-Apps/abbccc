@@ -246,8 +246,8 @@ export default function Employee({ params }: { params: { employee: string } }) {
   return (
     <Holds className="w-full h-full">
       <Grids rows="10" gap="5">
-        <Holds position="row" className="row-span-2 h-full w-full">
-          <Grids rows="3" cols={"8"} className="w-full">
+        <Holds position="row" className="row-span-2 w-full h-full">
+          <Grids rows="3" cols={"8"} className="w-full h-full">
             {/* --------------------------------------------------------------------------------------------------------------------*/}
             {/* -----------------------------------------------  Image section  ----------------------------------------------------*/}
             {/* --------------------------------------------------------------------------------------------------------------------*/}
@@ -334,83 +334,29 @@ export default function Employee({ params }: { params: { employee: string } }) {
           </Grids>
         </Holds>
         {/* --------------------------------------------------------------------------------------------------------------------*/}
-        {/* -----------------------------------------------  Modal Section  ----------------------------------------------------*/}
-        {/* --------------------------------------------------------------------------------------------------------------------*/}
-        {/* This is the modal for reinstating  -- #update needed */}
-        <Modals
-          isOpen={isOpen}
-          type="decision"
-          handleSubmit={() => {
-            handleTerminate();
-            setIsOpen(false);
-          }}
-          handleClose={() => setIsOpen(false)}
-        >
-          <Texts size="p3">
-            Are you sure you want to terminate this employee?
-          </Texts>
-        </Modals>
-        {/* This is the modal for reinstating  -- #update needed */}
-        <Modals
-          isOpen={isOpen2}
-          type="decision"
-          handleSubmit={() => {
-            handleReinstate();
-            setIsOpen2(false);
-          }}
-          handleClose={() => setIsOpen2(false)}
-        >
-          <Texts size="p3">
-            Are you sure you want to reinstate this employee?
-          </Texts>
-        </Modals>
-
-        {/* This is the modal for employee profiles to allow user to upload theres -- #update needed */}
-        <Modals
-          isOpen={isProfilePic}
-          type="decision"
-          handleSubmit={() => {
-            handleRemoveProfilePic();
-            setIsProfilePic(false);
-          }}
-          handleClose={() => setIsProfilePic(false)}
-        >
-          <Texts size="p3">Remove Profile Photo</Texts>
-        </Modals>
-
-        {/* This is the modal for multiple different profile picture upload decisions -- #update needed */}
-        <Modals
-          isOpen={isPersonalProfile}
-          type="decision"
-          handleSubmit={() => {
-            setIsPersonalProfile(false);
-          }}
-          handleClose={() => setIsPersonalProfile(false)}
-        >
-          <Texts size="p3">Remove Profile Photo</Texts>
-        </Modals>
-        {/* --------------------------------------------------------------------------------------------------------------------*/}
         {/* -----------------------------------------------  Form Section  -----------------------------------------------------*/}
         {/* --------------------------------------------------------------------------------------------------------------------*/}
         <form
           ref={formRef}
           onSubmit={handleSubmitEdits}
-          className="row-span-8 h-full"
+          className="row-span-8 "
         >
           {/* --------------------------------------------------------------------------------------------------------------------*/}
           {/* -----------------------------------------------  Employee Info  ----------------------------------------------------*/}
           {/* --------------------------------------------------------------------------------------------------------------------*/}
           <Inputs type="hidden" name="id" value={editedData?.id || ""} />
-          <Holds position="row" className="w-full h-full p-4">
+          <Holds position="row" className="w-full h-full px-3">
             <Holds className="w-2/3 h-full ">
               {userId === user ? (
-                <Titles size={"h3"}>Your Information</Titles>
+                <Titles size={"h5"}>Your Information</Titles>
               ) : (
-                <Titles size={"h3"}>Employee Information</Titles>
+                <Titles size={"h5"}>Employee Information</Titles>
               )}
               <Holds position={"row"} className="gap-16 h-full ">
-                <Holds className="w-1/2 h-full my-10 ">
-                  <Labels size={"p6"}>First Name</Labels>
+                <Holds className="w-1/2  my-10 ">
+                  <Labels size={"p6"} className="">
+                    First Name
+                  </Labels>
                   <Holds
                     position={"row"}
                     className="gap-2 h-10 border-[3px] rounded-[10px] border-black"
@@ -672,7 +618,7 @@ export default function Employee({ params }: { params: { employee: string } }) {
             <Holds className="w-1/3 h-full">
               {/* This section is for the permission level to display, the user will be able to change the permission level differently based on roles*/}
               {/*Super admin can change the permission level of anyone */}
-              <Titles size={"h3"}>Employee Permissions</Titles>
+              <Titles size={"h5"}>Employee Permissions</Titles>
               {permission === "SUPERADMIN" || permission === "ADMIN" ? (
                 <Labels size={"p6"}>
                   Permission Level
@@ -807,6 +753,61 @@ export default function Employee({ params }: { params: { employee: string } }) {
           </Holds>
         </form>
       </Grids>
+      {/* --------------------------------------------------------------------------------------------------------------------*/}
+      {/* -----------------------------------------------  Modal Section  ----------------------------------------------------*/}
+      {/* --------------------------------------------------------------------------------------------------------------------*/}
+      {/* This is the modal for reinstating  -- #update needed */}
+      <Modals
+        isOpen={isOpen}
+        type="decision"
+        handleSubmit={() => {
+          handleTerminate();
+          setIsOpen(false);
+        }}
+        handleClose={() => setIsOpen(false)}
+      >
+        <Texts size="p3">
+          Are you sure you want to terminate this employee?
+        </Texts>
+      </Modals>
+      {/* This is the modal for reinstating  -- #update needed */}
+      <Modals
+        isOpen={isOpen2}
+        type="decision"
+        handleSubmit={() => {
+          handleReinstate();
+          setIsOpen2(false);
+        }}
+        handleClose={() => setIsOpen2(false)}
+      >
+        <Texts size="p3">
+          Are you sure you want to reinstate this employee?
+        </Texts>
+      </Modals>
+
+      {/* This is the modal for employee profiles to allow user to upload theres -- #update needed */}
+      <Modals
+        isOpen={isProfilePic}
+        type="decision"
+        handleSubmit={() => {
+          handleRemoveProfilePic();
+          setIsProfilePic(false);
+        }}
+        handleClose={() => setIsProfilePic(false)}
+      >
+        <Texts size="p3">Remove Profile Photo</Texts>
+      </Modals>
+
+      {/* This is the modal for multiple different profile picture upload decisions -- #update needed */}
+      <Modals
+        isOpen={isPersonalProfile}
+        handleSubmit={() => {
+          setIsPersonalProfile(false);
+        }}
+        handleClose={() => setIsPersonalProfile(false)}
+      >
+        <Texts size="p3">Remove Profile Photo</Texts>
+      </Modals>
     </Holds>
   );
 }

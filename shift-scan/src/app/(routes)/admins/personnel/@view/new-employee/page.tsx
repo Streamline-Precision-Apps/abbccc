@@ -44,10 +44,10 @@ export default function NewEmployee() {
   };
 
   return (
-    <Holds className="w-full h-full p-2">
+    <Holds className="w-full h-full">
       <Grids rows="10" gap="5">
         <Holds className="row-span-2 w-full h-full">
-          <Grids cols="5" rows="3" className="mx-1">
+          <Grids cols="5">
             <Holds
               position="left"
               className="row-start-1 row-end-3 col-start-1 col-end-2 my-auto"

@@ -21,7 +21,7 @@ export default async function PersonnelLayout({
     <Holds className="w-full h-full ">
       <NextIntlClientProvider messages={messages}>
         <Providers>
-          <Grids cols={"10"} gap={"5"} className="">
+          <Grids cols={"10"} gap={"5"} className="w-full h-full">
             <Holds className="col-span-3 h-full w-full">{search}</Holds>
             <Holds background={"white"} className="col-span-7 h-full w-full">
               {view}

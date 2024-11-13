@@ -21,11 +21,11 @@ export default async function RootLayout({
           <Holds position={"row"} className="w-full h-full">
             <Sidebar />
             <Holds className={"w-full h-full mt-2"}>
-              <Grids rows={"7"}>
+              <Grids rows={"8"}>
                 <Holds className={"row-span-1 h-full "}>
                   <Topbar />
                 </Holds>
-                <Holds className="h-full row-span-6 px-4 py-1">
+                <Holds className="h-full row-span-7 px-4 py-1">
                   {children}
                 </Holds>
               </Grids>

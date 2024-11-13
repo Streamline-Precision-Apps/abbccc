@@ -4,15 +4,10 @@ import { HTMLAttributes, FC } from "react";
 import { cn } from "@/components/(reusable)/utils";
 import ReactPortal from "./ReactPortal";
 import React, { useEffect } from "react";
-import { Buttons } from "./buttons";
-import { Images } from "./images";
 import { Titles } from "./titles";
-import { Contents } from "./contents";
 import { Bases } from "./bases";
-import { Holds } from "./holds";
-import { signOut } from "next-auth/react";
 
-const ModalVariants = cva(
+const NModalVariants = cva(
   "", //this applies to all variants
   {
     variants: {
@@ -42,9 +37,9 @@ const ModalVariants = cva(
   }
 );
 
-interface ModalProps
+interface NModalProps
   extends HTMLAttributes<HTMLElement>,
-    VariantProps<typeof ModalVariants> {
+    VariantProps<typeof NModalVariants> {
   type?: string;
   isOpen: boolean;
   step?: number;
@@ -52,16 +47,12 @@ interface ModalProps
   handleSubmit?: () => void;
 }
 
-const Modals: FC<ModalProps> = ({
+const NModals: FC<NModalProps> = ({
   className,
   background,
   position,
   size,
-  type,
   isOpen,
-  step,
-  handleClose,
-  handleSubmit,
   ...props
 }) => {
   useEffect(() => {
@@ -78,238 +69,21 @@ const Modals: FC<ModalProps> = ({
 
   if (!isOpen) return null;
 
-  if (type === "signOut") {
-    return (
-      <ReactPortal wrapperId="react-portal-modal-container">
-        <div className="modal ">
-          <div className="fixed top-0 left-0 w-screen h-screen bg-neutral-800 opacity-50" />
-          <div
-            className={cn(
-              ModalVariants({ background, position, size, className })
-            )}
-            {...props}
-          >
-            <div className="modal-content">{props.children}</div>
-            <div className=" flex flex-row gap-10">
-              <Buttons
-                onClick={() => {
-                  handleClose();
-                  signOut();
-                }}
-                className="close-btn"
-                background={"green"}
-                size={"full"}
-              >
-                <Titles size={"h3"}>Yes</Titles>
-              </Buttons>
-              <Buttons
-                onClick={handleClose}
-                className="close-btn"
-                background={"red"}
-                size={"full"}
-              >
-                <Titles size={"h3"}>Cancel</Titles>
-              </Buttons>
-            </div>
-          </div>
-        </div>
-      </ReactPortal>
-    );
-  }
-  if (type === "decision") {
-    return (
-      <ReactPortal wrapperId="react-portal-modal-container">
-        <div className="modal ">
-          <div className="fixed top-0 left-0 w-screen h-screen bg-neutral-800 opacity-50" />
-          <div
-            className={cn(
-              ModalVariants({ background, position, size, className })
-            )}
-            {...props}
-          >
-            <div className="modal-content">{props.children}</div>
-            <div className=" flex flex-row gap-10">
-              <Buttons
-                onClick={handleSubmit}
-                className="close-btn"
-                background={"green"}
-                size={"full"}
-              >
-                <Titles size={"h3"}>Yes</Titles>
-              </Buttons>
-              <Buttons
-                onClick={handleClose}
-                className="close-btn"
-                background={"red"}
-                size={"full"}
-              >
-                <Titles size={"h3"}>Cancel</Titles>
-              </Buttons>
-            </div>
-          </div>
-        </div>
-      </ReactPortal>
-    );
-  } else if (type === "clock")
-    return (
-      <ReactPortal wrapperId="react-portal-modal-container">
+  return (
+    <ReactPortal wrapperId="react-portal-modal-container ">
+      <Bases background={"modal"} position={"start"} size={"screen"}>
         <div
           className={cn(
-            ModalVariants({ background, position, size, className })
+            NModalVariants({ background, position, size, className })
           )}
           {...props}
         >
-          <Buttons
-            onClick={handleClose}
-            className="close-btn"
-            background={"red"}
-            size={"full"}
-          >
-            {step === 5 ? <></> : <Images titleImg="/x.svg" titleImgAlt="x" />}
-          </Buttons>
-          <Contents className="modal-content">{props.children}</Contents>
+          <Titles>{props.title}</Titles>
+          <div className="modal-content">{props.children}</div>
         </div>
-      </ReactPortal>
-    );
-  else if (type === "expand")
-    return (
-      <>
-        <Buttons
-          onClick={handleClose}
-          className="close-btn"
-          background={"red"}
-          size={"full"}
-        >
-          <Images titleImg="/x.svg" titleImgAlt="x" />
-        </Buttons>
-        <Contents>{props.children}</Contents>
-      </>
-    );
-  else if (type === "base64")
-    return (
-      <ReactPortal wrapperId="react-portal-modal-container">
-        <div className="fixed top-0 left-0 w-screen h-screen bg-neutral-800 opacity-50" />
-        <div
-          className={cn(
-            ModalVariants({ background, position, size, className })
-          )}
-          {...props}
-        >
-          <Buttons
-            onClick={handleClose}
-            background={"red"}
-            className="close-btn"
-            size={"10"}
-          >
-            <Images
-              titleImg="/camera.svg"
-              titleImgAlt="x"
-              className="mx-auto"
-            />
-          </Buttons>
-          <div className="modal-content-wrapper max-h-[80vh] overflow-y-auto scrollbar-hide">
-            {props.children}
-          </div>
-        </div>
-      </ReactPortal>
-    );
-  else if (type === "signature")
-    return (
-      <ReactPortal wrapperId="react-portal-modal-container">
-        <div className="fixed top-0 left-0 w-screen h-screen bg-neutral-800 opacity-50" />
-        <div className={cn(ModalVariants({ size, className }))} {...props}>
-          <Buttons
-            onClick={handleClose}
-            background={"red"}
-            className="close-btn"
-            size={"10"}
-          >
-            <Images
-              titleImg="/backArrow.svg"
-              titleImgAlt="x"
-              className="mx-auto"
-            />
-          </Buttons>
-          <div className="modal-content-wrapper max-h-[80vh] overflow-y-auto scrollbar-hide">
-            {props.children}
-          </div>
-        </div>
-      </ReactPortal>
-    );
-  else if (type === "StartDay")
-    return (
-      <ReactPortal wrapperId="react-portal-modal-container ">
-        <Bases
-          background={"modal"}
-          position={"start"}
-          size={"screen"}
-          className="overflow-scroll"
-        >
-          <div
-            className={cn(
-              ModalVariants({ background, position, size, className })
-            )}
-            {...props}
-          >
-            <Titles>{props.title}</Titles>
-            <Holds size={"full"} className="pb-10">
-              <Buttons
-                onClick={handleClose}
-                className=" mr-2 close-btn w-10 h-10"
-                background={"red"}
-                position={"right"}
-              >
-                <Holds>
-                  <Images
-                    titleImg="/x.svg"
-                    titleImgAlt="x"
-                    size={"50"}
-                    className="m-auto "
-                  />
-                </Holds>
-              </Buttons>
-            </Holds>
-            <div className="modal-content-wrapper overflow-auto ">
-              {props.children}
-            </div>
-          </div>
-        </Bases>
-      </ReactPortal>
-    );
-  else
-    return (
-      <ReactPortal wrapperId="react-portal-modal-container ">
-        <Bases background={"modal"} position={"start"} size={"screen"}>
-          <div
-            className={cn(
-              ModalVariants({ background, position, size, className })
-            )}
-            {...props}
-          >
-            <Titles>{props.title}</Titles>
-            <div className="modal-content">{props.children}</div>
-            <Holds size={"full"} className="mb-10">
-              <Buttons
-                onClick={handleClose}
-                className="close-btn"
-                size={"90"}
-                background={"red"}
-                position={"center"}
-              >
-                <Holds>
-                  <Images
-                    titleImg="/x.svg"
-                    titleImgAlt="x"
-                    size={"10"}
-                    className="my-auto"
-                  />
-                </Holds>
-              </Buttons>
-            </Holds>
-          </div>
-        </Bases>
-      </ReactPortal>
-    );
+      </Bases>
+    </ReactPortal>
+  );
 };
 
-export { Modals, ModalVariants };
+export { NModals, NModalVariants };
