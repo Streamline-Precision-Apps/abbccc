@@ -8,7 +8,6 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
-import { Modals } from "@/components/(reusable)/modals";
 import { NModals } from "@/components/(reusable)/newmodals";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";

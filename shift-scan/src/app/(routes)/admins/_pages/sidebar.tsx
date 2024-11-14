@@ -8,9 +8,8 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
-import path from "path";
 
-const sidebar = () => {
+const Sidebar = () => {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
@@ -273,4 +272,4 @@ const sidebar = () => {
     </>
   );
 };
-export default sidebar;
+export default Sidebar;
