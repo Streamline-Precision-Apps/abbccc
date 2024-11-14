@@ -1,7 +1,6 @@
 "use client";
 import {
   archivePersonnel,
-  editPersonnelInfo,
   reactivatePersonnel,
   removeProfilePic,
 } from "@/actions/adminActions";
@@ -9,11 +8,8 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
-import { Inputs } from "@/components/(reusable)/inputs";
-import { Labels } from "@/components/(reusable)/labels";
 import { Modals } from "@/components/(reusable)/modals";
-import { Options } from "@/components/(reusable)/options";
-import { Selects } from "@/components/(reusable)/selects";
+import { NModals } from "@/components/(reusable)/newmodals";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { Permission } from "@/lib/types";
@@ -22,8 +18,14 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import EmptyView from "../../../_pages/EmptyView";
 import Spinner from "@/components/(animations)/spinner";
+import { EditEmployeeForm } from "./_components/edit-employee-form";
+import { Contents } from "@/components/(reusable)/contents";
+import Base64FileEncoder from "@/components/(camera)/Base64FileEncoder";
+import Base64ImageEncoder from "@/components/(camera)/Base64ImageEncoder";
+import Signature from "@/components/(reusable)/signature";
+import { uploadFirstSignature } from "@/actions/userActions";
 
-type Data = {
+type UserProfile = {
   DOB: string;
   activeEmployee: boolean;
   email: string;
@@ -42,7 +44,7 @@ type Data = {
   username: string;
 };
 
-type Data1 = {
+type EmployeeContactInfo = {
   id: number;
   employeeId: string;
   phoneNumber: string;
@@ -61,28 +63,36 @@ export default function Employee({ params }: { params: { employee: string } }) {
   const [lastName, setLastName] = useState<string>("");
 
   const formRef = useRef<HTMLFormElement>(null);
-
+  const [editedData, setEditedData] = useState<UserProfile | null>(null);
+  const [editedData1, setEditedData1] = useState<EmployeeContactInfo | null>(
+    null
+  );
   // modal
   const [isOpen, setIsOpen] = useState(false);
   const [isOpen2, setIsOpen2] = useState(false);
   const [isProfilePic, setIsProfilePic] = useState(false); // profile modal
   const [isPersonalProfile, setIsPersonalProfile] = useState(false); // profile modal
 
+  const [uploadProfilePic, setUploadProfilePic] = useState(false); // update profile pic modal
+  const [uploadProfilePicWithCamera, setUploadProfilePicWithCamera] =
+    useState(false);
+  const [personalSignature, setPersonalSignature] = useState(false);
+  const [signatureBase64String, setSignatureBase64String] =
+    useState<string>("");
+  const [base64String, setBase64String] = useState<string>("");
   const handleSubmitClick = () => {
     formRef.current?.dispatchEvent(
       new Event("submit", { bubbles: true, cancelable: true })
     );
   };
 
-  const [restrictions, setRestrictions] = useState<boolean>(false);
   const [userStatus, setUserStatus] = useState<boolean>(false);
   // this is for the employee info
-  const [renderedData, setRenderedData] = useState<Data | null>(null);
-  const [editedData, setEditedData] = useState<Data | null>(null);
-
+  const [initialEmployeeProfile, setRenderedData] =
+    useState<UserProfile | null>(null);
   // this is for the contact info
-  const [renderedData1, setRenderedData1] = useState<Data1 | null>(null);
-  const [editedData1, setEditedData1] = useState<Data1 | null>(null);
+  const [initialEmployeeContactInfo, setRenderedData1] =
+    useState<EmployeeContactInfo | null>(null);
 
   useEffect(() => {
     const fetchEmployeeInfo = async () => {
@@ -95,7 +105,7 @@ export default function Employee({ params }: { params: { employee: string } }) {
         setUserStatus(data.activeEmployee);
         setRenderedData(data);
         setEditedData(data);
-
+        setSignatureBase64String(data.signature);
         setImage(data.image);
         setFirstName(data.firstName);
         setLastName(data.lastName);
@@ -124,53 +134,6 @@ export default function Employee({ params }: { params: { employee: string } }) {
     fetchContactInfo();
   }, [params.employee, pathname]);
 
-  // this is for the restrictions on what the user can do when they want to edit there own info
-  useEffect(() => {
-    if (userId === user && permission !== "SUPERADMIN") {
-      setRestrictions(true);
-    } else if (permission === "SUPERADMIN" || permission === "ADMIN") {
-      setRestrictions(false);
-    } else {
-      setRestrictions(true);
-    }
-  }, [userId, user, permission]);
-
-  // Handle changes in form inputs
-  const handleInputChange = (
-    e:
-      | React.ChangeEvent<HTMLInputElement>
-      | React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setEditedData((prevData) =>
-      prevData ? { ...prevData, [name]: value } : null
-    );
-  };
-
-  const handleInputChange1 = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setEditedData1((prevData) =>
-      prevData ? { ...prevData, [name]: value } : null
-    );
-  };
-
-  const handleSubmitEdits = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const formData = new FormData(formRef.current!);
-      console.log(formData);
-      const res = await editPersonnelInfo(formData);
-      if (res) {
-        console.log("Employee info updated successfully.");
-        setRenderedData(editedData);
-        setRenderedData1(editedData1);
-      } else {
-        console.log("Failed to update employee info.");
-      }
-    } catch (error) {
-      console.error("Failed to update employee info:", error);
-    }
-  };
   const handleReinstate = async () => {
     const formData = new FormData();
     formData.append("userId", user);
@@ -208,40 +171,41 @@ export default function Employee({ params }: { params: { employee: string } }) {
     }
   };
 
-  const revertField = (field: keyof Data) => {
-    setEditedData((prevData) =>
-      prevData && renderedData
-        ? { ...prevData, [field]: renderedData[field] }
-        : prevData
-    );
+  const reloadEmployeeData = async () => {
+    try {
+      const response = await fetch(`/api/employeeInfo/${params.employee}`);
+      const data = await response.json();
+      setImage(data.image);
+      setSignatureBase64String(data.signature);
+      setFirstName(data.firstName);
+      setLastName(data.lastName);
+      // other data updates if needed
+    } catch (error) {
+      console.error("Failed to fetch employee info:", error);
+    }
   };
 
-  const revertField1 = (field: keyof Data1) => {
-    setEditedData1((prevData) =>
-      prevData && renderedData1
-        ? { ...prevData, [field]: renderedData1[field] }
-        : prevData
-    );
-  };
-
-  // Utility function to check if a specific field has been modified
-  const isFieldChanged = (field: keyof Data) => {
-    return (
-      editedData && renderedData && editedData[field] !== renderedData[field]
-    );
-  };
-
-  const isFieldChanged1 = (field: keyof Data1) => {
-    return (
-      editedData1 &&
-      renderedData1 &&
-      editedData1[field] !== renderedData1[field]
-    );
-  };
-
-  if (!renderedData || !renderedData1) {
+  if (!initialEmployeeProfile || !initialEmployeeContactInfo) {
     return <EmptyView Children={<Spinner size={350} />} />;
   }
+
+  const handleSignature = async () => {
+    const formData = new FormData();
+    formData.append("id", user);
+    // add error handling to ensure that base64String is a string
+    if (typeof signatureBase64String === "object") {
+      formData.append("signature", JSON.stringify(signatureBase64String));
+    } else {
+      formData.append("signature", signatureBase64String);
+    }
+    console.log(formData);
+
+    try {
+      await uploadFirstSignature(formData);
+    } catch (error) {
+      console.error("Error uploading signature:", error);
+    }
+  };
 
   return (
     <Holds className="w-full h-full">
@@ -253,7 +217,8 @@ export default function Employee({ params }: { params: { employee: string } }) {
             {/* --------------------------------------------------------------------------------------------------------------------*/}
             <Holds
               position="left"
-              className="row-start-1 row-end-2 col-start-1 col-end-3 h-full"
+              className="row-start-1 row-end-2 col-start-1 col-end-3 h-full cursor-pointer"
+              title="Change Profile Picture"
               onClick={
                 userId !== user
                   ? () => setIsProfilePic(true)
@@ -336,478 +301,299 @@ export default function Employee({ params }: { params: { employee: string } }) {
         {/* --------------------------------------------------------------------------------------------------------------------*/}
         {/* -----------------------------------------------  Form Section  -----------------------------------------------------*/}
         {/* --------------------------------------------------------------------------------------------------------------------*/}
-        <form
-          ref={formRef}
-          onSubmit={handleSubmitEdits}
-          className="row-span-8 "
-        >
-          {/* --------------------------------------------------------------------------------------------------------------------*/}
-          {/* -----------------------------------------------  Employee Info  ----------------------------------------------------*/}
-          {/* --------------------------------------------------------------------------------------------------------------------*/}
-          <Inputs type="hidden" name="id" value={editedData?.id || ""} />
-          <Holds position="row" className="w-full h-full px-3">
-            <Holds className="w-2/3 h-full ">
-              {userId === user ? (
-                <Titles size={"h5"}>Your Information</Titles>
-              ) : (
-                <Titles size={"h5"}>Employee Information</Titles>
-              )}
-              <Holds position={"row"} className="gap-16 h-full ">
-                <Holds className="w-1/2  my-10 ">
-                  <Labels size={"p6"} className="">
-                    First Name
-                  </Labels>
-                  <Holds
-                    position={"row"}
-                    className="gap-2 h-10 border-[3px] rounded-[10px] border-black"
-                  >
-                    <Inputs
-                      className="h-full w-5/6 border-2 border-none focus:outline-none my-auto "
-                      type="text"
-                      name="firstName"
-                      value={editedData?.firstName || ""}
-                      onChange={handleInputChange}
-                    />
-                    {isFieldChanged("firstName") && (
-                      <Buttons
-                        background={"none"}
-                        type="button"
-                        className="w-1/6"
-                        title="Revert changes"
-                        onClick={() => revertField("firstName")}
-                      >
-                        <Holds>
-                          <Images
-                            titleImg={"/turnBack.svg"}
-                            titleImgAlt={"revert"}
-                            size={"70"}
-                          />
-                        </Holds>
-                      </Buttons>
-                    )}
-                  </Holds>
-                  <Labels size={"p6"}>Last Name</Labels>
-                  <Holds
-                    position={"row"}
-                    className="gap-2 h-10  border-[3px] rounded-[10px] border-black"
-                  >
-                    <Inputs
-                      className="h-full w-5/6 border-2 border-none focus:outline-none my-auto "
-                      type="text"
-                      name="lastName"
-                      value={editedData?.lastName || ""}
-                      onChange={handleInputChange}
-                    />
-                    {isFieldChanged("lastName") && (
-                      <Buttons
-                        background={"none"}
-                        type="button"
-                        className="w-1/6"
-                        title="Revert changes"
-                        onClick={() => revertField("lastName")}
-                      >
-                        <Holds>
-                          <Images
-                            titleImg={"/turnBack.svg"}
-                            titleImgAlt={"revert"}
-                            size={"70"}
-                          />
-                        </Holds>
-                      </Buttons>
-                    )}
-                  </Holds>
-
-                  <Labels size={"p6"}>
-                    Username
-                    <Inputs
-                      className="h-10"
-                      type="text"
-                      name="userName"
-                      value={editedData?.username || ""}
-                      onChange={handleInputChange}
-                      disabled
-                    />
-                  </Labels>
-                  <Labels size={"p6"}>Email </Labels>
-                  <Holds
-                    position={"row"}
-                    className="gap-2 h-10  border-[3px] rounded-[10px] border-black"
-                  >
-                    <Inputs
-                      className="h-full w-5/6 border-2 border-none focus:outline-none my-auto "
-                      type="text"
-                      name="email"
-                      value={editedData?.email || ""}
-                      onChange={handleInputChange}
-                    />
-                    {isFieldChanged("email") && (
-                      <Buttons
-                        background={"none"}
-                        type="button"
-                        className="w-1/6"
-                        title="Revert changes"
-                        onClick={() => revertField("firstName")}
-                      >
-                        <Holds>
-                          <Images
-                            titleImg={"/turnBack.svg"}
-                            titleImgAlt={"revert"}
-                            size={"70"}
-                          />
-                        </Holds>
-                      </Buttons>
-                    )}
-                  </Holds>
-
-                  <Labels size={"p6"}>Date of Birth </Labels>
-                  <Holds
-                    position={"row"}
-                    className="gap-2 h-10  border-[3px] rounded-[10px] border-black"
-                  >
-                    <Inputs
-                      className="h-full w-5/6 border-2 border-none focus:outline-none my-auto "
-                      type="date"
-                      name="DOB"
-                      value={
-                        new Date(editedData?.DOB || "")
-                          .toISOString()
-                          .split("T")[0]
-                      }
-                      onChange={handleInputChange}
-                    />
-                    {isFieldChanged("DOB") && (
-                      <Buttons
-                        background={"none"}
-                        type="button"
-                        className="w-1/6"
-                        title="Revert changes"
-                        onClick={() => revertField("DOB")}
-                      >
-                        <Holds>
-                          <Images
-                            titleImg={"/turnBack.svg"}
-                            titleImgAlt={"revert"}
-                            size={"70"}
-                          />
-                        </Holds>
-                      </Buttons>
-                    )}
-                  </Holds>
-
-                  <Labels size={"p6"}>Phone Number </Labels>
-                  <Holds
-                    position={"row"}
-                    className="gap-2 h-10 border-[3px] rounded-[10px] border-black"
-                  >
-                    <Inputs
-                      className="h-full w-5/6 border-2 border-none focus:outline-none my-auto "
-                      type="tel"
-                      name="phoneNumber"
-                      value={editedData1?.phoneNumber || ""}
-                      onChange={handleInputChange1}
-                    />
-                    {isFieldChanged1("phoneNumber") && (
-                      <Buttons
-                        title="Revert changes"
-                        type="button"
-                        className="w-1/6"
-                        background={"none"}
-                        onClick={() => revertField1("phoneNumber")}
-                      >
-                        <Holds>
-                          <Images
-                            titleImg={"/turnBack.svg"}
-                            titleImgAlt={"revert"}
-                            size={"70"}
-                          />
-                        </Holds>
-                      </Buttons>
-                    )}
-                  </Holds>
-                </Holds>
-                <Holds className="w-1/2 h-full">
-                  <Holds className="h-full  mb-20 ">
-                    <Holds className="h-full flex justify-start">
-                      <Labels size={"p6"}>Emergency Contact</Labels>
-                      <Holds
-                        position={"row"}
-                        className="gap-2 h-10  border-[3px] rounded-[10px] border-black"
-                      >
-                        <Inputs
-                          className="h-full w-5/6 border-2 border-none focus:outline-none my-auto "
-                          type="text"
-                          name="emergencyContact"
-                          value={editedData1?.emergencyContact || ""}
-                          onChange={handleInputChange1}
-                        />
-                        {isFieldChanged1("emergencyContact") && (
-                          <Buttons
-                            type="button"
-                            background={"none"}
-                            className="w-1/6"
-                            title="Revert changes"
-                            onClick={() => revertField1("emergencyContact")}
-                          >
-                            <Holds>
-                              <Images
-                                titleImg={"/turnBack.svg"}
-                                titleImgAlt={"revert"}
-                                size={"70"}
-                              />
-                            </Holds>
-                          </Buttons>
-                        )}
-                      </Holds>
-                      <Labels size={"p6"}>Emergency Contact Number</Labels>
-                      <Holds
-                        position={"row"}
-                        className="gap-2 h-10  border-[3px] rounded-[10px] border-black"
-                      >
-                        <Inputs
-                          className="h-full w-5/6 border-2 border-none focus:outline-none my-auto "
-                          type="tel"
-                          name="emergencyContactNumber"
-                          value={editedData1?.emergencyContactNumber || ""}
-                          onChange={handleInputChange1}
-                        />
-                        {isFieldChanged1("emergencyContactNumber") && (
-                          <Buttons
-                            type="button"
-                            background={"none"}
-                            className="w-1/6"
-                            title="Revert changes"
-                            onClick={() =>
-                              revertField1("emergencyContactNumber")
-                            }
-                          >
-                            <Holds>
-                              <Images
-                                titleImg={"/turnBack.svg"}
-                                titleImgAlt={"revert"}
-                                size={"70"}
-                              />
-                            </Holds>
-                          </Buttons>
-                        )}
-                      </Holds>
-                    </Holds>
-                    <Labels size={"p6"}>Signature</Labels>
-                    <Holds className="justify-end w-full h-[200px] border-[3px] rounded-[10px] border-black">
-                      {!editedData?.signature ? (
-                        <Holds className="w-full h-full justify-center">
-                          <Texts size={"p4"}>No Signature</Texts>
-                        </Holds>
-                      ) : (
-                        <Images
-                          titleImg={editedData?.signature || ""}
-                          titleImgAlt="personnel"
-                          className="rounded-full my-auto p-4"
-                          size="70"
-                        />
-                      )}
-                    </Holds>
-                  </Holds>
-                </Holds>
-              </Holds>
-            </Holds>
-            {/* --------------------------------------------------------------------------------------------------------------------*/}
-            {/* ----------------------------------------------   Employee Permissions  ---------------------------------------------*/}
-            {/* --------------------------------------------------------------------------------------------------------------------*/}
-
-            <Holds className="w-[2px] h-full bg-black mx-5 border-none"></Holds>
-            <Holds className="w-1/3 h-full">
-              {/* This section is for the permission level to display, the user will be able to change the permission level differently based on roles*/}
-              {/*Super admin can change the permission level of anyone */}
-              <Titles size={"h5"}>Employee Permissions</Titles>
-              {permission === "SUPERADMIN" || permission === "ADMIN" ? (
-                <Labels size={"p6"}>
-                  Permission Level
-                  <Selects
-                    value={editedData?.permission || "USER"} // Set default to "USER" if no value
-                    onChange={(e) =>
-                      setEditedData((prevData) =>
-                        prevData
-                          ? {
-                              ...prevData,
-                              permission: e.target.value as Permission,
-                            }
-                          : null
-                      )
-                    }
-                    name="permission"
-                    disabled={restrictions}
-                  >
-                    <Options
-                      value="SUPERADMIN"
-                      disabled={editedData?.permission === "SUPERADMIN"}
-                    >
-                      Super Admin
-                    </Options>
-                    <Options value="ADMIN">Admin</Options>
-                    <Options value="MANAGER">Manager</Options>
-                    <Options value="USER"> User</Options>
-                  </Selects>
-                </Labels>
-              ) : (
-                //the other cannot change the permission level
-                <Labels size={"p6"}>
-                  Permission Level
-                  <Selects
-                    value={editedData?.permission}
-                    onChange={handleInputChange}
-                    name="permission"
-                  >
-                    <Options value="SUPERADMIN">Super Admin</Options>
-                    <Options value="ADMIN">Admin</Options>
-                    <Options value="MANAGER">Manager</Options>
-                    <Options value="USER"> User</Options>
-                  </Selects>
-                </Labels>
-              )}
-
-              {/* Individual views with separate state bindings */}
-              <Labels size={"p6"}>
-                Truck View
-                <Selects
-                  name="truckView"
-                  value={editedData?.truckView ? "true" : "false"}
-                  onChange={(e) =>
-                    setEditedData((prevData) =>
-                      prevData
-                        ? {
-                            ...prevData,
-                            truckView: e.target.value === "true", // Convert back to boolean
-                          }
-                        : null
-                    )
-                  }
-                >
-                  <Options value="true">True</Options>
-                  <Options value="false">False</Options>
-                </Selects>
-              </Labels>
-
-              <Labels size={"p6"}>
-                Tasco View
-                <Selects
-                  name="tascoView"
-                  value={editedData?.truckView ? "true" : "false"}
-                  onChange={(e) =>
-                    setEditedData((prevData) =>
-                      prevData
-                        ? {
-                            ...prevData,
-                            tascoView: e.target.value === "true",
-                          }
-                        : null
-                    )
-                  }
-                >
-                  <Options value="true">True</Options>
-                  <Options value="false">False</Options>
-                </Selects>
-              </Labels>
-
-              <Labels size={"p6"}>
-                Labor View
-                <Selects
-                  name="laborView"
-                  value={editedData?.laborView ? "true" : "false"}
-                  onChange={(e) =>
-                    setEditedData((prevData) =>
-                      prevData
-                        ? {
-                            ...prevData,
-                            laborView: e.target.value === "true",
-                          }
-                        : null
-                    )
-                  }
-                >
-                  <Options value="true">True</Options>
-                  <Options value="false">False</Options>
-                </Selects>
-              </Labels>
-
-              <Labels size={"p6"}>
-                Mechanic View
-                <Selects
-                  name="mechanicView"
-                  value={editedData?.mechanicView ? "true" : "false"}
-                  onChange={(e) =>
-                    setEditedData((prevData) =>
-                      prevData
-                        ? {
-                            ...prevData,
-                            mechanicView: e.target.value === "true",
-                          }
-                        : null
-                    )
-                  }
-                >
-                  <Options value="true">True</Options>
-                  <Options value="false">False</Options>
-                </Selects>
-              </Labels>
-            </Holds>
-          </Holds>
-        </form>
+        <EditEmployeeForm
+          initialEmployeeProfile={initialEmployeeProfile}
+          setRenderedData={setRenderedData}
+          initialEmployeeContactInfo={initialEmployeeContactInfo}
+          editedData={editedData}
+          editedData1={editedData1}
+          setEditedData={setEditedData}
+          setEditedData1={setEditedData1}
+          formRef={formRef}
+          user={""}
+          setRenderedData1={setRenderedData1}
+          userId={user}
+          permission={"USER"}
+          signatureBase64String={signatureBase64String}
+          setPersonalSignature={() => setPersonalSignature(true)}
+        />
       </Grids>
       {/* --------------------------------------------------------------------------------------------------------------------*/}
       {/* -----------------------------------------------  Modal Section  ----------------------------------------------------*/}
       {/* --------------------------------------------------------------------------------------------------------------------*/}
       {/* This is the modal for reinstating  -- #update needed */}
-      <Modals
-        isOpen={isOpen}
-        type="decision"
-        handleSubmit={() => {
-          handleTerminate();
-          setIsOpen(false);
-        }}
-        handleClose={() => setIsOpen(false)}
+      <NModals isOpen={isOpen} handleClose={() => setIsOpen(false)}>
+        <Holds className="mb-5">
+          <Texts size={"p4"}>
+            Are you sure you want to terminate this employee?
+          </Texts>
+        </Holds>
+        <Holds className="h-full my-5">
+          <Contents width={"section"}>
+            <Holds className="flex gap-4">
+              <Buttons
+                background="red"
+                type="button"
+                onClick={() => {
+                  handleTerminate();
+                  setIsOpen(false);
+                }}
+                className="px-4 py-2"
+              >
+                <Titles size="h4"> Yes, terminate</Titles>
+              </Buttons>
+              <Buttons
+                background="lightBlue"
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="px-4 py-2"
+              >
+                <Titles size="h4">Cancel</Titles>
+              </Buttons>
+            </Holds>
+          </Contents>
+        </Holds>
+      </NModals>
+      {/* This is the modal for signature  -- #update needed */}
+      <NModals
+        size={"lg"}
+        isOpen={personalSignature}
+        handleClose={() => setPersonalSignature(false)}
       >
-        <Texts size="p3">
-          Are you sure you want to terminate this employee?
-        </Texts>
-      </Modals>
+        <Holds className="mb-5">
+          <Texts size={"p4"}>Change Signature</Texts>
+        </Holds>
+        <Holds className="h-full my-5">
+          <Contents width={"section"}>
+            <Holds>
+              <Signature setBase64String={setSignatureBase64String} />
+              <Holds position={"row"} className="flex gap-4">
+                <Buttons
+                  background="green"
+                  type="button"
+                  onClick={() => {
+                    handleSignature();
+                    setPersonalSignature(false);
+                    reloadEmployeeData();
+                  }}
+                  className="px-4 py-2"
+                >
+                  <Titles size="h4">Save</Titles>
+                </Buttons>
+                <Buttons
+                  background="lightBlue"
+                  type="button"
+                  onClick={() => setPersonalSignature(false)}
+                  className="px-4 py-2"
+                >
+                  <Titles size="h4">Cancel</Titles>
+                </Buttons>
+              </Holds>
+            </Holds>
+          </Contents>
+        </Holds>
+      </NModals>
+
       {/* This is the modal for reinstating  -- #update needed */}
-      <Modals
-        isOpen={isOpen2}
-        type="decision"
-        handleSubmit={() => {
-          handleReinstate();
-          setIsOpen2(false);
-        }}
-        handleClose={() => setIsOpen2(false)}
-      >
-        <Texts size="p3">
-          Are you sure you want to reinstate this employee?
-        </Texts>
-      </Modals>
+      <NModals isOpen={isOpen2} handleClose={() => setIsOpen2(false)}>
+        <Holds className="mb-5">
+          <Texts size={"p4"}>
+            Are you sure you want to reinstate this employee?
+          </Texts>
+        </Holds>
+        <Holds className="h-full my-5">
+          <Contents width={"section"}>
+            <Holds className="flex gap-4">
+              <Buttons
+                background="green"
+                type="button"
+                onClick={() => {
+                  handleReinstate();
+                  setIsOpen2(false);
+                }}
+                className="px-4 py-2"
+              >
+                <Titles size="h4">Reinstate</Titles>
+              </Buttons>
+              <Buttons
+                background="lightBlue"
+                type="button"
+                onClick={() => setIsOpen2(false)}
+                className="px-4 py-2"
+              >
+                <Titles size="h4">Cancel</Titles>
+              </Buttons>
+            </Holds>
+          </Contents>
+        </Holds>
+      </NModals>
 
       {/* This is the modal for employee profiles to allow user to upload theres -- #update needed */}
-      <Modals
-        isOpen={isProfilePic}
-        type="decision"
-        handleSubmit={() => {
-          handleRemoveProfilePic();
-          setIsProfilePic(false);
-        }}
-        handleClose={() => setIsProfilePic(false)}
-      >
-        <Texts size="p3">Remove Profile Photo</Texts>
-      </Modals>
+      <NModals isOpen={isProfilePic} handleClose={() => setIsProfilePic(false)}>
+        <Holds className="mb-5">
+          <Texts size={"p4"}>Change Profile Photo</Texts>
+        </Holds>
+        <Holds className="h-full my-5">
+          <Contents width={"section"}>
+            <Holds className="flex gap-4">
+              <Buttons
+                background="red"
+                type="button"
+                onClick={() => {
+                  handleRemoveProfilePic();
+                  setIsProfilePic(false);
+                }}
+                className="px-4 py-2"
+              >
+                <Titles size="h4">Remove Profile Photo</Titles>
+              </Buttons>
+              <Buttons
+                background="lightBlue"
+                type="button"
+                onClick={() => setIsProfilePic(false)}
+                className="px-4 py-2"
+              >
+                <Titles size="h4">Cancel</Titles>
+              </Buttons>
+            </Holds>
+          </Contents>
+        </Holds>
+      </NModals>
 
       {/* This is the modal for multiple different profile picture upload decisions -- #update needed */}
-      <Modals
+      <NModals
         isOpen={isPersonalProfile}
-        handleSubmit={() => {
-          setIsPersonalProfile(false);
-        }}
         handleClose={() => setIsPersonalProfile(false)}
+        size={"lg"}
       >
-        <Texts size="p3">Remove Profile Photo</Texts>
-      </Modals>
+        <Holds className="mb-5">
+          <Texts size={"p4"}>Change Profile Photo</Texts>
+        </Holds>
+        <Holds className="h-full my-5">
+          <Contents width={"section"}>
+            <Holds className="flex gap-4">
+              <Buttons
+                background="green"
+                type="button"
+                onClick={() => {
+                  setUploadProfilePic(true);
+                  setIsPersonalProfile(false);
+                }}
+                className="px-4 py-2"
+              >
+                <Titles size="h4">Upload Photo</Titles>
+              </Buttons>
+              <Buttons
+                background="green"
+                type="button"
+                onClick={() => {
+                  setUploadProfilePicWithCamera(true);
+                  setIsPersonalProfile(false);
+                }}
+                className="px-4 py-2"
+              >
+                <Titles size="h4">Use Camera</Titles>
+              </Buttons>
+
+              <Buttons
+                background="red"
+                type="button"
+                onClick={() => {
+                  setIsPersonalProfile(false);
+                }}
+                className="px-4 py-2"
+              >
+                <Titles size="h4">Remove Profile Photo</Titles>
+              </Buttons>
+              <Buttons
+                background="lightBlue"
+                type="button"
+                onClick={() => setIsPersonalProfile(false)}
+                className="px-4 py-2"
+              >
+                <Titles size="h4">Cancel</Titles>
+              </Buttons>
+            </Holds>
+          </Contents>
+        </Holds>
+      </NModals>
+
+      {/* Modal for Uploading Profile Picture */}
+      <NModals
+        isOpen={uploadProfilePic}
+        handleClose={() => setUploadProfilePic(false)}
+        size={"xl"}
+      >
+        <Holds className="h-full w-full">
+          <Holds className="mb-5 ">
+            <Texts size={"p4"}>Change Profile Photo</Texts>
+          </Holds>
+
+          <Holds className="flex gap-4 h-full w-[70%]">
+            <Grids rows={"4"} gap={"5"}>
+              <Holds className="h-full row-span-3">
+                <Base64FileEncoder
+                  employee={initialEmployeeProfile}
+                  base64String={base64String}
+                  setBase64String={setBase64String}
+                  setIsOpen={setUploadProfilePic} // Close modal on success
+                  reloadEmployeeData={reloadEmployeeData}
+                />
+                <Holds className="row-span-1 h-full">
+                  <Buttons
+                    background="lightBlue"
+                    type="button"
+                    onClick={() => setUploadProfilePic(false)}
+                    className="px-4 py-2  "
+                  >
+                    <Titles size="h4">Cancel</Titles>
+                  </Buttons>
+                </Holds>
+              </Holds>
+            </Grids>
+          </Holds>
+        </Holds>
+      </NModals>
+
+      {/* Modal for Uploading Profile Picture via camera */}
+      <NModals
+        isOpen={uploadProfilePicWithCamera}
+        handleClose={() => setUploadProfilePicWithCamera(false)}
+        size={"xl"}
+      >
+        <Holds className="h-full w-full">
+          <Holds className="mb-5 ">
+            <Texts size={"p4"}>Change Profile Photo</Texts>
+          </Holds>
+
+          <Holds className="flex gap-4 h-full w-[70%]">
+            <Grids rows={"4"} gap={"5"}>
+              <Holds className="h-full row-span-3">
+                <Base64ImageEncoder
+                  employee={initialEmployeeProfile}
+                  base64String={base64String}
+                  setBase64String={setBase64String}
+                  setIsOpen={setUploadProfilePicWithCamera} // Close modal on success
+                  reloadEmployeeData={reloadEmployeeData}
+                />
+                <Holds className="row-span-1 h-full">
+                  <Contents width={"section"}>
+                    <Buttons
+                      background="lightBlue"
+                      type="button"
+                      size={"40"}
+                      onClick={() => setUploadProfilePicWithCamera(false)}
+                      className="px-4 py-2  "
+                    >
+                      <Titles size="h4">Cancel</Titles>
+                    </Buttons>
+                  </Contents>
+                </Holds>
+              </Holds>
+            </Grids>
+          </Holds>
+        </Holds>
+      </NModals>
     </Holds>
   );
 }

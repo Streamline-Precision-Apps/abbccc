@@ -4,7 +4,6 @@ import { HTMLAttributes, FC } from "react";
 import { cn } from "@/components/(reusable)/utils";
 import ReactPortal from "./ReactPortal";
 import React, { useEffect } from "react";
-import { Titles } from "./titles";
 import { Bases } from "./bases";
 
 const NModalVariants = cva(
@@ -18,21 +17,17 @@ const NModalVariants = cva(
         center: "relative",
       },
       size: {
-        default:
-          "fixed rounded p-1 bg-white top-1/4 left-3/4 -translate-x-1/4 -translate-y-1/2 flex flex-col",
-        sm: "absolute left-[50%] top-[50%]",
-        med: "",
-        lg: " fixed rounded-3xl p-1 bg-white opacity-none h-fit w-2/3 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col justify-normal mt-16",
-        clock:
-          "fixed rounded top-1/3 -translate-y-1/3 flex flex-col w-full h-[100%] ",
-        fullPage:
-          "fixed left-0 top-0 mt-10 rounded-2xl rounded-b-none w-full h-full",
+        sm: "fixed rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-1/4 h-1/4",
+        med: "fixed rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-1/3 h-1/3",
+        lg: " fixed rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-1/2 h-1/2",
+        xl: "fixed rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-3/4 h-3/4",
+        page: "fixed rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-5/6 h-5/6",
       },
     },
     defaultVariants: {
       background: "default",
       position: "center",
-      size: "default",
+      size: "med",
     },
   }
 );
@@ -40,11 +35,8 @@ const NModalVariants = cva(
 interface NModalProps
   extends HTMLAttributes<HTMLElement>,
     VariantProps<typeof NModalVariants> {
-  type?: string;
   isOpen: boolean;
-  step?: number;
   handleClose: () => void;
-  handleSubmit?: () => void;
 }
 
 const NModals: FC<NModalProps> = ({
@@ -71,15 +63,20 @@ const NModals: FC<NModalProps> = ({
 
   return (
     <ReactPortal wrapperId="react-portal-modal-container ">
-      <Bases background={"modal"} position={"start"} size={"screen"}>
+      <Bases
+        background={"modal"}
+        position={"start"}
+        size={"screen"}
+        onClick={props.handleClose}
+      >
         <div
+          onClick={(e) => e.stopPropagation()}
           className={cn(
             NModalVariants({ background, position, size, className })
           )}
           {...props}
         >
-          <Titles>{props.title}</Titles>
-          <div className="modal-content">{props.children}</div>
+          <div className="modal-content h-full ">{props.children}</div>
         </div>
       </Bases>
     </ReactPortal>

@@ -16,7 +16,7 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Texts } from "@/components/(reusable)/texts";
 import Spinner from "@/components/(animations)/spinner";
 import { z } from "zod"; // Import Zod for validation
-import { Signature } from "@/app/(routes)/dashboard/clock-out/(components)/injury-verification/Signature";
+import Signature from "@/app/(routes)/dashboard/clock-out/(components)/injury-verification/Signature";
 import { uploadFirstSignature } from "@/actions/userActions";
 import { Titles } from "@/components/(reusable)/titles";
 

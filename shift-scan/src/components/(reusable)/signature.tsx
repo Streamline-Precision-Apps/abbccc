@@ -1,7 +1,6 @@
 "use client";
-import { Buttons } from "@/components/(reusable)/buttons";
-import { Holds } from "@/components/(reusable)/holds";
 import { useRef, useState, useEffect } from "react";
+import { Holds } from "../(reusable)/holds";
 
 type SignatureProps = {
   setBase64String: (base64string: string) => void;
@@ -20,20 +19,6 @@ export default function Signature({ setBase64String }: SignatureProps) {
         ctx.strokeStyle = "black";
       }
     }
-
-    // Set canvas size based on container width
-    const resizeCanvas = () => {
-      const canvas = canvasRef.current;
-      if (canvas) {
-        canvas.width = canvas.offsetWidth;
-        canvas.height = canvas.offsetHeight;
-      }
-    };
-
-    // Resize canvas on initial load and window resize
-    resizeCanvas();
-    window.addEventListener("resize", resizeCanvas);
-    return () => window.removeEventListener("resize", resizeCanvas);
   }, []);
 
   const handleMouseDown = (event: React.MouseEvent<HTMLCanvasElement>) => {
@@ -60,38 +45,29 @@ export default function Signature({ setBase64String }: SignatureProps) {
 
   const handleMouseUp = () => {
     setIsDrawing(false);
-    handleSave();
-  };
-
-  const handleClear = () => {
-    const canvas = canvasRef.current;
-    if (canvas) {
-      const ctx = canvas.getContext("2d");
-      if (ctx) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-      }
-      setBase64String("");
-    }
+    handleSave(); // Automatically save after finishing the signature
   };
 
   const handleSave = () => {
     const canvas = canvasRef.current;
     if (canvas) {
       const base64string = canvas.toDataURL("image/png");
-      setBase64String(base64string);
+      setBase64String(base64string); // Set base64 string using the prop
+      console.log("Signature saved:");
     }
   };
 
   return (
-    <Holds>
+    <Holds className="flex flex-col items-center justify-center mb-5">
       <canvas
         ref={canvasRef}
-        className="m-auto border border-black rounded-xl w-full h-48" // Responsive width, fixed height for this example
+        width={500}
+        height={200}
+        className="m-auto border border-black rounded-xl"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
       />
-      <Buttons onClick={handleClear}>Clear</Buttons>
     </Holds>
   );
 }
