@@ -10,35 +10,9 @@ import { Options } from "@/components/(reusable)/options";
 import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import { Permission } from "@/lib/types";
+import { EmployeeContactInfo, Permission, UserProfile } from "@/lib/types";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
-type UserProfile = {
-  DOB: string;
-  activeEmployee: boolean;
-  email: string;
-  firstName: string;
-  id: string;
-  image: string;
-  laborView: boolean;
-  lastName: string;
-  mechanicView: boolean;
-  permission: Permission;
-  signature: string;
-  startDate: string;
-  tascoView: boolean;
-  terminationDate: string;
-  truckView: boolean;
-  username: string;
-};
-
-type EmployeeContactInfo = {
-  id: number;
-  employeeId: string;
-  phoneNumber: string;
-  emergencyContact: string | null;
-  emergencyContactNumber: string | null;
-};
 type Props = {
   formRef: React.RefObject<HTMLFormElement>;
   user: string;
@@ -154,6 +128,7 @@ export const EditEmployeeForm = ({
       editedData1[field] !== initialEmployeeContactInfo[field]
     );
   };
+
   return (
     <Holds className="row-span-8 my-auto h-full">
       <form
