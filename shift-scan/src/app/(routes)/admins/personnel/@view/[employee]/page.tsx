@@ -1,55 +1,19 @@
 "use client";
-import {
-  archivePersonnel,
-  reactivatePersonnel,
-  removeProfilePic,
-} from "@/actions/adminActions";
+
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
-import { NModals } from "@/components/(reusable)/newmodals";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import { Permission } from "@/lib/types";
 import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import EmptyView from "../../../_pages/EmptyView";
 import Spinner from "@/components/(animations)/spinner";
 import { EditEmployeeForm } from "./_components/edit-employee-form";
-import { Contents } from "@/components/(reusable)/contents";
-import Base64FileEncoder from "@/components/(camera)/Base64FileEncoder";
-import Base64ImageEncoder from "@/components/(camera)/Base64ImageEncoder";
-import Signature from "@/components/(reusable)/signature";
-import { uploadFirstSignature } from "@/actions/userActions";
-
-type UserProfile = {
-  DOB: string;
-  activeEmployee: boolean;
-  email: string;
-  firstName: string;
-  id: string;
-  image: string;
-  laborView: boolean;
-  lastName: string;
-  mechanicView: boolean;
-  permission: Permission;
-  signature: string;
-  startDate: string;
-  tascoView: boolean;
-  terminationDate: string;
-  truckView: boolean;
-  username: string;
-};
-
-type EmployeeContactInfo = {
-  id: number;
-  employeeId: string;
-  phoneNumber: string;
-  emergencyContact: string | null;
-  emergencyContactNumber: string | null;
-};
+import { EmployeeContactInfo, UserProfile } from "@/lib/types";
+import { ModalsPage } from "./_components/modal";
 
 export default function Employee({ params }: { params: { employee: string } }) {
   const { data: session } = useSession();
@@ -72,13 +36,10 @@ export default function Employee({ params }: { params: { employee: string } }) {
   const [isProfilePic, setIsProfilePic] = useState(false); // profile modal
   const [isPersonalProfile, setIsPersonalProfile] = useState(false); // profile modal
 
-  const [uploadProfilePic, setUploadProfilePic] = useState(false); // update profile pic modal
-  const [uploadProfilePicWithCamera, setUploadProfilePicWithCamera] =
-    useState(false);
   const [personalSignature, setPersonalSignature] = useState(false);
   const [signatureBase64String, setSignatureBase64String] =
     useState<string>("");
-  const [base64String, setBase64String] = useState<string>("");
+
   const handleSubmitClick = () => {
     formRef.current?.dispatchEvent(
       new Event("submit", { bubbles: true, cancelable: true })
@@ -133,49 +94,11 @@ export default function Employee({ params }: { params: { employee: string } }) {
     fetchContactInfo();
   }, [params.employee, pathname]);
 
-  const handleReinstate = async () => {
-    const formData = new FormData();
-    formData.append("userId", user);
-    formData.append("active", "true");
-
-    const res = await reactivatePersonnel(formData);
-    if (res === true) {
-      console.log("Employee info updated successfully.");
-      setUserStatus(true);
-    } else {
-      console.log("Failed to update employee info.");
-    }
-  };
-
-  const handleTerminate = async () => {
-    const formData = new FormData();
-    formData.append("userId", user);
-    formData.append("active", "false");
-    const res = await archivePersonnel(formData);
-    if (res === true) {
-      console.log("Employee info updated successfully.");
-      setUserStatus(false);
-    } else {
-      console.log("Failed to update employee info.");
-    }
-  };
-
-  const handleRemoveProfilePic = async () => {
-    const formData = new FormData();
-    formData.append("userId", user);
-    formData.append("image", "");
-    const res = await removeProfilePic(formData);
-    if (res === null) {
-      setImage("");
-    }
-  };
-
   const reloadEmployeeData = async () => {
     try {
       const response = await fetch(`/api/employeeInfo/${params.employee}`);
       const data = await response.json();
       setImage(data.image);
-      setSignatureBase64String(data.signature);
       setFirstName(data.firstName);
       setLastName(data.lastName);
       // other data updates if needed
@@ -184,27 +107,22 @@ export default function Employee({ params }: { params: { employee: string } }) {
     }
   };
 
+  const reloadSignature = async () => {
+    const loadSignature = async () => {
+      try {
+        const response = await fetch(`/api/employeeInfo/${params.employee}`);
+        const data = await response.json();
+        setSignatureBase64String(data.signature);
+      } catch (error) {
+        console.error("Failed to fetch employee info:", error);
+      }
+    };
+    setTimeout(() => loadSignature(), 1000);
+  };
+
   if (!initialEmployeeProfile || !initialEmployeeContactInfo) {
     return <EmptyView Children={<Spinner size={350} />} />;
   }
-
-  const handleSignature = async () => {
-    const formData = new FormData();
-    formData.append("id", user);
-    // add error handling to ensure that base64String is a string
-    if (typeof signatureBase64String === "object") {
-      formData.append("signature", JSON.stringify(signatureBase64String));
-    } else {
-      formData.append("signature", signatureBase64String);
-    }
-    console.log(formData);
-
-    try {
-      await uploadFirstSignature(formData);
-    } catch (error) {
-      console.error("Error uploading signature:", error);
-    }
-  };
 
   return (
     <Holds className="w-full h-full">
@@ -316,283 +234,35 @@ export default function Employee({ params }: { params: { employee: string } }) {
           signatureBase64String={signatureBase64String}
           setPersonalSignature={() => setPersonalSignature(true)}
         />
+        {/* --------------------------------------------------------------------------------------------------------------------*/}
+        {/* ---------------------------------------------  Modals Section  -----------------------------------------------------*/}
+        {/* --------------------------------------------------------------------------------------------------------------------*/}
+        <ModalsPage
+          reloadEmployeeData={reloadEmployeeData}
+          reloadSignature={reloadSignature}
+          initialEmployeeProfile={initialEmployeeProfile}
+          initialEmployeeContactInfo={initialEmployeeContactInfo}
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          isOpen2={isOpen2}
+          setIsOpen2={setIsOpen}
+          setUserStatus={setUserStatus}
+          setImage={setImage}
+          setSignatureBase64String={setSignatureBase64String}
+          setFirstName={setFirstName}
+          setLastName={setLastName}
+          user={user}
+          setPersonalSignature={setPersonalSignature}
+          personalSignature={personalSignature}
+          signatureBase64String={signatureBase64String}
+          setEditedData={setEditedData}
+          setEditedData1={setEditedData1}
+          setIsProfilePic={setIsProfilePic}
+          isProfilePic={isProfilePic}
+          isPersonalProfile={isPersonalProfile}
+          setIsPersonalProfile={setIsPersonalProfile}
+        />
       </Grids>
-      {/* --------------------------------------------------------------------------------------------------------------------*/}
-      {/* -----------------------------------------------  Modal Section  ----------------------------------------------------*/}
-      {/* --------------------------------------------------------------------------------------------------------------------*/}
-      {/* This is the modal for reinstating  -- #update needed */}
-      <NModals isOpen={isOpen} handleClose={() => setIsOpen(false)}>
-        <Holds className="mb-5">
-          <Texts size={"p4"}>
-            Are you sure you want to terminate this employee?
-          </Texts>
-        </Holds>
-        <Holds className="h-full my-5">
-          <Contents width={"section"}>
-            <Holds className="flex gap-4">
-              <Buttons
-                background="red"
-                type="button"
-                onClick={() => {
-                  handleTerminate();
-                  setIsOpen(false);
-                }}
-                className="px-4 py-2"
-              >
-                <Titles size="h4"> Yes, terminate</Titles>
-              </Buttons>
-              <Buttons
-                background="lightBlue"
-                type="button"
-                onClick={() => setIsOpen(false)}
-                className="px-4 py-2"
-              >
-                <Titles size="h4">Cancel</Titles>
-              </Buttons>
-            </Holds>
-          </Contents>
-        </Holds>
-      </NModals>
-      {/* This is the modal for signature  -- #update needed */}
-      <NModals
-        size={"lg"}
-        isOpen={personalSignature}
-        handleClose={() => setPersonalSignature(false)}
-      >
-        <Holds className="mb-5">
-          <Texts size={"p4"}>Change Signature</Texts>
-        </Holds>
-        <Holds className="h-full my-5">
-          <Contents width={"section"}>
-            <Holds>
-              <Signature setBase64String={setSignatureBase64String} />
-              <Holds position={"row"} className="flex gap-4">
-                <Buttons
-                  background="green"
-                  type="button"
-                  onClick={() => {
-                    handleSignature();
-                    setPersonalSignature(false);
-                    reloadEmployeeData();
-                  }}
-                  className="px-4 py-2"
-                >
-                  <Titles size="h4">Save</Titles>
-                </Buttons>
-                <Buttons
-                  background="lightBlue"
-                  type="button"
-                  onClick={() => setPersonalSignature(false)}
-                  className="px-4 py-2"
-                >
-                  <Titles size="h4">Cancel</Titles>
-                </Buttons>
-              </Holds>
-            </Holds>
-          </Contents>
-        </Holds>
-      </NModals>
-
-      {/* This is the modal for reinstating  -- #update needed */}
-      <NModals isOpen={isOpen2} handleClose={() => setIsOpen2(false)}>
-        <Holds className="mb-5">
-          <Texts size={"p4"}>
-            Are you sure you want to reinstate this employee?
-          </Texts>
-        </Holds>
-        <Holds className="h-full my-5">
-          <Contents width={"section"}>
-            <Holds className="flex gap-4">
-              <Buttons
-                background="green"
-                type="button"
-                onClick={() => {
-                  handleReinstate();
-                  setIsOpen2(false);
-                }}
-                className="px-4 py-2"
-              >
-                <Titles size="h4">Reinstate</Titles>
-              </Buttons>
-              <Buttons
-                background="lightBlue"
-                type="button"
-                onClick={() => setIsOpen2(false)}
-                className="px-4 py-2"
-              >
-                <Titles size="h4">Cancel</Titles>
-              </Buttons>
-            </Holds>
-          </Contents>
-        </Holds>
-      </NModals>
-
-      {/* This is the modal for employee profiles to allow user to upload theres -- #update needed */}
-      <NModals isOpen={isProfilePic} handleClose={() => setIsProfilePic(false)}>
-        <Holds className="mb-5">
-          <Texts size={"p4"}>Change Profile Photo</Texts>
-        </Holds>
-        <Holds className="h-full my-5">
-          <Contents width={"section"}>
-            <Holds className="flex gap-4">
-              <Buttons
-                background="red"
-                type="button"
-                onClick={() => {
-                  handleRemoveProfilePic();
-                  setIsProfilePic(false);
-                }}
-                className="px-4 py-2"
-              >
-                <Titles size="h4">Remove Profile Photo</Titles>
-              </Buttons>
-              <Buttons
-                background="lightBlue"
-                type="button"
-                onClick={() => setIsProfilePic(false)}
-                className="px-4 py-2"
-              >
-                <Titles size="h4">Cancel</Titles>
-              </Buttons>
-            </Holds>
-          </Contents>
-        </Holds>
-      </NModals>
-
-      {/* This is the modal for multiple different profile picture upload decisions -- #update needed */}
-      <NModals
-        isOpen={isPersonalProfile}
-        handleClose={() => setIsPersonalProfile(false)}
-        size={"lg"}
-      >
-        <Holds className="mb-5">
-          <Texts size={"p4"}>Change Profile Photo</Texts>
-        </Holds>
-        <Holds className="h-full my-5">
-          <Contents width={"section"}>
-            <Holds className="flex gap-4">
-              <Buttons
-                background="green"
-                type="button"
-                onClick={() => {
-                  setUploadProfilePic(true);
-                  setIsPersonalProfile(false);
-                }}
-                className="px-4 py-2"
-              >
-                <Titles size="h4">Upload Photo</Titles>
-              </Buttons>
-              <Buttons
-                background="green"
-                type="button"
-                onClick={() => {
-                  setUploadProfilePicWithCamera(true);
-                  setIsPersonalProfile(false);
-                }}
-                className="px-4 py-2"
-              >
-                <Titles size="h4">Use Camera</Titles>
-              </Buttons>
-
-              <Buttons
-                background="red"
-                type="button"
-                onClick={() => {
-                  setIsPersonalProfile(false);
-                }}
-                className="px-4 py-2"
-              >
-                <Titles size="h4">Remove Profile Photo</Titles>
-              </Buttons>
-              <Buttons
-                background="lightBlue"
-                type="button"
-                onClick={() => setIsPersonalProfile(false)}
-                className="px-4 py-2"
-              >
-                <Titles size="h4">Cancel</Titles>
-              </Buttons>
-            </Holds>
-          </Contents>
-        </Holds>
-      </NModals>
-
-      {/* Modal for Uploading Profile Picture */}
-      <NModals
-        isOpen={uploadProfilePic}
-        handleClose={() => setUploadProfilePic(false)}
-        size={"xl"}
-      >
-        <Holds className="h-full w-full">
-          <Holds className="mb-5 ">
-            <Texts size={"p4"}>Change Profile Photo</Texts>
-          </Holds>
-
-          <Holds className="flex gap-4 h-full w-[70%]">
-            <Grids rows={"4"} gap={"5"}>
-              <Holds className="h-full row-span-3">
-                <Base64FileEncoder
-                  employee={initialEmployeeProfile}
-                  base64String={base64String}
-                  setBase64String={setBase64String}
-                  setIsOpen={setUploadProfilePic} // Close modal on success
-                  reloadEmployeeData={reloadEmployeeData}
-                />
-                <Holds className="row-span-1 h-full">
-                  <Buttons
-                    background="lightBlue"
-                    type="button"
-                    onClick={() => setUploadProfilePic(false)}
-                    className="px-4 py-2  "
-                  >
-                    <Titles size="h4">Cancel</Titles>
-                  </Buttons>
-                </Holds>
-              </Holds>
-            </Grids>
-          </Holds>
-        </Holds>
-      </NModals>
-
-      {/* Modal for Uploading Profile Picture via camera */}
-      <NModals
-        isOpen={uploadProfilePicWithCamera}
-        handleClose={() => setUploadProfilePicWithCamera(false)}
-        size={"xl"}
-      >
-        <Holds className="h-full w-full">
-          <Holds className="mb-5 ">
-            <Texts size={"p4"}>Change Profile Photo</Texts>
-          </Holds>
-
-          <Holds className="flex gap-4 h-full w-[70%]">
-            <Grids rows={"4"} gap={"5"}>
-              <Holds className="h-full row-span-3">
-                <Base64ImageEncoder
-                  employee={initialEmployeeProfile}
-                  base64String={base64String}
-                  setBase64String={setBase64String}
-                  setIsOpen={setUploadProfilePicWithCamera} // Close modal on success
-                  reloadEmployeeData={reloadEmployeeData}
-                />
-                <Holds className="row-span-1 h-full">
-                  <Contents width={"section"}>
-                    <Buttons
-                      background="lightBlue"
-                      type="button"
-                      size={"40"}
-                      onClick={() => setUploadProfilePicWithCamera(false)}
-                      className="px-4 py-2  "
-                    >
-                      <Titles size="h4">Cancel</Titles>
-                    </Buttons>
-                  </Contents>
-                </Holds>
-              </Holds>
-            </Grids>
-          </Holds>
-        </Holds>
-      </NModals>
     </Holds>
   );
 }
