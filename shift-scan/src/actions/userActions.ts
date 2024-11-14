@@ -106,12 +106,13 @@ export async function uploadFirstImage(formdata: FormData) {
 
 export async function uploadFirstSignature(formdata: FormData) {
   console.log(formdata);
-  await prisma.users.update({
+  const result = await prisma.users.update({
     where: { id: formdata.get("id") as string },
     data: {
       signature: formdata.get("signature") as string,
     },
   });
+  console.log(result);
 }
 
 export async function setUserSettings(formdata: FormData) {

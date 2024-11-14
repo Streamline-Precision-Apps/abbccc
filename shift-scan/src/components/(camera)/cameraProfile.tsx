@@ -31,7 +31,7 @@ const CameraComponent: React.FC<CameraComponentProps> = ({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const imgRef = useRef<HTMLImageElement | null>(null);
   const [cameraActive, setCameraActive] = useState(false);
-  const t = useTranslations("equipmentPicture");
+  const t = useTranslations("Widgets");
 
   const startCamera = async () => {
     const constraints = {
@@ -145,61 +145,69 @@ const CameraComponent: React.FC<CameraComponentProps> = ({
           height={VIDEO_DIMENSIONS}
         ></canvas>
       </Holds>
-      <Holds size={"full"} position={"row"}>
-        <Buttons
-          background={cameraActive ? "red" : "green"}
-          onClick={toggleCamera}
-        >
-          {cameraActive ? `${t("HideCamera")}` : `${t("ShowCamera")}`}
-        </Buttons>
-        {cameraActive && (
-          <Buttons background="green" onClick={takePicture}>
-            {t("TakePicture")}
+      {imageSrc === null && (
+        <Holds size={"50"} position={"row"} className="mb-5 mx-auto">
+          <Buttons
+            background={cameraActive ? "red" : "green"}
+            onClick={toggleCamera}
+          >
+            {cameraActive ? `${t("HideCamera")}` : `${t("ShowCamera")}`}
           </Buttons>
-        )}
-      </Holds>
+          {cameraActive && (
+            <Buttons background="green" onClick={takePicture}>
+              {t("TakePicture")}
+            </Buttons>
+          )}
+        </Holds>
+      )}
 
       {imageSrc && (
-        <Holds size={"70"} className="mx-auto">
-          <Holds size={"full"} className="mx-auto">
-            <ReactCrop
-              crop={crop}
-              circularCrop
-              keepSelection
-              aspect={ASPECT_RATIO}
-              minWidth={DIMENSIONS}
-              onChange={(percentCrop) => setCrop(percentCrop)}
-            >
-              <img
-                ref={imgRef}
-                src={imageSrc}
-                alt="Captured"
-                onLoad={onImageLoad}
-              />
-            </ReactCrop>
+        <Holds className="mx-auto ">
+          <Holds className="p-4 w-[300px] border-black border-[3px] rounded-[10px]">
+            <Holds style={{ width: 250, height: 250 }}>
+              <ReactCrop
+                crop={crop}
+                circularCrop
+                keepSelection
+                aspect={ASPECT_RATIO}
+                minWidth={DIMENSIONS}
+                onChange={(percentCrop) => setCrop(percentCrop)}
+              >
+                <img
+                  ref={imgRef}
+                  src={imageSrc}
+                  style={{ width: 250, height: 250 }}
+                  alt="Captured"
+                  onLoad={onImageLoad}
+                />
+              </ReactCrop>
+            </Holds>
           </Holds>
-
-          <Buttons
-            background={"lightBlue"}
-            type="submit"
-            onClick={() => {
-              if (imgRef.current && canvasRef.current && crop) {
-                SetCanvasPreview(
-                  imgRef.current,
-                  canvasRef.current,
-                  convertToPixelCrop(
-                    crop,
-                    imgRef.current.width,
-                    imgRef.current.height
-                  )
-                );
-                const dataUrl = canvasRef.current.toDataURL();
-                setBase64String(dataUrl);
-              }
-            }}
-          >
-            <Texts>Save Crop Image</Texts>
-          </Buttons>
+          <Holds className="h-full mt-2">
+            <Buttons
+              background={"lightBlue"}
+              type="submit"
+              size={"40"}
+              className="px-4 py-2"
+              onClick={() => {
+                if (imgRef.current && canvasRef.current && crop) {
+                  SetCanvasPreview(
+                    imgRef.current,
+                    canvasRef.current,
+                    convertToPixelCrop(
+                      crop,
+                      imgRef.current.width,
+                      imgRef.current.height
+                    )
+                  );
+                  const dataUrl = canvasRef.current.toDataURL();
+                  setBase64String(dataUrl);
+                }
+              }}
+            >
+              <Texts size={"p4"}>Save Crop Image</Texts>
+            </Buttons>
+          </Holds>
 
           <canvas
             className="mt-5"
@@ -207,8 +215,8 @@ const CameraComponent: React.FC<CameraComponentProps> = ({
             style={{
               display: "none",
               objectFit: "contain",
-              width: 250,
-              height: 250,
+              width: 300,
+              height: 300,
             }}
           />
         </Holds>
