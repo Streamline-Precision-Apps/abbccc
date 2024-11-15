@@ -284,3 +284,30 @@ export type costCodes = {
   isActive?: boolean;
 };
 export { Permission };
+///
+export type UserProfile = {
+  DOB: string;
+  activeEmployee: boolean;
+  email: string;
+  firstName: string;
+  id: string;
+  image: string;
+  laborView: boolean;
+  lastName: string;
+  mechanicView: boolean;
+  permission: Permission;
+  signature: string;
+  startDate: string;
+  tascoView: boolean;
+  terminationDate: string;
+  truckView: boolean;
+  username: string;
+};
+
+export type EmployeeContactInfo = {
+  id: number;
+  employeeId: string;
+  phoneNumber: string;
+  emergencyContact: string | null;
+  emergencyContactNumber: string | null;
+};

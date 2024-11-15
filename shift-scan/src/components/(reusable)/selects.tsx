@@ -7,7 +7,7 @@ const SelectsVariants = cva("text-lg rounded-[10px]", {
   variants: {
     variant: {
       default:
-        "border border-[3px] border-black disabled:bg-gray-400 mb-3 last:mb-0 w-full p-3",
+        "border border-[3px] border-black disabled:bg-gray-400 mb-3 last:mb-0 w-full p-1",
     },
   },
   defaultVariants: {

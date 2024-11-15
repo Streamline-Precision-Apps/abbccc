@@ -137,7 +137,6 @@ export default function Content() {
     fetchAssets();
   }, []);
 
-  
   if (loading) {
     return (
       <Grids className="grid-rows-7 gap-5">
@@ -176,21 +175,15 @@ export default function Content() {
         )}
       </Contents>
       <Contents>
-        <Tab
-          onClick={() => setActiveTab(1)}
-          tabLabel="Equipment"
-          isTabActive={activeTab === 1}
-        />
-        <Tab
-          onClick={() => setActiveTab(2)}
-          tabLabel="Job Codes"
-          isTabActive={activeTab === 2}
-        />
-        <Tab
-          onClick={() => setActiveTab(3)}
-          tabLabel="Cost Codes"
-          isTabActive={activeTab === 3}
-        />
+        <Tab onClick={() => setActiveTab(1)} isActive={activeTab === 1}>
+          Equipment
+        </Tab>
+        <Tab onClick={() => setActiveTab(2)} isActive={activeTab === 2}>
+          Job Codes
+        </Tab>
+        <Tab onClick={() => setActiveTab(3)} isActive={activeTab === 3}>
+          Cost Codes
+        </Tab>
       </Contents>
       <Holds>
         {activeTab === 1 && (

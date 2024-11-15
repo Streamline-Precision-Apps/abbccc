@@ -49,6 +49,7 @@ interface ModalProps
   isOpen: boolean;
   step?: number;
   handleClose: () => void;
+  handleSubmit?: () => void;
 }
 
 const Modals: FC<ModalProps> = ({
@@ -60,6 +61,7 @@ const Modals: FC<ModalProps> = ({
   isOpen,
   step,
   handleClose,
+  handleSubmit,
   ...props
 }) => {
   useEffect(() => {
@@ -94,6 +96,41 @@ const Modals: FC<ModalProps> = ({
                   handleClose();
                   signOut();
                 }}
+                className="close-btn"
+                background={"green"}
+                size={"full"}
+              >
+                <Titles size={"h3"}>Yes</Titles>
+              </Buttons>
+              <Buttons
+                onClick={handleClose}
+                className="close-btn"
+                background={"red"}
+                size={"full"}
+              >
+                <Titles size={"h3"}>Cancel</Titles>
+              </Buttons>
+            </div>
+          </div>
+        </div>
+      </ReactPortal>
+    );
+  }
+  if (type === "decision") {
+    return (
+      <ReactPortal wrapperId="react-portal-modal-container">
+        <div className="modal ">
+          <div className="fixed top-0 left-0 w-screen h-screen bg-neutral-800 opacity-50" />
+          <div
+            className={cn(
+              ModalVariants({ background, position, size, className })
+            )}
+            {...props}
+          >
+            <div className="modal-content">{props.children}</div>
+            <div className=" flex flex-row gap-10">
+              <Buttons
+                onClick={handleSubmit}
                 className="close-btn"
                 background={"green"}
                 size={"full"}

@@ -14,16 +14,12 @@ export default function Content() {
     <Holds className="h-full">
       <Grids className="grid-rows-10">
         <Holds position={"row"} className="row-span-1">
-          <Tab
-            onClick={() => setActiveTab(1)}
-            tabLabel="Sent"
-            isTabActive={activeTab === 1}
-          />
-          <Tab
-            onClick={() => setActiveTab(2)}
-            tabLabel="Received"
-            isTabActive={activeTab === 2}
-          />
+          <Tab onClick={() => setActiveTab(1)} isActive={activeTab === 1}>
+            Sent
+          </Tab>
+          <Tab onClick={() => setActiveTab(2)} isActive={activeTab === 2}>
+            Received
+          </Tab>
         </Holds>
         <Holds
           background={"white"}
