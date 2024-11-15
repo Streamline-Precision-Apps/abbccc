@@ -14,7 +14,6 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { Images } from "@/components/(reusable)/images";
-import { user } from "@nextui-org/theme";
 
 const ResetPassword = ({   userId,
   handleNextStep,

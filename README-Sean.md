@@ -359,4 +359,9 @@ I finished some more prisma DB research and Created the clock out dashboard page
 
 ## 11/14/2024
 
-- Fixed 
+- Fixed Clockin and clockout bugs.
+- Long meeting with team to discuss trucking section functionality.
+
+## 11/15/2024
+
+- Fixing build bugs.

@@ -37,30 +37,8 @@ export default function Content({
   userId: string;
   accountSetup: boolean;
 }) {
-  // const isValid = validateProps(userId, accountSetup); // Validate props
-
-  // Hooks setup
-  const [step, setStep] = useState(4); // change to 1 after account setup is complete
-
-  // Clear local storage if needed
-  useEffect(() => {
-    const authStep = getAuthStep();
-    if (authStep === "removeLocalStorage") {
-      localStorage.clear();
-      setAuthStep("");
-    }
-  }, []);
-
-  // Effect for account setup logic
-  useEffect(() => {
-    if (accountSetup) {
-      handleComplete();
-    } else {
-      setStep(1);
-    }
-  }, [accountSetup]);
-
-  // Define the function to handle completion
+  const isValid = validateProps(userId, accountSetup); // Ensure this is at the top
+  const [step, setStep] = useState(4); // Always call useState
   const handleComplete = () => {
     try {
       setAuthStep("");
@@ -70,31 +48,48 @@ export default function Content({
     }
   };
 
+  // Always call useEffect
+  useEffect(() => {
+    const authStep = getAuthStep();
+    if (authStep === "removeLocalStorage") {
+      localStorage.clear();
+      setAuthStep("");
+    }
+  }, []);
+
+  useEffect(() => {
+    if (accountSetup) {
+      handleComplete();
+    } else {
+      setStep(1);
+    }
+  }, [accountSetup]);
+
   const handleNextStep = () => {
     setStep((prevStep) => prevStep + 1);
   };
 
-  // Early return if validation fails
-  // if (!isValid) return null;
+  // Early return after hooks are declared
+  if (!isValid) return <div>Error: Invalid props provided.</div>;
 
   return (
     <Holds className="h-full" position={"row"}>
       <Contents width={"section"}>
-        {step === 1 && <ShiftScanIntro handleNextStep={handleNextStep}/>}
+        {step === 1 && <ShiftScanIntro handleNextStep={handleNextStep} />}
         {step === 2 && (
-          <ResetPassword userId={userId} handleNextStep={handleNextStep}/>
+          <ResetPassword userId={userId} handleNextStep={handleNextStep} />
         )}
         {step === 3 && (
-          <ProfilePictureSetup id={userId} handleNextStep={handleNextStep}/>
+          <ProfilePictureSetup id={userId} handleNextStep={handleNextStep} />
         )}
         {step === 4 && (
-          <SignatureSetup id={userId} handleNextStep={handleNextStep}/>
+          <SignatureSetup id={userId} handleNextStep={handleNextStep} />
         )}
         {step === 5 && (
-          <NotificationSettings id={userId} handleNextStep={handleNextStep}/>
+          <NotificationSettings id={userId} handleNextStep={handleNextStep} />
         )}
         {step === 6 && (
-          <Permissions id={userId} handleAccept={handleComplete}/>
+          <Permissions id={userId} handleAccept={handleComplete} />
         )}
       </Contents>
     </Holds>

@@ -59,7 +59,6 @@ export default function ClockOutContent() {
   const { savedCostCode } = useSavedCostCode();
   const { savedTimeSheetData } = useTimeSheetData();
   const { truckScanData } = useTruckScanData();
-  const [savedVehicleId] = useState(truckScanData);
   const [date] = useState(new Date());
   const [base64String, setBase64String] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);

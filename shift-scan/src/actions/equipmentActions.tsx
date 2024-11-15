@@ -165,7 +165,6 @@ export async function createEquipment(formData: FormData) {
         mileage: formData.get("mileage")
           ? Number(formData.get("mileage"))
           : null,
-        image: image || null,
       },
     });
     revalidatePath("/dashboard/qr-generator");
