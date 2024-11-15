@@ -1,7 +1,6 @@
 "use server";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { useTruckScanData } from "@/app/context/TruckScanDataContext";
 
 // Parse UTC function to handle timezone conversion
 const parseUTC = (timestamp: string): Date => {
@@ -246,8 +245,6 @@ export async function updateTimeSheet(formData: FormData) {
     console.log("Timesheet updated successfully.");
     console.log(updatedTimeSheet);
 
-    const {setTruckScanData} = useTruckScanData();
-    setTruckScanData("")
     // Optionally, you can handle revalidation of paths here or elsewhere
     revalidatePath(`/`);
   } catch (error) {
@@ -301,8 +298,6 @@ export async function updateTimeSheetBySwitch(formData: FormData) {
     console.log("Timesheet updated successfully.");
     console.log(updatedTimeSheet);
 
-    const {setTruckScanData} = useTruckScanData();
-    setTruckScanData("")
     // Revalidate the path
     revalidatePath(`/`);
     revalidatePath("/admins/settings");

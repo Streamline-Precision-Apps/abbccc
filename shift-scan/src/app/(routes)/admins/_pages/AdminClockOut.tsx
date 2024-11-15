@@ -21,6 +21,7 @@ import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Clock } from "@/components/clock";
 import { CheckBox } from "@/components/(inputs)/checkBox";
+import { useTruckScanData } from "@/app/context/TruckScanDataContext";
 
 export const AdminClockOut = ({ handleClose }: { handleClose: () => void }) => {
   const [loading, setLoading] = useState(true);
@@ -37,6 +38,7 @@ export const AdminClockOut = ({ handleClose }: { handleClose: () => void }) => {
   const t = useTranslations("ClockOut");
   const [checked, setChecked] = useState(false);
   const [base64String, setBase64String] = useState<string>("");
+  const { setTruckScanData } = useTruckScanData();
 
   const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
     setChecked(event.currentTarget.checked);
@@ -80,6 +82,7 @@ export const AdminClockOut = ({ handleClose }: { handleClose: () => void }) => {
 
       const formData = new FormData(formRef.current as HTMLFormElement);
       await updateTimeSheet(formData);
+      setTruckScanData("")
       localStorage.clear();
       router.push("/");
     } catch (error) {
