@@ -1,108 +1,97 @@
+"use client";
 import { Buttons } from "@/components/(reusable)/buttons";
-import { useTranslations } from "next-intl";
-import React, { useRef, useState, useEffect } from "react";
+import { Holds } from "@/components/(reusable)/holds";
+import { useRef, useState, useEffect } from "react";
 
 type SignatureProps = {
   setBase64String: (base64string: string) => void;
-  base64string?: string | null;
-  handleSubmitImage: () => void;
 };
 
-export const Signature = ({
-  setBase64String,
-  base64string,
-  handleSubmitImage,
-}: SignatureProps) => {
+export default function Signature({ setBase64String }: SignatureProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const ctxRef = useRef<CanvasRenderingContext2D | null>(null); // Ref for context optimization
   const [isDrawing, setIsDrawing] = useState(false);
-  const t = useTranslations("");
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (canvas) {
-      canvas.width = canvas.parentElement!.offsetWidth - 30; // Set canvas width dynamically
-      canvas.height = 150;
-      ctxRef.current = canvas.getContext("2d");
-      if (ctxRef.current) {
-        ctxRef.current.lineWidth = 2;
-        ctxRef.current.lineCap = "round";
-        ctxRef.current.strokeStyle = "black";
-      }
-
-      if (base64string) {
-        const img = new Image();
-        img.src = base64string;
-        img.onload = () => {
-          ctxRef.current!.clearRect(0, 0, canvas.width, canvas.height);
-          ctxRef.current!.drawImage(img, 0, 0);
-        };
+    if (canvasRef.current) {
+      const ctx = canvasRef.current.getContext("2d");
+      if (ctx) {
+        ctx.lineWidth = 2;
+        ctx.lineCap = "round";
+        ctx.strokeStyle = "black";
       }
     }
-  }, [base64string]);
+
+    // Set canvas size based on container width
+    const resizeCanvas = () => {
+      const canvas = canvasRef.current;
+      if (canvas) {
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+      }
+    };
+
+    // Resize canvas on initial load and window resize
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+    return () => window.removeEventListener("resize", resizeCanvas);
+  }, []);
 
   const handleMouseDown = (event: React.MouseEvent<HTMLCanvasElement>) => {
     setIsDrawing(true);
-    const ctx = ctxRef.current;
-    if (ctx) {
-      ctx.beginPath();
-      ctx.moveTo(event.nativeEvent.offsetX, event.nativeEvent.offsetY);
+    const canvas = canvasRef.current;
+    if (canvas) {
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        ctx.beginPath();
+        ctx.moveTo(event.nativeEvent.offsetX, event.nativeEvent.offsetY);
+      }
     }
   };
 
   const handleMouseMove = (event: React.MouseEvent<HTMLCanvasElement>) => {
-    if (isDrawing && ctxRef.current) {
-      ctxRef.current.lineTo(
-        event.nativeEvent.offsetX,
-        event.nativeEvent.offsetY
-      );
-      ctxRef.current.stroke();
+    if (isDrawing && canvasRef.current) {
+      const ctx = canvasRef.current.getContext("2d");
+      if (ctx) {
+        ctx.lineTo(event.nativeEvent.offsetX, event.nativeEvent.offsetY);
+        ctx.stroke();
+      }
     }
   };
 
   const handleMouseUp = () => {
     setIsDrawing(false);
+    handleSave();
   };
 
   const handleClear = () => {
     const canvas = canvasRef.current;
-    if (canvas && ctxRef.current) {
-      ctxRef.current.clearRect(0, 0, canvas.width, canvas.height);
+    if (canvas) {
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+      setBase64String("");
     }
   };
 
   const handleSave = () => {
     const canvas = canvasRef.current;
     if (canvas) {
-      const newBase64string = canvas.toDataURL("image/png");
-      setBase64String(newBase64string); // Set parent base64 string
-      handleSubmitImage();
+      const base64string = canvas.toDataURL("image/png");
+      setBase64String(base64string);
     }
   };
 
   return (
-    <div>
+    <Holds>
       <canvas
         ref={canvasRef}
-        style={{ border: "1px solid black", margin: "0 auto" }}
+        className="m-auto border border-black rounded-xl w-full h-48" // Responsive width, fixed height for this example
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
       />
-      <div className="flex flex-row gap-4">
-        <Buttons size={null} onClick={(event) => {
-                    event.preventDefault();
-                    handleClear();
-                  }}>
-          {t("Clear")}
-        </Buttons>
-        <Buttons size={null} onClick={(event) => {
-            event.preventDefault();
-            handleSave();
-          }}>
-          {t("Save")}
-        </Buttons>
-      </div>
-    </div>
+      <Buttons onClick={handleClear}>Clear</Buttons>
+    </Holds>
   );
-};
+}

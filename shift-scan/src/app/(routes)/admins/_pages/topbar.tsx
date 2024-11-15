@@ -14,33 +14,37 @@ import { Modals } from "@/components/(reusable)/modals";
 import { AdminClockOut } from "./AdminClockOut";
 import AdminSwitch from "./AdminSwitch";
 import AdminClock from "./AdminClock";
+import { usePathname, useRouter } from "next/navigation";
 
 const Topbar = () => {
   const { data: session } = useSession();
   const firstName = session?.user.firstName;
   const lastName = session?.user.lastName;
+  const pathname = usePathname();
+  const Router = useRouter();
 
   const [isOpen, setIsOpen] = useState(false);
   const [isOpen2, setIsOpen2] = useState(false);
   const [isSwitch, setIsSwitch] = useState(false);
   const [isEndofDay, setIsEndofDay] = useState(false);
-  const [page, setPage] = useState(0);
 
   // State for data fetched from `localStorage` and `getAuthStep`
   const [jobSite, setJobSite] = useState("");
   const [costCode, setCostCode] = useState("");
   const [authStep, setAuthStepState] = useState("");
 
-  // Fetch data from `localStorage` and `getAuthStep` on mount
+  // We want to fetch data more offten to avoid unnecessary API calls
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const localeValue = localStorage.getItem("savedtimeSheetData");
+    const cc = localStorage.getItem("costCode");
+    const j = localStorage.getItem("jobSite");
     const parsedData = JSON.parse(localeValue || "{}");
-    setJobSite(parsedData.jobSite || "");
-    setCostCode(parsedData.costCode || "");
+    setJobSite(parsedData.jobSite || j || "");
+    setCostCode(parsedData.costCode || cc || "");
     setAuthStepState(getAuthStep() || "");
-  }, []); // Empty dependency array ensures this only runs on mount
+  });
 
-  const toggle = () => setIsOpen(!isOpen);
   const handleClockClick = () => setIsOpen2(!isOpen2);
   const handleClose = () => setIsOpen(false);
 
@@ -59,9 +63,233 @@ const Topbar = () => {
       console.error(err);
     }
   };
+  // these statments allow the page to dynamically have icons for every router that have the correct prefix
+  const isPersonnelPage = pathname.includes("/admins/personnel");
+  const isAssetsPage = pathname.includes("/admins/assets");
+  const isReportsPage = pathname.includes("/admins/reports");
+  const settingsPage = pathname.includes("/admins/settings");
 
   return (
-    <Holds className="w-full h-[10%] absolute ">
+    <Holds className="w-full h-full pb-8">
+      {/* UI Elements */}
+      {!isOpen2 ? (
+        <Holds className=" h-full w-full">
+          <Holds position={"row"} className="w-[98%] h-full mx-auto ">
+            {pathname === "/admins" ? (
+              <Holds
+                background={"lightBlue"}
+                className="flex flex-row justify-center items-center rounded border-[3px] border-black w-[90%] h-full relative"
+              >
+                <Titles className="h-full">Banner messages go here</Titles>
+              </Holds>
+            ) : (
+              <Holds
+                background={"lightBlue"}
+                className="flex flex-row justify-center items-center rounded border-[3px] border-black w-[90%] h-full relative"
+              >
+                <Holds className="w-[15%] absolute left-5">
+                  <Holds position={"row"} className="hidden md:flex">
+                    <Images
+                      titleImg={
+                        isPersonnelPage
+                          ? "/team.svg"
+                          : isAssetsPage
+                          ? "/jobsite.svg"
+                          : isReportsPage
+                          ? "/form.svg"
+                          : settingsPage
+                          ? "/person.svg"
+                          : ""
+                      }
+                      size={"30"}
+                      titleImgAlt="current Icon"
+                      className="my-auto cursor-pointer"
+                    />
+                    <Titles size={"h4"} className="h-full ml-4">
+                      {isPersonnelPage
+                        ? "Personnel"
+                        : isAssetsPage
+                        ? "Assets"
+                        : isReportsPage
+                        ? "Reports"
+                        : settingsPage
+                        ? `${firstName} ${lastName}`
+                        : ""}
+                    </Titles>
+                  </Holds>
+                </Holds>
+                <Titles size={"h4"} className="h-full">
+                  Closed Banner messages go here
+                </Titles>
+                <Holds className="w-10 absolute right-5">
+                  <Images
+                    titleImg="/x.svg"
+                    titleImgAlt="Home Icon"
+                    className="my-auto cursor-pointer"
+                    size={"90"}
+                    onClick={() => Router.push("/admins")}
+                  />
+                </Holds>
+              </Holds>
+            )}
+
+            <Holds
+              background={"white"}
+              className="col-start-4 col-end-5 w-[10%] h-[80%] flex-row rounded-l-none"
+            >
+              <Holds position={"row"} className="my-auto">
+                <Holds size={"50"}>
+                  <Images
+                    titleImg={"/clock.svg"}
+                    titleImgAlt={"clock"}
+                    size={"50"}
+                  />
+                </Holds>
+                <Holds size={"50"}>
+                  <Images
+                    titleImg="/expandLeft.svg"
+                    titleImgAlt="Home Icon"
+                    className="my-auto rotate-90 cursor-pointer"
+                    size={"50"}
+                    onClick={handleClockClick}
+                  />
+                </Holds>
+              </Holds>
+            </Holds>
+          </Holds>
+        </Holds>
+      ) : (
+        <Holds className="h-full w-full ">
+          <Holds className="w-[98%] h-2/3">
+            <Holds
+              background={"lightBlue"}
+              className="rounded h-full w-full border-[3px] border-black"
+            >
+              <Titles size={"h4"} className="m-auto h-full">
+                Open Banner messages go here
+              </Titles>
+            </Holds>
+            <Holds
+              background={"white"}
+              className="h-full w-[99%] flex justify-start flex-row rounded"
+            >
+              <Holds
+                position={"row"}
+                className="ml-2 my-auto w-[70%] md:w-[70%] lg:w-[60%]"
+              >
+                <Holds size={"20"}>
+                  <Images
+                    titleImg={"/clock.svg"}
+                    titleImgAlt={"clock"}
+                    className="h-8 w-8 my-auto"
+                    position={"left"}
+                  />
+                </Holds>
+                <Holds
+                  position={"row"}
+                  size={"80"}
+                  className="lg:gap-10 h-full"
+                >
+                  <Holds
+                    size={"30"}
+                    position={"row"}
+                    className="mx-2 flex-col lg:flex-row"
+                  >
+                    <Labels size={"p3"} type="title">
+                      J#
+                    </Labels>
+                    <Inputs
+                      name="jobsite"
+                      type="text"
+                      className="h-8 w-full md:w-[100px] my-auto p-0"
+                      value={jobSite}
+                      disabled
+                    />
+                  </Holds>
+                  <Holds
+                    size={"30"}
+                    position={"row"}
+                    className="flex-col lg:flex-row my-auto"
+                  >
+                    <Labels size={"p3"} type="title" className="pt-0">
+                      CC#
+                    </Labels>
+                    <Inputs
+                      name="jobsite"
+                      type="text"
+                      className="h-8 w-full md:w-[100px] my-auto p-0"
+                      value={costCode}
+                      disabled
+                    />
+                  </Holds>
+                </Holds>
+              </Holds>
+              {authStep === "success" ? (
+                <Holds
+                  position={"row"}
+                  className="my-auto w-[40%] gap-4 h-full"
+                >
+                  <Buttons
+                    background={"orange"}
+                    onClick={() => setIsSwitch(true)}
+                    className="h-8 "
+                  >
+                    <Texts size={"p6"}>Switch</Texts>
+                  </Buttons>
+                  <Buttons
+                    className="h-8 "
+                    background={"lightBlue"}
+                    onClick={handleBreakClick}
+                  >
+                    <Texts size={"p6"}>Break</Texts>
+                  </Buttons>
+                  <Buttons
+                    className="h-8 "
+                    background={"red"}
+                    onClick={() => {
+                      setIsEndofDay(true);
+                    }}
+                  >
+                    <Texts size={"p6"}>End Day</Texts>
+                  </Buttons>
+                  <Holds>
+                    <Images
+                      titleImg="/expandLeft.svg"
+                      titleImgAlt="Home Icon"
+                      className="m-auto rotate-[270deg] cursor-pointer h-16 w-16"
+                      onClick={handleClockClick}
+                    />
+                  </Holds>
+                </Holds>
+              ) : (
+                <Holds
+                  position={"row"}
+                  className=" h-full mx-2 py-1 space-x-4 w-[40%]"
+                >
+                  <Holds>
+                    <Buttons
+                      className="my-auto h-8 "
+                      background={"green"}
+                      onClick={() => setIsOpen(true)}
+                      size={"60"}
+                    >
+                      <Texts size={"p6"}>start day</Texts>
+                    </Buttons>
+                  </Holds>
+                  <Holds>
+                    <Images
+                      titleImg="/expandLeft.svg"
+                      titleImgAlt="Home Icon"
+                      className="my-auto rotate-[270deg] cursor-pointer h-16 w-16"
+                      onClick={handleClockClick}
+                    />
+                  </Holds>
+                </Holds>
+              )}
+            </Holds>
+          </Holds>
+        </Holds>
+      )}
       <Modals
         isOpen={isOpen}
         handleClose={handleClose}
@@ -86,196 +314,6 @@ const Topbar = () => {
       >
         <AdminClockOut handleClose={() => setIsEndofDay(false)} />
       </Modals>
-
-      {/* UI Elements */}
-      {!isOpen2 ? (
-        <Holds className=" h-full pb-4 w-full">
-          <Holds position={"row"} className="w-[98%] h-full m-auto">
-            {page === 0 ? (
-              <Holds
-                background={"lightBlue"}
-                className="flex flex-row justify-center items-center rounded border-[3px] border-black w-[90%] h-full relative"
-              >
-                <Titles className="h-full">Banner messages go here</Titles>
-              </Holds>
-            ) : (
-              <Holds
-                background={"lightBlue"}
-                className="flex flex-row justify-center items-center rounded border-[3px] border-black w-[90%] h-full relative"
-              >
-                <Holds className="w-[15%] absolute left-5">
-                  <Holds position={"row"} className="hidden md:flex">
-                    <Images
-                      titleImg={
-                        page === 1
-                          ? "/team.svg"
-                          : page === 2
-                          ? "/jobsite.svg"
-                          : page === 3
-                          ? "/form.svg"
-                          : page === 4
-                          ? "/person.svg"
-                          : ""
-                      }
-                      size={"40"}
-                      titleImgAlt="current Icon"
-                      className="my-auto cursor-pointer"
-                    />
-                    <Titles size={"h4"} className="h-full ml-4">
-                      {page === 1
-                        ? "Personnel"
-                        : page === 2
-                        ? "Assets"
-                        : page === 3
-                        ? "Reports"
-                        : page === 4
-                        ? `${firstName} ${lastName}`
-                        : ""}
-                    </Titles>
-                  </Holds>
-                </Holds>
-                <Titles size={"h4"} className="h-full">
-                  Closed Banner messages go here
-                </Titles>
-                <Holds className="w-10 absolute right-5">
-                  <Images
-                    titleImg="/x.svg"
-                    titleImgAlt="Home Icon"
-                    className="my-auto cursor-pointer"
-                    size={"90"}
-                    onClick={() => setPage(0)}
-                  />
-                </Holds>
-              </Holds>
-            )}
-
-            <Holds
-              background={"white"}
-              className="col-start-4 col-end-5 w-[10%] h-[80%] flex-row rounded-l-none"
-            >
-              <Holds position={"row"} className="my-auto">
-                <Holds size={"50"}>
-                  <Images titleImg={"/clock.svg"} titleImgAlt={"clock"} />
-                </Holds>
-                <Holds size={"50"}>
-                  <Images
-                    titleImg="/expandLeft.svg"
-                    titleImgAlt="Home Icon"
-                    className="my-auto rotate-90 cursor-pointer"
-                    size={"50"}
-                    onClick={handleClockClick}
-                  />
-                </Holds>
-              </Holds>
-            </Holds>
-          </Holds>
-        </Holds>
-      ) : (
-        <Holds className="h-full w-full ">
-          <Holds className="w-[98%] h-full">
-            <Holds
-              background={"lightBlue"}
-              className="rounded h-full w-full border-[3px] border-black"
-            >
-              <Titles className="m-auto h-full">
-                Open Banner messages go here
-              </Titles>
-            </Holds>
-            <Holds
-              background={"white"}
-              className="h-full py-2 w-[99%] flex justify-start flex-row rounded"
-            >
-              <Holds
-                position={"row"}
-                className="ml-2 my-auto w-[70%] md:w-[70%] lg:w-[60%]"
-              >
-                <Holds size={"20"}>
-                  <Images
-                    titleImg={"/clock.svg"}
-                    titleImgAlt={"clock"}
-                    className="h-16 w-16"
-                    position={"left"}
-                  />
-                </Holds>
-                <Holds position={"row"} size={"80"} className="lg:gap-10">
-                  <Holds
-                    size={"30"}
-                    position={"row"}
-                    className="mx-2 flex-col lg:flex-row"
-                  >
-                    <Labels size={"p3"} type="title">
-                      J#
-                    </Labels>
-                    <Inputs
-                      name="jobsite"
-                      type="text"
-                      className="h-8 w-full md:w-[100px] my-auto"
-                      value={jobSite}
-                      disabled
-                    />
-                  </Holds>
-                  <Holds
-                    size={"30"}
-                    position={"row"}
-                    className="flex-col lg:flex-row"
-                  >
-                    <Labels size={"p3"} type="title">
-                      CC#
-                    </Labels>
-                    <Inputs
-                      name="jobsite"
-                      type="text"
-                      className="h-8 w-full md:w-[100px] my-auto"
-                      value={costCode}
-                      disabled
-                    />
-                  </Holds>
-                </Holds>
-              </Holds>
-              {authStep === "success" ? (
-                <Holds position={"row"} className="my-auto w-[40%]">
-                  <Buttons
-                    background={"orange"}
-                    onClick={() => setIsSwitch(true)}
-                  >
-                    <Texts size={"p6"}>Switch</Texts>
-                  </Buttons>
-                  <Buttons background={"lightBlue"} onClick={handleBreakClick}>
-                    <Texts size={"p6"}>Break</Texts>
-                  </Buttons>
-                  <Buttons
-                    background={"red"}
-                    onClick={() => setIsEndofDay(true)}
-                  >
-                    <Texts size={"p6"}>End Day</Texts>
-                  </Buttons>
-                  <Images
-                    titleImg="/expandLeft.svg"
-                    titleImgAlt="Home Icon"
-                    className="m-auto rotate-[270deg] cursor-pointer h-16 w-16"
-                    onClick={handleClockClick}
-                  />
-                </Holds>
-              ) : (
-                <Holds
-                  position={"row"}
-                  className="my-auto mx-2 space-x-4 w-[40%]"
-                >
-                  <Buttons background={"green"} onClick={() => setIsOpen(true)}>
-                    <Texts size={"p6"}>start day</Texts>
-                  </Buttons>
-                  <Images
-                    titleImg="/expandLeft.svg"
-                    titleImgAlt="Home Icon"
-                    className="m-auto rotate-[270deg] cursor-pointer h-16 w-16"
-                    onClick={handleClockClick}
-                  />
-                </Holds>
-              )}
-            </Holds>
-          </Holds>
-        </Holds>
-      )}
     </Holds>
   );
 };

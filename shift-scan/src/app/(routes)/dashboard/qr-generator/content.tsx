@@ -18,16 +18,12 @@ export default function QRGeneratorContent() {
     <>
       <Grids rows={"10"}>
         <Holds position={"row"} className="row-span-1 h-full gap-2">
-          <Tab
-            onClick={() => setActiveTab(1)}
-            tabLabel={t("Jobsite")}
-            isTabActive={activeTab === 1}
-          />
-          <Tab
-            onClick={() => setActiveTab(2)}
-            tabLabel={u("EquipmentTitle")}
-            isTabActive={activeTab === 2}
-          />
+          <Tab onClick={() => setActiveTab(1)} isActive={activeTab === 1}>
+            {t("Jobsite")}
+          </Tab>
+          <Tab onClick={() => setActiveTab(2)} isActive={activeTab === 2}>
+            {u("EquipmentTitle")}
+          </Tab>
         </Holds>
         <Holds
           background={"white"}
