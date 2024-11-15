@@ -11,9 +11,9 @@ const InputVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-white border border-[3px] border-black disabled:bg-gray-400 mb-3 last:mb-0 w-full p-3",
+          "bg-white border border-[3px] border-black disabled:bg-gray-400 mb-3 last:mb-0 w-full p-1",
         white:
-          "bg-white border border-2 border-black mb-3 last:mb-0 w-full p-3",
+          "bg-white border border-2 border-black mb-3 last:mb-0 w-full p-1",
       },
     },
     defaultVariants: {

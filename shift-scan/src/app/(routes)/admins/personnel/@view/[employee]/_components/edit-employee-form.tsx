@@ -16,6 +16,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 type Props = {
   formRef: React.RefObject<HTMLFormElement>;
   user: string;
+  userId: string | undefined;
   editedData: UserProfile | null;
   setEditedData: Dispatch<SetStateAction<UserProfile | null>>;
   editedData1: EmployeeContactInfo | null;
@@ -24,7 +25,6 @@ type Props = {
   initialEmployeeContactInfo: EmployeeContactInfo | null;
   setRenderedData: Dispatch<SetStateAction<UserProfile | null>>;
   setRenderedData1: Dispatch<SetStateAction<EmployeeContactInfo | null>>;
-  userId: string;
   permission: Permission;
   setPersonalSignature: Dispatch<SetStateAction<boolean>>;
   signatureBase64String: string;
@@ -139,15 +139,17 @@ export const EditEmployeeForm = ({
         {/* --------------------------------------------------------------------------------------------------------------------*/}
         {/* -----------------------------------------------  Employee Info  ----------------------------------------------------*/}
         {/* --------------------------------------------------------------------------------------------------------------------*/}
-        <Inputs type="hidden" name="id" value={editedData?.id || ""} />
         <Grids rows={"1"} className="w-full h-full p-5 ">
           <Holds position="row" className="w-full h-full row-span-1 ">
             <Holds className="w-2/3 h-full ">
-              {userId === user ? (
-                <Titles size={"h5"}>Your Information</Titles>
-              ) : (
-                <Titles size={"h5"}>Employee Information</Titles>
-              )}
+              <Inputs type="hidden" name="id" value={editedData?.id || ""} />
+              <Holds>
+                {userId === user ? (
+                  <Titles size={"h5"}>Your Information</Titles>
+                ) : (
+                  <Titles size={"h5"}>Employee Information</Titles>
+                )}
+              </Holds>
               <Holds className=" w-full flex-wrap h-full  ">
                 <Holds className="w-[50%] px-2">
                   <Labels size={"p6"} className="">
@@ -419,10 +421,12 @@ export const EditEmployeeForm = ({
             {/* --------------------------------------------------------------------------------------------------------------------*/}
 
             <Holds className="w-[2px] h-full bg-black mx-5 border-none"></Holds>
-            <Holds className="w-1/3 h-full overflow-y-scroll">
+            <Grids className="w-1/3 h-full">
               {/* This section is for the permission level to display, the user will be able to change the permission level differently based on roles*/}
               {/*Super admin can change the permission level of anyone */}
-              <Titles size={"h5"}>Employee Permissions</Titles>
+              <Holds>
+                <Titles size={"h5"}>Employee Permissions</Titles>
+              </Holds>
               {permission === "SUPERADMIN" || permission === "ADMIN" ? (
                 <>
                   <Labels size={"p6"}>Permission Level</Labels>
@@ -546,7 +550,7 @@ export const EditEmployeeForm = ({
                 <Options value="true">True</Options>
                 <Options value="false">False</Options>
               </Selects>
-            </Holds>
+            </Grids>
           </Holds>
         </Grids>
       </form>
