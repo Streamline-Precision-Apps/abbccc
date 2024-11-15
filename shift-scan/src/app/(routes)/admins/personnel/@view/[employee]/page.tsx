@@ -227,9 +227,9 @@ export default function Employee({ params }: { params: { employee: string } }) {
           setEditedData={setEditedData}
           setEditedData1={setEditedData1}
           formRef={formRef}
-          user={""}
+          user={user}
           setRenderedData1={setRenderedData1}
-          userId={user}
+          userId={userId}
           permission={"USER"}
           signatureBase64String={signatureBase64String}
           setPersonalSignature={() => setPersonalSignature(true)}

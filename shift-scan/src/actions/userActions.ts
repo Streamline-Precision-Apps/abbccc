@@ -54,6 +54,104 @@ export async function createUser(formData: FormData) {
   revalidatePath("/");
 }
 
+// this creates a user from the admin view
+export async function adminCreateUser(formData: FormData) {
+  try {
+    // Extract data from form
+    const firstName = formData.get("firstName") as string;
+    const lastName = formData.get("lastName") as string;
+    const DOB = formData.get("DOB") as string;
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    if (!firstName || !lastName || !email || !password || !DOB) {
+      throw new Error("Required fields are missing.");
+    }
+
+    // Check for duplicate users based on firstName, lastName, and DOB
+    const users = await prisma.users.findMany({
+      where: {
+        firstName,
+        lastName,
+        DOB,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (users.length > 0) {
+      console.log(
+        "User already exists based on first name, last name, and DOB"
+      );
+      return;
+    }
+
+    // Check for duplicate email
+    const existingEmailUser = await prisma.users.findUnique({
+      where: {
+        email,
+      },
+    });
+
+    if (existingEmailUser) {
+      console.log("User already exists with the provided email:", email);
+      return;
+    }
+
+    console.log("Creating user:", formData);
+    const newUser = await prisma.users.create({
+      data: {
+        firstName,
+        lastName,
+        username: formData.get("username") as string,
+        email,
+        password: formData.get("password") as string,
+        DOB,
+        truckView: formData.get("truckView") === "true",
+        tascoView: formData.get("tascoView") === "true",
+        laborView: formData.get("laborView") === "true",
+        mechanicView: formData.get("mechanicView") === "true",
+        permission: formData.get("permission") as Permission,
+        image: formData.get("image") as string,
+      },
+    });
+    const employeeId = newUser.id;
+
+    // Create contact details
+    await prisma.contacts.create({
+      data: {
+        employeeId,
+        email,
+        phoneNumber: formData.get("phoneNumber") as string,
+        emergencyContact: formData.get("emergencyContact") as string,
+        emergencyContactNumber: formData.get(
+          "emergencyContactNumber"
+        ) as string,
+      },
+    });
+
+    // Create user settings
+    await prisma.userSettings.create({
+      data: {
+        userId: employeeId,
+        language: "en",
+        approvedRequests: formData.get("approvedRequests") === "true",
+        timeOffRequests: formData.get("timeoffRequests") === "true",
+        generalReminders: formData.get("GeneralReminders") === "true",
+        biometric: formData.get("biometric") === "false",
+        cameraAccess: formData.get("cameraAccess") === "false",
+        locationAccess: formData.get("locationAccess") === "false",
+      },
+    });
+
+    console.log("User created successfully.");
+  } catch (error) {
+    console.error("Error creating user:", error);
+  }
+  revalidatePath("/");
+}
+
 export async function updateUser(formData: FormData) {
   await prisma.users.update({
     where: { id: formData.get("id") as string },
