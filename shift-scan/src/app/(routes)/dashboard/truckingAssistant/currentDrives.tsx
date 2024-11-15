@@ -5,7 +5,6 @@ import { useSession } from "next-auth/react";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
 import { receivedContent } from "@/lib/types";
-import { useRouter } from "next/navigation";
 import React from "react";
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
@@ -51,7 +50,6 @@ const receivedContentSchema = z.object({
 
 export default function CurrentDrives() {
   const { data: session } = useSession();
-  const router = useRouter();
   const [receivedContent, setReceivedContent] = useState<receivedContent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

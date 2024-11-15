@@ -37,23 +37,22 @@ export default function VerificationStep({
   const { setTimeSheetData } = useTimeSheetData();
   const [date] = useState(new Date());
   const { data: session } = useSession();
-  if (!session) return null;
+  const { truckScanData } = useTruckScanData(); // Move this hook call to the top level.
+
+  if (!session) return null; // Conditional rendering for session
+
   const { id } = session.user;
-  const { truckScanData } = useTruckScanData();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
       e.preventDefault();
 
-      if (id === null) {
+      if (!id) {
         throw new Error("User id does not exist");
       }
 
       if (type === "switchJobs") {
         try {
-          console.log("The type is ", type);
-          console.log("entered switch jobs:");
-
           const localeValue = localStorage.getItem("savedtimeSheetData");
           const tId = JSON.parse(localeValue || "{}").id;
           const formData2 = new FormData();
@@ -65,8 +64,8 @@ export default function VerificationStep({
           await updateTimeSheetBySwitch(formData2);
 
           const formData = new FormData();
-          if (truckScanData !== "") {
-            formData.append("vehicleId", truckScanData ?? "");
+          if (truckScanData) {
+            formData.append("vehicleId", truckScanData);
           }
           formData.append("submitDate", new Date().toISOString());
           formData.append("userId", id?.toString() || "");
@@ -79,18 +78,18 @@ export default function VerificationStep({
           const response = await CreateTimeSheet(formData);
           const result = { id: response.id.toString() };
           setTimeSheetData(result);
-          setTimeSheetData(result);
           setAuthStep("success");
+
           if (handleNextStep) {
             handleNextStep();
           }
         } catch (error) {
-          console.log(error);
+          console.error(error);
         }
       } else {
         const formData = new FormData();
-        if (truckScanData !== "" || null) {
-          formData.append("vehicleId", truckScanData ?? "");
+        if (truckScanData) {
+          formData.append("vehicleId", truckScanData);
         }
         formData.append("submitDate", new Date().toISOString());
         formData.append("userId", id.toString());
@@ -102,16 +101,17 @@ export default function VerificationStep({
         const response = await CreateTimeSheet(formData);
         const result = { id: response.id.toString() };
         setTimeSheetData(result);
-        setTimeSheetData(result);
         setAuthStep("success");
+
         if (handleNextStep) {
           handleNextStep();
         }
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
+
   return (
     <>
       <TitleBoxes
@@ -123,7 +123,6 @@ export default function VerificationStep({
         type="row"
       />
       <Forms onSubmit={handleSubmit}>
-        {/* <Bases variant={"pinkCard"} size={"pinkCard"} className="relative"> */}
         <Buttons type="submit">
           <Images titleImg={"/new/downArrow.svg"} titleImgAlt={"downArrow"} />
         </Buttons>
@@ -142,21 +141,19 @@ export default function VerificationStep({
               })}
             />
           </Labels>
-          <Labels>
-            {truckScanData !== "" && (
-              <React.Fragment>
-                <Texts size={"p4"} position={"left"}>
-                  {t("Truck-label")}
-                </Texts>
-                <Inputs
-                  state="disabled"
-                  name="jobsiteId"
-                  variant={"white"}
-                  data={truckScanData || ""}
-                />
-              </React.Fragment>
-            )}
-          </Labels>
+          {truckScanData && (
+            <Labels>
+              <Texts size={"p4"} position={"left"}>
+                {t("Truck-label")}
+              </Texts>
+              <Inputs
+                state="disabled"
+                name="jobsiteId"
+                variant={"white"}
+                data={truckScanData}
+              />
+            </Labels>
+          )}
           <Labels>
             <Texts size={"p4"} position={"left"}>
               {t("JobSite-label")}
@@ -168,7 +165,6 @@ export default function VerificationStep({
               data={scanResult?.data || ""}
             />
           </Labels>
-
           <Labels>
             <Texts size={"p4"} position={"left"}>
               {t("CostCode-label")}
@@ -181,22 +177,12 @@ export default function VerificationStep({
             />
           </Labels>
         </Contents>
-
-        {/* This commented out code was the design for the punch in /punch out box */}
-
-        {/* </Bases> */}
-        {/* <Bases variant={null} size={"box"} className="relative">
-          <Bases variant={"blueboxTop"} size={"blueboxTop"}></Bases>
-          <Bases variant={"blueboxTop2"} size={"blueboxTop"}></Bases>
-          <Bases variant={"blueBox"} size={"blueBox"}> */}
         <Buttons
           type="submit"
           className="bg-app-green mx-auto flex justify-center w-full h-full py-4 px-5 rounded-lg text-black font-bold mt-5"
         >
           <Clock time={date.getTime()} />
         </Buttons>
-        {/* </Bases>
-        </Bases> */}
         <Inputs
           type="hidden"
           name="submitDate"
