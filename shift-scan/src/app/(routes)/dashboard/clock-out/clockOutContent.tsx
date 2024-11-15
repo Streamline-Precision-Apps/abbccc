@@ -62,6 +62,7 @@ export default function ClockOutContent() {
   const [date] = useState(new Date());
   const [base64String, setBase64String] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const { setTruckScanData } = useTruckScanData();
 
   // Validate initial state with Zod schema
   try {
@@ -128,6 +129,7 @@ export default function ClockOutContent() {
       const formData = new FormData(formRef.current as HTMLFormElement);
       await updateTimeSheet(formData);
       localStorage.clear();
+      setTruckScanData("");
       router.push("/");
     } catch (error) {
       console.error("Failed to submit the time sheet:", error);
