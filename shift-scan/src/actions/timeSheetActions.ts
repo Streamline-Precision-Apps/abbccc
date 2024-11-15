@@ -85,6 +85,11 @@ export async function CreateTimeSheet(formData: FormData) {
     });
 
     console.log("newTimeSheet:", newTimeSheet);
+    revalidatePath("/admins/settings");
+    revalidatePath("/admins/assets");
+    revalidatePath("/admins/reports");
+    revalidatePath("/admins/personnel");
+    revalidatePath("/admins");
     return newTimeSheet;
   } catch (error) {
     console.error("Error creating timesheet:", error);
@@ -300,6 +305,11 @@ export async function updateTimeSheetBySwitch(formData: FormData) {
     setTruckScanData("")
     // Revalidate the path
     revalidatePath(`/`);
+    revalidatePath("/admins/settings");
+    revalidatePath("/admins/assets");
+    revalidatePath("/admins/reports");
+    revalidatePath("/admins/personnel");
+    revalidatePath("/admins");
     return { success: true };
   } catch (error) {
     console.log(error);

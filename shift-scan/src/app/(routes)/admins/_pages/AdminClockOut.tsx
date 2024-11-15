@@ -65,7 +65,7 @@ export const AdminClockOut = ({ handleClose }: { handleClose: () => void }) => {
           jobsite: localStorage.getItem("jobSite"),
           costCode: localStorage.getItem("costCode"),
           timesheet: JSON.parse(
-            localStorage.getItem("savedtimeSheetData") || "{}"
+            localStorage.getItem("savedtimeSheetData") || ""
           ),
         }
       : {};

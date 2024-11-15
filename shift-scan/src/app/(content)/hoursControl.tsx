@@ -86,6 +86,10 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
   const currentData = dailyHours[currentIndex] || { date: "", hours: 0 };
   const nextData = dailyHours[currentIndex + 1] || { date: "", hours: 0 };
 
+  console.log("prevData", prevData);
+  console.log("currentData", currentData);
+  console.log("nextData", nextData);
+
   const calculateBarHeight = (value: number) => {
     if (value === 0) return 50;
     if (value > 0 && value <= 1) return 50;
@@ -102,12 +106,14 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
   const scrollLeft = () => {
     if (currentIndex > 0) {
       setCurrentIndex((prevIndex) => prevIndex - 1);
+      console.log(currentIndex);
     }
   };
 
   const scrollRight = () => {
     if (currentIndex < dailyHours.length - 1) {
       setCurrentIndex((prevIndex) => prevIndex + 1);
+      console.log(currentIndex);
     }
   };
   const returnToMain = () => {
@@ -117,14 +123,14 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
   return (
     <Grids rows="7" gap="5">
       <Holds
-        background="darkBlue"
+        background={"darkBlue"}
         className="row-span-2 h-full shadow-[8px_8px_0px_grey]"
       >
         <ViewComponent
           returnToMain={returnToMain}
           scrollLeft={scrollLeft}
           scrollRight={scrollRight}
-          currentDate={new Date(currentData.date)}
+          currentDate={currentData.date}
         />
       </Holds>
 
@@ -132,72 +138,151 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
         position="row"
         className="row-span-4 border-black border-[3px] rounded-2xl shadow-[8px_8px_0px_grey]"
       >
-        {[prevData, currentData, nextData].map((data, index) => (
-          <Holds
-            key={index}
-            className={`mx-auto ${
-              currentData.date === data.date
-                ? "px-2 py-2 h-full w-[30%]"
-                : prevData.date === data.date
-                ? "px-2 py-4 h-full w-[25%]"
-                : nextData.date === data.date
-                ? "px-2 py-4 h-full w-[25%]"
-                : "px-2 py-4 h-full hidden xl:block xl:w-28"
-            }`}
-          >
+        {/* Render prevData only if it exists */}
+        {prevData.date !== "" ? (
+          <Holds className="mx-auto px-2 py-4 h-full w-[25%]">
             <Holds
-              background={"darkBlue"}
-              className={`h-full rounded-[10px] p-1 flex justify-end
-                ${
-                  // this is a ternary to style today with a green border and all the other days with a black border
-                  data.date === Today.date
-                    ? " border-[5px] border-app-green "
-                    : " border-[3px] border-black"
-                } ${
-                // this is a ternary to style days with 0 hours before today
-                data.hours === 0 &&
-                data.date <= new Date().toISOString().split("T")[0]
+              background="darkBlue"
+              className={`h-full rounded-[10px] p-1 flex justify-end ${
+                prevData.date === Today.date
+                  ? "border-[5px] border-app-green"
+                  : "border-[3px] border-black"
+              } ${
+                prevData.hours === 0 &&
+                prevData.date <= new Date().toISOString().split("T")[0]
                   ? " "
                   : ""
               }`}
             >
               <Holds
-                // this is a ternary to style the hours inputs green, orange, or clear
                 className={`rounded-[10px] justify-end ${
-                  data.hours > 8 && data.hours !== 0
+                  prevData.hours > 8 && prevData.hours !== 0
                     ? "bg-app-green"
-                    : "bg-none"
-                }
-                    ${
-                      data.hours < 8 && data.hours !== 0
-                        ? "bg-app-orange"
-                        : "bg-none"
-                    }
-                        
-                     `}
+                    : prevData.hours < 8 && prevData.hours !== 0
+                    ? "bg-app-orange"
+                    : ""
+                }`}
                 style={{
-                  height: `${calculateBarHeight(data.hours)}%`,
-                  border: data.hours ? "3px solid black" : "none",
+                  height: `${calculateBarHeight(prevData.hours)}%`,
+                  border: prevData.hours ? "3px solid black" : "none",
                 }}
               >
                 <Texts size="p4">
-                  {data.hours !== 0 ? data.hours.toFixed(1) : ""}
+                  {prevData.hours !== 0 ? prevData.hours.toFixed(1) : ""}
                 </Texts>
                 <Texts size="p4">
-                  {data.hours === 0 &&
-                  data.date <= new Date().toISOString().split("T")[0]
-                    ? data.hours
+                  {prevData.hours === 0 &&
+                  prevData.date <= new Date().toISOString().split("T")[0]
+                    ? prevData.hours
                     : ""}
                 </Texts>
                 <Texts size="p4">
-                  {data.date <= new Date().toISOString().split("T")[0]
+                  {prevData.date <= new Date().toISOString().split("T")[0]
                     ? `${t("DA-Time-Label")}`
                     : ""}
                 </Texts>
               </Holds>
             </Holds>
           </Holds>
-        ))}
+        ) : (
+          <Holds className="mx-auto px-2 py-4 h-full w-[25%]" />
+        )}
+
+        {/* Render currentData */}
+        <Holds className="mx-auto px-2 py-2 h-full w-[30%]">
+          <Holds
+            background="darkBlue"
+            className={`h-full rounded-[10px] p-1 flex justify-end ${
+              currentData.date === Today.date
+                ? "border-[5px] border-app-green"
+                : "border-[3px] border-black"
+            } ${
+              currentData.hours === 0 &&
+              currentData.date <= new Date().toISOString().split("T")[0]
+                ? " "
+                : ""
+            }`}
+          >
+            <Holds
+              className={`rounded-[10px] justify-end ${
+                currentData.hours > 8 && currentData.hours !== 0
+                  ? "bg-app-green"
+                  : currentData.hours < 8 && currentData.hours !== 0
+                  ? "bg-app-orange"
+                  : ""
+              }`}
+              style={{
+                height: `${calculateBarHeight(currentData.hours)}%`,
+                border: currentData.hours ? "3px solid black" : "none",
+              }}
+            >
+              <Texts size="p4">
+                {currentData.hours !== 0 ? currentData.hours.toFixed(1) : ""}
+              </Texts>
+              <Texts size="p4">
+                {currentData.hours === 0 &&
+                currentData.date <= new Date().toISOString().split("T")[0]
+                  ? currentData.hours
+                  : ""}
+              </Texts>
+              <Texts size="p4">
+                {currentData.date <= new Date().toISOString().split("T")[0]
+                  ? `${t("DA-Time-Label")}`
+                  : ""}
+              </Texts>
+            </Holds>
+          </Holds>
+        </Holds>
+
+        {/* Render nextData */}
+        {nextData.date !== "" ? (
+          <Holds className="mx-auto px-2 py-4 h-full w-[25%]">
+            <Holds
+              background="darkBlue"
+              className={`h-full rounded-[10px] p-1 flex justify-end ${
+                nextData.date === Today.date
+                  ? "border-[5px] border-app-green"
+                  : "border-[3px] border-black"
+              } ${
+                nextData.hours === 0 &&
+                nextData.date <= new Date().toISOString().split("T")[0]
+                  ? " "
+                  : ""
+              }`}
+            >
+              <Holds
+                className={`rounded-[10px] justify-end ${
+                  nextData.hours > 8 && nextData.hours !== 0
+                    ? "bg-app-green"
+                    : nextData.hours < 8 && nextData.hours !== 0
+                    ? "bg-app-orange"
+                    : ""
+                }`}
+                style={{
+                  height: `${calculateBarHeight(nextData.hours)}%`,
+                  border: nextData.hours ? "3px solid black" : "none",
+                }}
+              >
+                <Texts size="p4">
+                  {nextData.hours !== 0 ? nextData.hours.toFixed(1) : ""}
+                </Texts>
+                <Texts size="p4">
+                  {nextData.hours === 0 &&
+                  nextData.date <= new Date().toISOString().split("T")[0]
+                    ? nextData.hours
+                    : ""}
+                </Texts>
+                <Texts size="p4">
+                  {nextData.date <= new Date().toISOString().split("T")[0]
+                    ? `${t("DA-Time-Label")}`
+                    : ""}
+                </Texts>
+              </Holds>
+            </Holds>
+          </Holds>
+        ) : (
+          <Holds className="mx-auto px-2 py-4 h-full w-[25%]" />
+        )}
       </Holds>
       <Holds className="row-span-1 h-full">
         <Buttons href={"/timesheets"} background={"green"}>

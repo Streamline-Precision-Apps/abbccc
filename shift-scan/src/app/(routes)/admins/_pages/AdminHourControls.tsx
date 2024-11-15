@@ -14,9 +14,9 @@ import { Grids } from "@/components/(reusable)/grids";
 type ViewComponentProps = {
   scrollLeft: () => void;
   scrollRight: () => void;
-  dataRangeStart: Date;
-  dataRangeEnd: Date;
-  currentDate: Date;
+  dataRangeStart: string;
+  dataRangeEnd: string;
+  currentDate: string;
 };
 export default function AdminHourControls({
   scrollLeft,
@@ -33,27 +33,34 @@ export default function AdminHourControls({
       setLocale(localeCookie);
     }
   }, []);
-  const rangeStart = dataRangeStart.toLocaleDateString(locale, {
+  const rangeStart = new Date(dataRangeStart).toLocaleDateString(locale, {
+    timeZone: "UTC",
     month: "short",
     day: "numeric",
   });
-  const rangeEnd = dataRangeEnd.toLocaleDateString(locale, {
+  const rangeEnd = new Date(dataRangeEnd).toLocaleDateString(locale, {
+    timeZone: "UTC",
     month: "short",
     day: "numeric",
   });
 
   const t = useTranslations("Home");
   const today = new Date();
-  let Weekday = currentDate.toLocaleDateString(locale, { weekday: "long" });
+  let Weekday = new Date(currentDate).toLocaleDateString(locale, {
+    timeZone: "UTC",
+    weekday: "long",
+  });
 
   if (
     Weekday === today.toLocaleDateString(locale, { weekday: "long" }) &&
-    currentDate.toLocaleDateString(locale, {
+    new Date(currentDate).toLocaleDateString(locale, {
+      timeZone: "UTC",
       month: "short",
       day: "numeric",
       year: "numeric",
     }) ===
-      today.toLocaleDateString(locale, {
+      new Date(today).toLocaleDateString(locale, {
+        timeZone: "UTC",
         month: "short",
         day: "numeric",
         year: "numeric",
@@ -61,7 +68,8 @@ export default function AdminHourControls({
   ) {
     Weekday = `${t("DA-Today")}`;
   }
-  const dateToday = currentDate.toLocaleDateString(locale, {
+  const dateToday = new Date(currentDate).toLocaleDateString(locale, {
+    timeZone: "UTC",
     month: "short",
     day: "numeric",
     year: "numeric",

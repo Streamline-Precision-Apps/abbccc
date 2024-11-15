@@ -20,6 +20,7 @@ const TextVariants = cva(
         disabled: "text-gray-600",
         link: "text-black underline underline-offset-2",
         red: "text-red-500",
+        green: "text-green-500",
       },
       position: {
         //only position attributes
