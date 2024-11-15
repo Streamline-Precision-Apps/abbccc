@@ -13,8 +13,8 @@ import { signIn } from "next-auth/react";
 import { setLocale } from "@/actions/cookieActions";
 import { Forms } from "@/components/(reusable)/forms";
 import { Holds } from "@/components/(reusable)/holds";
-import Checkbox from "@/components/(inputs)/CheckBox";
 import Link from "next/link";
+import { CheckBox } from "@/components/(inputs)/checkBox";
 
 export default function SignInForm() {
   const [viewSecret, setViewSecret] = useState(false);
@@ -121,7 +121,7 @@ export default function SignInForm() {
             <Texts size="p2">{t("Spanish")}</Texts>
           </Holds>
           <Holds size={"30"}>
-            <Checkbox
+            <CheckBox
               id={"1"}
               label={""}
               onChange={(e) => LocaleHandler(e)}

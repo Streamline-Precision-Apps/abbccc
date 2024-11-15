@@ -238,7 +238,6 @@ model Equipment {
   registrationExpiration DateTime?
   mileage                Int?
   isActive               Boolean         @default(true)
-  image                  String?
   inUse                  Boolean         @default(false)
 
   employeeEquipmentLogs EmployeeEquipmentLogs[]

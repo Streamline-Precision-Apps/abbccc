@@ -353,3 +353,10 @@ I finished some more prisma DB research and Created the clock out dashboard page
 ## 11/13/2024
 
 - Fix error where clocking out replaces truck with null.
+- Fixed translations on clockout and dashboard and clock in.
+- Made a new context current view and changed the name of the current one to be a truck id tracker instead.
+- Make it show truck id at the clockout confirmation page.
+
+## 11/14/2024
+
+- Fixed 
