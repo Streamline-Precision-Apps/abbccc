@@ -19,7 +19,7 @@ import { Forms } from "../(reusable)/forms";
 import { Images } from "../(reusable)/images";
 import { Texts } from "../(reusable)/texts";
 import { useSession } from "next-auth/react";
-import { useCurrentView } from "@/app/context/CurrentViewContext";
+import { useTruckScanData } from "@/app/context/TruckScanDataContext";
 
 type VerifyProcessProps = {
   handleNextStep?: () => void;
@@ -39,7 +39,7 @@ export default function VerificationStep({
   const { data: session } = useSession();
   if (!session) return null;
   const { id } = session.user;
-  const { currentView } = useCurrentView();
+  const { truckScanData } = useTruckScanData();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
@@ -65,8 +65,8 @@ export default function VerificationStep({
           await updateTimeSheetBySwitch(formData2);
 
           const formData = new FormData();
-          if (currentView !== "") {
-            formData.append("vehicleId", currentView ?? "");
+          if (truckScanData !== "") {
+            formData.append("vehicleId", truckScanData ?? "");
           }
           formData.append("submitDate", new Date().toISOString());
           formData.append("userId", id?.toString() || "");
@@ -89,8 +89,8 @@ export default function VerificationStep({
         }
       } else {
         const formData = new FormData();
-        if (currentView !== "" || null) {
-          formData.append("vehicleId", currentView ?? "");
+        if (truckScanData !== "" || null) {
+          formData.append("vehicleId", truckScanData ?? "");
         }
         formData.append("submitDate", new Date().toISOString());
         formData.append("userId", id.toString());
@@ -143,7 +143,7 @@ export default function VerificationStep({
             />
           </Labels>
           <Labels>
-            {currentView !== "" && (
+            {truckScanData !== "" && (
               <React.Fragment>
                 <Texts size={"p4"} position={"left"}>
                   {t("Truck-label")}
@@ -152,7 +152,7 @@ export default function VerificationStep({
                   state="disabled"
                   name="jobsiteId"
                   variant={"white"}
-                  data={currentView || ""}
+                  data={truckScanData || ""}
                 />
               </React.Fragment>
             )}

@@ -11,7 +11,7 @@ import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useEQScanData } from "@/app/context/equipmentContext";
 import { Titles } from "../(reusable)/titles";
 import { setAuthStep } from "@/app/api/auth";
-import { useCurrentView } from "@/app/context/CurrentViewContext";
+import { useTruckScanData } from "@/app/context/TruckScanDataContext";
 
 import useFetchAllData from "@/app/(content)/FetchData";
 import { Banners } from "../(reusable)/banners";
@@ -41,7 +41,7 @@ export default function ClockProcessor({
   const [path, setPath] = useState("");
   const [scanner, setScanner] = useState("");
   const [banner, setBanner] = useState("");
-  const {currentView} = useCurrentView()
+  const { truckScanData } = useTruckScanData();
 
   useEffect(() => {
     // sets step to 1 on mount
@@ -209,9 +209,11 @@ export default function ClockProcessor({
           <Titles size={"h2"}>
             {t("CostCode-label")} {savedCostCode}{" "}
           </Titles>
-          {currentView !== "" && <Titles size={"h2"}>
-            {t("Truck-label")} {currentView}{" "}
-          </Titles>}
+          {truckScanData !== "" && (
+            <Titles size={"h2"}>
+              {t("Truck-label")} {truckScanData}{" "}
+            </Titles>
+          )}
           <Titles size={"h2"}>
             {t("Confirmation-time")}{" "}
             {new Date().toLocaleDateString(locale, {

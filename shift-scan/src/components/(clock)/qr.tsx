@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import QrScanner from "qr-scanner";
 import { useRouter } from "next/navigation";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
+import { useTruckScanData } from "@/app/context/TruckScanDataContext";
 import { useCurrentView } from "@/app/context/CurrentViewContext";
 
 type QrReaderProps = {
@@ -11,20 +12,27 @@ type QrReaderProps = {
   url: string;
 };
 
-export default function QR({ handleNextStep, handleScanTruck, url }: QrReaderProps) {
-  const videoRef: React.MutableRefObject<HTMLVideoElement | null> = useRef(null);
+export default function QR({
+  handleNextStep,
+  handleScanTruck,
+  url,
+}: QrReaderProps) {
+  const videoRef: React.MutableRefObject<HTMLVideoElement | null> =
+    useRef(null);
   const qrScannerRef: React.MutableRefObject<QrScanner | null> = useRef(null);
   const [scanCount, setScanCount] = useState(0);
   const { setScanResult } = useScanData();
   const router = useRouter();
   const SCAN_THRESHOLD = 200;
+  const { setTruckScanData } = useTruckScanData();
   const { setCurrentView } = useCurrentView();
 
   const onScanSuccess = (result: QrScanner.ScanResult) => {
     try {
       if (result.data.startsWith("EQ")) {
         // If the scan result starts with "EQ", set the view and do not call handleNextStep
-        setCurrentView(result.data);
+        setTruckScanData(result.data);
+        setCurrentView("truck");
         handleScanTruck();
       } else {
         // Proceed as usual through clock in proccess.

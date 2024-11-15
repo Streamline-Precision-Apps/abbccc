@@ -18,7 +18,6 @@ import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { calculateDuration } from "@/utils/calculateDuration";
 import { Contents } from "@/components/(reusable)/contents";
-import Checkbox from "@/components/(inputs)/CheckBox";
 import { Grids } from "@/components/(reusable)/grids";
 import Spinner from "@/components/(animations)/spinner";
 import { Titles } from "@/components/(reusable)/titles";
@@ -54,6 +53,7 @@ const FormDataSchema = z.object({
   duration: z.string(),
 });
 import { EmployeeEquipmentLogs } from "@/lib/types";
+import { CheckBox } from "@/components/(inputs)/checkBox";
 
 export default function CombinedForm({ id }: { id: string }) {
   const router = useRouter();
@@ -341,7 +341,7 @@ export default function CombinedForm({ id }: { id: string }) {
                 refueled ? "row-span-1" : "row-span-2"
               }`}
             >
-              <Checkbox
+              <CheckBox
                 id={"1"}
                 name={"refueled"}
                 label={""}
