@@ -1,6 +1,145 @@
 "use server";
 import prisma from "@/lib/prisma";
+import { Permission } from "@/lib/types";
 import { revalidatePath } from "next/cache";
+
+export async function reactivatePersonnel(formData: FormData) {
+  try {
+    console.log("Archiving personnel...");
+    console.log(formData);
+    const id = formData.get("userId") as string;
+    const activeEmployee = formData.get("active") === "true";
+
+    const result = await prisma.users.update({
+      where: { id },
+      data: {
+        activeEmployee: activeEmployee,
+        terminationDate: null,
+      },
+    });
+    console.log(result.activeEmployee);
+
+    revalidatePath(`/admins/personnel/${id}`);
+    return true;
+  } catch (error) {
+    console.error("Error archiving personnel:", error);
+    throw error;
+  }
+}
+
+export async function removeProfilePic(formData: FormData) {
+  try {
+    console.log("Removing profile pic...");
+    console.log(formData);
+    const id = formData.get("userId") as string;
+
+    const result = await prisma.users.update({
+      where: { id },
+      data: {
+        image: null,
+      },
+    });
+    revalidatePath("/admins/personnel");
+    revalidatePath("/admins/personnel/" + result.id);
+    return result.image;
+  } catch (error) {
+    console.error("Error removing profile pic:", error);
+    throw error;
+  }
+}
+
+export async function archivePersonnel(formData: FormData) {
+  try {
+    console.log("Archiving personnel...");
+    console.log(formData);
+    const id = formData.get("userId") as string;
+    const activeEmployee = formData.get("active") === "true";
+
+    const result = await prisma.users.update({
+      where: { id },
+      data: {
+        activeEmployee: activeEmployee,
+        terminationDate: new Date().toISOString(),
+      },
+    });
+    console.log(result.activeEmployee);
+
+    revalidatePath(`/admins/personnel/${id}`);
+    return true;
+  } catch (error) {
+    console.error("Error archiving personnel:", error);
+    throw error;
+  }
+}
+// Edit personnel info
+export async function editPersonnelInfo(formData: FormData) {
+  try {
+    console.log("Editing personnel info...");
+    console.log(formData);
+
+    const id = formData.get("id") as string;
+
+    const firstName = formData.get("firstName") as string;
+
+    const lastName = formData.get("lastName") as string;
+
+    const email = formData.get("email") as string;
+
+    const DOB = formData.get("DOB") as string;
+
+    const permission = formData.get("permission") as string;
+
+    const truckBool = formData.get("truckView") as string;
+    const truckView = Boolean(truckBool === "true");
+
+    const tascoBool = formData.get("tascoView") as string;
+    const tascoView = Boolean(tascoBool === "true");
+
+    const laborBool = formData.get("laborView") as string;
+    const laborView = Boolean(laborBool === "true");
+
+    const mechanicBool = formData.get("mechanicView") as string;
+    const mechanicView = Boolean(mechanicBool === "true");
+
+    console.log(truckView, tascoView, laborView, mechanicView);
+
+    await prisma.users.update({
+      where: { id: id },
+      data: {
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        DOB: DOB,
+        permission: permission as Permission,
+        truckView: truckView,
+        tascoView: tascoView,
+        laborView: laborView,
+        mechanicView: mechanicView,
+      },
+    });
+
+    const phoneNumber = formData.get("phoneNumber") as string;
+    const emergencyContact = formData.get("emergencyContact") as string;
+    const emergencyContactNumber = formData.get(
+      "emergencyContactNumber"
+    ) as string;
+
+    await prisma.contacts.update({
+      where: { employeeId: id },
+      data: {
+        email: email,
+        phoneNumber: phoneNumber,
+        emergencyContact: emergencyContact,
+        emergencyContactNumber: emergencyContactNumber,
+      },
+    });
+
+    return true;
+  } catch (error) {
+    console.error("Error editing personnel info:", error);
+    return new Response("Error", { status: 500 });
+  }
+}
 
 export async function timecardData(formData: FormData) {
   const startDate = formData.get("start") as string;
@@ -247,7 +386,7 @@ export async function TagCostCodeChange(formData: FormData) {
   }
 }
 
-export async function AddlistToJobsite(formData: FormData) {
+export async function AddListToJobsite(formData: FormData) {
   try {
     console.log("Adding cost codes to job site...");
     const qrId = formData.get("qrId") as string;
@@ -293,7 +432,7 @@ export async function AddlistToJobsite(formData: FormData) {
   }
 }
 
-export async function RemovelistToJobsite(formData: FormData) {
+export async function RemoveListToJobsite(formData: FormData) {
   try {
     console.log("Adding cost codes to job site...");
     const qrId = formData.get("qrId") as string;

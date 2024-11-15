@@ -14,8 +14,8 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Texts } from "@/components/(reusable)/texts";
 import Spinner from "@/components/(animations)/spinner";
 import { z } from "zod"; // Import Zod for validation
-import { Signature } from "@/app/(routes)/dashboard/clock-out/(components)/injury-verification/Signature";
-import { updateContactInfo, uploadFirstSignature } from "@/actions/userActions";
+import Signature from "@/app/(routes)/dashboard/clock-out/(components)/injury-verification/Signature";
+import { updateContactInfo } from "@/actions/userActions";
 import { Titles } from "@/components/(reusable)/titles";
 import { Forms } from "@/components/(reusable)/forms";
 
@@ -107,31 +107,6 @@ export const AdminEditContact = ({
   const reloadEmployeeData = () => {
     fetchEmployee(); // Directly fetch the updated employee data
     console.log("Employee data reloaded");
-  };
-
-  const handleSubmitImage = async () => {
-    if (employee) {
-      const formData = new FormData();
-      formData.append("id", employee.id);
-      if (typeof signatureBase64String === "object") {
-        formData.append("signature", JSON.stringify(signatureBase64String));
-      } else {
-        formData.append("signature", signatureBase64String);
-      }
-      console.log(formData);
-
-      setLoading(true);
-      try {
-        const response = await uploadFirstSignature(formData); // This assumes you have an uploadFirstSignature function elsewhere
-        console.log(response);
-      } catch (error) {
-        console.error("Error uploading signature:", error);
-      } finally {
-        setLoading(false);
-      }
-    } else {
-      console.error("Employee is not defined");
-    }
   };
 
   if (loading) {
@@ -291,13 +266,7 @@ export const AdminEditContact = ({
               size={"fullPage"}
               isOpen={editSignatureModalOpen}
             >
-              <Signature
-                setBase64String={setSignatureBase64String}
-                base64string={signatureBase64String}
-                handleSubmitImage={() => {
-                  handleSubmitImage();
-                }}
-              />
+              <Signature setBase64String={setSignatureBase64String} />
             </Modals>
           </Holds>
         </Holds>

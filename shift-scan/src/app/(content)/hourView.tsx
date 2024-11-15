@@ -15,7 +15,7 @@ type ViewComponentProps = {
   scrollLeft: () => void;
   scrollRight: () => void;
   returnToMain: () => void;
-  currentDate: Date;
+  currentDate: string;
 };
 export default function ViewComponent({
   scrollLeft,
@@ -34,16 +34,22 @@ export default function ViewComponent({
 
   const t = useTranslations("Home");
   const today = new Date();
-  let Weekday = currentDate.toLocaleDateString(locale, { weekday: "long" });
+  let Weekday = new Date(currentDate).toLocaleDateString(locale, {
+    timeZone: "UTC",
+    weekday: "long",
+  });
 
   if (
-    Weekday === today.toLocaleDateString(locale, { weekday: "long" }) &&
-    currentDate.toLocaleDateString(locale, {
+    Weekday ===
+      today.toLocaleDateString(locale, { timeZone: "UTC", weekday: "long" }) &&
+    new Date(currentDate).toLocaleDateString(locale, {
+      timeZone: "UTC",
       month: "short",
       day: "numeric",
       year: "numeric",
     }) ===
       today.toLocaleDateString(locale, {
+        timeZone: "UTC",
         month: "short",
         day: "numeric",
         year: "numeric",
@@ -51,7 +57,8 @@ export default function ViewComponent({
   ) {
     Weekday = `${t("DA-Today")}`;
   }
-  const dateToday = currentDate.toLocaleDateString(locale, {
+  const dateToday = new Date(currentDate).toLocaleDateString(locale, {
+    timeZone: "UTC",
     month: "short",
     day: "numeric",
     year: "numeric",

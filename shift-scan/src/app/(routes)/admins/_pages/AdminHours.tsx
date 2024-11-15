@@ -68,12 +68,11 @@ export default function AdminHours() {
       setCurrentIndex(todayIndex);
     }
   }, [dailyHours]);
-
+  console.log(dailyHours);
   // Calculate the slice range for a fixed window of 14 items
   const start = Math.max(0, currentIndex - 2);
   const end = start + 5;
   const visibleHours = dailyHours.slice(start, end); // Slice for 14 items only
-  const placeholdersNeeded = 4 - visibleHours.length;
 
   const calculateBarHeight = (value: number) => {
     if (value === 0) return 100;
@@ -106,9 +105,9 @@ export default function AdminHours() {
         <AdminHourControls
           scrollLeft={scrollLeft}
           scrollRight={scrollRight}
-          currentDate={new Date(dailyHours[currentIndex + 1]?.date || "")}
-          dataRangeStart={new Date(dailyHours[0]?.date || "")}
-          dataRangeEnd={new Date(dailyHours[dailyHours.length - 1]?.date || "")}
+          currentDate={dailyHours[currentIndex]?.date}
+          dataRangeStart={dailyHours[0]?.date}
+          dataRangeEnd={dailyHours[dailyHours.length - 1]?.date}
         />
       </Holds>
 
@@ -168,21 +167,6 @@ export default function AdminHours() {
                     : data.date === new Date().toISOString().split("T")[0]
                     ? `${t("Today")}`
                     : ""}
-                </Texts>
-              </Holds>
-            </Holds>
-          </Holds>
-        ))}
-        {/* Add placeholder Holds to fill remaining spots */}
-        {Array.from({ length: placeholdersNeeded }).map((_, index) => (
-          <Holds
-            key={`placeholder-${index}`}
-            className="p-4 h-[95%] w-[38%] mx-auto bg-slate-400 rounded-[10px]"
-          >
-            <Holds className="w-full h-full bg-app-dark-blue rounded-[10px] border-2 border-black">
-              <Holds className="justify-center items-center h-full">
-                <Texts size="p4" text={"white"} className="text-center my-auto">
-                  {t("End-Pay-Period")}
                 </Texts>
               </Holds>
             </Holds>
