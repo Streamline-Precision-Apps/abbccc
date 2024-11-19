@@ -1,8 +1,110 @@
 "use server";
 import prisma from "@/lib/prisma";
 import { Permission } from "@/lib/types";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
+export async function saveNewTimesheet(formData: FormData) {
+  try {
+    const timesheet = await prisma.timeSheets.create({
+      data: {
+        userId: formData.get("userId") as string,
+        startTime: formData.get("startTime") as string,
+        endTime: formData.get("endTime") as string,
+        duration: parseFloat(formData.get("duration") as string),
+        date: formData.get("date") as string,
+        costcode: formData.get("costcode") as string,
+        jobsiteId: formData.get("jobsiteId") as string,
+        timeSheetComments: formData.get("timeSheetComments") as string,
+        vehicleId: formData.get("vehicleId")
+          ? parseInt(formData.get("vehicleId") as string)
+          : null,
+        startingMileage: formData.get("startingMileage")
+          ? parseInt(formData.get("startingMileage") as string)
+          : null,
+        endingMileage: formData.get("endingMileage")
+          ? parseInt(formData.get("endingMileage") as string)
+          : null,
+        leftIdaho: formData.get("leftIdaho") === "true",
+        refuelingGallons: formData.get("refuelingGallons")
+          ? parseInt(formData.get("refuelingGallons") as string)
+          : null,
+        hauledLoadsQuantity: formData.get("hauledLoadsQuantity")
+          ? parseInt(formData.get("hauledLoadsQuantity") as string)
+          : null,
+        equipmentHauled: formData.get("equipmentHauled") as string,
+        materialsHauled: formData.get("materialsHauled") as string,
+      },
+    });
+
+    return timesheet.id; // Return the new ID
+  } catch (error) {
+    console.error("Error saving new timesheet:", error);
+    throw error;
+  }
+}
+
+export async function saveTimesheet(formData: FormData) {
+  try {
+    console.log("Saving timesheet...");
+    console.log(formData);
+    const id = parseInt(formData.get("id") as string);
+    const userId = formData.get("userId") as string;
+    const timesheet = await prisma.timeSheets.update({
+      where: { userId, id },
+      data: {
+        startTime: formData.get("startTime") as string,
+        endTime: formData.get("endTime") as string,
+        duration: parseFloat(formData.get("duration") as string),
+        date: formData.get("date") as string,
+        costcode: formData.get("costcode") as string,
+        jobsiteId: formData.get("jobsiteId") as string,
+        timeSheetComments: formData.get("timeSheetComments") as string,
+        vehicleId: parseInt(formData.get("vehicleId") as string),
+        startingMileage: parseInt(formData.get("startingMileage") as string),
+        endingMileage: parseInt(formData.get("endingMileage") as string),
+        leftIdaho: formData.get("leftIdaho") === "true",
+        refuelingGallons: parseInt(formData.get("refuelingGallons") as string),
+        hauledLoadsQuantity: parseInt(
+          formData.get("hauledLoadsQuantity") as string
+        ),
+        equipmentHauled: formData.get("equipmentHauled") as string,
+        materialsHauled: formData.get("materialsHauled") as string,
+      },
+    });
+    console.log(timesheet);
+    revalidatePath(`/admins/personnel/${id}`);
+    revalidateTag("timesheets");
+    return true;
+  } catch (error) {
+    console.error("Error saving timesheet:", error);
+    throw error;
+  }
+}
+export async function saveEquipmentLogs(formData: FormData) {
+  try {
+    console.log("Saving equipment logs...");
+    console.log(formData);
+    const id = parseInt(formData.get("id") as string);
+    const equipmentLog = await prisma.employeeEquipmentLogs.update({
+      where: { id },
+      data: {
+        startTime: formData.get("startTime") as string,
+        endTime: formData.get("endTime") as string,
+        duration: parseFloat(formData.get("duration") as string),
+        isRefueled: formData.get("isRefueled") === "true",
+        fuelUsed: parseInt(formData.get("fuelUsed") as string),
+        comment: formData.get("comment") as string,
+      },
+    });
+
+    console.log(equipmentLog);
+    revalidateTag("timesheets");
+    return true;
+  } catch (error) {
+    console.error("Error saving equipment logs:", error);
+    throw error;
+  }
+}
 export async function reactivatePersonnel(formData: FormData) {
   try {
     console.log("Archiving personnel...");

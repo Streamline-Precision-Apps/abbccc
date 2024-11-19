@@ -1,5 +1,11 @@
+import {
+  saveEquipmentLogs,
+  saveNewTimesheet,
+  saveTimesheet,
+} from "@/actions/adminActions";
 import EmptyView from "@/app/(routes)/admins/_pages/EmptyView";
 import { Buttons } from "@/components/(reusable)/buttons";
+import { EditableFields } from "@/components/(reusable)/EditableField";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
@@ -9,7 +15,7 @@ import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-
+import { cache } from "react";
 type TimeSheet = {
   submitDate?: string; // Changed to string since API returns string dates
   id: string;
@@ -36,7 +42,6 @@ type TimeSheet = {
 
 type Equipment = {
   name: string; // Assuming only the name field is required
-  qrId: string;
 };
 
 type EmployeeEquipmentLog = {
@@ -61,14 +66,30 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
   const [equipmentLogs, setEquipmentLogs] = useState<EmployeeEquipmentLog[]>(
     []
   );
-  const [originalEquipmentLogs, setOriginalEquipmentLogs] =
-    useState<EmployeeEquipmentLog[]>();
+  const [originalEquipmentLogs, setOriginalEquipmentLogs] = useState<
+    EmployeeEquipmentLog[]
+  >([]);
   const [error, setError] = useState<string | null>(null);
 
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set()); // Track expanded timesheet IDs
 
+  const calculateDuration = (
+    startTime?: string,
+    endTime?: string
+  ): number | null => {
+    if (!startTime || !endTime) return null;
+
+    const start = new Date(startTime).getTime();
+    const end = new Date(endTime).getTime();
+
+    if (isNaN(start) || isNaN(end)) return null;
+
+    const durationInMs = end - start;
+    return durationInMs > 0 ? durationInMs / (1000 * 60 * 60) : null; // Convert ms to hours
+  };
+
   useEffect(() => {
-    const fetchTimesheets = async () => {
+    const fetchTimesheets = cache(async () => {
       if (!params.employee) {
         setError("Invalid employee ID.");
         return;
@@ -78,7 +99,10 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
       }
       try {
         const response = await fetch(
-          `/api/getAllTimesheetsByDate/${params.employee}?date=${dateByFilter}`
+          `/api/getAllTimesheetsByDate/${params.employee}?date=${dateByFilter}`,
+          {
+            next: { tags: ["timesheets"] },
+          }
         );
         if (!response.ok) {
           throw new Error(`Failed to fetch: ${response.statusText}`);
@@ -93,7 +117,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
         console.error("Failed to fetch employee info:", error);
         setError("Unable to load timesheets. Please try again later.");
       }
-    };
+    });
     fetchTimesheets();
   }, [dateByFilter, params.employee]);
 
@@ -108,6 +132,30 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
     }
   }, [filter]);
 
+  const createNewTimesheet = () => {
+    const newTimesheet = {
+      id: `${Date.now()}`, // Temporary unique ID
+      userId: params.employee, // Set to the current employee
+      startTime: "",
+      endTime: "",
+      duration: null,
+      date: new Date().toISOString().substring(0, 10), // Default to today's date
+      costcode: "",
+      jobsiteId: "",
+      timeSheetComments: "",
+      vehicleId: null,
+      startingMileage: null,
+      endingMileage: null,
+      leftIdaho: null,
+      refuelingGallons: null,
+      hauledLoadsQuantity: null,
+      equipmentHauled: "",
+      materialsHauled: "",
+      status: "new", // Custom status to identify unsaved timesheets
+    };
+    setUserTimeSheets((prev) => [...prev, newTimesheet]);
+  };
+
   const handleDateClick = (newDate: string) => {
     const updatedSearchParams = new URLSearchParams(searchParams.toString());
     updatedSearchParams.set("date", newDate);
@@ -116,9 +164,22 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
 
   const handleInputChange = (id: string, field: string, value: unknown) => {
     setUserTimeSheets((prev) =>
-      prev.map((sheet) =>
-        sheet.id === id ? { ...sheet, [field]: value } : sheet
-      )
+      prev.map((sheet) => {
+        if (sheet.id === id) {
+          const updatedSheet = { ...sheet, [field]: value };
+
+          // Calculate duration if startTime or endTime is updated
+          if (field === "startTime" || field === "endTime") {
+            updatedSheet.duration = calculateDuration(
+              updatedSheet.startTime,
+              updatedSheet.endTime?.toString()
+            );
+          }
+
+          return updatedSheet;
+        }
+        return sheet;
+      })
     );
   };
   const handleEquipmentLogChange = (
@@ -127,9 +188,22 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
     value: unknown
   ) => {
     setEquipmentLogs((prev) =>
-      prev.map((sheet) =>
-        sheet.id?.toString() === id ? { ...sheet, [field]: value } : sheet
-      )
+      prev.map((sheet) => {
+        if (sheet.id?.toString() === id) {
+          const updatedSheet = { ...sheet, [field]: value };
+
+          // Calculate duration if startTime or endTime is updated
+          if (field === "startTime" || field === "endTime") {
+            updatedSheet.duration = calculateDuration(
+              updatedSheet.startTime,
+              updatedSheet.endTime?.toString()
+            );
+          }
+
+          return updatedSheet;
+        }
+        return sheet;
+      })
     );
   };
 
@@ -137,31 +211,67 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
     setUserTimeSheets((prev) =>
       prev.map((sheet) => {
         if (sheet.id === id) {
+          // Find the original sheet
           const originalSheet = originalTimeSheets.find(
             (original) => original.id === id
           );
-          return originalSheet
-            ? { ...sheet, [field]: originalSheet[field] } // Reset only the specified field
-            : sheet; // If no original found, return the current sheet
+
+          if (!originalSheet) {
+            console.warn(`Original timesheet not found for id: ${id}`);
+            return sheet; // Return the sheet unchanged if no original is found
+          }
+
+          // Revert the specific field to its original value
+          const updatedSheet = { ...sheet, [field]: originalSheet[field] };
+
+          // Recalculate duration if startTime or endTime is reverted
+          if (field === "startTime" || field === "endTime") {
+            updatedSheet.duration = calculateDuration(
+              updatedSheet.startTime,
+              updatedSheet.endTime?.toString()
+            );
+          }
+
+          return updatedSheet;
         }
-        return sheet; // For other sheets, return as-is
+        return sheet; // Return unchanged sheets
       })
     );
   };
+
   const isFieldChanged = (id: string, field: keyof TimeSheet) => {
     const userSheet = userTimeSheets.find((sheet) => sheet.id === id);
     const originalSheet = originalTimeSheets.find((sheet) => sheet.id === id);
     return userSheet?.[field] !== originalSheet?.[field];
   };
 
-  const revertEquipmentLog = (id: string) => {
-    setOriginalEquipmentLogs((prev) =>
-      prev?.map((sheet) =>
-        sheet.id?.toString() === id
-          ? equipmentLogs.find((original) => original.id?.toString() === id) ||
-            sheet
-          : sheet
-      )
+  const revertEquipmentLog = (
+    id: string,
+    field: keyof EmployeeEquipmentLog
+  ) => {
+    setEquipmentLogs((prev) =>
+      prev.map((sheet) => {
+        if (sheet.id?.toString() === id) {
+          const originalSheet = originalEquipmentLogs.find(
+            (original) => original.id?.toString() === id
+          );
+          if (!originalSheet) {
+            console.warn(`Original timesheet not found for id: ${id}`);
+            return sheet; // Return the sheet unchanged if no original is found
+          }
+
+          const updatedSheet = { ...sheet, [field]: originalSheet[field] };
+          if (field === "startTime" || field === "endTime") {
+            updatedSheet.duration = calculateDuration(
+              updatedSheet.startTime,
+              updatedSheet.endTime?.toString()
+            );
+          }
+
+          return updatedSheet;
+        }
+        return sheet; // Return unchanged sheets
+      })
     );
   };
 
@@ -172,10 +282,15 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
     const equipmentSheet = equipmentLogs.find(
       (sheet) => sheet.id?.toString() === id
     );
-    const originalEquipmentLogs = equipmentLogs.find(
+    const originalEquipmentSheet = originalEquipmentLogs.find(
       (sheet) => sheet.id?.toString() === id
     );
-    return equipmentSheet?.[field] !== originalEquipmentLogs?.[field];
+    return equipmentSheet?.[field] !== originalEquipmentSheet?.[field];
+  };
+
+  const refreshOriginalData = () => {
+    setOriginalTimeSheets([...userTimeSheets]);
+    setOriginalEquipmentLogs([...equipmentLogs]);
   };
 
   const toggleExpanded = (id: string) => {
@@ -188,6 +303,135 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
       }
       return newSet;
     });
+  };
+  function isTimesheetChanged(
+    timesheet: TimeSheet,
+    originalTimesheet: TimeSheet
+  ) {
+    return JSON.stringify(timesheet) !== JSON.stringify(originalTimesheet);
+  }
+
+  function isLogChanged(
+    log: EmployeeEquipmentLog,
+    originalLog: EmployeeEquipmentLog
+  ) {
+    return JSON.stringify(log) !== JSON.stringify(originalLog);
+  }
+  const handleNewTimesheet = () => {
+    for (const timesheet of userTimeSheets) {
+      if (timesheet.status === "new") {
+        // Handle saving new timesheet
+        const formData2 = new FormData();
+        formData2.append("userId", timesheet.userId || "");
+        formData2.append("startTime", timesheet.startTime || "");
+        formData2.append("endTime", timesheet.endTime || "");
+        formData2.append("duration", timesheet.duration?.toString() || "");
+        formData2.append("date", timesheet.date || "");
+        formData2.append("costcode", timesheet.costcode || "");
+        formData2.append("jobsiteId", timesheet.jobsiteId || "");
+        formData2.append(
+          "timeSheetComments",
+          timesheet.timeSheetComments || ""
+        );
+        formData2.append("vehicleId", timesheet.vehicleId?.toString() || "");
+        formData2.append(
+          "startingMileage",
+          timesheet.startingMileage?.toString() || ""
+        );
+        formData2.append(
+          "endingMileage",
+          timesheet.endingMileage?.toString() || ""
+        );
+        formData2.append("leftIdaho", timesheet.leftIdaho ? "true" : "false");
+        formData2.append(
+          "refuelingGallons",
+          timesheet.refuelingGallons?.toString() || ""
+        );
+        formData2.append(
+          "hauledLoadsQuantity",
+          timesheet.hauledLoadsQuantity?.toString() || ""
+        );
+        formData2.append("equipmentHauled", timesheet.equipmentHauled || "");
+        formData2.append("materialsHauled", timesheet.materialsHauled || "");
+
+        saveNewTimesheet(formData2); // Custom function to save a new timesheet
+        refreshOriginalData();
+      } else {
+        handleSubmitTimesheets();
+      }
+    }
+  };
+
+  const handleSubmitTimesheets = async () => {
+    try {
+      // Filter out only modified timesheets
+      const changedTimesheets = userTimeSheets.filter((timesheet) => {
+        const original = originalTimeSheets.find(
+          (original) => original.id === timesheet.id
+        );
+        return original && isTimesheetChanged(timesheet, original);
+      });
+      for (const timesheet of changedTimesheets) {
+        const formData = new FormData();
+        formData.append("id", timesheet.id);
+        formData.append("userId", timesheet.userId || "");
+        formData.append("startTime", timesheet.startTime || "");
+        formData.append("endTime", timesheet.endTime || "");
+        formData.append("duration", timesheet.duration?.toString() || "");
+        formData.append("date", timesheet.date || "");
+        formData.append("costcode", timesheet.costcode || "");
+        formData.append("jobsiteId", timesheet.jobsiteId || "");
+        formData.append("timeSheetComments", timesheet.timeSheetComments || "");
+        formData.append("vehicleId", timesheet.vehicleId?.toString() || "");
+        formData.append(
+          "startingMileage",
+          timesheet.startingMileage?.toString() || ""
+        );
+        formData.append(
+          "endingMileage",
+          timesheet.endingMileage?.toString() || ""
+        );
+        formData.append("leftIdaho", timesheet.leftIdaho ? "true" : "false");
+        formData.append(
+          "refuelingGallons",
+          timesheet.refuelingGallons?.toString() || ""
+        );
+        formData.append(
+          "hauledLoadsQuantity",
+          timesheet.hauledLoadsQuantity?.toString() || ""
+        );
+        formData.append("equipmentHauled", timesheet.equipmentHauled || "");
+        formData.append("materialsHauled", timesheet.materialsHauled || "");
+        const result = await saveTimesheet(formData);
+        if (!result)
+          throw new Error(`Failed to save timesheet ${timesheet.id}`);
+      }
+
+      // Filter out only modified equipment logs
+      const changedLogs = equipmentLogs.filter((log) => {
+        const original = originalEquipmentLogs.find(
+          (original) => original.id === log.id
+        );
+        return original && isLogChanged(log, original);
+      });
+
+      for (const log of changedLogs) {
+        const logFormData = new FormData();
+        logFormData.append("id", log.id?.toString() || "");
+        logFormData.append("startTime", log.startTime || "");
+        logFormData.append("endTime", log.endTime || "");
+        logFormData.append("duration", log.duration?.toString() || "");
+        logFormData.append("isRefueled", log.isRefueled ? "true" : "false");
+        logFormData.append("fuelUsed", log.fuelUsed?.toString() || "");
+        logFormData.append("comment", log.comment || "");
+        const result = await saveEquipmentLogs(logFormData);
+        if (!result) throw new Error(`Failed to save equipment log ${log.id}`);
+        refreshOriginalData();
+        console.log("All changes saved successfully.");
+      }
+    } catch (error) {
+      console.error("Error saving timesheet:", error);
+    }
   };
 
   return (
@@ -213,48 +457,33 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
           </Holds>
           <Holds className="row-span-9 col-span-5 h-full">
             <Holds className="h-full w-full row-span-5 overflow-y-auto no-scrollbar border-[3px] border-black rounded-[10px]">
-              {userTimeSheets.length > 0 ? (
-                userTimeSheets.map((timesheet) => {
-                  const isExpanded = expandedIds.has(timesheet.id);
+              {userTimeSheets.length > 0
+                ? userTimeSheets.map((timesheet) => {
+                    const isExpanded = expandedIds.has(timesheet.id);
 
-                  // Filter equipment logs based on timesheet startTime and endTime
-                  const filteredLogs = equipmentLogs.filter((log) => {
+                    // Filter equipment logs based on timesheet startTime and endTime
+
                     return (
-                      log.startTime &&
-                      log.endTime &&
-                      timesheet.startTime &&
-                      timesheet.endTime &&
-                      new Date(log.startTime) >=
-                        new Date(timesheet.startTime) &&
-                      new Date(log.endTime) <= new Date(timesheet.endTime)
-                    );
-                  });
-                  return (
-                    <Holds
-                      key={timesheet.id}
-                      className="w-full even:bg-gray-200 odd:bg-gray-100 rounded-[10px] px-2 py-3 mb-4 cursor-pointer"
-                    >
-                      {/* Always show the header */}
                       <Holds
-                        position={"row"}
-                        className="h-full w-full mb-2 relative"
+                        key={timesheet.id}
+                        className="w-full even:bg-gray-200 odd:bg-gray-100 rounded-[10px] px-2 py-3 mb-4 cursor-pointer"
                       >
-                        <Inputs type="hidden" value={timesheet.id} />
-                        <Inputs type="hidden" value={timesheet.userId} />
-                        {/* ----------------------------------------------------------------------------*/}
-                        {/* ----------------------------------------------------------------------------*/}
+                        {/* Always show the header */}
                         <Holds
                           position={"row"}
-                          className="h-full w-full mr-2 gap-4"
+                          className="h-full w-full my-auto relative"
                         >
-                          <Holds className="w-2/5 my-auto h-full">
-                            <Labels size="p4">Start Time</Labels>
-                            <Holds
-                              position="row"
-                              className="gap-2 items-center"
-                            >
-                              {/* Editable Input */}
-                              <Inputs
+                          <Inputs type="hidden" value={timesheet.id} />
+                          <Inputs type="hidden" value={timesheet.userId} />
+                          {/* ----------------------------------------------------------------------------*/}
+                          {/* ----------------------------------------------------------------------------*/}
+                          <Holds
+                            position={"row"}
+                            className="h-full w-full gap-4"
+                          >
+                            <Holds className="w-[45%] h-full">
+                              <Labels size={"p4"}>Start Time</Labels>
+                              <EditableFields
                                 type="time"
                                 value={
                                   timesheet.startTime &&
@@ -263,221 +492,195 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                   )
                                     ? new Date(timesheet.startTime)
                                         .toISOString()
-                                        .substring(11, 16) // HH:mm format
+                                        .substring(11, 16) // Convert to HH:mm
                                     : ""
                                 }
-                                onChange={(e) =>
+                                onChange={(e) => {
+                                  const currentDate = timesheet.startTime
+                                    ? new Date(timesheet.startTime)
+                                        .toISOString()
+                                        .substring(0, 10) // Extract the date portion
+                                    : new Date().toISOString().substring(0, 10); // Use today's date as default
                                   handleInputChange(
                                     timesheet.id,
                                     "startTime",
-                                    `1970-01-01T${e.target.value}:00Z` // Convert HH:mm to ISO format
-                                  )
+                                    `${currentDate}T${e.target.value}:00Z` // Combine current date with new time
+                                  );
+                                }}
+                                isChanged={isFieldChanged(
+                                  timesheet.id,
+                                  "startTime"
+                                )}
+                                onRevert={() =>
+                                  revertTimesheet(timesheet.id, "startTime")
                                 }
-                                className={
-                                  isFieldChanged(timesheet.id, "startTime")
-                                    ? "border-app-orange" // Highlight when changed
+                                variant="default"
+                                size="default"
+                              />
+                            </Holds>
+
+                            {/* ----------------------------------------------------------------------------*/}
+                            {/* ----------------------------------------------------------------------------*/}
+                            <Holds className="w-[45%] h-full">
+                              <Labels size={"p4"}>End Time</Labels>
+                              <EditableFields
+                                type="time"
+                                value={
+                                  timesheet.endTime &&
+                                  !isNaN(new Date(timesheet.endTime).getTime())
+                                    ? new Date(timesheet.endTime)
+                                        .toISOString()
+                                        .substring(11, 16) // Convert to HH:mm
                                     : ""
                                 }
-                              />
-
-                              {/* Revert Button */}
-                              {isFieldChanged(timesheet.id, "startTime") && (
-                                <Buttons
-                                  background={"none"}
-                                  type="button"
-                                  className="w-1/6"
-                                  title="Revert changes"
-                                  onClick={() =>
-                                    revertTimesheet(timesheet.id, "startTime")
-                                  }
-                                >
-                                  <Holds>
-                                    <Images
-                                      titleImg={"/turnBack.svg"}
-                                      titleImgAlt={"revert"}
-                                      size={"70"}
-                                    />
-                                  </Holds>
-                                </Buttons>
-                              )}
-                            </Holds>
-                          </Holds>
-                          {/* ----------------------------------------------------------------------------*/}
-                          {/* ----------------------------------------------------------------------------*/}
-                          <Holds className="w-2/5">
-                            <Labels size={"p4"}>End Time</Labels>
-                            <Inputs
-                              type="time"
-                              value={
-                                timesheet.endTime &&
-                                !isNaN(new Date(timesheet.endTime).getTime())
-                                  ? new Date(timesheet.endTime)
-                                      .toISOString()
-                                      .substring(11, 16) // Convert to HH:mm
-                                  : ""
-                              }
-                              onChange={(e) =>
-                                handleInputChange(
+                                onChange={(e) => {
+                                  const currentDate = timesheet.endTime
+                                    ? new Date(timesheet.endTime)
+                                        .toISOString()
+                                        .substring(0, 10) // Extract the date portion
+                                    : new Date().toISOString().substring(0, 10); // Use today's date as default
+                                  handleInputChange(
+                                    timesheet.id,
+                                    "endTime",
+                                    `${currentDate}T${e.target.value}:00Z` // Combine current date with new time
+                                  );
+                                }}
+                                isChanged={isFieldChanged(
                                   timesheet.id,
-                                  "endTime",
-                                  `1970-01-01T${e.target.value}:00Z` // Convert HH:mm back to ISO format
-                                )
-                              }
-                              className={
-                                isFieldChanged(timesheet.id, "endTime")
-                                  ? "border-app-orange" // Highlight when changed
-                                  : ""
-                              }
-                            />
-
-                            {/* Revert Button */}
-                            {isFieldChanged(timesheet.id, "endTime") && (
-                              <Buttons
-                                background={"none"}
-                                type="button"
-                                className="w-1/6"
-                                title="Revert changes"
-                                onClick={() =>
+                                  "endTime"
+                                )}
+                                onRevert={() =>
                                   revertTimesheet(timesheet.id, "endTime")
                                 }
-                              >
-                                <Holds>
-                                  <Images
-                                    titleImg={"/turnBack.svg"}
-                                    titleImgAlt={"revert"}
-                                    size={"70"}
-                                  />
-                                </Holds>
-                              </Buttons>
-                            )}
+                                variant="default"
+                                size="default"
+                              />
+                            </Holds>
                           </Holds>
+
+                          {isExpanded ? (
+                            <Holds className="w-[10%] h-full">
+                              <Images
+                                titleImg="/expandLeft.svg"
+                                titleImgAlt="clock in"
+                                className="rotate-[270deg] my-auto"
+                                size={"50"}
+                                onClick={() => toggleExpanded(timesheet.id)} // Toggle on click
+                              />
+                            </Holds>
+                          ) : (
+                            <Holds className="w-[10%] h-full ">
+                              <Images
+                                titleImg="/expandLeft.svg"
+                                titleImgAlt="clock in"
+                                className="rotate-90 my-auto"
+                                size={"50"}
+                                onClick={() => toggleExpanded(timesheet.id)} // Toggle on click
+                              />
+                            </Holds>
+                          )}
                         </Holds>
-                        {/* ----------------------------------------------------------------------------*/}
-                        {/* ----------------------------------------------------------------------------*/}
-                        {isExpanded ? (
-                          <Holds className="w-1/5">
-                            <Images
-                              titleImg="/expandLeft.svg"
-                              titleImgAlt="clock in"
-                              className="rotate-[270deg]"
-                              size={"30"}
-                              onClick={() => toggleExpanded(timesheet.id)} // Toggle on click
-                            />
-                          </Holds>
-                        ) : (
-                          <Holds className="w-1/5">
-                            <Images
-                              titleImg="/expandLeft.svg"
-                              titleImgAlt="clock in"
-                              className="rotate-90"
-                              size={"30"}
-                              onClick={() => toggleExpanded(timesheet.id)} // Toggle on click
-                            />
-                          </Holds>
-                        )}
-                      </Holds>
 
-                      {/* Collapsible details */}
-                      {isExpanded && (
-                        <>
-                          <Holds
-                            position={"row"}
-                            className="h-full w-full mb-2 gap-4"
-                          >
-                            <Holds>
-                              <Labels size={"p4"}>
-                                Duration (updates manually)
-                              </Labels>
-                              <Inputs
-                                type="text"
-                                value={timesheet.duration?.toFixed(2)}
-                                disabled
-                              />
-                            </Holds>
-                          </Holds>
-                          <Holds
-                            position={"row"}
-                            className="h-full w-full mb-2 gap-4"
-                          >
-                            <Holds className="w-1/2">
-                              <Labels size={"p4"}>Date of Shift</Labels>
-                              <Inputs
-                                type="date"
-                                value={
-                                  timesheet.date &&
-                                  !isNaN(new Date(timesheet.date).getTime())
-                                    ? new Date(timesheet.date)
-                                        .toISOString()
-                                        .substring(0, 10) // Convert to HH:mm
-                                    : ""
-                                }
-                                onChange={(e) =>
-                                  handleInputChange(
-                                    timesheet.id,
-                                    "date",
-                                    `${e.target.value}T00:00:00Z`
-                                    // Convert HH:mm back to ISO format
-                                  )
-                                }
-                                className={
-                                  isFieldChanged(timesheet.id, "date")
-                                    ? "border-app-orange" // Highlight when changed
-                                    : ""
-                                }
-                              />
-                            </Holds>
+                        {/* Collapsible details */}
 
-                            {/* Revert Button */}
-                            {isFieldChanged(timesheet.id, "date") && (
-                              <Buttons
-                                background={"none"}
-                                type="button"
-                                className="w-1/6"
-                                title="Revert changes"
-                                onClick={() =>
-                                  revertTimesheet(timesheet.id, "date")
-                                }
+                        {isExpanded && (
+                          <>
+                            <Holds
+                              position={"row"}
+                              className="h-full w-full mb-2 gap-4"
+                            >
+                              <Holds
+                                position={"row"}
+                                className="h-full w-full gap-4"
                               >
                                 <Holds>
-                                  <Images
-                                    titleImg={"/turnBack.svg"}
-                                    titleImgAlt={"revert"}
-                                    size={"70"}
+                                  <Labels size={"p4"}>Date of Shift</Labels>
+                                  <EditableFields
+                                    type="date"
+                                    value={
+                                      timesheet.date &&
+                                      !isNaN(new Date(timesheet.date).getTime())
+                                        ? new Date(timesheet.date)
+                                            .toISOString()
+                                            .substring(0, 10) // Convert to HH:mm
+                                        : ""
+                                    }
+                                    onChange={(e) =>
+                                      handleInputChange(
+                                        timesheet.id,
+                                        "date",
+                                        `${e.target.value}T00:00:00Z`
+                                        // Convert HH:mm back to ISO format
+                                      )
+                                    }
+                                    isChanged={isFieldChanged(
+                                      timesheet.id,
+                                      "date"
+                                    )}
+                                    onRevert={() =>
+                                      revertTimesheet(timesheet.id, "date")
+                                    }
+                                    variant="default"
+                                    size="default"
                                   />
                                 </Holds>
-                              </Buttons>
-                            )}
-                          </Holds>
+                              </Holds>
+                              <Holds>
+                                <Labels size={"p4"}>
+                                  Duration (updates manually)
+                                </Labels>
 
-                          <Holds
-                            position={"row"}
-                            className="h-full w-full mb-2 gap-4"
-                          >
-                            <Holds>
-                              <Labels size={"p4"}>Timesheet comment</Labels>
-                              <TextAreas
-                                value={timesheet.timeSheetComments?.toString()}
-                                style={{ resize: "none" }}
-                                onChange={(e) =>
-                                  handleInputChange(
-                                    timesheet.id,
-                                    "timeSheetComments",
-                                    e.target.value
-                                  )
-                                }
-                              />
-                            </Holds>
-                          </Holds>
-                          <Holds
-                            position={"row"}
-                            className="h-full w-full mb-2 gap-4"
-                          >
-                            <Holds>
-                              <Labels size={"p4"}>Jobsite</Labels>
-                              <Holds position={"row"}>
                                 <Inputs
                                   type="text"
-                                  value={timesheet.jobsiteId}
+                                  value={timesheet.duration?.toFixed(2)}
+                                  disabled
+                                />
+                              </Holds>
+                            </Holds>
+
+                            <Holds
+                              position={"row"}
+                              className="h-full w-full gap-4"
+                            >
+                              <Holds className="h-full w-full relative">
+                                <Labels size={"p4"}>Timesheet comment</Labels>
+                                <TextAreas
+                                  maxLength={40}
+                                  value={timesheet.timeSheetComments?.toString()}
+                                  style={{ resize: "none" }}
+                                  onChange={(e) =>
+                                    handleInputChange(
+                                      timesheet.id,
+                                      "timeSheetComments",
+                                      e.target.value
+                                    )
+                                  }
+                                />
+                                <Texts
+                                  size={"p6"}
+                                  className={`text-app-gray absolute bottom-3 right-2 ${
+                                    timesheet.timeSheetComments?.length === 40
+                                      ? "text-app-red"
+                                      : ""
+                                  }`}
+                                >
+                                  {`${
+                                    timesheet.timeSheetComments?.length ?? 0
+                                  }/40`}
+                                </Texts>
+                              </Holds>
+                            </Holds>
+
+                            <Holds
+                              position={"row"}
+                              className="h-full w-full gap-4"
+                            >
+                              <Holds>
+                                <Labels size={"p4"}>Jobsite</Labels>
+
+                                <EditableFields
+                                  type="text"
+                                  value={timesheet.jobsiteId || ""}
                                   onChange={(e) =>
                                     handleInputChange(
                                       timesheet.id,
@@ -485,41 +688,22 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                       e.target.value
                                     )
                                   }
-                                  className={
-                                    isFieldChanged(timesheet.id, "jobsiteId")
-                                      ? "border-app-orange" // Highlight when changed
-                                      : ""
+                                  isChanged={isFieldChanged(
+                                    timesheet.id,
+                                    "jobsiteId"
+                                  )}
+                                  onRevert={() =>
+                                    revertTimesheet(timesheet.id, "jobsiteId")
                                   }
+                                  variant="default"
+                                  size="default"
                                 />
-
-                                {/* Revert Button */}
-                                {isFieldChanged(timesheet.id, "jobsiteId") && (
-                                  <Buttons
-                                    background={"none"}
-                                    type="button"
-                                    className="w-1/6"
-                                    title="Revert changes"
-                                    onClick={() =>
-                                      revertTimesheet(timesheet.id, "jobsiteId")
-                                    }
-                                  >
-                                    <Holds>
-                                      <Images
-                                        titleImg={"/turnBack.svg"}
-                                        titleImgAlt={"revert"}
-                                        size={"70"}
-                                      />
-                                    </Holds>
-                                  </Buttons>
-                                )}
                               </Holds>
-                            </Holds>
-                            <Holds>
-                              <Labels size={"p4"}>Cost Code</Labels>
-                              <Holds position={"row"}>
-                                <Inputs
+                              <Holds>
+                                <Labels size={"p4"}>Cost Code</Labels>
+                                <EditableFields
                                   type="text"
-                                  value={timesheet.costcode}
+                                  value={timesheet.costcode || ""}
                                   onChange={(e) =>
                                     handleInputChange(
                                       timesheet.id,
@@ -527,704 +711,560 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                       e.target.value
                                     )
                                   }
-                                  className={
-                                    isFieldChanged(timesheet.id, "costcode")
-                                      ? "border-app-orange" // Highlight when changed
-                                      : ""
+                                  isChanged={isFieldChanged(
+                                    timesheet.id,
+                                    "costcode"
+                                  )}
+                                  onRevert={() =>
+                                    revertTimesheet(timesheet.id, "costcode")
                                   }
+                                  variant="default"
+                                  size="default"
                                 />
-
-                                {/* Revert Button */}
-                                {isFieldChanged(timesheet.id, "costcode") && (
-                                  <Buttons
-                                    background={"none"}
-                                    type="button"
-                                    className="w-1/6"
-                                    title="Revert changes"
-                                    onClick={() =>
-                                      revertTimesheet(timesheet.id, "costcode")
-                                    }
-                                  >
-                                    <Holds>
-                                      <Images
-                                        titleImg={"/turnBack.svg"}
-                                        titleImgAlt={"revert"}
-                                        size={"70"}
-                                      />
-                                    </Holds>
-                                  </Buttons>
-                                )}
                               </Holds>
                             </Holds>
-                          </Holds>
 
-                          {/* If the time sheet has a vehicle ID, show Vehicle ID, Starting Mileage, and Ending Mileage and all truck details */}
-                          {timesheet.vehicleId && (
-                            <>
-                              <Holds
-                                position={"row"}
-                                className="h-full w-full mb-2 gap-4"
-                              >
-                                <Holds>
-                                  <Labels size={"p4"}>Vehicle ID</Labels>
-                                  <Inputs
-                                    type="text"
-                                    value={timesheet.vehicleId?.toString()}
-                                    onChange={(e) =>
-                                      handleInputChange(
+                            {/* If the time sheet has a vehicle ID, show Vehicle ID, Starting Mileage, and Ending Mileage and all truck details */}
+                            {!timesheet.vehicleId && (
+                              <>
+                                <Holds
+                                  position={"row"}
+                                  className="h-full w-full mb-2 gap-4"
+                                >
+                                  <Holds>
+                                    <Labels size={"p4"}>Vehicle ID</Labels>
+                                    <EditableFields
+                                      type="text"
+                                      value={
+                                        timesheet.vehicleId?.toString() || ""
+                                      }
+                                      onChange={(e) =>
+                                        handleInputChange(
+                                          timesheet.id,
+                                          "vehicleId",
+                                          e.target.value
+                                        )
+                                      }
+                                      isChanged={isFieldChanged(
                                         timesheet.id,
-                                        "vehicleId",
-                                        e.target.value
-                                      )
-                                    }
-                                    className={
-                                      isFieldChanged(timesheet.id, "vehicleId")
-                                        ? "border-app-orange" // Highlight when changed
-                                        : ""
-                                    }
-                                  />
-
-                                  {/* Revert Button */}
-                                  {isFieldChanged(
-                                    timesheet.id,
-                                    "vehicleId"
-                                  ) && (
-                                    <Buttons
-                                      background={"none"}
-                                      type="button"
-                                      className="w-1/6"
-                                      title="Revert changes"
-                                      onClick={() =>
+                                        "vehicleId"
+                                      )}
+                                      onRevert={() =>
                                         revertTimesheet(
                                           timesheet.id,
                                           "vehicleId"
                                         )
                                       }
-                                    >
-                                      <Holds>
-                                        <Images
-                                          titleImg={"/turnBack.svg"}
-                                          titleImgAlt={"revert"}
-                                          size={"70"}
-                                        />
-                                      </Holds>
-                                    </Buttons>
-                                  )}
-                                </Holds>
+                                      variant="default"
+                                      size="default"
+                                    />
+                                  </Holds>
 
-                                <Holds>
-                                  <Labels size={"p4"}>Starting Mileage</Labels>
-                                  <Inputs
-                                    type="text"
-                                    value={timesheet.startingMileage?.toString()}
-                                    onChange={(e) =>
-                                      handleInputChange(
-                                        timesheet.id,
-                                        "startingMileage",
-                                        e.target.value
-                                      )
-                                    }
-                                    className={
-                                      isFieldChanged(
+                                  <Holds>
+                                    <Labels size={"p4"}>
+                                      Starting Mileage
+                                    </Labels>
+                                    <EditableFields
+                                      type="text"
+                                      value={
+                                        timesheet.startingMileage?.toString() ||
+                                        ""
+                                      }
+                                      onChange={(e) =>
+                                        handleInputChange(
+                                          timesheet.id,
+                                          "startingMileage",
+                                          e.target.value
+                                        )
+                                      }
+                                      isChanged={isFieldChanged(
                                         timesheet.id,
                                         "startingMileage"
-                                      )
-                                        ? "border-app-orange" // Highlight when changed
-                                        : ""
-                                    }
-                                  />
-
-                                  {/* Revert Button */}
-                                  {isFieldChanged(
-                                    timesheet.id,
-                                    "startingMileage"
-                                  ) && (
-                                    <Buttons
-                                      background={"none"}
-                                      type="button"
-                                      className="w-1/6"
-                                      title="Revert changes"
-                                      onClick={() =>
+                                      )}
+                                      onRevert={() =>
                                         revertTimesheet(
                                           timesheet.id,
                                           "startingMileage"
                                         )
                                       }
-                                    >
-                                      <Holds>
-                                        <Images
-                                          titleImg={"/turnBack.svg"}
-                                          titleImgAlt={"revert"}
-                                          size={"70"}
-                                        />
-                                      </Holds>
-                                    </Buttons>
-                                  )}
+                                      variant="default"
+                                      size="default"
+                                    />
+                                  </Holds>
                                 </Holds>
-                              </Holds>
-                              <Holds
-                                position={"row"}
-                                className="h-full w-full mb-2 gap-4"
-                              >
-                                <Holds>
-                                  <Labels size={"p4"}>Ending Mileage</Labels>
-                                  <Inputs
-                                    type="text"
-                                    value={timesheet.endingMileage?.toString()}
-                                    onChange={(e) =>
-                                      handleInputChange(
-                                        timesheet.id,
-                                        "endingMileage",
-                                        e.target.value
-                                      )
-                                    }
-                                    className={
-                                      isFieldChanged(
+                                <Holds
+                                  position={"row"}
+                                  className="h-full w-full mb-2 gap-4"
+                                >
+                                  <Holds>
+                                    <Labels size={"p4"}>Ending Mileage</Labels>
+                                    <EditableFields
+                                      type="text"
+                                      value={
+                                        timesheet.endingMileage?.toString() ||
+                                        ""
+                                      }
+                                      onChange={(e) =>
+                                        handleInputChange(
+                                          timesheet.id,
+                                          "endingMileage",
+                                          e.target.value
+                                        )
+                                      }
+                                      isChanged={isFieldChanged(
                                         timesheet.id,
                                         "endingMileage"
-                                      )
-                                        ? "border-app-orange" // Highlight when changed
-                                        : ""
-                                    }
-                                  />
-
-                                  {/* Revert Button */}
-                                  {isFieldChanged(
-                                    timesheet.id,
-                                    "endingMileage"
-                                  ) && (
-                                    <Buttons
-                                      background={"none"}
-                                      type="button"
-                                      className="w-1/6"
-                                      title="Revert changes"
-                                      onClick={() =>
+                                      )}
+                                      onRevert={() =>
                                         revertTimesheet(
                                           timesheet.id,
                                           "endingMileage"
                                         )
                                       }
-                                    >
-                                      <Holds>
-                                        <Images
-                                          titleImg={"/turnBack.svg"}
-                                          titleImgAlt={"revert"}
-                                          size={"70"}
-                                        />
-                                      </Holds>
-                                    </Buttons>
-                                  )}
-                                </Holds>
-                                <Holds>
-                                  <Labels size={"p4"}>Left Idaho?</Labels>
-                                  <Inputs
-                                    type="text"
-                                    value={timesheet.leftIdaho ? "Yes" : "No"}
-                                    onChange={(e) =>
-                                      handleInputChange(
-                                        timesheet.id,
-                                        "leftIdaho",
-                                        e.target.value
-                                      )
-                                    }
-                                    className={
-                                      isFieldChanged(timesheet.id, "leftIdaho")
-                                        ? "border-app-orange" // Highlight when changed
-                                        : ""
-                                    }
-                                  />
+                                      variant="default"
+                                      size="default"
+                                    />
+                                  </Holds>
 
-                                  {/* Revert Button */}
-                                  {isFieldChanged(
-                                    timesheet.id,
-                                    "leftIdaho"
-                                  ) && (
-                                    <Buttons
-                                      background={"none"}
-                                      type="button"
-                                      className="w-1/6"
-                                      title="Revert changes"
-                                      onClick={() =>
+                                  <Holds>
+                                    <Labels size={"p4"}>Left Idaho?</Labels>
+                                    <EditableFields
+                                      type="text"
+                                      value={timesheet.leftIdaho ? "Yes" : "No"}
+                                      onChange={(e) =>
+                                        handleInputChange(
+                                          timesheet.id,
+                                          "leftIdaho",
+                                          e.target.value
+                                        )
+                                      }
+                                      isChanged={isFieldChanged(
+                                        timesheet.id,
+                                        "leftIdaho"
+                                      )}
+                                      onRevert={() =>
                                         revertTimesheet(
                                           timesheet.id,
                                           "leftIdaho"
                                         )
                                       }
-                                    >
-                                      <Holds>
-                                        <Images
-                                          titleImg={"/turnBack.svg"}
-                                          titleImgAlt={"revert"}
-                                          size={"70"}
-                                        />
-                                      </Holds>
-                                    </Buttons>
-                                  )}
+                                      variant="default"
+                                      size="default"
+                                    />
+                                  </Holds>
                                 </Holds>
-                              </Holds>
-                              <Holds
-                                position={"row"}
-                                className="h-full w-full mb-2 gap-4"
-                              >
-                                <Holds>
-                                  <Labels size={"p4"}>Refueling Gallons</Labels>
-                                  <Inputs
-                                    type="number"
-                                    value={timesheet.refuelingGallons?.toString()}
-                                    onChange={(e) =>
-                                      handleInputChange(
-                                        timesheet.id,
-                                        "refuelingGallons",
-                                        e.target.value
-                                      )
-                                    }
-                                    className={
-                                      isFieldChanged(
+                                <Holds
+                                  position={"row"}
+                                  className="h-full w-full mb-2 gap-4"
+                                >
+                                  <Holds>
+                                    <Labels size={"p4"}>
+                                      Refueling Gallons
+                                    </Labels>
+                                    <EditableFields
+                                      type="text"
+                                      value={
+                                        timesheet.refuelingGallons?.toString() ||
+                                        ""
+                                      }
+                                      onChange={(e) =>
+                                        handleInputChange(
+                                          timesheet.id,
+                                          "refuelingGallons",
+                                          e.target.value
+                                        )
+                                      }
+                                      isChanged={isFieldChanged(
                                         timesheet.id,
                                         "refuelingGallons"
-                                      )
-                                        ? "border-app-orange" // Highlight when changed
-                                        : ""
-                                    }
-                                  />
-
-                                  {/* Revert Button */}
-                                  {isFieldChanged(
-                                    timesheet.id,
-                                    "refuelingGallons"
-                                  ) && (
-                                    <Buttons
-                                      background={"none"}
-                                      type="button"
-                                      className="w-1/6"
-                                      title="Revert changes"
-                                      onClick={() =>
+                                      )}
+                                      onRevert={() =>
                                         revertTimesheet(
                                           timesheet.id,
                                           "refuelingGallons"
                                         )
                                       }
-                                    >
-                                      <Holds>
-                                        <Images
-                                          titleImg={"/turnBack.svg"}
-                                          titleImgAlt={"revert"}
-                                          size={"70"}
-                                        />
-                                      </Holds>
-                                    </Buttons>
-                                  )}
-                                </Holds>
-                                <Holds>
-                                  <Labels size={"p4"}>
-                                    # of Hauled Loads{" "}
-                                  </Labels>
-                                  <Inputs
-                                    type="text"
-                                    value={timesheet.hauledLoadsQuantity?.toString()}
-                                    onChange={(e) =>
-                                      handleInputChange(
-                                        timesheet.id,
-                                        "hauledLoadsQuantity",
-                                        e.target.value
-                                      )
-                                    }
-                                    className={
-                                      isFieldChanged(
+                                      variant="default"
+                                      size="default"
+                                    />
+                                  </Holds>
+                                  <Holds>
+                                    <Labels size={"p4"}>
+                                      # of Hauled Loads{" "}
+                                    </Labels>
+                                    <EditableFields
+                                      type="text"
+                                      value={
+                                        timesheet.hauledLoadsQuantity?.toString() ||
+                                        ""
+                                      }
+                                      onChange={(e) =>
+                                        handleInputChange(
+                                          timesheet.id,
+                                          "hauledLoadsQuantity",
+                                          e.target.value
+                                        )
+                                      }
+                                      isChanged={isFieldChanged(
                                         timesheet.id,
                                         "hauledLoadsQuantity"
-                                      )
-                                        ? "border-app-orange" // Highlight when changed
-                                        : ""
-                                    }
-                                  />
-
-                                  {/* Revert Button */}
-                                  {isFieldChanged(
-                                    timesheet.id,
-                                    "hauledLoadsQuantity"
-                                  ) && (
-                                    <Buttons
-                                      background={"none"}
-                                      type="button"
-                                      className="w-1/6"
-                                      title="Revert changes"
-                                      onClick={() =>
+                                      )}
+                                      onRevert={() =>
                                         revertTimesheet(
                                           timesheet.id,
                                           "hauledLoadsQuantity"
                                         )
                                       }
-                                    >
-                                      <Holds>
-                                        <Images
-                                          titleImg={"/turnBack.svg"}
-                                          titleImgAlt={"revert"}
-                                          size={"70"}
-                                        />
-                                      </Holds>
-                                    </Buttons>
-                                  )}
+                                      variant="default"
+                                      size="default"
+                                    />
+                                  </Holds>
                                 </Holds>
-                              </Holds>
-                              <Holds
-                                position={"row"}
-                                className="h-full w-full mb-2 gap-4"
-                              >
-                                <Holds>
-                                  <Labels size={"p4"}>Equipment Hauled</Labels>
-                                  <Inputs
-                                    type="text"
-                                    value={timesheet.equipmentHauled?.toString()}
-                                    onChange={(e) =>
-                                      handleInputChange(
-                                        timesheet.id,
-                                        "equipmentHauled",
-                                        e.target.value
-                                      )
-                                    }
-                                    className={
-                                      isFieldChanged(
+                                <Holds
+                                  position={"row"}
+                                  className="h-full w-full mb-2 gap-4"
+                                >
+                                  <Holds>
+                                    <Labels size={"p4"}>
+                                      Equipment Hauled
+                                    </Labels>
+                                    <EditableFields
+                                      type="text"
+                                      value={
+                                        timesheet.equipmentHauled?.toString() ||
+                                        ""
+                                      }
+                                      onChange={(e) =>
+                                        handleInputChange(
+                                          timesheet.id,
+                                          "equipmentHauled",
+                                          e.target.value
+                                        )
+                                      }
+                                      isChanged={isFieldChanged(
                                         timesheet.id,
                                         "equipmentHauled"
-                                      )
-                                        ? "border-app-orange" // Highlight when changed
-                                        : ""
-                                    }
-                                  />
-
-                                  {/* Revert Button */}
-                                  {isFieldChanged(
-                                    timesheet.id,
-                                    "equipmentHauled"
-                                  ) && (
-                                    <Buttons
-                                      background={"none"}
-                                      type="button"
-                                      className="w-1/6"
-                                      title="Revert changes"
-                                      onClick={() =>
+                                      )}
+                                      onRevert={() =>
                                         revertTimesheet(
                                           timesheet.id,
                                           "equipmentHauled"
                                         )
                                       }
-                                    >
-                                      <Holds>
-                                        <Images
-                                          titleImg={"/turnBack.svg"}
-                                          titleImgAlt={"revert"}
-                                          size={"70"}
-                                        />
-                                      </Holds>
-                                    </Buttons>
-                                  )}
-                                </Holds>
-                                <Holds>
-                                  <Labels size={"p4"}>Materials Hauled</Labels>
-                                  <Inputs
-                                    type="text"
-                                    value={timesheet.materialsHauled?.toString()}
-                                    onChange={(e) =>
-                                      handleInputChange(
-                                        timesheet.id,
-                                        "materialsHauled",
-                                        e.target.value
-                                      )
-                                    }
-                                    className={
-                                      isFieldChanged(
+                                      variant="default"
+                                      size="default"
+                                    />
+                                  </Holds>
+                                  <Holds>
+                                    <Labels size={"p4"}>
+                                      Materials Hauled
+                                    </Labels>
+                                    <EditableFields
+                                      type="text"
+                                      value={
+                                        timesheet.materialsHauled?.toString() ||
+                                        ""
+                                      }
+                                      onChange={(e) =>
+                                        handleInputChange(
+                                          timesheet.id,
+                                          "materialsHauled",
+                                          e.target.value
+                                        )
+                                      }
+                                      isChanged={isFieldChanged(
                                         timesheet.id,
                                         "materialsHauled"
-                                      )
-                                        ? "border-app-orange" // Highlight when changed
-                                        : ""
-                                    }
-                                  />
-
-                                  {/* Revert Button */}
-                                  {isFieldChanged(
-                                    timesheet.id,
-                                    "materialsHauled"
-                                  ) && (
-                                    <Buttons
-                                      background={"none"}
-                                      type="button"
-                                      className="w-1/6"
-                                      title="Revert changes"
-                                      onClick={() =>
+                                      )}
+                                      onRevert={() =>
                                         revertTimesheet(
                                           timesheet.id,
                                           "materialsHauled"
                                         )
                                       }
-                                    >
-                                      <Holds>
-                                        <Images
-                                          titleImg={"/turnBack.svg"}
-                                          titleImgAlt={"revert"}
-                                          size={"70"}
-                                        />
-                                      </Holds>
-                                    </Buttons>
-                                  )}
-                                </Holds>
-                              </Holds>
-                            </>
-                          )}
-                          {/* Equipment Logs */}
-
-                          {isExpanded && (
-                            <Holds className="h-full w-full mb-4">
-                              <Labels size="p4">Equipment Logs</Labels>
-                              {filteredLogs.length > 0 ? (
-                                filteredLogs.map((log, index) => (
-                                  <Holds
-                                    key={log.id || index}
-                                    className="border-[1px] border-gray-300 rounded-[8px] p-3 mb-2"
-                                  >
-                                    {/* Equipment Name */}
-                                    <Holds>
-                                      <Labels size="p4">Equipment Name</Labels>
-                                      <Holds
-                                        position="row"
-                                        className="gap-2 items-center"
-                                      >
-                                        <Inputs
-                                          type="text"
-                                          value={log.Equipment?.name || ""}
-                                          onChange={(e) =>
-                                            handleEquipmentLogChange(
-                                              log.id?.toString() || "",
-                                              "Equipment",
-                                              {
-                                                ...log.Equipment,
-                                                name: e.target.value,
-                                              }
-                                            )
-                                          }
-                                          className={
-                                            isEquipmentFieldChanged(
-                                              log.id?.toString() || "",
-                                              "Equipment"
-                                            )
-                                              ? "border-app-orange"
-                                              : ""
-                                          }
-                                        />
-                                        {isEquipmentFieldChanged(
-                                          log.id?.toString() || "",
-                                          "Equipment"
-                                        ) && (
-                                          <Buttons
-                                            background="none"
-                                            type="button"
-                                            className="w-1/6"
-                                            title="Revert changes"
-                                            onClick={() =>
-                                              revertEquipmentLog(
-                                                log.id?.toString() || ""
-                                              )
-                                            }
-                                          >
-                                            <Holds>
-                                              <Images
-                                                titleImg={"/turnBack.svg"}
-                                                titleImgAlt={"revert"}
-                                                size="70"
-                                              />
-                                            </Holds>
-                                          </Buttons>
-                                        )}
-                                      </Holds>
-                                    </Holds>
-
-                                    {/* Start Time */}
-                                    <Holds
-                                      position="row"
-                                      className="my-2 gap-4"
-                                    >
-                                      <Holds>
-                                        <Labels size="p4">Start Time</Labels>
-                                        <Holds
-                                          position="row"
-                                          className="gap-2 items-center"
-                                        >
-                                          <Inputs
-                                            type="time"
-                                            value={
-                                              log.startTime &&
-                                              !isNaN(
-                                                new Date(
-                                                  log.startTime
-                                                ).getTime()
-                                              )
-                                                ? new Date(log.startTime)
-                                                    .toISOString()
-                                                    .substring(11, 16)
-                                                : ""
-                                            }
-                                            onChange={(e) => {
-                                              const currentDate = log.startTime
-                                                ? new Date(log.startTime)
-                                                    .toISOString()
-                                                    .substring(0, 10) // Extract the date portion
-                                                : new Date()
-                                                    .toISOString()
-                                                    .substring(0, 10); // Use today's date as default
-                                              handleEquipmentLogChange(
-                                                log.id?.toString() || "",
-                                                "startTime",
-                                                `${currentDate}T${e.target.value}:00Z` // Combine current date with new time
-                                              );
-                                            }}
-                                            className={
-                                              isEquipmentFieldChanged(
-                                                log.id?.toString() || "",
-                                                "startTime"
-                                              )
-                                                ? "border-app-orange"
-                                                : ""
-                                            }
-                                          />
-                                          {isEquipmentFieldChanged(
-                                            log.id?.toString() || "",
-                                            "startTime"
-                                          ) && (
-                                            <Buttons
-                                              background="none"
-                                              type="button"
-                                              className="w-1/6"
-                                              title="Revert changes"
-                                              onClick={() =>
-                                                revertEquipmentLog(
-                                                  log.id?.toString() || ""
-                                                )
-                                              }
-                                            >
-                                              <Holds>
-                                                <Images
-                                                  titleImg={"/turnBack.svg"}
-                                                  titleImgAlt={"revert"}
-                                                  size="70"
-                                                />
-                                              </Holds>
-                                            </Buttons>
-                                          )}
-                                        </Holds>
-                                      </Holds>
-
-                                      {/* End Time */}
-                                      <Holds>
-                                        <Labels size="p4">End Time</Labels>
-                                        <Holds
-                                          position="row"
-                                          className="gap-2 items-center"
-                                        >
-                                          <Inputs
-                                            type="time"
-                                            value={
-                                              log.endTime &&
-                                              !isNaN(
-                                                new Date(log.endTime).getTime()
-                                              )
-                                                ? new Date(log.endTime)
-                                                    .toISOString()
-                                                    .substring(11, 16)
-                                                : ""
-                                            }
-                                            onChange={(e) => {
-                                              const currentDate = log.endTime
-                                                ? new Date(log.endTime)
-                                                    .toISOString()
-                                                    .substring(0, 10) // Extract the date portion
-                                                : new Date()
-                                                    .toISOString()
-                                                    .substring(0, 10); // Use today's date as default
-                                              handleEquipmentLogChange(
-                                                log.id?.toString() || "",
-                                                "endTime",
-                                                `${currentDate}T${e.target.value}:00Z` // Combine current date with new time
-                                              );
-                                            }}
-                                            className={
-                                              isEquipmentFieldChanged(
-                                                log.id?.toString() || "",
-                                                "endTime"
-                                              )
-                                                ? "border-app-orange"
-                                                : ""
-                                            }
-                                          />
-                                          {isEquipmentFieldChanged(
-                                            log.id?.toString() || "",
-                                            "endTime"
-                                          ) && (
-                                            <Buttons
-                                              background="none"
-                                              type="button"
-                                              className="w-1/6"
-                                              title="Revert changes"
-                                              onClick={() =>
-                                                revertEquipmentLog(
-                                                  log.id?.toString() || ""
-                                                )
-                                              }
-                                            >
-                                              <Holds>
-                                                <Images
-                                                  titleImg={"/turnBack.svg"}
-                                                  titleImgAlt={"revert"}
-                                                  size="70"
-                                                />
-                                              </Holds>
-                                            </Buttons>
-                                          )}
-                                        </Holds>
-                                      </Holds>
-                                    </Holds>
-
-                                    {/* Duration */}
-                                    <Holds>
-                                      <Labels size="p4">
-                                        Duration (updates manually)
-                                      </Labels>
-                                      <Inputs
-                                        type="text"
-                                        value={log.duration?.toFixed(2) || ""}
-                                        onChange={(e) =>
-                                          handleEquipmentLogChange(
-                                            log.id?.toString() || "",
-                                            "duration",
-                                            parseFloat(e.target.value) || 0
-                                          )
-                                        }
-                                        className={
-                                          isEquipmentFieldChanged(
-                                            log.id?.toString() || "",
-                                            "duration"
-                                          )
-                                            ? "border-app-orange"
-                                            : ""
-                                        }
-                                      />
-                                    </Holds>
+                                      variant="default"
+                                      size="default"
+                                    />
                                   </Holds>
-                                ))
-                              ) : (
-                                <Texts size={"p4"}>
-                                  No Equipment Logs Available
-                                </Texts>
-                              )}
+                                </Holds>
+                              </>
+                            )}
+                          </>
+                        )}
+                      </Holds>
+                    );
+                  })
+                : null}
+              {equipmentLogs.length > 0 &&
+                equipmentLogs.map((log, index) => {
+                  const isExpanded = expandedIds.has(
+                    `equipmentLog-${log.id || index}`
+                  );
+
+                  return (
+                    <Holds
+                      key={log.id || index}
+                      className="w-full even:bg-gray-200 odd:bg-gray-100 rounded-[10px] px-1 py-3 mb-4 cursor-pointer"
+                    >
+                      <Holds position="row" className="w-full h-full gap-4">
+                        <Holds className="w-[45%] h-full">
+                          <Labels size="p4">Equipment Name</Labels>
+                          <EditableFields
+                            type="text"
+                            value={log?.Equipment?.name?.toString() || ""}
+                            onChange={(e) =>
+                              handleEquipmentLogChange(
+                                log.id?.toString() || "",
+                                "Equipment", // Ensure this matches `keyof EmployeeEquipmentLog`
+                                {
+                                  ...log.Equipment,
+                                  name: e.target.value,
+                                }
+                              )
+                            }
+                            isChanged={isEquipmentFieldChanged(
+                              log.id?.toString() || "",
+                              "Equipment"
+                            )}
+                            onRevert={() =>
+                              revertEquipmentLog(
+                                log.id?.toString() || "",
+                                "Equipment"
+                              )
+                            }
+                            variant="default"
+                            size="default"
+                          />
+                        </Holds>
+                        {/* Duration */}
+                        <Holds className="w-[45%] h-full">
+                          <Labels size="p4">Duration (updates manually)</Labels>
+                          <Inputs
+                            type="text"
+                            disabled
+                            value={log.duration?.toFixed(2) || ""}
+                            onChange={(e) =>
+                              handleEquipmentLogChange(
+                                log.id?.toString() || "",
+                                "duration",
+                                e.target.value
+                              )
+                            }
+                          />
+                        </Holds>
+                        {isExpanded ? (
+                          <Holds className="w-[10%] h-full">
+                            <Images
+                              titleImg="/expandLeft.svg"
+                              titleImgAlt="clock in"
+                              className="rotate-[270deg] my-auto"
+                              size={"50"}
+                              onClick={() =>
+                                toggleExpanded(
+                                  `equipmentLog-${log.id || index}`
+                                )
+                              }
+                            />
+                          </Holds>
+                        ) : (
+                          <Holds className="w-[10%] h-full ">
+                            <Images
+                              titleImg="/expandLeft.svg"
+                              titleImgAlt="clock in"
+                              className="rotate-90 my-auto"
+                              size={"50"}
+                              onClick={() =>
+                                toggleExpanded(
+                                  `equipmentLog-${log.id || index}`
+                                )
+                              }
+                            />
+                          </Holds>
+                        )}
+                      </Holds>
+                      {isExpanded && (
+                        <>
+                          {/* Start Time */}
+                          <Holds className="my-auto w-full">
+                            <Holds
+                              position="row"
+                              className="my-auto w-full gap-4"
+                            >
+                              <Holds>
+                                <Labels size="p4">Start Time</Labels>
+                                <EditableFields
+                                  type="time"
+                                  value={
+                                    log.startTime &&
+                                    !isNaN(new Date(log.startTime).getTime())
+                                      ? new Date(log.startTime)
+                                          .toISOString()
+                                          .substring(11, 16)
+                                      : ""
+                                  }
+                                  onChange={(e) => {
+                                    const currentDate = log.startTime
+                                      ? new Date(log.startTime)
+                                          .toISOString()
+                                          .substring(0, 10) // Extract the date portion
+                                      : new Date()
+                                          .toISOString()
+                                          .substring(0, 10); // Use today's date as default
+                                    handleEquipmentLogChange(
+                                      log.id?.toString() || "",
+                                      "startTime",
+                                      `${currentDate}T${e.target.value}:00Z` // Combine current date with new time
+                                    );
+                                  }}
+                                  isChanged={isEquipmentFieldChanged(
+                                    log.id?.toString() || "",
+                                    "startTime"
+                                  )}
+                                  onRevert={() =>
+                                    revertEquipmentLog(
+                                      log.id?.toString() || "",
+                                      "startTime"
+                                    )
+                                  }
+                                  variant="default"
+                                  size="default"
+                                />
+                              </Holds>
+
+                              {/* End Time */}
+                              <Holds>
+                                <Labels size="p4">End Time</Labels>
+                                <EditableFields
+                                  type="time"
+                                  value={
+                                    log.endTime &&
+                                    !isNaN(new Date(log.endTime).getTime())
+                                      ? new Date(log.endTime)
+                                          .toISOString()
+                                          .substring(11, 16)
+                                      : ""
+                                  }
+                                  onChange={(e) => {
+                                    const currentDate = log.endTime
+                                      ? new Date(log.endTime)
+                                          .toISOString()
+                                          .substring(0, 10) // Extract the date portion
+                                      : new Date()
+                                          .toISOString()
+                                          .substring(0, 10); // Use today's date as default
+                                    handleEquipmentLogChange(
+                                      log.id?.toString() || "",
+                                      "endTime",
+                                      `${currentDate}T${e.target.value}:00Z` // Combine current date with new time
+                                    );
+                                  }}
+                                  isChanged={isEquipmentFieldChanged(
+                                    log.id?.toString() || "",
+                                    "endTime"
+                                  )}
+                                  onRevert={() =>
+                                    revertEquipmentLog(
+                                      log.id?.toString() || "",
+                                      "endTime"
+                                    )
+                                  }
+                                  variant="default"
+                                  size="default"
+                                />
+                              </Holds>
                             </Holds>
-                          )}
+                            <Holds
+                              position="row"
+                              className="my-auto w-full gap-4"
+                            >
+                              <Holds>
+                                <Labels size="p4">Fuel used</Labels>
+                                <EditableFields
+                                  type="checkbox"
+                                  variant={"noFrames"}
+                                  checked={log.isRefueled || false}
+                                  value={log.isRefueled ? "true" : "false"}
+                                  onChange={(e) => {
+                                    handleEquipmentLogChange(
+                                      log.id?.toString() || "",
+                                      "isRefueled",
+                                      e.target.checked // Use `e.target.checked` to get the updated boolean value
+                                    );
+                                  }}
+                                  isChanged={isEquipmentFieldChanged(
+                                    log.id?.toString() || "",
+                                    "isRefueled"
+                                  )}
+                                  onRevert={() =>
+                                    revertEquipmentLog(
+                                      log.id?.toString() || "",
+                                      "isRefueled"
+                                    )
+                                  }
+                                  size="default"
+                                />
+                              </Holds>
+                              <Holds>
+                                <Labels size="p4">Fuel used</Labels>
+                                <EditableFields
+                                  type="text"
+                                  value={log.fuelUsed?.toString() || ""}
+                                  onChange={(e) => {
+                                    handleEquipmentLogChange(
+                                      log.id?.toString() || "",
+                                      "fuelUsed",
+                                      e.target.value
+                                    );
+                                  }}
+                                  isChanged={isEquipmentFieldChanged(
+                                    log.id?.toString() || "",
+                                    "fuelUsed"
+                                  )}
+                                  onRevert={() =>
+                                    revertEquipmentLog(
+                                      log.id?.toString() || "",
+                                      "fuelUsed"
+                                    )
+                                  }
+                                  variant="default"
+                                  size="default"
+                                />
+                              </Holds>
+                            </Holds>
+                            <Holds>
+                              <Labels size="p4">Comment</Labels>
+                              <TextAreas
+                                value={log.comment || ""}
+                                style={{ resize: "none" }}
+                                maxLength={40}
+                                onChange={(e) => {
+                                  handleEquipmentLogChange(
+                                    log.id?.toString() || "",
+                                    "comment",
+                                    e.target.value
+                                  );
+                                }}
+                              />
+                            </Holds>
+                          </Holds>
                         </>
                       )}
                     </Holds>
                   );
-                })
-              ) : (
-                <EmptyView Children={undefined} />
+                })}
+
+              {userTimeSheets.length > 0 && (
+                <>
+                  {userTimeSheets.length === 0 && (
+                    <Holds className="row-span-12 col-span-5 w-full h-full">
+                      <EmptyView
+                        Children={
+                          <Texts size={"p4"}>No Timesheet or Logs Found</Texts>
+                        }
+                      />
+                    </Holds>
+                  )}
+                </>
               )}
             </Holds>
           </Holds>
@@ -1232,7 +1272,11 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
             position={"row"}
             className="row-start-12 row-end-13 col-start-1 col-end-3 h-full"
           >
-            <Buttons background={"green"} className="w-full h-full">
+            <Buttons
+              background={"green"}
+              onClick={handleNewTimesheet}
+              className="w-full h-full"
+            >
               <Texts size={"p4"}>Submit Timesheet</Texts>
             </Buttons>
           </Holds>
@@ -1241,7 +1285,11 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
             position={"row"}
             className="row-start-12 row-end-13 col-start-5 col-end-6 h-full"
           >
-            <Buttons background={"green"} className="w-full h-full">
+            <Buttons
+              background={"green"}
+              className="w-full h-full"
+              onClick={createNewTimesheet}
+            >
               <Texts size={"p4"}>+</Texts>
             </Buttons>
           </Holds>

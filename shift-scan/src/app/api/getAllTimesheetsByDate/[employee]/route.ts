@@ -63,7 +63,6 @@ export async function GET(
         Equipment: {
           select: {
             name: true,
-            qrId: true,
           },
         },
       },
