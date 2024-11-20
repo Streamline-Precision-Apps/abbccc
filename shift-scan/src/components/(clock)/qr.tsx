@@ -40,7 +40,7 @@ export default function QR({
         // Proceed as usual through clock in proccess.
         setScanResult({ data: result.data });
         qrScannerRef.current?.stop();
-        handleNextStep();
+        handleScanJobsite();
       }
     } catch (error) {
       console.error("Error processing QR code:", error);
