@@ -44,8 +44,7 @@ export default function ClockProcessor({
   const [banner, setBanner] = useState("");
   const { truckScanData } = useTruckScanData();
   const [startingMileage, setStartingMileage] = useState(0);
-  const [ comments, setComments] = useState("");
-
+  const [comments, setComments] = useState("");
 
   useEffect(() => {
     // sets step to 1 on mount
@@ -82,6 +81,7 @@ export default function ClockProcessor({
 
   const handleAlternativePath = () => {
     setUseQrCode(false);
+    setPath("jobsite");
     handleNextStep();
   };
 
@@ -126,6 +126,7 @@ export default function ClockProcessor({
 
   const handleScanJobsite = () => {
     setPath("jobsite");
+    handleNextStep();
     handleNextStep();
   };
 
@@ -212,49 +213,90 @@ export default function ClockProcessor({
           comments={undefined}
         />
       )}
-
-      {step === 5 && path === "jobsite" && (
-        <div>
-          <Titles size={"h1"}>{t("Confirmation-job-message-1")}</Titles>
-          {option === "break" ? (
-            <Titles size={"h4"}>Hope you enjoyed your Break!</Titles>
-          ) : null}
-          {type === "switchJobs" ? (
-            <>
-              <Titles size={"h4"}>{t("Confirmation-job-message-3")}</Titles>
-              <Titles size={"h4"}>{t("Confirmation-job-message-4")}</Titles>
-            </>
-          ) : (
-            <Titles size={"h4"}>{t("Confirmation-job-message-2")}</Titles>
-          )}
-          <Titles size={"h2"}>
-            {t("JobSite-label")} {scanResult?.data}
-          </Titles>
-
-          <Titles size={"h2"}>
-            {t("CostCode-label")} {savedCostCode}{" "}
-          </Titles>
-          {truckScanData !== "" && (
+      {(step === 5 && path === "jobsite"&& (
+          <div>
+            <Titles size={"h1"}>{t("Confirmation-job-message-1")}</Titles>
+            {option === "break" ? (
+              <Titles size={"h4"}>Hope you enjoyed your Break!</Titles>
+            ) : null}
+            {type === "switchJobs" ? (
+              <>
+                <Titles size={"h4"}>{t("Confirmation-job-message-3")}</Titles>
+                <Titles size={"h4"}>{t("Confirmation-job-message-4")}</Titles>
+              </>
+            ) : (
+              <Titles size={"h4"}>{t("Confirmation-job-message-2")}</Titles>
+            )}
             <Titles size={"h2"}>
-              {t("Truck-label")} {truckScanData}{" "}
+              {t("JobSite-label")} {scanResult?.data}
             </Titles>
-          )}
-          {startingMileage !== 0 && (
+
             <Titles size={"h2"}>
-              {t("Mileage")} {startingMileage}{" "}
+              {t("CostCode-label")} {savedCostCode}{" "}
             </Titles>
-          )}
-          <Titles size={"h2"}>
-            {t("Confirmation-time")}{" "}
-            {new Date().toLocaleDateString(locale, {
-              hour: "numeric",
-              minute: "numeric",
-              second: "numeric",
-            })}
-          </Titles>
-          <RedirectAfterDelay delay={5000} to="/dashboard" />
-        </div>
-      )}
+            {truckScanData !== "" && (
+              <Titles size={"h2"}>
+                {t("Truck-label")} {truckScanData}{" "}
+              </Titles>
+            )}
+            {startingMileage !== 0 && (
+              <Titles size={"h2"}>
+                {t("Mileage")} {startingMileage}{" "}
+              </Titles>
+            )}
+            <Titles size={"h2"}>
+              {t("Confirmation-time")}{" "}
+              {new Date().toLocaleDateString(locale, {
+                hour: "numeric",
+                minute: "numeric",
+                second: "numeric",
+              })}
+            </Titles>
+            <RedirectAfterDelay delay={5000} to="/dashboard" />
+          </div>
+        ))}
+      {(step === 4 && path === "truck" && (
+          <div>
+            <Titles size={"h1"}>{t("Confirmation-job-message-1")}</Titles>
+            {option === "break" ? (
+              <Titles size={"h4"}>Hope you enjoyed your Break!</Titles>
+            ) : null}
+            {type === "switchJobs" ? (
+              <>
+                <Titles size={"h4"}>{t("Confirmation-job-message-3")}</Titles>
+                <Titles size={"h4"}>{t("Confirmation-job-message-4")}</Titles>
+              </>
+            ) : (
+              <Titles size={"h4"}>{t("Confirmation-job-message-2")}</Titles>
+            )}
+            <Titles size={"h2"}>
+              {t("JobSite-label")} {scanResult?.data}
+            </Titles>
+
+            <Titles size={"h2"}>
+              {t("CostCode-label")} {savedCostCode}{" "}
+            </Titles>
+            {truckScanData !== "" && (
+              <Titles size={"h2"}>
+                {t("Truck-label")} {truckScanData}{" "}
+              </Titles>
+            )}
+            {startingMileage !== 0 && (
+              <Titles size={"h2"}>
+                {t("Mileage")} {startingMileage}{" "}
+              </Titles>
+            )}
+            <Titles size={"h2"}>
+              {t("Confirmation-time")}{" "}
+              {new Date().toLocaleDateString(locale, {
+                hour: "numeric",
+                minute: "numeric",
+                second: "numeric",
+              })}
+            </Titles>
+            <RedirectAfterDelay delay={5000} to="/dashboard" />
+          </div>
+        ))}
     </>
   );
 }
