@@ -14,6 +14,7 @@ const EditableFieldsVariants = cva(
         default: "border-black",
         danger: "border-red-500",
         success: "border-green-500",
+        noFrames: "border-none rounded-none",
       },
       size: {
         default: "h-10",
@@ -32,6 +33,11 @@ const EditableFieldsVariants = cva(
 interface EditableFieldsProps
   extends HTMLAttributes<HTMLElement>,
     VariantProps<typeof EditableFieldsVariants> {
+  value: string;
+  type?: string;
+  checked?: boolean;
+  disable?: boolean;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   isChanged: boolean;
   onRevert?: () => void;
   iconSrc?: string;
@@ -39,9 +45,14 @@ interface EditableFieldsProps
 }
 
 const EditableFields: FC<EditableFieldsProps> = ({
-  className,
+  className = "px-2",
   variant,
   size,
+  value,
+  checked,
+  disable = false,
+  type = "text",
+  onChange,
   isChanged,
   onRevert,
   iconSrc = "/turnBack.svg",
@@ -51,7 +62,12 @@ const EditableFields: FC<EditableFieldsProps> = ({
   return (
     <div className={cn(EditableFieldsVariants({ variant, size, className }))}>
       <input
-        className="h-full w-5/6 border-none focus:outline-none my-auto"
+        type={type}
+        value={value}
+        disabled={disable}
+        checked={checked}
+        onChange={onChange}
+        className="h-full w-5/6 border-none focus:outline-none my-auto "
         {...props}
       />
       {isChanged && onRevert && (
