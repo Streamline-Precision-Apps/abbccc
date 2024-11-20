@@ -1,4 +1,7 @@
 import {
+  // CreateEquipmentLogs,
+  deleteLog,
+  deleteTimesheet,
   saveEquipmentLogs,
   saveNewTimesheet,
   saveTimesheet,
@@ -11,6 +14,7 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
+import { NModals } from "@/components/(reusable)/newmodals";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -26,7 +30,7 @@ type TimeSheet = {
   nu?: string;
   Fp?: string;
   vehicleId?: number | null;
-  startTime?: string;
+  startTime?: string | null;
   endTime?: string | null;
   duration?: number | null;
   startingMileage?: number | null;
@@ -66,6 +70,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
   const [equipmentLogs, setEquipmentLogs] = useState<EmployeeEquipmentLog[]>(
     []
   );
+  const [isOpened, setIsOpened] = useState(false);
   const [originalEquipmentLogs, setOriginalEquipmentLogs] = useState<
     EmployeeEquipmentLog[]
   >([]);
@@ -132,28 +137,15 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
     }
   }, [filter]);
 
-  const createNewTimesheet = () => {
-    const newTimesheet = {
-      id: `${Date.now()}`, // Temporary unique ID
-      userId: params.employee, // Set to the current employee
-      startTime: "",
-      endTime: "",
-      duration: null,
-      date: new Date().toISOString().substring(0, 10), // Default to today's date
-      costcode: "",
-      jobsiteId: "",
-      timeSheetComments: "",
-      vehicleId: null,
-      startingMileage: null,
-      endingMileage: null,
-      leftIdaho: null,
-      refuelingGallons: null,
-      hauledLoadsQuantity: null,
-      equipmentHauled: "",
-      materialsHauled: "",
-      status: "new", // Custom status to identify unsaved timesheets
-    };
-    setUserTimeSheets((prev) => [...prev, newTimesheet]);
+  const createNewTimesheet = async () => {
+    const newTimesheet = await saveNewTimesheet(params.employee, dateByFilter);
+
+    setUserTimeSheets((prev) => [...prev, newTimesheet] as TimeSheet[]);
+  };
+
+  const createNewLog = async () => {
+    // const newTimesheet = await CreateEquipmentLogs(params.employee, dateByFilter);
+    // setUserTimeSheets((prev) => [...prev, newTimesheet] as TimeSheet[]);
   };
 
   const handleDateClick = (newDate: string) => {
@@ -171,7 +163,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
           // Calculate duration if startTime or endTime is updated
           if (field === "startTime" || field === "endTime") {
             updatedSheet.duration = calculateDuration(
-              updatedSheet.startTime,
+              updatedSheet.startTime?.toString(),
               updatedSheet.endTime?.toString()
             );
           }
@@ -227,7 +219,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
           // Recalculate duration if startTime or endTime is reverted
           if (field === "startTime" || field === "endTime") {
             updatedSheet.duration = calculateDuration(
-              updatedSheet.startTime,
+              updatedSheet.startTime?.toString(),
               updatedSheet.endTime?.toString()
             );
           }
@@ -317,50 +309,6 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
   ) {
     return JSON.stringify(log) !== JSON.stringify(originalLog);
   }
-  const handleNewTimesheet = () => {
-    for (const timesheet of userTimeSheets) {
-      if (timesheet.status === "new") {
-        // Handle saving new timesheet
-        const formData2 = new FormData();
-        formData2.append("userId", timesheet.userId || "");
-        formData2.append("startTime", timesheet.startTime || "");
-        formData2.append("endTime", timesheet.endTime || "");
-        formData2.append("duration", timesheet.duration?.toString() || "");
-        formData2.append("date", timesheet.date || "");
-        formData2.append("costcode", timesheet.costcode || "");
-        formData2.append("jobsiteId", timesheet.jobsiteId || "");
-        formData2.append(
-          "timeSheetComments",
-          timesheet.timeSheetComments || ""
-        );
-        formData2.append("vehicleId", timesheet.vehicleId?.toString() || "");
-        formData2.append(
-          "startingMileage",
-          timesheet.startingMileage?.toString() || ""
-        );
-        formData2.append(
-          "endingMileage",
-          timesheet.endingMileage?.toString() || ""
-        );
-        formData2.append("leftIdaho", timesheet.leftIdaho ? "true" : "false");
-        formData2.append(
-          "refuelingGallons",
-          timesheet.refuelingGallons?.toString() || ""
-        );
-        formData2.append(
-          "hauledLoadsQuantity",
-          timesheet.hauledLoadsQuantity?.toString() || ""
-        );
-        formData2.append("equipmentHauled", timesheet.equipmentHauled || "");
-        formData2.append("materialsHauled", timesheet.materialsHauled || "");
-
-        saveNewTimesheet(formData2); // Custom function to save a new timesheet
-        refreshOriginalData();
-      } else {
-        handleSubmitTimesheets();
-      }
-    }
-  };
 
   const handleSubmitTimesheets = async () => {
     try {
@@ -431,6 +379,34 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
       }
     } catch (error) {
       console.error("Error saving timesheet:", error);
+    }
+  };
+
+  const handleDeleteTimesheet = async (id: string) => {
+    try {
+      const timesheetId = parseInt(id, 10);
+      await deleteTimesheet(timesheetId);
+      setUserTimeSheets((prev) => prev.filter((sheet) => sheet.id !== id));
+      setOriginalTimeSheets((prev) => prev.filter((sheet) => sheet.id !== id));
+      console.log("Timesheet deleted successfully.");
+    } catch (error) {
+      console.error("Error deleting timesheet:", error);
+    }
+  };
+
+  const handleDeleteLog = async (id: string) => {
+    try {
+      const logId = parseInt(id, 10);
+      await deleteLog(logId);
+      setEquipmentLogs((prev) =>
+        prev.filter((log) => log.id?.toString() !== id)
+      );
+      setOriginalEquipmentLogs((prev) =>
+        prev.filter((log) => log.id?.toString() !== id)
+      );
+      console.log("Timesheet deleted successfully.");
+    } catch (error) {
+      console.error("Error deleting timesheet:", error);
     }
   };
 
@@ -989,6 +965,18 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                 </Holds>
                               </>
                             )}
+                            <Holds className="mt-4 ">
+                              <Buttons
+                                background={"red"}
+                                position={"left"}
+                                className="w-1/4 py-2"
+                                onClick={() =>
+                                  handleDeleteTimesheet(timesheet.id)
+                                }
+                              >
+                                <Texts size={"p5"}>Delete</Texts>
+                              </Buttons>
+                            </Holds>
                           </>
                         )}
                       </Holds>
@@ -1247,6 +1235,18 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                               />
                             </Holds>
                           </Holds>
+                          <Holds className="mt-4 ">
+                            <Buttons
+                              background={"red"}
+                              position={"left"}
+                              className="w-1/4 py-2"
+                              onClick={() =>
+                                handleDeleteLog(log.id?.toString() || "")
+                              }
+                            >
+                              <Texts size={"p5"}>Delete</Texts>
+                            </Buttons>
+                          </Holds>
                         </>
                       )}
                     </Holds>
@@ -1274,7 +1274,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
           >
             <Buttons
               background={"green"}
-              onClick={handleNewTimesheet}
+              onClick={handleSubmitTimesheets}
               className="w-full h-full"
             >
               <Texts size={"p4"}>Submit Timesheet</Texts>
@@ -1288,10 +1288,39 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
             <Buttons
               background={"green"}
               className="w-full h-full"
-              onClick={createNewTimesheet}
+              onClick={() => setIsOpened(true)}
             >
               <Texts size={"p4"}>+</Texts>
             </Buttons>
+            <NModals
+              size={"sm"}
+              isOpen={isOpened}
+              handleClose={() => setIsOpened(false)}
+            >
+              <Holds className="w-full h-full">
+                <Texts size={"p2"}>Select one of the following:</Texts>
+                <Holds position={"row"} className="w-full h-full gap-4">
+                  <Holds>
+                    <Buttons
+                      background={"green"}
+                      className="w-full h-full py-2"
+                      onClick={createNewTimesheet}
+                    >
+                      <Texts size={"p5"}>New Timesheet</Texts>
+                    </Buttons>
+                  </Holds>
+                  <Holds>
+                    <Buttons
+                      background={"green"}
+                      className="w-full h-full py-2"
+                      onClick={createNewLog}
+                    >
+                      <Texts size={"p5"}> New Equipment Log</Texts>
+                    </Buttons>
+                  </Holds>
+                </Holds>
+              </Holds>
+            </NModals>
           </Holds>
         </>
       )}
