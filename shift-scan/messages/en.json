@@ -72,6 +72,7 @@
         "startCamera": "Start Camera",
         "HideCamera": "Hide Camera",
         "ShowCamera": "Show Camera",
+        "TruckingAssistant": "Trucking Assistant",
         "NoCamera": "No Camera Available"
     },
 
@@ -205,7 +206,7 @@
 
     "Clock": {
         "ChangeCostCode": "Change Cost Code",
-        "ScanJobSite": "Scan Job Site",
+        "ScanJobSiteOrTruck": "Scan Job Site or Truck",
         "SwitchSites": "Switch Sites",
         "search-jobsite": "Search for Job Site",
         "search-equipment": "Search for Equipment",
@@ -220,6 +221,7 @@
         "VerifyJobSite": "Clock In",
         "Date-label": "Date",
         "JobSite-label": "Job Site #",
+        "Truck-label": "Truck ID",
         "CostCode-label": "Cost Code",
         "Confirmation-job-message-1": "Process Completed",
         "Confirmation-job-message-2": "Thank you! Your timesheet has been successfully created.",
@@ -239,6 +241,17 @@
         "Equipment-result": "Equipment Found",
         "Equipment-notes-title": "Notes",
         "Next-btn": "Next",
+        "StartingMileage": "Starting Mileage",
+        "SiteNumber": "Site Number",
+        "ChooseSite": "Choose a site number",
+        "0002": "0002 - Equipment Hauling not Job Specfic",
+        "0003": "0003 - Property and Grounds Work",
+        "TruckingMaterial": "Trucking Material",
+        "TruckingLabor": "Trucking Labor",
+        "TruckingEquipment": "Trucking Equipment",
+        "Notes": "Notes",
+        "Mileage": "Mileage",
+        "Comments": "Comments",
         "recentlyUsed" : "Recently Used"
         },
 
@@ -269,6 +282,7 @@
         "incidentDescription" : "Describe the Incident",
         "Save": "Save",
         "Saved": "Saved signature",
+        "Truck-label": "Truck:",
         "Clear": "Clear"
     },
 
@@ -386,5 +400,17 @@
         "LabelDuration": "Duration",
         "LabelJobsite": "Jobsite",
         "LabelCostCode": "Cost Code"
+    },
+
+    "TruckingAssistant": {
+        "TruckingAssistant": "Trucking Assistant",
+        "FailedToRetrieve": "Failed to fetch received content",
+        "ValidationError": "Validation error:",
+        "ErrorFetching": "Error fetching received content:",
+        "InvalidDataFormat": "Invalid data format",
+        "ComingSoon": "Coming Soon",
+        "Loading": "Loading...",
+        "NoDrives": "There Are No Drives Currently",
+        "FetchingError": "An error occurred while fetching received content"
     }
 }

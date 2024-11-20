@@ -11,7 +11,6 @@ import Spinner from "@/components/(animations)/spinner";
 import { Titles } from "@/components/(reusable)/titles";
 import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import Checkbox from "@/components/(inputs)/CheckBox";
 import { useRouter } from "next/navigation";
 import { InjuryReportContent } from "../../dashboard/clock-out/(components)/injury-report/injuryReportContent";
 import { updateTimeSheet } from "@/actions/timeSheetActions";
@@ -21,6 +20,8 @@ import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Clock } from "@/components/clock";
+import { CheckBox } from "@/components/(inputs)/checkBox";
+import { useTruckScanData } from "@/app/context/TruckScanDataContext";
 
 export const AdminClockOut = ({ handleClose }: { handleClose: () => void }) => {
   const [loading, setLoading] = useState(true);
@@ -37,6 +38,7 @@ export const AdminClockOut = ({ handleClose }: { handleClose: () => void }) => {
   const t = useTranslations("ClockOut");
   const [checked, setChecked] = useState(false);
   const [base64String, setBase64String] = useState<string>("");
+  const { setTruckScanData } = useTruckScanData();
 
   const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
     setChecked(event.currentTarget.checked);
@@ -80,6 +82,7 @@ export const AdminClockOut = ({ handleClose }: { handleClose: () => void }) => {
 
       const formData = new FormData(formRef.current as HTMLFormElement);
       await updateTimeSheet(formData);
+      setTruckScanData("")
       localStorage.clear();
       router.push("/");
     } catch (error) {
@@ -137,7 +140,7 @@ export const AdminClockOut = ({ handleClose }: { handleClose: () => void }) => {
                   <Titles size={"h2"}>{t("SignatureVerify")}</Titles>
                 </Holds>
                 <Holds size={"30"}>
-                  <Checkbox
+                  <CheckBox
                     id="injury-checkbox"
                     name="injury-verify"
                     onChange={handleCheckboxChange}

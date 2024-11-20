@@ -65,22 +65,18 @@ export async function CreateTimeSheet(formData: FormData) {
         date: parseUTC(formData.get("date") as string).toISOString(),
         jobsite: { connect: { qrId: formData.get("jobsiteId") as string } },
         costcode: formData.get("costcode") as string,
-        vehicleId: formData.get("vehicleId")
-          ? Number(formData.get("vehicleId"))
-          : null,
+        vehicleId: String(formData.get("vehicleId")),
         startTime: parseUTC(formData.get("startTime") as string).toISOString(),
         endTime: null,
         duration: null,
-        startingMileage: formData.get("startingMileage")
-          ? Number(formData.get("startingMileage"))
-          : null,
+        startingMileage: Number(formData.get("startingMileage")),
         endingMileage: null,
         leftIdaho: null,
         equipmentHauled: null,
         materialsHauled: null,
         hauledLoadsQuantity: null,
         refuelingGallons: null,
-        timeSheetComments: null,
+        timeSheetComments: formData.get("timeSheetComments") as string,
         user: { connect: { id: formData.get("userId") as string } },
       },
     });
@@ -113,9 +109,7 @@ export async function AddWholeTimeSheet(formData: FormData) {
         date: parseUTC(formData.get("date") as string).toISOString(),
         jobsite: { connect: { qrId: formData.get("jobsiteId") as string } },
         costcode: formData.get("costcode") as string,
-        vehicleId: formData.get("vehicleId")
-          ? Number(formData.get("vehicleId"))
-          : null,
+        vehicleId: String(formData.get("vehicleId")),
         startTime: parseUTC(formData.get("startTime") as string).toISOString(),
         endTime: formData.get("endTime")
           ? parseUTC(formData.get("endTime") as string).toISOString()
@@ -232,7 +226,6 @@ export async function updateTimeSheet(formData: FormData) {
     const updatedTimeSheet = await prisma.timeSheets.update({
       where: { id },
       data: {
-        vehicleId: Number(formData.get("vehicleId")) || null,
         endTime: endTime.toISOString(),
         duration: duration,
         startingMileage: Number(formData.get("startingMileage")) || null,
@@ -287,7 +280,6 @@ export async function updateTimeSheetBySwitch(formData: FormData) {
     const updatedTimeSheet = await prisma.timeSheets.update({
       where: { id },
       data: {
-        vehicleId: Number(formData.get("vehicleId")) || null,
         endTime: parseUTC(formData.get("endTime") as string).toISOString(),
         duration: Number(duration) || null,
         startingMileage: Number(formData.get("startingMileage")) || null,

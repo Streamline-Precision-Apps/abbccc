@@ -167,7 +167,7 @@ model TimeSheets {
   costcode            String
   nu                  String     @default("nu") // non union {} default
   Fp                  String     @default("fp") // field personal
-  vehicleId           Int?
+  vehicleId           String?
   startTime           DateTime
   endTime             DateTime?
   duration            Float?
@@ -185,8 +185,8 @@ model TimeSheets {
   jobsite Jobsites @relation(fields: [jobsiteId], references: [qrId])
 }
 
-//tracks notes on the used equipment, who used it, where, the condition its in, and for how long
-//tracks notes on the used equipment, who used it, where, the condition its in, and for how long
+// Used in equipment section, admin assets section, maybe the check in the clockout section.
+// tracks notes on the used equipment, who used it, where, the condition its in, and for how long.
 model EmployeeEquipmentLogs {
   id          Int       @id @default(autoincrement())
   date        DateTime  @default(now())
@@ -238,7 +238,6 @@ model Equipment {
   registrationExpiration DateTime?
   mileage                Int?
   isActive               Boolean         @default(true)
-  image                  String?
   inUse                  Boolean         @default(false)
 
   employeeEquipmentLogs EmployeeEquipmentLogs[]
