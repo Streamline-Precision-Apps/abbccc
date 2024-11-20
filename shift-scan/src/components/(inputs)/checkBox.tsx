@@ -12,7 +12,7 @@ export interface CheckboxProps {
   onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
-const CheckBox = ({
+export const CheckBox = ({
   disabled,
   defaultChecked,
   id,
@@ -53,5 +53,3 @@ const CheckBox = ({
     {label && <label htmlFor={id}>{label}</label>}
   </div>
 );
-
-export default CheckBox;

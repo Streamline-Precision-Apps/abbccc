@@ -15,6 +15,8 @@ type QRStepProps = {
   handleNextStep: () => void;
   handleChangeJobsite?: () => void;
   handleReturn?: () => void;
+  handleScanTruck?: () => void;
+  handleScanJobsite?: () => void;
   type: string;
   url: string;
   option?: string;
@@ -26,6 +28,8 @@ export default function QRStep({
   handleAlternativePath,
   handleNextStep,
   handleChangeJobsite,
+  handleScanTruck,
+  handleScanJobsite,
   type,
   url,
 }: QRStepProps) {
@@ -39,7 +43,7 @@ export default function QRStep({
               <Titles size={"h1"}>{t("ScanEquipment")}</Titles>
             ) : (
               <Titles size={"h1"} className="my-auto">
-                {t("ScanJobSite")}
+                {t("ScanJobSiteOrTruck")}
               </Titles>
             )}
           </Holds>
@@ -49,7 +53,7 @@ export default function QRStep({
                 <QR_EQ handleNextStep={handleNextStep} />
               ) : (
                 <>
-                  <QR handleNextStep={handleNextStep} url={url} />
+                  <QR handleScanJobsite={handleScanJobsite || (() => {})} handleScanTruck={handleScanTruck || (() => {})} url={url} />
                 </>
               )}
             </div>
