@@ -7,14 +7,12 @@ import { useTruckScanData } from "@/app/context/TruckScanDataContext";
 import { useCurrentView } from "@/app/context/CurrentViewContext";
 
 type QrReaderProps = {
-  handleNextStep: () => void;
   handleScanTruck: () => void;
   handleScanJobsite: () => void;
   url: string;
 };
 
 export default function QR({
-  handleNextStep,
   handleScanTruck,
   handleScanJobsite,
   url,

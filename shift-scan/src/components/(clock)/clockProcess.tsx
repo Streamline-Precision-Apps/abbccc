@@ -14,7 +14,7 @@ import { setAuthStep } from "@/app/api/auth";
 import { useTruckScanData } from "@/app/context/TruckScanDataContext";
 
 import useFetchAllData from "@/app/(content)/FetchData";
-import { Banners } from "../(reusable)/banners";
+// import { Banners } from "../(reusable)/banners";
 import TruckClockInForm from "./truckClockInForm";
 type clockProcessProps = {
   scannerType: string;
@@ -41,7 +41,7 @@ export default function ClockProcessor({
   const { scanEQResult } = useEQScanData();
   const [path, setPath] = useState("");
   const [scanner, setScanner] = useState("");
-  const [banner, setBanner] = useState("");
+  // const [banner, setBanner] = useState("");
   const { truckScanData } = useTruckScanData();
   const [startingMileage, setStartingMileage] = useState(0);
   const [comments, setComments] = useState("");
@@ -166,7 +166,7 @@ export default function ClockProcessor({
     <>
       {step === 1 && (
         <>
-          {banner !== "" && <Banners background="green">{banner}</Banners>}
+          {/* {banner !== "" && <Banners background="green">{banner}</Banners>} */}
           <QRStep
             type="jobsite"
             handleAlternativePath={handleAlternativePath}
