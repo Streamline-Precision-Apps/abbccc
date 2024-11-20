@@ -15,6 +15,7 @@ import { useTruckScanData } from "@/app/context/TruckScanDataContext";
 
 import useFetchAllData from "@/app/(content)/FetchData";
 import { Banners } from "../(reusable)/banners";
+import TruckClockInForm from "./truckClockInForm";
 type clockProcessProps = {
   scannerType: string;
   type: string;
@@ -42,6 +43,9 @@ export default function ClockProcessor({
   const [scanner, setScanner] = useState("");
   const [banner, setBanner] = useState("");
   const { truckScanData } = useTruckScanData();
+  const [startingMileage, setStartingMileage] = useState(0);
+  const [ comments, setComments] = useState("");
+
 
   useEffect(() => {
     // sets step to 1 on mount
@@ -116,12 +120,13 @@ export default function ClockProcessor({
   };
 
   const handleScanTruck = () => {
-    setBanner("Truck Successfully Scanned. Please scan a jobsite now.");
+    setPath("truck");
+    handleNextStep();
+  };
 
-    // Clear the banner after 6 seconds.
-    setTimeout(() => {
-      setBanner("");
-    }, 6000);
+  const handleScanJobsite = () => {
+    setPath("jobsite");
+    handleNextStep();
   };
 
   if (type === "equipment") {
@@ -168,23 +173,43 @@ export default function ClockProcessor({
             handleChangeJobsite={handleChangeJobsite}
             handleReturn={handleReturn}
             handleScanTruck={handleScanTruck}
+            handleScanJobsite={handleScanJobsite}
             url={returnpath}
             option={option}
           />
         </>
       )}
-      {step === 2 && (
+      {step === 2 && path === "jobsite" && (
         <CodeStep datatype="jobsite" handleNextStep={handleNextStep} />
+      )}
+      {step === 2 && path === "truck" && (
+        <TruckClockInForm
+          handleNextStep={handleNextStep}
+          startingMileage={startingMileage}
+          setStartingMileage={setStartingMileage}
+          setComments={setComments}
+        />
       )}
       {step === 3 && path === "jobsite" && (
         <CodeStep datatype="costcode" handleNextStep={handleNextStep} />
       )}
 
+      {step === 3 && path === "truck" && (
+        <VerificationStep
+          type={type}
+          handleNextStep={handleNextStep}
+          option={option}
+          mileage={startingMileage}
+          comments={comments}
+        />
+      )}
       {step === 4 && path === "jobsite" && (
         <VerificationStep
           type={type}
           handleNextStep={handleNextStep}
           option={option}
+          mileage={undefined}
+          comments={undefined}
         />
       )}
 
@@ -212,6 +237,11 @@ export default function ClockProcessor({
           {truckScanData !== "" && (
             <Titles size={"h2"}>
               {t("Truck-label")} {truckScanData}{" "}
+            </Titles>
+          )}
+          {startingMileage !== 0 && (
+            <Titles size={"h2"}>
+              {t("Mileage")} {startingMileage}{" "}
             </Titles>
           )}
           <Titles size={"h2"}>

@@ -25,11 +25,15 @@ type VerifyProcessProps = {
   handleNextStep?: () => void;
   type: string;
   option?: string;
+  mileage?: number;
+  comments?: string;
 };
 
 export default function VerificationStep({
   type,
   handleNextStep,
+  mileage,
+  comments,
 }: VerifyProcessProps) {
   const t = useTranslations("Clock");
   const { scanResult } = useScanData();
@@ -91,6 +95,9 @@ export default function VerificationStep({
         if (truckScanData) {
           formData.append("vehicleId", truckScanData);
         }
+        if (mileage !== 0 && mileage !== undefined) {
+          formData.append("mileage", mileage.toString());
+        }
         formData.append("submitDate", new Date().toISOString());
         formData.append("userId", id.toString());
         formData.append("date", new Date().toISOString());
@@ -151,9 +158,22 @@ export default function VerificationStep({
                 name="jobsiteId"
                 variant={"white"}
                 data={truckScanData}
-              />
+                />
             </Labels>
           )}
+          {mileage !== 0 && (
+            <Labels>
+              <Texts size={"p4"} position={"left"}>
+                {t("Mileage")}
+              </Texts>
+              <Inputs
+                state="disabled"
+                name="startingMileage"
+                variant={"white"}
+                data={mileage}
+                />
+            </Labels>
+              )}
           <Labels>
             <Texts size={"p4"} position={"left"}>
               {t("JobSite-label")}
@@ -163,7 +183,7 @@ export default function VerificationStep({
               name="jobsiteId"
               variant={"white"}
               data={scanResult?.data || ""}
-            />
+              />
           </Labels>
           <Labels>
             <Texts size={"p4"} position={"left"}>
@@ -174,8 +194,21 @@ export default function VerificationStep({
               name="costcode"
               variant={"white"}
               data={savedCostCode?.toString() || ""}
-            />
+              />
           </Labels>
+          {comments !== undefined && (
+            <Labels>
+              <Texts size={"p4"} position={"left"}>
+                {t("Comments")}
+              </Texts>
+              <Inputs
+                state="disabled"
+                name="timeSheetComments"
+                variant={"white"}
+                data={comments}
+                />
+            </Labels>
+              )}
         </Contents>
         <Buttons
           type="submit"

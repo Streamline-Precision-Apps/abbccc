@@ -9,12 +9,14 @@ import { useCurrentView } from "@/app/context/CurrentViewContext";
 type QrReaderProps = {
   handleNextStep: () => void;
   handleScanTruck: () => void;
+  handleScanJobsite: () => void;
   url: string;
 };
 
 export default function QR({
   handleNextStep,
   handleScanTruck,
+  handleScanJobsite,
   url,
 }: QrReaderProps) {
   const videoRef: React.MutableRefObject<HTMLVideoElement | null> =

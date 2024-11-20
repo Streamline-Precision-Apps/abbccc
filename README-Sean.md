@@ -365,3 +365,17 @@ I finished some more prisma DB research and Created the clock out dashboard page
 ## 11/15/2024
 
 - Fixing build bugs.
+- After merge was complete I checked everything built to this point other than admins. The following is a list of the bugs found:
+  - In admin/employees Edit and delete users search is not working.
+  - in admin/employees view employees search is not working.
+  - in admin/assets edit existing jobsite is on the page twice
+  - in admin/assets create costcode (button also says create jobsite)
+  - clockin scanning a jobsite takes it to the search jobsite step
+  - add equipment scanner brings up a label on button that says switch sites.
+  - submit date for injury report is off by 1 day.
+- Start construction of clock in reworking trucking view.
+
+## 11/19/2024
+
+- Worked on clock in section changes (Trucking route).
+- Add select for the truck clock in. This select will have the appropriate jobsite and costcode.

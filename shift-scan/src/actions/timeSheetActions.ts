@@ -69,16 +69,14 @@ export async function CreateTimeSheet(formData: FormData) {
         startTime: parseUTC(formData.get("startTime") as string).toISOString(),
         endTime: null,
         duration: null,
-        startingMileage: formData.get("startingMileage")
-          ? Number(formData.get("startingMileage"))
-          : null,
+        startingMileage: Number(formData.get("startingMileage")),
         endingMileage: null,
         leftIdaho: null,
         equipmentHauled: null,
         materialsHauled: null,
         hauledLoadsQuantity: null,
         refuelingGallons: null,
-        timeSheetComments: null,
+        timeSheetComments: formData.get("timeSheetComments") as string,
         user: { connect: { id: formData.get("userId") as string } },
       },
     });
