@@ -53,7 +53,7 @@ export default function QRStep({
                 <QR_EQ handleNextStep={handleNextStep} />
               ) : (
                 <>
-                  <QR handleNextStep={handleNextStep} handleScanJobsite={handleScanJobsite || (() => {})} handleScanTruck={handleScanTruck || (() => {})} url={url} />
+                  <QR handleScanJobsite={handleScanJobsite || (() => {})} handleScanTruck={handleScanTruck || (() => {})} url={url} />
                 </>
               )}
             </div>

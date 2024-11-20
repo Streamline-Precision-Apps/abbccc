@@ -2,18 +2,16 @@
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Forms } from "@/components/(reusable)/forms";
-import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
 import { Holds } from "@/components/(reusable)/holds";
 import { Selects } from "@/components/(reusable)/selects";
 import { TextAreas } from "@/components/(reusable)/textareas";
-import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { useEffect, useState } from "react";
 import React from "react";
 import { Grids } from "@/components/(reusable)/grids";
-import { z } from "zod";
+// import { z } from "zod";
 import { useSession } from "next-auth/react";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useTruckScanData } from "@/app/context/TruckScanDataContext";
@@ -21,15 +19,15 @@ import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useTranslations } from "next-intl";
 
 // Zod schema for form validation
-const leaveRequestSchema = z.object({
-  startDate: z.string().nonempty({ message: "Start date is required" }),
-  endDate: z.string().nonempty({ message: "End date is required" }),
-  requestType: z.enum(["Vacation", "Medical", "Military", "Personal", "Sick"]),
-  description: z.string().max(40, { message: "Max 40 characters" }),
-  userId: z.string().nonempty({ message: "User ID is required" }),
-  status: z.literal("PENDING"),
-  date: z.string().nonempty({ message: "Date is required" }),
-});
+// const leaveRequestSchema = z.object({
+//   startDate: z.string().nonempty({ message: "Start date is required" }),
+//   endDate: z.string().nonempty({ message: "End date is required" }),
+//   requestType: z.enum(["Vacation", "Medical", "Military", "Personal", "Sick"]),
+//   description: z.string().max(40, { message: "Max 40 characters" }),
+//   userId: z.string().nonempty({ message: "User ID is required" }),
+//   status: z.literal("PENDING"),
+//   date: z.string().nonempty({ message: "Date is required" }),
+// });
 
 type TruckClockInFormProps = {
   handleNextStep: () => void;
@@ -48,8 +46,7 @@ export default function TruckClockInForm({
   const [siteNumber, setSiteNumber] = useState(""); // State to track site number
   const [costCode, setCostCodeState] = useState(""); // State to track cost code
 
-  const { data: session } = useSession();
-  if (!session) return null;
+  const { data: session } = useSession(); // Always call hooks at the top level
   const { setScanResult } = useScanData();
   const { truckScanData } = useTruckScanData();
   const { setCostCode } = useSavedCostCode();
@@ -59,6 +56,9 @@ export default function TruckClockInForm({
   useEffect(() => {
     setComplete(siteNumber !== "" && costCode !== "");
   }, [siteNumber, costCode]);
+
+  // Conditional return after all hooks
+  if (!session) return null;
 
   return (
     <>
@@ -108,7 +108,7 @@ export default function TruckClockInForm({
                     {t("0002")}
                   </option>
                   <option value="0003 - Property and Grounds Work">
-                  {t("0003")}
+                    {t("0003")}
                   </option>
                 </Selects>
                 <Labels>{t("CostCode-Label")}</Labels>
