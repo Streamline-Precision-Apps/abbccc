@@ -28,47 +28,41 @@ export async function deleteLog(id: number) {
     throw error;
   }
 }
-export async function saveNewTimesheet(userId: string, date: string) {
-  try {
-    const dateIsoString = new Date(date).toISOString();
-    const timesheet = await prisma.timeSheets.create({
-      data: {
-        userId: userId,
-        startTime: new Date(date).toISOString(),
-        endTime: new Date(date).toISOString(),
-        duration: 0,
-        date: dateIsoString,
-        costcode: "",
-        jobsiteId: "j123",
-        timeSheetComments: "",
-        vehicleId: null,
-        startingMileage: null,
-        endingMileage: null,
-        leftIdaho: null,
-        hauledLoadsQuantity: null,
-        equipmentHauled: null,
-        materialsHauled: null,
-      },
-    });
-
-    return timesheet.id; // Return the new ID
-  } catch (error) {
-    console.error("Error saving new timesheet:", error);
-    throw error;
-  }
-}
 
 export async function saveTimesheet(formData: FormData) {
   try {
     console.log("Saving timesheet...");
-    console.log(formData);
+    const id = formData.get("id")
+      ? parseInt(formData.get("id") as string)
+      : undefined;
+    const userId = formData.get("userId") as string;
+
     const date = formData.get("date") as string;
     const dateIsoString = new Date(date).toISOString();
-    const id = parseInt(formData.get("id") as string);
-    const userId = formData.get("userId") as string;
-    const timesheet = await prisma.timeSheets.update({
-      where: { userId, id },
-      data: {
+
+    const timesheet = await prisma.timeSheets.upsert({
+      where: { id: id || -1 }, // Use an invalid ID for new entries
+      create: {
+        userId,
+        startTime: formData.get("startTime") as string,
+        endTime: formData.get("endTime") as string,
+        duration: parseFloat(formData.get("duration") as string),
+        date: dateIsoString,
+        costcode: formData.get("costcode") as string,
+        jobsiteId: formData.get("jobsiteId") as string,
+        timeSheetComments: formData.get("timeSheetComments") as string,
+        vehicleId: parseInt(formData.get("vehicleId") as string),
+        startingMileage: parseInt(formData.get("startingMileage") as string),
+        endingMileage: parseInt(formData.get("endingMileage") as string),
+        leftIdaho: formData.get("leftIdaho") === "true",
+        refuelingGallons: parseInt(formData.get("refuelingGallons") as string),
+        hauledLoadsQuantity: parseInt(
+          formData.get("hauledLoadsQuantity") as string
+        ),
+        equipmentHauled: formData.get("equipmentHauled") as string,
+        materialsHauled: formData.get("materialsHauled") as string,
+      },
+      update: {
         startTime: formData.get("startTime") as string,
         endTime: formData.get("endTime") as string,
         duration: parseFloat(formData.get("duration") as string),
@@ -88,6 +82,7 @@ export async function saveTimesheet(formData: FormData) {
         materialsHauled: formData.get("materialsHauled") as string,
       },
     });
+
     console.log(timesheet);
     revalidatePath(`/admins/personnel/${id}`);
     revalidateTag("timesheets");
@@ -98,28 +93,22 @@ export async function saveTimesheet(formData: FormData) {
   }
 }
 
-export async function CreateEquipmentLogs(
-  userId: string,
-  date: string,
-  formData: FormData
-) {
+export async function CreateEquipmentLogs(userId: string, date: string) {
   try {
     console.log("Saving equipment logs...");
-    console.log(formData);
-    const dateIsoString = new Date(date).toISOString();
 
     const equipmentLog = await prisma.employeeEquipmentLogs.create({
       data: {
-        date: dateIsoString,
-        equipmentId: formData.get("equipmentId") as string,
-        jobsiteId: formData.get("jobsiteId") as string,
+        date: new Date(date).toISOString(),
+        equipmentId: "new",
+        jobsiteId: "new",
         employeeId: userId,
-        startTime: dateIsoString,
-        endTime: dateIsoString,
-        duration: parseFloat(formData.get("duration") as string),
-        isRefueled: formData.get("isRefueled") === "true",
-        fuelUsed: parseInt(formData.get("fuelUsed") as string),
-        comment: formData.get("comment") as string,
+        startTime: new Date(date).toISOString(),
+        endTime: new Date(date).toISOString(),
+        duration: null,
+        isRefueled: false,
+        fuelUsed: null,
+        comment: null,
         isCompleted: true,
         isSubmitted: true,
         status: "APPROVED",
@@ -128,7 +117,8 @@ export async function CreateEquipmentLogs(
 
     console.log(equipmentLog);
     revalidateTag("timesheets");
-    return true;
+
+    return equipmentLog.id;
   } catch (error) {
     console.error("Error saving equipment logs:", error);
     throw error;
@@ -138,11 +128,25 @@ export async function CreateEquipmentLogs(
 export async function saveEquipmentLogs(formData: FormData) {
   try {
     console.log("Saving equipment logs...");
-    console.log(formData);
-    const id = parseInt(formData.get("id") as string);
-    const equipmentLog = await prisma.employeeEquipmentLogs.update({
-      where: { id },
-      data: {
+    const id = formData.get("id")
+      ? parseInt(formData.get("id") as string)
+      : undefined;
+
+    const equipmentLog = await prisma.employeeEquipmentLogs.upsert({
+      where: { id: id || -1 }, // Use an invalid ID for new entries
+      create: {
+        startTime: formData.get("startTime") as string,
+        endTime: formData.get("endTime") as string,
+        duration: parseFloat(formData.get("duration") as string),
+        isRefueled: formData.get("isRefueled") === "true",
+        fuelUsed: parseInt(formData.get("fuelUsed") as string),
+        comment: formData.get("comment") as string,
+        employeeId: formData.get("employeeId") as string,
+        equipmentId: formData.get("equipmentId") as string,
+        jobsiteId: formData.get("jobsiteId") as string,
+      },
+      update: {
+        id: id,
         startTime: formData.get("startTime") as string,
         endTime: formData.get("endTime") as string,
         duration: parseFloat(formData.get("duration") as string),

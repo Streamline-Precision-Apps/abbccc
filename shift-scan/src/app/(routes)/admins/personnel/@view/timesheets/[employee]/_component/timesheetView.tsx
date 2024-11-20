@@ -1,12 +1,11 @@
 import {
-  // CreateEquipmentLogs,
   deleteLog,
   deleteTimesheet,
   saveEquipmentLogs,
-  saveNewTimesheet,
   saveTimesheet,
 } from "@/actions/adminActions";
 import EmptyView from "@/app/(routes)/admins/_pages/EmptyView";
+
 import { Buttons } from "@/components/(reusable)/buttons";
 import { EditableFields } from "@/components/(reusable)/EditableField";
 import { Grids } from "@/components/(reusable)/grids";
@@ -14,12 +13,14 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
-import { NModals } from "@/components/(reusable)/newmodals";
+// import { NModals } from "@/components/(reusable)/newmodals";
+import { Selects } from "@/components/(reusable)/selects";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { cache } from "react";
+
 type TimeSheet = {
   submitDate?: string; // Changed to string since API returns string dates
   id: string;
@@ -70,11 +71,12 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
   const [equipmentLogs, setEquipmentLogs] = useState<EmployeeEquipmentLog[]>(
     []
   );
-  const [isOpened, setIsOpened] = useState(false);
+  // const [isOpened, setIsOpened] = useState(false);
   const [originalEquipmentLogs, setOriginalEquipmentLogs] = useState<
     EmployeeEquipmentLog[]
   >([]);
   const [error, setError] = useState<string | null>(null);
+  const [selectedOption, setSelectedOption] = useState("timesheets");
 
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set()); // Track expanded timesheet IDs
 
@@ -138,14 +140,55 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
   }, [filter]);
 
   const createNewTimesheet = async () => {
-    const newTimesheet = await saveNewTimesheet(params.employee, dateByFilter);
+    const newTimesheet = {
+      id: `new-${Date.now()}`, // Temporary unique ID
+      submitDate: new Date().toISOString(),
+      userId: params.employee,
+      date: new Date().toISOString(),
+      jobsiteId: null,
+      costcode: null,
+      nu: null,
+      Fp: null,
+      vehicleId: null,
+      startTime: null,
+      endTime: null,
+      duration: null,
+      startingMileage: null,
+      endingMileage: null,
+      leftIdaho: null,
+      equipmentHauled: null,
+      materialsHauled: null,
+      hauledLoadsQuantity: null,
+      refuelingGallons: null,
+      timeSheetComments: null,
+      status: "Pending",
+    };
 
+    setOriginalTimeSheets((prev) => [...prev, newTimesheet] as TimeSheet[]);
     setUserTimeSheets((prev) => [...prev, newTimesheet] as TimeSheet[]);
+    refreshOriginalData();
   };
 
   const createNewLog = async () => {
-    // const newTimesheet = await CreateEquipmentLogs(params.employee, dateByFilter);
-    // setUserTimeSheets((prev) => [...prev, newTimesheet] as TimeSheet[]);
+    try {
+      const newLog = {
+        id: `new-${Date.now()}`, // Temporary unique ID
+        Equipment: { name: "" },
+        startTime: "",
+        endTime: "",
+        duration: null,
+        isRefueled: false,
+        fuelUsed: null,
+        comment: "",
+      };
+      setEquipmentLogs((prev) => [...prev, newLog] as EmployeeEquipmentLog[]);
+      setOriginalEquipmentLogs(
+        (prev) => [...prev, newLog] as EmployeeEquipmentLog[]
+      );
+      refreshOriginalData();
+    } catch (error) {
+      console.error("Error creating new equipment log:", error);
+    }
   };
 
   const handleDateClick = (newDate: string) => {
@@ -180,21 +223,21 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
     value: unknown
   ) => {
     setEquipmentLogs((prev) =>
-      prev.map((sheet) => {
-        if (sheet.id?.toString() === id) {
-          const updatedSheet = { ...sheet, [field]: value };
+      prev.map((log) => {
+        if (log.id?.toString() === id) {
+          const updatedLog = { ...log, [field]: value };
 
-          // Calculate duration if startTime or endTime is updated
+          // Update duration if startTime or endTime changes
           if (field === "startTime" || field === "endTime") {
-            updatedSheet.duration = calculateDuration(
-              updatedSheet.startTime,
-              updatedSheet.endTime?.toString()
+            updatedLog.duration = calculateDuration(
+              updatedLog.startTime?.toString(),
+              updatedLog.endTime?.toString()
             );
           }
 
-          return updatedSheet;
+          return updatedLog;
         }
-        return sheet;
+        return log;
       })
     );
   };
@@ -312,13 +355,71 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
 
   const handleSubmitTimesheets = async () => {
     try {
-      // Filter out only modified timesheets
+      console.log("Submitting timesheets...");
+
+      // Separate new and changed timesheets
       const changedTimesheets = userTimeSheets.filter((timesheet) => {
         const original = originalTimeSheets.find(
           (original) => original.id === timesheet.id
         );
         return original && isTimesheetChanged(timesheet, original);
       });
+      console.log("changedTimesheets:", changedTimesheets);
+
+      const newTimesheets = userTimeSheets.filter((timesheet) => {
+        const original = originalTimeSheets.find(
+          (original) => original.id === timesheet.id
+        );
+        return !original;
+      });
+
+      console.log("newTimesheets:", newTimesheets);
+
+      // Process new timesheets
+      for (const timesheet of newTimesheets) {
+        console.log("Processing new timesheet...");
+        const formData = new FormData();
+        formData.append("userId", timesheet.userId || "");
+        formData.append("date", timesheet.date || "");
+        formData.append("jobsiteId", timesheet.jobsiteId || "");
+        formData.append("costcode", timesheet.costcode || "");
+        formData.append("nu", timesheet.nu || "");
+        formData.append("Fp", timesheet.Fp || "");
+        formData.append("vehicleId", timesheet.vehicleId?.toString() || "");
+        formData.append("startTime", timesheet.startTime || "");
+        formData.append("endTime", timesheet.endTime || "");
+        formData.append("duration", timesheet.duration?.toString() || "");
+        formData.append(
+          "startingMileage",
+          timesheet.startingMileage?.toString() || ""
+        );
+        formData.append(
+          "endingMileage",
+          timesheet.endingMileage?.toString() || ""
+        );
+        formData.append("leftIdaho", timesheet.leftIdaho ? "true" : "false");
+        formData.append("equipmentHauled", timesheet.equipmentHauled || "");
+        formData.append("materialsHauled", timesheet.materialsHauled || "");
+        formData.append(
+          "hauledLoadsQuantity",
+          timesheet.hauledLoadsQuantity?.toString() || ""
+        );
+        formData.append(
+          "refuelingGallons",
+          timesheet.refuelingGallons?.toString() || ""
+        );
+        formData.append("timeSheetComments", timesheet.timeSheetComments || "");
+        formData.append("status", timesheet.status || "Pending");
+
+        const result = await saveTimesheet(formData); // Handle creating new timesheet
+        if (!result)
+          throw new Error(
+            `Failed to create new timesheet with temporary ID: ${timesheet.id}`
+          );
+        console.log(`Created new timesheet with ID: ${timesheet.id}`);
+      }
+
+      // Process changed timesheets
       for (const timesheet of changedTimesheets) {
         const formData = new FormData();
         formData.append("id", timesheet.id);
@@ -350,19 +451,50 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
         );
         formData.append("equipmentHauled", timesheet.equipmentHauled || "");
         formData.append("materialsHauled", timesheet.materialsHauled || "");
-        const result = await saveTimesheet(formData);
+
+        const result = await saveTimesheet(formData); // Handle updating existing timesheet
         if (!result)
           throw new Error(`Failed to save timesheet ${timesheet.id}`);
+        console.log(`Updated timesheet with ID: ${timesheet.id}`);
       }
 
-      // Filter out only modified equipment logs
+      console.log("newTimesheets:", newTimesheets);
+      // Separate new and changed logs
+
+      const newLogs = equipmentLogs.filter((log) => {
+        const original = originalEquipmentLogs.find(
+          (original) => original.id === log.id?.toString()
+        );
+        return !original;
+      });
+      console.log("newLogs:", newLogs);
+
       const changedLogs = equipmentLogs.filter((log) => {
         const original = originalEquipmentLogs.find(
-          (original) => original.id === log.id
+          (original) => original.id === log.id?.toString()
         );
         return original && isLogChanged(log, original);
       });
 
+      // Process new logs
+      for (const log of newLogs) {
+        const logFormData = new FormData();
+        logFormData.append("startTime", log.startTime || "");
+        logFormData.append("endTime", log.endTime || "");
+        logFormData.append("duration", log.duration?.toString() || "");
+        logFormData.append("isRefueled", log.isRefueled ? "true" : "false");
+        logFormData.append("fuelUsed", log.fuelUsed?.toString() || "");
+        logFormData.append("comment", log.comment || "");
+
+        const result = await saveEquipmentLogs(logFormData); // Handle creating new log
+        if (!result)
+          throw new Error(
+            `Failed to create new equipment log with temporary ID: ${log.id}`
+          );
+        console.log(`Created new equipment log with ID: ${log.id}`);
+      }
+
+      // Process changed logs
       for (const log of changedLogs) {
         const logFormData = new FormData();
         logFormData.append("id", log.id?.toString() || "");
@@ -372,14 +504,17 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
         logFormData.append("isRefueled", log.isRefueled ? "true" : "false");
         logFormData.append("fuelUsed", log.fuelUsed?.toString() || "");
         logFormData.append("comment", log.comment || "");
-        const result = await saveEquipmentLogs(logFormData);
+
+        const result = await saveEquipmentLogs(logFormData); // Handle updating existing log
         if (!result) throw new Error(`Failed to save equipment log ${log.id}`);
-        refreshOriginalData();
-        console.log("All changes saved successfully.");
+        console.log(`Updated equipment log with ID: ${log.id}`);
       }
+      console.log("All changes saved successfully", userTimeSheets);
+      refreshOriginalData();
     } catch (error) {
-      console.error("Error saving timesheet:", error);
+      console.error("Error saving changes:", error);
     }
+    console.log("All changes saved successfully");
   };
 
   const handleDeleteTimesheet = async (id: string) => {
@@ -983,11 +1118,10 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                     );
                   })
                 : null}
+
               {equipmentLogs.length > 0 &&
                 equipmentLogs.map((log, index) => {
-                  const isExpanded = expandedIds.has(
-                    `equipmentLog-${log.id || index}`
-                  );
+                  const isExpanded = expandedIds.has(log.id?.toString() || "");
 
                   return (
                     <Holds
@@ -1048,9 +1182,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                               className="rotate-[270deg] my-auto"
                               size={"50"}
                               onClick={() =>
-                                toggleExpanded(
-                                  `equipmentLog-${log.id || index}`
-                                )
+                                toggleExpanded(log.id?.toString() || "")
                               }
                             />
                           </Holds>
@@ -1062,9 +1194,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                               className="rotate-90 my-auto"
                               size={"50"}
                               onClick={() =>
-                                toggleExpanded(
-                                  `equipmentLog-${log.id || index}`
-                                )
+                                toggleExpanded(log.id?.toString() || "")
                               }
                             />
                           </Holds>
@@ -1165,7 +1295,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                               position="row"
                               className="my-auto w-full gap-4"
                             >
-                              <Holds>
+                              <Holds className="">
                                 <Labels size="p4">Fuel used</Labels>
                                 <EditableFields
                                   type="checkbox"
@@ -1193,32 +1323,37 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                 />
                               </Holds>
                               <Holds>
-                                <Labels size="p4">Fuel used</Labels>
-                                <EditableFields
-                                  type="text"
-                                  value={log.fuelUsed?.toString() || ""}
-                                  onChange={(e) => {
-                                    handleEquipmentLogChange(
-                                      log.id?.toString() || "",
-                                      "fuelUsed",
-                                      e.target.value
-                                    );
-                                  }}
-                                  isChanged={isEquipmentFieldChanged(
-                                    log.id?.toString() || "",
-                                    "fuelUsed"
-                                  )}
-                                  onRevert={() =>
-                                    revertEquipmentLog(
-                                      log.id?.toString() || "",
-                                      "fuelUsed"
-                                    )
-                                  }
-                                  variant="default"
-                                  size="default"
-                                />
+                                {log.isRefueled && (
+                                  <>
+                                    <Labels size="p4">Fuel used</Labels>
+                                    <EditableFields
+                                      type="text"
+                                      value={log.fuelUsed?.toString() || ""}
+                                      onChange={(e) => {
+                                        handleEquipmentLogChange(
+                                          log.id?.toString() || "",
+                                          "fuelUsed",
+                                          e.target.value
+                                        );
+                                      }}
+                                      isChanged={isEquipmentFieldChanged(
+                                        log.id?.toString() || "",
+                                        "fuelUsed"
+                                      )}
+                                      onRevert={() =>
+                                        revertEquipmentLog(
+                                          log.id?.toString() || "",
+                                          "fuelUsed"
+                                        )
+                                      }
+                                      variant="default"
+                                      size="default"
+                                    />
+                                  </>
+                                )}
                               </Holds>
                             </Holds>
+
                             <Holds>
                               <Labels size="p4">Comment</Labels>
                               <TextAreas
@@ -1266,6 +1401,15 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                   )}
                 </>
               )}
+              {userTimeSheets.length === 0 && equipmentLogs.length === 0 && (
+                <Holds className="row-span-12 col-span-5 w-full h-full">
+                  <EmptyView
+                    Children={
+                      <Texts size={"p4"}>No Timesheet or Logs Found</Texts>
+                    }
+                  />
+                </Holds>
+              )}
             </Holds>
           </Holds>
           <Holds
@@ -1281,18 +1425,30 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
             </Buttons>
           </Holds>
 
-          <Holds
-            position={"row"}
-            className="row-start-12 row-end-13 col-start-5 col-end-6 h-full"
-          >
-            <Buttons
-              background={"green"}
-              className="w-full h-full"
-              onClick={() => setIsOpened(true)}
-            >
-              <Texts size={"p4"}>+</Texts>
-            </Buttons>
-            <NModals
+          <Holds className="row-start-12 row-end-13 col-start-4 col-end-6 h-full">
+            <Holds position={"row"} className="w-full h-full gap-4">
+              <Selects
+                className="my-auto"
+                value={selectedOption}
+                onChange={(e) => setSelectedOption(e.target.value)}
+              >
+                <option value="timesheets">Timesheets</option>
+                <option value="logs">Logs</option>
+              </Selects>
+              <Buttons
+                background={"green"}
+                className="w-full h-full"
+                onClick={
+                  selectedOption === "timesheets"
+                    ? createNewTimesheet
+                    : createNewLog
+                }
+              >
+                <Texts size={"p4"}>+</Texts>
+              </Buttons>
+            </Holds>
+
+            {/* <NModals
               size={"sm"}
               isOpen={isOpened}
               handleClose={() => setIsOpened(false)}
@@ -1320,7 +1476,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                   </Holds>
                 </Holds>
               </Holds>
-            </NModals>
+            </NModals> */}
           </Holds>
         </>
       )}
