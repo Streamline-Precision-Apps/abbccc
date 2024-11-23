@@ -93,6 +93,40 @@ export async function saveTimesheet(formData: FormData) {
   }
 }
 
+export async function CreateTimesheet(userId: string, date: string) {
+  try {
+    const timesheet = await prisma.timeSheets.create({
+      data: {
+        submitDate: new Date().toISOString(),
+        userId: userId,
+        startTime: new Date(date).toISOString(),
+        endTime: new Date(date).toISOString(),
+        duration: 0,
+        date: new Date(date).toISOString(),
+        costcode: "new",
+        jobsiteId: "new",
+        timeSheetComments: null,
+        vehicleId: null,
+        startingMileage: null,
+        endingMileage: null,
+        leftIdaho: null,
+        refuelingGallons: null,
+        hauledLoadsQuantity: null,
+        equipmentHauled: null,
+        materialsHauled: null,
+      },
+    });
+
+    console.log(timesheet);
+    revalidatePath(`/admins/personnel/${timesheet.userId}?date=${date}`);
+    revalidateTag("timesheets");
+    return timesheet;
+  } catch (error) {
+    console.error("Error saving timesheet:", error);
+    throw error;
+  }
+}
+
 export async function CreateEquipmentLogs(userId: string, date: string) {
   try {
     console.log("Saving equipment logs...");
@@ -100,8 +134,8 @@ export async function CreateEquipmentLogs(userId: string, date: string) {
     const equipmentLog = await prisma.employeeEquipmentLogs.create({
       data: {
         date: new Date(date).toISOString(),
-        equipmentId: "new",
-        jobsiteId: "new",
+        equipmentId: "new", // this is a placeholder equipment
+        jobsiteId: "new", // this is a placeholder jobsite
         employeeId: userId,
         startTime: new Date(date).toISOString(),
         endTime: new Date(date).toISOString(),
@@ -118,7 +152,7 @@ export async function CreateEquipmentLogs(userId: string, date: string) {
     console.log(equipmentLog);
     revalidateTag("timesheets");
 
-    return equipmentLog.id;
+    return equipmentLog;
   } catch (error) {
     console.error("Error saving equipment logs:", error);
     throw error;

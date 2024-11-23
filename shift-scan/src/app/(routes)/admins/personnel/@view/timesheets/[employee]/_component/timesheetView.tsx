@@ -1,4 +1,6 @@
 import {
+  CreateEquipmentLogs,
+  CreateTimesheet,
   deleteLog,
   deleteTimesheet,
   saveEquipmentLogs,
@@ -140,50 +142,37 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
   }, [filter]);
 
   const createNewTimesheet = async () => {
-    const newTimesheet = {
-      id: `new-${Date.now()}`, // Temporary unique ID
-      submitDate: new Date().toISOString(),
-      userId: params.employee,
-      date: new Date().toISOString(),
-      jobsiteId: null,
-      costcode: null,
-      nu: null,
-      Fp: null,
-      vehicleId: null,
-      startTime: null,
-      endTime: null,
-      duration: null,
-      startingMileage: null,
-      endingMileage: null,
-      leftIdaho: null,
-      equipmentHauled: null,
-      materialsHauled: null,
-      hauledLoadsQuantity: null,
-      refuelingGallons: null,
-      timeSheetComments: null,
-      status: "Pending",
-    };
+    const CreateTimesheetResponse = await CreateTimesheet(
+      params.employee,
+      dateByFilter
+    );
+    if (!CreateTimesheetResponse) {
+      return;
+    }
 
-    setOriginalTimeSheets((prev) => [...prev, newTimesheet] as TimeSheet[]);
-    setUserTimeSheets((prev) => [...prev, newTimesheet] as TimeSheet[]);
+    setOriginalTimeSheets(
+      (prev) => [...prev, CreateTimesheetResponse] as TimeSheet[]
+    );
+    setUserTimeSheets(
+      (prev) => [...prev, CreateTimesheetResponse] as TimeSheet[]
+    );
     refreshOriginalData();
   };
 
   const createNewLog = async () => {
     try {
-      const newLog = {
-        id: `new-${Date.now()}`, // Temporary unique ID
-        Equipment: { name: "" },
-        startTime: "",
-        endTime: "",
-        duration: null,
-        isRefueled: false,
-        fuelUsed: null,
-        comment: "",
-      };
-      setEquipmentLogs((prev) => [...prev, newLog] as EmployeeEquipmentLog[]);
+      const createdLog = await CreateEquipmentLogs(
+        params.employee,
+        dateByFilter
+      );
+
+      if (!createdLog) return;
+
+      setEquipmentLogs(
+        (prev) => [...prev, createdLog] as EmployeeEquipmentLog[]
+      );
       setOriginalEquipmentLogs(
-        (prev) => [...prev, newLog] as EmployeeEquipmentLog[]
+        (prev) => [...prev, createdLog] as EmployeeEquipmentLog[]
       );
       refreshOriginalData();
     } catch (error) {
@@ -356,7 +345,6 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
   const handleSubmitTimesheets = async () => {
     try {
       console.log("Submitting timesheets...");
-
       // Separate new and changed timesheets
       const changedTimesheets = userTimeSheets.filter((timesheet) => {
         const original = originalTimeSheets.find(
@@ -365,59 +353,6 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
         return original && isTimesheetChanged(timesheet, original);
       });
       console.log("changedTimesheets:", changedTimesheets);
-
-      const newTimesheets = userTimeSheets.filter((timesheet) => {
-        const original = originalTimeSheets.find(
-          (original) => original.id === timesheet.id
-        );
-        return !original;
-      });
-
-      console.log("newTimesheets:", newTimesheets);
-
-      // Process new timesheets
-      for (const timesheet of newTimesheets) {
-        console.log("Processing new timesheet...");
-        const formData = new FormData();
-        formData.append("userId", timesheet.userId || "");
-        formData.append("date", timesheet.date || "");
-        formData.append("jobsiteId", timesheet.jobsiteId || "");
-        formData.append("costcode", timesheet.costcode || "");
-        formData.append("nu", timesheet.nu || "");
-        formData.append("Fp", timesheet.Fp || "");
-        formData.append("vehicleId", timesheet.vehicleId?.toString() || "");
-        formData.append("startTime", timesheet.startTime || "");
-        formData.append("endTime", timesheet.endTime || "");
-        formData.append("duration", timesheet.duration?.toString() || "");
-        formData.append(
-          "startingMileage",
-          timesheet.startingMileage?.toString() || ""
-        );
-        formData.append(
-          "endingMileage",
-          timesheet.endingMileage?.toString() || ""
-        );
-        formData.append("leftIdaho", timesheet.leftIdaho ? "true" : "false");
-        formData.append("equipmentHauled", timesheet.equipmentHauled || "");
-        formData.append("materialsHauled", timesheet.materialsHauled || "");
-        formData.append(
-          "hauledLoadsQuantity",
-          timesheet.hauledLoadsQuantity?.toString() || ""
-        );
-        formData.append(
-          "refuelingGallons",
-          timesheet.refuelingGallons?.toString() || ""
-        );
-        formData.append("timeSheetComments", timesheet.timeSheetComments || "");
-        formData.append("status", timesheet.status || "Pending");
-
-        const result = await saveTimesheet(formData); // Handle creating new timesheet
-        if (!result)
-          throw new Error(
-            `Failed to create new timesheet with temporary ID: ${timesheet.id}`
-          );
-        console.log(`Created new timesheet with ID: ${timesheet.id}`);
-      }
 
       // Process changed timesheets
       for (const timesheet of changedTimesheets) {
@@ -458,41 +393,12 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
         console.log(`Updated timesheet with ID: ${timesheet.id}`);
       }
 
-      console.log("newTimesheets:", newTimesheets);
-      // Separate new and changed logs
-
-      const newLogs = equipmentLogs.filter((log) => {
-        const original = originalEquipmentLogs.find(
-          (original) => original.id === log.id?.toString()
-        );
-        return !original;
-      });
-      console.log("newLogs:", newLogs);
-
       const changedLogs = equipmentLogs.filter((log) => {
         const original = originalEquipmentLogs.find(
           (original) => original.id === log.id?.toString()
         );
         return original && isLogChanged(log, original);
       });
-
-      // Process new logs
-      for (const log of newLogs) {
-        const logFormData = new FormData();
-        logFormData.append("startTime", log.startTime || "");
-        logFormData.append("endTime", log.endTime || "");
-        logFormData.append("duration", log.duration?.toString() || "");
-        logFormData.append("isRefueled", log.isRefueled ? "true" : "false");
-        logFormData.append("fuelUsed", log.fuelUsed?.toString() || "");
-        logFormData.append("comment", log.comment || "");
-
-        const result = await saveEquipmentLogs(logFormData); // Handle creating new log
-        if (!result)
-          throw new Error(
-            `Failed to create new equipment log with temporary ID: ${log.id}`
-          );
-        console.log(`Created new equipment log with ID: ${log.id}`);
-      }
 
       // Process changed logs
       for (const log of changedLogs) {
@@ -577,22 +483,47 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                     return (
                       <Holds
                         key={timesheet.id}
-                        className="w-full even:bg-gray-200 odd:bg-gray-100 rounded-[10px] px-2 py-3 mb-4 cursor-pointer"
+                        className="w-full even:bg-gray-200 odd:bg-gray-100 rounded-[10px] p-4 mb-4 cursor-pointer"
                       >
                         {/* Always show the header */}
+                        {isExpanded ? (
+                          <Holds position={"row"} className="w-full h-full ">
+                            <Holds className="mt-4 ">
+                              <Buttons
+                                background={"red"}
+                                position={"left"}
+                                className="w-1/3 py-2"
+                                onClick={() =>
+                                  handleDeleteTimesheet(timesheet.id)
+                                }
+                              >
+                                <Texts size={"p5"}>Delete</Texts>
+                              </Buttons>
+                            </Holds>
+                            <Holds className="w-[10%] h-full">
+                              <Images
+                                titleImg="/expandLeft.svg"
+                                titleImgAlt="clock in"
+                                className="rotate-[270deg] my-auto"
+                                size={"50"}
+                                onClick={() => toggleExpanded(timesheet.id)} // Toggle on click
+                              />
+                            </Holds>
+                          </Holds>
+                        ) : null}
+                        <Inputs type="hidden" value={timesheet.id} />
+                        <Inputs type="hidden" value={timesheet.userId} />
+                        {/* ----------------------------------------------------------------------------*/}
+                        {/* ----------------------------------------------------------------------------*/}
                         <Holds
                           position={"row"}
                           className="h-full w-full my-auto relative"
                         >
-                          <Inputs type="hidden" value={timesheet.id} />
-                          <Inputs type="hidden" value={timesheet.userId} />
-                          {/* ----------------------------------------------------------------------------*/}
-                          {/* ----------------------------------------------------------------------------*/}
                           <Holds
                             position={"row"}
-                            className="h-full w-full gap-4"
+                            className="w-full h-full gap-4"
                           >
-                            <Holds className="w-[45%] h-full">
+                            <Holds className=" h-full">
                               <Labels size={"p4"}>Start Time</Labels>
                               <EditableFields
                                 type="time"
@@ -632,7 +563,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
 
                             {/* ----------------------------------------------------------------------------*/}
                             {/* ----------------------------------------------------------------------------*/}
-                            <Holds className="w-[45%] h-full">
+                            <Holds className=" h-full">
                               <Labels size={"p4"}>End Time</Labels>
                               <EditableFields
                                 type="time"
@@ -669,18 +600,8 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                             </Holds>
                           </Holds>
 
-                          {isExpanded ? (
-                            <Holds className="w-[10%] h-full">
-                              <Images
-                                titleImg="/expandLeft.svg"
-                                titleImgAlt="clock in"
-                                className="rotate-[270deg] my-auto"
-                                size={"50"}
-                                onClick={() => toggleExpanded(timesheet.id)} // Toggle on click
-                              />
-                            </Holds>
-                          ) : (
-                            <Holds className="w-[10%] h-full ">
+                          {isExpanded ? null : (
+                            <Holds className="w-[10%] h-full ml-4">
                               <Images
                                 titleImg="/expandLeft.svg"
                                 titleImgAlt="clock in"
@@ -834,43 +755,38 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                 />
                               </Holds>
                             </Holds>
-
-                            {/* If the time sheet has a vehicle ID, show Vehicle ID, Starting Mileage, and Ending Mileage and all truck details */}
-                            {!timesheet.vehicleId && (
-                              <>
-                                <Holds
-                                  position={"row"}
-                                  className="h-full w-full mb-2 gap-4"
-                                >
-                                  <Holds>
-                                    <Labels size={"p4"}>Vehicle ID</Labels>
-                                    <EditableFields
-                                      type="text"
-                                      value={
-                                        timesheet.vehicleId?.toString() || ""
-                                      }
-                                      onChange={(e) =>
-                                        handleInputChange(
-                                          timesheet.id,
-                                          "vehicleId",
-                                          e.target.value
-                                        )
-                                      }
-                                      isChanged={isFieldChanged(
-                                        timesheet.id,
-                                        "vehicleId"
-                                      )}
-                                      onRevert={() =>
-                                        revertTimesheet(
-                                          timesheet.id,
-                                          "vehicleId"
-                                        )
-                                      }
-                                      variant="default"
-                                      size="default"
-                                    />
-                                  </Holds>
-
+                            <Holds
+                              position={"row"}
+                              className="h-full w-full mb-2 gap-4"
+                            >
+                              <Holds>
+                                <Labels size={"p4"}>Vehicle ID</Labels>
+                                <EditableFields
+                                  type="text"
+                                  value={timesheet.vehicleId?.toString() || ""}
+                                  onChange={(e) =>
+                                    handleInputChange(
+                                      timesheet.id,
+                                      "vehicleId",
+                                      e.target.value
+                                    )
+                                  }
+                                  isChanged={isFieldChanged(
+                                    timesheet.id,
+                                    "vehicleId"
+                                  )}
+                                  onRevert={() =>
+                                    revertTimesheet(timesheet.id, "vehicleId")
+                                  }
+                                  variant="default"
+                                  size="default"
+                                />
+                              </Holds>
+                              <Holds
+                                position={"row"}
+                                className="h-full w-full mb-2 gap-4"
+                              >
+                                {timesheet.vehicleId && (
                                   <Holds>
                                     <Labels size={"p4"}>
                                       Starting Mileage
@@ -902,7 +818,13 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                       size="default"
                                     />
                                   </Holds>
-                                </Holds>
+                                )}
+                              </Holds>
+                            </Holds>
+
+                            {/* If the time sheet has a vehicle ID, show Vehicle ID, Starting Mileage, and Ending Mileage and all truck details */}
+                            {timesheet.vehicleId && (
+                              <>
                                 <Holds
                                   position={"row"}
                                   className="h-full w-full mb-2 gap-4"
@@ -1100,18 +1022,6 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                 </Holds>
                               </>
                             )}
-                            <Holds className="mt-4 ">
-                              <Buttons
-                                background={"red"}
-                                position={"left"}
-                                className="w-1/4 py-2"
-                                onClick={() =>
-                                  handleDeleteTimesheet(timesheet.id)
-                                }
-                              >
-                                <Texts size={"p5"}>Delete</Texts>
-                              </Buttons>
-                            </Holds>
                           </>
                         )}
                       </Holds>
@@ -1126,10 +1036,37 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                   return (
                     <Holds
                       key={log.id || index}
-                      className="w-full even:bg-gray-200 odd:bg-gray-100 rounded-[10px] px-1 py-3 mb-4 cursor-pointer"
+                      className="w-full even:bg-gray-200 odd:bg-gray-100 rounded-[10px] p-4 mb-4 cursor-pointer"
                     >
-                      <Holds position="row" className="w-full h-full gap-4">
-                        <Holds className="w-[45%] h-full">
+                      {isExpanded && (
+                        <Holds position="row">
+                          <Holds className="mt-4 ">
+                            <Buttons
+                              background={"red"}
+                              position={"left"}
+                              className="w-1/3 py-2"
+                              onClick={() =>
+                                handleDeleteLog(log.id?.toString() || "")
+                              }
+                            >
+                              <Texts size={"p5"}>Delete</Texts>
+                            </Buttons>
+                          </Holds>
+                          <Holds className=" w-[10%] h-full">
+                            <Images
+                              titleImg="/expandLeft.svg"
+                              titleImgAlt="clock in"
+                              className="rotate-[270deg] my-auto"
+                              size={"50"}
+                              onClick={() =>
+                                toggleExpanded(log.id?.toString() || "")
+                              }
+                            />
+                          </Holds>
+                        </Holds>
+                      )}
+                      <Holds position="row" className="w-full h-full gap-4 ">
+                        <Holds className="w-[50%] h-full">
                           <Labels size="p4">Equipment Name</Labels>
                           <EditableFields
                             type="text"
@@ -1159,7 +1096,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                           />
                         </Holds>
                         {/* Duration */}
-                        <Holds className="w-[45%] h-full">
+                        <Holds className="w-[50%] h-full">
                           <Labels size="p4">Duration (updates manually)</Labels>
                           <Inputs
                             type="text"
@@ -1174,19 +1111,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                             }
                           />
                         </Holds>
-                        {isExpanded ? (
-                          <Holds className="w-[10%] h-full">
-                            <Images
-                              titleImg="/expandLeft.svg"
-                              titleImgAlt="clock in"
-                              className="rotate-[270deg] my-auto"
-                              size={"50"}
-                              onClick={() =>
-                                toggleExpanded(log.id?.toString() || "")
-                              }
-                            />
-                          </Holds>
-                        ) : (
+                        {isExpanded ? null : (
                           <Holds className="w-[10%] h-full ">
                             <Images
                               titleImg="/expandLeft.svg"
@@ -1369,18 +1294,6 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                 }}
                               />
                             </Holds>
-                          </Holds>
-                          <Holds className="mt-4 ">
-                            <Buttons
-                              background={"red"}
-                              position={"left"}
-                              className="w-1/4 py-2"
-                              onClick={() =>
-                                handleDeleteLog(log.id?.toString() || "")
-                              }
-                            >
-                              <Texts size={"p5"}>Delete</Texts>
-                            </Buttons>
                           </Holds>
                         </>
                       )}
