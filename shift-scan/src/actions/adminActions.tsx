@@ -183,6 +183,7 @@ export async function saveEquipmentLogs(formData: FormData) {
         id: id,
         startTime: formData.get("startTime") as string,
         endTime: formData.get("endTime") as string,
+        equipmentId: formData.get("equipmentId") as string,
         duration: parseFloat(formData.get("duration") as string),
         isRefueled: formData.get("isRefueled") === "true",
         fuelUsed: parseInt(formData.get("fuelUsed") as string),

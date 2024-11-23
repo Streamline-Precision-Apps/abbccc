@@ -15,12 +15,13 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
+import { NModals } from "@/components/(reusable)/newmodals";
 // import { NModals } from "@/components/(reusable)/newmodals";
 import { Selects } from "@/components/(reusable)/selects";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { cache } from "react";
 
 type TimeSheet = {
@@ -48,6 +49,8 @@ type TimeSheet = {
 };
 
 type Equipment = {
+  id: number;
+  qrId: string;
   name: string; // Assuming only the name field is required
 };
 
@@ -73,6 +76,13 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
   const [equipmentLogs, setEquipmentLogs] = useState<EmployeeEquipmentLog[]>(
     []
   );
+  const [term, setTerm] = useState("");
+  const [equipmentSearchList, setEquipmentSearchList] = useState<Equipment[]>(
+    []
+  );
+  const [equipmentSearchOpen, setEquipmentSearchOpen] = useState(false);
+  const [totalHours, setTotalHours] = useState("");
+  const [showCommentSection, setShowCommentSection] = useState(false);
   // const [isOpened, setIsOpened] = useState(false);
   const [originalEquipmentLogs, setOriginalEquipmentLogs] = useState<
     EmployeeEquipmentLog[]
@@ -122,6 +132,15 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
         setEquipmentLogs(data.equipmentLogs || []);
         setOriginalEquipmentLogs(data.equipmentLogs || []);
         setError(null);
+        setTotalHours(
+          data.timesheets
+            .reduce(
+              (acc: number, timesheet: TimeSheet) =>
+                acc + (timesheet.duration ?? 0),
+              0
+            )
+            .toFixed(2)
+        );
       } catch (error) {
         console.error("Failed to fetch employee info:", error);
         setError("Unable to load timesheets. Please try again later.");
@@ -129,6 +148,32 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
     });
     fetchTimesheets();
   }, [dateByFilter, params.employee]);
+
+  useEffect(() => {
+    const fetchEquipment = async () => {
+      try {
+        const response = await fetch("/api/getAllEquipment");
+        if (!response.ok) {
+          throw new Error(`Failed to fetch: ${response.statusText}`);
+        }
+        const data = await response.json();
+
+        // Trim the data to only include the necessary fields
+        const trimmedData = (data as Equipment[]).map((equipment) => ({
+          id: equipment.id,
+          qrId: equipment.qrId,
+          name: equipment.name,
+        }));
+
+        setEquipmentSearchList(trimmedData);
+      } catch (error) {
+        console.error("Failed to fetch equipment info:", error);
+        setError("Unable to load timesheets. Please try again later.");
+      }
+    };
+
+    fetchEquipment();
+  }, []); // Keep the dependencies array empty to run the effect only once
 
   useEffect(() => {
     setDateByFilter(date || "");
@@ -140,6 +185,18 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
       setDateByFilter("");
     }
   }, [filter]);
+
+  useEffect(() => {
+    setTotalHours(
+      userTimeSheets
+        .reduce(
+          (acc: number, timesheet: TimeSheet) =>
+            acc + (timesheet.duration ?? 0),
+          0
+        )
+        .toFixed(2)
+    );
+  }, [userTimeSheets]);
 
   const createNewTimesheet = async () => {
     const CreateTimesheetResponse = await CreateTimesheet(
@@ -328,18 +385,8 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
       return newSet;
     });
   };
-  function isTimesheetChanged(
-    timesheet: TimeSheet,
-    originalTimesheet: TimeSheet
-  ) {
-    return JSON.stringify(timesheet) !== JSON.stringify(originalTimesheet);
-  }
-
-  function isLogChanged(
-    log: EmployeeEquipmentLog,
-    originalLog: EmployeeEquipmentLog
-  ) {
-    return JSON.stringify(log) !== JSON.stringify(originalLog);
+  function isChanged<T>(current: T, original: T): boolean {
+    return JSON.stringify(current) !== JSON.stringify(original);
   }
 
   const handleSubmitTimesheets = async () => {
@@ -350,7 +397,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
         const original = originalTimeSheets.find(
           (original) => original.id === timesheet.id
         );
-        return original && isTimesheetChanged(timesheet, original);
+        return original && isChanged(timesheet, original);
       });
       console.log("changedTimesheets:", changedTimesheets);
 
@@ -397,13 +444,15 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
         const original = originalEquipmentLogs.find(
           (original) => original.id === log.id?.toString()
         );
-        return original && isLogChanged(log, original);
+        return original && isChanged(log, original);
       });
 
       // Process changed logs
       for (const log of changedLogs) {
         const logFormData = new FormData();
         logFormData.append("id", log.id?.toString() || "");
+        logFormData.append("name", log?.Equipment?.name || ""); // Include Name
+        logFormData.append("equipmentId", log?.Equipment?.id?.toString() || "");
         logFormData.append("startTime", log.startTime || "");
         logFormData.append("endTime", log.endTime || "");
         logFormData.append("duration", log.duration?.toString() || "");
@@ -423,33 +472,51 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
     console.log("All changes saved successfully");
   };
 
-  const handleDeleteTimesheet = async (id: string) => {
+  const handleDelete = async (id: string, type: string) => {
     try {
-      const timesheetId = parseInt(id, 10);
-      await deleteTimesheet(timesheetId);
-      setUserTimeSheets((prev) => prev.filter((sheet) => sheet.id !== id));
-      setOriginalTimeSheets((prev) => prev.filter((sheet) => sheet.id !== id));
-      console.log("Timesheet deleted successfully.");
+      if (type === "timesheet") {
+        const timesheetId = parseInt(id, 10);
+        await deleteTimesheet(timesheetId);
+        setUserTimeSheets((prev) => prev.filter((sheet) => sheet.id !== id));
+        setOriginalTimeSheets((prev) =>
+          prev.filter((sheet) => sheet.id !== id)
+        );
+        console.log("Timesheet deleted successfully.");
+      }
+      if (type === "log") {
+        const logId = parseInt(id, 10);
+        await deleteLog(logId);
+        setEquipmentLogs((prev) =>
+          prev.filter((log) => log.id?.toString() !== id)
+        );
+        setOriginalEquipmentLogs((prev) =>
+          prev.filter((log) => log.id?.toString() !== id)
+        );
+        console.log("Timesheet deleted successfully.");
+      }
     } catch (error) {
       console.error("Error deleting timesheet:", error);
     }
+  };
+  const handleCommentSection = () => {
+    setShowCommentSection(!showCommentSection);
   };
 
-  const handleDeleteLog = async (id: string) => {
-    try {
-      const logId = parseInt(id, 10);
-      await deleteLog(logId);
-      setEquipmentLogs((prev) =>
-        prev.filter((log) => log.id?.toString() !== id)
-      );
-      setOriginalEquipmentLogs((prev) =>
-        prev.filter((log) => log.id?.toString() !== id)
-      );
-      console.log("Timesheet deleted successfully.");
-    } catch (error) {
-      console.error("Error deleting timesheet:", error);
-    }
-  };
+  const filteredList = useMemo(() => {
+    if (!term.trim()) return equipmentSearchList; // Return the full list if no term is entered
+
+    return equipmentSearchList.filter((equipment) => {
+      const name = `${equipment.qrId} ${equipment.name}`.toLowerCase();
+      return name.includes(term.toLowerCase());
+    });
+  }, [term, equipmentSearchList]);
+
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setTerm(e.target.value);
+    },
+    []
+  );
 
   return (
     <Grids rows={"12"} cols={"5"} gap={"2"} className="h-full w-full">
@@ -466,13 +533,51 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
               />
             </Holds>
           </Holds>
-          <Holds className="row-start-1 row-end-2 col-start-4 col-end-6  h-full">
-            <Holds background={"red"} className=" my-auto"></Holds>
+          <Holds
+            position={"row"}
+            className=" row-start-2 row-end-3 col-start-1 col-end-3 h-full"
+          >
+            <Grids rows={"1"} cols={"8"} className=" h-full w-full my-auto">
+              <Holds className="col-span-5 my-auto">
+                <Texts size={"p6"} className="">
+                  Comments
+                </Texts>
+              </Holds>
+              <Holds>
+                <Images
+                  titleImg={"/comment.svg"}
+                  titleImgAlt={"comment icon"}
+                  className=" my-auto col-span-2"
+                  onClick={handleCommentSection}
+                />
+              </Holds>
+              <div className="w-2 h-2 mt-2 rounded-full bg-app-orange flex col-span-1"></div>
+            </Grids>
           </Holds>
+
           <Holds className="row-start-2 row-end-3 col-start-4 col-end-6  h-full">
-            <Holds background={"green"} className=" my-auto"></Holds>
+            <Holds className=" my-auto">
+              <Texts position={"right"} size={"p6"}>
+                Total Hours: {totalHours}
+              </Texts>
+            </Holds>
           </Holds>
-          <Holds className="row-span-9 col-span-5 h-full">
+          {showCommentSection && (
+            <Holds className="row-start-3 row-end-12 col-start-1 col-end-6 h-full w-full">
+              <TextAreas
+                maxLength={40}
+                className="w-full"
+                style={{ resize: "none" }}
+              ></TextAreas>
+            </Holds>
+          )}
+          <Holds
+            className={`${
+              showCommentSection
+                ? "row-start-5 row-end-12 col-start-1 col-end-6  "
+                : "row-start-3 row-end-12 col-start-1 col-end-6 "
+            }  h-full w-full`}
+          >
             <Holds className="h-full w-full row-span-5 overflow-y-auto no-scrollbar border-[3px] border-black rounded-[10px]">
               {userTimeSheets.length > 0
                 ? userTimeSheets.map((timesheet) => {
@@ -494,7 +599,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                 position={"left"}
                                 className="w-1/3 py-2"
                                 onClick={() =>
-                                  handleDeleteTimesheet(timesheet.id)
+                                  handleDelete(timesheet.id, "timesheet")
                                 }
                               >
                                 <Texts size={"p5"}>Delete</Texts>
@@ -1046,7 +1151,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                               position={"left"}
                               className="w-1/3 py-2"
                               onClick={() =>
-                                handleDeleteLog(log.id?.toString() || "")
+                                handleDelete(log.id?.toString() || "", "log")
                               }
                             >
                               <Texts size={"p5"}>Delete</Texts>
@@ -1065,22 +1170,25 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                           </Holds>
                         </Holds>
                       )}
+
                       <Holds position="row" className="w-full h-full gap-4 ">
                         <Holds className="w-[50%] h-full">
                           <Labels size="p4">Equipment Name</Labels>
                           <EditableFields
                             type="text"
                             value={log?.Equipment?.name?.toString() || ""}
-                            onChange={(e) =>
+                            onChange={(e) => {
+                              const newValue = e.target.value;
                               handleEquipmentLogChange(
                                 log.id?.toString() || "",
-                                "Equipment", // Ensure this matches `keyof EmployeeEquipmentLog`
+                                "Equipment",
                                 {
                                   ...log.Equipment,
-                                  name: e.target.value,
+                                  id: newValue,
+                                  name: newValue,
                                 }
-                              )
-                            }
+                              );
+                            }}
                             isChanged={isEquipmentFieldChanged(
                               log.id?.toString() || "",
                               "Equipment"
@@ -1091,6 +1199,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                 "Equipment"
                               )
                             }
+                            onClick={() => setEquipmentSearchOpen(true)}
                             variant="default"
                             size="default"
                           />
@@ -1125,6 +1234,99 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                           </Holds>
                         )}
                       </Holds>
+                      {/* Equipment Search modal */}
+                      <NModals
+                        isOpen={equipmentSearchOpen}
+                        handleClose={() => setEquipmentSearchOpen(false)}
+                      >
+                        <Holds className="row-span-8 h-full border-[3px] border-black rounded-t-[10px]">
+                          <>
+                            <Holds
+                              position={"row"}
+                              className="py-2 border-b-[3px] border-black"
+                            >
+                              <Holds className="h-full w-[20%]">
+                                <Images
+                                  titleImg="/magnifyingGlass.svg"
+                                  titleImgAlt="search"
+                                />
+                              </Holds>
+                              <Holds className="w-[80%]">
+                                <Inputs
+                                  type="search"
+                                  placeholder="Search employees by name"
+                                  value={term}
+                                  onChange={handleSearchChange}
+                                  className="border-none outline-none"
+                                />
+                              </Holds>
+                            </Holds>
+                            <Holds className=" h-full mb-4  overflow-y-auto no-scrollbar ">
+                              <Holds>
+                                {filteredList.length > 0 ? (
+                                  filteredList.map((equipment) => (
+                                    <Holds
+                                      key={equipment.id}
+                                      className="py-2 border-b"
+                                      onClick={() => {
+                                        handleEquipmentLogChange(
+                                          log.id?.toString() || "",
+                                          "Equipment",
+                                          {
+                                            ...log.Equipment,
+                                            id: equipment.id, // Update ID
+                                            name: equipment.name, // Update Name
+                                          }
+                                        );
+                                        setEquipmentSearchOpen(false); // Close the modal
+                                      }}
+                                    >
+                                      <Texts size="p6">
+                                        {equipment.name} - {equipment.qrId}
+                                      </Texts>
+                                    </Holds>
+                                  ))
+                                ) : (
+                                  <Texts size="p6" className="text-center">
+                                    No employees found
+                                  </Texts>
+                                )}
+                              </Holds>
+                            </Holds>
+                          </>
+                          <Holds>
+                            <Buttons
+                              background={"green"}
+                              onClick={() => {
+                                handleEquipmentLogChange(
+                                  log.id?.toString() || "",
+                                  "Equipment",
+                                  {
+                                    id: log.Equipment?.id,
+                                  }
+                                );
+                                handleEquipmentLogChange(
+                                  log.id?.toString() || "",
+                                  "EquipmentId",
+                                  {
+                                    qrId: log.Equipment?.qrId,
+                                  }
+                                );
+                                handleEquipmentLogChange(
+                                  log.id?.toString() || "",
+                                  "EquipmentName",
+                                  {
+                                    name: log.Equipment?.name,
+                                  }
+                                );
+                                setEquipmentSearchOpen(false);
+                              }}
+                            >
+                              <Texts size={"p4"}>Submit</Texts>
+                            </Buttons>
+                          </Holds>
+                        </Holds>
+                      </NModals>
                       {isExpanded && (
                         <>
                           {/* Start Time */}
@@ -1350,7 +1552,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
               </Selects>
               <Buttons
                 background={"green"}
-                className="w-full h-full"
+                className="w-1/3 h-full"
                 onClick={
                   selectedOption === "timesheets"
                     ? createNewTimesheet
@@ -1360,36 +1562,6 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                 <Texts size={"p4"}>+</Texts>
               </Buttons>
             </Holds>
-
-            {/* <NModals
-              size={"sm"}
-              isOpen={isOpened}
-              handleClose={() => setIsOpened(false)}
-            >
-              <Holds className="w-full h-full">
-                <Texts size={"p2"}>Select one of the following:</Texts>
-                <Holds position={"row"} className="w-full h-full gap-4">
-                  <Holds>
-                    <Buttons
-                      background={"green"}
-                      className="w-full h-full py-2"
-                      onClick={createNewTimesheet}
-                    >
-                      <Texts size={"p5"}>New Timesheet</Texts>
-                    </Buttons>
-                  </Holds>
-                  <Holds>
-                    <Buttons
-                      background={"green"}
-                      className="w-full h-full py-2"
-                      onClick={createNewLog}
-                    >
-                      <Texts size={"p5"}> New Equipment Log</Texts>
-                    </Buttons>
-                  </Holds>
-                </Holds>
-              </Holds>
-            </NModals> */}
           </Holds>
         </>
       )}
