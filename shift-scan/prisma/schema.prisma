@@ -59,6 +59,17 @@ model PasswordResetTokens {
   @@unique([email, token])
 }
 
+model managerComments {
+  id        String   @id @default(cuid())
+  comment   String?
+  managerId String
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  users     Users    @relation("UserRelation", fields: [userId], references: [id])
+  employee  Users    @relation("ManagerRelation", fields: [managerId], references: [id])
+}
+
 // Holds the login and general app data of employee but not all the data
 model Users {
   id              String     @id @default(cuid())
@@ -91,6 +102,8 @@ model Users {
   injuryForms           InjuryForms[]
   timeoffRequestForms   timeoffRequestForms[]
   passwordResetTokensId String?
+  commentsAsUser        managerComments[]       @relation("UserRelation")
+  commentsAsEmployee    managerComments[]       @relation("ManagerRelation")
 }
 
 model UserSettings {
