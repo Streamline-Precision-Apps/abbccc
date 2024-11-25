@@ -1,5 +1,5 @@
 // This file holds all the types that will be used in the app
-import { EquipmentStatus, FormStatus, Permission, Tags } from "@prisma/client";
+import { EquipmentStatus, Permission, Tags } from "@prisma/client"; // i removed the ebnum formSatus hope no breaks
 // this imports the session types for the app, it works client and server-side
 import { Session } from "next-auth";
 
@@ -13,7 +13,7 @@ import { clockInFormSchema } from "./validation";
 
 export type clockInForm = z.infer<typeof clockInFormSchema>;
 // -------------------------------------------------------------------------------------
-
+export type FormStatus = "PENDING" | "APPROVED" | "DENIED";
 export type User = {
   id: string;
   username?: string;

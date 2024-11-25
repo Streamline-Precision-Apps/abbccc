@@ -28,6 +28,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { cache } from "react";
 import { SearchModal } from "./searchModal";
 import { TimeSheetView, EmployeeEquipmentLog } from "@/lib/types";
+import { Options } from "@/components/(reusable)/options";
 
 type Equipment = {
   id: number;
@@ -462,6 +463,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
         formData.append("jobsiteId", timesheet.jobsiteId || "");
         formData.append("timeSheetComments", timesheet.timeSheetComments || "");
         formData.append("vehicleId", timesheet.vehicleId?.toString() || "");
+        formData.append("status", timesheet.status || "");
         formData.append(
           "startingMileage",
           timesheet.startingMileage?.toString() || ""
@@ -686,8 +688,14 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                       >
                         {/* Always show the header */}
                         {isExpanded ? (
-                          <Holds position={"row"} className="w-full h-full ">
-                            <Holds className="mt-4 ">
+                          <Holds
+                            position={"row"}
+                            className="w-full h-full gap-4 "
+                          >
+                            <Holds
+                              position={"row"}
+                              className="mt-4 justify-between "
+                            >
                               <Buttons
                                 background={"red"}
                                 position={"left"}
@@ -698,7 +706,24 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                               >
                                 <Texts size={"p5"}>Delete</Texts>
                               </Buttons>
+                              <Holds className=" w-1/3 h-full">
+                                <Selects
+                                  value={timesheet.status}
+                                  onChange={(e) =>
+                                    handleInputChange(
+                                      timesheet.id,
+                                      "status",
+                                      e.target.value
+                                    )
+                                  }
+                                >
+                                  <option value="PENDING">Pending</option>
+                                  <option value="APPROVED">Approved</option>
+                                  <option value="DENIED">Denied</option>
+                                </Selects>
+                              </Holds>
                             </Holds>
+
                             <Holds className="w-[10%] h-full">
                               <Images
                                 titleImg="/expandLeft.svg"
@@ -800,7 +825,31 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                           </Holds>
 
                           {isExpanded ? null : (
-                            <Holds className="w-[10%] h-full ml-4">
+                            <Holds className="w-[10%] h-full  ml-4">
+                              <div
+                                className={
+                                  timesheet.status === "APPROVED"
+                                    ? "min-w-fit w-7 h-fit rounded-full bg-app-green mx-auto"
+                                    : timesheet.status === "PENDING"
+                                    ? "min-w-fit w-7 h-fit rounded-full bg-app-orange mx-auto"
+                                    : "min-w-fit w-7 h-fit rounded-full bg-app-red mx-auto"
+                                }
+                              >
+                                <Texts size={"p6"} className="text-center">
+                                  {timesheet.status === "APPROVED"
+                                    ? "A"
+                                    : timesheet.status === "PENDING"
+                                    ? "P"
+                                    : "D"}
+                                </Texts>
+                              </div>
+
+                              {/* <Images 
+                                titleImg={timesheet.status === "APPROVED" ? "/approved.svg" : timesheet.status === "PENDING" ? "/pending.svg" : "/denied.svg"}
+                                titleImgAlt="status"
+                                className="rotate-[270deg] my-auto"
+                                size={"50"}
+                                /> */}
                               <Images
                                 titleImg="/expandLeft.svg"
                                 titleImgAlt="clock in"
