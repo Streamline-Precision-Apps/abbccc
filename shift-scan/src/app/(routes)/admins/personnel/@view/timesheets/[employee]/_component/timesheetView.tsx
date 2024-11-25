@@ -24,11 +24,10 @@ import { Selects } from "@/components/(reusable)/selects";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { cache } from "react";
 import { SearchModal } from "./searchModal";
 import { TimeSheetView, EmployeeEquipmentLog } from "@/lib/types";
-import { Options } from "@/components/(reusable)/options";
 
 type Equipment = {
   id: number;
@@ -60,7 +59,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
   >([]);
   //---------------------------------------------------------------------------------------
   // for state management for search modals
-  const [term, setTerm] = useState("");
+  const [term] = useState("");
   const [equipmentSearchList, setEquipmentSearchList] = useState<Equipment[]>(
     []
   );
@@ -559,17 +558,17 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
     setShowCommentSection(!showCommentSection);
   };
 
-  const filteredList = useMemo(() => {
-    if (!term.trim()) return equipmentSearchList;
+  // const filteredList = useMemo(() => {
+  //   if (!term.trim()) return equipmentSearchList;
 
-    const filtered = equipmentSearchList.filter((equipment) => {
-      const name = `${equipment.qrId} ${equipment.name}`.toLowerCase();
-      return name.includes(term.toLowerCase());
-    });
+  //   const filtered = equipmentSearchList.filter((equipment) => {
+  //     const name = `${equipment.qrId} ${equipment.name}`.toLowerCase();
+  //     return name.includes(term.toLowerCase());
+  //   });
 
-    console.log("Filtered List:", filtered);
-    return filtered;
-  }, [term, equipmentSearchList]);
+  //   console.log("Filtered List:", filtered);
+  //   return filtered;
+  // }, [term, equipmentSearchList]);
 
   const vehicleFilteredList = useMemo(() => {
     if (!term.trim()) return equipmentList;
@@ -607,12 +606,12 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
     return filtered;
   }, [term, costcodeResults]);
 
-  const handleSearchChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setTerm(e.target.value);
-    },
-    []
-  );
+  // const handleSearchChange = useCallback(
+  //   (e: React.ChangeEvent<HTMLInputElement>) => {
+  //     setTerm(e.target.value);
+  //   },
+  //   []
+  // );
 
   return (
     <Grids rows={"12"} cols={"5"} gap={"2"} className="h-full w-full">
