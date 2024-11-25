@@ -7,7 +7,11 @@ import {
   saveTimesheet,
 } from "@/actions/adminActions";
 import EmptyView from "@/app/(routes)/admins/_pages/EmptyView";
-
+import {
+  useDBCostcode,
+  useDBEquipment,
+  useDBJobsite,
+} from "@/app/context/dbCodeContext";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { EditableFields } from "@/components/(reusable)/EditableField";
 import { Grids } from "@/components/(reusable)/grids";
@@ -15,7 +19,6 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
-import { NModals } from "@/components/(reusable)/newmodals";
 // import { NModals } from "@/components/(reusable)/newmodals";
 import { Selects } from "@/components/(reusable)/selects";
 import { TextAreas } from "@/components/(reusable)/textareas";
@@ -23,6 +26,8 @@ import { Texts } from "@/components/(reusable)/texts";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { cache } from "react";
+import { SearchModal } from "./searchModal";
+import CostCodes from "@/app/(routes)/admin/assets/(components)/costcodes";
 
 type TimeSheet = {
   submitDate?: string; // Changed to string since API returns string dates
@@ -81,18 +86,26 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
     []
   );
   const [equipmentSearchOpen, setEquipmentSearchOpen] = useState(false);
+  const [jobsiteSearchOpen, setJobsiteSearchOpen] = useState(false);
+  const [costcodeSearchOpen, setCostcodeSearchOpen] = useState(false);
+  const [vehiclesSearchOpen, setVehiclesSearchOpen] = useState(false);
   const [totalHours, setTotalHours] = useState("");
   const [showCommentSection, setShowCommentSection] = useState(false);
   // const [isOpened, setIsOpened] = useState(false);
   const [originalEquipmentLogs, setOriginalEquipmentLogs] = useState<
     EmployeeEquipmentLog[]
   >([]);
+  const { jobsiteResults } = useDBJobsite();
+  const { costcodeResults } = useDBCostcode();
+  const { equipmentResults } = useDBEquipment();
+  const [equipmentList, setEquipmentList] = useState(equipmentResults);
   const [error, setError] = useState<string | null>(null);
   const [selectedOption, setSelectedOption] = useState("timesheets");
 
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set()); // Track expanded timesheet IDs
 
   const [currentLogId, setCurrentLogId] = useState<string | null>(null);
+  const [currentSheetId, setCurrentSheetId] = useState<string | null>(null);
 
   const openEquipmentSearch = (logId: string) => {
     setCurrentLogId(logId);
@@ -102,6 +115,36 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
   const closeEquipmentSearch = () => {
     setCurrentLogId(null);
     setEquipmentSearchOpen(false);
+  };
+
+  const openTimesheetSearch = (sheetId: string) => {
+    setCurrentSheetId(sheetId);
+    setJobsiteSearchOpen(true);
+  };
+
+  const closeTimesheetSearch = () => {
+    setCurrentSheetId(null);
+    setJobsiteSearchOpen(false);
+  };
+
+  const openCostcodeSearch = (sheetId: string) => {
+    setCurrentSheetId(sheetId);
+    setCostcodeSearchOpen(true);
+  };
+
+  const closeCostcodeSearch = () => {
+    setCurrentSheetId(null);
+    setCostcodeSearchOpen(false);
+  };
+
+  const openVehicleSearch = (sheetId: string) => {
+    setCurrentSheetId(sheetId);
+    setVehiclesSearchOpen(true);
+  };
+
+  const closeVehiclesSearch = () => {
+    setCurrentSheetId(null);
+    setVehiclesSearchOpen(false);
   };
 
   const calculateDuration = (
@@ -535,6 +578,42 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
     return filtered;
   }, [term, equipmentSearchList]);
 
+  const vehicleFilteredList = useMemo(() => {
+    if (!term.trim()) return equipmentList;
+
+    const filtered = equipmentList.filter((vehicle) => {
+      const name = `${vehicle.qrId} ${vehicle.name}`.toLowerCase();
+      return name.includes(term.toLowerCase());
+    });
+
+    console.log("Filtered List:", filtered);
+    return filtered;
+  }, [term, equipmentList]);
+
+  const jobFilteredList = useMemo(() => {
+    if (!term.trim()) return jobsiteResults;
+
+    const filtered = jobsiteResults.filter((jobsite) => {
+      const name = `${jobsite.qrId} ${jobsite.name}`.toLowerCase();
+      return name.includes(term.toLowerCase());
+    });
+
+    console.log("Filtered List:", filtered);
+    return filtered;
+  }, [term, jobsiteResults]);
+
+  const ccFilteredList = useMemo(() => {
+    if (!term.trim()) return costcodeResults;
+
+    const filtered = costcodeResults.filter((cc) => {
+      const name = `${cc.name} ${cc.description}`.toLowerCase();
+      return name.includes(term.toLowerCase());
+    });
+
+    console.log("Filtered List:", filtered);
+    return filtered;
+  }, [term, costcodeResults]);
+
   const handleSearchChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setTerm(e.target.value);
@@ -798,7 +877,6 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                 />
                               </Holds>
                             </Holds>
-
                             <Holds
                               position={"row"}
                               className="h-full w-full gap-4"
@@ -831,7 +909,6 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                 </Texts>
                               </Holds>
                             </Holds>
-
                             <Holds
                               position={"row"}
                               className="h-full w-full gap-4"
@@ -856,10 +933,16 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                   onRevert={() =>
                                     revertTimesheet(timesheet.id, "jobsiteId")
                                   }
+                                  onClick={() =>
+                                    openTimesheetSearch(
+                                      timesheet.id?.toString() || ""
+                                    )
+                                  }
                                   variant="default"
                                   size="default"
                                 />
                               </Holds>
+
                               <Holds>
                                 <Labels size={"p4"}>Cost Code</Labels>
                                 <EditableFields
@@ -879,11 +962,72 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                   onRevert={() =>
                                     revertTimesheet(timesheet.id, "costcode")
                                   }
+                                  onClick={() =>
+                                    openCostcodeSearch(
+                                      timesheet.id?.toString() || ""
+                                    )
+                                  }
                                   variant="default"
                                   size="default"
                                 />
                               </Holds>
                             </Holds>
+                            {/* Start of jobsite search Modal*/}
+                            <SearchModal
+                              isOpen={
+                                jobsiteSearchOpen &&
+                                currentSheetId === timesheet.id?.toString()
+                              }
+                              renderItem={(item): React.ReactNode =>
+                                `${item.name} - ${item.qrId}`
+                              }
+                              handleClose={closeTimesheetSearch}
+                              list={jobFilteredList}
+                              filterFunction={(jobsite, searchTerm) =>
+                                jobsite.name
+                                  .toLowerCase()
+                                  .includes(searchTerm.toLowerCase())
+                              }
+                              onItemClick={(jobsite) => {
+                                handleInputChange(
+                                  timesheet.id,
+                                  "jobsiteId",
+                                  jobsite.qrId
+                                );
+                              }}
+                              placeholder="Search jobsite by name"
+                            />
+                            {/* Start of costcode search Modal*/}
+
+                            <SearchModal
+                              isOpen={
+                                costcodeSearchOpen &&
+                                currentSheetId === timesheet.id?.toString()
+                              }
+                              handleClose={closeCostcodeSearch}
+                              list={ccFilteredList.map((costcode) => ({
+                                id: costcode.id.toString(),
+                                name: costcode.name,
+                                description: costcode.description,
+                              }))}
+                              renderItem={(item): React.ReactNode =>
+                                `${item.name} - ${item.description}`
+                              }
+                              filterFunction={(costcode, searchTerm) =>
+                                costcode.name
+                                  .toLowerCase()
+                                  .includes(searchTerm.toLowerCase())
+                              }
+                              onItemClick={(costcode) => {
+                                handleInputChange(
+                                  timesheet.id,
+                                  "costcode",
+                                  costcode.name
+                                );
+                              }}
+                              placeholder="Search costcode by name"
+                            />
+                            {/* End of costcode search Modal*/}
                             <Holds
                               position={"row"}
                               className="h-full w-full mb-2 gap-4"
@@ -906,6 +1050,11 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                   )}
                                   onRevert={() =>
                                     revertTimesheet(timesheet.id, "vehicleId")
+                                  }
+                                  onClick={() =>
+                                    openVehicleSearch(
+                                      timesheet.id?.toString() || ""
+                                    )
                                   }
                                   variant="default"
                                   size="default"
@@ -950,7 +1099,43 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                 )}
                               </Holds>
                             </Holds>
-
+                            {/* Start of jobsite search Modal*/}
+                            <SearchModal
+                              isOpen={
+                                vehiclesSearchOpen &&
+                                currentSheetId === timesheet.id?.toString()
+                              }
+                              renderItem={(item): React.ReactNode =>
+                                `${item.qrId} - ${item.name}`
+                              }
+                              handleClose={closeTimesheetSearch}
+                              list={vehicleFilteredList
+                                .filter(
+                                  (vehicle) =>
+                                    vehicle.name &&
+                                    !vehicle.qrId.startsWith("EQ-") // Exclude names starting with "EQ-"
+                                )
+                                .map((vehicle) => ({
+                                  id: vehicle.id.toString(),
+                                  name: vehicle.name,
+                                  qrId: vehicle.qrId,
+                                  equipmentTag: vehicle.equipmentTag,
+                                }))} // Prepare the list structure
+                              filterFunction={
+                                (jobsite, searchTerm) =>
+                                  jobsite.name
+                                    .toLowerCase()
+                                    .includes(searchTerm.toLowerCase()) // Match searchTerm dynamically
+                              }
+                              onItemClick={(vehicle) => {
+                                handleInputChange(
+                                  timesheet.id,
+                                  "vehicleId",
+                                  vehicle.name
+                                );
+                              }}
+                              placeholder="Search Vehicle by name"
+                            />
                             {/* If the time sheet has a vehicle ID, show Vehicle ID, Starting Mileage, and Ending Mileage and all truck details */}
                             {timesheet.vehicleId && (
                               <>
@@ -1266,88 +1451,30 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                         )}
                       </Holds>
                       {/* Equipment Search modal */}
-                      <NModals
+                      <SearchModal
                         isOpen={
                           equipmentSearchOpen &&
                           currentLogId === log.id?.toString()
                         }
                         handleClose={closeEquipmentSearch}
-                      >
-                        <Holds className="row-span-8 h-full border-[3px] border-black rounded-t-[10px]">
-                          <Holds
-                            position={"row"}
-                            className="py-2 border-b-[3px] border-black"
-                          >
-                            <Holds className="h-full w-[20%]">
-                              <Images
-                                titleImg="/magnifyingGlass.svg"
-                                titleImgAlt="search"
-                              />
-                            </Holds>
-                            <Holds className="w-[80%]">
-                              <Inputs
-                                type="search"
-                                placeholder="Search equipment by name"
-                                value={term}
-                                onChange={handleSearchChange}
-                                className="border-none outline-none"
-                              />
-                            </Holds>
-                          </Holds>
-                          <Holds className="h-full mb-4 overflow-y-auto no-scrollbar">
-                            {filteredList.length > 0 ? (
-                              filteredList.map((equipment) => (
-                                <Holds
-                                  key={equipment.id}
-                                  className="py-2 border-b"
-                                  onClick={() => {
-                                    handleEquipmentLogChange(
-                                      currentLogId || "", // Use the current log being edited
-                                      "equipmentId",
-                                      equipment.id
-                                    );
-                                    setTerm(""); // Clear the search term
-                                    closeEquipmentSearch(); // Close the modal
-                                  }}
-                                >
-                                  <Texts size="p6">
-                                    {equipment.name} - {equipment.qrId}
-                                  </Texts>
-                                </Holds>
-                              ))
-                            ) : (
-                              <Texts size="p6" className="text-center">
-                                No equipment found
-                              </Texts>
-                            )}
-                          </Holds>
-                          <Holds>
-                            <Buttons
-                              background={"green"}
-                              onClick={() => {
-                                if (currentLogId) {
-                                  const selectedEquipment =
-                                    equipmentSearchList.find(
-                                      (eq) => eq.name === term
-                                    );
-                                  if (selectedEquipment) {
-                                    handleEquipmentLogChange(
-                                      currentLogId,
-                                      "equipmentId",
-                                      selectedEquipment.id
-                                    );
-                                    setTerm(""); // Clear the search term
-                                    closeEquipmentSearch(); // Close the modal
-                                  }
-                                }
-                              }}
-                            >
-                              <Texts size={"p4"}>Submit</Texts>
-                            </Buttons>
-                          </Holds>
-                        </Holds>
-                      </NModals>
-
+                        list={equipmentSearchList.map((equipment) => ({
+                          id: equipment.id.toString(),
+                          name: equipment.name,
+                        }))}
+                        filterFunction={(equipment, searchTerm) =>
+                          equipment.name
+                            .toLowerCase()
+                            .includes(searchTerm.toLowerCase())
+                        }
+                        onItemClick={(equipment) => {
+                          handleEquipmentLogChange(
+                            currentLogId || "",
+                            "equipmentId",
+                            equipment.id
+                          );
+                        }}
+                        placeholder="Search equipment by name"
+                      />
                       {isExpanded && (
                         <>
                           {/* Start Time */}

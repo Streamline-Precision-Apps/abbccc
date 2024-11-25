@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { Filter } from "./_component/filter";
 import { TimesheetView } from "./_component/timesheetView";
 import Spinner from "@/components/(animations)/spinner";
+import useFetchAllData from "@/app/(content)/FetchData";
 
 export default function Timesheets({
   params,
@@ -16,6 +17,7 @@ export default function Timesheets({
   const [user, setUser] = useState<string>("");
   const [profilePic, setProfilePic] = useState<string>("");
   const [loading, setLoading] = useState(true);
+  useFetchAllData();
 
   useEffect(() => {
     const fetchUserName = async () => {
