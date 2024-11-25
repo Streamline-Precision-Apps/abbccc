@@ -1,5 +1,4 @@
-import { Buttons } from "@/components/(reusable)/buttons";
-
+"use client";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
@@ -17,7 +16,7 @@ type Props = {
 export const Timesheets = ({ employees, setFilter }: Props) => {
   const [term, setTerm] = useState<string>("");
   const [page, setPage] = useState(true);
-  const [employeeId, setEmployeeId] = useState<string>("");
+
   const router = useRouter();
 
   // Memoize the filtered list to avoid re-filtering on every render
@@ -40,14 +39,8 @@ export const Timesheets = ({ employees, setFilter }: Props) => {
 
   const selectEmployee = (employee: SearchUser) => {
     setTerm(employee.firstName + " " + employee.lastName);
-    setEmployeeId(employee.id);
+
     router.push(`/admins/personnel/timesheets/${employee.id}`);
-  };
-
-  const createEmployee = () => {
-    if (!term) return;
-
-    router.push(`/admins/personnel/timesheets/${employeeId}/new-timesheet`);
   };
 
   return (
