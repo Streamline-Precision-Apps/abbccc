@@ -17,6 +17,7 @@ type Props = {
 export const Timesheets = ({ employees, setFilter }: Props) => {
   const [term, setTerm] = useState<string>("");
   const [page, setPage] = useState(true);
+  const [employeeId, setEmployeeId] = useState<string>("");
   const router = useRouter();
 
   // Memoize the filtered list to avoid re-filtering on every render
@@ -39,17 +40,20 @@ export const Timesheets = ({ employees, setFilter }: Props) => {
 
   const selectEmployee = (employee: SearchUser) => {
     setTerm(employee.firstName + " " + employee.lastName);
+    setEmployeeId(employee.id);
     router.push(`/admins/personnel/timesheets/${employee.id}`);
   };
 
   const createEmployee = () => {
-    router.push(`/admins/personnel/new-timesheet`);
+    if (!term) return;
+
+    router.push(`/admins/personnel/timesheets/${employeeId}/new-timesheet`);
   };
 
   return (
     <Holds className="h-full w-full">
       <Grids rows="10" gap="5" className="h-full">
-        <Holds className=" bg-white h-full w-full py-3 ">
+        <Holds className=" bg-white row-span-1 h-full w-full gap-4 ">
           <Selects
             defaultValue={"all"}
             onChange={(e) => setFilter(e.target.value)}
@@ -71,7 +75,7 @@ export const Timesheets = ({ employees, setFilter }: Props) => {
           </Selects>
         </Holds>
         {/* Search Input Section */}
-        <Holds className="row-span-8 h-full border-[3px] border-black rounded-t-[10px]">
+        <Holds className="row-span-9 h-full border-[3px]  border-black rounded-t-[10px]">
           {page && (
             <>
               <Holds
@@ -118,15 +122,6 @@ export const Timesheets = ({ employees, setFilter }: Props) => {
             </>
           )}
         </Holds>
-
-        {/* Create New Employee Button */}
-        <Buttons
-          background="green"
-          className="row-span-1 h-full"
-          onClick={createEmployee}
-        >
-          <Texts size="p6">Create New Timesheet</Texts>
-        </Buttons>
       </Grids>
     </Holds>
   );

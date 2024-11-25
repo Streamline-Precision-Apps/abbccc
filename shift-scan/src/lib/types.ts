@@ -93,6 +93,29 @@ export type EmployeeEquipmentLogs = {
   status: FormStatus;
   Equipment?: Equipment | null;
 };
+export type TimeSheetView = {
+  submitDate?: string; // Changed to string since API returns string dates
+  id: string;
+  userId?: string;
+  date?: string;
+  jobsiteId?: string;
+  costcode?: string;
+  nu?: string;
+  Fp?: string;
+  vehicleId?: number | null;
+  startTime?: string | null;
+  endTime?: string | null;
+  duration?: number | null;
+  startingMileage?: number | null;
+  endingMileage?: number | null;
+  leftIdaho?: boolean | null;
+  equipmentHauled?: string | null;
+  materialsHauled?: string | null;
+  hauledLoadsQuantity?: number | null;
+  refuelingGallons?: number | null;
+  timeSheetComments?: string | null;
+  status?: string;
+};
 
 export type PayPeriodTimesheets = {
   startTime: Date; // Correct field name
@@ -239,6 +262,17 @@ export type Equipment = {
   isActive?: boolean;
   image?: string | null;
   inUse?: boolean;
+};
+
+export type EmployeeEquipmentLog = {
+  id?: number | null;
+  startTime?: string;
+  endTime?: string | null;
+  duration?: number | null;
+  isRefueled?: boolean | null;
+  fuelUsed?: number | null;
+  comment?: string | null;
+  equipmentId?: number | null;
 };
 
 export type Jobsites = {
