@@ -66,6 +66,7 @@ export async function saveTimesheet(formData: FormData) {
         startTime: formData.get("startTime") as string,
         endTime: formData.get("endTime") as string,
         duration: parseFloat(formData.get("duration") as string),
+        submitDate: dateIsoString,
         date: dateIsoString,
         costcode: formData.get("costcode") as string,
         jobsiteId: formData.get("jobsiteId") as string,

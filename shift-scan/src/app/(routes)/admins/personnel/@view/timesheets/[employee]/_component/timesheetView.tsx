@@ -27,31 +27,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { cache } from "react";
 import { SearchModal } from "./searchModal";
-import CostCodes from "@/app/(routes)/admin/assets/(components)/costcodes";
-
-type TimeSheet = {
-  submitDate?: string; // Changed to string since API returns string dates
-  id: string;
-  userId?: string;
-  date?: string;
-  jobsiteId?: string;
-  costcode?: string;
-  nu?: string;
-  Fp?: string;
-  vehicleId?: number | null;
-  startTime?: string | null;
-  endTime?: string | null;
-  duration?: number | null;
-  startingMileage?: number | null;
-  endingMileage?: number | null;
-  leftIdaho?: boolean | null;
-  equipmentHauled?: string | null;
-  materialsHauled?: string | null;
-  hauledLoadsQuantity?: number | null;
-  refuelingGallons?: number | null;
-  timeSheetComments?: string | null;
-  status?: string;
-};
+import { TimeSheetView, EmployeeEquipmentLog } from "@/lib/types";
 
 type Equipment = {
   id: number;
@@ -59,28 +35,30 @@ type Equipment = {
   name: string; // Assuming only the name field is required
 };
 
-type EmployeeEquipmentLog = {
-  id?: number | null;
-  startTime?: string;
-  endTime?: string | null;
-  duration?: number | null;
-  isRefueled?: boolean | null;
-  fuelUsed?: number | null;
-  comment?: string | null;
-  equipmentId?: number | null;
-};
-
 export const TimesheetView = ({ params }: { params: { employee: string } }) => {
+  const router = useRouter();
   const searchParams = useSearchParams();
+  // date is read from the url and passed to the component
   const date = searchParams.get("date");
   const filter = searchParams.get("filter");
-  const router = useRouter();
   const [dateByFilter, setDateByFilter] = useState<string>("");
-  const [userTimeSheets, setUserTimeSheets] = useState<TimeSheet[]>([]);
-  const [originalTimeSheets, setOriginalTimeSheets] = useState<TimeSheet[]>([]);
+  //---------------------------------------------------------------------------------------
+  // timesheets hold each individual timesheet in the database under an array of timesheets
+  const [userTimeSheets, setUserTimeSheets] = useState<TimeSheetView[]>([]);
+  // holds the original timesheets to revert back to if needed
+  const [originalTimeSheets, setOriginalTimeSheets] = useState<TimeSheetView[]>(
+    []
+  );
+  //---------------------------------------------------------------------------------------
+  // equipmentLogs holds each individual equipment log in the database under an array of equipmentLogs
   const [equipmentLogs, setEquipmentLogs] = useState<EmployeeEquipmentLog[]>(
     []
   );
+  const [originalEquipmentLogs, setOriginalEquipmentLogs] = useState<
+    EmployeeEquipmentLog[]
+  >([]);
+  //---------------------------------------------------------------------------------------
+  // for state management for search modals
   const [term, setTerm] = useState("");
   const [equipmentSearchList, setEquipmentSearchList] = useState<Equipment[]>(
     []
@@ -91,22 +69,26 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
   const [vehiclesSearchOpen, setVehiclesSearchOpen] = useState(false);
   const [totalHours, setTotalHours] = useState("");
   const [showCommentSection, setShowCommentSection] = useState(false);
-  // const [isOpened, setIsOpened] = useState(false);
-  const [originalEquipmentLogs, setOriginalEquipmentLogs] = useState<
-    EmployeeEquipmentLog[]
-  >([]);
+
+  //---------------------------------------------------------------------------------------
+  // hold the context data for the search modals
   const { jobsiteResults } = useDBJobsite();
   const { costcodeResults } = useDBCostcode();
   const { equipmentResults } = useDBEquipment();
-  const [equipmentList, setEquipmentList] = useState(equipmentResults);
+  const [equipmentList] = useState(equipmentResults);
+
+  // display the error message that occurs when an error occurs
   const [error, setError] = useState<string | null>(null);
   const [selectedOption, setSelectedOption] = useState("timesheets");
-
+  //---------------------------------------------------------------------------------------
+  // make the timesheet expandable and collapsible
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set()); // Track expanded timesheet IDs
-
+  // helps models know which Id is currently open and what to edit based on that
   const [currentLogId, setCurrentLogId] = useState<string | null>(null);
   const [currentSheetId, setCurrentSheetId] = useState<string | null>(null);
 
+  //---------------------------------------------------------------------------------------
+  // functions to open and close the search modals
   const openEquipmentSearch = (logId: string) => {
     setCurrentLogId(logId);
     setEquipmentSearchOpen(true);
@@ -146,7 +128,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
     setCurrentSheetId(null);
     setVehiclesSearchOpen(false);
   };
-
+  //  ---------------------------------------------------------------------------------------
   const calculateDuration = (
     startTime?: string,
     endTime?: string
@@ -161,7 +143,8 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
     const durationInMs = end - start;
     return durationInMs > 0 ? durationInMs / (1000 * 60 * 60) : null; // Convert ms to hours
   };
-
+  //  ---------------------------------------------------------------------------------------
+  // fetch all timesheets and equipment logs by date
   useEffect(() => {
     const fetchTimesheets = cache(async () => {
       if (!params.employee) {
@@ -190,7 +173,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
         setTotalHours(
           data.timesheets
             .reduce(
-              (acc: number, timesheet: TimeSheet) =>
+              (acc: number, timesheet: TimeSheetView) =>
                 acc + (timesheet.duration ?? 0),
               0
             )
@@ -203,7 +186,8 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
     });
     fetchTimesheets();
   }, [dateByFilter, params.employee]);
-
+  //  ---------------------------------------------------------------------------------------
+  // fetch all equipment names
   useEffect(() => {
     const fetchEquipment = async () => {
       try {
@@ -230,6 +214,8 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
     fetchEquipment();
   }, []); // Keep the dependencies array empty to run the effect only once
 
+  //  ---------------------------------------------------------------------------------------
+  // useeffect are listening to the date and filter changes and then update based on that
   useEffect(() => {
     setDateByFilter(date || "");
   }, [date]);
@@ -241,17 +227,21 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
     }
   }, [filter]);
 
+  //  ---------------------------------------------------------------------------------------
+  // this takes the toal hours and updates the state of total day hours
   useEffect(() => {
     setTotalHours(
       userTimeSheets
         .reduce(
-          (acc: number, timesheet: TimeSheet) =>
+          (acc: number, timesheet: TimeSheetView) =>
             acc + (timesheet.duration ?? 0),
           0
         )
         .toFixed(2)
     );
   }, [userTimeSheets]);
+
+  //  ---------------------------------------------------------------------------------------
 
   const createNewTimesheet = async () => {
     const CreateTimesheetResponse = await CreateTimesheet(
@@ -263,10 +253,10 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
     }
 
     setOriginalTimeSheets(
-      (prev) => [...prev, CreateTimesheetResponse] as TimeSheet[]
+      (prev) => [...prev, CreateTimesheetResponse] as TimeSheetView[]
     );
     setUserTimeSheets(
-      (prev) => [...prev, CreateTimesheetResponse] as TimeSheet[]
+      (prev) => [...prev, CreateTimesheetResponse] as TimeSheetView[]
     );
     refreshOriginalData();
   };
@@ -343,7 +333,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
     );
   };
 
-  const revertTimesheet = (id: string, field: keyof TimeSheet) => {
+  const revertTimesheet = (id: string, field: keyof TimeSheetView) => {
     setUserTimeSheets((prev) =>
       prev.map((sheet) => {
         if (sheet.id === id) {
@@ -375,7 +365,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
     );
   };
 
-  const isFieldChanged = (id: string, field: keyof TimeSheet) => {
+  const isFieldChanged = (id: string, field: keyof TimeSheetView) => {
     const userSheet = userTimeSheets.find((sheet) => sheet.id === id);
     const originalSheet = originalTimeSheets.find((sheet) => sheet.id === id);
     return userSheet?.[field] !== originalSheet?.[field];
@@ -453,7 +443,8 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
           (original) => original.id === timesheet.id
         );
         return (
-          original && isChanged(timesheet as TimeSheet, original as TimeSheet)
+          original &&
+          isChanged(timesheet as TimeSheetView, original as TimeSheetView)
         );
       });
       console.log("changedTimesheets:", changedTimesheets);
@@ -1108,7 +1099,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                               renderItem={(item): React.ReactNode =>
                                 `${item.qrId} - ${item.name}`
                               }
-                              handleClose={closeTimesheetSearch}
+                              handleClose={closeVehiclesSearch}
                               list={vehicleFilteredList
                                 .filter(
                                   (vehicle) =>
