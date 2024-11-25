@@ -59,13 +59,6 @@ export async function GET(
           lte: endOfDay.toISOString(), // End of the day (later)
         },
       },
-      include: {
-        Equipment: {
-          select: {
-            name: true,
-          },
-        },
-      },
     });
 
     console.log("eqSheets:", eqSheets[0]?.startTime);

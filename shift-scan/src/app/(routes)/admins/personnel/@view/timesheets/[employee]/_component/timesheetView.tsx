@@ -62,7 +62,7 @@ type EmployeeEquipmentLog = {
   isRefueled?: boolean | null;
   fuelUsed?: number | null;
   comment?: string | null;
-  Equipment?: Equipment;
+  equipmentId?: number | null;
 };
 
 export const TimesheetView = ({ params }: { params: { employee: string } }) => {
@@ -397,7 +397,9 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
         const original = originalTimeSheets.find(
           (original) => original.id === timesheet.id
         );
-        return original && isChanged(timesheet, original);
+        return (
+          original && isChanged(timesheet as TimeSheet, original as TimeSheet)
+        );
       });
       console.log("changedTimesheets:", changedTimesheets);
 
@@ -433,6 +435,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
         );
         formData.append("equipmentHauled", timesheet.equipmentHauled || "");
         formData.append("materialsHauled", timesheet.materialsHauled || "");
+        console.log("formData:", formData);
 
         const result = await saveTimesheet(formData); // Handle updating existing timesheet
         if (!result)
@@ -442,25 +445,31 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
 
       const changedLogs = equipmentLogs.filter((log) => {
         const original = originalEquipmentLogs.find(
-          (original) => original.id === log.id?.toString()
+          (original) => original.id?.toString() === log.id?.toString()
         );
-        return original && isChanged(log, original);
+        return (
+          original &&
+          isChanged(
+            log as EmployeeEquipmentLog,
+            original as EmployeeEquipmentLog
+          )
+        );
       });
 
       // Process changed logs
       for (const log of changedLogs) {
         const logFormData = new FormData();
         logFormData.append("id", log.id?.toString() || "");
-        logFormData.append("name", log?.Equipment?.name || ""); // Include Name
-        logFormData.append("equipmentId", log?.Equipment?.id?.toString() || "");
+        logFormData.append("equipmentId", log?.equipmentId?.toString() || "");
         logFormData.append("startTime", log.startTime || "");
         logFormData.append("endTime", log.endTime || "");
         logFormData.append("duration", log.duration?.toString() || "");
         logFormData.append("isRefueled", log.isRefueled ? "true" : "false");
         logFormData.append("fuelUsed", log.fuelUsed?.toString() || "");
         logFormData.append("comment", log.comment || "");
-
+        console.log("formData:", logFormData);
         const result = await saveEquipmentLogs(logFormData); // Handle updating existing log
+
         if (!result) throw new Error(`Failed to save equipment log ${log.id}`);
         console.log(`Updated equipment log with ID: ${log.id}`);
       }
@@ -1176,27 +1185,26 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                           <Labels size="p4">Equipment Name</Labels>
                           <EditableFields
                             type="text"
-                            value={log?.Equipment?.name?.toString() || ""}
+                            value={
+                              equipmentSearchList.find(
+                                (eq) => eq.id === log.equipmentId
+                              )?.name || ""
+                            }
                             onChange={(e) => {
-                              const newValue = e.target.value;
                               handleEquipmentLogChange(
                                 log.id?.toString() || "",
-                                "Equipment",
-                                {
-                                  ...log.Equipment,
-                                  id: newValue,
-                                  name: newValue,
-                                }
+                                "equipmentId",
+                                e.target.value
                               );
                             }}
                             isChanged={isEquipmentFieldChanged(
                               log.id?.toString() || "",
-                              "Equipment"
+                              "equipmentId"
                             )}
                             onRevert={() =>
                               revertEquipmentLog(
                                 log.id?.toString() || "",
-                                "Equipment"
+                                "equipmentId"
                               )
                             }
                             onClick={() => setEquipmentSearchOpen(true)}
@@ -1266,19 +1274,15 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                 {filteredList.length > 0 ? (
                                   filteredList.map((equipment) => (
                                     <Holds
-                                      key={equipment.id}
+                                      key={index}
                                       className="py-2 border-b"
                                       onClick={() => {
                                         handleEquipmentLogChange(
                                           log.id?.toString() || "",
-                                          "Equipment",
-                                          {
-                                            ...log.Equipment,
-                                            id: equipment.id, // Update ID
-                                            name: equipment.name, // Update Name
-                                          }
+                                          "equipmentId",
+                                          equipment.id
                                         );
-                                        setEquipmentSearchOpen(false); // Close the modal
+                                        setTerm(`${equipment.name}`);
                                       }}
                                     >
                                       <Texts size="p6">
@@ -1300,25 +1304,10 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                               onClick={() => {
                                 handleEquipmentLogChange(
                                   log.id?.toString() || "",
-                                  "Equipment",
-                                  {
-                                    id: log.Equipment?.id,
-                                  }
+                                  "equipmentId",
+                                  log.equipmentId
                                 );
-                                handleEquipmentLogChange(
-                                  log.id?.toString() || "",
-                                  "EquipmentId",
-                                  {
-                                    qrId: log.Equipment?.qrId,
-                                  }
-                                );
-                                handleEquipmentLogChange(
-                                  log.id?.toString() || "",
-                                  "EquipmentName",
-                                  {
-                                    name: log.Equipment?.name,
-                                  }
-                                );
+
                                 setEquipmentSearchOpen(false);
                               }}
                             >

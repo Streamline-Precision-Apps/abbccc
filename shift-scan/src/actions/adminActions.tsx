@@ -162,24 +162,14 @@ export async function CreateEquipmentLogs(userId: string, date: string) {
 export async function saveEquipmentLogs(formData: FormData) {
   try {
     console.log("Saving equipment logs...");
+    console.log("Form data form saveEquipmentLogs", formData);
     const id = formData.get("id")
       ? parseInt(formData.get("id") as string)
       : undefined;
 
-    const equipmentLog = await prisma.employeeEquipmentLogs.upsert({
-      where: { id: id || -1 }, // Use an invalid ID for new entries
-      create: {
-        startTime: formData.get("startTime") as string,
-        endTime: formData.get("endTime") as string,
-        duration: parseFloat(formData.get("duration") as string),
-        isRefueled: formData.get("isRefueled") === "true",
-        fuelUsed: parseInt(formData.get("fuelUsed") as string),
-        comment: formData.get("comment") as string,
-        employeeId: formData.get("employeeId") as string,
-        equipmentId: formData.get("equipmentId") as string,
-        jobsiteId: formData.get("jobsiteId") as string,
-      },
-      update: {
+    const equipmentLog = await prisma.employeeEquipmentLogs.update({
+      where: { id: id }, // Use an invalid ID for new entries
+      data: {
         id: id,
         startTime: formData.get("startTime") as string,
         endTime: formData.get("endTime") as string,
@@ -199,6 +189,7 @@ export async function saveEquipmentLogs(formData: FormData) {
     throw error;
   }
 }
+
 export async function reactivatePersonnel(formData: FormData) {
   try {
     console.log("Archiving personnel...");
