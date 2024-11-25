@@ -7,15 +7,20 @@ const ContentVariants = cva(
   "mx-auto", //this applies to all variants
   {
     variants: {
-      position: {//only position attributes
+      position: {
+        //only position attributes
         col: "flex flex-col",
         row: "flex flex-row items-center",
       },
-      width: {//only width
-        responsive: "w-[95%] sm:w-[85%] md:w-[75%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%]",
+      width: {
+        //only width
+        responsive:
+          "w-[95%] sm:w-[85%] md:w-[75%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%]",
         section: "w-[90%]",
+        "60": "w-[50%]",
       },
-      height: {//only height
+      height: {
+        //only height
         none: "",
         page: "h-full",
       },
@@ -26,16 +31,26 @@ const ContentVariants = cva(
       height: "page",
     },
   }
-)
+);
 
 // this extends the capability of HTMLAttributes or the VariantProps that it can hold, specify your props here
-interface ContentProps extends HTMLAttributes<HTMLElement>, VariantProps<typeof ContentVariants> {
-}
+interface ContentProps
+  extends HTMLAttributes<HTMLElement>,
+    VariantProps<typeof ContentVariants> {}
 
-const Contents: FC<ContentProps> = ({className, position, width, height, ...props}) => {
-    return (
-      <div className={cn(ContentVariants({position, width, height, className}))} {...props}/>
-    )
-}
+const Contents: FC<ContentProps> = ({
+  className,
+  position,
+  width,
+  height,
+  ...props
+}) => {
+  return (
+    <div
+      className={cn(ContentVariants({ position, width, height, className }))}
+      {...props}
+    />
+  );
+};
 
-export {Contents, ContentVariants}
+export { Contents, ContentVariants };
