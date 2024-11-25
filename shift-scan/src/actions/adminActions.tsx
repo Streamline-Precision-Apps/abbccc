@@ -1,6 +1,7 @@
 "use server";
 import prisma from "@/lib/prisma";
-import { Permission } from "@/lib/types";
+import { FormStatus, Permission } from "@/lib/types";
+
 import { revalidatePath, revalidateTag } from "next/cache";
 
 export async function deleteTimesheet(id: number) {
@@ -79,6 +80,7 @@ export async function saveTimesheet(formData: FormData) {
         hauledLoadsQuantity: parseInt(
           formData.get("hauledLoadsQuantity") as string
         ),
+        status: formData.get("status") as FormStatus,
         equipmentHauled: formData.get("equipmentHauled") as string,
         materialsHauled: formData.get("materialsHauled") as string,
       },
