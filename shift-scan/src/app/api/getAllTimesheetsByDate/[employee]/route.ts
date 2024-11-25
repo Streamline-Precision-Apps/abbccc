@@ -59,6 +59,7 @@ export async function GET(
           lte: endOfDay.toISOString(), // End of the day (later)
         },
       },
+      orderBy: { date: "desc" },
     });
 
     console.log("eqSheets:", eqSheets[0]?.startTime);

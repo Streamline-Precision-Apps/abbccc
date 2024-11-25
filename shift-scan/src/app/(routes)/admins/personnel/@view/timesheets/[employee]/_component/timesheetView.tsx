@@ -92,6 +92,18 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
 
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set()); // Track expanded timesheet IDs
 
+  const [currentLogId, setCurrentLogId] = useState<string | null>(null);
+
+  const openEquipmentSearch = (logId: string) => {
+    setCurrentLogId(logId);
+    setEquipmentSearchOpen(true);
+  };
+
+  const closeEquipmentSearch = () => {
+    setCurrentLogId(null);
+    setEquipmentSearchOpen(false);
+  };
+
   const calculateDuration = (
     startTime?: string,
     endTime?: string
@@ -512,12 +524,15 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
   };
 
   const filteredList = useMemo(() => {
-    if (!term.trim()) return equipmentSearchList; // Return the full list if no term is entered
+    if (!term.trim()) return equipmentSearchList;
 
-    return equipmentSearchList.filter((equipment) => {
+    const filtered = equipmentSearchList.filter((equipment) => {
       const name = `${equipment.qrId} ${equipment.name}`.toLowerCase();
       return name.includes(term.toLowerCase());
     });
+
+    console.log("Filtered List:", filtered);
+    return filtered;
   }, [term, equipmentSearchList]);
 
   const handleSearchChange = useCallback(
@@ -1144,12 +1159,12 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                 : null}
 
               {equipmentLogs.length > 0 &&
-                equipmentLogs.map((log, index) => {
+                equipmentLogs.map((log) => {
                   const isExpanded = expandedIds.has(log.id?.toString() || "");
 
                   return (
                     <Holds
-                      key={log.id || index}
+                      key={log.id?.toString() || ""}
                       className="w-full even:bg-gray-200 odd:bg-gray-100 rounded-[10px] p-4 mb-4 cursor-pointer"
                     >
                       {isExpanded && (
@@ -1191,11 +1206,17 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                               )?.name || ""
                             }
                             onChange={(e) => {
-                              handleEquipmentLogChange(
-                                log.id?.toString() || "",
-                                "equipmentId",
-                                e.target.value
-                              );
+                              const selectedEquipment =
+                                equipmentSearchList.find(
+                                  (eq) => eq.name === e.target.value
+                                );
+                              if (selectedEquipment) {
+                                handleEquipmentLogChange(
+                                  log.id?.toString() || "",
+                                  "equipmentId",
+                                  selectedEquipment.id
+                                );
+                              }
                             }}
                             isChanged={isEquipmentFieldChanged(
                               log.id?.toString() || "",
@@ -1207,7 +1228,9 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                 "equipmentId"
                               )
                             }
-                            onClick={() => setEquipmentSearchOpen(true)}
+                            onClick={() =>
+                              openEquipmentSearch(log.id?.toString() || "")
+                            }
                             variant="default"
                             size="default"
                           />
@@ -1244,71 +1267,79 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                       </Holds>
                       {/* Equipment Search modal */}
                       <NModals
-                        isOpen={equipmentSearchOpen}
-                        handleClose={() => setEquipmentSearchOpen(false)}
+                        isOpen={
+                          equipmentSearchOpen &&
+                          currentLogId === log.id?.toString()
+                        }
+                        handleClose={closeEquipmentSearch}
                       >
                         <Holds className="row-span-8 h-full border-[3px] border-black rounded-t-[10px]">
-                          <>
-                            <Holds
-                              position={"row"}
-                              className="py-2 border-b-[3px] border-black"
-                            >
-                              <Holds className="h-full w-[20%]">
-                                <Images
-                                  titleImg="/magnifyingGlass.svg"
-                                  titleImgAlt="search"
-                                />
-                              </Holds>
-                              <Holds className="w-[80%]">
-                                <Inputs
-                                  type="search"
-                                  placeholder="Search employees by name"
-                                  value={term}
-                                  onChange={handleSearchChange}
-                                  className="border-none outline-none"
-                                />
-                              </Holds>
+                          <Holds
+                            position={"row"}
+                            className="py-2 border-b-[3px] border-black"
+                          >
+                            <Holds className="h-full w-[20%]">
+                              <Images
+                                titleImg="/magnifyingGlass.svg"
+                                titleImgAlt="search"
+                              />
                             </Holds>
-                            <Holds className=" h-full mb-4  overflow-y-auto no-scrollbar ">
-                              <Holds>
-                                {filteredList.length > 0 ? (
-                                  filteredList.map((equipment) => (
-                                    <Holds
-                                      key={index}
-                                      className="py-2 border-b"
-                                      onClick={() => {
-                                        handleEquipmentLogChange(
-                                          log.id?.toString() || "",
-                                          "equipmentId",
-                                          equipment.id
-                                        );
-                                        setTerm(`${equipment.name}`);
-                                      }}
-                                    >
-                                      <Texts size="p6">
-                                        {equipment.name} - {equipment.qrId}
-                                      </Texts>
-                                    </Holds>
-                                  ))
-                                ) : (
-                                  <Texts size="p6" className="text-center">
-                                    No employees found
+                            <Holds className="w-[80%]">
+                              <Inputs
+                                type="search"
+                                placeholder="Search equipment by name"
+                                value={term}
+                                onChange={handleSearchChange}
+                                className="border-none outline-none"
+                              />
+                            </Holds>
+                          </Holds>
+                          <Holds className="h-full mb-4 overflow-y-auto no-scrollbar">
+                            {filteredList.length > 0 ? (
+                              filteredList.map((equipment) => (
+                                <Holds
+                                  key={equipment.id}
+                                  className="py-2 border-b"
+                                  onClick={() => {
+                                    handleEquipmentLogChange(
+                                      currentLogId || "", // Use the current log being edited
+                                      "equipmentId",
+                                      equipment.id
+                                    );
+                                    setTerm(""); // Clear the search term
+                                    closeEquipmentSearch(); // Close the modal
+                                  }}
+                                >
+                                  <Texts size="p6">
+                                    {equipment.name} - {equipment.qrId}
                                   </Texts>
-                                )}
-                              </Holds>
-                            </Holds>
-                          </>
+                                </Holds>
+                              ))
+                            ) : (
+                              <Texts size="p6" className="text-center">
+                                No equipment found
+                              </Texts>
+                            )}
+                          </Holds>
                           <Holds>
                             <Buttons
                               background={"green"}
                               onClick={() => {
-                                handleEquipmentLogChange(
-                                  log.id?.toString() || "",
-                                  "equipmentId",
-                                  log.equipmentId
-                                );
-
-                                setEquipmentSearchOpen(false);
+                                if (currentLogId) {
+                                  const selectedEquipment =
+                                    equipmentSearchList.find(
+                                      (eq) => eq.name === term
+                                    );
+                                  if (selectedEquipment) {
+                                    handleEquipmentLogChange(
+                                      currentLogId,
+                                      "equipmentId",
+                                      selectedEquipment.id
+                                    );
+                                    setTerm(""); // Clear the search term
+                                    closeEquipmentSearch(); // Close the modal
+                                  }
+                                }
                               }}
                             >
                               <Texts size={"p4"}>Submit</Texts>
@@ -1316,6 +1347,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                           </Holds>
                         </Holds>
                       </NModals>
+
                       {isExpanded && (
                         <>
                           {/* Start Time */}
