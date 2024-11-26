@@ -63,6 +63,12 @@ export type SearchUser = {
   terminationDate: Date | null;
 };
 
+export type SearchCrew = {
+  id: string;
+  name: string;
+  description: string;
+};
+
 export type CustomSession = {
   user?: User | null;
 };

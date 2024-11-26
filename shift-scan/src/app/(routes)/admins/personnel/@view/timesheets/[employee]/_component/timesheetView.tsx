@@ -906,7 +906,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                               </Holds>
                               <Holds>
                                 <Labels size={"p4"}>
-                                  Duration (updates manually)
+                                  Duration (Updates Automatically)
                                 </Labels>
 
                                 <Inputs
