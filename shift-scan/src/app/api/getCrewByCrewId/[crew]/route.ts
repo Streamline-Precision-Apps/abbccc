@@ -32,7 +32,6 @@ export async function GET(
                     id: true,
                     firstName: true,
                     lastName: true,
-                    image: true,
                   },
                 },
               },
@@ -41,9 +40,10 @@ export async function GET(
         },
       },
     });
-
+    const crew = crewMembers[0].crew.crewMembers.map((member) => member.user);
+    console.log(crew);
     // Set Cache-Control header for caching if necessary
-    return NextResponse.json(crewMembers);
+    return NextResponse.json(crew);
   } catch (error) {
     console.error("Error fetching crew data:", error);
     return NextResponse.json(
