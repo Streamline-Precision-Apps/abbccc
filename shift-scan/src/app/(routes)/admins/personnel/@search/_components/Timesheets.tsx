@@ -45,7 +45,7 @@ export const Timesheets = ({ employees, setFilter }: Props) => {
 
   return (
     <Holds className="h-full w-full">
-      <Grids rows="10" gap="5" className="h-full">
+      <Grids rows="10" gap="5" className="h-full py-5">
         <Holds className=" bg-white row-span-1 h-full w-full gap-4 ">
           <Selects
             defaultValue={"all"}
