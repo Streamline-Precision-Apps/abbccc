@@ -15,6 +15,7 @@ type ReusableViewLayoutProps = {
   mainRight?: ReactNode; // Optional sidebar content
   footer?: ReactNode; // Footer content
   commentText?: string;
+  editedItem?: string;
 };
 
 export const ReusableViewLayout = ({
@@ -24,6 +25,7 @@ export const ReusableViewLayout = ({
   mainRight,
   footer,
   commentText,
+  editedItem,
 }: ReusableViewLayoutProps) => {
   const [isCommentSectionOpen, setIsCommentSectionOpen] = useState(false);
 
@@ -54,7 +56,7 @@ export const ReusableViewLayout = ({
                   >
                     <Holds className="w-full row-start-1 row-end-2 col-start-1 col-end-4">
                       <Inputs
-                        placeholder={commentText}
+                        placeholder={editedItem}
                         variant={"titleFont"}
                         className=" my-auto"
                       />
@@ -64,7 +66,7 @@ export const ReusableViewLayout = ({
                       className="h-full w-full my-1 row-start-2 row-end-3 col-start-1 col-end-2 "
                     >
                       <Texts size={"p6"} className="mr-2">
-                        Comment
+                        {commentText || "Comment"}
                       </Texts>
                       <Images
                         titleImg="/comment.svg"
@@ -121,12 +123,8 @@ export const ReusableViewLayout = ({
           )}
           {!main && mainLeft && mainRight && (
             <>
-              <Holds className="h-full w-1/2 overflow-y-scroll overflow-hidden no-scroll">
-                {mainLeft}
-              </Holds>
-              <Holds background={"white"} className="h-full w-1/2">
-                {mainRight}
-              </Holds>
+              {mainLeft}
+              {mainRight}
             </>
           )}
           {!main && (!mainLeft || !mainRight) && (
