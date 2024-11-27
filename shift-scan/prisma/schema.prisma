@@ -191,6 +191,7 @@ model TimeSheets {
   startingMileage     Int?
   endingMileage       Int?
   leftIdaho           Boolean?   @default(false)
+  // stateline          []  this is its own table for stateline mileage and state. 
   equipmentHauled     String?
   materialsHauled     String?
   hauledLoadsQuantity Int?
