@@ -1,5 +1,6 @@
 // Stores the id for the time sheet that is currently open (waiting to be submitted when you clock out).
 
+"use client";
 import React, { createContext, useState, ReactNode, useContext } from "react";
 
 type TimeSheetData = {
