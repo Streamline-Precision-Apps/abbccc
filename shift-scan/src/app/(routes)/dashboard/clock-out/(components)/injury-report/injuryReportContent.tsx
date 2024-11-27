@@ -14,15 +14,11 @@ import { CheckBox } from "@/components/(inputs)/checkBox";
 
 type FormProps = {
   base64String: string | null;
-  setBase64String: (base64: string) => void;
-  handleComplete: () => void;
-  handleSubmitImage: () => void;
   handleNextStep: () => void;
 };
 
 export const InjuryReportContent = ({
   base64String,
-  handleComplete,
   handleNextStep,
 }: FormProps) => {
   const [supervisorChecked, setSupervisorChecked] = useState<boolean>(false);
@@ -73,7 +69,6 @@ export const InjuryReportContent = ({
     try {
       await CreateInjuryForm(formData);
       setError(undefined);
-      handleComplete();
       handleNextStep();
     } catch (error) {
       setError(t("FaildToSubmit"));

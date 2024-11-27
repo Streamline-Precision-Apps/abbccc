@@ -3,7 +3,7 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
-import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
+import { ChangeEvent, SetStateAction, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { InjuryReportContent } from "./(components)/injury-report/injuryReportContent";
 import { Titles } from "@/components/(reusable)/titles";
@@ -21,6 +21,8 @@ import Spinner from "@/components/(animations)/spinner";
 import { z } from "zod";
 import { useTruckScanData } from "@/app/context/TruckScanDataContext";
 import { CheckBox } from "@/components/(inputs)/checkBox";
+import { useCurrentView } from "@/app/context/CurrentViewContext";
+import TruckClockOutForm from "./(components)/truckClockOutForm";
 
 // Zod schema for component state
 const ClockOutContentSchema = z.object({
@@ -45,10 +47,41 @@ const ClockOutContentSchema = z.object({
   date: z.date(),
 });
 
+// Define FormStatus Enum
+const FormStatus = z.enum(["PENDING", "APPROVED", "REJECTED"]); // Update as per actual values
+
+// Define TimeSheetsSchema
+const TimeSheetsSchema = z.object({
+  submitDate: z.date().default(new Date()),
+  id: z.number().int(), // Int type
+  userId: z.string(),
+  date: z.date(), // DateTime
+  jobsiteId: z.string(),
+  costcode: z.string(),
+  nu: z.string().default("nu"),
+  Fp: z.string().default("fp"),
+  vehicleId: z.string().nullable(), // Nullable String
+  startTime: z.date(),
+  endTime: z.date().nullable(),
+  duration: z.number().nullable(),
+  startingMileage: z.number().int().nullable(),
+  endingMileage: z.number().int().nullable(),
+  leftIdaho: z.boolean().nullable().default(false),
+  equipmentHauled: z.string().nullable(),
+  materialsHauled: z.string().nullable(),
+  hauledLoadsQuantity: z.number().int().nullable(),
+  refuelingGallons: z.number().nullable(),
+  timeSheetComments: z.string().nullable(),
+  status: FormStatus.default("PENDING"),
+});
+
+// Infer the TypeScript type for convenience
+type TimeSheetsType = z.infer<typeof TimeSheetsSchema>;
+
 // Main component function
 export default function ClockOutContent() {
   const [loading, setLoading] = useState(true);
-  const [step, incrementStep] = useState(1);
+  const [step, setStep] = useState(1); // Using setStep instead of incrementStep
   const [path, setPath] = useState("ClockOut");
   const router = useRouter();
   const t = useTranslations("ClockOut");
@@ -61,8 +94,21 @@ export default function ClockOutContent() {
   const { truckScanData } = useTruckScanData();
   const [date] = useState(new Date());
   const [base64String, setBase64String] = useState<string>("");
+  const [timeSheet, setTimeSheet] = useState<TimeSheetsType>();
+  const [startingMileage, setStartingMileage] = useState<number>(0);
+  const [endingMileage, setEndingMileage] = useState<number>(0);
+  const [comments, setComments] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const { setTruckScanData } = useTruckScanData();
+  const { currentView, setCurrentView } = useCurrentView();
+  const [refuelingGallons, setRefuelingGallons] = useState<number>(0);
+  const [hauledLoadsQuantity, setHauledLoadsQuantity] = useState<number>(0);
+  const [materialsHauled, setMaterialsHauled] = useState<string>("");
+  const [leftIdaho, setLeftIdaho] = useState<boolean>(false);
+
+  const incrementStep = () => {
+    setStep((prevStep) => prevStep + 1); // Increment function
+  };
 
   // Validate initial state with Zod schema
   try {
@@ -115,6 +161,37 @@ export default function ClockOutContent() {
     fetchSignature();
   }, []);
 
+  useEffect(() => {
+    const fetchTimesheet = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch("/api/getTimesheetById");
+        const json = await response.json();
+  
+        // Validate and parse with Zod
+        const parsedTimeSheet = TimeSheetsSchema.parse(json);
+        setTimeSheet(parsedTimeSheet);
+      } catch (error) {
+        console.error("Error fetching or validating timesheet:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchTimesheet();
+    console.log(timeSheet);
+    if (timeSheet) {
+      setStartingMileage(timeSheet?.startingMileage ?? 0);
+      console.log(startingMileage);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (currentView === "truck") {
+      setPath("truck");
+    }
+  }, []);
+
   const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
     setChecked(event.currentTarget.checked);
   };
@@ -142,19 +219,35 @@ export default function ClockOutContent() {
   const handleNextStepAndSubmit = async () => {
     if (!checked) {
       setPath("Injury");
-      incrementStep(2);
+      incrementStep();
+    } else if (checked && currentView === "truck") {
+        setPath("truck");
+        incrementStep();
     } else {
-      incrementStep(2);
+      setPath("clockOut");
+      incrementStep();
     }
   };
 
   const handleNextStep = async () => {
-    incrementStep(3);
+    if (currentView === "truck") {
+      setPath("truck");
+    }
+    incrementStep();
   };
 
   const handleButtonClick = () => {
     handleSubmit();
   };
+
+  const handleSubmitInjury = async () => {
+    if (currentView === "truck") {
+      setPath("truck");
+    }
+    else{
+      setPath("ClockOut");
+    }
+  }
 
   if (step === 1) {
     return (
@@ -236,15 +329,12 @@ export default function ClockOutContent() {
           {/* Injury Report Content */}
           <InjuryReportContent
             base64String={base64String}
-            setBase64String={setBase64String}
-            handleComplete={handleNextStepAndSubmit}
-            handleSubmitImage={handleSubmit}
-            handleNextStep={handleNextStep}
+            handleNextStep={handleSubmitInjury}
           />
         </Holds>
       </Grids>
     );
-  } else if (step === 2 && path === "ClockOut") {
+  } else if (step === 2 && path === "clockOut") {
     return (
       <>
         <Grids rows={"4"} gap={"5"}>
@@ -278,13 +368,6 @@ export default function ClockOutContent() {
                       {t("ClockOutDate")} {new Date().toLocaleDateString()}
                     </Texts>
                   </Holds>
-                  {truckScanData !== "" && (
-                    <Holds className="row-span-1 h-full my-auto">
-                      <Texts>
-                        {t("Truck-label")} {truckScanData}
-                      </Texts>
-                    </Holds>
-                  )}
                   <Holds className="row-span-1 h-full my-auto">
                     <Texts>
                       {t("Jobsite")}{" "}
@@ -336,7 +419,13 @@ export default function ClockOutContent() {
         </Grids>
       </>
     );
-  } else if (step === 3) {
+  } else if (step === 2 && path === "truck") {
+    return (
+      <>
+        <TruckClockOutForm handleNextStep={handleNextStep} jobsiteId={scanResult?.data || ""} costCode={savedCostCode || ""} endingMileage={endingMileage} setEndingMileage={setEndingMileage} leftIdaho={leftIdaho} setLeftIdaho={setLeftIdaho} refuelingGallons={refuelingGallons} setRefuelingGallons={setRefuelingGallons} materialsHauled={materialsHauled} setMaterialsHauled={setMaterialsHauled} hauledLoadsQuantity={hauledLoadsQuantity} setHauledLoadsQuantity={setHauledLoadsQuantity} comments={comments} setComments={setComments}/>
+      </>
+    );
+  } else if (step === 3 || path === "clockOut") {
     return (
       <>
         <Grids rows={"4"} gap={"5"}>
@@ -370,13 +459,6 @@ export default function ClockOutContent() {
                       {t("ClockOutDate")} {new Date().toLocaleDateString()}
                     </Texts>
                   </Holds>
-                  {truckScanData !== "" && (
-                    <Holds className="row-span-1 h-full my-auto">
-                      <Texts>
-                        {t("Truck-label")} {truckScanData}{" "}
-                      </Texts>
-                    </Holds>
-                  )}
                   <Holds className="row-span-1 h-full my-auto">
                     <Texts>
                       {t("Jobsite")}{" "}
@@ -428,7 +510,124 @@ export default function ClockOutContent() {
         </Grids>
       </>
     );
-  } else {
+  } else if (step === 3 && path === "truck") {
+    return (
+      <>
+        <Grids rows={"4"} gap={"5"}>
+          <Holds background={"white"} className="row-span-1 h-full">
+            <Contents width={"section"}>
+              <TitleBoxes
+                title={t("Bye")}
+                titleImg={"/end-day.svg"}
+                titleImgAlt={"End of Day Icon"}
+              />
+            </Contents>
+          </Holds>
+          <Holds background={"white"} className="row-span-3 h-full">
+            <Contents width={"section"} className="py-5">
+              <Holds background={"orange"} className="h-full">
+                <Grids rows={"6"} gap={"5"}>
+                  <Holds className="row-span-1 h-full my-auto">
+                    <Holds position={"right"} size={"20"}>
+                      <Buttons type="button" onClick={handleButtonClick}>
+                        <Images
+                          titleImg={"/downArrow.svg"}
+                          titleImgAlt={"downArrow"}
+                          size={"80"}
+                          className="mx-auto p-2"
+                        />
+                      </Buttons>
+                    </Holds>
+                  </Holds>
+                  <Holds className="row-span-1 h-full my-auto">
+                    <Texts>
+                      {t("ClockOutDate")} {new Date().toLocaleDateString()}
+                    </Texts>
+                  </Holds>
+                  <Holds className="row-span-1 h-full my-auto">
+                    <Texts>
+                      {t("Jobsite")}{" "}
+                      {scanResult?.data || localStorageData?.jobsite}
+                    </Texts>
+                  </Holds>
+                  <Holds className="row-span-1 h-full my-auto">
+                    <Texts>
+                      {t("CostCode")}{" "}
+                      {savedCostCode || localStorageData?.costCode}
+                    </Texts>
+                  </Holds>
+                  <Holds className="row-span-1 h-full my-auto">
+                    <Texts>
+                      {t("Truck-label")}{" "}
+                      {truckScanData}
+                    </Texts>
+                  </Holds>
+                  <Holds className="row-span-1 h-full my-auto">
+                    <form ref={formRef}>
+                      {/* Disabled Inputs */}
+                      <Holds className="mb-2">
+                        <Texts>{t("Ending Mileage")}</Texts>
+                        <Inputs
+                          type="number"
+                          name="endingMileage"
+                          value={endingMileage.toString()}
+                          disabled
+                        />
+                      </Holds>
+                      <Holds className="mb-2">
+                        <Texts>{t("Left Idaho")}</Texts>
+                        <Inputs
+                          type="text"
+                          name="leftIdaho"
+                          value={leftIdaho.toString()} // Boolean displayed as string "true" or "false"
+                          disabled
+                        />
+                      </Holds>
+                      <Holds className="mb-2">
+                        <Texts>{t("Gallons Refueled")}</Texts>
+                        <Inputs
+                          type="number"
+                          name="gallonsRefueled"
+                          value={refuelingGallons.toString()}
+                          disabled
+                        />
+                      </Holds>
+                      <Holds className="mb-2">
+                        <Texts>{t("Materials Hauled")}</Texts>
+                        <Inputs
+                          type="text"
+                          name="materialsHauled"
+                          value={materialsHauled}
+                          disabled
+                        />
+                      </Holds>
+                      <Holds className="mb-2">
+                        <Texts>{t("Hauled Loads Quantity")}</Texts>
+                        <Inputs
+                          type="number"
+                          name="hauledLoadsQuantity"
+                          value={hauledLoadsQuantity.toString()}
+                          disabled
+                        />
+                      </Holds>
+                      <Buttons
+                        onClick={handleButtonClick}
+                        className="bg-app-red mx-auto flex justify-center w-full h-full py-4 px-5 rounded-lg text-black font-bold mt-5"
+                        disabled={isSubmitting}
+                      >
+                        <Clock time={date.getTime()} />
+                      </Buttons>
+                    </form>
+                  </Holds>
+                </Grids>
+              </Holds>
+            </Contents>
+          </Holds>
+        </Grids>
+      </>
+    );
+  }
+   else {
     return null;
   }
 }

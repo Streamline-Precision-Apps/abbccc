@@ -228,7 +228,6 @@ export async function updateTimeSheet(formData: FormData) {
       data: {
         endTime: endTime.toISOString(),
         duration: duration,
-        startingMileage: Number(formData.get("startingMileage")) || null,
         endingMileage: Number(formData.get("endingMileage")) || null,
         leftIdaho: Boolean(formData.get("leftIdaho")) || null,
         equipmentHauled: (formData.get("equipmentHauled") as string) || null,
