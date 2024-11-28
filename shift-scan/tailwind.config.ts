@@ -9,6 +9,7 @@ const config: Config = {
   },
   theme: {
     extend: {
+      backgroundColor: { "peer-checked": "#FCE700" },
       animation: {
         "spin-custom": "spin 1.1s linear infinite", // Adjust '2s' to make it slower or faster
         wave: "wave 1s linear",

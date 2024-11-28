@@ -27,11 +27,13 @@ export async function GET(
           select: {
             crewMembers: {
               select: {
+                supervisor: true,
                 user: {
                   select: {
                     id: true,
                     firstName: true,
                     lastName: true,
+                    permission: true,
                   },
                 },
               },
@@ -40,7 +42,14 @@ export async function GET(
         },
       },
     });
-    const crew = crewMembers[0].crew.crewMembers.map((member) => member.user);
+    const crew = crewMembers[0].crew.crewMembers.map((member) => ({
+      id: member.user.id,
+      firstName: member.user.firstName,
+      lastName: member.user.lastName,
+      permission: member.user.permission,
+      supervisor: member.supervisor,
+    }));
+
     console.log(crew);
     // Set Cache-Control header for caching if necessary
     return NextResponse.json(crew);
