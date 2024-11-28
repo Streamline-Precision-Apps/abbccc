@@ -7,18 +7,27 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Texts } from "@/components/(reusable)/texts";
 import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
+import CheckBox from "@/components/(inputs)/CheckBox";
+import CheckBoxWithImage from "@/components/(inputs)/CheckBoxWithImage";
 
 type User = {
   id: string;
   firstName: string;
   lastName: string;
+  permission: string;
+  supervisor: boolean;
 };
 
 export default function ViewCrew({ params }: { params: { crew: string } }) {
   const [employees, setEmployees] = useState<User[]>([]);
   const [filter, setFilter] = useState("all");
   const [usersInCrew, setUsersInCrew] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true); // Loading state for crew members
+  const [loading, setLoading] = useState(true);
+  const [toggledUsers, setToggledUsers] = useState<Record<string, boolean>>({});
+  const [toggledManager, setToggledManagers] = useState<
+    Record<string, boolean>
+  >({});
+  const [teamLead, setTeamLead] = useState<string | null>(null);
 
   // Fetch all employees
   useEffect(() => {
@@ -45,22 +54,70 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
         if (!response.ok) throw new Error(`Error: ${response.status}`);
         const data = await response.json();
         setUsersInCrew(data);
+        // Mark crew members as toggled
+        const toggled = data.reduce(
+          (acc: Record<string, boolean>, user: User) => {
+            acc[user.id] = true;
+            return acc;
+          },
+          {}
+        );
+        setToggledUsers(toggled);
+
+        const supervisor = data.find((user: User) => user.supervisor === true);
+        if (supervisor) {
+          setTeamLead(supervisor.id);
+          setToggledManagers({ [supervisor.id]: true });
+        } else {
+          setToggledManagers(toggled); // Default to all toggled managers
+        }
+
         setLoading(false);
-        return data;
       } catch (error) {
         console.error("Failed to fetch crew members:", error);
       }
       setLoading(false);
     };
-
     fetchCrewMembers(params.crew);
   }, [params.crew]);
 
-  // Add unique users to crew
-  const addToCrew = (employee: User) => {
-    setUsersInCrew((prev) =>
-      prev.some((user) => user.id === employee.id) ? prev : [...prev, employee]
-    );
+  // Add or remove users from crew based on toggle
+  const toggleUser = (id: string) => {
+    setToggledUsers((prev) => {
+      const isToggled = !prev[id];
+      // Update crew members
+      setUsersInCrew((prevCrew) => {
+        if (isToggled) {
+          // Add to crew if toggled on
+          const employee = employees.find((emp) => emp.id === id);
+          return employee && !prevCrew.some((user) => user.id === id)
+            ? [...prevCrew, employee]
+            : prevCrew;
+        } else {
+          // Remove from crew if toggled off
+          return prevCrew.filter((user) => user.id !== id);
+        }
+      });
+      return { ...prev, [id]: isToggled };
+    });
+  };
+
+  const toggleManager = (id: string) => {
+    if (teamLead === id) {
+      // If the current team lead is unchecked, remove them and re-enable all checkboxes
+      setTeamLead(null);
+      setToggledManagers((prev) => ({ ...prev, [id]: false }));
+    } else {
+      // Set the new team lead and disable checkboxes for others
+      setTeamLead(id);
+      setToggledManagers((prev) => {
+        const updated = { ...prev };
+        Object.keys(updated).forEach((key) => {
+          updated[key] = key === id; // Only the selected team lead remains checked
+        });
+        return updated;
+      });
+    }
   };
 
   return loading ? (
@@ -70,9 +127,14 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
       mainLeft={
         <Holds className="h-full bg-white w-1/3 mr-2">
           <CrewLeft
-            addToCrew={addToCrew}
+            addToCrew={(user) => toggleUser(user.id)}
             setFilter={setFilter}
             employees={employees}
+            toggledUsers={toggledUsers}
+            toggleUser={toggleUser}
+            toggledManager={toggledManager}
+            toggleManager={toggleManager}
+            teamLead={teamLead}
           />
         </Holds>
       }
@@ -80,15 +142,11 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
         <Holds className="h-full bg-white w-2/3">
           {usersInCrew.length > 0 ? (
             <ul>
-              {usersInCrew.map((user) =>
-                user && user.firstName && user.lastName ? (
-                  <li key={user.id}>
-                    {user.firstName} {user.lastName}
-                  </li>
-                ) : (
-                  <li key={Math.random()}>Invalid User Data</li> // Fallback
-                )
-              )}
+              {usersInCrew.map((user) => (
+                <li key={user.id}>
+                  {user.firstName} {user.lastName}
+                </li>
+              ))}
             </ul>
           ) : (
             <p>No crew members found</p>
@@ -102,11 +160,21 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
 function CrewLeft({
   setFilter,
   employees,
-  addToCrew,
+
+  toggledUsers,
+  toggleUser,
+  toggledManager,
+  toggleManager,
+  teamLead,
 }: {
   setFilter: (filter: string) => void;
   employees: User[];
   addToCrew: (employee: User) => void;
+  toggledUsers: Record<string, boolean>;
+  toggleUser: (id: string) => void;
+  toggledManager: Record<string, boolean>;
+  toggleManager: (id: string) => void;
+  teamLead: string | null;
 }) {
   const [term, setTerm] = useState<string>("");
 
@@ -151,12 +219,62 @@ function CrewLeft({
             {filteredList.map((employee) => (
               <Holds
                 key={employee.id}
-                className="py-2 border-b cursor-pointer"
-                onClick={() => addToCrew(employee)}
+                className="py-2 border-b cursor-pointer flex items-center"
               >
-                <Texts size="p6">
-                  {employee.firstName} {employee.lastName}
-                </Texts>
+                <Holds position={"row"} className="justify-between">
+                  <Holds className="flex w-2/3">
+                    <Texts size="p6">
+                      {employee.firstName} {employee.lastName}
+                    </Texts>
+                  </Holds>
+                  <Holds position="row" className="relative flex w-1/3">
+                    {!employee.permission.includes("USER") &&
+                    toggledUsers[employee.id] ? (
+                      <Holds className="relative w-1/2">
+                        {!teamLead ? (
+                          <CheckBoxWithImage
+                            id={employee.id}
+                            defaultChecked={!!toggledManager[employee.id]}
+                            onChange={() => {
+                              toggleManager(employee.id);
+                            }}
+                            size={2}
+                            name={""}
+                            type=""
+                          />
+                        ) : teamLead === employee.id ? (
+                          <CheckBoxWithImage
+                            id={employee.id}
+                            defaultChecked={!!toggledManager[employee.id]}
+                            onChange={() => {
+                              toggleManager(employee.id);
+                            }}
+                            size={2}
+                            name={""}
+                            type="selected"
+                          />
+                        ) : (
+                          <CheckBoxWithImage
+                            id={employee.id}
+                            size={2}
+                            name={""}
+                            disabled
+                          />
+                        )}
+                      </Holds>
+                    ) : (
+                      <Holds className="relative w-1/2"></Holds>
+                    )}
+                    <CheckBox
+                      id={employee.id}
+                      defaultChecked={!!toggledUsers[employee.id]}
+                      onChange={() => toggleUser(employee.id)}
+                      disabled={employee.id === teamLead}
+                      size={2}
+                      name={""}
+                    />
+                  </Holds>
+                </Holds>
               </Holds>
             ))}
           </Holds>
