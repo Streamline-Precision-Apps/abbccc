@@ -9,6 +9,10 @@ import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
 import CheckBox from "@/components/(inputs)/CheckBox";
 import CheckBoxWithImage from "@/components/(inputs)/CheckBoxWithImage";
+import { Buttons } from "@/components/(reusable)/buttons";
+import { Titles } from "@/components/(reusable)/titles";
+import { updateCrew } from "@/actions/adminActions";
+import Spinner from "@/components/(animations)/spinner";
 
 type User = {
   id: string;
@@ -16,10 +20,13 @@ type User = {
   lastName: string;
   permission: string;
   supervisor: boolean;
+  image: string;
 };
 
 export default function ViewCrew({ params }: { params: { crew: string } }) {
   const [employees, setEmployees] = useState<User[]>([]);
+  const [crewName, setCrewName] = useState<string>("");
+  const [crewDescription, setCrewDescription] = useState<string>("");
   const [filter, setFilter] = useState("all");
   const [usersInCrew, setUsersInCrew] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -53,18 +60,26 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
         const response = await fetch(`/api/getCrewByCrewId/${crewId}`);
         if (!response.ok) throw new Error(`Error: ${response.status}`);
         const data = await response.json();
-        setUsersInCrew(data);
-        // Mark crew members as toggled
-        const toggled = data.reduce(
+
+        // Update crew state
+        setUsersInCrew(data.crew);
+        setCrewName(data.crewName);
+        setCrewDescription(data.crewDescription);
+
+        // Initialize toggledUsers state
+        const toggled = data.crew.reduce(
           (acc: Record<string, boolean>, user: User) => {
-            acc[user.id] = true;
+            acc[user.id] = true; // All crew members are toggled initially
             return acc;
           },
           {}
         );
         setToggledUsers(toggled);
 
-        const supervisor = data.find((user: User) => user.supervisor === true);
+        // Find and set the supervisor (team lead)
+        const supervisor = data.crew.find(
+          (user: User) => user.supervisor === true
+        );
         if (supervisor) {
           setTeamLead(supervisor.id);
           setToggledManagers({ [supervisor.id]: true });
@@ -75,9 +90,10 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
         setLoading(false);
       } catch (error) {
         console.error("Failed to fetch crew members:", error);
+        setLoading(false);
       }
-      setLoading(false);
     };
+
     fetchCrewMembers(params.crew);
   }, [params.crew]);
 
@@ -120,10 +136,63 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
     }
   };
 
+  const teamLeadUser = usersInCrew.find((user) => user.id === teamLead);
+
+  const UpdateCrew = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("crewName", crewName);
+      formData.append("crewDescription", crewDescription);
+      formData.append("crew", JSON.stringify(usersInCrew));
+      formData.append("teamLead", teamLead || "");
+
+      await updateCrew(params.crew, formData);
+
+      alert("Crew updated successfully!");
+    } catch (error) {
+      console.error("Failed to update crew:", error);
+      alert("An error occurred while updating the crew. Please try again.");
+    }
+  };
+
+  const TeamLeadDetails = ({ user }: { user: User }) => (
+    <Holds position={"row"} className="w-full h-full ">
+      <Holds className="w-1/4 ">
+        <Images
+          titleImg={user.image || "/person.svg"}
+          titleImgAlt={""}
+          size={"40"}
+          className={
+            user.image
+              ? "border-[3px] border-black rounded-full"
+              : "rounded-full"
+          }
+          position={"left"}
+        />
+      </Holds>
+
+      <Holds className="w-3/4">
+        <Texts size={"p2"} position={"left"}>{`${user?.firstName || ""} ${
+          user?.lastName || ""
+        }`}</Texts>
+      </Holds>
+    </Holds>
+  );
+
   return loading ? (
-    <p>Loading...</p>
+    <ReusableViewLayout
+      main={
+        <Holds className="h-full bg-white w-full items-center justify-center">
+          <Spinner />
+        </Holds>
+      }
+    />
   ) : (
     <ReusableViewLayout
+      editFunction={setCrewName}
+      editedItem={crewName}
+      editCommentFunction={setCrewDescription}
+      commentText={crewDescription}
       mainLeft={
         <Holds className="h-full bg-white w-1/3 mr-2">
           <CrewLeft
@@ -140,17 +209,92 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
       }
       mainRight={
         <Holds className="h-full bg-white w-2/3">
-          {usersInCrew.length > 0 ? (
-            <ul>
-              {usersInCrew.map((user) => (
-                <li key={user.id}>
-                  {user.firstName} {user.lastName}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No crew members found</p>
-          )}
+          <Holds className="h-full p-4 px-10">
+            <Holds
+              background={teamLeadUser ? "offWhite" : "grey"}
+              className={
+                teamLeadUser
+                  ? "w-full h-fit border-[3px] border-black rounded-[10px] my-2  p-3 flex items-center justify-center"
+                  : "w-full h-1/5 justify-center p-3"
+              }
+            >
+              <Grids rows={"3"} cols={"6"} className="w-full h-full">
+                <Holds className=" row-start-1 row-end-2 col-start-5 col-span-7 ">
+                  <Texts position={"right"} size={"p6"}>
+                    Crew Lead
+                  </Texts>
+                </Holds>
+                <Holds className=" row-start-1 row-end-4 col-start-1 col-end-7 ">
+                  {teamLeadUser ? (
+                    <TeamLeadDetails user={teamLeadUser} />
+                  ) : (
+                    <Texts size={"p5"}>Select a Crew lead</Texts>
+                  )}
+                </Holds>
+              </Grids>
+            </Holds>
+            <Holds className="w-full h-4/5">
+              {usersInCrew.length > 0 ? (
+                <Holds
+                  background={"offWhite"}
+                  className="w-full h-full overflow-y-scroll no-scrollbar "
+                >
+                  {usersInCrew.map((user) =>
+                    user.id === teamLead ? null : (
+                      <Holds
+                        key={user.id}
+                        className="w-full h-fit border-[3px] border-black rounded-[10px] my-2 p-3 flex items-center justify-center"
+                      >
+                        <Holds position={"row"}>
+                          <Holds className="w-1/4">
+                            {user.image ? (
+                              <Images
+                                titleImg={user.image}
+                                titleImgAlt={""}
+                                size={"40"}
+                                className="border-[3px] border-black rounded-full"
+                                position={"left"}
+                              />
+                            ) : (
+                              <Images
+                                titleImg={"/person.svg"}
+                                titleImgAlt={""}
+                                size={"40"}
+                                className=" rounded-full"
+                                position={"left"}
+                              />
+                            )}
+                          </Holds>
+                          <Holds className="w-3/4">
+                            <Texts size={"p2"} position={"left"}>
+                              {`${user.firstName} ${user.lastName}`}
+                            </Texts>
+                          </Holds>
+                        </Holds>
+                      </Holds>
+                    )
+                  )}
+                </Holds>
+              ) : (
+                <p>No crew members found</p>
+              )}
+            </Holds>
+          </Holds>
+        </Holds>
+      }
+      footer={
+        <Holds className="h-full w-full px-4 py-2">
+          <Grids rows={"3"} cols={"10"} className="w-full h-full">
+            <Buttons
+              background={"green"}
+              onClick={() => {
+                UpdateCrew();
+              }}
+              className="row-start-1 row-end-4 col-start-8 col-end-11"
+            >
+              <Titles size={"h4"}>Submit Crew</Titles>
+            </Buttons>
+          </Grids>
         </Holds>
       }
     />
@@ -187,7 +331,7 @@ function CrewLeft({
   }, [term, employees]);
 
   return (
-    <Holds className="h-full w-full">
+    <Holds className="h-full w-full px-4 py-2">
       <Grids rows="10" gap="5" className="h-full">
         <Holds className="bg-white h-full w-full">
           <Selects
@@ -197,7 +341,7 @@ function CrewLeft({
           >
             <option value="all">Select Filter</option>
             <option value="all">All</option>
-            <option value="active">Active</option>
+            <option value="supervisors">Supervisors</option>
           </Selects>
         </Holds>
         <Holds className="row-span-8 h-full border-[3px] border-black rounded-t-[10px]">
