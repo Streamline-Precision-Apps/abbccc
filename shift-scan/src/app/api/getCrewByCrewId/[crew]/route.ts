@@ -25,6 +25,8 @@ export async function GET(
       include: {
         crew: {
           select: {
+            name: true,
+            description: true,
             crewMembers: {
               select: {
                 supervisor: true,
@@ -34,6 +36,7 @@ export async function GET(
                     firstName: true,
                     lastName: true,
                     permission: true,
+                    image: true, // Ensure base64 image field is included
                   },
                 },
               },
@@ -42,17 +45,22 @@ export async function GET(
         },
       },
     });
+
     const crew = crewMembers[0].crew.crewMembers.map((member) => ({
       id: member.user.id,
       firstName: member.user.firstName,
       lastName: member.user.lastName,
       permission: member.user.permission,
       supervisor: member.supervisor,
+      image: member.user.image, // Embed base64 string as a data URL
     }));
+    const crewName = crewMembers[0].crew.name;
+    const crewDescription = crewMembers[0].crew.description;
 
     console.log(crew);
-    // Set Cache-Control header for caching if necessary
-    return NextResponse.json(crew);
+    const data = { crew, crewName, crewDescription };
+
+    return NextResponse.json(data);
   } catch (error) {
     console.error("Error fetching crew data:", error);
     return NextResponse.json(

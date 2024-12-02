@@ -4,6 +4,110 @@ import { FormStatus, Permission } from "@/lib/types";
 
 import { revalidatePath, revalidateTag } from "next/cache";
 
+export async function updateCrew(id: string, formData: FormData) {
+  try {
+    console.log("Updating crew...");
+    const crewName = formData.get("crewName") as string;
+    const crewDescription = formData.get("crewDescription") as string;
+    const crew = JSON.parse(formData.get("crew") as string) as Array<{
+      id: string;
+      supervisor: boolean;
+    }>;
+    const teamLead = formData.get("teamLead") as string;
+    console.log("teamLead", teamLead);
+
+    // Update the crew details
+    const updatedCrew = await prisma.crews.update({
+      where: { id: Number(id) },
+      data: {
+        name: crewName,
+        description: crewDescription,
+      },
+    });
+
+    if (!updatedCrew) {
+      throw new Error("Crew not found");
+    }
+
+    // Get current members of the crew
+    const currentMembers = await prisma.crewMembers.findMany({
+      where: { crewId: Number(id) },
+    });
+
+    const currentTeamLead = currentMembers.find((member) => member.supervisor);
+
+    // Determine members to add, remove, or update
+    const currentMemberIds = currentMembers.map((member) => member.employeeId);
+    const newMemberIds = crew.map((member) => member.id);
+
+    const membersToRemove = currentMembers.filter(
+      (member) => !newMemberIds.includes(member.employeeId)
+    );
+
+    const membersToAdd = crew.filter(
+      (member) => !currentMemberIds.includes(member.id)
+    );
+
+    const membersToUpdate = crew.filter((member) =>
+      currentMemberIds.includes(member.id)
+    );
+
+    console.log("membersToRemove", membersToRemove);
+    console.log("membersToAdd", membersToAdd);
+    console.log("membersToUpdate", membersToUpdate);
+
+    console.log("newMemberIds", newMemberIds);
+
+    // Remove members who are no longer in the crew
+    for (const member of membersToRemove) {
+      await prisma.crewMembers.delete({
+        where: { id: member.id },
+      });
+    }
+
+    // Add new members to the crew
+    for (const member of membersToAdd) {
+      await prisma.crewMembers.create({
+        data: {
+          crewId: Number(id),
+          employeeId: member.id,
+          supervisor: member.supervisor,
+        },
+      });
+    }
+
+    // Update existing members' supervisor status
+    for (const member of membersToUpdate) {
+      // Reset current supervisor if needed
+      if (currentTeamLead && member.supervisor) {
+        await prisma.crewMembers.update({
+          where: { id: currentTeamLead.id },
+          data: { supervisor: false },
+        });
+      }
+
+      // Update the supervisor status
+      const updatedMember = await prisma.crewMembers.update({
+        where: {
+          id: Number(teamLead),
+        },
+        data: {
+          supervisor: true,
+        },
+      });
+      console.log("updatedMember", updatedMember);
+    }
+
+    // Revalidate cache or tags if necessary
+    revalidateTag("crews");
+
+    return { message: "Crew updated successfully" };
+  } catch (error) {
+    console.error("Error updating crew:", error);
+    throw error;
+  }
+}
+
 export async function deleteTimesheet(id: number) {
   try {
     await prisma.timeSheets.delete({

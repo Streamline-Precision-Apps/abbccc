@@ -6,7 +6,7 @@ import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
-import { ReactNode, useState } from "react";
+import { Dispatch, ReactNode, SetStateAction, useState } from "react";
 
 type ReusableViewLayoutProps = {
   header?: ReactNode; // Custom header content
@@ -16,6 +16,8 @@ type ReusableViewLayoutProps = {
   footer?: ReactNode; // Footer content
   commentText?: string;
   editedItem?: string;
+  editCommentFunction?: Dispatch<SetStateAction<string>>;
+  editFunction?: Dispatch<SetStateAction<string>>;
 };
 
 export const ReusableViewLayout = ({
@@ -25,6 +27,8 @@ export const ReusableViewLayout = ({
   mainRight,
   footer,
   commentText,
+  editFunction,
+  editCommentFunction,
   editedItem,
 }: ReusableViewLayoutProps) => {
   const [isCommentSectionOpen, setIsCommentSectionOpen] = useState(false);
@@ -56,7 +60,12 @@ export const ReusableViewLayout = ({
                   >
                     <Holds className="w-full row-start-1 row-end-2 col-start-1 col-end-4">
                       <Inputs
-                        placeholder={editedItem}
+                        type="text"
+                        value={editedItem}
+                        onChange={(e) => {
+                          editFunction?.(e.target.value);
+                        }}
+                        placeholder={"Enter your Crew Name"}
                         variant={"titleFont"}
                         className=" my-auto"
                       />
@@ -66,20 +75,24 @@ export const ReusableViewLayout = ({
                       className="h-full w-full my-1 row-start-2 row-end-3 col-start-1 col-end-2 "
                     >
                       <Texts size={"p6"} className="mr-2">
-                        {commentText || "Comment"}
+                        {"Comment"}
                       </Texts>
                       <Images
                         titleImg="/comment.svg"
                         titleImgAlt="comment"
                         size={"30"}
                         onClick={openComment}
+                        className="cursor-pointer hover:shadow-black hover:shadow-md"
                       />
                     </Holds>
 
                     <Holds className="w-full h-full row-start-3 row-end-6 col-start-1 col-end-6">
                       <TextAreas
                         placeholder="Enter your comment"
-                        className=""
+                        value={commentText ? commentText : ""}
+                        onChange={(e) => {
+                          editCommentFunction?.(e.target.value);
+                        }}
                         maxLength={40}
                         rows={4}
                         style={{ resize: "none" }}
@@ -90,7 +103,16 @@ export const ReusableViewLayout = ({
               ) : (
                 <Grids rows={"2"} cols={"5"} className=" h-full w-full p-4">
                   <Holds className="w-full row-start-1 row-end-3 col-start-1 col-end-4 ">
-                    <Inputs placeholder={commentText} className=" my-auto" />
+                    <Inputs
+                      type="text"
+                      value={editedItem}
+                      placeholder={"Enter your Crew Name"}
+                      onChange={(e) => {
+                        editFunction?.(e.target.value);
+                      }}
+                      variant={"titleFont"}
+                      className=" my-auto"
+                    />
                   </Holds>
                   <Holds
                     position={"row"}
@@ -102,8 +124,9 @@ export const ReusableViewLayout = ({
                     <Images
                       titleImg="/comment.svg"
                       titleImgAlt="comment"
-                      size={"30"}
+                      size={"40"}
                       onClick={openComment}
+                      className="cursor-pointer hover:shadow-black hover:shadow-md"
                     />
                   </Holds>
                 </Grids>
@@ -138,7 +161,7 @@ export const ReusableViewLayout = ({
 
         {/* Footer Section */}
         <Holds className="row-span-1 col-span-2 h-full">
-          {footer || <Texts size={"p6"}>Default Footer</Texts>}
+          {footer || <Texts size={"p6"}></Texts>}
         </Holds>
       </Grids>
     </Holds>
