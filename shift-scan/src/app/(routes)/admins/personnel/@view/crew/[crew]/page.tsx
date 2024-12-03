@@ -11,8 +11,9 @@ import CheckBox from "@/components/(inputs)/CheckBox";
 import CheckBoxWithImage from "@/components/(inputs)/CheckBoxWithImage";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
-import { updateCrew } from "@/actions/adminActions";
+import { deleteCrewAction, updateCrew } from "@/actions/adminActions";
 import Spinner from "@/components/(animations)/spinner";
+import { useRouter } from "next/navigation";
 
 type User = {
   id: string;
@@ -35,6 +36,7 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
     Record<string, boolean>
   >({});
   const [teamLead, setTeamLead] = useState<string | null>(null);
+  const router = useRouter();
 
   // Fetch all employees
   useEffect(() => {
@@ -140,18 +142,36 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
 
   const UpdateCrew = async () => {
     try {
+      // Gather required parameters
+      const crewId = params.crew;
+      if (!crewId) {
+        alert("Invalid crew ID.");
+        return;
+      }
+
+      // Prepare FormData with the necessary fields
       const formData = new FormData();
-      formData.append("crewName", crewName);
-      formData.append("crewDescription", crewDescription);
-      formData.append("crew", JSON.stringify(usersInCrew));
-      formData.append("teamLead", teamLead || "");
+      formData.append("crewId", crewId);
+      formData.append("crewName", crewName.trim());
+      formData.append("crewDescription", crewDescription.trim());
+      formData.append("crew", JSON.stringify(usersInCrew)); // Array of users in the crew
+      formData.append("teamLead", teamLead || ""); // Optional field
 
-      await updateCrew(params.crew, formData);
-
-      alert("Crew updated successfully!");
+      // Call the updateCrew function to handle backend update logic
+      await updateCrew(crewId, formData);
     } catch (error) {
       console.error("Failed to update crew:", error);
-      alert("An error occurred while updating the crew. Please try again.");
+    }
+  };
+
+  const deleteCrew = async () => {
+    try {
+      const crewId = params.crew;
+      await deleteCrewAction(crewId);
+      router.push("/admins/personnel");
+    } catch (error) {
+      console.error("Failed to delete crew:", error);
+      alert("An error occurred while deleting the crew. Please try again.");
     }
   };
 
@@ -284,7 +304,17 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
       }
       footer={
         <Holds className="h-full w-full px-4 py-2">
-          <Grids rows={"3"} cols={"10"} className="w-full h-full">
+          <Grids rows={"3"} cols={"10"} gap={"4"} className="w-full h-full">
+            <Buttons
+              background={"red"}
+              onClick={() => {
+                deleteCrew();
+              }}
+              className="row-start-1 row-end-4 col-start-5 col-end-8 hover:cursor-pointer"
+            >
+              <Titles size={"h4"}>Delete Crew</Titles>
+            </Buttons>
+
             <Buttons
               background={"green"}
               onClick={() => {
