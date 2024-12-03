@@ -3,21 +3,21 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Forms } from "@/components/(reusable)/forms";
 import { Inputs } from "@/components/(reusable)/inputs";
-import { Labels } from "@/components/(reusable)/labels";
 import { Holds } from "@/components/(reusable)/holds";
 import { Selects } from "@/components/(reusable)/selects";
 import { Titles } from "@/components/(reusable)/titles";
-import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import React from "react";
 import { Grids } from "@/components/(reusable)/grids";
 import { useSession } from "next-auth/react";
-import { set, z } from "zod";
+import { z } from "zod";
 import { useTruckScanData } from "@/app/context/TruckScanDataContext";
 import { Texts } from "@/components/(reusable)/texts";
 import { useTranslations } from "next-intl";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { CheckBox } from "@/components/(inputs)/checkBox";
 import { useStartingMileage } from "@/app/context/StartingMileageContext";
+import { useTimeSheetComments } from "@/app/context/TimeSheetCommentsContext";
 
 // Props type for the form component
 type TruckClockOutFormProps = {
@@ -34,8 +34,6 @@ type TruckClockOutFormProps = {
   setMaterialsHauled: React.Dispatch<React.SetStateAction<string>>;
   hauledLoadsQuantity: number;
   setHauledLoadsQuantity: React.Dispatch<React.SetStateAction<number>>;
-  comments: string;
-  setComments: React.Dispatch<React.SetStateAction<string>>;
 };
 
 // Zod schema for validation
@@ -43,40 +41,25 @@ const formSchema = z
   .object({
     startingMileage: z
       .number()
-      .nonnegative("Starting mileage must be non-negative"),
+      .nonnegative("Starting mileage must be non-negative")
+      .optional(),
     endingMileage: z
       .number()
       .nonnegative("Ending mileage must be non-negative"),
-    jobsiteId: z.string(),
-    costCode: z.string(),
-    timeSheetComments: z
+    materialHauled: z
       .string()
-      .max(40, "Comments must be 40 characters or less")
       .optional(),
-    materialHauled: z.string(),
     hauledLoadsQuantity: z
       .number()
       .int("Loads quantity must be an integer")
-      .positive("Loads quantity must be greater than zero")
+      .nonnegative("Loads quantity must not be negative")
       .optional(),
     refuelingGallons: z
       .number()
       .nonnegative("Refueling gallons must be non-negative")
       .optional(),
     leftIdaho: z.boolean(),
-  })
-  .superRefine((data, ctx) => {
-    if (data.endingMileage < data.startingMileage) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["endingMileage"],
-        message:
-          "Ending mileage must be greater than or equal to starting mileage",
-      });
-    }
   });
-
-type FormSchemaType = typeof formSchema;
 
 export default function TruckClockOutForm({
   handleNextStep,
@@ -92,15 +75,14 @@ export default function TruckClockOutForm({
   setMaterialsHauled,
   hauledLoadsQuantity,
   setHauledLoadsQuantity,
-  comments,
-  setComments,
 }: TruckClockOutFormProps) {
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const { truckScanData } = useTruckScanData();
   const { data: session } = useSession();
   const t = useTranslations("ClockOut");
   const [checkedRefuel, setCheckedRefuel] = useState(false);
-  const { startingMileage, setStartingMileage } = useStartingMileage();
+  const { startingMileage } = useStartingMileage();
+  const { timeSheetComments, setTimeSheetComments } = useTimeSheetComments();
 
   // Derived state to enable/disable the Submit button
   const isSubmitEnabled = endingMileage > 0; // Ensure mileage is a positive number
@@ -113,7 +95,7 @@ export default function TruckClockOutForm({
       endingMileage,
       jobsiteId,
       costCode,
-      timeSheetComments: comments,
+      timeSheetComments: timeSheetComments,
       materialsHauled,
       hauledLoadsQuantity,
       refuelingGallons,
@@ -172,25 +154,13 @@ export default function TruckClockOutForm({
               </Holds>
               <Holds className="row-span-1 h-full my-auto">
                 <Texts position="left" size="p3">
-                  Site Number
-                </Texts>
-                <Inputs type="text" value={jobsiteId} readOnly />
-              </Holds>
-              <Holds className="row-span-1 h-full my-auto">
-                <Texts position="left" size="p3">
-                  Cost Code
-                </Texts>
-                <Inputs type="text" value={costCode} readOnly />
-              </Holds>
-              <Holds className="row-span-1 h-full my-auto">
-                <Texts position="left" size="p3">
                   Comments
                 </Texts>
                 <Inputs
                   type="textarea"
                   name="timeSheetComments"
-                  value={comments}
-                  onChange={(e) => setComments(e.target.value)}
+                  value={timeSheetComments ?? ""}
+                  onChange={(e) => setTimeSheetComments(e.target.value)}
                 />
               </Holds>
               <Holds className="row-span-1 h-full my-auto">

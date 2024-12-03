@@ -235,7 +235,6 @@ export async function updateTimeSheet(formData: FormData) {
         hauledLoadsQuantity:
           Number(formData.get("hauledLoadsQuantity")) || null,
         refuelingGallons: Number(formData.get("refuelingGallons")) || null,
-        timeSheetComments: formData.get("timeSheetComments") as string,
       },
     });
 

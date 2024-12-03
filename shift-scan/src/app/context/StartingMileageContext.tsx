@@ -1,5 +1,3 @@
-// This will save the current view for the dashboard.
-
 "use client";
 import React, { createContext, useState, ReactNode, useContext } from "react";
 
@@ -15,21 +13,40 @@ const StartingMileage = createContext<StartingMileageProps | undefined>(
 export const StartingMileageProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  // creates a state
-  const [startingMileage, setStartingMileage] = useState<number | null>(0);
-  // when the provider is called it will return the value below
+  const [startingMileage, setStartingMileageState] = useState<number | null>(() => {
+    // Load initial state from localStorage if available
+    if (typeof window !== "undefined") {
+      const savedMileage = localStorage.getItem("startingMileage");
+      return savedMileage ? parseFloat(savedMileage) : null;
+    } else {
+      return null;
+    }
+  });
+
+  const setStartingMileage = (mileage: number | null) => {
+    setStartingMileageState(mileage);
+    // Save to localStorage
+    if (typeof window !== "undefined") {
+      if (mileage !== null) {
+        localStorage.setItem("startingMileage", mileage.toString());
+      } else {
+        localStorage.removeItem("startingMileage");
+      }
+    }
+  };
+
   return (
     <StartingMileage.Provider value={{ startingMileage, setStartingMileage }}>
       {children}
     </StartingMileage.Provider>
   );
 };
-// this is used to get the value
+
 export const useStartingMileage = () => {
   const context = useContext(StartingMileage);
-  if (context === undefined) {
+  if (!context) {
     throw new Error(
-      "StartingMileage must be used within a StartingMileageProvider"
+      "useStartingMileage must be used within a StartingMileageProvider"
     );
   }
   return context;
