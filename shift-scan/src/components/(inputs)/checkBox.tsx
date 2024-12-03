@@ -33,6 +33,7 @@ export const CheckBox = ({
       id={id}
       name={name}
       defaultChecked={defaultChecked}
+      checked={defaultChecked}
       disabled={disabled}
       onChange={onChange}
       style={{ width: `${size}em`, height: `${size}em` }} // Dynamically setting size with inline styles

@@ -157,6 +157,26 @@ export async function GET(req: Request) {
           terminationDate: true,
         },
       });
+    } else if (filter === "supervisors") {
+      employees = await prisma.users.findMany({
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          username: true,
+          permission: true,
+          DOB: true,
+          truckView: true,
+          mechanicView: true,
+          laborView: true,
+          tascoView: true,
+          image: true,
+          terminationDate: true,
+        },
+      });
+      employees = employees.filter(
+        (employee) => employee.permission !== "USER"
+      );
     } else if (filter === "admins") {
       employees = await prisma.users.findMany({
         where: {

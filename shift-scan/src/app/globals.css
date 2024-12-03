@@ -2,24 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 :root {
---color-custom-blue: #57BDE9;
---color-custom-dark-blue: #233861;
---color-custom-green: #74E957;
---color-custom-red: #FC3939;
---color-custom-orange: #FC8F2B;
---color-custom-yellow: #FCE700;
+  --color-custom-blue: #57bde9;
+  --color-custom-dark-blue: #233861;
+  --color-custom-green: #74e957;
+  --color-custom-red: #fc3939;
+  --color-custom-orange: #fc8f2b;
+  --color-custom-yellow: #fce700;
 }
 
 @layer utilities {
-      /* Hide scrollbar for Chrome, Safari, and Opera */
-      .no-scrollbar::-webkit-scrollbar {
-        display: none;
-      }
-  
-  
-      /* Hide scrollbar for IE, Edge, and Firefox */
-      .no-scrollbar {
-        -ms-overflow-style: none; /* IE and Edge */
-        scrollbar-width: none; /* Firefox */
-      }
-    }
+  /* Hide scrollbar for Chrome, Safari, and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge, and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+}
+@layer utilities {
+  .peer-checked + svg path {
+    fill: yellow;
+    stroke: black;
+  }
+}

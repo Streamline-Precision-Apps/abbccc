@@ -1,12 +1,17 @@
 import {
-  // CreateEquipmentLogs,
+  CreateEquipmentLogs,
+  CreateTimesheet,
   deleteLog,
   deleteTimesheet,
   saveEquipmentLogs,
-  saveNewTimesheet,
   saveTimesheet,
 } from "@/actions/adminActions";
 import EmptyView from "@/app/(routes)/admins/_pages/EmptyView";
+import {
+  useDBCostcode,
+  useDBEquipment,
+  useDBJobsite,
+} from "@/app/context/dbCodeContext";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { EditableFields } from "@/components/(reusable)/EditableField";
 import { Grids } from "@/components/(reusable)/grids";
@@ -14,70 +19,116 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
-import { NModals } from "@/components/(reusable)/newmodals";
+// import { NModals } from "@/components/(reusable)/newmodals";
+import { Selects } from "@/components/(reusable)/selects";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { cache } from "react";
-type TimeSheet = {
-  submitDate?: string; // Changed to string since API returns string dates
-  id: string;
-  userId?: string;
-  date?: string;
-  jobsiteId?: string;
-  costcode?: string;
-  nu?: string;
-  Fp?: string;
-  vehicleId?: number | null;
-  startTime?: string | null;
-  endTime?: string | null;
-  duration?: number | null;
-  startingMileage?: number | null;
-  endingMileage?: number | null;
-  leftIdaho?: boolean | null;
-  equipmentHauled?: string | null;
-  materialsHauled?: string | null;
-  hauledLoadsQuantity?: number | null;
-  refuelingGallons?: number | null;
-  timeSheetComments?: string | null;
-  status?: string;
-};
+import { SearchModal } from "./searchModal";
+import { TimeSheetView, EmployeeEquipmentLog } from "@/lib/types";
 
 type Equipment = {
+  id: number;
+  qrId: string;
   name: string; // Assuming only the name field is required
 };
 
-type EmployeeEquipmentLog = {
-  id?: number | null;
-  startTime?: string;
-  endTime?: string | null;
-  duration?: number | null;
-  isRefueled?: boolean | null;
-  fuelUsed?: number | null;
-  comment?: string | null;
-  Equipment?: Equipment;
-};
-
 export const TimesheetView = ({ params }: { params: { employee: string } }) => {
+  const router = useRouter();
   const searchParams = useSearchParams();
+  // date is read from the url and passed to the component
   const date = searchParams.get("date");
   const filter = searchParams.get("filter");
-  const router = useRouter();
   const [dateByFilter, setDateByFilter] = useState<string>("");
-  const [userTimeSheets, setUserTimeSheets] = useState<TimeSheet[]>([]);
-  const [originalTimeSheets, setOriginalTimeSheets] = useState<TimeSheet[]>([]);
+  //---------------------------------------------------------------------------------------
+  // timesheets hold each individual timesheet in the database under an array of timesheets
+  const [userTimeSheets, setUserTimeSheets] = useState<TimeSheetView[]>([]);
+  // holds the original timesheets to revert back to if needed
+  const [originalTimeSheets, setOriginalTimeSheets] = useState<TimeSheetView[]>(
+    []
+  );
+  //---------------------------------------------------------------------------------------
+  // equipmentLogs holds each individual equipment log in the database under an array of equipmentLogs
   const [equipmentLogs, setEquipmentLogs] = useState<EmployeeEquipmentLog[]>(
     []
   );
-  const [isOpened, setIsOpened] = useState(false);
   const [originalEquipmentLogs, setOriginalEquipmentLogs] = useState<
     EmployeeEquipmentLog[]
   >([]);
+  //---------------------------------------------------------------------------------------
+  // for state management for search modals
+  const [term] = useState("");
+  const [equipmentSearchList, setEquipmentSearchList] = useState<Equipment[]>(
+    []
+  );
+  const [equipmentSearchOpen, setEquipmentSearchOpen] = useState(false);
+  const [jobsiteSearchOpen, setJobsiteSearchOpen] = useState(false);
+  const [costcodeSearchOpen, setCostcodeSearchOpen] = useState(false);
+  const [vehiclesSearchOpen, setVehiclesSearchOpen] = useState(false);
+  const [totalHours, setTotalHours] = useState("");
+  const [showCommentSection, setShowCommentSection] = useState(false);
+
+  //---------------------------------------------------------------------------------------
+  // hold the context data for the search modals
+  const { jobsiteResults } = useDBJobsite();
+  const { costcodeResults } = useDBCostcode();
+  const { equipmentResults } = useDBEquipment();
+  const [equipmentList] = useState(equipmentResults);
+
+  // display the error message that occurs when an error occurs
   const [error, setError] = useState<string | null>(null);
-
+  const [selectedOption, setSelectedOption] = useState("timesheets");
+  //---------------------------------------------------------------------------------------
+  // make the timesheet expandable and collapsible
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set()); // Track expanded timesheet IDs
+  // helps models know which Id is currently open and what to edit based on that
+  const [currentLogId, setCurrentLogId] = useState<string | null>(null);
+  const [currentSheetId, setCurrentSheetId] = useState<string | null>(null);
 
+  //---------------------------------------------------------------------------------------
+  // functions to open and close the search modals
+  const openEquipmentSearch = (logId: string) => {
+    setCurrentLogId(logId);
+    setEquipmentSearchOpen(true);
+  };
+
+  const closeEquipmentSearch = () => {
+    setCurrentLogId(null);
+    setEquipmentSearchOpen(false);
+  };
+
+  const openTimesheetSearch = (sheetId: string) => {
+    setCurrentSheetId(sheetId);
+    setJobsiteSearchOpen(true);
+  };
+
+  const closeTimesheetSearch = () => {
+    setCurrentSheetId(null);
+    setJobsiteSearchOpen(false);
+  };
+
+  const openCostcodeSearch = (sheetId: string) => {
+    setCurrentSheetId(sheetId);
+    setCostcodeSearchOpen(true);
+  };
+
+  const closeCostcodeSearch = () => {
+    setCurrentSheetId(null);
+    setCostcodeSearchOpen(false);
+  };
+
+  const openVehicleSearch = (sheetId: string) => {
+    setCurrentSheetId(sheetId);
+    setVehiclesSearchOpen(true);
+  };
+
+  const closeVehiclesSearch = () => {
+    setCurrentSheetId(null);
+    setVehiclesSearchOpen(false);
+  };
+  //  ---------------------------------------------------------------------------------------
   const calculateDuration = (
     startTime?: string,
     endTime?: string
@@ -92,7 +143,8 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
     const durationInMs = end - start;
     return durationInMs > 0 ? durationInMs / (1000 * 60 * 60) : null; // Convert ms to hours
   };
-
+  //  ---------------------------------------------------------------------------------------
+  // fetch all timesheets and equipment logs by date
   useEffect(() => {
     const fetchTimesheets = cache(async () => {
       if (!params.employee) {
@@ -118,6 +170,15 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
         setEquipmentLogs(data.equipmentLogs || []);
         setOriginalEquipmentLogs(data.equipmentLogs || []);
         setError(null);
+        setTotalHours(
+          data.timesheets
+            .reduce(
+              (acc: number, timesheet: TimeSheetView) =>
+                acc + (timesheet.duration ?? 0),
+              0
+            )
+            .toFixed(2)
+        );
       } catch (error) {
         console.error("Failed to fetch employee info:", error);
         setError("Unable to load timesheets. Please try again later.");
@@ -125,7 +186,36 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
     });
     fetchTimesheets();
   }, [dateByFilter, params.employee]);
+  //  ---------------------------------------------------------------------------------------
+  // fetch all equipment names
+  useEffect(() => {
+    const fetchEquipment = async () => {
+      try {
+        const response = await fetch("/api/getAllEquipment");
+        if (!response.ok) {
+          throw new Error(`Failed to fetch: ${response.statusText}`);
+        }
+        const data = await response.json();
 
+        // Trim the data to only include the necessary fields
+        const trimmedData = (data as Equipment[]).map((equipment) => ({
+          id: equipment.id,
+          qrId: equipment.qrId,
+          name: equipment.name,
+        }));
+
+        setEquipmentSearchList(trimmedData);
+      } catch (error) {
+        console.error("Failed to fetch equipment info:", error);
+        setError("Unable to load timesheets. Please try again later.");
+      }
+    };
+
+    fetchEquipment();
+  }, []); // Keep the dependencies array empty to run the effect only once
+
+  //  ---------------------------------------------------------------------------------------
+  // useeffect are listening to the date and filter changes and then update based on that
   useEffect(() => {
     setDateByFilter(date || "");
   }, [date]);
@@ -137,15 +227,59 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
     }
   }, [filter]);
 
-  const createNewTimesheet = async () => {
-    const newTimesheet = await saveNewTimesheet(params.employee, dateByFilter);
+  //  ---------------------------------------------------------------------------------------
+  // this takes the toal hours and updates the state of total day hours
+  useEffect(() => {
+    setTotalHours(
+      userTimeSheets
+        .reduce(
+          (acc: number, timesheet: TimeSheetView) =>
+            acc + (timesheet.duration ?? 0),
+          0
+        )
+        .toFixed(2)
+    );
+  }, [userTimeSheets]);
 
-    setUserTimeSheets((prev) => [...prev, newTimesheet] as TimeSheet[]);
+  //  ---------------------------------------------------------------------------------------
+
+  const createNewTimesheet = async () => {
+    const CreateTimesheetResponse = await CreateTimesheet(
+      params.employee,
+      dateByFilter
+    );
+    if (!CreateTimesheetResponse) {
+      return;
+    }
+
+    setOriginalTimeSheets(
+      (prev) => [...prev, CreateTimesheetResponse] as TimeSheetView[]
+    );
+    setUserTimeSheets(
+      (prev) => [...prev, CreateTimesheetResponse] as TimeSheetView[]
+    );
+    refreshOriginalData();
   };
 
   const createNewLog = async () => {
-    // const newTimesheet = await CreateEquipmentLogs(params.employee, dateByFilter);
-    // setUserTimeSheets((prev) => [...prev, newTimesheet] as TimeSheet[]);
+    try {
+      const createdLog = await CreateEquipmentLogs(
+        params.employee,
+        dateByFilter
+      );
+
+      if (!createdLog) return;
+
+      setEquipmentLogs(
+        (prev) => [...prev, createdLog] as EmployeeEquipmentLog[]
+      );
+      setOriginalEquipmentLogs(
+        (prev) => [...prev, createdLog] as EmployeeEquipmentLog[]
+      );
+      refreshOriginalData();
+    } catch (error) {
+      console.error("Error creating new equipment log:", error);
+    }
   };
 
   const handleDateClick = (newDate: string) => {
@@ -180,26 +314,26 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
     value: unknown
   ) => {
     setEquipmentLogs((prev) =>
-      prev.map((sheet) => {
-        if (sheet.id?.toString() === id) {
-          const updatedSheet = { ...sheet, [field]: value };
+      prev.map((log) => {
+        if (log.id?.toString() === id) {
+          const updatedLog = { ...log, [field]: value };
 
-          // Calculate duration if startTime or endTime is updated
+          // Update duration if startTime or endTime changes
           if (field === "startTime" || field === "endTime") {
-            updatedSheet.duration = calculateDuration(
-              updatedSheet.startTime,
-              updatedSheet.endTime?.toString()
+            updatedLog.duration = calculateDuration(
+              updatedLog.startTime?.toString(),
+              updatedLog.endTime?.toString()
             );
           }
 
-          return updatedSheet;
+          return updatedLog;
         }
-        return sheet;
+        return log;
       })
     );
   };
 
-  const revertTimesheet = (id: string, field: keyof TimeSheet) => {
+  const revertTimesheet = (id: string, field: keyof TimeSheetView) => {
     setUserTimeSheets((prev) =>
       prev.map((sheet) => {
         if (sheet.id === id) {
@@ -231,7 +365,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
     );
   };
 
-  const isFieldChanged = (id: string, field: keyof TimeSheet) => {
+  const isFieldChanged = (id: string, field: keyof TimeSheetView) => {
     const userSheet = userTimeSheets.find((sheet) => sheet.id === id);
     const originalSheet = originalTimeSheets.find((sheet) => sheet.id === id);
     return userSheet?.[field] !== originalSheet?.[field];
@@ -296,29 +430,26 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
       return newSet;
     });
   };
-  function isTimesheetChanged(
-    timesheet: TimeSheet,
-    originalTimesheet: TimeSheet
-  ) {
-    return JSON.stringify(timesheet) !== JSON.stringify(originalTimesheet);
-  }
-
-  function isLogChanged(
-    log: EmployeeEquipmentLog,
-    originalLog: EmployeeEquipmentLog
-  ) {
-    return JSON.stringify(log) !== JSON.stringify(originalLog);
+  function isChanged<T>(current: T, original: T): boolean {
+    return JSON.stringify(current) !== JSON.stringify(original);
   }
 
   const handleSubmitTimesheets = async () => {
     try {
-      // Filter out only modified timesheets
+      console.log("Submitting timesheets...");
+      // Separate new and changed timesheets
       const changedTimesheets = userTimeSheets.filter((timesheet) => {
         const original = originalTimeSheets.find(
           (original) => original.id === timesheet.id
         );
-        return original && isTimesheetChanged(timesheet, original);
+        return (
+          original &&
+          isChanged(timesheet as TimeSheetView, original as TimeSheetView)
+        );
       });
+      console.log("changedTimesheets:", changedTimesheets);
+
+      // Process changed timesheets
       for (const timesheet of changedTimesheets) {
         const formData = new FormData();
         formData.append("id", timesheet.id);
@@ -331,6 +462,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
         formData.append("jobsiteId", timesheet.jobsiteId || "");
         formData.append("timeSheetComments", timesheet.timeSheetComments || "");
         formData.append("vehicleId", timesheet.vehicleId?.toString() || "");
+        formData.append("status", timesheet.status || "");
         formData.append(
           "startingMileage",
           timesheet.startingMileage?.toString() || ""
@@ -350,65 +482,136 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
         );
         formData.append("equipmentHauled", timesheet.equipmentHauled || "");
         formData.append("materialsHauled", timesheet.materialsHauled || "");
-        const result = await saveTimesheet(formData);
+        console.log("formData:", formData);
+
+        const result = await saveTimesheet(formData); // Handle updating existing timesheet
         if (!result)
           throw new Error(`Failed to save timesheet ${timesheet.id}`);
+        console.log(`Updated timesheet with ID: ${timesheet.id}`);
       }
 
-      // Filter out only modified equipment logs
       const changedLogs = equipmentLogs.filter((log) => {
         const original = originalEquipmentLogs.find(
-          (original) => original.id === log.id
+          (original) => original.id?.toString() === log.id?.toString()
         );
-        return original && isLogChanged(log, original);
+        return (
+          original &&
+          isChanged(
+            log as EmployeeEquipmentLog,
+            original as EmployeeEquipmentLog
+          )
+        );
       });
 
+      // Process changed logs
       for (const log of changedLogs) {
         const logFormData = new FormData();
         logFormData.append("id", log.id?.toString() || "");
+        logFormData.append("equipmentId", log?.equipmentId?.toString() || "");
         logFormData.append("startTime", log.startTime || "");
         logFormData.append("endTime", log.endTime || "");
         logFormData.append("duration", log.duration?.toString() || "");
         logFormData.append("isRefueled", log.isRefueled ? "true" : "false");
         logFormData.append("fuelUsed", log.fuelUsed?.toString() || "");
         logFormData.append("comment", log.comment || "");
-        const result = await saveEquipmentLogs(logFormData);
+        console.log("formData:", logFormData);
+        const result = await saveEquipmentLogs(logFormData); // Handle updating existing log
+
         if (!result) throw new Error(`Failed to save equipment log ${log.id}`);
-        refreshOriginalData();
-        console.log("All changes saved successfully.");
+        console.log(`Updated equipment log with ID: ${log.id}`);
+      }
+      console.log("All changes saved successfully", userTimeSheets);
+      refreshOriginalData();
+    } catch (error) {
+      console.error("Error saving changes:", error);
+    }
+    console.log("All changes saved successfully");
+  };
+
+  const handleDelete = async (id: string, type: string) => {
+    try {
+      if (type === "timesheet") {
+        const timesheetId = parseInt(id, 10);
+        await deleteTimesheet(timesheetId);
+        setUserTimeSheets((prev) => prev.filter((sheet) => sheet.id !== id));
+        setOriginalTimeSheets((prev) =>
+          prev.filter((sheet) => sheet.id !== id)
+        );
+        console.log("Timesheet deleted successfully.");
+      }
+      if (type === "log") {
+        const logId = parseInt(id, 10);
+        await deleteLog(logId);
+        setEquipmentLogs((prev) =>
+          prev.filter((log) => log.id?.toString() !== id)
+        );
+        setOriginalEquipmentLogs((prev) =>
+          prev.filter((log) => log.id?.toString() !== id)
+        );
+        console.log("Timesheet deleted successfully.");
       }
     } catch (error) {
-      console.error("Error saving timesheet:", error);
-    }
-  };
-
-  const handleDeleteTimesheet = async (id: string) => {
-    try {
-      const timesheetId = parseInt(id, 10);
-      await deleteTimesheet(timesheetId);
-      setUserTimeSheets((prev) => prev.filter((sheet) => sheet.id !== id));
-      setOriginalTimeSheets((prev) => prev.filter((sheet) => sheet.id !== id));
-      console.log("Timesheet deleted successfully.");
-    } catch (error) {
       console.error("Error deleting timesheet:", error);
     }
   };
-
-  const handleDeleteLog = async (id: string) => {
-    try {
-      const logId = parseInt(id, 10);
-      await deleteLog(logId);
-      setEquipmentLogs((prev) =>
-        prev.filter((log) => log.id?.toString() !== id)
-      );
-      setOriginalEquipmentLogs((prev) =>
-        prev.filter((log) => log.id?.toString() !== id)
-      );
-      console.log("Timesheet deleted successfully.");
-    } catch (error) {
-      console.error("Error deleting timesheet:", error);
-    }
+  const handleCommentSection = () => {
+    setShowCommentSection(!showCommentSection);
   };
+
+  // const filteredList = useMemo(() => {
+  //   if (!term.trim()) return equipmentSearchList;
+
+  //   const filtered = equipmentSearchList.filter((equipment) => {
+  //     const name = `${equipment.qrId} ${equipment.name}`.toLowerCase();
+  //     return name.includes(term.toLowerCase());
+  //   });
+
+  //   console.log("Filtered List:", filtered);
+  //   return filtered;
+  // }, [term, equipmentSearchList]);
+
+  const vehicleFilteredList = useMemo(() => {
+    if (!term.trim()) return equipmentList;
+
+    const filtered = equipmentList.filter((vehicle) => {
+      const name = `${vehicle.qrId} ${vehicle.name}`.toLowerCase();
+      return name.includes(term.toLowerCase());
+    });
+
+    console.log("Filtered List:", filtered);
+    return filtered;
+  }, [term, equipmentList]);
+
+  const jobFilteredList = useMemo(() => {
+    if (!term.trim()) return jobsiteResults;
+
+    const filtered = jobsiteResults.filter((jobsite) => {
+      const name = `${jobsite.qrId} ${jobsite.name}`.toLowerCase();
+      return name.includes(term.toLowerCase());
+    });
+
+    console.log("Filtered List:", filtered);
+    return filtered;
+  }, [term, jobsiteResults]);
+
+  const ccFilteredList = useMemo(() => {
+    if (!term.trim()) return costcodeResults;
+
+    const filtered = costcodeResults.filter((cc) => {
+      const name = `${cc.name} ${cc.description}`.toLowerCase();
+      return name.includes(term.toLowerCase());
+    });
+
+    console.log("Filtered List:", filtered);
+    return filtered;
+  }, [term, costcodeResults]);
+
+  // const handleSearchChange = useCallback(
+  //   (e: React.ChangeEvent<HTMLInputElement>) => {
+  //     setTerm(e.target.value);
+  //   },
+  //   []
+  // );
 
   return (
     <Grids rows={"12"} cols={"5"} gap={"2"} className="h-full w-full">
@@ -425,13 +628,51 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
               />
             </Holds>
           </Holds>
-          <Holds className="row-start-1 row-end-2 col-start-4 col-end-6  h-full">
-            <Holds background={"red"} className=" my-auto"></Holds>
+          <Holds
+            position={"row"}
+            className=" row-start-2 row-end-3 col-start-1 col-end-3 h-full"
+          >
+            <Grids rows={"1"} cols={"8"} className=" h-full w-full my-auto">
+              <Holds className="col-span-5 my-auto">
+                <Texts size={"p6"} className="">
+                  Comments
+                </Texts>
+              </Holds>
+              <Holds>
+                <Images
+                  titleImg={"/comment.svg"}
+                  titleImgAlt={"comment icon"}
+                  className=" my-auto col-span-2"
+                  onClick={handleCommentSection}
+                />
+              </Holds>
+              <div className="w-2 h-2 mt-2 rounded-full bg-app-orange flex col-span-1"></div>
+            </Grids>
           </Holds>
+
           <Holds className="row-start-2 row-end-3 col-start-4 col-end-6  h-full">
-            <Holds background={"green"} className=" my-auto"></Holds>
+            <Holds className=" my-auto">
+              <Texts position={"right"} size={"p6"}>
+                Total Hours: {totalHours}
+              </Texts>
+            </Holds>
           </Holds>
-          <Holds className="row-span-9 col-span-5 h-full">
+          {showCommentSection && (
+            <Holds className="row-start-3 row-end-12 col-start-1 col-end-6 h-full w-full">
+              <TextAreas
+                maxLength={40}
+                className="w-full"
+                style={{ resize: "none" }}
+              ></TextAreas>
+            </Holds>
+          )}
+          <Holds
+            className={`${
+              showCommentSection
+                ? "row-start-5 row-end-12 col-start-1 col-end-6  "
+                : "row-start-3 row-end-12 col-start-1 col-end-6 "
+            }  h-full w-full`}
+          >
             <Holds className="h-full w-full row-span-5 overflow-y-auto no-scrollbar border-[3px] border-black rounded-[10px]">
               {userTimeSheets.length > 0
                 ? userTimeSheets.map((timesheet) => {
@@ -442,22 +683,70 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                     return (
                       <Holds
                         key={timesheet.id}
-                        className="w-full even:bg-gray-200 odd:bg-gray-100 rounded-[10px] px-2 py-3 mb-4 cursor-pointer"
+                        className="w-full even:bg-gray-200 odd:bg-gray-100 rounded-[10px] p-4 mb-4 cursor-pointer"
                       >
                         {/* Always show the header */}
+                        {isExpanded ? (
+                          <Holds
+                            position={"row"}
+                            className="w-full h-full gap-4 "
+                          >
+                            <Holds
+                              position={"row"}
+                              className="mt-4 justify-between "
+                            >
+                              <Buttons
+                                background={"red"}
+                                position={"left"}
+                                className="w-1/3 py-2"
+                                onClick={() =>
+                                  handleDelete(timesheet.id, "timesheet")
+                                }
+                              >
+                                <Texts size={"p5"}>Delete</Texts>
+                              </Buttons>
+                              <Holds className=" w-1/3 h-full">
+                                <Selects
+                                  value={timesheet.status}
+                                  onChange={(e) =>
+                                    handleInputChange(
+                                      timesheet.id,
+                                      "status",
+                                      e.target.value
+                                    )
+                                  }
+                                >
+                                  <option value="PENDING">Pending</option>
+                                  <option value="APPROVED">Approved</option>
+                                  <option value="DENIED">Denied</option>
+                                </Selects>
+                              </Holds>
+                            </Holds>
+
+                            <Holds className="w-[10%] h-full">
+                              <Images
+                                titleImg="/expandLeft.svg"
+                                titleImgAlt="clock in"
+                                className="rotate-[270deg] my-auto"
+                                size={"50"}
+                                onClick={() => toggleExpanded(timesheet.id)} // Toggle on click
+                              />
+                            </Holds>
+                          </Holds>
+                        ) : null}
+                        <Inputs type="hidden" value={timesheet.id} />
+                        <Inputs type="hidden" value={timesheet.userId} />
+                        {/* ----------------------------------------------------------------------------*/}
+                        {/* ----------------------------------------------------------------------------*/}
                         <Holds
                           position={"row"}
                           className="h-full w-full my-auto relative"
                         >
-                          <Inputs type="hidden" value={timesheet.id} />
-                          <Inputs type="hidden" value={timesheet.userId} />
-                          {/* ----------------------------------------------------------------------------*/}
-                          {/* ----------------------------------------------------------------------------*/}
                           <Holds
                             position={"row"}
-                            className="h-full w-full gap-4"
+                            className="w-full h-full gap-4"
                           >
-                            <Holds className="w-[45%] h-full">
+                            <Holds className=" h-full">
                               <Labels size={"p4"}>Start Time</Labels>
                               <EditableFields
                                 type="time"
@@ -497,7 +786,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
 
                             {/* ----------------------------------------------------------------------------*/}
                             {/* ----------------------------------------------------------------------------*/}
-                            <Holds className="w-[45%] h-full">
+                            <Holds className=" h-full">
                               <Labels size={"p4"}>End Time</Labels>
                               <EditableFields
                                 type="time"
@@ -534,18 +823,32 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                             </Holds>
                           </Holds>
 
-                          {isExpanded ? (
-                            <Holds className="w-[10%] h-full">
-                              <Images
-                                titleImg="/expandLeft.svg"
-                                titleImgAlt="clock in"
+                          {isExpanded ? null : (
+                            <Holds className="w-[10%] h-full  ml-4">
+                              <div
+                                className={
+                                  timesheet.status === "APPROVED"
+                                    ? "min-w-fit w-7 h-fit rounded-full bg-app-green mx-auto"
+                                    : timesheet.status === "PENDING"
+                                    ? "min-w-fit w-7 h-fit rounded-full bg-app-orange mx-auto"
+                                    : "min-w-fit w-7 h-fit rounded-full bg-app-red mx-auto"
+                                }
+                              >
+                                <Texts size={"p6"} className="text-center">
+                                  {timesheet.status === "APPROVED"
+                                    ? "A"
+                                    : timesheet.status === "PENDING"
+                                    ? "P"
+                                    : "D"}
+                                </Texts>
+                              </div>
+
+                              {/* <Images 
+                                titleImg={timesheet.status === "APPROVED" ? "/approved.svg" : timesheet.status === "PENDING" ? "/pending.svg" : "/denied.svg"}
+                                titleImgAlt="status"
                                 className="rotate-[270deg] my-auto"
                                 size={"50"}
-                                onClick={() => toggleExpanded(timesheet.id)} // Toggle on click
-                              />
-                            </Holds>
-                          ) : (
-                            <Holds className="w-[10%] h-full ">
+                                /> */}
                               <Images
                                 titleImg="/expandLeft.svg"
                                 titleImgAlt="clock in"
@@ -603,7 +906,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                               </Holds>
                               <Holds>
                                 <Labels size={"p4"}>
-                                  Duration (updates manually)
+                                  Duration (Updates Automatically)
                                 </Labels>
 
                                 <Inputs
@@ -613,7 +916,6 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                 />
                               </Holds>
                             </Holds>
-
                             <Holds
                               position={"row"}
                               className="h-full w-full gap-4"
@@ -646,7 +948,6 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                 </Texts>
                               </Holds>
                             </Holds>
-
                             <Holds
                               position={"row"}
                               className="h-full w-full gap-4"
@@ -671,10 +972,16 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                   onRevert={() =>
                                     revertTimesheet(timesheet.id, "jobsiteId")
                                   }
+                                  onClick={() =>
+                                    openTimesheetSearch(
+                                      timesheet.id?.toString() || ""
+                                    )
+                                  }
                                   variant="default"
                                   size="default"
                                 />
                               </Holds>
+
                               <Holds>
                                 <Labels size={"p4"}>Cost Code</Labels>
                                 <EditableFields
@@ -694,48 +1001,109 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                   onRevert={() =>
                                     revertTimesheet(timesheet.id, "costcode")
                                   }
+                                  onClick={() =>
+                                    openCostcodeSearch(
+                                      timesheet.id?.toString() || ""
+                                    )
+                                  }
                                   variant="default"
                                   size="default"
                                 />
                               </Holds>
                             </Holds>
+                            {/* Start of jobsite search Modal*/}
+                            <SearchModal
+                              isOpen={
+                                jobsiteSearchOpen &&
+                                currentSheetId === timesheet.id?.toString()
+                              }
+                              renderItem={(item): React.ReactNode =>
+                                `${item.name} - ${item.qrId}`
+                              }
+                              handleClose={closeTimesheetSearch}
+                              list={jobFilteredList}
+                              filterFunction={(jobsite, searchTerm) =>
+                                jobsite.name
+                                  .toLowerCase()
+                                  .includes(searchTerm.toLowerCase())
+                              }
+                              onItemClick={(jobsite) => {
+                                handleInputChange(
+                                  timesheet.id,
+                                  "jobsiteId",
+                                  jobsite.qrId
+                                );
+                              }}
+                              placeholder="Search jobsite by name"
+                            />
+                            {/* Start of costcode search Modal*/}
 
-                            {/* If the time sheet has a vehicle ID, show Vehicle ID, Starting Mileage, and Ending Mileage and all truck details */}
-                            {!timesheet.vehicleId && (
-                              <>
-                                <Holds
-                                  position={"row"}
-                                  className="h-full w-full mb-2 gap-4"
-                                >
-                                  <Holds>
-                                    <Labels size={"p4"}>Vehicle ID</Labels>
-                                    <EditableFields
-                                      type="text"
-                                      value={
-                                        timesheet.vehicleId?.toString() || ""
-                                      }
-                                      onChange={(e) =>
-                                        handleInputChange(
-                                          timesheet.id,
-                                          "vehicleId",
-                                          e.target.value
-                                        )
-                                      }
-                                      isChanged={isFieldChanged(
-                                        timesheet.id,
-                                        "vehicleId"
-                                      )}
-                                      onRevert={() =>
-                                        revertTimesheet(
-                                          timesheet.id,
-                                          "vehicleId"
-                                        )
-                                      }
-                                      variant="default"
-                                      size="default"
-                                    />
-                                  </Holds>
-
+                            <SearchModal
+                              isOpen={
+                                costcodeSearchOpen &&
+                                currentSheetId === timesheet.id?.toString()
+                              }
+                              handleClose={closeCostcodeSearch}
+                              list={ccFilteredList.map((costcode) => ({
+                                id: costcode.id.toString(),
+                                name: costcode.name,
+                                description: costcode.description,
+                              }))}
+                              renderItem={(item): React.ReactNode =>
+                                `${item.name} - ${item.description}`
+                              }
+                              filterFunction={(costcode, searchTerm) =>
+                                costcode.name
+                                  .toLowerCase()
+                                  .includes(searchTerm.toLowerCase())
+                              }
+                              onItemClick={(costcode) => {
+                                handleInputChange(
+                                  timesheet.id,
+                                  "costcode",
+                                  costcode.name
+                                );
+                              }}
+                              placeholder="Search costcode by name"
+                            />
+                            {/* End of costcode search Modal*/}
+                            <Holds
+                              position={"row"}
+                              className="h-full w-full mb-2 gap-4"
+                            >
+                              <Holds>
+                                <Labels size={"p4"}>Vehicle ID</Labels>
+                                <EditableFields
+                                  type="text"
+                                  value={timesheet.vehicleId?.toString() || ""}
+                                  onChange={(e) =>
+                                    handleInputChange(
+                                      timesheet.id,
+                                      "vehicleId",
+                                      e.target.value
+                                    )
+                                  }
+                                  isChanged={isFieldChanged(
+                                    timesheet.id,
+                                    "vehicleId"
+                                  )}
+                                  onRevert={() =>
+                                    revertTimesheet(timesheet.id, "vehicleId")
+                                  }
+                                  onClick={() =>
+                                    openVehicleSearch(
+                                      timesheet.id?.toString() || ""
+                                    )
+                                  }
+                                  variant="default"
+                                  size="default"
+                                />
+                              </Holds>
+                              <Holds
+                                position={"row"}
+                                className="h-full w-full mb-2 gap-4"
+                              >
+                                {timesheet.vehicleId && (
                                   <Holds>
                                     <Labels size={"p4"}>
                                       Starting Mileage
@@ -767,7 +1135,49 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                       size="default"
                                     />
                                   </Holds>
-                                </Holds>
+                                )}
+                              </Holds>
+                            </Holds>
+                            {/* Start of jobsite search Modal*/}
+                            <SearchModal
+                              isOpen={
+                                vehiclesSearchOpen &&
+                                currentSheetId === timesheet.id?.toString()
+                              }
+                              renderItem={(item): React.ReactNode =>
+                                `${item.qrId} - ${item.name}`
+                              }
+                              handleClose={closeVehiclesSearch}
+                              list={vehicleFilteredList
+                                .filter(
+                                  (vehicle) =>
+                                    vehicle.name &&
+                                    !vehicle.qrId.startsWith("EQ-") // Exclude names starting with "EQ-"
+                                )
+                                .map((vehicle) => ({
+                                  id: vehicle.id.toString(),
+                                  name: vehicle.name,
+                                  qrId: vehicle.qrId,
+                                  equipmentTag: vehicle.equipmentTag,
+                                }))} // Prepare the list structure
+                              filterFunction={
+                                (jobsite, searchTerm) =>
+                                  jobsite.name
+                                    .toLowerCase()
+                                    .includes(searchTerm.toLowerCase()) // Match searchTerm dynamically
+                              }
+                              onItemClick={(vehicle) => {
+                                handleInputChange(
+                                  timesheet.id,
+                                  "vehicleId",
+                                  vehicle.name
+                                );
+                              }}
+                              placeholder="Search Vehicle by name"
+                            />
+                            {/* If the time sheet has a vehicle ID, show Vehicle ID, Starting Mileage, and Ending Mileage and all truck details */}
+                            {timesheet.vehicleId && (
+                              <>
                                 <Holds
                                   position={"row"}
                                   className="h-full w-full mb-2 gap-4"
@@ -965,67 +1375,92 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                 </Holds>
                               </>
                             )}
-                            <Holds className="mt-4 ">
-                              <Buttons
-                                background={"red"}
-                                position={"left"}
-                                className="w-1/4 py-2"
-                                onClick={() =>
-                                  handleDeleteTimesheet(timesheet.id)
-                                }
-                              >
-                                <Texts size={"p5"}>Delete</Texts>
-                              </Buttons>
-                            </Holds>
                           </>
                         )}
                       </Holds>
                     );
                   })
                 : null}
+
               {equipmentLogs.length > 0 &&
-                equipmentLogs.map((log, index) => {
-                  const isExpanded = expandedIds.has(
-                    `equipmentLog-${log.id || index}`
-                  );
+                equipmentLogs.map((log) => {
+                  const isExpanded = expandedIds.has(log.id?.toString() || "");
 
                   return (
                     <Holds
-                      key={log.id || index}
-                      className="w-full even:bg-gray-200 odd:bg-gray-100 rounded-[10px] px-1 py-3 mb-4 cursor-pointer"
+                      key={log.id?.toString() || ""}
+                      className="w-full even:bg-gray-200 odd:bg-gray-100 rounded-[10px] p-4 mb-4 cursor-pointer"
                     >
-                      <Holds position="row" className="w-full h-full gap-4">
-                        <Holds className="w-[45%] h-full">
+                      {isExpanded && (
+                        <Holds position="row">
+                          <Holds className="mt-4 ">
+                            <Buttons
+                              background={"red"}
+                              position={"left"}
+                              className="w-1/3 py-2"
+                              onClick={() =>
+                                handleDelete(log.id?.toString() || "", "log")
+                              }
+                            >
+                              <Texts size={"p5"}>Delete</Texts>
+                            </Buttons>
+                          </Holds>
+                          <Holds className=" w-[10%] h-full">
+                            <Images
+                              titleImg="/expandLeft.svg"
+                              titleImgAlt="clock in"
+                              className="rotate-[270deg] my-auto"
+                              size={"50"}
+                              onClick={() =>
+                                toggleExpanded(log.id?.toString() || "")
+                              }
+                            />
+                          </Holds>
+                        </Holds>
+                      )}
+
+                      <Holds position="row" className="w-full h-full gap-4 ">
+                        <Holds className="w-[50%] h-full">
                           <Labels size="p4">Equipment Name</Labels>
                           <EditableFields
                             type="text"
-                            value={log?.Equipment?.name?.toString() || ""}
-                            onChange={(e) =>
-                              handleEquipmentLogChange(
-                                log.id?.toString() || "",
-                                "Equipment", // Ensure this matches `keyof EmployeeEquipmentLog`
-                                {
-                                  ...log.Equipment,
-                                  name: e.target.value,
-                                }
-                              )
+                            value={
+                              equipmentSearchList.find(
+                                (eq) => eq.id === log.equipmentId
+                              )?.name || ""
                             }
+                            onChange={(e) => {
+                              const selectedEquipment =
+                                equipmentSearchList.find(
+                                  (eq) => eq.name === e.target.value
+                                );
+                              if (selectedEquipment) {
+                                handleEquipmentLogChange(
+                                  log.id?.toString() || "",
+                                  "equipmentId",
+                                  selectedEquipment.id
+                                );
+                              }
+                            }}
                             isChanged={isEquipmentFieldChanged(
                               log.id?.toString() || "",
-                              "Equipment"
+                              "equipmentId"
                             )}
                             onRevert={() =>
                               revertEquipmentLog(
                                 log.id?.toString() || "",
-                                "Equipment"
+                                "equipmentId"
                               )
+                            }
+                            onClick={() =>
+                              openEquipmentSearch(log.id?.toString() || "")
                             }
                             variant="default"
                             size="default"
                           />
                         </Holds>
                         {/* Duration */}
-                        <Holds className="w-[45%] h-full">
+                        <Holds className="w-[50%] h-full">
                           <Labels size="p4">Duration (updates manually)</Labels>
                           <Inputs
                             type="text"
@@ -1040,21 +1475,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                             }
                           />
                         </Holds>
-                        {isExpanded ? (
-                          <Holds className="w-[10%] h-full">
-                            <Images
-                              titleImg="/expandLeft.svg"
-                              titleImgAlt="clock in"
-                              className="rotate-[270deg] my-auto"
-                              size={"50"}
-                              onClick={() =>
-                                toggleExpanded(
-                                  `equipmentLog-${log.id || index}`
-                                )
-                              }
-                            />
-                          </Holds>
-                        ) : (
+                        {isExpanded ? null : (
                           <Holds className="w-[10%] h-full ">
                             <Images
                               titleImg="/expandLeft.svg"
@@ -1062,14 +1483,37 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                               className="rotate-90 my-auto"
                               size={"50"}
                               onClick={() =>
-                                toggleExpanded(
-                                  `equipmentLog-${log.id || index}`
-                                )
+                                toggleExpanded(log.id?.toString() || "")
                               }
                             />
                           </Holds>
                         )}
                       </Holds>
+                      {/* Equipment Search modal */}
+                      <SearchModal
+                        isOpen={
+                          equipmentSearchOpen &&
+                          currentLogId === log.id?.toString()
+                        }
+                        handleClose={closeEquipmentSearch}
+                        list={equipmentSearchList.map((equipment) => ({
+                          id: equipment.id.toString(),
+                          name: equipment.name,
+                        }))}
+                        filterFunction={(equipment, searchTerm) =>
+                          equipment.name
+                            .toLowerCase()
+                            .includes(searchTerm.toLowerCase())
+                        }
+                        onItemClick={(equipment) => {
+                          handleEquipmentLogChange(
+                            currentLogId || "",
+                            "equipmentId",
+                            equipment.id
+                          );
+                        }}
+                        placeholder="Search equipment by name"
+                      />
                       {isExpanded && (
                         <>
                           {/* Start Time */}
@@ -1165,7 +1609,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                               position="row"
                               className="my-auto w-full gap-4"
                             >
-                              <Holds>
+                              <Holds className="">
                                 <Labels size="p4">Fuel used</Labels>
                                 <EditableFields
                                   type="checkbox"
@@ -1193,32 +1637,37 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                 />
                               </Holds>
                               <Holds>
-                                <Labels size="p4">Fuel used</Labels>
-                                <EditableFields
-                                  type="text"
-                                  value={log.fuelUsed?.toString() || ""}
-                                  onChange={(e) => {
-                                    handleEquipmentLogChange(
-                                      log.id?.toString() || "",
-                                      "fuelUsed",
-                                      e.target.value
-                                    );
-                                  }}
-                                  isChanged={isEquipmentFieldChanged(
-                                    log.id?.toString() || "",
-                                    "fuelUsed"
-                                  )}
-                                  onRevert={() =>
-                                    revertEquipmentLog(
-                                      log.id?.toString() || "",
-                                      "fuelUsed"
-                                    )
-                                  }
-                                  variant="default"
-                                  size="default"
-                                />
+                                {log.isRefueled && (
+                                  <>
+                                    <Labels size="p4">Fuel used</Labels>
+                                    <EditableFields
+                                      type="text"
+                                      value={log.fuelUsed?.toString() || ""}
+                                      onChange={(e) => {
+                                        handleEquipmentLogChange(
+                                          log.id?.toString() || "",
+                                          "fuelUsed",
+                                          e.target.value
+                                        );
+                                      }}
+                                      isChanged={isEquipmentFieldChanged(
+                                        log.id?.toString() || "",
+                                        "fuelUsed"
+                                      )}
+                                      onRevert={() =>
+                                        revertEquipmentLog(
+                                          log.id?.toString() || "",
+                                          "fuelUsed"
+                                        )
+                                      }
+                                      variant="default"
+                                      size="default"
+                                    />
+                                  </>
+                                )}
                               </Holds>
                             </Holds>
+
                             <Holds>
                               <Labels size="p4">Comment</Labels>
                               <TextAreas
@@ -1234,18 +1683,6 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                 }}
                               />
                             </Holds>
-                          </Holds>
-                          <Holds className="mt-4 ">
-                            <Buttons
-                              background={"red"}
-                              position={"left"}
-                              className="w-1/4 py-2"
-                              onClick={() =>
-                                handleDeleteLog(log.id?.toString() || "")
-                              }
-                            >
-                              <Texts size={"p5"}>Delete</Texts>
-                            </Buttons>
                           </Holds>
                         </>
                       )}
@@ -1266,6 +1703,15 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                   )}
                 </>
               )}
+              {userTimeSheets.length === 0 && equipmentLogs.length === 0 && (
+                <Holds className="row-span-12 col-span-5 w-full h-full">
+                  <EmptyView
+                    Children={
+                      <Texts size={"p4"}>No Timesheet or Logs Found</Texts>
+                    }
+                  />
+                </Holds>
+              )}
             </Holds>
           </Holds>
           <Holds
@@ -1281,46 +1727,28 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
             </Buttons>
           </Holds>
 
-          <Holds
-            position={"row"}
-            className="row-start-12 row-end-13 col-start-5 col-end-6 h-full"
-          >
-            <Buttons
-              background={"green"}
-              className="w-full h-full"
-              onClick={() => setIsOpened(true)}
-            >
-              <Texts size={"p4"}>+</Texts>
-            </Buttons>
-            <NModals
-              size={"sm"}
-              isOpen={isOpened}
-              handleClose={() => setIsOpened(false)}
-            >
-              <Holds className="w-full h-full">
-                <Texts size={"p2"}>Select one of the following:</Texts>
-                <Holds position={"row"} className="w-full h-full gap-4">
-                  <Holds>
-                    <Buttons
-                      background={"green"}
-                      className="w-full h-full py-2"
-                      onClick={createNewTimesheet}
-                    >
-                      <Texts size={"p5"}>New Timesheet</Texts>
-                    </Buttons>
-                  </Holds>
-                  <Holds>
-                    <Buttons
-                      background={"green"}
-                      className="w-full h-full py-2"
-                      onClick={createNewLog}
-                    >
-                      <Texts size={"p5"}> New Equipment Log</Texts>
-                    </Buttons>
-                  </Holds>
-                </Holds>
-              </Holds>
-            </NModals>
+          <Holds className="row-start-12 row-end-13 col-start-4 col-end-6 h-full">
+            <Holds position={"row"} className="w-full h-full gap-4">
+              <Selects
+                className="my-auto"
+                value={selectedOption}
+                onChange={(e) => setSelectedOption(e.target.value)}
+              >
+                <option value="timesheets">Timesheets</option>
+                <option value="logs">Logs</option>
+              </Selects>
+              <Buttons
+                background={"green"}
+                className="w-1/3 h-full"
+                onClick={
+                  selectedOption === "timesheets"
+                    ? createNewTimesheet
+                    : createNewLog
+                }
+              >
+                <Texts size={"p4"}>+</Texts>
+              </Buttons>
+            </Holds>
           </Holds>
         </>
       )}

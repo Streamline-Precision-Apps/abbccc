@@ -59,6 +59,21 @@ model PasswordResetTokens {
   @@unique([email, token])
 }
 
+// what does this table do and how does it work
+// this table compacts the approval status of each form into one table, rather then each form having its own 
+//approval status this will make it easier to aprove or deny all forms at once for a day
+model managerComments {
+  id        String     @id @default(cuid())
+  comment   String?
+  managerId String
+  status    FormStatus // pending, approved, denied overall aproval status of each form
+  userId    String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  users     Users      @relation("UserRelation", fields: [userId], references: [id])
+  employee  Users      @relation("ManagerRelation", fields: [managerId], references: [id])
+}
+
 // Holds the login and general app data of employee but not all the data
 model Users {
   id              String     @id @default(cuid())
@@ -91,6 +106,8 @@ model Users {
   injuryForms           InjuryForms[]
   timeoffRequestForms   timeoffRequestForms[]
   passwordResetTokensId String?
+  commentsAsUser        managerComments[]       @relation("UserRelation")
+  commentsAsEmployee    managerComments[]       @relation("ManagerRelation")
 }
 
 model UserSettings {
@@ -174,6 +191,7 @@ model TimeSheets {
   startingMileage     Int?
   endingMileage       Int?
   leftIdaho           Boolean?   @default(false)
+  // stateline          []  this is its own table for stateline mileage and state. 
   equipmentHauled     String?
   materialsHauled     String?
   hauledLoadsQuantity Int?
@@ -264,7 +282,7 @@ model CostCodes {
 model CrewMembers {
   id         Int     @id @default(autoincrement())
   supervisor Boolean @default(false) // if the crew member is a supervisor or not
-  employeeId String
+  employeeId String  @unique
   crewId     Int
 
   createdAt DateTime @default(now())
