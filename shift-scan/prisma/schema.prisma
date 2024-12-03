@@ -283,7 +283,7 @@ model CostCodes {
 model CrewMembers {
   id         Int     @id @default(autoincrement())
   supervisor Boolean @default(false) // if the crew member is a supervisor or not
-  employeeId String
+  employeeId String  @unique
   crewId     Int
 
   createdAt DateTime @default(now())
