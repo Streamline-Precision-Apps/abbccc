@@ -1,7 +1,196 @@
 "use server";
 import prisma from "@/lib/prisma";
-import { Permission } from "@/lib/types";
+import { FormStatus, Permission } from "@/lib/types";
+
 import { revalidatePath, revalidateTag } from "next/cache";
+
+export async function createCrew(formData: FormData) {
+  try {
+    console.log("Creating new crew...");
+
+    // Extract data from formData
+    const crewName = formData.get("crewName") as string;
+    const crewDescription = formData.get("crewDescription") as string;
+    const crewRaw = formData.get("crew");
+    const teamLead = formData.get("teamLead");
+
+    if (!crewName || !crewName.trim()) {
+      throw new Error("Crew name is required.");
+    }
+    if (!crewRaw) {
+      throw new Error("Crew members data is missing.");
+    }
+    if (!teamLead) {
+      throw new Error("A team lead is required.");
+    }
+
+    const crew = JSON.parse(crewRaw as string) as Array<{
+      id: string;
+      supervisor: boolean;
+    }>;
+
+    // Create the crew
+    const newCrew = await prisma.crews.create({
+      data: {
+        name: crewName.trim(),
+        description: crewDescription?.trim() || "",
+      },
+    });
+    console.log("Crew created:", newCrew);
+
+    // Add members to the crew
+    await Promise.all(
+      crew.map(async (member) => {
+        await prisma.crewMembers.create({
+          data: {
+            crewId: newCrew.id,
+            employeeId: member.id,
+            supervisor: member.id === teamLead,
+          },
+        });
+      })
+    );
+
+    console.log("Crew created successfully");
+    revalidateTag("crews");
+
+    return {
+      success: true,
+      crewId: newCrew.id,
+      message: "Crew created successfully",
+    };
+  } catch (error) {
+    console.error("Error creating crew:", error);
+    throw new Error(
+      `Failed to create crew: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`
+    );
+  }
+}
+
+export async function deleteCrewAction(id: string) {
+  try {
+    console.log("Deleting crew...");
+
+    // Delete associated crew members first
+    await prisma.crewMembers.deleteMany({
+      where: { crewId: Number(id) },
+    });
+
+    // Delete associated crew jobsites
+    await prisma.crewJobsites.deleteMany({
+      where: { crewId: Number(id) },
+    });
+
+    // Delete the crew itself
+    await prisma.crews.delete({
+      where: { id: Number(id) },
+    });
+
+    // Revalidate the path or trigger a re-fetch for the related UI
+    revalidateTag("crews");
+    console.log("Crew deleted successfully");
+  } catch (error) {
+    console.error("Error deleting crew:", error);
+    throw new Error("Failed to delete crew. Please try again.");
+  }
+}
+
+export async function updateCrew(id: string, formData: FormData) {
+  try {
+    console.log("Updating crew...");
+
+    // Extract data from formData
+    const crewName = formData.get("crewName") as string;
+    const crewDescription = formData.get("crewDescription") as string;
+    const crew = JSON.parse(formData.get("crew") as string) as Array<{
+      id: string;
+      supervisor: boolean;
+    }>;
+    const teamLead = formData.get("teamLead") as string;
+
+    // Update the crew details
+    const updatedCrew = await prisma.crews.update({
+      where: { id: Number(id) },
+      data: {
+        name: crewName,
+        description: crewDescription,
+      },
+    });
+
+    if (!updatedCrew) {
+      throw new Error("Crew not found");
+    }
+
+    // Fetch current members of the crew
+    const currentMembers = await prisma.crewMembers.findMany({
+      where: { crewId: Number(id) },
+    });
+
+    const currentMemberIds = currentMembers.map((member) => member.employeeId);
+    const newMemberIds = crew.map((member) => member.id);
+
+    const membersToRemove = currentMembers.filter(
+      (member) => !newMemberIds.includes(member.employeeId)
+    );
+    const membersToAdd = crew.filter(
+      (member) => !currentMemberIds.includes(member.id)
+    );
+
+    // Remove members no longer in the crew
+    await Promise.all(
+      membersToRemove.map(async (member) => {
+        await prisma.crewMembers.delete({
+          where: { id: member.id },
+        });
+      })
+    );
+
+    // Add new members to the crew
+    await Promise.all(
+      membersToAdd.map(async (member) => {
+        await prisma.crewMembers.create({
+          data: {
+            crewId: Number(id),
+            employeeId: member.id,
+            supervisor: member.supervisor,
+          },
+        });
+      })
+    );
+
+    // Update supervisor
+    if (teamLead) {
+      const teamLeadMember = currentMembers.find(
+        (member) => member.employeeId === teamLead
+      );
+
+      if (teamLeadMember) {
+        // Reset all current supervisors
+        await prisma.crewMembers.updateMany({
+          where: { crewId: Number(id), supervisor: true },
+          data: { supervisor: false },
+        });
+
+        // Set the new supervisor
+        await prisma.crewMembers.update({
+          where: { id: teamLeadMember.id },
+          data: { supervisor: true },
+        });
+      } else {
+        console.error("Team lead not found among current members");
+      }
+    }
+    revalidatePath(`/admins/personnel/crew/${id}`);
+    revalidateTag("crews");
+    console.log("Crew updated successfully");
+    return { success: true, message: "Crew updated successfully" };
+  } catch (error) {
+    console.error("Error updating crew:", error);
+    return { success: false, message: "Failed to update crew", error };
+  }
+}
 
 export async function deleteTimesheet(id: number) {
   try {
@@ -28,47 +217,22 @@ export async function deleteLog(id: number) {
     throw error;
   }
 }
-export async function saveNewTimesheet(userId: string, date: string) {
-  try {
-    const dateIsoString = new Date(date).toISOString();
-    const timesheet = await prisma.timeSheets.create({
-      data: {
-        userId: userId,
-        startTime: new Date(date).toISOString(),
-        endTime: new Date(date).toISOString(),
-        duration: 0,
-        date: dateIsoString,
-        costcode: "",
-        jobsiteId: "j123",
-        timeSheetComments: "",
-        vehicleId: null,
-        startingMileage: null,
-        endingMileage: null,
-        leftIdaho: null,
-        hauledLoadsQuantity: null,
-        equipmentHauled: null,
-        materialsHauled: null,
-      },
-    });
-
-    return timesheet.id; // Return the new ID
-  } catch (error) {
-    console.error("Error saving new timesheet:", error);
-    throw error;
-  }
-}
 
 export async function saveTimesheet(formData: FormData) {
   try {
     console.log("Saving timesheet...");
-    console.log(formData);
+    const id = formData.get("id")
+      ? parseInt(formData.get("id") as string)
+      : undefined;
+    const userId = formData.get("userId") as string;
+
     const date = formData.get("date") as string;
     const dateIsoString = new Date(date).toISOString();
-    const id = parseInt(formData.get("id") as string);
-    const userId = formData.get("userId") as string;
-    const timesheet = await prisma.timeSheets.update({
-      where: { userId, id },
-      data: {
+
+    const timesheet = await prisma.timeSheets.upsert({
+      where: { id: id || -1 }, // Use an invalid ID for new entries
+      create: {
+        userId,
         startTime: formData.get("startTime") as string,
         endTime: formData.get("endTime") as string,
         duration: parseFloat(formData.get("duration") as string),
@@ -87,7 +251,29 @@ export async function saveTimesheet(formData: FormData) {
         equipmentHauled: formData.get("equipmentHauled") as string,
         materialsHauled: formData.get("materialsHauled") as string,
       },
+      update: {
+        startTime: formData.get("startTime") as string,
+        endTime: formData.get("endTime") as string,
+        duration: parseFloat(formData.get("duration") as string),
+        submitDate: dateIsoString,
+        date: dateIsoString,
+        costcode: formData.get("costcode") as string,
+        jobsiteId: formData.get("jobsiteId") as string,
+        timeSheetComments: formData.get("timeSheetComments") as string,
+        vehicleId: parseInt(formData.get("vehicleId") as string),
+        startingMileage: parseInt(formData.get("startingMileage") as string),
+        endingMileage: parseInt(formData.get("endingMileage") as string),
+        leftIdaho: formData.get("leftIdaho") === "true",
+        refuelingGallons: parseInt(formData.get("refuelingGallons") as string),
+        hauledLoadsQuantity: parseInt(
+          formData.get("hauledLoadsQuantity") as string
+        ),
+        status: formData.get("status") as FormStatus,
+        equipmentHauled: formData.get("equipmentHauled") as string,
+        materialsHauled: formData.get("materialsHauled") as string,
+      },
     });
+
     console.log(timesheet);
     revalidatePath(`/admins/personnel/${id}`);
     revalidateTag("timesheets");
@@ -98,28 +284,56 @@ export async function saveTimesheet(formData: FormData) {
   }
 }
 
-export async function CreateEquipmentLogs(
-  userId: string,
-  date: string,
-  formData: FormData
-) {
+export async function CreateTimesheet(userId: string, date: string) {
+  try {
+    const timesheet = await prisma.timeSheets.create({
+      data: {
+        submitDate: new Date().toISOString(),
+        userId: userId,
+        startTime: new Date(date).toISOString(),
+        endTime: new Date(date).toISOString(),
+        duration: 0,
+        date: new Date(date).toISOString(),
+        costcode: "new",
+        jobsiteId: "new",
+        timeSheetComments: null,
+        vehicleId: null,
+        startingMileage: null,
+        endingMileage: null,
+        leftIdaho: null,
+        refuelingGallons: null,
+        hauledLoadsQuantity: null,
+        equipmentHauled: null,
+        materialsHauled: null,
+      },
+    });
+
+    console.log(timesheet);
+    revalidatePath(`/admins/personnel/${timesheet.userId}?date=${date}`);
+    revalidateTag("timesheets");
+    return timesheet;
+  } catch (error) {
+    console.error("Error saving timesheet:", error);
+    throw error;
+  }
+}
+
+export async function CreateEquipmentLogs(userId: string, date: string) {
   try {
     console.log("Saving equipment logs...");
-    console.log(formData);
-    const dateIsoString = new Date(date).toISOString();
 
     const equipmentLog = await prisma.employeeEquipmentLogs.create({
       data: {
-        date: dateIsoString,
-        equipmentId: formData.get("equipmentId") as string,
-        jobsiteId: formData.get("jobsiteId") as string,
+        date: new Date(date).toISOString(),
+        equipmentId: "new", // this is a placeholder equipment
+        jobsiteId: "new", // this is a placeholder jobsite
         employeeId: userId,
-        startTime: dateIsoString,
-        endTime: dateIsoString,
-        duration: parseFloat(formData.get("duration") as string),
-        isRefueled: formData.get("isRefueled") === "true",
-        fuelUsed: parseInt(formData.get("fuelUsed") as string),
-        comment: formData.get("comment") as string,
+        startTime: new Date(date).toISOString(),
+        endTime: new Date(date).toISOString(),
+        duration: null,
+        isRefueled: false,
+        fuelUsed: null,
+        comment: null,
         isCompleted: true,
         isSubmitted: true,
         status: "APPROVED",
@@ -128,7 +342,8 @@ export async function CreateEquipmentLogs(
 
     console.log(equipmentLog);
     revalidateTag("timesheets");
-    return true;
+
+    return equipmentLog;
   } catch (error) {
     console.error("Error saving equipment logs:", error);
     throw error;
@@ -138,13 +353,18 @@ export async function CreateEquipmentLogs(
 export async function saveEquipmentLogs(formData: FormData) {
   try {
     console.log("Saving equipment logs...");
-    console.log(formData);
-    const id = parseInt(formData.get("id") as string);
+    console.log("Form data form saveEquipmentLogs", formData);
+    const id = formData.get("id")
+      ? parseInt(formData.get("id") as string)
+      : undefined;
+
     const equipmentLog = await prisma.employeeEquipmentLogs.update({
-      where: { id },
+      where: { id: id }, // Use an invalid ID for new entries
       data: {
+        id: id,
         startTime: formData.get("startTime") as string,
         endTime: formData.get("endTime") as string,
+        equipmentId: formData.get("equipmentId") as string,
         duration: parseFloat(formData.get("duration") as string),
         isRefueled: formData.get("isRefueled") === "true",
         fuelUsed: parseInt(formData.get("fuelUsed") as string),
@@ -160,6 +380,7 @@ export async function saveEquipmentLogs(formData: FormData) {
     throw error;
   }
 }
+
 export async function reactivatePersonnel(formData: FormData) {
   try {
     console.log("Archiving personnel...");

@@ -6,43 +6,19 @@ import { Tab } from "@/components/(reusable)/tab";
 
 import { useEffect, useState } from "react";
 import { Timesheets } from "./_components/Timesheets";
-import { SearchUser } from "@/lib/types";
+import { SearchCrew, SearchUser } from "@/lib/types";
 import { z } from "zod";
 import { Personnel } from "./_components/Personnel";
-import { Texts } from "@/components/(reusable)/texts";
+import { Crews } from "./_components/Crews";
+import { usePathname } from "next/navigation";
 
 export default function Search() {
   const [activeTab, setActiveTab] = useState(1);
   const [employees, setEmployees] = useState<SearchUser[]>([]);
   const [filter, setFilter] = useState("all");
+  const [crew, setCrew] = useState<SearchCrew[]>([]);
+  const pathname = usePathname(); // Get current route
 
-  // const employeesSchema = z.array(
-  //   z.object({
-  //     id: z.string(),
-  //     firstName: z.string(),
-  //     lastName: z.string(),
-  //     username: z.string(),
-  //     permission: z.nativeEnum(Permission),
-  //     DOB: z.string(), // Updated this line to parse DOB as a Date
-  //     truckView: z.boolean(),
-  //     mechanicView: z.boolean(),
-  //     laborView: z.boolean(),
-  //     tascoView: z.boolean(),
-  //     image: z.string(),
-  //     terminationDate: z.preprocess((arg) => {
-  //       if (typeof arg === "string" && arg.trim() !== "") {
-  //         const parsedDate = new Date(arg);
-  //         if (!isNaN(parsedDate.getTime())) {
-  //           return parsedDate;
-  //         }
-  //       } else if (arg instanceof Date && !isNaN(arg.getTime())) {
-  //         return arg;
-  //       }
-  //       // Return null for invalid or missing dates
-  //       return null;
-  //     }, z.union([z.date(), z.null()])),
-  //   })
-  // );
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
@@ -63,6 +39,46 @@ export default function Search() {
 
     fetchEmployees();
   }, [filter]);
+
+  useEffect(() => {
+    const fetchCrews = async () => {
+      try {
+        const crewRes = await fetch("/api/getAllCrews", {
+          next: { tags: ["crews"] },
+        });
+        const crewData = await crewRes.json();
+        // const validatedEmployees = employeesSchema.parse(employeesData);
+        setCrew(crewData);
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          console.error("Validation Error:", error.errors);
+        } else {
+          console.error("Failed to fetch employees data:", error);
+        }
+      }
+    };
+
+    const routesToReload = [
+      "/admins/personnel/crew/new-crew",
+      "/admins/personnel/crew",
+    ];
+
+    if (routesToReload.includes(pathname)) {
+      fetchCrews(); // Only fetch data on the specified routes
+    }
+  }, [pathname]); // Trigger the effect when the route changes
+
+  useEffect(() => {
+    if (pathname.includes("/admins/personnel/timesheets")) {
+      setActiveTab(2);
+    }
+
+    if (pathname.includes("/admins/personnel/crew")) {
+      setActiveTab(3);
+    } else {
+      setActiveTab(1);
+    }
+  }, [pathname]);
 
   return (
     <Holds className="h-full ">
@@ -90,7 +106,7 @@ export default function Search() {
             {activeTab === 2 && (
               <Timesheets employees={employees} setFilter={setFilter} />
             )}
-            {activeTab === 3 && <Texts>Crews</Texts>}
+            {activeTab === 3 && <Crews crew={crew} />}
           </Contents>
         </Holds>
       </Grids>

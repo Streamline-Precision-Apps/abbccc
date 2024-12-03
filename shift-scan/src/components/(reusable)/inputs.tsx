@@ -3,7 +3,11 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { InputHTMLAttributes, FC } from "react";
 import { cn } from "@/components/(reusable)/utils";
 import React from "react";
-
+import { Anton } from "next/font/google";
+const anton = Anton({
+  subsets: ["latin"],
+  weight: "400",
+});
 //this determines styles of all inputs
 const InputVariants = cva(
   "items-center justify-center text-black text-lg rounded-xl", //this applies to all variants
@@ -14,6 +18,7 @@ const InputVariants = cva(
           "bg-white border border-[3px] border-black disabled:bg-gray-400 mb-3 last:mb-0 w-full p-1",
         white:
           "bg-white border border-2 border-black mb-3 last:mb-0 w-full p-1",
+        titleFont: `bg-white border border-2 border-black mb-3 last:mb-0 w-full p-1 ${anton.className}`,
       },
     },
     defaultVariants: {

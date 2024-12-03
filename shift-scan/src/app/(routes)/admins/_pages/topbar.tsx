@@ -15,6 +15,8 @@ import { AdminClockOut } from "./AdminClockOut";
 import AdminSwitch from "./AdminSwitch";
 import AdminClock from "./AdminClock";
 import { usePathname, useRouter } from "next/navigation";
+import { NotificationComponent } from "@/components/(inputs)/NotificationComponent";
+import { useNotification } from "@/app/context/NotificationContext";
 
 const Topbar = () => {
   const { data: session } = useSession();
@@ -44,6 +46,11 @@ const Topbar = () => {
     setCostCode(parsedData.costCode || cc || "");
     setAuthStepState(getAuthStep() || "");
   });
+  const { notification } = useNotification();
+
+  useEffect(() => {
+    console.log("Notification updated:", notification);
+  }, [notification]);
 
   const handleClockClick = () => setIsOpen2(!isOpen2);
   const handleClose = () => setIsOpen(false);
@@ -80,12 +87,12 @@ const Topbar = () => {
                 background={"lightBlue"}
                 className="flex flex-row justify-center items-center rounded border-[3px] border-black w-[90%] h-full relative"
               >
-                <Titles className="h-full">Banner messages go here</Titles>
+                <NotificationComponent />
               </Holds>
             ) : (
               <Holds
                 background={"lightBlue"}
-                className="flex flex-row justify-center items-center rounded border-[3px] border-black w-[90%] h-full relative"
+                className="flex flex-row z-1 justify-center items-center rounded border-[3px] border-black w-[90%] h-full relative"
               >
                 <Holds className="w-[15%] absolute left-5">
                   <Holds position={"row"} className="hidden md:flex">
@@ -118,9 +125,9 @@ const Topbar = () => {
                     </Titles>
                   </Holds>
                 </Holds>
-                <Titles size={"h4"} className="h-full">
-                  Closed Banner messages go here
-                </Titles>
+
+                <NotificationComponent />
+
                 <Holds className="w-10 absolute right-5">
                   <Images
                     titleImg="/x.svg"
@@ -165,9 +172,7 @@ const Topbar = () => {
               background={"lightBlue"}
               className="rounded h-full w-full border-[3px] border-black"
             >
-              <Titles size={"h4"} className="m-auto h-full">
-                Open Banner messages go here
-              </Titles>
+              <NotificationComponent />
             </Holds>
             <Holds
               background={"white"}
