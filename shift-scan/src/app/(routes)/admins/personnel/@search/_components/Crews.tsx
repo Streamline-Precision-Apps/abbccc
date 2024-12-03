@@ -79,7 +79,7 @@ export const Crews = ({ crew }: Props) => {
           className="row-span-1 h-full"
           onClick={createCrew}
         >
-          <Texts size="p6">Create New Employee</Texts>
+          <Texts size="p6">Create New Crew</Texts>
         </Buttons>
       </Grids>
     </Holds>

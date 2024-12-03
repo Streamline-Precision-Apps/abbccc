@@ -65,7 +65,7 @@ export const ReusableViewLayout = ({
                         onChange={(e) => {
                           editFunction?.(e.target.value);
                         }}
-                        placeholder={"Enter your Crew Name"}
+                        placeholder={"New Crew Name"}
                         variant={"titleFont"}
                         className=" my-auto"
                       />
