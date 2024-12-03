@@ -17,33 +17,6 @@ export default function Search() {
   const [filter, setFilter] = useState("all");
   const [crew, setCrew] = useState<SearchCrew[]>([]);
 
-  // const employeesSchema = z.array(
-  //   z.object({
-  //     id: z.string(),
-  //     firstName: z.string(),
-  //     lastName: z.string(),
-  //     username: z.string(),
-  //     permission: z.nativeEnum(Permission),
-  //     DOB: z.string(), // Updated this line to parse DOB as a Date
-  //     truckView: z.boolean(),
-  //     mechanicView: z.boolean(),
-  //     laborView: z.boolean(),
-  //     tascoView: z.boolean(),
-  //     image: z.string(),
-  //     terminationDate: z.preprocess((arg) => {
-  //       if (typeof arg === "string" && arg.trim() !== "") {
-  //         const parsedDate = new Date(arg);
-  //         if (!isNaN(parsedDate.getTime())) {
-  //           return parsedDate;
-  //         }
-  //       } else if (arg instanceof Date && !isNaN(arg.getTime())) {
-  //         return arg;
-  //       }
-  //       // Return null for invalid or missing dates
-  //       return null;
-  //     }, z.union([z.date(), z.null()])),
-  //   })
-  // );
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
@@ -68,7 +41,9 @@ export default function Search() {
   useEffect(() => {
     const fetchCrews = async () => {
       try {
-        const crewRes = await fetch("/api/getAllCrews");
+        const crewRes = await fetch("/api/getAllCrews", {
+          next: { tags: ["crews"] },
+        });
         const crewData = await crewRes.json();
         // const validatedEmployees = employeesSchema.parse(employeesData);
         setCrew(crewData);
@@ -82,7 +57,7 @@ export default function Search() {
     };
 
     fetchCrews();
-  }, []);
+  }, []); // Trigger the effect when the route changes
 
   return (
     <Holds className="h-full ">

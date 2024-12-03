@@ -4,6 +4,71 @@ import { FormStatus, Permission } from "@/lib/types";
 
 import { revalidatePath, revalidateTag } from "next/cache";
 
+export async function createCrew(formData: FormData) {
+  try {
+    console.log("Creating new crew...");
+
+    // Extract data from formData
+    const crewName = formData.get("crewName") as string;
+    const crewDescription = formData.get("crewDescription") as string;
+    const crewRaw = formData.get("crew");
+    const teamLead = formData.get("teamLead");
+
+    if (!crewName || !crewName.trim()) {
+      throw new Error("Crew name is required.");
+    }
+    if (!crewRaw) {
+      throw new Error("Crew members data is missing.");
+    }
+    if (!teamLead) {
+      throw new Error("A team lead is required.");
+    }
+
+    const crew = JSON.parse(crewRaw as string) as Array<{
+      id: string;
+      supervisor: boolean;
+    }>;
+
+    // Create the crew
+    const newCrew = await prisma.crews.create({
+      data: {
+        name: crewName.trim(),
+        description: crewDescription?.trim() || "",
+      },
+    });
+    console.log("Crew created:", newCrew);
+
+    // Add members to the crew
+    await Promise.all(
+      crew.map(async (member) => {
+        await prisma.crewMembers.create({
+          data: {
+            crewId: newCrew.id,
+            employeeId: member.id,
+            supervisor: member.id === teamLead,
+          },
+        });
+      })
+    );
+
+    console.log("Crew created successfully");
+    revalidateTag("crews");
+
+    return {
+      success: true,
+      crewId: newCrew.id,
+      message: "Crew created successfully",
+    };
+  } catch (error) {
+    console.error("Error creating crew:", error);
+    throw new Error(
+      `Failed to create crew: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`
+    );
+  }
+}
+
 export async function deleteCrewAction(id: string) {
   try {
     console.log("Deleting crew...");
@@ -24,8 +89,7 @@ export async function deleteCrewAction(id: string) {
     });
 
     // Revalidate the path or trigger a re-fetch for the related UI
-    revalidatePath("/admin/personnel");
-
+    revalidateTag("crews");
     console.log("Crew deleted successfully");
   } catch (error) {
     console.error("Error deleting crew:", error);
@@ -118,7 +182,8 @@ export async function updateCrew(id: string, formData: FormData) {
         console.error("Team lead not found among current members");
       }
     }
-
+    revalidatePath(`/admins/personnel/crew/${id}`);
+    revalidateTag("crews");
     console.log("Crew updated successfully");
     return { success: true, message: "Crew updated successfully" };
   } catch (error) {

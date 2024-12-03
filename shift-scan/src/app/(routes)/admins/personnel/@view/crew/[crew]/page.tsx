@@ -159,6 +159,7 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
 
       // Call the updateCrew function to handle backend update logic
       await updateCrew(crewId, formData);
+      router.refresh();
     } catch (error) {
       console.error("Failed to update crew:", error);
     }
@@ -168,7 +169,7 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
     try {
       const crewId = params.crew;
       await deleteCrewAction(crewId);
-      router.push("/admins/personnel");
+      router.push("/admins/personnel/crew");
     } catch (error) {
       console.error("Failed to delete crew:", error);
       alert("An error occurred while deleting the crew. Please try again.");
@@ -229,9 +230,14 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
       }
       mainRight={
         <Holds className="h-full bg-white w-2/3">
+          <Texts
+            size={"p6"}
+            position={"right"}
+            className="w-full px-10 py-2"
+          >{`Total Crew Members: ${usersInCrew.length}`}</Texts>
           <Holds className="h-full p-4 px-10">
             <Holds
-              background={teamLeadUser ? "offWhite" : "grey"}
+              background={"offWhite"}
               className={
                 teamLeadUser
                   ? "w-full h-fit border-[3px] border-black rounded-[10px] my-2  p-3 flex items-center justify-center"
@@ -331,7 +337,7 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
   );
 }
 
-function CrewLeft({
+export function CrewLeft({
   setFilter,
   employees,
 

@@ -8,6 +8,7 @@ import { PayPeriodHoursProvider } from "./context/PayPeriodHoursContext";
 import { SavedBreakTimeProvider } from "./context/BreakTimeContext";
 import { TimeSheetDataProvider } from "./context/TimeSheetIdContext";
 import { ScanDataEQProvider } from "./context/equipmentContext";
+import { NotificationProvider } from "./context/NotificationContext";
 import {
   JobSiteProvider,
   EquipmentProvider,
@@ -41,7 +42,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
                               <RecentJobSiteProvider>
                                 <PayPeriodTimeSheetProvider>
                                   <RecentEquipmentProvider>
-                                    {children}
+                                    <NotificationProvider>
+                                      {children}
+                                    </NotificationProvider>
                                   </RecentEquipmentProvider>
                                 </PayPeriodTimeSheetProvider>
                               </RecentJobSiteProvider>
