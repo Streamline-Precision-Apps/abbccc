@@ -1,5 +1,3 @@
-// This will save the current view for the dashboard.
-
 "use client";
 import React, { createContext, useState, ReactNode, useContext } from "react";
 
@@ -8,28 +6,45 @@ type TruckScanDataProps = {
   setTruckScanData: (truckScanData: string | null) => void;
 };
 
-const TruckScanData = createContext<TruckScanDataProps | undefined>(
-  undefined
-);
+const TruckScanData = createContext<TruckScanDataProps | undefined>(undefined);
 
 export const TruckScanDataProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  // creates a state
-  const [truckScanData, setTruckScanData] = useState<string | null>("");
-  // when the provider is called it will return the value below
+  const [truckScanData, setTruckScanDataState] = useState<string | null>(() => {
+    // Load initial state from localStorage if available
+    if (typeof window !== "undefined") {
+      const savedData = localStorage.getItem("truckScanData");
+      return savedData ? savedData : null;
+    } else {
+      return null;
+    }
+  });
+
+  const setTruckScanData = (data: string | null) => {
+    setTruckScanDataState(data);
+    // Save to localStorage
+    if (typeof window !== "undefined") {
+      if (data) {
+        localStorage.setItem("truckScanData", data);
+      } else {
+        localStorage.removeItem("truckScanData");
+      }
+    }
+  };
+
   return (
     <TruckScanData.Provider value={{ truckScanData, setTruckScanData }}>
       {children}
     </TruckScanData.Provider>
   );
 };
-// this is used to get the value
+
 export const useTruckScanData = () => {
   const context = useContext(TruckScanData);
-  if (context === undefined) {
+  if (!context) {
     throw new Error(
-      "TruckScanData must be used within a TruckScanDataProvider"
+      "useTruckScanData must be used within a TruckScanDataProvider"
     );
   }
   return context;

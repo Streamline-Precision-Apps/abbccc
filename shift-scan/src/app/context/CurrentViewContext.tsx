@@ -1,5 +1,3 @@
-// This will save the current view for the dashboard.
-
 "use client";
 import React, { createContext, useState, ReactNode, useContext } from "react";
 
@@ -8,28 +6,45 @@ type CurrentViewProps = {
   setCurrentView: (currentView: string | null) => void;
 };
 
-const CurrentView = createContext<CurrentViewProps | undefined>(
-  undefined
-);
+const CurrentView = createContext<CurrentViewProps | undefined>(undefined);
 
 export const CurrentViewProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  // creates a state
-  const [currentView, setCurrentView] = useState<string | null>("");
-  // when the provider is called it will return the value below
+  const [currentView, setCurrentViewState] = useState<string | null>(() => {
+    // Load initial state from localStorage if available
+    if (typeof window !== "undefined") {
+      const savedView = localStorage.getItem("currentView");
+      return savedView ? savedView : null;
+    } else {
+      return null;
+    }
+  });
+
+  const setCurrentView = (view: string | null) => {
+    setCurrentViewState(view);
+    // Save to localStorage
+    if (typeof window !== "undefined") {
+      if (view) {
+        localStorage.setItem("currentView", view);
+      } else {
+        localStorage.removeItem("currentView");
+      }
+    }
+  };
+
   return (
     <CurrentView.Provider value={{ currentView, setCurrentView }}>
       {children}
     </CurrentView.Provider>
   );
 };
-// this is used to get the value
+
 export const useCurrentView = () => {
   const context = useContext(CurrentView);
-  if (context === undefined) {
+  if (!context) {
     throw new Error(
-      "CurrentView must be used within a CurrentViewProvider"
+      "useCurrentView must be used within a CurrentViewProvider"
     );
   }
   return context;

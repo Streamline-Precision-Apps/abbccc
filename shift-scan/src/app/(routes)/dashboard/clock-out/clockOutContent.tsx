@@ -3,7 +3,7 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
-import { ChangeEvent, SetStateAction, useEffect, useMemo, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { InjuryReportContent } from "./(components)/injury-report/injuryReportContent";
 import { Titles } from "@/components/(reusable)/titles";
@@ -23,6 +23,7 @@ import { useTruckScanData } from "@/app/context/TruckScanDataContext";
 import { CheckBox } from "@/components/(inputs)/checkBox";
 import { useCurrentView } from "@/app/context/CurrentViewContext";
 import TruckClockOutForm from "./(components)/truckClockOutForm";
+import { useStartingMileage } from "@/app/context/StartingMileageContext";
 
 // Zod schema for component state
 const ClockOutContentSchema = z.object({
@@ -91,15 +92,12 @@ export default function ClockOutContent() {
   const { scanResult } = useScanData();
   const { savedCostCode } = useSavedCostCode();
   const { savedTimeSheetData } = useTimeSheetData();
-  const { truckScanData } = useTruckScanData();
+  const { truckScanData, setTruckScanData } = useTruckScanData();
+  const { setStartingMileage } = useStartingMileage();
   const [date] = useState(new Date());
   const [base64String, setBase64String] = useState<string>("");
-  const [timeSheet, setTimeSheet] = useState<TimeSheetsType>();
-  const [startingMileage, setStartingMileage] = useState<number>(0);
   const [endingMileage, setEndingMileage] = useState<number>(0);
-  const [comments, setComments] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const { setTruckScanData } = useTruckScanData();
   const { currentView, setCurrentView } = useCurrentView();
   const [refuelingGallons, setRefuelingGallons] = useState<number>(0);
   const [hauledLoadsQuantity, setHauledLoadsQuantity] = useState<number>(0);
@@ -109,26 +107,6 @@ export default function ClockOutContent() {
   const incrementStep = () => {
     setStep((prevStep) => prevStep + 1); // Increment function
   };
-
-  // Validate initial state with Zod schema
-  try {
-    ClockOutContentSchema.parse({
-      loading,
-      step,
-      path,
-      checked,
-      base64String,
-      isSubmitting,
-      scanResult,
-      savedCostCode,
-      savedTimeSheetData,
-      date,
-    });
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      console.error("Initial state validation error:", error.errors);
-    }
-  }
 
   // Optimizing localStorage access using useMemo
   const localStorageData = useMemo(() => {
@@ -143,8 +121,15 @@ export default function ClockOutContent() {
       : {};
   }, []);
 
-  // Fetching the signature only once
   useEffect(() => {
+    console.log("path:", path);
+  }, [path]);
+
+  useEffect(() => {
+    if (currentView === "truck") {
+      setPath("truck");
+    }
+    // Fetching the signature only once
     const fetchSignature = async () => {
       setLoading(true);
       try {
@@ -161,37 +146,6 @@ export default function ClockOutContent() {
     fetchSignature();
   }, []);
 
-  useEffect(() => {
-    const fetchTimesheet = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch("/api/getTimesheetById");
-        const json = await response.json();
-  
-        // Validate and parse with Zod
-        const parsedTimeSheet = TimeSheetsSchema.parse(json);
-        setTimeSheet(parsedTimeSheet);
-      } catch (error) {
-        console.error("Error fetching or validating timesheet:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-  
-    fetchTimesheet();
-    console.log(timeSheet);
-    if (timeSheet) {
-      setStartingMileage(timeSheet?.startingMileage ?? 0);
-      console.log(startingMileage);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (currentView === "truck") {
-      setPath("truck");
-    }
-  }, []);
-
   const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
     setChecked(event.currentTarget.checked);
   };
@@ -206,7 +160,9 @@ export default function ClockOutContent() {
       const formData = new FormData(formRef.current as HTMLFormElement);
       await updateTimeSheet(formData);
       localStorage.clear();
+      setCurrentView("");
       setTruckScanData("");
+      setStartingMileage(null);
       router.push("/");
     } catch (error) {
       console.error("Failed to submit the time sheet:", error);
@@ -221,8 +177,8 @@ export default function ClockOutContent() {
       setPath("Injury");
       incrementStep();
     } else if (checked && currentView === "truck") {
-        setPath("truck");
-        incrementStep();
+      setPath("truck");
+      incrementStep();
     } else {
       setPath("clockOut");
       incrementStep();
@@ -243,11 +199,10 @@ export default function ClockOutContent() {
   const handleSubmitInjury = async () => {
     if (currentView === "truck") {
       setPath("truck");
-    }
-    else{
+    } else {
       setPath("ClockOut");
     }
-  }
+  };
 
   if (step === 1) {
     return (
@@ -422,10 +377,24 @@ export default function ClockOutContent() {
   } else if (step === 2 && path === "truck") {
     return (
       <>
-        <TruckClockOutForm handleNextStep={handleNextStep} jobsiteId={scanResult?.data || ""} costCode={savedCostCode || ""} endingMileage={endingMileage} setEndingMileage={setEndingMileage} leftIdaho={leftIdaho} setLeftIdaho={setLeftIdaho} refuelingGallons={refuelingGallons} setRefuelingGallons={setRefuelingGallons} materialsHauled={materialsHauled} setMaterialsHauled={setMaterialsHauled} hauledLoadsQuantity={hauledLoadsQuantity} setHauledLoadsQuantity={setHauledLoadsQuantity} comments={comments} setComments={setComments}/>
+        <TruckClockOutForm
+          handleNextStep={handleNextStep}
+          jobsiteId={scanResult?.data || ""}
+          costCode={savedCostCode || ""}
+          endingMileage={endingMileage}
+          setEndingMileage={setEndingMileage}
+          leftIdaho={leftIdaho}
+          setLeftIdaho={setLeftIdaho}
+          refuelingGallons={refuelingGallons}
+          setRefuelingGallons={setRefuelingGallons}
+          materialsHauled={materialsHauled}
+          setMaterialsHauled={setMaterialsHauled}
+          hauledLoadsQuantity={hauledLoadsQuantity}
+          setHauledLoadsQuantity={setHauledLoadsQuantity}
+        />
       </>
     );
-  } else if (step === 3 || path === "clockOut") {
+  } else if (step === 3 && path === "clockOut") {
     return (
       <>
         <Grids rows={"4"} gap={"5"}>
@@ -558,20 +527,45 @@ export default function ClockOutContent() {
                   </Holds>
                   <Holds className="row-span-1 h-full my-auto">
                     <Texts>
-                      {t("Truck-label")}{" "}
-                      {truckScanData}
+                      {t("Truck-label")} {truckScanData}
                     </Texts>
                   </Holds>
                   <Holds className="row-span-1 h-full my-auto">
-                    <form ref={formRef}>
-                      {/* Disabled Inputs */}
+                    <form
+                      ref={formRef}
+                      onSubmit={(e) => {
+                        e.preventDefault(); // Prevent the default form submission
+                        handleButtonClick(); // Call your custom submit logic
+                      }}
+                    >
+                      <Inputs
+                        type="hidden"
+                        name="id"
+                        value={(
+                          savedTimeSheetData?.id ||
+                          localStorageData?.timesheet.id
+                        )?.toString()}
+                        readOnly
+                      />
+                      <Inputs
+                        type="hidden"
+                        name="endTime"
+                        value={new Date().toISOString()}
+                        readOnly
+                      />
+                      <Inputs
+                        type="hidden"
+                        name="timeSheetComments"
+                        value={""}
+                        readOnly
+                      />
                       <Holds className="mb-2">
                         <Texts>{t("Ending Mileage")}</Texts>
                         <Inputs
                           type="number"
                           name="endingMileage"
                           value={endingMileage.toString()}
-                          disabled
+                          readOnly
                         />
                       </Holds>
                       <Holds className="mb-2">
@@ -580,16 +574,16 @@ export default function ClockOutContent() {
                           type="text"
                           name="leftIdaho"
                           value={leftIdaho.toString()} // Boolean displayed as string "true" or "false"
-                          disabled
+                          readOnly
                         />
                       </Holds>
                       <Holds className="mb-2">
                         <Texts>{t("Gallons Refueled")}</Texts>
                         <Inputs
                           type="number"
-                          name="gallonsRefueled"
+                          name="refuelingGallons"
                           value={refuelingGallons.toString()}
-                          disabled
+                          readOnly
                         />
                       </Holds>
                       <Holds className="mb-2">
@@ -598,7 +592,7 @@ export default function ClockOutContent() {
                           type="text"
                           name="materialsHauled"
                           value={materialsHauled}
-                          disabled
+                          readOnly
                         />
                       </Holds>
                       <Holds className="mb-2">
@@ -607,13 +601,12 @@ export default function ClockOutContent() {
                           type="number"
                           name="hauledLoadsQuantity"
                           value={hauledLoadsQuantity.toString()}
-                          disabled
+                          readOnly
                         />
                       </Holds>
                       <Buttons
-                        onClick={handleButtonClick}
+                        type="submit"
                         className="bg-app-red mx-auto flex justify-center w-full h-full py-4 px-5 rounded-lg text-black font-bold mt-5"
-                        disabled={isSubmitting}
                       >
                         <Clock time={date.getTime()} />
                       </Buttons>
@@ -626,8 +619,7 @@ export default function ClockOutContent() {
         </Grids>
       </>
     );
-  }
-   else {
+  } else {
     return null;
   }
 }
