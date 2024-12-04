@@ -379,3 +379,8 @@ I finished some more prisma DB research and Created the clock out dashboard page
 
 - Worked on clock in section changes (Trucking route).
 - Add select for the truck clock in. This select will have the appropriate jobsite and costcode.
+
+## 12/3/2024
+
+- Meet with devun for debugging of notification context.
+- Made API routes and folder structure for Assets sections of ADMINS.

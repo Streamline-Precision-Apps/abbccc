@@ -12,6 +12,7 @@ import { useEQScanData } from "@/app/context/equipmentContext";
 import { Titles } from "../(reusable)/titles";
 import { setAuthStep } from "@/app/api/auth";
 import { useTruckScanData } from "@/app/context/TruckScanDataContext";
+import { useStartingMileage } from "@/app/context/StartingMileageContext";
 
 import useFetchAllData from "@/app/(content)/FetchData";
 // import { Banners } from "../(reusable)/banners";
@@ -43,7 +44,7 @@ export default function ClockProcessor({
   const [scanner, setScanner] = useState("");
   // const [banner, setBanner] = useState("");
   const { truckScanData } = useTruckScanData();
-  const [startingMileage, setStartingMileage] = useState(0);
+  const { startingMileage } = useStartingMileage();
   const [comments, setComments] = useState("");
 
   useEffect(() => {
@@ -186,8 +187,6 @@ export default function ClockProcessor({
       {step === 2 && path === "truck" && (
         <TruckClockInForm
           handleNextStep={handleNextStep}
-          startingMileage={startingMileage}
-          setStartingMileage={setStartingMileage}
           setComments={setComments}
         />
       )}
@@ -200,7 +199,6 @@ export default function ClockProcessor({
           type={type}
           handleNextStep={handleNextStep}
           option={option}
-          mileage={startingMileage}
           comments={comments}
         />
       )}
@@ -209,7 +207,6 @@ export default function ClockProcessor({
           type={type}
           handleNextStep={handleNextStep}
           option={option}
-          mileage={undefined}
           comments={undefined}
         />
       )}

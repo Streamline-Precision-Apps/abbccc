@@ -266,7 +266,6 @@ export type Equipment = {
   registrationExpiration?: Date | null;
   mileage?: number | null | undefined;
   isActive?: boolean;
-  image?: string | null;
   inUse?: boolean;
 };
 

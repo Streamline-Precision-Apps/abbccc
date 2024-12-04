@@ -11,41 +11,41 @@ import { Titles } from "@/components/(reusable)/titles";
 import { useEffect, useState } from "react";
 import React from "react";
 import { Grids } from "@/components/(reusable)/grids";
-// import { z } from "zod";
 import { useSession } from "next-auth/react";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useTruckScanData } from "@/app/context/TruckScanDataContext";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useTranslations } from "next-intl";
-
-// Zod schema for form validation
-// const leaveRequestSchema = z.object({
-//   startDate: z.string().nonempty({ message: "Start date is required" }),
-//   endDate: z.string().nonempty({ message: "End date is required" }),
-//   requestType: z.enum(["Vacation", "Medical", "Military", "Personal", "Sick"]),
-//   description: z.string().max(40, { message: "Max 40 characters" }),
-//   userId: z.string().nonempty({ message: "User ID is required" }),
-//   status: z.literal("PENDING"),
-//   date: z.string().nonempty({ message: "Date is required" }),
-// });
+import { z } from "zod";
+import { useStartingMileage } from "@/app/context/StartingMileageContext";
 
 type TruckClockInFormProps = {
   handleNextStep: () => void;
-  startingMileage: number;
-  setStartingMileage: React.Dispatch<React.SetStateAction<number>>;
   setComments: React.Dispatch<React.SetStateAction<string>>;
 };
 
+// Define the Zod schema
+const formSchema = z.object({
+  startingMileage: z
+    .number()
+    .nonnegative({ message: "Starting mileage must be non-negative" }),
+  siteNumber: z.string().min(1, { message: "Site number is required" }),
+  costCode: z.string().min(1, { message: "Cost code is required" }),
+  timeSheetComments: z
+    .string()
+    .max(40, { message: "Comments must be 40 characters or less" })
+    .optional(),
+});
+
 export default function TruckClockInForm({
   handleNextStep,
-  startingMileage,
-  setStartingMileage,
   setComments,
 }: TruckClockInFormProps) {
   const [complete, setComplete] = useState(false);
   const [siteNumber, setSiteNumber] = useState(""); // State to track site number
   const [costCode, setCostCodeState] = useState(""); // State to track cost code
-
+  const [errorMessages, setErrorMessages] = useState<string[]>([]);
+  const { startingMileage, setStartingMileage } = useStartingMileage();
   const { data: session } = useSession(); // Always call hooks at the top level
   const { setScanResult } = useScanData();
   const { truckScanData } = useTruckScanData();
@@ -57,19 +57,35 @@ export default function TruckClockInForm({
     setComplete(siteNumber !== "" && costCode !== "");
   }, [siteNumber, costCode]);
 
+  const handleValidationAndSubmit = (e: React.FormEvent) => {
+    e.preventDefault(); // Prevent default form submission
+
+    const formData = {
+      startingMileage,
+      siteNumber,
+      costCode,
+      timeSheetComments: "", // Add any default comments or pass the correct value
+    };
+
+    // Validate using Zod
+    const result = formSchema.safeParse(formData);
+
+    if (result.success) {
+      handleNextStep(); // Call handleNextStep when valid
+      setErrorMessages([]); // Clear any error messages
+    } else {
+      // Collect error messages from validation
+      const errors = result.error.errors.map((err) => err.message);
+      setErrorMessages(errors);
+    }
+  };
+
   // Conditional return after all hooks
   if (!session) return null;
 
   return (
     <>
-      <Forms
-        onSubmit={(e) => {
-          e.preventDefault(); // Prevent default form submission
-          if (complete) {
-            handleNextStep(); // Call handleNextStep when valid
-          }
-        }}
-      >
+      <Forms onSubmit={handleValidationAndSubmit}>
         <Holds background={"white"} className="mb-3">
           <Contents width="section">
             <Grids className="grid-rows-7">
@@ -87,7 +103,8 @@ export default function TruckClockInForm({
                   type="number"
                   name="startingMileage"
                   id="startingMileage"
-                  value={startingMileage ?? 0}
+                  defaultValue={0}
+                  value={startingMileage ?? 0} // Provide a default value of 0 when startingMileage is null
                   onChange={(e) => setStartingMileage(Number(e.target.value))}
                   required
                 />
@@ -138,6 +155,16 @@ export default function TruckClockInForm({
                   onChange={(e) => setComments(e.target.value)}
                 />
               </Holds>
+              {/* Error Messages */}
+              {errorMessages.length > 0 && (
+                <Holds>
+                  {errorMessages.map((message, index) => (
+                    <p key={index} className="text-red-500">
+                      {message}
+                    </p>
+                  ))}
+                </Holds>
+              )}
               {/* Submit Section */}
               <Holds className="row-span-1">
                 <Buttons

@@ -4,45 +4,53 @@ import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 
 export async function GET() {
-  const session = await auth();
-  const userId = session?.user?.id;
-  const manager = `${session?.user?.firstName} ${session?.user?.lastName}`;
-
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  // Get today's date in UTC and set the start and end boundaries for today's date
-  const startOfToday = new Date();
-  startOfToday.setUTCHours(0, 0, 0, 0);
-  const endOfToday = new Date();
-  endOfToday.setUTCHours(23, 59, 59, 999);
-
   try {
-    // Fetch received requests based on `id`, `userId`, and today's date
+    const session = await auth();
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id: userId, firstName, lastName } = session.user;
+    const manager = `${firstName} ${lastName}`;
+
+    const calculatePayPeriodStart = () => {
+      const startDate = new Date(2024, 7, 5); // August 5, 2024
+      const now = new Date();
+      const diff = now.getTime() - startDate.getTime();
+      const diffWeeks = Math.floor(diff / (2 * 7 * 24 * 60 * 60 * 1000)); // Two-week intervals
+      return new Date(
+        startDate.getTime() + diffWeeks * 2 * 7 * 24 * 60 * 60 * 1000
+      );
+    };
+
+    const payPeriodStart = calculatePayPeriodStart();
+
+    // Fetch timesheet entries
     const receivedContent = await prisma.timeSheets.findMany({
       where: {
-        userId: userId,
+        userId,
         startTime: {
-          gte: startOfToday,
-          lte: endOfToday,
+          gte: payPeriodStart,
         },
         vehicleId: {
-          not: null,
+          not: null, // Exclude null vehicleId entries
         },
       },
     });
 
-    const receivedContentWManager = receivedContent.map((request) => ({
-      manager: manager,
-      ...request,
+    console.log("Raw data fetched:", receivedContent);
+
+    // Include manager info in the response
+    const responseContent = receivedContent.map((entry) => ({
+      manager,
+      ...entry,
     }));
 
-    return NextResponse.json(receivedContentWManager);
+    return NextResponse.json(responseContent);
   } catch (error) {
-    console.error("Error fetching drives:", error);
+    console.error("Error fetching data:", error);
     return NextResponse.json(
-      { error: "Failed to fetch drives" },
+      { error: "Failed to fetch data" },
       { status: 500 }
     );
   }

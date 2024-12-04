@@ -24,44 +24,54 @@ import React from "react";
 import { EquipmentListProvider } from "./context/dbCompleteEquipmentList";
 import { TruckScanDataProvider } from "./context/TruckScanDataContext";
 import { CurrentViewProvider } from "./context/CurrentViewContext";
+import { StartingMileageProvider } from "./context/StartingMileageContext";
+import { TimeSheetCommentsProvider } from "./context/TimeSheetCommentsContext";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <>
       {" "}
-      <SavedBreakTimeProvider>
-        <PayPeriodHoursProvider>
-          <SavedCostCodeProvider>
-            <ScanDataProvider>
-              <ScanDataEQProvider>
-                <TimeSheetDataProvider>
-                  <SessionProvider>
-                    <EquipmentProvider>
-                      <EquipmentListProvider>
-                        <JobSiteProvider>
-                          <CostCodeProvider>
-                            <RecentCostCodeProvider>
-                              <RecentJobSiteProvider>
-                                <PayPeriodTimeSheetProvider>
-                                  <RecentEquipmentProvider>
-                                    <NotificationProvider>
-                                      {children}
-                                    </NotificationProvider>
-                                  </RecentEquipmentProvider>
-                                </PayPeriodTimeSheetProvider>
-                              </RecentJobSiteProvider>
-                            </RecentCostCodeProvider>
-                          </CostCodeProvider>
-                        </JobSiteProvider>
-                      </EquipmentListProvider>
-                    </EquipmentProvider>
-                  </SessionProvider>
-                </TimeSheetDataProvider>
-              </ScanDataEQProvider>
-            </ScanDataProvider>
-          </SavedCostCodeProvider>
-        </PayPeriodHoursProvider>
-      </SavedBreakTimeProvider>
+      <TimeSheetCommentsProvider>
+        <StartingMileageProvider>
+          <CurrentViewProvider>
+            <TruckScanDataProvider>
+              <SavedBreakTimeProvider>
+                <PayPeriodHoursProvider>
+                  <SavedCostCodeProvider>
+                    <ScanDataProvider>
+                      <ScanDataEQProvider>
+                        <TimeSheetDataProvider>
+                          <SessionProvider>
+                            <EquipmentProvider>
+                              <EquipmentListProvider>
+                                <JobSiteProvider>
+                                  <CostCodeProvider>
+                                    <RecentCostCodeProvider>
+                                      <RecentJobSiteProvider>
+                                        <PayPeriodTimeSheetProvider>
+                                          <RecentEquipmentProvider>
+                                            <NotificationProvider>
+                                              {children}
+                                            </NotificationProvider>
+                                          </RecentEquipmentProvider>
+                                        </PayPeriodTimeSheetProvider>
+                                      </RecentJobSiteProvider>
+                                    </RecentCostCodeProvider>
+                                  </CostCodeProvider>
+                                </JobSiteProvider>
+                              </EquipmentListProvider>
+                            </EquipmentProvider>
+                          </SessionProvider>
+                        </TimeSheetDataProvider>
+                      </ScanDataEQProvider>
+                    </ScanDataProvider>
+                  </SavedCostCodeProvider>
+                </PayPeriodHoursProvider>
+              </SavedBreakTimeProvider>
+            </TruckScanDataProvider>
+          </CurrentViewProvider>
+        </StartingMileageProvider>
+      </TimeSheetCommentsProvider>
     </>
   );
 }
