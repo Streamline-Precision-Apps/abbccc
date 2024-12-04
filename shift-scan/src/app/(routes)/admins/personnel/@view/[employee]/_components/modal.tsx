@@ -5,6 +5,7 @@ import {
   removeProfilePic,
 } from "@/actions/adminActions";
 import { uploadFirstSignature } from "@/actions/userActions";
+import { useNotification } from "@/app/context/NotificationContext";
 import Base64FileEncoder from "@/components/(camera)/Base64FileEncoder";
 import Base64ImageEncoder from "@/components/(camera)/Base64ImageEncoder";
 import { Buttons } from "@/components/(reusable)/buttons";
@@ -69,6 +70,7 @@ export const ModalsPage = ({
   const [uploadProfilePic, setUploadProfilePic] = useState(false); // update profile pic modal
   const [uploadProfilePicWithCamera, setUploadProfilePicWithCamera] =
     useState(false);
+  const { setNotification } = useNotification();
 
   const handleReinstate = async () => {
     const formData = new FormData();
@@ -78,9 +80,10 @@ export const ModalsPage = ({
     const res = await reactivatePersonnel(formData);
     if (res === true) {
       console.log("Employee info updated successfully.");
+      setNotification("Employee was successfully reinstated.", "success");
       setUserStatus(true);
     } else {
-      console.log("Failed to update employee info.");
+      setNotification("Error: Failed to reactivate employee.", "success");
     }
   };
 
@@ -90,10 +93,11 @@ export const ModalsPage = ({
     formData.append("active", "false");
     const res = await archivePersonnel(formData);
     if (res === true) {
-      console.log("Employee info updated successfully.");
       setUserStatus(false);
+      setNotification("Employee was successfully terminated.", "success");
     } else {
       console.log("Failed to update employee info.");
+      setNotification("Failed to terminated employee.", "error");
     }
   };
 

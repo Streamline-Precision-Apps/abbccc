@@ -4,6 +4,17 @@ import { FormStatus, Permission } from "@/lib/types";
 
 import { revalidatePath, revalidateTag } from "next/cache";
 
+export async function createNewCostCode(formData: FormData) {
+  try {
+    console.log("Creating new cost code...");
+    console.log(formData);
+    // Extract data from formData
+    return formData;
+  } catch (error) {
+    return error;
+  }
+}
+
 export async function createCrew(formData: FormData) {
   try {
     console.log("Creating new crew...");
