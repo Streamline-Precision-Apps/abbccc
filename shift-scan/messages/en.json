@@ -252,6 +252,10 @@
         "Notes": "Notes",
         "Mileage": "Mileage",
         "Comments": "Comments",
+        "EndingMileage": "Ending Mileage",
+        "GallonsRefueled": "Gallons Refueled",
+        "MaterialsHauled": "Materials Hauled",
+        "LeftIdaho": "Left Idaho?",
         "recentlyUsed" : "Recently Used"
         },
 
