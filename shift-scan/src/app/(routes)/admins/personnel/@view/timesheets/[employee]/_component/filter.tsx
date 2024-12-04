@@ -90,9 +90,13 @@ export const Filter = ({ params }: { params: { employee: string } }) => {
             <Selects
               onChange={handleFilterChange}
               defaultValue={filter}
-              data={["APPROVED", "DENIED", "PENDING", "ALL"]}
               className="h-16"
-            />
+            >
+              <option value="ALL">All</option>
+              <option value="DENIED">Denied</option>
+              <option value="APPROVED">Approved</option>
+              <option value="PENDING">Pending</option>
+            </Selects>
           </Holds>
           <Holds className="h-full w-full row-span-5 overflow-y-auto no-scrollbar border-[3px] border-black rounded-[10px] ">
             {loading ? (

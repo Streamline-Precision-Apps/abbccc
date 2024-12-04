@@ -3,7 +3,6 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Tab } from "@/components/(reusable)/tab";
-
 import { useEffect, useState } from "react";
 import { Timesheets } from "./_components/Timesheets";
 import { SearchCrew, SearchUser } from "@/lib/types";
@@ -65,15 +64,16 @@ export default function Search() {
   }, [pathname, notification]); // Trigger the effect when the route changes
 
   useEffect(() => {
-    if (pathname.includes("/admins/personnel/timesheets")) {
-      setActiveTab(2);
-    }
+    const tabMapping: { [key: string]: number } = {
+      "/admins/personnel/timesheets": 2,
+      "/admins/personnel/crew": 3,
+    };
 
-    if (pathname.includes("/admins/personnel/crew")) {
-      setActiveTab(3);
-    } else {
-      setActiveTab(1);
-    }
+    const matchedTab = Object.keys(tabMapping).find((key) =>
+      pathname.startsWith(key)
+    );
+
+    setActiveTab(matchedTab ? tabMapping[matchedTab] : 1);
   }, [pathname]);
 
   return (

@@ -13,11 +13,13 @@ type ReusableViewLayoutProps = {
   mainLeft?: ReactNode; // Main section content
   main?: ReactNode;
   mainRight?: ReactNode; // Optional sidebar content
+  mainHolds?: string; // used for main section grid really only required for left and right
   footer?: ReactNode; // Footer content
   commentText?: string;
   editedItem?: string;
   editCommentFunction?: Dispatch<SetStateAction<string>>;
   editFunction?: Dispatch<SetStateAction<string>>;
+  custom?: boolean;
 };
 
 export const ReusableViewLayout = ({
@@ -30,12 +32,49 @@ export const ReusableViewLayout = ({
   editFunction,
   editCommentFunction,
   editedItem,
+  custom,
+  mainHolds,
 }: ReusableViewLayoutProps) => {
   const [isCommentSectionOpen, setIsCommentSectionOpen] = useState(false);
 
   const openComment = () => {
     setIsCommentSectionOpen(!isCommentSectionOpen);
   };
+  if (custom === true) {
+    return (
+      <Holds
+        background={"darkBlue"}
+        className="h-full w-full  border-[3px] border-black"
+      >
+        <Grids rows={"8"} cols={"2"} gap={"2"} className="h-full w-full ">
+          {/* Header Section */}
+
+          {header}
+
+          {main && (
+            <Holds className="h-full w-full flex flex-col">{main}</Holds>
+          )}
+          {!main && mainLeft && mainRight && (
+            <Holds className={mainHolds}>
+              {mainLeft}
+              {mainRight}
+            </Holds>
+          )}
+          {!main && (!mainLeft || !mainRight) && (
+            <Holds background={"white"} className="h-full w-full">
+              <Texts size={"p6"}>
+                Must specify either main, or both mainLeft and mainRight
+              </Texts>
+            </Holds>
+          )}
+
+          {/* Footer Section */}
+
+          {footer}
+        </Grids>
+      </Holds>
+    );
+  }
 
   return (
     <Holds className="h-full w-full">
