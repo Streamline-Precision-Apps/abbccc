@@ -11,6 +11,7 @@ import { z } from "zod";
 import { Personnel } from "./_components/Personnel";
 import { Crews } from "./_components/Crews";
 import { usePathname } from "next/navigation";
+import { NotificationComponent } from "@/components/(inputs)/NotificationComponent";
 
 export default function Search() {
   const [activeTab, setActiveTab] = useState(1);
@@ -58,14 +59,7 @@ export default function Search() {
       }
     };
 
-    const routesToReload = [
-      "/admins/personnel/crew/new-crew",
-      "/admins/personnel/crew",
-    ];
-
-    if (routesToReload.includes(pathname)) {
-      fetchCrews(); // Only fetch data on the specified routes
-    }
+    fetchCrews();
   }, [pathname]); // Trigger the effect when the route changes
 
   useEffect(() => {
@@ -82,6 +76,7 @@ export default function Search() {
 
   return (
     <Holds className="h-full ">
+      <NotificationComponent />
       <Grids rows={"10"}>
         <Holds position={"row"} className="row-span-1 h-full gap-2">
           <Tab onClick={() => setActiveTab(1)} isActive={activeTab === 1}>
