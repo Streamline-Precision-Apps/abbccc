@@ -15,7 +15,11 @@ import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { Images } from "@/components/(reusable)/images";
 
-export default function ResetPassword({ userId }: { userId: string }) {
+const ResetPassword = ({   userId,
+  handleNextStep,
+} : {
+  userId: string;
+  handleNextStep: () => void}) => {
   const t = useTranslations("Hamburger");
   const [showBanner, setShowBanner] = useState(false);
   const [bannerMessage, setBannerMessage] = useState("");
@@ -84,6 +88,7 @@ export default function ResetPassword({ userId }: { userId: string }) {
 
     try {
       await setUserPassword(formData);
+      handleNextStep();
       route.push("/hamburger/settings");
     } catch (error) {
       console.error("Error updating password:", error);
@@ -233,3 +238,5 @@ export default function ResetPassword({ userId }: { userId: string }) {
     </>
   );
 };
+
+export default ResetPassword;

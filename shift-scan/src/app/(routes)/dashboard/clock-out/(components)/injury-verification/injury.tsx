@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import "@/app/globals.css";
-import Checkbox from "@/components/(inputs)/CheckBox";
 import { useRouter } from "next/navigation";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Bases } from "@/components/(reusable)/bases";
@@ -10,6 +9,7 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Contents } from "@/components/(reusable)/contents";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { z } from "zod";
+import { CheckBox } from "@/components/(inputs)/checkBox";
 
 // Zod schema for component state
 const InjuryVerificationSchema = z.object({
@@ -80,7 +80,7 @@ export default function InjuryVerification() {
           {signatureBlob && <p>{t("SignatureCaptured")}</p>}
           <Holds className="flex-row gap-2">
             <h1>{t("SignatureVerify")}</h1>
-            <Checkbox
+            <CheckBox
               defaultChecked={checked}
               onChange={handleCheckboxChange}
               id={"injury"}
