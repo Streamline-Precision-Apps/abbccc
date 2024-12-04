@@ -7,13 +7,15 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Texts } from "@/components/(reusable)/texts";
 import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
-import CheckBox from "@/components/(inputs)/CheckBox";
+
 import CheckBoxWithImage from "@/components/(inputs)/CheckBoxWithImage";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
 import { deleteCrewAction, updateCrew } from "@/actions/adminActions";
 import Spinner from "@/components/(animations)/spinner";
 import { useRouter } from "next/navigation";
+import { useNotification } from "@/app/context/NotificationContext";
+import { CheckBox } from "@/components/(inputs)/checkBox";
 
 type User = {
   id: string;
@@ -24,19 +26,37 @@ type User = {
   image: string;
 };
 
+const arraysAreEqual = (arr1: User[], arr2: User[]) => {
+  if (arr1.length !== arr2.length) return false;
+
+  // Compare by id to detect changes
+  const set1 = new Set(arr1.map((user) => user.id));
+  const set2 = new Set(arr2.map((user) => user.id));
+
+  return Array.from(set1).every((id) => set2.has(id));
+};
+
 export default function ViewCrew({ params }: { params: { crew: string } }) {
   const [employees, setEmployees] = useState<User[]>([]);
   const [crewName, setCrewName] = useState<string>("");
   const [crewDescription, setCrewDescription] = useState<string>("");
   const [filter, setFilter] = useState("all");
   const [usersInCrew, setUsersInCrew] = useState<User[]>([]);
+  const [initialUsersInCrew, setInitialUsersInCrew] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [toggledUsers, setToggledUsers] = useState<Record<string, boolean>>({});
   const [toggledManager, setToggledManagers] = useState<
     Record<string, boolean>
   >({});
   const [teamLead, setTeamLead] = useState<string | null>(null);
+  const [hasChanged, setHasChanged] = useState(false);
+  const { setNotification } = useNotification();
   const router = useRouter();
+
+  useEffect(() => {
+    // Check for changes whenever `usersInCrew` updates
+    setHasChanged(!arraysAreEqual(usersInCrew, initialUsersInCrew));
+  }, [usersInCrew, initialUsersInCrew]);
 
   // Fetch all employees
   useEffect(() => {
@@ -65,6 +85,7 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
 
         // Update crew state
         setUsersInCrew(data.crew);
+        setInitialUsersInCrew(data.crew);
         setCrewName(data.crewName);
         setCrewDescription(data.crewDescription);
 
@@ -143,6 +164,10 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
   const UpdateCrew = async () => {
     try {
       // Gather required parameters
+      if (!hasChanged) {
+        setNotification("No changes detected.", "neutral");
+        return;
+      }
       const crewId = params.crew;
       if (!crewId) {
         alert("Invalid crew ID.");
@@ -160,6 +185,7 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
       // Call the updateCrew function to handle backend update logic
       await updateCrew(crewId, formData);
       router.refresh();
+      setNotification("Updated crew successfully!", "success");
     } catch (error) {
       console.error("Failed to update crew:", error);
     }
@@ -170,9 +196,11 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
       const crewId = params.crew;
       await deleteCrewAction(crewId);
       router.push("/admins/personnel/crew");
+      router.refresh();
+      setNotification("Crew deleted successfully!", "error");
     } catch (error) {
       console.error("Failed to delete crew:", error);
-      alert("An error occurred while deleting the crew. Please try again.");
+      setNotification("Error: Failed to delete crew.");
     }
   };
 
@@ -230,17 +258,17 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
       }
       mainRight={
         <Holds className="h-full bg-white w-2/3">
-          <Texts
-            size={"p6"}
-            position={"right"}
-            className="w-full px-10 py-2"
-          >{`Total Crew Members: ${usersInCrew.length}`}</Texts>
-          <Holds className="h-full p-4 px-10">
+          <Holds className="h-full w-full px-10">
+            <Texts
+              size={"p6"}
+              position={"right"}
+              className="w-full px-10 "
+            >{`Total Crew Members: ${usersInCrew.length}`}</Texts>
             <Holds
               background={"offWhite"}
               className={
                 teamLeadUser
-                  ? "w-full h-fit border-[3px] border-black rounded-[10px] my-2  p-3 flex items-center justify-center"
+                  ? "w-full h-1/5 border-[3px] border-black rounded-[10px]   p-3 flex items-center justify-center"
                   : "w-full h-1/5 justify-center p-3"
               }
             >
@@ -259,7 +287,7 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
                 </Holds>
               </Grids>
             </Holds>
-            <Holds className="w-full h-4/5">
+            <Holds className="w-full h-4/6">
               {usersInCrew.length > 0 ? (
                 <Holds
                   background={"offWhite"}
@@ -269,7 +297,7 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
                     user.id === teamLead ? null : (
                       <Holds
                         key={user.id}
-                        className="w-full h-fit border-[3px] border-black rounded-[10px] my-2 p-3 flex items-center justify-center"
+                        className="w-full h-fit border-[3px] border-black rounded-[10px] my-2 p-2 flex items-center justify-center"
                       >
                         <Holds position={"row"}>
                           <Holds className="w-1/4">

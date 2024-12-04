@@ -1,17 +1,12 @@
 "use client";
 
-import { useNotification } from "@/app/context/NotificationContext";
+import { Holds } from "@/components/(reusable)/holds";
+import EmptyView from "../../../_pages/EmptyView";
 
 export default function Crew() {
-  const { setNotification } = useNotification();
-
-  const handleSubmit = () => {
-    setNotification("Operation was successful!");
-  };
-
   return (
-    <div>
-      <button onClick={handleSubmit}>Submit</button>
-    </div>
+    <Holds className="w-full h-full ">
+      <EmptyView Children={undefined} />
+    </Holds>
   );
 }

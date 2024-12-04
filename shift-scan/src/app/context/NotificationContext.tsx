@@ -7,9 +7,16 @@ import React, {
   useContext,
 } from "react";
 
+// Define notification types
+type NotificationType = "error" | "success" | "neutral";
+
 type NotificationProps = {
   notification: string | null;
-  setNotification: (notification: string | null) => void;
+  type: NotificationType; // Add type to indicate the state
+  setNotification: (
+    notification: string | null,
+    type?: NotificationType
+  ) => void;
 };
 
 const Notification = createContext<NotificationProps | undefined>(undefined);
@@ -17,22 +24,23 @@ const Notification = createContext<NotificationProps | undefined>(undefined);
 export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [notification, setNotificationState] = useState<string | null>(() => {
-    // Load initial state from localStorage if available
-    if (typeof window !== "undefined") {
-      const notification = localStorage.getItem("notification");
-      return notification ? notification : null;
-    } else {
-      return null;
-    }
-  });
+  const [notification, setNotificationState] = useState<string | null>(null);
+  const [type, setType] = useState<NotificationType>("neutral");
 
-  const setNotification = (notification: string | null) => {
-    setNotificationState(notification);
-    // Save to localStorage
+  const setNotification = (
+    message: string | null,
+    stateType: NotificationType = "neutral"
+  ) => {
+    setNotificationState(message);
+    setType(stateType);
+
+    // Save to localStorage (optional, can be removed if not needed)
     if (typeof window !== "undefined") {
-      if (notification) {
-        localStorage.setItem("notification", notification);
+      if (message) {
+        localStorage.setItem(
+          "notification",
+          JSON.stringify({ message, stateType })
+        );
       } else {
         localStorage.removeItem("notification");
       }
@@ -43,16 +51,16 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
   useEffect(() => {
     if (notification) {
       const timer = setTimeout(() => {
-        setNotification(null);
+        setNotificationState(null);
+        setType("neutral"); // Reset to neutral after clearing
       }, 6000);
 
-      // Cleanup timer when notification changes or component unmounts
       return () => clearTimeout(timer);
     }
   }, [notification]);
 
   return (
-    <Notification.Provider value={{ notification, setNotification }}>
+    <Notification.Provider value={{ notification, type, setNotification }}>
       {children}
     </Notification.Provider>
   );

@@ -15,8 +15,6 @@ import { AdminClockOut } from "./AdminClockOut";
 import AdminSwitch from "./AdminSwitch";
 import AdminClock from "./AdminClock";
 import { usePathname, useRouter } from "next/navigation";
-import { NotificationComponent } from "@/components/(inputs)/NotificationComponent";
-import { useNotification } from "@/app/context/NotificationContext";
 
 const Topbar = () => {
   const { data: session } = useSession();
@@ -46,11 +44,6 @@ const Topbar = () => {
     setCostCode(parsedData.costCode || cc || "");
     setAuthStepState(getAuthStep() || "");
   });
-  const { notification } = useNotification();
-
-  useEffect(() => {
-    console.log("Notification updated:", notification);
-  }, [notification]);
 
   const handleClockClick = () => setIsOpen2(!isOpen2);
   const handleClose = () => setIsOpen(false);
@@ -86,9 +79,7 @@ const Topbar = () => {
               <Holds
                 background={"lightBlue"}
                 className="flex flex-row justify-center items-center rounded border-[3px] border-black w-[90%] h-full relative"
-              >
-                <NotificationComponent />
-              </Holds>
+              ></Holds>
             ) : (
               <Holds
                 background={"lightBlue"}
@@ -125,8 +116,6 @@ const Topbar = () => {
                     </Titles>
                   </Holds>
                 </Holds>
-
-                <NotificationComponent />
 
                 <Holds className="w-10 absolute right-5">
                   <Images
@@ -167,16 +156,14 @@ const Topbar = () => {
         </Holds>
       ) : (
         <Holds className="h-full w-full ">
-          <Holds className="w-[98%] h-2/3">
+          <Holds className="w-[98%] h-full">
             <Holds
               background={"lightBlue"}
-              className="rounded h-full w-full border-[3px] border-black"
-            >
-              <NotificationComponent />
-            </Holds>
+              className="rounded h-2/5 w-full border-[3px] border-black"
+            ></Holds>
             <Holds
               background={"white"}
-              className="h-full w-[99%] flex justify-start flex-row rounded"
+              className="h-3/5 w-[99%] flex justify-start flex-row rounded"
             >
               <Holds
                 position={"row"}

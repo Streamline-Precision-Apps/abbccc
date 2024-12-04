@@ -51,9 +51,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
                                         <PayPeriodTimeSheetProvider>
                                           <RecentEquipmentProvider>
                                             <NotificationProvider>
-                                      {children}
+                                              {children}
                                             </NotificationProvider>
-                                  </RecentEquipmentProvider>
+                                          </RecentEquipmentProvider>
                                         </PayPeriodTimeSheetProvider>
                                       </RecentJobSiteProvider>
                                     </RecentCostCodeProvider>
