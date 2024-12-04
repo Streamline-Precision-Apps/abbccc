@@ -53,7 +53,7 @@ export async function createCrew(formData: FormData) {
 
     console.log("Crew created successfully");
     revalidateTag("crews");
-
+    revalidatePath(`/admins/personnel/crew/new-crew`);
     return {
       success: true,
       crewId: newCrew.id,

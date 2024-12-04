@@ -12,6 +12,7 @@ import { Personnel } from "./_components/Personnel";
 import { Crews } from "./_components/Crews";
 import { usePathname } from "next/navigation";
 import { NotificationComponent } from "@/components/(inputs)/NotificationComponent";
+import { useNotification } from "@/app/context/NotificationContext";
 
 export default function Search() {
   const [activeTab, setActiveTab] = useState(1);
@@ -19,6 +20,7 @@ export default function Search() {
   const [filter, setFilter] = useState("all");
   const [crew, setCrew] = useState<SearchCrew[]>([]);
   const pathname = usePathname(); // Get current route
+  const { notification } = useNotification();
 
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -39,7 +41,7 @@ export default function Search() {
     };
 
     fetchEmployees();
-  }, [filter]);
+  }, [filter, notification]);
 
   useEffect(() => {
     const fetchCrews = async () => {
@@ -60,7 +62,7 @@ export default function Search() {
     };
 
     fetchCrews();
-  }, [pathname]); // Trigger the effect when the route changes
+  }, [pathname, notification]); // Trigger the effect when the route changes
 
   useEffect(() => {
     if (pathname.includes("/admins/personnel/timesheets")) {
