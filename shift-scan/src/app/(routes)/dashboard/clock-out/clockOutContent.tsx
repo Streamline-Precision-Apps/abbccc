@@ -18,8 +18,9 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Images } from "@/components/(reusable)/images";
 import { Grids } from "@/components/(reusable)/grids";
 import Spinner from "@/components/(animations)/spinner";
-import Checkbox from "@/components/(inputs)/CheckBox";
 import { z } from "zod";
+import { useTruckScanData } from "@/app/context/TruckScanDataContext";
+import { CheckBox } from "@/components/(inputs)/checkBox";
 
 // Zod schema for component state
 const ClockOutContentSchema = z.object({
@@ -40,6 +41,7 @@ const ClockOutContentSchema = z.object({
       id: z.union([z.string(), z.number()]).optional(),
     })
     .nullable(),
+  savedVehicleId: z.string().nullable(),
   date: z.date(),
 });
 
@@ -56,9 +58,11 @@ export default function ClockOutContent() {
   const { scanResult } = useScanData();
   const { savedCostCode } = useSavedCostCode();
   const { savedTimeSheetData } = useTimeSheetData();
+  const { truckScanData } = useTruckScanData();
   const [date] = useState(new Date());
   const [base64String, setBase64String] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const { setTruckScanData } = useTruckScanData();
 
   // Validate initial state with Zod schema
   try {
@@ -125,6 +129,7 @@ export default function ClockOutContent() {
       const formData = new FormData(formRef.current as HTMLFormElement);
       await updateTimeSheet(formData);
       localStorage.clear();
+      setTruckScanData("");
       router.push("/");
     } catch (error) {
       console.error("Failed to submit the time sheet:", error);
@@ -191,7 +196,7 @@ export default function ClockOutContent() {
                   <Titles size={"h2"}>{t("SignatureVerify")}</Titles>
                 </Holds>
                 <Holds size={"30"}>
-                  <Checkbox
+                  <CheckBox
                     id="injury-checkbox"
                     name="injury-verify"
                     onChange={handleCheckboxChange}
@@ -273,6 +278,13 @@ export default function ClockOutContent() {
                       {t("ClockOutDate")} {new Date().toLocaleDateString()}
                     </Texts>
                   </Holds>
+                  {truckScanData !== "" && (
+                    <Holds className="row-span-1 h-full my-auto">
+                      <Texts>
+                        {t("Truck-label")} {truckScanData}
+                      </Texts>
+                    </Holds>
+                  )}
                   <Holds className="row-span-1 h-full my-auto">
                     <Texts>
                       {t("Jobsite")}{" "}
@@ -358,6 +370,13 @@ export default function ClockOutContent() {
                       {t("ClockOutDate")} {new Date().toLocaleDateString()}
                     </Texts>
                   </Holds>
+                  {truckScanData !== "" && (
+                    <Holds className="row-span-1 h-full my-auto">
+                      <Texts>
+                        {t("Truck-label")} {truckScanData}{" "}
+                      </Texts>
+                    </Holds>
+                  )}
                   <Holds className="row-span-1 h-full my-auto">
                     <Texts>
                       {t("Jobsite")}{" "}

@@ -26,7 +26,7 @@ type TimeSheet = {
   costcode?: string;
   nu?: string;
   Fp?: string;
-  vehicleId?: number | null;
+  vehicleId?: string | null;
   startTime?: Date | string;
   endTime?: Date | string | null;
   duration?: number | null;

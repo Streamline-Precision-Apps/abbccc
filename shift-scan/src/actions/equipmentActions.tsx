@@ -140,7 +140,6 @@ export async function createEquipment(formData: FormData) {
     const equipmentTagValue = formData.get("equipmentTag") as string;
     const equipmentStatusValue = formData.get("equipmentStatus") as string;
     const qrId = formData.get("qrId") as string;
-    const image = formData.get("image") as string;
     const equipmentTag = toEnumValue(Tags, equipmentTagValue);
     const equipmentStatus = toEnumValue(EquipmentStatus, equipmentStatusValue);
 
@@ -165,7 +164,6 @@ export async function createEquipment(formData: FormData) {
         mileage: formData.get("mileage")
           ? Number(formData.get("mileage"))
           : null,
-        image: image || null,
       },
     });
     revalidatePath("/dashboard/qr-generator");

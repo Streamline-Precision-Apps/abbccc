@@ -22,6 +22,8 @@ import {
 import { PayPeriodTimeSheetProvider } from "./context/PayPeriodTimeSheetsContext";
 import React from "react";
 import { EquipmentListProvider } from "./context/dbCompleteEquipmentList";
+import { TruckScanDataProvider } from "./context/TruckScanDataContext";
+import { CurrentViewProvider } from "./context/CurrentViewContext";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
