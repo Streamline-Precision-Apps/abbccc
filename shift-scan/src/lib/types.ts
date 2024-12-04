@@ -1,5 +1,5 @@
 // This file holds all the types that will be used in the app
-import { EquipmentStatus, FormStatus, Permission, Tags } from "@prisma/client";
+import { EquipmentStatus, Permission, Tags } from "@prisma/client"; // i removed the ebnum formSatus hope no breaks
 // this imports the session types for the app, it works client and server-side
 import { Session } from "next-auth";
 
@@ -13,7 +13,7 @@ import { clockInFormSchema } from "./validation";
 
 export type clockInForm = z.infer<typeof clockInFormSchema>;
 // -------------------------------------------------------------------------------------
-
+export type FormStatus = "PENDING" | "APPROVED" | "DENIED";
 export type User = {
   id: string;
   username?: string;
@@ -63,6 +63,12 @@ export type SearchUser = {
   terminationDate: Date | null;
 };
 
+export type SearchCrew = {
+  id: string;
+  name: string;
+  description: string;
+};
+
 export type CustomSession = {
   user?: User | null;
 };
@@ -92,6 +98,29 @@ export type EmployeeEquipmentLogs = {
   isSubmitted: boolean;
   status: FormStatus;
   Equipment?: Equipment | null;
+};
+export type TimeSheetView = {
+  submitDate?: string; // Changed to string since API returns string dates
+  id: string;
+  userId?: string;
+  date?: string;
+  jobsiteId?: string;
+  costcode?: string;
+  nu?: string;
+  Fp?: string;
+  vehicleId?: number | null;
+  startTime?: string | null;
+  endTime?: string | null;
+  duration?: number | null;
+  startingMileage?: number | null;
+  endingMileage?: number | null;
+  leftIdaho?: boolean | null;
+  equipmentHauled?: string | null;
+  materialsHauled?: string | null;
+  hauledLoadsQuantity?: number | null;
+  refuelingGallons?: number | null;
+  timeSheetComments?: string | null;
+  status?: string;
 };
 
 export type PayPeriodTimesheets = {
@@ -239,6 +268,17 @@ export type Equipment = {
   isActive?: boolean;
   image?: string | null;
   inUse?: boolean;
+};
+
+export type EmployeeEquipmentLog = {
+  id?: number | null;
+  startTime?: string;
+  endTime?: string | null;
+  duration?: number | null;
+  isRefueled?: boolean | null;
+  fuelUsed?: number | null;
+  comment?: string | null;
+  equipmentId?: number | null;
 };
 
 export type Jobsites = {

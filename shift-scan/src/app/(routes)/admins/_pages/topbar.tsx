@@ -79,13 +79,11 @@ const Topbar = () => {
               <Holds
                 background={"lightBlue"}
                 className="flex flex-row justify-center items-center rounded border-[3px] border-black w-[90%] h-full relative"
-              >
-                <Titles className="h-full">Banner messages go here</Titles>
-              </Holds>
+              ></Holds>
             ) : (
               <Holds
                 background={"lightBlue"}
-                className="flex flex-row justify-center items-center rounded border-[3px] border-black w-[90%] h-full relative"
+                className="flex flex-row z-1 justify-center items-center rounded border-[3px] border-black w-[90%] h-full relative"
               >
                 <Holds className="w-[15%] absolute left-5">
                   <Holds position={"row"} className="hidden md:flex">
@@ -118,9 +116,7 @@ const Topbar = () => {
                     </Titles>
                   </Holds>
                 </Holds>
-                <Titles size={"h4"} className="h-full">
-                  Closed Banner messages go here
-                </Titles>
+
                 <Holds className="w-10 absolute right-5">
                   <Images
                     titleImg="/x.svg"
@@ -160,18 +156,14 @@ const Topbar = () => {
         </Holds>
       ) : (
         <Holds className="h-full w-full ">
-          <Holds className="w-[98%] h-2/3">
+          <Holds className="w-[98%] h-full">
             <Holds
               background={"lightBlue"}
-              className="rounded h-full w-full border-[3px] border-black"
-            >
-              <Titles size={"h4"} className="m-auto h-full">
-                Open Banner messages go here
-              </Titles>
-            </Holds>
+              className="rounded h-2/5 w-full border-[3px] border-black"
+            ></Holds>
             <Holds
               background={"white"}
-              className="h-full w-[99%] flex justify-start flex-row rounded"
+              className="h-3/5 w-[99%] flex justify-start flex-row rounded"
             >
               <Holds
                 position={"row"}

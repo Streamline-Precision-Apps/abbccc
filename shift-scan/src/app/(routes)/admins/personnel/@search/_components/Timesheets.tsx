@@ -1,5 +1,4 @@
-import { Buttons } from "@/components/(reusable)/buttons";
-
+"use client";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
@@ -17,6 +16,7 @@ type Props = {
 export const Timesheets = ({ employees, setFilter }: Props) => {
   const [term, setTerm] = useState<string>("");
   const [page, setPage] = useState(true);
+
   const router = useRouter();
 
   // Memoize the filtered list to avoid re-filtering on every render
@@ -39,17 +39,14 @@ export const Timesheets = ({ employees, setFilter }: Props) => {
 
   const selectEmployee = (employee: SearchUser) => {
     setTerm(employee.firstName + " " + employee.lastName);
-    router.push(`/admins/personnel/timesheets/${employee.id}`);
-  };
 
-  const createEmployee = () => {
-    router.push(`/admins/personnel/new-timesheet`);
+    router.push(`/admins/personnel/timesheets/${employee.id}`);
   };
 
   return (
     <Holds className="h-full w-full">
-      <Grids rows="10" gap="5" className="h-full">
-        <Holds className=" bg-white h-full w-full py-3 ">
+      <Grids rows="10" gap="5" className="h-full py-5">
+        <Holds className=" bg-white row-span-1 h-full w-full gap-4 ">
           <Selects
             defaultValue={"all"}
             onChange={(e) => setFilter(e.target.value)}
@@ -71,7 +68,7 @@ export const Timesheets = ({ employees, setFilter }: Props) => {
           </Selects>
         </Holds>
         {/* Search Input Section */}
-        <Holds className="row-span-8 h-full border-[3px] border-black rounded-t-[10px]">
+        <Holds className="row-span-9 h-full border-[3px]  border-black rounded-t-[10px]">
           {page && (
             <>
               <Holds
@@ -118,15 +115,6 @@ export const Timesheets = ({ employees, setFilter }: Props) => {
             </>
           )}
         </Holds>
-
-        {/* Create New Employee Button */}
-        <Buttons
-          background="green"
-          className="row-span-1 h-full"
-          onClick={createEmployee}
-        >
-          <Texts size="p6">Create New Timesheet</Texts>
-        </Buttons>
       </Grids>
     </Holds>
   );
