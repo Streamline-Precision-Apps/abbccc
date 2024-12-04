@@ -16,6 +16,8 @@ import { useRouter } from "next/navigation";
 import { updateTimeSheet } from "@/actions/timeSheetActions";
 import { useTruckScanData } from "@/app/context/TruckScanDataContext";
 import { useStartingMileage } from "@/app/context/StartingMileageContext";
+import { useScanData } from "@/app/context/JobSiteScanDataContext";
+import { useSavedCostCode } from "@/app/context/CostCodeContext";
 
 // Zod schema for form validation
 const haulingRequestSchema = z.object({
@@ -38,7 +40,7 @@ type HaulingFormProps = {
 };
 
 export default function HaulingForm({ user }: HaulingFormProps) {
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(0);
   const [errorMessage, setErrorMessage] = useState("");
   const { savedTimeSheetData } = useTimeSheetData();
   const { currentView, setCurrentView } = useCurrentView();
@@ -46,7 +48,9 @@ export default function HaulingForm({ user }: HaulingFormProps) {
   const { truckScanData, setTruckScanData } = useTruckScanData();
   const { startingMileage, setStartingMileage } = useStartingMileage();
   const formRef = useRef<HTMLFormElement>(null);
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(1);
+  const { scanResult } = useScanData();
+  const { savedCostCode } = useSavedCostCode();
 
   useEffect(() => {
     if (currentView !== "truck") {
@@ -187,38 +191,27 @@ export default function HaulingForm({ user }: HaulingFormProps) {
               value={new Date().toISOString()}
               readOnly
             />
-            <Inputs
-              type="hidden"
-              name="timeSheetComments"
-              value={""}
-              readOnly
-            />
           </Holds>
           <Contents width="section">
             <Holds>
-              <Labels>Site Number</Labels>
-              <Inputs type="text" name="jobsiteId" required />
+              <Labels>Vehicle ID</Labels>
+              <Inputs type="text" name="bvehicleId" value={truckScanData ?? ""} readOnly />
             </Holds>
             <Holds>
-              <Labels>Equipment Operated</Labels>
-              <Inputs type="text" name="vehicleId" required />
+              <Labels>Site Number</Labels>
+              <Inputs type="text" name="jobsiteId" value={scanResult?.data ?? ""} readOnly />
             </Holds>
             <Holds>
               <Labels>Cost Code</Labels>
-              <Inputs type="text" name="costcode" required />
-            </Holds>
-            <Holds>
-              <Labels>Notes</Labels>
-              <TextAreas name="notes" rows={5} maxLength={200} />
+              <Inputs type="text" name="costcode" value={savedCostCode ?? ""} readOnly />
             </Holds>
             <Holds>
               <Labels>Material Hauled</Labels>
-              <Selects name="materialHauled" required>
-                <option value="">Select One</option>
+              <Selects name="materialHauled">
+                <option value="">None</option>
                 <option value="Steel">Steel</option>
                 <option value="Wood">Wood</option>
                 <option value="Concrete">Concrete</option>
-                {/* Add more options as needed */}
               </Selects>
             </Holds>
 
@@ -226,18 +219,18 @@ export default function HaulingForm({ user }: HaulingFormProps) {
             <Holds className="flex justify-between items-center mt-4">
               <Buttons
                 type="button"
-                onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
-                className="bg-red-500"
-              >
-                <Titles size="h2">-</Titles>
-              </Buttons>
-              <Titles size="h2">{quantity}</Titles>
-              <Buttons
-                type="button"
                 onClick={() => setQuantity((prev) => prev + 1)}
                 className="bg-green-500"
               >
                 <Titles size="h2">+</Titles>
+              </Buttons>
+              <Titles size="h2">{quantity}</Titles>
+              <Buttons
+                type="button"
+                onClick={() => setQuantity((prev) => Math.max(0, prev - 1))}
+                className="bg-red-500"
+              >
+                <Titles size="h2">-</Titles>
               </Buttons>
             </Holds>
 
