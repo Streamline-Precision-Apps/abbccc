@@ -75,6 +75,11 @@ export default function DbWidgetSection({ session }: props) {
   >(null);
   const { currentView } = useCurrentView();
 
+  
+  useEffect(() => {
+    console.log("Current view:", currentView);
+  }, []);
+
   // Validate initial state with Zod schema
   try {
     DbWidgetSectionSchema.parse({

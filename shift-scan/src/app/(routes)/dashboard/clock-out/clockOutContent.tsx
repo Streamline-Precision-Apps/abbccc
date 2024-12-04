@@ -18,37 +18,71 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Images } from "@/components/(reusable)/images";
 import { Grids } from "@/components/(reusable)/grids";
 import Spinner from "@/components/(animations)/spinner";
-import { z } from "zod";
+// import { z } from "zod";
 import { useTruckScanData } from "@/app/context/TruckScanDataContext";
 import { CheckBox } from "@/components/(inputs)/checkBox";
+import { useCurrentView } from "@/app/context/CurrentViewContext";
+import TruckClockOutForm from "./(components)/truckClockOutForm";
+import { useStartingMileage } from "@/app/context/StartingMileageContext";
 
 // Zod schema for component state
-const ClockOutContentSchema = z.object({
-  loading: z.boolean(),
-  step: z.number(),
-  path: z.string(),
-  checked: z.boolean(),
-  base64String: z.string(),
-  isSubmitting: z.boolean(),
-  scanResult: z
-    .object({
-      data: z.string().optional(),
-    })
-    .nullable(),
-  savedCostCode: z.string().nullable(),
-  savedTimeSheetData: z
-    .object({
-      id: z.union([z.string(), z.number()]).optional(),
-    })
-    .nullable(),
-  savedVehicleId: z.string().nullable(),
-  date: z.date(),
-});
+// const ClockOutContentSchema = z.object({
+//   loading: z.boolean(),
+//   step: z.number(),
+//   path: z.string(),
+//   checked: z.boolean(),
+//   base64String: z.string(),
+//   isSubmitting: z.boolean(),
+//   scanResult: z
+//     .object({
+//       data: z.string().optional(),
+//     })
+//     .nullable(),
+//   savedCostCode: z.string().nullable(),
+//   savedTimeSheetData: z
+//     .object({
+//       id: z.union([z.string(), z.number()]).optional(),
+//     })
+//     .nullable(),
+//   savedVehicleId: z.string().nullable(),
+//   date: z.date(),
+// });
+
+// Define FormStatus Enum
+// const FormStatus = z.enum(["PENDING", "APPROVED", "REJECTED"]); // Update as per actual values
+
+// Define TimeSheetsSchema
+// const TimeSheetsSchema = z.object({
+//   submitDate: z.date().default(new Date()),
+//   id: z.number().int(), // Int type
+//   userId: z.string(),
+//   date: z.date(), // DateTime
+//   jobsiteId: z.string(),
+//   costcode: z.string(),
+//   nu: z.string().default("nu"),
+//   Fp: z.string().default("fp"),
+//   vehicleId: z.string().nullable(), // Nullable String
+//   startTime: z.date(),
+//   endTime: z.date().nullable(),
+//   duration: z.number().nullable(),
+//   startingMileage: z.number().int().nullable(),
+//   endingMileage: z.number().int().nullable(),
+//   leftIdaho: z.boolean().nullable().default(false),
+//   equipmentHauled: z.string().nullable(),
+//   materialsHauled: z.string().nullable(),
+//   hauledLoadsQuantity: z.number().int().nullable(),
+//   refuelingGallons: z.number().nullable(),
+//   timeSheetComments: z.string().nullable(),
+//   status: FormStatus.default("PENDING"),
+// });
+
+// Infer the TypeScript type for convenience
+// type TimeSheetsType = z.infer<typeof TimeSheetsSchema>;
 
 // Main component function
 export default function ClockOutContent() {
   const [loading, setLoading] = useState(true);
-  const [step, incrementStep] = useState(1);
+  const [step, setStep] = useState(1); // Using setStep instead of incrementStep
   const [path, setPath] = useState("ClockOut");
   const router = useRouter();
   const t = useTranslations("ClockOut");
@@ -58,31 +92,21 @@ export default function ClockOutContent() {
   const { scanResult } = useScanData();
   const { savedCostCode } = useSavedCostCode();
   const { savedTimeSheetData } = useTimeSheetData();
-  const { truckScanData } = useTruckScanData();
+  const { truckScanData, setTruckScanData } = useTruckScanData();
+  const { setStartingMileage } = useStartingMileage();
   const [date] = useState(new Date());
   const [base64String, setBase64String] = useState<string>("");
+  const [endingMileage, setEndingMileage] = useState<number>(0);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const { setTruckScanData } = useTruckScanData();
+  const { currentView, setCurrentView } = useCurrentView();
+  const [refuelingGallons, setRefuelingGallons] = useState<number>(0);
+  const [hauledLoadsQuantity, setHauledLoadsQuantity] = useState<number>(0);
+  const [materialsHauled, setMaterialsHauled] = useState<string>("");
+  const [leftIdaho, setLeftIdaho] = useState<boolean>(false);
 
-  // Validate initial state with Zod schema
-  try {
-    ClockOutContentSchema.parse({
-      loading,
-      step,
-      path,
-      checked,
-      base64String,
-      isSubmitting,
-      scanResult,
-      savedCostCode,
-      savedTimeSheetData,
-      date,
-    });
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      console.error("Initial state validation error:", error.errors);
-    }
-  }
+  const incrementStep = () => {
+    setStep((prevStep) => prevStep + 1); // Increment function
+  };
 
   // Optimizing localStorage access using useMemo
   const localStorageData = useMemo(() => {
@@ -97,8 +121,15 @@ export default function ClockOutContent() {
       : {};
   }, []);
 
-  // Fetching the signature only once
   useEffect(() => {
+    console.log("path:", path);
+  }, [path]);
+
+  useEffect(() => {
+    if (currentView === "truck") {
+      setPath("truck");
+    }
+    // Fetching the signature only once
     const fetchSignature = async () => {
       setLoading(true);
       try {
@@ -129,7 +160,9 @@ export default function ClockOutContent() {
       const formData = new FormData(formRef.current as HTMLFormElement);
       await updateTimeSheet(formData);
       localStorage.clear();
+      setCurrentView("");
       setTruckScanData("");
+      setStartingMileage(null);
       router.push("/");
     } catch (error) {
       console.error("Failed to submit the time sheet:", error);
@@ -142,18 +175,33 @@ export default function ClockOutContent() {
   const handleNextStepAndSubmit = async () => {
     if (!checked) {
       setPath("Injury");
-      incrementStep(2);
+      incrementStep();
+    } else if (checked && currentView === "truck") {
+      setPath("truck");
+      incrementStep();
     } else {
-      incrementStep(2);
+      setPath("clockOut");
+      incrementStep();
     }
   };
 
   const handleNextStep = async () => {
-    incrementStep(3);
+    if (currentView === "truck") {
+      setPath("truck");
+    }
+    incrementStep();
   };
 
   const handleButtonClick = () => {
     handleSubmit();
+  };
+
+  const handleSubmitInjury = async () => {
+    if (currentView === "truck") {
+      setPath("truck");
+    } else {
+      setPath("ClockOut");
+    }
   };
 
   if (step === 1) {
@@ -236,15 +284,12 @@ export default function ClockOutContent() {
           {/* Injury Report Content */}
           <InjuryReportContent
             base64String={base64String}
-            setBase64String={setBase64String}
-            handleComplete={handleNextStepAndSubmit}
-            handleSubmitImage={handleSubmit}
-            handleNextStep={handleNextStep}
+            handleNextStep={handleSubmitInjury}
           />
         </Holds>
       </Grids>
     );
-  } else if (step === 2 && path === "ClockOut") {
+  } else if (step === 2 && path === "clockOut") {
     return (
       <>
         <Grids rows={"4"} gap={"5"}>
@@ -278,13 +323,6 @@ export default function ClockOutContent() {
                       {t("ClockOutDate")} {new Date().toLocaleDateString()}
                     </Texts>
                   </Holds>
-                  {truckScanData !== "" && (
-                    <Holds className="row-span-1 h-full my-auto">
-                      <Texts>
-                        {t("Truck-label")} {truckScanData}
-                      </Texts>
-                    </Holds>
-                  )}
                   <Holds className="row-span-1 h-full my-auto">
                     <Texts>
                       {t("Jobsite")}{" "}
@@ -336,7 +374,27 @@ export default function ClockOutContent() {
         </Grids>
       </>
     );
-  } else if (step === 3) {
+  } else if (step === 2 && path === "truck") {
+    return (
+      <>
+        <TruckClockOutForm
+          handleNextStep={handleNextStep}
+          jobsiteId={scanResult?.data || ""}
+          costCode={savedCostCode || ""}
+          endingMileage={endingMileage}
+          setEndingMileage={setEndingMileage}
+          leftIdaho={leftIdaho}
+          setLeftIdaho={setLeftIdaho}
+          refuelingGallons={refuelingGallons}
+          setRefuelingGallons={setRefuelingGallons}
+          materialsHauled={materialsHauled}
+          setMaterialsHauled={setMaterialsHauled}
+          hauledLoadsQuantity={hauledLoadsQuantity}
+          setHauledLoadsQuantity={setHauledLoadsQuantity}
+        />
+      </>
+    );
+  } else if (step === 3 && path === "clockOut") {
     return (
       <>
         <Grids rows={"4"} gap={"5"}>
@@ -370,13 +428,6 @@ export default function ClockOutContent() {
                       {t("ClockOutDate")} {new Date().toLocaleDateString()}
                     </Texts>
                   </Holds>
-                  {truckScanData !== "" && (
-                    <Holds className="row-span-1 h-full my-auto">
-                      <Texts>
-                        {t("Truck-label")} {truckScanData}{" "}
-                      </Texts>
-                    </Holds>
-                  )}
                   <Holds className="row-span-1 h-full my-auto">
                     <Texts>
                       {t("Jobsite")}{" "}
@@ -416,6 +467,146 @@ export default function ClockOutContent() {
                         onClick={handleButtonClick}
                         className="bg-app-red mx-auto flex justify-center w-full h-full py-4 px-5 rounded-lg text-black font-bold mt-5"
                         disabled={isSubmitting}
+                      >
+                        <Clock time={date.getTime()} />
+                      </Buttons>
+                    </form>
+                  </Holds>
+                </Grids>
+              </Holds>
+            </Contents>
+          </Holds>
+        </Grids>
+      </>
+    );
+  } else if (step === 3 && path === "truck") {
+    return (
+      <>
+        <Grids rows={"4"} gap={"5"}>
+          <Holds background={"white"} className="row-span-1 h-full">
+            <Contents width={"section"}>
+              <TitleBoxes
+                title={t("Bye")}
+                titleImg={"/end-day.svg"}
+                titleImgAlt={"End of Day Icon"}
+              />
+            </Contents>
+          </Holds>
+          <Holds background={"white"} className="row-span-3 h-full">
+            <Contents width={"section"} className="py-5">
+              <Holds background={"orange"} className="h-full">
+                <Grids rows={"6"} gap={"5"}>
+                  <Holds className="row-span-1 h-full my-auto">
+                    <Holds position={"right"} size={"20"}>
+                      <Buttons type="button" onClick={handleButtonClick}>
+                        <Images
+                          titleImg={"/downArrow.svg"}
+                          titleImgAlt={"downArrow"}
+                          size={"80"}
+                          className="mx-auto p-2"
+                        />
+                      </Buttons>
+                    </Holds>
+                  </Holds>
+                  <Holds className="row-span-1 h-full my-auto">
+                    <Texts>
+                      {t("ClockOutDate")} {new Date().toLocaleDateString()}
+                    </Texts>
+                  </Holds>
+                  <Holds className="row-span-1 h-full my-auto">
+                    <Texts>
+                      {t("Jobsite")}{" "}
+                      {scanResult?.data || localStorageData?.jobsite}
+                    </Texts>
+                  </Holds>
+                  <Holds className="row-span-1 h-full my-auto">
+                    <Texts>
+                      {t("CostCode")}{" "}
+                      {savedCostCode || localStorageData?.costCode}
+                    </Texts>
+                  </Holds>
+                  <Holds className="row-span-1 h-full my-auto">
+                    <Texts>
+                      {t("Truck-label")} {truckScanData}
+                    </Texts>
+                  </Holds>
+                  <Holds className="row-span-1 h-full my-auto">
+                    <form
+                      ref={formRef}
+                      onSubmit={(e) => {
+                        e.preventDefault(); // Prevent the default form submission
+                        handleButtonClick(); // Call your custom submit logic
+                      }}
+                    >
+                      <Inputs
+                        type="hidden"
+                        name="id"
+                        value={(
+                          savedTimeSheetData?.id ||
+                          localStorageData?.timesheet.id
+                        )?.toString()}
+                        readOnly
+                      />
+                      <Inputs
+                        type="hidden"
+                        name="endTime"
+                        value={new Date().toISOString()}
+                        readOnly
+                      />
+                      <Inputs
+                        type="hidden"
+                        name="timeSheetComments"
+                        value={""}
+                        readOnly
+                      />
+                      <Holds className="mb-2">
+                        <Texts>{t("Ending Mileage")}</Texts>
+                        <Inputs
+                          type="number"
+                          name="endingMileage"
+                          value={endingMileage.toString()}
+                          readOnly
+                        />
+                      </Holds>
+                      <Holds className="mb-2">
+                        <Texts>{t("Left Idaho")}</Texts>
+                        <Inputs
+                          type="text"
+                          name="leftIdaho"
+                          value={leftIdaho.toString()} // Boolean displayed as string "true" or "false"
+                          readOnly
+                        />
+                      </Holds>
+                      <Holds className="mb-2">
+                        <Texts>{t("Gallons Refueled")}</Texts>
+                        <Inputs
+                          type="number"
+                          name="refuelingGallons"
+                          value={refuelingGallons.toString()}
+                          readOnly
+                        />
+                      </Holds>
+                      <Holds className="mb-2">
+                        <Texts>{t("Materials Hauled")}</Texts>
+                        <Inputs
+                          type="text"
+                          name="materialsHauled"
+                          value={materialsHauled}
+                          readOnly
+                        />
+                      </Holds>
+                      <Holds className="mb-2">
+                        <Texts>{t("Hauled Loads Quantity")}</Texts>
+                        <Inputs
+                          type="number"
+                          name="hauledLoadsQuantity"
+                          value={hauledLoadsQuantity.toString()}
+                          readOnly
+                        />
+                      </Holds>
+                      <Buttons
+                        type="submit"
+                        className="bg-app-red mx-auto flex justify-center w-full h-full py-4 px-5 rounded-lg text-black font-bold mt-5"
                       >
                         <Clock time={date.getTime()} />
                       </Buttons>

@@ -20,19 +20,18 @@ import { Images } from "../(reusable)/images";
 import { Texts } from "../(reusable)/texts";
 import { useSession } from "next-auth/react";
 import { useTruckScanData } from "@/app/context/TruckScanDataContext";
+import { useStartingMileage } from "@/app/context/StartingMileageContext";
 
 type VerifyProcessProps = {
   handleNextStep?: () => void;
   type: string;
   option?: string;
-  mileage?: number;
   comments?: string;
 };
 
 export default function VerificationStep({
   type,
   handleNextStep,
-  mileage,
   comments,
 }: VerifyProcessProps) {
   const t = useTranslations("Clock");
@@ -42,6 +41,7 @@ export default function VerificationStep({
   const [date] = useState(new Date());
   const { data: session } = useSession();
   const { truckScanData } = useTruckScanData(); // Move this hook call to the top level.
+  const { startingMileage } = useStartingMileage();
 
   if (!session) return null; // Conditional rendering for session
 
@@ -95,8 +95,8 @@ export default function VerificationStep({
         if (truckScanData) {
           formData.append("vehicleId", truckScanData);
         }
-        if (mileage !== 0 && mileage !== undefined) {
-          formData.append("mileage", mileage.toString());
+        if (startingMileage !== undefined) {
+          formData.append("startingMileage", startingMileage?.toString() || "0");
         }
         formData.append("submitDate", new Date().toISOString());
         formData.append("userId", id.toString());
@@ -161,7 +161,7 @@ export default function VerificationStep({
                 />
             </Labels>
           )}
-          {mileage !== 0 && (
+          {startingMileage !== 0 && (
             <Labels>
               <Texts size={"p4"} position={"left"}>
                 {t("Mileage")}
@@ -170,7 +170,7 @@ export default function VerificationStep({
                 state="disabled"
                 name="startingMileage"
                 variant={"white"}
-                data={mileage}
+                data={startingMileage?.toString() || "0"}
                 />
             </Labels>
               )}

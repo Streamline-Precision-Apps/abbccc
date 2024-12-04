@@ -277,6 +277,9 @@ model CostCodes {
   updatedAt   DateTime   @default(now()) @updatedAt
   Jobsite     Jobsites[]
 }
+// !!!
+// TODO: I believe that we may need to make a table for tags.
+// !!!
 
 // crew data for seeing the entire crew and enabling site linking it also has direct access to the employeed time cards, and some desire profile settings
 model CrewMembers {
@@ -348,6 +351,8 @@ enum FormStatus {
   PENDING
   APPROVED
   DENIED
+  // I "TEMPORARY" this for the search filter api call for admins.
+  TEMPORARY
 }
 
 enum IsActive {
