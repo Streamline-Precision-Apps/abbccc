@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
 
-export async function GET(request: Request) {
+export async function GET() {
   const session = await auth();
   const userId = session?.user.id;
   const { savedTimeSheetData } = useTimeSheetData();

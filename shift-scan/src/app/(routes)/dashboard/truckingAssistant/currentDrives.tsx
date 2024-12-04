@@ -57,7 +57,7 @@ export default function CurrentDrives() {
         const data = await response.json();
         console.log("Raw data:", data);
 
-        const validatedData: ReceivedContent[] = data.map((item: any) =>
+        const validatedData: ReceivedContent[] = data.map((item: ReceivedContent) =>
           receivedContentSchema.parse(item)
         );
         console.log("Validated Data:", validatedData);

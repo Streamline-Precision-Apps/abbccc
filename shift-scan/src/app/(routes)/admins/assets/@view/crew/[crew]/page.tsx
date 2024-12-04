@@ -7,7 +7,7 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Texts } from "@/components/(reusable)/texts";
 import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
-import CheckBox from "@/components/(inputs)/CheckBox";
+import { CheckBox } from "@/components/(inputs)/checkBox";
 import CheckBoxWithImage from "@/components/(inputs)/CheckBoxWithImage";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";

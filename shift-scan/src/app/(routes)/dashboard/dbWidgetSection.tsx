@@ -5,7 +5,7 @@ import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
 import { useTranslations } from "next-intl";
 import { Grids } from "@/components/(reusable)/grids";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Holds } from "@/components/(reusable)/holds";
 import { Contents } from "@/components/(reusable)/contents";
 import { useRouter } from "next/navigation";

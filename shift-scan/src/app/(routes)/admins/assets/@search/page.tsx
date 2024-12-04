@@ -5,11 +5,8 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Tab } from "@/components/(reusable)/tab";
 
 import { useEffect, useState } from "react";
-import { Timesheets } from "./_components/Timesheets";
 import { Equipment, Jobsites, costCodes } from "@/lib/types";
 import { z } from "zod";
-import { Personnel } from "./_components/Personnel";
-import { Crews } from "./_components/Crews";
 import { Texts } from "@/components/(reusable)/texts";
 
 export default function Search() {
@@ -61,9 +58,7 @@ export default function Search() {
   useEffect(() => {
     const fetchJobsites = async () => {
       try {
-        const jobsitesRes = await fetch(
-          "/api/getAllJobsites?filter=" + filter
-        );
+        const jobsitesRes = await fetch("/api/getAllJobsites?filter=" + filter);
         const jobsitesData = await jobsitesRes.json();
         // const validatedJobsites = jobsitesSchema.parse(jobsitesData);
         setJobsites(jobsitesData);
@@ -82,9 +77,7 @@ export default function Search() {
   useEffect(() => {
     const fetchCostCodes = async () => {
       try {
-        const costCodesRes = await fetch(
-          "/api/getAllCostCodes"
-        );
+        const costCodesRes = await fetch("/api/getAllCostCodes");
         const costCodesData = await costCodesRes.json();
         // const validatedCostCodes = costCodesSchema.parse(costCodesData);
         setCostCodes(costCodesData);
@@ -131,7 +124,7 @@ export default function Search() {
             {activeTab === 3 && (
               // <Crews crew={crew} />
               <Texts>Cost Codes</Texts>
-              )}
+            )}
           </Contents>
         </Holds>
       </Grids>

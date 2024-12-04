@@ -1,15 +1,14 @@
 "use client";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
-import { Forms } from "@/components/(reusable)/forms";
+// import { Forms } from "@/components/(reusable)/forms";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
 import { Holds } from "@/components/(reusable)/holds";
 import { Selects } from "@/components/(reusable)/selects";
-import { TextAreas } from "@/components/(reusable)/textareas";
 import { Titles } from "@/components/(reusable)/titles";
-import { z } from "zod";
-import React, { use, useEffect, useMemo, useRef, useState } from "react";
+// import { z } from "zod";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
 import { useCurrentView } from "@/app/context/CurrentViewContext";
 import { useRouter } from "next/navigation";
@@ -20,35 +19,34 @@ import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 
 // Zod schema for form validation
-const haulingRequestSchema = z.object({
-  jobsiteId: z.string().nonempty({ message: "Site number is required" }),
-  vehicleId: z.string().nonempty({ message: "Equipment operated is required" }),
-  costcode: z.string().nonempty({ message: "Cost code is required" }),
-  notes: z.string().max(200, { message: "Max 200 characters" }),
-  materialHauled: z
-    .string()
-    .nonempty({ message: "Material hauled is required" }),
-  quantity: z
-    .number()
-    .int()
-    .positive({ message: "Quantity must be a positive integer" }),
-  userId: z.string().nonempty({ message: "User ID is required" }),
-});
+// const haulingRequestSchema = z.object({
+//   jobsiteId: z.string().nonempty({ message: "Site number is required" }),
+//   vehicleId: z.string().nonempty({ message: "Equipment operated is required" }),
+//   costcode: z.string().nonempty({ message: "Cost code is required" }),
+//   notes: z.string().max(200, { message: "Max 200 characters" }),
+//   materialHauled: z
+//     .string()
+//     .nonempty({ message: "Material hauled is required" }),
+//   quantity: z
+//     .number()
+//     .int()
+//     .positive({ message: "Quantity must be a positive integer" }),
+//   userId: z.string().nonempty({ message: "User ID is required" }),
+// });
 
-type HaulingFormProps = {
-  user: string | undefined;
-};
-
-export default function HaulingForm({ user }: HaulingFormProps) {
+export default function HaulingForm() {
   const [quantity, setQuantity] = useState(0);
-  const [errorMessage, setErrorMessage] = useState("");
+  // const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage] = useState("");
   const { savedTimeSheetData } = useTimeSheetData();
   const { currentView, setCurrentView } = useCurrentView();
   const router = useRouter();
   const { truckScanData, setTruckScanData } = useTruckScanData();
-  const { startingMileage, setStartingMileage } = useStartingMileage();
+  // const { startingMileage, setStartingMileage } = useStartingMileage();
+  const { setStartingMileage } = useStartingMileage();
   const formRef = useRef<HTMLFormElement>(null);
-  const [step, setStep] = useState(1);
+  // const [step, setStep] = useState(1);
+  const [step] = useState(1);
   const { scanResult } = useScanData();
   const { savedCostCode } = useSavedCostCode();
 
@@ -158,9 +156,9 @@ export default function HaulingForm({ user }: HaulingFormProps) {
   //   }
   // };
 
-  const incrementStep = () => {
-    setStep((prevStep) => prevStep + 1); // Increment function
-  };
+  // const incrementStep = () => {
+  //   setStep((prevStep) => prevStep + 1); // Increment function
+  // };
 
   if (step === 1) {
   return (

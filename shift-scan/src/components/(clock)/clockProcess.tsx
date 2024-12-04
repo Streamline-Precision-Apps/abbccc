@@ -1,5 +1,5 @@
 "use client";
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import QRStep from "@/components/(clock)/qr-step";
 import CodeStep from "@/components/(clock)/code-step";
