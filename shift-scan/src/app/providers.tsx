@@ -8,6 +8,7 @@ import { PayPeriodHoursProvider } from "./context/PayPeriodHoursContext";
 import { SavedBreakTimeProvider } from "./context/BreakTimeContext";
 import { TimeSheetDataProvider } from "./context/TimeSheetIdContext";
 import { ScanDataEQProvider } from "./context/equipmentContext";
+import { NotificationProvider } from "./context/NotificationContext";
 import {
   JobSiteProvider,
   EquipmentProvider,
@@ -28,41 +29,39 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <>
       {" "}
-      <CurrentViewProvider>
-        <TruckScanDataProvider>
-          <SavedBreakTimeProvider>
-            <PayPeriodHoursProvider>
-              <SavedCostCodeProvider>
-                <ScanDataProvider>
-                  <ScanDataEQProvider>
-                    <TimeSheetDataProvider>
-                      <SessionProvider>
-                        <EquipmentProvider>
-                          <EquipmentListProvider>
-                            <JobSiteProvider>
-                              <CostCodeProvider>
-                                <RecentCostCodeProvider>
-                                  <RecentJobSiteProvider>
-                                    <PayPeriodTimeSheetProvider>
-                                      <RecentEquipmentProvider>
-                                        {children}
-                                      </RecentEquipmentProvider>
-                                    </PayPeriodTimeSheetProvider>
-                                  </RecentJobSiteProvider>
-                                </RecentCostCodeProvider>
-                              </CostCodeProvider>
-                            </JobSiteProvider>
-                          </EquipmentListProvider>
-                        </EquipmentProvider>
-                      </SessionProvider>
-                    </TimeSheetDataProvider>
-                  </ScanDataEQProvider>
-                </ScanDataProvider>
-              </SavedCostCodeProvider>
-            </PayPeriodHoursProvider>
-          </SavedBreakTimeProvider>
-        </TruckScanDataProvider>
-      </CurrentViewProvider>
+      <SavedBreakTimeProvider>
+        <PayPeriodHoursProvider>
+          <SavedCostCodeProvider>
+            <ScanDataProvider>
+              <ScanDataEQProvider>
+                <TimeSheetDataProvider>
+                  <SessionProvider>
+                    <EquipmentProvider>
+                      <EquipmentListProvider>
+                        <JobSiteProvider>
+                          <CostCodeProvider>
+                            <RecentCostCodeProvider>
+                              <RecentJobSiteProvider>
+                                <PayPeriodTimeSheetProvider>
+                                  <RecentEquipmentProvider>
+                                    <NotificationProvider>
+                                      {children}
+                                    </NotificationProvider>
+                                  </RecentEquipmentProvider>
+                                </PayPeriodTimeSheetProvider>
+                              </RecentJobSiteProvider>
+                            </RecentCostCodeProvider>
+                          </CostCodeProvider>
+                        </JobSiteProvider>
+                      </EquipmentListProvider>
+                    </EquipmentProvider>
+                  </SessionProvider>
+                </TimeSheetDataProvider>
+              </ScanDataEQProvider>
+            </ScanDataProvider>
+          </SavedCostCodeProvider>
+        </PayPeriodHoursProvider>
+      </SavedBreakTimeProvider>
     </>
   );
 }
