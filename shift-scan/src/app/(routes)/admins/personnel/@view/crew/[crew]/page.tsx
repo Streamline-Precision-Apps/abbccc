@@ -7,7 +7,7 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Texts } from "@/components/(reusable)/texts";
 import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
-import CheckBox from "@/components/(inputs)/CheckBox";
+
 import CheckBoxWithImage from "@/components/(inputs)/CheckBoxWithImage";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
@@ -15,6 +15,7 @@ import { deleteCrewAction, updateCrew } from "@/actions/adminActions";
 import Spinner from "@/components/(animations)/spinner";
 import { useRouter } from "next/navigation";
 import { useNotification } from "@/app/context/NotificationContext";
+import { CheckBox } from "@/components/(inputs)/checkBox";
 
 type User = {
   id: string;
