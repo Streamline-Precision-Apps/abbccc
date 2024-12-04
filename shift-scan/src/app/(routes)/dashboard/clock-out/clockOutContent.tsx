@@ -18,7 +18,7 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Images } from "@/components/(reusable)/images";
 import { Grids } from "@/components/(reusable)/grids";
 import Spinner from "@/components/(animations)/spinner";
-import { z } from "zod";
+// import { z } from "zod";
 import { useTruckScanData } from "@/app/context/TruckScanDataContext";
 import { CheckBox } from "@/components/(inputs)/checkBox";
 import { useCurrentView } from "@/app/context/CurrentViewContext";
@@ -26,58 +26,58 @@ import TruckClockOutForm from "./(components)/truckClockOutForm";
 import { useStartingMileage } from "@/app/context/StartingMileageContext";
 
 // Zod schema for component state
-const ClockOutContentSchema = z.object({
-  loading: z.boolean(),
-  step: z.number(),
-  path: z.string(),
-  checked: z.boolean(),
-  base64String: z.string(),
-  isSubmitting: z.boolean(),
-  scanResult: z
-    .object({
-      data: z.string().optional(),
-    })
-    .nullable(),
-  savedCostCode: z.string().nullable(),
-  savedTimeSheetData: z
-    .object({
-      id: z.union([z.string(), z.number()]).optional(),
-    })
-    .nullable(),
-  savedVehicleId: z.string().nullable(),
-  date: z.date(),
-});
+// const ClockOutContentSchema = z.object({
+//   loading: z.boolean(),
+//   step: z.number(),
+//   path: z.string(),
+//   checked: z.boolean(),
+//   base64String: z.string(),
+//   isSubmitting: z.boolean(),
+//   scanResult: z
+//     .object({
+//       data: z.string().optional(),
+//     })
+//     .nullable(),
+//   savedCostCode: z.string().nullable(),
+//   savedTimeSheetData: z
+//     .object({
+//       id: z.union([z.string(), z.number()]).optional(),
+//     })
+//     .nullable(),
+//   savedVehicleId: z.string().nullable(),
+//   date: z.date(),
+// });
 
 // Define FormStatus Enum
-const FormStatus = z.enum(["PENDING", "APPROVED", "REJECTED"]); // Update as per actual values
+// const FormStatus = z.enum(["PENDING", "APPROVED", "REJECTED"]); // Update as per actual values
 
 // Define TimeSheetsSchema
-const TimeSheetsSchema = z.object({
-  submitDate: z.date().default(new Date()),
-  id: z.number().int(), // Int type
-  userId: z.string(),
-  date: z.date(), // DateTime
-  jobsiteId: z.string(),
-  costcode: z.string(),
-  nu: z.string().default("nu"),
-  Fp: z.string().default("fp"),
-  vehicleId: z.string().nullable(), // Nullable String
-  startTime: z.date(),
-  endTime: z.date().nullable(),
-  duration: z.number().nullable(),
-  startingMileage: z.number().int().nullable(),
-  endingMileage: z.number().int().nullable(),
-  leftIdaho: z.boolean().nullable().default(false),
-  equipmentHauled: z.string().nullable(),
-  materialsHauled: z.string().nullable(),
-  hauledLoadsQuantity: z.number().int().nullable(),
-  refuelingGallons: z.number().nullable(),
-  timeSheetComments: z.string().nullable(),
-  status: FormStatus.default("PENDING"),
-});
+// const TimeSheetsSchema = z.object({
+//   submitDate: z.date().default(new Date()),
+//   id: z.number().int(), // Int type
+//   userId: z.string(),
+//   date: z.date(), // DateTime
+//   jobsiteId: z.string(),
+//   costcode: z.string(),
+//   nu: z.string().default("nu"),
+//   Fp: z.string().default("fp"),
+//   vehicleId: z.string().nullable(), // Nullable String
+//   startTime: z.date(),
+//   endTime: z.date().nullable(),
+//   duration: z.number().nullable(),
+//   startingMileage: z.number().int().nullable(),
+//   endingMileage: z.number().int().nullable(),
+//   leftIdaho: z.boolean().nullable().default(false),
+//   equipmentHauled: z.string().nullable(),
+//   materialsHauled: z.string().nullable(),
+//   hauledLoadsQuantity: z.number().int().nullable(),
+//   refuelingGallons: z.number().nullable(),
+//   timeSheetComments: z.string().nullable(),
+//   status: FormStatus.default("PENDING"),
+// });
 
 // Infer the TypeScript type for convenience
-type TimeSheetsType = z.infer<typeof TimeSheetsSchema>;
+// type TimeSheetsType = z.infer<typeof TimeSheetsSchema>;
 
 // Main component function
 export default function ClockOutContent() {

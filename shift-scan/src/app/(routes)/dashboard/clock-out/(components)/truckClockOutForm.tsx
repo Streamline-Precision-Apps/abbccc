@@ -13,7 +13,7 @@ import { useSession } from "next-auth/react";
 import { z } from "zod";
 import { useTruckScanData } from "@/app/context/TruckScanDataContext";
 import { Texts } from "@/components/(reusable)/texts";
-import { useTranslations } from "next-intl";
+// import { useTranslations } from "next-intl";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { CheckBox } from "@/components/(inputs)/checkBox";
 import { useStartingMileage } from "@/app/context/StartingMileageContext";
@@ -79,7 +79,7 @@ export default function TruckClockOutForm({
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const { truckScanData } = useTruckScanData();
   const { data: session } = useSession();
-  const t = useTranslations("ClockOut");
+  // const t = useTranslations("ClockOut");
   const [checkedRefuel, setCheckedRefuel] = useState(false);
   const { startingMileage } = useStartingMileage();
   const { timeSheetComments, setTimeSheetComments } = useTimeSheetComments();
