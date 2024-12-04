@@ -9,7 +9,7 @@ import { Grids } from "@/components/(reusable)/grids";
 
 export default async function Form() {
   const session = await auth();
-  // if (!session) return null;
+  if (!session) return null;
 
   return (
     <Bases size={"scroll"}>
