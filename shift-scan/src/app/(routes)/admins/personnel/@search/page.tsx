@@ -10,6 +10,7 @@ import { SearchCrew, SearchUser } from "@/lib/types";
 import { z } from "zod";
 import { Personnel } from "./_components/Personnel";
 import { Crews } from "./_components/Crews";
+import { NotificationComponent } from "@/components/(inputs)/NotificationComponent";
 
 export default function Search() {
   const [activeTab, setActiveTab] = useState(1);
@@ -61,6 +62,7 @@ export default function Search() {
 
   return (
     <Holds className="h-full ">
+      <NotificationComponent />
       <Grids rows={"10"}>
         <Holds position={"row"} className="row-span-1 h-full gap-2">
           <Tab onClick={() => setActiveTab(1)} isActive={activeTab === 1}>
