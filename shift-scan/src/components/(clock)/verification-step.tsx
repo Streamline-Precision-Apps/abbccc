@@ -161,7 +161,7 @@ export default function VerificationStep({
                 />
             </Labels>
           )}
-          {startingMileage !== 0 && (
+          {truckScanData && (
             <Labels>
               <Texts size={"p4"} position={"left"}>
                 {t("Mileage")}

@@ -8,47 +8,41 @@ import { useEffect, useState } from "react";
 import { Equipment, Jobsites, costCodes } from "@/lib/types";
 import { z } from "zod";
 import { Texts } from "@/components/(reusable)/texts";
+import { EquipmentComponent } from "./_components/EquipmentComponent";
+import { JobsiteComponent } from "./_components/JobsiteComponent";
+import { CostCodeComponent } from "./_components/CostCodeComponent";
 
 export default function Search() {
   const [activeTab, setActiveTab] = useState(1);
   const [equipments, setEquipments] = useState<Equipment[]>([]);
-  const [Jobsites, setJobsites] = useState<Jobsites[]>([]);
+  const [jobsites, setJobsites] = useState<Jobsites[]>([]);
   const [costCodes, setCostCodes] = useState<costCodes[]>([]);
   const [filter, setFilter] = useState("all");
-
-  // useEffect(() => {
-  //   const fetchEmployees = async () => {
-  //     try {
-  //       const employeesRes = await fetch(
-  //         "/api/getAllEmployees?filter=" + filter
-  //       );
-  //       const employeesData = await employeesRes.json();
-  //       // const validatedEmployees = employeesSchema.parse(employeesData);
-  //       setEmployees(employeesData);
-  //     } catch (error) {
-  //       if (error instanceof z.ZodError) {
-  //         console.error("Validation Error:", error.errors);
-  //       } else {
-  //         console.error("Failed to fetch employees data:", error);
-  //       }
-  //     }
-  //   };
 
   useEffect(() => {
     const fetchEquipments = async () => {
       try {
         const equipmentsRes = await fetch(
-          "/api/getAllEqipment?filter=" + filter
+          "/api/getAllEquipment?filter=" + filter // Corrected path
         );
-        const equipmentsData = await equipmentsRes.json();
-        // const validatedEquipments = equipmentsSchema.parse(equipmentsData);
-        setEquipments(equipmentsData);
-      } catch (error) {
-        if (error instanceof z.ZodError) {
-          console.error("Validation Error:", error.errors);
-        } else {
-          console.error("Failed to fetch equipments data:", error);
+
+        if (!equipmentsRes.ok) {
+          throw new Error(`HTTP error! status: ${equipmentsRes.status}`);
         }
+
+        const contentType = equipmentsRes.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const equipmentsData = await equipmentsRes.json();
+          setEquipments(equipmentsData);
+        } else {
+          const html = await equipmentsRes.text();
+          console.error(
+            "Received HTML instead of JSON:",
+            html.substring(0, 100)
+          );
+        }
+      } catch (error) {
+        console.error("Failed to fetch equipments data:", error);
       }
     };
 
@@ -114,16 +108,16 @@ export default function Search() {
         >
           <Contents width={"section"} className=" pt-3 pb-5">
             {activeTab === 1 && (
-              // <Personnel employees={employees} setFilter={setFilter} />
-              <Texts>Equipment</Texts>
+              <EquipmentComponent
+                equipments={equipments}
+                setFilter={setFilter}
+              />
             )}
             {activeTab === 2 && (
-              // <Timesheets employees={employees} setFilter={setFilter} />
-              <Texts>Job Sites</Texts>
+              <JobsiteComponent jobsites={jobsites} setFilter={setFilter} />
             )}
             {activeTab === 3 && (
-              // <Crews crew={crew} />
-              <Texts>Cost Codes</Texts>
+            <CostCodeComponent costCodes={costCodes} setFilter={setFilter} />
             )}
           </Contents>
         </Holds>

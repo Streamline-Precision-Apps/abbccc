@@ -6,29 +6,29 @@ import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
-import { SearchUser } from "@/lib/types";
+import { CostCodes } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { useState, useMemo, useCallback } from "react";
 
 type Props = {
-  employees: SearchUser[];
+  costCodes: CostCodes[];
   setFilter: (filter: string) => void;
 };
 
-export const Personnel = ({ employees, setFilter }: Props) => {
+export const CostCodeComponent = ({ costCodes, setFilter }: Props) => {
   const [term, setTerm] = useState<string>("");
   // const [page, setPage] = useState(true);
   const router = useRouter();
 
   // Memoize the filtered list to avoid re-filtering on every render
   const filteredList = useMemo(() => {
-    if (!term.trim()) return employees; // Return the full list if no term is entered
+    if (!term.trim()) return costCodes; // Return the full list if no term is entered
 
-    return employees.filter((employee) => {
-      const name = `${employee.firstName} ${employee.lastName}`.toLowerCase();
+    return costCodes.filter((costCode) => {
+      const name = costCode.name;
       return name.includes(term.toLowerCase());
     });
-  }, [term, employees]);
+  }, [term, costCodes]);
 
   // Debounce handler to avoid rapid state updates on each keystroke
   const handleSearchChange = useCallback(
@@ -38,13 +38,13 @@ export const Personnel = ({ employees, setFilter }: Props) => {
     []
   );
 
-  const selectEmployee = (employee: SearchUser) => {
-    setTerm(employee.firstName + " " + employee.lastName);
-    router.push(`/admins/personnel/${employee.id}`);
+  const selectCostCode = (costCode: CostCodes) => {
+    setTerm(costCode.name);
+    router.push(`/admins/assets/${costCode.id}`);
   };
 
-  const createEmployee = () => {
-    router.push(`/admins/personnel/new-employee`);
+  const createCostCode = () => {
+    router.push(`/admins/assets/new-costCode`);
   };
 
   return (
@@ -59,16 +59,9 @@ export const Personnel = ({ employees, setFilter }: Props) => {
           >
             <option value="all">Select Filter</option>
             <option value="all">All</option>
+            <option value="Temporary">Temporary</option>
             <option value="active">Active</option>
-            <option value="admins">Admins</option>
             <option value="inactive">Inactive</option>
-            <option value="laborers">Laborers</option>
-            <option value="managers">Managers</option>
-            <option value="mechanics">Mechanics</option>
-            <option value="recentlyHired">Recently Hired</option>
-            <option value="superAdmins">Super Admins</option>
-            <option value="tasco">Tasco</option>
-            <option value="truckers">Trunk Drivers</option>
           </Selects>
         </Holds>
         {/* Search Input Section */}
@@ -84,7 +77,7 @@ export const Personnel = ({ employees, setFilter }: Props) => {
               <Holds className="w-[80%]">
                 <Inputs
                   type="search"
-                  placeholder="Search employees by name"
+                  placeholder="Search costcodes by name"
                   value={term}
                   onChange={handleSearchChange}
                   className="border-none outline-none"
@@ -94,20 +87,20 @@ export const Personnel = ({ employees, setFilter }: Props) => {
             <Holds className=" h-full mb-4  overflow-y-auto no-scrollbar ">
               <Holds>
                 {filteredList.length > 0 ? (
-                  filteredList.map((employee) => (
+                  filteredList.map((costCode) => (
                     <Holds
-                      key={employee.id}
+                      key={costCode.id}
                       className="py-2 border-b"
-                      onClick={() => selectEmployee(employee)}
+                      onClick={() => selectCostCode(costCode)}
                     >
                       <Texts size="p6">
-                        {employee.firstName} {employee.lastName}
+                        {costCode.name} - {costCode.description}
                       </Texts>
                     </Holds>
                   ))
                 ) : (
                   <Texts size="p6" className="text-center">
-                    No employees found
+                    No cost code found
                   </Texts>
                 )}
               </Holds>
@@ -115,13 +108,13 @@ export const Personnel = ({ employees, setFilter }: Props) => {
           </>
         </Holds>
 
-        {/* Create New Employee Button */}
+        {/* Create New CostCode Button */}
         <Buttons
           background="green"
           className="row-span-1 h-full"
-          onClick={createEmployee}
+          onClick={createCostCode}
         >
-          <Texts size="p6">Create New Employee</Texts>
+          <Texts size="p6">Create New Cost Code</Texts>
         </Buttons>
       </Grids>
     </Holds>

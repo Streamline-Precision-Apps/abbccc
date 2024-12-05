@@ -1,6 +1,6 @@
 "use client";
 import { FormEvent, useEffect, useState } from "react";
-import { ReusableViewLayout } from "../../[employee]/_components/reusableViewLayout";
+import { ReusableViewLayout } from "../../[equipment]/_components/reusableViewLayout";
 import { Holds } from "@/components/(reusable)/holds";
 
 import { Grids } from "@/components/(reusable)/grids";
