@@ -38,14 +38,14 @@ export default function Timesheets({
     fetchUserName();
   }, [params.employee]);
   return (
-    <Holds className="h-full w-full p-4">
+    <Holds className="h-full w-full">
       {loading ? (
         <Holds className="bg-[#CACACA] rounded-[10px] h-full w-full justify-center items-center">
           <Titles size={"h1"}>Loading...</Titles>
           <Spinner />
         </Holds>
       ) : (
-        <Grids rows={"10"} cols={"5"} gap={"3"} className="h-full w-full">
+        <Grids rows={"10"} cols={"5"} gap={"3"} className="h-full w-full  p-4">
           {/*Title of time sheets */}
           <Holds className="col-span-2 row-start-1 row-end-3 h-full">
             <Holds position={"row"} className="h-full w-full">

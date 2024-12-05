@@ -28,6 +28,7 @@ import { useEffect, useMemo, useState } from "react";
 import { cache } from "react";
 import { SearchModal } from "./searchModal";
 import { TimeSheetView, EmployeeEquipmentLog } from "@/lib/types";
+import { useNotification } from "@/app/context/NotificationContext";
 
 type Equipment = {
   id: number;
@@ -86,6 +87,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
   // helps models know which Id is currently open and what to edit based on that
   const [currentLogId, setCurrentLogId] = useState<string | null>(null);
   const [currentSheetId, setCurrentSheetId] = useState<string | null>(null);
+  const { setNotification } = useNotification();
 
   //---------------------------------------------------------------------------------------
   // functions to open and close the search modals
@@ -520,12 +522,13 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
         if (!result) throw new Error(`Failed to save equipment log ${log.id}`);
         console.log(`Updated equipment log with ID: ${log.id}`);
       }
-      console.log("All changes saved successfully", userTimeSheets);
+
       refreshOriginalData();
+      setNotification("Changes saved successfully!", "success");
     } catch (error) {
       console.error("Error saving changes:", error);
+      setNotification("Error: Failed to save changes.", "error");
     }
-    console.log("All changes saved successfully");
   };
 
   const handleDelete = async (id: string, type: string) => {
@@ -537,7 +540,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
         setOriginalTimeSheets((prev) =>
           prev.filter((sheet) => sheet.id !== id)
         );
-        console.log("Timesheet deleted successfully.");
+        setNotification("Timesheet deleted successfully!", "success");
       }
       if (type === "log") {
         const logId = parseInt(id, 10);
@@ -548,10 +551,11 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
         setOriginalEquipmentLogs((prev) =>
           prev.filter((log) => log.id?.toString() !== id)
         );
-        console.log("Timesheet deleted successfully.");
+        setNotification("Equipment log deleted successfully.", "success");
       }
     } catch (error) {
       console.error("Error deleting timesheet:", error);
+      setNotification("Error: Failed to delete timesheet.", "error");
     }
   };
   const handleCommentSection = () => {

@@ -12,6 +12,8 @@ import { Titles } from "@/components/(reusable)/titles";
 import { createCrew } from "@/actions/adminActions";
 import { CrewLeft } from "../[crew]/page";
 import { Forms } from "@/components/(reusable)/forms";
+import { useNotification } from "@/app/context/NotificationContext";
+import { useRouter } from "next/navigation";
 
 type User = {
   id: string;
@@ -33,7 +35,9 @@ export default function CreateTeam() {
   const [toggledManager, setToggledManagers] = useState<
     Record<string, boolean>
   >({});
+  const { setNotification } = useNotification();
   const [teamLead, setTeamLead] = useState<string | null>(null);
+  const router = useRouter();
 
   // Fetch all employees
   useEffect(() => {
@@ -122,14 +126,15 @@ export default function CreateTeam() {
       // Call the server action
       await createCrew(formData);
 
+      router.refresh();
+      setNotification("Crew created successfully!", "success");
+
       setCrewName(""); // Clear the crew name
       setCrewDescription(""); // Clear the description
       setUsersInCrew([]); // Reset crew members
       setToggledUsers({}); // Reset toggled users
       setToggledManagers({}); // Reset toggled managers
       setTeamLead(null); // Clear the selected team lead
-
-      window.location.reload();
     } catch (error) {
       console.error("Failed to create crew:", error);
       alert("An error occurred while creating the crew. Please try again.");

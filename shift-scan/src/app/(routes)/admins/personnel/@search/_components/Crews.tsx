@@ -62,7 +62,7 @@ export const Crews = ({ crew }: Props) => {
                     className="py-2 border-b"
                     onClick={() => selectCrew(crew)}
                   >
-                    <Texts size="p6">{`Crew ${crew.id} - ${crew.name} `}</Texts>
+                    <Texts size="p6">{crew.name}</Texts>
                   </Holds>
                 ))
               ) : (
