@@ -7,7 +7,6 @@ import { Tab } from "@/components/(reusable)/tab";
 import { useEffect, useState } from "react";
 import { Equipment, Jobsites, costCodes } from "@/lib/types";
 import { z } from "zod";
-import { Texts } from "@/components/(reusable)/texts";
 import { EquipmentComponent } from "./_components/EquipmentComponent";
 import { JobsiteComponent } from "./_components/JobsiteComponent";
 import { CostCodeComponent } from "./_components/CostCodeComponent";
@@ -117,7 +116,7 @@ export default function Search() {
               <JobsiteComponent jobsites={jobsites} setFilter={setFilter} />
             )}
             {activeTab === 3 && (
-            <CostCodeComponent costCodes={costCodes} setFilter={setFilter} />
+              <CostCodeComponent costCodes={costCodes} setFilter={setFilter} />
             )}
           </Contents>
         </Holds>
