@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { ReusableViewLayout } from "../../[employee]/_components/reusableViewLayout";
+import { ReusableViewLayout } from "../../[equipment]/_components/reusableViewLayout";
 import { Holds } from "@/components/(reusable)/holds";
 import { Selects } from "@/components/(reusable)/selects";
 import { Grids } from "@/components/(reusable)/grids";

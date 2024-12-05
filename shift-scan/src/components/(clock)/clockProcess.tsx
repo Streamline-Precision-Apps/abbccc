@@ -231,12 +231,12 @@ export default function ClockProcessor({
             <Titles size={"h2"}>
               {t("CostCode-label")} {savedCostCode}{" "}
             </Titles>
-            {truckScanData !== "" && (
+            {truckScanData && (
               <Titles size={"h2"}>
                 {t("Truck-label")} {truckScanData}{" "}
               </Titles>
             )}
-            {startingMileage !== 0 && (
+            {truckScanData && (
               <Titles size={"h2"}>
                 {t("Mileage")} {startingMileage}{" "}
               </Titles>
@@ -273,12 +273,12 @@ export default function ClockProcessor({
             <Titles size={"h2"}>
               {t("CostCode-label")} {savedCostCode}{" "}
             </Titles>
-            {truckScanData !== "" && (
+            {truckScanData && (
               <Titles size={"h2"}>
                 {t("Truck-label")} {truckScanData}{" "}
               </Titles>
             )}
-            {startingMileage !== 0 && (
+            {truckScanData && (
               <Titles size={"h2"}>
                 {t("Mileage")} {startingMileage}{" "}
               </Titles>

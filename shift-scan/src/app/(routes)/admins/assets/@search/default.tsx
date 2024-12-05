@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { Timesheets } from "./_components/Timesheets";
 import { SearchCrew, SearchUser } from "@/lib/types";
 import { z } from "zod";
-import { Personnel } from "./_components/Personnel";
+import { Personnel } from "./_components/EquipmentComponent";
 import { Crews } from "./_components/Crews";
 import { usePathname } from "next/navigation";
 
