@@ -4,6 +4,17 @@ import { FormStatus, Permission } from "@/lib/types";
 
 import { revalidatePath, revalidateTag } from "next/cache";
 
+export async function createNewCostCode(formData: FormData) {
+  try {
+    console.log("Creating new cost code...");
+    console.log(formData);
+    // Extract data from formData
+    return formData;
+  } catch (error) {
+    return error;
+  }
+}
+
 export async function createCrew(formData: FormData) {
   try {
     console.log("Creating new crew...");
@@ -53,7 +64,7 @@ export async function createCrew(formData: FormData) {
 
     console.log("Crew created successfully");
     revalidateTag("crews");
-
+    revalidatePath(`/admins/personnel/crew/new-crew`);
     return {
       success: true,
       crewId: newCrew.id,

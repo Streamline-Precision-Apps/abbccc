@@ -3,7 +3,6 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Tab } from "@/components/(reusable)/tab";
-
 import { useEffect, useState } from "react";
 import { Timesheets } from "./_components/Timesheets";
 import { SearchCrew, SearchUser } from "@/lib/types";
@@ -12,6 +11,7 @@ import { Personnel } from "./_components/Personnel";
 import { Crews } from "./_components/Crews";
 import { usePathname } from "next/navigation";
 import { NotificationComponent } from "@/components/(inputs)/NotificationComponent";
+import { useNotification } from "@/app/context/NotificationContext";
 
 export default function Search() {
   const [activeTab, setActiveTab] = useState(1);
@@ -19,6 +19,7 @@ export default function Search() {
   const [filter, setFilter] = useState("all");
   const [crew, setCrew] = useState<SearchCrew[]>([]);
   const pathname = usePathname(); // Get current route
+  const { notification } = useNotification();
 
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -39,7 +40,7 @@ export default function Search() {
     };
 
     fetchEmployees();
-  }, [filter]);
+  }, [filter, notification]);
 
   useEffect(() => {
     const fetchCrews = async () => {
@@ -60,18 +61,19 @@ export default function Search() {
     };
 
     fetchCrews();
-  }, [pathname]); // Trigger the effect when the route changes
+  }, [pathname, notification]); // Trigger the effect when the route changes
 
   useEffect(() => {
-    if (pathname.includes("/admins/personnel/timesheets")) {
-      setActiveTab(2);
-    }
+    const tabMapping: { [key: string]: number } = {
+      "/admins/personnel/timesheets": 2,
+      "/admins/personnel/crew": 3,
+    };
 
-    if (pathname.includes("/admins/personnel/crew")) {
-      setActiveTab(3);
-    } else {
-      setActiveTab(1);
-    }
+    const matchedTab = Object.keys(tabMapping).find((key) =>
+      pathname.startsWith(key)
+    );
+
+    setActiveTab(matchedTab ? tabMapping[matchedTab] : 1);
   }, [pathname]);
 
   return (
