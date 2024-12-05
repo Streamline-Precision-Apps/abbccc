@@ -24,6 +24,7 @@ export async function GET(req: Request) {
         //   status: "TEMPORARY",
         // },
         select: {
+          costCode: true,
           id: true,
           qrId: true,
           isActive: true,
@@ -44,6 +45,7 @@ export async function GET(req: Request) {
           isActive: true,
         },
         select: {
+          costCode: true,
           id: true,
           qrId: true,
           isActive: true,
@@ -64,6 +66,7 @@ export async function GET(req: Request) {
           isActive: false,
         },
         select: {
+          costCode: true,
           id: true,
           qrId: true,
           isActive: true,
@@ -81,6 +84,7 @@ export async function GET(req: Request) {
     } else {
       jobsiteData = await prisma.jobsites.findMany({
         select: {
+          costCode: true,
           id: true,
           qrId: true,
           isActive: true,
