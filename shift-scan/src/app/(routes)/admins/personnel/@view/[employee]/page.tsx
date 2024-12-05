@@ -121,7 +121,15 @@ export default function Employee({ params }: { params: { employee: string } }) {
   };
 
   if (!initialEmployeeProfile || !initialEmployeeContactInfo) {
-    return <EmptyView Children={<Spinner size={350} />} />;
+    return (
+      <EmptyView
+        Children={
+          <>
+            <Spinner size={350} />
+          </>
+        }
+      />
+    );
   }
 
   return (

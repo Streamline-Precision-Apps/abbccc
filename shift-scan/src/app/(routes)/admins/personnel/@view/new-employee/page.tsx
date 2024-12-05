@@ -1,5 +1,6 @@
 "use client";
 import { adminCreateUser } from "@/actions/userActions";
+import { useNotification } from "@/app/context/NotificationContext";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
@@ -27,7 +28,7 @@ export default function NewEmployee() {
   const { data: session } = useSession();
   const permission = session?.user.permission;
   const CreateFormRef = useRef<HTMLFormElement>(null);
-
+  const { setNotification } = useNotification();
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -63,11 +64,14 @@ export default function NewEmployee() {
 
       // Call the server action
       await adminCreateUser(validatedData);
-
+      setNotification("Employee created successfully.", "success");
       // Redirect on success
-      window.location.href = "/admins/personnel/new-employee";
+      if (CreateFormRef.current) {
+        CreateFormRef.current.reset();
+      }
     } catch (error) {
       console.error("Failed to create employee:", error);
+      setNotification("Failed to create employee.", "error");
     }
   };
 
