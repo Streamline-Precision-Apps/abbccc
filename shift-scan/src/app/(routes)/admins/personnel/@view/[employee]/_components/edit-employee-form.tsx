@@ -1,5 +1,6 @@
 "use client";
 import { editPersonnelInfo } from "@/actions/adminActions";
+import { useNotification } from "@/app/context/NotificationContext";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
@@ -47,7 +48,7 @@ export const EditEmployeeForm = ({
   signatureBase64String,
 }: Props) => {
   const [restrictions, setRestrictions] = useState<boolean>(false);
-
+  const { setNotification } = useNotification();
   // Handle changes in form inputs
   const handleInputChange = (
     e:
@@ -85,14 +86,15 @@ export const EditEmployeeForm = ({
       console.log(formData);
       const res = await editPersonnelInfo(formData);
       if (res) {
-        console.log("Employee info updated successfully.");
+        setNotification("Employee info updated successfully.", "success");
         setRenderedData(editedData);
         setRenderedData1(editedData1);
       } else {
-        console.log("Failed to update employee info.");
+        setNotification("Failed to update employee info.", "error");
       }
     } catch (error) {
       console.error("Failed to update employee info:", error);
+      setNotification("Failed to update employee info.", "error");
     }
   };
 
