@@ -1,5 +1,5 @@
 "use client";
-
+"use client";
 import { setLocale } from "@/actions/cookieActions";
 import { setUserLanguage } from "@/actions/userActions";
 import { Buttons } from "@/components/(reusable)/buttons";

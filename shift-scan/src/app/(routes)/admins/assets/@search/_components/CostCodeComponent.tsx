@@ -44,7 +44,7 @@ export const CostCodeComponent = ({ costCodes, setFilter }: Props) => {
   };
 
   const createCostCode = () => {
-    router.push(`/admins/assets/new-costCode`);
+    router.push(`/admins/assets/new-cost-codes`);
   };
 
   return (
