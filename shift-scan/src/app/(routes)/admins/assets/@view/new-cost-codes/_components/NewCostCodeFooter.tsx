@@ -6,8 +6,10 @@ import { Titles } from "@/components/(reusable)/titles";
 
 export function NewCostCodeFooter({
   handleSubmitClick,
+  canSubmit,
 }: {
   handleSubmitClick: () => void;
+  canSubmit: boolean;
 }) {
   return (
     <Holds background={"white"} className="w-full h-full row-span-2 col-span-2">
@@ -17,7 +19,10 @@ export function NewCostCodeFooter({
             background={"green"}
             onClick={() => {
               handleSubmitClick();
+              console.log("Submitted");
             }}
+            disabled={!canSubmit}
+            className={!canSubmit ? "bg-gray-400" : ""}
           >
             <Titles size={"h4"}>Submit Cost Code</Titles>
           </Buttons>
