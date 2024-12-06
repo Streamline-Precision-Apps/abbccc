@@ -94,7 +94,10 @@ const Modals: FC<ModalProps> = ({
               <Buttons
                 onClick={() => {
                   handleClose();
-                  signOut();
+                  signOut({
+                    redirect: true,
+                    callbackUrl: "/signin", // Specify the redirection URL
+                  });
                 }}
                 className="close-btn"
                 background={"green"}
