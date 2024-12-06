@@ -11,7 +11,7 @@ export function NewCostCodeForm({
 }: {
   createCostCode: RefObject<HTMLFormElement>;
   placeholder: string;
-  setIsFormFilled: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsFormFilled?: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [ccName, setCcName] = useState<string>("");
   const [ccDescription, setCcDescription] = useState<string>("");
@@ -34,9 +34,10 @@ export function NewCostCodeForm({
   };
 
   useEffect(() => {
-    setIsFormFilled(
-      ccName.trim().length > 0 && ccDescription.trim().length > 0
-    );
+    if (setIsFormFilled)
+      setIsFormFilled(
+        ccName.trim().length > 0 && ccDescription.trim().length > 0
+      );
   }, [ccName, ccDescription, setIsFormFilled]);
 
   return (
