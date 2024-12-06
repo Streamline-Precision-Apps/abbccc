@@ -5,93 +5,99 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Tab } from "@/components/(reusable)/tab";
 
 import { useEffect, useState } from "react";
-import { Timesheets } from "./_components/Timesheets";
-import { SearchCrew, SearchUser } from "@/lib/types";
+import { Equipment, Jobsites, costCodes } from "@/lib/types";
 import { z } from "zod";
-import { Personnel } from "./_components/EquipmentComponent";
-import { Crews } from "./_components/Crews";
-import { usePathname } from "next/navigation";
+import { EquipmentComponent } from "./_components/EquipmentComponent";
+import { JobsiteComponent } from "./_components/JobsiteComponent";
+import { CostCodeComponent } from "./_components/CostCodeComponent";
 
 export default function Search() {
   const [activeTab, setActiveTab] = useState(1);
-  const [employees, setEmployees] = useState<SearchUser[]>([]);
+  const [equipments, setEquipments] = useState<Equipment[]>([]);
+  const [jobsites, setJobsites] = useState<Jobsites[]>([]);
+  const [costCodes, setCostCodes] = useState<costCodes[]>([]);
   const [filter, setFilter] = useState("all");
-  const [crew, setCrew] = useState<SearchCrew[]>([]);
-  const pathname = usePathname(); // Get current route
 
   useEffect(() => {
-    const fetchEmployees = async () => {
+    const fetchEquipments = async () => {
       try {
-        const employeesRes = await fetch(
-          "/api/getAllEmployees?filter=" + filter
+        const equipmentsRes = await fetch(
+          "/api/getAllEquipment?filter=" + filter // Corrected path
         );
-        const employeesData = await employeesRes.json();
-        // const validatedEmployees = employeesSchema.parse(employeesData);
-        setEmployees(employeesData);
-      } catch (error) {
-        if (error instanceof z.ZodError) {
-          console.error("Validation Error:", error.errors);
-        } else {
-          console.error("Failed to fetch employees data:", error);
+
+        if (!equipmentsRes.ok) {
+          throw new Error(`HTTP error! status: ${equipmentsRes.status}`);
         }
+
+        const contentType = equipmentsRes.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const equipmentsData = await equipmentsRes.json();
+          setEquipments(equipmentsData);
+        } else {
+          const html = await equipmentsRes.text();
+          console.error(
+            "Received HTML instead of JSON:",
+            html.substring(0, 100)
+          );
+        }
+      } catch (error) {
+        console.error("Failed to fetch equipments data:", error);
       }
     };
 
-    fetchEmployees();
+    fetchEquipments();
   }, [filter]);
 
   useEffect(() => {
-    const fetchCrews = async () => {
+    const fetchJobsites = async () => {
       try {
-        const crewRes = await fetch("/api/getAllCrews", {
-          next: { tags: ["crews"] },
-        });
-        const crewData = await crewRes.json();
-        // const validatedEmployees = employeesSchema.parse(employeesData);
-        setCrew(crewData);
+        const jobsitesRes = await fetch("/api/getAllJobsites?filter=" + filter);
+        const jobsitesData = await jobsitesRes.json();
+        // const validatedJobsites = jobsitesSchema.parse(jobsitesData);
+        setJobsites(jobsitesData);
       } catch (error) {
         if (error instanceof z.ZodError) {
           console.error("Validation Error:", error.errors);
         } else {
-          console.error("Failed to fetch employees data:", error);
+          console.error("Failed to fetch jobsites data:", error);
         }
       }
     };
 
-    const routesToReload = [
-      "/admins/personnel/crew/new-crew",
-      "/admins/personnel/crew",
-    ];
-
-    if (routesToReload.includes(pathname)) {
-      fetchCrews(); // Only fetch data on the specified routes
-    }
-  }, [pathname]); // Trigger the effect when the route changes
+    fetchJobsites();
+  }, [filter]);
 
   useEffect(() => {
-    if (pathname.includes("/admins/personnel/timesheets")) {
-      setActiveTab(2);
-    }
+    const fetchCostCodes = async () => {
+      try {
+        const costCodesRes = await fetch("/api/getAllCostCodes");
+        const costCodesData = await costCodesRes.json();
+        // const validatedCostCodes = costCodesSchema.parse(costCodesData);
+        setCostCodes(costCodesData);
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          console.error("Validation Error:", error.errors);
+        } else {
+          console.error("Failed to fetch costCodes data:", error);
+        }
+      }
+    };
 
-    if (pathname.includes("/admins/personnel/crew")) {
-      setActiveTab(3);
-    } else {
-      setActiveTab(1);
-    }
-  }, [pathname]);
+    fetchCostCodes();
+  }, [filter]);
 
   return (
     <Holds className="h-full ">
       <Grids rows={"10"}>
         <Holds position={"row"} className="row-span-1 h-full gap-2">
           <Tab onClick={() => setActiveTab(1)} isActive={activeTab === 1}>
-            Personnel
+            Equipment
           </Tab>
           <Tab onClick={() => setActiveTab(2)} isActive={activeTab === 2}>
-            Time Sheets
+            Job Sites
           </Tab>
           <Tab onClick={() => setActiveTab(3)} isActive={activeTab === 3}>
-            Crews
+            Cost Codes
           </Tab>
         </Holds>
 
@@ -101,12 +107,17 @@ export default function Search() {
         >
           <Contents width={"section"} className=" pt-3 pb-5">
             {activeTab === 1 && (
-              <Personnel employees={employees} setFilter={setFilter} />
+              <EquipmentComponent
+                equipments={equipments}
+                setFilter={setFilter}
+              />
             )}
             {activeTab === 2 && (
-              <Timesheets employees={employees} setFilter={setFilter} />
+              <JobsiteComponent jobsites={jobsites} setFilter={setFilter} />
             )}
-            {activeTab === 3 && <Crews crew={crew} />}
+            {activeTab === 3 && (
+              <CostCodeComponent costCodes={costCodes} setFilter={setFilter} />
+            )}
           </Contents>
         </Holds>
       </Grids>
