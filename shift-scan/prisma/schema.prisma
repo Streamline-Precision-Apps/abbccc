@@ -167,12 +167,11 @@ model Jobsites {
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 
+  costCode              CostCodes[]
   address               Addresses[]
   employeeEquipmentLogs EmployeeEquipmentLogs[]
   crewjobsites          CrewJobsites[]
   TimeSheet             TimeSheets[]
-  tags                  Tags[] // One-to-Many relationship with Tags
-  CostCodeTags          CostCodeTags[]
 }
 
 //  Time sheet that integrates with the accounting software. Accounting Software Data: {|submitDate | Form Id | empl ID| Date| ProfitID(jobsite)| CostCode| NU | FP| Start Time| END Time| Job Description | Duration |}
@@ -270,51 +269,24 @@ enum EquipmentStatus {
 
 // This Table stores a collection of company Estimating codes. The purpose is to help in billing process. Very import for our project.
 model CostCodes {
-  id          Int               @id @default(autoincrement())
-  name        String            @unique
+  id          Int        @id @default(autoincrement())
+  name        String     @unique
   description String
   type        String // set to an enum later,type is how we can filter the costcodes
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @default(now()) @updatedAt
-  tags        TagsOnCostCodes[] // Many-to-Many via junction table
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @default(now()) @updatedAt
+  Jobsite     Jobsites[]
 }
 
 // !!!
 // TODO: I believe that we may need to make a table for tags.
-// I think this is a many to many relationship with cost codes, tags variable is taken so 
-// we cn use CostCodesTags to create a many to many relationship
 // !!!
-
-model CostCodeTags {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
-  jobsiteId String // Foreign key for Jobsite
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-
-  jobsite   Jobsites          @relation(fields: [jobsiteId], references: [id], onDelete: Cascade)
-  costCodes TagsOnCostCodes[] // Many-to-Many via junction table
-}
-
-model TagsOnCostCodes {
-  id         Int @id @default(autoincrement())
-  costCodeId Int
-  tagId      Int
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-
-  costCode CostCodes    @relation(fields: [costCodeId], references: [id], onDelete: Cascade)
-  tag      CostCodeTags @relation(fields: [tagId], references: [id], onDelete: Cascade)
-
-  @@unique([costCodeId, tagId]) // Ensures unique combinations
-}
 
 // crew data for seeing the entire crew and enabling site linking it also has direct access to the employeed time cards, and some desire profile settings
 model CrewMembers {
   id         Int     @id @default(autoincrement())
   supervisor Boolean @default(false) // if the crew member is a supervisor or not
-  employeeId String  @unique
+  employeeId String
   crewId     Int
 
   createdAt DateTime @default(now())
