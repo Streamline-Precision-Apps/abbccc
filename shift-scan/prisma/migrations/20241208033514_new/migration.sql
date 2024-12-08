@@ -8,7 +8,7 @@ CREATE TYPE "Tags" AS ENUM ('TRUCK', 'TRAILER', 'EQUIPMENT', 'VEHICLE');
 CREATE TYPE "EquipmentStatus" AS ENUM ('OPERATIONAL', 'NEEDS_REPAIR', 'NEEDS_MAINTENANCE');
 
 -- CreateEnum
-CREATE TYPE "FormStatus" AS ENUM ('PENDING', 'APPROVED', 'DENIED');
+CREATE TYPE "FormStatus" AS ENUM ('PENDING', 'APPROVED', 'DENIED', 'TEMPORARY');
 
 -- CreateEnum
 CREATE TYPE "IsActive" AS ENUM ('ACTIVE', 'INACTIVE');
@@ -118,7 +118,7 @@ CREATE TABLE "TimeSheets" (
     "costcode" TEXT NOT NULL,
     "nu" TEXT NOT NULL DEFAULT 'nu',
     "Fp" TEXT NOT NULL DEFAULT 'fp',
-    "vehicleId" INTEGER,
+    "vehicleId" TEXT,
     "startTime" TIMESTAMP(3) NOT NULL,
     "endTime" TIMESTAMP(3),
     "duration" DOUBLE PRECISION,
@@ -176,7 +176,6 @@ CREATE TABLE "Equipment" (
     "registrationExpiration" TIMESTAMP(3),
     "mileage" INTEGER,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
-    "image" TEXT,
     "inUse" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Equipment_pkey" PRIMARY KEY ("id")
@@ -192,6 +191,14 @@ CREATE TABLE "CostCodes" (
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "CostCodes_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "CCTags" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+
+    CONSTRAINT "CCTags_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -289,9 +296,15 @@ CREATE TABLE "timeoffRequestForms" (
 );
 
 -- CreateTable
-CREATE TABLE "_CostCodesToJobsites" (
+CREATE TABLE "_CCTagsToJobsites" (
     "A" INTEGER NOT NULL,
     "B" TEXT NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "_CCTagsToCostCodes" (
+    "A" INTEGER NOT NULL,
+    "B" INTEGER NOT NULL
 );
 
 -- CreateTable
@@ -328,13 +341,22 @@ CREATE UNIQUE INDEX "Equipment_qrId_key" ON "Equipment"("qrId");
 CREATE UNIQUE INDEX "CostCodes_name_key" ON "CostCodes"("name");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "CCTags_name_key" ON "CCTags"("name");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Contacts_employeeId_key" ON "Contacts"("employeeId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "_CostCodesToJobsites_AB_unique" ON "_CostCodesToJobsites"("A", "B");
+CREATE UNIQUE INDEX "_CCTagsToJobsites_AB_unique" ON "_CCTagsToJobsites"("A", "B");
 
 -- CreateIndex
-CREATE INDEX "_CostCodesToJobsites_B_index" ON "_CostCodesToJobsites"("B");
+CREATE INDEX "_CCTagsToJobsites_B_index" ON "_CCTagsToJobsites"("B");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_CCTagsToCostCodes_AB_unique" ON "_CCTagsToCostCodes"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_CCTagsToCostCodes_B_index" ON "_CCTagsToCostCodes"("B");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_AddressesToJobsites_AB_unique" ON "_AddressesToJobsites"("A", "B");
@@ -346,22 +368,22 @@ CREATE INDEX "_AddressesToJobsites_B_index" ON "_AddressesToJobsites"("B");
 ALTER TABLE "PasswordResetTokens" ADD CONSTRAINT "PasswordResetTokens_email_fkey" FOREIGN KEY ("email") REFERENCES "Users"("email") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "UserSettings" ADD CONSTRAINT "UserSettings_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "UserSettings" ADD CONSTRAINT "UserSettings_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UserTrainings" ADD CONSTRAINT "UserTrainings_trainingId_fkey" FOREIGN KEY ("trainingId") REFERENCES "Trainings"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "UserTrainings" ADD CONSTRAINT "UserTrainings_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "UserTrainings" ADD CONSTRAINT "UserTrainings_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "TimeSheets" ADD CONSTRAINT "TimeSheets_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "TimeSheets" ADD CONSTRAINT "TimeSheets_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "TimeSheets" ADD CONSTRAINT "TimeSheets_jobsiteId_fkey" FOREIGN KEY ("jobsiteId") REFERENCES "Jobsites"("qrId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "EmployeeEquipmentLogs" ADD CONSTRAINT "EmployeeEquipmentLogs_employeeId_fkey" FOREIGN KEY ("employeeId") REFERENCES "Users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "EmployeeEquipmentLogs" ADD CONSTRAINT "EmployeeEquipmentLogs_employeeId_fkey" FOREIGN KEY ("employeeId") REFERENCES "Users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "EmployeeEquipmentLogs" ADD CONSTRAINT "EmployeeEquipmentLogs_jobsiteId_fkey" FOREIGN KEY ("jobsiteId") REFERENCES "Jobsites"("qrId") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -373,7 +395,7 @@ ALTER TABLE "EmployeeEquipmentLogs" ADD CONSTRAINT "EmployeeEquipmentLogs_equipm
 ALTER TABLE "CrewMembers" ADD CONSTRAINT "CrewMembers_crewId_fkey" FOREIGN KEY ("crewId") REFERENCES "Crews"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "CrewMembers" ADD CONSTRAINT "CrewMembers_employeeId_fkey" FOREIGN KEY ("employeeId") REFERENCES "Users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "CrewMembers" ADD CONSTRAINT "CrewMembers_employeeId_fkey" FOREIGN KEY ("employeeId") REFERENCES "Users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "CrewJobsites" ADD CONSTRAINT "CrewJobsites_crewId_fkey" FOREIGN KEY ("crewId") REFERENCES "Crews"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -382,19 +404,25 @@ ALTER TABLE "CrewJobsites" ADD CONSTRAINT "CrewJobsites_crewId_fkey" FOREIGN KEY
 ALTER TABLE "CrewJobsites" ADD CONSTRAINT "CrewJobsites_jobsiteId_fkey" FOREIGN KEY ("jobsiteId") REFERENCES "Jobsites"("qrId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Contacts" ADD CONSTRAINT "Contacts_employeeId_fkey" FOREIGN KEY ("employeeId") REFERENCES "Users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Contacts" ADD CONSTRAINT "Contacts_employeeId_fkey" FOREIGN KEY ("employeeId") REFERENCES "Users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "InjuryForms" ADD CONSTRAINT "InjuryForms_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "InjuryForms" ADD CONSTRAINT "InjuryForms_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "timeoffRequestForms" ADD CONSTRAINT "timeoffRequestForms_employeeId_fkey" FOREIGN KEY ("employeeId") REFERENCES "Users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "timeoffRequestForms" ADD CONSTRAINT "timeoffRequestForms_employeeId_fkey" FOREIGN KEY ("employeeId") REFERENCES "Users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "_CostCodesToJobsites" ADD CONSTRAINT "_CostCodesToJobsites_A_fkey" FOREIGN KEY ("A") REFERENCES "CostCodes"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "_CCTagsToJobsites" ADD CONSTRAINT "_CCTagsToJobsites_A_fkey" FOREIGN KEY ("A") REFERENCES "CCTags"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "_CostCodesToJobsites" ADD CONSTRAINT "_CostCodesToJobsites_B_fkey" FOREIGN KEY ("B") REFERENCES "Jobsites"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "_CCTagsToJobsites" ADD CONSTRAINT "_CCTagsToJobsites_B_fkey" FOREIGN KEY ("B") REFERENCES "Jobsites"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_CCTagsToCostCodes" ADD CONSTRAINT "_CCTagsToCostCodes_A_fkey" FOREIGN KEY ("A") REFERENCES "CCTags"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_CCTagsToCostCodes" ADD CONSTRAINT "_CCTagsToCostCodes_B_fkey" FOREIGN KEY ("B") REFERENCES "CostCodes"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_AddressesToJobsites" ADD CONSTRAINT "_AddressesToJobsites_A_fkey" FOREIGN KEY ("A") REFERENCES "Addresses"("id") ON DELETE CASCADE ON UPDATE CASCADE;

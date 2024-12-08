@@ -8,6 +8,10 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
+import { NModals } from "@/components/(reusable)/newmodals";
+import PasswordModal from "./sidebar/PasswordModal";
+import LanguageModal from "./sidebar/LanguageModal";
+import SignOutModal from "./sidebar/SignOutModal";
 
 const Sidebar = () => {
   const pathname = usePathname();
@@ -18,12 +22,18 @@ const Sidebar = () => {
   const permission = session?.user.permission;
   const router = useRouter();
 
+  const [isOpenChangePassword, setIsOpenChangePassword] = useState(false);
+  const [isOpenLanguageSelector, setIsOpenLanguageSelector] = useState(false);
+  const [isOpenSignOut, setIsOpenSignOut] = useState(false);
+
   useEffect(() => {
     setUsername(`${session?.user.firstName} ${session?.user.lastName}`);
   }, [session?.user.firstName, session?.user.lastName]);
   return (
     <>
-      {/* If the side bar is closed it will show the mini menu */}
+      {/*----------------------------------------------------------------------------------------------------------*/}
+      {/*------------------------------- Displays the full extended sidebar ---------------------------------------*/}
+      {/*----------------------------------------------------------------------------------------------------------*/}
       {isOpen ? (
         <Holds background={"white"} className=" h-full w-[20em] ml-3 ">
           <Grids rows={"10"} gap={"5"}>
@@ -73,7 +83,7 @@ const Sidebar = () => {
               </Grids>
             </Holds>
             {/* The first button that says personal */}
-            <Holds className=" row-span-5 h-full gap-5 mt-10">
+            <Holds className=" row-span-4 h-full gap-5 mt-10">
               <Holds>
                 <Buttons
                   className={`
@@ -170,17 +180,106 @@ const Sidebar = () => {
                 </Buttons>
               </Holds>
             </Holds>
+            <Holds
+              position={"row"}
+              className="row-start-9 row-end-11 h-full gap-3 px-4"
+            >
+              {/*----------------------------------------------------------------------------------------------------------*/}
+              {/*----------------------------------------------------------------------------------------------------------*/}
+              {/* This is the password button */}
+              <Buttons
+                background={"white"}
+                size={"50"}
+                onClick={() => {
+                  setIsOpenChangePassword(true);
+                }}
+                className="py-1"
+              >
+                <Images
+                  titleImg="/key.svg"
+                  titleImgAlt="Change Password Icon"
+                  className="m-auto "
+                />
+              </Buttons>
+              <NModals
+                size={"medH"}
+                isOpen={isOpenChangePassword}
+                handleClose={() => setIsOpenChangePassword(false)}
+              >
+                <PasswordModal
+                  setIsOpenChangePassword={() => setIsOpenChangePassword(false)}
+                />
+              </NModals>
+              {/*----------------------------------------------------------------------------------------------------------*/}
+              {/*----------------------------------------------------------------------------------------------------------*/}
+              {/* This is the language button */}
+              <Buttons
+                background={"white"}
+                size={"50"}
+                onClick={() => {
+                  setIsOpenLanguageSelector(true);
+                }}
+                className="py-1"
+              >
+                <Images
+                  titleImg="/language.svg"
+                  titleImgAlt="Language Settings Icon"
+                  className="m-auto"
+                />
+              </Buttons>
+              <NModals
+                size={"medM"}
+                isOpen={isOpenLanguageSelector}
+                handleClose={() => setIsOpenLanguageSelector(false)}
+              >
+                <LanguageModal
+                  setIsOpenLanguageSelector={() =>
+                    setIsOpenLanguageSelector(false)
+                  }
+                />
+              </NModals>
+              {/*----------------------------------------------------------------------------------------------------------*/}
+              {/*----------------------------------------------------------------------------------------------------------*/}
+              {/* This is the sign out button */}
+              <Buttons
+                background={"white"}
+                size={"50"}
+                onClick={() => {
+                  setIsOpenSignOut(true);
+                }}
+                className=""
+              >
+                <Images
+                  titleImg="/end-day.svg"
+                  titleImgAlt="Sign Out Icon"
+                  className="m-auto p-2"
+                />
+              </Buttons>
+              <NModals
+                isOpen={isOpenSignOut}
+                handleClose={() => setIsOpenSignOut(false)}
+              >
+                <SignOutModal
+                  setIsOpenSignOut={() => setIsOpenSignOut(false)}
+                />
+              </NModals>
+              {/*----------------------------------------------------------------------------------------------------------*/}
+              {/*----------------------------------------------------------------------------------------------------------*/}
+            </Holds>
           </Grids>
         </Holds>
       ) : (
         <Holds background={"white"} className=" h-full w-[5em] ml-3 ">
+          {/*----------------------------------------------------------------------------------------------------------*/}
+          {/*------------------------------------- Displays the mini menu --------------------------------------------*/}
+          {/*----------------------------------------------------------------------------------------------------------*/}
           <Grids rows={"10"} gap={"5"} className="my-5">
             <Holds className="row-span-4 h-full">
               <Holds className="w-24">
                 <Buttons background={"none"} size={"50"} onClick={toggle}>
                   <Images
-                    titleImg="/expandLeft.svg"
-                    titleImgAlt="arrow left"
+                    titleImg="/drag.svg"
+                    titleImgAlt="menu icon"
                     className="m-auto"
                   />
                 </Buttons>
