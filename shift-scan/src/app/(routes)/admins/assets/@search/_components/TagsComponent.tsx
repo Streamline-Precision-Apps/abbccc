@@ -6,28 +6,33 @@ import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
 
 import { Texts } from "@/components/(reusable)/texts";
-import { CostCodes } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { useState, useMemo, useCallback } from "react";
 
-type Props = {
-  costCodes: CostCodes[];
+type Tags = {
+  id: number;
+  name: string;
+  jobsiteId: number;
 };
 
-export const CostCodeComponent = ({ costCodes }: Props) => {
+type Props = {
+  tags: Tags[];
+};
+
+export const TagsComponent = ({ tags }: Props) => {
   const [term, setTerm] = useState<string>("");
   // const [page, setPage] = useState(true);
   const router = useRouter();
 
   // Memoize the filtered list to avoid re-filtering on every render
   const filteredList = useMemo(() => {
-    if (!term.trim()) return costCodes; // Return the full list if no term is entered
+    if (!term.trim()) return tags; // Return the full list if no term is entered
 
-    return costCodes.filter((costCode) => {
-      const name = costCode.name;
+    return tags.filter((tags) => {
+      const name = tags.name;
       return name.includes(term.toLowerCase());
     });
-  }, [term, costCodes]);
+  }, [term, tags]);
 
   // Debounce handler to avoid rapid state updates on each keystroke
   const handleSearchChange = useCallback(
@@ -37,18 +42,17 @@ export const CostCodeComponent = ({ costCodes }: Props) => {
     []
   );
 
-  const selectCostCode = (costCode: CostCodes) => {
-    setTerm(costCode.name);
-    router.push(`/admins/assets/cost-code/${costCode.id}`);
+  const selectTags = (tags: Tags) => {
+    setTerm(tags.name);
+    router.push(`/admins/assets/tags/${tags.id}`);
   };
 
-  const createCostCode = () => {
+  const createTags = () => {
     router.push(`/admins/assets/new-cost-codes`);
   };
 
   return (
     <>
-      {/* Search Input Section */}
       <Holds className="row-span-9 h-full border-[3px] border-black rounded-t-[10px]">
         <>
           <Holds position={"row"} className="py-2 border-b-[3px] border-black">
@@ -68,14 +72,14 @@ export const CostCodeComponent = ({ costCodes }: Props) => {
           <Holds className=" h-full mb-4  overflow-y-auto no-scrollbar ">
             <Holds>
               {filteredList.length > 0 ? (
-                filteredList.map((costCode) => (
+                filteredList.map((tags) => (
                   <Holds
-                    key={costCode.id}
+                    key={tags.id}
                     className="py-2 border-b"
-                    onClick={() => selectCostCode(costCode)}
+                    onClick={() => selectTags(tags)}
                   >
                     <Texts size="p6">
-                      {costCode.name} - {costCode.description}
+                      {tags.name} - {tags.jobsiteId}
                     </Texts>
                   </Holds>
                 ))
@@ -89,13 +93,13 @@ export const CostCodeComponent = ({ costCodes }: Props) => {
         </>
       </Holds>
 
-      {/* Create New CostCode Button */}
+      {/* Create New Tags Button */}
       <Buttons
         background="green"
         className="row-span-1 h-full"
-        onClick={createCostCode}
+        onClick={createTags}
       >
-        <Texts size="p6">Create New Cost Code</Texts>
+        <Texts size="p6">Create New Tag</Texts>
       </Buttons>
     </>
   );
