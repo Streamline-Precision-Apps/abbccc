@@ -12,6 +12,7 @@ import { JobsiteComponent } from "./_components/JobsiteComponent";
 import { CostCodeComponent } from "./_components/CostCodeComponent";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { TagsComponent } from "./_components/TagsComponent";
+import { usePathname } from "next/navigation";
 
 export default function Search() {
   const [activeTab, setActiveTab] = useState(1);
@@ -21,6 +22,14 @@ export default function Search() {
   const [tags, setTags] = useState<CCTags[]>([]);
   const [activeTab2, setActiveTab2] = useState(1);
   const [filter, setFilter] = useState("all");
+  const pathname = usePathname();
+  const [triggeredPath, setTrigger] = useState(0);
+
+  useEffect(() => {
+    if (pathname === "/admins/assets/cost-code") {
+      setTrigger((prev) => prev + 1); // Increment the counter
+    }
+  }, [pathname]);
 
   useEffect(() => {
     const fetchTags = async () => {
@@ -87,7 +96,9 @@ export default function Search() {
   useEffect(() => {
     const fetchCostCodes = async () => {
       try {
-        const costCodesRes = await fetch("/api/getAllCostCodes");
+        const costCodesRes = await fetch("/api/getAllCostCodes", {
+          next: { revalidate: 0, tags: ["costcodes"] },
+        });
         const costCodesData = await costCodesRes.json();
         // const validatedCostCodes = costCodesSchema.parse(costCodesData);
         setCostCodes(costCodesData);
@@ -101,7 +112,7 @@ export default function Search() {
     };
 
     fetchCostCodes();
-  }, [filter]);
+  }, [filter, triggeredPath]);
 
   return (
     <Holds className="h-full ">
