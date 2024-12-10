@@ -15,6 +15,7 @@ import { Texts } from "@/components/(reusable)/texts";
 import { CCTags } from "@prisma/client";
 import { CheckBox } from "@/components/(inputs)/checkBox";
 import { arraysAreEqual } from "@/utils/forms/isArrayEqual";
+import { changeCostCodeTags } from "@/actions/adminActions";
 
 export default function UpdateCostCodes({
   params,
@@ -28,7 +29,7 @@ export default function UpdateCostCodes({
   const [costcodeId, setCostCodeId] = useState<number>(0);
   const [costcodeName, setCostCodeName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
-  const [changesMade, SetChangesMade] = useState(false);
+  const [initialSelectedTags, setinitialSelectedTags] = useState<CCTags[]>([]);
   const [selectedTags, setSelectedTags] = useState<CCTags[]>([]);
   const [initalTags, setInitialTags] = useState<CCTags[]>([]);
   const [hasChanged, setHasChanged] = useState(false);
@@ -66,7 +67,6 @@ export default function UpdateCostCodes({
         const allTagsRes = await fetch(`/api/getAllTags`);
         const allTagsData = await allTagsRes.json();
         setInitialTags(allTagsData);
-
         // Fetch connected tags for the current costCode
         const connectedTagsRes = await fetch(
           `/api/getCostCodeTags/${costcodeId}`
@@ -82,6 +82,11 @@ export default function UpdateCostCodes({
             connectedTags.some((ct: CCTags) => ct.id === tag.id)
           )
         );
+        setinitialSelectedTags(
+          allTagsData.filter((tag: CCTags) =>
+            connectedTags.some((ct: CCTags) => ct.id === tag.id)
+          )
+        );
       } catch (error) {
         console.error("Error fetching tags:", error);
       }
@@ -90,13 +95,6 @@ export default function UpdateCostCodes({
     fetchTags();
   }, [costcodeId]);
 
-  useEffect(() => {
-    const hasChanges =
-      costcodeName !== initialCostcodeName ||
-      description !== initialDescription;
-    SetChangesMade(hasChanges);
-  }, [costcodeName, description, initialCostcodeName, initialDescription]);
-
   const toggleTagSelection = (tag: CCTags) => {
     setSelectedTags(
       (prev) =>
@@ -104,6 +102,42 @@ export default function UpdateCostCodes({
           ? prev.filter((t) => t.id !== tag.id) // Remove if already selected
           : [...prev, tag] // Add if not selected
     );
+  };
+  const handleEditForm = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("costcodeId", costcodeId.toString());
+      formData.append("name", costcodeName);
+      formData.append("description", description);
+
+      // Separate selected tags into add and remove
+      const tagsToAdd = selectedTags.filter(
+        (tag) => !initialSelectedTags.some((initTag) => initTag.id === tag.id)
+      );
+      const tagsToRemove = initialSelectedTags.filter(
+        (initTag) => !selectedTags.some((tag) => tag.id === initTag.id)
+      );
+
+      // Append tags to add
+      tagsToAdd.forEach((tag) => formData.append("tags", tag.id.toString()));
+
+      // Append tags to remove
+      tagsToRemove.forEach((tag) =>
+        formData.append("removeTags", tag.id.toString())
+      );
+
+      // Call the API
+      const response = await changeCostCodeTags(formData);
+      if (response) {
+        setInitialCostCodeName(costcodeName);
+        setInitialDescription(description);
+      }
+
+      // Optionally: Add user feedback (e.g., success notification)
+    } catch (error) {
+      console.error("Error updating cost code tags:", error);
+      // Optionally: Add error notification
+    }
   };
 
   return (
@@ -130,7 +164,7 @@ export default function UpdateCostCodes({
           />
         }
         mainRight={<CostCodeRight selectedTags={selectedTags} />}
-        footer={<EditCostCodeFooter changesMade={changesMade} />}
+        footer={<EditCostCodeFooter handleEditForm={handleEditForm} />}
       />
     </Holds>
   );
@@ -184,7 +218,7 @@ function CostCodeLeft({
                   <Holds position="row" className="relative flex w-1/3">
                     <CheckBox
                       id={tag.id.toString()}
-                      defaultChecked={selectedTags.some((t) => t.id === tag.id)}
+                      checked={selectedTags.some((t) => t.id === tag.id)}
                       onChange={() => toggleTagSelection(tag)}
                       size={2}
                       name={tag.name}
@@ -267,7 +301,11 @@ function EditCostCodeForm({
   );
 }
 
-function EditCostCodeFooter({ changesMade }: { changesMade: boolean }) {
+function EditCostCodeFooter({
+  handleEditForm,
+}: {
+  handleEditForm: () => void;
+}) {
   return (
     <Holds
       background={"white"}
@@ -282,10 +320,8 @@ function EditCostCodeFooter({ changesMade }: { changesMade: boolean }) {
 
         <Holds className="my-auto col-start-4 col-end-5 ">
           <Buttons
-            className={
-              "py-2 " + (changesMade ? "bg-app-green" : "bg-slate-400")
-            }
-            disabled={!changesMade}
+            className={"py-2 bg-app-green"}
+            onClick={() => handleEditForm()}
           >
             <Titles size={"h4"}>Submit Edit</Titles>
           </Buttons>
