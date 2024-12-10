@@ -4,6 +4,34 @@ import { FormStatus, Permission } from "@/lib/types";
 
 import { revalidatePath, revalidateTag } from "next/cache";
 
+export async function changeCostCodeTags(formData: FormData) {
+  try {
+    console.log("Changing cost code tags...");
+    console.log(formData);
+    const costcodeId = formData.get("costcodeId") as string;
+    const newTags = formData
+      .getAll("tags")
+      .map((tag) => ({ id: parseInt(tag as string) })); // Map tags to connect format
+    const disconnectTags = formData
+      .getAll("removeTags")
+      .map((tag) => ({ id: parseInt(tag as string) })); // Map tags to disconnect format
+    const updateCostcodeTags = await prisma.costCodes.update({
+      where: {
+        id: parseInt(costcodeId),
+      },
+      data: {
+        CCTags: {
+          connect: newTags, // Add new connections
+          disconnect: disconnectTags, // Remove connections
+        },
+      },
+    });
+    console.log(updateCostcodeTags);
+    return formData;
+  } catch (error) {
+    return error;
+  }
+}
 export async function createNewCostCode(formData: FormData) {
   try {
     console.log("Creating new cost code...");
@@ -251,7 +279,7 @@ export async function saveTimesheet(formData: FormData) {
         costcode: formData.get("costcode") as string,
         jobsiteId: formData.get("jobsiteId") as string,
         timeSheetComments: formData.get("timeSheetComments") as string,
-        vehicleId: parseInt(formData.get("vehicleId") as string),
+        vehicleId: formData.get("vehicleId") as string,
         startingMileage: parseInt(formData.get("startingMileage") as string),
         endingMileage: parseInt(formData.get("endingMileage") as string),
         leftIdaho: formData.get("leftIdaho") === "true",
@@ -271,7 +299,7 @@ export async function saveTimesheet(formData: FormData) {
         costcode: formData.get("costcode") as string,
         jobsiteId: formData.get("jobsiteId") as string,
         timeSheetComments: formData.get("timeSheetComments") as string,
-        vehicleId: parseInt(formData.get("vehicleId") as string),
+        vehicleId: formData.get("vehicleId") as string,
         startingMileage: parseInt(formData.get("startingMileage") as string),
         endingMileage: parseInt(formData.get("endingMileage") as string),
         leftIdaho: formData.get("leftIdaho") === "true",
@@ -771,98 +799,6 @@ export async function TagCostCodeChange(formData: FormData) {
     revalidatePath(`/admin/assets`);
   } catch (error) {
     console.error("Error creating cost code:", error);
-    throw error;
-  }
-}
-
-export async function AddListToJobsite(formData: FormData) {
-  try {
-    console.log("Adding cost codes to job site...");
-    const qrId = formData.get("qrId") as string;
-    const costCodeTypes = (formData.get("types") as string)
-      .split(",")
-      .map((code) => code.trim());
-
-    // Find all cost codes that match the list of types
-    const costCodes = await prisma.costCodes.findMany({
-      where: {
-        type: {
-          in: costCodeTypes,
-        },
-      },
-    });
-
-    if (costCodes.length === 0) {
-      console.log("No matching cost codes found.");
-      return;
-    }
-
-    console.log("Cost codes found:", costCodes);
-
-    // Connect the found cost codes to the job site
-    const jobsite = await prisma.jobsites.update({
-      where: {
-        qrId: qrId,
-      },
-      data: {
-        costCode: {
-          connect: costCodes.map((code) => ({ id: code.id })),
-        },
-      },
-    });
-
-    console.log("Job site updated with cost codes:", jobsite);
-
-    // Revalidate the path to reflect changes
-    revalidatePath(`/admin/assets`);
-  } catch (error) {
-    console.error("Error adding cost codes to job site:", error);
-    throw error;
-  }
-}
-
-export async function RemoveListToJobsite(formData: FormData) {
-  try {
-    console.log("Adding cost codes to job site...");
-    const qrId = formData.get("qrId") as string;
-    const costCodeTypes = (formData.get("types") as string)
-      .split(",")
-      .map((code) => code.trim());
-
-    // Find all cost codes that match the list of types
-    const costCodes = await prisma.costCodes.findMany({
-      where: {
-        type: {
-          in: costCodeTypes,
-        },
-      },
-    });
-
-    if (costCodes.length === 0) {
-      console.log("No matching cost codes found.");
-      return;
-    }
-
-    console.log("Cost codes found:", costCodes);
-
-    // Connect the found cost codes to the job site
-    const jobsite = await prisma.jobsites.update({
-      where: {
-        qrId: qrId,
-      },
-      data: {
-        costCode: {
-          disconnect: costCodes.map((code) => ({ id: code.id })),
-        },
-      },
-    });
-
-    console.log("Job site updated with cost codes:", jobsite);
-
-    // Revalidate the path to reflect changes
-    revalidatePath(`/admin/assets`);
-  } catch (error) {
-    console.error("Error adding cost codes to job site:", error);
     throw error;
   }
 }
