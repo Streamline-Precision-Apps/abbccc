@@ -350,3 +350,30 @@ export type EmployeeContactInfo = {
   emergencyContact: string | null;
   emergencyContactNumber: string | null;
 };
+
+// tag section of app
+export type JobTags = {
+  id: string;
+  qrId: string;
+  name: string;
+};
+export type costCodesTag = {
+  id: number;
+  name: string;
+  description: string;
+};
+
+export type CCTags = {
+  id: number;
+  name: string;
+  jobsite: {
+    id: string;
+    qrId: string;
+    name: string;
+  };
+  costCode: {
+    id: number;
+    name: string;
+    description: string;
+  };
+};

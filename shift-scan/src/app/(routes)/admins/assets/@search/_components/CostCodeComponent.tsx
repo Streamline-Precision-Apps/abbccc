@@ -6,12 +6,13 @@ import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
 
 import { Texts } from "@/components/(reusable)/texts";
-import { CostCodes } from "@/lib/types";
+import { CCTags, CostCodes } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { useState, useMemo, useCallback } from "react";
 
 type Props = {
   costCodes: CostCodes[];
+  tags: CCTags[];
 };
 
 export const CostCodeComponent = ({ costCodes }: Props) => {

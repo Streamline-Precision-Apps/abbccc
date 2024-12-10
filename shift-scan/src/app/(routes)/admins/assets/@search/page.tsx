@@ -5,18 +5,35 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Tab } from "@/components/(reusable)/tab";
 
 import { useEffect, useState } from "react";
-import { Equipment, Jobsites, costCodes } from "@/lib/types";
+import { Equipment, Jobsites, costCodes, CCTags } from "@/lib/types";
 import { z } from "zod";
 import { EquipmentComponent } from "./_components/EquipmentComponent";
 import { JobsiteComponent } from "./_components/JobsiteComponent";
 import { CostCodeComponent } from "./_components/CostCodeComponent";
+import { Buttons } from "@/components/(reusable)/buttons";
+import { TagsComponent } from "./_components/TagsComponent";
 
 export default function Search() {
   const [activeTab, setActiveTab] = useState(1);
   const [equipments, setEquipments] = useState<Equipment[]>([]);
   const [jobsites, setJobsites] = useState<Jobsites[]>([]);
   const [costCodes, setCostCodes] = useState<costCodes[]>([]);
+  const [tags, setTags] = useState<CCTags[]>([]);
+  const [activeTab2, setActiveTab2] = useState(1);
   const [filter, setFilter] = useState("all");
+
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const tagsRes = await fetch("/api/getAllTags");
+        const tagsData = await tagsRes.json();
+        setTags(tagsData);
+      } catch (error) {
+        console.error("Failed to fetch tags data:", error);
+      }
+    };
+    fetchTags();
+  }, [filter]);
 
   useEffect(() => {
     const fetchEquipments = async () => {
@@ -116,7 +133,41 @@ export default function Search() {
               <JobsiteComponent jobsites={jobsites} setFilter={setFilter} />
             )}
             {activeTab === 3 && (
-              <CostCodeComponent costCodes={costCodes} setFilter={setFilter} />
+              <Holds className="h-full w-full">
+                <Grids rows="10" gap="5" className="h-full">
+                  <Holds
+                    background={"white"}
+                    position={"row"}
+                    className="row-span-1 h-full border-[3px] border-black"
+                  >
+                    <Buttons
+                      onClick={() => setActiveTab2(1)}
+                      className={`px-4 py-4 min-w-[100px] rounded-[10px] h-full flex items-center justify-center font-bold  w-full shadow-none ${
+                        activeTab2 === 1
+                          ? "bg-app-blue border-none "
+                          : "bg-white border-none"
+                      }`}
+                    >
+                      CostCodes
+                    </Buttons>
+                    <Buttons
+                      onClick={() => setActiveTab2(2)}
+                      className={`px-4 py-4 min-w-[100px] rounded-[10px] h-full flex items-center justify-center  font-bold w-full shadow-none ${
+                        activeTab2 === 2
+                          ? "bg-app-blue border-none"
+                          : "bg-white border-none"
+                      }`}
+                    >
+                      Tags
+                    </Buttons>
+                  </Holds>
+
+                  {activeTab2 === 1 && (
+                    <CostCodeComponent costCodes={costCodes} tags={tags} />
+                  )}
+                  {activeTab2 === 2 && <TagsComponent tags={tags} />}
+                </Grids>
+              </Holds>
             )}
           </Contents>
         </Holds>
