@@ -40,7 +40,7 @@ export const TagsComponent = ({ tags }: { tags: CCTags[] }) => {
   };
 
   const createTags = () => {
-    router.push(`/admins/assets/new-cost-codes`);
+    router.push(`/admins/assets/new-tag`);
   };
 
   return (

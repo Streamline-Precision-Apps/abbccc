@@ -16,7 +16,7 @@ export function EditCostCodeFooter({
       className="w-full h-full row-span-1 col-span-2 "
     >
       <Grids cols={"4"} gap={"4"} className="w-full h-full p-4">
-        <Holds className="my-auto col-start-1 col-end-2 ">
+        <Holds className=" col-start-1 col-end-2 ">
           <Buttons
             background={"red"}
             className="py-2"
@@ -28,7 +28,7 @@ export function EditCostCodeFooter({
           </Buttons>
         </Holds>
 
-        <Holds className="my-auto col-start-4 col-end-5 ">
+        <Holds className="col-start-4 col-end-5 ">
           <Buttons
             className={"py-2 bg-app-green"}
             onClick={() => handleEditForm()}
