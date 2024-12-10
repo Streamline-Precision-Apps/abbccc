@@ -280,10 +280,11 @@ model CostCodes {
 }
 
 model CCTags {
-  id       Int         @id @default(autoincrement())
-  name     String      @unique
-  jobsite  Jobsites[]
-  costCode CostCodes[]
+  id          Int         @id @default(autoincrement())
+  name        String      @unique
+  description String?
+  jobsite     Jobsites[]
+  costCode    CostCodes[]
 }
 
 // !!!
