@@ -5,7 +5,7 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Tab } from "@/components/(reusable)/tab";
 
 import { useEffect, useState } from "react";
-import { Equipment, Jobsites, costCodes } from "@/lib/types";
+import { Equipment, Jobsites, costCodes, CCTags } from "@/lib/types";
 import { z } from "zod";
 import { EquipmentComponent } from "./_components/EquipmentComponent";
 import { JobsiteComponent } from "./_components/JobsiteComponent";
@@ -13,28 +13,21 @@ import { CostCodeComponent } from "./_components/CostCodeComponent";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { TagsComponent } from "./_components/TagsComponent";
 
-type Tags = {
-  id: number;
-  name: string;
-  jobsiteId: number;
-};
-
 export default function Search() {
   const [activeTab, setActiveTab] = useState(1);
   const [equipments, setEquipments] = useState<Equipment[]>([]);
   const [jobsites, setJobsites] = useState<Jobsites[]>([]);
   const [costCodes, setCostCodes] = useState<costCodes[]>([]);
-  const [tags, setTags] = useState<Tags[]>([]);
+  const [tags, setTags] = useState<CCTags[]>([]);
   const [activeTab2, setActiveTab2] = useState(1);
   const [filter, setFilter] = useState("all");
 
   useEffect(() => {
     const fetchTags = async () => {
       try {
-        setTags([
-          { id: 1, name: "Tag 1", jobsiteId: 1 },
-          { id: 2, name: "Tag 2", jobsiteId: 1 },
-        ]);
+        const tagsRes = await fetch("/api/getAllTags");
+        const tagsData = await tagsRes.json();
+        setTags(tagsData);
       } catch (error) {
         console.error("Failed to fetch tags data:", error);
       }
@@ -170,7 +163,7 @@ export default function Search() {
                   </Holds>
 
                   {activeTab2 === 1 && (
-                    <CostCodeComponent costCodes={costCodes} />
+                    <CostCodeComponent costCodes={costCodes} tags={tags} />
                   )}
                   {activeTab2 === 2 && <TagsComponent tags={tags} />}
                 </Grids>
