@@ -2,25 +2,35 @@
 import { createNewCostCode } from "@/actions/adminActions";
 import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
+import { CCTags } from "@/lib/types";
 import { FormEvent, RefObject, useEffect, useState } from "react";
 
 export function NewCostCodeForm({
   createCostCode,
   placeholder,
   setIsFormFilled,
+  selectedTags,
+  initialSelectedTags,
 }: {
   createCostCode: RefObject<HTMLFormElement>;
   placeholder: string;
   setIsFormFilled?: React.Dispatch<React.SetStateAction<boolean>>;
+  selectedTags: CCTags[];
+  initialSelectedTags: CCTags[];
 }) {
   const [ccName, setCcName] = useState<string>("");
   const [ccDescription, setCcDescription] = useState<string>("");
 
   const CreateCostCode = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // Prevent the page from reloading
-    const formData = new FormData(createCostCode.current!);
-
     try {
+      const formData = new FormData(createCostCode.current!);
+
+      const tagsToAdd = selectedTags.filter(
+        (tag) => !initialSelectedTags.some((initTag) => initTag.id === tag.id)
+      );
+      tagsToAdd.forEach((tag) => formData.append("tags", tag.id.toString()));
+
       const response = await createNewCostCode(formData);
       if (response) {
         console.log("Cost Code created successfully");
@@ -55,7 +65,9 @@ export function NewCostCodeForm({
             name="name"
             placeholder={placeholder}
             className="p-2"
-            onChange={(e) => setCcName(e.target.value)}
+            onChange={(e) => {
+              setCcName(e.target.value);
+            }}
           />
         </Holds>
         <Holds className="w-1/2">
@@ -64,7 +76,9 @@ export function NewCostCodeForm({
             name="description"
             className="p-2"
             placeholder="Cost Code Description"
-            onChange={(e) => setCcDescription(e.target.value)}
+            onChange={(e) => {
+              setCcDescription(e.target.value);
+            }}
           />
         </Holds>
       </form>

@@ -4,6 +4,20 @@ import { FormStatus, Permission } from "@/lib/types";
 
 import { revalidatePath, revalidateTag } from "next/cache";
 
+export async function deleteCostCodeById(costcodeId: number) {
+  try {
+    console.log("Deleting cost code...");
+    console.log(costcodeId);
+    const deletedCostCode = await prisma.costCodes.delete({
+      where: { id: costcodeId },
+    });
+    console.log(deletedCostCode);
+    revalidateTag("costcodes");
+    return deletedCostCode;
+  } catch (error) {
+    return error;
+  }
+}
 export async function changeCostCodeTags(formData: FormData) {
   try {
     console.log("Changing cost code tags...");
@@ -36,13 +50,24 @@ export async function createNewCostCode(formData: FormData) {
   try {
     console.log("Creating new cost code...");
     console.log(formData);
-    // Extract data from formData
-    return formData;
+    const newTags = formData.getAll("tags").map((tag) => ({ id: Number(tag) })); // Ensure IDs are numbers
+    const type = (formData.get("type") as string) || "New Cost Code"; // Retrieve the type value from the formData
+
+    await prisma.costCodes.create({
+      data: {
+        name: formData.get("name") as string,
+        description: formData.get("description") as string,
+        type, // Add the type property to the data object
+        CCTags: {
+          connect: newTags, // Add new connections
+        },
+      },
+    });
+    return true;
   } catch (error) {
     return error;
   }
 }
-
 export async function createCrew(formData: FormData) {
   try {
     console.log("Creating new crew...");

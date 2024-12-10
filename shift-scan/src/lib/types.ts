@@ -364,16 +364,6 @@ export type costCodesTag = {
 };
 
 export type CCTags = {
-  id: number;
   name: string;
-  jobsite: {
-    id: string;
-    qrId: string;
-    name: string;
-  };
-  costCode: {
-    id: number;
-    name: string;
-    description: string;
-  };
+  id: number;
 };
