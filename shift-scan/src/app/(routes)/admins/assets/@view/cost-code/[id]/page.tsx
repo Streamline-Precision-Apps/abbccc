@@ -14,16 +14,7 @@ import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
 import { CCTags } from "@prisma/client";
 import { CheckBox } from "@/components/(inputs)/checkBox";
-
-const arraysAreEqual = (arr1: CCTags[], arr2: CCTags[]) => {
-  if (arr1.length !== arr2.length) return false;
-
-  // Compare by id to detect changes
-  const set1 = new Set(arr1.map((user) => user.id));
-  const set2 = new Set(arr2.map((user) => user.id));
-
-  return Array.from(set1).every((id) => set2.has(id));
-};
+import { arraysAreEqual } from "@/utils/forms/isArrayEqual";
 
 export default function UpdateCostCodes({
   params,
