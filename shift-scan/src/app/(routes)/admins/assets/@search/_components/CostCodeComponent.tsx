@@ -1,21 +1,21 @@
 "use client";
 import { Buttons } from "@/components/(reusable)/buttons";
-import { Grids } from "@/components/(reusable)/grids";
+
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
-import { Selects } from "@/components/(reusable)/selects";
+
 import { Texts } from "@/components/(reusable)/texts";
-import { CostCodes } from "@/lib/types";
+import { CCTags, CostCodes } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { useState, useMemo, useCallback } from "react";
 
 type Props = {
   costCodes: CostCodes[];
-  setFilter: (filter: string) => void;
+  tags: CCTags[];
 };
 
-export const CostCodeComponent = ({ costCodes, setFilter }: Props) => {
+export const CostCodeComponent = ({ costCodes }: Props) => {
   const [term, setTerm] = useState<string>("");
   // const [page, setPage] = useState(true);
   const router = useRouter();
@@ -40,7 +40,7 @@ export const CostCodeComponent = ({ costCodes, setFilter }: Props) => {
 
   const selectCostCode = (costCode: CostCodes) => {
     setTerm(costCode.name);
-    router.push(`/admins/assets/${costCode.id}`);
+    router.push(`/admins/assets/cost-code/${costCode.id}`);
   };
 
   const createCostCode = () => {
@@ -48,75 +48,56 @@ export const CostCodeComponent = ({ costCodes, setFilter }: Props) => {
   };
 
   return (
-    <Holds className="h-full w-full">
-      <Grids rows="10" gap="5" className="h-full">
-        <Holds className=" bg-white h-full w-full  ">
-          <Selects
-            defaultValue={"all"}
-            onChange={(e) => setFilter(e.target.value)}
-            className="w-full px-0 py-2 text-center"
-            // onClick={() => setPage(!page)}
-          >
-            <option value="all">Select Filter</option>
-            <option value="all">All</option>
-            <option value="Temporary">Temporary</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-          </Selects>
-        </Holds>
-        {/* Search Input Section */}
-        <Holds className="row-span-8 h-full border-[3px] border-black rounded-t-[10px]">
-          <>
-            <Holds
-              position={"row"}
-              className="py-2 border-b-[3px] border-black"
-            >
-              <Holds className="h-full w-[20%]">
-                <Images titleImg="/magnifyingGlass.svg" titleImgAlt="search" />
-              </Holds>
-              <Holds className="w-[80%]">
-                <Inputs
-                  type="search"
-                  placeholder="Search costcodes by name"
-                  value={term}
-                  onChange={handleSearchChange}
-                  className="border-none outline-none"
-                />
-              </Holds>
+    <>
+      {/* Search Input Section */}
+      <Holds className="row-span-9 h-full border-[3px] border-black rounded-t-[10px]">
+        <>
+          <Holds position={"row"} className="py-2 border-b-[3px] border-black">
+            <Holds className="h-full w-[20%]">
+              <Images titleImg="/magnifyingGlass.svg" titleImgAlt="search" />
             </Holds>
-            <Holds className=" h-full mb-4  overflow-y-auto no-scrollbar ">
-              <Holds>
-                {filteredList.length > 0 ? (
-                  filteredList.map((costCode) => (
-                    <Holds
-                      key={costCode.id}
-                      className="py-2 border-b"
-                      onClick={() => selectCostCode(costCode)}
-                    >
-                      <Texts size="p6">
-                        {costCode.name} - {costCode.description}
-                      </Texts>
-                    </Holds>
-                  ))
-                ) : (
-                  <Texts size="p6" className="text-center">
-                    No cost code found
-                  </Texts>
-                )}
-              </Holds>
+            <Holds className="w-[80%]">
+              <Inputs
+                type="search"
+                placeholder="Search costcodes by name"
+                value={term}
+                onChange={handleSearchChange}
+                className="border-none outline-none"
+              />
             </Holds>
-          </>
-        </Holds>
+          </Holds>
+          <Holds className=" h-full mb-4  overflow-y-auto no-scrollbar ">
+            <Holds>
+              {filteredList.length > 0 ? (
+                filteredList.map((costCode) => (
+                  <Holds
+                    key={costCode.id}
+                    className="py-2 border-b"
+                    onClick={() => selectCostCode(costCode)}
+                  >
+                    <Texts size="p6">
+                      {costCode.name} - {costCode.description}
+                    </Texts>
+                  </Holds>
+                ))
+              ) : (
+                <Texts size="p6" className="text-center">
+                  No cost code found
+                </Texts>
+              )}
+            </Holds>
+          </Holds>
+        </>
+      </Holds>
 
-        {/* Create New CostCode Button */}
-        <Buttons
-          background="green"
-          className="row-span-1 h-full"
-          onClick={createCostCode}
-        >
-          <Texts size="p6">Create New Cost Code</Texts>
-        </Buttons>
-      </Grids>
-    </Holds>
+      {/* Create New CostCode Button */}
+      <Buttons
+        background="green"
+        className="row-span-1 h-full"
+        onClick={createCostCode}
+      >
+        <Texts size="p6">Create New Cost Code</Texts>
+      </Buttons>
+    </>
   );
 };
