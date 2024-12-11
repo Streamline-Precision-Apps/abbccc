@@ -3,7 +3,6 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Tab } from "@/components/(reusable)/tab";
-
 import { useEffect, useState } from "react";
 import { Equipment, Jobsites, costCodes, CCTags } from "@/lib/types";
 import { z } from "zod";
@@ -14,7 +13,6 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { TagsComponent } from "./_components/TagsComponent";
 import { usePathname } from "next/navigation";
 import { NotificationComponent } from "@/components/(inputs)/NotificationComponent";
-
 
 export default function Search() {
   const [activeTab, setActiveTab] = useState(1);
