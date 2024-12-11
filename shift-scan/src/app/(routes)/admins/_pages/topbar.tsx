@@ -15,8 +15,10 @@ import { AdminClockOut } from "./AdminClockOut";
 import AdminSwitch from "./AdminSwitch";
 import AdminClock from "./AdminClock";
 import { usePathname, useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 const Topbar = () => {
+  const t = useTranslations("Admins");
   const { data: session } = useSession();
   const firstName = session?.user.firstName;
   const lastName = session?.user.lastName;
@@ -226,14 +228,14 @@ const Topbar = () => {
                     onClick={() => setIsSwitch(true)}
                     className="h-8 "
                   >
-                    <Texts size={"p6"}>Switch</Texts>
+                    <Texts size={"p6"}>{t("Switch")}</Texts>
                   </Buttons>
                   <Buttons
                     className="h-8 "
                     background={"lightBlue"}
                     onClick={handleBreakClick}
                   >
-                    <Texts size={"p6"}>Break</Texts>
+                    <Texts size={"p6"}>{t("Break")}</Texts>
                   </Buttons>
                   <Buttons
                     className="h-8 "
@@ -242,7 +244,7 @@ const Topbar = () => {
                       setIsEndofDay(true);
                     }}
                   >
-                    <Texts size={"p6"}>End Day</Texts>
+                    <Texts size={"p6"}>{t("EndDay")}</Texts>
                   </Buttons>
                   <Holds>
                     <Images
@@ -265,7 +267,7 @@ const Topbar = () => {
                       onClick={() => setIsOpen(true)}
                       size={"60"}
                     >
-                      <Texts size={"p6"}>start day</Texts>
+                      <Texts size={"p6"}>{t("StartDay")}</Texts>
                     </Buttons>
                   </Holds>
                   <Holds>
