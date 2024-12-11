@@ -1,5 +1,5 @@
 "use client";
-import { changeTags, createTag } from "@/actions/adminActions";
+import { createTag } from "@/actions/adminActions";
 import { ReusableViewLayout } from "@/app/(routes)/admins/personnel/@view/[employee]/_components/reusableViewLayout";
 import { CheckBox } from "@/components/(inputs)/checkBox";
 import { Buttons } from "@/components/(reusable)/buttons";
@@ -11,7 +11,7 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import { CCTags, costCodesTag, JobTags } from "@/lib/types";
+import { costCodesTag, JobTags } from "@/lib/types";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 
 export default function NewTagView() {
@@ -33,10 +33,12 @@ export default function NewTagView() {
       try {
         const response = await fetch("/api/getAllJobsites");
         const jobs = (await response.json()) as JobTags[];
+        setInitialSelectedJobs(jobs ?? []);
         setJobs(jobs ?? []);
         //cost codes
         const response2 = await fetch("/api/getAllCostCodes");
         const costCodes = (await response2.json()) as costCodesTag[];
+        setInitialSelectedCostCodes(costCodes ?? []);
         setCostCodes(costCodes ?? []);
       } catch (error) {
         console.log(error);
