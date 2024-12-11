@@ -26,7 +26,12 @@ export default function Search() {
   const [triggeredPath, setTrigger] = useState(0);
 
   useEffect(() => {
-    if (pathname === "/admins/assets/cost-code") {
+    if (
+      pathname === "/admins/assets/cost-code" ||
+      pathname === "/admins/assets/tags" ||
+      pathname === "/admins/assets/new-tag" ||
+      pathname === "/admins/assets/new-cost-codes"
+    ) {
       setTrigger((prev) => prev + 1); // Increment the counter
     }
   }, [pathname]);
@@ -42,7 +47,7 @@ export default function Search() {
       }
     };
     fetchTags();
-  }, [filter]);
+  }, [filter, triggeredPath]);
 
   useEffect(() => {
     const fetchEquipments = async () => {

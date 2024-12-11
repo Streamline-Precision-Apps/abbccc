@@ -4,6 +4,49 @@ import { FormStatus, Permission } from "@/lib/types";
 
 import { revalidatePath, revalidateTag } from "next/cache";
 
+export async function deleteTagById(tagId: string) {
+  try {
+    console.log("Deleting tag...");
+    console.log(tagId);
+    const deletedTag = await prisma.cCTags.delete({
+      where: {
+        id: Number(tagId),
+      },
+    });
+    console.log(deletedTag);
+    revalidatePath("/admins/assets/tags");
+    return deletedTag;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to delete tag");
+  }
+}
+export async function createTag(data: {
+  name: string;
+  description: string;
+  jobs: string[];
+  costCodes: number[];
+}) {
+  try {
+    const newTag = await prisma.cCTags.create({
+      data: {
+        name: data.name,
+        description: data.description,
+        jobsite: {
+          connect: data.jobs.map((id) => ({ id })), // Connect jobsites
+        },
+        costCode: {
+          connect: data.costCodes.map((id) => ({ id })), // Connect cost codes
+        },
+      },
+    });
+    console.log(newTag);
+    return newTag;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to create tag");
+  }
+}
 export async function changeTags(data: {
   id: string;
   name: string;

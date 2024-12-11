@@ -1,5 +1,5 @@
 "use client";
-import { changeTags } from "@/actions/adminActions";
+import { changeTags, deleteTagById } from "@/actions/adminActions";
 import { ReusableViewLayout } from "@/app/(routes)/admins/personnel/@view/[employee]/_components/reusableViewLayout";
 import { CheckBox } from "@/components/(inputs)/checkBox";
 import { Buttons } from "@/components/(reusable)/buttons";
@@ -12,10 +12,12 @@ import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { CCTags, costCodesTag, JobTags } from "@/lib/types";
+import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 
 export default function TagView({ params }: { params: { id: string } }) {
   const tagId = params.id;
+  const router = useRouter();
   const [editedItem, setEditedItem] = useState<string>("");
   const [commentText, setCommentText] = useState<string>("");
   const [tag, setTag] = useState<CCTags[]>();
@@ -126,6 +128,10 @@ export default function TagView({ params }: { params: { id: string } }) {
 
   const deleteTag = async () => {
     try {
+      const response = await deleteTagById(tagId);
+      if (response) {
+        router.push("/admins/assets/tags");
+      }
     } catch (error) {
       console.log(error);
     }
