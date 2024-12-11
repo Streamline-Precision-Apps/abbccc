@@ -87,45 +87,34 @@ export default function TagView({ params }: { params: { id: string } }) {
   };
   const handleEditForm = async () => {
     try {
-      const formData = new FormData();
-      formData.append("id", tagId);
-      formData.append("name", editedItem);
-      formData.append("description", commentText);
+      const payload = {
+        id: tagId,
+        name: editedItem,
+        description: commentText,
+        jobs: selectedJobs
+          .filter(
+            (job) =>
+              !initialSelectedJobs.some((initJob) => initJob.id === job.id)
+          )
+          .map((job) => job.id), // IDs of jobs to add
+        removeJobs: initialSelectedJobs
+          .filter((job) => !selectedJobs.some((j) => j.id === job.id))
+          .map((job) => job.id), // IDs of jobs to remove
+        costCodes: selectedCostCodes
+          .filter(
+            (costCodes) =>
+              !initialSelectedCostCodes.some((c) => c.id === costCodes.id)
+          )
+          .map((cc) => cc.id), // IDs of costCodes to add
+        removeCostCodes: initialSelectedCostCodes
+          .filter(
+            (costCodes) => !selectedCostCodes.some((c) => c.id === costCodes.id)
+          )
+          .map((cc) => cc.id), // IDs of costCodes to remove
+      };
 
-      const jobsitesToAdd = selectedJobs.filter(
-        (job) => !initialSelectedJobs.some((j) => j.id === job.id)
-      );
-      const jobsitesToRemove = initialSelectedJobs.filter(
-        (job) => !selectedJobs.some((j) => j.id === job.id)
-      );
-      // Append jobs to add
-      jobsitesToAdd.forEach((job) =>
-        formData.append("jobs", job.id.toString())
-      );
-
-      // Append jobs to remove
-      jobsitesToRemove.forEach((tag) =>
-        formData.append("removeJobs", tag.id.toString())
-      );
-
-      const costCodesToAdd = selectedCostCodes.filter(
-        (costCodes) =>
-          !initialSelectedCostCodes.some((c) => c.id === costCodes.id)
-      );
-      const costCodesToRemove = initialSelectedCostCodes.filter(
-        (costCodes) => !selectedCostCodes.some((c) => c.id === costCodes.id)
-      );
-      // Append jobs to add
-      costCodesToAdd.forEach((cc) =>
-        formData.append("costCodes", cc.id.toString())
-      );
-
-      // Append jobs to remove
-      costCodesToRemove.forEach((cc) =>
-        formData.append("removeCostCodes", cc.id.toString())
-      );
-
-      const response = await changeTags(formData);
+      // Call changeTags with JSON payload
+      const response = await changeTags(payload);
       if (response) {
         setEditedItem(editedItem);
         setCommentText(commentText);
