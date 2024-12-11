@@ -19,7 +19,7 @@ export default async function ClockOutPage() {
       <Contents>
         <Grids rows={"1"}>
           <Holds className="h-full row-span-1  ">
-            <ClockOutContent />;
+            <ClockOutContent />
           </Holds>
         </Grids>
       </Contents>
