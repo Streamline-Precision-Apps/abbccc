@@ -57,27 +57,25 @@ export default function PasswordModal({ setIsOpenChangePassword }: Props) {
     event.preventDefault();
 
     if (newPassword.length === 0) {
-      setBannerMessage("Invalid. New Password cannot be empty.");
+      setBannerMessage(t("InvalidNewPassword"));
       setShowBanner(true);
       return;
     }
 
     if (confirmPassword.length === 0) {
-      setBannerMessage("Invalid. Confirm Password cannot be empty.");
+      setBannerMessage(t("InvalidConfirmPassword"));
       setShowBanner(true);
       return;
     }
 
     if (!validatePassword(newPassword)) {
-      setBannerMessage(
-        "Invalid. Password must be at least 8 characters long, contain 1 number, and 1 symbol."
-      );
+      setBannerMessage(t("InvalidPassword"));
       setShowBanner(true);
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setBannerMessage("Invalid. Passwords do not match!");
+      setBannerMessage(t("InvalidPasswordMatch"));
       setShowBanner(true);
       return;
     }
@@ -88,17 +86,17 @@ export default function PasswordModal({ setIsOpenChangePassword }: Props) {
     formData.append("password", hashed);
 
     if (userId === "") {
-      setBannerMessage("Invalid. User ID cannot be empty.");
+      setBannerMessage(t("InvalidUserEmpty"));
       setShowBanner(true);
       return;
     }
     try {
       await setUserPassword(formData);
       setIsOpenChangePassword();
-      setNotification("Password was successfully updated.", "success");
+      setNotification(t("PasswordUpdated"), "success");
     } catch (error) {
       console.error("Error updating password:", error);
-      setNotification("Password was successfully updated.", "error");
+      setNotification(t("PasswordNotUpdated"), "error");
     }
   };
 
@@ -209,14 +207,14 @@ export default function PasswordModal({ setIsOpenChangePassword }: Props) {
           </Holds>
           <Holds background={"darkBlue"} className="row-span-1 h-full">
             <Texts position="left" text={"white"} size="p4">
-              Password Strength:
+              {t("PasswordStrength")}
             </Texts>
             <Holds background="white" className="rounded-xl h-full ">
               <Contents width={"section"}>
                 <Holds position="row" className="my-auto">
-                  <PasswordCriteria passed={oneNumber} label="123" />
-                  <PasswordCriteria passed={oneSymbol} label="Symbol" />
-                  <PasswordCriteria passed={eightChar} label="(8) Length" />
+                  <PasswordCriteria passed={oneNumber} label={t("Numbers")} />
+                  <PasswordCriteria passed={oneSymbol} label={t("Symbols")} />
+                  <PasswordCriteria passed={eightChar} label={t("Length")} />
                 </Holds>
               </Contents>
             </Holds>

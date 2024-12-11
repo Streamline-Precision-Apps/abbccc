@@ -75,10 +75,6 @@ export default function DbWidgetSection({ session }: props) {
   >(null);
   const { currentView } = useCurrentView();
 
-  useEffect(() => {
-    console.log("Current view:", currentView);
-  }, []);
-
   // Validate initial state with Zod schema
   try {
     DbWidgetSectionSchema.parse({
@@ -116,7 +112,7 @@ export default function DbWidgetSection({ session }: props) {
       }
     };
     fetchLogs();
-  }, []);
+  }, [e]);
 
   useEffect(() => {
     if (authStep !== "success") {
@@ -321,32 +317,30 @@ export default function DbWidgetSection({ session }: props) {
               </>
             ) : (
               <>
-                {permission !== "USER" &&
-                  !additionalButtonsType &&
-                  currentView === "" && (
-                    <>
-                      <Holds
-                        position={"row"}
-                        className="row-span-1 col-span-1 gap-5"
+                {permission !== "USER" && !additionalButtonsType && (
+                  <>
+                    <Holds
+                      position={"row"}
+                      className="row-span-1 col-span-1 gap-5"
+                    >
+                      <Buttons //----------------------This is the QR Generator Widget
+                        background={"lightBlue"}
+                        href="/dashboard/qr-generator"
                       >
-                        <Buttons //----------------------This is the QR Generator Widget
-                          background={"lightBlue"}
-                          href="/dashboard/qr-generator"
-                        >
-                          <Holds>
-                            <Images
-                              titleImg="/qr.svg"
-                              titleImgAlt="QR Code"
-                              size={"40"}
-                            />
-                          </Holds>
-                          <Holds>
-                            <Texts size={"p3"}>{t("QR")}</Texts>
-                          </Holds>
-                        </Buttons>
-                      </Holds>
-                    </>
-                  )}
+                        <Holds>
+                          <Images
+                            titleImg="/qr.svg"
+                            titleImgAlt="QR Code"
+                            size={"40"}
+                          />
+                        </Holds>
+                        <Holds>
+                          <Texts size={"p3"}>{t("QR")}</Texts>
+                        </Holds>
+                      </Buttons>
+                    </Holds>
+                  </>
+                )}
                 {permission !== "USER" &&
                   !additionalButtonsType &&
                   currentView === "truck" && (
