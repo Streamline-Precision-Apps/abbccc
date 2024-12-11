@@ -10,6 +10,8 @@ import { z } from "zod";
 import { EquipmentComponent } from "./_components/EquipmentComponent";
 import { JobsiteComponent } from "./_components/JobsiteComponent";
 import { CostCodeComponent } from "./_components/CostCodeComponent";
+import { NotificationComponent } from "@/components/(inputs)/NotificationComponent";
+import { useNotification } from "@/app/context/NotificationContext";
 
 export default function Search() {
   const [activeTab, setActiveTab] = useState(1);
@@ -88,6 +90,7 @@ export default function Search() {
 
   return (
     <Holds className="h-full ">
+      <NotificationComponent />
       <Grids rows={"10"}>
         <Holds position={"row"} className="row-span-1 h-full gap-2">
           <Tab onClick={() => setActiveTab(1)} isActive={activeTab === 1}>
