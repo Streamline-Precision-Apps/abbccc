@@ -4,17 +4,218 @@ import { FormStatus, Permission } from "@/lib/types";
 
 import { revalidatePath, revalidateTag } from "next/cache";
 
-export async function createNewCostCode(formData: FormData) {
+export async function deleteAdminJobsite(id: string) {
   try {
-    console.log("Creating new cost code...");
+    await prisma.jobsites.delete({
+      where: { id },
+    });
+    console.log("Jobsite deleted successfully.");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to delete jobsite:", error);
+    return { success: false, message: "Failed to delete jobsite." };
+  }
+}
+
+export async function createAdminJobsite(formData: FormData) {
+  try {
+    console.log("Saving jobsite changes...");
     console.log(formData);
-    // Extract data from formData
+    const jobsite = await prisma.jobsites.create({
+      data: {
+        name: formData.get("name") as string,
+        streetNumber: formData.get("streetNumber") as string,
+        streetName: formData.get("streetName") as string,
+        city: formData.get("city") as string,
+        state: formData.get("state") as string,
+        country: formData.get("country") as string,
+        description: formData.get("description") as string,
+        comment: formData.get("comment") as string,
+        CCTags: {
+          connect: {
+            id: 1, //automatically connect to the first tag
+          },
+        },
+      },
+    });
+    console.log(jobsite);
+    revalidatePath("/admins/assets/jobsites");
+    return jobsite;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to save jobsite changes");
+  }
+}
+export async function savejobsiteChanges(formData: FormData) {
+  try {
+    console.log("Saving jobsite changes...");
+    console.log(formData);
+    const jobsiteId = formData.get("id") as string;
+    const jobsite = await prisma.jobsites.update({
+      where: { id: jobsiteId },
+      data: {
+        name: formData.get("name") as string,
+        streetNumber: formData.get("streetNumber") as string,
+        streetName: formData.get("streetName") as string,
+        city: formData.get("city") as string,
+        state: formData.get("state") as string,
+        country: formData.get("country") as string,
+        description: formData.get("description") as string,
+        comment: formData.get("comment") as string,
+      },
+    });
+    console.log(jobsite);
+    revalidatePath("/admins/assets/jobsites");
+    return jobsite;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to save jobsite changes");
+  }
+}
+
+export async function deleteTagById(tagId: string) {
+  try {
+    console.log("Deleting tag...");
+    console.log(tagId);
+    const deletedTag = await prisma.cCTags.delete({
+      where: {
+        id: Number(tagId),
+      },
+    });
+    console.log(deletedTag);
+    revalidatePath("/admins/assets/tags");
+    return deletedTag;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to delete tag");
+  }
+}
+export async function createTag(data: {
+  name: string;
+  description: string;
+  jobs: string[];
+  costCodes: number[];
+}) {
+  try {
+    const newTag = await prisma.cCTags.create({
+      data: {
+        name: data.name,
+        description: data.description,
+        jobsite: {
+          connect: data.jobs.map((id) => ({ id })), // Connect jobsites
+        },
+        costCode: {
+          connect: data.costCodes.map((id) => ({ id })), // Connect cost codes
+        },
+      },
+    });
+    console.log(newTag);
+    return newTag;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to create tag");
+  }
+}
+export async function changeTags(data: {
+  id: string;
+  name: string;
+  description: string;
+  jobs: string[];
+  removeJobs: string[];
+  costCodes: number[];
+  removeCostCodes: number[];
+}) {
+  try {
+    const updateTags = await prisma.cCTags.update({
+      where: {
+        id: parseInt(data.id),
+      },
+      data: {
+        name: data.name,
+        description: data.description,
+        jobsite: {
+          connect: data.jobs.map((id) => ({ id })), // Add new connections
+          disconnect: data.removeJobs.map((id) => ({ id })), // Remove connections
+        },
+        costCode: {
+          connect: data.costCodes.map((id) => ({ id })), // Add new connections
+          disconnect: data.removeCostCodes.map((id) => ({ id })), // Remove connections
+        },
+      },
+    });
+    console.log(updateTags);
+    return updateTags;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to update tags");
+  }
+}
+
+export async function deleteCostCodeById(costcodeId: number) {
+  try {
+    console.log("Deleting cost code...");
+    console.log(costcodeId);
+    const deletedCostCode = await prisma.costCodes.delete({
+      where: { id: costcodeId },
+    });
+    console.log(deletedCostCode);
+    revalidateTag("costcodes");
+    return deletedCostCode;
+  } catch (error) {
+    return error;
+  }
+}
+export async function changeCostCodeTags(formData: FormData) {
+  try {
+    console.log("Changing cost code tags...");
+    console.log(formData);
+
+    const costcodeId = formData.get("costcodeId") as string;
+    const newTags = formData
+      .getAll("tags")
+      .map((tag) => ({ id: parseInt(tag as string) })); // Map tags to connect format
+    const disconnectTags = formData
+      .getAll("removeTags")
+      .map((tag) => ({ id: parseInt(tag as string) })); // Map tags to disconnect format
+    const updateCostcodeTags = await prisma.costCodes.update({
+      where: {
+        id: parseInt(costcodeId),
+      },
+      data: {
+        CCTags: {
+          connect: newTags, // Add new connections
+          disconnect: disconnectTags, // Remove connections
+        },
+      },
+    });
+    console.log(updateCostcodeTags);
     return formData;
   } catch (error) {
     return error;
   }
 }
+export async function createNewCostCode(formData: FormData) {
+  try {
+    console.log("Creating new cost code...");
+    console.log(formData);
+    const newTags = formData.getAll("tags").map((tag) => ({ id: Number(tag) })); // Ensure IDs are numbers
+    const type = (formData.get("type") as string) || "New Cost Code"; // Retrieve the type value from the formData
 
+    await prisma.costCodes.create({
+      data: {
+        name: formData.get("name") as string,
+        description: formData.get("description") as string,
+        type, // Add the type property to the data object
+        CCTags: {
+          connect: newTags, // Add new connections
+        },
+      },
+    });
+    return true;
+  } catch (error) {
+    return error;
+  }
+}
 export async function createCrew(formData: FormData) {
   try {
     console.log("Creating new crew...");
@@ -251,7 +452,7 @@ export async function saveTimesheet(formData: FormData) {
         costcode: formData.get("costcode") as string,
         jobsiteId: formData.get("jobsiteId") as string,
         timeSheetComments: formData.get("timeSheetComments") as string,
-        vehicleId: parseInt(formData.get("vehicleId") as string),
+        vehicleId: formData.get("vehicleId") as string,
         startingMileage: parseInt(formData.get("startingMileage") as string),
         endingMileage: parseInt(formData.get("endingMileage") as string),
         leftIdaho: formData.get("leftIdaho") === "true",
@@ -271,7 +472,7 @@ export async function saveTimesheet(formData: FormData) {
         costcode: formData.get("costcode") as string,
         jobsiteId: formData.get("jobsiteId") as string,
         timeSheetComments: formData.get("timeSheetComments") as string,
-        vehicleId: parseInt(formData.get("vehicleId") as string),
+        vehicleId: formData.get("vehicleId") as string,
         startingMileage: parseInt(formData.get("startingMileage") as string),
         endingMileage: parseInt(formData.get("endingMileage") as string),
         leftIdaho: formData.get("leftIdaho") === "true",
@@ -771,98 +972,6 @@ export async function TagCostCodeChange(formData: FormData) {
     revalidatePath(`/admin/assets`);
   } catch (error) {
     console.error("Error creating cost code:", error);
-    throw error;
-  }
-}
-
-export async function AddListToJobsite(formData: FormData) {
-  try {
-    console.log("Adding cost codes to job site...");
-    const qrId = formData.get("qrId") as string;
-    const costCodeTypes = (formData.get("types") as string)
-      .split(",")
-      .map((code) => code.trim());
-
-    // Find all cost codes that match the list of types
-    const costCodes = await prisma.costCodes.findMany({
-      where: {
-        type: {
-          in: costCodeTypes,
-        },
-      },
-    });
-
-    if (costCodes.length === 0) {
-      console.log("No matching cost codes found.");
-      return;
-    }
-
-    console.log("Cost codes found:", costCodes);
-
-    // Connect the found cost codes to the job site
-    const jobsite = await prisma.jobsites.update({
-      where: {
-        qrId: qrId,
-      },
-      data: {
-        costCode: {
-          connect: costCodes.map((code) => ({ id: code.id })),
-        },
-      },
-    });
-
-    console.log("Job site updated with cost codes:", jobsite);
-
-    // Revalidate the path to reflect changes
-    revalidatePath(`/admin/assets`);
-  } catch (error) {
-    console.error("Error adding cost codes to job site:", error);
-    throw error;
-  }
-}
-
-export async function RemoveListToJobsite(formData: FormData) {
-  try {
-    console.log("Adding cost codes to job site...");
-    const qrId = formData.get("qrId") as string;
-    const costCodeTypes = (formData.get("types") as string)
-      .split(",")
-      .map((code) => code.trim());
-
-    // Find all cost codes that match the list of types
-    const costCodes = await prisma.costCodes.findMany({
-      where: {
-        type: {
-          in: costCodeTypes,
-        },
-      },
-    });
-
-    if (costCodes.length === 0) {
-      console.log("No matching cost codes found.");
-      return;
-    }
-
-    console.log("Cost codes found:", costCodes);
-
-    // Connect the found cost codes to the job site
-    const jobsite = await prisma.jobsites.update({
-      where: {
-        qrId: qrId,
-      },
-      data: {
-        costCode: {
-          disconnect: costCodes.map((code) => ({ id: code.id })),
-        },
-      },
-    });
-
-    console.log("Job site updated with cost codes:", jobsite);
-
-    // Revalidate the path to reflect changes
-    revalidatePath(`/admin/assets`);
-  } catch (error) {
-    console.error("Error adding cost codes to job site:", error);
     throw error;
   }
 }

@@ -6,7 +6,6 @@ import EmptyView from "../../_pages/EmptyView";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { TimesheetSchema } from "@/lib/zod";
-import { Buttons } from "@/components/(reusable)/buttons";
 import { CSVLink } from "react-csv";
 import { Texts } from "@/components/(reusable)/texts";
 import { Grids } from "@/components/(reusable)/grids";
@@ -22,7 +21,6 @@ export default function ReportView() {
   const [readyToFetchData, setReadyToFetchData] = useState<boolean>(false);
   const [timeSheets, setTimeSheets] = useState<TimeSheets[]>([]);
   const [loading, setLoading] = useState(false);
-  const [showPayroll, setShowPayroll] = useState(true);
 
   // Extract query parameters
   const page = searchParams.get("page") || "";

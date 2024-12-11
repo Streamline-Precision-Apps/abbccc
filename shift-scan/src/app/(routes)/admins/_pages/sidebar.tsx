@@ -12,8 +12,10 @@ import { NModals } from "@/components/(reusable)/newmodals";
 import PasswordModal from "./sidebar/PasswordModal";
 import LanguageModal from "./sidebar/LanguageModal";
 import SignOutModal from "./sidebar/SignOutModal";
+import { useTranslations } from "next-intl";
 
 const Sidebar = () => {
+  const t = useTranslations("Admins");
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
@@ -103,7 +105,7 @@ const Sidebar = () => {
                         size={"50"}
                       />
                     </Holds>
-                    <Texts size={"p6"}>Personnel</Texts>
+                    <Texts size={"p6"}>{t("Personnel")}</Texts>
                     <Holds className="hidden md:flex" size={"30"}>
                       <Images
                         titleImg="/drag.svg"
@@ -135,7 +137,7 @@ const Sidebar = () => {
                         size={"50"}
                       />
                     </Holds>
-                    <Texts size={"p6"}>Assets</Texts>
+                    <Texts size={"p6"}>{t("Assets")}</Texts>
                     <Holds className="hidden md:flex" size={"30"}>
                       <Images
                         titleImg="/drag.svg"
@@ -167,7 +169,7 @@ const Sidebar = () => {
                         size={"50"}
                       />
                     </Holds>
-                    <Texts size={"p6"}>Reports</Texts>
+                    <Texts size={"p6"}>{t("Reports")}</Texts>
                     <Holds className="hidden md:flex" size={"30"}>
                       <Images
                         titleImg="/drag.svg"

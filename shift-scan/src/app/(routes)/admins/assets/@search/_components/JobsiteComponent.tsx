@@ -40,7 +40,7 @@ export const JobsiteComponent = ({ jobsites, setFilter }: Props) => {
 
   const selectJobsite = (jobsite: Jobsites) => {
     setTerm(jobsite.name);
-    router.push(`/admins/assets/${jobsite.id}`);
+    router.push(`/admins/assets/jobsite/${jobsite.id}`);
   };
 
   const createJobsite = () => {

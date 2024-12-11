@@ -51,9 +51,7 @@ export const ReusableViewLayout = ({
 
           {header}
 
-          {main && (
-            <Holds className="h-full w-full flex flex-col">{main}</Holds>
-          )}
+          {main && <Holds className={mainHolds}>{main}</Holds>}
           {!main && mainLeft && mainRight && (
             <Holds className={mainHolds}>
               {mainLeft}
