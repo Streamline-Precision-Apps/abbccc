@@ -4,6 +4,75 @@ import { FormStatus, Permission } from "@/lib/types";
 
 import { revalidatePath, revalidateTag } from "next/cache";
 
+export async function deleteAdminJobsite(id: string) {
+  try {
+    await prisma.jobsites.delete({
+      where: { id },
+    });
+    console.log("Jobsite deleted successfully.");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to delete jobsite:", error);
+    return { success: false, message: "Failed to delete jobsite." };
+  }
+}
+
+export async function createAdminJobsite(formData: FormData) {
+  try {
+    console.log("Saving jobsite changes...");
+    console.log(formData);
+    const jobsite = await prisma.jobsites.create({
+      data: {
+        name: formData.get("name") as string,
+        streetNumber: formData.get("streetNumber") as string,
+        streetName: formData.get("streetName") as string,
+        city: formData.get("city") as string,
+        state: formData.get("state") as string,
+        country: formData.get("country") as string,
+        description: formData.get("description") as string,
+        comment: formData.get("comment") as string,
+        CCTags: {
+          connect: {
+            id: 1, //automatically connect to the first tag
+          },
+        },
+      },
+    });
+    console.log(jobsite);
+    revalidatePath("/admins/assets/jobsites");
+    return jobsite;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to save jobsite changes");
+  }
+}
+export async function savejobsiteChanges(formData: FormData) {
+  try {
+    console.log("Saving jobsite changes...");
+    console.log(formData);
+    const jobsiteId = formData.get("id") as string;
+    const jobsite = await prisma.jobsites.update({
+      where: { id: jobsiteId },
+      data: {
+        name: formData.get("name") as string,
+        streetNumber: formData.get("streetNumber") as string,
+        streetName: formData.get("streetName") as string,
+        city: formData.get("city") as string,
+        state: formData.get("state") as string,
+        country: formData.get("country") as string,
+        description: formData.get("description") as string,
+        comment: formData.get("comment") as string,
+      },
+    });
+    console.log(jobsite);
+    revalidatePath("/admins/assets/jobsites");
+    return jobsite;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to save jobsite changes");
+  }
+}
+
 export async function deleteTagById(tagId: string) {
   try {
     console.log("Deleting tag...");

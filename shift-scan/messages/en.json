@@ -365,7 +365,14 @@
       "ChangePassword": "Change Password",
       "Numbers": "A Number",
       "Symbols": "A Symbol",
-      "Length": "(8) Length"
+      "Length": "(8) Length",
+      "JobsiteComment": "Jobsite Comments",
+      "City": "City",
+      "country": "Country",
+      "StreetNumber": "Street Number",
+      "StreetName": "Street Name",
+      "State": "State",
+      "ZipCode": "Zip Code"
     },
 
 
