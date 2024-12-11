@@ -1,13 +1,15 @@
 "use client";
 import { ReusableViewLayout } from "@/app/(routes)/admins/personnel/@view/[employee]/_components/reusableViewLayout";
 import { Holds } from "@/components/(reusable)/holds";
-
 import { useEffect, useState } from "react";
 import { Inputs } from "@/components/(reusable)/inputs";
-import { EditableFields } from "@/components/(reusable)/EditableField";
-import { Buttons } from "@/components/(reusable)/buttons";
-import { Grids } from "@/components/(reusable)/grids";
-import { Titles } from "@/components/(reusable)/titles";
+import { changeCostCodeTags, deleteCostCodeById } from "@/actions/adminActions";
+import { useRouter } from "next/navigation";
+import { CostCodeRight } from "./_components/CostCodeRight";
+import { CostCodeLeft } from "./_components/CostCodeLeft";
+import { CCTags } from "@/lib/types";
+import { EditCostCodeForm } from "./_components/EditCostCodeForm";
+import { EditCostCodeFooter } from "./_components/CostCodeFooter";
 
 export default function UpdateCostCodes({
   params,
@@ -18,32 +20,124 @@ export default function UpdateCostCodes({
 
   const [initialCostcodeName, setInitialCostCodeName] = useState<string>("");
   const [initialDescription, setInitialDescription] = useState<string>("");
-
   const [costcodeId, setCostCodeId] = useState<number>(0);
   const [costcodeName, setCostCodeName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
-  const [changesMade, SetChangesMade] = useState(false);
+  const [initialSelectedTags, setinitialSelectedTags] = useState<CCTags[]>([]);
+  const [selectedTags, setSelectedTags] = useState<CCTags[]>([]);
+  const [initalTags, setInitialTags] = useState<CCTags[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchCostcode = async () => {
-      const res = await fetch(`/api/getCostCodeById/${id}`);
-      const data = await res.json();
-      setCostCodeId(data.id);
-      setCostCodeName(data.name);
-      setDescription(data.description);
+      try {
+        const res = await fetch(`/api/getCostCodeById/${id}`);
+        const data = await res.json();
+        setCostCodeId(data.id);
+        setCostCodeName(data.name);
+        setDescription(data.description);
 
-      setInitialCostCodeName(data.name);
-      setInitialDescription(data.description);
+        setInitialCostCodeName(data.name);
+        setInitialDescription(data.description);
+      } catch (error) {
+        console.log(error);
+      }
     };
     fetchCostcode();
   }, [id]);
 
   useEffect(() => {
-    const hasChanges =
-      costcodeName !== initialCostcodeName ||
-      description !== initialDescription;
-    SetChangesMade(hasChanges);
-  }, [costcodeName, description, initialCostcodeName, initialDescription]);
+    const fetchTags = async () => {
+      try {
+        // Fetch all tags
+        const allTagsRes = await fetch(`/api/getAllTags`);
+        const allTagsData = await allTagsRes.json();
+        setInitialTags(allTagsData);
+        // Fetch connected tags for the current costCode
+        const connectedTagsRes = await fetch(
+          `/api/getCostCodeTags/${costcodeId}`
+        );
+        const connectedTagsData = await connectedTagsRes.json();
+
+        // Extract the connected CCTags
+        const connectedTags = connectedTagsData[0]?.CCTags || [];
+
+        // Mark tags as selected only if they are part of the connected tags
+        setSelectedTags(
+          allTagsData.filter((tag: CCTags) =>
+            connectedTags.some((ct: CCTags) => ct.id === tag.id)
+          )
+        );
+        setinitialSelectedTags(
+          allTagsData.filter((tag: CCTags) =>
+            connectedTags.some((ct: CCTags) => ct.id === tag.id)
+          )
+        );
+      } catch (error) {
+        console.error("Error fetching tags:", error);
+      }
+    };
+
+    fetchTags();
+  }, [costcodeId]);
+
+  const toggleTagSelection = (tag: CCTags) => {
+    setSelectedTags(
+      (prev) =>
+        prev.some((t) => t.id === tag.id)
+          ? prev.filter((t) => t.id !== tag.id) // Remove if already selected
+          : [...prev, tag] // Add if not selected
+    );
+  };
+  const handleEditForm = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("costcodeId", costcodeId.toString());
+      formData.append("name", costcodeName);
+      formData.append("description", description);
+
+      // Separate selected tags into add and remove
+      const tagsToAdd = selectedTags.filter(
+        (tag) => !initialSelectedTags.some((initTag) => initTag.id === tag.id)
+      );
+      const tagsToRemove = initialSelectedTags.filter(
+        (initTag) => !selectedTags.some((tag) => tag.id === initTag.id)
+      );
+
+      // Append tags to add
+      tagsToAdd.forEach((tag) => formData.append("tags", tag.id.toString()));
+
+      // Append tags to remove
+      tagsToRemove.forEach((tag) =>
+        formData.append("removeTags", tag.id.toString())
+      );
+
+      // Call the API
+      const response = await changeCostCodeTags(formData);
+      if (response) {
+        setInitialCostCodeName(costcodeName);
+        setInitialDescription(description);
+      }
+
+      // Optionally: Add user feedback (e.g., success notification)
+    } catch (error) {
+      console.error("Error updating cost code tags:", error);
+      // Optionally: Add error notification
+    }
+  };
+
+  const deleteCostCode = async () => {
+    try {
+      const res = await deleteCostCodeById(costcodeId);
+      if (res) {
+        setCostCodeName("");
+        setDescription("");
+        router.push("/admins/assets/cost-code");
+      }
+    } catch (error) {
+      console.error("Error deleting cost code:", error);
+    }
+  };
 
   return (
     <Holds className="w-full h-full ">
@@ -61,98 +155,21 @@ export default function UpdateCostCodes({
           />
         }
         mainHolds="h-full w-full flex flex-row row-span-6 col-span-2 bg-app-dark-blue px-4 py-2 rounded-[10px] gap-4"
-        mainLeft={<CostCodeLeft />}
-        mainRight={<CostCodeRight />}
-        footer={<EditCostCodeFooter changesMade={changesMade} />}
+        mainLeft={
+          <CostCodeLeft
+            initalTags={initalTags}
+            selectedTags={selectedTags}
+            toggleTagSelection={toggleTagSelection}
+          />
+        }
+        mainRight={<CostCodeRight selectedTags={selectedTags} />}
+        footer={
+          <EditCostCodeFooter
+            handleEditForm={handleEditForm}
+            deleteCostCode={deleteCostCode}
+          />
+        }
       />
-    </Holds>
-  );
-}
-
-function CostCodeLeft() {
-  return (
-    <Holds background={"white"} className="w-full h-full p-4">
-      left
-    </Holds>
-  );
-}
-function CostCodeRight() {
-  return (
-    <Holds background={"white"} className="w-full h-full p-4">
-      right
-    </Holds>
-  );
-}
-
-function EditCostCodeForm({
-  costcodeName,
-  description,
-  setCostCodeName,
-  setDescription,
-  initialCostcodeName,
-  initialDescription,
-}: {
-  costcodeName: string;
-  description: string;
-  initialCostcodeName: string;
-  initialDescription: string;
-  setCostCodeName: (value: string) => void;
-  setDescription: (value: string) => void;
-}) {
-  return (
-    <Holds background={"white"} className="w-full h-full row-span-1 col-span-2">
-      <form className="flex flex-row size-full gap-4 py-2 px-10">
-        <Holds className="w-1/2 py-4">
-          <EditableFields
-            value={costcodeName}
-            onChange={(e) => setCostCodeName(e.target.value)}
-            isChanged={costcodeName !== initialCostcodeName}
-            onRevert={() => setCostCodeName(initialCostcodeName)}
-            className="p-2"
-            variant="default"
-            size="lg"
-          />
-        </Holds>
-        <Holds className="w-1/2">
-          <EditableFields
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            isChanged={description !== initialDescription}
-            onRevert={() => setDescription(initialDescription)}
-            className="p-2"
-            variant="default"
-            size="lg"
-          />
-        </Holds>
-      </form>
-    </Holds>
-  );
-}
-
-function EditCostCodeFooter({ changesMade }: { changesMade: boolean }) {
-  return (
-    <Holds
-      background={"white"}
-      className="w-full h-full row-span-1 col-span-2 "
-    >
-      <Grids cols={"4"} gap={"4"} className="w-full h-full p-4">
-        <Holds className="my-auto col-start-1 col-end-2 ">
-          <Buttons background={"red"} className="py-2 ">
-            <Titles size={"h4"}>Delete Cost Code</Titles>
-          </Buttons>
-        </Holds>
-
-        <Holds className="my-auto col-start-4 col-end-5 ">
-          <Buttons
-            className={
-              "py-2 " + (changesMade ? "bg-app-green" : "bg-slate-400")
-            }
-            disabled={!changesMade}
-          >
-            <Titles size={"h4"}>Submit Edit</Titles>
-          </Buttons>
-        </Holds>
-      </Grids>
     </Holds>
   );
 }

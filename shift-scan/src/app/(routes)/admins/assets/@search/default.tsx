@@ -5,42 +5,49 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Tab } from "@/components/(reusable)/tab";
 
 import { useEffect, useState } from "react";
-import { Equipment, Jobsites, costCodes } from "@/lib/types";
+import { Equipment, Jobsites, costCodes, CCTags } from "@/lib/types";
 import { z } from "zod";
 import { EquipmentComponent } from "./_components/EquipmentComponent";
 import { JobsiteComponent } from "./_components/JobsiteComponent";
 import { CostCodeComponent } from "./_components/CostCodeComponent";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { TagsComponent } from "./_components/TagsComponent";
-
-type Tags = {
-  id: number;
-  name: string;
-  jobsiteId: number;
-};
+import { usePathname } from "next/navigation";
 
 export default function Search() {
   const [activeTab, setActiveTab] = useState(1);
   const [equipments, setEquipments] = useState<Equipment[]>([]);
   const [jobsites, setJobsites] = useState<Jobsites[]>([]);
   const [costCodes, setCostCodes] = useState<costCodes[]>([]);
-  const [tags, setTags] = useState<Tags[]>([]);
+  const [tags, setTags] = useState<CCTags[]>([]);
   const [activeTab2, setActiveTab2] = useState(1);
   const [filter, setFilter] = useState("all");
+  const pathname = usePathname();
+  const [triggeredPath, setTrigger] = useState(0);
+
+  useEffect(() => {
+    if (
+      pathname === "/admins/assets/cost-code" ||
+      pathname === "/admins/assets/tags" ||
+      pathname === "/admins/assets/new-tag" ||
+      pathname === "/admins/assets/new-cost-codes"
+    ) {
+      setTrigger((prev) => prev + 1); // Increment the counter
+    }
+  }, [pathname]);
 
   useEffect(() => {
     const fetchTags = async () => {
       try {
-        setTags([
-          { id: 1, name: "Tag 1", jobsiteId: 1 },
-          { id: 2, name: "Tag 2", jobsiteId: 1 },
-        ]);
+        const tagsRes = await fetch("/api/getAllTags");
+        const tagsData = await tagsRes.json();
+        setTags(tagsData);
       } catch (error) {
         console.error("Failed to fetch tags data:", error);
       }
     };
     fetchTags();
-  }, [filter]);
+  }, [filter, triggeredPath]);
 
   useEffect(() => {
     const fetchEquipments = async () => {
@@ -94,7 +101,9 @@ export default function Search() {
   useEffect(() => {
     const fetchCostCodes = async () => {
       try {
-        const costCodesRes = await fetch("/api/getAllCostCodes");
+        const costCodesRes = await fetch("/api/getAllCostCodes", {
+          next: { revalidate: 0, tags: ["costcodes"] },
+        });
         const costCodesData = await costCodesRes.json();
         // const validatedCostCodes = costCodesSchema.parse(costCodesData);
         setCostCodes(costCodesData);
@@ -108,12 +117,12 @@ export default function Search() {
     };
 
     fetchCostCodes();
-  }, [filter]);
+  }, [filter, triggeredPath]);
 
   return (
     <Holds className="h-full ">
       <Grids rows={"10"}>
-        <Holds position={"row"} className="row-span-1 h-full gap-2">
+        <Holds position={"row"} className="row-span-1 h-full gap-1">
           <Tab onClick={() => setActiveTab(1)} isActive={activeTab === 1}>
             Equipment
           </Tab>
@@ -129,7 +138,7 @@ export default function Search() {
           background={"white"}
           className="rounded-t-none row-span-9 h-full"
         >
-          <Contents width={"section"} className=" pt-3 pb-5">
+          <Contents width={"section"} className=" pt-1 pb-2">
             {activeTab === 1 && (
               <EquipmentComponent
                 equipments={equipments}
@@ -141,7 +150,7 @@ export default function Search() {
             )}
             {activeTab === 3 && (
               <Holds className="h-full w-full">
-                <Grids rows="10" gap="5" className="h-full">
+                <Grids rows="10" gap="2" className="h-full">
                   <Holds
                     background={"white"}
                     position={"row"}
@@ -170,7 +179,7 @@ export default function Search() {
                   </Holds>
 
                   {activeTab2 === 1 && (
-                    <CostCodeComponent costCodes={costCodes} />
+                    <CostCodeComponent costCodes={costCodes} tags={tags} />
                   )}
                   {activeTab2 === 2 && <TagsComponent tags={tags} />}
                 </Grids>

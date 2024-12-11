@@ -9,17 +9,9 @@ import { Texts } from "@/components/(reusable)/texts";
 import { useRouter } from "next/navigation";
 import { useState, useMemo, useCallback } from "react";
 
-type Tags = {
-  id: number;
-  name: string;
-  jobsiteId: number;
-};
+import { CCTags } from "@/lib/types";
 
-type Props = {
-  tags: Tags[];
-};
-
-export const TagsComponent = ({ tags }: Props) => {
+export const TagsComponent = ({ tags }: { tags: CCTags[] }) => {
   const [term, setTerm] = useState<string>("");
   // const [page, setPage] = useState(true);
   const router = useRouter();
@@ -42,13 +34,13 @@ export const TagsComponent = ({ tags }: Props) => {
     []
   );
 
-  const selectTags = (tags: Tags) => {
+  const selectTags = (tags: CCTags) => {
     setTerm(tags.name);
     router.push(`/admins/assets/tags/${tags.id}`);
   };
 
   const createTags = () => {
-    router.push(`/admins/assets/new-cost-codes`);
+    router.push(`/admins/assets/new-tag`);
   };
 
   return (
@@ -62,7 +54,7 @@ export const TagsComponent = ({ tags }: Props) => {
             <Holds className="w-[80%]">
               <Inputs
                 type="search"
-                placeholder="Search costcodes by name"
+                placeholder="Search Tags by name"
                 value={term}
                 onChange={handleSearchChange}
                 className="border-none outline-none"
@@ -78,9 +70,7 @@ export const TagsComponent = ({ tags }: Props) => {
                     className="py-2 border-b"
                     onClick={() => selectTags(tags)}
                   >
-                    <Texts size="p6">
-                      {tags.name} - {tags.jobsiteId}
-                    </Texts>
+                    <Texts size="p6">{`" ${tags.name} " `}</Texts>
                   </Holds>
                 ))
               ) : (

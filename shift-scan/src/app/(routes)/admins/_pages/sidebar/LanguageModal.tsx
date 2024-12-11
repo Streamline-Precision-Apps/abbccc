@@ -1,5 +1,4 @@
 "use client";
-"use client";
 import { setLocale } from "@/actions/cookieActions";
 import { setUserLanguage } from "@/actions/userActions";
 import { Buttons } from "@/components/(reusable)/buttons";
@@ -9,6 +8,7 @@ import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { useSession } from "next-auth/react";
+import { useTranslations } from "next-intl";
 import { useState, useEffect, FormEvent } from "react";
 
 type Props = {
@@ -18,6 +18,7 @@ type Props = {
 export default function LanguageModal({ setIsOpenLanguageSelector }: Props) {
   const { data: session } = useSession();
   const userId = session?.user.id;
+  const t = useTranslations("Admins");
   // language selector modal
   const [language, setLanguage] = useState("en");
   useEffect(() => {
@@ -28,14 +29,17 @@ export default function LanguageModal({ setIsOpenLanguageSelector }: Props) {
           const data = await response.json();
           setLanguage(data.language);
         } else {
-          console.error("Error fetching language:", response.statusText);
+          console.error(
+            { error: t("ErrorFetchingLanguage") },
+            response.statusText
+          );
         }
       } catch (error) {
-        console.error("Error fetching language:", error);
+        console.error(t("ErrorFetchingLanguage"), error);
       }
     };
     fetchLanguage();
-  }, [userId]);
+  }, [userId, t]);
 
   const handleLanguageChange = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -56,7 +60,7 @@ export default function LanguageModal({ setIsOpenLanguageSelector }: Props) {
     <Holds background={"white"} className=" h-full w-full p-4">
       <Forms onSubmit={handleLanguageChange} className="h-full w-full">
         <Texts size={"p4"} className="mb-4">
-          Select A Language
+          {t("SelectALanguage")}
         </Texts>
         <Holds className="my-auto h-1/3">
           <Selects
@@ -68,13 +72,13 @@ export default function LanguageModal({ setIsOpenLanguageSelector }: Props) {
               setLanguage(e.target.value);
             }}
           >
-            <option value="en">English</option>
-            <option value="es">Spanish</option>
+            <option value="en">{t("English")}</option>
+            <option value="es">{t("Spanish")}</option>
           </Selects>
         </Holds>
         <Holds className="flex justify-between gap-5">
           <Buttons background={"green"} type="submit" className="py-2">
-            <Titles size="h4">Change Language</Titles>
+            <Titles size="h4">{t("ChangeLanguage")}</Titles>
           </Buttons>
           <Buttons
             background={"lightBlue"}
@@ -85,7 +89,7 @@ export default function LanguageModal({ setIsOpenLanguageSelector }: Props) {
               setIsOpenLanguageSelector();
             }}
           >
-            <Titles size="h4">Cancel</Titles>
+            <Titles size="h4">{t("Cancel")}</Titles>
           </Buttons>
         </Holds>
       </Forms>
