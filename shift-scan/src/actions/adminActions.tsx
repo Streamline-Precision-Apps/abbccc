@@ -4,50 +4,41 @@ import { FormStatus, Permission } from "@/lib/types";
 
 import { revalidatePath, revalidateTag } from "next/cache";
 
-export async function changeTags(formData: FormData) {
+export async function changeTags(data: {
+  id: string;
+  name: string;
+  description: string;
+  jobs: string[];
+  removeJobs: string[];
+  costCodes: number[];
+  removeCostCodes: number[];
+}) {
   try {
-    console.log("Changing tags...");
-    console.log(formData);
-    const name = formData.get("name") as string;
-    const description = (formData.get("description") as string) || "";
-
-    const newJobsites = formData
-      .getAll("jobsites")
-      .map((jobsite) => ({ id: jobsite as string })); // Map jobsites to connect format
-    const disconnectJobsites = formData
-      .getAll("removeJobsites")
-      .map((jobsite) => ({ id: jobsite as string })); // Map jobsites to disconnect format
-
-    const newCostCodes = formData
-      .getAll("costcodes")
-      .map((costcode) => ({ id: parseInt(costcode as string) })); // Map costcodes to connect format
-    const disconnectCostCodes = formData
-      .getAll("removeCostcodes")
-      .map((costcode) => ({ id: parseInt(costcode as string) })); // Map costcodes to disconnect format
-
     const updateTags = await prisma.cCTags.update({
       where: {
-        id: parseInt(formData.get("tagId") as string),
+        id: parseInt(data.id),
       },
       data: {
-        name,
-        description,
+        name: data.name,
+        description: data.description,
         jobsite: {
-          connect: newJobsites, // Add new connections
-          disconnect: disconnectJobsites, // Remove connections
+          connect: data.jobs.map((id) => ({ id })), // Add new connections
+          disconnect: data.removeJobs.map((id) => ({ id })), // Remove connections
         },
         costCode: {
-          connect: newCostCodes, // Add new connections
-          disconnect: disconnectCostCodes, // Remove connections
+          connect: data.costCodes.map((id) => ({ id })), // Add new connections
+          disconnect: data.removeCostCodes.map((id) => ({ id })), // Remove connections
         },
       },
     });
     console.log(updateTags);
     return updateTags;
   } catch (error) {
-    return error;
+    console.error(error);
+    throw new Error("Failed to update tags");
   }
 }
+
 export async function deleteCostCodeById(costcodeId: number) {
   try {
     console.log("Deleting cost code...");
@@ -66,6 +57,7 @@ export async function changeCostCodeTags(formData: FormData) {
   try {
     console.log("Changing cost code tags...");
     console.log(formData);
+
     const costcodeId = formData.get("costcodeId") as string;
     const newTags = formData
       .getAll("tags")
