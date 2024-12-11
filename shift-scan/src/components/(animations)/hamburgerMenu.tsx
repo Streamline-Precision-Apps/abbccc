@@ -4,13 +4,11 @@ import React, { useState } from "react";
 import { motion, MotionConfig } from "framer-motion";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Images } from "@/components/(reusable)/images";
-import { useSession } from "next-auth/react";
 import { Holds } from "../(reusable)/holds";
 
 export function AnimatedHamburgerButton() {
   const [active, setActive] = useState(false);
-  const { data: session } = useSession();
-  const role = session?.user.permission;
+
   return (
     <div className=" flex flex-row-reverse">
       <MotionConfig transition={{ duration: 0.7 }}>
