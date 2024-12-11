@@ -117,7 +117,7 @@ export default function Search() {
   return (
     <Holds className="h-full ">
       <Grids rows={"10"}>
-        <Holds position={"row"} className="row-span-1 h-full gap-2">
+        <Holds position={"row"} className="row-span-1 h-full gap-1">
           <Tab onClick={() => setActiveTab(1)} isActive={activeTab === 1}>
             Equipment
           </Tab>
@@ -133,7 +133,7 @@ export default function Search() {
           background={"white"}
           className="rounded-t-none row-span-9 h-full"
         >
-          <Contents width={"section"} className=" pt-3 pb-5">
+          <Contents width={"section"} className=" pt-1 pb-2">
             {activeTab === 1 && (
               <EquipmentComponent
                 equipments={equipments}
@@ -145,7 +145,7 @@ export default function Search() {
             )}
             {activeTab === 3 && (
               <Holds className="h-full w-full">
-                <Grids rows="10" gap="5" className="h-full">
+                <Grids rows="10" gap="2" className="h-full">
                   <Holds
                     background={"white"}
                     position={"row"}
