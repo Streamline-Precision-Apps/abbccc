@@ -81,9 +81,9 @@ export default function Content() {
   }, [crewId, id]);
 
   return (
-    <Bases>
-      <Contents>
-        <Grids rows={"5"} gap={"5"}>
+    <Bases className="h-screen">
+      <Contents className="h-full">
+        <Grids rows={"5"} gap={"5"} className="h-full">
           <Holds background={"white"} className="row-span-1 h-full">
             <Contents width={"section"}>
               <TitleBoxes

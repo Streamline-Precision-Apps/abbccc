@@ -75,7 +75,6 @@ export default function DbWidgetSection({ session }: props) {
   >(null);
   const { currentView } = useCurrentView();
 
-  
   useEffect(() => {
     console.log("Current view:", currentView);
   }, []);
@@ -374,6 +373,7 @@ export default function DbWidgetSection({ session }: props) {
                       </Holds>
                     </>
                   )}
+
                 {permission !== "USER" && !additionalButtonsType && (
                   <>
                     <Holds
