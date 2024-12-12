@@ -6,6 +6,7 @@ import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
+import { useTranslations } from "next-intl";
 import { Dispatch, SetStateAction, useState } from "react";
 
 export function NewEquipmentHeader({
@@ -20,6 +21,7 @@ export function NewEquipmentHeader({
   setComment?: Dispatch<SetStateAction<string>>;
   setEquipmentName?: Dispatch<SetStateAction<string>>;
 }) {
+  const t = useTranslations("Admins");
   const [isCommentSectionOpen, setIsCommentSectionOpen] = useState(false);
 
   const openComment = () => {
@@ -51,7 +53,7 @@ export function NewEquipmentHeader({
                   onChange={(e) => {
                     setEquipmentName?.(e.target.value);
                   }}
-                  placeholder={"New Equipment Name"}
+                  placeholder={t("EnterYourEquipmentName")}
                   variant={"matchSelects"}
                   className=" my-auto"
                 />
@@ -61,7 +63,7 @@ export function NewEquipmentHeader({
                 className="h-full w-full my-1 row-start-2 row-end-3 col-start-1 col-end-2 "
               >
                 <Texts size={"p6"} className="mr-2">
-                  {"Comment"}
+                  {t("Comment")}
                 </Texts>
                 <Images
                   titleImg="/comment.svg"
@@ -74,13 +76,13 @@ export function NewEquipmentHeader({
 
               <Holds className="w-full h-full row-start-3 row-end-6 col-start-1 col-end-6">
                 <TextAreas
-                  placeholder="Enter your comment"
+                  placeholder={t("EnterYourComment")}
                   value={comment}
                   onChange={(e) => {
                     setComment?.(e.target.value);
                   }}
                   maxLength={40}
-                  rows={4}
+                  rows={3}
                   style={{ resize: "none" }}
                 />
               </Holds>
@@ -92,7 +94,7 @@ export function NewEquipmentHeader({
               <Inputs
                 type="text"
                 value={equipmentName}
-                placeholder={"Enter your Equipment Name"}
+                placeholder={t("EnterYourEquipmentName")}
                 onChange={(e) => {
                   setEquipmentName?.(e.target.value);
                 }}
@@ -105,7 +107,7 @@ export function NewEquipmentHeader({
               className="h-full w-full row-start-2 row-end-3 col-start-6 col-end-7 "
             >
               <Texts size={"p6"} className="mr-2">
-                Comment
+                {t("Comment")}
               </Texts>
               <Images
                 titleImg="/comment.svg"
