@@ -37,6 +37,7 @@ interface EditableFieldsProps
   type?: string;
   checked?: boolean;
   disable?: boolean;
+  placeholder?: string;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   isChanged: boolean;
   onRevert?: () => void;
@@ -54,6 +55,7 @@ const EditableFields: FC<EditableFieldsProps> = ({
   type = "text",
   onChange,
   isChanged,
+  placeholder,
   onRevert,
   iconSrc = "/turnBack.svg",
   iconAlt = "revert",
@@ -67,6 +69,7 @@ const EditableFields: FC<EditableFieldsProps> = ({
         disabled={disable}
         checked={checked}
         onChange={onChange}
+        placeholder={placeholder || ""}
         className="h-full w-5/6 border-none focus:outline-none my-auto "
         {...props}
       />

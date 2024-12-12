@@ -7,6 +7,7 @@ import { NewCostCodeFooter } from "./_components/NewCostCodeFooter";
 import { z } from "zod";
 import { useNotification } from "@/app/context/NotificationContext";
 import { ReusableViewLayout } from "../../../personnel/@view/[employee]/_components/reusableViewLayout";
+import { useTranslations } from "next-intl";
 
 // Zod schemas
 const CCTagSchema = z.object({
@@ -23,13 +24,19 @@ const NewCostCodeSchema = z.object({
 export default function NewCostCodes() {
   const { setNotification } = useNotification(); // Access notification context
   const [isFormFilled, setIsFormFilled] = useState(false);
-  const [initalTags, setInitialTags] = useState<z.infer<typeof CCTagSchema>[]>([]);
-  const [initialSelectedTags, setinitialSelectedTags] = useState<z.infer<typeof CCTagSchema>[]>([]);
-  const [selectedTags, setSelectedTags] = useState<z.infer<typeof CCTagSchema>[]>([]);
+  const [initalTags, setInitialTags] = useState<z.infer<typeof CCTagSchema>[]>(
+    []
+  );
+  const [initialSelectedTags, setinitialSelectedTags] = useState<
+    z.infer<typeof CCTagSchema>[]
+  >([]);
+  const [selectedTags, setSelectedTags] = useState<
+    z.infer<typeof CCTagSchema>[]
+  >([]);
   const [tagsAttach, setTagsAttach] = useState(false); // Tracks if tags are attached
   const [canSubmit, setCanSubmit] = useState(false);
   const createCostCode = useRef<HTMLFormElement>(null);
-
+  const t = useTranslations("Admins");
   useEffect(() => {
     const fetchTags = async () => {
       try {
@@ -37,12 +44,14 @@ export default function NewCostCodes() {
         const allTagsData = await allTagsRes.json();
 
         // Validate and set tags
-        const validatedTags = allTagsData.map((tag: any) => CCTagSchema.parse(tag));
+        const validatedTags = allTagsData.map((tag: any) =>
+          CCTagSchema.parse(tag)
+        );
         setInitialTags(validatedTags);
         setinitialSelectedTags([]);
       } catch (error) {
-        console.error("Error fetching or validating tags:", error);
-        setNotification("Error fetching tags. Please try again.");
+        console.error(t("ErrorFetchingCostCodeData"), error);
+        setNotification(t("ErrorFetchingCostCodeData"));
       }
     };
 
@@ -66,23 +75,24 @@ export default function NewCostCodes() {
       NewCostCodeSchema.parse(formData);
 
       // Proceed with form submission
-      setNotification("New cost code created successfully!");
+      setNotification(t("NewCostCodeCreatedSuccessfully"));
     } catch (error) {
       if (error instanceof z.ZodError) {
         const errorMessages = error.errors.map((err) => err.message).join(", ");
-        setNotification(`Validation failed: ${errorMessages}`);
+        setNotification(`${t("ValidationFailed")}: ${errorMessages}`);
       } else {
         console.error("Unexpected error:", error);
-        setNotification("An unexpected error occurred. Please try again.");
+        setNotification(t("AnUnexpectedErrorOccurred"));
       }
     }
   };
 
   const toggleTagSelection = (tag: z.infer<typeof CCTagSchema>) => {
-    setSelectedTags((prev) =>
-      prev.some((t) => t.id === tag.id)
-        ? prev.filter((t) => t.id !== tag.id) // Remove if already selected
-        : [...prev, tag] // Add if not selected
+    setSelectedTags(
+      (prev) =>
+        prev.some((t) => t.id === tag.id)
+          ? prev.filter((t) => t.id !== tag.id) // Remove if already selected
+          : [...prev, tag] // Add if not selected
     );
   };
 
@@ -96,7 +106,7 @@ export default function NewCostCodes() {
       custom={true}
       header={
         <NewCostCodeForm
-          placeholder="New Cost Code"
+          placeholder={t("NewCostCode")}
           createCostCode={createCostCode}
           setIsFormFilled={setIsFormFilled}
           selectedTags={selectedTags}

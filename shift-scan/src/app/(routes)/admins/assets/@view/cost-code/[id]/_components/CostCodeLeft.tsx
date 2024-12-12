@@ -5,6 +5,7 @@ import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Texts } from "@/components/(reusable)/texts";
 import { CCTags } from "@/lib/types";
+import { useTranslations } from "next-intl";
 import { useState, useMemo } from "react";
 
 export function CostCodeLeft({
@@ -23,7 +24,7 @@ export function CostCodeLeft({
       tag.name.toLowerCase().includes(term.toLowerCase())
     );
   }, [term, initalTags]);
-
+  const t = useTranslations("Admins");
   return (
     <Holds background="white" className="w-full h-full p-4">
       <Grids rows="10" gap="5" className="h-full">
@@ -35,7 +36,7 @@ export function CostCodeLeft({
             <Holds className="w-[80%]">
               <Inputs
                 type="search"
-                placeholder="Search Tags"
+                placeholder={t("TagSearchPlaceholder")}
                 value={term}
                 onChange={(e) => setTerm(e.target.value)}
                 className="border-none outline-none"

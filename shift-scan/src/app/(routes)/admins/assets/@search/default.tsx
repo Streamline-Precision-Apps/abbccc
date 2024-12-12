@@ -25,8 +25,18 @@ export default function Search() {
   const [filter, setFilter] = useState("all");
   const pathname = usePathname();
   const [triggeredPath, setTrigger] = useState(0);
+  const [triggeredPathEquipment, setTriggerEquipment] = useState(0);
 
   const t = useTranslations("Admins");
+
+  useEffect(() => {
+    if (
+      pathname === "/admins/assets" ||
+      pathname === "admins/assets/new-equipment"
+    ) {
+      setTriggerEquipment((prev) => prev + 1); // Increment the counter
+    }
+  }, [pathname]);
 
   useEffect(() => {
     if (pathname === "/admins/assets/cost-code") {
@@ -75,7 +85,7 @@ export default function Search() {
     };
 
     fetchEquipments();
-  }, [filter]);
+  }, [filter, triggeredPathEquipment]);
 
   useEffect(() => {
     const fetchJobsites = async () => {

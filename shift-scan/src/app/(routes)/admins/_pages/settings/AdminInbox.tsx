@@ -4,6 +4,7 @@ import { Tab } from "@/components/(reusable)/tab";
 import { useState } from "react";
 import AdminSTab from "./AdminSTab";
 import AdminRTab from "./AdminRTab";
+import { useTranslations } from "next-intl";
 
 // import { CreateRequest } from "./CreateRequest";
 
@@ -11,15 +12,15 @@ import AdminRTab from "./AdminRTab";
 
 export const AdminInbox = () => {
   const [activeTab, setActiveTab] = useState(1); // change back to one
-
+  const t = useTranslations("Admins");
   return (
     <Holds className="h-full">
       <Holds position={"row"} className="row-span-1 gap-5 w-full ">
         <Tab onClick={() => setActiveTab(1)} isActive={activeTab === 1}>
-          Sent
+          {t("Sent")}
         </Tab>
         <Tab onClick={() => setActiveTab(2)} isActive={activeTab === 2}>
-          Recieved
+          {t("Recieved")}
         </Tab>
       </Holds>
       <Holds

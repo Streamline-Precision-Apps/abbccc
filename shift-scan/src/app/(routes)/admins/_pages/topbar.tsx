@@ -107,11 +107,11 @@ const Topbar = () => {
                     />
                     <Titles size={"h4"} className="h-full ml-4">
                       {isPersonnelPage
-                        ? "Personnel"
+                        ? t("Personnel")
                         : isAssetsPage
-                        ? "Assets"
+                        ? t("Assets")
                         : isReportsPage
-                        ? "Reports"
+                        ? t("Reports")
                         : settingsPage
                         ? `${firstName} ${lastName}`
                         : ""}
