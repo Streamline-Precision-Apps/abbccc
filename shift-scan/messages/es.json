@@ -560,7 +560,30 @@
            "Code": "Código",
            "Make": "Marca",
            "VehicleYear": "Año de Vehículo",
-           "VehicleLicensePlate": "Placa de Vehículo"
+           "VehicleLicensePlate": "Placa de Vehículo",
+           "SelectAJobsiteToView": "Seleccione un Sitio de Trabajo para Ver",
+           "Country": "País", 
+           "DeleteJobsite":"Eliminar Sitio",
+                 "SelectACostCodeToView": "Seleccione un Código de Costo para Ver",
+        "ErrorFetchingCostCodeData": "Error al Obtener Datos de Código de Costo:",
+        "CostCodeDescription": "Descripción de Código de Costo",
+        "DeleteCostCode":"Eliminar Código",
+        "ErrorFetchingTags": "Error al Obtener Etiquetas:",
+        "NewTagCreatedSuccessfully": "Etiqueta creada con exito.",
+        "AnUnexpectedErrorOccurred": "An unexpected error occurred. Please try again.",
+       "NewCostCode": "Nuevo Código de Costo",
+        "NewCostCodeCreatedSuccessfully": "Código de Costo creado con exito.",
+        "CostCodeCreated": "Creado Código de Costo.",
+"CostCodeFailedCreation": "Fallo al Crear Código de Costo.",
+"CreateCostCode" : "Crear Código de Costo",
+"EditTagName": "Editar Nombre de Etiqueta",
+"Search": "Buscar",
+"CreateTag" : "Crear Etiqueta",
+"SelectATagToView": "Seleccione una Etiqueta para Ver",
+"FailedToFetchTagData": "Fallo al Obtener Datos de Etiqueta.", "FailedToFetchJobData": "Fallo al Obtener Datos de Trabajo.",
+"DeleteTag": "Eliminar Etiqueta"
+
+        
           
 
 

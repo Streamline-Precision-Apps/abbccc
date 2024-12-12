@@ -582,10 +582,35 @@
           "Mileage":"Mileage",
           "EnterYourEquipmentName":"Enter your equipment name",
         "Code": "Code",
-        "Make": "Make"
+        "Make": "Make",
+        "SelectAJobsiteToView": "Select a Jobsite to View",
+        "ChangesSavedSuccessfully": "Changes saved successfully.",
+        "FailedToSaveChanges": "Failed to save changes.",
+        "APIErrorSaveChanges": "An error occurred while saving changes.",
+        "JobsiteDeletedSuccessfully": "Jobsite deleted successfully.",
+        "APIErrorDeleteJobsite": "An error occurred while deleting the jobsite.",
+        "FailedToDeleteJobsite": "Failed to delete jobsite.",
+        "EditTagName": "Edit Tag Name",
+        "Country": "Country",
+        "DeleteJobsite":"Delete Jobsite",
+        "SelectACostCodeToView": "Select a Cost Code to View",
+        "ErrorFetchingCostCodeData": "Error fetching or validating cost code.",
+        "CostCodeDescription": "Cost Code Description",
+        "DeleteCostCode":"Delete Cost Code",
+        "ErrorFetchingTags": "Error fetching or validating tags.",
+        "NewTagCreatedSuccessfully": "New tag created successfully.",
+        "NewCostCode": "New Cost Code",
+        "NewCostCodeCreatedSuccessfully": "New cost code created successfully.",
+"CostCodeCreated": "Cost code created successfully.",
+"CostCodeFailedCreation": "Failed to create cost code.",
+"CreateCostCode" : "Create Cost Code",
+"Search": "Search",
+"CreateTag" : "Create Tag",
+"SelectATagToView": "Select a Tag to View",
+"FailedToFetchTagData": "Failed to fetch tag data.",
+"FailedToFetchJobData": "Failed to fetch job data.",
+"DeleteTag": "Delete Tag"
        
-
-         
     
         },  
 
