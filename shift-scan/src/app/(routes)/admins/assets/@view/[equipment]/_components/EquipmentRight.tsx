@@ -6,6 +6,7 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Images } from "@/components/(reusable)/images";
+import { useTranslations } from "next-intl";
 
 // Define the types for props
 type EquipmentRightProps = {
@@ -71,6 +72,7 @@ export function EquipmentRight({
   isFieldChanged,
   revertField,
 }: EquipmentRightProps) {
+  const t = useTranslations("Admins");
   // Return early if equipmentTag is not VEHICLE or TRUCK
   if (equipmentTag !== "VEHICLE" && equipmentTag !== "TRUCK") {
     return (
@@ -88,51 +90,61 @@ export function EquipmentRight({
     <Holds background={"white"} className="w-full h-full">
       <Grids cols={"2"} rows={"6"} className="w-full h-full gap-4 p-4">
         {/* Input Components */}
-        {[{
-          label: "Vehicle Make",
-          value: vehicleMake,
-          setValue: setVehicleMake,
-          field: "make" as const,
-          placeholder: "Make",
-          type: "text",
-        }, {
-          label: "Vehicle Model",
-          value: vehicleModel,
-          setValue: setVehicleModel,
-          field: "model" as const,
-          placeholder: "Model",
-          type: "text",
-        }, {
-          label: "Vehicle Year",
-          value: vehicleYear,
-          setValue: setVehicleYear,
-          field: "year" as const,
-          placeholder: "Year",
-          type: "number",
-        }, {
-          label: "Vehicle License Plate",
-          value: vehicleLicensePlate,
-          setValue: setVehicleLicensePlate,
-          field: "licensePlate" as const,
-          placeholder: "License Plate",
-          type: "text",
-        }, {
-          label: "Registration Expiration",
-          value: registrationExpiration,
-          setValue: setRegistrationExpiration,
-          field: "registrationExpiration" as const,
-          placeholder: "Expiration",
-          type: "date",
-        }, {
-          label: "Vehicle Mileage",
-          value: vehicleMileage,
-          setValue: setVehicleMileage,
-          field: "mileage" as const,
-          placeholder: "Mileage",
-          type: "number",
-        }].map(({ label, value, setValue, field, placeholder, type }) => (
+        {[
+          {
+            label: t("VehicleMake"),
+            value: vehicleMake,
+            setValue: setVehicleMake,
+            field: "make" as const,
+            placeholder: t("VehicleMake"),
+            type: "text",
+          },
+          {
+            label: t("VehicleModel"),
+            value: vehicleModel,
+            setValue: setVehicleModel,
+            field: "model" as const,
+            placeholder: t("Model"),
+            type: "text",
+          },
+          {
+            label: t("VehicleYear"),
+            value: vehicleYear,
+            setValue: setVehicleYear,
+            field: "year" as const,
+            placeholder: t("Year"),
+            type: "number",
+          },
+          {
+            label: t("VehicleLicensePlate"),
+            value: vehicleLicensePlate,
+            setValue: setVehicleLicensePlate,
+            field: "licensePlate" as const,
+            placeholder: t("LicensePlate"),
+            type: "text",
+          },
+          {
+            label: t("RegistrationExpiration"),
+            value: registrationExpiration,
+            setValue: setRegistrationExpiration,
+            field: "registrationExpiration" as const,
+            placeholder: t("Expiration"),
+            type: "date",
+          },
+          {
+            label: t("VehicleMileage"),
+            value: vehicleMileage,
+            setValue: setVehicleMileage,
+            field: "mileage" as const,
+            placeholder: t("Mileage"),
+            type: "number",
+          },
+        ].map(({ label, value, setValue, field, placeholder, type }) => (
           <Holds className="w-full px-2" key={field}>
-            <Labels size={"p4"}>{label}<span className="text-red-500">*</span></Labels>
+            <Labels size={"p4"}>
+              {label}
+              <span className="text-red-500">*</span>
+            </Labels>
             <Holds
               position={"row"}
               className="gap-2 h-10 border-[3px] rounded-[10px] border-black"

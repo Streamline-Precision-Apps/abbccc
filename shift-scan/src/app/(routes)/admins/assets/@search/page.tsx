@@ -13,6 +13,7 @@ import { CostCodeComponent } from "./_components/CostCodeComponent";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { TagsComponent } from "./_components/TagsComponent";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export default function Search() {
   const [activeTab, setActiveTab] = useState(1);
@@ -24,6 +25,8 @@ export default function Search() {
   const [filter, setFilter] = useState("all");
   const pathname = usePathname();
   const [triggeredPath, setTrigger] = useState(0);
+
+  const t = useTranslations("Admins");
 
   useEffect(() => {
     if (pathname === "/admins/assets/cost-code") {
@@ -38,7 +41,7 @@ export default function Search() {
         const tagsData = await tagsRes.json();
         setTags(tagsData);
       } catch (error) {
-        console.error("Failed to fetch tags data:", error);
+        console.error(`${t("FailedToFetch")} ${t("tags data")}:"`, error);
       }
     };
     fetchTags();
@@ -52,7 +55,7 @@ export default function Search() {
         );
 
         if (!equipmentsRes.ok) {
-          throw new Error(`HTTP error! status: ${equipmentsRes.status}`);
+          throw new Error(`${t("HTTPError")}: ${equipmentsRes.status}`);
         }
 
         const contentType = equipmentsRes.headers.get("content-type");
@@ -62,12 +65,12 @@ export default function Search() {
         } else {
           const html = await equipmentsRes.text();
           console.error(
-            "Received HTML instead of JSON:",
+            `${t("RecievedHTMLInsteadOfJSON")}`,
             html.substring(0, 100)
           );
         }
       } catch (error) {
-        console.error("Failed to fetch equipments data:", error);
+        console.error(`${t("FailedToFetch")} ${t("EquipmentData")}:`, error);
       }
     };
 
@@ -83,9 +86,9 @@ export default function Search() {
         setJobsites(jobsitesData);
       } catch (error) {
         if (error instanceof z.ZodError) {
-          console.error("Validation Error:", error.errors);
+          console.error(t("ValidationError"), error.errors);
         } else {
-          console.error("Failed to fetch jobsites data:", error);
+          console.error(`${t("FailedToFetch")} ${t("JobsiteData")}:`, error);
         }
       }
     };
@@ -104,9 +107,9 @@ export default function Search() {
         setCostCodes(costCodesData);
       } catch (error) {
         if (error instanceof z.ZodError) {
-          console.error("Validation Error:", error.errors);
+          console.error(t("ValidationError"), error.errors);
         } else {
-          console.error("Failed to fetch costCodes data:", error);
+          console.error(`${t("FailedToFetch")} ${t("CostCodeData")}:`, error);
         }
       }
     };
@@ -119,13 +122,13 @@ export default function Search() {
       <Grids rows={"10"}>
         <Holds position={"row"} className="row-span-1 h-full gap-1">
           <Tab onClick={() => setActiveTab(1)} isActive={activeTab === 1}>
-            Equipment
+            {t("Equipment")}
           </Tab>
           <Tab onClick={() => setActiveTab(2)} isActive={activeTab === 2}>
-            Job Sites
+            {t("JobSite")}
           </Tab>
           <Tab onClick={() => setActiveTab(3)} isActive={activeTab === 3}>
-            Cost Codes
+            {t("CostCode")}
           </Tab>
         </Holds>
 
@@ -159,7 +162,7 @@ export default function Search() {
                           : "bg-white border-none"
                       }`}
                     >
-                      CostCodes
+                      {t("CostCodes")}
                     </Buttons>
                     <Buttons
                       onClick={() => setActiveTab2(2)}
@@ -169,7 +172,7 @@ export default function Search() {
                           : "bg-white border-none"
                       }`}
                     >
-                      Tags
+                      {t("Tags")}
                     </Buttons>
                   </Holds>
 

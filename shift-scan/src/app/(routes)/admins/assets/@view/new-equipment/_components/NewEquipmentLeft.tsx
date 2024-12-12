@@ -3,6 +3,7 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
 import { Selects } from "@/components/(reusable)/selects";
+import { useTranslations } from "next-intl";
 
 type EquipmentLeftProps = {
   equipmentCode: string | null;
@@ -21,6 +22,7 @@ export function NewEquipmentLeft({
   equipmentTag,
   setEquipmentTag,
 }: EquipmentLeftProps) {
+  const t = useTranslations("Admins");
   return (
     <Holds background={"white"} className="w-2/5 h-full">
       <Grids cols={"1"} rows={"6"} className="w-full h-full">
@@ -28,7 +30,7 @@ export function NewEquipmentLeft({
         <Holds className="w-full row-span-4">
           <Holds className="w-full px-2">
             <Labels size={"p4"}>
-              Equipment Code
+              {t("EquipmentCode")}
               {/* <span className="text-red-500">*</span> */}
             </Labels>
             <div className="relative w-full">
@@ -43,7 +45,7 @@ export function NewEquipmentLeft({
                 onChange={(e) => {
                   setEquipmentCode?.(e.target.value);
                 }}
-                placeholder={"Code"}
+                placeholder={t("Code")}
                 variant={"matchSelects"}
                 className="pl-10 my-auto" // Adjust padding to make space for the prefix
               />
@@ -52,7 +54,7 @@ export function NewEquipmentLeft({
 
           {/* Equipment Status */}
           <Holds className="w-full px-2">
-            <Labels size={"p4"}>Status</Labels>
+            <Labels size={"p4"}>{t("Status")}</Labels>
             <Selects
               name="equipmentStatus"
               value={equipmentStatus || "OPERATIONAL"}
@@ -60,15 +62,15 @@ export function NewEquipmentLeft({
                 setEquipmentStatus?.(e.target.value);
               }}
             >
-              <option value="OPERATIONAL">Operational</option>
-              <option value="NEEDS_REPAIR">Needs Repair</option>
-              <option value="NEEDS_MAINTENANCE">Needs Maintenance</option>
+              <option value="OPERATIONAL">{t("Operational")}</option>
+              <option value="NEEDS_REPAIR">{t("NeedsRepair")}</option>
+              <option value="NEEDS_MAINTENANCE">{t("NeedsMaintenance")}</option>
             </Selects>
           </Holds>
 
           {/* Equipment Tag */}
           <Holds className="w-full px-2">
-            <Labels size={"p4"}>Equipment Tag</Labels>
+            <Labels size={"p4"}>{t("EquipmentTag")}</Labels>
             <Selects
               name="equipmentTag"
               value={equipmentTag || "EQUIPMENT"}
@@ -76,10 +78,10 @@ export function NewEquipmentLeft({
                 setEquipmentTag?.(e.target.value);
               }}
             >
-              <option value="EQUIPMENT">Equipment</option>
-              <option value="VEHICLE">Vehicle</option>
-              <option value="TRUCK">Truck</option>
-              <option value="TRAILER">Trailer</option>
+              <option value="EQUIPMENT">{t("Equipment")}</option>
+              <option value="VEHICLE">{t("Vehicle")}</option>
+              <option value="TRUCK">{t("Truck")}</option>
+              <option value="TRAILER">{t("Trailer")}</option>
             </Selects>
           </Holds>
         </Holds>

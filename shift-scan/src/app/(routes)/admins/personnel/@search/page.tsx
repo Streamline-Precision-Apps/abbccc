@@ -3,21 +3,25 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Tab } from "@/components/(reusable)/tab";
-
 import { useEffect, useState } from "react";
 import { Timesheets } from "./_components/Timesheets";
 import { SearchCrew, SearchUser } from "@/lib/types";
 import { z } from "zod";
 import { Personnel } from "./_components/Personnel";
 import { Crews } from "./_components/Crews";
+import { usePathname } from "next/navigation";
 import { NotificationComponent } from "@/components/(inputs)/NotificationComponent";
+import { useNotification } from "@/app/context/NotificationContext";
+import { useTranslations } from "next-intl";
 
 export default function Search() {
   const [activeTab, setActiveTab] = useState(1);
   const [employees, setEmployees] = useState<SearchUser[]>([]);
   const [filter, setFilter] = useState("all");
   const [crew, setCrew] = useState<SearchCrew[]>([]);
-
+  const pathname = usePathname(); // Get current route
+  const { notification } = useNotification();
+  const t = useTranslations("Admins");
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
@@ -29,15 +33,15 @@ export default function Search() {
         setEmployees(employeesData);
       } catch (error) {
         if (error instanceof z.ZodError) {
-          console.error("Validation Error:", error.errors);
+          console.error(`${t("ZodError")}`, error.errors);
         } else {
-          console.error("Failed to fetch employees data:", error);
+          console.error(`${t("FailedToFetch")} ${t("EmployeesData")}`, error);
         }
       }
     };
 
     fetchEmployees();
-  }, [filter]);
+  }, [filter, notification, t]);
 
   useEffect(() => {
     const fetchCrews = async () => {
@@ -50,15 +54,28 @@ export default function Search() {
         setCrew(crewData);
       } catch (error) {
         if (error instanceof z.ZodError) {
-          console.error("Validation Error:", error.errors);
+          console.error(t("ZodError"), error.errors);
         } else {
-          console.error("Failed to fetch employees data:", error);
+          console.error(`${t("FailedToFetch")} ${t("EmployeesData")}`, error);
         }
       }
     };
 
     fetchCrews();
-  }, []); // Trigger the effect when the route changes
+  }, [pathname, notification, t]); // Trigger the effect when the route changes
+
+  useEffect(() => {
+    const tabMapping: { [key: string]: number } = {
+      "/admins/personnel/timesheets": 2,
+      "/admins/personnel/crew": 3,
+    };
+
+    const matchedTab = Object.keys(tabMapping).find((key) =>
+      pathname.startsWith(key)
+    );
+
+    setActiveTab(matchedTab ? tabMapping[matchedTab] : 1);
+  }, [pathname]);
 
   return (
     <Holds className="h-full ">
@@ -66,13 +83,13 @@ export default function Search() {
       <Grids rows={"10"}>
         <Holds position={"row"} className="row-span-1 h-full gap-2">
           <Tab onClick={() => setActiveTab(1)} isActive={activeTab === 1}>
-            Personnel
+            {t("Personnel")}
           </Tab>
           <Tab onClick={() => setActiveTab(2)} isActive={activeTab === 2}>
-            Time Sheets
+            {t("TimeSheets")}
           </Tab>
           <Tab onClick={() => setActiveTab(3)} isActive={activeTab === 3}>
-            Crews
+            {t("Crews")}
           </Tab>
         </Holds>
 

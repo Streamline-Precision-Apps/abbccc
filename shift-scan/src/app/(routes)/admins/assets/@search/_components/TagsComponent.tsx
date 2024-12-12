@@ -10,8 +10,10 @@ import { useRouter } from "next/navigation";
 import { useState, useMemo, useCallback } from "react";
 
 import { CCTags } from "@/lib/types";
+import { useTranslations } from "next-intl";
 
 export const TagsComponent = ({ tags }: { tags: CCTags[] }) => {
+  const t = useTranslations("Admins");
   const [term, setTerm] = useState<string>("");
   // const [page, setPage] = useState(true);
   const router = useRouter();
@@ -54,7 +56,7 @@ export const TagsComponent = ({ tags }: { tags: CCTags[] }) => {
             <Holds className="w-[80%]">
               <Inputs
                 type="search"
-                placeholder="Search Tags by name"
+                placeholder={t("TagSearchPlaceholder")}
                 value={term}
                 onChange={handleSearchChange}
                 className="border-none outline-none"
@@ -75,7 +77,7 @@ export const TagsComponent = ({ tags }: { tags: CCTags[] }) => {
                 ))
               ) : (
                 <Texts size="p6" className="text-center">
-                  No cost code found
+                  {t("NoTagsFound")}
                 </Texts>
               )}
             </Holds>
@@ -89,7 +91,7 @@ export const TagsComponent = ({ tags }: { tags: CCTags[] }) => {
         className="row-span-1 h-full"
         onClick={createTags}
       >
-        <Texts size="p6">Create New Tag</Texts>
+        <Texts size="p6">{t("CreateNewTag")}</Texts>
       </Buttons>
     </>
   );

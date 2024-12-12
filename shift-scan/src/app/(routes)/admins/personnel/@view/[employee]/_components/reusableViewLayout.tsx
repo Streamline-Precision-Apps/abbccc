@@ -6,7 +6,8 @@ import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
-import { Dispatch, ReactNode, SetStateAction, useState } from "react";
+import { useTranslations } from "next-intl";
+import { Dispatch, ReactNode, SetStateAction, use, useState } from "react";
 
 type ReusableViewLayoutProps = {
   header?: ReactNode; // Custom header content
@@ -36,7 +37,7 @@ export const ReusableViewLayout = ({
   mainHolds,
 }: ReusableViewLayoutProps) => {
   const [isCommentSectionOpen, setIsCommentSectionOpen] = useState(false);
-
+  const t = useTranslations("Admins");
   const openComment = () => {
     setIsCommentSectionOpen(!isCommentSectionOpen);
   };
@@ -60,9 +61,7 @@ export const ReusableViewLayout = ({
           )}
           {!main && (!mainLeft || !mainRight) && (
             <Holds background={"white"} className="h-full w-full">
-              <Texts size={"p6"}>
-                Must specify either main, or both mainLeft and mainRight
-              </Texts>
+              <Texts size={"p6"}>{t("MustSpecify")}</Texts>
             </Holds>
           )}
 
@@ -102,7 +101,7 @@ export const ReusableViewLayout = ({
                         onChange={(e) => {
                           editFunction?.(e.target.value);
                         }}
-                        placeholder={"New Crew Name"}
+                        placeholder={t("NewCrewName")}
                         variant={"titleFont"}
                         className=" my-auto"
                       />
@@ -112,7 +111,7 @@ export const ReusableViewLayout = ({
                       className="h-full w-full my-1 row-start-2 row-end-3 col-start-1 col-end-2 "
                     >
                       <Texts size={"p6"} className="mr-2">
-                        {"Comment"}
+                        {t("Comment")}
                       </Texts>
                       <Images
                         titleImg="/comment.svg"
@@ -125,7 +124,7 @@ export const ReusableViewLayout = ({
 
                     <Holds className="w-full h-full row-start-3 row-end-6 col-start-1 col-end-6">
                       <TextAreas
-                        placeholder="Enter your comment"
+                        placeholder={t("EnterYourComment")}
                         value={commentText ? commentText : ""}
                         onChange={(e) => {
                           editCommentFunction?.(e.target.value);
@@ -143,7 +142,7 @@ export const ReusableViewLayout = ({
                     <Inputs
                       type="text"
                       value={editedItem}
-                      placeholder={"Enter your Crew Name"}
+                      placeholder={t("NewCrewName")}
                       onChange={(e) => {
                         editFunction?.(e.target.value);
                       }}
@@ -156,7 +155,7 @@ export const ReusableViewLayout = ({
                     className="h-full w-full row-start-2 row-end-3 col-start-6 col-end-7 "
                   >
                     <Texts size={"p6"} className="mr-2">
-                      Comment
+                      {t("Comment")}
                     </Texts>
                     <Images
                       titleImg="/comment.svg"
@@ -189,9 +188,7 @@ export const ReusableViewLayout = ({
           )}
           {!main && (!mainLeft || !mainRight) && (
             <Holds background={"white"} className="h-full w-full">
-              <Texts size={"p6"}>
-                Must specify either main, or both mainLeft and mainRight
-              </Texts>
+              <Texts size={"p6"}>{t("MustSpecify")}</Texts>
             </Holds>
           )}
         </Holds>

@@ -7,7 +7,8 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, use, useState } from "react";
+import { useTranslations } from "next-intl";
 
 type EquipmentHeaderProps = {
   comment?: string;
@@ -53,6 +54,7 @@ export function EquipmentHeader({
   revertField,
 }: EquipmentHeaderProps) {
   const [isCommentSectionOpen, setIsCommentSectionOpen] = useState(false);
+  const t = useTranslations("Admins");
 
   const openComment = () => {
     setIsCommentSectionOpen(!isCommentSectionOpen);
@@ -72,13 +74,13 @@ export function EquipmentHeader({
           <Contents width={"95"} position={"row"}>
             <Grids
               rows={"5"}
-              cols={"5"} 
-              gap={"2"}
+              cols={"5"}
+              gap={"5"}
               className="h-full w-full py-4"
             >
               <Holds className="w-full row-start-1 row-end-2 col-start-1 col-end-4">
-                <Labels htmlFor="equipmentName" size={"p4"} position={"left"}>
-                  {"Equipment Name"}
+                <Labels htmlFor="equipmentName" size={"p6"} position={"left"}>
+                  {t("EquipmentName")}
                 </Labels>
                 <Holds
                   className="w-full h-full border-[3px] rounded-[10px] border-black"
@@ -111,76 +113,76 @@ export function EquipmentHeader({
                 </Holds>
               </Holds>
               <Holds
-              position={"row"}
-              className="h-full w-full my-1 row-start-2 row-end-3 col-start-1 col-end-2 "
-            >
-              <Texts size={"p6"} className="mr-2">
-                {"Comment"}
-              </Texts>
-              <Images
-                titleImg="/comment.svg"
-                titleImgAlt="comment"
-                size={"30"}
-                onClick={openComment}
-                className="cursor-pointer hover:shadow-black hover:shadow-md"
-              />
-            </Holds>
-                <Holds className="w-full h-full row-start-3 row-end-6 col-start-1 col-end-6">
-                  <TextAreas
-                    placeholder="Enter your comment"
-                    value={comment}
-                    onChange={(e) => {
-                      setComment?.(e.target.value);
-                    }}
-                    maxLength={40}
-                    rows={3}
-                    style={{ resize: "none" }}
-                  />
-                </Holds>
+                position={"row"}
+                className="h-full w-full my-1 row-start-2 row-end-3 col-start-1 col-end-2 "
+              >
+                <Texts size={"p6"} className="mr-2">
+                  {t("Comment")}
+                </Texts>
+                <Images
+                  titleImg="/comment.svg"
+                  titleImgAlt="comment"
+                  size={"30"}
+                  onClick={openComment}
+                  className="cursor-pointer hover:shadow-black hover:shadow-md"
+                />
+              </Holds>
+              <Holds className="w-full h-full row-start-3 row-end-6 col-start-1 col-end-6">
+                <TextAreas
+                  placeholder={t("EnterComment")}
+                  value={comment}
+                  onChange={(e) => {
+                    setComment?.(e.target.value);
+                  }}
+                  maxLength={40}
+                  rows={3}
+                  style={{ resize: "none" }}
+                />
+              </Holds>
             </Grids>
           </Contents>
         ) : (
           <Grids rows={"2"} cols={"5"} gap={"4"} className=" h-full w-full p-4">
             <Holds className="w-full row-start-1 row-end-2 col-start-1 col-end-4">
-                <Labels htmlFor="equipmentName" size={"p4"} position={"left"}>
-                  {"Equipment Name"}
-                </Labels>
-                <Holds
-                  className="w-full h-full border-[3px] rounded-[10px] border-black"
-                  position={"row"}
-                >
-                  <Holds className="w-5/6 h-full">
-                    <Inputs
-                      type="text"
-                      name="equipmentName"
-                      value={equipmentName}
-                      onChange={(e) => {
-                        setEquipmentName?.(e.target.value);
-                      }}
-                      placeholder={"New Equipment Name"}
-                      variant={"matchSelects"}
-                      className="my-auto border-none focus:outline-none pl-2"
+              <Labels htmlFor="equipmentName" size={"p6"} position={"left"}>
+                {t("EquipmentName")}
+              </Labels>
+              <Holds
+                className="w-full h-full border-[3px] rounded-[10px] border-black"
+                position={"row"}
+              >
+                <Holds className="w-5/6 h-full">
+                  <Inputs
+                    type="text"
+                    name="equipmentName"
+                    value={equipmentName}
+                    onChange={(e) => {
+                      setEquipmentName?.(e.target.value);
+                    }}
+                    placeholder={"New Equipment Name"}
+                    variant={"matchSelects"}
+                    className="my-auto border-none focus:outline-none pl-2"
+                  />
+                </Holds>
+                <Holds className="w-1/6 h-full">
+                  {isFieldChanged("equipmentName") && (
+                    <Images
+                      titleImg="/turnBack.svg"
+                      titleImgAlt="revert"
+                      size={"30"}
+                      onClick={() => revertField("equipmentName")}
+                      className="cursor-pointer ml-2"
                     />
-                  </Holds>
-                  <Holds className="w-1/6 h-full">
-                    {isFieldChanged("equipmentName") && (
-                      <Images
-                        titleImg="/turnBack.svg"
-                        titleImgAlt="revert"
-                        size={"30"}
-                        onClick={() => revertField("equipmentName")}
-                        className="cursor-pointer ml-2"
-                      />
-                    )}
-                  </Holds>
+                  )}
                 </Holds>
               </Holds>
+            </Holds>
             <Holds
               position={"row"}
               className="h-full w-full row-start-2 row-end-3 col-start-6 col-end-7 "
             >
               <Texts size={"p6"} className="mr-2">
-                Comment
+                {t("Comment")}
               </Texts>
               <Images
                 titleImg="/comment.svg"
