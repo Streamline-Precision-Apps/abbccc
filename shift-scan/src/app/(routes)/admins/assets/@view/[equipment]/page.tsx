@@ -308,7 +308,7 @@ export default function ViewEquipment({
         editedItem={equipmentName}
         editCommentFunction={setEquipmentDescription}
         commentText={equipmentDescription}
-        mainHolds="h-full w-full flex flex-row row-span-6 col-span-2 bg-app-dark-blue px-4 py-2 rounded-[10px] gap-4"
+        mainHolds="h-full w-full flex flex-row row-span-6 col-span-2 bg-app-dark-blue px-4  rounded-[10px] gap-4"
         mainLeft={
           <EquipmentLeft
             equipmentCode={equipmentCode}

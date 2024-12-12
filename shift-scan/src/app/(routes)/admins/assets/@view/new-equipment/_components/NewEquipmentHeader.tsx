@@ -33,7 +33,7 @@ export function NewEquipmentHeader({
       background={"white"}
       className={
         isCommentSectionOpen
-          ? `row-span-4 col-span-2 h-full`
+          ? `row-span-3 col-span-2 h-full`
           : `row-span-1 col-span-2 h-full`
       }
     >
