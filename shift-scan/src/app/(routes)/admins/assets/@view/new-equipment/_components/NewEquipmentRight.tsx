@@ -4,6 +4,7 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
+import { useTranslations } from "next-intl";
 
 type EquipmentRightProps = {
   equipmentTag: string | null;
@@ -38,6 +39,7 @@ export function NewEquipmentRight({
   vehicleMileage,
   setVehicleMileage,
 }: EquipmentRightProps) {
+  const t = useTranslations("Admins");
   // Only display the input fields if equipmentTag is "VEHICLE" or "TRUCK"
   if (equipmentTag !== "VEHICLE" && equipmentTag !== "TRUCK") {
     return (
@@ -61,26 +63,28 @@ export function NewEquipmentRight({
           >
             <Holds className="w-full">
               <Labels size={"p4"}>
-                Vehicle Make<span className="text-red-500">*</span>
+                {t("VehicleMake")}
+                <span className="text-red-500">*</span>
               </Labels>
               <Inputs
                 type="text"
                 value={vehicleMake || ""}
                 onChange={(e) => setVehicleMake(e.target.value)}
-                placeholder={"Make"}
+                placeholder={t("Make")}
               />
             </Holds>
 
             {/* Vehicle Model */}
             <Holds className="w-full">
               <Labels size={"p4"}>
-                Vehicle Model<span className="text-red-500">*</span>
+                {t("VehicleModel")}
+                <span className="text-red-500">*</span>
               </Labels>
               <Inputs
                 type="text"
                 value={vehicleModel || ""}
                 onChange={(e) => setVehicleModel(e.target.value)}
-                placeholder={"Model"}
+                placeholder={t("Model")}
               />
             </Holds>
           </Holds>
@@ -92,26 +96,28 @@ export function NewEquipmentRight({
             {/* Vehicle Year */}
             <Holds className="w-full">
               <Labels size={"p4"}>
-                Vehicle Year<span className="text-red-500">*</span>
+                {t("VehicleYear")}
+                <span className="text-red-500">*</span>
               </Labels>
               <Inputs
                 type="number"
                 value={vehicleYear || ""}
                 onChange={(e) => setVehicleYear(e.target.value)}
-                placeholder={"Year"}
+                placeholder={t("Year")}
               />
             </Holds>
 
             {/* Vehicle License Plate */}
             <Holds className="w-full">
               <Labels size={"p4"}>
-                Vehicle License Plate<span className="text-red-500">*</span>
+                {t("VehicleLicensePlate")}
+                <span className="text-red-500">*</span>
               </Labels>
               <Inputs
                 type="text"
                 value={vehicleLicensePlate || ""}
                 onChange={(e) => setVehicleLicensePlate(e.target.value)}
-                placeholder={"License Plate"}
+                placeholder={t("LicensePlate")}
               />
             </Holds>
           </Holds>
@@ -123,7 +129,8 @@ export function NewEquipmentRight({
             {/* Registration Expiration */}
             <Holds className="w-full">
               <Labels size={"p4"}>
-                Registration Expiration<span className="text-red-500">*</span>
+                {t("RegistrationExpiration")}
+                <span className="text-red-500">*</span>
               </Labels>
               <Inputs
                 type="date"
@@ -136,13 +143,14 @@ export function NewEquipmentRight({
             {/* Vehicle Mileage */}
             <Holds className="w-full">
               <Labels size={"p4"}>
-                Vehicle Mileage<span className="text-red-500">*</span>
+                {t("VehicleMileage")}
+                <span className="text-red-500">*</span>
               </Labels>
               <Inputs
                 type="number"
                 value={vehicleMileage || ""}
                 onChange={(e) => setVehicleMileage(e.target.value)}
-                placeholder={"Mileage"}
+                placeholder={t("Mileage")}
               />
             </Holds>
           </Holds>

@@ -7,6 +7,7 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
 import { SearchUser } from "@/lib/types";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState, useMemo, useCallback } from "react";
 
@@ -17,6 +18,7 @@ type Props = {
 
 export const Personnel = ({ employees, setFilter }: Props) => {
   const [term, setTerm] = useState<string>("");
+  const t = useTranslations("Admins");
   // const [page, setPage] = useState(true);
   const router = useRouter();
 
@@ -55,20 +57,19 @@ export const Personnel = ({ employees, setFilter }: Props) => {
             defaultValue={"all"}
             onChange={(e) => setFilter(e.target.value)}
             className="w-full px-0 py-2 text-center"
-            // onClick={() => setPage(!page)}
           >
-            <option value="all">Select Filter</option>
-            <option value="all">All</option>
-            <option value="active">Active</option>
-            <option value="admins">Admins</option>
-            <option value="inactive">Inactive</option>
-            <option value="laborers">Laborers</option>
-            <option value="managers">Managers</option>
-            <option value="mechanics">Mechanics</option>
-            <option value="recentlyHired">Recently Hired</option>
-            <option value="superAdmins">Super Admins</option>
-            <option value="tasco">Tasco</option>
-            <option value="truckers">Trunk Drivers</option>
+            <option value="all">{t("SelectFilter")}</option>
+            <option value="all">{t("All")}</option>
+            <option value="active">{t("Active")}</option>
+            <option value="admins">{t("Admins")}</option>
+            <option value="inactive">{t("Inactive")}</option>
+            <option value="laborers">{t("Laborers")}</option>
+            <option value="managers">{t("Managers")}</option>
+            <option value="mechanics">{t("Mechanics")}</option>
+            <option value="recentlyHired">{t("RecentlyHired")}</option>
+            <option value="superAdmins">{t("SuperAdmins")}</option>
+            <option value="tasco">{t("Tasco")}</option>
+            <option value="truckers">{t("TruckDrivers")}</option>
           </Selects>
         </Holds>
         {/* Search Input Section */}
@@ -84,7 +85,7 @@ export const Personnel = ({ employees, setFilter }: Props) => {
               <Holds className="w-[80%]">
                 <Inputs
                   type="search"
-                  placeholder="Search employees by name"
+                  placeholder={t("PersonalSearchPlaceholder")}
                   value={term}
                   onChange={handleSearchChange}
                   className="border-none outline-none"
@@ -107,7 +108,7 @@ export const Personnel = ({ employees, setFilter }: Props) => {
                   ))
                 ) : (
                   <Texts size="p6" className="text-center">
-                    No employees found
+                    {t("NoEmployeesFound")}
                   </Texts>
                 )}
               </Holds>
@@ -121,7 +122,7 @@ export const Personnel = ({ employees, setFilter }: Props) => {
           className="row-span-1 h-full"
           onClick={createEmployee}
         >
-          <Texts size="p6">Create New Employee</Texts>
+          <Texts size="p6">{t("CreateNewEmployee")}</Texts>
         </Buttons>
       </Grids>
     </Holds>

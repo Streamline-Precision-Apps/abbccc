@@ -6,6 +6,7 @@ import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { NModals } from "@/components/(reusable)/newmodals";
 import { Texts } from "@/components/(reusable)/texts";
+import { useTranslations } from "next-intl";
 import React, { useState } from "react";
 
 interface SearchModalProps<T> {
@@ -30,7 +31,7 @@ export const SearchModal = <T extends { id: string; name: string }>({
 }: SearchModalProps<T>) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [itemClicked, setItemClicked] = useState<T | null>(null);
-
+  const t = useTranslations("Admins");
   const filteredList = list.filter((item) => filterFunction(item, searchTerm));
 
   return (
@@ -80,7 +81,7 @@ export const SearchModal = <T extends { id: string; name: string }>({
                   ))
                 ) : (
                   <Holds>
-                    <Texts>No results found</Texts>
+                    <Texts>{t("NoResultsFound")}</Texts>
                   </Holds>
                 )}
               </Holds>
@@ -97,7 +98,7 @@ export const SearchModal = <T extends { id: string; name: string }>({
                   }
                 }}
               >
-                Submit
+                {t("Submit")}
               </Buttons>
               <Buttons
                 className="w-full h-1/2 my-auto shadow-none"
@@ -106,7 +107,7 @@ export const SearchModal = <T extends { id: string; name: string }>({
                   setSearchTerm("");
                 }}
               >
-                Cancel
+                {t("Cancel")}
               </Buttons>
             </Holds>
           </Grids>
