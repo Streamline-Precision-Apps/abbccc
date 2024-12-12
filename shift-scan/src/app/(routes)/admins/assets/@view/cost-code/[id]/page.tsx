@@ -7,9 +7,26 @@ import { changeCostCodeTags, deleteCostCodeById } from "@/actions/adminActions";
 import { useRouter } from "next/navigation";
 import { CostCodeRight } from "./_components/CostCodeRight";
 import { CostCodeLeft } from "./_components/CostCodeLeft";
-import { CCTags } from "@/lib/types";
 import { EditCostCodeForm } from "./_components/EditCostCodeForm";
 import { EditCostCodeFooter } from "./_components/CostCodeFooter";
+import { z } from "zod";
+import { useNotification } from "@/app/context/NotificationContext";
+
+// Define Zod schemas
+const CCTagSchema = z.object({
+  id: z.number().int(),
+  name: z.string().min(1, "Name is required"),
+  description: z.string().optional(),
+  jobsite: z.array(z.object({ id: z.number(), name: z.string() })).optional(),
+  costCode: z.array(z.object({ id: z.number(), name: z.string() })).optional(),
+});
+
+const CostCodeSchema = z.object({
+  id: z.number().int(),
+  name: z.string().min(1, "Name is required"),
+  description: z.string().min(1, "Description is required"),
+  CCTags: z.array(CCTagSchema),
+});
 
 export default function UpdateCostCodes({
   params,
@@ -17,15 +34,15 @@ export default function UpdateCostCodes({
   params: { id: string };
 }) {
   const { id } = params;
-
+  const { setNotification } = useNotification();
   const [initialCostcodeName, setInitialCostCodeName] = useState<string>("");
   const [initialDescription, setInitialDescription] = useState<string>("");
   const [costcodeId, setCostCodeId] = useState<number>(0);
   const [costcodeName, setCostCodeName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
-  const [initialSelectedTags, setinitialSelectedTags] = useState<CCTags[]>([]);
-  const [selectedTags, setSelectedTags] = useState<CCTags[]>([]);
-  const [initalTags, setInitialTags] = useState<CCTags[]>([]);
+  const [initialSelectedTags, setinitialSelectedTags] = useState<z.infer<typeof CCTagSchema>[]>([]);
+  const [selectedTags, setSelectedTags] = useState<z.infer<typeof CCTagSchema>[]>([]);
+  const [initalTags, setInitialTags] = useState<z.infer<typeof CCTagSchema>[]>([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -33,64 +50,71 @@ export default function UpdateCostCodes({
       try {
         const res = await fetch(`/api/getCostCodeById/${id}`);
         const data = await res.json();
-        setCostCodeId(data.id);
-        setCostCodeName(data.name);
-        setDescription(data.description);
 
-        setInitialCostCodeName(data.name);
-        setInitialDescription(data.description);
+        // Validate fetched cost code data
+        const validatedData = CostCodeSchema.parse(data);
+
+        setCostCodeId(validatedData.id);
+        setCostCodeName(validatedData.name);
+        setDescription(validatedData.description);
+
+        setInitialCostCodeName(validatedData.name);
+        setInitialDescription(validatedData.description);
       } catch (error) {
-        console.log(error);
+        console.error("Error fetching or validating cost code:", error);
       }
     };
     fetchCostcode();
   }, [id]);
 
   useEffect(() => {
+    const toggleTagSelection = (tag: z.infer<typeof CCTagSchema>) => {
+      setSelectedTags((prev) =>
+        prev.some((t) => t.id === tag.id)
+          ? prev.filter((t) => t.id !== tag.id) // Remove if already selected
+          : [...prev, tag] // Add if not selected
+      );
+    };
+    
+    // Fix other parameter types
     const fetchTags = async () => {
       try {
         // Fetch all tags
         const allTagsRes = await fetch(`/api/getAllTags`);
-        const allTagsData = await allTagsRes.json();
+        const allTagsData: z.infer<typeof CCTagSchema>[] = await allTagsRes.json(); // Use correct type
         setInitialTags(allTagsData);
+    
         // Fetch connected tags for the current costCode
-        const connectedTagsRes = await fetch(
-          `/api/getCostCodeTags/${costcodeId}`
-        );
-        const connectedTagsData = await connectedTagsRes.json();
-
-        // Extract the connected CCTags
+        const connectedTagsRes = await fetch(`/api/getCostCodeTags/${costcodeId}`);
+        const connectedTagsData: { CCTags: z.infer<typeof CCTagSchema>[] }[] =
+          await connectedTagsRes.json();
         const connectedTags = connectedTagsData[0]?.CCTags || [];
-
+    
         // Mark tags as selected only if they are part of the connected tags
-        setSelectedTags(
-          allTagsData.filter((tag: CCTags) =>
-            connectedTags.some((ct: CCTags) => ct.id === tag.id)
-          )
+        const selected = allTagsData.filter((tag: z.infer<typeof CCTagSchema>) =>
+          connectedTags.some((ct: z.infer<typeof CCTagSchema>) => ct.id === tag.id)
         );
-        setinitialSelectedTags(
-          allTagsData.filter((tag: CCTags) =>
-            connectedTags.some((ct: CCTags) => ct.id === tag.id)
-          )
-        );
+        setSelectedTags(selected);
+        setinitialSelectedTags(selected);
       } catch (error) {
-        console.error("Error fetching tags:", error);
+        console.error("Error fetching or validating tags:", error);
       }
     };
 
     fetchTags();
   }, [costcodeId]);
 
-  const toggleTagSelection = (tag: CCTags) => {
-    setSelectedTags(
-      (prev) =>
-        prev.some((t) => t.id === tag.id)
-          ? prev.filter((t) => t.id !== tag.id) // Remove if already selected
-          : [...prev, tag] // Add if not selected
+  const toggleTagSelection = (tag: z.infer<typeof CCTagSchema>) => {
+    setSelectedTags((prev) =>
+      prev.some((t) => t.id === tag.id)
+        ? prev.filter((t) => t.id !== tag.id) // Remove if already selected
+        : [...prev, tag] // Add if not selected
     );
   };
+
   const handleEditForm = async () => {
     try {
+      // Prepare form data
       const formData = new FormData();
       formData.append("costcodeId", costcodeId.toString());
       formData.append("name", costcodeName);
@@ -112,17 +136,34 @@ export default function UpdateCostCodes({
         formData.append("removeTags", tag.id.toString())
       );
 
+      // Validate data
+      try {
+        CostCodeSchema.parse({
+          id: costcodeId,
+          name: costcodeName,
+          description,
+          CCTags: selectedTags,
+        });
+      } catch (validationError) {
+        if (validationError instanceof z.ZodError) {
+          // Collect validation errors
+          const errorMessages = validationError.errors.map((err) => err.message).join(", ");
+          setNotification(`Validation failed: ${errorMessages}`); // Set notification
+          return; // Stop further processing
+        }
+        throw validationError; // Rethrow unexpected errors
+      }
+
       // Call the API
       const response = await changeCostCodeTags(formData);
       if (response) {
         setInitialCostCodeName(costcodeName);
         setInitialDescription(description);
+        setNotification("Cost code updated successfully!"); // Success notification
       }
-
-      // Optionally: Add user feedback (e.g., success notification)
     } catch (error) {
       console.error("Error updating cost code tags:", error);
-      // Optionally: Add error notification
+      setNotification("An error occurred while updating the cost code."); // Error notification
     }
   };
 

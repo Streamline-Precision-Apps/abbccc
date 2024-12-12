@@ -315,6 +315,7 @@ export type JobsiteWithCost = {
     name: string;
   };
 };
+
 export type costCodes = {
   id: number;
   name: string;
