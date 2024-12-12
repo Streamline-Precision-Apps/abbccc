@@ -1,16 +1,31 @@
 "use client";
-import { ReusableViewLayout } from "@/app/(routes)/admins/personnel/@view/[employee]/_components/reusableViewLayout";
 import { useEffect, useRef, useState } from "react";
 import { NewCostCodeForm } from "./_components/NewCostCodeForm";
 import { CostCodeLeft } from "@/app/(routes)/admins/assets/@view/cost-code/[id]/_components/CostCodeLeft";
 import { CostCodeRight } from "@/app/(routes)/admins/assets/@view/cost-code/[id]/_components/CostCodeRight";
 import { NewCostCodeFooter } from "./_components/NewCostCodeFooter";
-import { CCTags } from "@/lib/types";
+import { z } from "zod";
+import { useNotification } from "@/app/context/NotificationContext";
+import { ReusableViewLayout } from "../../../personnel/@view/[employee]/_components/reusableViewLayout";
+
+// Zod schemas
+const CCTagSchema = z.object({
+  id: z.number().int(),
+  name: z.string().min(1, "Tag name is required"),
+});
+
+const NewCostCodeSchema = z.object({
+  name: z.string().min(1, "Cost code name is required"),
+  description: z.string().optional(),
+  CCTags: z.array(CCTagSchema),
+});
+
 export default function NewCostCodes() {
+  const { setNotification } = useNotification(); // Access notification context
   const [isFormFilled, setIsFormFilled] = useState(false);
-  const [initalTags, setInitialTags] = useState<CCTags[]>([]);
-  const [initialSelectedTags, setinitialSelectedTags] = useState<CCTags[]>([]);
-  const [selectedTags, setSelectedTags] = useState<CCTags[]>([]);
+  const [initalTags, setInitialTags] = useState<z.infer<typeof CCTagSchema>[]>([]);
+  const [initialSelectedTags, setinitialSelectedTags] = useState<z.infer<typeof CCTagSchema>[]>([]);
+  const [selectedTags, setSelectedTags] = useState<z.infer<typeof CCTagSchema>[]>([]);
   const [tagsAttach, setTagsAttach] = useState(false); // Tracks if tags are attached
   const [canSubmit, setCanSubmit] = useState(false);
   const createCostCode = useRef<HTMLFormElement>(null);
@@ -18,14 +33,16 @@ export default function NewCostCodes() {
   useEffect(() => {
     const fetchTags = async () => {
       try {
-        // Fetch all tags
         const allTagsRes = await fetch(`/api/getAllTags`);
         const allTagsData = await allTagsRes.json();
-        setInitialTags(allTagsData);
+
+        // Validate and set tags
+        const validatedTags = allTagsData.map((tag: any) => CCTagSchema.parse(tag));
+        setInitialTags(validatedTags);
         setinitialSelectedTags([]);
-        // Fetch connected tags for the current costCode
       } catch (error) {
-        console.error("Error fetching tags:", error);
+        console.error("Error fetching or validating tags:", error);
+        setNotification("Error fetching tags. Please try again.");
       }
     };
 
@@ -33,24 +50,44 @@ export default function NewCostCodes() {
   }, []);
 
   const handleSubmitClick = () => {
+    // Trigger form submission
     createCostCode.current?.dispatchEvent(
       new Event("submit", { bubbles: true, cancelable: true })
     );
+
+    // Validate the form data
+    try {
+      const formData = {
+        name: createCostCode.current?.["costCodeName"]?.value || "",
+        description: createCostCode.current?.["description"]?.value || "",
+        CCTags: selectedTags,
+      };
+
+      NewCostCodeSchema.parse(formData);
+
+      // Proceed with form submission
+      setNotification("New cost code created successfully!");
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const errorMessages = error.errors.map((err) => err.message).join(", ");
+        setNotification(`Validation failed: ${errorMessages}`);
+      } else {
+        console.error("Unexpected error:", error);
+        setNotification("An unexpected error occurred. Please try again.");
+      }
+    }
   };
-  const toggleTagSelection = (tag: CCTags) => {
-    setSelectedTags(
-      (prev) =>
-        prev.some((t) => t.id === tag.id)
-          ? prev.filter((t) => t.id !== tag.id) // Remove if already selected
-          : [...prev, tag] // Add if not selected
+
+  const toggleTagSelection = (tag: z.infer<typeof CCTagSchema>) => {
+    setSelectedTags((prev) =>
+      prev.some((t) => t.id === tag.id)
+        ? prev.filter((t) => t.id !== tag.id) // Remove if already selected
+        : [...prev, tag] // Add if not selected
     );
   };
+
   useEffect(() => {
-    if (selectedTags.length > 0) {
-      setTagsAttach(true);
-    } else {
-      setTagsAttach(false);
-    }
+    setTagsAttach(selectedTags.length > 0);
     setCanSubmit(isFormFilled && tagsAttach);
   }, [isFormFilled, selectedTags.length, tagsAttach]);
 
