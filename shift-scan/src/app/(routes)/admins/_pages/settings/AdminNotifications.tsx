@@ -31,6 +31,7 @@ const userSettingsSchema = z.object({
 export const AdminNotifications = ({ id }: { id: string }) => {
   const router = useRouter();
   const t = useTranslations("Hamburger");
+  const a = useTranslations("Admins");
 
   const [data, setData] = useState<UserSettings | null>(null);
   const [updatedData, setUpdatedData] = useState<UserSettings | null>(null);
@@ -150,7 +151,7 @@ export const AdminNotifications = ({ id }: { id: string }) => {
               <Holds position={"row"}>
                 <Holds size={"70"}>
                   <Texts position={"left"} size={"p6"}>
-                    {t("LocationAccess")}
+                    {a("LocationAccess")}
                   </Texts>
                 </Holds>
                 <Holds size={"30"}>
@@ -168,7 +169,7 @@ export const AdminNotifications = ({ id }: { id: string }) => {
               <Holds position={"row"} className=" w-full my-auto">
                 <Holds position={"left"} className="w-1/2">
                   <Texts position={"left"} size={"p5"}>
-                    {t("Language")}
+                    {a("Language")}
                   </Texts>
                 </Holds>
                 <Holds position={"right"} className="w-1/2 flex justify-end">
