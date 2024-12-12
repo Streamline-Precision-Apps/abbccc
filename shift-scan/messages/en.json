@@ -531,8 +531,34 @@
         "ErrorOccurredCreatingCrew":"An error occurred while creating the crew.",
         "PleaseTryAgain":"Please try again.",
         "TotalCrewMembers":"Total Crew Members",
-        "CreateCrew":"Create Crew"
-        
+        "CreateCrew":"Create Crew",
+        "TagData":"Tag Data",
+        "HTTPError":"HTTP Error! Status",
+        "RecievedHTMLInsteadOfJSON":"Received HTML instead of JSON.",
+        "EquipmentData": "Equipment Data",
+        "ValidationError": "Validation Error:",
+        "JobsiteData": "Jobsite Data",
+        "CostCodeData": "Cost Code Data",
+        "Tags": "Tags",
+        "Temporary": "Temporary",
+        "NeedsRepair": "Needs Repair",
+        "Truck": "Truck",
+        "Trailer": "Trailer",
+         "Vehicle": "Vehicle",
+         "NoEquipmentFound": "No equipment found.",
+         "NoJobsiteFound": "No jobsite found.",
+         "NoCostCodeFound": "No cost code found.",
+         "NoTagsFound": "No tags found.",
+          "CreateNewEquipment":"Create New Equipment",
+          "EquipmentSearchPlaceholder": "Search for an Equipment",
+          "JobsiteSearchPlaceholder": "Search for a Jobsite",
+          "CostCodeSearchPlaceholder": "Search for a Cost Code",
+          "TagSearchPlaceholder": "Search for a Tag",
+          "CreateNewJobsite":"Create New Jobsite",
+          "CostCodes": "Cost Codes",
+          "CreateNewCostCode":"Create New Cost Code",
+          "CreateNewTag":"Create New Tag"
+         
 
     },
     "Components": {

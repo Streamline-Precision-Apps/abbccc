@@ -511,8 +511,34 @@
         "ErrorOccurredCreatingCrew":"Error: No se pudo crear el equipo.",
         "PleaseTryAgain":"Por favor, intente de nuevo.",
         "TotalCrewMembers":"Miembros de Equipo Totales",
-        "CreateCrew":"Crear Equipo"
-    
+        "CreateCrew":"Crear Equipo",
+         "TagData":"No se Encontraron Datos de Etiqueta",
+         "HTTPError":"HTTP Error! Status",
+         "RecievedHTMLInsteadOfJSON":"Recibido HTML en lugar de JSON.",
+          "EquipmentData": "Datos de Equipo",
+          "ValidationError": "Error de Validación:",
+          "JobsiteData": "Datos de Sitio de Trabajo",
+           "CostCodeData": "Datos de Código de Costo",
+           "Tags": "Etiquetas",
+           "Temporary": "Temporal",
+           "NeedsRepair": "Necesita Reparación",
+           "Truck": "Camioneta",
+           "Trailer": "Remolque",
+            "Vehicle": "Vehículo",
+            "NoEquipmentFound": "No se Encontraron Equipos",
+            "NoJobsiteFound": "No se Encontraron Sitios de Trabajo",
+            "NoCostCodeFound": "No se Encontraron Códigos de Costo",
+            "NoTagsFound": "No se Encontraron Etiquetas",
+           "CreateNewEquipment":"Crear Nuevo Equipo",
+           "EquipmentSearchPlaceholder": "Buscar un Equipo",
+          "JobsiteSearchPlaceholder": "Buscar un Sitio",
+          "CostCodeSearchPlaceholder": "Buscar un Código de Costo",
+          "TagSearchPlaceholder": "Buscar una Etiqueta",
+          "CreateNewJobsite":"Crear Nuevo Sitio",
+          "CostCodes": "Códigos de Costo",
+          "CreateNewCostCode":"Crear Nuevo Código",
+          "CreateNewTag":"Crear Nueva Etiqueta"
+
     
     },
     "Components": {
