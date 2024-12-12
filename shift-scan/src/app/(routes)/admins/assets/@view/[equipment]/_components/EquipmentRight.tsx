@@ -7,6 +7,8 @@ import { Labels } from "@/components/(reusable)/labels";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Images } from "@/components/(reusable)/images";
 import { useTranslations } from "next-intl";
+import { m } from "framer-motion";
+import { kMaxLength } from "buffer";
 
 // Define the types for props
 type EquipmentRightProps = {
@@ -98,6 +100,9 @@ export function EquipmentRight({
             field: "make" as const,
             placeholder: t("VehicleMake"),
             type: "text",
+            pattern: "^[a-zA-Z0-9\\s]+$",
+            minLength: 3,
+            maxLength: 100,
           },
           {
             label: t("VehicleModel"),
@@ -106,6 +111,9 @@ export function EquipmentRight({
             field: "model" as const,
             placeholder: t("Model"),
             type: "text",
+            pattern: "^[a-zA-Z0-9\\s]+$",
+            minLength: 3,
+            maxLength: 100,
           },
           {
             label: t("VehicleYear"),
@@ -114,6 +122,9 @@ export function EquipmentRight({
             field: "year" as const,
             placeholder: t("Year"),
             type: "number",
+            min: 1980,
+            max: new Date().getFullYear(),
+            step: 1,
           },
           {
             label: t("VehicleLicensePlate"),
@@ -122,6 +133,8 @@ export function EquipmentRight({
             field: "licensePlate" as const,
             placeholder: t("LicensePlate"),
             type: "text",
+            minLength: 3,
+            maxLength: 100,
           },
           {
             label: t("RegistrationExpiration"),
@@ -139,43 +152,54 @@ export function EquipmentRight({
             placeholder: t("Mileage"),
             type: "number",
           },
-        ].map(({ label, value, setValue, field, placeholder, type }) => (
-          <Holds className="w-full px-2" key={field}>
-            <Labels size={"p4"}>
-              {label}
-              <span className="text-red-500">*</span>
-            </Labels>
-            <Holds
-              position={"row"}
-              className="gap-2 h-10 border-[3px] rounded-[10px] border-black"
-            >
-              <Inputs
-                type={type}
-                value={value || ""}
-                onChange={(e) => setValue(e.target.value)}
-                placeholder={placeholder}
-                className="h-full w-5/6 border-2 border-none focus:outline-none my-auto"
-              />
-              {isFieldChanged(field) && (
-                <Buttons
-                  background={"none"}
-                  type="button"
-                  className="w-1/6"
-                  title="Revert changes"
-                  onClick={() => revertField(field)}
-                >
-                  <Holds>
-                    <Images
-                      titleImg={"/turnBack.svg"}
-                      titleImgAlt={"revert"}
-                      size={"70"}
-                    />
-                  </Holds>
-                </Buttons>
-              )}
+        ].map(
+          ({
+            label,
+            value,
+            setValue,
+            field,
+            placeholder,
+            type,
+            ...constraints
+          }) => (
+            <Holds className="w-full px-2" key={field}>
+              <Labels size={"p4"}>
+                {label}
+                <span className="text-red-500">*</span>
+              </Labels>
+              <Holds
+                position={"row"}
+                className="gap-2 h-10 border-[3px] rounded-[10px] border-black"
+              >
+                <Inputs
+                  type={type}
+                  value={value || ""}
+                  onChange={(e) => setValue(e.target.value)}
+                  placeholder={placeholder}
+                  className="h-full w-5/6 border-2 border-none focus:outline-none my-auto"
+                  {...constraints}
+                />
+                {isFieldChanged(field) && (
+                  <Buttons
+                    background={"none"}
+                    type="button"
+                    className="w-1/6"
+                    title="Revert changes"
+                    onClick={() => revertField(field)}
+                  >
+                    <Holds>
+                      <Images
+                        titleImg={"/turnBack.svg"}
+                        titleImgAlt={"revert"}
+                        size={"70"}
+                      />
+                    </Holds>
+                  </Buttons>
+                )}
+              </Holds>
             </Holds>
-          </Holds>
-        ))}
+          )
+        )}
       </Grids>
     </Holds>
   );

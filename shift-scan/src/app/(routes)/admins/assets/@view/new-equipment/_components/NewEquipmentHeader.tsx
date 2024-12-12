@@ -53,8 +53,9 @@ export function NewEquipmentHeader({
                   onChange={(e) => {
                     setEquipmentName?.(e.target.value);
                   }}
+                  pattern="[A-Za-z0-9\s]+"
                   placeholder={t("EnterYourEquipmentName")}
-                  variant={"matchSelects"}
+                  variant={"titleFont"}
                   className=" my-auto"
                 />
               </Holds>
