@@ -162,8 +162,8 @@ const CameraComponent: React.FC<CameraComponentProps> = ({
       )}
 
       {imageSrc && (
-        <Holds className="mx-auto ">
-          <Holds className="p-4 w-[300px] border-black border-[3px] rounded-[10px]">
+        <Holds className="mx-auto w-full ">
+          <Holds className="p-4 w-[400px] border-black border-[3px] rounded-[10px]">
             <Holds style={{ width: 250, height: 250 }}>
               <ReactCrop
                 crop={crop}
@@ -173,6 +173,7 @@ const CameraComponent: React.FC<CameraComponentProps> = ({
                 minWidth={DIMENSIONS}
                 onChange={(percentCrop) => setCrop(percentCrop)}
               >
+                {/* eslint-disable-next-line @next/next/no-img-element*/}
                 <img
                   ref={imgRef}
                   src={imageSrc}
@@ -188,7 +189,7 @@ const CameraComponent: React.FC<CameraComponentProps> = ({
               background={"lightBlue"}
               type="submit"
               size={"40"}
-              className="px-4 py-2"
+              className="px-4 py-2 my-2"
               onClick={() => {
                 if (imgRef.current && canvasRef.current && crop) {
                   SetCanvasPreview(
@@ -205,7 +206,7 @@ const CameraComponent: React.FC<CameraComponentProps> = ({
                 }
               }}
             >
-              <Texts size={"p4"}>Save Crop Image</Texts>
+              <Texts size={"p6"}>{t("SaveCropImage")}</Texts>
             </Buttons>
           </Holds>
 

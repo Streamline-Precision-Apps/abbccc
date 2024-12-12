@@ -210,6 +210,7 @@ export default function Employee({ params }: { params: { employee: string } }) {
                     ) : (
                       <Holds>
                         <Buttons
+                          className="py-2"
                           background="lightBlue"
                           onClick={() => setIsOpen2(true)}
                         >
@@ -253,7 +254,7 @@ export default function Employee({ params }: { params: { employee: string } }) {
           isOpen={isOpen}
           setIsOpen={setIsOpen}
           isOpen2={isOpen2}
-          setIsOpen2={setIsOpen}
+          setIsOpen2={setIsOpen2}
           setUserStatus={setUserStatus}
           setImage={setImage}
           setSignatureBase64String={setSignatureBase64String}
