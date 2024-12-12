@@ -1,8 +1,10 @@
 "use client";
 import { createNewCostCode } from "@/actions/adminActions";
+import { useNotification } from "@/app/context/NotificationContext";
 import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { CCTags } from "@/lib/types";
+import { useTranslations } from "next-intl";
 import { FormEvent, RefObject, useEffect, useState } from "react";
 
 export function NewCostCodeForm({
@@ -18,6 +20,8 @@ export function NewCostCodeForm({
   selectedTags: CCTags[];
   initialSelectedTags: CCTags[];
 }) {
+  const t = useTranslations("Admins");
+  const { setNotification } = useNotification();
   const [ccName, setCcName] = useState<string>("");
   const [ccDescription, setCcDescription] = useState<string>("");
 
@@ -34,12 +38,14 @@ export function NewCostCodeForm({
       const response = await createNewCostCode(formData);
       if (response) {
         console.log("Cost Code created successfully");
-        console.log(response);
+        setNotification(t("CostCodeCreated"), "success");
       } else {
         console.error("Failed to create Cost Code");
+        setNotification(t("CostCodeFailedCreation"), "error");
       }
     } catch (error) {
       console.error("Error submitting the form:", error);
+      setNotification(t("CostCodeFailedCreation"), "error");
     }
   };
 
@@ -75,7 +81,7 @@ export function NewCostCodeForm({
             type="text"
             name="description"
             className="p-2"
-            placeholder="Cost Code Description"
+            placeholder={t("CostCodeDescription")}
             onChange={(e) => {
               setCcDescription(e.target.value);
             }}

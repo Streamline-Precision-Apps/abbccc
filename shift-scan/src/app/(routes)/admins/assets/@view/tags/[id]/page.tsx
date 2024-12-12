@@ -1,6 +1,7 @@
 "use client";
 import { changeTags, deleteTagById } from "@/actions/adminActions";
 import { ReusableViewLayout } from "@/app/(routes)/admins/personnel/@view/[employee]/_components/reusableViewLayout";
+import { useNotification } from "@/app/context/NotificationContext";
 import { CheckBox } from "@/components/(inputs)/checkBox";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
@@ -12,10 +13,13 @@ import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { CCTags, costCodesTag, JobTags } from "@/lib/types";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 
 export default function TagView({ params }: { params: { id: string } }) {
+  const t = useTranslations("Admins");
+  const { setNotification } = useNotification();
   const tagId = params.id;
   const router = useRouter();
   const [editedItem, setEditedItem] = useState<string>("");
@@ -46,6 +50,7 @@ export default function TagView({ params }: { params: { id: string } }) {
         setInitialSelectedCostCodes(tag.costCode ?? []);
       } catch (error) {
         console.log(error);
+        setNotification(t("FailedToFetchTagData"), "error");
       }
     };
     fetchTag();
@@ -63,6 +68,7 @@ export default function TagView({ params }: { params: { id: string } }) {
         setCostCodes(costCodes ?? []);
       } catch (error) {
         console.log(error);
+        setNotification(t("FailedToFetchJobData"), "error");
       }
     };
     fetchJobs();
@@ -188,6 +194,7 @@ export function EditTagHeader({
   editFunction?: Dispatch<SetStateAction<string>>;
   editCommentFunction?: Dispatch<SetStateAction<string>>;
 }) {
+  const t = useTranslations("Admins");
   const [isCommentSectionOpen, setIsCommentSectionOpen] = useState(false);
 
   const openComment = () => {
@@ -215,7 +222,7 @@ export function EditTagHeader({
                 onChange={(e) => {
                   editFunction?.(e.target.value);
                 }}
-                placeholder={"Edit Tag Name"}
+                placeholder={t("EditTagName")}
                 variant={"titleFont"}
                 className=" my-auto"
               />
@@ -225,7 +232,7 @@ export function EditTagHeader({
               className="h-full w-full my-1 row-start-2 row-end-3 col-start-1 col-end-2 "
             >
               <Texts size={"p6"} className="mr-2">
-                {"Comment"}
+                {t("Comment")}
               </Texts>
               <Images
                 titleImg="/comment.svg"
@@ -238,7 +245,7 @@ export function EditTagHeader({
 
             <Holds className="w-full h-full row-start-3 row-end-6 col-start-1 col-end-6">
               <TextAreas
-                placeholder="Enter your comment"
+                placeholder={t("EnterYourComment")}
                 value={commentText ? commentText : ""}
                 onChange={(e) => {
                   editCommentFunction?.(e.target.value);
@@ -256,7 +263,7 @@ export function EditTagHeader({
             <Inputs
               type="text"
               value={editedItem}
-              placeholder={"Enter your Crew Name"}
+              placeholder={t("EditTagName")}
               onChange={(e) => {
                 editFunction?.(e.target.value);
               }}
@@ -269,7 +276,7 @@ export function EditTagHeader({
             className="h-full w-full row-start-2 row-end-3 col-start-6 col-end-7 "
           >
             <Texts size={"p6"} className="mr-2">
-              Comment
+              {t("Comment")}
             </Texts>
             <Images
               titleImg="/comment.svg"
@@ -300,6 +307,7 @@ export function EditTagMainLeft({
   selectedJobs: JobTags[];
   selectedCostCodes: costCodesTag[];
 }) {
+  const t = useTranslations("Admins");
   const [term, setTerm] = useState<string>("");
   const [activeList, setActiveList] = useState<"jobs" | "costCodes">("jobs");
 
@@ -329,14 +337,14 @@ export function EditTagMainLeft({
             className="w-[50%] h-full justify-center "
             onClick={() => setActiveList("jobs")}
           >
-            <Texts size={"p6"}>Jobsite</Texts>
+            <Texts size={"p6"}>{t("Jobsite")}</Texts>
           </Holds>
           <Holds
             background={activeList === "costCodes" ? "lightBlue" : "white"}
             className="w-[50%] h-full justify-center "
             onClick={() => setActiveList("costCodes")}
           >
-            <Texts size={"p6"}>Cost Code</Texts>
+            <Texts size={"p6"}>{t("CostCode")}</Texts>
           </Holds>
         </Holds>
 
@@ -348,7 +356,7 @@ export function EditTagMainLeft({
             <Holds className="w-[80%]">
               <Inputs
                 type="search"
-                placeholder="Search"
+                placeholder={t("Search")}
                 value={term}
                 onChange={(e) => setTerm(e.target.value)}
                 className="border-none outline-none"
@@ -462,6 +470,7 @@ export function EditTagFooter({
   handleEditForm: () => void;
   deleteTag: () => void;
 }) {
+  const t = useTranslations("Admins");
   return (
     <Holds
       background={"white"}
@@ -476,7 +485,7 @@ export function EditTagFooter({
               deleteTag();
             }}
           >
-            <Titles size={"h4"}>Delete Tag</Titles>
+            <Titles size={"h4"}>{t("DeleteTag")}</Titles>
           </Buttons>
         </Holds>
 
@@ -485,7 +494,7 @@ export function EditTagFooter({
             className={"py-2 bg-app-green"}
             onClick={() => handleEditForm()}
           >
-            <Titles size={"h4"}>Submit Edit</Titles>
+            <Titles size={"h4"}>{t("SubmitEdit")}</Titles>
           </Buttons>
         </Holds>
       </Grids>
