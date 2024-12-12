@@ -29,6 +29,7 @@ import { cache } from "react";
 import { SearchModal } from "./searchModal";
 import { TimeSheetView, EmployeeEquipmentLog } from "@/lib/types";
 import { useNotification } from "@/app/context/NotificationContext";
+import { useTranslations } from "next-intl";
 
 type Equipment = {
   id: number;
@@ -88,6 +89,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
   const [currentLogId, setCurrentLogId] = useState<string | null>(null);
   const [currentSheetId, setCurrentSheetId] = useState<string | null>(null);
   const { setNotification } = useNotification();
+  const t = useTranslations("Admins");
 
   //---------------------------------------------------------------------------------------
   // functions to open and close the search modals
@@ -150,7 +152,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
   useEffect(() => {
     const fetchTimesheets = cache(async () => {
       if (!params.employee) {
-        setError("Invalid employee ID.");
+        setError(t("InvalidEmployeeID"));
         return;
       }
       if (dateByFilter === "" || dateByFilter === null) {
@@ -164,7 +166,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
           }
         );
         if (!response.ok) {
-          throw new Error(`Failed to fetch: ${response.statusText}`);
+          throw new Error(`${t("FailedToFetch")} ${response.statusText}`);
         }
         const data = await response.json();
         setUserTimeSheets(data.timesheets || []);
@@ -182,8 +184,8 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
             .toFixed(2)
         );
       } catch (error) {
-        console.error("Failed to fetch employee info:", error);
-        setError("Unable to load timesheets. Please try again later.");
+        console.error(`${t("FailedToFetch")} ${t("EmployeeData")}`, error);
+        setError(`${t("UnableToLoadTimeSheets")} ${t("PleaseTryAgainlater")}`);
       }
     });
     fetchTimesheets();
@@ -195,7 +197,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
       try {
         const response = await fetch("/api/getAllEquipment");
         if (!response.ok) {
-          throw new Error(`Failed to fetch: ${response.statusText}`);
+          throw new Error(`${t("FailedToFetch")} ${response.statusText}`);
         }
         const data = await response.json();
 
@@ -208,8 +210,8 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
 
         setEquipmentSearchList(trimmedData);
       } catch (error) {
-        console.error("Failed to fetch equipment info:", error);
-        setError("Unable to load timesheets. Please try again later.");
+        console.error(`${t("FailedToFetch")} ${t("equipmentInfo")}:`, error);
+        setError(`${t("UnableToLoadTimeSheets")} ${t("PleaseTryAgainlater")}`);
       }
     };
 
@@ -224,7 +226,6 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
 
   useEffect(() => {
     if (filter) {
-      console.log(`Filter changed: ${filter}`);
       setDateByFilter("");
     }
   }, [filter]);
@@ -280,7 +281,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
       );
       refreshOriginalData();
     } catch (error) {
-      console.error("Error creating new equipment log:", error);
+      console.error(t("ErrorCreatingNewEquipmentLog"), error);
     }
   };
 
@@ -384,8 +385,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
             (original) => original.id?.toString() === id
           );
           if (!originalSheet) {
-            console.warn(`Original timesheet not found for id: ${id}`);
-            return sheet; // Return the sheet unchanged if no original is found
+            return sheet;
           }
 
           const updatedSheet = { ...sheet, [field]: originalSheet[field] };
@@ -438,7 +438,6 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
 
   const handleSubmitTimesheets = async () => {
     try {
-      console.log("Submitting timesheets...");
       // Separate new and changed timesheets
       const changedTimesheets = userTimeSheets.filter((timesheet) => {
         const original = originalTimeSheets.find(
@@ -449,7 +448,6 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
           isChanged(timesheet as TimeSheetView, original as TimeSheetView)
         );
       });
-      console.log("changedTimesheets:", changedTimesheets);
 
       // Process changed timesheets
       for (const timesheet of changedTimesheets) {
@@ -562,18 +560,6 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
     setShowCommentSection(!showCommentSection);
   };
 
-  // const filteredList = useMemo(() => {
-  //   if (!term.trim()) return equipmentSearchList;
-
-  //   const filtered = equipmentSearchList.filter((equipment) => {
-  //     const name = `${equipment.qrId} ${equipment.name}`.toLowerCase();
-  //     return name.includes(term.toLowerCase());
-  //   });
-
-  //   console.log("Filtered List:", filtered);
-  //   return filtered;
-  // }, [term, equipmentSearchList]);
-
   const vehicleFilteredList = useMemo(() => {
     if (!term.trim()) return equipmentList;
 
@@ -581,8 +567,6 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
       const name = `${vehicle.qrId} ${vehicle.name}`.toLowerCase();
       return name.includes(term.toLowerCase());
     });
-
-    console.log("Filtered List:", filtered);
     return filtered;
   }, [term, equipmentList]);
 
@@ -594,7 +578,6 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
       return name.includes(term.toLowerCase());
     });
 
-    console.log("Filtered List:", filtered);
     return filtered;
   }, [term, jobsiteResults]);
 
@@ -606,16 +589,8 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
       return name.includes(term.toLowerCase());
     });
 
-    console.log("Filtered List:", filtered);
     return filtered;
   }, [term, costcodeResults]);
-
-  // const handleSearchChange = useCallback(
-  //   (e: React.ChangeEvent<HTMLInputElement>) => {
-  //     setTerm(e.target.value);
-  //   },
-  //   []
-  // );
 
   return (
     <Grids rows={"12"} cols={"5"} gap={"2"} className="h-full w-full">
@@ -639,7 +614,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
             <Grids rows={"1"} cols={"8"} className=" h-full w-full my-auto">
               <Holds className="col-span-5 my-auto">
                 <Texts size={"p6"} className="">
-                  Comments
+                  {t("Comments")}
                 </Texts>
               </Holds>
               <Holds>
@@ -657,7 +632,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
           <Holds className="row-start-2 row-end-3 col-start-4 col-end-6  h-full">
             <Holds className=" my-auto">
               <Texts position={"right"} size={"p6"}>
-                Total Hours: {totalHours}
+                {t("Total Hours")}: {totalHours}
               </Texts>
             </Holds>
           </Holds>
@@ -707,7 +682,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                   handleDelete(timesheet.id, "timesheet")
                                 }
                               >
-                                <Texts size={"p5"}>Delete</Texts>
+                                <Texts size={"p5"}>{t("Delete")}</Texts>
                               </Buttons>
                               <Holds className=" w-1/3 h-full">
                                 <Selects
@@ -720,9 +695,13 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                     )
                                   }
                                 >
-                                  <option value="PENDING">Pending</option>
-                                  <option value="APPROVED">Approved</option>
-                                  <option value="DENIED">Denied</option>
+                                  <option value="PENDING">
+                                    {t("Pending")}
+                                  </option>
+                                  <option value="APPROVED">
+                                    {t("Approved")}
+                                  </option>
+                                  <option value="DENIED">{t("Denied")}</option>
                                 </Selects>
                               </Holds>
                             </Holds>
@@ -751,7 +730,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                             className="w-full h-full gap-4"
                           >
                             <Holds className=" h-full">
-                              <Labels size={"p4"}>Start Time</Labels>
+                              <Labels size={"p6"}>{t("StartTime")}</Labels>
                               <EditableFields
                                 type="time"
                                 value={
@@ -791,7 +770,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                             {/* ----------------------------------------------------------------------------*/}
                             {/* ----------------------------------------------------------------------------*/}
                             <Holds className=" h-full">
-                              <Labels size={"p4"}>End Time</Labels>
+                              <Labels size={"p6"}>{t("EndTime")}</Labels>
                               <EditableFields
                                 type="time"
                                 value={
@@ -877,7 +856,9 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                 className="h-full w-full gap-4"
                               >
                                 <Holds>
-                                  <Labels size={"p4"}>Date of Shift</Labels>
+                                  <Labels size={"p6"}>
+                                    {t("DateOfShift")}
+                                  </Labels>
                                   <EditableFields
                                     type="date"
                                     value={
@@ -909,8 +890,8 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                 </Holds>
                               </Holds>
                               <Holds>
-                                <Labels size={"p4"}>
-                                  Duration (Updates Automatically)
+                                <Labels size={"p6"}>
+                                  {t("DurationUpdatesAuto")}
                                 </Labels>
 
                                 <Inputs
@@ -925,7 +906,9 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                               className="h-full w-full gap-4"
                             >
                               <Holds className="h-full w-full relative">
-                                <Labels size={"p4"}>Timesheet comment</Labels>
+                                <Labels size={"p6"}>
+                                  {t("TimesheetComment")}
+                                </Labels>
                                 <TextAreas
                                   maxLength={40}
                                   value={timesheet.timeSheetComments?.toString()}
@@ -957,7 +940,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                               className="h-full w-full gap-4"
                             >
                               <Holds>
-                                <Labels size={"p4"}>Jobsite</Labels>
+                                <Labels size={"p6"}>{t("Jobsite")}</Labels>
 
                                 <EditableFields
                                   type="text"
@@ -987,7 +970,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                               </Holds>
 
                               <Holds>
-                                <Labels size={"p4"}>Cost Code</Labels>
+                                <Labels size={"p6"}>{t("CostCode")}</Labels>
                                 <EditableFields
                                   type="text"
                                   value={timesheet.costcode || ""}
@@ -1076,7 +1059,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                               className="h-full w-full mb-2 gap-4"
                             >
                               <Holds>
-                                <Labels size={"p4"}>Vehicle ID</Labels>
+                                <Labels size={"p6"}>{t("VehicleID")}</Labels>
                                 <EditableFields
                                   type="text"
                                   value={timesheet.vehicleId?.toString() || ""}
@@ -1109,8 +1092,8 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                               >
                                 {timesheet.vehicleId && (
                                   <Holds>
-                                    <Labels size={"p4"}>
-                                      Starting Mileage
+                                    <Labels size={"p6"}>
+                                      {t("StartingMileage")}
                                     </Labels>
                                     <EditableFields
                                       type="text"
@@ -1187,7 +1170,9 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                   className="h-full w-full mb-2 gap-4"
                                 >
                                   <Holds>
-                                    <Labels size={"p4"}>Ending Mileage</Labels>
+                                    <Labels size={"p6"}>
+                                      {t("EndingMileage")}
+                                    </Labels>
                                     <EditableFields
                                       type="text"
                                       value={
@@ -1217,7 +1202,9 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                   </Holds>
 
                                   <Holds>
-                                    <Labels size={"p4"}>Left Idaho?</Labels>
+                                    <Labels size={"p6"}>
+                                      {t("LeftIdaho")}
+                                    </Labels>
                                     <EditableFields
                                       type="text"
                                       value={timesheet.leftIdaho ? "Yes" : "No"}
@@ -1248,8 +1235,8 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                   className="h-full w-full mb-2 gap-4"
                                 >
                                   <Holds>
-                                    <Labels size={"p4"}>
-                                      Refueling Gallons
+                                    <Labels size={"p6"}>
+                                      {t("RefuelingGallons")}
                                     </Labels>
                                     <EditableFields
                                       type="text"
@@ -1279,8 +1266,8 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                     />
                                   </Holds>
                                   <Holds>
-                                    <Labels size={"p4"}>
-                                      # of Hauled Loads{" "}
+                                    <Labels size={"p6"}>
+                                      {t("NumberOfHauledLoads")}
                                     </Labels>
                                     <EditableFields
                                       type="text"
@@ -1315,8 +1302,8 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                   className="h-full w-full mb-2 gap-4"
                                 >
                                   <Holds>
-                                    <Labels size={"p4"}>
-                                      Equipment Hauled
+                                    <Labels size={"p6"}>
+                                      {t("EquipmentHauled")}
                                     </Labels>
                                     <EditableFields
                                       type="text"
@@ -1346,8 +1333,8 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                     />
                                   </Holds>
                                   <Holds>
-                                    <Labels size={"p4"}>
-                                      Materials Hauled
+                                    <Labels size={"p6"}>
+                                      {t("MaterialsHauled")}
                                     </Labels>
                                     <EditableFields
                                       type="text"
@@ -1406,7 +1393,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                 handleDelete(log.id?.toString() || "", "log")
                               }
                             >
-                              <Texts size={"p5"}>Delete</Texts>
+                              <Texts size={"p5"}>{t("Delete")}</Texts>
                             </Buttons>
                           </Holds>
                           <Holds className=" w-[10%] h-full">
@@ -1425,7 +1412,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
 
                       <Holds position="row" className="w-full h-full gap-4 ">
                         <Holds className="w-[50%] h-full">
-                          <Labels size="p4">Equipment Name</Labels>
+                          <Labels size={"p6"}>{t("EquipmentName")}</Labels>
                           <EditableFields
                             type="text"
                             value={
@@ -1465,7 +1452,9 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                         </Holds>
                         {/* Duration */}
                         <Holds className="w-[50%] h-full">
-                          <Labels size="p4">Duration (updates manually)</Labels>
+                          <Labels size={"p6"}>
+                            {t("DurationUpdatesAuto")}
+                          </Labels>
                           <Inputs
                             type="text"
                             disabled
@@ -1527,7 +1516,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                               className="my-auto w-full gap-4"
                             >
                               <Holds>
-                                <Labels size="p4">Start Time</Labels>
+                                <Labels size={"p6"}>{t("StartTime")}</Labels>
                                 <EditableFields
                                   type="time"
                                   value={
@@ -1569,7 +1558,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
 
                               {/* End Time */}
                               <Holds>
-                                <Labels size="p4">End Time</Labels>
+                                <Labels size={"p6"}>{t("EndTime")}</Labels>
                                 <EditableFields
                                   type="time"
                                   value={
@@ -1614,7 +1603,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                               className="my-auto w-full gap-4"
                             >
                               <Holds className="">
-                                <Labels size="p4">Fuel used</Labels>
+                                <Labels size={"p6"}>{t("IsRefueled")}</Labels>
                                 <EditableFields
                                   type="checkbox"
                                   variant={"noFrames"}
@@ -1643,7 +1632,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                               <Holds>
                                 {log.isRefueled && (
                                   <>
-                                    <Labels size="p4">Fuel used</Labels>
+                                    <Labels size={"p6"}>{t("FuelUsed")}</Labels>
                                     <EditableFields
                                       type="text"
                                       value={log.fuelUsed?.toString() || ""}
@@ -1673,7 +1662,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                             </Holds>
 
                             <Holds>
-                              <Labels size="p4">Comment</Labels>
+                              <Labels size={"p6"}>{t("Comment")}</Labels>
                               <TextAreas
                                 value={log.comment || ""}
                                 style={{ resize: "none" }}
@@ -1700,7 +1689,9 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                     <Holds className="row-span-12 col-span-5 w-full h-full">
                       <EmptyView
                         Children={
-                          <Texts size={"p4"}>No Timesheet or Logs Found</Texts>
+                          <Texts size={"p6"}>
+                            {t("NoTimesheetOrLogsFound")}
+                          </Texts>
                         }
                       />
                     </Holds>
@@ -1711,7 +1702,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                 <Holds className="row-span-12 col-span-5 w-full h-full">
                   <EmptyView
                     Children={
-                      <Texts size={"p4"}>No Timesheet or Logs Found</Texts>
+                      <Texts size={"p6"}>{t("NoTimesheetOrLogsFound")}</Texts>
                     }
                   />
                 </Holds>
@@ -1727,19 +1718,19 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
               onClick={handleSubmitTimesheets}
               className="w-full h-full"
             >
-              <Texts size={"p4"}>Submit Timesheet</Texts>
+              <Texts size={"p6"}>{t("SubmitTimesheet")}</Texts>
             </Buttons>
           </Holds>
 
           <Holds className="row-start-12 row-end-13 col-start-4 col-end-6 h-full">
             <Holds position={"row"} className="w-full h-full gap-4">
               <Selects
-                className="my-auto"
+                className="my-auto text-sm"
                 value={selectedOption}
                 onChange={(e) => setSelectedOption(e.target.value)}
               >
-                <option value="timesheets">Timesheets</option>
-                <option value="logs">Logs</option>
+                <option value="timesheets">{t("Timesheets")}</option>
+                <option value="logs">{t("Logs")}</option>
               </Selects>
               <Buttons
                 background={"green"}
@@ -1750,7 +1741,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                     : createNewLog
                 }
               >
-                <Texts size={"p4"}>+</Texts>
+                <Texts size={"p6"}>+</Texts>
               </Buttons>
             </Holds>
           </Holds>
