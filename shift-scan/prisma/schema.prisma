@@ -287,10 +287,6 @@ model CCTags {
   costCode    CostCodes[]
 }
 
-// !!!
-// TODO: I believe that we may need to make a table for tags.
-// !!!
-
 // crew data for seeing the entire crew and enabling site linking it also has direct access to the employeed time cards, and some desire profile settings
 model CrewMembers {
   id         Int     @id @default(autoincrement())

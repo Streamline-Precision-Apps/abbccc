@@ -14,10 +14,25 @@ import { EditableFields } from "@/components/(reusable)/EditableField";
 import { deleteAdminJobsite, savejobsiteChanges } from "@/actions/adminActions";
 import { useRouter } from "next/navigation";
 import { Labels } from "@/components/(reusable)/labels";
+import { z } from "zod";
+import { useNotification } from "@/app/context/NotificationContext";
+
+// Define the Zod schema for Jobsites
+const JobsiteSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  streetNumber: z.string().optional(),
+  streetName: z.string().optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
+  country: z.string().optional(),
+  description: z.string().min(1, "Description is required"),
+  comment: z.string().optional(),
+});
 
 export default function Jobsites({ params }: { params: { id: string } }) {
   const JobsitesId = params.id;
   const router = useRouter();
+  const { setNotification } = useNotification();
   const [formState, setFormState] = useState({
     name: "",
     streetName: "",
@@ -77,6 +92,13 @@ export default function Jobsites({ params }: { params: { id: string } }) {
 
   const saveEdits = async () => {
     try {
+      const parsedData = JobsiteSchema.safeParse(formState);
+
+      if (!parsedData.success) {
+        console.error("Validation errors:", parsedData.error.errors);
+        setNotification("Validation errors.", "error");
+        return;
+      }
       if (formState !== originalState) {
         const formData = new FormData();
         formData.append("id", JobsitesId);
