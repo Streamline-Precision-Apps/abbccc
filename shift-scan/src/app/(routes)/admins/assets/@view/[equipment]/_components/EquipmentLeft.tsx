@@ -5,6 +5,7 @@ import { Labels } from "@/components/(reusable)/labels";
 import { Selects } from "@/components/(reusable)/selects";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Images } from "@/components/(reusable)/images";
+import { useTranslations } from "next-intl";
 
 type EquipmentLeftProps = {
   equipmentCode: string | null;
@@ -53,12 +54,13 @@ export function EquipmentLeft({
   isFieldChanged,
   revertField,
 }: EquipmentLeftProps) {
+  const t = useTranslations("Admins");
   return (
     <Holds background={"white"} className="w-2/5 h-full">
       <Grids cols={"1"} rows={"6"} className="w-full h-full">
         {/* Equipment Code */}
         <Holds className="w-full px-2">
-          <Labels size={"p4"}>Equipment Code</Labels>
+          <Labels size={"p4"}>{t("EquipmentCode")}</Labels>
           <Holds
             position={"row"}
             className="gap-2 h-10 border-[3px] rounded-[10px] border-black"
@@ -101,7 +103,7 @@ export function EquipmentLeft({
 
         {/* Equipment Status */}
         <Holds className="w-full px-2">
-          <Labels size={"p4"}>Status</Labels>
+          <Labels size={"p4"}>{t("Status")}</Labels>
           <Holds
             position={"row"}
             className="gap-2 h-10 border-[3px] rounded-[10px] border-black"
@@ -112,9 +114,9 @@ export function EquipmentLeft({
               value={equipmentStatus || "OPERATIONAL"}
               onChange={(e) => setEquipmentStatus(e.target.value)}
             >
-              <option value="OPERATIONAL">Operational</option>
-              <option value="NEEDS_REPAIR">Needs Repair</option>
-              <option value="NEEDS_MAINTENANCE">Needs Maintenance</option>
+              <option value="OPERATIONAL">{t("Operational")}</option>
+              <option value="NEEDS_REPAIR">{t("NeedsRepair")}</option>
+              <option value="NEEDS_MAINTENANCE">{t("NeedsMaintenance")}</option>
             </Selects>
             {isFieldChanged("equipmentStatus") && (
               <Buttons
@@ -138,7 +140,7 @@ export function EquipmentLeft({
 
         {/* Equipment Tag */}
         <Holds className="w-full px-2">
-          <Labels size={"p4"}>Equipment Tag</Labels>
+          <Labels size={"p4"}>{t("EquipmentTag")}</Labels>
           <Holds
             position={"row"}
             className="gap-2 h-10 border-[3px] rounded-[10px] border-black"
@@ -149,10 +151,10 @@ export function EquipmentLeft({
               value={equipmentTag || "EQUIPMENT"}
               onChange={(e) => setEquipmentTag(e.target.value)}
             >
-              <option value="EQUIPMENT">Equipment</option>
-              <option value="VEHICLE">Vehicle</option>
-              <option value="TRUCK">Truck</option>
-              <option value="TRAILER">Trailer</option>
+              <option value="EQUIPMENT">{t("Equipment")}</option>
+              <option value="VEHICLE">{t("Vehicle")}</option>
+              <option value="TRUCK">{t("Truck")}</option>
+              <option value="TRAILER">{t("Trailer")}</option>
             </Selects>
             {isFieldChanged("equipmentTag") && (
               <Buttons

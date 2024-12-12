@@ -561,9 +561,34 @@
           "ErrorFetchingEquipmentData":"Error fetching equipment data.",
           "PleaseFillInAllVehicleDetails":"Please fill in all vehicle details.",
           "EquipmentUpdatedSuccessfully":"Equipment updated successfully.",
-          "FailedToUpdateEquipment":"Failed to update equipment."
+          "FailedToUpdateEquipment":"Failed to update equipment.",
+         "EnterComment":"Enter your comment",
+         "DeleteEquipment":"Delete Equipment",
+         "SubmitEquipment":"Submit Equipment",
+         "EquipmentCode": "Equipment Code",
+         "Status": "Status",
+         "Operational": "Operational",
+         "NeedsMaintenance": "Needs Maintenance",
+         "EquipmentTag": "Equipment Tag",
+         "VehicleMake": "Vehicle Make",
+         "VehicleYear": "Vehicle Year",
+          "Model":"Model",
+          "Year":"Year",
+          "VehicleLicensePlate":"Vehicle License Plate",
+          "LicensePlate":"License Plate",
+          "RegistrationExpiration":"Registration Expiration",
+          "Expiration":"Expiration",
+          "VehicleMileage":"Vehicle Mileage",
+          "Mileage":"Mileage",
+          "EnterYourEquipmentName":"Enter your equipment name",
+        "Code": "Code",
+        "Make": "Make"
+       
+
+         
     
         },  
+
     "Components": {
         "CropImage": "Crop Image"
        

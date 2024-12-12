@@ -10,41 +10,48 @@ import { NewEquipmentRight } from "./_components/NewEquipmentRight";
 import { NewEquipmentFooter } from "./_components/NewEquipmentFooter";
 import { NewEquipmentHeader } from "./_components/NewEquipmentHeader";
 import { z } from "zod";
+import { useTranslations } from "next-intl";
 
-const equipmentSchema = z.object({
-  qrId: z.string().min(4, "QR ID is required."),
-  name: z.string().min(1, "Name is required."),
-  description: z.string().optional(),
-  equipmentTag: z.string().min(1, "Equipment tag is required."),
-  status: z.string().min(1, "Equipment status is required.").optional(),
-  make: z.string().nullable().optional(),
-  model: z.string().nullable().optional(),
-  year: z.string().nullable().optional(),
-  licensePlate: z.string().nullable().optional(),
-  registrationExpiration: z.string().nullable().optional(),
-  mileage: z.number().nullable().optional(),
-}).refine(data => {
-  if (["VEHICLE", "TRUCK"].includes(data.equipmentTag)) {
-    return (
-      !!data.make?.length &&
-      !!data.model?.length &&
-      !!data.year?.length &&
-      !!data.licensePlate?.length &&
-      !!data.registrationExpiration?.length &&
-      data.mileage != null
-    );
-  }
-  return true;
-}, {
-  message: "Make, model, year, license plate, registration expiration, and mileage are required for VEHICLE or TRUCK.",
-  path: [], // Path can be left empty or specify a path for the error message.
-});
+const equipmentSchema = z
+  .object({
+    qrId: z.string().min(4, "QR ID is required."),
+    name: z.string().min(1, "Name is required."),
+    description: z.string().optional(),
+    equipmentTag: z.string().min(1, "Equipment tag is required."),
+    status: z.string().min(1, "Equipment status is required.").optional(),
+    make: z.string().nullable().optional(),
+    model: z.string().nullable().optional(),
+    year: z.string().nullable().optional(),
+    licensePlate: z.string().nullable().optional(),
+    registrationExpiration: z.string().nullable().optional(),
+    mileage: z.number().nullable().optional(),
+  })
+  .refine(
+    (data) => {
+      if (["VEHICLE", "TRUCK"].includes(data.equipmentTag)) {
+        return (
+          !!data.make?.length &&
+          !!data.model?.length &&
+          !!data.year?.length &&
+          !!data.licensePlate?.length &&
+          !!data.registrationExpiration?.length &&
+          data.mileage != null
+        );
+      }
+      return true;
+    },
+    {
+      message:
+        "Make, model, year, license plate, registration expiration, and mileage are required for VEHICLE or TRUCK.",
+      path: [], // Path can be left empty or specify a path for the error message.
+    }
+  );
 
 export default function NewEquipment() {
   const { data: session } = useSession();
   const equipmentFormRef = useRef<HTMLFormElement>(null); // Renamed from `createEquipment`
   const { setNotification } = useNotification();
-
+  const t = useTranslations("Admins");
   // State variables
   const [equipmentName, setEquipmentName] = useState("");
   const [equipmentDescription, setEquipmentDescription] = useState("");
@@ -80,18 +87,18 @@ export default function NewEquipment() {
       registrationExpiration: registrationExpiration ?? null,
       mileage: vehicleMileage ? parseFloat(vehicleMileage) : null,
     };
-    
+
     const validationResult = equipmentSchema.safeParse(equipmentData);
 
     if (!validationResult.success) {
-        // Map validation errors to a user-friendly message
-        const errorMessages = validationResult.error.errors
-            .map((error) => `${error.path.join(" -> ")} ${error.message}`)
-            .join(", ");
+      // Map validation errors to a user-friendly message
+      const errorMessages = validationResult.error.errors
+        .map((error) => `${error.path.join(" -> ")} ${error.message}`)
+        .join(", ");
 
-        // Set notification with detailed validation errors
-        setNotification(`Validation failed: ${errorMessages}`, "error");
-        return;
+      // Set notification with detailed validation errors
+      setNotification(`${t("ValidationFailed")} ${errorMessages}`, "error");
+      return;
     }
 
     const formData = new FormData(e.currentTarget);

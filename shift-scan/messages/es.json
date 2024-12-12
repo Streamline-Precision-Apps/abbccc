@@ -538,7 +538,32 @@
           "CostCodes": "Códigos de Costo",
           "CreateNewCostCode":"Crear Nuevo Código",
           "CreateNewTag":"Crear Nueva Etiqueta",
-          "ErrorFetchingEquipmentData":"Error al Obtener Datos de Equipo:"
+          "ErrorFetchingEquipmentData":"Error al Obtener Datos de Equipo:",
+           "EnterComment":"Ingrese un Comentario",
+             "DeleteEquipment":"Eliminar Equipo",
+             "SubmitEquipment":"Enviar Equipo",
+             "EquipmentCode": "Código de Equipo",
+             "Status": "Estado de Funcionamiento",
+            "Operational": "Operacional",
+         "NeedsMaintenance": "Necesita Mantenimiento",
+         "EquipmentTag": "Etiqueta de Equipo",
+           "VehicleMake": "Marca de Vehículo",
+           "VehicleModel": "Modelo de Vehículo",
+           "Model":"Modelo",
+           "Year":"Año",
+          "LicensePlate":"Matrícula",
+          "RegistrationExpiration":"Expiración de Registro",
+          "Expiration":"Expiración",
+          "VehicleMileage":"Kilometraje de Vehículo",
+          "Mileage":"Kilometraje",
+           "EnterYourEquipmentName":"Ingrese el Nombre del Equipo",
+           "Code": "Código",
+           "Make": "Marca",
+           "VehicleYear": "Año de Vehículo",
+           "VehicleLicensePlate": "Placa de Vehículo"
+          
+
+
 
 
     
