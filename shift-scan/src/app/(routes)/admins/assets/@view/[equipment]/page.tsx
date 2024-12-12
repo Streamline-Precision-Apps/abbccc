@@ -12,36 +12,43 @@ import { EquipmentHeader } from "./_components/EquipmentHeader";
 import EmptyView from "../../../_pages/EmptyView";
 import { Spinner } from "@nextui-org/react";
 import { z } from "zod";
+import { useTranslations } from "next-intl";
 
-const equipmentSchema = z.object({
-  id: z.string().min(1, "Equipment ID is required."),
-  qrId: z.string().min(4, "QR ID is required."),
-  name: z.string().min(1, "Name is required."),
-  description: z.string().optional(),
-  equipmentTag: z.string().min(1, "Equipment tag is required."),
-  status: z.string().min(1, "Equipment status is required.").optional(),
-  make: z.string().nullable().optional(),
-  model: z.string().nullable().optional(),
-  year: z.string().nullable().optional(),
-  licensePlate: z.string().nullable().optional(),
-  registrationExpiration: z.string().nullable().optional(),
-  mileage: z.number().nullable().optional(),
-}).refine(data => {
-  if (["VEHICLE", "TRUCK"].includes(data.equipmentTag)) {
-    return (
-      !!data.make?.length &&
-      !!data.model?.length &&
-      !!data.year?.length &&
-      !!data.licensePlate?.length &&
-      !!data.registrationExpiration?.length &&
-      data.mileage != null
-    );
-  }
-  return true;
-}, {
-  message: "Make, model, year, license plate, registration expiration, and mileage are required for VEHICLE or TRUCK.",
-  path: [], // Path can be left empty or specify a path for the error message.
-});
+const equipmentSchema = z
+  .object({
+    id: z.string().min(1, "Equipment ID is required."),
+    qrId: z.string().min(4, "QR ID is required."),
+    name: z.string().min(1, "Name is required."),
+    description: z.string().optional(),
+    equipmentTag: z.string().min(1, "Equipment tag is required."),
+    status: z.string().min(1, "Equipment status is required.").optional(),
+    make: z.string().nullable().optional(),
+    model: z.string().nullable().optional(),
+    year: z.string().nullable().optional(),
+    licensePlate: z.string().nullable().optional(),
+    registrationExpiration: z.string().nullable().optional(),
+    mileage: z.number().nullable().optional(),
+  })
+  .refine(
+    (data) => {
+      if (["VEHICLE", "TRUCK"].includes(data.equipmentTag)) {
+        return (
+          !!data.make?.length &&
+          !!data.model?.length &&
+          !!data.year?.length &&
+          !!data.licensePlate?.length &&
+          !!data.registrationExpiration?.length &&
+          data.mileage != null
+        );
+      }
+      return true;
+    },
+    {
+      message:
+        "Make, model, year, license plate, registration expiration, and mileage are required for VEHICLE or TRUCK.",
+      path: [], // Path can be left empty or specify a path for the error message.
+    }
+  );
 
 export default function ViewEquipment({
   params,
@@ -51,6 +58,7 @@ export default function ViewEquipment({
   const { setNotification } = useNotification();
   const router = useRouter();
   const equipmentFormRef = useRef<HTMLFormElement>(null);
+  const t = useTranslations("Admins");
 
   // State variables for equipment data
   const [equipmentName, setEquipmentName] = useState<string>("");
@@ -62,7 +70,9 @@ export default function ViewEquipment({
   const [model, setModel] = useState<string | null>(null);
   const [year, setYear] = useState<string | null>(null);
   const [licensePlate, setLicensePlate] = useState<string | null>(null);
-  const [registrationExpiration, setRegistrationExpiration] = useState<string | null>(null);
+  const [registrationExpiration, setRegistrationExpiration] = useState<
+    string | null
+  >(null);
   const [mileage, setMileage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -101,7 +111,6 @@ export default function ViewEquipment({
           `/api/getEquipmentByEquipmentId/${params.equipment}`
         );
         const equipmentData = await equipmentRes.json();
-        console.log("Equipment data:", equipmentData);
         if (equipmentData) {
           setEquipmentName(equipmentData.name);
           setEquipmentDescription(equipmentData.description);
@@ -130,12 +139,14 @@ export default function ViewEquipment({
             model: equipmentData.model,
             year: equipmentData.year,
             licensePlate: equipmentData.licensePlate,
-            registrationExpiration: equipmentData.registrationExpiration? equipmentData.registrationExpiration.split("T")[0] : null,
+            registrationExpiration: equipmentData.registrationExpiration
+              ? equipmentData.registrationExpiration.split("T")[0]
+              : null,
             mileage: equipmentData.mileage,
           });
         }
       } catch (error) {
-        console.error("Error fetching equipment:", error);
+        console.error(t("ErrorFetchingEquipmentData"), error);
       } finally {
         setLoading(false);
       }
@@ -150,12 +161,15 @@ export default function ViewEquipment({
 
   // Revert field to its initial value
   const revertField = (field: keyof typeof initialEquipment) => {
-    eval(`set${field.charAt(0).toUpperCase() + field.slice(1)}(initialEquipment[field])`);
+    eval(
+      `set${
+        field.charAt(0).toUpperCase() + field.slice(1)
+      }(initialEquipment[field])`
+    );
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     const equipmentData = {
       id: params.equipment,
       qrId: equipmentCode ?? "",
@@ -170,18 +184,18 @@ export default function ViewEquipment({
       registrationExpiration: registrationExpiration ?? null,
       mileage: mileage ? parseFloat(mileage) : null,
     };
-    
+
     const validationResult = equipmentSchema.safeParse(equipmentData);
 
     if (!validationResult.success) {
-        // Map validation errors to a user-friendly message
-        const errorMessages = validationResult.error.errors
-            .map((error) => `${error.path.join(" -> ")}: ${error.message}`)
-            .join(", ");
+      // Map validation errors to a user-friendly message
+      const errorMessages = validationResult.error.errors
+        .map((error) => `${error.path.join(" -> ")}: ${error.message}`)
+        .join(", ");
 
-        // Set notification with detailed validation errors
-        setNotification(`Validation failed: ${errorMessages}`, "error");
-        return;
+      // Set notification with detailed validation errors
+      setNotification(`${t("ValidationFailed")} ${errorMessages}`, "error");
+      return;
     }
 
     try {
@@ -192,7 +206,7 @@ export default function ViewEquipment({
       if (equipmentCode) formData.append("qrId", equipmentCode);
       formData.append("equipmentTag", equipmentTag ?? "");
       formData.append("status", equipmentStatus ?? "");
-  
+
       if (equipmentTag === "VEHICLE" || equipmentTag === "TRUCK") {
         if (
           !make ||
@@ -202,7 +216,7 @@ export default function ViewEquipment({
           !registrationExpiration ||
           !mileage
         ) {
-          setNotification("Please fill in all vehicle details.", "error");
+          setNotification(t("PleaseFillInAllVehicleDetails"), "error");
           return;
         }
         formData.append("make", make);
@@ -212,35 +226,33 @@ export default function ViewEquipment({
         formData.append("registrationExpiration", registrationExpiration);
         formData.append("mileage", mileage);
       }
-        formData.append("id", params.equipment);
+      formData.append("id", params.equipment);
 
-        
-        await updateEquipment(formData);
-        setNotification("Equipment updated successfully.", "success");
+      await updateEquipment(formData);
+      setNotification(t("EquipmentUpdatedSuccessfully"), "success");
 
-        setInitialEquipment({
-            equipmentName: equipmentName,
-            equipmentDescription: equipmentDescription,
-            equipmentCode: equipmentCode,
-            equipmentTag: equipmentTag,
-            equipmentStatus: equipmentStatus,
-            make: make,
-            model: model,
-            year: year,
-            licensePlate: licensePlate,
-            registrationExpiration: registrationExpiration
-                ? registrationExpiration.split("T")[0]
-                : null,
-            mileage: mileage,
-        });
+      setInitialEquipment({
+        equipmentName: equipmentName,
+        equipmentDescription: equipmentDescription,
+        equipmentCode: equipmentCode,
+        equipmentTag: equipmentTag,
+        equipmentStatus: equipmentStatus,
+        make: make,
+        model: model,
+        year: year,
+        licensePlate: licensePlate,
+        registrationExpiration: registrationExpiration
+          ? registrationExpiration.split("T")[0]
+          : null,
+        mileage: mileage,
+      });
 
-        router.refresh();
+      router.refresh();
     } catch (error) {
-        console.error("Failed to update equipment:", error);
-        setNotification("Failed to update equipment.", "error");
+      console.error(t("FailedToUpdateEquipment"), error);
+      setNotification(t("FailedToUpdateEquipment"), "error");
     }
-};
-
+  };
 
   const handleSubmitClick = () => {
     equipmentFormRef.current?.dispatchEvent(
@@ -261,9 +273,9 @@ export default function ViewEquipment({
         setLoading(false);
       }
     } else {
-      return
+      return;
     }
-  }
+  };
 
   if (loading) {
     return (

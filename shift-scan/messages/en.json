@@ -557,10 +557,13 @@
           "CreateNewJobsite":"Create New Jobsite",
           "CostCodes": "Cost Codes",
           "CreateNewCostCode":"Create New Cost Code",
-          "CreateNewTag":"Create New Tag"
-         
-
-    },
+          "CreateNewTag":"Create New Tag",
+          "ErrorFetchingEquipmentData":"Error fetching equipment data.",
+          "PleaseFillInAllVehicleDetails":"Please fill in all vehicle details.",
+          "EquipmentUpdatedSuccessfully":"Equipment updated successfully.",
+          "FailedToUpdateEquipment":"Failed to update equipment."
+    
+        },  
     "Components": {
         "CropImage": "Crop Image"
        
