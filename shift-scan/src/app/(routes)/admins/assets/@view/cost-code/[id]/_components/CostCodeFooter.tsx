@@ -1,7 +1,9 @@
+"use client";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Titles } from "@/components/(reusable)/titles";
+import { useTranslations } from "next-intl";
 
 export function EditCostCodeFooter({
   handleEditForm,
@@ -10,6 +12,7 @@ export function EditCostCodeFooter({
   handleEditForm: () => void;
   deleteCostCode: () => void;
 }) {
+  const t = useTranslations("Admins");
   return (
     <Holds
       background={"white"}
@@ -24,7 +27,7 @@ export function EditCostCodeFooter({
               deleteCostCode();
             }}
           >
-            <Titles size={"h4"}>Delete Cost Code</Titles>
+            <Titles size={"h6"}>{t("DeleteCostCode")}</Titles>
           </Buttons>
         </Holds>
 
@@ -33,7 +36,7 @@ export function EditCostCodeFooter({
             className={"py-2 bg-app-green"}
             onClick={() => handleEditForm()}
           >
-            <Titles size={"h4"}>Submit Edit</Titles>
+            <Titles size={"h6"}>{t("SubmitEdit")}</Titles>
           </Buttons>
         </Holds>
       </Grids>

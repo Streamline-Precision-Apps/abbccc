@@ -10,6 +10,7 @@ import { CSVLink } from "react-csv";
 import { Texts } from "@/components/(reusable)/texts";
 import { Grids } from "@/components/(reusable)/grids";
 import Spinner from "@/components/(animations)/spinner";
+import { useTranslations } from "next-intl";
 
 const TimesheetsArraySchema = z.array(TimesheetSchema);
 
@@ -17,7 +18,7 @@ type TimeSheets = z.infer<typeof TimesheetsArraySchema>[number];
 
 export default function ReportView() {
   const searchParams = useSearchParams();
-
+  const t = useTranslations("Admins");
   const [readyToFetchData, setReadyToFetchData] = useState<boolean>(false);
   const [timeSheets, setTimeSheets] = useState<TimeSheets[]>([]);
   const [loading, setLoading] = useState(false);
@@ -223,13 +224,15 @@ export default function ReportView() {
               className="bg-app-green h-full p-2 rounded-t-[10px]  text-white"
             >
               <Texts size={"p6"} className="h-full w-full">
-                Download as CSV
+                {t("DownloadAsCSV")}
               </Texts>
             </CSVLink>
           </Holds>
         </Grids>
       ) : (
-        <EmptyView Children={<Texts size={"p6"}>No Time Sheets Found</Texts>} />
+        <EmptyView
+          Children={<Texts size={"p6"}>{t("NoTimeSheetsFound")}</Texts>}
+        />
       )}
     </Holds>
   );

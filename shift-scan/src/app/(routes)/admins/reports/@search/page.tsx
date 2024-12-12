@@ -1,4 +1,6 @@
 "use client";
+import { useNotification } from "@/app/context/NotificationContext";
+import { NotificationComponent } from "@/components/(inputs)/NotificationComponent";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Forms } from "@/components/(reusable)/forms";
 import { Grids } from "@/components/(reusable)/grids";
@@ -7,8 +9,10 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
 import { Options } from "@/components/(reusable)/options";
 import { Selects } from "@/components/(reusable)/selects";
+import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { set } from "zod";
 
 export default function ReportSearch() {
   const [readyToSubmit, setReadyToSubmit] = useState<boolean>(false);
@@ -16,6 +20,8 @@ export default function ReportSearch() {
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
   const searchParams = useSearchParams();
+  const { setNotification } = useNotification();
+  const t = useTranslations("Admins");
   // Centralized validation logic
   const validateForm = () => {
     if (page === "timesheets") {
@@ -33,7 +39,10 @@ export default function ReportSearch() {
   const handleFormSubmit = async (page: string, e: any) => {
     e.preventDefault();
     if (!readyToSubmit) {
-      alert("Please complete all required fields before submitting.");
+      setNotification(
+        t("PleaseCompleteAllRequiredFieldsBeforeSubmitting"),
+        "neutral"
+      );
       return;
     }
 
@@ -76,6 +85,7 @@ export default function ReportSearch() {
 
   return (
     <Holds background={"white"} className="w-full h-full p-4">
+      <NotificationComponent />
       <Grids rows={"10"} gap={"5"} className="w-full h-full">
         <Holds className="row-start-1 row-end-10 h-full w-full">
           <Grids rows={"10"} gap={"5"} className="w-full h-full">
@@ -87,10 +97,10 @@ export default function ReportSearch() {
                   handleSelectedForm(e.target.value);
                 }}
               >
-                <Options value="">Select a form</Options>
-                <Options value="timesheets">Full Timesheets</Options>
+                <Options value="">{t("SelectForm")}</Options>
+                <Options value="timesheets">{t("FullTimesheets")}</Options>
                 <Options value="viewpoint">
-                  Viewpoint Timesheets Extract
+                  {t("ViewTimesheetsExtract")}
                 </Options>
               </Selects>
             </Holds>
@@ -119,7 +129,7 @@ export default function ReportSearch() {
               type="submit"
               disabled={!readyToSubmit}
             >
-              Extract Report
+              {t("ExtractReport")}
             </Buttons>
           </Forms>
         </Holds>
@@ -139,9 +149,12 @@ function TimesheetReport({
   setStartDate: (startDate: string) => void;
   setEndDate: (endDate: string) => void;
 }) {
+  const t = useTranslations("Admins");
+  const { setNotification } = useNotification();
+
   const checkEndDate = (endDate: string) => {
     if (new Date(endDate) < new Date(startDate)) {
-      alert("End date must be after start date");
+      setNotification(t("EndDateMustBeAfterStartDate"), "error");
       setEndDate(""); // Clear the invalid end date
     } else {
       setEndDate(endDate);
@@ -153,7 +166,7 @@ function TimesheetReport({
     const end = new Date(startDate);
 
     if (start > end) {
-      alert("Start date cannot be after end date");
+      setNotification(t("StartDateMustBeAfterEndDate"), "error");
       setEndDate(""); // Clear the end date if it becomes invalid
     }
     setStartDate(newStartDate);
@@ -167,7 +180,7 @@ function TimesheetReport({
       <Holds position={"row"} className="w-full h-full gap-5">
         <Holds className="row-start-1 row-end-3 col-span-1 h-full w-full">
           <Labels position={"left"} size={"p6"}>
-            Start Date
+            {t("StartDate")}
           </Labels>
           <Inputs
             variant={"default"}
@@ -178,7 +191,7 @@ function TimesheetReport({
         </Holds>
         <Holds className="row-start-1 row-end-3 col-span-1 h-full w-full">
           <Labels position={"left"} size={"p6"}>
-            End Date
+            {t("EndDate")}
           </Labels>
           <Inputs
             variant={"default"}

@@ -31,6 +31,7 @@ const employeeSchema = z.object({
 });
 
 export const AdminContact = () => {
+  const a = useTranslations("Admins");
   const [loading, setLoading] = useState(true);
   const [employee, setEmployee] = useState<Employee>();
   const [contacts, setContacts] = useState<
@@ -53,7 +54,7 @@ export const AdminContact = () => {
       const validatedEmployee = employeeSchema.parse(employeeData);
       setEmployee(validatedEmployee as Employee);
     } catch (error) {
-      console.error("Failed to fetch employee data:", error);
+      console.error(a("FailedToFetchEmployeeData"), error);
     } finally {
       setLoading(false);
     }
@@ -83,7 +84,7 @@ export const AdminContact = () => {
     try {
       await Promise.all([fetchProfile(), fetchEmployee()]);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error(a("ErrorFetchingData"), error);
     } finally {
       setLoading(false);
     }
@@ -107,7 +108,7 @@ export const AdminContact = () => {
           className="row-span-5 h-full "
         >
           <Contents width={"section"}>
-            <Texts> Loading </Texts>
+            <Texts> {a("Loading")} </Texts>
             <Spinner />
           </Contents>
         </Holds>
@@ -200,7 +201,7 @@ export const AdminContact = () => {
                 background={"red"}
                 size={"80"}
               >
-                <Titles size={"h4"}>{t("Logout")}</Titles>
+                <Titles size={"h4"}>{a("Logout")}</Titles>
               </Buttons>
             </Holds>
 

@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 import { Labels } from "@/components/(reusable)/labels";
 import { z } from "zod";
 import { useNotification } from "@/app/context/NotificationContext";
+import { useTranslations } from "next-intl";
 
 // Define the Zod schema for Jobsites
 const JobsiteSchema = z.object({
@@ -45,7 +46,7 @@ export default function Jobsites({ params }: { params: { id: string } }) {
   });
 
   const [originalState, setOriginalState] = useState(formState);
-
+  const t = useTranslations("Admins");
   useEffect(() => {
     const fetchJobsites = async () => {
       try {
@@ -95,8 +96,8 @@ export default function Jobsites({ params }: { params: { id: string } }) {
       const parsedData = JobsiteSchema.safeParse(formState);
 
       if (!parsedData.success) {
-        console.error("Validation errors:", parsedData.error.errors);
-        setNotification("Validation errors.", "error");
+        console.error(t("ValidationError"), parsedData.error.errors);
+        setNotification(t("ValidationError"), "error");
         return;
       }
       if (formState !== originalState) {
@@ -114,26 +115,28 @@ export default function Jobsites({ params }: { params: { id: string } }) {
         const response = await savejobsiteChanges(formData);
         if (response) {
           setOriginalState(formState);
-          console.log("Changes saved successfully.");
+          setNotification(t("ChangesSavedSuccessfully"), "success");
         } else {
-          console.log("Failed to save changes.");
+          throw new Error(t("APIErrorSaveChanges"));
         }
       }
     } catch (error) {
       console.error(error);
+      setNotification(t("FailedToSaveChanges"), "error");
     }
   };
   const removeJobsite = async () => {
     try {
       const response = await deleteAdminJobsite(JobsitesId);
       if (response.success) {
-        console.log("Jobsite deleted successfully.");
         router.push("/admins/assets/jobsite");
+        setNotification(t("JobsiteDeletedSuccessfully"), "success");
       } else {
-        console.error("Failed to delete jobsite:", response.message);
+        throw new Error(t("APIErrorDeleteJobsite"));
       }
     } catch (error) {
-      console.error("Error deleting jobsite:", error);
+      console.error(error);
+      setNotification(t("FailedToDeleteJobsite"), "error");
     }
   };
 
@@ -166,9 +169,9 @@ export default function Jobsites({ params }: { params: { id: string } }) {
                 originalState={originalState}
               />
             </Holds>
-            <Holds background={"white"} className="w-full h-full">
+            {/* <Holds background={"white"} className="w-full h-full">
               <EditTags />
-            </Holds>
+            </Holds> */}
           </Holds>
         }
         footer={
@@ -182,10 +185,12 @@ export default function Jobsites({ params }: { params: { id: string } }) {
   );
 }
 
+//TODO: create edit tags section
 export function EditTags() {
+  const t = useTranslations("Admins");
   return (
     <Holds background={"white"} className="w-full h-full col-span-2">
-      <Texts className="text-black font-bold text-2xl">Edit Tag</Texts>
+      <Texts className="text-black font-bold text-2xl">{t("EditTag")}</Texts>
     </Holds>
   );
 }
@@ -202,7 +207,7 @@ export function EditJobsitesHeader({
   editCommentFunction?: Dispatch<SetStateAction<string>>;
 }) {
   const [isCommentSectionOpen, setIsCommentSectionOpen] = useState(false);
-
+  const t = useTranslations("Admins");
   const openComment = () => {
     setIsCommentSectionOpen(!isCommentSectionOpen);
   };
@@ -228,7 +233,7 @@ export function EditJobsitesHeader({
                 onChange={(e) => {
                   editFunction?.(e.target.value);
                 }}
-                placeholder={"Edit Tag Name"}
+                placeholder={t("EditTagName")}
                 variant={"titleFont"}
                 className=" my-auto"
               />
@@ -238,7 +243,7 @@ export function EditJobsitesHeader({
               className="h-full w-full my-1 row-start-2 row-end-3 col-start-1 col-end-2 "
             >
               <Texts size={"p6"} className="mr-2">
-                {"Comment"}
+                {t("Comment")}
               </Texts>
               <Images
                 titleImg="/comment.svg"
@@ -251,7 +256,7 @@ export function EditJobsitesHeader({
 
             <Holds className="w-full h-full row-start-3 row-end-6 col-start-1 col-end-6">
               <TextAreas
-                placeholder="Enter your comment"
+                placeholder={t("EnterYourComment")}
                 value={commentText ? commentText : ""}
                 onChange={(e) => {
                   editCommentFunction?.(e.target.value);
@@ -269,7 +274,7 @@ export function EditJobsitesHeader({
             <Inputs
               type="text"
               value={editedItem}
-              placeholder={"Enter your Crew Name"}
+              placeholder={t("EditTagName")}
               onChange={(e) => {
                 editFunction?.(e.target.value);
               }}
@@ -282,7 +287,7 @@ export function EditJobsitesHeader({
             className="h-full w-full row-start-2 row-end-3 col-start-6 col-end-7 "
           >
             <Texts size={"p6"} className="mr-2">
-              Comment
+              {t("Comment")}
             </Texts>
             <Images
               titleImg="/comment.svg"
@@ -336,12 +341,13 @@ export function EditJobsitesMain({
     comment: string;
   };
 }) {
+  const t = useTranslations("Admins");
   return (
     <Holds background={"white"} className="w-full h-full ">
       <Grids cols={"3"} rows={"3"} gap={"5"} className="w-full h-full p-4  ">
         {/* Input */}
         <Holds className="h-full w-full ">
-          <Labels size={"p6"}>Street Name</Labels>
+          <Labels size={"p6"}>{t("StreetName")}</Labels>
           <EditableFields
             value={formState.streetName}
             isChanged={hasChanged("streetName")}
@@ -354,7 +360,7 @@ export function EditJobsitesMain({
           />
         </Holds>
         <Holds className="h-full w-full">
-          <Labels size={"p6"}>Street Number</Labels>
+          <Labels size={"p6"}>{t("StreetNumber")}</Labels>
           <EditableFields
             value={formState.streetNumber}
             isChanged={hasChanged("streetNumber")}
@@ -367,7 +373,7 @@ export function EditJobsitesMain({
           />
         </Holds>
         <Holds className="h-full w-full">
-          <Labels size={"p6"}>City</Labels>
+          <Labels size={"p6"}>{t("City")}</Labels>
           <EditableFields
             value={formState.city}
             isChanged={hasChanged("city")}
@@ -378,7 +384,7 @@ export function EditJobsitesMain({
           />
         </Holds>
         <Holds className="h-full w-full">
-          <Labels size={"p6"}>State</Labels>
+          <Labels size={"p6"}>{t("State")}</Labels>
           <EditableFields
             value={formState.state}
             isChanged={hasChanged("state")}
@@ -389,7 +395,7 @@ export function EditJobsitesMain({
           />
         </Holds>
         <Holds className="h-full w-full">
-          <Labels size={"p6"}>Country</Labels>
+          <Labels size={"p6"}>{t("Country")}</Labels>
           <EditableFields
             value={formState.country}
             isChanged={hasChanged("country")}
@@ -400,7 +406,7 @@ export function EditJobsitesMain({
           />
         </Holds>
         <Holds className="h-full w-full col-start-1 col-end-4 row-start-3 row-end-4 ">
-          <Labels size={"p6"}>Description</Labels>
+          <Labels size={"p6"}>{t("Description")}</Labels>
           <TextAreas
             value={formState.description}
             onChange={(e) => handleFieldChange("description", e.target.value)}
@@ -418,6 +424,7 @@ export function EditJobsitesFooter({
   handleEditForm: () => void;
   deleteTag: () => void;
 }) {
+  const t = useTranslations("Admins");
   return (
     <Holds
       background={"white"}
@@ -432,7 +439,7 @@ export function EditJobsitesFooter({
               deleteTag();
             }}
           >
-            <Titles size={"h4"}>Delete Jobsite</Titles>
+            <Titles size={"h4"}>{t("DeleteJobsite")}</Titles>
           </Buttons>
         </Holds>
 
@@ -441,7 +448,7 @@ export function EditJobsitesFooter({
             className={"py-2 bg-app-green"}
             onClick={() => handleEditForm()}
           >
-            <Titles size={"h4"}>Submit Edit</Titles>
+            <Titles size={"h4"}>{t("SubmitEdit")}</Titles>
           </Buttons>
         </Holds>
       </Grids>

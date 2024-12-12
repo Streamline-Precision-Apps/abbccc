@@ -20,12 +20,16 @@ export const Crews = ({ crew }: Props) => {
   const router = useRouter();
 
   const filteredList = useMemo(() => {
-    if (!term.trim()) return crew; // Return the full list if no term is entered
+    if (!term.trim()) {
+      return [...crew].sort((a, b) => a.name.localeCompare(b.name));
+    } // Return the full list if no term is entered
 
-    return crew.filter((c) => {
-      const name = `${c.name}`.toLowerCase();
-      return name.includes(term.toLowerCase());
-    });
+    return crew
+      .filter((c) => {
+        const name = `${c.name}`.toLowerCase();
+        return name.includes(term.toLowerCase());
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
   }, [term, crew]);
 
   // Debounce handler to avoid rapid state updates on each keystroke
@@ -73,7 +77,9 @@ export const Crews = ({ crew }: Props) => {
                     className="py-2 border-b"
                     onClick={() => selectCrew(crew)}
                   >
-                    <Texts size="p6">{crew.name}</Texts>
+                    <Texts position={"left"} size="p6" className="pl-4">
+                      {crew.name}
+                    </Texts>
                   </Holds>
                 ))
               ) : (

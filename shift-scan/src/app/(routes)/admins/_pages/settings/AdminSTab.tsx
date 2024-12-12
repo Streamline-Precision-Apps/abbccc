@@ -8,6 +8,7 @@ import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { sentContent } from "@/lib/types";
+import { useTranslations } from "next-intl";
 import React from "react";
 import { useState, useEffect } from "react";
 import { z } from "zod";
@@ -22,6 +23,7 @@ const sentContentSchema = z.object({
 });
 
 export default function AdminSTab() {
+  const t = useTranslations("Admins");
   const [sentContent, setSentContent] = useState<sentContent[]>([]);
   const [sentPendingContent, setSentPendingContent] = useState<sentContent[]>(
     []
@@ -72,7 +74,7 @@ export default function AdminSTab() {
   if (loading) {
     return (
       <Holds className="py-5">
-        <Texts>Loading...</Texts>
+        <Texts>{t("Loading")}</Texts>
         <Spinner />
       </Holds>
     );
@@ -91,7 +93,7 @@ export default function AdminSTab() {
       <Contents width={"section"}>
         <Grids rows={"5"} cols={"3"} gap={"5"} className="py-5">
           <Holds className="row-start-1 row-end-5 col-span-3 h-full mt-5">
-            <Titles>No Requests Available</Titles>
+            <Titles>{t("NoRequestsAvailable")}</Titles>
           </Holds>
           <Holds className="row-start-5 col-start-3 col-end-4 h-full">
             <Buttons background={"green"} href="/hamburger/inbox/form">

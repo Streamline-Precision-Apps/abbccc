@@ -1,5 +1,6 @@
 import { EditableFields } from "@/components/(reusable)/EditableField";
 import { Holds } from "@/components/(reusable)/holds";
+import { useTranslations } from "next-intl";
 
 export function EditCostCodeForm({
   costcodeName,
@@ -16,6 +17,7 @@ export function EditCostCodeForm({
   setCostCodeName: (value: string) => void;
   setDescription: (value: string) => void;
 }) {
+  const t = useTranslations("Admins");
   return (
     <Holds background={"white"} className="w-full h-full row-span-1 col-span-2">
       <form className="flex flex-row size-full gap-4 py-2 px-10">
@@ -25,6 +27,7 @@ export function EditCostCodeForm({
             onChange={(e) => setCostCodeName(e.target.value)}
             isChanged={costcodeName !== initialCostcodeName}
             onRevert={() => setCostCodeName(initialCostcodeName)}
+            placeholder={t("CostCode")}
             className="p-2"
             variant="default"
             size="lg"
@@ -36,6 +39,7 @@ export function EditCostCodeForm({
             onChange={(e) => setDescription(e.target.value)}
             isChanged={description !== initialDescription}
             onRevert={() => setDescription(initialDescription)}
+            placeholder={t("CostCodeDescription")}
             className="p-2"
             variant="default"
             size="lg"
