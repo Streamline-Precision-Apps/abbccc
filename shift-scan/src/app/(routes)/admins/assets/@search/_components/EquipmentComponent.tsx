@@ -24,12 +24,16 @@ export const EquipmentComponent = ({ equipments, setFilter }: Props) => {
 
   // Memoize the filtered list to avoid re-filtering on every render
   const filteredList = useMemo(() => {
-    if (!term.trim()) return equipments; // Return the full list if no term is entered
+    if (!term.trim()) {
+      return [...equipments].sort((a, b) => a.name.localeCompare(b.name));
+    } // Return the full list if no term is entered
 
-    return equipments.filter((equipment) => {
-      const name = equipment.name;
-      return name.includes(term.toLowerCase());
-    });
+    return equipments
+      .filter((equipment) => {
+        const name = equipment.name;
+        return name.includes(term.toLowerCase());
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
   }, [term, equipments]);
 
   // Debounce handler to avoid rapid state updates on each keystroke
@@ -98,8 +102,8 @@ export const EquipmentComponent = ({ equipments, setFilter }: Props) => {
                       className="py-2 border-b"
                       onClick={() => selectEquipment(equipment)}
                     >
-                      <Texts size="p6">
-                        {equipment.qrId} - {equipment.name}
+                      <Texts position={"left"} className="pl-4" size="p6">
+                        {equipment.qrId} - {equipment.name.slice(0, 20)}
                       </Texts>
                     </Holds>
                   ))
