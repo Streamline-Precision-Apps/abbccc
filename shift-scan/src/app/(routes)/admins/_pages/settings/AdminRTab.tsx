@@ -14,6 +14,7 @@ import Spinner from "@/components/(animations)/spinner";
 import { Images } from "@/components/(reusable)/images";
 import { Grids } from "@/components/(reusable)/grids";
 import { z } from "zod";
+import { useTranslations } from "next-intl";
 
 // Define Zod schema for received content
 const receivedContentSchema = z.object({
@@ -26,6 +27,7 @@ const receivedContentSchema = z.object({
 });
 
 export default function AdminRTab() {
+  const t = useTranslations("Admins");
   const { data: session } = useSession();
   const router = useRouter();
   const [receivedContent, setReceivedContent] = useState<receivedContent[]>([]);
@@ -83,7 +85,7 @@ export default function AdminRTab() {
   ) {
     return (
       <Holds className="h-full justify-center">
-        <Titles>Coming Soon</Titles>
+        <Titles>{t("ComingSoon")}</Titles>
         <Holds>
           <Images size={"30"} titleImg="/logo.svg" titleImgAlt="coming soon" />
         </Holds>
@@ -99,7 +101,7 @@ export default function AdminRTab() {
   if (loading) {
     return (
       <Holds className="py-5">
-        <Texts>Loading...</Texts>
+        <Texts>{t("Loading")}</Texts>
         <Spinner />
       </Holds>
     );
@@ -118,7 +120,7 @@ export default function AdminRTab() {
   if (!pending || pending.length === 0) {
     return (
       <Holds className="mt-10">
-        <Titles>There Are No Requests Currently</Titles>
+        <Titles>{t("NoRequestsAvailable")}</Titles>
       </Holds>
     );
   }

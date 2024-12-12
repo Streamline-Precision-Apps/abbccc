@@ -581,8 +581,23 @@
 "CreateTag" : "Crear Etiqueta",
 "SelectATagToView": "Seleccione una Etiqueta para Ver",
 "FailedToFetchTagData": "Fallo al Obtener Datos de Etiqueta.", "FailedToFetchJobData": "Fallo al Obtener Datos de Trabajo.",
-"DeleteTag": "Eliminar Etiqueta"
-
+"DeleteTag": "Eliminar Etiqueta",
+"PleaseCompleteAllRequiredFieldsBeforeSubmitting": "Por favor, complete todos los campos requeridos antes de enviar.",
+"SelectForm": "Seleccione un forma",
+"FullTimesheets": "Hojas de Tiempo Completas",
+"ViewTimesheetsExtract": "Ver Extracción de Hojas de Tiempo",
+"ExtractReport": "Informe de Extracción",
+"EndDateMustBeAfterStartDate": "La fecha de fin debe ser posterior a la fecha de inicio.",
+"StartDateMustBeAfterEndDate": "La fecha de inicio debe ser posterior a la fecha de fin.",
+"DownloadAsCSV": "Descargar como CSV",
+"FailedToFetchEmployeeData": "Fallo al Obtener Datos de Empleado.",
+"Logout": "Cerrar Sesión",
+"LocationAccess": "Acceso a Ubicación",
+"Language": "Idioma",
+"Sent": "Enviado",
+"Recieved": "Recibido",
+"NoRequestsAvailable": "No se Encontraron Solicitudes",
+"CommingSoon": "la página llegará pronto"
         
           
 

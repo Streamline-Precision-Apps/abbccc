@@ -609,7 +609,24 @@
 "SelectATagToView": "Select a Tag to View",
 "FailedToFetchTagData": "Failed to fetch tag data.",
 "FailedToFetchJobData": "Failed to fetch job data.",
-"DeleteTag": "Delete Tag"
+"DeleteTag": "Delete Tag",
+"PleaseCompleteAllRequiredFieldsBeforeSubmitting": "Please complete all required fields before submitting.",
+"SelectForm": "Select Form",
+"FullTimesheets": "Full Timesheets",
+"ViewTimesheetsExtract": "View Timesheets Extract",
+"ExtractReport": "Extract Report",
+"EndDateMustBeAfterStartDate": "End date must be after start date.",
+"StartDateMustBeAfterEndDate": "Start date must be after end date.",
+"DownloadAsCSV": "Download as CSV",
+"FailedToFetchEmployeeData": "Failed to fetch employee data.",
+"Logout": "Logout",
+"LocationAccess": "Location",
+"Language": "Language",
+"Sent": "Sent",
+"Recieved": "Received",
+"NoRequestsAvailable": "No requests available.",
+"CommingSoon": "Coming Soon"
+
        
     
         },  
