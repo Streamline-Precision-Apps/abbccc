@@ -537,7 +537,9 @@
           "CreateNewJobsite":"Crear Nuevo Sitio",
           "CostCodes": "Códigos de Costo",
           "CreateNewCostCode":"Crear Nuevo Código",
-          "CreateNewTag":"Crear Nueva Etiqueta"
+          "CreateNewTag":"Crear Nueva Etiqueta",
+          "ErrorFetchingEquipmentData":"Error al Obtener Datos de Equipo:"
+
 
     
     },
