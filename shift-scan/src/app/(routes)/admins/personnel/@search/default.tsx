@@ -12,6 +12,7 @@ import { Crews } from "./_components/Crews";
 import { usePathname } from "next/navigation";
 import { NotificationComponent } from "@/components/(inputs)/NotificationComponent";
 import { useNotification } from "@/app/context/NotificationContext";
+import { useTranslations } from "next-intl";
 
 export default function Search() {
   const [activeTab, setActiveTab] = useState(1);
@@ -20,7 +21,7 @@ export default function Search() {
   const [crew, setCrew] = useState<SearchCrew[]>([]);
   const pathname = usePathname(); // Get current route
   const { notification } = useNotification();
-
+  const t = useTranslations("Admins");
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
@@ -32,15 +33,15 @@ export default function Search() {
         setEmployees(employeesData);
       } catch (error) {
         if (error instanceof z.ZodError) {
-          console.error("Validation Error:", error.errors);
+          console.error(`${t("ZodError")}`, error.errors);
         } else {
-          console.error("Failed to fetch employees data:", error);
+          console.error(`${t("FailedToFetch")} ${t("EmployeesData")}`, error);
         }
       }
     };
 
     fetchEmployees();
-  }, [filter, notification]);
+  }, [filter, notification, t]);
 
   useEffect(() => {
     const fetchCrews = async () => {
@@ -53,15 +54,15 @@ export default function Search() {
         setCrew(crewData);
       } catch (error) {
         if (error instanceof z.ZodError) {
-          console.error("Validation Error:", error.errors);
+          console.error(t("ZodError"), error.errors);
         } else {
-          console.error("Failed to fetch employees data:", error);
+          console.error(`${t("FailedToFetch")} ${t("EmployeesData")}`, error);
         }
       }
     };
 
     fetchCrews();
-  }, [pathname, notification]); // Trigger the effect when the route changes
+  }, [pathname, notification, t]); // Trigger the effect when the route changes
 
   useEffect(() => {
     const tabMapping: { [key: string]: number } = {
@@ -82,13 +83,13 @@ export default function Search() {
       <Grids rows={"10"}>
         <Holds position={"row"} className="row-span-1 h-full gap-2">
           <Tab onClick={() => setActiveTab(1)} isActive={activeTab === 1}>
-            Personnel
+            {t("Personnel")}
           </Tab>
           <Tab onClick={() => setActiveTab(2)} isActive={activeTab === 2}>
-            Time Sheets
+            {t("TimeSheets")}
           </Tab>
           <Tab onClick={() => setActiveTab(3)} isActive={activeTab === 3}>
-            Crews
+            {t("Crews")}
           </Tab>
         </Holds>
 

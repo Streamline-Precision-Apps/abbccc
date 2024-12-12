@@ -14,8 +14,10 @@ import Spinner from "@/components/(animations)/spinner";
 import { EditEmployeeForm } from "./_components/edit-employee-form";
 import { EmployeeContactInfo, UserProfile } from "@/lib/types";
 import { ModalsPage } from "./_components/modal";
+import { useTranslations } from "next-intl";
 
 export default function Employee({ params }: { params: { employee: string } }) {
+  const t = useTranslations("Admins");
   const { data: session } = useSession();
   const permission = session?.user.permission;
   const userId = session?.user.id;
@@ -59,9 +61,7 @@ export default function Employee({ params }: { params: { employee: string } }) {
       try {
         const response = await fetch(`/api/employeeInfo/${params.employee}`);
         const data = await response.json();
-        console.log(data);
         setUser(data.id);
-        console.log("permissions", data.permission);
         setUserStatus(data.activeEmployee);
         setRenderedData(data);
         setEditedData(data);
@@ -70,12 +70,12 @@ export default function Employee({ params }: { params: { employee: string } }) {
         setFirstName(data.firstName);
         setLastName(data.lastName);
       } catch (error) {
-        console.error("Failed to fetch employee info:", error);
+        console.error(`${t("FailedToFetch")} ${t("EmployeeInfo")}`, error);
       }
     };
 
     fetchEmployeeInfo();
-  }, [params.employee, pathname]);
+  }, [params.employee, pathname, t]);
 
   useEffect(() => {
     const fetchContactInfo = async () => {
@@ -87,12 +87,12 @@ export default function Employee({ params }: { params: { employee: string } }) {
         setRenderedData1(data);
         setEditedData1(data);
       } catch (error) {
-        console.error("Failed to fetch employee info:", error);
+        console.error(`${t("FailedToFetch")} ${t("EmployeeInfo")}`, error);
       }
     };
 
     fetchContactInfo();
-  }, [params.employee, pathname]);
+  }, [params.employee, pathname, t]);
 
   const reloadEmployeeData = async () => {
     try {
@@ -103,7 +103,7 @@ export default function Employee({ params }: { params: { employee: string } }) {
       setLastName(data.lastName);
       // other data updates if needed
     } catch (error) {
-      console.error("Failed to fetch employee info:", error);
+      console.error(`${t("FailedToReload")} ${t("EmployeeInfo")}`, error);
     }
   };
 
@@ -114,7 +114,7 @@ export default function Employee({ params }: { params: { employee: string } }) {
         const data = await response.json();
         setSignatureBase64String(data.signature);
       } catch (error) {
-        console.error("Failed to fetch employee info:", error);
+        console.error(`${t("FailedToFetch")} ${t("EmployeeSignature")}`, error);
       }
     };
     setTimeout(() => loadSignature(), 1000);
@@ -143,7 +143,7 @@ export default function Employee({ params }: { params: { employee: string } }) {
             <Holds
               position="left"
               className="row-start-1 row-end-2 col-start-1 col-end-3 h-full cursor-pointer"
-              title="Change Profile Picture"
+              title={t("ChangeProfilePicture")}
               onClick={
                 userId !== user
                   ? () => setIsProfilePic(true)
@@ -166,7 +166,7 @@ export default function Employee({ params }: { params: { employee: string } }) {
                   </Titles>
                 ) : (
                   <Titles size="h2" position="left">
-                    Your Profile
+                    {t("YourProfile")}
                   </Titles>
                 )}
               </Holds>
@@ -176,7 +176,7 @@ export default function Employee({ params }: { params: { employee: string } }) {
                   size="p6"
                   text={userStatus ? "green" : "red"}
                 >
-                  {userStatus ? "Active" : "Terminated"}
+                  {userStatus ? `${t("Active")}` : `${t("Terminated")}`}
                 </Texts>
               </Holds>
             </Holds>
@@ -192,7 +192,7 @@ export default function Employee({ params }: { params: { employee: string } }) {
                     onClick={handleSubmitClick}
                     className="py-2"
                   >
-                    <Titles size="h5">Submit Edit</Titles>
+                    <Titles size="h5">{t("SubmitEdit")}</Titles>
                   </Buttons>
                 </Holds>
                 {userId !== user || permission === "SUPERADMIN" ? (
@@ -204,16 +204,17 @@ export default function Employee({ params }: { params: { employee: string } }) {
                           background="red"
                           onClick={() => setIsOpen(true)}
                         >
-                          <Titles size="h5">Terminate Employee</Titles>
+                          <Titles size="h5">{t("TerminateEmployee")}</Titles>
                         </Buttons>
                       </Holds>
                     ) : (
                       <Holds>
                         <Buttons
+                          className="py-2"
                           background="lightBlue"
                           onClick={() => setIsOpen2(true)}
                         >
-                          <Titles size="h5">Activate Employee</Titles>
+                          <Titles size="h5">{t("ActivateEmployee")}</Titles>
                         </Buttons>
                       </Holds>
                     )}
@@ -253,7 +254,7 @@ export default function Employee({ params }: { params: { employee: string } }) {
           isOpen={isOpen}
           setIsOpen={setIsOpen}
           isOpen2={isOpen2}
-          setIsOpen2={setIsOpen}
+          setIsOpen2={setIsOpen2}
           setUserStatus={setUserStatus}
           setImage={setImage}
           setSignatureBase64String={setSignatureBase64String}

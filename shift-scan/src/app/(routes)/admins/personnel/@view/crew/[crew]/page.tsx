@@ -16,6 +16,8 @@ import Spinner from "@/components/(animations)/spinner";
 import { useRouter } from "next/navigation";
 import { useNotification } from "@/app/context/NotificationContext";
 import { CheckBox } from "@/components/(inputs)/checkBox";
+import { useTranslations } from "next-intl";
+import { arraysAreEqual } from "@/utils/forms/isArrayEqual";
 
 type User = {
   id: string;
@@ -24,16 +26,6 @@ type User = {
   permission: string;
   supervisor: boolean;
   image: string;
-};
-
-const arraysAreEqual = (arr1: User[], arr2: User[]) => {
-  if (arr1.length !== arr2.length) return false;
-
-  // Compare by id to detect changes
-  const set1 = new Set(arr1.map((user) => user.id));
-  const set2 = new Set(arr2.map((user) => user.id));
-
-  return Array.from(set1).every((id) => set2.has(id));
 };
 
 export default function ViewCrew({ params }: { params: { crew: string } }) {
@@ -51,6 +43,7 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
   const [teamLead, setTeamLead] = useState<string | null>(null);
   const [hasChanged, setHasChanged] = useState(false);
   const { setNotification } = useNotification();
+  const t = useTranslations("Admins");
   const router = useRouter();
 
   useEffect(() => {
@@ -68,7 +61,7 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
         const employeesData = await employeesRes.json();
         setEmployees(employeesData);
       } catch (error) {
-        console.error("Failed to fetch employees:", error);
+        console.error(`${t("FailedToFetch")} ${t("EmployeeData")}`, error);
       }
     };
     fetchEmployees();
@@ -112,7 +105,7 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
 
         setLoading(false);
       } catch (error) {
-        console.error("Failed to fetch crew members:", error);
+        console.error(`${t("FailedToFetch")} ${t("CrewMembers")}`, error);
         setLoading(false);
       }
     };
@@ -165,12 +158,12 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
     try {
       // Gather required parameters
       if (!hasChanged) {
-        setNotification("No changes detected.", "neutral");
+        setNotification(t("NoChangesDetected"), "neutral");
         return;
       }
       const crewId = params.crew;
       if (!crewId) {
-        alert("Invalid crew ID.");
+        alert(t("InvalidCrewId"));
         return;
       }
 
@@ -185,9 +178,9 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
       // Call the updateCrew function to handle backend update logic
       await updateCrew(crewId, formData);
       router.refresh();
-      setNotification("Updated crew successfully!", "success");
+      setNotification(t("UpdateCrewSuccess"), "success");
     } catch (error) {
-      console.error("Failed to update crew:", error);
+      console.error(t("FailedToUpdateCrew"), error);
     }
   };
 
@@ -197,10 +190,10 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
       await deleteCrewAction(crewId);
       router.push("/admins/personnel/crew");
       router.refresh();
-      setNotification("Crew deleted successfully!", "error");
+      setNotification(t("CrewDeletedSuccessfully"), "error");
     } catch (error) {
-      console.error("Failed to delete crew:", error);
-      setNotification("Error: Failed to delete crew.");
+      console.error(t("FailedToDeleteCrew"), error);
+      setNotification(t("ErrorFailedToDeleteCrew"));
     }
   };
 
@@ -275,14 +268,14 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
               <Grids rows={"3"} cols={"6"} className="w-full h-full">
                 <Holds className=" row-start-1 row-end-2 col-start-5 col-span-7 ">
                   <Texts position={"right"} size={"p6"}>
-                    Crew Lead
+                    {t("CrewLead")}
                   </Texts>
                 </Holds>
                 <Holds className=" row-start-1 row-end-4 col-start-1 col-end-7 ">
                   {teamLeadUser ? (
                     <TeamLeadDetails user={teamLeadUser} />
                   ) : (
-                    <Texts size={"p5"}>Select a Crew lead</Texts>
+                    <Texts size={"p5"}>{t("SelectCrewLead")}</Texts>
                   )}
                 </Holds>
               </Grids>
@@ -330,7 +323,7 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
                   )}
                 </Holds>
               ) : (
-                <p>No crew members found</p>
+                <p>{t("NoCrewMembersFound")}</p>
               )}
             </Holds>
           </Holds>
@@ -346,7 +339,7 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
               }}
               className="row-start-1 row-end-4 col-start-5 col-end-8 hover:cursor-pointer"
             >
-              <Titles size={"h4"}>Delete Crew</Titles>
+              <Titles size={"h4"}>{t("DeleteCrew")}</Titles>
             </Buttons>
 
             <Buttons
@@ -356,7 +349,7 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
               }}
               className="row-start-1 row-end-4 col-start-8 col-end-11"
             >
-              <Titles size={"h4"}>Submit Crew</Titles>
+              <Titles size={"h4"}>{t("SubmitCrew")}</Titles>
             </Buttons>
           </Grids>
         </Holds>
@@ -385,7 +378,7 @@ export function CrewLeft({
   teamLead: string | null;
 }) {
   const [term, setTerm] = useState<string>("");
-
+  const t = useTranslations("Admins");
   const filteredList = useMemo(() => {
     if (!term.trim()) return employees;
     return employees.filter((employee) => {
@@ -403,9 +396,9 @@ export function CrewLeft({
             onChange={(e) => setFilter(e.target.value)}
             className="w-full px-0 py-2 text-center"
           >
-            <option value="all">Select Filter</option>
-            <option value="all">All</option>
-            <option value="supervisors">Supervisors</option>
+            <option value="all">{t("SelectFilter")}</option>
+            <option value="all">{t("All")}</option>
+            <option value="supervisors">{t("Supervisors")}</option>
           </Selects>
         </Holds>
         <Holds className="row-span-8 h-full border-[3px] border-black rounded-t-[10px]">
@@ -416,7 +409,7 @@ export function CrewLeft({
             <Holds className="w-[80%]">
               <Inputs
                 type="search"
-                placeholder="Search employees by name"
+                placeholder={t("SearchCrewMembers")}
                 value={term}
                 onChange={(e) => setTerm(e.target.value)}
                 className="border-none outline-none"

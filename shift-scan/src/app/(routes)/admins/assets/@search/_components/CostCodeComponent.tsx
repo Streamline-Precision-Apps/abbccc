@@ -7,6 +7,7 @@ import { Inputs } from "@/components/(reusable)/inputs";
 
 import { Texts } from "@/components/(reusable)/texts";
 import { CCTags, CostCodes } from "@/lib/types";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState, useMemo, useCallback } from "react";
 
@@ -16,6 +17,7 @@ type Props = {
 };
 
 export const CostCodeComponent = ({ costCodes }: Props) => {
+  const t = useTranslations("Admins");
   const [term, setTerm] = useState<string>("");
   // const [page, setPage] = useState(true);
   const router = useRouter();
@@ -59,7 +61,7 @@ export const CostCodeComponent = ({ costCodes }: Props) => {
             <Holds className="w-[80%]">
               <Inputs
                 type="search"
-                placeholder="Search costcodes by name"
+                placeholder={t("CostCodeSearchPlaceholder")}
                 value={term}
                 onChange={handleSearchChange}
                 className="border-none outline-none"
@@ -82,7 +84,7 @@ export const CostCodeComponent = ({ costCodes }: Props) => {
                 ))
               ) : (
                 <Texts size="p6" className="text-center">
-                  No cost code found
+                  {t("NoCostCodeFound")}
                 </Texts>
               )}
             </Holds>
@@ -96,7 +98,7 @@ export const CostCodeComponent = ({ costCodes }: Props) => {
         className="row-span-1 h-full"
         onClick={createCostCode}
       >
-        <Texts size="p6">Create New Cost Code</Texts>
+        <Texts size="p6">{t("CreateNewCostCode")}</Texts>
       </Buttons>
     </>
   );
