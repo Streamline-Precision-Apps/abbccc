@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation";
 import { useNotification } from "@/app/context/NotificationContext";
 import { CheckBox } from "@/components/(inputs)/checkBox";
 import { useTranslations } from "next-intl";
+import { arraysAreEqual } from "@/utils/forms/isArrayEqual";
 
 type User = {
   id: string;
@@ -25,16 +26,6 @@ type User = {
   permission: string;
   supervisor: boolean;
   image: string;
-};
-
-const arraysAreEqual = (arr1: User[], arr2: User[]) => {
-  if (arr1.length !== arr2.length) return false;
-
-  // Compare by id to detect changes
-  const set1 = new Set(arr1.map((user) => user.id));
-  const set2 = new Set(arr2.map((user) => user.id));
-
-  return Array.from(set1).every((id) => set2.has(id));
 };
 
 export default function ViewCrew({ params }: { params: { crew: string } }) {

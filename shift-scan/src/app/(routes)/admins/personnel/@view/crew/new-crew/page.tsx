@@ -1,5 +1,5 @@
 "use client";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, use, useEffect, useState } from "react";
 import { ReusableViewLayout } from "../../[employee]/_components/reusableViewLayout";
 import { Holds } from "@/components/(reusable)/holds";
 
@@ -14,6 +14,7 @@ import { CrewLeft } from "../[crew]/page";
 import { Forms } from "@/components/(reusable)/forms";
 import { useNotification } from "@/app/context/NotificationContext";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 type User = {
   id: string;
@@ -37,6 +38,7 @@ export default function CreateTeam() {
   >({});
   const { setNotification } = useNotification();
   const [teamLead, setTeamLead] = useState<string | null>(null);
+  const t = useTranslations("Admins");
   const router = useRouter();
 
   // Fetch all employees
@@ -48,7 +50,7 @@ export default function CreateTeam() {
         const data = await response.json();
         setEmployees(data);
       } catch (error) {
-        console.error("Failed to fetch employees:", error);
+        console.error(`${t("FailedToFetch")} ${t("Employee")}`, error);
       } finally {
         setLoading(false);
       }
@@ -99,12 +101,12 @@ export default function CreateTeam() {
     event.preventDefault();
     try {
       if (!crewName.trim()) {
-        alert("Crew name is required.");
+        setNotification(t("CrewNameRequired"), "error");
         return;
       }
 
       if (!teamLead) {
-        alert("A team lead must be selected.");
+        setNotification(t("TeamLeadRequired"), "error");
         return;
       }
 
@@ -127,7 +129,7 @@ export default function CreateTeam() {
       await createCrew(formData);
 
       router.refresh();
-      setNotification("Crew created successfully!", "success");
+      setNotification(t("CrewCreatedSuccessfully"), "success");
 
       setCrewName(""); // Clear the crew name
       setCrewDescription(""); // Clear the description
@@ -137,7 +139,10 @@ export default function CreateTeam() {
       setTeamLead(null); // Clear the selected team lead
     } catch (error) {
       console.error("Failed to create crew:", error);
-      alert("An error occurred while creating the crew. Please try again.");
+      setNotification(
+        `${t("FailedToCreateCrew")} ${t("PleaseTryAgain")}`,
+        "error"
+      );
     }
   };
 
@@ -199,7 +204,7 @@ export default function CreateTeam() {
             size={"p6"}
             position={"right"}
             className="w-full px-10 py-2"
-          >{`Total Crew Members: ${usersInCrew.length}`}</Texts>
+          >{`${t("TotalCrewMembers")}: ${usersInCrew.length}`}</Texts>
           <Holds className="h-full  px-10">
             <Holds
               background={"offWhite"}
@@ -212,7 +217,7 @@ export default function CreateTeam() {
               <Grids rows={"3"} cols={"6"} className="w-full h-full">
                 <Holds className=" row-start-1 row-end-2 col-start-5 col-span-7 ">
                   <Texts position={"right"} size={"p6"}>
-                    Crew Lead
+                    {t("CrewLead")}
                   </Texts>
                 </Holds>
                 <Holds className=" row-start-1 row-end-4 col-start-1 col-end-7 ">
@@ -221,7 +226,7 @@ export default function CreateTeam() {
                       user={employees.find((emp) => emp.id === teamLead)!}
                     />
                   ) : (
-                    <Texts size={"p5"}>Select a Crew lead</Texts>
+                    <Texts size={"p6"}>{t("SelectCrewLead")}</Texts>
                   )}
                 </Holds>
               </Grids>
@@ -260,7 +265,7 @@ export default function CreateTeam() {
                 </Holds>
               ) : (
                 <Holds background={"offWhite"} className="w-full h-full">
-                  <Texts size={"p5"}>No crew members found</Texts>
+                  <Texts size={"p6"}>{t("NoCrewMembersFound")}</Texts>
                 </Holds>
               )}
             </Holds>
@@ -276,7 +281,7 @@ export default function CreateTeam() {
                 type="submit"
                 className="row-start-1 row-end-4 col-start-8 col-end-11"
               >
-                <Titles size={"h4"}>Create Crew</Titles>
+                <Titles size={"h4"}>{t("CreateCrew")}</Titles>
               </Buttons>
             </Grids>
           </Holds>
