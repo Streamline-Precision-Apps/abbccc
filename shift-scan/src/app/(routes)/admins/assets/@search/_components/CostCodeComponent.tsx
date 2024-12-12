@@ -24,12 +24,16 @@ export const CostCodeComponent = ({ costCodes }: Props) => {
 
   // Memoize the filtered list to avoid re-filtering on every render
   const filteredList = useMemo(() => {
-    if (!term.trim()) return costCodes; // Return the full list if no term is entered
+    if (!term.trim()) {
+      return [...costCodes].sort((a, b) => a.name.localeCompare(b.name));
+    }
 
-    return costCodes.filter((costCode) => {
-      const name = costCode.name;
-      return name.includes(term.toLowerCase());
-    });
+    return costCodes
+      .filter((costCode) => {
+        const name = costCode.name;
+        return name.includes(term.toLowerCase());
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
   }, [term, costCodes]);
 
   // Debounce handler to avoid rapid state updates on each keystroke
@@ -77,8 +81,8 @@ export const CostCodeComponent = ({ costCodes }: Props) => {
                     className="py-2 border-b"
                     onClick={() => selectCostCode(costCode)}
                   >
-                    <Texts size="p6">
-                      {costCode.name} - {costCode.description}
+                    <Texts position={"left"} className="pl-4" size="p6">
+                      {costCode.name} - {costCode.description.slice(0, 20)}
                     </Texts>
                   </Holds>
                 ))

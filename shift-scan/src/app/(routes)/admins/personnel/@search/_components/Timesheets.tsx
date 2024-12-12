@@ -23,12 +23,18 @@ export const Timesheets = ({ employees, setFilter }: Props) => {
 
   // Memoize the filtered list to avoid re-filtering on every render
   const filteredList = useMemo(() => {
-    if (!term.trim()) return employees; // Return the full list if no term is entered
+    if (!term.trim()) {
+      return [...employees].sort((a, b) =>
+        a.lastName.localeCompare(b.lastName)
+      );
+    } // Return the full list if no term is entered
 
-    return employees.filter((employee) => {
-      const name = `${employee.firstName} ${employee.lastName}`.toLowerCase();
-      return name.includes(term.toLowerCase());
-    });
+    return employees
+      .filter((employee) => {
+        const name = `${employee.firstName} ${employee.lastName}`.toLowerCase();
+        return name.includes(term.toLowerCase());
+      })
+      .sort((a, b) => a.lastName.localeCompare(b.lastName));
   }, [term, employees]);
 
   // Debounce handler to avoid rapid state updates on each keystroke
@@ -102,7 +108,7 @@ export const Timesheets = ({ employees, setFilter }: Props) => {
                         className="py-2 border-b"
                         onClick={() => selectEmployee(employee)}
                       >
-                        <Texts size="p6">
+                        <Texts position={"left"} size="p6" className="pl-4">
                           {employee.firstName} {employee.lastName}
                         </Texts>
                       </Holds>
