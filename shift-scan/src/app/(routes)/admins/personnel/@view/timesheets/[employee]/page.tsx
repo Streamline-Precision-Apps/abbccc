@@ -8,12 +8,14 @@ import { Filter } from "./_component/filter";
 import { TimesheetView } from "./_component/timesheetView";
 import Spinner from "@/components/(animations)/spinner";
 import useFetchAllData from "@/app/(content)/FetchData";
+import { useTranslations } from "next-intl";
 
 export default function Timesheets({
   params,
 }: {
   params: { employee: string };
 }) {
+  const t = useTranslations("Admins");
   const [user, setUser] = useState<string>("");
   const [profilePic, setProfilePic] = useState<string>("");
   const [loading, setLoading] = useState(true);
@@ -31,7 +33,7 @@ export default function Timesheets({
         setUser(data.firstName + " " + data.lastName);
         setProfilePic(data.image);
       } catch (error) {
-        console.error("Failed to fetch employee info:", error);
+        console.error(`${t("FailedToFetch")} ${t("EmployeeData")}`, error);
       }
       setLoading(false);
     };
@@ -41,7 +43,7 @@ export default function Timesheets({
     <Holds className="h-full w-full">
       {loading ? (
         <Holds className="bg-[#CACACA] rounded-[10px] h-full w-full justify-center items-center">
-          <Titles size={"h1"}>Loading...</Titles>
+          <Titles size={"h1"}>{t("Loading")}</Titles>
           <Spinner />
         </Holds>
       ) : (

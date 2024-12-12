@@ -1,7 +1,8 @@
+"use client";
 import { ChangeEvent, Dispatch, SetStateAction, useRef, useState } from "react";
 import { Inputs } from "../(reusable)/inputs";
 import { Labels } from "../(reusable)/labels";
-import { Contents } from "../(reusable)/contents";
+
 import "react-image-crop/dist/ReactCrop.css";
 import ReactCrop, {
   centerCrop,
@@ -14,6 +15,9 @@ import { Buttons } from "../(reusable)/buttons";
 import SetCanvasPreview from "./setCanvasPreview";
 import React from "react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
+import { Holds } from "../(reusable)/holds";
+import { Titles } from "../(reusable)/titles";
 type Props = {
   setBase64String: Dispatch<SetStateAction<string>>;
   handleFileChange: (event: ChangeEvent<HTMLInputElement>) => void;
@@ -32,6 +36,7 @@ export default function FileImageCropper({
   const [crop, setCrop] = useState<Crop>();
   const [error, setError] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<boolean>(false);
+  const t = useTranslations("Components");
 
   const onSelectFile = (e: ChangeEvent<HTMLInputElement>) => {
     setSelectedFile(true);
@@ -88,7 +93,7 @@ export default function FileImageCropper({
       )}
       {error && <Texts color="red">{error}</Texts>}
       {imageSource && (
-        <Contents>
+        <Holds className="flex flex-col items-center">
           <ReactCrop
             crop={crop}
             circularCrop
@@ -100,8 +105,8 @@ export default function FileImageCropper({
             <Image
               ref={imgRef}
               src={imageSource}
-              width={500}
-              height={500}
+              width={300}
+              height={300}
               alt="profile"
               onLoad={onImageLoad}
             />
@@ -126,8 +131,9 @@ export default function FileImageCropper({
                 handleFileChange;
               }
             }}
+            className="mt-5 py-2"
           >
-            <Texts>Crop Image</Texts>
+            <Titles size="h4">{t("CropImage")}</Titles>
           </Buttons>
 
           {crop && (
@@ -142,7 +148,7 @@ export default function FileImageCropper({
               }}
             ></canvas>
           )}
-        </Contents>
+        </Holds>
       )}
     </>
   );

@@ -11,6 +11,7 @@ import { Selects } from "@/components/(reusable)/selects";
 import { Titles } from "@/components/(reusable)/titles";
 import { hash } from "bcryptjs";
 import { useSession } from "next-auth/react";
+import { useTranslations } from "next-intl";
 import { useRef } from "react";
 import { z } from "zod";
 
@@ -25,6 +26,7 @@ const employeeSchema = z.object({
 });
 
 export default function NewEmployee() {
+  const t = useTranslations("Admins");
   const { data: session } = useSession();
   const permission = session?.user.permission;
   const CreateFormRef = useRef<HTMLFormElement>(null);
@@ -42,7 +44,7 @@ export default function NewEmployee() {
     // Validate data using Zod schema
     const result = employeeSchema.safeParse(plainData);
     if (!result.success) {
-      console.error("Validation failed:", result.error.errors);
+      console.error(`${t("ValidationFailed")}`, result.error.errors);
       return;
     }
 
@@ -64,14 +66,14 @@ export default function NewEmployee() {
 
       // Call the server action
       await adminCreateUser(validatedData);
-      setNotification("Employee created successfully.", "success");
+      setNotification(t("EmployeeCreatedSuccessfully"), "success");
       // Redirect on success
       if (CreateFormRef.current) {
         CreateFormRef.current.reset();
       }
     } catch (error) {
-      console.error("Failed to create employee:", error);
-      setNotification("Failed to create employee.", "error");
+      console.error(t("FailedToCreateEmployee"), error);
+      setNotification(t("FailedToCreateEmployee"), "error");
     }
   };
 
@@ -99,13 +101,13 @@ export default function NewEmployee() {
 
               <Holds className="row-start-2 row-end-3 col-start-3 col-end-5 h-full">
                 <Titles size="h2" position="left">
-                  New Employee
+                  {t("NewEmployee")}
                 </Titles>
               </Holds>
 
               <Holds className="row-start-1 row-end-2  col-start-7 col-end-9 my-auto pr-4">
                 <Buttons background="green" type="submit" className="p-1">
-                  <Titles size="h4">Create Employee</Titles>
+                  <Titles size="h4">{t("CreateEmployee")}</Titles>
                 </Buttons>
               </Holds>
             </Grids>
@@ -121,11 +123,11 @@ export default function NewEmployee() {
                     name="image"
                     value=""
                   />
-                  <Titles size={"h3"}>Employee Information</Titles>
+                  <Titles size={"h3"}>{t("EmployeeInformation")}</Titles>
                   <Holds className="w-full flex-wrap h-full   ">
                     <Holds className="w-[45%] px-2">
                       <Labels size={"p6"}>
-                        First Name <span className="text-red-500">*</span>
+                        {t("FirstName")} <span className="text-red-500">*</span>
                       </Labels>
                       <Inputs
                         className="h-10"
@@ -136,7 +138,7 @@ export default function NewEmployee() {
                     </Holds>
                     <Holds className="w-[45%] px-2">
                       <Labels size={"p6"}>
-                        Last Name <span className="text-red-500">*</span>
+                        {t("LastName")} <span className="text-red-500">*</span>
                       </Labels>
                       <Inputs
                         className="h-10"
@@ -146,7 +148,7 @@ export default function NewEmployee() {
                       />
                     </Holds>
                     <Holds className="w-[45%] px-2">
-                      <Labels size={"p6"}>Username</Labels>
+                      <Labels size={"p6"}>{t("Username")}</Labels>
                       <Inputs
                         className="h-10"
                         type="text"
@@ -156,7 +158,7 @@ export default function NewEmployee() {
                     </Holds>
                     <Holds className="w-[45%] px-2">
                       <Labels size={"p6"}>
-                        Email <span className="text-red-500">*</span>
+                        {t("Email")} <span className="text-red-500">*</span>
                       </Labels>
                       <Inputs
                         className="h-10"
@@ -167,7 +169,8 @@ export default function NewEmployee() {
                     </Holds>
                     <Holds className="w-[45%] px-2">
                       <Labels size={"p6"}>
-                        Date of Birth <span className="text-red-500">*</span>
+                        {t("DateOfBirth")}{" "}
+                        <span className="text-red-500">*</span>
                       </Labels>
                       <Inputs
                         className="h-10"
@@ -178,7 +181,8 @@ export default function NewEmployee() {
                     </Holds>
                     <Holds className="w-[45%] px-2">
                       <Labels size={"p6"}>
-                        Phone Number <span className="text-red-500">*</span>
+                        {t("PhoneNumber")}{" "}
+                        <span className="text-red-500">*</span>
                       </Labels>
                       <Inputs
                         className="h-10"
@@ -189,7 +193,7 @@ export default function NewEmployee() {
                     </Holds>
                     <Holds className="w-[45%] px-2">
                       <Labels size={"p6"}>
-                        Emergency Contact
+                        {t("EmergencyContact")}
                         <Inputs
                           className="h-10"
                           type="text"
@@ -199,7 +203,7 @@ export default function NewEmployee() {
                     </Holds>
                     <Holds className="w-[45%] px-2">
                       <Labels size={"p6"}>
-                        Emergency Contact Number
+                        {t("EmergencyContactNumber")}
                         <Inputs
                           className="h-10"
                           type="tel"
@@ -209,7 +213,7 @@ export default function NewEmployee() {
                     </Holds>
                     <Holds className="w-[45%] px-2">
                       <Labels size={"p6"}>
-                        Temporary Password{" "}
+                        {t("TemporaryPassword")}
                         <span className="text-red-500">*</span>
                         <Inputs
                           className="h-10"
@@ -226,66 +230,68 @@ export default function NewEmployee() {
                 {/* This section is for the permission level to display, the user will be able to change the permission level differently based on roles*/}
                 {/*Super admin can change the permission level of anyone */}
                 <Grids className="w-1/3 h-full">
-                  <Titles size={"h3"}>Employee Permissions</Titles>
+                  <Titles size={"h3"}>{t("EmployeePermissions")}</Titles>
                   {permission === "SUPERADMIN" ? (
                     <Holds className="w-full h-full">
                       <Labels size={"p6"}>
-                        Permission Level <span className="text-red-500">*</span>
+                        {t("PermissionLevel")}{" "}
+                        <span className="text-red-500">*</span>
                       </Labels>
                       <Selects className="" name="permission">
-                        <option value="SUPERADMIN">Super Admin</option>
-                        <option value="ADMIN">Admin</option>
-                        <option value="MANAGER">Manager</option>
-                        <option value="USER"> User</option>
+                        <option value="SUPERADMIN">{t("SuperAdmin")}</option>
+                        <option value="ADMIN">{t("Admin")}</option>
+                        <option value="MANAGER">{t("Manager")}</option>
+                        <option value="USER">{t("User")}</option>
                       </Selects>
                     </Holds>
                   ) : (
                     //the other cannt change the permission level
                     <Holds className="w-full h-full">
                       <Labels size={"p6"}>
-                        Permission Level <span className="text-red-500">*</span>
+                        {t("PermissionLevel")}{" "}
+                        <span className="text-red-500">*</span>
                       </Labels>
                       <Selects name="permission">
-                        <option value="SUPERADMIN">Super Admin</option>
-                        <option value="ADMIN">Admin</option>
-                        <option value="MANAGER">Manager</option>
-                        <option value="USER"> User</option>
+                        <option value="SUPERADMIN">{t("SuperAdmin")}</option>
+                        <option value="ADMIN">{t("Admin")}</option>
+                        <option value="MANAGER">{t("Manager")}</option>
+                        <option value="USER"> {t("User")}</option>
                       </Selects>
                     </Holds>
                   )}
                   <Holds className="w-full h-full">
                     <Labels size={"p6"}>
-                      Truck View <span className="text-red-500">*</span>
+                      {t("TruckView")} <span className="text-red-500">*</span>
                     </Labels>
                     <Selects name="truckView">
-                      <option value="false">False</option>
-                      <option value="true">True</option>
+                      <option value="false">{t("False")}</option>
+                      <option value="true">{t("True")}</option>
                     </Selects>
                   </Holds>
                   <Holds className="w-full h-full">
                     <Labels size={"p6"}>
-                      Tasco View <span className="text-red-500">*</span>
+                      {t("TascoView")} <span className="text-red-500">*</span>
                     </Labels>
                     <Selects name="tascoView">
-                      <option value="false">False</option>
-                      <option value="true">True</option>
+                      <option value="false">{t("False")}</option>
+                      <option value="true">{t("True")}</option>
                     </Selects>
                   </Holds>
                   <Holds className="w-full h-full">
                     <Labels size={"p6"}>
-                      Labor View <span className="text-red-500">*</span>
+                      {t("LaborView")} <span className="text-red-500">*</span>
                     </Labels>
                     <Selects name="laborView">
-                      <option value="false">False</option>
-                      <option value="true">True</option>
+                      <option value="false">{t("False")}</option>
+                      <option value="true">{t("True")}</option>
                     </Selects>
                   </Holds>
                   <Labels size={"p6"}>
-                    Mechanic View <span className="text-red-500">*</span>
+                    {t("MechanicView")} <span className="text-red-500">*</span>
                   </Labels>
                   <Selects name="mechanicView">
-                    <option value="false">False</option>
-                    <option value="true">True</option>
+                    <option value="false">{t("False")}</option>
+                    <option value="true">{t("True")}</option>
                   </Selects>
                 </Grids>
               </Holds>
