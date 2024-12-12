@@ -493,8 +493,8 @@
         "CrewDeletedSuccessfully":"Equipo eliminado con exito.",
         "FailedToDeleteCrew":"No se pudo eliminar el equipo.",
         "ErrorFailedToDeleteCrew":"Error: No se pudo eliminar el equipo.",
-        "CrewLead":"líder de equipo",
-        "SelectCrewLead":"Seleccione un líder de Equipo",
+        "CrewLead":"Líder de Equipo",
+        "SelectCrewLead":"Seleccione un Líder de Equipo",
         "NoCrewMembersFound":"No se encontraron miembros de equipo.",
         "DeleteCrew":"Eliminar Equipo",
         "SubmitCrew":"Enviar Equipo",
@@ -502,7 +502,18 @@
         "SearchCrewMembers":"Buscar Miembros de Equipo",
         "MustSpecify":"Debe especificar al menos uno de los siguientes campos: 'main' o 'mainLeft' y 'mainRight'.",
         "NewCrewName":"Nuevo Nombre de Equipo",
-        "EnterYourComment":"Ingrese su comentario"
+        "EnterYourComment":"Ingrese su comentario",
+        "Employee":"Personal",
+        "CrewNameRequired":"equipo debe tener un nombre.",
+        "TeamLeadRequired":"equipo debe tener un lider de equipo.",
+        "CrewCreatedSuccessfully":"Equipo creado con exito.",
+        "FailedToCreateCrew":"No se pudo crear el equipo.",
+        "ErrorOccurredCreatingCrew":"Error: No se pudo crear el equipo.",
+        "PleaseTryAgain":"Por favor, intente de nuevo.",
+        "TotalCrewMembers":"Miembros de Equipo Totales",
+        "CreateCrew":"Crear Equipo"
+    
+    
     },
     "Components": {
         "CropImage": "Recortar Imagen"

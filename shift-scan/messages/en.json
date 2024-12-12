@@ -522,8 +522,18 @@
         "SearchCrewMembers":"Search Crew Members",
         "MustSpecify":"Must specify either main, or both mainLeft and mainRight",
         "NewCrewName":"New Crew Name",
-        "EnterYourComment":"Enter your comment"
-    
+        "EnterYourComment":"Enter your comment",
+        "Employee":"Employee",
+        "CrewNameRequired":"Crew name is required.",
+        "TeamLeadRequired":"Team lead must be selected.",
+        "CrewCreatedSuccessfully":"Crew created successfully.",
+        "FailedToCreateCrew":"Failed to create crew.",
+        "ErrorOccurredCreatingCrew":"An error occurred while creating the crew.",
+        "PleaseTryAgain":"Please try again.",
+        "TotalCrewMembers":"Total Crew Members",
+        "CreateCrew":"Create Crew"
+        
+
     },
     "Components": {
         "CropImage": "Crop Image"
