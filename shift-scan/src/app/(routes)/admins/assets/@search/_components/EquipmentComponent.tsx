@@ -7,6 +7,7 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
 import { Equipment } from "@/lib/types";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState, useMemo, useCallback } from "react";
 
@@ -16,6 +17,7 @@ type Props = {
 };
 
 export const EquipmentComponent = ({ equipments, setFilter }: Props) => {
+  const t = useTranslations("Admins");
   const [term, setTerm] = useState<string>("");
   // const [page, setPage] = useState(true);
   const router = useRouter();
@@ -57,14 +59,14 @@ export const EquipmentComponent = ({ equipments, setFilter }: Props) => {
             className="w-full px-0 py-2 text-center"
             // onClick={() => setPage(!page)}
           >
-            <option value="all">Select Filter</option>
-            <option value="all">All</option>
-            <option value="Temporary">Temporary</option>
-            <option value="needsRepair">Needs Repair</option>
-            <option value="truck">Truck</option>
-            <option value="trailer">Trailer</option>
-            <option value="equipment">Equipment</option>
-            <option value="vehicle">Vehicle</option>
+            <option value="all">{t("SelectFilter")}</option>
+            <option value="all">{t("All")}</option>
+            <option value="Temporary">{t("Temporary")}</option>
+            <option value="needsRepair">{t("NeedsRepair")}</option>
+            <option value="truck">{t("Truck")}</option>
+            <option value="trailer">{t("Trailer")}</option>
+            <option value="equipment">{t("Equipment")}</option>
+            <option value="vehicle">{t("Vehicle")}</option>
           </Selects>
         </Holds>
         {/* Search Input Section */}
@@ -80,7 +82,7 @@ export const EquipmentComponent = ({ equipments, setFilter }: Props) => {
               <Holds className="w-[80%]">
                 <Inputs
                   type="search"
-                  placeholder="Search equipments by name"
+                  placeholder={t("EquipmentSearchPlaceholder")}
                   value={term}
                   onChange={handleSearchChange}
                   className="border-none outline-none"
@@ -103,7 +105,7 @@ export const EquipmentComponent = ({ equipments, setFilter }: Props) => {
                   ))
                 ) : (
                   <Texts size="p6" className="text-center">
-                    No equipment found
+                    {t("NoEquipmentFound")}
                   </Texts>
                 )}
               </Holds>
@@ -117,7 +119,7 @@ export const EquipmentComponent = ({ equipments, setFilter }: Props) => {
           className="row-span-1 h-full"
           onClick={createEquipment}
         >
-          <Texts size="p6">Create New Equipment</Texts>
+          <Texts size="p6">{t("CreateNewEquipment")}</Texts>
         </Buttons>
       </Grids>
     </Holds>

@@ -7,6 +7,7 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
 import { Jobsites } from "@/lib/types";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState, useMemo, useCallback } from "react";
 
@@ -16,6 +17,7 @@ type Props = {
 };
 
 export const JobsiteComponent = ({ jobsites, setFilter }: Props) => {
+  const t = useTranslations("Admins");
   const [term, setTerm] = useState<string>("");
   // const [page, setPage] = useState(true);
   const router = useRouter();
@@ -57,11 +59,11 @@ export const JobsiteComponent = ({ jobsites, setFilter }: Props) => {
             className="w-full px-0 py-2 text-center"
             // onClick={() => setPage(!page)}
           >
-            <option value="all">Select Filter</option>
-            <option value="all">All</option>
-            <option value="Temporary">Temporary</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
+            <option value="all">{t("SelectFilter")}</option>
+            <option value="all">{t("All")}</option>
+            <option value="Temporary">{t("Temporary")}</option>
+            <option value="active">{t("Active")}</option>
+            <option value="inactive">{t("Inactive")}</option>
           </Selects>
         </Holds>
         {/* Search Input Section */}
@@ -77,7 +79,7 @@ export const JobsiteComponent = ({ jobsites, setFilter }: Props) => {
               <Holds className="w-[80%]">
                 <Inputs
                   type="search"
-                  placeholder="Search jobsites by name"
+                  placeholder={t("JobsiteSearchPlaceholder")}
                   value={term}
                   onChange={handleSearchChange}
                   className="border-none outline-none"
@@ -100,7 +102,7 @@ export const JobsiteComponent = ({ jobsites, setFilter }: Props) => {
                   ))
                 ) : (
                   <Texts size="p6" className="text-center">
-                    No jobsite found
+                    {t("NoJobsiteFound")}
                   </Texts>
                 )}
               </Holds>
@@ -114,7 +116,7 @@ export const JobsiteComponent = ({ jobsites, setFilter }: Props) => {
           className="row-span-1 h-full"
           onClick={createJobsite}
         >
-          <Texts size="p6">Create New Jobsite</Texts>
+          <Texts size="p6">{t("CreateNewJobsite")}</Texts>
         </Buttons>
       </Grids>
     </Holds>
