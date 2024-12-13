@@ -60,7 +60,7 @@ export default function NewTagView() {
       }
     };
     fetchJobs();
-  }, []);
+  }, [setNotification, t]);
 
   const toggleJobSelection = (job: JobTags) => {
     setSelectedJobs((prev) => {
@@ -88,11 +88,9 @@ export default function NewTagView() {
       const payload = {
         name: editedItem,
         description: commentText,
-        jobs: selectedJobs
-          .map((job) => job.id), // IDs of jobs to add
+        jobs: selectedJobs.map((job) => job.id), // IDs of jobs to add
 
-        costCodes: selectedCostCodes
-          .map((cc) => cc.id), // IDs of costCodes to add
+        costCodes: selectedCostCodes.map((cc) => cc.id), // IDs of costCodes to add
       };
 
       // Call changeTags with JSON payload
