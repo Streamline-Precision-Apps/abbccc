@@ -126,7 +126,7 @@ export default function AdminHome() {
             className="w-fit h-fit rounded-2xl"
           >
             <Images
-              titleImg="/calendar.svg"
+              titleImg={"/Calendar.svg"}
               titleImgAlt="adminHome"
               className="m-auto p-1"
               size={"60"}

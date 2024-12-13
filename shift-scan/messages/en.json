@@ -628,7 +628,10 @@
 "CommingSoon": "Coming Soon",
 "Equipment": "Equipment",
 "EnterJobsiteName": "Enter Jobsite Name",
-"ValidationFields": "Please fill in all required fields."
+"ValidationFields": "Please fill in all required fields.",
+"StartDate": "Start Date",
+"EndDate": "End Date",
+"Total Hours": "Total Hours"
 
        
     
