@@ -38,7 +38,7 @@ export default function Timesheets({
       setLoading(false);
     };
     fetchUserName();
-  }, [params.employee]);
+  }, [params.employee, t]);
   return (
     <Holds className="h-full w-full">
       {loading ? (

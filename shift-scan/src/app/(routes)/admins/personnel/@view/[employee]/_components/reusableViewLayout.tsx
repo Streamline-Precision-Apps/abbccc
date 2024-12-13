@@ -7,7 +7,7 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { useTranslations } from "next-intl";
-import { Dispatch, ReactNode, SetStateAction, use, useState } from "react";
+import { Dispatch, ReactNode, SetStateAction, useState } from "react";
 
 type ReusableViewLayoutProps = {
   header?: ReactNode; // Custom header content

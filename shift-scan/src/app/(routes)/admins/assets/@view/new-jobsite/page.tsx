@@ -1,19 +1,14 @@
 "use client";
 import { ReusableViewLayout } from "@/app/(routes)/admins/personnel/@view/[employee]/_components/reusableViewLayout";
 import { Holds } from "@/components/(reusable)/holds";
-import { Texts } from "@/components/(reusable)/texts";
-import { SetStateAction, useState } from "react";
-import { Inputs } from "@/components/(reusable)/inputs";
-import { Grids } from "@/components/(reusable)/grids";
-import { TextAreas } from "@/components/(reusable)/textareas";
-import { Contents } from "@/components/(reusable)/contents";
-import { Images } from "@/components/(reusable)/images";
-import { Buttons } from "@/components/(reusable)/buttons";
-import { Titles } from "@/components/(reusable)/titles";
+import { useState } from "react";
 import { createAdminJobsite } from "@/actions/adminActions";
-import { Labels } from "@/components/(reusable)/labels";
 import { z } from "zod";
 import { useNotification } from "@/app/context/NotificationContext";
+import { useTranslations } from "next-intl";
+import { NewJobsitesHeader } from "./_components/NewJobsiteHeader";
+import NewJobsitesFooter from "./_components/NewJobsiteFooter";
+import NewJobsitesMain from "./_components/NewJobsiteMain";
 
 // Define the Zod schema for Jobsites
 const JobsiteSchema = z.object({
@@ -28,6 +23,7 @@ const JobsiteSchema = z.object({
 });
 
 export default function NewJobsite() {
+  const t = useTranslations("Admins");
   const { setNotification } = useNotification();
   const [formState, setFormState] = useState({
     name: "",
@@ -54,10 +50,9 @@ export default function NewJobsite() {
 
       if (!parsedData.success) {
         console.error("Validation errors:", parsedData.error.errors);
-        setNotification("Validation errors.", "error");
+        setNotification(t("ValidationFields"), "error");
         return;
       }
-
       const formData = new FormData();
       formData.append("name", formState.name);
       formData.append("streetName", formState.streetName);
@@ -70,8 +65,7 @@ export default function NewJobsite() {
 
       const response = await createAdminJobsite(formData);
       if (response) {
-        console.log("Jobsite successfully created.");
-        setNotification("Jobsite successfully created.");
+        setNotification(t("ChangesSavedSuccessfully"), "success");
         setFormState({
           name: "",
           streetName: "",
@@ -83,10 +77,11 @@ export default function NewJobsite() {
           comment: "",
         });
       } else {
-        console.log("Failed to save changes.");
+        setNotification(t("FailedToSaveChanges"), "error");
       }
     } catch (error) {
       console.error(error);
+      setNotification(t("FailedToSaveChanges"), "error");
     }
   };
 
@@ -98,7 +93,7 @@ export default function NewJobsite() {
           "h-full w-full flex flex-col col-span-2 row-span-6 px-5 py-2"
         }
         header={
-          <EditJobsitesHeader
+          <NewJobsitesHeader
             editedItem={formState.name}
             commentText={formState.comment}
             editFunction={(value) => handleFieldChange("name", value as string)}
@@ -110,14 +105,17 @@ export default function NewJobsite() {
         main={
           <Holds className="w-full h-full overflow-y-auto no-scrollbar gap-5">
             <Holds className="w-full h-full">
-              <EditJobsitesMain
+              <NewJobsitesMain
                 formState={formState}
                 handleFieldChange={handleFieldChange}
               />
             </Holds>
+            {/* <Holds background={"white"} className="w-full h-full">
+              <EditTags />
+            </Holds> */}
           </Holds>
         }
-        footer={<EditJobsitesFooter handleEditForm={saveEdits} />}
+        footer={<NewJobsitesFooter handleEditForm={saveEdits} />}
       />
     </Holds>
   );
@@ -327,3 +325,10 @@ export function EditJobsitesFooter({
     </Holds>
   );
 }
+// export function EditTags() {
+//   return (
+//     <Holds background={"white"} className="w-full h-full col-span-2">
+//       <Texts className="text-black font-bold text-2xl">{t("EditTag")}</Texts>
+//     </Holds>
+//   );
+// }
