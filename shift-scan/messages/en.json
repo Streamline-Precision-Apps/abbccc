@@ -632,6 +632,8 @@
 "StartDate": "Start Date",
 "EndDate": "End Date",
 "TagCreatedSuccessfully": "Tag created successfully.",
+"TagDeletedSuccessfully": "Tag deleted successfully.",
+"TagUpdatedSuccessfully": "Tag updated successfully.",
 "Total Hours": "Total Hours"
 
        
