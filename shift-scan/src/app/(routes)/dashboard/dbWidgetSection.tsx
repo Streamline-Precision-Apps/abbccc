@@ -412,7 +412,7 @@ export default function DbWidgetSection({ session }: props) {
                         <Images
                           titleImg="/equipment.svg"
                           titleImgAlt="Equipment Icon"
-                          size={"40"}
+                          size={"30"}
                         />
                       </Holds>
                       <Holds>
