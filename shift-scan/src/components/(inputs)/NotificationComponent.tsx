@@ -18,7 +18,7 @@ export const NotificationComponent = () => {
   return (
     <Holds
       background={backgroundColor as "red" | "green" | "orange"}
-      className="w-[70%] fixed top-[4.5%] left-1/2 -translate-x-1/2 z-50 "
+      className="w-full fixed top-[0%] left-1/2 -translate-x-1/2 z-50 rounded-none "
     >
       <Titles text={"black"} size={"h5"} className="text-center">
         {notification}

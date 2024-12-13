@@ -347,7 +347,9 @@ export function EditJobsitesMain({
       <Grids cols={"3"} rows={"3"} gap={"5"} className="w-full h-full p-4  ">
         {/* Input */}
         <Holds className="h-full w-full ">
-          <Labels size={"p6"}>{t("StreetName")}</Labels>
+          <Labels size={"p6"}>
+            {t("StreetName")} <span className="text-red-500">*</span>
+          </Labels>
           <EditableFields
             value={formState.streetName}
             isChanged={hasChanged("streetName")}
@@ -360,7 +362,9 @@ export function EditJobsitesMain({
           />
         </Holds>
         <Holds className="h-full w-full">
-          <Labels size={"p6"}>{t("StreetNumber")}</Labels>
+          <Labels size={"p6"}>
+            {t("StreetNumber")} <span className="text-red-500">*</span>
+          </Labels>
           <EditableFields
             value={formState.streetNumber}
             isChanged={hasChanged("streetNumber")}
@@ -373,7 +377,9 @@ export function EditJobsitesMain({
           />
         </Holds>
         <Holds className="h-full w-full">
-          <Labels size={"p6"}>{t("City")}</Labels>
+          <Labels size={"p6"}>
+            {t("City")} <span className="text-red-500">*</span>
+          </Labels>
           <EditableFields
             value={formState.city}
             isChanged={hasChanged("city")}
@@ -384,7 +390,9 @@ export function EditJobsitesMain({
           />
         </Holds>
         <Holds className="h-full w-full">
-          <Labels size={"p6"}>{t("State")}</Labels>
+          <Labels size={"p6"}>
+            {t("State")} <span className="text-red-500">*</span>
+          </Labels>
           <EditableFields
             value={formState.state}
             isChanged={hasChanged("state")}
@@ -395,7 +403,9 @@ export function EditJobsitesMain({
           />
         </Holds>
         <Holds className="h-full w-full">
-          <Labels size={"p6"}>{t("Country")}</Labels>
+          <Labels size={"p6"}>
+            {t("Country")} <span className="text-red-500">*</span>
+          </Labels>
           <EditableFields
             value={formState.country}
             isChanged={hasChanged("country")}
@@ -406,7 +416,9 @@ export function EditJobsitesMain({
           />
         </Holds>
         <Holds className="h-full w-full col-start-1 col-end-4 row-start-3 row-end-4 ">
-          <Labels size={"p6"}>{t("Description")}</Labels>
+          <Labels size={"p6"}>
+            {t("Description")} <span className="text-red-500">*</span>
+          </Labels>
           <TextAreas
             value={formState.description}
             onChange={(e) => handleFieldChange("description", e.target.value)}

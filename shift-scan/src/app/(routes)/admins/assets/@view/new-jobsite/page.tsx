@@ -14,6 +14,7 @@ import { createAdminJobsite } from "@/actions/adminActions";
 import { Labels } from "@/components/(reusable)/labels";
 import { z } from "zod";
 import { useNotification } from "@/app/context/NotificationContext";
+import { useTranslations } from "next-intl";
 
 // Define the Zod schema for Jobsites
 const JobsiteSchema = z.object({
@@ -28,6 +29,7 @@ const JobsiteSchema = z.object({
 });
 
 export default function NewJobsite() {
+  const t = useTranslations("Admins");
   const { setNotification } = useNotification();
   const [formState, setFormState] = useState({
     name: "",
@@ -54,10 +56,9 @@ export default function NewJobsite() {
 
       if (!parsedData.success) {
         console.error("Validation errors:", parsedData.error.errors);
-        setNotification("Validation errors.", "error");
+        setNotification(t("ValidationFields"), "error");
         return;
       }
-
       const formData = new FormData();
       formData.append("name", formState.name);
       formData.append("streetName", formState.streetName);
@@ -70,7 +71,7 @@ export default function NewJobsite() {
 
       const response = await createAdminJobsite(formData);
       if (response) {
-        console.log("Changes saved successfully.");
+        setNotification(t("ChangesSavedSuccessfully"), "success");
         setFormState({
           name: "",
           streetName: "",
@@ -82,10 +83,11 @@ export default function NewJobsite() {
           comment: "",
         });
       } else {
-        console.log("Failed to save changes.");
+        setNotification(t("FailedToSaveChanges"), "error");
       }
     } catch (error) {
       console.error(error);
+      setNotification(t("FailedToSaveChanges"), "error");
     }
   };
 
@@ -114,9 +116,9 @@ export default function NewJobsite() {
                 handleFieldChange={handleFieldChange}
               />
             </Holds>
-            <Holds background={"white"} className="w-full h-full">
+            {/* <Holds background={"white"} className="w-full h-full">
               <EditTags />
-            </Holds>
+            </Holds> */}
           </Holds>
         }
         footer={<EditJobsitesFooter handleEditForm={saveEdits} />}
@@ -125,13 +127,13 @@ export default function NewJobsite() {
   );
 }
 
-export function EditTags() {
-  return (
-    <Holds background={"white"} className="w-full h-full col-span-2">
-      <Texts className="text-black font-bold text-2xl">Edit Tag</Texts>
-    </Holds>
-  );
-}
+// export function EditTags() {
+//   return (
+//     <Holds background={"white"} className="w-full h-full col-span-2">
+//       <Texts className="text-black font-bold text-2xl">{t("EditTag")}</Texts>
+//     </Holds>
+//   );
+// }
 
 export function EditJobsitesHeader({
   editedItem,
@@ -145,7 +147,7 @@ export function EditJobsitesHeader({
   editCommentFunction: (value: SetStateAction<string>) => void;
 }) {
   const [isCommentSectionOpen, setIsCommentSectionOpen] = useState(false);
-
+  const t = useTranslations("Admins");
   const openComment = () => {
     setIsCommentSectionOpen(!isCommentSectionOpen);
   };
@@ -171,7 +173,7 @@ export function EditJobsitesHeader({
                 onChange={(e) => {
                   editFunction?.(e.target.value); // Pass the input value to editFunction
                 }}
-                placeholder={"Enter Jobsite Name"}
+                placeholder={t("EnterJobsiteName")}
                 variant={"titleFont"}
                 className=" my-auto"
               />
@@ -181,7 +183,7 @@ export function EditJobsitesHeader({
               className="h-full w-full my-1 row-start-2 row-end-3 col-start-1 col-end-2 "
             >
               <Texts size={"p6"} className="mr-2">
-                {"Comment"}
+                {t("Comment")}
               </Texts>
               <Images
                 titleImg="/comment.svg"
@@ -194,7 +196,7 @@ export function EditJobsitesHeader({
 
             <Holds className="w-full h-full row-start-3 row-end-6 col-start-1 col-end-6">
               <TextAreas
-                placeholder="Enter your comment"
+                placeholder={t("EnterYourComment")}
                 value={commentText ? commentText : ""}
                 onChange={(e) => {
                   editCommentFunction?.(e.target.value); // Pass the input value to editCommentFunction
@@ -212,7 +214,7 @@ export function EditJobsitesHeader({
             <Inputs
               type="text"
               value={editedItem}
-              placeholder={"Enter Jobsite Name"}
+              placeholder={t("EnterJobsiteName")}
               onChange={(e) => {
                 editFunction?.(e.target.value);
               }}
@@ -225,7 +227,7 @@ export function EditJobsitesHeader({
             className="h-full w-full row-start-2 row-end-3 col-start-6 col-end-7 "
           >
             <Texts size={"p6"} className="mr-2">
-              Comment
+              {t("Comment")}
             </Texts>
             <Images
               titleImg="/comment.svg"
@@ -256,12 +258,15 @@ export function EditJobsitesMain({
   };
   handleFieldChange: (field: string, value: string) => void;
 }) {
+  const t = useTranslations("Admins");
   return (
     <Holds background={"white"} className="w-full h-full ">
       <Grids cols={"3"} rows={"3"} gap={"5"} className="w-full h-full p-4  ">
         {/* Input */}
         <Holds className="h-full w-full ">
-          <Labels size={"p6"}>Street Number</Labels>
+          <Labels size={"p6"}>
+            {t("StreetNumber")} <span className="text-red-500">*</span>
+          </Labels>
           <Inputs
             type="text"
             value={formState.streetNumber}
@@ -269,7 +274,9 @@ export function EditJobsitesMain({
           />
         </Holds>
         <Holds className="h-full w-full">
-          <Labels size={"p6"}>Street Name</Labels>
+          <Labels size={"p6"}>
+            {t("StreetName")} <span className="text-red-500">*</span>
+          </Labels>
           <Inputs
             type="text"
             value={formState.streetName}
@@ -277,7 +284,9 @@ export function EditJobsitesMain({
           />
         </Holds>
         <Holds className="h-full w-full">
-          <Labels size={"p6"}>City</Labels>
+          <Labels size={"p6"}>
+            {t("City")} <span className="text-red-500">*</span>
+          </Labels>
           <Inputs
             type="text"
             value={formState.city}
@@ -285,7 +294,9 @@ export function EditJobsitesMain({
           />
         </Holds>
         <Holds className="h-full w-full">
-          <Labels size={"p6"}>State</Labels>
+          <Labels size={"p6"}>
+            {t("State")} <span className="text-red-500">*</span>
+          </Labels>
           <Inputs
             type="text"
             value={formState.state}
@@ -293,7 +304,9 @@ export function EditJobsitesMain({
           />
         </Holds>
         <Holds className="h-full w-full">
-          <Labels size={"p6"}>Country</Labels>
+          <Labels size={"p6"}>
+            {t("Country")} <span className="text-red-500">*</span>
+          </Labels>
           <Inputs
             type="text"
             value={formState.country}
@@ -301,7 +314,9 @@ export function EditJobsitesMain({
           />
         </Holds>
         <Holds className="h-full w-full col-start-1 col-end-4 row-start-3 row-end-4 ">
-          <Labels size={"p6"}>Description</Labels>
+          <Labels size={"p6"}>
+            {t("Description")} <span className="text-red-500">*</span>
+          </Labels>
           <TextAreas
             value={formState.description}
             onChange={(e) => handleFieldChange("description", e.target.value)}
@@ -317,6 +332,7 @@ export function EditJobsitesFooter({
 }: {
   handleEditForm: () => void;
 }) {
+  const t = useTranslations("Admins");
   return (
     <Holds
       background={"white"}
@@ -328,7 +344,7 @@ export function EditJobsitesFooter({
             className={"py-2 bg-app-green"}
             onClick={() => handleEditForm()}
           >
-            <Titles size={"h4"}>Create Jobsite</Titles>
+            <Titles size={"h4"}>{t("CreateNewJobsite")}</Titles>
           </Buttons>
         </Holds>
       </Grids>

@@ -75,18 +75,9 @@ export default function UpdateCostCodes({
       }
     };
     fetchCostcode();
-  }, [id]);
+  }, [id, t]);
 
   useEffect(() => {
-    const toggleTagSelection = (tag: z.infer<typeof CCTagSchema>) => {
-      setSelectedTags(
-        (prev) =>
-          prev.some((t) => t.id === tag.id)
-            ? prev.filter((t) => t.id !== tag.id) // Remove if already selected
-            : [...prev, tag] // Add if not selected
-      );
-    };
-
     // Fix other parameter types
     const fetchTags = async () => {
       try {
@@ -119,7 +110,7 @@ export default function UpdateCostCodes({
     };
 
     fetchTags();
-  }, [costcodeId]);
+  }, [costcodeId, t]);
 
   const toggleTagSelection = (tag: z.infer<typeof CCTagSchema>) => {
     setSelectedTags(

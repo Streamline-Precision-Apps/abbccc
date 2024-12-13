@@ -56,7 +56,7 @@ export default function Search() {
       }
     };
     fetchTags();
-  }, [filter]);
+  }, [filter, t]);
 
   useEffect(() => {
     const fetchEquipments = async () => {
@@ -86,7 +86,7 @@ export default function Search() {
     };
 
     fetchEquipments();
-  }, [filter, triggeredPathEquipment]);
+  }, [filter, t, triggeredPathEquipment]);
 
   useEffect(() => {
     const fetchJobsites = async () => {
@@ -105,7 +105,7 @@ export default function Search() {
     };
 
     fetchJobsites();
-  }, [filter]);
+  }, [filter, t]);
 
   useEffect(() => {
     const fetchCostCodes = async () => {
@@ -126,7 +126,7 @@ export default function Search() {
     };
 
     fetchCostCodes();
-  }, [filter, triggeredPath]);
+  }, [filter, t, triggeredPath]);
 
   return (
     <Holds className="h-full ">
