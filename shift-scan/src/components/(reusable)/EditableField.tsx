@@ -43,6 +43,9 @@ interface EditableFieldsProps
   onRevert?: () => void;
   iconSrc?: string;
   iconAlt?: string;
+  minLength?: number;
+  maxLength?: number;
+  pattern?: string;
 }
 
 const EditableFields: FC<EditableFieldsProps> = ({
@@ -57,8 +60,12 @@ const EditableFields: FC<EditableFieldsProps> = ({
   isChanged,
   placeholder,
   onRevert,
+  minLength,
+  maxLength,
+  pattern,
   iconSrc = "/turnBack.svg",
   iconAlt = "revert",
+
   ...props
 }) => {
   return (
@@ -71,6 +78,9 @@ const EditableFields: FC<EditableFieldsProps> = ({
         onChange={onChange}
         placeholder={placeholder || ""}
         className="h-full w-5/6 border-none focus:outline-none my-auto "
+        minLength={minLength}
+        maxLength={maxLength}
+        pattern={pattern}
         {...props}
       />
       {isChanged && onRevert && (

@@ -11,7 +11,6 @@ import { Buttons } from "../(reusable)/buttons";
 import { TextAreas } from "../(reusable)/textareas";
 import { Labels } from "../(reusable)/labels";
 import { Inputs } from "../(reusable)/inputs";
-import { Images } from "../(reusable)/images";
 import { TitleBoxes } from "../(reusable)/titleBoxes";
 import { Equipment } from "@/lib/types";
 import { useSession } from "next-auth/react";
@@ -101,21 +100,9 @@ const VerificationEQStep: React.FC<VerifyProcessProps> = ({
                   {/*If image is not found it will be null */}
                   {equipment?.find(
                     (equipment) => equipment.qrId === scanEQResult?.data
-                  )?.image ? (
+                  ) ? (
                     <Holds className="row-span-1 h-full ">
-                      <Holds size={"30"}>
-                        <Images
-                          titleImg={
-                            equipment?.find(
-                              (equipment) =>
-                                equipment.qrId === scanEQResult?.data
-                            )?.image ?? ""
-                          }
-                          titleImgAlt="
-                      Equipment Image not found"
-                          className="rounded-full border-[3px] border-black "
-                        />
-                      </Holds>
+                      <Holds size={"30"}></Holds>
                     </Holds>
                   ) : null}
                   <Holds className=" h-full  row-span-1">

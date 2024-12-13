@@ -1,12 +1,11 @@
 "use client";
 import { ReusableViewLayout } from "@/app/(routes)/admins/personnel/@view/[employee]/_components/reusableViewLayout";
 import { Holds } from "@/components/(reusable)/holds";
-import { Inputs } from "@/components/(reusable)/inputs";
 import { Texts } from "@/components/(reusable)/texts";
 
 export default function XXXXX({ params }: { params: { id: string } }) {
   const tagId = params.id;
-
+  console.log(tagId);
   return (
     <Holds className="w-full h-full ">
       <ReusableViewLayout

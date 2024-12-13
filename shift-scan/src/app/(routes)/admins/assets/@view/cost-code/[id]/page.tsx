@@ -10,6 +10,26 @@ import { CostCodeLeft } from "./_components/CostCodeLeft";
 import { CCTags } from "@/lib/types";
 import { EditCostCodeForm } from "./_components/EditCostCodeForm";
 import { EditCostCodeFooter } from "./_components/CostCodeFooter";
+// import { z } from "zod";
+import { useTranslations } from "next-intl";
+
+// // Define Zod schemas
+// const CCTagSchema = z.object({
+//   id: z.number().int(),
+//   name: z.string().min(1, "Name is required"),
+//   description: z.string().optional(),
+//   jobsite: z.array(z.object({ id: z.number(), name: z.string() })).optional(),
+//   costCode: z.array(z.object({ id: z.number(), name: z.string() })).optional(),
+// });
+
+// const CostCodeSchema = z.object({
+//   id: z.number().int(),
+//   name: z.string().min(1, "Name is required"),
+//   description: z.string().min(1, "Description is required"),
+//   type: z.string().min(1, "Type is required"),
+//   createdAt: z.string(),
+//   updatedAt: z.string(),
+// });
 
 export default function UpdateCostCodes({
   params,
@@ -17,7 +37,7 @@ export default function UpdateCostCodes({
   params: { id: string };
 }) {
   const { id } = params;
-
+  const t = useTranslations("Admins");
   const [initialCostcodeName, setInitialCostCodeName] = useState<string>("");
   const [initialDescription, setInitialDescription] = useState<string>("");
   const [costcodeId, setCostCodeId] = useState<number>(0);
@@ -44,9 +64,10 @@ export default function UpdateCostCodes({
       }
     };
     fetchCostcode();
-  }, [id]);
+  }, [id, t]);
 
   useEffect(() => {
+    // Fix other parameter types
     const fetchTags = async () => {
       try {
         // Fetch all tags
@@ -79,7 +100,7 @@ export default function UpdateCostCodes({
     };
 
     fetchTags();
-  }, [costcodeId]);
+  }, [costcodeId, t]);
 
   const toggleTagSelection = (tag: CCTags) => {
     setSelectedTags(

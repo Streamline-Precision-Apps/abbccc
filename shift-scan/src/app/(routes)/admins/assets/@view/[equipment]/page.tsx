@@ -153,7 +153,7 @@ export default function ViewEquipment({
     };
 
     fetchEquipment();
-  }, [params.equipment]);
+  }, [params.equipment, t]);
 
   // Utility to check if a field has changed
   const isFieldChanged = (field: keyof typeof initialEquipment) =>
@@ -199,7 +199,7 @@ export default function ViewEquipment({
     }
 
     try {
-      let formData = new FormData(equipmentFormRef.current!);
+      const formData = new FormData(equipmentFormRef.current!);
       formData.append("id", params.equipment);
       formData.append("name", equipmentName.trim());
       formData.append("description", equipmentDescription.trim());
@@ -308,7 +308,7 @@ export default function ViewEquipment({
         editedItem={equipmentName}
         editCommentFunction={setEquipmentDescription}
         commentText={equipmentDescription}
-        mainHolds="h-full w-full flex flex-row row-span-6 col-span-2 bg-app-dark-blue px-4 py-2 rounded-[10px] gap-4"
+        mainHolds="h-full w-full flex flex-row row-span-6 col-span-2 bg-app-dark-blue px-4  rounded-[10px] gap-4"
         mainLeft={
           <EquipmentLeft
             equipmentCode={equipmentCode}

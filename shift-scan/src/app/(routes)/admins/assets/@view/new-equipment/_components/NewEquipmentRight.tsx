@@ -71,6 +71,8 @@ export function NewEquipmentRight({
                 value={vehicleMake || ""}
                 onChange={(e) => setVehicleMake(e.target.value)}
                 placeholder={t("Make")}
+                pattern="[A-Za-z0-9\s]+"
+                minLength={2}
               />
             </Holds>
 
@@ -85,6 +87,8 @@ export function NewEquipmentRight({
                 value={vehicleModel || ""}
                 onChange={(e) => setVehicleModel(e.target.value)}
                 placeholder={t("Model")}
+                pattern="[A-Za-z0-9\s]+"
+                minLength={3}
               />
             </Holds>
           </Holds>
@@ -104,6 +108,8 @@ export function NewEquipmentRight({
                 value={vehicleYear || ""}
                 onChange={(e) => setVehicleYear(e.target.value)}
                 placeholder={t("Year")}
+                maxLength={4}
+                minLength={4}
               />
             </Holds>
 
@@ -118,6 +124,8 @@ export function NewEquipmentRight({
                 value={vehicleLicensePlate || ""}
                 onChange={(e) => setVehicleLicensePlate(e.target.value)}
                 placeholder={t("LicensePlate")}
+                pattern="[A-Za-z0-9\s]+"
+                minLength={3}
               />
             </Holds>
           </Holds>
