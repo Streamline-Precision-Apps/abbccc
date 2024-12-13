@@ -631,6 +631,7 @@
 "ValidationFields": "Please fill in all required fields.",
 "StartDate": "Start Date",
 "EndDate": "End Date",
+"TagCreatedSuccessfully": "Tag created successfully.",
 "Total Hours": "Total Hours"
 
        

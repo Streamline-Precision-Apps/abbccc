@@ -121,6 +121,210 @@ export default function NewJobsite() {
   );
 }
 
+
+
+export function EditJobsitesHeader({
+  editedItem,
+  commentText,
+  editFunction,
+  editCommentFunction,
+}: {
+  editedItem: string;
+  commentText: string;
+  editFunction: (value: SetStateAction<string>) => void;
+  editCommentFunction: (value: SetStateAction<string>) => void;
+}) {
+  const [isCommentSectionOpen, setIsCommentSectionOpen] = useState(false);
+
+  const openComment = () => {
+    setIsCommentSectionOpen(!isCommentSectionOpen);
+  };
+  return (
+    <Holds
+      background={"white"}
+      className={`w-full h-full col-span-2 ${
+        isCommentSectionOpen ? "row-span-3" : "row-span-1"
+      }`}
+    >
+      {isCommentSectionOpen ? (
+        <Contents width={"95"} position={"row"}>
+          <Grids
+            rows={"5"}
+            cols={"5"}
+            gap={"2"}
+            className=" h-full w-full py-4"
+          >
+            <Holds className="w-full row-start-1 row-end-2 col-start-1 col-end-4">
+              <Inputs
+                type="text"
+                value={editedItem}
+                onChange={(e) => {
+                  editFunction?.(e.target.value); // Pass the input value to editFunction
+                }}
+                placeholder={"Enter Jobsite Name"}
+                variant={"titleFont"}
+                className=" my-auto"
+              />
+            </Holds>
+            <Holds
+              position={"row"}
+              className="h-full w-full my-1 row-start-2 row-end-3 col-start-1 col-end-2 "
+            >
+              <Texts size={"p6"} className="mr-2">
+                {"Comment"}
+              </Texts>
+              <Images
+                titleImg="/comment.svg"
+                titleImgAlt="comment"
+                size={"30"}
+                onClick={openComment}
+                className="cursor-pointer hover:shadow-black hover:shadow-md"
+              />
+            </Holds>
+
+            <Holds className="w-full h-full row-start-3 row-end-6 col-start-1 col-end-6">
+              <TextAreas
+                placeholder="Enter your comment"
+                value={commentText ? commentText : ""}
+                onChange={(e) => {
+                  editCommentFunction?.(e.target.value); // Pass the input value to editCommentFunction
+                }}
+                maxLength={40}
+                rows={4}
+                style={{ resize: "none" }}
+              />
+            </Holds>
+          </Grids>
+        </Contents>
+      ) : (
+        <Grids rows={"2"} cols={"5"} className=" h-full w-full p-4">
+          <Holds className="w-full row-start-1 row-end-3 col-start-1 col-end-4 ">
+            <Inputs
+              type="text"
+              value={editedItem}
+              placeholder={"Enter Jobsite Name"}
+              onChange={(e) => {
+                editFunction?.(e.target.value);
+              }}
+              variant={"titleFont"}
+              className=" my-auto"
+            />
+          </Holds>
+          <Holds
+            position={"row"}
+            className="h-full w-full row-start-2 row-end-3 col-start-6 col-end-7 "
+          >
+            <Texts size={"p6"} className="mr-2">
+              Comment
+            </Texts>
+            <Images
+              titleImg="/comment.svg"
+              titleImgAlt="comment"
+              size={"40"}
+              onClick={openComment}
+              className="cursor-pointer hover:shadow-black hover:shadow-md"
+            />
+          </Holds>
+        </Grids>
+      )}
+    </Holds>
+  );
+}
+export function EditJobsitesMain({
+  formState,
+  handleFieldChange,
+}: {
+  formState: {
+    name: string;
+    streetName: string;
+    streetNumber: string;
+    city: string;
+    state: string;
+    country: string;
+    description: string;
+    comment: string;
+  };
+  handleFieldChange: (field: string, value: string) => void;
+}) {
+  return (
+    <Holds background={"white"} className="w-full h-full ">
+      <Grids cols={"3"} rows={"3"} gap={"5"} className="w-full h-full p-4  ">
+        {/* Input */}
+        <Holds className="h-full w-full ">
+          <Labels size={"p6"}>Street Number</Labels>
+          <Inputs
+            type="text"
+            value={formState.streetNumber}
+            onChange={(e) => handleFieldChange("streetNumber", e.target.value)}
+          />
+        </Holds>
+        <Holds className="h-full w-full">
+          <Labels size={"p6"}>Street Name</Labels>
+          <Inputs
+            type="text"
+            value={formState.streetName}
+            onChange={(e) => handleFieldChange("streetName", e.target.value)}
+          />
+        </Holds>
+        <Holds className="h-full w-full">
+          <Labels size={"p6"}>City</Labels>
+          <Inputs
+            type="text"
+            value={formState.city}
+            onChange={(e) => handleFieldChange("city", e.target.value)}
+          />
+        </Holds>
+        <Holds className="h-full w-full">
+          <Labels size={"p6"}>State</Labels>
+          <Inputs
+            type="text"
+            value={formState.state}
+            onChange={(e) => handleFieldChange("state", e.target.value)}
+          />
+        </Holds>
+        <Holds className="h-full w-full">
+          <Labels size={"p6"}>Country</Labels>
+          <Inputs
+            type="text"
+            value={formState.country}
+            onChange={(e) => handleFieldChange("country", e.target.value)}
+          />
+        </Holds>
+        <Holds className="h-full w-full col-start-1 col-end-4 row-start-3 row-end-4 ">
+          <Labels size={"p6"}>Description</Labels>
+          <TextAreas
+            value={formState.description}
+            onChange={(e) => handleFieldChange("description", e.target.value)}
+          />
+        </Holds>
+      </Grids>
+    </Holds>
+  );
+}
+
+export function EditJobsitesFooter({
+  handleEditForm,
+}: {
+  handleEditForm: () => void;
+}) {
+  return (
+    <Holds
+      background={"white"}
+      className="w-full h-full row-span-1 col-span-2 "
+    >
+      <Grids cols={"4"} gap={"4"} className="w-full h-full p-4">
+        <Holds className="col-start-4 col-end-5 ">
+          <Buttons
+            className={"py-2 bg-app-green"}
+            onClick={() => handleEditForm()}
+          >
+            <Titles size={"h4"}>Create Jobsite</Titles>
+          </Buttons>
+        </Holds>
+      </Grids>
+    </Holds>
+  );
+}
 // export function EditTags() {
 //   return (
 //     <Holds background={"white"} className="w-full h-full col-span-2">
