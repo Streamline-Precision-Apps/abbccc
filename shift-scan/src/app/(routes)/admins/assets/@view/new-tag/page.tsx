@@ -14,6 +14,16 @@ import { Titles } from "@/components/(reusable)/titles";
 import { costCodesTag, JobTags } from "@/lib/types";
 import { useTranslations } from "next-intl";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
+import { z } from "zod";
+import { useNotification } from "@/app/context/NotificationContext";
+
+// Zod schema for validation
+const tagPayloadSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  description: z.string().optional(),
+  jobs: z.array(z.string()).nonempty("At least one job must be selected"),
+  costCodes: z.array(z.string()).nonempty("At least one cost code must be selected"),
+});
 
 export default function NewTagView() {
   const [editedItem, setEditedItem] = useState<string>("");
@@ -28,6 +38,7 @@ export default function NewTagView() {
   const [selectedCostCodes, setSelectedCostCodes] = useState<costCodesTag[]>(
     []
   );
+  const { setNotification } = useNotification();
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -36,7 +47,7 @@ export default function NewTagView() {
         const jobs = (await response.json()) as JobTags[];
         setInitialSelectedJobs(jobs ?? []);
         setJobs(jobs ?? []);
-        //cost codes
+        // Fetch cost codes
         const response2 = await fetch("/api/getAllCostCodes");
         const costCodes = (await response2.json()) as costCodesTag[];
         setInitialSelectedCostCodes(costCodes ?? []);
@@ -81,19 +92,29 @@ export default function NewTagView() {
 
         costCodes: selectedCostCodes
           .filter(
-            (costCodes) =>
-              !initialSelectedCostCodes.some((c) => c.id === costCodes.id)
+            (costCode) =>
+              !initialSelectedCostCodes.some((c) => c.id === costCode.id)
           )
-          .map((cc) => cc.id), // IDs of costCodes to add
+          .map((cc) => cc.id), // IDs of cost codes to add
       };
 
-      // Call changeTags with JSON payload
+      // Validate the payload with Zod
+      const validation = tagPayloadSchema.safeParse(payload);
+
+      if (!validation.success) {
+        console.error("Validation failed:", validation.error.format());
+        setNotification("Data Validation Error", "error");
+        return; // Exit if validation fails
+      }
+
+      // Call createTag with the validated payload
       const response = await createTag(payload);
       if (response) {
-        setEditedItem(editedItem);
-        setCommentText(commentText);
+        setEditedItem("");
+        setCommentText("");
         setSelectedJobs([]);
         setSelectedCostCodes([]);
+        setNotification("Tag created successfully", "success");
       }
     } catch (error) {
       console.log(error);
