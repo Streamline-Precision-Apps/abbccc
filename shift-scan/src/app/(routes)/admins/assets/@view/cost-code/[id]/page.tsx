@@ -10,6 +10,20 @@ import { CostCodeLeft } from "./_components/CostCodeLeft";
 import { CCTags } from "@/lib/types";
 import { EditCostCodeForm } from "./_components/EditCostCodeForm";
 import { EditCostCodeFooter } from "./_components/CostCodeFooter";
+import { z } from "zod";
+
+const costCodeSchema = z.object({
+  id: z.number(),
+  name: z.string().min(1, "Name is required"),
+  description: z.string().optional(),
+});
+
+const tagsSchema = z.array(
+  z.object({
+    id: z.number(),
+    name: z.string().min(1, "Tag name is required"),
+  })
+);
 
 export default function UpdateCostCodes({
   params,
@@ -25,7 +39,7 @@ export default function UpdateCostCodes({
   const [description, setDescription] = useState<string>("");
   const [initialSelectedTags, setinitialSelectedTags] = useState<CCTags[]>([]);
   const [selectedTags, setSelectedTags] = useState<CCTags[]>([]);
-  const [initalTags, setInitialTags] = useState<CCTags[]>([]);
+  const [initialTags, setInitialTags] = useState<CCTags[]>([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -33,14 +47,17 @@ export default function UpdateCostCodes({
       try {
         const res = await fetch(`/api/getCostCodeById/${id}`);
         const data = await res.json();
-        setCostCodeId(data.id);
-        setCostCodeName(data.name);
-        setDescription(data.description);
 
-        setInitialCostCodeName(data.name);
-        setInitialDescription(data.description);
+        const parsedData = costCodeSchema.parse(data);
+
+        setCostCodeId(parsedData.id);
+        setCostCodeName(parsedData.name);
+        setDescription(parsedData.description || "");
+
+        setInitialCostCodeName(parsedData.name);
+        setInitialDescription(parsedData.description || "");
       } catch (error) {
-        console.log(error);
+        console.error("Error fetching cost code or validation failed:", error);
       }
     };
     fetchCostcode();
@@ -49,32 +66,28 @@ export default function UpdateCostCodes({
   useEffect(() => {
     const fetchTags = async () => {
       try {
-        // Fetch all tags
         const allTagsRes = await fetch(`/api/getAllTags`);
         const allTagsData = await allTagsRes.json();
-        setInitialTags(allTagsData);
-        // Fetch connected tags for the current costCode
-        const connectedTagsRes = await fetch(
-          `/api/getCostCodeTags/${costcodeId}`
-        );
-        const connectedTagsData = await connectedTagsRes.json();
+        const parsedTags = tagsSchema.parse(allTagsData);
 
-        // Extract the connected CCTags
+        setInitialTags(parsedTags);
+
+        const connectedTagsRes = await fetch(`/api/getCostCodeTags/${costcodeId}`);
+        const connectedTagsData = await connectedTagsRes.json();
         const connectedTags = connectedTagsData[0]?.CCTags || [];
 
-        // Mark tags as selected only if they are part of the connected tags
         setSelectedTags(
-          allTagsData.filter((tag: CCTags) =>
+          parsedTags.filter((tag) =>
             connectedTags.some((ct: CCTags) => ct.id === tag.id)
           )
         );
         setinitialSelectedTags(
-          allTagsData.filter((tag: CCTags) =>
+          parsedTags.filter((tag) =>
             connectedTags.some((ct: CCTags) => ct.id === tag.id)
           )
         );
       } catch (error) {
-        console.error("Error fetching tags:", error);
+        console.error("Error fetching tags or validation failed:", error);
       }
     };
 
@@ -82,21 +95,21 @@ export default function UpdateCostCodes({
   }, [costcodeId]);
 
   const toggleTagSelection = (tag: CCTags) => {
-    setSelectedTags(
-      (prev) =>
-        prev.some((t) => t.id === tag.id)
-          ? prev.filter((t) => t.id !== tag.id) // Remove if already selected
-          : [...prev, tag] // Add if not selected
+    setSelectedTags((prev) =>
+      prev.some((t) => t.id === tag.id)
+        ? prev.filter((t) => t.id !== tag.id)
+        : [...prev, tag]
     );
   };
+
   const handleEditForm = async () => {
     try {
-      const formData = new FormData();
-      formData.append("costcodeId", costcodeId.toString());
-      formData.append("name", costcodeName);
-      formData.append("description", description);
+      const formData = costCodeSchema.parse({
+        id: costcodeId,
+        name: costcodeName,
+        description,
+      });
 
-      // Separate selected tags into add and remove
       const tagsToAdd = selectedTags.filter(
         (tag) => !initialSelectedTags.some((initTag) => initTag.id === tag.id)
       );
@@ -104,25 +117,23 @@ export default function UpdateCostCodes({
         (initTag) => !selectedTags.some((tag) => tag.id === initTag.id)
       );
 
-      // Append tags to add
-      tagsToAdd.forEach((tag) => formData.append("tags", tag.id.toString()));
+      const requestData = new FormData();
+      requestData.append("costcodeId", formData.id.toString());
+      requestData.append("name", formData.name);
+      requestData.append("description", formData.description || "");
 
-      // Append tags to remove
+      tagsToAdd.forEach((tag) => requestData.append("tags", tag.id.toString()));
       tagsToRemove.forEach((tag) =>
-        formData.append("removeTags", tag.id.toString())
+        requestData.append("removeTags", tag.id.toString())
       );
 
-      // Call the API
-      const response = await changeCostCodeTags(formData);
+      const response = await changeCostCodeTags(requestData);
       if (response) {
         setInitialCostCodeName(costcodeName);
         setInitialDescription(description);
       }
-
-      // Optionally: Add user feedback (e.g., success notification)
     } catch (error) {
-      console.error("Error updating cost code tags:", error);
-      // Optionally: Add error notification
+      console.error("Error validating or updating cost code:", error);
     }
   };
 
@@ -157,7 +168,7 @@ export default function UpdateCostCodes({
         mainHolds="h-full w-full flex flex-row row-span-6 col-span-2 bg-app-dark-blue px-4 py-2 rounded-[10px] gap-4"
         mainLeft={
           <CostCodeLeft
-            initalTags={initalTags}
+            initalTags={initialTags}
             selectedTags={selectedTags}
             toggleTagSelection={toggleTagSelection}
           />
