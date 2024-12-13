@@ -76,7 +76,8 @@
     "HideCamera": "Desactivar la cámara",
     "ShowCamera": "Activar la cámara",
     "NoCamera": "Cámara no disponible",
-        "SaveCropImage": "Guardar imagen"
+    "SaveCropImage": "Guardar imagen",
+    "TruckingAssistant": "Asistente de camiones"
 },
 "Equipment":{
     "NoCurrent": " No hay equipo en uso actualmente",
@@ -213,6 +214,7 @@
     "SearchedCodes" : "Resultados Actuales",
     "noResults" : "No se encontraron resultados",
     "Continue": "Continuar",
+    "Submit": "Enviar",
     "Title-costcode": "Seleccionar",
     "VerifyJobSite": "Fichar",
     "Date-label": "Fecha",
@@ -236,7 +238,12 @@
     "Equipment-result": "Equipo Encontrado",
     "Equipment-notes-title": "Notas",
     "Next-btn": "Siguiente",
-    "recentlyUsed" : "Usado Recientemente"
+    "recentlyUsed" : "Usado Recientemente",
+    "CostCode-Label": "Código de Costo:",
+    "ScanJobSiteOrTruck":"Escanear Sitio de Trabajo o Camiones",
+    "ChangeJobsite": "Cambiar Sitio de Trabajo",
+    "Truck-label": "Camiones Encontrados",
+    "Mileage": "Mileage"
     },
 "ClockOut":{
     "SignBelow": "Al marcar la casilla a continuación, certifico que no sufrí lesiones este día.",
@@ -299,7 +306,9 @@
     "Cancel": "Cancelar",
     "Signature": "Haga clic para Editar Firma",
     "EditSignature": "Editar Firma",
-    "PhoneNumber": "Número de Teléfono"
+    "PhoneNumber": "Número de Teléfono",
+    "LocationAccess": "Acceso a Ubicación",
+    "Language": "Idioma"
 },
 "Admins":{
     "Totalhoursthispayperiod": "Horas Totales este Período de Pago",
@@ -593,7 +602,8 @@
     "EquipmentUpdatedSuccessfully": "Equipo Actualizado con Exito",
     "TagDeletedSuccessfully": "Etiqueta Eliminada con Exito",
     "TagUpdatedSuccessfully": "Etiqueta Actualizada con Exito",
-    "Total Hours": "Horas Totales"
+    "Total Hours": "Horas Totales",
+    "EmployeeTerminatedSuccessfully": "Empleado Eliminado con Exito"
 },
 "Components": {
     "CropImage": "Recortar Imagen"

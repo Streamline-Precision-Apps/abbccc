@@ -161,7 +161,7 @@ export default function WidgetSection({ session }: Props) {
                 <DisplayBreakTime setToggle={handleToggle} display={toggle} />
               </Holds>
             ) : (
-              <Holds className="bg-pink-700 col-span-2 row-span-5 gap-5 h-full">
+              <Holds className="col-span-2 row-span-5 gap-5 h-full">
                 <Hours
                   setToggle={handleToggle}
                   display={toggle}

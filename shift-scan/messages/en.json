@@ -248,7 +248,9 @@
     "GallonsRefueled": "Gallons Refueled",
     "MaterialsHauled": "Materials Hauled",
     "LeftIdaho": "Left Idaho?",
-    "recentlyUsed" : "Recently Used"
+    "recentlyUsed" : "Recently Used",
+    "CostCode-Label": "Cost Code:",
+    "Submit": "Enviar"
 },
 "ClockOut":{
     "SignBelow": "By Checking the box below I certify I suffered no injuries this day.",
@@ -279,6 +281,7 @@
     "Saved": "Saved signature",
     "Truck-label": "Truck:",
     "Clear": "Clear"
+    
 },
 "Err-Msg":{
     "PayPeriod-Fetch:" : "Error fetching pay period sheets:", 
@@ -318,10 +321,10 @@
     "SignatureTitle": "Signature",
     "Signature": "Click to Edit Signature",
     "EditSignature": "Edit Signature",
-    "Language": "Language",
     "English": "English",
     "Spanish": "Spanish",
-    "PhoneNumber": "Phone Number"
+    "PhoneNumber": "Phone Number",
+    "Language": "Language"
 },
 
 "Admins":{
