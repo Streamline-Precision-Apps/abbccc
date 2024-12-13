@@ -1,5 +1,5 @@
 "use client";
-import { FormEvent, use, useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { ReusableViewLayout } from "../../[employee]/_components/reusableViewLayout";
 import { Holds } from "@/components/(reusable)/holds";
 
@@ -10,11 +10,11 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import Spinner from "@/components/(animations)/spinner";
 import { Titles } from "@/components/(reusable)/titles";
 import { createCrew } from "@/actions/adminActions";
-import { CrewLeft } from "../[crew]/page";
 import { Forms } from "@/components/(reusable)/forms";
 import { useNotification } from "@/app/context/NotificationContext";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import CrewLeft from "../component/leftCrew";
 
 type User = {
   id: string;
@@ -56,7 +56,7 @@ export default function CreateTeam() {
       }
     };
     fetchEmployees();
-  }, [filter]);
+  }, [filter, t]);
 
   // Add or remove users from crew based on toggle
   const toggleUser = (id: string) => {
@@ -187,7 +187,7 @@ export default function CreateTeam() {
       mainLeft={
         <Holds className="h-full bg-white w-1/3 mr-2">
           <CrewLeft
-            addToCrew={(user) => toggleUser(user.id)}
+            addToCrew={(user: { id: string }) => toggleUser(user.id)}
             setFilter={setFilter}
             employees={employees}
             toggledUsers={toggledUsers}

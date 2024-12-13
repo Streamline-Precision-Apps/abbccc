@@ -4,10 +4,9 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
-import { Labels } from "@/components/(reusable)/labels";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
-import { Dispatch, SetStateAction, use, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { useTranslations } from "next-intl";
 
 type EquipmentHeaderProps = {

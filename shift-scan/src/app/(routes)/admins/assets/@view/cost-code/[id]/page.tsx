@@ -10,27 +10,26 @@ import { CostCodeLeft } from "./_components/CostCodeLeft";
 import { CCTags } from "@/lib/types";
 import { EditCostCodeForm } from "./_components/EditCostCodeForm";
 import { EditCostCodeFooter } from "./_components/CostCodeFooter";
-import { z } from "zod";
-import { useNotification } from "@/app/context/NotificationContext";
+// import { z } from "zod";
 import { useTranslations } from "next-intl";
 
-// Define Zod schemas
-const CCTagSchema = z.object({
-  id: z.number().int(),
-  name: z.string().min(1, "Name is required"),
-  description: z.string().optional(),
-  jobsite: z.array(z.object({ id: z.number(), name: z.string() })).optional(),
-  costCode: z.array(z.object({ id: z.number(), name: z.string() })).optional(),
-});
+// // Define Zod schemas
+// const CCTagSchema = z.object({
+//   id: z.number().int(),
+//   name: z.string().min(1, "Name is required"),
+//   description: z.string().optional(),
+//   jobsite: z.array(z.object({ id: z.number(), name: z.string() })).optional(),
+//   costCode: z.array(z.object({ id: z.number(), name: z.string() })).optional(),
+// });
 
-const CostCodeSchema = z.object({
-  id: z.number().int(),
-  name: z.string().min(1, "Name is required"),
-  description: z.string().min(1, "Description is required"),
-  type: z.string().min(1, "Type is required"),
-  createdAt: z.string(),
-  updatedAt: z.string(),
-});
+// const CostCodeSchema = z.object({
+//   id: z.number().int(),
+//   name: z.string().min(1, "Name is required"),
+//   description: z.string().min(1, "Description is required"),
+//   type: z.string().min(1, "Type is required"),
+//   createdAt: z.string(),
+//   updatedAt: z.string(),
+// });
 
 export default function UpdateCostCodes({
   params,

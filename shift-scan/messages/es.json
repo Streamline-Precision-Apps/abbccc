@@ -601,7 +601,11 @@
 "EnterJobsiteName": "Ingrese el Nombre del Sitio",
 "ChangesSavedSuccessfully": "Cambios Guardados con Exito",
 "FailedToSaveChanges": "Fallo al Guardar Cambios",
-"ValidationFields": "Por favor, complete todos los campos requeridos antes de enviar."
+"ValidationFields": "Por favor, complete todos los campos requeridos antes de enviar.",
+"JobsiteDeletedSuccessfully": "Sitio de Trabajo Eliminado con Exito",
+"StartDate": "Fecha de Inicio",
+"EndDate": "Fecha de Fin",
+"Total Hours": "Horas Totales"
 
     
     },

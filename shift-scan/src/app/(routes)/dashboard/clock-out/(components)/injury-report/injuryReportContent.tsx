@@ -1,6 +1,6 @@
 "use client";
 import "@/app/globals.css";
-import { useState, ChangeEvent } from "react";
+import { useState, ChangeEvent, Dispatch, SetStateAction } from "react";
 import { CreateInjuryForm } from "@/actions/injuryReportActions";
 import { useTranslations } from "next-intl";
 import { Contents } from "@/components/(reusable)/contents";
@@ -15,6 +15,9 @@ import { CheckBox } from "@/components/(inputs)/checkBox";
 type FormProps = {
   base64String: string | null;
   handleNextStep: () => void;
+  setBase64String?: Dispatch<SetStateAction<string>>;
+  handleComplete?: () => Promise<void>;
+  handleSubmitImage?: () => Promise<void>;
 };
 
 export const InjuryReportContent = ({
