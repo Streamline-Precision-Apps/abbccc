@@ -7,6 +7,7 @@ import { changeCostCodeTags, deleteCostCodeById } from "@/actions/adminActions";
 import { useRouter } from "next/navigation";
 import { CostCodeRight } from "./_components/CostCodeRight";
 import { CostCodeLeft } from "./_components/CostCodeLeft";
+import { CCTags } from "@/lib/types";
 import { EditCostCodeForm } from "./_components/EditCostCodeForm";
 import { EditCostCodeFooter } from "./_components/CostCodeFooter";
 import { z } from "zod";
@@ -37,41 +38,30 @@ export default function UpdateCostCodes({
   params: { id: string };
 }) {
   const { id } = params;
-  const { setNotification } = useNotification();
+  const t = useTranslations("Admins");
   const [initialCostcodeName, setInitialCostCodeName] = useState<string>("");
   const [initialDescription, setInitialDescription] = useState<string>("");
-  const [costcodeId, setCostCodeId] = useState<number>(Number(id));
+  const [costcodeId, setCostCodeId] = useState<number>(0);
   const [costcodeName, setCostCodeName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
-  const [initialSelectedTags, setinitialSelectedTags] = useState<
-    z.infer<typeof CCTagSchema>[]
-  >([]);
-  const [selectedTags, setSelectedTags] = useState<
-    z.infer<typeof CCTagSchema>[]
-  >([]);
-  const [initalTags, setInitialTags] = useState<z.infer<typeof CCTagSchema>[]>(
-    []
-  );
+  const [initialSelectedTags, setinitialSelectedTags] = useState<CCTags[]>([]);
+  const [selectedTags, setSelectedTags] = useState<CCTags[]>([]);
+  const [initalTags, setInitialTags] = useState<CCTags[]>([]);
   const router = useRouter();
-  const t = useTranslations("Admins");
 
   useEffect(() => {
     const fetchCostcode = async () => {
       try {
         const res = await fetch(`/api/getCostCodeById/${id}`);
         const data = await res.json();
+        setCostCodeId(data.id);
+        setCostCodeName(data.name);
+        setDescription(data.description);
 
-        // Validate fetched cost code data
-        const validatedData = CostCodeSchema.parse(data);
-
-        setCostCodeId(validatedData.id);
-        setCostCodeName(validatedData.name);
-        setDescription(validatedData.description);
-
-        setInitialCostCodeName(validatedData.name);
-        setInitialDescription(validatedData.description);
+        setInitialCostCodeName(data.name);
+        setInitialDescription(data.description);
       } catch (error) {
-        console.error(t("ErrorFetchingCostCodeData"), error);
+        console.log(error);
       }
     };
     fetchCostcode();
@@ -83,36 +73,37 @@ export default function UpdateCostCodes({
       try {
         // Fetch all tags
         const allTagsRes = await fetch(`/api/getAllTags`);
-        const allTagsData: z.infer<typeof CCTagSchema>[] =
-          await allTagsRes.json(); // Use correct type
+        const allTagsData = await allTagsRes.json();
         setInitialTags(allTagsData);
-
         // Fetch connected tags for the current costCode
         const connectedTagsRes = await fetch(
           `/api/getCostCodeTags/${costcodeId}`
         );
-        const connectedTagsData: { CCTags: z.infer<typeof CCTagSchema>[] }[] =
-          await connectedTagsRes.json();
+        const connectedTagsData = await connectedTagsRes.json();
+
+        // Extract the connected CCTags
         const connectedTags = connectedTagsData[0]?.CCTags || [];
 
         // Mark tags as selected only if they are part of the connected tags
-        const selected = allTagsData.filter(
-          (tag: z.infer<typeof CCTagSchema>) =>
-            connectedTags.some(
-              (ct: z.infer<typeof CCTagSchema>) => ct.id === tag.id
-            )
+        setSelectedTags(
+          allTagsData.filter((tag: CCTags) =>
+            connectedTags.some((ct: CCTags) => ct.id === tag.id)
+          )
         );
-        setSelectedTags(selected);
-        setinitialSelectedTags(selected);
+        setinitialSelectedTags(
+          allTagsData.filter((tag: CCTags) =>
+            connectedTags.some((ct: CCTags) => ct.id === tag.id)
+          )
+        );
       } catch (error) {
-        console.error(t("ErrorFetchingCostCodeData"), error);
+        console.error("Error fetching tags:", error);
       }
     };
 
     fetchTags();
   }, [costcodeId, t]);
 
-  const toggleTagSelection = (tag: z.infer<typeof CCTagSchema>) => {
+  const toggleTagSelection = (tag: CCTags) => {
     setSelectedTags(
       (prev) =>
         prev.some((t) => t.id === tag.id)
@@ -120,10 +111,8 @@ export default function UpdateCostCodes({
           : [...prev, tag] // Add if not selected
     );
   };
-
   const handleEditForm = async () => {
     try {
-      // Prepare form data
       const formData = new FormData();
       formData.append("costcodeId", costcodeId.toString());
       formData.append("name", costcodeName);
@@ -145,36 +134,17 @@ export default function UpdateCostCodes({
         formData.append("removeTags", tag.id.toString())
       );
 
-      // Validate data
-      try {
-        CostCodeSchema.parse({
-          id: costcodeId,
-          name: costcodeName,
-          description,
-          CCTags: selectedTags,
-        });
-      } catch (validationError) {
-        if (validationError instanceof z.ZodError) {
-          // Collect validation errors
-          const errorMessages = validationError.errors
-            .map((err) => err.message)
-            .join(", ");
-          setNotification(`Validation failed: ${errorMessages}`); // Set notification
-          return; // Stop further processing
-        }
-        throw validationError; // Rethrow unexpected errors
-      }
-
       // Call the API
       const response = await changeCostCodeTags(formData);
       if (response) {
         setInitialCostCodeName(costcodeName);
         setInitialDescription(description);
-        setNotification("Cost code updated successfully!"); // Success notification
       }
+
+      // Optionally: Add user feedback (e.g., success notification)
     } catch (error) {
       console.error("Error updating cost code tags:", error);
-      setNotification("An error occurred while updating the cost code."); // Error notification
+      // Optionally: Add error notification
     }
   };
 

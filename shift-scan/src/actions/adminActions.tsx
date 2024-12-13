@@ -182,6 +182,8 @@ export async function changeCostCodeTags(formData: FormData) {
         id: parseInt(costcodeId),
       },
       data: {
+        name: formData.get("name") as string,
+        description: formData.get("description") as string,
         CCTags: {
           connect: newTags, // Add new connections
           disconnect: disconnectTags, // Remove connections
