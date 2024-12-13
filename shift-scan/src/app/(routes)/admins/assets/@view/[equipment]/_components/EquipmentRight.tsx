@@ -7,8 +7,6 @@ import { Labels } from "@/components/(reusable)/labels";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Images } from "@/components/(reusable)/images";
 import { useTranslations } from "next-intl";
-import { m } from "framer-motion";
-import { kMaxLength } from "buffer";
 
 // Define the types for props
 type EquipmentRightProps = {
