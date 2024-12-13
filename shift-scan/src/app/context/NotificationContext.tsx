@@ -49,6 +49,7 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
 
   // Automatically clear the notification after 6 seconds
   useEffect(() => {
+    console.log("notification", notification);
     if (notification) {
       const timer = setTimeout(() => {
         setNotificationState(null);
