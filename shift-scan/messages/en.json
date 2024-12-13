@@ -626,7 +626,12 @@
 "Recieved": "Received",
 "NoRequestsAvailable": "No requests available.",
 "CommingSoon": "Coming Soon",
-"Equipment": "Equipment"
+"Equipment": "Equipment",
+"EnterJobsiteName": "Enter Jobsite Name",
+"ValidationFields": "Please fill in all required fields.",
+"StartDate": "Start Date",
+"EndDate": "End Date",
+"Total Hours": "Total Hours"
 
        
     

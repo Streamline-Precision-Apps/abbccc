@@ -6,6 +6,24 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { CCTags } from "@/lib/types";
 import { useTranslations } from "next-intl";
 import { FormEvent, RefObject, useEffect, useState } from "react";
+import { z } from "zod";
+
+const CostCodeSchema = z.object({
+  name: z
+    .string()
+    .min(1, "Cost Code must Have only numbers, #, and .")
+    .regex(
+      /^[0-9#\\.]+$/,
+      "Only numbers, #, and . are allowed in Cost Code Name."
+    ),
+  description: z
+    .string()
+    .min(1, "Description is required")
+    .regex(
+      /^[a-zA-Z0-9\\]+$/,
+      "Only letters and numbers are allowed in Cost Code Description."
+    ),
+});
 
 export function NewCostCodeForm({
   createCostCode,
@@ -27,6 +45,22 @@ export function NewCostCodeForm({
 
   const CreateCostCode = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // Prevent the page from reloading
+    const costcodeData = {
+      name: ccName,
+      description: ccDescription,
+    };
+    const validationResult = CostCodeSchema.safeParse(costcodeData);
+
+    if (!validationResult.success) {
+      const errorMessages = validationResult.error.errors
+        .map((error) => `${error.path.join(" -> ")} ${error.message}`)
+        .join(", ");
+
+      // Set notification with detailed validation errors
+      setNotification(`${t("ValidationFailed")} ${errorMessages}`, "error");
+      return;
+    }
+
     try {
       const formData = new FormData(createCostCode.current!);
 
@@ -39,6 +73,9 @@ export function NewCostCodeForm({
       if (response) {
         console.log("Cost Code created successfully");
         setNotification(t("CostCodeCreated"), "success");
+        if (createCostCode.current) {
+          createCostCode.current?.reset();
+        }
       } else {
         console.error("Failed to create Cost Code");
         setNotification(t("CostCodeFailedCreation"), "error");
@@ -74,6 +111,8 @@ export function NewCostCodeForm({
             onChange={(e) => {
               setCcName(e.target.value);
             }}
+            pattern={"^[0-9#\\.]+$"}
+            required
           />
         </Holds>
         <Holds className="w-1/2">
@@ -85,6 +124,8 @@ export function NewCostCodeForm({
             onChange={(e) => {
               setCcDescription(e.target.value);
             }}
+            pattern={"^[0-9#\\.]+$"}
+            required
           />
         </Holds>
       </form>

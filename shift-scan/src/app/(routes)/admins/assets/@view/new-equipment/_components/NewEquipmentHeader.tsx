@@ -33,7 +33,7 @@ export function NewEquipmentHeader({
       background={"white"}
       className={
         isCommentSectionOpen
-          ? `row-span-4 col-span-2 h-full`
+          ? `row-span-3 col-span-2 h-full`
           : `row-span-1 col-span-2 h-full`
       }
     >
@@ -53,8 +53,9 @@ export function NewEquipmentHeader({
                   onChange={(e) => {
                     setEquipmentName?.(e.target.value);
                   }}
+                  pattern="[A-Za-z0-9\s]+"
                   placeholder={t("EnterYourEquipmentName")}
-                  variant={"matchSelects"}
+                  variant={"titleFont"}
                   className=" my-auto"
                 />
               </Holds>

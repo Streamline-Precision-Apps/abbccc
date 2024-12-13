@@ -2,7 +2,6 @@
 
 import { useNotification } from "@/app/context/NotificationContext";
 import { createEquipment } from "@/actions/equipmentActions";
-import { useSession } from "next-auth/react";
 import { useRef, useState } from "react";
 import { ReusableViewLayout } from "../../../personnel/@view/[employee]/_components/reusableViewLayout";
 import { NewEquipmentLeft } from "./_components/NewEquipmentLeft";
@@ -48,7 +47,6 @@ const equipmentSchema = z
   );
 
 export default function NewEquipment() {
-  const { data: session } = useSession();
   const equipmentFormRef = useRef<HTMLFormElement>(null); // Renamed from `createEquipment`
   const { setNotification } = useNotification();
   const t = useTranslations("Admins");

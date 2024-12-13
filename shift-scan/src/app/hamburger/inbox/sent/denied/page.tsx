@@ -9,27 +9,31 @@ import { TextAreas } from "@/components/(reusable)/textareas";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { sentContent } from "@/lib/types";
-import { Session } from "next-auth";
 import { useEffect, useState } from "react";
 import { formatDate } from "@/utils/formatDateYMD";
+import { useSession } from "next-auth/react";
 
-type Props = {
-  sentContent: sentContent[]; // Define the type of sentContent prop
-  session: Session | null;
-  params: { id: string };
-};
+export default function Content() {
+  const [InitialContent, setInitialContent] = useState<sentContent[]>([]);
+  const { data: session } = useSession();
 
-export default function Content({ sentContent, session }: Props) {
-  const [, setInitialContent] = useState<sentContent[]>(sentContent);
   useEffect(() => {
-    setInitialContent(sentContent); // Store initial values
-  }, [sentContent]);
-
+    const fetchData = async () => {
+      try {
+        const response = await fetch("/api/getTimeoffRequests");
+        const data = await response.json();
+        setInitialContent(data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, []);
   return (
     <>
       <Bases>
         <Contents>
-          <Holds background={"green"}>
+          <Holds background={"red"}>
             <TitleBoxes
               variant={null}
               title="leave request"
@@ -37,7 +41,7 @@ export default function Content({ sentContent, session }: Props) {
               titleImgAlt="Inbox"
               type="noIcon"
             ></TitleBoxes>
-            {sentContent.map((item) => (
+            {InitialContent.map((item) => (
               <>
                 <Titles key={item.id}>
                   {item.date.toLocaleString("en-US", {
@@ -52,7 +56,7 @@ export default function Content({ sentContent, session }: Props) {
               </>
             ))}
           </Holds>
-          {sentContent.map((item) => (
+          {InitialContent.map((item) => (
             <>
               <Holds>
                 <Labels>
@@ -91,6 +95,7 @@ export default function Content({ sentContent, session }: Props) {
                   disabled
                 />
                 <Labels>
+                  {" "}
                   Start Date
                   <Inputs
                     type="date"
@@ -101,6 +106,7 @@ export default function Content({ sentContent, session }: Props) {
                 </Labels>
 
                 <Labels>
+                  {" "}
                   End Date
                   <Inputs
                     type="date"
@@ -110,6 +116,7 @@ export default function Content({ sentContent, session }: Props) {
                   />
                 </Labels>
                 <Labels>
+                  {" "}
                   Request Type
                   <Inputs
                     type="text"
@@ -120,6 +127,7 @@ export default function Content({ sentContent, session }: Props) {
                 </Labels>
 
                 <Labels>
+                  {" "}
                   Comments
                   <TextAreas
                     name="description"
@@ -129,9 +137,9 @@ export default function Content({ sentContent, session }: Props) {
                   />
                 </Labels>
               </Holds>
-
               <Holds>
                 <Labels>
+                  {" "}
                   Managers Comments
                   <TextAreas
                     name="mangerComments"
@@ -140,7 +148,7 @@ export default function Content({ sentContent, session }: Props) {
                   />
                 </Labels>
                 <Labels>
-                  Approved By
+                  Denied By
                   <Inputs
                     name="decidedBy"
                     defaultValue={item.decidedBy?.toString()}

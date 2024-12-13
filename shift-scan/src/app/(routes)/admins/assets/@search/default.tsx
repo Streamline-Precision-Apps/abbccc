@@ -14,6 +14,7 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { TagsComponent } from "./_components/TagsComponent";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { NotificationComponent } from "@/components/(inputs)/NotificationComponent";
 
 export default function Search() {
   const [activeTab, setActiveTab] = useState(1);
@@ -55,7 +56,7 @@ export default function Search() {
       }
     };
     fetchTags();
-  }, [filter]);
+  }, [filter, t]);
 
   useEffect(() => {
     const fetchEquipments = async () => {
@@ -85,7 +86,7 @@ export default function Search() {
     };
 
     fetchEquipments();
-  }, [filter, triggeredPathEquipment]);
+  }, [filter, t, triggeredPathEquipment]);
 
   useEffect(() => {
     const fetchJobsites = async () => {
@@ -104,7 +105,7 @@ export default function Search() {
     };
 
     fetchJobsites();
-  }, [filter]);
+  }, [filter, t]);
 
   useEffect(() => {
     const fetchCostCodes = async () => {
@@ -125,10 +126,11 @@ export default function Search() {
     };
 
     fetchCostCodes();
-  }, [filter, triggeredPath]);
+  }, [filter, t, triggeredPath]);
 
   return (
     <Holds className="h-full ">
+      <NotificationComponent />
       <Grids rows={"10"}>
         <Holds position={"row"} className="row-span-1 h-full gap-1">
           <Tab onClick={() => setActiveTab(1)} isActive={activeTab === 1}>

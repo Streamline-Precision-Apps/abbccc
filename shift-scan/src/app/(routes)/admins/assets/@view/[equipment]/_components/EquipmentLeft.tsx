@@ -57,10 +57,10 @@ export function EquipmentLeft({
   const t = useTranslations("Admins");
   return (
     <Holds background={"white"} className="w-2/5 h-full">
-      <Grids cols={"1"} rows={"6"} className="w-full h-full">
+      <Grids cols={"1"} rows={"6"} className="w-full h-full gap-10 ">
         {/* Equipment Code */}
-        <Holds className="w-full px-2">
-          <Labels size={"p4"}>{t("EquipmentCode")}</Labels>
+        <Holds className="w-full h-full px-2 row-start-1 row-end-2 ">
+          <Labels size={"p6"}>{t("EquipmentCode")}</Labels>
           <Holds
             position={"row"}
             className="gap-2 h-10 border-[3px] rounded-[10px] border-black"
@@ -102,8 +102,8 @@ export function EquipmentLeft({
         </Holds>
 
         {/* Equipment Status */}
-        <Holds className="w-full px-2">
-          <Labels size={"p4"}>{t("Status")}</Labels>
+        <Holds className="w-full h-full px-2 row-start-2 row-end-3">
+          <Labels size={"p6"}>{t("Status")}</Labels>
           <Holds
             position={"row"}
             className="gap-2 h-10 border-[3px] rounded-[10px] border-black"
@@ -139,8 +139,8 @@ export function EquipmentLeft({
         </Holds>
 
         {/* Equipment Tag */}
-        <Holds className="w-full px-2">
-          <Labels size={"p4"}>{t("EquipmentTag")}</Labels>
+        <Holds className="w-full h-full px-2 row-start-3 row-end-4">
+          <Labels size={"p6"}>{t("EquipmentTag")}</Labels>
           <Holds
             position={"row"}
             className="gap-2 h-10 border-[3px] rounded-[10px] border-black"

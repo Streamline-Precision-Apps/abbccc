@@ -44,8 +44,8 @@ export default function NewCostCodes() {
         const allTagsData = await allTagsRes.json();
 
         // Validate and set tags
-        const validatedTags = allTagsData.map((tag: any) =>
-          CCTagSchema.parse(tag)
+        const validatedTags = allTagsData.map(
+          (tag: z.infer<typeof CCTagSchema>) => CCTagSchema.parse(tag)
         );
         setInitialTags(validatedTags);
         setinitialSelectedTags([]);
@@ -56,7 +56,7 @@ export default function NewCostCodes() {
     };
 
     fetchTags();
-  }, []);
+  }, [setNotification, t]);
 
   const handleSubmitClick = () => {
     // Trigger form submission

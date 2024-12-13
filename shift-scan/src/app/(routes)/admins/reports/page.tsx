@@ -1,6 +1,4 @@
-import { Holds } from "@/components/(reusable)/holds";
-import Reports from "../../admin/reports/page";
-
+"use client";
 export default function AdminReports() {
   return null;
 }
