@@ -631,7 +631,8 @@
 "ValidationFields": "Please fill in all required fields.",
 "StartDate": "Start Date",
 "EndDate": "End Date",
-"Total Hours": "Total Hours"
+"Total Hours": "Total Hours",
+"VehicleModel": "Vehicle Model"
 
        
     
