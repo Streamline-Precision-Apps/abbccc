@@ -14,25 +14,25 @@ import EditTagMainRight from "./_Component/EditTagRightMain";
 import EditTagFooter from "./_Component/EditTagFooter";
 import { useNotification } from "@/app/context/NotificationContext";
 
-const tagSchema = z.object({
-  id: z.string(),
-  name: z.string().min(1, "Tag name is required"),
-  description: z.string().optional(),
-  jobsite: z.array(
-    z.object({
-      id: z.string(),
-      name: z.string().min(1, "Job name is required"),
-      qrId: z.string(), // Ensure qrId is included
-    })
-  ),
-  costCode: z.array(
-    z.object({
-      id: z.number(),
-      name: z.string().min(1, "Cost code name is required"),
-      description: z.string(), // Ensure description is required if needed
-    })
-  ),
-});
+// const tagSchema = z.object({
+//   id: z.string(),
+//   name: z.string().min(1, "Tag name is required"),
+//   description: z.string().optional(),
+//   jobsite: z.array(
+//     z.object({
+//       id: z.string(),
+//       name: z.string().min(1, "Job name is required"),
+//       qrId: z.string(), // Ensure qrId is included
+//     })
+//   ),
+//   costCode: z.array(
+//     z.object({
+//       id: z.number(),
+//       name: z.string().min(1, "Cost code name is required"),
+//       description: z.string(), // Ensure description is required if needed
+//     })
+//   ),
+// });
 
 const jobsSchema = z.array(
   z.object({
@@ -59,8 +59,9 @@ export default function TagView({ params }: { params: { id: string } }) {
   const [costCodes, setCostCodes] = useState<costCodesTag[]>([]);
   const [initialSelectedJobs, setInitialSelectedJobs] = useState<JobTags[]>([]);
   const [selectedJobs, setSelectedJobs] = useState<JobTags[]>([]);
-  const [initialSelectedCostCodes, setInitialSelectedCostCodes] =
-    useState<costCodesTag[]>([]);
+  const [initialSelectedCostCodes, setInitialSelectedCostCodes] = useState<
+    costCodesTag[]
+  >([]);
   const [selectedCostCodes, setSelectedCostCodes] = useState<costCodesTag[]>(
     []
   );
@@ -73,14 +74,14 @@ export default function TagView({ params }: { params: { id: string } }) {
       try {
         const response = await fetch(`/api/getTagById/${tagId}`);
         const tagData = await response.json();
-        
+
         setEditedItem(tagData.name);
         setCommentText(tagData.description ?? "");
         setSelectedJobs(tagData.jobsite ?? []);
         setInitialSelectedJobs(tagData.jobsite ?? []);
         setSelectedCostCodes(tagData.costCode ?? []);
         setInitialSelectedCostCodes(tagData.costCode ?? []);
-        
+
         // TODO: Fix this validation.
         // const validatedTag = tagSchema.parse(tagData);
 
@@ -90,7 +91,6 @@ export default function TagView({ params }: { params: { id: string } }) {
         // setInitialSelectedJobs(validatedTag.jobsite ?? []);
         // setSelectedCostCodes(validatedTag.costCode ?? []);
         // setInitialSelectedCostCodes(validatedTag.costCode ?? []);
-        
       } catch (error) {
         console.error("Error fetching or validating tag data:", error);
       }
@@ -160,8 +160,7 @@ export default function TagView({ params }: { params: { id: string } }) {
           .map((costCode) => costCode.id),
         removeCostCodes: initialSelectedCostCodes
           .filter(
-            (costCode) =>
-              !selectedCostCodes.some((cc) => cc.id === costCode.id)
+            (costCode) => !selectedCostCodes.some((cc) => cc.id === costCode.id)
           )
           .map((costCode) => costCode.id),
       };
