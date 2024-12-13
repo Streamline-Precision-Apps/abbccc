@@ -597,12 +597,11 @@
 "Sent": "Enviado",
 "Recieved": "Recibido",
 "NoRequestsAvailable": "No se Encontraron Solicitudes",
-"CommingSoon": "la página llegará pronto"
-        
-          
-
-
-
+"CommingSoon": "la página llegará pronto",
+"EnterJobsiteName": "Ingrese el Nombre del Sitio",
+"ChangesSavedSuccessfully": "Cambios Guardados con Exito",
+"FailedToSaveChanges": "Fallo al Guardar Cambios",
+"ValidationFields": "Por favor, complete todos los campos requeridos antes de enviar."
 
     
     },

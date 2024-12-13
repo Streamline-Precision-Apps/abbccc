@@ -153,7 +153,7 @@ export default function ViewEquipment({
     };
 
     fetchEquipment();
-  }, [params.equipment]);
+  }, [params.equipment, t]);
 
   // Utility to check if a field has changed
   const isFieldChanged = (field: keyof typeof initialEquipment) =>
@@ -199,7 +199,7 @@ export default function ViewEquipment({
     }
 
     try {
-      let formData = new FormData(equipmentFormRef.current!);
+      const formData = new FormData(equipmentFormRef.current!);
       formData.append("id", params.equipment);
       formData.append("name", equipmentName.trim());
       formData.append("description", equipmentDescription.trim());
