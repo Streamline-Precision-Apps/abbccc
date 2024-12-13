@@ -93,19 +93,22 @@ export async function deleteTagById(tagId: string) {
 export async function createTag(data: {
   name: string;
   description: string;
-  jobs: JobTags[];
-  costCodes: costCodesTag[];
+  jobs: string[];
+  costCodes: number[];
 }) {
   try {
+    console.log("Creating tag...");
+    console.log(data);
+    
     const newTag = await prisma.cCTags.create({
       data: {
         name: data.name,
         description: data.description,
         jobsite: {
-          connect: data.jobs.map((job) => ({ id: job.id, qrId: job.qrId })),
+          connect: data.jobs.map((job) => ({ id: job })), // Connect jobs
         },
         costCode: {
-          connect: data.costCodes.map((id) => ({ id: id.id })), // Connect cost codes
+          connect: data.costCodes.map((id) => ( { id })), // Connect cost codes
         },
       },
     });
