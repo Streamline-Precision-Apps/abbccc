@@ -31,7 +31,7 @@ export default function UpdateCostCodes({
   params: { id: string };
 }) {
   const { id } = params;
-
+  const t = useTranslations("Admins");
   const [initialCostcodeName, setInitialCostCodeName] = useState<string>("");
   const [initialDescription, setInitialDescription] = useState<string>("");
   const [costcodeId, setCostCodeId] = useState<number>(0);
@@ -61,9 +61,10 @@ export default function UpdateCostCodes({
       }
     };
     fetchCostcode();
-  }, [id]);
+  }, [id, t]);
 
   useEffect(() => {
+    // Fix other parameter types
     const fetchTags = async () => {
       try {
         const allTagsRes = await fetch(`/api/getAllTags`);
@@ -92,7 +93,7 @@ export default function UpdateCostCodes({
     };
 
     fetchTags();
-  }, [costcodeId]);
+  }, [costcodeId, t]);
 
   const toggleTagSelection = (tag: CCTags) => {
     setSelectedTags((prev) =>
@@ -184,3 +185,4 @@ export default function UpdateCostCodes({
     </Holds>
   );
 }
+

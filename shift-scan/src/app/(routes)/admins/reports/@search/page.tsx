@@ -10,16 +10,13 @@ import { Labels } from "@/components/(reusable)/labels";
 import { Options } from "@/components/(reusable)/options";
 import { Selects } from "@/components/(reusable)/selects";
 import { useTranslations } from "next-intl";
-import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { set } from "zod";
+import { FormEvent, useEffect, useState } from "react";
 
 export default function ReportSearch() {
   const [readyToSubmit, setReadyToSubmit] = useState<boolean>(false);
   const [page, setPage] = useState<string>("");
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
-  const searchParams = useSearchParams();
   const { setNotification } = useNotification();
   const t = useTranslations("Admins");
   // Centralized validation logic
@@ -36,7 +33,7 @@ export default function ReportSearch() {
     setReadyToSubmit(validateForm());
   }, [page, startDate, endDate]);
 
-  const handleFormSubmit = async (page: string, e: any) => {
+  const handleFormSubmit = async (page: string, e: FormEvent) => {
     e.preventDefault();
     if (!readyToSubmit) {
       setNotification(

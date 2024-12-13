@@ -6,6 +6,7 @@ import { Holds } from "@/components/(reusable)/holds";
 import { costCodesTag, JobTags } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { EditTagFooter, EditTagHeader, EditTagMainLeft, EditTagMainRight } from "../../new-tag/page";
 
@@ -89,7 +90,7 @@ export default function TagView({ params }: { params: { id: string } }) {
     };
 
     fetchTag();
-  }, [tagId]);
+  }, [tagId, setNotification, t]);
 
   useEffect(() => {
     const fetchJobsAndCostCodes = async () => {
@@ -111,6 +112,7 @@ export default function TagView({ params }: { params: { id: string } }) {
 
     fetchJobsAndCostCodes();
   }, []);
+  }, [setNotification, t]);
 
   const toggleJobSelection = (job: JobTags) => {
     setSelectedJobs((prev) =>
