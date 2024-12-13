@@ -12,6 +12,7 @@ import EditTagHeader from "./_Component/EditTagHeader";
 import EditTagMainLeft from "./_Component/EditTagLeftMain";
 import EditTagMainRight from "./_Component/EditTagRightMain";
 import EditTagFooter from "./_Component/EditTagFooter";
+import { useNotification } from "@/app/context/NotificationContext";
 
 // const tagSchema = z.object({
 //   id: z.string(),
@@ -65,6 +66,8 @@ export default function TagView({ params }: { params: { id: string } }) {
     []
   );
   const t = useTranslations("Admins");
+  const { setNotification } = useNotification();
+
 
   useEffect(() => {
     const fetchTag = async () => {
@@ -102,7 +105,6 @@ export default function TagView({ params }: { params: { id: string } }) {
         const jobsResponse = await fetch("/api/getAllJobsites");
         const jobsData = await jobsResponse.json();
         const validatedJobs = jobsSchema.parse(jobsData);
-
         const costCodesResponse = await fetch("/api/getAllCostCodes");
         const costCodesData = await costCodesResponse.json();
         const validatedCostCodes = costCodesSchema.parse(costCodesData);
@@ -167,6 +169,7 @@ export default function TagView({ params }: { params: { id: string } }) {
       if (response) {
         setEditedItem(payload.name);
         setCommentText(payload.description);
+        setNotification(t("TagUpdatedSuccessfully"), "success");
       }
     } catch (error) {
       console.error("Error updating tag:", error);
