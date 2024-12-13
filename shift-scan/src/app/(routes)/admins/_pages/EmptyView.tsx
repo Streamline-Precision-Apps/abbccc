@@ -6,7 +6,7 @@ export default function EmptyView({ Children }: { Children: React.ReactNode }) {
     <Holds className="bg-[#CACACA] rounded-[10px] w-full h-full justify-center items-center">
       <Holds className="w-1/3 h-1/3  justify-center rounded-[10px]  ">
         <Images
-          titleImg="/shiftScanLogoHorizontal.svg"
+          titleImg={"/shiftScanLogoHorizontal.svg"}
           titleImgAlt="personnel"
           className="bg-clip-padding"
         />
