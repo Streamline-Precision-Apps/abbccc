@@ -10,6 +10,7 @@ import NewTagHeader from "./_Components/NewTagHeader";
 import { NewTagMainRight } from "./_Components/NewTagRightMain";
 import NewTagFooter from "./_Components/NewTagFooter";
 import NewTagMainLeft from "./_Components/NewTagLeftMain";
+import { useTranslations } from "next-intl";
 
 // Zod schema for validation
 export const costCodesTagSchema = z.object({
@@ -37,11 +38,11 @@ export default function NewTagView() {
   const [jobs, setJobs] = useState<JobTags[]>();
   const [costCodes, setCostCodes] = useState<costCodesTag[]>();
   const [selectedJobs, setSelectedJobs] = useState<JobTags[]>([]);
-
+  const { setNotification } = useNotification();
   const [selectedCostCodes, setSelectedCostCodes] = useState<costCodesTag[]>(
     []
   );
-  const { setNotification } = useNotification();
+  const t = useTranslations("Admins");
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -49,12 +50,13 @@ export default function NewTagView() {
         const response = await fetch("/api/getAllJobsites");
         const jobs = (await response.json()) as JobTags[];
         setJobs(jobs ?? []);
-        // Fetch cost codes
+        //cost codes
         const response2 = await fetch("/api/getAllCostCodes");
         const costCodes = (await response2.json()) as costCodesTag[];
         setCostCodes(costCodes ?? []);
       } catch (error) {
         console.log(error);
+        setNotification(t("FailedToFetchTagData"), "error");
       }
     };
     fetchJobs();
@@ -81,30 +83,26 @@ export default function NewTagView() {
   };
   const handleCreateTag = async () => {
     try {
+      console.log("selected jobs:", selectedJobs);
+      console.log("selected cost codes:", selectedCostCodes);
       const payload = {
         name: editedItem,
         description: commentText,
-        jobs: selectedJobs,
-        costCodes: selectedCostCodes,
+        jobs: selectedJobs
+          .map((job) => job.id), // IDs of jobs to add
+
+        costCodes: selectedCostCodes
+          .map((cc) => cc.id), // IDs of costCodes to add
       };
 
-      // Validate the payload with Zod
-      const validation = tagPayloadSchema.safeParse(payload);
-
-      if (!validation.success) {
-        console.error("Validation failed:", validation.error.format());
-        setNotification("Data Validation Error", "error");
-        return; // Exit if validation fails
-      }
-
-      // Call createTag with the validated payload
+      // Call changeTags with JSON payload
       const response = await createTag(payload);
       if (response) {
-        setEditedItem("");
-        setCommentText("");
+        setEditedItem(editedItem);
+        setCommentText(commentText);
         setSelectedJobs([]);
         setSelectedCostCodes([]);
-        setNotification("Tag created successfully", "success");
+        setNotification(t("TagCreatedSuccessfully"), "success");
       }
     } catch (error) {
       console.log(error);

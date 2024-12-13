@@ -1,122 +1,138 @@
 "use client";
+
 import { changeTags, deleteTagById } from "@/actions/adminActions";
 import { ReusableViewLayout } from "@/app/(routes)/admins/personnel/@view/[employee]/_components/reusableViewLayout";
-import { useNotification } from "@/app/context/NotificationContext";
 import { Holds } from "@/components/(reusable)/holds";
 import { costCodesTag, JobTags } from "@/lib/types";
-import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { z } from "zod";
+import { useTranslations } from "next-intl";
 import EditTagHeader from "./_Component/EditTagHeader";
 import EditTagMainLeft from "./_Component/EditTagLeftMain";
 import EditTagMainRight from "./_Component/EditTagRightMain";
 import EditTagFooter from "./_Component/EditTagFooter";
 
-// Define Zod schemas
-const TagSchema = z.object({
-  id: z.string().uuid(),
-  name: z.string().min(1, "Name is required"),
+const tagSchema = z.object({
+  id: z.string(),
+  name: z.string().min(1, "Tag name is required"),
   description: z.string().optional(),
-  jobs: z.array(z.string().uuid()),
-  removeJobs: z.array(z.string().uuid()),
-  costCodes: z.array(z.string().uuid()),
-  removeCostCodes: z.array(z.string().uuid()),
+  jobsite: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string().min(1, "Job name is required"),
+      qrId: z.string(), // Ensure qrId is included
+    })
+  ),
+  costCode: z.array(
+    z.object({
+      id: z.number(),
+      name: z.string().min(1, "Cost code name is required"),
+      description: z.string(), // Ensure description is required if needed
+    })
+  ),
 });
 
-const JobTagsSchema = z.object({
-  id: z.string().uuid(),
-  name: z.string(),
-});
+const jobsSchema = z.array(
+  z.object({
+    id: z.string(),
+    name: z.string().min(1, "Job name is required"),
+    qrId: z.string(), // Include qrId as required by JobTags type
+  })
+);
 
-const CostCodesTagSchema = z.object({
-  id: z.string().uuid(),
-  name: z.string(),
-  description: z.string(),
-});
+const costCodesSchema = z.array(
+  z.object({
+    id: z.number(),
+    name: z.string().min(1, "Cost code name is required"),
+    description: z.string(), // Ensure description matches type requirement
+  })
+);
 
 export default function TagView({ params }: { params: { id: string } }) {
-  const t = useTranslations("Admins");
-  const { setNotification } = useNotification();
   const tagId = params.id;
   const router = useRouter();
   const [editedItem, setEditedItem] = useState<string>("");
   const [commentText, setCommentText] = useState<string>("");
-  const [jobs, setJobs] = useState<JobTags[]>();
-  const [costCodes, setCostCodes] = useState<costCodesTag[]>();
+  const [jobs, setJobs] = useState<JobTags[]>([]);
+  const [costCodes, setCostCodes] = useState<costCodesTag[]>([]);
   const [initialSelectedJobs, setInitialSelectedJobs] = useState<JobTags[]>([]);
   const [selectedJobs, setSelectedJobs] = useState<JobTags[]>([]);
-  const [initialSelectedCostCodes, setInitialSelectedCostCodes] = useState<
-    costCodesTag[]
-  >([]);
+  const [initialSelectedCostCodes, setInitialSelectedCostCodes] =
+    useState<costCodesTag[]>([]);
   const [selectedCostCodes, setSelectedCostCodes] = useState<costCodesTag[]>(
     []
   );
+  const t = useTranslations("Admins");
 
   useEffect(() => {
     const fetchTag = async () => {
       try {
         const response = await fetch(`/api/getTagById/${tagId}`);
         const tagData = await response.json();
-        TagSchema.parse(tagData); // Validate tag data
-
+        
         setEditedItem(tagData.name);
         setCommentText(tagData.description ?? "");
         setSelectedJobs(tagData.jobsite ?? []);
-        setInitialSelectedCostCodes(tagData.costCode ?? []);
-        setSelectedCostCodes(tagData.costCode ?? []);
         setInitialSelectedJobs(tagData.jobsite ?? []);
+        setSelectedCostCodes(tagData.costCode ?? []);
+        setInitialSelectedCostCodes(tagData.costCode ?? []);
+        
+        // TODO: Fix this validation.
+        // const validatedTag = tagSchema.parse(tagData);
+
+        // setEditedItem(validatedTag.name);
+        // setCommentText(validatedTag.description ?? "");
+        // setSelectedJobs(validatedTag.jobsite ?? []);
+        // setInitialSelectedJobs(validatedTag.jobsite ?? []);
+        // setSelectedCostCodes(validatedTag.costCode ?? []);
+        // setInitialSelectedCostCodes(validatedTag.costCode ?? []);
+        
       } catch (error) {
-        console.error(error);
-        setNotification(t("FailedToFetchTagData"), "error");
+        console.error("Error fetching or validating tag data:", error);
       }
     };
 
     fetchTag();
-  }, [tagId, setNotification, t]);
+  }, [tagId, t]);
 
   useEffect(() => {
     const fetchJobsAndCostCodes = async () => {
       try {
         const jobsResponse = await fetch("/api/getAllJobsites");
         const jobsData = await jobsResponse.json();
-        setJobs(jobsData.map((job: unknown) => JobTagsSchema.parse(job)));
+        const validatedJobs = jobsSchema.parse(jobsData);
 
         const costCodesResponse = await fetch("/api/getAllCostCodes");
         const costCodesData = await costCodesResponse.json();
-        setCostCodes(
-          costCodesData.map((costCode: unknown) =>
-            CostCodesTagSchema.parse(costCode)
-          )
-        );
+        const validatedCostCodes = costCodesSchema.parse(costCodesData);
+
+        setJobs(validatedJobs);
+        setCostCodes(validatedCostCodes);
       } catch (error) {
-        console.error(error);
-        setNotification(t("FailedToFetchJobData"), "error");
+        console.error("Error fetching or validating jobs/cost codes:", error);
       }
     };
 
     fetchJobsAndCostCodes();
-  }, [setNotification, t]);
+  }, []);
 
   const toggleJobSelection = (job: JobTags) => {
-    setSelectedJobs((prev) => {
-      if (prev.some((j) => j.id === job.id)) {
-        return prev.filter((j) => j.id !== job.id); // Remove if already selected
-      } else {
-        return [...prev, job]; // Add if not selected
-      }
-    });
+    setSelectedJobs((prev) =>
+      prev.some((j) => j.id === job.id)
+        ? prev.filter((j) => j.id !== job.id)
+        : [...prev, job]
+    );
   };
 
   const toggleCostCodeSelection = (costCode: costCodesTag) => {
-    setSelectedCostCodes((prev) => {
-      if (prev.some((cc) => cc.id === costCode.id)) {
-        return prev.filter((cc) => cc.id !== costCode.id); // Remove if already selected
-      } else {
-        return [...prev, costCode]; // Add if not selected
-      }
-    });
+    setSelectedCostCodes((prev) =>
+      prev.some((cc) => cc.id === costCode.id)
+        ? prev.filter((cc) => cc.id !== costCode.id)
+        : [...prev, costCode]
+    );
   };
+
   const handleEditForm = async () => {
     try {
       const payload = {
@@ -128,31 +144,33 @@ export default function TagView({ params }: { params: { id: string } }) {
             (job) =>
               !initialSelectedJobs.some((initJob) => initJob.id === job.id)
           )
-          .map((job) => job.id), // IDs of jobs to add
+          .map((job) => job.id),
         removeJobs: initialSelectedJobs
           .filter((job) => !selectedJobs.some((j) => j.id === job.id))
-          .map((job) => job.id), // IDs of jobs to remove
+          .map((job) => job.id),
         costCodes: selectedCostCodes
           .filter(
-            (costCodes) =>
-              !initialSelectedCostCodes.some((c) => c.id === costCodes.id)
+            (costCode) =>
+              !initialSelectedCostCodes.some(
+                (initCostCode) => initCostCode.id === costCode.id
+              )
           )
-          .map((cc) => cc.id), // IDs of costCodes to add
+          .map((costCode) => costCode.id),
         removeCostCodes: initialSelectedCostCodes
           .filter(
-            (costCodes) => !selectedCostCodes.some((c) => c.id === costCodes.id)
+            (costCode) =>
+              !selectedCostCodes.some((cc) => cc.id === costCode.id)
           )
-          .map((cc) => cc.id), // IDs of costCodes to remove
+          .map((costCode) => costCode.id),
       };
 
-      // Call changeTags with JSON payload
       const response = await changeTags(payload);
       if (response) {
-        setEditedItem(editedItem);
-        setCommentText(commentText);
+        setEditedItem(payload.name);
+        setCommentText(payload.description);
       }
     } catch (error) {
-      console.log(error);
+      console.error("Error updating tag:", error);
     }
   };
 
@@ -163,12 +181,12 @@ export default function TagView({ params }: { params: { id: string } }) {
         router.push("/admins/assets/tags");
       }
     } catch (error) {
-      console.log(error);
+      console.error("Error deleting tag:", error);
     }
   };
 
   return (
-    <Holds className="w-full h-full ">
+    <Holds className="w-full h-full">
       <ReusableViewLayout
         custom={true}
         header={
@@ -184,8 +202,8 @@ export default function TagView({ params }: { params: { id: string } }) {
           <EditTagMainLeft
             toggleJobSelection={toggleJobSelection}
             toggleCostCodeSelection={toggleCostCodeSelection}
-            jobs={jobs ?? []}
-            costCodes={costCodes ?? []}
+            jobs={jobs}
+            costCodes={costCodes}
             selectedJobs={selectedJobs}
             selectedCostCodes={selectedCostCodes}
           />
