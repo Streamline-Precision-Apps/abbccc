@@ -6,6 +6,24 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { CCTags } from "@/lib/types";
 import { useTranslations } from "next-intl";
 import { FormEvent, RefObject, useEffect, useState } from "react";
+import { z } from "zod";
+
+const CostCodeSchema = z.object({
+  name: z
+    .string()
+    .min(1, "Cost Code must Have only numbers, #, and .")
+    .regex(
+      /^[0-9#\\.]+$/,
+      "Only numbers, #, and . are allowed in Cost Code Name."
+    ),
+  description: z
+    .string()
+    .min(1, "Description is required")
+    .regex(
+      /^[a-zA-Z0-9\\]+$/,
+      "Only letters and numbers are allowed in Cost Code Description."
+    ),
+});
 
 export function NewCostCodeForm({
   createCostCode,
@@ -24,26 +42,22 @@ export function NewCostCodeForm({
   const { setNotification } = useNotification();
   const [ccName, setCcName] = useState<string>("");
   const [ccDescription, setCcDescription] = useState<string>("");
-  const [errors, setErrors] = useState<{ name?: string; description?: string }>(
-    {}
-  );
 
   const CreateCostCode = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // Prevent the page from reloading
-    const newErrors: { name?: string; description?: string } = {};
+    const costcodeData = {
+      name: ccName,
+      description: ccDescription,
+    };
+    const validationResult = CostCodeSchema.safeParse(costcodeData);
 
-    if (!/^[0-9#\\.]+$/.test(ccName)) {
-      newErrors.name = t("InvalidCostCodeName");
-    }
-    if (!/^[0-9#\\.]+$/.test(ccDescription)) {
-      newErrors.description = t("InvalidCostCodeDescription");
-    }
+    if (!validationResult.success) {
+      const errorMessages = validationResult.error.errors
+        .map((error) => `${error.path.join(" -> ")} ${error.message}`)
+        .join(", ");
 
-    setErrors(newErrors);
-
-    // If there are errors, do not proceed
-    if (Object.keys(newErrors).length > 0) {
-      setNotification(t("FormValidationFailed"), "error");
+      // Set notification with detailed validation errors
+      setNotification(`${t("ValidationFailed")} ${errorMessages}`, "error");
       return;
     }
 
@@ -59,6 +73,9 @@ export function NewCostCodeForm({
       if (response) {
         console.log("Cost Code created successfully");
         setNotification(t("CostCodeCreated"), "success");
+        if (createCostCode.current) {
+          createCostCode.current?.reset();
+        }
       } else {
         console.error("Failed to create Cost Code");
         setNotification(t("CostCodeFailedCreation"), "error");
@@ -92,27 +109,11 @@ export function NewCostCodeForm({
             placeholder={placeholder}
             className="p-2"
             onChange={(e) => {
-              const value = e.target.value;
-              setCcName(value);
-
-              if (!/^[0-9#\\.]+$/.test(value)) {
-                setErrors((prev) => ({
-                  ...prev,
-                  name: t("InvalidCostCodeName"),
-                }));
-              } else {
-                setErrors((prev) => {
-                  const { name, ...rest } = prev;
-                  return rest;
-                });
-              }
+              setCcName(e.target.value);
             }}
             pattern={"^[0-9#\\.]+$"}
             required
           />
-          {errors.name && (
-            <span className="text-red-500 text-sm">{errors.name}</span>
-          )}
         </Holds>
         <Holds className="w-1/2">
           <Inputs
@@ -121,27 +122,11 @@ export function NewCostCodeForm({
             className="p-2"
             placeholder={t("CostCodeDescription")}
             onChange={(e) => {
-              const value = e.target.value;
-              setCcDescription(value);
-
-              if (!/^[0-9#\\.]+$/.test(value)) {
-                setErrors((prev) => ({
-                  ...prev,
-                  description: t("InvalidCostCodeDescription"),
-                }));
-              } else {
-                setErrors((prev) => {
-                  const { description, ...rest } = prev;
-                  return rest;
-                });
-              }
+              setCcDescription(e.target.value);
             }}
             pattern={"^[0-9#\\.]+$"}
             required
           />
-          {errors.description && (
-            <span className="text-red-500 text-sm">{errors.description}</span>
-          )}
         </Holds>
       </form>
     </Holds>
