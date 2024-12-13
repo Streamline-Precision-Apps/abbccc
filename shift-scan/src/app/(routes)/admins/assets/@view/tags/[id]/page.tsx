@@ -16,6 +16,30 @@ import { CCTags, costCodesTag, JobTags } from "@/lib/types";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
+import { z } from "zod";
+
+// Define Zod schemas
+const TagSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string().min(1, "Name is required"),
+  description: z.string().optional(),
+  jobs: z.array(z.string().uuid()),
+  removeJobs: z.array(z.string().uuid()),
+  costCodes: z.array(z.string().uuid()),
+  removeCostCodes: z.array(z.string().uuid()),
+});
+
+const JobTagsSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string(),
+});
+
+const CostCodesTagSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string(),
+  description: z.string(),
+});
+
 
 export default function TagView({ params }: { params: { id: string } }) {
   const t = useTranslations("Admins");
@@ -40,39 +64,42 @@ export default function TagView({ params }: { params: { id: string } }) {
     const fetchTag = async () => {
       try {
         const response = await fetch(`/api/getTagById/${tagId}`);
-        const tag = await response.json();
-        setTag(tag);
-        setEditedItem(tag.name);
-        setCommentText(tag.description ?? "");
-        setSelectedJobs(tag.jobsite ?? []);
-        setInitialSelectedJobs(tag.jobsite ?? []);
-        setSelectedCostCodes(tag.costCode ?? []);
-        setInitialSelectedCostCodes(tag.costCode ?? []);
+        const tagData = await response.json();
+        TagSchema.parse(tagData); // Validate tag data
+
+        setTag(tagData);
+        setEditedItem(tagData.name);
+        setCommentText(tagData.description ?? "");
+        setSelectedJobs(tagData.jobsite ?? []);
+        setSelectedCostCodes(tagData.costCode ?? []);
       } catch (error) {
-        console.log(error);
+        console.error(error);
         setNotification(t("FailedToFetchTagData"), "error");
       }
     };
+
     fetchTag();
   }, [tagId]);
 
   useEffect(() => {
-    const fetchJobs = async () => {
+    const fetchJobsAndCostCodes = async () => {
       try {
-        const response = await fetch("/api/getAllJobsites");
-        const jobs = (await response.json()) as JobTags[];
-        setJobs(jobs ?? []);
-        //cost codes
-        const response2 = await fetch("/api/getAllCostCodes");
-        const costCodes = (await response2.json()) as costCodesTag[];
-        setCostCodes(costCodes ?? []);
+        const jobsResponse = await fetch("/api/getAllJobsites");
+        const jobsData = await jobsResponse.json();
+        setJobs(jobsData.map((job: unknown) => JobTagsSchema.parse(job)));
+
+        const costCodesResponse = await fetch("/api/getAllCostCodes");
+        const costCodesData = await costCodesResponse.json();
+        setCostCodes(costCodesData.map((costCode: unknown) => CostCodesTagSchema.parse(costCode)));
       } catch (error) {
-        console.log(error);
+        console.error(error);
         setNotification(t("FailedToFetchJobData"), "error");
       }
     };
-    fetchJobs();
+
+    fetchJobsAndCostCodes();
   }, []);
+
 
   const toggleJobSelection = (job: JobTags) => {
     setSelectedJobs((prev) => {
