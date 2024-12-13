@@ -97,6 +97,9 @@ export async function createTag(data: {
   costCodes: number[];
 }) {
   try {
+    console.log("Creating tag...");
+    console.log(data);
+    
     const newTag = await prisma.cCTags.create({
       data: {
         name: data.name,

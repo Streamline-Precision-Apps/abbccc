@@ -70,7 +70,8 @@ export default function NewJobsite() {
 
       const response = await createAdminJobsite(formData);
       if (response) {
-        console.log("Changes saved successfully.");
+        console.log("Jobsite successfully created.");
+        setNotification("Jobsite successfully created.");
         setFormState({
           name: "",
           streetName: "",
@@ -114,9 +115,6 @@ export default function NewJobsite() {
                 handleFieldChange={handleFieldChange}
               />
             </Holds>
-            <Holds background={"white"} className="w-full h-full">
-              <EditTags />
-            </Holds>
           </Holds>
         }
         footer={<EditJobsitesFooter handleEditForm={saveEdits} />}
@@ -125,13 +123,7 @@ export default function NewJobsite() {
   );
 }
 
-export function EditTags() {
-  return (
-    <Holds background={"white"} className="w-full h-full col-span-2">
-      <Texts className="text-black font-bold text-2xl">Edit Tag</Texts>
-    </Holds>
-  );
-}
+
 
 export function EditJobsitesHeader({
   editedItem,

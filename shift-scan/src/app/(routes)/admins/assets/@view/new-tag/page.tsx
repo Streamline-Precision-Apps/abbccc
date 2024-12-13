@@ -12,18 +12,7 @@ import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { costCodesTag, JobTags } from "@/lib/types";
-import { useTranslations } from "next-intl";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
-import { z } from "zod";
-import { useNotification } from "@/app/context/NotificationContext";
-
-// Zod schema for validation
-const tagPayloadSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  description: z.string().optional(),
-  jobs: z.array(z.string()).nonempty("At least one job must be selected"),
-  costCodes: z.array(z.string()).nonempty("At least one cost code must be selected"),
-});
 
 export default function NewTagView() {
   const [editedItem, setEditedItem] = useState<string>("");
@@ -38,7 +27,6 @@ export default function NewTagView() {
   const [selectedCostCodes, setSelectedCostCodes] = useState<costCodesTag[]>(
     []
   );
-  const { setNotification } = useNotification();
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -47,7 +35,7 @@ export default function NewTagView() {
         const jobs = (await response.json()) as JobTags[];
         setInitialSelectedJobs(jobs ?? []);
         setJobs(jobs ?? []);
-        // Fetch cost codes
+        //cost codes
         const response2 = await fetch("/api/getAllCostCodes");
         const costCodes = (await response2.json()) as costCodesTag[];
         setInitialSelectedCostCodes(costCodes ?? []);
@@ -80,41 +68,25 @@ export default function NewTagView() {
   };
   const handleCreateTag = async () => {
     try {
+      console.log("selected jobs:", selectedJobs);
+      console.log("selected cost codes:", selectedCostCodes);
       const payload = {
         name: editedItem,
         description: commentText,
         jobs: selectedJobs
-          .filter(
-            (job) =>
-              !initialSelectedJobs.some((initJob) => initJob.id === job.id)
-          )
           .map((job) => job.id), // IDs of jobs to add
 
         costCodes: selectedCostCodes
-          .filter(
-            (costCode) =>
-              !initialSelectedCostCodes.some((c) => c.id === costCode.id)
-          )
-          .map((cc) => cc.id), // IDs of cost codes to add
+          .map((cc) => cc.id), // IDs of costCodes to add
       };
 
-      // Validate the payload with Zod
-      const validation = tagPayloadSchema.safeParse(payload);
-
-      if (!validation.success) {
-        console.error("Validation failed:", validation.error.format());
-        setNotification("Data Validation Error", "error");
-        return; // Exit if validation fails
-      }
-
-      // Call createTag with the validated payload
+      // Call changeTags with JSON payload
       const response = await createTag(payload);
       if (response) {
-        setEditedItem("");
-        setCommentText("");
+        setEditedItem(editedItem);
+        setCommentText(commentText);
         setSelectedJobs([]);
         setSelectedCostCodes([]);
-        setNotification("Tag created successfully", "success");
       }
     } catch (error) {
       console.log(error);
@@ -150,7 +122,7 @@ export default function NewTagView() {
             selectedCostCodes={selectedCostCodes}
           />
         }
-        footer={<EditTagFooter handleEditForm={handleCreateTag} />}
+        footer={<EditTagFooter handleEditForm={handleCreateTag}/>}
       />
     </Holds>
   );
@@ -168,7 +140,7 @@ export function EditTagHeader({
   editCommentFunction?: Dispatch<SetStateAction<string>>;
 }) {
   const [isCommentSectionOpen, setIsCommentSectionOpen] = useState(false);
-  const t = useTranslations("Admins");
+
   const openComment = () => {
     setIsCommentSectionOpen(!isCommentSectionOpen);
   };
@@ -194,7 +166,7 @@ export function EditTagHeader({
                 onChange={(e) => {
                   editFunction?.(e.target.value);
                 }}
-                placeholder={t("EditTagName")}
+                placeholder={"Edit Tag Name"}
                 variant={"titleFont"}
                 className=" my-auto"
               />
@@ -204,7 +176,7 @@ export function EditTagHeader({
               className="h-full w-full my-1 row-start-2 row-end-3 col-start-1 col-end-2 "
             >
               <Texts size={"p6"} className="mr-2">
-                {t("Comment")}
+                {"Comment"}
               </Texts>
               <Images
                 titleImg="/comment.svg"
@@ -217,7 +189,7 @@ export function EditTagHeader({
 
             <Holds className="w-full h-full row-start-3 row-end-6 col-start-1 col-end-6">
               <TextAreas
-                placeholder={t("EnterYourComment")}
+                placeholder="Enter your comment"
                 value={commentText ? commentText : ""}
                 onChange={(e) => {
                   editCommentFunction?.(e.target.value);
@@ -235,7 +207,7 @@ export function EditTagHeader({
             <Inputs
               type="text"
               value={editedItem}
-              placeholder={t("EditTagName")}
+              placeholder={"Enter your Crew Name"}
               onChange={(e) => {
                 editFunction?.(e.target.value);
               }}
@@ -248,7 +220,7 @@ export function EditTagHeader({
             className="h-full w-full row-start-2 row-end-3 col-start-6 col-end-7 "
           >
             <Texts size={"p6"} className="mr-2">
-              {t("Comment")}
+              Comment
             </Texts>
             <Images
               titleImg="/comment.svg"
@@ -279,7 +251,6 @@ export function EditTagMainLeft({
   selectedJobs: JobTags[];
   selectedCostCodes: costCodesTag[];
 }) {
-  const t = useTranslations("Admins");
   const [term, setTerm] = useState<string>("");
   const [activeList, setActiveList] = useState<"jobs" | "costCodes">("jobs");
 
@@ -309,14 +280,14 @@ export function EditTagMainLeft({
             className="w-[50%] h-full justify-center "
             onClick={() => setActiveList("jobs")}
           >
-            <Texts size={"p6"}>{t("Jobsite")}</Texts>
+            <Texts size={"p6"}>Jobsite</Texts>
           </Holds>
           <Holds
             background={activeList === "costCodes" ? "lightBlue" : "white"}
             className="w-[50%] h-full justify-center "
             onClick={() => setActiveList("costCodes")}
           >
-            <Texts size={"p6"}>{t("CostCode")}</Texts>
+            <Texts size={"p6"}>Cost Code</Texts>
           </Holds>
         </Holds>
 
@@ -328,7 +299,7 @@ export function EditTagMainLeft({
             <Holds className="w-[80%]">
               <Inputs
                 type="search"
-                placeholder={t("Search")}
+                placeholder="Search"
                 value={term}
                 onChange={(e) => setTerm(e.target.value)}
                 className="border-none outline-none"
@@ -437,10 +408,11 @@ export function EditTagMainRight({
 }
 export function EditTagFooter({
   handleEditForm,
+  // deleteTag,
 }: {
   handleEditForm: () => void;
+  // deleteTag: () => void;
 }) {
-  const t = useTranslations("Admins");
   return (
     <Holds
       background={"white"}
@@ -452,9 +424,17 @@ export function EditTagFooter({
             className={"py-2 bg-app-green"}
             onClick={() => handleEditForm()}
           >
-            <Titles size={"h4"}>{t("CreateTag")}</Titles>
+            <Titles size={"h4"}>Create Tag</Titles>
           </Buttons>
         </Holds>
+        {/* <Holds className="col-start-4 col-end-5 ">
+          <Buttons
+            className={"py-2 bg-app-green"}
+            onClick={() => deleteTag()}
+          >
+            <Titles size={"h4"}>Create Tag</Titles>
+          </Buttons>
+        </Holds> */}
       </Grids>
     </Holds>
   );
