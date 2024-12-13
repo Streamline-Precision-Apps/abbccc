@@ -634,6 +634,8 @@
 "TagCreatedSuccessfully": "Tag created successfully.",
 "Total Hours": "Total Hours",
 "VehicleModel": "Vehicle Model"
+"TagDeletedSuccessfully": "Tag deleted successfully.",
+"TagUpdatedSuccessfully": "Tag updated successfully.",
 
        
     

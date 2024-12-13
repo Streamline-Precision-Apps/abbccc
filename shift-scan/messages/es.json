@@ -606,8 +606,11 @@
 "StartDate": "Fecha de Inicio",
 "EndDate": "Fecha de Fin",
 "TagCreatedSuccessfully": "Etiqueta Creada con Exito",
-"Total Hours": "Horas Totales",
 "EquipmentUpdatedSuccessfully": "Equipo Actualizado con Exito"
+"TagDeletedSuccessfully": "Etiqueta Eliminada con Exito",
+"TagUpdatedSuccessfully": "Etiqueta Actualizada con Exito",
+"Total Hours": "Horas Totales"
+
 
     
     },
