@@ -4,7 +4,7 @@ import { ReusableViewLayout } from "@/app/(routes)/admins/personnel/@view/[emplo
 import { Holds } from "@/components/(reusable)/holds";
 import { costCodesTag, JobTags } from "@/lib/types";
 import { useEffect, useState } from "react";
-import { z } from "zod";
+// import { z } from "zod";
 import { useNotification } from "@/app/context/NotificationContext";
 import NewTagHeader from "./_Components/NewTagHeader";
 import { NewTagMainRight } from "./_Components/NewTagRightMain";
@@ -12,25 +12,25 @@ import NewTagFooter from "./_Components/NewTagFooter";
 import NewTagMainLeft from "./_Components/NewTagLeftMain";
 import { useTranslations } from "next-intl";
 
-// Zod schema for validation
-export const costCodesTagSchema = z.object({
-  id: z.number(),
-  name: z.string(),
-  description: z.string(),
-});
+// // Zod schema for validation
+// export const costCodesTagSchema = z.object({
+//   id: z.number(),
+//   name: z.string(),
+//   description: z.string(),
+// });
 
-export const jobTagsSchema = z.object({
-  id: z.string(),
-  qrId: z.string(),
-  name: z.string(),
-});
+// export const jobTagsSchema = z.object({
+//   id: z.string(),
+//   qrId: z.string(),
+//   name: z.string(),
+// });
 
-export const tagPayloadSchema = z.object({
-  name: z.string(),
-  description: z.string(),
-  jobs: z.array(jobTagsSchema),
-  costCodes: z.array(costCodesTagSchema),
-});
+// export const tagPayloadSchema = z.object({
+//   name: z.string(),
+//   description: z.string(),
+//   jobs: z.array(jobTagsSchema),
+//   costCodes: z.array(costCodesTagSchema),
+// });
 
 export default function NewTagView() {
   const [editedItem, setEditedItem] = useState<string>("");
