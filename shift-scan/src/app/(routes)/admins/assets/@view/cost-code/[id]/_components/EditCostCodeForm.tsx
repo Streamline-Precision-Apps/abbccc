@@ -31,6 +31,9 @@ export function EditCostCodeForm({
             className="p-2"
             variant="default"
             size="lg"
+            minLength={1}
+            maxLength={10}
+            pattern={"^[0-9#\\.]+$"}
           />
         </Holds>
         <Holds className="w-1/2">
@@ -43,6 +46,9 @@ export function EditCostCodeForm({
             className="p-2"
             variant="default"
             size="lg"
+            minLength={1}
+            maxLength={50}
+            pattern={"^[a-zA-Z0-9]+$"}
           />
         </Holds>
       </form>

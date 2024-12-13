@@ -24,9 +24,29 @@ export function NewCostCodeForm({
   const { setNotification } = useNotification();
   const [ccName, setCcName] = useState<string>("");
   const [ccDescription, setCcDescription] = useState<string>("");
+  const [errors, setErrors] = useState<{ name?: string; description?: string }>(
+    {}
+  );
 
   const CreateCostCode = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // Prevent the page from reloading
+    const newErrors: { name?: string; description?: string } = {};
+
+    if (!/^[0-9#\\.]+$/.test(ccName)) {
+      newErrors.name = t("InvalidCostCodeName");
+    }
+    if (!/^[0-9#\\.]+$/.test(ccDescription)) {
+      newErrors.description = t("InvalidCostCodeDescription");
+    }
+
+    setErrors(newErrors);
+
+    // If there are errors, do not proceed
+    if (Object.keys(newErrors).length > 0) {
+      setNotification(t("FormValidationFailed"), "error");
+      return;
+    }
+
     try {
       const formData = new FormData(createCostCode.current!);
 
@@ -72,9 +92,27 @@ export function NewCostCodeForm({
             placeholder={placeholder}
             className="p-2"
             onChange={(e) => {
-              setCcName(e.target.value);
+              const value = e.target.value;
+              setCcName(value);
+
+              if (!/^[0-9#\\.]+$/.test(value)) {
+                setErrors((prev) => ({
+                  ...prev,
+                  name: t("InvalidCostCodeName"),
+                }));
+              } else {
+                setErrors((prev) => {
+                  const { name, ...rest } = prev;
+                  return rest;
+                });
+              }
             }}
+            pattern={"^[0-9#\\.]+$"}
+            required
           />
+          {errors.name && (
+            <span className="text-red-500 text-sm">{errors.name}</span>
+          )}
         </Holds>
         <Holds className="w-1/2">
           <Inputs
@@ -83,9 +121,27 @@ export function NewCostCodeForm({
             className="p-2"
             placeholder={t("CostCodeDescription")}
             onChange={(e) => {
-              setCcDescription(e.target.value);
+              const value = e.target.value;
+              setCcDescription(value);
+
+              if (!/^[0-9#\\.]+$/.test(value)) {
+                setErrors((prev) => ({
+                  ...prev,
+                  description: t("InvalidCostCodeDescription"),
+                }));
+              } else {
+                setErrors((prev) => {
+                  const { description, ...rest } = prev;
+                  return rest;
+                });
+              }
             }}
+            pattern={"^[0-9#\\.]+$"}
+            required
           />
+          {errors.description && (
+            <span className="text-red-500 text-sm">{errors.description}</span>
+          )}
         </Holds>
       </form>
     </Holds>
