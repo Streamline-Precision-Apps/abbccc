@@ -1,6 +1,6 @@
 "use server";
 import prisma from "@/lib/prisma";
-import { FormStatus, Permission } from "@/lib/types";
+import { costCodesTag, FormStatus, JobTags, Permission } from "@/lib/types";
 
 import { revalidatePath, revalidateTag } from "next/cache";
 
@@ -93,8 +93,8 @@ export async function deleteTagById(tagId: string) {
 export async function createTag(data: {
   name: string;
   description: string;
-  jobs: string[];
-  costCodes: number[];
+  jobs: JobTags[];
+  costCodes: costCodesTag[];
 }) {
   try {
     const newTag = await prisma.cCTags.create({
@@ -102,10 +102,10 @@ export async function createTag(data: {
         name: data.name,
         description: data.description,
         jobsite: {
-          connect: data.jobs.map((id) => ({ id })), // Connect jobsites
+          connect: data.jobs.map((job) => ({ id: job.id, qrId: job.qrId })),
         },
         costCode: {
-          connect: data.costCodes.map((id) => ({ id })), // Connect cost codes
+          connect: data.costCodes.map((id) => ({ id: id.id })), // Connect cost codes
         },
       },
     });

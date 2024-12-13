@@ -12,13 +12,23 @@ import NewTagFooter from "./_Components/NewTagFooter";
 import NewTagMainLeft from "./_Components/NewTagLeftMain";
 
 // Zod schema for validation
-const tagPayloadSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  description: z.string().optional(),
-  jobs: z.array(z.string()).nonempty("At least one job must be selected"),
-  costCodes: z
-    .array(z.string())
-    .nonempty("At least one cost code must be selected"),
+export const costCodesTagSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  description: z.string(),
+});
+
+export const jobTagsSchema = z.object({
+  id: z.string(),
+  qrId: z.string(),
+  name: z.string(),
+});
+
+export const tagPayloadSchema = z.object({
+  name: z.string(),
+  description: z.string(),
+  jobs: z.array(jobTagsSchema),
+  costCodes: z.array(costCodesTagSchema),
 });
 
 export default function NewTagView() {
@@ -26,11 +36,8 @@ export default function NewTagView() {
   const [commentText, setCommentText] = useState<string>("");
   const [jobs, setJobs] = useState<JobTags[]>();
   const [costCodes, setCostCodes] = useState<costCodesTag[]>();
-  const [initialSelectedJobs, setInitialSelectedJobs] = useState<JobTags[]>([]);
   const [selectedJobs, setSelectedJobs] = useState<JobTags[]>([]);
-  const [initialSelectedCostCodes, setInitialSelectedCostCodes] = useState<
-    costCodesTag[]
-  >([]);
+
   const [selectedCostCodes, setSelectedCostCodes] = useState<costCodesTag[]>(
     []
   );
@@ -41,12 +48,10 @@ export default function NewTagView() {
       try {
         const response = await fetch("/api/getAllJobsites");
         const jobs = (await response.json()) as JobTags[];
-        setInitialSelectedJobs(jobs ?? []);
         setJobs(jobs ?? []);
         // Fetch cost codes
         const response2 = await fetch("/api/getAllCostCodes");
         const costCodes = (await response2.json()) as costCodesTag[];
-        setInitialSelectedCostCodes(costCodes ?? []);
         setCostCodes(costCodes ?? []);
       } catch (error) {
         console.log(error);
@@ -79,19 +84,8 @@ export default function NewTagView() {
       const payload = {
         name: editedItem,
         description: commentText,
-        jobs: selectedJobs
-          .filter(
-            (job) =>
-              !initialSelectedJobs.some((initJob) => initJob.id === job.id)
-          )
-          .map((job) => job.id), // IDs of jobs to add
-
-        costCodes: selectedCostCodes
-          .filter(
-            (costCode) =>
-              !initialSelectedCostCodes.some((c) => c.id === costCode.id)
-          )
-          .map((cc) => cc.id), // IDs of cost codes to add
+        jobs: selectedJobs,
+        costCodes: selectedCostCodes,
       };
 
       // Validate the payload with Zod
