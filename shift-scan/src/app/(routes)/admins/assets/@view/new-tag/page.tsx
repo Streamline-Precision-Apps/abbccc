@@ -3,7 +3,6 @@ import { createTag } from "@/actions/adminActions";
 import { ReusableViewLayout } from "@/app/(routes)/admins/personnel/@view/[employee]/_components/reusableViewLayout";
 import { Holds } from "@/components/(reusable)/holds";
 import { costCodesTag, JobTags } from "@/lib/types";
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { useNotification } from "@/app/context/NotificationContext";
@@ -11,6 +10,7 @@ import NewTagHeader from "./_Components/NewTagHeader";
 import { NewTagMainRight } from "./_Components/NewTagRightMain";
 import NewTagFooter from "./_Components/NewTagFooter";
 import NewTagMainLeft from "./_Components/NewTagLeftMain";
+import { useTranslations } from "next-intl";
 
 // Zod schema for validation
 export const costCodesTagSchema = z.object({
@@ -38,10 +38,11 @@ export default function NewTagView() {
   const [jobs, setJobs] = useState<JobTags[]>();
   const [costCodes, setCostCodes] = useState<costCodesTag[]>();
   const [selectedJobs, setSelectedJobs] = useState<JobTags[]>([]);
-
+  const { setNotification } = useNotification();
   const [selectedCostCodes, setSelectedCostCodes] = useState<costCodesTag[]>(
     []
   );
+  const t = useTranslations("Admins");
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -55,6 +56,7 @@ export default function NewTagView() {
         setCostCodes(costCodes ?? []);
       } catch (error) {
         console.log(error);
+        setNotification(t("FailedToFetchTagData"), "error");
       }
     };
     fetchJobs();
@@ -100,6 +102,7 @@ export default function NewTagView() {
         setCommentText(commentText);
         setSelectedJobs([]);
         setSelectedCostCodes([]);
+        setNotification(t("TagCreatedSuccessfully"), "success");
       }
     } catch (error) {
       console.log(error);

@@ -6,9 +6,12 @@ import { Holds } from "@/components/(reusable)/holds";
 import { costCodesTag, JobTags } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useEffect, useState } from "react";
 import { z } from "zod";
-import { EditTagFooter, EditTagHeader, EditTagMainLeft, EditTagMainRight } from "../../new-tag/page";
+import { useTranslations } from "next-intl";
+import EditTagHeader from "./_Component/EditTagHeader";
+import EditTagMainLeft from "./_Component/EditTagLeftMain";
+import EditTagMainRight from "./_Component/EditTagRightMain";
+import EditTagFooter from "./_Component/EditTagFooter";
 
 const tagSchema = z.object({
   id: z.string(),
@@ -60,6 +63,7 @@ export default function TagView({ params }: { params: { id: string } }) {
   const [selectedCostCodes, setSelectedCostCodes] = useState<costCodesTag[]>(
     []
   );
+  const t = useTranslations("Admins");
 
   useEffect(() => {
     const fetchTag = async () => {
@@ -90,7 +94,7 @@ export default function TagView({ params }: { params: { id: string } }) {
     };
 
     fetchTag();
-  }, [tagId, setNotification, t]);
+  }, [tagId, t]);
 
   useEffect(() => {
     const fetchJobsAndCostCodes = async () => {
@@ -112,7 +116,6 @@ export default function TagView({ params }: { params: { id: string } }) {
 
     fetchJobsAndCostCodes();
   }, []);
-  }, [setNotification, t]);
 
   const toggleJobSelection = (job: JobTags) => {
     setSelectedJobs((prev) =>
@@ -214,7 +217,7 @@ export default function TagView({ params }: { params: { id: string } }) {
         footer={
           <EditTagFooter
             handleEditForm={handleEditForm}
-            // deleteTag={deleteTag}
+            deleteTag={deleteTag}
           />
         }
       />
