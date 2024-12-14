@@ -27,6 +27,7 @@ import {
   useRecentDBEquipment,
 } from "@/app/context/dbRecentCodesContext";
 import { Holds } from "../(reusable)/holds";
+import { Grids } from "../(reusable)/grids";
 
 type Option = {
   code: string;
@@ -136,17 +137,24 @@ export default function CodeFinder({ datatype, savedCode }: Props) {
 
   return (
     <Holds className="w-full h-full">
-      <SearchBar
-        selected={false}
-        placeholder={t(`search-${datatype}`)}
-        searchTerm={searchTerm}
-        onSearchChange={handleSearchChange}
-      />
-      <CustomSelect
-        options={filteredOptions}
-        onOptionSelect={handleOptionSelect}
-        selectedOption={selectedOption}
-      />
+      <Grids cols={"1"} rows={"5"} gap={"5"}>
+        <Holds className="row-span-1 h-full">
+          <SearchBar
+            selected={false}
+            placeholder={t(`search-${datatype}`)}
+            searchTerm={searchTerm}
+            onSearchChange={handleSearchChange}
+          />
+        </Holds>
+
+        <Holds className="row-span-4 h-full">
+          <CustomSelect
+            options={filteredOptions}
+            onOptionSelect={handleOptionSelect}
+            selectedOption={selectedOption}
+          />
+        </Holds>
+      </Grids>
     </Holds>
   );
 }
