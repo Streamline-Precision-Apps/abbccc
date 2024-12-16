@@ -14,7 +14,7 @@ import { setLocale } from "@/actions/cookieActions";
 import { Forms } from "@/components/(reusable)/forms";
 import { Holds } from "@/components/(reusable)/holds";
 import Link from "next/link";
-import { CheckBox } from "@/components/(inputs)/checkBox";
+import { Checkbox } from "@/components/(inputs)/checkBox";
 
 export default function SignInForm() {
   const [viewSecret, setViewSecret] = useState(false);
@@ -47,7 +47,7 @@ export default function SignInForm() {
     if (result?.error) {
       setError(t("Err"));
       setAnimation(false);
-      setTimeout(() => setError(""), 3000);
+      setTimeout(() => setError(""), 5000);
     } else {
       router.push("/");
       setAnimation(false);
@@ -55,8 +55,15 @@ export default function SignInForm() {
   };
 
   return (
-    <Contents width={"section"}>
-      <Forms onSubmit={handleSubmit} className="pt-3">
+    <Contents width={"section"} className="pt-4">
+        {error && (
+          <Holds background={"red"} className="p-1 mb-3">
+            <Titles size={"h3"}>
+              {error}
+            </Titles>
+          </Holds>
+        )}
+      <Forms onSubmit={handleSubmit}>
         <Labels>{t("EmployeeID")}</Labels>
         <Inputs variant="default" name="username" type="text" required />
         <Holds position={"row"}>
@@ -76,14 +83,7 @@ export default function SignInForm() {
           required
         />
         <Holds position={"row"}>
-          {error && (
-            <Holds position={"left"}>
-              <Texts text={"red"} size={"p4"}>
-                {error}
-              </Texts>
-            </Holds>
-          )}
-          <Holds className="mb-10 ">
+          <Holds className="mb-8">
             <Link href="/signin/forgot-password">
               <Texts text={"link"} size={"p5"} position={"right"}>
                 {t("Btn-forgot")}
@@ -92,7 +92,7 @@ export default function SignInForm() {
           </Holds>
         </Holds>
 
-        <Holds position={"row"} className="mb-10">
+        <Holds position={"row"} className="mb-8">
           <Holds size={"30"}>
             <Images
               titleImg="/biometrics.svg"
@@ -105,26 +105,30 @@ export default function SignInForm() {
           <Holds size={"70"}>
             <Buttons background="green" type="submit">
               {animation && (
+                <Holds className="p-1">
                 <Images
                   titleImg="/spinner.svg"
                   titleImgAlt="login"
-                  size={"30"}
+                  size={"20"}
+                  position={"center"}
                   className="animate-spin"
                 />
+                </Holds>
               )}
               {!animation && <Titles className="p-3">{t("Btn-signIn")}</Titles>}
             </Buttons>
           </Holds>
         </Holds>
-        <Holds position="row" className="mb-3">
+        <Holds position="row" className="mb-6">
           <Holds size={"70"}>
-            <Texts size="p2">{t("Spanish")}</Texts>
+            <Texts size="p2" position={"left"}>{t("Spanish")}</Texts>
           </Holds>
-          <Holds size={"30"}>
-            <CheckBox
+          <Holds size={"30"} position={"right"}>
+            <Checkbox
+              disabled ={false}
               id={"1"}
-              label={""}
-              onChange={(e) => LocaleHandler(e)}
+              label={"h"}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => LocaleHandler(e)}
               name="locale"
             />
           </Holds>

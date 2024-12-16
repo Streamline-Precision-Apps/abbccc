@@ -1,14 +1,88 @@
 { 
 "Login":{
-    "LogoAlt" :"Logo",
     "EmployeeID": "Employee ID",
     "Password": "Password",
     "Btn-signIn": "Sign In",
     "Btn-forgot": "Forgot Password?",
     "Spanish": "Habla Español?",
     "Err": "Invalid Attempt",
-    "ChangePassword": "Change Password"
+    "ChangePassword": "Change Password",
+    "LogoAlt" :"Streamline Precision Logo"
 },
+
+"SignUpIntro":{
+    "Welcome": "Welcome to shift scan! Time to set up your account!",
+    "ThingsWeNeedToDo": "Things we need to do...",
+    "ChooseNewPassword": "Choose New Password",
+    "GivePermissions": "Give Permissions",
+    "ChooseProfilePicture": "Choose Profile Picture",
+    "CreateVirtualSignature": "Create Virtual Signature",
+    "LetsGetStarted": "Let's Get Started!",
+    "LogoAlt" :"Shift Scan Logo"
+},
+
+"SignUpPassword":{
+    "ChoosePasswordTitle" : "Choose A Password",
+    "ChooseNewPassword" : "Choose a new password! Make sure to follow the strength requirements!",
+    "PasswordRequirements" : "Password Requirements:",
+    "NumberRequirement" : "Number",
+    "SymbolRequirement" : "Symbol",
+    "LengthRequirement" : "Length (8+)",
+    "NewPassword" : "New Password",
+    "ConfirmPassword" : "Confirm Password",
+    "Next" : "Next",
+    "NewPasswordEmptyError" : "Invalid Attempt. New Password cannot be empty!",
+    "ConfirmPasswordEmptyError" : "Invalid Attempt. Confirm Password cannot be empty!",
+    "PasswordMismatchError" : "Invalid Attempt. Passwords do not match!",
+    "PasswordLengthError" : "Invalid Attempt. Password must be at least 8 characters long, contain 1 number, and 1 symbol.",
+    "EyeImageAlt" :"Eyeball Image"
+},
+
+"SignUpPermissions":{
+    "GiveUsAccess" : "Give Us Access",
+    "YesToEverything" : "Yes to Everything!",
+    "RequiredForAppUse" : "Required for App Use",
+    "CameraAccess" : "Camera Access",
+    "LocationAccess" : "Location Access",
+    "Cookies" : "Cookies",
+    "OptionalButVeryHelpful" : "Optional, but very helpful",
+    "BiometricsLogin" : "Biometrics Login",
+    "Notifications" : "Notifications",
+    "Photo Album" : "Photo Album",
+    "Next" : "Next"
+},
+
+"SignUpProfilePicture":{
+    "AddProfilePicture" : "Add A Profile Picture",
+    "LetsPickAPicture" : "Let’s pick a picture for your profile! Please choose a picture of your face!",
+    "UseCamera" : "Use Camera",
+    "CameraRoll" : "Camera Roll",
+    "Next" : "Next",
+    "ProfilePictureMissingError" : "Invalid Attempt. You must select a Profile Picture!",
+    "ImageAlt" :"Profile Picture Image"
+},
+
+"SignUpVirtualSignature":{
+    "AddASignature" : "Add A Signature",
+    "LetsAddASignature" : "Let’s add an e-signature! make sure you like it, it will be imprinted on every form.",
+    "SingHere" : "Sign Here",
+    "Clear" : "Clear",
+    "Save" : "Save",
+    "Next" : "Next",
+    "SignatureMissingError" : "Invalid Attempt. You must add a Signature!"
+},
+
+"SignUpOutro":{
+    "LooksLikeYoureAllSetUp" : "Looks like you’re all set up! Time to experience working made easier!",
+    "HeresWhatWeDid" : "Here’s what we did...",
+    "ChooseNewPassword": "Choose New Password",
+    "GivePermissions": "Give Permissions",
+    "ChooseProfilePicture": "Choose Profile Picture",
+    "CreateVirtualSignature": "Create Virtual Signature",
+    "StartScanning": "Start Scanning!",
+    "LogoAlt" :"Shift Scan Logo"
+},
+
 "Home" : {
     "Today": "Today",
     "End-Pay-Period": "End of Current Pay Period",
