@@ -6,16 +6,31 @@ import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Texts } from "@/components/(reusable)/texts";
 import { SearchCrew } from "@/lib/types";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 type Props = {
   crew: SearchCrew[];
 };
 
 export const Crews = ({ crew }: Props) => {
+  const t = useTranslations("Admins");
   const [term, setTerm] = useState<string>("");
 
   const router = useRouter();
+
+  const filteredList = useMemo(() => {
+    if (!term.trim()) {
+      return [...crew].sort((a, b) => a.name.localeCompare(b.name));
+    } // Return the full list if no term is entered
+
+    return crew
+      .filter((c) => {
+        const name = `${c.name}`.toLowerCase();
+        return name.includes(term.toLowerCase());
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [term, crew]);
 
   // Debounce handler to avoid rapid state updates on each keystroke
   const handleSearchChange = useCallback(
@@ -26,7 +41,7 @@ export const Crews = ({ crew }: Props) => {
   );
 
   const selectCrew = (crew: SearchCrew) => {
-    setTerm(`Crew ${crew.id} - ${crew.name} `);
+    setTerm(`${crew.name} `);
 
     router.push(`/admins/personnel/crew/${crew.id}`);
   };
@@ -46,28 +61,30 @@ export const Crews = ({ crew }: Props) => {
             <Holds className="w-[80%]">
               <Inputs
                 type="search"
-                placeholder="Search crew by name"
+                placeholder={t("CrewsSearchPlaceholder")}
                 value={term}
                 onChange={handleSearchChange}
                 className="border-none outline-none"
               />
             </Holds>
           </Holds>
-          <Holds className=" h-full mb-4  overflow-y-auto ">
+          <Holds className=" h-full mb-4 overflow-y-auto no-scrollbar ">
             <Holds>
-              {crew.length > 0 ? (
-                crew.map((crew) => (
+              {filteredList.length > 0 ? (
+                filteredList.map((crew) => (
                   <Holds
                     key={crew.id}
                     className="py-2 border-b"
                     onClick={() => selectCrew(crew)}
                   >
-                    <Texts size="p6">{`Crew ${crew.id} - ${crew.name} `}</Texts>
+                    <Texts position={"left"} size="p6" className="pl-4">
+                      {crew.name}
+                    </Texts>
                   </Holds>
                 ))
               ) : (
                 <Texts size="p6" className="text-center">
-                  No crew found
+                  {t("NoCrewsFound")}
                 </Texts>
               )}
             </Holds>
@@ -79,7 +96,7 @@ export const Crews = ({ crew }: Props) => {
           className="row-span-1 h-full"
           onClick={createCrew}
         >
-          <Texts size="p6">Create New Crew</Texts>
+          <Texts size="p6">{t("CreateNewCrew")}</Texts>
         </Buttons>
       </Grids>
     </Holds>

@@ -1,5 +1,6 @@
 "use client";
 import { editPersonnelInfo } from "@/actions/adminActions";
+import { useNotification } from "@/app/context/NotificationContext";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
@@ -11,6 +12,7 @@ import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { EmployeeContactInfo, Permission, UserProfile } from "@/lib/types";
+import { useTranslations } from "next-intl";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 type Props = {
@@ -47,7 +49,8 @@ export const EditEmployeeForm = ({
   signatureBase64String,
 }: Props) => {
   const [restrictions, setRestrictions] = useState<boolean>(false);
-
+  const t = useTranslations("Admins");
+  const { setNotification } = useNotification();
   // Handle changes in form inputs
   const handleInputChange = (
     e:
@@ -85,14 +88,15 @@ export const EditEmployeeForm = ({
       console.log(formData);
       const res = await editPersonnelInfo(formData);
       if (res) {
-        console.log("Employee info updated successfully.");
+        setNotification(`${t("EmployeeInfoUpdatedSuccessfully")}`, "success");
         setRenderedData(editedData);
         setRenderedData1(editedData1);
       } else {
-        console.log("Failed to update employee info.");
+        setNotification(`${t("FailedToUpdateEmployeeInfo")}`, "error");
       }
     } catch (error) {
-      console.error("Failed to update employee info:", error);
+      console.error(`${t("FailedToUpdateEmployeeInfo")}`, error);
+      setNotification(`${t("FailedToUpdateEmployeeInfo")}`, "error");
     }
   };
 
@@ -145,15 +149,15 @@ export const EditEmployeeForm = ({
               <Inputs type="hidden" name="id" value={editedData?.id || ""} />
               <Holds>
                 {userId === user ? (
-                  <Titles size={"h5"}>Your Information</Titles>
+                  <Titles size={"h5"}>{t("YourInformation")}</Titles>
                 ) : (
-                  <Titles size={"h5"}>Employee Information</Titles>
+                  <Titles size={"h5"}>{t("EmployeeInformation")}</Titles>
                 )}
               </Holds>
               <Holds className=" w-full flex-wrap h-full  ">
                 <Holds className="w-[50%] px-2">
                   <Labels size={"p6"} className="">
-                    First Name
+                    {t("FirstName")}
                   </Labels>
                   <Holds
                     position={"row"}
@@ -186,7 +190,7 @@ export const EditEmployeeForm = ({
                   </Holds>
                 </Holds>
                 <Holds className="w-[50%] px-2">
-                  <Labels size={"p6"}>Last Name</Labels>
+                  <Labels size={"p6"}>{t("LastName")}</Labels>
                   <Holds
                     position={"row"}
                     className="gap-2  h-10  border-[3px] rounded-[10px] border-black"
@@ -218,7 +222,7 @@ export const EditEmployeeForm = ({
                   </Holds>
                 </Holds>
                 <Holds className="w-[50%] px-2">
-                  <Labels size={"p6"}>Username</Labels>
+                  <Labels size={"p6"}>{t("Username")}</Labels>
                   <Inputs
                     className="h-10"
                     type="text"
@@ -229,7 +233,7 @@ export const EditEmployeeForm = ({
                   />
                 </Holds>
                 <Holds className="w-[50%] px-2">
-                  <Labels size={"p6"}>Email </Labels>
+                  <Labels size={"p6"}>{t("Email")}</Labels>
                   <Holds
                     position={"row"}
                     className="gap-2  h-10  border-[3px] rounded-[10px] border-black"
@@ -261,7 +265,7 @@ export const EditEmployeeForm = ({
                   </Holds>
                 </Holds>
                 <Holds className="w-[50%] px-2">
-                  <Labels size={"p6"}>Date of Birth </Labels>
+                  <Labels size={"p6"}>{t("DateOfBirth")}</Labels>
                   <Holds
                     position={"row"}
                     className="gap-2  h-10  border-[3px] rounded-[10px] border-black"
@@ -297,7 +301,7 @@ export const EditEmployeeForm = ({
                   </Holds>
                 </Holds>
                 <Holds className="w-[50%] px-2">
-                  <Labels size={"p6"}>Phone Number </Labels>
+                  <Labels size={"p6"}>{t("PhoneNumber")}</Labels>
                   <Holds
                     position={"row"}
                     className="gap-2 h-10 border-[3px] rounded-[10px] border-black"
@@ -330,7 +334,7 @@ export const EditEmployeeForm = ({
                 </Holds>
 
                 <Holds className="w-[50%] px-2">
-                  <Labels size={"p6"}>Emergency Contact</Labels>
+                  <Labels size={"p6"}>{t("EmergencyContact")}</Labels>
                   <Holds
                     position={"row"}
                     className="gap-2  h-10  border-[3px] rounded-[10px] border-black"
@@ -362,7 +366,7 @@ export const EditEmployeeForm = ({
                   </Holds>
                 </Holds>
                 <Holds className="w-[50%] px-2">
-                  <Labels size={"p6"}>Emergency Contact Number</Labels>
+                  <Labels size={"p6"}>{t("EmergencyContactNumber")}</Labels>
                   <Holds
                     position={"row"}
                     className="gap-2 border-[3px] rounded-[10px] border-black"
@@ -394,7 +398,7 @@ export const EditEmployeeForm = ({
                   </Holds>
                 </Holds>
                 <Holds className="w-[50%] px-2">
-                  <Labels size={"p6"}>Signature</Labels>
+                  <Labels size={"p6"}>{t("Signature")}</Labels>
                   <Holds
                     title="Edit Signature"
                     className=" border-[3px] rounded-[10px] border-black cursor-pointer"
@@ -402,7 +406,7 @@ export const EditEmployeeForm = ({
                   >
                     {!signatureBase64String ? (
                       <Holds className="w-full h-full justify-center">
-                        <Texts size={"p4"}>No Signature</Texts>
+                        <Texts size={"p4"}>{t("NoSignature")}</Texts>
                       </Holds>
                     ) : (
                       <Images
@@ -425,11 +429,11 @@ export const EditEmployeeForm = ({
               {/* This section is for the permission level to display, the user will be able to change the permission level differently based on roles*/}
               {/*Super admin can change the permission level of anyone */}
               <Holds>
-                <Titles size={"h5"}>Employee Permissions</Titles>
+                <Titles size={"h5"}>{t("EmployeePermissions")}</Titles>
               </Holds>
               {permission === "SUPERADMIN" || permission === "ADMIN" ? (
                 <>
-                  <Labels size={"p6"}>Permission Level</Labels>
+                  <Labels size={"p6"}>{t("PermissionLevel")}</Labels>
                   <Selects
                     value={editedData?.permission || "USER"} // Set default to "USER" if no value
                     onChange={(e) =>
@@ -460,22 +464,22 @@ export const EditEmployeeForm = ({
               ) : (
                 //the other cannot change the permission level
                 <>
-                  <Labels size={"p6"}>Permission Level</Labels>
+                  <Labels size={"p6"}>{t("PermissionLevel")}</Labels>
                   <Selects
                     value={editedData?.permission}
                     onChange={handleInputChange}
                     name="permission"
                   >
-                    <Options value="SUPERADMIN">Super Admin</Options>
-                    <Options value="ADMIN">Admin</Options>
-                    <Options value="MANAGER">Manager</Options>
-                    <Options value="USER"> User</Options>
+                    <Options value="SUPERADMIN">{t("SuperAdmin")}</Options>
+                    <Options value="ADMIN">{t("Admin")}</Options>
+                    <Options value="MANAGER">{t("Manager")}</Options>
+                    <Options value="USER">{t("User")}</Options>
                   </Selects>
                 </>
               )}
 
               {/* Individual views with separate state bindings */}
-              <Labels size={"p6"}>Truck View</Labels>
+              <Labels size={"p6"}>{t("TruckView")}</Labels>
               <Selects
                 name="truckView"
                 value={editedData?.truckView ? "true" : "false"}
@@ -490,11 +494,11 @@ export const EditEmployeeForm = ({
                   )
                 }
               >
-                <Options value="true">True</Options>
-                <Options value="false">False</Options>
+                <Options value="true">{t("True")}</Options>
+                <Options value="false">{t("False")}</Options>
               </Selects>
 
-              <Labels size={"p6"}>Tasco View</Labels>
+              <Labels size={"p6"}>{t("TascoView")}</Labels>
               <Selects
                 name="tascoView"
                 value={editedData?.truckView ? "true" : "false"}
@@ -509,11 +513,11 @@ export const EditEmployeeForm = ({
                   )
                 }
               >
-                <Options value="true">True</Options>
-                <Options value="false">False</Options>
+                <Options value="true">{t("True")}</Options>
+                <Options value="false">{t("False")}</Options>
               </Selects>
 
-              <Labels size={"p6"}>Labor View</Labels>
+              <Labels size={"p6"}>{t("LaborView")}</Labels>
               <Selects
                 name="laborView"
                 value={editedData?.laborView ? "true" : "false"}
@@ -528,11 +532,11 @@ export const EditEmployeeForm = ({
                   )
                 }
               >
-                <Options value="true">True</Options>
-                <Options value="false">False</Options>
+                <Options value="true">{t("True")}</Options>
+                <Options value="false">{t("False")}</Options>
               </Selects>
 
-              <Labels size={"p6"}>Mechanic View</Labels>
+              <Labels size={"p6"}>{t("MechanicView")}</Labels>
               <Selects
                 name="mechanicView"
                 value={editedData?.mechanicView ? "true" : "false"}
@@ -547,8 +551,8 @@ export const EditEmployeeForm = ({
                   )
                 }
               >
-                <Options value="true">True</Options>
-                <Options value="false">False</Options>
+                <Options value="true">{t("True")}</Options>
+                <Options value="false">{t("False")}</Options>
               </Selects>
             </Grids>
           </Holds>

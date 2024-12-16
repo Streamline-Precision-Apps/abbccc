@@ -10,6 +10,7 @@ import { PayPeriodTimesheets } from "@/lib/types";
 import { z } from "zod";
 import { Images } from "@/components/(reusable)/images";
 import { Buttons } from "@/components/(reusable)/buttons";
+import { useTranslations } from "next-intl";
 
 const PayPeriodTimesheetsSchema = z.object({
   startTime: z.string().refine((date) => !isNaN(new Date(date).getTime()), {
@@ -28,6 +29,7 @@ export default function AdminHome() {
   const [payPeriodSheets, setPayPeriodSheets] = useState<PayPeriodTimesheets[]>(
     []
   );
+  const t = useTranslations("Admins");
 
   useEffect(() => {
     const storedSheets = localStorage.getItem("payPeriodSheets");
@@ -109,7 +111,7 @@ export default function AdminHome() {
                 className=" h-[15%] p-4 rounded-t-none flex items-center justify-center"
               >
                 <Texts className="text-center ">
-                  Total hours this pay period: {payPeriodHours}
+                  {t("Totalhoursthispayperiod")} {payPeriodHours}
                 </Texts>
               </Holds>
             </Holds>
@@ -124,7 +126,7 @@ export default function AdminHome() {
             className="w-fit h-fit rounded-2xl"
           >
             <Images
-              titleImg="/calendar.svg"
+              titleImg={"/Calendar.svg"}
               titleImgAlt="adminHome"
               className="m-auto p-1"
               size={"60"}

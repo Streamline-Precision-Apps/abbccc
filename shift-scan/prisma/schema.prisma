@@ -62,17 +62,17 @@ model PasswordResetTokens {
 // what does this table do and how does it work
 // this table compacts the approval status of each form into one table, rather then each form having its own 
 //approval status this will make it easier to aprove or deny all forms at once for a day
-model managerComments {
-  id        String     @id @default(cuid())
-  comment   String?
-  managerId String
-  status    FormStatus // pending, approved, denied overall aproval status of each form
-  userId    String
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  users     Users      @relation("UserRelation", fields: [userId], references: [id])
-  employee  Users      @relation("ManagerRelation", fields: [managerId], references: [id])
-}
+// model managerComments {
+//   id        String     @id @default(cuid())
+//   comment   String?
+//   managerId String
+//   status    FormStatus // pending, approved, denied overall aproval status of each form
+//   userId    String
+//   createdAt DateTime   @default(now())
+//   updatedAt DateTime   @updatedAt
+//   users     Users      @relation("UserRelation", fields: [userId], references: [id])
+//   employee  Users      @relation("ManagerRelation", fields: [managerId], references: [id])
+// }
 
 // Holds the login and general app data of employee but not all the data
 model Users {
@@ -106,8 +106,8 @@ model Users {
   injuryForms           InjuryForms[]
   timeoffRequestForms   timeoffRequestForms[]
   passwordResetTokensId String?
-  commentsAsUser        managerComments[]       @relation("UserRelation")
-  commentsAsEmployee    managerComments[]       @relation("ManagerRelation")
+  // commentsAsUser        managerComments[]       @relation("UserRelation")
+  // commentsAsEmployee    managerComments[]       @relation("ManagerRelation")
 }
 
 model UserSettings {
@@ -121,7 +121,7 @@ model UserSettings {
   cameraAccess     Boolean @default(false)
   locationAccess   Boolean @default(false)
 
-  user Users @relation(fields: [userId], references: [id])
+  user Users @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 //-------------------------------------------------------------------------------------------
@@ -145,7 +145,7 @@ model UserTrainings {
   isCompleted Boolean @default(false)
 
   Training Trainings @relation(fields: [trainingId], references: [id])
-  User     Users     @relation(fields: [userId], references: [id])
+  User     Users     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 //-------------------------------------------------------------------------------------------------//
@@ -167,11 +167,11 @@ model Jobsites {
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 
-  costCode              CostCodes[]
   address               Addresses[]
   employeeEquipmentLogs EmployeeEquipmentLogs[]
   crewjobsites          CrewJobsites[]
   TimeSheet             TimeSheets[]
+  CCTags                CCTags[]
 }
 
 //  Time sheet that integrates with the accounting software. Accounting Software Data: {|submitDate | Form Id | empl ID| Date| ProfitID(jobsite)| CostCode| NU | FP| Start Time| END Time| Job Description | Duration |}
@@ -199,7 +199,7 @@ model TimeSheets {
   timeSheetComments   String? // theses will be not nulled in the future
   status              FormStatus @default(PENDING)
 
-  user    Users    @relation(fields: [userId], references: [id])
+  user    Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
   jobsite Jobsites @relation(fields: [jobsiteId], references: [qrId])
 }
 
@@ -224,7 +224,7 @@ model EmployeeEquipmentLogs {
   isSubmitted Boolean    @default(false) // marks true when form is submitted at end of day
   status      FormStatus @default(PENDING) // approving of the form
 
-  employee  Users      @relation(fields: [employeeId], references: [id])
+  employee  Users      @relation(fields: [employeeId], references: [id], onDelete: Cascade)
   Job       Jobsites   @relation(fields: [jobsiteId], references: [qrId])
   Equipment Equipment? @relation(fields: [equipmentId], references: [id])
 }
@@ -269,30 +269,36 @@ enum EquipmentStatus {
 
 // This Table stores a collection of company Estimating codes. The purpose is to help in billing process. Very import for our project.
 model CostCodes {
-  id          Int        @id @default(autoincrement())
-  name        String     @unique
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
   description String
   type        String // set to an enum later,type is how we can filter the costcodes
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @default(now()) @updatedAt
-  Jobsite     Jobsites[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+
+  CCTags CCTags[]
 }
-// !!!
-// TODO: I believe that we may need to make a table for tags.
-// !!!
+
+model CCTags {
+  id          Int         @id @default(autoincrement())
+  name        String      @unique
+  description String?
+  jobsite     Jobsites[]
+  costCode    CostCodes[]
+}
 
 // crew data for seeing the entire crew and enabling site linking it also has direct access to the employeed time cards, and some desire profile settings
 model CrewMembers {
   id         Int     @id @default(autoincrement())
   supervisor Boolean @default(false) // if the crew member is a supervisor or not
-  employeeId String  @unique
+  employeeId String
   crewId     Int
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   crew Crews @relation(fields: [crewId], references: [id])
-  user Users @relation(fields: [employeeId], references: [id])
+  user Users @relation(fields: [employeeId], references: [id], onDelete: Cascade)
 }
 
 // the crew model assigns creates a crew and assigns an employee to be the lead
@@ -327,7 +333,7 @@ model Contacts {
   emergencyContactNumber String?
   createdAt              DateTime @default(now())
   updatedAt              DateTime @updatedAt
-  user                   Users    @relation(fields: [employeeId], references: [id])
+  user                   Users    @relation(fields: [employeeId], references: [id], onDelete: Cascade)
 }
 
 // Address Assigner makes a many to many relation ship from employees to there address
@@ -380,7 +386,7 @@ model InjuryForms {
   incidentDescription String
   signature           String?  @db.Text
   verifyFormSignature Boolean  @default(false)
-  user                Users    @relation(fields: [userId], references: [id])
+  user                Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model timeoffRequestForms {
@@ -397,5 +403,5 @@ model timeoffRequestForms {
   updatedAt          DateTime   @updatedAt
   decidedBy          String? // ment to hold the individual who approved the timesheet
 
-  employee Users @relation(fields: [employeeId], references: [id])
+  employee Users @relation(fields: [employeeId], references: [id], onDelete: Cascade)
 }

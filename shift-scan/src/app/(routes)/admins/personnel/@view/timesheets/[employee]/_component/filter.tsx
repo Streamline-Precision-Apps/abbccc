@@ -6,6 +6,7 @@ import { Texts } from "@/components/(reusable)/texts";
 import { Selects } from "@/components/(reusable)/selects";
 import { useRouter, useSearchParams } from "next/navigation";
 import Spinner from "@/components/(animations)/spinner";
+import { useTranslations } from "next-intl";
 
 type TimeSheet = {
   submitDate?: Date;
@@ -32,6 +33,7 @@ type TimeSheet = {
 };
 
 export const Filter = ({ params }: { params: { employee: string } }) => {
+  const t = useTranslations("Admins");
   const [filter, setFilter] = useState<string>("DENIED");
   const [userTimeSheets, setUserTimeSheets] = useState<TimeSheet[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -58,7 +60,7 @@ export const Filter = ({ params }: { params: { employee: string } }) => {
         setUserTimeSheets(data.timesheets || []);
         setError(null);
       } catch (error) {
-        console.error("Failed to fetch employee info:", error);
+        console.error(`${t("FailedToFetch")} ${t("EmployeeData")}`, error);
         setError("Unable to load timesheets. Please try again later.");
       }
       setLoading(false);
@@ -89,10 +91,14 @@ export const Filter = ({ params }: { params: { employee: string } }) => {
           <Holds className="h-full w-full row-span-1">
             <Selects
               onChange={handleFilterChange}
-              defaultValue={filter}
-              data={["APPROVED", "DENIED", "PENDING", "ALL"]}
+              value={filter}
               className="h-16"
-            />
+            >
+              <option value="ALL">{t("All")}</option>
+              <option value="DENIED">{t("Denied")}</option>
+              <option value="APPROVED">{t("Approved")}</option>
+              <option value="PENDING">{t("Pending")}</option>
+            </Selects>
           </Holds>
           <Holds className="h-full w-full row-span-5 overflow-y-auto no-scrollbar border-[3px] border-black rounded-[10px] ">
             {loading ? (
@@ -122,13 +128,13 @@ export const Filter = ({ params }: { params: { employee: string } }) => {
                           <Texts position={"left"} size="p4">
                             {timesheet.submitDate
                               ? [
-                                  "Sunday",
-                                  "Monday",
-                                  "Tuesday",
-                                  "Wednesday",
-                                  "Thursday",
-                                  "Friday",
-                                  "Saturday",
+                                  t("Sunday"),
+                                  t("Monday"),
+                                  t("Tuesday"),
+                                  t("Wednesday"),
+                                  t("Thursday"),
+                                  t("Friday"),
+                                  t("Saturday"),
                                 ][new Date(timesheet.submitDate).getDay()]
                               : ""}
                           </Texts>
@@ -147,7 +153,7 @@ export const Filter = ({ params }: { params: { employee: string } }) => {
                   ))
                 ) : (
                   <Holds className=" bg-[#CACACA] h-full w-full justify-center">
-                    <Texts size="p4">No timesheets found</Texts>
+                    <Texts size="p5">{t("NoTimeSheetsFound")}</Texts>
                   </Holds>
                 )}
               </Holds>

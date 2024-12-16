@@ -208,7 +208,7 @@ export default function ClockOutContent() {
     return (
       <Grids className="grid-rows-4 gap-5">
         <Holds background={"white"} className="row-span-1 h-full">
-          <Contents width={"section"}>
+          <Contents width={"section"} className="py-4">
             <TitleBoxes
               title={t("InjuryVerification")}
               titleImg="/end-day.svg"
@@ -274,11 +274,13 @@ export default function ClockOutContent() {
     return (
       <Grids rows={"10"} gap={"5"}>
         <Holds background={"white"} className="h-full row-span-2">
-          <TitleBoxes
-            title={t("InjuryVerification")}
-            titleImg="/injury.svg"
-            titleImgAlt={"injury icon"}
-          />
+          <Contents width={"section"} className="py-4">
+            <TitleBoxes
+              title={t("InjuryVerification")}
+              titleImg="/injury.svg"
+              titleImgAlt={"injury icon"}
+            />
+          </Contents>
         </Holds>
         <Holds background={"white"} className="h-full row-span-8">
           {/* Injury Report Content */}
@@ -294,7 +296,7 @@ export default function ClockOutContent() {
       <>
         <Grids rows={"4"} gap={"5"}>
           <Holds background={"white"} className="row-span-1 h-full">
-            <Contents width={"section"}>
+            <Contents width={"section"} className="py-4">
               <TitleBoxes
                 title={t("Bye")}
                 titleImg={"/end-day.svg"}
@@ -303,8 +305,8 @@ export default function ClockOutContent() {
             </Contents>
           </Holds>
           <Holds background={"white"} className="row-span-3 h-full">
-            <Contents width={"section"} className="py-5">
-              <Holds background={"orange"} className="h-full">
+            <Contents width={"section"} className="py-2">
+              <Holds background={"lightGray"} className="h-full">
                 <Grids rows={"6"} gap={"5"}>
                   <Holds className="row-span-1 h-full my-auto">
                     <Holds position={"right"} size={"20"}>
@@ -399,7 +401,7 @@ export default function ClockOutContent() {
       <>
         <Grids rows={"4"} gap={"5"}>
           <Holds background={"white"} className="row-span-1 h-full">
-            <Contents width={"section"}>
+            <Contents width={"section"} className="py-4">
               <TitleBoxes
                 title={t("Bye")}
                 titleImg={"/end-day.svg"}
@@ -409,7 +411,7 @@ export default function ClockOutContent() {
           </Holds>
           <Holds background={"white"} className="row-span-3 h-full">
             <Contents width={"section"} className="py-5">
-              <Holds background={"orange"} className="h-full">
+              <Holds background={"lightGray"} className="h-full">
                 <Grids rows={"6"} gap={"5"}>
                   <Holds className="row-span-1 h-full my-auto">
                     <Holds position={"right"} size={"20"}>
@@ -484,7 +486,7 @@ export default function ClockOutContent() {
       <>
         <Grids rows={"4"} gap={"5"}>
           <Holds background={"white"} className="row-span-1 h-full">
-            <Contents width={"section"}>
+            <Contents width={"section"} className="py-4">
               <TitleBoxes
                 title={t("Bye")}
                 titleImg={"/end-day.svg"}
@@ -494,7 +496,7 @@ export default function ClockOutContent() {
           </Holds>
           <Holds background={"white"} className="row-span-3 h-full">
             <Contents width={"section"} className="py-5">
-              <Holds background={"orange"} className="h-full">
+              <Holds background={"lightGray"} className="h-full">
                 <Grids rows={"6"} gap={"5"}>
                   <Holds className="row-span-1 h-full my-auto">
                     <Holds position={"right"} size={"20"}>
