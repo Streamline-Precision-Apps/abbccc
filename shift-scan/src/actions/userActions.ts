@@ -227,12 +227,13 @@ export async function setUserSettings(formdata: FormData) {
 
 export async function setUserLanguage(formdata: FormData) {
   console.log(formdata);
-  await prisma.userSettings.update({
+  const result = await prisma.userSettings.update({
     where: { userId: formdata.get("id") as string },
     data: {
       language: formdata.get("language") as string,
     },
   });
+  return result.language;
 }
 
 export async function fetchByNameUser(name: string) {

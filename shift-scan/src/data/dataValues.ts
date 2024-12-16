@@ -17,6 +17,9 @@ export const initialJobsites: Prisma.JobsitesCreateInput[] = [
     isActive: true,
     createdAt: new Date(),
     updatedAt: new Date(),
+    CCTags: {
+      connect: [], // No CCTags are linked initially
+    },
   },
   {
     qrId: "j234",
@@ -31,6 +34,9 @@ export const initialJobsites: Prisma.JobsitesCreateInput[] = [
     isActive: true,
     createdAt: new Date(),
     updatedAt: new Date(),
+    CCTags: {
+      connect: [], // No CCTags are linked initially
+    },
   },
   {
     qrId: "j345",
@@ -45,6 +51,9 @@ export const initialJobsites: Prisma.JobsitesCreateInput[] = [
     isActive: true,
     createdAt: new Date(),
     updatedAt: new Date(),
+    CCTags: {
+      connect: [], // No CCTags are linked initially
+    },
   },
   {
     qrId: "j456",
@@ -59,6 +68,9 @@ export const initialJobsites: Prisma.JobsitesCreateInput[] = [
     isActive: true,
     createdAt: new Date(),
     updatedAt: new Date(),
+    CCTags: {
+      connect: [], // No CCTags are linked initially
+    },
   },
   {
     qrId: "j567",
@@ -73,6 +85,9 @@ export const initialJobsites: Prisma.JobsitesCreateInput[] = [
     isActive: true,
     createdAt: new Date(),
     updatedAt: new Date(),
+    CCTags: {
+      connect: [], // No CCTags are linked initially
+    },
   },
 ];
 
@@ -429,14 +444,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Engineering Material",
     type: "engineer",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -445,14 +454,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Engineering Labor",
     type: "engineer",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -461,14 +464,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Engineering Sub",
     type: "engineer",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -477,14 +474,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Engineering Equipment",
     type: "Engineer",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -493,14 +484,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Earth Material",
     type: "Earth",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -509,14 +494,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Earth Labor",
     type: "Earth",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -525,14 +504,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Earth Sub",
     type: "Earth",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -541,14 +514,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Earth Equipment",
     type: "Earth",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -557,14 +524,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Concrete Material",
     type: "Concrete",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -573,14 +534,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Concrete Labor",
     type: "Concrete",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -589,14 +544,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Concrete Sub",
     type: "Concrete",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -605,14 +554,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Concrete Equipment",
     type: "",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -621,14 +564,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Finishes Material",
     type: "Finishes",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -637,14 +574,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Finishes Labor",
     type: "Finishes",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -653,14 +584,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Finishes Sub",
     type: "Finishes",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -669,14 +594,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Finishes Equipment",
     type: "Finishes",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -685,14 +604,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Steel Material",
     type: "Steel",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -701,14 +614,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Steel Labor",
     type: "Steel",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -717,14 +624,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Steel Sub",
     type: "Steel",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -733,14 +634,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Steel Equipment",
     type: "Steel",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -749,14 +644,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Wood Material",
     type: "Wood",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -765,14 +654,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Wood Labor",
     type: "Wood",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -781,14 +664,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Wood Sub",
     type: "Wood",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -797,14 +674,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Wood Equipment",
     type: "Wood",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -813,14 +684,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Insulation Material",
     type: "Insulation",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -829,14 +694,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Insulation Labor",
     type: "Insulation",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -845,14 +704,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Insulation Sub",
     type: "Insulation",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -861,14 +714,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Insulation Equipment",
     type: "Insulation",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -877,14 +724,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Door and Window Material",
     type: "DoorAndWindow",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -893,14 +734,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Door and Window labor",
     type: "DoorAndWindow",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -909,14 +744,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Door and Window Sub",
     type: "DoorAndWindow",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -925,14 +754,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Door and Window Equipment",
     type: "DoorAndWindow",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -941,14 +764,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Utilities Material",
     type: "Utilities",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -957,14 +774,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Utilities Labor",
     type: "Utilities",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -973,14 +784,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Utilities Sub",
     type: "Utilities",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -989,14 +794,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Utilities Equipment",
     type: "Utilities",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -1005,14 +804,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Process Material",
     type: "Process",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -1021,14 +814,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Process Labor",
     type: "Process",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -1037,14 +824,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Process Sub",
     type: "Process",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -1053,14 +834,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Process Equipment",
     type: "Process",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -1069,14 +844,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Shop Material",
     type: "Shop",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -1085,14 +854,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Shop Labor",
     type: "Shop",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -1101,14 +864,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Shop Sub",
     type: "Shop",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -1117,14 +874,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Shop Equipment",
     type: "Shop",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -1133,14 +884,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Pipe Material",
     type: "Pipe",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -1149,14 +894,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Pipe Labor",
     type: "Pipe",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -1165,14 +904,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Pipe Sub",
     type: "Pipe",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -1181,14 +914,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Pipe Equipment",
     type: "Pipe",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -1197,14 +924,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Trucking Material",
     type: "Trucking",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -1213,14 +934,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Trucking Labor",
     type: "Trucking",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -1229,14 +944,8 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Trucking Sub",
     type: "Trucking",
-    Jobsite: {
-      connect: [
-        { qrId: "j123" },
-        { qrId: "j234" },
-        { qrId: "j345" },
-        { qrId: "j456" },
-        { qrId: "j567" },
-      ],
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
   },
   {
@@ -1245,7 +954,13 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
     updatedAt: new Date(),
     description: "Trucking Equipment",
     type: "Trucking",
-    Jobsite: {
+  },
+];
+
+export const initialCCTags: Prisma.CCTagsCreateInput[] = [
+  {
+    name: "All",
+    jobsite: {
       connect: [
         { qrId: "j123" },
         { qrId: "j234" },
@@ -1253,6 +968,9 @@ export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
         { qrId: "j456" },
         { qrId: "j567" },
       ],
+    },
+    costCode: {
+      connect: Array.from({ length: 52 }, (_, i) => ({ id: i + 1 })),
     },
   },
 ];

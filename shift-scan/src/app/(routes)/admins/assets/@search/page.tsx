@@ -5,55 +5,88 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Tab } from "@/components/(reusable)/tab";
 
 import { useEffect, useState } from "react";
-import { Equipment, Jobsites, costCodes } from "@/lib/types";
+import { Equipment, Jobsites, costCodes, CCTags } from "@/lib/types";
 import { z } from "zod";
-import { Texts } from "@/components/(reusable)/texts";
+import { EquipmentComponent } from "./_components/EquipmentComponent";
+import { JobsiteComponent } from "./_components/JobsiteComponent";
+import { CostCodeComponent } from "./_components/CostCodeComponent";
+import { Buttons } from "@/components/(reusable)/buttons";
+import { TagsComponent } from "./_components/TagsComponent";
+import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { NotificationComponent } from "@/components/(inputs)/NotificationComponent";
 
 export default function Search() {
   const [activeTab, setActiveTab] = useState(1);
   const [equipments, setEquipments] = useState<Equipment[]>([]);
-  const [Jobsites, setJobsites] = useState<Jobsites[]>([]);
+  const [jobsites, setJobsites] = useState<Jobsites[]>([]);
   const [costCodes, setCostCodes] = useState<costCodes[]>([]);
+  const [tags, setTags] = useState<CCTags[]>([]);
+  const [activeTab2, setActiveTab2] = useState(1);
   const [filter, setFilter] = useState("all");
+  const pathname = usePathname();
+  const [triggeredPath, setTrigger] = useState(0);
+  const [triggeredPathEquipment, setTriggerEquipment] = useState(0);
 
-  // useEffect(() => {
-  //   const fetchEmployees = async () => {
-  //     try {
-  //       const employeesRes = await fetch(
-  //         "/api/getAllEmployees?filter=" + filter
-  //       );
-  //       const employeesData = await employeesRes.json();
-  //       // const validatedEmployees = employeesSchema.parse(employeesData);
-  //       setEmployees(employeesData);
-  //     } catch (error) {
-  //       if (error instanceof z.ZodError) {
-  //         console.error("Validation Error:", error.errors);
-  //       } else {
-  //         console.error("Failed to fetch employees data:", error);
-  //       }
-  //     }
-  //   };
+  const t = useTranslations("Admins");
+
+  useEffect(() => {
+    if (
+      pathname === "/admins/assets" ||
+      pathname === "admins/assets/new-equipment"
+    ) {
+      setTriggerEquipment((prev) => prev + 1); // Increment the counter
+    }
+  }, [pathname]);
+
+  useEffect(() => {
+    if (pathname === "/admins/assets/cost-code") {
+      setTrigger((prev) => prev + 1); // Increment the counter
+    }
+  }, [pathname]);
+
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const tagsRes = await fetch("/api/getAllTags");
+        const tagsData = await tagsRes.json();
+        setTags(tagsData);
+      } catch (error) {
+        console.error(`${t("FailedToFetch")} ${t("tags data")}:"`, error);
+      }
+    };
+    fetchTags();
+  }, [filter, t]);
 
   useEffect(() => {
     const fetchEquipments = async () => {
       try {
         const equipmentsRes = await fetch(
-          "/api/getAllEqipment?filter=" + filter
+          "/api/getAllEquipment?filter=" + filter // Corrected path
         );
-        const equipmentsData = await equipmentsRes.json();
-        // const validatedEquipments = equipmentsSchema.parse(equipmentsData);
-        setEquipments(equipmentsData);
-      } catch (error) {
-        if (error instanceof z.ZodError) {
-          console.error("Validation Error:", error.errors);
-        } else {
-          console.error("Failed to fetch equipments data:", error);
+
+        if (!equipmentsRes.ok) {
+          throw new Error(`${t("HTTPError")}: ${equipmentsRes.status}`);
         }
+
+        const contentType = equipmentsRes.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const equipmentsData = await equipmentsRes.json();
+          setEquipments(equipmentsData);
+        } else {
+          const html = await equipmentsRes.text();
+          console.error(
+            `${t("RecievedHTMLInsteadOfJSON")}`,
+            html.substring(0, 100)
+          );
+        }
+      } catch (error) {
+        console.error(`${t("FailedToFetch")} ${t("EquipmentData")}:`, error);
       }
     };
 
     fetchEquipments();
-  }, [filter]);
+  }, [filter, t, triggeredPathEquipment]);
 
   useEffect(() => {
     const fetchJobsites = async () => {
@@ -64,47 +97,50 @@ export default function Search() {
         setJobsites(jobsitesData);
       } catch (error) {
         if (error instanceof z.ZodError) {
-          console.error("Validation Error:", error.errors);
+          console.error(t("ValidationError"), error.errors);
         } else {
-          console.error("Failed to fetch jobsites data:", error);
+          console.error(`${t("FailedToFetch")} ${t("JobsiteData")}:`, error);
         }
       }
     };
 
     fetchJobsites();
-  }, [filter]);
+  }, [filter, t]);
 
   useEffect(() => {
     const fetchCostCodes = async () => {
       try {
-        const costCodesRes = await fetch("/api/getAllCostCodes");
+        const costCodesRes = await fetch("/api/getAllCostCodes", {
+          next: { revalidate: 0, tags: ["costcodes"] },
+        });
         const costCodesData = await costCodesRes.json();
         // const validatedCostCodes = costCodesSchema.parse(costCodesData);
         setCostCodes(costCodesData);
       } catch (error) {
         if (error instanceof z.ZodError) {
-          console.error("Validation Error:", error.errors);
+          console.error(t("ValidationError"), error.errors);
         } else {
-          console.error("Failed to fetch costCodes data:", error);
+          console.error(`${t("FailedToFetch")} ${t("CostCodeData")}:`, error);
         }
       }
     };
 
     fetchCostCodes();
-  }, [filter]);
+  }, [filter, t, triggeredPath]);
 
   return (
     <Holds className="h-full ">
+      <NotificationComponent />
       <Grids rows={"10"}>
-        <Holds position={"row"} className="row-span-1 h-full gap-2">
+        <Holds position={"row"} className="row-span-1 h-full gap-1">
           <Tab onClick={() => setActiveTab(1)} isActive={activeTab === 1}>
-            Equipment
+            {t("Equipment")}
           </Tab>
           <Tab onClick={() => setActiveTab(2)} isActive={activeTab === 2}>
-            Job Sites
+            {t("JobSite")}
           </Tab>
           <Tab onClick={() => setActiveTab(3)} isActive={activeTab === 3}>
-            Cost Codes
+            {t("CostCode")}
           </Tab>
         </Holds>
 
@@ -112,18 +148,52 @@ export default function Search() {
           background={"white"}
           className="rounded-t-none row-span-9 h-full"
         >
-          <Contents width={"section"} className=" pt-3 pb-5">
+          <Contents width={"section"} className=" pt-1 pb-2">
             {activeTab === 1 && (
-              // <Personnel employees={employees} setFilter={setFilter} />
-              <Texts>Equipment</Texts>
+              <EquipmentComponent
+                equipments={equipments}
+                setFilter={setFilter}
+              />
             )}
             {activeTab === 2 && (
-              // <Timesheets employees={employees} setFilter={setFilter} />
-              <Texts>Job Sites</Texts>
+              <JobsiteComponent jobsites={jobsites} setFilter={setFilter} />
             )}
             {activeTab === 3 && (
-              // <Crews crew={crew} />
-              <Texts>Cost Codes</Texts>
+              <Holds className="h-full w-full">
+                <Grids rows="10" gap="2" className="h-full">
+                  <Holds
+                    background={"white"}
+                    position={"row"}
+                    className="row-span-1 h-full border-[3px] border-black"
+                  >
+                    <Buttons
+                      onClick={() => setActiveTab2(1)}
+                      className={`px-4 py-4 min-w-[100px] rounded-[10px] h-full flex items-center justify-center font-bold  w-full shadow-none ${
+                        activeTab2 === 1
+                          ? "bg-app-blue border-none "
+                          : "bg-white border-none"
+                      }`}
+                    >
+                      {t("CostCodes")}
+                    </Buttons>
+                    <Buttons
+                      onClick={() => setActiveTab2(2)}
+                      className={`px-4 py-4 min-w-[100px] rounded-[10px] h-full flex items-center justify-center  font-bold w-full shadow-none ${
+                        activeTab2 === 2
+                          ? "bg-app-blue border-none"
+                          : "bg-white border-none"
+                      }`}
+                    >
+                      {t("Tags")}
+                    </Buttons>
+                  </Holds>
+
+                  {activeTab2 === 1 && (
+                    <CostCodeComponent costCodes={costCodes} tags={tags} />
+                  )}
+                  {activeTab2 === 2 && <TagsComponent tags={tags} />}
+                </Grids>
+              </Holds>
             )}
           </Contents>
         </Holds>

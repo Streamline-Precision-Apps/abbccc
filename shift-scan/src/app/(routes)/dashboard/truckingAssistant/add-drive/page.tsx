@@ -23,7 +23,7 @@ export default async function Form() {
             />
           </Holds>
           <Holds className="row-span-8 h-full">
-            <Content user={session?.user.id} />
+            <Content />
           </Holds>
         </Grids>
       </Contents>

@@ -1,21 +1,21 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { ReusableViewLayout } from "../../[employee]/_components/reusableViewLayout";
 import { Holds } from "@/components/(reusable)/holds";
-import { Selects } from "@/components/(reusable)/selects";
+
 import { Grids } from "@/components/(reusable)/grids";
 import { Texts } from "@/components/(reusable)/texts";
 import { Images } from "@/components/(reusable)/images";
-import { Inputs } from "@/components/(reusable)/inputs";
 
-import CheckBoxWithImage from "@/components/(inputs)/CheckBoxWithImage";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
 import { deleteCrewAction, updateCrew } from "@/actions/adminActions";
 import Spinner from "@/components/(animations)/spinner";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { arraysAreEqual } from "@/utils/forms/isArrayEqual";
+import CrewLeft from "../component/leftCrew";
 import { useNotification } from "@/app/context/NotificationContext";
-import { CheckBox } from "@/components/(inputs)/checkBox";
 
 type User = {
   id: string;
@@ -24,16 +24,6 @@ type User = {
   permission: string;
   supervisor: boolean;
   image: string;
-};
-
-const arraysAreEqual = (arr1: User[], arr2: User[]) => {
-  if (arr1.length !== arr2.length) return false;
-
-  // Compare by id to detect changes
-  const set1 = new Set(arr1.map((user) => user.id));
-  const set2 = new Set(arr2.map((user) => user.id));
-
-  return Array.from(set1).every((id) => set2.has(id));
 };
 
 export default function ViewCrew({ params }: { params: { crew: string } }) {
@@ -51,6 +41,7 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
   const [teamLead, setTeamLead] = useState<string | null>(null);
   const [hasChanged, setHasChanged] = useState(false);
   const { setNotification } = useNotification();
+  const t = useTranslations("Admins");
   const router = useRouter();
 
   useEffect(() => {
@@ -68,11 +59,11 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
         const employeesData = await employeesRes.json();
         setEmployees(employeesData);
       } catch (error) {
-        console.error("Failed to fetch employees:", error);
+        console.error(`${t("FailedToFetch")} ${t("EmployeeData")}`, error);
       }
     };
     fetchEmployees();
-  }, [filter]);
+  }, [filter, t]);
 
   // Fetch crew members
   useEffect(() => {
@@ -112,13 +103,13 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
 
         setLoading(false);
       } catch (error) {
-        console.error("Failed to fetch crew members:", error);
+        console.error(`${t("FailedToFetch")} ${t("CrewMembers")}`, error);
         setLoading(false);
       }
     };
 
     fetchCrewMembers(params.crew);
-  }, [params.crew]);
+  }, [params.crew, t]);
 
   // Add or remove users from crew based on toggle
   const toggleUser = (id: string) => {
@@ -165,12 +156,12 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
     try {
       // Gather required parameters
       if (!hasChanged) {
-        setNotification("No changes detected.", "neutral");
+        setNotification(t("NoChangesDetected"), "neutral");
         return;
       }
       const crewId = params.crew;
       if (!crewId) {
-        alert("Invalid crew ID.");
+        alert(t("InvalidCrewId"));
         return;
       }
 
@@ -185,9 +176,9 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
       // Call the updateCrew function to handle backend update logic
       await updateCrew(crewId, formData);
       router.refresh();
-      setNotification("Updated crew successfully!", "success");
+      setNotification(t("UpdateCrewSuccess"), "success");
     } catch (error) {
-      console.error("Failed to update crew:", error);
+      console.error(t("FailedToUpdateCrew"), error);
     }
   };
 
@@ -197,10 +188,10 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
       await deleteCrewAction(crewId);
       router.push("/admins/personnel/crew");
       router.refresh();
-      setNotification("Crew deleted successfully!", "error");
+      setNotification(t("CrewDeletedSuccessfully"), "error");
     } catch (error) {
-      console.error("Failed to delete crew:", error);
-      setNotification("Error: Failed to delete crew.");
+      console.error(t("FailedToDeleteCrew"), error);
+      setNotification(t("ErrorFailedToDeleteCrew"));
     }
   };
 
@@ -245,7 +236,7 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
       mainLeft={
         <Holds className="h-full bg-white w-1/3 mr-2">
           <CrewLeft
-            addToCrew={(user) => toggleUser(user.id)}
+            addToCrew={(user) => toggleUser(user.id || "")}
             setFilter={setFilter}
             employees={employees}
             toggledUsers={toggledUsers}
@@ -275,14 +266,14 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
               <Grids rows={"3"} cols={"6"} className="w-full h-full">
                 <Holds className=" row-start-1 row-end-2 col-start-5 col-span-7 ">
                   <Texts position={"right"} size={"p6"}>
-                    Crew Lead
+                    {t("CrewLead")}
                   </Texts>
                 </Holds>
                 <Holds className=" row-start-1 row-end-4 col-start-1 col-end-7 ">
                   {teamLeadUser ? (
                     <TeamLeadDetails user={teamLeadUser} />
                   ) : (
-                    <Texts size={"p5"}>Select a Crew lead</Texts>
+                    <Texts size={"p5"}>{t("SelectCrewLead")}</Texts>
                   )}
                 </Holds>
               </Grids>
@@ -330,7 +321,7 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
                   )}
                 </Holds>
               ) : (
-                <p>No crew members found</p>
+                <p>{t("NoCrewMembersFound")}</p>
               )}
             </Holds>
           </Holds>
@@ -346,7 +337,7 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
               }}
               className="row-start-1 row-end-4 col-start-5 col-end-8 hover:cursor-pointer"
             >
-              <Titles size={"h4"}>Delete Crew</Titles>
+              <Titles size={"h4"}>{t("DeleteCrew")}</Titles>
             </Buttons>
 
             <Buttons
@@ -356,138 +347,11 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
               }}
               className="row-start-1 row-end-4 col-start-8 col-end-11"
             >
-              <Titles size={"h4"}>Submit Crew</Titles>
+              <Titles size={"h4"}>{t("SubmitCrew")}</Titles>
             </Buttons>
           </Grids>
         </Holds>
       }
     />
-  );
-}
-
-export function CrewLeft({
-  setFilter,
-  employees,
-
-  toggledUsers,
-  toggleUser,
-  toggledManager,
-  toggleManager,
-  teamLead,
-}: {
-  setFilter: (filter: string) => void;
-  employees: User[];
-  addToCrew: (employee: User) => void;
-  toggledUsers: Record<string, boolean>;
-  toggleUser: (id: string) => void;
-  toggledManager: Record<string, boolean>;
-  toggleManager: (id: string) => void;
-  teamLead: string | null;
-}) {
-  const [term, setTerm] = useState<string>("");
-
-  const filteredList = useMemo(() => {
-    if (!term.trim()) return employees;
-    return employees.filter((employee) => {
-      const name = `${employee.firstName} ${employee.lastName}`.toLowerCase();
-      return name.includes(term.toLowerCase());
-    });
-  }, [term, employees]);
-
-  return (
-    <Holds className="h-full w-full px-4 py-2">
-      <Grids rows="10" gap="5" className="h-full">
-        <Holds className="bg-white h-full w-full">
-          <Selects
-            defaultValue="all"
-            onChange={(e) => setFilter(e.target.value)}
-            className="w-full px-0 py-2 text-center"
-          >
-            <option value="all">Select Filter</option>
-            <option value="all">All</option>
-            <option value="supervisors">Supervisors</option>
-          </Selects>
-        </Holds>
-        <Holds className="row-span-8 h-full border-[3px] border-black rounded-t-[10px]">
-          <Holds position="row" className="py-2 border-b-[3px] border-black">
-            <Holds className="h-full w-[20%]">
-              <Images titleImg="/magnifyingGlass.svg" titleImgAlt="search" />
-            </Holds>
-            <Holds className="w-[80%]">
-              <Inputs
-                type="search"
-                placeholder="Search employees by name"
-                value={term}
-                onChange={(e) => setTerm(e.target.value)}
-                className="border-none outline-none"
-              />
-            </Holds>
-          </Holds>
-          <Holds className="h-full mb-4 overflow-y-auto no-scrollbar">
-            {filteredList.map((employee) => (
-              <Holds
-                key={employee.id}
-                className="py-2 border-b cursor-pointer flex items-center"
-              >
-                <Holds position={"row"} className="justify-between">
-                  <Holds className="flex w-2/3">
-                    <Texts size="p6">
-                      {employee.firstName} {employee.lastName}
-                    </Texts>
-                  </Holds>
-                  <Holds position="row" className="relative flex w-1/3">
-                    {!employee.permission.includes("USER") &&
-                    toggledUsers[employee.id] ? (
-                      <Holds className="relative w-1/2">
-                        {!teamLead ? (
-                          <CheckBoxWithImage
-                            id={employee.id}
-                            defaultChecked={!!toggledManager[employee.id]}
-                            onChange={() => {
-                              toggleManager(employee.id);
-                            }}
-                            size={2}
-                            name={""}
-                            type=""
-                          />
-                        ) : teamLead === employee.id ? (
-                          <CheckBoxWithImage
-                            id={employee.id}
-                            defaultChecked={!!toggledManager[employee.id]}
-                            onChange={() => {
-                              toggleManager(employee.id);
-                            }}
-                            size={2}
-                            name={""}
-                            type="selected"
-                          />
-                        ) : (
-                          <CheckBoxWithImage
-                            id={employee.id}
-                            size={2}
-                            name={""}
-                            disabled
-                          />
-                        )}
-                      </Holds>
-                    ) : (
-                      <Holds className="relative w-1/2"></Holds>
-                    )}
-                    <CheckBox
-                      id={employee.id}
-                      defaultChecked={!!toggledUsers[employee.id]}
-                      onChange={() => toggleUser(employee.id)}
-                      disabled={employee.id === teamLead}
-                      size={2}
-                      name={""}
-                    />
-                  </Holds>
-                </Holds>
-              </Holds>
-            ))}
-          </Holds>
-        </Holds>
-      </Grids>
-    </Holds>
   );
 }

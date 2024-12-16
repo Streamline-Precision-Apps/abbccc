@@ -19,6 +19,7 @@ const InputVariants = cva(
         white:
           "bg-white border border-2 border-black mb-3 last:mb-0 w-full p-1",
         titleFont: `bg-white border border-2 border-black mb-3 last:mb-0 w-full p-1 ${anton.className}`,
+        matchSelects: `border border-[3px] border-black disabled:bg-gray-400 mb-3 last:mb-0 w-full p-1`,
       },
     },
     defaultVariants: {

@@ -5,6 +5,7 @@ import {
   removeProfilePic,
 } from "@/actions/adminActions";
 import { uploadFirstSignature } from "@/actions/userActions";
+import { useNotification } from "@/app/context/NotificationContext";
 import Base64FileEncoder from "@/components/(camera)/Base64FileEncoder";
 import Base64ImageEncoder from "@/components/(camera)/Base64ImageEncoder";
 import { Buttons } from "@/components/(reusable)/buttons";
@@ -16,6 +17,7 @@ import Signature from "@/components/(reusable)/signature";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { Employee, EmployeeContactInfo, UserProfile } from "@/lib/types";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 type ModalProps = {
@@ -69,6 +71,8 @@ export const ModalsPage = ({
   const [uploadProfilePic, setUploadProfilePic] = useState(false); // update profile pic modal
   const [uploadProfilePicWithCamera, setUploadProfilePicWithCamera] =
     useState(false);
+  const { setNotification } = useNotification();
+  const t = useTranslations("Admins");
 
   const handleReinstate = async () => {
     const formData = new FormData();
@@ -77,10 +81,10 @@ export const ModalsPage = ({
 
     const res = await reactivatePersonnel(formData);
     if (res === true) {
-      console.log("Employee info updated successfully.");
+      setNotification(`${t("EmployeeReactivatedSuccessfully")}`, "success");
       setUserStatus(true);
     } else {
-      console.log("Failed to update employee info.");
+      setNotification(`${t("EmployeeFailedToReactivate")}`, "success");
     }
   };
 
@@ -90,10 +94,10 @@ export const ModalsPage = ({
     formData.append("active", "false");
     const res = await archivePersonnel(formData);
     if (res === true) {
-      console.log("Employee info updated successfully.");
       setUserStatus(false);
+      setNotification(`${t("EmployeeTerminatedSuccessfully")}`, "success");
     } else {
-      console.log("Failed to update employee info.");
+      setNotification(`${t("EmployeeFailedToTerminate")}`, "error");
     }
   };
 
@@ -134,7 +138,7 @@ export const ModalsPage = ({
       <NModals isOpen={isOpen} handleClose={() => setIsOpen(false)}>
         <Holds className="mb-5">
           <Texts size={"p4"}>
-            Are you sure you want to terminate this employee?
+            {t("AreYouSureYouWantToTerminateThisEmployee")}
           </Texts>
         </Holds>
         <Holds className="h-full my-5">
@@ -149,7 +153,7 @@ export const ModalsPage = ({
                 }}
                 className="px-4 py-2"
               >
-                <Titles size="h4"> Yes, terminate</Titles>
+                <Titles size="h4">{t("YesTerminate")}</Titles>
               </Buttons>
               <Buttons
                 background="lightBlue"
@@ -157,7 +161,7 @@ export const ModalsPage = ({
                 onClick={() => setIsOpen(false)}
                 className="px-4 py-2"
               >
-                <Titles size="h4">Cancel</Titles>
+                <Titles size="h4">{t("Cancel")}</Titles>
               </Buttons>
             </Holds>
           </Contents>
@@ -170,7 +174,7 @@ export const ModalsPage = ({
         handleClose={() => setPersonalSignature(false)}
       >
         <Holds className="mb-5">
-          <Texts size={"p4"}>Change Signature</Texts>
+          <Texts size={"p4"}>{t("ChangeSignature")}</Texts>
         </Holds>
         <Holds className="h-full my-5">
           <Contents width={"section"}>
@@ -187,7 +191,7 @@ export const ModalsPage = ({
                   }}
                   className="px-4 py-2"
                 >
-                  <Titles size="h4">Save</Titles>
+                  <Titles size="h4">{t("Save")}</Titles>
                 </Buttons>
                 <Buttons
                   background="lightBlue"
@@ -195,7 +199,7 @@ export const ModalsPage = ({
                   onClick={() => setPersonalSignature(false)}
                   className="px-4 py-2"
                 >
-                  <Titles size="h4">Cancel</Titles>
+                  <Titles size="h4">{t("Cancel")}</Titles>
                 </Buttons>
               </Holds>
             </Holds>
@@ -207,7 +211,7 @@ export const ModalsPage = ({
       <NModals isOpen={isOpen2} handleClose={() => setIsOpen2(false)}>
         <Holds className="mb-5">
           <Texts size={"p4"}>
-            Are you sure you want to reinstate this employee?
+            {t("AreYouSureYouWantToReinstateThisEmployee")}
           </Texts>
         </Holds>
         <Holds className="h-full my-5">
@@ -217,12 +221,12 @@ export const ModalsPage = ({
                 background="green"
                 type="button"
                 onClick={() => {
-                  handleReinstate();
                   setIsOpen2(false);
+                  handleReinstate();
                 }}
                 className="px-4 py-2"
               >
-                <Titles size="h4">Reinstate</Titles>
+                <Titles size="h4">{t("Reinstate")}</Titles>
               </Buttons>
               <Buttons
                 background="lightBlue"
@@ -230,7 +234,7 @@ export const ModalsPage = ({
                 onClick={() => setIsOpen2(false)}
                 className="px-4 py-2"
               >
-                <Titles size="h4">Cancel</Titles>
+                <Titles size="h4">{t("Cancel")}</Titles>
               </Buttons>
             </Holds>
           </Contents>
@@ -240,7 +244,7 @@ export const ModalsPage = ({
       {/* This is the modal for employee profiles to allow user to upload theres -- #update needed */}
       <NModals isOpen={isProfilePic} handleClose={() => setIsProfilePic(false)}>
         <Holds className="mb-5">
-          <Texts size={"p4"}>Change Profile Photo</Texts>
+          <Texts size={"p4"}>{t("ChangeProfilePhoto")}</Texts>
         </Holds>
         <Holds className="h-full my-5">
           <Contents width={"section"}>
@@ -254,7 +258,7 @@ export const ModalsPage = ({
                 }}
                 className="px-4 py-2"
               >
-                <Titles size="h4">Remove Profile Photo</Titles>
+                <Titles size="h4">{t("RemoveProfilePhoto")}</Titles>
               </Buttons>
               <Buttons
                 background="lightBlue"
@@ -262,7 +266,7 @@ export const ModalsPage = ({
                 onClick={() => setIsProfilePic(false)}
                 className="px-4 py-2"
               >
-                <Titles size="h4">Cancel</Titles>
+                <Titles size="h4">{t("Cancel")}</Titles>
               </Buttons>
             </Holds>
           </Contents>
@@ -276,7 +280,7 @@ export const ModalsPage = ({
         size={"lg"}
       >
         <Holds className="mb-5">
-          <Texts size={"p4"}>Change Profile Photo</Texts>
+          <Texts size={"p4"}>{"ChangeProfilePhoto"}</Texts>
         </Holds>
         <Holds className="h-full my-5">
           <Contents width={"section"}>
@@ -290,7 +294,7 @@ export const ModalsPage = ({
                 }}
                 className="px-4 py-2"
               >
-                <Titles size="h4">Upload Photo</Titles>
+                <Titles size="h4">{t("UploadPhoto")}</Titles>
               </Buttons>
               <Buttons
                 background="green"
@@ -301,7 +305,7 @@ export const ModalsPage = ({
                 }}
                 className="px-4 py-2"
               >
-                <Titles size="h4">Use Camera</Titles>
+                <Titles size="h4">{t("UseCamera")}</Titles>
               </Buttons>
 
               <Buttons
@@ -312,7 +316,7 @@ export const ModalsPage = ({
                 }}
                 className="px-4 py-2"
               >
-                <Titles size="h4">Remove Profile Photo</Titles>
+                <Titles size="h4">{t("RemoveProfilePhoto")}</Titles>
               </Buttons>
               <Buttons
                 background="lightBlue"
@@ -320,7 +324,7 @@ export const ModalsPage = ({
                 onClick={() => setIsPersonalProfile(false)}
                 className="px-4 py-2"
               >
-                <Titles size="h4">Cancel</Titles>
+                <Titles size="h4">{t("Cancel")}</Titles>
               </Buttons>
             </Holds>
           </Contents>
@@ -335,10 +339,10 @@ export const ModalsPage = ({
       >
         <Holds className="h-full w-full">
           <Holds className="mb-5 ">
-            <Texts size={"p4"}>Change Profile Photo</Texts>
+            <Texts size={"p4"}>{t("ChangeProfilePhoto")}</Texts>
           </Holds>
 
-          <Holds className="flex gap-4 h-full w-[70%]">
+          <Holds className="flex gap-4 h-full w-full">
             <Grids rows={"4"} gap={"5"}>
               <Holds className="h-full row-span-3">
                 <Base64FileEncoder
@@ -349,14 +353,16 @@ export const ModalsPage = ({
                   reloadEmployeeData={reloadEmployeeData}
                 />
                 <Holds className="row-span-1 h-full">
-                  <Buttons
-                    background="lightBlue"
-                    type="button"
-                    onClick={() => setUploadProfilePic(false)}
-                    className="px-4 py-2  "
-                  >
-                    <Titles size="h4">Cancel</Titles>
-                  </Buttons>
+                  <Contents width={"section"}>
+                    <Buttons
+                      background="lightBlue"
+                      type="button"
+                      onClick={() => setUploadProfilePic(false)}
+                      className="px-4 py-2   "
+                    >
+                      <Titles size="h4">{t("Cancel")}</Titles>
+                    </Buttons>
+                  </Contents>
                 </Holds>
               </Holds>
             </Grids>
@@ -372,7 +378,7 @@ export const ModalsPage = ({
       >
         <Holds className="h-full w-full">
           <Holds className="mb-5 ">
-            <Texts size={"p4"}>Change Profile Photo</Texts>
+            <Texts size={"p4"}>{t("ChangeProfilePhoto")}</Texts>
           </Holds>
 
           <Holds className="flex gap-4 h-full w-[70%]">
@@ -394,7 +400,7 @@ export const ModalsPage = ({
                       onClick={() => setUploadProfilePicWithCamera(false)}
                       className="px-4 py-2  "
                     >
-                      <Titles size="h4">Cancel</Titles>
+                      <Titles size="h4">{t("Cancel")}</Titles>
                     </Buttons>
                   </Contents>
                 </Holds>

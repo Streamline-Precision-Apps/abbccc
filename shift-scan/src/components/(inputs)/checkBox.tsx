@@ -97,6 +97,7 @@ const CheckboxVariants = cva(
 export interface CheckboxProps extends HTMLAttributes<HTMLElement>, VariantProps<typeof CheckboxVariants> {
   disabled?: boolean;
   defaultChecked?: boolean;
+  checked?: boolean;
   id: string;
   name: string;
   label?: string;
@@ -120,7 +121,7 @@ export {Checkbox, CheckboxVariants}
       id={id}
       name={name}
       defaultChecked={defaultChecked}
-      checked={defaultChecked}
+      checked={checked}
       disabled={disabled}
       onChange={onChange}
     />

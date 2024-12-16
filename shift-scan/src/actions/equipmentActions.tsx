@@ -7,9 +7,11 @@ function toEnumValue<T extends Record<string, string>>(
   enumObject: T,
   value: string
 ): T[keyof T] | null {
-  return Object.values(enumObject).includes(value as T[keyof T])
-    ? (value as T[keyof T])
-    : null;
+  const validValue = Object.values(enumObject).find((v) => v === value);
+  if (!validValue) {
+    console.error(`Invalid enum value: "${value}". Expected one of: ${Object.values(enumObject)}`);
+  }
+  return validValue as T[keyof T] || null;
 }
 
 // Enum for tags
@@ -17,12 +19,14 @@ enum Tags {
   TRUCK = "TRUCK",
   TRAILER = "TRAILER",
   EQUIPMENT = "EQUIPMENT",
+  VEHICLE = "VEHICLE",
 }
 
 // Enum for equipment statusOPERATIONAL
 enum EquipmentStatus {
   OPERATIONAL = "OPERATIONAL",
   NEEDS_REPAIR = "NEEDS_REPAIR",
+  NEEDS_MAINTENANCE = "NEEDS_MAINTENANCE",
 }
 
 export async function equipmentTagExists(id: string) {
@@ -137,11 +141,15 @@ export async function createEquipment(formData: FormData) {
     console.log("Creating equipment...");
     console.log(formData);
 
-    const equipmentTagValue = formData.get("equipmentTag") as string;
-    const equipmentStatusValue = formData.get("equipmentStatus") as string;
+    const equipmentTagValue = formData.get("equipmentTag") as Tags;
+    const equipmentStatusValue = formData.get("equipmentStatus") as EquipmentStatus;
     const qrId = formData.get("qrId") as string;
     const equipmentTag = toEnumValue(Tags, equipmentTagValue);
     const equipmentStatus = toEnumValue(EquipmentStatus, equipmentStatusValue);
+    console.log(
+      "equipmentTag: " + equipmentTag,
+      "equipmentStatus: " + equipmentStatus,
+    )
 
     if (!equipmentTag || !equipmentStatus) {
       throw new Error("Invalid enum value provided.");
@@ -304,7 +312,7 @@ export async function updateEmployeeEquipment(formData: FormData) {
 
 export async function updateEquipment(formData: FormData) {
   try {
-    console.log(formData);
+    console.log("server action recieved formData:", formData);
     const id = formData.get("id") as string;
     const converted = new Date(
       formData.get("registrationExpiration") as string
@@ -330,6 +338,7 @@ export async function updateEquipment(formData: FormData) {
         year: formData.get("year") as string,
         licensePlate: formData.get("licensePlate") as string,
         registrationExpiration: converted || null,
+        mileage: Number(formData.get("mileage") as string),
       },
     });
     revalidatePath("/admin/assets");
