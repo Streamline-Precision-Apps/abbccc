@@ -58,9 +58,9 @@
 "use client";
 import { cva, type VariantProps } from "class-variance-authority";
 import { HTMLAttributes, FC } from "react";
-import { cn } from "@/components/(reusable)/utils";
+// import { cn } from "@/components/(reusable)/utils";
 import { ChangeEvent } from "react";
-import { Holds } from "../(reusable)/holds";
+// import { Holds } from "../(reusable)/holds";
 
 const CheckboxVariants = cva(
   "", //this applies to all variants
@@ -104,11 +104,11 @@ export interface CheckboxProps extends HTMLAttributes<HTMLElement>, VariantProps
   onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
-
-const Checkbox: FC<CheckboxProps> = ({className, background, position, size, disabled, defaultChecked, id, name, label, onChange, ...props}) => {
+// className, background, position, size, disabled, defaultChecked, id, name, label, onChange, ...props
+const Checkbox: FC<CheckboxProps> = ({}) => {
   
   return (
-    
+    null
   )
 }
 
