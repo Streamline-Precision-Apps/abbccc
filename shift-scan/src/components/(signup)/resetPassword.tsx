@@ -6,7 +6,7 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
 import { Forms } from "@/components/(reusable)/forms";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useState, useRef } from "react";
 import { setUserPassword } from "@/actions/userActions";
 import { hash } from "bcryptjs";
 import { useRouter } from "next/navigation";
@@ -20,7 +20,7 @@ const ResetPassword = ({   userId,
 } : {
   userId: string;
   handleNextStep: () => void}) => {
-  const t = useTranslations("Hamburger");
+  const t = useTranslations("SignUpPassword");
   const [showBanner, setShowBanner] = useState(false);
   const [bannerMessage, setBannerMessage] = useState("");
   const [eightChar, setEightChar] = useState(false);
@@ -32,7 +32,7 @@ const ResetPassword = ({   userId,
 
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
+  const useFormRef = useRef<HTMLFormElement>(null);
   const route = useRouter();
 
   const viewPasscode1 = () => {
@@ -40,6 +40,12 @@ const ResetPassword = ({   userId,
   };
   const viewPasscode2 = () => {
     setViewSecret2(!viewSecret2);
+  };
+
+  const handleSubmitClick = () => {
+    useFormRef.current?.dispatchEvent(
+      new Event("submit", { bubbles: true, cancelable: true })
+    );
   };
 
   useEffect(() => {
@@ -56,27 +62,25 @@ const ResetPassword = ({   userId,
     event.preventDefault();
 
     if (newPassword.length === 0) {
-      setBannerMessage("Invalid. New Password cannot be empty.");
+      setBannerMessage(t("NewPasswordEmptyError"));
       setShowBanner(true);
       return;
     }
 
     if (confirmPassword.length === 0) {
-      setBannerMessage("Invalid. Confirm Password cannot be empty.");
-      setShowBanner(true);
-      return;
-    }
-
-    if (!validatePassword(newPassword)) {
-      setBannerMessage(
-        "Invalid. Password must be at least 8 characters long, contain 1 number, and 1 symbol."
-      );
+      setBannerMessage(t("ConfirmPasswordEmptyError"));
       setShowBanner(true);
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setBannerMessage("Invalid. Passwords do not match!");
+      setBannerMessage(t("PasswordMismatchError"));
+      setShowBanner(true);
+      return;
+    }
+
+    if (!validatePassword(newPassword)) {
+      setBannerMessage(t("PasswordLengthError"));
       setShowBanner(true);
       return;
     }
@@ -89,7 +93,6 @@ const ResetPassword = ({   userId,
     try {
       await setUserPassword(formData);
       handleNextStep();
-      route.push("/hamburger/settings");
     } catch (error) {
       console.error("Error updating password:", error);
       setBannerMessage(
@@ -124,68 +127,60 @@ const ResetPassword = ({   userId,
     passed: boolean;
     label: string;
   }) => (
-    <Holds position="row" className="space-x-2">
       <Holds
-        background={passed ? "green" : "red"}
-        className="w-1 rounded-full my-auto"
-      ></Holds>
-      <Texts size="p6">{label}</Texts>
-    </Holds>
+      background={passed ? "green" : "red"}
+      className=" border-black border-[3px] rounded-[10px]"
+      >
+        <Texts size="p5" className="p-2">{label}</Texts>
+      </Holds>
   );
 
   return (
-    <>
-      <Holds background={"white"}>
-        <Titles size={"h1"}>Choose A Password</Titles>
+    <Grids rows={"10"} gap={"5"} className="h-full mb-5">
+      <Holds background={"white"} className="row-span-1 h-full justify-center">
+        <Titles size={"h1"}>{t("ChoosePasswordTitle")}</Titles>
       </Holds>
-      <Holds className="h-full my-auto">
-      <Forms
-        onSubmit={handleSubmit}
-        className="h-full flex flex-col items-center justify-between"
-      >
-        {showBanner && (
-          <Holds
-            background="red"
-            position="absolute"
-            size="full"
-            className="rounded-none"
+      <Holds background={"white"} className="row-span-8 h-full p-3">
+          <form
+          ref={useFormRef}
+          onSubmit={handleSubmit}
+          className="h-full flex flex-col items-center"
           >
-            <Texts size="p6">{bannerMessage}</Texts>
-          </Holds>
-        )}
-
-        {/* Start of grid container */}
-        <Grids rows={"5"} gap={"5"} className="h-full">
-          {/* New password section */}
-
-          <Holds background={"darkBlue"} className="row-span-1 h-full">
-            <Texts position="left" text={"white"} size="p4">
-              Password Strength:
-            </Texts>
-            <Holds background="white" className="rounded-xl h-full ">
-              <Contents width={"section"}>
-                <Holds position="row" className="my-auto">
-                  <PasswordCriteria passed={oneNumber} label="123" />
-                  <PasswordCriteria passed={oneSymbol} label="Symbol" />
-                  <PasswordCriteria passed={eightChar} label="(8) Length" />
+            {/* <Grids rows={"5"} gap={"5"} className="h-full"> */}
+            <Contents width={"section"} className="">
+                <Holds background={"white"}>
+                  <Texts size="p2">{t("ChooseNewPassword")}</Texts>
                 </Holds>
-              </Contents>
-            </Holds>
-          </Holds>
-          <Holds background="white" className="row-span-2 h-full">
-            <Contents width="section">
-              <Holds className="my-auto w-full">
-                <Holds position="row" className="">
-                  <Labels htmlFor="new-password">{t("NewPassword")}</Labels>
-                  <Images
+                <Holds background={"white"} className="my-5">
+                  <Texts position="left" size="p4">{t("PasswordRequirements")}</Texts>
+                  <Holds position="row" className="">
+                    <PasswordCriteria passed={oneNumber} label={t("NumberRequirement")}/>
+                    <PasswordCriteria passed={oneSymbol} label={t("SymbolRequirement")}/>
+                    <PasswordCriteria passed={eightChar} label={t("LengthRequirement")}/>
+                    </Holds>
+                    {showBanner && (
+                      <Contents width={"section"}>
+                    <Holds
+                    background="red"
+                    size="full"
+                    >
+                      <Texts size="p6">{bannerMessage}</Texts>
+                    </Holds>
+                    </Contents>
+                    )}
+                </Holds>
+                <Holds background={"white"} className="h-full">
+                  <Holds position="row">
+                    <Labels htmlFor="new-password">{t("NewPassword")}</Labels>
+                    <Images
                     titleImg={viewSecret1 ? "/eye.svg" : "/eye-slash.svg"}
-                    titleImgAlt="eye"
+                    titleImgAlt={t("EyeImageAlt")}
                     background="none"
                     size="10"
                     onClick={viewPasscode1}
-                  />
-                </Holds>
-                <Inputs
+                    />
+                  </Holds>
+                  <Inputs
                   type={viewSecret1 ? "text" : "password"}
                   id="new-password"
                   value={newPassword}
@@ -193,49 +188,34 @@ const ResetPassword = ({   userId,
                     handlePasswordChange(e.target.value);
                     setNewPassword(e.target.value);
                   }}
-                />
-              </Holds>
-            </Contents>
-          </Holds>
-
-          {/* Confirm password section */}
-          <Holds className="row-span-4 h-full" background="white">
-            <Contents width="section">
-              <Holds className="my-auto w-full">
-                <Holds position="row" className="h-full">
-                  <Labels htmlFor="confirm-password">
-                    {t("ConfirmPassword")}
-                  </Labels>
-                  <Images
+                  />
+                  <Holds position="row" className="">
+                    <Labels htmlFor="confirm-password">{t("ConfirmPassword")}</Labels>
+                    <Images
                     titleImg={viewSecret2 ? "/eye.svg" : "/eye-slash.svg"}
-                    titleImgAlt="eye"
+                    titleImgAlt={t("EyeImageAlt")}
                     background="none"
                     size="10"
                     onClick={viewPasscode2}
-                  />
-                </Holds>
-                <Inputs
+                    />
+                  </Holds>
+                  <Inputs
                   type={viewSecret2 ? "text" : "password"}
                   id="confirm-password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                />
-              </Holds>
-            </Contents>
-          </Holds>
-
-          {/* Submit button section */}
-          <Holds className="row-span-2 h-full">
-            <Holds className="my-auto">
-                <Buttons background="orange" type="submit">
-                  <Titles size="h2">Next</Titles>
-                </Buttons>
-            </Holds>
-          </Holds>
-        </Grids>
-      </Forms>
-    </Holds>
-    </>
+                  />
+                </Holds>
+              </Contents>
+            {/* </Grids> */}
+          </form>
+        </Holds>
+        <Holds className="row-span-1 h-full">
+          <Buttons background={"orange"} onClick={() => handleSubmitClick()}>
+          <Titles>{t("Next")}</Titles>
+        </Buttons>
+      </Holds>
+    </Grids>
   );
 };
 

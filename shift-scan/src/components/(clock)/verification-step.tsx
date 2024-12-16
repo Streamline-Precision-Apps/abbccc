@@ -6,7 +6,7 @@ import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
 import {
   CreateTimeSheet,
-  updateTimeSheetBySwitch,
+  // updateTimeSheetBySwitch,
 } from "@/actions/timeSheetActions";
 import { Clock } from "../clock";
 import { setAuthStep } from "@/app/api/auth";
@@ -65,7 +65,7 @@ export default function VerificationStep({
           formData2.append("timesheetComments", "");
           formData2.append("appComment", "Switched jobs");
 
-          await updateTimeSheetBySwitch(formData2);
+          // await updateTimeSheetBySwitch(formData2);
 
           const formData = new FormData();
           if (truckScanData) {
@@ -79,9 +79,9 @@ export default function VerificationStep({
           formData.append("startTime", new Date().toISOString());
           formData.append("endTime", "");
 
-          const response = await CreateTimeSheet(formData);
-          const result = { id: response.id.toString() };
-          setTimeSheetData(result);
+          // const response = await CreateTimeSheet(formData);
+          // const result = { id: response.id.toString() };
+          // setTimeSheetData(result);
           setAuthStep("success");
 
           if (handleNextStep) {
@@ -105,9 +105,9 @@ export default function VerificationStep({
         formData.append("costcode", savedCostCode?.toString() || "");
         formData.append("startTime", new Date().toISOString());
 
-        const response = await CreateTimeSheet(formData);
-        const result = { id: response.id.toString() };
-        setTimeSheetData(result);
+        // const response = await CreateTimeSheet(formData);
+        // const result = { id: response.id.toString() };
+        // setTimeSheetData(result);
         setAuthStep("success");
 
         if (handleNextStep) {

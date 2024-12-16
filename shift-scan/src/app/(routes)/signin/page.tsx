@@ -11,7 +11,7 @@ export default async function SignInPage() {
   const t = await getTranslations("Login");
   return (
     <Bases>
-      <Contents>
+      <Contents className="justify-center">
         <Images
           titleImg="/logo.svg"
           titleImgAlt={`${t("LogoAlt")}`}
