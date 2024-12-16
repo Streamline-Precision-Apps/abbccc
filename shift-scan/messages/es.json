@@ -1,23 +1,85 @@
 { 
-    
-"PortalLogin": {
-        
-        "Username": "Usuario",
-        "Password": "Contraseña",
-        "btn-signIn": "Iniciar Sesion",
-        "Spanish": "Speak English?",
-        "btn-forgot": "olvides mi contraseña?",
-        "Error": "Nombre de usuario o contraseña no válido",
-        "lN4": "Copyright © 2024. Todos los derechos reservados."
-    },
-"Login":{
-        "LogoAlt" :"Logo",
+    "Login":{
         "EmployeeID": "ID de empleado",
         "Password": "Contraseña",
         "Btn-signIn": "Iniciar sesión",
         "Btn-forgot": "¿Olvidaste tu contraseña?",
-        "Spanish": "Switch back to English",
-        "Err": "Intento no válido"
+        "Spanish": "Switch to English?",
+        "Err": "Intento no válido",
+        "LogoAlt" :"Logotipo de Streamline Precision"
+    },
+
+    "SignUpIntro":{
+        "Welcome": "¡Bienvenido a Shift Scan! ¡Es hora de configurar tu cuenta!",
+        "ThingsWeNeedToDo": "Cosas que necesitamos hacer...",
+        "ChooseNewPassword": "Elige una nueva contraseña",
+        "GivePermissions": "Dar permisos",
+        "ChooseProfilePicture": "Elegir foto de perfil",
+        "CreateVirtualSignature": "Crear firma virtual",
+        "LetsGetStarted": "¡Comencemos!",
+        "LogoAlt" :"Logotipo de Shift Scan"
+    },
+
+    "SignUpPassword":{
+        "ChoosePasswordTitle" : "Elegir una contraseña",
+        "ChooseNewPassword" : "¡Elige una nueva contraseña! ¡Asegúrate de cumplir con los requisitos de seguridad!",
+        "PasswordRequirements" : "Requisitos para la contraseña:",
+        "NumberRequirement" : "Número",
+        "SymbolRequirement" : "Símbolo",
+        "LengthRequirement": "Longitud (8+)",
+        "NewPassword": "Nueva contraseña",
+        "ConfirmPassword": "Confirmar contraseña",
+        "Next": "Siguiente",
+        "NewPasswordEmptyError": "Intento no válido. ¡La nueva contraseña no puede estar vacía!",
+        "ConfirmPasswordEmptyError": "Intento no válido. ¡La confirmación de la contraseña no puede estar vacía!",
+        "PasswordMismatchError": "Intento no válido. ¡Las contraseñas no coinciden!",
+        "PasswordLengthError": "Intento no válido. La contraseña debe tener al menos 8 caracteres, incluir 1 número y 1 símbolo.",
+        "EyeImageAlt": "Imagen de ojo"
+    },
+
+    "SignUpPermissions":{
+        "GiveUsAccess": "Danos acceso",
+        "YesToEverything": "¡Sí a todo!",
+        "RequiredForAppUse": "Requerido para el uso de la aplicación",
+        "CameraAccess": "Acceso a la cámara",
+        "LocationAccess": "Acceso a la ubicación",
+        "Cookies": "Cookies",
+        "OptionalButVeryHelpful": "Opcional, pero muy útil",
+        "BiometricsLogin": "Inicio de sesión biométrico",
+        "Notifications": "Notificaciones",
+        "Photo Album": "Álbum de fotos",
+        "Next": "Siguiente"
+    },
+
+    "SignUpProfilePicture":{
+        "AddProfilePicture": "Agregar una foto de perfil",
+        "LetsPickAPicture": "¡Elijamos una foto para tu perfil! Por favor, elige una foto de tu rostro.",
+        "UseCamera": "Usar cámara",
+        "CameraRoll": "Carrete de fotos",
+        "Next": "Siguiente",
+        "ProfilePictureMissingError": "Intento no válido. ¡Debes seleccionar una foto de perfil!",
+        "ImageAlt": "Imagen de foto de perfil"
+    },
+
+    "SignUpVirtualSignature":{
+        "AddASignature": "Agregar una firma",
+        "LetsAddASignature": "¡Añadamos una firma electrónica! Asegúrate de que te guste, aparecerá en todos los formularios.",
+        "SingHere": "Firma aquí",
+        "Clear": "Borrar",
+        "Save": "Guardar",
+        "Next": "Siguiente",
+        "SignatureMissingError": "Intento no válido. ¡Debes añadir una firma!"
+    },
+
+    "SignUpOutro":{
+        "LooksLikeYoureAllSetUp": "¡Parece que ya está todo configurado! ¡Es hora de experimentar un trabajo más fácil!",
+        "HeresWhatWeDid": "Esto es lo que hicimos...",
+        "ChooseNewPassword": "Elegir nueva contraseña",
+        "GivePermissions": "Dar permisos",
+        "ChooseProfilePicture": "Elegir foto de perfil",
+        "CreateVirtualSignature": "Crear firma virtual",
+        "StartScanning": "¡Comenzar a escanear!",
+        "LogoAlt": "Logotipo de Shift Scan"
     },
 
     "Home" : {
@@ -182,33 +244,33 @@
     },
 
     "MyTeam": {
-            "Teams-Title": "Mis Equipos",
-            "Teams-Logo-Title": "Icono del Equipo",
-            "MyTeams-Title": "",
-            "Teams-Button-Name": "Equipo",
-            "Timesheets": "Hojas de Tiempo",
-            "Duration": "Total de horas trabajadas:",
-            "Duration-Comment": "La duración se actualiza cuando se guardan los cambios de edición.",
-            "ClockIn" : "Registro de Entrada",
-            "ClockOut" : "Registro de Salida",
-            "Breaktime" : "Tiempo Total de Descanso",
-            "JobSites" : "ID de Sitio de Trabajo Registrado",
-            "CostCode" : "Código de Costo Registrado",
-            "Equipment" : "Equipo",
-            "EQTotalTime" : "Tiempo Total",
-            "NoData": "No se Encontraron Datos",
-            "EquipmentLogs": "Registros de Equipo",
-            "PhoneNumber": "Registros de Equipo",
-            "Email": "Correo Electrónico",
-            "EmergencyContact": "Contacto de Emergencia",
-            "EmergencyContactNumber": "Número de Contacto",
-            "DOB": "Fecha de Nacimiento",
-            "Edit": "Editar",
-            "Delete": "Eliminar",
-            "SelectDate": "Seleccionar Fecha",
-            "NoEquipmentLogs": "No se encontraron registros para el día seleccionado.",
-            "ID": "Id: #"
-        },
+        "Teams-Title": "Mis Equipos",
+        "Teams-Logo-Title": "Icono del Equipo",
+        "MyTeams-Title": "",
+        "Teams-Button-Name": "Equipo",
+        "Timesheets": "Hojas de Tiempo",
+        "Duration": "Total de horas trabajadas:",
+        "Duration-Comment": "La duración se actualiza cuando se guardan los cambios de edición.",
+        "ClockIn" : "Registro de Entrada",
+        "ClockOut" : "Registro de Salida",
+        "Breaktime" : "Tiempo Total de Descanso",
+        "JobSites" : "ID de Sitio de Trabajo Registrado",
+        "CostCode" : "Código de Costo Registrado",
+        "Equipment" : "Equipo",
+        "EQTotalTime" : "Tiempo Total",
+        "NoData": "No se Encontraron Datos",
+        "EquipmentLogs": "Registros de Equipo",
+        "PhoneNumber": "Registros de Equipo",
+        "Email": "Correo Electrónico",
+        "EmergencyContact": "Contacto de Emergencia",
+        "EmergencyContactNumber": "Número de Contacto",
+        "DOB": "Fecha de Nacimiento",
+        "Edit": "Editar",
+        "Delete": "Eliminar",
+        "SelectDate": "Seleccionar Fecha",
+        "NoEquipmentLogs": "No se encontraron registros para el día seleccionado.",
+        "ID": "Id: #"
+    },
 
     "Clock": {
         "ChangeCostCode": "Cambiar Código de Costo",
@@ -289,7 +351,7 @@
     "Hamburger": {
         "loading": "Cargando...",
         "NewPassword": "Nueva Contraseña",
-        "ConfirmPassword": "Confirmar Nueva Contraseña",
+        "ConfirmPassword": "Confirmar Contraseña",
         "ChangePassword": "Cambiar Contraseña",
         "Title": "Configuraciones",
         "Notifications": "Notificaciones",
