@@ -80,16 +80,19 @@ export default function Content({
           <ResetPassword userId={userId} handleNextStep={handleNextStep} />
         )}
         {step === 3 && (
-          <ProfilePictureSetup id={userId} handleNextStep={handleNextStep} />
-        )}
-        {step === 4 && (
-          <SignatureSetup id={userId} handleNextStep={handleNextStep} />
-        )}
-        {step === 5 && (
           <NotificationSettings id={userId} handleNextStep={handleNextStep} />
         )}
-        {step === 6 && (
-          <Permissions id={userId} handleAccept={handleComplete} />
+                {step === 4 && (
+          <Permissions id={userId} handleAccept={handleComplete}/>
+        )}
+                {step === 5 && (
+          <ProfilePictureSetup id={userId} handleNextStep={handleNextStep} />
+        )}
+        {step === 7 && (
+          <SignatureSetup id={userId} handleNextStep={handleNextStep} />
+        )}
+        {step === 7 && (
+          <Permissions id={userId} handleAccept={handleComplete}/>
         )}
       </Contents>
     </Holds>
