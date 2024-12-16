@@ -1,13 +1,13 @@
 { 
 "Login":{
-    "LogoAlt" :"Logo",
     "EmployeeID": "Employee ID",
     "Password": "Password",
     "Btn-signIn": "Sign In",
     "Btn-forgot": "Forgot Password?",
     "Spanish": "Habla Español?",
     "Err": "Invalid Attempt",
-    "ChangePassword": "Change Password"
+    "ChangePassword": "Change Password",
+    "LogoAlt" :"Streamline Precision Logo"
 },
 
 "SignUpIntro":{
