@@ -1,4 +1,4 @@
-model Errors {
+model Error {
     id           String   @id @default(uuid())
     errorMessage String?
     userId       String?

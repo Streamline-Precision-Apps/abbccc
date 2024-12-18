@@ -20,19 +20,19 @@ model Equipment {
     isActive               Boolean         @default(true)
     inUse                  Boolean         @default(false)
 
-    employeeEquipmentLogs EmployeeEquipmentLogs[]
+    employeeEquipmentLogs EmployeeEquipmentLog[]
     Maintenance           Maintenance[]
-    TascoLogs             TascoLogs[]
-    TruckingLogs          TruckingLogs[]
+    TascoLogs             TascoLog[]
+    TruckingLogs          TruckingLog[]
     EquipmentHauled       EquipmentHauled[]
-    jobsite               Jobsites?               @relation(fields: [jobsiteId], references: [id], onDelete: Cascade)
+    jobsite               Jobsite?               @relation(fields: [jobsiteId], references: [id], onDelete: Cascade)
 
     @@index([qrId]) // index for qr code
 }
 
 // Used in equipment section, admin assets section, maybe the check in the clockout section.
 // tracks notes on the used equipment, who used it, where, the condition its in, and for how long.
-model EmployeeEquipmentLogs {
+model EmployeeEquipmentLog {
     id             Int         @id @default(autoincrement())
     equipmentId    String
     jobsiteId      String
@@ -45,27 +45,27 @@ model EmployeeEquipmentLogs {
     isSubmitted    Boolean     @default(false) // marks true when form is submitted at end of day
     status         FormStatus  @default(PENDING) // approving of the form
     // connections to other tables
-    timeSheetsId   String?
-    tascoLogsId    String? // link to tasco logs IF USED
-    laborLogsId    String?
-    truckingLogsId String?
+    timeSheetId   String?
+    tascoLogId    String? // link to tasco logs IF USED
+    laborLogId    String?
+    truckingLogId String?
     maintenanceId  String?
     refueled       Refueled[]
-    employee       Users       @relation(fields: [employeeId], references: [id], onDelete: Cascade)
-    Job            Jobsites    @relation(fields: [jobsiteId], references: [qrId])
+    employee       User       @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+    Job            Jobsite    @relation(fields: [jobsiteId], references: [qrId])
     Equipment      Equipment?  @relation(fields: [equipmentId], references: [id])
-    TimeSheets     TimeSheets? @relation(fields: [timeSheetsId], references: [id])
+    TimeSheets     TimeSheet? @relation(fields: [timeSheetId], references: [id])
 }
 
 model Refueled {
     id                      String   @id @default(cuid())
     date                    DateTime @default(now())
-    employeeEquipmentLogsId Int?
-    truckingLogsId          String?
+    employeeEquipmentLogId Int?
+    truckingLogId          String?
     gallonsRefueled         Float?
 
-    EmployeeEquipmentLogs EmployeeEquipmentLogs? @relation(fields: [employeeEquipmentLogsId], references: [id])
-    TruckingLogs          TruckingLogs?          @relation(fields: [truckingLogsId], references: [id])
-    TascoLogs             TascoLogs?             @relation(fields: [tascoLogsId], references: [id])
-    tascoLogsId           String?
+    EmployeeEquipmentLog EmployeeEquipmentLog? @relation(fields: [employeeEquipmentLogId], references: [id])
+    TruckingLog          TruckingLog?          @relation(fields: [truckingLogId], references: [id])
+    TascoLog             TascoLog?             @relation(fields: [tascoLogId], references: [id])
+    tascoLogId           String?
 }

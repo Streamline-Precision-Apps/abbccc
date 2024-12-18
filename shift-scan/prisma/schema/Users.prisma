@@ -1,5 +1,5 @@
 // Holds the login and general app data of employee but not all the data
-model Users {
+model User {
     id              String     @id @default(cuid())
     firstName       String
     lastName        String
@@ -19,18 +19,19 @@ model Users {
     terminationDate DateTime?
     accountSetup    Boolean    @default(false)
 
-    passwordResetToken    PasswordResetTokens[]
-    timeSheet             TimeSheets[]
-    equipmentLogs         EmployeeEquipmentLogs[]
-    contacts              Contacts?
-    userSettings          UserSettings? // one to one relationship
-    injuryForms           InjuryForms[] // one to many relationship 
-    timeoffRequestForms   timeoffRequestForms[] // one to many relationship
-    MaintenanceLogs       MaintenanceLogs[]
-    passwordResetTokensId String?
-    crews                 Crews[]
+    passwordResetTokens    PasswordResetToken[]
+    timeSheets             TimeSheet[]
+    equipmentLogs          EmployeeEquipmentLog[]
+    contact                Contacts?
+    userSettings           UserSettings? // one to one relationship
+    injuryForms            InjuryForm[] // one to many relationship 
+    timeOffRequestForms    timeOffRequestForm[] // one to many relationship
+    maintenanceLogs        MaintenanceLog[]
+    passwordResetTokenId   String?
+    crews                  Crew[]
 
     @@unique([firstName, lastName, DOB]) // prevent duplicate users
+    @@index([email])
 }
 
 model UserSettings {
@@ -43,10 +44,10 @@ model UserSettings {
     biometric        Boolean @default(false)
     cameraAccess     Boolean @default(false)
     locationAccess   Boolean @default(false)
-    photoAlbum       Boolean @default(false)
-    cookies          Boolean @default(false)
+    photoAlbumAccess       Boolean @default(false)
+    cookiesAccess          Boolean @default(false)
 
-    user Users @relation(fields: [userId], references: [id], onDelete: Cascade)
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 //Employee contact information section. Purpose get ahold of them or their emergency contact. 
@@ -58,17 +59,16 @@ model Contacts {
     emergencyContactNumber String?
     createdAt              DateTime @default(now())
     updatedAt              DateTime @updatedAt
-    user                   Users?   @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+    user                   User?   @relation(fields: [employeeId], references: [id], onDelete: Cascade)
 }
 
 // password reset token
-model PasswordResetTokens {
+model PasswordResetToken {
     id         String   @id @default(cuid())
     email      String
     token      String   @unique
     expiration DateTime
-    usersId    String?
-    Users      Users?   @relation(fields: [email], references: [email])
+    Users      User?   @relation(fields: [email], references: [email])
 
     @@unique([email, token])
 }
