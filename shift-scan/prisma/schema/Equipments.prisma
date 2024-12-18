@@ -26,6 +26,8 @@ model Equipment {
     TruckingLogs          TruckingLogs[]
     EquipmentHauled       EquipmentHauled[]
     jobsite               Jobsites?               @relation(fields: [jobsiteId], references: [id], onDelete: Cascade)
+
+    @@index([qrId]) // index for qr code
 }
 
 // Used in equipment section, admin assets section, maybe the check in the clockout section.
