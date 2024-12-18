@@ -1,24 +1,10 @@
-// crew data for seeing the entire crew and enabling site linking it also has direct access to the employeed time cards, and some desire profile settings
-model CrewMembers {
-    id         Int     @id @default(autoincrement())
-    supervisor Boolean @default(false) // if the crew member is a supervisor or not
-    employeeId String
-    crewId     Int
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    crew Crews @relation(fields: [crewId], references: [id])
-    user Users @relation(fields: [employeeId], references: [id], onDelete: Cascade)
-}
-
-// the crew model assigns creates a crew and assigns an employee to be the lead
+// The crew model here pair users to a group that can be used to make a team or a group of people.
 model Crews {
-    id          Int            @id @default(autoincrement())
+    id          Int      @id @default(autoincrement())
     name        String
+    leadId      String
     description String
-    createdAt   DateTime       @default(now())
-    updatedAt   DateTime       @updatedAt
-    crewMembers CrewMembers[]
-    jobsites    CrewJobsites[]
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    users       Users[]
 }
