@@ -11,6 +11,7 @@ import { CCTags } from "@/lib/types";
 import { EditCostCodeForm } from "./_components/EditCostCodeForm";
 import { EditCostCodeFooter } from "./_components/CostCodeFooter";
 import { z } from "zod";
+import { useTranslations } from "next-intl";
 
 const costCodeSchema = z.object({
   id: z.number(),
@@ -73,7 +74,9 @@ export default function UpdateCostCodes({
 
         setInitialTags(parsedTags);
 
-        const connectedTagsRes = await fetch(`/api/getCostCodeTags/${costcodeId}`);
+        const connectedTagsRes = await fetch(
+          `/api/getCostCodeTags/${costcodeId}`
+        );
         const connectedTagsData = await connectedTagsRes.json();
         const connectedTags = connectedTagsData[0]?.CCTags || [];
 
@@ -185,4 +188,3 @@ export default function UpdateCostCodes({
     </Holds>
   );
 }
-

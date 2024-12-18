@@ -1,0 +1,19 @@
+// This Table stores a collection of company Estimating codes. The purpose is to help in billing process. Very import for our project.
+model CostCodes {
+    id          Int      @id @default(autoincrement())
+    name        String   @unique
+    description String
+    type        String // set to an enum later,type is how we can filter the costcodes
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @default(now()) @updatedAt
+
+    CCTags CCTags[]
+}
+
+model CCTags {
+    id          Int         @id @default(autoincrement())
+    name        String      @unique
+    description String?
+    jobsite     Jobsites[]
+    costCode    CostCodes[]
+}

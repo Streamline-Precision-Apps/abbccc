@@ -6,7 +6,7 @@ import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
 import {
   CreateTimeSheet,
-  updateTimeSheetBySwitch,
+  // updateTimeSheetBySwitch,
 } from "@/actions/timeSheetActions";
 import { Clock } from "../clock";
 import { setAuthStep } from "@/app/api/auth";
@@ -21,6 +21,8 @@ import { Texts } from "../(reusable)/texts";
 import { useSession } from "next-auth/react";
 import { useTruckScanData } from "@/app/context/TruckScanDataContext";
 import { useStartingMileage } from "@/app/context/StartingMileageContext";
+import { Holds } from "../(reusable)/holds";
+import { Grids } from "../(reusable)/grids";
 
 type VerifyProcessProps = {
   handleNextStep?: () => void;
@@ -65,7 +67,7 @@ export default function VerificationStep({
           formData2.append("timesheetComments", "");
           formData2.append("appComment", "Switched jobs");
 
-          await updateTimeSheetBySwitch(formData2);
+          // await updateTimeSheetBySwitch(formData2);
 
           const formData = new FormData();
           if (truckScanData) {
@@ -79,9 +81,9 @@ export default function VerificationStep({
           formData.append("startTime", new Date().toISOString());
           formData.append("endTime", "");
 
-          const response = await CreateTimeSheet(formData);
-          const result = { id: response.id.toString() };
-          setTimeSheetData(result);
+          // const response = await CreateTimeSheet(formData);
+          // const result = { id: response.id.toString() };
+          // setTimeSheetData(result);
           setAuthStep("success");
 
           if (handleNextStep) {
@@ -96,7 +98,10 @@ export default function VerificationStep({
           formData.append("vehicleId", truckScanData);
         }
         if (startingMileage !== undefined) {
-          formData.append("startingMileage", startingMileage?.toString() || "0");
+          formData.append(
+            "startingMileage",
+            startingMileage?.toString() || "0"
+          );
         }
         formData.append("submitDate", new Date().toISOString());
         formData.append("userId", id.toString());
@@ -105,9 +110,9 @@ export default function VerificationStep({
         formData.append("costcode", savedCostCode?.toString() || "");
         formData.append("startTime", new Date().toISOString());
 
-        const response = await CreateTimeSheet(formData);
-        const result = { id: response.id.toString() };
-        setTimeSheetData(result);
+        // const response = await CreateTimeSheet(formData);
+        // const result = { id: response.id.toString() };
+        // setTimeSheetData(result);
         setAuthStep("success");
 
         if (handleNextStep) {
@@ -121,114 +126,136 @@ export default function VerificationStep({
 
   return (
     <>
-      <TitleBoxes
-        title={t("VerifyJobSite")}
-        titleImg="/clock-in.svg"
-        titleImgAlt="Verify"
-        variant="row"
-        size="default"
-        type="row"
-      />
-      <Forms onSubmit={handleSubmit}>
-        <Buttons type="submit">
-          <Images titleImg={"/new/downArrow.svg"} titleImgAlt={"downArrow"} />
-        </Buttons>
-        <Contents>
-          <Labels>
-            <Texts size={"p4"} position={"left"}>
-              {t("Date-label")}
-            </Texts>
-            <Inputs
-              state="disabled"
-              variant={"white"}
-              data={date.toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "numeric",
-                day: "numeric",
-              })}
-            />
-          </Labels>
-          {truckScanData && (
-            <Labels>
-              <Texts size={"p4"} position={"left"}>
-                {t("Truck-label")}
-              </Texts>
-              <Inputs
-                state="disabled"
-                name="jobsiteId"
-                variant={"white"}
-                data={truckScanData}
-                />
-            </Labels>
-          )}
-          {truckScanData && (
-            <Labels>
-              <Texts size={"p4"} position={"left"}>
-                {t("Mileage")}
-              </Texts>
-              <Inputs
-                state="disabled"
-                name="startingMileage"
-                variant={"white"}
-                data={startingMileage?.toString() || "0"}
-                />
-            </Labels>
-              )}
-          <Labels>
-            <Texts size={"p4"} position={"left"}>
-              {t("JobSite-label")}
-            </Texts>
-            <Inputs
-              state="disabled"
-              name="jobsiteId"
-              variant={"white"}
-              data={scanResult?.data || ""}
-              />
-          </Labels>
-          <Labels>
-            <Texts size={"p4"} position={"left"}>
-              {t("CostCode-label")}
-            </Texts>
-            <Inputs
-              state="disabled"
-              name="costcode"
-              variant={"white"}
-              data={savedCostCode?.toString() || ""}
-              />
-          </Labels>
-          {comments !== undefined && (
-            <Labels>
-              <Texts size={"p4"} position={"left"}>
-                {t("Comments")}
-              </Texts>
-              <Inputs
-                state="disabled"
-                name="timeSheetComments"
-                variant={"white"}
-                data={comments}
-                />
-            </Labels>
-              )}
-        </Contents>
-        <Buttons
-          type="submit"
-          className="bg-app-green mx-auto flex justify-center w-full h-full py-4 px-5 rounded-lg text-black font-bold mt-5"
-        >
-          <Clock time={date.getTime()} />
-        </Buttons>
-        <Inputs
-          type="hidden"
-          name="submitDate"
-          value={new Date().toISOString()}
+      <Contents width={"section"} className="h-full my-5">
+        <TitleBoxes
+          title={t("VerifyJobSite")}
+          titleImg="/clock-in.svg"
+          titleImgAlt="Verify"
+          variant="row"
+          size="default"
+          type="row"
         />
-        <Inputs type="hidden" name="userId" value={id} />
-        <Inputs type="hidden" name="date" value={new Date().toISOString()} />
-        <Inputs
-          type="hidden"
-          name="startTime"
-          value={new Date().toISOString()}
-        />
-      </Forms>
+        <Forms onSubmit={handleSubmit} className="h-full my-5">
+          <Holds className="h-full w-full">
+            <Contents width={"section"} className="h-full">
+              <Grids cols={"5"} rows={"5"} gap={"5"}>
+                <Holds className="row-start-1 row-end-2 col-start-5 col-end-6 h-full ">
+                  <Buttons type="submit" className="w-1/2 h-1/2 justify-center">
+                    <Images
+                      titleImg={"/downArrow.svg"}
+                      titleImgAlt={"downArrow"}
+                      className="mx-auto"
+                    />
+                  </Buttons>
+                </Holds>
+                <Holds className="row-start-2 row-end-5 col-start-1 col-end-6 h-full ">
+                  <Contents width={"section"} className="h-full">
+                    <Labels>
+                      <Texts size={"p4"} position={"left"}>
+                        {t("Date-label")}
+                      </Texts>
+                      <Inputs
+                        state="disabled"
+                        variant={"white"}
+                        data={date.toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "numeric",
+                          day: "numeric",
+                        })}
+                      />
+                    </Labels>
+                    {truckScanData && (
+                      <Labels>
+                        <Texts size={"p4"} position={"left"}>
+                          {t("Truck-label")}
+                        </Texts>
+                        <Inputs
+                          state="disabled"
+                          name="jobsiteId"
+                          variant={"white"}
+                          data={truckScanData}
+                        />
+                      </Labels>
+                    )}
+                    {truckScanData && (
+                      <Labels>
+                        <Texts size={"p4"} position={"left"}>
+                          {t("Mileage")}
+                        </Texts>
+                        <Inputs
+                          state="disabled"
+                          name="startingMileage"
+                          variant={"white"}
+                          data={startingMileage?.toString() || "0"}
+                        />
+                      </Labels>
+                    )}
+                    <Labels>
+                      <Texts size={"p4"} position={"left"}>
+                        {t("JobSite-label")}
+                      </Texts>
+                      <Inputs
+                        state="disabled"
+                        name="jobsiteId"
+                        variant={"white"}
+                        data={scanResult?.data || ""}
+                      />
+                    </Labels>
+                    <Labels>
+                      <Texts size={"p4"} position={"left"}>
+                        {t("CostCode-label")}
+                      </Texts>
+                      <Inputs
+                        state="disabled"
+                        name="costcode"
+                        variant={"white"}
+                        data={savedCostCode?.toString() || ""}
+                      />
+                    </Labels>
+                    {comments !== undefined && (
+                      <Labels>
+                        <Texts size={"p4"} position={"left"}>
+                          {t("Comments")}
+                        </Texts>
+                        <Inputs
+                          state="disabled"
+                          name="timeSheetComments"
+                          variant={"white"}
+                          data={comments}
+                        />
+                      </Labels>
+                    )}
+                  </Contents>
+                </Holds>
+                <Holds className="row-start-5 row-end-6 col-start-1 col-end-6 h-full">
+                  <Buttons
+                    type="submit"
+                    className="bg-app-green mx-auto flex justify-center items-center w-full h-full py-4 px-5 rounded-lg text-black font-bold"
+                  >
+                    <Clock time={date.getTime()} />
+                  </Buttons>
+                </Holds>
+                <Inputs
+                  type="hidden"
+                  name="submitDate"
+                  value={new Date().toISOString()}
+                />
+                <Inputs type="hidden" name="userId" value={id} />
+                <Inputs
+                  type="hidden"
+                  name="date"
+                  value={new Date().toISOString()}
+                />
+                <Inputs
+                  type="hidden"
+                  name="startTime"
+                  value={new Date().toISOString()}
+                />
+              </Grids>
+            </Contents>
+          </Holds>
+        </Forms>
+      </Contents>
     </>
   );
 }

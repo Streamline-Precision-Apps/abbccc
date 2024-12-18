@@ -1,7 +1,17 @@
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { Providers } from "./providers";
+import { Metadata, Viewport } from "next";
 
+export const metadata: Metadata = {
+  manifest: "/manifest.json",
+  title: "Shift Scan",
+  description: "TimeCards made easy",
+};
+
+export const viewport: Viewport = {
+  themeColor: "#57BDE9",
+};
 export default async function RootLayout({
   children,
 }: {

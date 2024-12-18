@@ -1,11 +1,26 @@
 import createNextIntlPlugin from "next-intl/plugin";
+import withPWA from "@ducanh2912/next-pwa";
+
+/** @type {import('next').NextConfig} */
 
 const withNextIntl = createNextIntlPlugin();
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  experimental: {
-    serverComponentsExternalPackages: ["@prisma/client", "bcryptjs"], // replace bcryptjs with zod
+
+const pwaConfig = {
+  dest: "public",
+  cacheOnFrontEndNav: true,
+  aggressiveFrontEndNavCaching: true,
+  reloadOnOnline: true,
+  swcMinify: true,
+  disable: false,
+  workboxOptions: {
+    disableDevLogs: true,
   },
 };
 
-export default withNextIntl(nextConfig);
+const nextConfig = {
+  experimental: {
+    serverComponentsExternalPackages: ["@prisma/client", "bcryptjs"], // replace bcryptjs with zod if needed
+  },
+};
+
+export default withPWA(pwaConfig)(withNextIntl(nextConfig));

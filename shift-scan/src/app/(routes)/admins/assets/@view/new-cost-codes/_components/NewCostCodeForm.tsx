@@ -111,7 +111,6 @@ export function NewCostCodeForm({
             onChange={(e) => {
               setCcName(e.target.value);
             }}
-            pattern={"^[0-9#\\.]+$"}
             required
           />
         </Holds>
@@ -124,7 +123,6 @@ export function NewCostCodeForm({
             onChange={(e) => {
               setCcDescription(e.target.value);
             }}
-            pattern={"^[0-9#\\.]+$"}
             required
           />
         </Holds>
