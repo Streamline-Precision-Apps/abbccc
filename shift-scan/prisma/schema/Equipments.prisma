@@ -1,0 +1,69 @@
+// This collection stores information about all company equipment. It includes a wide range of items such as company vehicles, trailers, handheld equipment, and heavy machinery. The purpose is to keep track of all assets the company owns and maintains.
+model Equipment {
+    id                     String          @id @default(cuid())
+    qrId                   String          @unique // temporary id, generating specific unique qr code
+    jobsiteId              String? // show location of equipment
+    name                   String
+    description            String
+    equipmentTag           EquipmentTags   @default(EQUIPMENT)
+    lastInspection         DateTime?
+    lastRepair             DateTime?
+    status                 EquipmentStatus @default(OPERATIONAL)
+    createdAt              DateTime        @default(now())
+    updatedAt              DateTime        @updatedAt
+    make                   String?
+    model                  String?
+    year                   String?
+    licensePlate           String?
+    registrationExpiration DateTime?
+    mileage                Int?
+    isActive               Boolean         @default(true)
+    inUse                  Boolean         @default(false)
+
+    employeeEquipmentLogs EmployeeEquipmentLogs[]
+    Maintenance           Maintenance[]
+    TascoLogs             TascoLogs[]
+    TruckingLogs          TruckingLogs[]
+    EquipmentHauled       EquipmentHauled[]
+    jobsite               Jobsites?               @relation(fields: [jobsiteId], references: [id], onDelete: Cascade)
+}
+
+// Used in equipment section, admin assets section, maybe the check in the clockout section.
+// tracks notes on the used equipment, who used it, where, the condition its in, and for how long.
+model EmployeeEquipmentLogs {
+    id             Int         @id @default(autoincrement())
+    equipmentId    String
+    jobsiteId      String
+    employeeId     String
+    startTime      DateTime?
+    endTime        DateTime? // if end time is null it is not completed
+    comment        String?
+    createdAt      DateTime    @default(now())
+    updatedAt      DateTime    @updatedAt
+    isSubmitted    Boolean     @default(false) // marks true when form is submitted at end of day
+    status         FormStatus  @default(PENDING) // approving of the form
+    // connections to other tables
+    timeSheetsId   String?
+    tascoLogsId    String? // link to tasco logs IF USED
+    laborLogsId    String?
+    truckingLogsId String?
+    maintenanceId  String?
+    refueled       Refueled[]
+    employee       Users       @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+    Job            Jobsites    @relation(fields: [jobsiteId], references: [qrId])
+    Equipment      Equipment?  @relation(fields: [equipmentId], references: [id])
+    TimeSheets     TimeSheets? @relation(fields: [timeSheetsId], references: [id])
+}
+
+model Refueled {
+    id                      String   @id @default(cuid())
+    date                    DateTime @default(now())
+    employeeEquipmentLogsId Int?
+    truckingLogsId          String?
+    gallonsRefueled         Float?
+
+    EmployeeEquipmentLogs EmployeeEquipmentLogs? @relation(fields: [employeeEquipmentLogsId], references: [id])
+    TruckingLogs          TruckingLogs?          @relation(fields: [truckingLogsId], references: [id])
+    TascoLogs             TascoLogs?             @relation(fields: [tascoLogsId], references: [id])
+    tascoLogsId           String?
+}

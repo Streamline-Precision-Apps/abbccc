@@ -1,0 +1,35 @@
+// Holds a uniquely generated QR code that can be read to distinct jobsite and general jobsite information 
+model Jobsites {
+    id                    String                  @id @default(cuid())
+    qrId                  String                  @unique @default(cuid()) // qr-id
+    isActive              Boolean                 @default(true)
+    status                FormStatus              @default(PENDING)
+    name                  String
+    streetNumber          String?
+    streetName            String?
+    city                  String?
+    state                 String?
+    country               String?
+    description           String
+    comment               String?
+    createdAt             DateTime                @default(now())
+    updatedAt             DateTime                @updatedAt
+    archived              DateTime?
+    address               Addresses[]
+    employeeEquipmentLogs EmployeeEquipmentLogs[]
+    crewjobsites          CrewJobsites[]
+    TimeSheet             TimeSheets[]
+    CCTags                CCTags[]
+    Equipment             Equipment[]
+}
+
+// provides a many to many relationship to crew and jobsite. This enables us to assign a crew to a jobsite which can possible filter out the complexity of costcodes
+model CrewJobsites {
+    id        Int      @id @default(autoincrement())
+    crewId    Int
+    jobsiteId String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    crew      Crews    @relation(fields: [crewId], references: [id])
+    jobsite   Jobsites @relation(fields: [jobsiteId], references: [qrId])
+}

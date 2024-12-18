@@ -1,0 +1,38 @@
+// holds all possible form types
+enum FormType {
+    MEDICAL
+    INSPECTION
+    MANAGER
+    LEAVE
+    SAFETY
+    INJURY
+}
+
+model InjuryForms {
+    id                  Int      @id @default(autoincrement())
+    userId              String
+    submitDate          DateTime @default(now())
+    date                DateTime @db.Date
+    contactedSupervisor Boolean  @default(false)
+    incidentDescription String
+    signature           String?  @db.Text
+    verifyFormSignature Boolean  @default(false)
+    user                Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model timeoffRequestForms {
+    id                 Int        @id @default(autoincrement())
+    date               DateTime
+    requestedStartDate DateTime
+    requestedEndDate   DateTime
+    requestType        String //make enum later
+    comment            String
+    managerComment     String?
+    status             FormStatus @default(PENDING)
+    employeeId         String
+    createdAt          DateTime   @default(now())
+    updatedAt          DateTime   @updatedAt
+    decidedBy          String? // ment to hold the individual who approved the timesheet
+
+    employee Users @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+}
