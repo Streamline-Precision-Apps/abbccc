@@ -13,7 +13,7 @@ What is the generator?
 what is a datasource?
 - datasource - can only have 1 data source
 
-other things to included in the prisma schema are: 
+other things to included in the prisma schema attributes: 
 
 - A model must have an ID
 - @id - this is the id for the model
@@ -21,6 +21,9 @@ other things to included in the prisma schema are:
 - autoincrement() - this is an option for a param within the default
 - uuid() - a uniquely generated string option for the default section mainly used on primary keys
 - @unique - a tag that makes a constraint that the user preference of a user only has one table linked
+- @updatedAt it sets up the current field ayt a new time
+- default(now()) - take sthe time on creation
+
 
 ## Every Fields Type
 All the Field types in prisma are in relation to the database source you use, for example postgres used or has the ability to store data in the form of json. The following are Data types used in Prisma.
@@ -153,6 +156,24 @@ model UserPreference {
 **What is shown here?** 
 - we have an optional connection from the user to a preference on there account
 - a unique constraint that makes only one link to the user and preference
+
+
+### Block level attributes
+- goes inside a curly brace
+
+example
+- @@unique([age, name])
+- @@index([email])
+- @@id([title, authorId]) we must have a unique title and author models
+
+only specified values use an ENUM
+enum Role{
+    BASIC
+    ADMIN
+    EDITOR
+}
+
+
 
 #### Sources
 - [Learn Prisma In 60 Mins - Web Dev Simplified ](https://www.youtube.com/watch?v=RebA5J-rlwg) 
