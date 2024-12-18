@@ -7,49 +7,31 @@ model Users {
     email           String     @unique
     password        String
     signature       String?    @db.Text
-    DOB             String
-    truckView       Boolean
-    tascoView       Boolean
-    laborView       Boolean
-    mechanicView    Boolean
-    permission      Permission
+    DOB             String // used to check for duplicate users - manager can see this under profile
+    truckView       Boolean // view of truck info
+    tascoView       Boolean // view of tasco info
+    laborView       Boolean // view of labor info
+    mechanicView    Boolean // view of mechanic info
+    permission      Permission @default(USER) // sets default permission to user on creation
     image           String?
     activeEmployee  Boolean    @default(true)
     startDate       DateTime?  @default(now())
     terminationDate DateTime?
     accountSetup    Boolean    @default(false)
 
-    passwordResetToken PasswordResetTokens[]
-
-    crewMembers           CrewMembers[]
+    passwordResetToken    PasswordResetTokens[]
     timeSheet             TimeSheets[]
     equipmentLogs         EmployeeEquipmentLogs[]
-    contacts              Contacts[]
-    userSettings          UserSettings[]
-    injuryForms           InjuryForms[]
-    timeoffRequestForms   timeoffRequestForms[]
+    contacts              Contacts?
+    userSettings          UserSettings? // one to one relationship
+    injuryForms           InjuryForms[] // one to many relationship 
+    timeoffRequestForms   timeoffRequestForms[] // one to many relationship
     MaintenanceLogs       MaintenanceLogs[]
     passwordResetTokensId String?
-    // commentsAsUser        managerComments[]       @relation("UserRelation")
-    // commentsAsEmployee    managerComments[]       @relation("ManagerRelation")
+    crews                 Crews[]
+
+    @@unique([firstName, lastName, DOB]) // prevent duplicate users
 }
-
-// what does this table do and how does it work
-// this table compacts the approval status of each form into one table, rather then each form having its own 
-//approval status this will make it easier to aprove or deny all forms at once for a day
-// model managerComments {
-//   id        String     @id @default(cuid())
-//   comment   String?
-//   managerId String
-//   status    FormStatus // pending, approved, denied overall aproval status of each form
-//   userId    String
-//   createdAt DateTime   @default(now())
-//   updatedAt DateTime   @updatedAt
-//   users     Users      @relation("UserRelation", fields: [userId], references: [id])
-//   employee  Users      @relation("ManagerRelation", fields: [managerId], references: [id])
-// }
-
-// provides helpful tags to filter the equipment section, this will help with qr code reading too. 
 
 model UserSettings {
     id               String  @id @default(cuid())
@@ -61,6 +43,8 @@ model UserSettings {
     biometric        Boolean @default(false)
     cameraAccess     Boolean @default(false)
     locationAccess   Boolean @default(false)
+    photoAlbum       Boolean @default(false)
+    cookies          Boolean @default(false)
 
     user Users @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -70,28 +54,11 @@ model Contacts {
     id                     Int      @id @default(autoincrement())
     employeeId             String   @unique
     phoneNumber            String
-    email                  String?
     emergencyContact       String?
     emergencyContactNumber String?
     createdAt              DateTime @default(now())
     updatedAt              DateTime @updatedAt
-    user                   Users    @relation(fields: [employeeId], references: [id], onDelete: Cascade)
-}
-
-// Address Assigner makes a many to many relation ship from employees to there address
-
-// the purpose of the address table is to hold all addresses of sites, employees, and other data necessary for app, potetially using geolocation to access sites down the line. 
-model Addresses {
-    id        Int      @id @default(autoincrement())
-    address   String
-    city      String
-    state     String
-    zipCode   Int
-    country   String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    jobsite Jobsites[]
+    user                   Users?   @relation(fields: [employeeId], references: [id], onDelete: Cascade)
 }
 
 // password reset token
