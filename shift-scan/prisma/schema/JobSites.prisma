@@ -16,9 +16,9 @@ model Jobsite {
     updatedAt             DateTime                @updatedAt
     archiveDate           DateTime? // when the jobsite was archived we remove the date to unarchive
     employeeEquipmentLogs EmployeeEquipmentLog[] //connects a jobsite to an equipment log
-    TimeSheets             TimeSheet[] // connects a jobsite to the timesheet
+    timeSheets             TimeSheet[] // connects a jobsite to the timesheet
     CCTags                CCTag[] // a filter for the jobsite by a tag this connects the cost code to the jobsite
-    Equipment             Equipment[] // all equipment on the jobsite 
+    equipment             Equipment[] // all equipment on the jobsite 
 
     @@unique([name, address, city, state]) // unique jobsite so only one is created
     @@index([qrId])

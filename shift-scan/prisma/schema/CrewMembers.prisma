@@ -1,6 +1,6 @@
 // The crew model here pair users to a group that can be used to make a team or a group of people.
 model Crew {
-    id          Int      @id @default(autoincrement())
+    id          String      @id @default(cuid())
     name        String
     leadId      String
     description String

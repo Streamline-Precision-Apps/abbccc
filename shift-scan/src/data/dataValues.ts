@@ -3,218 +3,170 @@ import { Prisma } from "@prisma/client";
 export const now = new Date();
 
 // jobsites
-export const initialJobsites: Prisma.JobsitesCreateInput[] = [
+export const initialJobsites: Prisma.JobsiteCreateInput[] = [
   {
+    id: "1",
     qrId: "j123",
     name: "Jobsite 1",
-    streetNumber: "123",
-    streetName: "Main St",
+    description: "Description for Jobsite 1",
+    address: "123 Main St",
     city: "City",
     state: "State",
+    zipCode: "12345",
     country: "Country",
-    description: "Description for Jobsite 1",
     comment: "Comments for Jobsite 1",
     isActive: true,
     createdAt: new Date(),
     updatedAt: new Date(),
+    employeeEquipmentLogs: {
+      connect: [], // No employeeEquipmentLogs are linked initially
+    },
+    timeSheets: {
+      connect: [], // No timeSheets are linked initially
+    },
     CCTags: {
       connect: [], // No CCTags are linked initially
+    },
+    equipment: {
+      connect: [], // No equipment are linked initially
     },
   },
   {
     qrId: "j234",
     name: "Jobsite 2",
-    streetNumber: "234",
-    streetName: "Second St",
+    description: "Description for Jobsite 2",
+    address: "456 Main St",
     city: "City",
     state: "State",
+    zipCode: "67890",
     country: "Country",
-    description: "Description for Jobsite 2",
     comment: "Comments for Jobsite 2",
     isActive: true,
     createdAt: new Date(),
     updatedAt: new Date(),
+    employeeEquipmentLogs: {
+      connect: [], // No employeeEquipmentLogs are linked initially
+    },
+    timeSheets: {
+      connect: [], // No timeSheets are linked initially
+    },
     CCTags: {
       connect: [], // No CCTags are linked initially
+    },
+    equipment: {
+      connect: [], // No equipment are linked initially
     },
   },
   {
     qrId: "j345",
     name: "Jobsite 3",
-    streetNumber: "345",
-    streetName: "Third St",
+    description: "Description for Jobsite 3",
+    address: "789 Main St",
     city: "City",
     state: "State",
+    zipCode: "12345",
     country: "Country",
-    description: "Description for Jobsite 3",
     comment: "Comments for Jobsite 3",
     isActive: true,
     createdAt: new Date(),
     updatedAt: new Date(),
+    employeeEquipmentLogs: {
+      connect: [], // No employeeEquipmentLogs are linked initially
+    },
+    timeSheets: {
+      connect: [], // No timeSheets are linked initially
+    },
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
-  },
-  {
-    qrId: "j456",
-    name: "Jobsite 4",
-    streetNumber: "456",
-    streetName: "Fourth St",
-    city: "City",
-    state: "State",
-    country: "Country",
-    description: "Description for Jobsite 4",
-    comment: "Comments for Jobsite 4",
-    isActive: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    CCTags: {
-      connect: [], // No CCTags are linked initially
+    equipment: {
+      connect: [], // No equipment are linked initially
     },
-  },
-  {
-    qrId: "j567",
-    name: "Jobsite 5",
-    streetNumber: "567",
-    streetName: "Fifth St",
-    city: "City",
-    state: "State",
-    country: "Country",
-    description: "Description for Jobsite 5",
-    comment: "Comments for Jobsite 5",
-    isActive: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    CCTags: {
-      connect: [], // No CCTags are linked initially
     },
-  },
-];
-
-// time sheets create method
-export const initialTimeSheets: Prisma.TimeSheetsCreateInput[] = [
-  {
-    submitDate: new Date(),
-    date: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(),
-    jobsite: { connect: { qrId: "j123" } },
-    costcode: "#cc123gdj1",
-    startTime: new Date(new Date().setHours(12, 0, 0, 0)).toISOString(),
-    endTime: new Date(new Date().setHours(17, 0, 0, 0)).toISOString(),
-    duration: 4.0,
-    timeSheetComments: "No issues during the shift.",
-    user: { connect: { id: "2" } },
-  },
-  {
-    submitDate: new Date(),
-    date: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(),
-    jobsite: { connect: { qrId: "j123" } },
-    costcode: "#cc123gdj1",
-    startTime: new Date(new Date().setHours(8, 0, 0, 0)).toISOString(),
-    endTime: new Date(new Date().setHours(15, 0, 0, 0)).toISOString(),
-    duration: 6.0,
-    timeSheetComments: "No issues during the shift.",
-    user: { connect: { id: "1" } },
-  },
-  {
-    submitDate: new Date(),
-    date: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(),
-    jobsite: { connect: { qrId: "j123" } },
-    costcode: "#cc123gdj1",
-    startTime: new Date(new Date().setHours(15, 0, 0, 0)).toISOString(),
-    endTime: new Date(new Date().setHours(19, 0, 0, 0)).toISOString(),
-    duration: 4.0,
-    timeSheetComments: "No issues during the shift.",
-    user: { connect: { id: "1" } },
-  },
-  {
-    submitDate: new Date("2024-07-30"),
-    date: new Date("2024-07-30T00:00:00.000Z").toISOString(),
-    jobsite: { connect: { qrId: "j123" } },
-    costcode: "#cc123gdj1",
-    startTime: new Date("2024-07-30T15:00:00.000Z").toISOString(),
-    endTime: new Date("2024-07-30T19:00:00.000Z").toISOString(),
-    duration: 4.0,
-    timeSheetComments: "No issues during the shift.",
-    user: { connect: { id: "1" } },
-  },
+    {
+      qrId: "j456",
+      name: "Jobsite 4",
+      description: "Description for Jobsite 4",
+      address: "101 Main St",
+      city: "City",
+      state: "State",
+      zipCode: "12345",
+      country: "Country",
+      comment: "Comments for Jobsite 4",
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      employeeEquipmentLogs: {
+        connect: [], // No employeeEquipmentLogs are linked initially
+      },
+      timeSheets: {
+        connect: [], // No timeSheets are linked initially
+      },
+      CCTags: {
+        connect: [], // No CCTags are linked initially
+      },
+      equipment: {
+        connect: [], // No equipment are linked initially
+      },
+    },
+    {
+      qrId: "j567",
+      name: "Jobsite 5",
+      description: "Description for Jobsite 5",
+      address: "102 Main St",
+      city: "City",
+      state: "State",
+      zipCode: "12345",
+      country: "Country",
+      comment: "Comments for Jobsite 5",
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      employeeEquipmentLogs: {
+        connect: [], // No employeeEquipmentLogs are linked initially
+      },
+      timeSheets: {
+        connect: [], // No timeSheets are linked initially
+      },
+      CCTags: {
+        connect: [], // No CCTags are linked initially
+      },
+      equipment: {
+        connect: [], // No equipment are linked initially
+      },
+    },
 ];
 
 // intaializing crew
-export const initialCrews: Prisma.CrewsCreateInput[] = [
+export const initialCrews: Prisma.CrewCreateInput[] = [
   {
     name: "Jessica's Crew",
+    leadId: "1",
     description: "General Contrator Crew",
     createdAt: new Date(),
     updatedAt: new Date(),
+    users: { connect: [
+      { id: "1" },
+      { id: "2" },
+      { id: "3" },
+    ] },
   },
   {
     name: "Devun's Crew",
+    leadId: "7",
     description: "A Computer Science and App development Crew",
     createdAt: new Date(),
     updatedAt: new Date(),
-  },
-  {
-    name: "Dustin's Crew",
-    description: "Trucking Crew",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    name: "Seth's Crew",
-    description: "Fabrication Crew",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-];
-
-// initializing crew members
-export const initialCrewMembers: Prisma.CrewMembersCreateInput[] = [
-  {
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    user: { connect: { id: "1" } },
-    crew: { connect: { id: 1 } },
-    supervisor: true,
-  },
-  {
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    user: { connect: { id: "7" } },
-    crew: { connect: { id: 2 } },
-    supervisor: true,
-  },
-  {
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    user: { connect: { id: "8" } },
-    crew: { connect: { id: 2 } },
-    supervisor: false,
-  },
-  {
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    user: { connect: { id: "9" } },
-    crew: { connect: { id: 2 } },
-    supervisor: false,
-  },
-  {
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    user: { connect: { id: "2" } },
-    crew: { connect: { id: 1 } },
-    supervisor: false,
-  },
-  {
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    user: { connect: { id: "3" } },
-    crew: { connect: { id: 1 } },
-    supervisor: false,
+    users: { connect: [
+      { id: "7" },
+      { id: "8" },
+      { id: "9" },
+    ] },
   },
 ];
 
 // initializing users
-export const initialUsers: Prisma.UsersCreateInput[] = [
+export const initialUsers: Prisma.UserCreateInput[] = [
   {
     id: "1",
     firstName: "Jessica",
@@ -357,7 +309,6 @@ export const initialContacts: Prisma.ContactsCreateInput[] = [
   {
     user: { connect: { id: "1" } },
     phoneNumber: "123-456-7890",
-    email: "jessica.rabbit@example.com",
     emergencyContact: "Roger Rabbit",
     emergencyContactNumber: "098-765-4321",
     createdAt: "2022-01-01T00:00:00.000Z",
@@ -366,7 +317,6 @@ export const initialContacts: Prisma.ContactsCreateInput[] = [
   {
     user: { connect: { id: "2" } },
     phoneNumber: "987-654-3210",
-    email: "john.doe@example.com",
     emergencyContact: "Jane Doe",
     emergencyContactNumber: "123-456-7890",
     createdAt: "2021-06-01T00:00:00.000Z",
@@ -375,7 +325,6 @@ export const initialContacts: Prisma.ContactsCreateInput[] = [
   {
     user: { connect: { id: "3" } },
     phoneNumber: "987-654-3210",
-    email: "jane.doe@example.com",
     emergencyContact: "John Doe",
     emergencyContactNumber: "123-456-7890",
     createdAt: "2021-06-01T00:00:00.000Z",
@@ -384,7 +333,6 @@ export const initialContacts: Prisma.ContactsCreateInput[] = [
   {
     user: { connect: { id: "4" } },
     phoneNumber: "183-416-7890",
-    email: "buggsbunny@example.com",
     emergencyContact: "Lola Bunny",
     emergencyContactNumber: "218-765-4021",
     createdAt: "2022-01-01T00:00:00.000Z",
@@ -393,7 +341,6 @@ export const initialContacts: Prisma.ContactsCreateInput[] = [
   {
     user: { connect: { id: "5" } },
     phoneNumber: "987-654-3210",
-    email: "lolabunny@example.com",
     emergencyContact: "Buggs Bunny",
     emergencyContactNumber: "098-745-4121",
     createdAt: "2022-01-01T00:00:00.000Z",
@@ -402,7 +349,6 @@ export const initialContacts: Prisma.ContactsCreateInput[] = [
   {
     user: { connect: { id: "6" } },
     phoneNumber: "987-654-3210",
-    email: "jessica.rabbit@example.com",
     emergencyContact: "Jessica Rabbit",
     emergencyContactNumber: "098-765-4321",
     createdAt: "2021-06-01T00:00:00.000Z",
@@ -411,7 +357,6 @@ export const initialContacts: Prisma.ContactsCreateInput[] = [
   {
     user: { connect: { id: "7" } },
     phoneNumber: "987-654-3210",
-    email: "wife.@example.com",
     emergencyContact: "your wife",
     emergencyContactNumber: "218-765-4311",
     createdAt: "2021-06-01T00:00:00.000Z",
@@ -420,7 +365,6 @@ export const initialContacts: Prisma.ContactsCreateInput[] = [
   {
     user: { connect: { id: "8" } },
     phoneNumber: "987-654-3210",
-    email: "wife.@example.com",
     emergencyContact: "your wife",
     emergencyContactNumber: "218-765-4311",
     createdAt: "2021-06-01T00:00:00.000Z",
@@ -429,7 +373,6 @@ export const initialContacts: Prisma.ContactsCreateInput[] = [
   {
     user: { connect: { id: "9" } },
     phoneNumber: "987-654-3210",
-    email: "wife.@example.com",
     emergencyContact: "your wife",
     emergencyContactNumber: "218-765-4311",
     createdAt: "2021-06-01T00:00:00.000Z",
@@ -437,530 +380,533 @@ export const initialContacts: Prisma.ContactsCreateInput[] = [
   },
 ];
 // initializing cost codes
-export const initialCostCodes: Prisma.CostCodesCreateInput[] = [
+export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
   {
+    id: "1",
     name: "#01.10",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Engineering Material",
-    type: "engineer",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "2",
     name: "#01.20",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Engineering Labor",
-    type: "engineer",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "3",
     name: "#01.30",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Engineering Sub",
-    type: "engineer",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "4",
     name: "#01.40",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Engineering Equipment",
-    type: "Engineer",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "5",
     name: "#02.10",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Earth Material",
-    type: "Earth",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "6",
     name: "#02.20",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Earth Labor",
-    type: "Earth",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "7",
     name: "#02.30",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Earth Sub",
-    type: "Earth",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "8",
     name: "#02.40",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Earth Equipment",
-    type: "Earth",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "9",
     name: "#03.10",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Concrete Material",
-    type: "Concrete",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "10",
     name: "#03.20",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Concrete Labor",
-    type: "Concrete",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "11",
     name: "#03.30",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Concrete Sub",
-    type: "Concrete",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "12",
     name: "#03.40",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Concrete Equipment",
-    type: "",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "13",
     name: "#04.10",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Finishes Material",
-    type: "Finishes",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "14",
     name: "#04.20",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Finishes Labor",
-    type: "Finishes",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "15",
     name: "#04.30",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Finishes Sub",
-    type: "Finishes",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "16",
     name: "#04.40",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Finishes Equipment",
-    type: "Finishes",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "17",
     name: "#05.10",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Steel Material",
-    type: "Steel",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "18",
     name: "#05.20",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Steel Labor",
-    type: "Steel",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "19",
     name: "#05.30",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Steel Sub",
-    type: "Steel",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "20",
     name: "#05.40",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Steel Equipment",
-    type: "Steel",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "21",
     name: "#06.10",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Wood Material",
-    type: "Wood",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "22",
     name: "#06.20",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Wood Labor",
-    type: "Wood",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "23",
     name: "#06.30",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Wood Sub",
-    type: "Wood",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "24",
     name: "#06.40",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Wood Equipment",
-    type: "Wood",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "25",
     name: "#07.10",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Insulation Material",
-    type: "Insulation",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "26",
     name: "#07.20",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Insulation Labor",
-    type: "Insulation",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "27",
     name: "#07.30",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Insulation Sub",
-    type: "Insulation",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "28",
     name: "#07.40",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Insulation Equipment",
-    type: "Insulation",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "29",
     name: "#08.10",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Door and Window Material",
-    type: "DoorAndWindow",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "30",
     name: "#08.20",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Door and Window labor",
-    type: "DoorAndWindow",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "31",
     name: "#08.30",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Door and Window Sub",
-    type: "DoorAndWindow",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "32",
     name: "#08.40",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Door and Window Equipment",
-    type: "DoorAndWindow",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "33",
     name: "#09.10",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Utilities Material",
-    type: "Utilities",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "34",
     name: "#09.20",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Utilities Labor",
-    type: "Utilities",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "35",
     name: "#09.30",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Utilities Sub",
-    type: "Utilities",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "36",
     name: "#09.40",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Utilities Equipment",
-    type: "Utilities",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "37",
     name: "#10.10",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Process Material",
-    type: "Process",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "38",
     name: "#10.20",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Process Labor",
-    type: "Process",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "39",
     name: "#10.30",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Process Sub",
-    type: "Process",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "40",
     name: "#10.40",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Process Equipment",
-    type: "Process",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "41",
     name: "#11.10",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Shop Material",
-    type: "Shop",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "42",
     name: "#11.20",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Shop Labor",
-    type: "Shop",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "43",
     name: "#11.30",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Shop Sub",
-    type: "Shop",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "44",
     name: "#11.40",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Shop Equipment",
-    type: "Shop",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "45",
     name: "#12.10",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Pipe Material",
-    type: "Pipe",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "46",
     name: "#12.20",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Pipe Labor",
-    type: "Pipe",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "47",
     name: "#12.30",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Pipe Sub",
-    type: "Pipe",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "48",
     name: "#12.40",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Pipe Equipment",
-    type: "Pipe",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "49",
     name: "#13.10",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Trucking Material",
-    type: "Trucking",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "50",
     name: "#13.20",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Trucking Labor",
-    type: "Trucking",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "51",
     name: "#13.30",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Trucking Sub",
-    type: "Trucking",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
+    id: "52",
     name: "#13.40",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Trucking Equipment",
-    type: "Trucking",
+    CCTags: {
+      connect: [], // No CCTags are linked initially
+    },
   },
 ];
 
-export const initialCCTags: Prisma.CCTagsCreateInput[] = [
+export const initialCCTags: Prisma.CCTagCreateInput[] = [
   {
     name: "All",
-    jobsite: {
+    jobsites: {
       connect: [
         { qrId: "j123" },
         { qrId: "j234" },
@@ -969,54 +915,9 @@ export const initialCCTags: Prisma.CCTagsCreateInput[] = [
         { qrId: "j567" },
       ],
     },
-    costCode: {
-      connect: Array.from({ length: 52 }, (_, i) => ({ id: i + 1 })),
+    costCodes: {
+      connect: Array.from({ length: 52 }, (_, i) => ({ id: (i + 1).toString() })),
     },
-  },
-];
-
-export const initialCrewJobsites: Prisma.CrewJobsitesCreateInput[] = [
-  {
-    createdAt: "2022-01-01T00:00:00.000Z",
-    updatedAt: "2022-01-01T00:00:00.000Z",
-    crew: { connect: { id: 1 } },
-    jobsite: { connect: { qrId: "j123" } },
-  },
-  {
-    createdAt: "2022-01-01T00:00:00.000Z",
-    updatedAt: "2022-01-01T00:00:00.000Z",
-    crew: { connect: { id: 1 } },
-    jobsite: { connect: { qrId: "j123" } },
-  },
-  {
-    createdAt: "2022-01-01T00:00:00.000Z",
-    updatedAt: "2022-01-01T00:00:00.000Z",
-    crew: { connect: { id: 2 } },
-    jobsite: { connect: { qrId: "j123" } },
-  },
-  {
-    createdAt: "2022-01-01T00:00:00.000Z",
-    updatedAt: "2022-01-01T00:00:00.000Z",
-    crew: { connect: { id: 2 } },
-    jobsite: { connect: { qrId: "j123" } },
-  },
-  {
-    createdAt: "2022-01-01T00:00:00.000Z",
-    updatedAt: "2022-01-01T00:00:00.000Z",
-    crew: { connect: { id: 3 } },
-    jobsite: { connect: { qrId: "j123" } },
-  },
-  {
-    createdAt: "2022-01-01T00:00:00.000Z",
-    updatedAt: "2022-01-01T00:00:00.000Z",
-    crew: { connect: { id: 4 } },
-    jobsite: { connect: { qrId: "j123" } },
-  },
-  {
-    createdAt: "2022-01-01T00:00:00.000Z",
-    updatedAt: "2022-01-01T00:00:00.000Z",
-    crew: { connect: { id: 3 } },
-    jobsite: { connect: { qrId: "j123" } },
   },
 ];
 
@@ -1026,10 +927,10 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     qrId: "EQ-100000",
     name: "ALKOTA PRESSURE WASHER",
     description: "",
-    status: "OPERATIONAL",
     equipmentTag: "EQUIPMENT",
     lastInspection: new Date(now),
     lastRepair: new Date(now),
+    status: "OPERATIONAL",
     createdAt: new Date(now),
     updatedAt: new Date(now),
     make: "",
@@ -1039,6 +940,9 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
+    jobsite: {
+      connect: { id: "1" },
+    },
   },
   {
     qrId: "EQ-100001",
@@ -1057,6 +961,9 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
+    jobsite: {
+      connect: { id: "1" },
+    },
   },
   {
     qrId: "EQ-100002",
@@ -1075,6 +982,9 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
+    jobsite: {
+      connect: { id: "1" },
+    },
   },
   {
     qrId: "EQ-100003",
@@ -1093,6 +1003,9 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
+    jobsite: {
+      connect: { id: "1" },
+    },
   },
   {
     qrId: "EQ-100004",
@@ -1111,6 +1024,9 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
+    jobsite: {
+      connect: { id: "1" },
+    },
   },
   {
     qrId: "EQ-100005",
@@ -1129,6 +1045,9 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
+    jobsite: {
+      connect: { id: "1" },
+    },
   },
   {
     qrId: "EQ-100006",
@@ -1147,6 +1066,9 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
+    jobsite: {
+      connect: { id: "1" },
+    },
   },
   {
     qrId: "EQ-100007",
@@ -1165,6 +1087,9 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
+    jobsite: {
+      connect: { id: "1" },
+    },
   },
   {
     qrId: "EQ-100008",
@@ -1183,6 +1108,9 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
+    jobsite: {
+      connect: { id: "1" },
+    },
   },
   {
     qrId: "EQ-100009",
@@ -1201,6 +1129,9 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
+    jobsite: {
+      connect: { id: "1" },
+    },
   },
   {
     qrId: "EQ-100010",
@@ -1219,6 +1150,9 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
+    jobsite: {
+      connect: { id: "1" },
+    },
   },
   {
     qrId: "EQ-100011",
@@ -1237,6 +1171,9 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
+    jobsite: {
+      connect: { id: "1" },
+    },
   },
   {
     qrId: "EQ-100012",
@@ -1255,6 +1192,9 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
+    jobsite: {
+      connect: { id: "1" },
+    },
   },
 
   {
@@ -1274,6 +1214,9 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
+    jobsite: {
+      connect: { id: "1" },
+    },
   },
   {
     qrId: "EQ-100014",
@@ -1292,6 +1235,9 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
+    jobsite: {
+      connect: { id: "1" },
+    },
   },
   {
     qrId: "EQ-100015",
@@ -1310,6 +1256,9 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
+    jobsite: {
+      connect: { id: "1" },
+    },
   },
   {
     qrId: "EQ-100016",
@@ -1328,6 +1277,9 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
+    jobsite: {
+      connect: { id: "1" },
+    },
   },
   {
     qrId: "EQ-100017",
@@ -1346,6 +1298,9 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
+    jobsite: {
+      connect: { id: "1" },
+    },
   },
   {
     qrId: "EQ-100018",
@@ -1364,6 +1319,9 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
+    jobsite: {
+      connect: { id: "1" },
+    },
   },
   {
     qrId: "EQ-100019",
@@ -1382,6 +1340,9 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
+    jobsite: {
+      connect: { id: "1" },
+    },
   },
   {
     qrId: "EQ-100020",
@@ -1400,6 +1361,9 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
+    jobsite: {
+      connect: { id: "1" },
+    },
   },
   {
     qrId: "EQ-100021",
@@ -1418,6 +1382,9 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
+    jobsite: {
+      connect: { id: "1" },
+    },
   },
   {
     qrId: "EQ-100022",
@@ -1436,6 +1403,9 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
+    jobsite: {
+      connect: { id: "1" },
+    },
   },
   {
     qrId: "EQ-100023",
@@ -1454,6 +1424,9 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
+    jobsite: {
+      connect: { id: "1" },
+    },
   },
   {
     qrId: "EQ-100024",
@@ -1472,6 +1445,9 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
+    jobsite: {
+      connect: { id: "1" },
+    },
   },
   {
     qrId: "EQ-100025",
@@ -1490,6 +1466,9 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
+    jobsite: {
+      connect: { id: "1" },
+    },
   },
   {
     qrId: "EQ-100026",
@@ -1508,6 +1487,9 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
+    jobsite: {
+      connect: { id: "1" },
+    },
   },
   // start page 3 of equipment assignar
   // trailers
@@ -1528,6 +1510,9 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: new Date("2018-05-30T00:00:00.000Z"),
     mileage: null,
     isActive: true,
+    jobsite: {
+      connect: { id: "1" },
+    },
   },
 
   // vehicles
@@ -1548,6 +1533,9 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: new Date("2019-06-25T00:00:00.000Z"),
     mileage: 800,
     isActive: true,
+    jobsite: {
+      connect: { id: "1" },
+    },
   },
   {
     qrId: "EQ-123456",
@@ -1566,6 +1554,9 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: new Date("2021-01-20T00:00:00.000Z"),
     mileage: 1200,
     isActive: true,
+    jobsite: {
+      connect: { id: "1" },
+    },
   },
 ];
 

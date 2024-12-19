@@ -2,7 +2,6 @@
 model Equipment {
     id                     String          @id @default(cuid())
     qrId                   String          @unique // temporary id, generating specific unique qr code
-    jobsiteId              String? // show location of equipment
     name                   String
     description            String
     equipmentTag           EquipmentTags   @default(EQUIPMENT)
@@ -19,6 +18,7 @@ model Equipment {
     mileage                Int?
     isActive               Boolean         @default(true)
     inUse                  Boolean         @default(false)
+    jobsiteId              String? // show location of equipment
 
     employeeEquipmentLogs EmployeeEquipmentLog[]
     Maintenance           Maintenance[]
@@ -33,7 +33,7 @@ model Equipment {
 // Used in equipment section, admin assets section, maybe the check in the clockout section.
 // tracks notes on the used equipment, who used it, where, the condition its in, and for how long.
 model EmployeeEquipmentLog {
-    id             Int         @id @default(autoincrement())
+    id             String         @id @default(cuid())
     equipmentId    String
     jobsiteId      String
     employeeId     String
@@ -60,7 +60,7 @@ model EmployeeEquipmentLog {
 model Refueled {
     id                      String   @id @default(cuid())
     date                    DateTime @default(now())
-    employeeEquipmentLogId Int?
+    employeeEquipmentLogId String?
     truckingLogId          String?
     gallonsRefueled         Float?
 
