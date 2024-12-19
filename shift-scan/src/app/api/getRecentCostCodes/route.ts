@@ -12,7 +12,7 @@ export async function GET() {
   }
 
   // Fetch the 5 most recent unique cost codes for the authenticated user
-  const recentCostCodes = await prisma.timeSheets.groupBy({
+  const recentCostCodes = await prisma.timeSheet.groupBy({
     by: ['costcode'], 
     where: {
       userId: userId,

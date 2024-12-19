@@ -20,7 +20,7 @@ export async function GET(
   try {
     let timesheets;
     if (filter === "DENIED") {
-      timesheets = await prisma.timeSheets.findMany({
+      timesheets = await prisma.timeSheet.findMany({
         where: {
           userId: employee,
           status: "DENIED",
@@ -28,7 +28,7 @@ export async function GET(
         orderBy: { date: "desc" },
       });
     } else if (filter === "PENDING") {
-      timesheets = await prisma.timeSheets.findMany({
+      timesheets = await prisma.timeSheet.findMany({
         where: {
           userId: employee,
           status: "PENDING",
@@ -36,7 +36,7 @@ export async function GET(
         orderBy: { date: "desc" },
       });
     } else if (filter === "APPROVED") {
-      timesheets = await prisma.timeSheets.findMany({
+      timesheets = await prisma.timeSheet.findMany({
         where: {
           userId: employee,
           status: "APPROVED",
@@ -44,7 +44,7 @@ export async function GET(
         orderBy: { date: "desc" },
       });
     } else {
-      timesheets = await prisma.timeSheets.findMany({
+      timesheets = await prisma.timeSheet.findMany({
         where: {
           userId: employee,
         },

@@ -52,7 +52,7 @@ const providers: Provider[] = [
       const passwords = credentials?.password as string;
 
       // Replace this with your own authentication logic
-      const user = await prisma.users.findUnique({
+      const user = await prisma.user.findUnique({
         where: { username: username },
       });
 

@@ -199,7 +199,7 @@ export const EmployeeTimeSheets = () => {
                 timesheetData={timesheets}
                 edit={edit}
                 costcodesData={costcodesData}
-                jobsitesData={jobsitesData}
+                jobsiteData={jobsitesData}
                 equipmentData={filteredEquipmentData}
                 handleFormSubmit={handleFormSubmitFromEditWork}
                 setEdit={setEdit}

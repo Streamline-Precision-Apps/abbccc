@@ -22,7 +22,7 @@ import { revalidatePath } from "next/cache";
 // Get all jobsite forms
 export async function getJobsiteForms() {
   try {
-    const jobsiteForms = await prisma.jobsites.findMany();
+    const jobsiteForms = await prisma.jobsite.findMany();
     console.log(jobsiteForms);
     return jobsiteForms;
   } catch (error) {
@@ -34,7 +34,7 @@ export async function getJobsiteForms() {
 // Check if jobsite exists
 export async function jobExists(id: string) {
   try {
-    const jobsite = await prisma.jobsites.findUnique({
+    const jobsite = await prisma.jobsite.findUnique({
       where: { id: id },
     });
     return jobsite;
@@ -51,7 +51,7 @@ export async function createJobsite(formData: FormData) {
     console.log(formData);
     const id = formData.get("id");
     const idString = id?.toString() ?? "";
-    const verify = prisma.jobsites.findMany({
+    const verify = prisma.jobsite.findMany({
       where: { id: idString },
     });
     // Check if jobsite already exists
@@ -60,19 +60,17 @@ export async function createJobsite(formData: FormData) {
       throw new Error("Jobsite already exists.");
     }
 
-    await prisma.jobsites.create({
+    await prisma.jobsite.create({
       data: {
         name: formData.get("name") as string,
-        streetNumber: (formData.get("streetNumber") as string) || null,
-        streetName: formData.get("streetName") as string,
-        city: formData.get("city") as string,
-        state: (formData.get("state") as string) || null,
-        country: formData.get("country") as string,
         description: formData.get("description") as string,
-        comment: (formData.get("jobsite_comment") as string) || null,
         isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        address: formData.get("address") as string,
+        city: formData.get("city") as string,
+        state: (formData.get("state") as string),
+        zipCode: formData.get("zipCode") as string,
+        country: formData.get("country") as string,
+        comment: (formData.get("jobsite_comment") as string) || null,
       },
     });
     console.log("Jobsite created successfully.");
@@ -88,7 +86,7 @@ export async function createJobsite(formData: FormData) {
 // Delete jobsite by id
 export async function deleteJobsite(id: string) {
   try {
-    await prisma.jobsites.delete({
+    await prisma.jobsite.delete({
       where: { id: id },
     });
     console.log("Jobsite deleted successfully.");

@@ -18,7 +18,7 @@ export async function GET(req: Request) {
     let employees: SearchUser[] = [];
 
     if (filter === "inactive") {
-      employees = await prisma.users.findMany({
+      employees = await prisma.user.findMany({
         where: {
           terminationDate: { not: null },
         },
@@ -38,7 +38,7 @@ export async function GET(req: Request) {
         },
       });
     } else if (filter === "active") {
-      employees = await prisma.users.findMany({
+      employees = await prisma.user.findMany({
         where: {
           terminationDate: null,
         },
@@ -58,7 +58,7 @@ export async function GET(req: Request) {
         },
       });
     } else if (filter === "laborers") {
-      employees = await prisma.users.findMany({
+      employees = await prisma.user.findMany({
         where: {
           laborView: true,
         },
@@ -78,7 +78,7 @@ export async function GET(req: Request) {
         },
       });
     } else if (filter === "truckers") {
-      employees = await prisma.users.findMany({
+      employees = await prisma.user.findMany({
         where: {
           truckView: true,
         },
@@ -98,7 +98,7 @@ export async function GET(req: Request) {
         },
       });
     } else if (filter === "tasco") {
-      employees = await prisma.users.findMany({
+      employees = await prisma.user.findMany({
         where: {
           tascoView: true,
         },
@@ -118,7 +118,7 @@ export async function GET(req: Request) {
         },
       });
     } else if (filter === "mechanics") {
-      employees = await prisma.users.findMany({
+      employees = await prisma.user.findMany({
         where: {
           mechanicView: true,
         },
@@ -138,7 +138,7 @@ export async function GET(req: Request) {
         },
       });
     } else if (filter === "managers") {
-      employees = await prisma.users.findMany({
+      employees = await prisma.user.findMany({
         where: {
           permission: "MANAGER",
         },
@@ -158,7 +158,7 @@ export async function GET(req: Request) {
         },
       });
     } else if (filter === "supervisors") {
-      employees = await prisma.users.findMany({
+      employees = await prisma.user.findMany({
         select: {
           id: true,
           firstName: true,
@@ -178,7 +178,7 @@ export async function GET(req: Request) {
         (employee) => employee.permission !== "USER"
       );
     } else if (filter === "admins") {
-      employees = await prisma.users.findMany({
+      employees = await prisma.user.findMany({
         where: {
           permission: "ADMIN",
         },
@@ -198,7 +198,7 @@ export async function GET(req: Request) {
         },
       });
     } else if (filter === "superAdmins") {
-      employees = await prisma.users.findMany({
+      employees = await prisma.user.findMany({
         where: {
           permission: "SUPERADMIN",
         },
@@ -218,7 +218,7 @@ export async function GET(req: Request) {
         },
       });
     } else if (filter === "recentlyHired") {
-      employees = await prisma.users.findMany({
+      employees = await prisma.user.findMany({
         select: {
           id: true,
           firstName: true,
@@ -238,7 +238,7 @@ export async function GET(req: Request) {
         },
       });
     } else {
-      employees = await prisma.users.findMany({
+      employees = await prisma.user.findMany({
         select: {
           id: true,
           firstName: true,

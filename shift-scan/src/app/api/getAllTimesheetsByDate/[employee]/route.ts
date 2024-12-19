@@ -64,7 +64,7 @@ export async function GET(
 
     console.log("eqSheets:", eqSheets[0]?.startTime);
 
-    const timesheets = await prisma.timeSheets.findMany({
+    const timesheets = await prisma.timeSheet.findMany({
       where: {
         userId: employee,
         date: {

@@ -1,12 +1,12 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { FormStatus } from "@prisma/client";
+import { FormStatus, TimeOffRequestType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 export async function getUserSentContent(user_id: string | undefined) {
   if (!user_id) return;
-  const sentContent = await prisma.timeoffRequestForms.findMany({
+  const sentContent = await prisma.timeOffRequestForm.findMany({
     where: {
       employeeId: user_id,
     },
@@ -19,13 +19,12 @@ export async function createLeaveRequest(formData: FormData) {
   try {
     console.log(formData);
     const userId = formData.get("userId") as string;
-    const requestType = formData.get("requestType") as string;
+    const requestType = formData.get("requestType") as TimeOffRequestType;
     const status = formData.get("status") as string;
 
     if (status) {
-      const result = await prisma.timeoffRequestForms.create({
+      const result = await prisma.timeOffRequestForm.create({
         data: {
-          date: new Date(formData.get("date") as string),
           requestedStartDate: new Date(formData.get("startDate") as string),
           requestedEndDate: new Date(formData.get("endDate") as string),
           requestType: requestType,
@@ -48,7 +47,7 @@ export async function EditLeaveRequest(formData: FormData) {
     console.log(formData);
     const id = formData.get("id") as string;
 
-    const requestType = formData.get("requestType") as string;
+    const requestType = formData.get("requestType") as TimeOffRequestType;
 
     const today = new Date();
 
@@ -61,10 +60,9 @@ export async function EditLeaveRequest(formData: FormData) {
 
     console.log(startDate, endDate);
 
-    await prisma.timeoffRequestForms.update({
+    await prisma.timeOffRequestForm.update({
       where: { id: Number(id) },
       data: {
-        date: new Date(today),
         requestedStartDate: startDate,
         requestedEndDate: endDate,
         requestType: requestType,
@@ -91,7 +89,7 @@ export async function ManagerLeaveRequest(formData: FormData) {
 
     if (id && status && managerComment) {
       // Perform the Prisma update
-      const result = await prisma.timeoffRequestForms.update({
+      const result = await prisma.timeOffRequestForm.update({
         where: { id: Number(id) },
         data: {
           managerComment: managerComment,
@@ -125,7 +123,7 @@ export async function DeleteLeaveRequest(
     const deleteId = Number(id);
 
     // Perform the deletion
-    await prisma.timeoffRequestForms.delete({
+    await prisma.timeOffRequestForm.delete({
       where: {
         id: deleteId,
         employeeId: userId,

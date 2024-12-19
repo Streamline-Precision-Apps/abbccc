@@ -1,22 +1,22 @@
 // Holds a uniquely generated QR code that can be read to distinct jobsite and general jobsite information 
 model Jobsite {
-    id                    String                  @id @default(cuid())
-    qrId                  String                  @unique @default(cuid()) // qr-id
+    id                    String                 @id @default(cuid())
+    qrId                  String                 @unique @default(cuid()) // qr-id
     name                  String
     description           String // what the job is about
-    isActive              Boolean                 @default(true)
-    status                FormStatus              @default(PENDING)
+    isActive              Boolean                @default(true)
+    status                FormStatus             @default(PENDING)
     address               String
     city                  String
     state                 String
     zipCode               String
-    country               String                  @default("US")
+    country               String                 @default("US")
     comment               String? // for creation reasons to show admins why it was created
-    createdAt             DateTime                @default(now())
-    updatedAt             DateTime                @updatedAt
+    createdAt             DateTime               @default(now())
+    updatedAt             DateTime               @updatedAt
     archiveDate           DateTime? // when the jobsite was archived we remove the date to unarchive
     employeeEquipmentLogs EmployeeEquipmentLog[] //connects a jobsite to an equipment log
-    timeSheets             TimeSheet[] // connects a jobsite to the timesheet
+    timeSheets            TimeSheet[] // connects a jobsite to the timesheet
     CCTags                CCTag[] // a filter for the jobsite by a tag this connects the cost code to the jobsite
     equipment             Equipment[] // all equipment on the jobsite 
 

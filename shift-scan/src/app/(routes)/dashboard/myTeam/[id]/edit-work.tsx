@@ -18,7 +18,7 @@ import { CostCodes, Jobsites, EquipmentLog, Equipment } from "@/lib/types";
 type EditWorkProps = {
   edit: boolean;
   costcodesData: CostCodes[];
-  jobsitesData: Jobsites[];
+  jobsiteData: Jobsites[];
   timesheetData: TimeSheet[];
   equipmentData: EquipmentLog[];
   handleFormSubmit: (
@@ -60,7 +60,7 @@ export type TimeSheet = {
 
 const EditWork = ({
   timesheetData,
-  jobsitesData,
+  jobsiteData: jobsiteData,
   costcodesData,
   edit,
   equipment,
@@ -273,8 +273,8 @@ const EditWork = ({
       if (date) {
         const equipmentLogs = await fetchEq(employeeId, date);
         const filteredEquipmentLogs = equipmentLogs
-          .filter((log) => log.duration !== null && log.Equipment !== null)
-          .map((log) => ({
+          .filter((log: EquipmentLog) => log.duration !== null && log.Equipment !== null)
+          .map((log: EquipmentLog) => ({
             ...log,
             duration: log.duration ? log.duration.toString() : "0",
             id: Number(log.id),
@@ -284,20 +284,6 @@ const EditWork = ({
               name: log.Equipment?.name ?? "Unknown",
               qrId: log.Equipment?.qrId ?? "Unknown",
               description: log.Equipment?.description ?? "",
-              status: log.Equipment?.status ?? "UNKNOWN",
-              equipmentTag: log.Equipment?.equipmentTag ?? "UNKNOWN",
-              lastInspection: log.Equipment?.lastInspection ?? null,
-              lastRepair: log.Equipment?.lastRepair ?? null,
-              createdAt: log.Equipment?.createdAt ?? new Date(),
-              updatedAt: log.Equipment?.updatedAt ?? new Date(),
-              make: log.Equipment?.make ?? "Unknown",
-              model: log.Equipment?.model ?? "Unknown",
-              year: log.Equipment?.year ?? "Unknown",
-              licensePlate: log.Equipment?.licensePlate ?? "Unknown",
-              registrationExpiration:
-                log.Equipment?.registrationExpiration ?? null,
-              mileage: log.Equipment?.mileage ?? 0,
-              isActive: log.Equipment?.isActive ?? false,
             },
           }));
         setEquipmentLogs(filteredEquipmentLogs);
@@ -465,7 +451,7 @@ const EditWork = ({
                     }
                     disabled={!edit}
                   >
-                    {jobsitesData.map((jobsite) => (
+                    {jobsiteData.map((jobsite) => (
                       <option key={jobsite.id} value={jobsite.id}>
                         {jobsite.name}
                       </option>

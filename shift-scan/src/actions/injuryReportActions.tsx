@@ -1,11 +1,11 @@
 "use server";
 import prisma from "@/lib/prisma";
 
-// Get all injuryForms
+// Get all injuryForm
 export async function getInjuryForms() {
-  const injuryForms = prisma.injuryForms.findMany();
-  console.log(injuryForms);
-  return injuryForms;
+  const injuryForm = prisma.injuryForm.findMany();
+  console.log(injuryForm);
+  return injuryForm;
 }
 
 // Create injuryForm
@@ -23,7 +23,7 @@ export async function CreateInjuryForm(formData: FormData) {
       return date;
     };
 
-    await prisma.injuryForms.create({
+    await prisma.injuryForm.create({
       data: {
         submitDate: parseDate(
           new Date().toISOString().split("T")[0]
@@ -49,7 +49,7 @@ export async function CreateInjuryForm(formData: FormData) {
 // Delete injuryForm by id
 // will be used by Admin only
 export async function deleteInjuryForm(id: number) {
-  await prisma.injuryForms.delete({
+  await prisma.injuryForm.delete({
     where: { id },
   });
 }
