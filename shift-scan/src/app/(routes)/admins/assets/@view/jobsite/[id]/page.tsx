@@ -15,11 +15,11 @@ import { EditJobsitesFooter } from "./_component/jobsiteFooter";
 // Define the Zod schema for Jobsites
 const JobsiteSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  streetNumber: z.string().optional(),
-  streetName: z.string().optional(),
+  address: z.string().optional(),
   city: z.string().optional(),
   state: z.string().optional(),
   country: z.string().optional(),
+  zipCode: z.string().optional(),
   description: z.string().min(1, "Description is required"),
   comment: z.string().optional(),
 });
@@ -30,11 +30,11 @@ export default function Jobsites({ params }: { params: { id: string } }) {
   const { setNotification } = useNotification();
   const [formState, setFormState] = useState({
     name: "",
-    streetName: "",
-    streetNumber: "",
+    address: "",
     city: "",
     state: "",
     country: "",
+    zipCode: "",
     description: "",
     comment: "",
   });
@@ -48,21 +48,21 @@ export default function Jobsites({ params }: { params: { id: string } }) {
         const data = await response.json();
         setFormState({
           name: data.name,
-          streetName: data.streetName,
-          streetNumber: data.streetNumber,
+          address: data.address,
           city: data.city,
           state: data.state,
           country: data.country,
+          zipCode: data.zipCode,
           description: data.description,
           comment: data.comment,
         });
         setOriginalState({
           name: data.name,
-          streetName: data.streetName,
-          streetNumber: data.streetNumber,
+          address: data.address,
           city: data.city,
           state: data.state,
           country: data.country,
+          zipCode: data.zipCode,
           description: data.description,
           comment: data.comment,
         });
@@ -98,11 +98,11 @@ export default function Jobsites({ params }: { params: { id: string } }) {
         const formData = new FormData();
         formData.append("id", JobsitesId);
         formData.append("name", formState.name);
-        formData.append("streetName", formState.streetName);
-        formData.append("streetNumber", formState.streetNumber);
+        formData.append("address", formState.address);
         formData.append("city", formState.city);
         formData.append("state", formState.state);
         formData.append("country", formState.country);
+        formData.append("zipCode", formState.zipCode);
         formData.append("description", formState.description);
         formData.append("comment", formState.comment);
 
