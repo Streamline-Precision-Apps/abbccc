@@ -249,13 +249,11 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
   const createNewTimesheet = async () => {
     const CreateTimesheetResponse = await CreateTimesheet(
       params.employee,
-      dateByFilter,
-      "LABOR" // hardcoded for now until we have a way to select the type
+      dateByFilter
     );
     if (!CreateTimesheetResponse) {
       return;
     }
-
     setOriginalTimeSheets(
       (prev) => [...prev, CreateTimesheetResponse] as TimeSheetView[]
     );

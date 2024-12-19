@@ -18,9 +18,9 @@ export async function GET(
   const filter = url.searchParams.get("filter");
 
   try {
-    let timesheets;
+    let timeSheet;
     if (filter === "DENIED") {
-      timesheets = await prisma.timeSheets.findMany({
+      timeSheet = await prisma.timeSheet.findMany({
         where: {
           userId: employee,
           status: "DENIED",
@@ -28,7 +28,7 @@ export async function GET(
         orderBy: { date: "desc" },
       });
     } else if (filter === "PENDING") {
-      timesheets = await prisma.timeSheets.findMany({
+      timeSheet = await prisma.timeSheet.findMany({
         where: {
           userId: employee,
           status: "PENDING",
@@ -36,7 +36,7 @@ export async function GET(
         orderBy: { date: "desc" },
       });
     } else if (filter === "APPROVED") {
-      timesheets = await prisma.timeSheets.findMany({
+      timeSheet = await prisma.timeSheet.findMany({
         where: {
           userId: employee,
           status: "APPROVED",
@@ -44,30 +44,30 @@ export async function GET(
         orderBy: { date: "desc" },
       });
     } else {
-      timesheets = await prisma.timeSheets.findMany({
+      timeSheet = await prisma.timeSheet.findMany({
         where: {
           userId: employee,
         },
         orderBy: { date: "desc" },
       });
     }
-    // Process to group timesheets by day
-    const uniqueTimesheets = [];
+    // Process to group timeSheet by day
+    const uniquetimeSheet = [];
     const seenDates = new Set();
 
-    for (const timesheet of timesheets) {
+    for (const timesheet of timeSheet) {
       const dateOnly = new Date(timesheet.date).toISOString().split("T")[0];
       if (!seenDates.has(dateOnly)) {
-        uniqueTimesheets.push(timesheet);
+        uniquetimeSheet.push(timesheet);
         seenDates.add(dateOnly);
       }
     }
 
-    return NextResponse.json({ timesheets: uniqueTimesheets });
+    return NextResponse.json({ timeSheet: uniquetimeSheet });
   } catch (error) {
     console.error("Error fetching Time Sheets:", error);
     return NextResponse.json(
-      { error: "Failed to fetch timesheets" },
+      { error: "Failed to fetch timeSheet" },
       { status: 500 }
     );
   }

@@ -36,6 +36,7 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
   const [toggledManager, setToggledManagers] = useState<
     Record<string, boolean>
   >({});
+  const [initialTeamLead, setInitialTeamLead] = useState<string | null>(null);
   const [teamLead, setTeamLead] = useState<string | null>(null);
   const [hasChanged, setHasChanged] = useState(false);
   const { setNotification } = useNotification();
@@ -45,7 +46,10 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
   useEffect(() => {
     // Check for changes whenever `usersInCrew` updates
     setHasChanged(!arraysAreEqual(usersInCrew, initialUsersInCrew));
-  }, [usersInCrew, initialUsersInCrew]);
+    if (teamLead !== null) {
+      setHasChanged(!(teamLead === initialTeamLead));
+    }
+  }, [usersInCrew, initialUsersInCrew, teamLead, initialTeamLead]);
 
   // Fetch all employees
   useEffect(() => {
@@ -77,6 +81,8 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
         setInitialUsersInCrew(data.users);
         setCrewName(data.crewName);
         setCrewDescription(data.crewDescription);
+        const teamLeadId = data.leadId;
+        setInitialTeamLead(teamLeadId);
 
         // Initialize toggledUsers state
         const toggled = data.users.reduce(
@@ -90,7 +96,7 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
 
         // Find and set the supervisor (team lead)
         const supervisor = data.users.find(
-          (user: User) => user.permission === "SUPERVISOR"
+          (user: User) => user.id === teamLeadId
         );
         if (supervisor) {
           setTeamLead(supervisor.id);
