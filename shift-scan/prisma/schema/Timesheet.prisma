@@ -12,6 +12,7 @@ model TimeSheet {
     endTime       DateTime?
     comment       String? // comment for reporting what they did that day
     statusComment String? // manager comment for reporting why they approved or rejected the timesheet
+    location      String? // location of clock in work
     status        FormStatus @default(PENDING) // approving of the form
     workType      WorkType // this was created to help filter the timesheet by work type
 
@@ -20,8 +21,8 @@ model TimeSheet {
     maintenanceLogs       MaintenanceLog[]
     truckingLogs          TruckingLog[]
     employeeEquipmentLogs EmployeeEquipmentLog[]
-    user                  User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
-    jobsite               Jobsite                 @relation(fields: [jobsiteId], references: [qrId])
+    user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    jobsite               Jobsite                @relation(fields: [jobsiteId], references: [qrId])
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
@@ -31,7 +32,7 @@ model TimeSheet {
 // logs to keep track of what each engineer has done.
 model MaintenanceLog {
     id            String    @id @default(uuid())
-    timeSheetId  String
+    timeSheetId   String
     userId        String
     maintenanceId String
     startTime     DateTime
@@ -55,7 +56,7 @@ model Maintenance {
     delay              DateTime? // this shows priority as delay if the date has not passed
     repaired           Boolean   @default(false) // finished request are marked as repaired
 
-    equipment       Equipment         @relation(fields: [equipmentId], references: [id])
+    equipment       Equipment        @relation(fields: [equipmentId], references: [id])
     maintenanceLogs MaintenanceLog[]
 }
 
@@ -82,14 +83,14 @@ model TascoLog {
     refueled     Refueled[] // link to refueled
 
     // connections to other tables
-    equipment    Equipment?  @relation(fields: [equipmentId], references: [id])
-    timeSheet    TimeSheet?  @relation(fields: [timeSheetId], references: [id])
+    equipment Equipment? @relation(fields: [equipmentId], references: [id])
+    timeSheet TimeSheet? @relation(fields: [timeSheetId], references: [id])
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
 // logs to keep track of what each truckDriver has done.
 model TruckingLog {
-    id              String            @id @default(uuid())
+    id              String    @id @default(uuid())
     taskName        String? // auto default to drive or operator
     equipmentId     String? // this is the equipment id vehicle id
     timeSheetId     String?
@@ -99,15 +100,15 @@ model TruckingLog {
     endTime         DateTime?
     netWeight       Float?
     comment         String?
-    createdAt       DateTime          @default(now())
+    createdAt       DateTime  @default(now())
 
     stateMileage    StateMileage[]
     Refueled        Refueled[]
     Material        Material[]
     EquipmentHauled EquipmentHauled[]
 
-    equipment    Equipment?  @relation(fields: [equipmentId], references: [id])
-    timeSheet   TimeSheet? @relation(fields: [timeSheetId], references: [id])
+    equipment Equipment? @relation(fields: [equipmentId], references: [id])
+    timeSheet TimeSheet? @relation(fields: [timeSheetId], references: [id])
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
@@ -116,7 +117,7 @@ model TruckingLog {
 
 model StateMileage {
     id               String   @id @default(uuid())
-    truckingLogId   String
+    truckingLogId    String
     state            String
     stateLineMileage Int
     createdAt        DateTime @default(now())
@@ -126,22 +127,22 @@ model StateMileage {
 
 //--------------------------------------------------------------------------------------------------------------------------------
 model Material {
-    id             String   @id @default(uuid())
-    truckingLogId  String
-    name           String
+    id            String   @id @default(uuid())
+    truckingLogId String
+    name          String
     // quantity       Int?  //potential to show quantity of material later
-    createdAt      DateTime @default(now())
+    createdAt     DateTime @default(now())
 
     truckingLog TruckingLog? @relation(fields: [truckingLogId], references: [id])
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
 model EquipmentHauled {
-    id             String   @id @default(uuid())
-    truckingLogId  String
-    equipmentId    String
-    createdAt      DateTime @default(now())
+    id            String   @id @default(uuid())
+    truckingLogId String
+    equipmentId   String
+    createdAt     DateTime @default(now())
 
-    truckingLog    TruckingLog?  @relation(fields: [truckingLogId], references: [id])
-    equipment      Equipment?    @relation(fields: [equipmentId], references: [id])
+    truckingLog TruckingLog? @relation(fields: [truckingLogId], references: [id])
+    equipment   Equipment?   @relation(fields: [equipmentId], references: [id])
 }
