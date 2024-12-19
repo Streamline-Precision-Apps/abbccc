@@ -346,6 +346,7 @@
     "Logs-Fetch": "Error al obtener registros:"
 },
 "Hamburger": {
+    "Saving": "Guardando Cambios",
     "loading": "Cargando...",
     "NewPassword": "Nueva Contraseña",
     "ConfirmPassword": "Confirmar Nueva Contraseña",
