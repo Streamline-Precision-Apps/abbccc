@@ -25,9 +25,9 @@ model TimeSheet {
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
-/**
- * This section collects data from each Engineer to create a timesheet for the day and demonstrate the work they have done
- */
+
+//This section collects data from each Engineer to create a timesheet for the day and demonstrate the work they have done
+
 // logs to keep track of what each engineer has done.
 model MaintenanceLog {
     id            String    @id @default(uuid())
@@ -60,9 +60,9 @@ model Maintenance {
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
-/**
- * This section collects data from each Tasco Worker to create a timesheet for the day and demonstrate the work they have done
- */
+
+// This section collects data from each Tasco Worker to create a timesheet for the day and demonstrate the work they have done
+
 // keeps track of All tasco work in one management table 
 model TascoLog {
     id           String     @id @default(uuid())
@@ -111,9 +111,9 @@ model TruckingLog {
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
-/**
- * This section collects data from each Tasco Worker to create a timesheet for the day and demonstrate the work they have done
- */
+
+// This section collects data from each Tasco Worker to create a timesheet for the day and demonstrate the work they have done
+
 model StateMileage {
     id               String   @id @default(uuid())
     truckingLogId   String

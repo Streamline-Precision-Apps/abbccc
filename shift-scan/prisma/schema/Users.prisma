@@ -52,7 +52,7 @@ model UserSettings {
 
 //Employee contact information section. Purpose get ahold of them or their emergency contact. 
 model Contacts {
-    id                     Int      @id @default(autoincrement())
+    id                     String      @id @default(cuid())
     employeeId             String   @unique
     phoneNumber            String
     emergencyContact       String?
