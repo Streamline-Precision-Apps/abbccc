@@ -20,16 +20,9 @@ type TimeSheet = {
   vehicleId?: number | null;
   startTime?: Date | string;
   endTime?: Date | string | null;
-  duration?: number | null;
-  startingMileage?: number | null;
-  endingMileage?: number | null;
-  leftIdaho?: boolean | null;
-  equipmentHauled?: string | null;
-  materialsHauled?: string | null;
-  hauledLoadsQuantity?: number | null;
-  refuelingGallons?: number | null;
   timeSheetComments?: string | null;
   status?: string;
+  workType?: string;
 };
 
 export const Filter = ({ params }: { params: { employee: string } }) => {
@@ -67,7 +60,7 @@ export const Filter = ({ params }: { params: { employee: string } }) => {
     };
 
     fetchTimesheets();
-  }, [filter, params.employee]);
+  }, [filter, params.employee, t]);
 
   const handleFilterChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newFilter = event.target.value.toUpperCase();

@@ -2,11 +2,9 @@
 import { useEffect, useState } from "react";
 import { ReusableViewLayout } from "../../[employee]/_components/reusableViewLayout";
 import { Holds } from "@/components/(reusable)/holds";
-
 import { Grids } from "@/components/(reusable)/grids";
 import { Texts } from "@/components/(reusable)/texts";
 import { Images } from "@/components/(reusable)/images";
-
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
 import { deleteCrewAction, updateCrew } from "@/actions/adminActions";
@@ -38,6 +36,7 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
   const [toggledManager, setToggledManagers] = useState<
     Record<string, boolean>
   >({});
+  const [initialTeamLead, setInitialTeamLead] = useState<string | null>(null);
   const [teamLead, setTeamLead] = useState<string | null>(null);
   const [hasChanged, setHasChanged] = useState(false);
   const { setNotification } = useNotification();
@@ -47,7 +46,10 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
   useEffect(() => {
     // Check for changes whenever `usersInCrew` updates
     setHasChanged(!arraysAreEqual(usersInCrew, initialUsersInCrew));
-  }, [usersInCrew, initialUsersInCrew]);
+    if (teamLead !== null) {
+      setHasChanged(!(teamLead === initialTeamLead));
+    }
+  }, [usersInCrew, initialUsersInCrew, teamLead, initialTeamLead]);
 
   // Fetch all employees
   useEffect(() => {
@@ -75,13 +77,15 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
         const data = await response.json();
 
         // Update crew state
-        setUsersInCrew(data.crew);
-        setInitialUsersInCrew(data.crew);
+        setUsersInCrew(data.users);
+        setInitialUsersInCrew(data.users);
         setCrewName(data.crewName);
         setCrewDescription(data.crewDescription);
+        const teamLeadId = data.leadId;
+        setInitialTeamLead(teamLeadId);
 
         // Initialize toggledUsers state
-        const toggled = data.crew.reduce(
+        const toggled = data.users.reduce(
           (acc: Record<string, boolean>, user: User) => {
             acc[user.id] = true; // All crew members are toggled initially
             return acc;
@@ -91,8 +95,8 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
         setToggledUsers(toggled);
 
         // Find and set the supervisor (team lead)
-        const supervisor = data.crew.find(
-          (user: User) => user.supervisor === true
+        const supervisor = data.users.find(
+          (user: User) => user.id === teamLeadId
         );
         if (supervisor) {
           setTeamLead(supervisor.id);
@@ -103,13 +107,15 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
 
         setLoading(false);
       } catch (error) {
-        console.error(`${t("FailedToFetch")} ${t("CrewMembers")}`, error);
+        console.error(`Failed to fetch crew members`, error);
         setLoading(false);
       }
     };
 
-    fetchCrewMembers(params.crew);
-  }, [params.crew, t]);
+    if (params.crew) {
+      fetchCrewMembers(params.crew);
+    }
+  }, [params.crew]);
 
   // Add or remove users from crew based on toggle
   const toggleUser = (id: string) => {
@@ -170,6 +176,7 @@ export default function ViewCrew({ params }: { params: { crew: string } }) {
       formData.append("crewId", crewId);
       formData.append("crewName", crewName.trim());
       formData.append("crewDescription", crewDescription.trim());
+      formData.append("initialUsersInCrew", JSON.stringify(initialUsersInCrew));
       formData.append("crew", JSON.stringify(usersInCrew)); // Array of users in the crew
       formData.append("teamLead", teamLead || ""); // Optional field
 

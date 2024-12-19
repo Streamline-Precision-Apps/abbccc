@@ -14,14 +14,14 @@ import { z } from "zod";
 import { useTranslations } from "next-intl";
 
 const costCodeSchema = z.object({
-  id: z.number(),
+  id: z.string(),
   name: z.string().min(1, "Name is required"),
   description: z.string().optional(),
 });
 
 const tagsSchema = z.array(
   z.object({
-    id: z.number(),
+    id: z.string(),
     name: z.string().min(1, "Tag name is required"),
   })
 );
@@ -35,7 +35,7 @@ export default function UpdateCostCodes({
   const t = useTranslations("Admins");
   const [initialCostcodeName, setInitialCostCodeName] = useState<string>("");
   const [initialDescription, setInitialDescription] = useState<string>("");
-  const [costcodeId, setCostCodeId] = useState<number>(0);
+  const [costcodeId, setCostCodeId] = useState<string>("");
   const [costcodeName, setCostCodeName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [initialSelectedTags, setinitialSelectedTags] = useState<CCTags[]>([]);
@@ -122,14 +122,12 @@ export default function UpdateCostCodes({
       );
 
       const requestData = new FormData();
-      requestData.append("costcodeId", formData.id.toString());
+      requestData.append("costcodeId", formData.id);
       requestData.append("name", formData.name);
       requestData.append("description", formData.description || "");
 
-      tagsToAdd.forEach((tag) => requestData.append("tags", tag.id.toString()));
-      tagsToRemove.forEach((tag) =>
-        requestData.append("removeTags", tag.id.toString())
-      );
+      tagsToAdd.forEach((tag) => requestData.append("tags", tag.id));
+      tagsToRemove.forEach((tag) => requestData.append("removeTags", tag.id));
 
       const response = await changeCostCodeTags(requestData);
       if (response) {

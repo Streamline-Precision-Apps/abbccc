@@ -5,7 +5,7 @@ import { revalidateTag } from "next/cache";
 
 export async function GET() {
   try {
-    const userCrewData = await prisma.crews.findMany({
+    const userCrewData = await prisma.crew.findMany({
       orderBy: {
         name: "asc",
       },
