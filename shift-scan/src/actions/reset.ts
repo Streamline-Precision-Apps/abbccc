@@ -1,6 +1,5 @@
 "use server";
 import prisma from "@/lib/prisma";
-import { sendPasswordResetEmail } from "@/lib/mail";
 import { generatePasswordResetToken } from "@/lib/tokens";
 
 export const Reset = async (formData: FormData) => {
@@ -9,7 +8,7 @@ export const Reset = async (formData: FormData) => {
   if (!email) {
     return null;
   }
-  const user = await prisma.users.findUnique({
+  const user = await prisma.user.findUnique({
     where: {
       email,
     },
@@ -34,7 +33,7 @@ export async function resetUserPassword(formData: FormData) {
   const token = formData.get("token") as string;
   const newPassword = formData.get("password") as string;
   // Fetch the password reset token
-  const verify = await prisma.passwordResetTokens.findUnique({
+  const verify = await prisma.passwordResetToken.findUnique({
     where: { token },
   });
 
@@ -48,7 +47,7 @@ export async function resetUserPassword(formData: FormData) {
   }
 
   // Fetch the user by email
-  const user = await prisma.users.findUnique({
+  const user = await prisma.user.findUnique({
     where: { email: verify.email },
   });
 
@@ -57,15 +56,19 @@ export async function resetUserPassword(formData: FormData) {
   }
 
   // delete the token
-  await prisma.passwordResetTokens.delete({
+  await prisma.passwordResetToken.delete({
     where: { id: verify.id },
   });
 
   // Update the user's password in the database
-  await prisma.users.update({
+  await prisma.user.update({
     where: { id: user.id },
     data: {
       password: newPassword,
     },
   });
 }
+function sendPasswordResetEmail(email: any, token: any) {
+  throw new Error("Function not implemented.");
+}
+

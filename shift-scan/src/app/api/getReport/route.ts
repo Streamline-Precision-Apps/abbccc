@@ -21,7 +21,7 @@ export async function GET(req: Request) {
       const end = new Date(endDate);
       end.setUTCHours(23, 59, 59, 999);
 
-      const timesheetData = await prisma.timeSheets.findMany({
+      const timesheetData = await prisma.timeSheet.findMany({
         where: {
           date: {
             gte: start,

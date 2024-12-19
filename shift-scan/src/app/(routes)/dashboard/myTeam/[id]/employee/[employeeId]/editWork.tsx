@@ -53,7 +53,7 @@ const EditWorkPropsSchema = z.object({
       description: z.string(),
     })
   ),
-  jobsitesData: z.array(
+  jobsiteData: z.array(
     z.object({
       id: z.string(),
       name: z.string(),
@@ -95,7 +95,7 @@ export type TimeSheet = z.infer<typeof TimeSheetSchema>;
 
 const EditWork = ({
   timesheetData,
-  jobsitesData,
+  jobsiteData: jobsiteData,
   costcodesData,
   edit,
   equipment,
@@ -108,7 +108,7 @@ const EditWork = ({
   try {
     EditWorkPropsSchema.parse({
       timesheetData,
-      jobsitesData,
+      jobsiteData: jobsiteData,
       costcodesData,
       edit,
       equipment,
@@ -528,7 +528,7 @@ const EditWork = ({
                           }
                           disabled={!edit}
                         >
-                          {jobsitesData.map((jobsite) => (
+                          {jobsiteData.map((jobsite) => (
                             <option key={jobsite.id} value={jobsite.id}>
                               {jobsite.name}
                             </option>

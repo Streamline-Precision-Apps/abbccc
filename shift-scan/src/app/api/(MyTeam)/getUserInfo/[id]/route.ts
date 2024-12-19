@@ -17,7 +17,7 @@ export async function GET(req: NextRequest, { params }: { params: Params }) {
   }
 
   // Fetch the employee and related contact information
-  const employee = await prisma.users.findUnique({
+  const employee = await prisma.user.findUnique({
     where: {
       id: userId,
     },
@@ -25,14 +25,14 @@ export async function GET(req: NextRequest, { params }: { params: Params }) {
       id: true,
       firstName: true,
       lastName: true,
+      email: true,
       DOB: true,
       image: true,
-      contacts: {
+      contact: {
         select: {
           phoneNumber: true,
           emergencyContact: true,
           emergencyContactNumber: true,
-          email: true,
         },
       },
       // Exclude fields like password, signature, etc.

@@ -1,5 +1,6 @@
 "use server";
 import prisma from "@/lib/prisma";
+import { WorkType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 // Parse UTC function to handle timezone conversion
@@ -23,7 +24,7 @@ const parseUTCNoTz = (timestamp: string): Date => {
 };
 // Get all TimeSheets
 export async function getTimeSheetsbyId() {
-  const timesheets = prisma.timeSheets.findMany();
+  const timesheets = prisma.timeSheet.findMany();
   console.log(timesheets);
   return timesheets;
 }
@@ -36,7 +37,7 @@ export async function fetchTimesheets(employeeId: string, date: string) {
   const endOfDay = new Date(date);
   endOfDay.setUTCHours(23, 59, 59, 999);
 
-  const timeSheets = await prisma.timeSheets.findMany({
+  const timeSheet = await prisma.timeSheet.findMany({
     where: {
       userId: employeeId,
       date: {
@@ -46,8 +47,8 @@ export async function fetchTimesheets(employeeId: string, date: string) {
     },
   });
 
-  console.log("\n\n\nTimeSheets:", timeSheets);
-  return timeSheets;
+  console.log("\n\n\nTimeSheets:", timeSheet);
+  return timeSheet;
 }
 
 // Create TimeSheet
@@ -57,27 +58,16 @@ export async function CreateTimeSheet(formData: FormData) {
     console.log("entered CreateTimeSheet:");
     console.log("formData:", formData);
 
-    const newTimeSheet = await prisma.timeSheets.create({
+    const newTimeSheet = await prisma.timeSheet.create({
       data: {
-        submitDate: parseUTC(
-          formData.get("submitDate") as string
-        ).toISOString(),
+        submitDate: parseUTC(formData.get("submitDate") as string).toISOString(),
         date: parseUTC(formData.get("date") as string).toISOString(),
         jobsite: { connect: { qrId: formData.get("jobsiteId") as string } },
         costcode: formData.get("costcode") as string,
-        vehicleId: String(formData.get("vehicleId")),
-        startTime: parseUTC(formData.get("startTime") as string).toISOString(),
-        endTime: null,
-        duration: null,
-        startingMileage: Number(formData.get("startingMileage")),
-        endingMileage: null,
-        leftIdaho: null,
-        equipmentHauled: null,
-        materialsHauled: null,
-        hauledLoadsQuantity: null,
-        refuelingGallons: null,
-        timeSheetComments: formData.get("timeSheetComments") as string,
+        comment: formData.get("timeSheetComments") as string,
         user: { connect: { id: formData.get("userId") as string } },
+        startTime: formData.get("startTime") as string,
+        workType: formData.get("workType") as WorkType,
       },
     });
 
@@ -101,47 +91,21 @@ export async function AddWholeTimeSheet(formData: FormData) {
     console.log("Creating Timesheet...");
     console.log(formData);
 
-    const newTimeSheet = await prisma.timeSheets.create({
+    const newTimeSheet = await prisma.timeSheet.create({
       data: {
-        submitDate: parseUTC(
-          formData.get("submitDate") as string
-        ).toISOString(),
+        submitDate: parseUTC(formData.get("submitDate") as string).toISOString(),
         date: parseUTC(formData.get("date") as string).toISOString(),
         jobsite: { connect: { qrId: formData.get("jobsiteId") as string } },
         costcode: formData.get("costcode") as string,
-        vehicleId: String(formData.get("vehicleId")),
         startTime: parseUTC(formData.get("startTime") as string).toISOString(),
         endTime: formData.get("endTime")
           ? parseUTC(formData.get("endTime") as string).toISOString()
           : null,
-        duration: formData.get("duration")
-          ? Number(formData.get("duration"))
-          : null,
-        startingMileage: formData.get("startingMileage")
-          ? Number(formData.get("startingMileage"))
-          : null,
-        endingMileage: formData.get("endingMileage")
-          ? Number(formData.get("endingMileage"))
-          : null,
-        leftIdaho: formData.get("leftIdaho")
-          ? Boolean(formData.get("leftIdaho"))
-          : null,
-        equipmentHauled: formData.get("equipmentHauled")
-          ? (formData.get("equipmentHauled") as string)
-          : null,
-        materialsHauled: formData.get("materialsHauled")
-          ? (formData.get("materialsHauled") as string)
-          : null,
-        hauledLoadsQuantity: formData.get("hauledLoadsQuantity")
-          ? Number(formData.get("hauledLoadsQuantity"))
-          : null,
-        refuelingGallons: formData.get("refuelingGallons")
-          ? Number(formData.get("refuelingGallons"))
-          : null,
-        timeSheetComments: formData.get("timeSheetComments")
+        comment: formData.get("timeSheetComments")
           ? (formData.get("timeSheetComments") as string)
           : null,
         user: { connect: { id: formData.get("userId") as string } },
+        workType: formData.get("workType") as WorkType, // Add this line
       },
     });
     console.log("Timesheet created successfully.");
@@ -155,28 +119,29 @@ export async function AddWholeTimeSheet(formData: FormData) {
 export async function editTimeSheet(formData: FormData) {
   console.log("Editing Timesheet...");
   console.log(formData);
-
-  const id = formData.get("id");
+  try {
+  const id = formData.get("id") as string;
   const costcode = formData.get("costcode");
   const endTime = parseUTC(formData.get("endTime") as string);
   const startTime = parseUTC(formData.get("startTime") as string);
-  const duration = (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60);
 
   if (!id) {
     throw new Error("ID is required");
   }
 
-  const timeSheet = await prisma.timeSheets.update({
-    where: { id: Number(id) },
+  const timeSheet = await prisma.timeSheet.update({
+    where: { id: id },
     data: {
       costcode: costcode as string,
       startTime: startTime.toISOString(),
       endTime: endTime.toISOString(),
-      duration: Number(duration),
     },
   });
 
   console.log(timeSheet);
+} catch (error) {
+  console.error("Error editing timesheet:", error);
+}
 }
 
 // provides a way to update a timesheet and will give supervisor access to all timesheets
@@ -186,13 +151,13 @@ export async function updateTimeSheet(formData: FormData) {
     console.log("formData:", formData);
 
     // Get the ID from formData
-    const id = Number(formData.get("id"));
-    if (isNaN(id)) {
+    const id = formData.get("id") as string;
+    if (!id) {
       throw new Error("Invalid timesheet ID");
     }
 
     // Fetch the startTime from the database to ensure correct calculations
-    const start = await prisma.timeSheets.findUnique({
+    const start = await prisma.timeSheet.findUnique({
       where: { id },
       select: { startTime: true },
     });
@@ -213,28 +178,11 @@ export async function updateTimeSheet(formData: FormData) {
     const endTime = parseUTC(endTimeString);
     console.log("endTime:", endTime);
 
-    // Calculate the duration between start and end times
-    const durationMs = endTime.getTime() - startTime.getTime();
-    const durationHours = durationMs / (1000 * 60 * 60); // Convert ms to hours
-    const duration = Number.isNaN(durationHours) ? null : durationHours;
-
-    console.log(
-      `{endTime}: ${endTime} - {startTime}: ${startTime} = duration: ${durationHours}`
-    );
-
     // Update the timesheet with new data
-    const updatedTimeSheet = await prisma.timeSheets.update({
+    const updatedTimeSheet = await prisma.timeSheet.update({
       where: { id },
       data: {
         endTime: endTime.toISOString(),
-        duration: duration,
-        endingMileage: Number(formData.get("endingMileage")) || null,
-        leftIdaho: Boolean(formData.get("leftIdaho")) || null,
-        equipmentHauled: (formData.get("equipmentHauled") as string) || null,
-        materialsHauled: (formData.get("materialsHauled") as string) || null,
-        hauledLoadsQuantity:
-          Number(formData.get("hauledLoadsQuantity")) || null,
-        refuelingGallons: Number(formData.get("refuelingGallons")) || null,
       },
     });
 
@@ -253,10 +201,10 @@ export async function updateTimeSheetBySwitch(formData: FormData) {
     console.log("formData:", formData);
     console.log("switch jobsite, updating Timesheet...");
 
-    const id = Number(formData.get("id"));
+    const id = formData.get("id") as string;
 
     // Fetch the startTime from the database to prevent irregular dates
-    const start = await prisma.timeSheets.findUnique({
+    const start = await prisma.timeSheet.findUnique({
       where: { id },
       select: { startTime: true },
     });
@@ -270,25 +218,11 @@ export async function updateTimeSheetBySwitch(formData: FormData) {
     console.log("Updating Timesheet...");
     const endTime = parseUTC(formData.get("endTime") as string);
 
-    const durationMs = endTime.getTime() - new Date(startTime).getTime();
-    const durationHours = durationMs / (1000 * 60 * 60);
-
-    const duration = durationHours;
-
-    const updatedTimeSheet = await prisma.timeSheets.update({
+    const updatedTimeSheet = await prisma.timeSheet.update({
       where: { id },
       data: {
         endTime: parseUTC(formData.get("endTime") as string).toISOString(),
-        duration: Number(duration) || null,
-        startingMileage: Number(formData.get("startingMileage")) || null,
-        endingMileage: Number(formData.get("endingMileage")) || null,
-        leftIdaho: Boolean(formData.get("leftIdaho")) || null,
-        equipmentHauled: (formData.get("equipmentHauled") as string) || null,
-        materialsHauled: (formData.get("materialsHauled") as string) || null,
-        hauledLoadsQuantity:
-          Number(formData.get("hauledLoadsQuantity")) || null,
-        refuelingGallons: Number(formData.get("refuelingGallons")) || null,
-        timeSheetComments: formData.get("timeSheetComments") as string,
+        comment: formData.get("timeSheetComments") as string,
       },
     });
     console.log("Timesheet updated successfully.");
@@ -309,16 +243,16 @@ export async function updateTimeSheetBySwitch(formData: FormData) {
 
 export async function GetAllTimeSheets(date: string) {
   date = new Date(date).toISOString();
-  const timeSheets = await prisma.timeSheets.findMany({
+  const timeSheet = await prisma.timeSheet.findMany({
     where: { date: { equals: date } },
   });
-  return timeSheets;
+  return timeSheet;
 }
 
 // Delete TimeSheet by id
 // will be used by Admin only
-export async function deleteTimeSheet(id: number) {
-  await prisma.timeSheets.delete({
+export async function deleteTimeSheet(id: string) {
+  await prisma.timeSheet.delete({
     where: { id },
   });
 }
@@ -333,7 +267,7 @@ export async function findTimesheetsforDay(formData: FormData) {
   const localDateISO = new Date(dateString).toISOString();
 
   // Query for timesheets where the full ISO string matches
-  const timeSheets = await prisma.timeSheets.findMany({
+  const timeSheet = await prisma.timeSheet.findMany({
     where: {
       userId: id,
       date: {
@@ -342,9 +276,9 @@ export async function findTimesheetsforDay(formData: FormData) {
     },
   });
 
-  if (timeSheets.length === 0) {
+  if (timeSheet.length === 0) {
     return null;
   } else {
-    return timeSheets;
+    return timeSheet;
   }
 }

@@ -11,7 +11,7 @@ export async function GET() {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const jobsiteDetails = await prisma.jobsites.findMany({
+    const jobsiteDetails = await prisma.jobsite.findMany({
         select: {
           id: true,
           qrId: true,

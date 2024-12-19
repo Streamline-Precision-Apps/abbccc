@@ -25,7 +25,7 @@ export async function GET(request: Request) {
             const endDate = new Date(endDateParam);
             endDate.setUTCHours(23, 59, 59, 999);
 
-            timesheets = await prisma.timeSheets.findMany({ 
+            timesheets = await prisma.timeSheet.findMany({ 
                 where: { 
                     userId: userId,
                     date: {
@@ -37,7 +37,7 @@ export async function GET(request: Request) {
             });
         } else {
             // Fetch all timesheets if no date is provided
-            timesheets = await prisma.timeSheets.findMany({ 
+            timesheets = await prisma.timeSheet.findMany({ 
                 where: { 
                     userId: userId,
                 },
