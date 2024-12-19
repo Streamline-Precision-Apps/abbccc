@@ -271,6 +271,7 @@
     "ID": "Id: #"
 },
 "Clock": {
+    "ChangeJobsite": "Change Jobsite",
     "ChangeCostCode": "Change Cost Code",
     "ScanJobSiteOrTruck": "Scan Job Site or Truck",
     "SwitchSites": "Switch Sites",
