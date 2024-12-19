@@ -17,7 +17,7 @@ export async function GET(
 
   try {
     // Fetch employee details
-    const EmployeeData = await prisma.users.findUnique({
+    const EmployeeData = await prisma.user.findUnique({
       where: {
         id: employee.toString(),
       },

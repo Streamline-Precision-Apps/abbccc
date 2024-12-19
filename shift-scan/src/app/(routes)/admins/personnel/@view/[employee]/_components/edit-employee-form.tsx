@@ -275,9 +275,12 @@ export const EditEmployeeForm = ({
                       type="date"
                       name="DOB"
                       value={
-                        new Date(editedData?.DOB || "")
-                          .toISOString()
-                          .split("T")[0]
+                        editedData?.DOB &&
+                        !isNaN(new Date(editedData?.DOB).getTime())
+                          ? new Date(editedData?.DOB)
+                              .toISOString()
+                              .split("T")[0]
+                          : ""
                       }
                       onChange={handleInputChange}
                     />
@@ -501,7 +504,7 @@ export const EditEmployeeForm = ({
               <Labels size={"p6"}>{t("TascoView")}</Labels>
               <Selects
                 name="tascoView"
-                value={editedData?.truckView ? "true" : "false"}
+                value={editedData?.tascoView ? "true" : "false"}
                 onChange={(e) =>
                   setEditedData((prevData) =>
                     prevData

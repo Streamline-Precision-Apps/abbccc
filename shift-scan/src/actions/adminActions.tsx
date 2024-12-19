@@ -434,12 +434,8 @@ export async function saveTimesheet(formData: FormData) {
   }
 }
 
-// Todo: Test Server Action
-export async function CreateTimesheet(
-  userId: string,
-  date: string,
-  workType: WorkType
-) {
+// Todo: update this to make a new timesheet
+export async function CreateTimesheet(userId: string, date: string) {
   try {
     const timesheet = await prisma.timeSheet.create({
       data: {
@@ -451,7 +447,7 @@ export async function CreateTimesheet(
         costcode: "new",
         jobsiteId: "new",
         comment: null,
-        workType: workType,
+        workType: "LABOR" as WorkType,
       },
     });
 
@@ -493,6 +489,7 @@ export async function CreateEquipmentLogs(userId: string, date: string) {
   }
 }
 
+// Todo: Check after testing
 export async function saveEquipmentLogs(formData: FormData) {
   try {
     console.log("Saving equipment logs...");
@@ -523,6 +520,7 @@ export async function saveEquipmentLogs(formData: FormData) {
   }
 }
 
+// Completed: Test
 export async function reactivatePersonnel(formData: FormData) {
   try {
     console.log("Archiving personnel...");
@@ -547,6 +545,7 @@ export async function reactivatePersonnel(formData: FormData) {
   }
 }
 
+//todo: test after sean's changes
 export async function removeProfilePic(formData: FormData) {
   try {
     console.log("Removing profile pic...");
@@ -567,7 +566,7 @@ export async function removeProfilePic(formData: FormData) {
     throw error;
   }
 }
-
+// Completed: Test
 export async function archivePersonnel(formData: FormData) {
   try {
     console.log("Archiving personnel...");
@@ -591,7 +590,8 @@ export async function archivePersonnel(formData: FormData) {
     throw error;
   }
 }
-// Edit personnel info
+
+// Completed: Test
 export async function editPersonnelInfo(formData: FormData) {
   try {
     console.log("Editing personnel info...");
@@ -658,29 +658,6 @@ export async function editPersonnelInfo(formData: FormData) {
     console.error("Error editing personnel info:", error);
     return new Response("Error", { status: 500 });
   }
-}
-
-export async function timecardData(formData: FormData) {
-  const startDate = formData.get("start") as string;
-  const endDate = formData.get("end") as string;
-
-  const startOfDay = new Date(startDate);
-  startOfDay.setUTCHours(0, 0, 0, 0);
-
-  const endOfDay = new Date(endDate);
-  endOfDay.setUTCHours(23, 59, 59, 999);
-
-  const timeSheets = await prisma.timeSheet.findMany({
-    where: {
-      date: {
-        gte: startOfDay.toISOString(),
-        lte: endOfDay.toISOString(),
-      },
-    },
-  });
-
-  console.log("\n\n\nTimeSheets:", timeSheets);
-  return timeSheets;
 }
 
 // Create jobsite admin
