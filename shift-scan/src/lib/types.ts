@@ -1,5 +1,5 @@
 // This file holds all the types that will be used in the app
-import { EquipmentStatus, Permission, Tags } from "@prisma/client"; // i removed the ebnum formSatus hope no breaks
+import { Permission } from "@prisma/client"; // i removed the ebnum formSatus hope no breaks
 // this imports the session types for the app, it works client and server-side
 import { Session } from "next-auth";
 
@@ -14,6 +14,16 @@ import { clockInFormSchema } from "./validation";
 export type clockInForm = z.infer<typeof clockInFormSchema>;
 // -------------------------------------------------------------------------------------
 export type FormStatus = "PENDING" | "APPROVED" | "DENIED";
+
+export type WorkType = "MECHANIC" | "TRUCK_DRIVER" | "LABOR" | "TASCO";
+
+export type EquipmentTags = "TRUCK" | "TRAILER" | "EQUIPMENT" | "VEHICLE";
+
+export type EquipmentStatus =
+  | "OPERATIONAL"
+  | "NEEDS_REPAIR"
+  | "NEEDS_MAINTENANCE";
+
 export type User = {
   id: string;
   username?: string;
@@ -34,7 +44,7 @@ export type Employee = {
   imageUrl?: string | null;
 };
 export type Contact = {
-  id: number;
+  id: string;
   phoneNumber: string;
   email: string;
   emergencyContact: string;
@@ -42,7 +52,7 @@ export type Contact = {
 };
 
 export type UserTraining = {
-  id: number;
+  id: string;
   userId: string;
   trainingId: string;
   isCompleted: boolean;
@@ -81,7 +91,7 @@ export type Logs = {
 };
 
 export type EmployeeEquipmentLogs = {
-  id: number;
+  id: string;
   date: Date;
   equipmentId: string;
   jobsiteId: string;
@@ -134,7 +144,7 @@ export type inboxContent = {
 
 export type receivedContent = {
   employeeName: string | number | readonly string[] | undefined;
-  id: number;
+  id: string;
   date: Date;
   requestedStartDate: Date;
   requestedEndDate: Date;
@@ -149,7 +159,7 @@ export type receivedContent = {
 };
 
 export type sentContent = {
-  id: number;
+  id: string;
   date: Date;
   requestedStartDate: Date;
   requestedEndDate: Date;
@@ -169,7 +179,7 @@ export type TimeSheets = {
 };
 
 export type EquipmentLog = {
-  id: number;
+  id: string;
   employeeId: string;
   duration: string | null;
   Equipment: EquipmentCodes;
@@ -184,7 +194,7 @@ export type EquipmentFetchEQ = {
     updatedAt: Date;
     qrId: string;
     description: string;
-    equipmentTag: Tags;
+    equipmentTag: EquipmentTags;
     inUse: boolean;
   } | null;
   duration: number | null;
@@ -223,7 +233,7 @@ export type JobCode = {
 };
 
 export type CostCodes = {
-  id: number;
+  id: string;
   name: string;
   description: string;
 };
@@ -311,13 +321,13 @@ export type JobsiteWithCost = {
   description?: string | null;
   comment?: string | null;
   costCode: {
-    id: number;
+    id: string;
     name: string;
   };
 };
 
 export type costCodes = {
-  id: number;
+  id: string;
   name: string;
   description: string;
   type: string;
@@ -345,7 +355,7 @@ export type UserProfile = {
 };
 
 export type EmployeeContactInfo = {
-  id: number;
+  id: string;
   employeeId: string;
   phoneNumber: string;
   emergencyContact: string | null;
@@ -359,14 +369,14 @@ export type JobTags = {
   name: string;
 };
 export type costCodesTag = {
-  id: number;
+  id: string;
   name: string;
   description: string;
 };
 
 export type CCTags = {
+  id: string;
   name: string;
-  id: number;
 };
 
 export type AssetJobsite = {

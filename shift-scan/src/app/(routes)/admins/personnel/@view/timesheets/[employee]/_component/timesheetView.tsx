@@ -189,7 +189,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
       }
     });
     fetchTimesheets();
-  }, [dateByFilter, params.employee]);
+  }, [dateByFilter, params.employee, t]);
   //  ---------------------------------------------------------------------------------------
   // fetch all equipment names
   useEffect(() => {
@@ -216,7 +216,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
     };
 
     fetchEquipment();
-  }, []); // Keep the dependencies array empty to run the effect only once
+  }, [t]); // Keep the dependencies array empty to run the effect only once
 
   //  ---------------------------------------------------------------------------------------
   // useeffect are listening to the date and filter changes and then update based on that
@@ -249,7 +249,8 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
   const createNewTimesheet = async () => {
     const CreateTimesheetResponse = await CreateTimesheet(
       params.employee,
-      dateByFilter
+      dateByFilter,
+      "LABOR" // hardcoded for now until we have a way to select the type
     );
     if (!CreateTimesheetResponse) {
       return;
@@ -532,7 +533,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
   const handleDelete = async (id: string, type: string) => {
     try {
       if (type === "timesheet") {
-        const timesheetId = parseInt(id, 10);
+        const timesheetId = id;
         await deleteTimesheet(timesheetId);
         setUserTimeSheets((prev) => prev.filter((sheet) => sheet.id !== id));
         setOriginalTimeSheets((prev) =>
@@ -541,7 +542,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
         setNotification("Timesheet deleted successfully!", "success");
       }
       if (type === "log") {
-        const logId = parseInt(id, 10);
+        const logId = id;
         await deleteLog(logId);
         setEquipmentLogs((prev) =>
           prev.filter((log) => log.id?.toString() !== id)

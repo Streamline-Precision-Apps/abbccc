@@ -119,7 +119,6 @@ export default function CreateTeam() {
         JSON.stringify(
           usersInCrew.map((user) => ({
             id: user.id,
-            supervisor: user.id === teamLead, // Mark team lead as supervisor
           }))
         )
       );
