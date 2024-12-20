@@ -154,6 +154,11 @@
     "Notes": "Notas adicionales"
 },
 "Generator":{
+    "SelectJobsite": "Seleccionar un sitio de trabajo",
+    "EquipmentDescription": "Descripción",
+    "NeedsMaintenance": "Necesita mantenimiento",
+    "Vehicle": "Vehículo",
+    "JobsiteLocation": "¿En qué lugar de trabajo se encuentra este equipo?",
     "SelectCostCodeTags": "Seleccionar una Etiqueta de Costo",
     "SelectTag": "Seleccionar Etiqueta",
     "AddTag": "Agregar",
@@ -197,8 +202,8 @@
     "NamePlaceholder": "Ingrese Nombre del Equipo",
     "DescriptionPlaceholder": "Ingrese una Descripción en menos de 40 caracteres",
     "Status": "Estado del Equipo",
-    "Operational": "OPERATIONAL",
-    "NeedsRepair": "NEEDS REPAIR",
+    "Operational": "Operacional",
+    "NeedsRepair": "Necesita Reparación",
     "Make": "Marca",
     "MakePlaceholder": "Ingrese Marca del Vehículo",
     "Model": "Modelo",
