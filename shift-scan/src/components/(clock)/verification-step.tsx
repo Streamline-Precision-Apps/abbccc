@@ -79,7 +79,6 @@ export default function VerificationStep({
           formData.append("jobsiteId", scanResult?.data || "");
           formData.append("costcode", savedCostCode?.toString() || "");
           formData.append("startTime", new Date().toISOString());
-          formData.append("endTime", "");
 
           // const response = await CreateTimeSheet(formData);
           // const result = { id: response.id.toString() };
@@ -109,10 +108,11 @@ export default function VerificationStep({
         formData.append("jobsiteId", scanResult?.data || "");
         formData.append("costcode", savedCostCode?.toString() || "");
         formData.append("startTime", new Date().toISOString());
+        formData.append("workType", type);
 
-        // const response = await CreateTimeSheet(formData);
-        // const result = { id: response.id.toString() };
-        // setTimeSheetData(result);
+        const response = await CreateTimeSheet(formData);
+        const result = { id: response.id.toString() };
+        setTimeSheetData(result);
         setAuthStep("success");
 
         if (handleNextStep) {

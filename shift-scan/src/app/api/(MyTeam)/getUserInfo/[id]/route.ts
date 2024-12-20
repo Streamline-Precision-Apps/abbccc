@@ -44,9 +44,19 @@ export async function GET(req: NextRequest, { params }: { params: Params }) {
     return NextResponse.json({ error: "Employee not found" }, { status: 404 });
   }
 
+  const contact = employee.contact;
+  const employeeData = {
+    id: employee.id,
+    firstName: employee.firstName,
+    lastName: employee.lastName,
+    email: employee.email,
+    DOB: employee.DOB,
+    image: employee.image,
+  };
+  const data = { employeeData, contact };
   // Exclude sensitive fields
 
-  return NextResponse.json(employee, {
+  return NextResponse.json(data, {
     headers: {
       "Cache-Control":
         "public, max-age=60, s-maxage=60, stale-while-revalidate=30",

@@ -7,7 +7,7 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";
 export default async function crewMember() {
   return (
-    <Bases className="h-min-screen h-dvh">
+    <Bases className="h-min-screen h-full">
       <Contents>
         <EmployeeInfo />
         <Holds className="mt-5">

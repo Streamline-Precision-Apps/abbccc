@@ -131,7 +131,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         className={cn(TitleBoxVariants({ variant, size, className }))}
         {...props}
       >
-        <Grids cols={"4"} rows={"3"} className="w-full">
+        <Grids cols={"4"} rows={"3"} className="w-full h-full p-4">
           <Holds className="col-span-1 row-span-1">
             <Buttons
               href={href}
@@ -142,22 +142,22 @@ const TitleBoxes: FC<TitleBoxProps> = ({
               <Images titleImg="/turnBack.svg" titleImgAlt={titleImgAlt} />
             </Buttons>
           </Holds>
-          <Holds className="col-span-2 row-span-2 ">
+          <Holds className="col-span-2 row-span-3 ">
             {props.children}
             <Holds size={"full"} position={"center"}>
-              <Holds size={"40"} className="rounded-full relative ">
+              <Holds className="rounded-full relative ">
                 <Images
                   titleImg={titleImg}
                   titleImgAlt={titleImgAlt}
                   className="rounded-full border-[3px] border-black"
-                  size={"full"}
+                  size={"50"}
                 />
               </Holds>
             </Holds>
           </Holds>
 
           <Holds className="col-span-4 row-span-1">
-            <Titles size={"h1"}>{title}</Titles>
+            <Titles size={"h2"}>{title}</Titles>
           </Holds>
           <Holds className="col-start-4 col-span-1 row-start-1 row-span-1">
             <Holds size={"90"} position={"center"}>

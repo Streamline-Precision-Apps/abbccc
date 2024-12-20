@@ -1,6 +1,7 @@
 "use server";
 import { auth } from "@/auth";
-import ClockProcessor from "@/components/(clock)/clockProcess";
+// import ClockProcessor from "@/components/(clock)/clockProcess";
+import NewClockProcess from "@/components/(clock)/newclockProcess";
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";
@@ -12,21 +13,39 @@ export default async function Clock() {
   if (!session) {
     redirect("/signin");
   }
-  const lang = (await cookies()).get("locale");
-  const locale = lang ? lang.value : "en"; // Default to English
+
+  const user = session.user;
+
+  // Get the current language from cookies
+  const lang = cookies().get("locale");
+  const locale = lang?.value || "en";
   return (
     <Bases>
       <Contents>
         <Holds background={"white"} className="h-full">
-          <ClockProcessor
+          <NewClockProcess
+            mechanicView={user.mechanicView}
+            tascoView={user.tascoView}
+            truckView={user.truckView}
+            laborView={user.laborView}
+            option="clockin"
+            returnpath="/"
             type={"jobsite"}
             scannerType={"jobsite"}
-            option="clockin"
             locale={locale}
-            returnpath="/"
           />
         </Holds>
       </Contents>
     </Bases>
   );
+}
+
+{
+  /* <ClockProcessor
+  type={"jobsite"}
+  scannerType={"jobsite"}
+  option="clockin"
+  locale={locale}
+  returnpath="/"
+/> */
 }
