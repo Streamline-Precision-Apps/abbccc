@@ -158,6 +158,9 @@
     "Notes": "Additional notes"
 },
 "Generator":{
+    "SelectCostCodeTags": "Select Cost Code Tags",
+    "SelectTag": "Select Tag",
+    "AddTag": "Add",
     "Loading": "Loading...",
     "Create": "Create",
     "Picture": "Picture of Equipment",
@@ -175,9 +178,9 @@
     "IsActive": "Is Site Active?",
     "Temporary": "Temporary",
     "NameExample": "Enter a name for the site",
-    "Address": "Address Information",
-    "StreetNumberDirection": "Street Number",
-    "StreetNameDirection": "Street Name",
+    "AddressInformation": "Address Information",
+    "Address": "Address",
+   "AddressExample": "100 Main Street",
     "CityTitle": "Burley",
     "ZipCode": "Zip Code",
     "ZipCodeTitle": "83318",
