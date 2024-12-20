@@ -247,6 +247,7 @@
     "Form3Submit" : "Enviar forma"    
 },
 "MyTeam": {
+    "NoTimesheetsFound": "No se Encontraron Hojas de Tiempo",
     "Teams-Title": "Mis Equipos",
     "Teams-Logo-Title": "Icono del Equipo",
     "MyTeams-Title": "",

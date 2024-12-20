@@ -251,6 +251,7 @@
     "Form3Submit" : "Submit form"    
 },
 "MyTeam": {
+    "NoTimesheetsFound": "No Timesheets Found",
     "Teams-Title": "My Teams",
     "Teams-Logo-Title": "Team Icon",
     "MyTeams-Title": "My Teams",
