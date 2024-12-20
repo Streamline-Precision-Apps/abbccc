@@ -17,14 +17,12 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Contents } from "@/components/(reusable)/contents";
 
 type AddEquipmentFormProps = {
-  base64String: string | null;
   handler: () => void;
   setBanner: Dispatch<SetStateAction<boolean>>;
   setBannerText: Dispatch<SetStateAction<string>>;
 };
 
 export default function AddEquipmentForm({
-  base64String,
   setBannerText,
   handler,
   setBanner,
@@ -237,13 +235,6 @@ export default function AddEquipmentForm({
               </Labels>
             </>
           ) : null}
-
-          <Inputs
-            id="image"
-            name="image"
-            type="hidden"
-            value={base64String || ""}
-          />
           <Inputs id="qrId" name="qrId" type="hidden" value={eqCode} />
         </Contents>
       </Holds>
