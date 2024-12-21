@@ -320,6 +320,7 @@
     "Mileage": "Mileage"
     },
 "ClockOut":{
+    "NoSignature": "No tiene firma registrada.",
     "SignBelow": "Al marcar la casilla a continuación, certifico que no sufrí lesiones este día.",
     "Jobsite" : "Sitio de trabajo # ",
     "CostCode" : "Código de Costo ",

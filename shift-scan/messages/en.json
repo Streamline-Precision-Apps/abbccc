@@ -337,6 +337,7 @@
     "Submit": "Enviar"
 },
 "ClockOut":{
+    "NoSignature": "No Signature Registered.",
     "SignBelow": "By Checking the box below I certify I suffered no injuries this day.",
     "Jobsite" : "Job site # ",
     "CostCode" : "Cost Code ",

@@ -39,217 +39,159 @@ export default function NewClockProcess({
   scannerType,
   locale,
 }: NewClockProcessProps) {
-  // fetching data for the clock process:
-  const data = useFetchAllData();
-  console.log(data);
-  // useState Section ---------------------------------------------------------------------
+  useFetchAllData(); // Fetch data on mount
+
+  // State management
   const [step, setStep] = useState(0);
-  const [clockInRole, setClockInRole] = useState(""); // handleNextStep function to incremen
-  // useContext Section -------------------------------------------------------------------
+  const [clockInRole, setClockInRole] = useState("");
+  const [scanner, setScanner] = useState("");
+  const [path, setPath] = useState("");
+
+  // Contexts
   const { savedCostCode, setCostCode } = useSavedCostCode();
   const { scanResult, setScanResult } = useScanData();
   const { scanEQResult } = useEQScanData();
   const { truckScanData } = useTruckScanData();
   const { startingMileage } = useStartingMileage();
 
-  const [scanner, setScanner] = useState("");
-  const [path, setPath] = useState("");
   const t = useTranslations("Clock");
 
-  // handleNextStep function to increment the step
-  const handleNextStep = () => {
-    setStep((prevStep) => prevStep + 1);
-  };
-  //  handleNextStep function to increment the step
+  // Helper functions
+  const handleNextStep = () => setStep((prevStep) => prevStep + 1);
+
   const handleChangeJobsite = () => {
-    try {
-      const jobsite = localStorage.getItem("jobSite");
-      if (jobsite !== null) {
-        setScanResult({ data: jobsite });
-        if (type === "equipment") {
-          throw new Error("Error");
-        } else {
-          setStep(3);
-        }
-      }
-    } catch (error) {
-      console.log(error);
+    const jobsite = localStorage.getItem("jobSite");
+    if (jobsite) {
+      setScanResult({ data: jobsite });
+      setStep(type === "equipment" ? 0 : 3); // Avoid throwing errors here
     }
   };
 
-  // skip over the Cost Code step
   const handleAlternativePath = () => {
     setStep(2);
     handleNextStep();
   };
 
-  // handleReturn function to return to the previous step
   const handleReturn = () => {
-    try {
+    const jobsite = localStorage.getItem("jobSite");
+    const costCode = localStorage.getItem("costCode");
+    if (jobsite && costCode) {
+      setScanResult({ data: jobsite });
+      setCostCode(costCode);
+      setAuthStep("success");
       setStep(4);
-      const jobsite = localStorage.getItem("jobSite");
-      const costCode = localStorage.getItem("costCode");
-      if (jobsite !== null && costCode !== null) {
-        setScanResult({ data: jobsite });
-        setCostCode(costCode);
-        setAuthStep("success");
-      } else {
-        setStep(0);
-      }
-    } catch (error) {
-      console.log(error);
+    } else {
+      setStep(0);
     }
   };
 
-  // useEffect Section -------------------------------------------------------------------
-  // set scanner data based on the scanner type
+  // useEffect to handle scanner type
   useEffect(() => {
-    if (scannerType === "EQ") {
-      setScanner(scanEQResult?.data || "");
-    } else {
-      setScanner(scanResult?.data || "");
-    }
-  }, [scanEQResult?.data, scanResult, scannerType]);
+    const scannedData =
+      scannerType === "EQ" ? scanEQResult?.data : scanResult?.data;
+    setScanner(scannedData || "");
+  }, [scanEQResult?.data, scanResult?.data, scannerType]);
 
-  // set path based on scanner data
+  // useEffect to set path based on scanner
   useEffect(() => {
     if (scanner) {
       const processFilter = scanner.slice(0, 1).toUpperCase();
-      if (processFilter === "J") {
-        setPath("jobsite");
-      }
-      if (processFilter === "E") {
-        setPath("equipment");
-      }
+      setPath(
+        processFilter === "J"
+          ? "jobsite"
+          : processFilter === "E"
+          ? "equipment"
+          : ""
+      );
+    } else {
+      setPath("");
     }
   }, [scanner]);
 
-  // reset step to 0 on mount
+  // useEffect to reset step and role on mount/unmount
   useEffect(() => {
     setStep(0);
     setClockInRole("");
-    // reset step to 0 on unmount
     return () => {
       setStep(0);
       setClockInRole("");
     };
   }, []);
-  // chooseRole function to determine the role of the user
-  // if the user has multiple roles, it will choose the first role that is true
+
+  // useEffect to choose role
   useEffect(() => {
-    const chooseRole = () => {
-      {
-        /* if no roles are selected, set step to 1 and set clockInRole to "general" */
-      }
-      if (!mechanicView && !truckView && !tascoView && laborView) {
-        setStep(1);
-        setClockInRole("general");
-      } else if (mechanicView && !truckView && !tascoView && !laborView) {
-        setStep(1);
-        setClockInRole("mechanic");
-      } else if (truckView && !mechanicView && !tascoView && !laborView) {
-        setStep(1);
-        setClockInRole("truck");
-      } else if (tascoView && !mechanicView && !truckView && !laborView) {
-        setStep(1);
-        setClockInRole("tasco");
-      } else {
-        setStep(0);
-      }
-    };
-    chooseRole();
-  }, [mechanicView, truckView, tascoView, laborView, setStep, setClockInRole]);
-  // --------------------------------------------------------------------------------------
-  // equipment or jobsite path
+    let role = "general";
+    if (mechanicView) role = "mechanic";
+    else if (truckView) role = "truck";
+    else if (tascoView) role = "tasco";
+    else if (!laborView) role = ""; // Default to no role if no valid views
+
+    setClockInRole(role);
+    setStep(role ? 1 : 0);
+  }, [mechanicView, truckView, tascoView, laborView]);
+
+  // Conditional render for equipment path
   if (path === "equipment") {
-    return (
-      <Holds>
-        {/* Step 1 - choose work type if needed */}
-        {step === 0 && (
-          <>
-            <div>Step 0 equipment</div>
-          </>
-        )}
-      </Holds>
-    );
+    return <Holds>{step === 0 && <div>Step 0 - Equipment</div>}</Holds>;
   }
-  // --------------------------------------------------------------------------------------
+
   return (
     <Holds className="p-5 h-full w-full">
-      {/* Step 1 - choose work type if needed */}
+      {/* Multiple Role Selection */}
       {step === 0 && (
-        <>
-          <MultipleRoles
-            handleNextStep={handleNextStep}
-            setClockInRole={setClockInRole}
-            clockInRole={clockInRole}
-          />
-        </>
+        <MultipleRoles
+          handleNextStep={handleNextStep}
+          setClockInRole={setClockInRole}
+          clockInRole={clockInRole}
+        />
       )}
 
-      {/*----------------------------Scanner with certain Type of roles------------------------------------------------*/}
-
-      {/* Step 2 - clock in for general Labor role */}
+      {/* General Role */}
       {step === 1 && clockInRole === "general" && (
-        <>
-          <div>Step 1 General</div>
-          <QRStep
-            type="jobsite"
-            handleAlternativePath={handleAlternativePath}
-            handleNextStep={handleNextStep}
-            handleChangeJobsite={handleChangeJobsite}
-            handleReturn={handleReturn}
-            url={returnpath}
-            option={option}
-          />
-        </>
+        <QRStep
+          type="jobsite"
+          handleAlternativePath={handleAlternativePath}
+          handleNextStep={handleNextStep}
+          handleChangeJobsite={handleChangeJobsite}
+          handleReturn={handleReturn}
+          url={returnpath}
+          option={option}
+        />
       )}
 
-      {/* Step 2 - clock in for mechanic  */}
+      {/* Mechanic Role */}
       {step === 1 && clockInRole === "mechanic" && (
-        <>
-          <div>Step 1 mechanic</div>
-        </>
-      )}
-      {/* Step 2 - clock in for truck  */}
-      {step === 1 && clockInRole === "truck" && (
-        <>
-          <div>Step 1 truck </div>
-        </>
-      )}
-      {/* Step 2 - clock in for tasco  */}
-      {step === 1 && clockInRole === "tasco" && (
-        <>
-          <div>Step 1 - tasco</div>
-        </>
+        <QRStep
+          type="jobsite"
+          handleAlternativePath={handleAlternativePath}
+          handleNextStep={handleNextStep}
+          handleChangeJobsite={handleChangeJobsite}
+          handleReturn={handleReturn}
+          url={returnpath}
+          option={option}
+        />
       )}
 
-      {/*----------------------------------------------------------------------------*/}
+      {/* Truck Role */}
+      {step === 1 && clockInRole === "truck" && <div>Step 1 - Truck</div>}
 
-      {/* Step 3  special forms section based on role */}
-      {step === 2 && (
-        <>
-          <div>Step 2</div>
-        </>
-      )}
-      {/*----------------------------------------------------------------------------*/}
-      {/* Step 4  select jobsite section */}
+      {/* Tasco Role */}
+      {step === 1 && clockInRole === "tasco" && <div>Step 1 - Tasco</div>}
+
+      {/* Special Forms Section */}
+      {step === 2 && <div>Step 2</div>}
+
+      {/* Select Jobsite Section */}
       {step === 3 && (
-        <>
-          <CodeStep datatype="jobsite" handleNextStep={handleNextStep} />
-        </>
+        <CodeStep datatype="jobsite" handleNextStep={handleNextStep} />
       )}
 
-      {/*----------------------------------------------------------------------------*/}
-      {/* Step 4  select cost code section */}
+      {/* Select Cost Code Section */}
       {step === 4 && (
-        <>
-          <CodeStep datatype="costcode" handleNextStep={handleNextStep} />
-        </>
+        <CodeStep datatype="costcode" handleNextStep={handleNextStep} />
       )}
 
-      {/*----------------------------------------------------------------------------*/}
-      {/* Step 5 Verification Page*/}
+      {/* Verification Page */}
       {step === 5 && (
         <VerificationStep
           type={clockInRole}
@@ -259,53 +201,47 @@ export default function NewClockProcess({
         />
       )}
 
-      {/*----------------------------------------------------------------------------*/}
-      {/* Step 6  */}
+      {/* Confirmation Page */}
       {step === 6 && (
-        <>
-          <div>
-            <div>
-              <Titles size={"h1"}>{t("Confirmation-job-message-1")}</Titles>
-              {option === "break" ? (
-                <Titles size={"h4"}>Hope you enjoyed your Break!</Titles>
-              ) : null}
-              {type === "switchJobs" ? (
-                <>
-                  <Titles size={"h4"}>{t("Confirmation-job-message-3")}</Titles>
-                  <Titles size={"h4"}>{t("Confirmation-job-message-4")}</Titles>
-                </>
-              ) : (
-                <Titles size={"h4"}>{t("Confirmation-job-message-2")}</Titles>
-              )}
-              <Titles size={"h2"}>
-                {t("JobSite-label")} {scanResult?.data}
-              </Titles>
-
-              <Titles size={"h2"}>
-                {t("CostCode-label")} {savedCostCode}{" "}
-              </Titles>
-              {truckScanData && (
-                <Titles size={"h2"}>
-                  {t("Truck-label")} {truckScanData}{" "}
-                </Titles>
-              )}
-              {truckScanData && (
-                <Titles size={"h2"}>
-                  {t("Mileage")} {startingMileage}{" "}
-                </Titles>
-              )}
-              <Titles size={"h2"}>
-                {t("Confirmation-time")}{" "}
-                {new Date().toLocaleDateString(locale, {
-                  hour: "numeric",
-                  minute: "numeric",
-                  second: "numeric",
-                })}
-              </Titles>
-              <RedirectAfterDelay delay={5000} to="/dashboard" />
-            </div>
-          </div>
-        </>
+        <div>
+          <Titles size="h1">{t("Confirmation-job-message-1")}</Titles>
+          {option === "break" && (
+            <Titles size="h4">Hope you enjoyed your Break!</Titles>
+          )}
+          {type === "switchJobs" ? (
+            <>
+              <Titles size="h4">{t("Confirmation-job-message-3")}</Titles>
+              <Titles size="h4">{t("Confirmation-job-message-4")}</Titles>
+            </>
+          ) : (
+            <Titles size="h4">{t("Confirmation-job-message-2")}</Titles>
+          )}
+          <Titles size="h2">
+            {t("JobSite-label")} {scanResult?.data}
+          </Titles>
+          <Titles size="h2">
+            {t("CostCode-label")} {savedCostCode}
+          </Titles>
+          {truckScanData && (
+            <Titles size="h2">
+              {t("Truck-label")} {truckScanData}
+            </Titles>
+          )}
+          {truckScanData && (
+            <Titles size="h2">
+              {t("Mileage")} {startingMileage}
+            </Titles>
+          )}
+          <Titles size="h2">
+            {t("Confirmation-time")}{" "}
+            {new Date().toLocaleDateString(locale, {
+              hour: "numeric",
+              minute: "numeric",
+              second: "numeric",
+            })}
+          </Titles>
+          <RedirectAfterDelay delay={5000} to="/dashboard" />
+        </div>
       )}
     </Holds>
   );
