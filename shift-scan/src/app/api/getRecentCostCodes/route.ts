@@ -13,13 +13,13 @@ export async function GET() {
 
   // Fetch the 5 most recent unique cost codes for the authenticated user
   const recentCostCodes = await prisma.timeSheet.groupBy({
-    by: ['costcode'], 
+    by: ["costcode"],
     where: {
       userId: userId,
     },
     orderBy: {
       _max: {
-        date: 'desc',
+        date: "desc",
       },
     },
     take: 5,
@@ -31,7 +31,7 @@ export async function GET() {
   // Fetch full cost code details based on the grouped costCode IDs
   const costCodeDetails = await Promise.all(
     recentCostCodes.map(async (log) => {
-      return prisma.costCodes.findUnique({
+      return prisma.costCode.findUnique({
         where: {
           name: log.costcode,
         },
