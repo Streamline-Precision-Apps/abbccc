@@ -57,14 +57,30 @@ export async function CreateTimeSheet(formData: FormData) {
   try {
     console.log("entered CreateTimeSheet:");
     console.log("formData:", formData);
+    // convert workType to correct enum
+    const workType = formData.get("workType") as string;
+    if (workType === "general") {
+      formData.set("workType", "LABOR");
+    }
+    if (workType === "mechanic") {
+      formData.set("workType", "MECHANIC");
+    }
+    if (workType === "tasco") {
+      formData.set("workType", "TASCO");
+    }
+    if (workType === "truck") {
+      formData.set("workType", "TRUCK_DRIVER");
+    }
 
     const newTimeSheet = await prisma.timeSheet.create({
       data: {
-        submitDate: parseUTC(formData.get("submitDate") as string).toISOString(),
+        submitDate: parseUTC(
+          formData.get("submitDate") as string
+        ).toISOString(),
         date: parseUTC(formData.get("date") as string).toISOString(),
         jobsite: { connect: { qrId: formData.get("jobsiteId") as string } },
         costcode: formData.get("costcode") as string,
-        comment: formData.get("timeSheetComments") as string,
+        comment: (formData.get("timeSheetComments") as string) || null,
         user: { connect: { id: formData.get("userId") as string } },
         startTime: formData.get("startTime") as string,
         workType: formData.get("workType") as WorkType,
@@ -93,7 +109,9 @@ export async function AddWholeTimeSheet(formData: FormData) {
 
     const newTimeSheet = await prisma.timeSheet.create({
       data: {
-        submitDate: parseUTC(formData.get("submitDate") as string).toISOString(),
+        submitDate: parseUTC(
+          formData.get("submitDate") as string
+        ).toISOString(),
         date: parseUTC(formData.get("date") as string).toISOString(),
         jobsite: { connect: { qrId: formData.get("jobsiteId") as string } },
         costcode: formData.get("costcode") as string,
@@ -120,28 +138,28 @@ export async function editTimeSheet(formData: FormData) {
   console.log("Editing Timesheet...");
   console.log(formData);
   try {
-  const id = formData.get("id") as string;
-  const costcode = formData.get("costcode");
-  const endTime = parseUTC(formData.get("endTime") as string);
-  const startTime = parseUTC(formData.get("startTime") as string);
+    const id = formData.get("id") as string;
+    const costcode = formData.get("costcode");
+    const endTime = parseUTC(formData.get("endTime") as string);
+    const startTime = parseUTC(formData.get("startTime") as string);
 
-  if (!id) {
-    throw new Error("ID is required");
+    if (!id) {
+      throw new Error("ID is required");
+    }
+
+    const timeSheet = await prisma.timeSheet.update({
+      where: { id: id },
+      data: {
+        costcode: costcode as string,
+        startTime: startTime.toISOString(),
+        endTime: endTime.toISOString(),
+      },
+    });
+
+    console.log(timeSheet);
+  } catch (error) {
+    console.error("Error editing timesheet:", error);
   }
-
-  const timeSheet = await prisma.timeSheet.update({
-    where: { id: id },
-    data: {
-      costcode: costcode as string,
-      startTime: startTime.toISOString(),
-      endTime: endTime.toISOString(),
-    },
-  });
-
-  console.log(timeSheet);
-} catch (error) {
-  console.error("Error editing timesheet:", error);
-}
 }
 
 // provides a way to update a timesheet and will give supervisor access to all timesheets
@@ -216,7 +234,6 @@ export async function updateTimeSheetBySwitch(formData: FormData) {
 
     console.log("formData:", formData);
     console.log("Updating Timesheet...");
-    const endTime = parseUTC(formData.get("endTime") as string);
 
     const updatedTimeSheet = await prisma.timeSheet.update({
       where: { id },

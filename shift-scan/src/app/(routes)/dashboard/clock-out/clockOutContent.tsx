@@ -4,6 +4,7 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { InjuryReportContent } from "./(components)/injury-report/injuryReportContent";
 import { Titles } from "@/components/(reusable)/titles";
@@ -144,7 +145,7 @@ export default function ClockOutContent() {
       }
     };
     fetchSignature();
-  }, []);
+  }, [currentView]);
 
   const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
     setChecked(event.currentTarget.checked);
@@ -229,12 +230,19 @@ export default function ClockOutContent() {
                     </Holds>
                   ) : (
                     <Holds className="my-auto">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={base64String}
-                        alt="Loading signature"
-                        className="w-[40%] mx-auto"
-                      />
+                      {base64String ? (
+                        <Image
+                          src={base64String}
+                          alt="Loading signature"
+                          width={200}
+                          height={100}
+                          className="w-[40%] mx-auto"
+                        />
+                      ) : (
+                        <Holds className="my-auto">
+                          <Texts>{t("NoSignature")}</Texts>
+                        </Holds>
+                      )}
                     </Holds>
                   )}
                 </Holds>

@@ -36,15 +36,13 @@ export default function Content() {
 
   const params = useParams(); // remove typing here
   const { id } = params;
-  const idParsed = z.coerce.number().safeParse(id);
-  const crewId = idParsed.data;
 
   useEffect(() => {
     const fetchCrew = async () => {
       try {
         setIsLoading(true);
 
-        const response = await fetch(`/api/getCrewById/${crewId}`);
+        const response = await fetch(`/api/getCrewById/${id}`);
         const crewData: CrewResponse = await response.json();
 
         // Validate fetched crew data using Zod
@@ -58,7 +56,7 @@ export default function Content() {
         }
         setCrew(crewData);
         console.log("crewData is logged", crewData);
-        localStorage.setItem(`crew-${crewId}`, JSON.stringify(crewData));
+        localStorage.setItem(`crew-${id}`, JSON.stringify(crewData));
       } catch (error) {
         console.error("Error fetching crew data:", error);
       } finally {
@@ -67,7 +65,7 @@ export default function Content() {
     };
 
     fetchCrew();
-  }, [crewId, id]);
+  }, [id]);
 
   useEffect(() => {
     const fetchCrew = async () => {
@@ -78,7 +76,7 @@ export default function Content() {
       setTitles(setName);
     };
     fetchCrew();
-  }, [crewId, id]);
+  }, [id]);
 
   return (
     <Bases className="h-screen">

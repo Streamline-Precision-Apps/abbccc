@@ -2,18 +2,16 @@
 
 import { Buttons } from "@/components/(reusable)/buttons";
 import React, { useState, useEffect } from "react";
-import { Modals } from "@/components/(reusable)/modals";
 import QRCode from "qrcode";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Texts } from "@/components/(reusable)/texts";
 import { Images } from "@/components/(reusable)/images";
 import { Holds } from "@/components/(reusable)/holds";
 import SearchSelect from "@/components/(search)/searchSelect";
 import { Grids } from "@/components/(reusable)/grids";
 import { z } from "zod";
 import { EquipmentCodes } from "@/lib/types";
-import { Contents } from "@/components/(reusable)/contents";
+import { NModals } from "@/components/(reusable)/newmodals";
 
 // Zod schema for EquipmentCodes
 const EquipmentCodesSchema = z.object({
@@ -31,8 +29,6 @@ export default function QrEquipmentContent() {
   const [generatedRecentList, setGeneratedRecentList] = useState<
     EquipmentCodes[]
   >([]);
-  const [selectedEquipmentName, setSelectedEquipmentName] =
-    useState<string>("");
   const [selectedEquipment, setSelectedEquipment] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState("");
@@ -126,7 +122,6 @@ export default function QrEquipmentContent() {
 
   const handleSelectEquipment = (selectedOption: EquipmentCodes) => {
     setSelectedEquipment(selectedOption.qrId);
-    setSelectedEquipmentName(selectedOption.name);
   };
 
   return (
@@ -187,22 +182,23 @@ export default function QrEquipmentContent() {
             </Buttons>
           </Holds>
 
-          <Modals
+          <NModals
             isOpen={isModalOpen}
             handleClose={() => setIsModalOpen(false)}
-            size="sm"
+            size={"xlWS"}
           >
             {selectedEquipment && (
-              <Holds className="p-4">
-                <Texts>
-                  {selectedEquipmentName} {t("QRCode")}
-                </Texts>
-                <Contents position={"row"}>
-                  <Images titleImg={qrCodeUrl} titleImgAlt={"QR Code"} />
-                </Contents>
-              </Holds>
+              <>
+                <Holds className="fixed rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col max-w-[90%] max-h-[90%] w-auto h-auto">
+                  <Images
+                    titleImg={qrCodeUrl}
+                    titleImgAlt="QR Code"
+                    className="h-full w-full object-contain"
+                  />
+                </Holds>
+              </>
             )}
-          </Modals>
+          </NModals>
         </Grids>
       )}
     </>

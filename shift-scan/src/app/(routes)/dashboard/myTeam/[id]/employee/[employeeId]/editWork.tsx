@@ -138,7 +138,7 @@ const EditWork = ({
 
   useEffect(() => {
     if (!timesheetData || timesheetData.length === 0) {
-      setMessage("No Timesheets Found");
+      setMessage(`${t("NoTimesheetsFound")}`);
     } else {
       setMessage(null);
       const initializedTimesheets = timesheetData.map((timesheet) => {

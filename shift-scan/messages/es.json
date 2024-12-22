@@ -154,6 +154,14 @@
     "Notes": "Notas adicionales"
 },
 "Generator":{
+    "SelectJobsite": "Seleccionar un sitio de trabajo",
+    "EquipmentDescription": "Descripción",
+    "NeedsMaintenance": "Necesita mantenimiento",
+    "Vehicle": "Vehículo",
+    "JobsiteLocation": "¿En qué lugar de trabajo se encuentra este equipo?",
+    "SelectCostCodeTags": "Seleccionar una Etiqueta de Costo",
+    "SelectTag": "Seleccionar Etiqueta",
+    "AddTag": "Agregar",
     "Loading": "Cargando...",
     "Create": "Crear",
     "Picture": "Imagen del Equipo",
@@ -161,8 +169,9 @@
     "CheckedOut": "Prestado",
     "Banner": "Registrado",
     "JobsiteName": "Nombre del Sitio",
-    "StreetNumber": "Número de Calle",
-    "StreetName": "Nombre de Calle",
+    "AddressInformation": "Información de Dirección",
+    "Address": "Dirección",
+   "AddressExample": "Ingrese la dirección del sitio",
     "City": "Ciudad",
     "State": "Estado",
     "Country": "País",
@@ -171,7 +180,6 @@
     "IsActive": "¿El Sitio está Activo?",
     "Temporary": "Temporal",
     "NameExample": "Ingrese un nombre para el sitio",
-    "Address": "Información de Dirección",
     "StreetNumberDirection": "Número de Calle",
     "StreetNameDirection": "Nombre de Calle",
     "CityTitle": "Burley",
@@ -194,8 +202,8 @@
     "NamePlaceholder": "Ingrese Nombre del Equipo",
     "DescriptionPlaceholder": "Ingrese una Descripción en menos de 40 caracteres",
     "Status": "Estado del Equipo",
-    "Operational": "OPERATIONAL",
-    "NeedsRepair": "NEEDS REPAIR",
+    "Operational": "Operacional",
+    "NeedsRepair": "Necesita Reparación",
     "Make": "Marca",
     "MakePlaceholder": "Ingrese Marca del Vehículo",
     "Model": "Modelo",
@@ -239,6 +247,7 @@
     "Form3Submit" : "Enviar forma"    
 },
 "MyTeam": {
+    "NoTimesheetsFound": "No se Encontraron Hojas de Tiempo",
     "Teams-Title": "Mis Equipos",
     "Teams-Logo-Title": "Icono del Equipo",
     "MyTeams-Title": "",
@@ -311,6 +320,7 @@
     "Mileage": "Mileage"
     },
 "ClockOut":{
+    "NoSignature": "No tiene firma registrada.",
     "SignBelow": "Al marcar la casilla a continuación, certifico que no sufrí lesiones este día.",
     "Jobsite" : "Sitio de trabajo # ",
     "CostCode" : "Código de Costo ",
