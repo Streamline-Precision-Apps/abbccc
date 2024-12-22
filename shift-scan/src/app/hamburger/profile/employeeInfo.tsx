@@ -7,7 +7,6 @@ import Base64Encoder from "@/components/(camera)/Base64Encoder";
 import { useEffect, useState } from "react";
 import { Contents } from "@/components/(reusable)/contents";
 import { Labels } from "@/components/(reusable)/labels";
-import { Inputs } from "@/components/(reusable)/inputs";
 import { Modals } from "@/components/(reusable)/modals";
 import { Images } from "@/components/(reusable)/images";
 import { Contact, Employee } from "@/lib/types";
@@ -15,74 +14,77 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
 import { Texts } from "@/components/(reusable)/texts";
 import Spinner from "@/components/(animations)/spinner";
-import { z } from "zod"; // Import Zod for validation
+import { z } from "zod";
 import Signature from "@/app/(routes)/dashboard/clock-out/(components)/injury-verification/Signature";
 import { Titles } from "@/components/(reusable)/titles";
+import { uploadSignature } from "@/actions/userActions";
+import { EditableFields } from "@/components/(reusable)/EditableField";
+import { updateUserProfile } from "@/actions/userActions";
 
-// Define Zod schemas for validation
 const contactSchema = z.object({
   phoneNumber: z.string().optional(),
   emergencyContact: z.string().optional(),
   emergencyContactNumber: z.string().optional(),
-  email: z.string().optional(),
 });
 
 const employeeSchema = z.object({
   id: z.string(),
   firstName: z.string(),
   lastName: z.string(),
+  email: z.string().optional(),
   image: z.string().nullable().optional(),
   signature: z.string().nullable().optional(),
 });
 
-// const trainingSchema = z.array(
-//   z.object({
-//     id: z.string(),
-//     name: z.string(),
-//     description: z.string().optional().default(""), // add a default value for optional properties
-//     createdAt: z.date().optional().default(new Date()), // add a default value for optional properties
-//     updatedAt: z.date().optional().default(new Date()), // add a default value for optional properties
-//   })
-// );
-
-// const userTrainingSchema = z.array(
-//   z.object({
-//     id: z.number(),
-//     userId: z.string(),
-//     trainingId: z.string(),
-//     isCompleted: z.boolean(),
-//   })
-// );
-
 export default function EmployeeInfo() {
   const [loading, setLoading] = useState(true);
   const [employee, setEmployee] = useState<Employee>();
-  const [contacts, setContacts] = useState<
-    Contact | Partial<Contact> | undefined
-  >();
-
+  const [formState, setFormState] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phoneNumber: "",
+    emergencyContact: "",
+    emergencyContactNumber: "",
+  });
+  const [originalState, setOriginalState] = useState(formState);
   const [isOpen, setIsOpen] = useState(false);
   const [isOpen2, setIsOpen2] = useState(false);
   const [editImg, setEditImg] = useState(false);
-  const [editSignatureModalOpen, setEditSignatureModalOpen] = useState(false); // State for signature modal
+  const [editSignatureModalOpen, setEditSignatureModalOpen] = useState(false);
 
   const t = useTranslations("Hamburger");
   const [base64String, setBase64String] = useState<string>("");
   const [signatureBase64String, setSignatureBase64String] =
     useState<string>("");
 
-  //----------------------------Data Fetching-------------------------------------
-  // Fetch Employee Data
   const fetchEmployee = async () => {
     setLoading(true);
     try {
       const employeeRes = await fetch("/api/getEmployee");
       const employeeData = await employeeRes.json();
+      const contactData = employeeData.contact;
 
-      // Validate data using Zod
       const validatedEmployee = employeeSchema.parse(employeeData);
+      const validatedContact = contactSchema.parse(contactData);
       setEmployee(validatedEmployee as Employee);
+      setFormState({
+        firstName: validatedEmployee.firstName,
+        lastName: validatedEmployee.lastName,
+        email: validatedEmployee.email ?? "",
+        phoneNumber: validatedContact.phoneNumber ?? "",
+        emergencyContact: validatedContact.emergencyContact ?? "",
+        emergencyContactNumber: validatedContact.emergencyContactNumber ?? "",
+      });
       setSignatureBase64String(validatedEmployee.signature ?? "");
+      setOriginalState({
+        firstName: validatedEmployee.firstName,
+        lastName: validatedEmployee.lastName,
+        email: validatedEmployee.email ?? "",
+        phoneNumber: validatedContact.phoneNumber ?? "",
+        emergencyContact: validatedContact.emergencyContact ?? "",
+        emergencyContactNumber: validatedContact.emergencyContactNumber ?? "",
+      });
     } catch (error) {
       console.error("Failed to fetch employee data:", error);
     } finally {
@@ -90,43 +92,39 @@ export default function EmployeeInfo() {
     }
   };
 
-  // Fetch Profile Data
-  const fetchProfile = async () => {
-    setLoading(true);
-    try {
-      const [contactsRes] = await Promise.all([fetch("/api/getContacts")]);
-
-      const [contactsData] = await Promise.all([contactsRes.json()]);
-
-      // Validate data using Zod
-      const validatedContacts = contactSchema.parse(contactsData);
-
-      setContacts(validatedContacts);
-    } catch (error) {
-      console.error("Failed to fetch profile data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchAllData = async () => {
-    setLoading(true);
-    try {
-      await Promise.all([fetchProfile(), fetchEmployee()]);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchAllData();
+    fetchEmployee();
   }, []);
 
-  const reloadEmployeeData = () => {
-    fetchEmployee(); // Directly fetch the updated employee data
-    console.log("Employee data reloaded");
+  const hasChanged = (field: keyof typeof originalState) =>
+    formState[field] !== originalState[field];
+
+  const handleFieldChange = (field: keyof typeof formState, value: string) => {
+    setFormState((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleSubmit = async () => {
+    const formData = new FormData();
+    formData.append("id", employee?.id ?? "");
+    formData.append("email", formState.email);
+    formData.append("phoneNumber", formState.phoneNumber);
+    formData.append("emergencyContact", formState.emergencyContact);
+    formData.append("emergencyContactNumber", formState.emergencyContactNumber);
+
+    try {
+      await updateUserProfile(formData);
+      setOriginalState(formState);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    }
+  };
+
+  const handleSignatureClose = () => {
+    uploadSignature(employee?.id ?? "", signatureBase64String);
+    setEditSignatureModalOpen(false);
   };
 
   if (loading) {
@@ -143,17 +141,13 @@ export default function EmployeeInfo() {
           className="row-span-5 h-full "
         >
           <Contents width={"section"}>
-            <Texts> Loading </Texts>
+            <Texts> {t("Loading")} </Texts>
             <Spinner />
           </Contents>
         </Holds>
       </Grids>
     );
   }
-
-  const signoutHandler = () => {
-    setIsOpen(false);
-  };
 
   return (
     <>
@@ -187,7 +181,12 @@ export default function EmployeeInfo() {
               isOpen={isOpen}
             >
               {!editImg && (
-                <Holds size={"full"} background={"white"} className="my-5">
+                <Holds
+                  size={"full"}
+                  background={"white"}
+                  className="my-5"
+                  row-span-7
+                >
                   <Holds size={"50"} className="rounded-full">
                     <img
                       src={employee?.image ?? ""}
@@ -200,7 +199,7 @@ export default function EmployeeInfo() {
                     className="my-5"
                     onClick={() => setEditImg(true)}
                   >
-                    <Texts>Change Profile Picture</Texts>
+                    <Texts>{t("ChangeProfilePicture")}</Texts>
                   </Buttons>
                 </Holds>
               )}
@@ -211,7 +210,7 @@ export default function EmployeeInfo() {
                     base64String={base64String}
                     setBase64String={setBase64String}
                     setIsOpen={setIsOpen}
-                    reloadEmployeeData={reloadEmployeeData}
+                    reloadEmployeeData={fetchEmployee}
                   />
                 </Holds>
               )}
@@ -220,58 +219,108 @@ export default function EmployeeInfo() {
           <Holds background={"white"} className="row-span-7 h-full">
             <Holds className="h-full">
               <Contents width={"section"}>
-                <Grids rows={"6"} gap={"5"}>
-                  <Holds className=" row-span-1 h-full">
-                    <Labels size={"p4"}>
-                      {t("PhoneNumber")}
-                      <Inputs
-                        disabled
-                        type="tel"
-                        defaultValue={contacts?.phoneNumber ?? ""}
-                      />
+                <Grids rows={"7"} gap={"5"}>
+                  <Holds className="h-full w-full">
+                    <Labels size={"p6"}>
+                      {t("PhoneNumber")} <span className="text-red-500">*</span>
                     </Labels>
+                    <EditableFields
+                      value={formState.phoneNumber}
+                      isChanged={hasChanged("phoneNumber")}
+                      onChange={(e) =>
+                        handleFieldChange("phoneNumber", e.target.value)
+                      }
+                      onRevert={() =>
+                        handleFieldChange(
+                          "phoneNumber",
+                          originalState.phoneNumber
+                        )
+                      }
+                      variant="default"
+                      size="default"
+                    />
                   </Holds>
-                  <Holds className=" row-span-1 h-full">
-                    <Labels size={"p4"}>
-                      {t("PersonalEmail")}
-                      <Inputs
-                        disabled
-                        type="email"
-                        defaultValue={contacts?.email}
-                      />
+                  <Holds className="h-full w-full">
+                    <Labels size={"p6"}>
+                      {t("Email")} <span className="text-red-500">*</span>
                     </Labels>
+                    <EditableFields
+                      value={formState.email}
+                      isChanged={hasChanged("email")}
+                      onChange={(e) =>
+                        handleFieldChange("email", e.target.value)
+                      }
+                      onRevert={() =>
+                        handleFieldChange("email", originalState.email)
+                      }
+                      variant="default"
+                      size="default"
+                    />
                   </Holds>
-                  <Holds className=" row-span-1 h-full">
-                    <Labels size={"p4"}>
-                      {t("EmergencyContact")}
-                      <Inputs
-                        disabled
-                        type="tel"
-                        defaultValue={contacts?.emergencyContactNumber ?? ""}
-                      />
+                  <Holds className="h-full w-full">
+                    <Labels size={"p6"}>
+                      {t("EmergencyContactName")}{" "}
+                      <span className="text-red-500">*</span>
                     </Labels>
+                    <EditableFields
+                      value={formState.emergencyContact}
+                      isChanged={hasChanged("emergencyContact")}
+                      onChange={(e) =>
+                        handleFieldChange("emergencyContact", e.target.value)
+                      }
+                      onRevert={() =>
+                        handleFieldChange(
+                          "emergencyContact",
+                          originalState.emergencyContact
+                        )
+                      }
+                      variant="default"
+                      size="default"
+                    />
                   </Holds>
-                  <Holds className=" row-span-1 h-full  ">
+                  <Holds className="h-full w-full">
+                    <Labels size={"p6"}>
+                      {t("EmergencyContact")}{" "}
+                      <span className="text-red-500">*</span>
+                    </Labels>
+                    <EditableFields
+                      value={formState.emergencyContactNumber}
+                      isChanged={hasChanged("emergencyContactNumber")}
+                      onChange={(e) =>
+                        handleFieldChange(
+                          "emergencyContactNumber",
+                          e.target.value
+                        )
+                      }
+                      onRevert={() =>
+                        handleFieldChange(
+                          "emergencyContactNumber",
+                          originalState.emergencyContactNumber
+                        )
+                      }
+                      variant="default"
+                      size="default"
+                    />
+                  </Holds>
+                  <Holds className=" row-span-2 h-full  ">
                     <Holds className="h-full my-auto">
-                      <Labels size={"p4"}>
-                        {t("Signature")}
-                        <Holds
-                          className="w-full rounded-3xl border-[3px] border-black cursor-pointer"
-                          onClick={() => setEditSignatureModalOpen(true)}
-                        >
-                          <Images
-                            titleImg={signatureBase64String}
-                            titleImgAlt={t("Signature")}
-                            size={"40"}
-                            className="p-1"
-                          />
-                        </Holds>
-                      </Labels>
+                      <Labels size={"p4"}>{t("Signature")}</Labels>
+                      <Holds
+                        className="w-full rounded-3xl border-[3px] border-black cursor-pointer"
+                        onClick={() => setEditSignatureModalOpen(true)}
+                      >
+                        <Images
+                          titleImg={signatureBase64String}
+                          titleImgAlt={t("Signature")}
+                          size={"40"}
+                          className="p-1"
+                        />
+                      </Holds>
                     </Holds>
                     <Modals
-                      handleClose={() => setEditSignatureModalOpen(false)}
+                      handleClose={() => handleSignatureClose()}
                       type="signature"
-                      size={"fullPage"}
+                      size="fullPage"
                       isOpen={editSignatureModalOpen}
                     >
                       <Signature setBase64String={setSignatureBase64String} />
@@ -279,21 +328,37 @@ export default function EmployeeInfo() {
                   </Holds>
                   <Holds className="row-span-2 h-full ">
                     <Holds className="my-auto">
-                      <Buttons
-                        onClick={() => setIsOpen2(true)}
-                        background={"red"}
-                        size={"full"}
-                        className="p-3 "
-                      >
-                        <Titles size={"h4"}>{t("SignOut")}</Titles>
-                      </Buttons>
+                      {Object.keys(formState).every(
+                        (key) => !hasChanged(key as keyof typeof formState)
+                      ) ? (
+                        // Button for when no changes have been made
+                        <Buttons
+                          onClick={() => setIsOpen2(true)} // Mimics the Sign Out button functionality
+                          background={"red"}
+                          size={"full"}
+                          className="p-3 "
+                        >
+                          <Titles size={"h4"}>{t("SignOut")}</Titles>
+                        </Buttons>
+                      ) : (
+                        // Submit Changes button
+                        <Buttons
+                          onClick={handleSubmit}
+                          background={"green"}
+                          size={"full"}
+                          className="p-3 "
+                        >
+                          <Titles size={"h4"}>{t("SubmitChanges")}</Titles>
+                        </Buttons>
+                      )}
                     </Holds>
 
+                    {/* Modal for Sign Out confirmation */}
                     <Modals
-                      handleClose={signoutHandler}
+                      handleClose={() => setIsOpen2(false)}
                       isOpen={isOpen2}
                       type="signOut"
-                      size={"sm"}
+                      size="sm"
                     >
                       {t("SignOutConfirmation")}
                     </Modals>
