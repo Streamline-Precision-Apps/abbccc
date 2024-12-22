@@ -373,7 +373,11 @@
     "Signature": "Haga clic para Editar Firma",
     "EditSignature": "Editar Firma",
     "PhoneNumber": "Número de Teléfono",
+    "Email": "Correo",
     "LocationAccess": "Acceso a Ubicación",
+    "Loading": "Cargando",
+    "ChangeProfilePicture": "Cambiar Foto de Perfil",
+    "SubmitChanges": "Guardar Cambios",
     "Language": "Idioma"
 },
 "Admins":{
