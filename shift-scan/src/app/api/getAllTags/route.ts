@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 
 export async function GET() {
   try {
-    const tags = await prisma.cCTags.findMany({});
+    const tags = await prisma.cCTag.findMany({});
     return NextResponse.json(tags);
   } catch (error) {
     console.error(error);

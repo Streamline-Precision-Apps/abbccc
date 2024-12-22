@@ -17,32 +17,31 @@ export async function GET(
   const { crewId } = params;
 
   try {
-    const crewMembers = await prisma.crewMembers.findMany({
-      where: { crewId: Number(crewId) },
-      include: {
-        crew: {
+    const crew = await prisma.crew.findUnique({
+      where: {
+        id: crewId,
+      },
+      select: {
+        users: {
           select: {
-            crewMembers: {
-              select: {
-                user: {
-                  select: {
-                    id: true,
-                    firstName: true,
-                    lastName: true,
-                    image: true,
-                  },
-                },
-              },
-            },
+            id: true,
+            firstName: true,
+            lastName: true,
+            image: true,
           },
         },
       },
     });
 
-    const crew = crewMembers[0].crew.crewMembers.map((member) => member.user);
+    // filtering crew members by first name and sorting them alphabetically
+    const crewMembers = crew?.users
+      .map((member) => member)
+      .sort((a, b) => {
+        return a.firstName.localeCompare(b.firstName);
+      });
 
     // Set Cache-Control header for caching if necessary
-    return NextResponse.json(crew);
+    return NextResponse.json(crewMembers);
   } catch (error) {
     console.error("Error fetching crew data:", error);
     return NextResponse.json(

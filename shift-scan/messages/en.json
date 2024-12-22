@@ -158,6 +158,13 @@
     "Notes": "Additional notes"
 },
 "Generator":{
+    "SelectJobsite": "Select Jobsite",
+    "NeedsMaintenance": "Needs Maintenance",
+    "Vehicle": "Vehicle",
+   "JobsiteLocation": "Where is this equipment located?",
+    "SelectCostCodeTags": "Select Cost Code Tags",
+    "SelectTag": "Select Tag",
+    "AddTag": "Add",
     "Loading": "Loading...",
     "Create": "Create",
     "Picture": "Picture of Equipment",
@@ -175,9 +182,9 @@
     "IsActive": "Is Site Active?",
     "Temporary": "Temporary",
     "NameExample": "Enter a name for the site",
-    "Address": "Address Information",
-    "StreetNumberDirection": "Street Number",
-    "StreetNameDirection": "Street Name",
+    "AddressInformation": "Address Information",
+    "Address": "Address",
+   "AddressExample": "100 Main Street",
     "CityTitle": "Burley",
     "ZipCode": "Zip Code",
     "ZipCodeTitle": "83318",
@@ -196,10 +203,11 @@
     "EquipmentTitle": "Equipment",
     "Name": "Name",
     "NamePlaceholder": "Enter Equipment Name",
+    "EquipmentDescription": "Description",
     "DescriptionPlaceholder": "Enter a Description in less than 40 characters",
     "Status": "Equipment status",
-    "Operational": "OPERATIONAL",
-    "NeedsRepair": "NEEDS REPAIR",
+    "Operational": "Operational",
+    "NeedsRepair": "Needs Repair",
     "Make": "Make",
     "MakePlaceholder": "Enter Make of Vehicle ",
     "Model": "Model",
@@ -243,6 +251,7 @@
     "Form3Submit" : "Submit form"    
 },
 "MyTeam": {
+    "NoTimesheetsFound": "No Timesheets Found",
     "Teams-Title": "My Teams",
     "Teams-Logo-Title": "Team Icon",
     "MyTeams-Title": "My Teams",
@@ -328,6 +337,7 @@
     "Submit": "Enviar"
 },
 "ClockOut":{
+    "NoSignature": "No Signature Registered.",
     "SignBelow": "By Checking the box below I certify I suffered no injuries this day.",
     "Jobsite" : "Job site # ",
     "CostCode" : "Cost Code ",
