@@ -409,6 +409,10 @@
     "English": "English",
     "Spanish": "Spanish",
     "PhoneNumber": "Phone Number",
+    "Email": "Email",
+    "Loading": "Loading",
+    "ChangeProfilePicture": "Change Profile Picture",
+    "SubmitChanges": "Submit Changes",
     "Language": "Language"
 },
 
