@@ -6,7 +6,6 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Titles } from "@/components/(reusable)/titles";
 import Spinner from "@/components/(animations)/spinner";
 import { EquipmentLog } from "@/lib/types";
-
 import { z } from "zod";
 import { editTimeSheet } from "@/actions/timeSheetActions";
 import { Labels } from "@/components/(reusable)/labels";
@@ -16,313 +15,8 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
 
-// Zod schema for TimeSheet type
-const TimeSheetSchema = z.object({
-  endDate: z.any(),
-  startDate: z.any(),
-  submitDate: z.date().optional(),
-  id: z.string().optional(),
-  userId: z.string().optional(),
-  date: z.date().optional(),
-  jobsiteId: z.string().optional(),
-  costcode: z.string().optional(),
-  nu: z.string().optional(),
-  Fp: z.string().optional(),
-  vehicleId: z.number().nullable().optional(),
-  startTime: z.union([z.date(), z.string()]).optional(),
-  endTime: z.union([z.date(), z.string(), z.null()]).optional(),
-  duration: z.number().nullable().optional(),
-  startingMileage: z.number().nullable().optional(),
-  endingMileage: z.number().nullable().optional(),
-  leftIdaho: z.boolean().nullable().optional(),
-  equipmentHauled: z.string().nullable().optional(),
-  materialsHauled: z.string().nullable().optional(),
-  hauledLoadsQuantity: z.number().nullable().optional(),
-  refuelingGallons: z.number().nullable().optional(),
-  timeSheetComments: z.string().nullable().optional(),
-  status: z.string().optional(),
-});
-
-// Zod schema for EditWorkProps
-const EditWorkPropsSchema = z.object({
-  edit: z.boolean(),
-  costcodesData: z.array(
-    z.object({
-      id: z.string(),
-      name: z.string(),
-      description: z.string(),
-    })
-  ),
-  jobsiteData: z.array(
-    z.object({
-      id: z.string(),
-      name: z.string(),
-      qrId: z.string(),
-    })
-  ),
-  timesheetData: z.array(TimeSheetSchema),
-  equipmentData: z.array(
-    z.object({
-      id: z.number(),
-      employeeId: z.string(),
-      duration: z.union([z.string(), z.number()]).nullable(),
-      Equipment: z.object({
-        id: z.string(),
-        qrId: z.string(),
-        name: z.string(),
-      }),
-    })
-  ),
-  handleFormSubmit: z
-    .function()
-    .args(z.string(), z.string(), z.string().optional())
-    .returns(z.void()),
-  setEdit: z.function().args(z.boolean()).returns(z.void()),
-  employeeId: z.string(),
-  date: z.string(),
-  equipment: z.array(
-    z.object({
-      id: z.string(),
-      name: z.string(),
-      qrId: z.string(),
-    })
-  ),
-});
-
-type EditWorkProps = z.infer<typeof EditWorkPropsSchema>;
-
-export type TimeSheet = z.infer<typeof TimeSheetSchema>;
-
-const EditWork = ({
-  timesheetData,
-  jobsiteData: jobsiteData,
-  costcodesData,
-  edit,
-  equipment,
-  handleFormSubmit,
-  setEdit,
-  employeeId,
-  date,
-}: EditWorkProps) => {
+const EditWork = ({ loading }: EditWorkProps) => {
   // Validate props using Zod
-  try {
-    EditWorkPropsSchema.parse({
-      timesheetData,
-      jobsiteData: jobsiteData,
-      costcodesData,
-      edit,
-      equipment,
-      handleFormSubmit,
-      setEdit,
-      employeeId,
-      date,
-    });
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      console.error("Validation error in EditWork props:", error.errors);
-    }
-  }
-
-  const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>(
-    {}
-  );
-  const [expandedEquipmentLogs, setExpandedEquipmentLogs] = useState<
-    Record<number, boolean>
-  >({});
-  const [timesheets, setTimesheets] = useState<TimeSheet[]>([]);
-  const [equipmentLogs, setEquipmentLogs] = useState<EquipmentLog[]>([]);
-  const [message, setMessage] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  const t = useTranslations("MyTeam");
-
-  useEffect(() => {
-    if (!timesheetData || timesheetData.length === 0) {
-      setMessage(`${t("NoTimesheetsFound")}`);
-    } else {
-      setMessage(null);
-      const initializedTimesheets = timesheetData.map((timesheet) => {
-        const startDate = timesheet.startTime
-          ? new Date(timesheet.startTime).toISOString().split("T")[0]
-          : "";
-        const startTime = timesheet.startTime
-          ? new Date(timesheet.startTime)
-              .toISOString()
-              .split("T")[1]
-              .split(":")
-              .slice(0, 2)
-              .join(":")
-          : "";
-        const endDate = timesheet.endTime
-          ? new Date(timesheet.endTime).toISOString().split("T")[0]
-          : "";
-        const endTime = timesheet.endTime
-          ? new Date(timesheet.endTime)
-              .toISOString()
-              .split("T")[1]
-              .split(":")
-              .slice(0, 2)
-              .join(":")
-          : "";
-
-        const durationBackup =
-          timesheet.startTime && timesheet.endTime
-            ? (new Date(timesheet.endTime).getTime() -
-                new Date(timesheet.startTime).getTime()) /
-              (1000 * 60 * 60)
-            : 0;
-
-        return {
-          ...timesheet,
-          startDate,
-          startTime,
-          endDate,
-          endTime,
-          duration: timesheet.duration ?? durationBackup,
-        };
-      });
-      setTimesheets(initializedTimesheets);
-    }
-  }, [timesheetData]);
-
-  useEffect(() => {
-    const fetchEquipmentLogs = async () => {
-      try {
-        setLoading(true);
-        const data = await fetch(
-          `/api/getEmployeeEquipmentByDate?date=${date}`
-        );
-        const res = await data.json();
-
-        // Validate fetched data using Zod
-        try {
-          EditWorkPropsSchema.shape.equipmentData.parse(res);
-        } catch (error) {
-          if (error instanceof z.ZodError) {
-            console.error("Validation error in equipment data:", error.errors);
-          }
-        }
-
-        setEquipmentLogs(res);
-      } catch {
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchEquipmentLogs();
-  }, [date]);
-
-  const toggleItem = (id: string) => {
-    setExpandedItems((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
-
-  const toggleEquipmentLog = (id: number) => {
-    setExpandedEquipmentLogs((prev) => ({
-      ...prev,
-      [id]: !prev[id], // Toggle the expansion state of the specific equipment log
-    }));
-  };
-
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    id: string,
-    field: keyof TimeSheet
-  ) => {
-    const value = e.target.value;
-    setTimesheets((prevData) =>
-      prevData.map((timesheet) =>
-        timesheet.id === id ? { ...timesheet, [field]: value } : timesheet
-      )
-    );
-  };
-
-  const handleInputChangeDate = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    id: string,
-    field: "startDate" | "startTime" | "endDate" | "endTime"
-  ) => {
-    const value = e.target.value;
-    setTimesheets((prevTimesheets) =>
-      prevTimesheets.map((timesheet) =>
-        timesheet.id === id ? { ...timesheet, [field]: value } : timesheet
-      )
-    );
-  };
-
-  const handleCodeChange = (
-    e: React.ChangeEvent<HTMLSelectElement>,
-    id: string,
-    field: keyof TimeSheet
-  ) => {
-    const value = e.target.value;
-    setTimesheets((prevTimesheets) =>
-      prevTimesheets.map((timesheet) =>
-        timesheet.id === id ? { ...timesheet, [field]: value } : timesheet
-      )
-    );
-  };
-
-  const handleDurationChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    id: number
-  ) => {
-    const value = e.target.value;
-    setEquipmentLogs((prevLogs) =>
-      prevLogs.map((log) => (log.id === id ? { ...log, duration: value } : log))
-    );
-  };
-
-  const handleEquipmentChange = (
-    e: React.ChangeEvent<HTMLSelectElement>,
-    id: number
-  ) => {
-    const value = e.target.value;
-    setEquipmentLogs((prevLogs) =>
-      prevLogs.map((log) =>
-        log.id === id
-          ? { ...log, Equipment: { ...log.Equipment, name: value } }
-          : log
-      )
-    );
-  };
-
-  const handleSaveChanges = async () => {
-    try {
-      for (const timesheet of timesheets) {
-        const formData = new FormData();
-        formData.append("id", timesheet.id ?? "");
-        formData.append(
-          "submitDate",
-          timesheet.submitDate?.toISOString() ?? ""
-        );
-        formData.append("employeeId", employeeId);
-        formData.append("costcode", timesheet.costcode ?? "");
-        formData.append(
-          "startTime",
-          `${timesheet.startDate}T${timesheet.startTime}`
-        );
-        formData.append("endTime", `${timesheet.endDate}T${timesheet.endTime}`);
-        formData.append("jobsiteId", timesheet.jobsiteId ?? "");
-        await editTimeSheet(formData);
-      }
-
-      handleFormSubmit(employeeId, date, "Changes saved successfully.");
-      setEdit(false);
-      setMessage("Changes saved successfully.");
-    } catch (error) {
-      console.error("Failed to save changes", error);
-      setMessage("Failed to save changes.");
-      setEdit(false);
-      handleFormSubmit(employeeId, date, "Changes not saved.");
-    }
-  };
-
-  const editHandler = () => {
-    setEdit(!edit);
-  };
 
   return loading ? (
     <>
@@ -440,8 +134,13 @@ const EditWork = ({
                           id="duration"
                           type="text"
                           value={
-                            timesheet.duration
-                              ? timesheet.duration.toFixed(2).toString()
+                            timesheet.endTime !== null &&
+                            timesheet.startTime !== null
+                              ? (new Date(timesheet.endTime!).getTime() -
+                                  new Date(timesheet.startTime!).getTime()) /
+                                1000 /
+                                60 /
+                                60
                               : ""
                           }
                           onChange={(e) =>
@@ -608,11 +307,15 @@ const EditWork = ({
                         type="text"
                         name="eq-duration"
                         value={
-                          log.duration !== null
-                            ? Number(log.duration).toFixed(2).toString()
+                          log.endTime !== null && log.startTime !== null
+                            ? Number(
+                                new Date(log.endTime).getTime() -
+                                  new Date(log.startTime).getTime()
+                              )
+                                .toFixed(2)
+                                .toString()
                             : ""
                         }
-                        onChange={(e) => handleDurationChange(e, log.id)}
                         disabled={!edit}
                       />
                     </Contents>
