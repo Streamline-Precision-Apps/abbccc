@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState } from "react";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Holds } from "@/components/(reusable)/holds";
@@ -26,7 +25,6 @@ const ViewTimesheetsSchema = z.object({
       id: z.string().nullable(),
       startTime: z.union([z.string(), z.instanceof(Date)]).nullable(),
       endTime: z.union([z.string(), z.instanceof(Date)]).nullable(),
-      duration: z.number().nullable(),
       jobsiteId: z.string().nullable(),
       costcode: z.string().nullable(),
     })
@@ -62,6 +60,21 @@ export default function ViewTimesheets({ user }: Props) {
     }
   }
 
+  // Function to calculate duration
+  const calculateDuration = (
+    startTime: string | Date | null | undefined,
+    endTime: string | Date | null | undefined
+  ): string => {
+    if (startTime && endTime) {
+      const start = new Date(startTime).getTime();
+      const end = new Date(endTime).getTime();
+      const durationInMilliseconds = end - start;
+      const durationInHours = durationInMilliseconds / (1000 * 60 * 60);
+      return durationInHours.toFixed(2); // Format as hours with two decimals
+    }
+    return "N/A";
+  };
+
   // Fetch timesheets from the API
   const fetchTimesheets = async (date?: string) => {
     setLoading(true);
@@ -78,26 +91,8 @@ export default function ViewTimesheets({ user }: Props) {
       }
 
       const data: TimeSheet[] = await response.json();
-
       setTimesheetData(data);
       setShowTimesheets(true);
-
-      // Format startTime and endTime asynchronously
-      const formattedData: {
-        [key: string]: { startTime: string; endTime: string };
-      } = {};
-      for (const timesheet of data) {
-        if (timesheet.id) {
-          formattedData[timesheet.id] = {
-            startTime: timesheet.startTime
-              ? await formatTime(timesheet.startTime.toString())
-              : "N/A",
-            endTime: timesheet.endTime
-              ? await formatTime(timesheet.endTime.toString())
-              : "N/A",
-          };
-        }
-      }
     } catch (error) {
       setError("Error fetching timesheets");
       console.error(error);
@@ -106,7 +101,6 @@ export default function ViewTimesheets({ user }: Props) {
     }
   };
 
-  // Handle form submission
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget as HTMLFormElement);
@@ -148,98 +142,74 @@ export default function ViewTimesheets({ user }: Props) {
           </Holds>
         </Holds>
       ) : (
-        <>
-          {showTimesheets ? (
-            <Holds
-              background={"white"}
-              size={"full"}
-              className="h-full min-h-[50vh]"
-            >
-              {timesheetData.length > 0 ? (
-                <Titles size={"h2"} className="pt-8">
-                  {`Timesheets Found (${timesheetData.length})`}
-                </Titles>
-              ) : (
-                <Titles size={"h2"} className="pt-8">
-                  {t("NoData")}
-                </Titles>
-              )}
-
-              {timesheetData.length > 0 ? (
-                timesheetData.map((timesheet) => (
-                  <Holds
-                    key={timesheet.id}
-                    size={"full"}
-                    className="odd:bg-app-blue rounded"
-                  >
-                    <Holds size={"70"} className="p-4 py-8">
-                      <Labels>
-                        {t("TimesheetID")}
-                        <Inputs value={timesheet.id} readOnly />
-                      </Labels>
-                      <Labels>
-                        {t("StartTime")}
-                        <Inputs
-                          value={
-                            timesheet.startTime
-                              ? formatTime(timesheet.startTime.toString())
-                              : "N/A"
-                          }
-                          readOnly
-                        />
-                      </Labels>
-                      <Labels>
-                        {t("EndTime")}
-                        <Inputs
-                          value={
-                            timesheet.endTime
-                              ? formatTime(timesheet.endTime.toString())
-                              : "N/A"
-                          }
-                          readOnly
-                        />
-                      </Labels>
-                      <Labels>
-                        {t("Duration")}
-                        <Inputs
-                          value={
-                            timesheet.duration !== null &&
-                            timesheet.duration !== undefined
-                              ? timesheet.duration.toFixed(2)
-                              : "N/A"
-                          }
-                          readOnly
-                        />
-                      </Labels>
-                      <Labels>
-                        {t("Jobsite")}
-                        <Inputs value={timesheet.jobsiteId} readOnly />
-                      </Labels>
-                      <Labels>
-                        {t("CostCode")}
-                        <Inputs value={timesheet.costcode} readOnly />
-                      </Labels>
-                    </Holds>
+        showTimesheets && (
+          <Holds
+            background={"white"}
+            size={"full"}
+            className="h-full min-h-[50vh]"
+          >
+            {timesheetData.length > 0 ? (
+              timesheetData.map((timesheet) => (
+                <Holds
+                  key={timesheet.id}
+                  size={"full"}
+                  className="odd:bg-app-blue rounded"
+                >
+                  <Holds size={"70"} className="p-4 py-8">
+                    <Labels>
+                      {t("TimesheetID")}
+                      <Inputs value={timesheet.id} readOnly />
+                    </Labels>
+                    <Labels>
+                      {t("StartTime")}
+                      <Inputs
+                        value={
+                          timesheet.startTime
+                            ? formatTime(timesheet.startTime.toString())
+                            : "N/A"
+                        }
+                        readOnly
+                      />
+                    </Labels>
+                    <Labels>
+                      {t("EndTime")}
+                      <Inputs
+                        value={
+                          timesheet.endTime
+                            ? formatTime(timesheet.endTime.toString())
+                            : "N/A"
+                        }
+                        readOnly
+                      />
+                    </Labels>
+                    <Labels>
+                      {t("Duration")}
+                      <Inputs
+                        value={calculateDuration(
+                          timesheet.startTime,
+                          timesheet.endTime
+                        )}
+                        readOnly
+                      />
+                    </Labels>
+                    <Labels>
+                      {t("Jobsite")}
+                      <Inputs value={timesheet.jobsiteId} readOnly />
+                    </Labels>
+                    <Labels>
+                      {t("CostCode")}
+                      <Inputs value={timesheet.costcode} readOnly />
+                    </Labels>
                   </Holds>
-                ))
-              ) : (
-                <Holds className="h-full">
-                  <Texts size={"p3"} className="py-8">
-                    {t("NoDataMessage")}
-                  </Texts>
                 </Holds>
-              )}
-            </Holds>
-          ) : (
-            <Holds background={"white"} className="pb-10 h-full min-h-[50vh]">
-              <Holds position={"center"} size={"70"} className="my-10">
-                <Texts size={"p3"}>{t("FirstMessage")}</Texts>
-              </Holds>
-            </Holds>
-          )}
-
-          {error && <Texts className="text-red-500">{error}</Texts>}
-        </>
+              ))
+            ) : (
+              <Titles size={"h2"} className="pt-8">
+                {t("NoData")}
+              </Titles>
+            )}
+          </Holds>
+        )
       )}
     </>
   );
