@@ -3,32 +3,33 @@ import { useSession } from "next-auth/react";
 import { Buttons } from "../(reusable)/buttons";
 import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
-import { useEffect } from "react";
 import { Titles } from "../(reusable)/titles";
+import { useTranslations } from "next-intl";
 
 type Props = {
   handleNextStep: () => void;
   setClockInRole: React.Dispatch<React.SetStateAction<string>>;
   clockInRole: string;
+  option?: string;
+  handleReturn?: () => void;
 };
 export default function MultipleRoles({
   handleNextStep,
   setClockInRole,
+  option,
+  handleReturn,
 }: Props) {
+  const t = useTranslations("Clock");
   const { data: session } = useSession();
   const tascoView = session?.user.tascoView;
   const truckView = session?.user.truckView;
   const mechanicView = session?.user.mechanicView;
 
-  useEffect(() => {
-    const chooseRole = () => {
-      if (!tascoView && !truckView && !mechanicView) {
-        setClockInRole("general");
-        handleNextStep();
-      }
-    };
-    chooseRole();
-  }, [tascoView, truckView, mechanicView, setClockInRole, handleNextStep]);
+  const selectView = (clockInRole: string) => {
+    setClockInRole(clockInRole);
+    localStorage.setItem("clockInRole", clockInRole);
+    handleNextStep();
+  };
   return (
     <Holds className="h-full w-full">
       <Grids rows={"7"} gap={"5"} className="my-5 h-fullw-full">
@@ -39,8 +40,7 @@ export default function MultipleRoles({
           <Holds className="h-full row-span-1">
             <Buttons
               onClick={() => {
-                handleNextStep();
-                setClockInRole("tasco");
+                selectView("tasco");
               }}
               background={"lightBlue"}
               className="w-5/6"
@@ -53,8 +53,7 @@ export default function MultipleRoles({
           <Holds className="h-full row-span-1">
             <Buttons
               onClick={() => {
-                handleNextStep();
-                setClockInRole("truck");
+                selectView("truck");
               }}
               background={"lightBlue"}
               className="w-5/6"
@@ -67,8 +66,7 @@ export default function MultipleRoles({
           <Holds className="h-full row-span-1">
             <Buttons
               onClick={() => {
-                handleNextStep();
-                setClockInRole("mechanic");
+                selectView("mechanic");
               }}
               background={"lightBlue"}
               className="w-5/6"
@@ -80,8 +78,7 @@ export default function MultipleRoles({
         <Holds className="h-full row-span-1">
           <Buttons
             onClick={() => {
-              handleNextStep();
-              setClockInRole("general");
+              selectView("general");
             }}
             background={"lightBlue"}
             className="w-5/6"
@@ -89,6 +86,11 @@ export default function MultipleRoles({
             <Titles size={"h3"}>General</Titles>
           </Buttons>
         </Holds>
+        {option === "break" ? (
+          <Buttons onClick={handleReturn} background={"red"}>
+            {t("ReturnToJobsite")}
+          </Buttons>
+        ) : null}
       </Grids>
     </Holds>
   );

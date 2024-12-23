@@ -72,11 +72,19 @@ export default function NewClockProcess({
   const handleReturn = () => {
     const jobsite = localStorage.getItem("jobSite");
     const costCode = localStorage.getItem("costCode");
-    if (jobsite && costCode) {
+    const clockInRole = localStorage.getItem("clockInRole");
+    if (jobsite && costCode && clockInRole === "general") {
+      setClockInRole(clockInRole || "");
       setScanResult({ data: jobsite });
       setCostCode(costCode);
       setAuthStep("success");
       setStep(4);
+    } else if (jobsite && costCode && clockInRole === "truck") {
+      setClockInRole(clockInRole || "");
+      setScanResult({ data: jobsite });
+      setCostCode(costCode);
+      setAuthStep("success");
+      setStep(3);
     } else {
       setStep(0);
     }
@@ -146,13 +154,15 @@ export default function NewClockProcess({
   }
 
   return (
-    <Holds className="p-5 h-full w-full">
+    <Holds className="h-full w-full py-5">
       {/* Multiple Role Selection */}
       {step === 0 && (
         <MultipleRoles
           handleNextStep={handleNextStep}
           setClockInRole={setClockInRole}
           clockInRole={clockInRole}
+          option={option}
+          handleReturn={handleReturn}
         />
       )}
 
