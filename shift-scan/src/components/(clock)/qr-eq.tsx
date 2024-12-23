@@ -3,7 +3,6 @@ import React, { useEffect, useRef, useState } from "react";
 import QrScanner from "qr-scanner";
 import { useRouter } from "next/navigation";
 import { useEQScanData } from "@/app/context/equipmentContext";
-
 type QrReaderProps = {
   handleNextStep: () => void;
 };
