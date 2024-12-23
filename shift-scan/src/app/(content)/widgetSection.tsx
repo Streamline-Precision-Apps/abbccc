@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 import { Session } from "next-auth";
 import { PayPeriodTimesheets } from "@/lib/types";
 import { z } from "zod";
+import { useSavedBreakTime } from "../context/BreakTimeContext";
 
 // Zod schema for Session type
 const UserSchema = z.object({
@@ -39,8 +40,9 @@ const PayPeriodTimesheetsSchema = z.object({
   startTime: z.string().refine((date) => !isNaN(new Date(date).getTime()), {
     message: "Invalid date format",
   }),
-
-  duration: z.number().nullable(),
+  endTime: z.string().refine((date) => !isNaN(new Date(date).getTime()), {
+    message: "Invalid date format",
+  }),
 });
 
 // Zod schema for props
@@ -81,6 +83,34 @@ export default function WidgetSection({ session }: Props) {
   const [payPeriodSheets, setPayPeriodSheets] = useState<PayPeriodTimesheets[]>(
     []
   );
+  const { breakTime: getBreakTime, setBreakTime } = useSavedBreakTime();
+
+  useEffect(() => {
+    const savedBreakTime = localStorage.getItem("breakTime");
+    if (savedBreakTime) {
+      setBreakTime(parseInt(savedBreakTime, 10));
+    }
+  }, [setBreakTime]);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout | undefined;
+
+    if (authStep === "break") {
+      timer = setInterval(() => {
+        setBreakTime((prevBreakTime) => {
+          const newBreakTime = prevBreakTime + 1;
+          localStorage.setItem("breakTime", newBreakTime.toString());
+          return newBreakTime;
+        });
+      }, 1000);
+    } else {
+      clearInterval(timer);
+    }
+
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [authStep, setBreakTime]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -94,6 +124,7 @@ export default function WidgetSection({ session }: Props) {
         const transformedData = validatedData.map((item) => ({
           ...item,
           startTime: new Date(item.startTime),
+          endTime: new Date(item.endTime),
         }));
         setPayPeriodSheets(transformedData);
         setPayPeriodTimeSheets(transformedData);
@@ -134,9 +165,13 @@ export default function WidgetSection({ session }: Props) {
   const totalPayPeriodHours = useMemo(() => {
     if (!payPeriodSheets.length) return 0;
     return payPeriodSheets
-      .filter((sheet: PayPeriodTimesheets) => sheet.duration !== null)
+      .filter((sheet: PayPeriodTimesheets) => sheet.startTime !== null)
       .reduce(
-        (total, sheet: PayPeriodTimesheets) => total + (sheet.duration ?? 0),
+        (total, sheet: PayPeriodTimesheets) =>
+          total +
+          (new Date(sheet.endTime).getTime() -
+            new Date(sheet.startTime).getTime()) /
+            (1000 * 60 * 60),
         0
       );
   }, [payPeriodSheets]);
@@ -158,7 +193,11 @@ export default function WidgetSection({ session }: Props) {
                     : "col-span-2 row-span-5 gap-5 h-full"
                 }
               >
-                <DisplayBreakTime setToggle={handleToggle} display={toggle} />
+                <DisplayBreakTime
+                  setToggle={handleToggle}
+                  display={toggle}
+                  getBreakTime={getBreakTime}
+                />
               </Holds>
             ) : (
               <Holds className="col-span-2 row-span-5 gap-5 h-full">

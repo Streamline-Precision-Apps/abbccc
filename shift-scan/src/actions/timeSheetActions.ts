@@ -82,7 +82,7 @@ export async function CreateTimeSheet(formData: FormData) {
         costcode: formData.get("costcode") as string,
         comment: (formData.get("timeSheetComments") as string) || null,
         user: { connect: { id: formData.get("userId") as string } },
-        startTime: formData.get("startTime") as string,
+        startTime: parseUTC(formData.get("startTime") as string).toISOString(),
         workType: formData.get("workType") as WorkType,
       },
     });
