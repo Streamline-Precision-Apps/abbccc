@@ -21,8 +21,16 @@ export async function GET() {
         id: true,
         firstName: true,
         lastName: true,
+        email: true,
         image: true,
         signature: true,
+        contact: {
+          select: {
+            phoneNumber: true,
+            emergencyContact: true,
+            emergencyContactNumber: true,
+          },
+        }
       },
     });
 

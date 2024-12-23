@@ -4,15 +4,6 @@ import prisma from "@/lib/prisma";
 import { FormStatus, TimeOffRequestType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
-export async function getUserSentContent(user_id: string | undefined) {
-  if (!user_id) return;
-  const sentContent = await prisma.timeOffRequestForm.findMany({
-    where: {
-      employeeId: user_id,
-    },
-  });
-  return sentContent;
-}
 export async function createLeaveRequest(formData: FormData) {
   // do we want to restrict the amount of requests that can be made?
   // do we want  to check if the user has a pending request already that match the dates and type of request
