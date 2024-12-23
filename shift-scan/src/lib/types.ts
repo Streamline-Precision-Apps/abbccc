@@ -19,6 +19,8 @@ export type WorkType = "MECHANIC" | "TRUCK_DRIVER" | "LABOR" | "TASCO";
 
 export type EquipmentTags = "TRUCK" | "TRAILER" | "EQUIPMENT" | "VEHICLE";
 
+export type Priority = "LOW" | "MEDIUM" | "HIGH" | "URGENT";
+
 export type EquipmentStatus =
   | "OPERATIONAL"
   | "NEEDS_REPAIR"
@@ -181,7 +183,8 @@ export type TimeSheets = {
 export type EquipmentLog = {
   id: string;
   employeeId: string;
-  duration: string | null;
+  startTime: Date;
+  endTime: Date | null;
   Equipment: EquipmentCodes;
 };
 
@@ -258,6 +261,90 @@ export type EquipmentCodes = {
   name: string;
 };
 
+export type TimeSheet = {
+  submitDate: Date;
+  date: Date;
+  id: string;
+  userId: string;
+  jobsiteId: string;
+  costcode: string;
+  nu: string;
+  Fp: string;
+  startTime: Date;
+  endTime: Date | null;
+  comment: string | null;
+  statusComment: string | null;
+  location: string | null;
+  status: string;
+  workType: string;
+  tascoLogs: tascoLogs[];
+  truckingLogs: truckingLogs[];
+  maintenanceLogs: maintenanceLogs[];
+  employeeEquipmentLogs: employeeEquipmentLogs[];
+};
+
+export type tascoLogs = {
+  id: string;
+  startTime: Date;
+  endTime: Date | null;
+  comment: string | null;
+  timeSheetId: string;
+  shiftType: string;
+  equipmentId: string | null;
+  laborType: string | null;
+  materialType: string | null;
+  loadsHauled: number | null;
+  loadType: string | null;
+  loadWeight: number | null;
+  refueled: Refueled[];
+  completed: boolean;
+};
+export type employeeEquipmentLogs = {
+  id: string;
+  equipmentId: string; // Foreign key to `Equipment`
+  jobsiteId: string; // Foreign key to `Jobsite`
+  employeeId: string; // Foreign key to `User`
+  startTime?: Date | null; // Optional
+  endTime?: Date | null; // Optional; null if the log is incomplete
+  comment?: string | null; // Optional
+  createdAt: Date; // Auto-generated timestamp
+  updatedAt: Date; // Auto-updated timestamp
+  isSubmitted: boolean; // Defaults to `false`
+  status: FormStatus; // Enum: e.g., "PENDING", "APPROVED", etc.
+};
+
+export type maintenanceLogs = {
+  id: String;
+  equipmentId: String;
+  equipmentIssue: String | null;
+  problemDiagnosis: String | null;
+  solution: String | null;
+  totalHoursLaboured: Number;
+  createdAt: Date;
+  priority: Priority;
+  delay: Date;
+  repaired: Boolean;
+};
+
+export type truckingLogs = {
+  id: String;
+  taskName: String;
+  equipmentId: String;
+  timeSheetId: String;
+  startingMileage: Number;
+  endingMileage: Number | null;
+  startTime: Date;
+  endTime: Date | null;
+  netWeight: Number | null;
+  comment: String | null;
+};
+
+export type Refueled = {
+  id: string;
+  date: Date;
+  gallonsRefueled: number | null;
+  tascoLogID: string | null;
+};
 //--------------------------------------------
 
 export type Equipment = {

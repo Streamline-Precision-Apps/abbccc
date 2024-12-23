@@ -1,5 +1,6 @@
 "use server";
 import prisma from "@/lib/prisma";
+import { TimeSheet } from "@/lib/types";
 import { WorkType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
@@ -31,24 +32,41 @@ export async function getTimeSheetsbyId() {
 
 // Get TimeSheet by id
 export async function fetchTimesheets(employeeId: string, date: string) {
+  console.log("Fetching timesheets for:", { employeeId, date });
+  // Convert the date to UTC start and end times
   const startOfDay = new Date(date);
   startOfDay.setUTCHours(0, 0, 0, 0);
 
   const endOfDay = new Date(date);
   endOfDay.setUTCHours(23, 59, 59, 999);
 
-  const timeSheet = await prisma.timeSheet.findMany({
-    where: {
-      userId: employeeId,
-      date: {
-        gte: startOfDay.toISOString(),
-        lte: endOfDay.toISOString(),
+  try {
+    // Fetch timesheets from Prisma
+    const timeSheets = await prisma.timeSheet.findMany({
+      where: {
+        userId: employeeId,
+        date: {
+          gte: startOfDay,
+          lte: endOfDay,
+        },
       },
-    },
-  });
+      orderBy: {
+        startTime: "asc", // Optional: Orders by startTime
+      },
+      include: {
+        tascoLogs: true,
+        truckingLogs: true,
+        maintenanceLogs: true,
+        employeeEquipmentLogs: true,
+      },
+    });
 
-  console.log("\n\n\nTimeSheets:", timeSheet);
-  return timeSheet;
+    console.log("Fetched Timesheets:", timeSheets);
+    return timeSheets;
+  } catch (error) {
+    console.error("Error fetching timesheets:", error);
+    throw new Error("Failed to fetch timesheets");
+  }
 }
 
 // Create TimeSheet
@@ -131,6 +149,35 @@ export async function AddWholeTimeSheet(formData: FormData) {
   } catch (error) {
     console.error("Error creating timesheet:", error);
     throw error;
+  }
+}
+
+export async function updateTimeSheets(updatedSheets: TimeSheet[]) {
+  try {
+    console.log("Updating Timesheets...");
+    console.log(updatedSheets);
+
+    // Perform individual updates for each timesheet
+    const updatePromises = updatedSheets.map((timesheet) => {
+      return prisma.timeSheet.update({
+        where: { id: timesheet.id }, // Identify the specific timesheet by its ID
+        data: {
+          date: timesheet.date,
+          workType: timesheet.workType as WorkType,
+          startTime: timesheet.startTime,
+          endTime: timesheet.endTime,
+          comment: timesheet.comment,
+        },
+      });
+    });
+
+    // Wait for all updates to complete
+    await Promise.all(updatePromises);
+
+    console.log("Timesheets updated successfully.");
+  } catch (error) {
+    console.error("Error updating timesheets:", error);
+    throw new Error("Failed to update timesheets. Please try again.");
   }
 }
 
