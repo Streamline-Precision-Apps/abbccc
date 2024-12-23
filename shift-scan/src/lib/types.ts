@@ -13,13 +13,27 @@ import { clockInFormSchema } from "./validation";
 
 export type clockInForm = z.infer<typeof clockInFormSchema>;
 // -------------------------------------------------------------------------------------
-export type FormStatus = "PENDING" | "APPROVED" | "DENIED";
-
-export type WorkType = "MECHANIC" | "TRUCK_DRIVER" | "LABOR" | "TASCO";
 
 export type EquipmentTags = "TRUCK" | "TRAILER" | "EQUIPMENT" | "VEHICLE";
 
-export type Priority = "LOW" | "MEDIUM" | "HIGH" | "URGENT";
+export enum FormStatus {
+  PENDING = "PENDING",
+  APPROVED = "APPROVED",
+  REJECTED = "REJECTED",
+}
+
+export enum WorkType {
+  MECHANIC = "MECHANIC",
+  LABOR = "LABOR",
+  TASCO = "TASCO",
+  TRUCK_DRIVER = "TRUCK_DRIVER",
+}
+
+export enum Priority {
+  LOW = "LOW",
+  MEDIUM = "MEDIUM",
+  HIGH = "HIGH",
+}
 
 export type EquipmentStatus =
   | "OPERATIONAL"
@@ -275,68 +289,140 @@ export type TimeSheet = {
   comment: string | null;
   statusComment: string | null;
   location: string | null;
-  status: string;
-  workType: string;
-  tascoLogs: tascoLogs[];
-  truckingLogs: truckingLogs[];
-  maintenanceLogs: maintenanceLogs[];
-  employeeEquipmentLogs: employeeEquipmentLogs[];
+  status: FormStatus; // Enum: PENDING, APPROVED, etc.
+  workType: WorkType; // Enum: Type of work
+
+  // Relations
+  tascoLogs: TascoLog[] | null;
+  truckingLogs: TruckingLog[] | null;
+  maintenanceLogs: MaintenanceLog[] | null;
+  employeeEquipmentLogs: EmployeeEquipmentLog[] | null;
 };
 
-export type tascoLogs = {
+export type TascoLog = {
   id: string;
+  timeSheetId: string;
+  shiftType: string; // Task name for Tasco work
+  startTime: Date;
+  endTime: Date | null;
+  equipmentId: string | null; // Linked equipment ID
+  laborType: string | null; // E.g., manual labor or equipment work
+  materialType: string | null; // Material being handled
+  loadsHauled: number | null;
+  loadType: string | null; // E.g., uncovered, screened
+  loadWeight: number | null; // Weight of loads
+  comment: string | null;
+  createdAt: Date;
+  completed: boolean; // Status of task completion
+
+  // Relations
+  refueled: Refueled[]; // Refueling logs
+  equipment: Equipment | null; // Related equipment
+  timeSheet: TimeSheet | null; // Related timesheet
+};
+
+export type EmployeeEquipmentLog = {
+  id: string;
+  equipmentId: string;
+  jobsiteId: string;
+  employeeId: string;
+  startTime?: Date | null;
+  endTime?: Date | null;
+  comment?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  isSubmitted: boolean;
+  status: FormStatus; // Enum: PENDING, APPROVED, etc.
+
+  // Relations
+  equipment: Equipment | null;
+  jobsite: Jobsite | null;
+  employee: User;
+  timeSheet: TimeSheet | null;
+};
+export type MaintenanceLog = {
+  id: string;
+  timeSheetId: string;
+  userId: string;
+  maintenanceId: string;
   startTime: Date;
   endTime: Date | null;
   comment: string | null;
-  timeSheetId: string;
-  shiftType: string;
-  equipmentId: string | null;
-  laborType: string | null;
-  materialType: string | null;
-  loadsHauled: number | null;
-  loadType: string | null;
-  loadWeight: number | null;
-  refueled: Refueled[];
-  completed: boolean;
+
+  // Relations
+  user: User;
+  timeSheet: TimeSheet | null;
+  maintenance: Maintenance | null;
 };
-export type employeeEquipmentLogs = {
+
+export type TruckingLog = {
   id: string;
-  equipmentId: string; // Foreign key to `Equipment`
-  jobsiteId: string; // Foreign key to `Jobsite`
-  employeeId: string; // Foreign key to `User`
-  startTime?: Date | null; // Optional
-  endTime?: Date | null; // Optional; null if the log is incomplete
-  comment?: string | null; // Optional
-  createdAt: Date; // Auto-generated timestamp
-  updatedAt: Date; // Auto-updated timestamp
-  isSubmitted: boolean; // Defaults to `false`
-  status: FormStatus; // Enum: e.g., "PENDING", "APPROVED", etc.
-};
-
-export type maintenanceLogs = {
-  id: String;
-  equipmentId: String;
-  equipmentIssue: String | null;
-  problemDiagnosis: String | null;
-  solution: String | null;
-  totalHoursLaboured: Number;
-  createdAt: Date;
-  priority: Priority;
-  delay: Date;
-  repaired: Boolean;
-};
-
-export type truckingLogs = {
-  id: String;
-  taskName: String;
-  equipmentId: String;
-  timeSheetId: String;
-  startingMileage: Number;
-  endingMileage: Number | null;
+  timeSheetId: string | null;
+  equipmentId: string | null;
+  taskName: string | null; // E.g., drive or operator
+  startingMileage: number;
+  endingMileage: number | null;
   startTime: Date;
   endTime: Date | null;
-  netWeight: Number | null;
-  comment: String | null;
+  netWeight: number | null;
+  comment: string | null;
+  createdAt: Date;
+
+  // Relations
+  stateMileage: StateMileage[];
+  refueled: Refueled[];
+  material: Material[];
+  equipmentHauled: EquipmentHauled[];
+  equipment: Equipment | null;
+  timeSheet: TimeSheet | null;
+};
+export type StateMileage = {
+  id: string;
+  truckingLogId: string;
+  state: string;
+  stateLineMileage: number;
+  createdAt: Date;
+
+  // Relations
+  truckingLog: TruckingLog | null;
+};
+
+export type Material = {
+  id: string;
+  truckingLogId: string;
+  name: string;
+  createdAt: Date;
+
+  // Relations
+  truckingLog: TruckingLog | null;
+};
+
+export type EquipmentHauled = {
+  id: string;
+  truckingLogId: string;
+  equipmentId: string;
+  createdAt: Date;
+
+  // Relations
+  truckingLog: TruckingLog | null;
+  equipment: Equipment | null;
+};
+
+export type Maintenance = {
+  id: string;
+  equipmentId: string;
+  equipmentIssue: string | null;
+  problemDiagnosis: string | null;
+  solution: string | null;
+  totalHoursLaboured: number | null;
+  createdAt: Date;
+  priority: Priority; // Enum: Priority level
+  delay: Date | null; // Deadline for maintenance
+  repaired: boolean; // Status of repair
+
+  // Relations
+  equipment: Equipment;
+  maintenanceLogs: MaintenanceLog[];
 };
 
 export type Refueled = {
@@ -366,32 +452,28 @@ export type Equipment = {
   inUse?: boolean;
 };
 
-export type EmployeeEquipmentLog = {
-  id?: number | null;
-  startTime?: string;
-  endTime?: string | null;
-  duration?: number | null;
-  isRefueled?: boolean | null;
-  fuelUsed?: number | null;
-  comment?: string | null;
-  equipmentId?: number | null;
-};
-
-export type Jobsites = {
-  selectedJobsite: CostCodes;
-  costCode: CostCodes[]; // Array of CostCodes
+export type Jobsite = {
   id: string;
-  qrId: string;
-  isActive: boolean;
-  status: string;
-  name: string;
-  streetNumber: string | null;
-  streetName: string;
-  city: string;
-  state: string | null;
-  country: string;
-  description: string | null;
-  comment: string | null;
+  qrId: string; // Uniquely generated QR code ID
+  name: string; // Name of the job site
+  description: string; // Description of the job
+  isActive: boolean; // Whether the job site is active
+  status: FormStatus; // Enum to track the status (e.g., PENDING, APPROVED)
+  address: string; // Street address of the job site
+  city: string; // City where the job site is located
+  state: string; // State where the job site is located
+  zipCode: string; // ZIP code of the job site
+  country: string; // Country, defaults to "US"
+  comment?: string | null; // Optional comment for admin usage
+  createdAt: Date; // Timestamp of when the job site was created
+  updatedAt: Date; // Timestamp of when the job site was last updated
+  archiveDate?: Date | null; // Date when the job site was archived, null if unarchived
+
+  // Relations
+  employeeEquipmentLogs: EmployeeEquipmentLog[]; // List of equipment logs related to this job site
+  timeSheets: TimeSheet[]; // List of timesheets associated with this job site
+  CCTags: CCTags[]; // List of cost code tags for filtering job sites
+  equipment: Equipment[]; // List of equipment at the job site
 };
 
 export type JobsiteWithCost = {

@@ -9,7 +9,7 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import EditWorkNew from "./editWork-new";
-import { TimeSheet } from "@/lib/types";
+import { FormStatus, TimeSheet } from "@/lib/types";
 
 export const EmployeeTimeSheets = () => {
   const [date, setDate] = useState<string>(""); // State for selected date
@@ -30,7 +30,13 @@ export const EmployeeTimeSheets = () => {
           employeeId as string,
           selectedDate
         );
-        setTimeSheets(fetchedTimeSheets); // Update the timesheets state
+        const mappedTimeSheets: TimeSheet[] = fetchedTimeSheets.map(
+          (ts: any) => ({
+            ...ts,
+            status: ts.status as FormStatus, // Ensure the status is of type FormStatus
+          })
+        );
+        setTimeSheets(mappedTimeSheets); // Update the timesheets state
       } catch (error) {
         console.error("Error fetching timesheets:", error);
       }
