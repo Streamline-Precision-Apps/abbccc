@@ -229,6 +229,7 @@ export default function NewClockProcess({
       {/* Tasco Role */}
       {step === 1 && clockInRole === "tasco" && <div>Step 1 - Tasco</div>}
 
+      {/* ----------------------------------------- General Role ---------------------*/}
       {/* Select Jobsite Section */}
       {step === 3 && clockInRole === "general" && (
         <CodeStep datatype="jobsite" handleNextStep={handleNextStep} />

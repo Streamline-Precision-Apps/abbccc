@@ -1,6 +1,7 @@
 "use server";
 import { auth } from "@/auth";
-import ClockProcessor from "@/components/(clock)/clockProcess";
+import NewClockProcess from "@/components/(clock)/newclockProcess";
+
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";
@@ -12,18 +13,25 @@ export default async function Clock() {
   if (!session) {
     redirect("/signin");
   }
+
+  const user = session.user;
+
   const lang = (await cookies()).get("locale");
   const locale = lang ? lang.value : "en"; // Default to English
   return (
     <Bases>
       <Contents>
         <Holds background={"white"}>
-          <ClockProcessor
+          <NewClockProcess
             type={"jobsite"}
             scannerType={"jobsite"}
             option="break"
             locale={locale}
             returnpath="/"
+            mechanicView={user.mechanicView}
+            tascoView={user.tascoView}
+            truckView={user.truckView}
+            laborView={user.laborView}
           />
         </Holds>
       </Contents>
