@@ -135,7 +135,7 @@ export type TimeSheetView = {
 
 export type PayPeriodTimesheets = {
   startTime: Date; // Correct field name
-  duration: number | null;
+  endTime: Date;
 };
 
 export type inboxContent = {

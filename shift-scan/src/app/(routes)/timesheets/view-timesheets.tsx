@@ -26,7 +26,6 @@ const ViewTimesheetsSchema = z.object({
       id: z.string().nullable(),
       startTime: z.union([z.string(), z.instanceof(Date)]).nullable(),
       endTime: z.union([z.string(), z.instanceof(Date)]).nullable(),
-      duration: z.number().nullable(),
       jobsiteId: z.string().nullable(),
       costcode: z.string().nullable(),
     })
@@ -81,23 +80,6 @@ export default function ViewTimesheets({ user }: Props) {
 
       setTimesheetData(data);
       setShowTimesheets(true);
-
-      // Format startTime and endTime asynchronously
-      const formattedData: {
-        [key: string]: { startTime: string; endTime: string };
-      } = {};
-      for (const timesheet of data) {
-        if (timesheet.id) {
-          formattedData[timesheet.id] = {
-            startTime: timesheet.startTime
-              ? await formatTime(timesheet.startTime.toString())
-              : "N/A",
-            endTime: timesheet.endTime
-              ? await formatTime(timesheet.endTime.toString())
-              : "N/A",
-          };
-        }
-      }
     } catch (error) {
       setError("Error fetching timesheets");
       console.error(error);
@@ -177,12 +159,31 @@ export default function ViewTimesheets({ user }: Props) {
                         {t("TimesheetID")}
                         <Inputs value={timesheet.id} readOnly />
                       </Labels>
+
+                      <Labels>
+                        {t("Duration")}
+                        <Inputs
+                          value={
+                            timesheet.endTime && timesheet.startTime
+                              ? `${(
+                                  (new Date(timesheet.endTime).getTime() -
+                                    new Date(timesheet.startTime).getTime()) /
+                                  1000 /
+                                  60 /
+                                  60
+                                ).toFixed(2)} ${t("Unit")}`
+                              : "N/A"
+                          }
+                          readOnly
+                        />
+                      </Labels>
+
                       <Labels>
                         {t("StartTime")}
                         <Inputs
                           value={
                             timesheet.startTime
-                              ? formatTime(timesheet.startTime.toString())
+                              ? formatTime(timesheet.startTime) // Pass directly
                               : "N/A"
                           }
                           readOnly
@@ -193,24 +194,13 @@ export default function ViewTimesheets({ user }: Props) {
                         <Inputs
                           value={
                             timesheet.endTime
-                              ? formatTime(timesheet.endTime.toString())
+                              ? formatTime(timesheet.endTime) // Pass directly
                               : "N/A"
                           }
                           readOnly
                         />
                       </Labels>
-                      <Labels>
-                        {t("Duration")}
-                        <Inputs
-                          value={
-                            timesheet.duration !== null &&
-                            timesheet.duration !== undefined
-                              ? timesheet.duration.toFixed(2)
-                              : "N/A"
-                          }
-                          readOnly
-                        />
-                      </Labels>
+
                       <Labels>
                         {t("Jobsite")}
                         <Inputs value={timesheet.jobsiteId} readOnly />
