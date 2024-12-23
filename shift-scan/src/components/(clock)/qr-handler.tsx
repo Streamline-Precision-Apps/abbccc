@@ -2,7 +2,6 @@
 import React from "react";
 import { useTranslations } from "next-intl";
 import QR from "./qr";
-import QR_EQ from "./qr-eq";
 import { Buttons } from "../(reusable)/buttons";
 import { Texts } from "../(reusable)/texts";
 import { Titles } from "../(reusable)/titles";
@@ -20,6 +19,7 @@ type QRStepProps = {
   type: string;
   url: string;
   option?: string;
+  clockInRole: string;
 };
 
 export default function QRStep({
@@ -30,6 +30,7 @@ export default function QRStep({
   handleChangeJobsite,
   handleScanTruck,
   handleScanJobsite,
+  clockInRole,
   type,
   url,
 }: QRStepProps) {
@@ -49,17 +50,14 @@ export default function QRStep({
           </Holds>
           <Holds className="row-span-5 ">
             <div className="">
-              {type === "equipment" ? (
-                <QR_EQ handleNextStep={handleNextStep} />
-              ) : (
-                <>
-                  <QR
-                    handleScanJobsite={handleScanJobsite || (() => {})}
-                    handleScanTruck={handleScanTruck || (() => {})}
-                    url={url}
-                  />
-                </>
-              )}
+              <QR
+                handleScanJobsite={handleScanJobsite || (() => {})}
+                handleScanTruck={handleScanTruck || (() => {})}
+                url={url}
+                clockInRole={clockInRole}
+                type={type}
+                handleNextStep={handleNextStep}
+              />
             </div>
           </Holds>
           <Holds className="row-span-1 h-full">
