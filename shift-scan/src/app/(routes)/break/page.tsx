@@ -13,19 +13,17 @@ export default async function Clock() {
   if (!session) {
     redirect("/signin");
   }
-
   const user = session.user;
-
-  const lang = (await cookies()).get("locale");
+  const lang = cookies().get("locale");
   const locale = lang ? lang.value : "en"; // Default to English
   return (
     <Bases>
-      <Contents>
-        <Holds background={"white"}>
+      <Contents className="h-full">
+        <Holds background={"white"} className="w-full h-full ">
           <NewClockProcess
             type={"jobsite"}
             scannerType={"jobsite"}
-            option="break"
+            option={"break"}
             locale={locale}
             returnpath="/"
             mechanicView={user.mechanicView}

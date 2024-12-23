@@ -19,11 +19,11 @@ export default function CodeStep({ datatype, handleNextStep }: CodeStepProps) {
   return (
     <Holds className="h-full w-full">
       <Contents width={"section"}>
-        <Grids rows={"7"} gap={"5"} className="my-5">
+        <Grids rows={"7"} gap={"2"} className="my-5 h-full  ">
           <Holds className="row-span-1">
             <Titles size={"h1"}>{t(`Title-${datatype}`)}</Titles>
           </Holds>
-          <Holds className="row-span-5 border-[3px] border-black rounded-[10px] h-full">
+          <Holds className="row-span-4 border-[3px] border-black rounded-[10px] h-full">
             <CodeFinder datatype={datatype} />
           </Holds>
           {handleNextStep && (
