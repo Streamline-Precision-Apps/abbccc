@@ -39,8 +39,9 @@ const PayPeriodTimesheetsSchema = z.object({
   startTime: z.string().refine((date) => !isNaN(new Date(date).getTime()), {
     message: "Invalid date format",
   }),
-
-  duration: z.number().nullable(),
+  endTime: z.string().refine((date) => !isNaN(new Date(date).getTime()), {
+    message: "Invalid date format",
+  }),
 });
 
 // Zod schema for props
@@ -94,6 +95,7 @@ export default function WidgetSection({ session }: Props) {
         const transformedData = validatedData.map((item) => ({
           ...item,
           startTime: new Date(item.startTime),
+          endTime: new Date(item.endTime),
         }));
         setPayPeriodSheets(transformedData);
         setPayPeriodTimeSheets(transformedData);
@@ -134,9 +136,13 @@ export default function WidgetSection({ session }: Props) {
   const totalPayPeriodHours = useMemo(() => {
     if (!payPeriodSheets.length) return 0;
     return payPeriodSheets
-      .filter((sheet: PayPeriodTimesheets) => sheet.duration !== null)
+      .filter((sheet: PayPeriodTimesheets) => sheet.startTime !== null)
       .reduce(
-        (total, sheet: PayPeriodTimesheets) => total + (sheet.duration ?? 0),
+        (total, sheet: PayPeriodTimesheets) =>
+          total +
+          (new Date(sheet.endTime).getTime() -
+            new Date(sheet.startTime).getTime()) /
+            (1000 * 60 * 60),
         0
       );
   }, [payPeriodSheets]);

@@ -36,7 +36,9 @@ export async function GET() {
         },
       },
       select: {
-        startTime: true,      },
+        startTime: true,
+        endTime: true,
+      },
     });
 
     // Return the filtered timesheets with caching disabled
