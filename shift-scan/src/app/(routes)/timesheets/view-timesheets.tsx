@@ -14,25 +14,6 @@ import { useTranslations } from "next-intl";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { TimeSheet } from "../dashboard/myTeam/[id]/employee/[employeeId]/editWork";
-import { z } from "zod";
-
-// Zod schema for component state
-const ViewTimesheetsSchema = z.object({
-  user: z.string(),
-  showTimesheets: z.boolean(),
-  startingEntry: z.boolean(),
-  timesheetData: z.array(
-    z.object({
-      id: z.string().nullable(),
-      startTime: z.union([z.string(), z.instanceof(Date)]).nullable(),
-      endTime: z.union([z.string(), z.instanceof(Date)]).nullable(),
-      jobsiteId: z.string().nullable(),
-      costcode: z.string().nullable(),
-    })
-  ),
-  loading: z.boolean(),
-  error: z.string().nullable(),
-});
 
 type Props = {
   user: string;
@@ -45,21 +26,6 @@ export default function ViewTimesheets({ user }: Props) {
   const [error, setError] = useState<string | null>(null);
 
   const t = useTranslations("Home");
-
-  // Validate initial state with Zod schema
-  try {
-    ViewTimesheetsSchema.parse({
-      user,
-      showTimesheets,
-      timesheetData,
-      loading,
-      error,
-    });
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      console.error("Initial state validation error:", error.errors);
-    }
-  }
 
   // Fetch timesheets from the API
   const fetchTimesheets = async (date?: string) => {
