@@ -51,7 +51,11 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
           .toISOString()
           .split("T")[0];
         if (hoursMap[sheetDateKey] !== undefined) {
-          hoursMap[sheetDateKey] += sheet.duration ?? 0;
+          (hoursMap[sheetDateKey] +=
+            (new Date(sheet.endTime).getTime() -
+              new Date(sheet.startTime).getTime()) /
+            (1000 * 60 * 60)),
+            0;
         }
       });
     }
@@ -76,8 +80,8 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
     const today = new Date().toISOString().split("T")[0];
     const todayIndex = dailyHours.findIndex((entry) => entry.date === today);
     if (todayIndex !== -1) {
-      setCurrentIndex(todayIndex + 1);
-      setTodayIndex(todayIndex + 1);
+      setCurrentIndex(todayIndex);
+      setTodayIndex(todayIndex);
     }
   }, [dailyHours]);
 

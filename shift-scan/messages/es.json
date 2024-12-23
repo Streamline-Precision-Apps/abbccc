@@ -87,7 +87,7 @@
     "Name": "{firstName}",
     "Date": "{date}",
     "PayPeriodHours": "Horas totales",
-    "Break": "Tiempo de descanso",
+    "Break": "Tiempo de Descanso",
     "Unit": "hrs",
     "DA-Time-Label" : "Hrs",
     "DA-Today": "Hoy",
