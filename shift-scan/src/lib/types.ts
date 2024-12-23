@@ -39,6 +39,7 @@ export type Employee = {
   id: string;
   firstName: string;
   lastName: string;
+  email: string | null;
   signature?: string | null;
   image: string | null;
   imageUrl?: string | null;
@@ -46,7 +47,6 @@ export type Employee = {
 export type Contact = {
   id: string;
   phoneNumber: string;
-  email: string;
   emergencyContact: string;
   emergencyContactNumber: string;
 };

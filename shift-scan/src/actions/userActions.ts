@@ -168,6 +168,28 @@ export async function updateUser(formData: FormData) {
     },
   });
 }
+export async function updateUserProfile(formData: FormData) {
+  try{
+    await prisma.user.update({
+    where: { id: formData.get("id") as string },
+    data: {
+      email: formData.get("email") as string,
+      contact: {
+        update: {
+          phoneNumber: formData.get("phoneNumber") as string,
+          emergencyContact: formData.get("emergencyContact") as string,
+          emergencyContactNumber: formData.get(
+            "emergencyContactNumber"
+          ) as string,
+        },
+      }
+    },
+  });
+  revalidatePath("/hamburger/profile");
+  } catch (error) {
+    console.error("Error updating user:", error);
+  }
+}
 
 export async function deleteUser(formData: FormData) {
   const date = new Date();
@@ -212,6 +234,17 @@ export async function uploadFirstSignature(formdata: FormData) {
   console.log(result);
 }
 
+export async function uploadSignature(id: string, signature: string) {
+  console.log("id:", id, "signature:", signature);
+  const result = await prisma.user.update({
+    where: { id: id },
+    data: {
+      signature: signature,
+    },
+  });
+  console.log(result);
+}
+
 export async function setUserSettings(formdata: FormData) {
   console.log(formdata);
   await prisma.userSettings.update({
@@ -233,24 +266,6 @@ export async function setUserLanguage(formdata: FormData) {
     },
   });
   return result.language;
-}
-
-export async function fetchByNameUser(name: string) {
-  try {
-    const user = await prisma.user.findFirst({
-      where: {
-        OR: [
-          { firstName: { contains: name, mode: "insensitive" } },
-          { lastName: { contains: name, mode: "insensitive" } },
-        ],
-      },
-    });
-    console.log(user);
-    return user;
-  } catch (error) {
-    console.error("Error fetching user:", error);
-    throw error;
-  }
 }
 
 export async function getUserFromDb(username: string, password: string) {
