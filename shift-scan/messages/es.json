@@ -277,6 +277,11 @@
     "ID": "Id: #"
 },
 "Clock": {
+    "General": "General",
+    "Truck": "Operador de Camiones",
+    "Mechanic": "Mecánico",
+    "TASCO": "TASCO",
+    "PleaseChooseYourRole": "Por favor, elija su rol:",
     "ChangeCostCode": "Cambiar Código de Costo",
     "ScanJobSite": "Escanear Sitio de Trabajo",
     "SwitchSites": "Cambiar Sitios",
@@ -301,7 +306,7 @@
     "ScanQR": "Escanear Código QR",
     "ScanEquipment": "Escanear Equipo",
     "Cancel": "Cancelar",
-    "ReturnToJobsite": "¿Cambiar Código de Costo?",
+    "ReturnToJobsite": "Regresar al Rol de Trabajo y Sitio Anterior?",
     "VerifyEquipment": "Verificar Equipo",
     "Equipment-label": "Equipo Encontrado",
     "ClockIn-btn": "Fichar",

@@ -154,7 +154,7 @@ export default function NewClockProcess({
   }
 
   return (
-    <Holds className="h-full w-full py-5">
+    <Holds className="h-full w-full">
       {/* Multiple Role Selection */}
       {step === 0 && (
         <MultipleRoles
