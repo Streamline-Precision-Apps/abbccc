@@ -32,9 +32,9 @@ export default function MultipleRoles({
   };
   return (
     <Holds className="h-full w-full">
-      <Grids rows={"7"} gap={"5"} className="my-5 h-fullw-full">
+      <Grids rows={"7"} gap={"5"} className="my-5 h-full w-full">
         <Holds className="row-start-1 row-end-3 h-full w-full justify-center">
-          <Titles size={"h3"}>Please choose your role</Titles>
+          <Titles size={"h3"}>{t("PleaseChooseYourRole")}</Titles>
         </Holds>
         {tascoView === true && (
           <Holds className="h-full row-span-1">
@@ -45,7 +45,7 @@ export default function MultipleRoles({
               background={"lightBlue"}
               className="w-5/6"
             >
-              <Titles size={"h3"}>TASCO</Titles>
+              <Titles size={"h3"}>{t("TASCO")}</Titles>
             </Buttons>
           </Holds>
         )}
@@ -58,7 +58,7 @@ export default function MultipleRoles({
               background={"lightBlue"}
               className="w-5/6"
             >
-              <Titles size={"h3"}>Truck</Titles>
+              <Titles size={"h3"}>{t("Truck")}</Titles>
             </Buttons>
           </Holds>
         )}
@@ -71,7 +71,7 @@ export default function MultipleRoles({
               background={"lightBlue"}
               className="w-5/6"
             >
-              <Titles size={"h3"}>Mechanic</Titles>
+              <Titles size={"h3"}>{t("Mechanic")}</Titles>
             </Buttons>
           </Holds>
         )}
@@ -83,13 +83,19 @@ export default function MultipleRoles({
             background={"lightBlue"}
             className="w-5/6"
           >
-            <Titles size={"h3"}>General</Titles>
+            <Titles size={"h3"}>{t("General")}</Titles>
           </Buttons>
         </Holds>
         {option === "break" ? (
-          <Buttons onClick={handleReturn} background={"red"}>
-            {t("ReturnToJobsite")}
-          </Buttons>
+          <Holds className="h-full row-span-1">
+            <Buttons
+              onClick={handleReturn}
+              background={"red"}
+              className="w-5/6"
+            >
+              <Titles size={"h5"}>{t("ReturnToJobsite")}</Titles>
+            </Buttons>
+          </Holds>
         ) : null}
       </Grids>
     </Holds>

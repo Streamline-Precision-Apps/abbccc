@@ -18,7 +18,7 @@ export default async function Clock() {
   const locale = lang ? lang.value : "en"; // Default to English
   return (
     <Bases>
-      <Contents className="h-full">
+      <Contents>
         <Holds background={"white"} className="w-full h-full ">
           <NewClockProcess
             type={"jobsite"}

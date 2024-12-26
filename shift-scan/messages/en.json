@@ -281,6 +281,11 @@
     "ID": "Id: #"
 },
 "Clock": {
+    "General": "General",
+    "Truck": "Truck",
+    "Mechanic": "Mechanic",
+    "TASCO": "TASCO",
+    "PleaseChooseYourRole": "Please choose your role:",
     "ChangeJobsite": "Change Jobsite",
     "ChangeCostCode": "Change Cost Code",
     "ScanJobSiteOrTruck": "Scan Job Site or Truck",
@@ -306,7 +311,7 @@
     "ScanQR": "Scan QR Code",
     "ScanEquipment": "Scan Equipment",
     "Cancel": "Cancel",
-    "ReturnToJobsite": "Switching CostCode?",
+    "ReturnToJobsite": "Return to Previous Role and Jobsite?",
     "VerifyEquipment": "Verify Equipment",
     "Equipment-label": "Equipment Found",
     "ClockIn-btn": "Clock In",
