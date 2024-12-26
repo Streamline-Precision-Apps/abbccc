@@ -4,6 +4,7 @@ import ViewHoursComponent from "@/app/(content)/hoursControl";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Texts } from "@/components/(reusable)/texts";
 import { Holds } from "@/components/(reusable)/holds";
+import { Grids } from "@/components/(reusable)/grids";
 
 type BreakTimeProps = {
   display: boolean;
@@ -30,22 +31,24 @@ export default function DisplayBreakTime({
 
   return display ? (
     <>
-      <Buttons onClick={handler} background={"orange"}>
-        <Holds position={"row"} className="my-auto p-4">
-          <Holds className="w-3/4">
-            <Texts text={"black"} size={"p2"}>
+      <Buttons onClick={handler} background={"darkBlue"}>
+        <Grids cols={"10"} rows={"3"}>
+          <Holds className="col-start-1 col-end-6 row-span-3">
+            <Texts text={"white"} size={"p2"}>
               {t("Break")}
             </Texts>
           </Holds>
           <Holds
             background={"white"}
-            className="w-1/4 py-2 border-[3px] border-black rounded-[10px] "
+            className="col-start-7 col-end-10 row-start-2 row-end-3 py-4 md:py-6 lg:py-8 border-[3px] border-black rounded-[10px] h-full"
           >
-            <Texts text={"black"} size={"p6"}>
-              {formatTime(getBreakTime)}
-            </Texts>
+            <Holds className="h-full flex items-center justify-center">
+              <Texts text={"black"} size={"p6"}>
+                {formatTime(getBreakTime)}
+              </Texts>
+            </Holds>
           </Holds>
-        </Holds>
+        </Grids>
       </Buttons>
     </>
   ) : (
