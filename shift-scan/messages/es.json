@@ -93,6 +93,7 @@
     "DA-Today": "Hoy",
     "TimeSheet-Label": "Ver mi hoja de tiempo",
     "Clock-btn": "Fichar",
+    "Clock-btn-break"   : "Regresar",
     "Title": "Ver hojas de tiempo",
     "Header1":"Por favor, ingresa una fecha para buscar tus hojas de tiempo.",
     "EnterDate": "Ingresar fecha",

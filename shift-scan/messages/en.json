@@ -97,6 +97,7 @@
     "DA-Today": "Today",
     "TimeSheet-Label": "View my Timesheet",
     "Clock-btn": "Clock In",
+    "Clock-btn-break"   : "Return",
     "Title": "View Timesheets",
     "Header1":"Please enter a date to search for your timesheets.",
     "EnterDate": "Enter Date",

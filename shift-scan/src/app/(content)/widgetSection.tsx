@@ -267,7 +267,7 @@ export default function WidgetSection({ session }: Props) {
                 <Buttons background={"orange"} href="/break">
                   <Holds position={"row"} className="my-auto">
                     <Holds size={"70"}>
-                      <Texts size={"p1"}>{f("Clock-btn")}</Texts>
+                      <Texts size={"p1"}>{f("Clock-btn-break")}</Texts>
                     </Holds>
                     <Holds size={"30"}>
                       <Images
