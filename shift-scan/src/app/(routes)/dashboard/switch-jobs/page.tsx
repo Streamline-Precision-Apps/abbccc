@@ -1,6 +1,6 @@
 "use server";
 import { auth } from "@/auth";
-import ClockProcessor from "@/components/(clock)/clockProcess";
+import NewClockProcess from "@/components/(clock)/newclockProcess";
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";
@@ -16,22 +16,43 @@ export default async function SwitchJobs() {
   }
 
   // Fetch all records
+  const user = session.user;
 
-  const lang = (await cookies()).get("locale");
-  const locale = lang ? lang.value : "en"; // Default to English
+  // Get the current language from cookies
+  const lang = cookies().get("locale");
+  const locale = lang?.value || "en";
 
   return (
-    <Bases size={"scroll"} className="min-h-screen">
+    <Bases>
       <Contents>
-        <Holds>
-          <ClockProcessor
+        <Holds background={"white"} className="h-full">
+          <NewClockProcess
+            mechanicView={user.mechanicView}
+            tascoView={user.tascoView}
+            truckView={user.truckView}
+            laborView={user.laborView}
+            option="clockin"
+            returnpath="/dashboard"
             type={"switchJobs"}
             scannerType={"jobsite"}
             locale={locale}
-            returnpath="/dashboard"
           />
         </Holds>
       </Contents>
     </Bases>
   );
+}
+{
+  /* <Bases size={"scroll"} className="min-h-screen">
+<Contents>
+  <Holds>
+    <ClockProcessor
+      type={"switchJobs"}
+      scannerType={"jobsite"}
+      locale={locale}
+      returnpath="/dashboard"
+    />
+  </Holds>
+</Contents>
+</Bases> */
 }
