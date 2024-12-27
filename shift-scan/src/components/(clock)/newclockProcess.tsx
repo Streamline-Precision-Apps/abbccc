@@ -72,15 +72,16 @@ export default function NewClockProcess({
   const handleReturn = () => {
     const jobsite = localStorage.getItem("jobSite");
     const costCode = localStorage.getItem("costCode");
-    const clockInRole = localStorage.getItem("clockInRole");
+    const clockInRoleRes = localStorage.getItem("clockInRole") || clockInRole;
+
     if (jobsite && costCode && clockInRole === "general") {
-      setClockInRole(clockInRole || "");
+      setClockInRole(clockInRoleRes || "");
       setScanResult({ data: jobsite });
       setCostCode(costCode);
       setAuthStep("success");
       setStep(4);
     } else if (jobsite && costCode && clockInRole === "truck") {
-      setClockInRole(clockInRole || "");
+      setClockInRole(clockInRoleRes || "");
       setScanResult({ data: jobsite });
       setCostCode(costCode);
       setAuthStep("success");
@@ -116,8 +117,12 @@ export default function NewClockProcess({
     }
 
     setClockInRole(role);
-    setStep(role === "" ? 0 : 1);
-  }, [mechanicView, truckView, tascoView, laborView]);
+    if (type === "switchJobs") {
+      setStep(0);
+    } else {
+      setStep(role === "" ? 0 : 1);
+    }
+  }, [mechanicView, truckView, tascoView, laborView, type]);
 
   // Conditional render for equipment path
   if (type === "equipment") {
