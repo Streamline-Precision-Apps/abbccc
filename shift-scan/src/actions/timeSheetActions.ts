@@ -248,6 +248,7 @@ export async function updateTimeSheet(formData: FormData) {
       where: { id },
       data: {
         endTime: endTime.toISOString(),
+        comment: (formData.get("timesheetComments") as string) || null,
       },
     });
 
