@@ -1,12 +1,19 @@
-"use server";
-export const formatTime = (timestamp: string): string => {
+export const formatTime = (timestamp: string | Date): string => {
   const date = new Date(timestamp);
-  const hours = date.getUTCHours();
-  const minutes = date.getUTCMinutes();
-  const isPM = hours >= 12;
-  const formattedHours = hours % 12 || 12; // Converts 0 to 12 for midnight and 13-23 to 1-11 for PM times
-  const formattedMinutes = minutes < 10 ? "0" + minutes : minutes;
-  const period = isPM ? "PM" : "AM";
 
-  return `${formattedHours}:${formattedMinutes} ${period}`;
+  // Check for invalid date
+  if (isNaN(date.getTime())) {
+    console.error("Invalid timestamp:", timestamp);
+    return "Invalid Time";
+  }
+
+  // Convert the UTC time to local time
+  const localDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+
+  // Format the local time
+  return localDate.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true, // 12-hour format with AM/PM
+  });
 };
