@@ -148,18 +148,24 @@ export default function ClockOutContent() {
     if (currentView === "truck") {
       setPath("truck");
     } else {
-      setPath("ClockOut");
+      setPath("clockOut");
     }
   };
   // step 0  is the comment step for clocking out
   if (step === 0) {
     return (
-      <Comment
-        handleClick={handleNextStep}
-        clockInRole={""}
-        setCommentsValue={setCommentsValue}
-        commentsValue={commentsValue}
-      />
+      <Grids className="grid-rows-1 gap-5">
+        <Holds background={"white"} className="row-span-1 h-full">
+          <Contents width={"section"} className="py-4">
+            <Comment
+              handleClick={handleNextStep}
+              clockInRole={""}
+              setCommentsValue={setCommentsValue}
+              commentsValue={commentsValue}
+            />
+          </Contents>
+        </Holds>
+      </Grids>
     );
   }
 
