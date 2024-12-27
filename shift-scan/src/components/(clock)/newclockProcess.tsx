@@ -152,10 +152,37 @@ export default function NewClockProcess({
       </>
     );
   }
+  /* 
+Clock In Process method 
+-----------------------------------------------------------------------------------------------
+STEP 0:
+  a: If you switch roles you will be prompted to write a comment in the Multiple role section
+    1: Comment will be saved to local storage and in a context
+  b: You will then will select a role if you have multiple roles
+
+General Role, Mechanic Role, Truck Driver Role, T.A.S.C.O Role: (scanner will be different for each)
+STEP 1:
+  a: Scan a QR code to select a jobsite
+  b: Optional selection of jobsite
+STEP 2: Select a Cost Code for the jobsite selected
+Step 3: Verify page for all Information capture and then submit it to the backend
+step 4: Confirmation page and redirect to dashboard with authorization
+
+
+trucker role:
+-----------------------------------------------------------------------------------------------
+STEP 1:
+a: scan a QR code to select your truck
+b: optional selection of truck code
+Step 2: scan a QR code to select for driver
+Step 3: Verify page for all Information capture, enter starting mileage, etc and then submit it to the backend
+step 4 : confirmation page and redirect to dashboard with authorization
+*/
 
   return (
     <Holds className="h-full w-full">
       {/* Multiple Role Selection */}
+
       {step === 0 && (
         <MultipleRoles
           handleNextStep={handleNextStep}
@@ -163,20 +190,7 @@ export default function NewClockProcess({
           clockInRole={clockInRole}
           option={option}
           handleReturn={handleReturn}
-        />
-      )}
-
-      {/* General Role */}
-      {step === 1 && clockInRole === "general" && (
-        <QRStep
-          type="jobsite"
-          handleAlternativePath={handleAlternativePath}
-          handleNextStep={handleNextStep}
-          handleChangeJobsite={handleChangeJobsite}
-          handleReturn={handleReturn}
-          url={returnpath}
-          option={option}
-          clockInRole={clockInRole}
+          type={type}
         />
       )}
 
@@ -219,6 +233,7 @@ export default function NewClockProcess({
       {step === 4 && clockInRole === "truck" && (
         <VerificationStep
           type={type}
+          role={clockInRole}
           handleNextStep={handleNextStep}
           option={option}
           comments={comments}
@@ -240,6 +255,21 @@ export default function NewClockProcess({
       {step === 1 && clockInRole === "tasco" && <div>Step 1 - Tasco</div>}
 
       {/* ----------------------------------------- General Role ---------------------*/}
+
+      {/* General Role */}
+      {step === 1 && clockInRole === "general" && (
+        <QRStep
+          type="jobsite"
+          handleAlternativePath={handleAlternativePath}
+          handleNextStep={handleNextStep}
+          handleChangeJobsite={handleChangeJobsite}
+          handleReturn={handleReturn}
+          url={returnpath}
+          option={option}
+          clockInRole={clockInRole}
+        />
+      )}
+
       {/* Select Jobsite Section */}
       {step === 3 && clockInRole === "general" && (
         <CodeStep datatype="jobsite" handleNextStep={handleNextStep} />
@@ -253,7 +283,8 @@ export default function NewClockProcess({
       {/* Verification Page */}
       {step === 5 && clockInRole === "general" && (
         <VerificationStep
-          type={clockInRole}
+          type={type}
+          role={clockInRole}
           handleNextStep={handleNextStep}
           option={option}
           comments={undefined}

@@ -4,9 +4,10 @@ import { useTranslations } from "next-intl";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
+
 import {
   CreateTimeSheet,
-  // updateTimeSheetBySwitch,
+  updateTimeSheetBySwitch,
 } from "@/actions/timeSheetActions";
 import { Clock } from "../clock";
 import { setAuthStep } from "@/app/api/auth";
@@ -23,10 +24,12 @@ import { useTruckScanData } from "@/app/context/TruckScanDataContext";
 import { useStartingMileage } from "@/app/context/StartingMileageContext";
 import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
+import { useCommentData } from "@/app/context/CommentContext";
 
 type VerifyProcessProps = {
   handleNextStep?: () => void;
   type: string;
+  role: string;
   option?: string;
   comments?: string;
 };
@@ -35,6 +38,7 @@ export default function VerificationStep({
   type,
   handleNextStep,
   comments,
+  role,
 }: VerifyProcessProps) {
   const t = useTranslations("Clock");
   const { scanResult } = useScanData();
@@ -44,7 +48,7 @@ export default function VerificationStep({
   const { data: session } = useSession();
   const { truckScanData } = useTruckScanData(); // Move this hook call to the top level.
   const { startingMileage } = useStartingMileage();
-
+  const { savedCommentData } = useCommentData();
   if (!session) return null; // Conditional rendering for session
 
   const { id } = session.user;
@@ -64,10 +68,13 @@ export default function VerificationStep({
           const formData2 = new FormData();
           formData2.append("id", tId?.toString() || "");
           formData2.append("endTime", new Date().toISOString());
-          formData2.append("timesheetComments", "");
+          formData2.append(
+            "timesheetComments",
+            savedCommentData?.toString() || ""
+          );
           formData2.append("appComment", "Switched jobs");
 
-          // await updateTimeSheetBySwitch(formData2);
+          await updateTimeSheetBySwitch(formData2);
 
           const formData = new FormData();
           if (truckScanData) {
@@ -80,9 +87,9 @@ export default function VerificationStep({
           formData.append("costcode", savedCostCode?.toString() || "");
           formData.append("startTime", new Date().toISOString());
 
-          // const response = await CreateTimeSheet(formData);
-          // const result = { id: response.id.toString() };
-          // setTimeSheetData(result);
+          const response = await CreateTimeSheet(formData);
+          const result = { id: response.id.toString() };
+          setTimeSheetData(result);
           setAuthStep("success");
 
           if (handleNextStep) {
@@ -108,7 +115,7 @@ export default function VerificationStep({
         formData.append("jobsiteId", scanResult?.data || "");
         formData.append("costcode", savedCostCode?.toString() || "");
         formData.append("startTime", new Date().toISOString());
-        formData.append("workType", type);
+        formData.append("workType", role);
 
         const response = await CreateTimeSheet(formData);
         const result = { id: response.id.toString() };

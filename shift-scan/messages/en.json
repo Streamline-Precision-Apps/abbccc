@@ -281,6 +281,8 @@
     "ID": "Id: #"
 },
 "Clock": {
+    "PleaseLeaveACommentOfWhatYouDid": "Please leave a comment of what you did.",
+    "TodayIDidTheFollowing": "Today I did the following...",
     "General": "General",
     "Truck": "Truck",
     "Mechanic": "Mechanic",

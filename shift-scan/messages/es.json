@@ -277,6 +277,8 @@
     "ID": "Id: #"
 },
 "Clock": {
+    "PleaseLeaveACommentOfWhatYouDid": "Por favor, deje un comentario de lo que hizo.",
+    "TodayIDidTheFollowing": "Hoy, hice lo siguiente...",
     "General": "General",
     "Truck": "Operador de Camiones",
     "Mechanic": "Mecánico",
