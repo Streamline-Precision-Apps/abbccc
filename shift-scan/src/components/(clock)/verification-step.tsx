@@ -48,7 +48,7 @@ export default function VerificationStep({
   const { data: session } = useSession();
   const { truckScanData } = useTruckScanData(); // Move this hook call to the top level.
   const { startingMileage } = useStartingMileage();
-  const { savedCommentData } = useCommentData();
+  const { savedCommentData, setCommentData } = useCommentData();
   if (!session) return null; // Conditional rendering for session
 
   const { id } = session.user;
@@ -70,11 +70,15 @@ export default function VerificationStep({
           formData2.append("endTime", new Date().toISOString());
           formData2.append(
             "timesheetComments",
-            savedCommentData?.toString() || ""
+            savedCommentData?.id.toString() || ""
           );
-          formData2.append("appComment", "Switched jobs");
 
-          await updateTimeSheetBySwitch(formData2);
+          const responseOldSheet = await updateTimeSheetBySwitch(formData2);
+          if (responseOldSheet) {
+            // removing the old sheet comment so it doesn't show up on the new sheet
+            setCommentData(null);
+            localStorage.removeItem("savedCommentData");
+          }
 
           const formData = new FormData();
           if (truckScanData) {
@@ -86,11 +90,13 @@ export default function VerificationStep({
           formData.append("jobsiteId", scanResult?.data || "");
           formData.append("costcode", savedCostCode?.toString() || "");
           formData.append("startTime", new Date().toISOString());
+          formData.append("workType", role);
 
           const response = await CreateTimeSheet(formData);
           const result = { id: response.id.toString() };
           setTimeSheetData(result);
           setAuthStep("success");
+          localStorage.setItem("workType", response.workType);
 
           if (handleNextStep) {
             handleNextStep();

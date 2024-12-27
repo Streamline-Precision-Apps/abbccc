@@ -60,7 +60,7 @@ export default function QRStep({
               />
             </div>
           </Holds>
-          <Holds className="row-span-1 h-full">
+          <Holds className="row-span-1 h-full space-y-2">
             <Buttons onClick={handleAlternativePath}>
               {option !== "clockin" && option !== "break" ? (
                 <Texts size={"p4"}>{t("SwitchSites")}</Texts>

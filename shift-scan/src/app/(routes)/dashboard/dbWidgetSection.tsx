@@ -137,7 +137,7 @@ export default function DbWidgetSection({ session }: props) {
         const t_id = JSON.parse(localeValue || "{}").id;
         formData2.append("id", t_id?.toString() || "");
         formData2.append("endTime", new Date().toISOString());
-        formData2.append("timeSheetComments", comment);
+        formData2.append("timesheetComments", comment);
 
         await updateTimeSheetBySwitch(formData2);
 

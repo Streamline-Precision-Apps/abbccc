@@ -21,6 +21,7 @@ type Props = {
 export default function MultipleRoles({
   handleNextStep,
   setClockInRole,
+  clockInRole,
   option,
   handleReturn,
   type,
@@ -31,6 +32,7 @@ export default function MultipleRoles({
   const tascoView = session?.user.tascoView;
   const truckView = session?.user.truckView;
   const mechanicView = session?.user.mechanicView;
+  const laborView = session?.user.laborView;
   const { setCommentData } = useCommentData();
   const [commentsValue, setCommentsValue] = useState("");
 
@@ -51,6 +53,9 @@ export default function MultipleRoles({
   const switchJobs = () => {
     setCommentData({ id: commentsValue }); // Ensure correct data structure
     setPage("");
+    if (clockInRole !== "") {
+      handleNextStep();
+    }
   };
 
   if (page === "switchJobs") {
@@ -147,17 +152,19 @@ export default function MultipleRoles({
               </Buttons>
             </Holds>
           )}
-          <Holds className="h-full row-span-1">
-            <Buttons
-              onClick={() => {
-                selectView("general");
-              }}
-              background={"lightBlue"}
-              className="w-5/6"
-            >
-              <Titles size={"h3"}>{t("General")}</Titles>
-            </Buttons>
-          </Holds>
+          {laborView === true && (
+            <Holds className="h-full row-span-1">
+              <Buttons
+                onClick={() => {
+                  selectView("general");
+                }}
+                background={"lightBlue"}
+                className="w-5/6"
+              >
+                <Titles size={"h3"}>{t("General")}</Titles>
+              </Buttons>
+            </Holds>
+          )}
           {option === "break" ? (
             <Holds className="h-full row-span-1">
               <Buttons
