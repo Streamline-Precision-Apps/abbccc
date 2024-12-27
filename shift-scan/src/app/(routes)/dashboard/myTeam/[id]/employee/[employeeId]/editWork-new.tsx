@@ -9,6 +9,9 @@ import { Grids } from "@/components/(reusable)/grids";
 import { TimeSheet } from "@/lib/types";
 import { Dispatch, SetStateAction, useState } from "react";
 import { updateTimeSheets } from "@/actions/timeSheetActions";
+import { Texts } from "@/components/(reusable)/texts";
+import { Buttons } from "@/components/(reusable)/buttons";
+import { formatTime } from "@/utils/formatDateAmPm";
 
 export default function EditWorkNew({
   timesheet,
@@ -22,11 +25,16 @@ export default function EditWorkNew({
   const [editedTimesheet, setEditedTimesheet] =
     useState<TimeSheet[]>(timesheet);
 
+  const [visibleSheetId, setVisibleSheetId] = useState<string | null>(null);
+
+  const toggleVisibility = (id: string) => {
+    setVisibleSheetId((prev) => (prev === id ? null : id));
+  };
   // Handles input changes for each timesheet
   const handleInputChange = (
     id: string,
     field: keyof TimeSheet,
-    value: any
+    value: string
   ) => {
     const updatedTimesheet = editedTimesheet.map((sheet) => {
       if (sheet.id === id) {
@@ -124,111 +132,149 @@ export default function EditWorkNew({
       {/* Timesheet Editing Section */}
       <Holds>
         {editedTimesheet.map((sheet) => (
-          <Holds
+          <div
             key={sheet.id}
-            className="border p-2 mb-2 rounded-lg bg-white shadow-md"
+            className="border mb-2 py-2 rounded-lg bg-white shadow-md"
           >
-            <Holds>
-              <Labels size={"p6"} htmlFor="date">
-                Date of Shift
-              </Labels>
-              <Inputs
-                name="date"
-                type="date"
-                value={
-                  sheet.date
-                    ? new Date(sheet.date).toISOString().slice(0, 10)
-                    : ""
-                }
-                onChange={(e) =>
-                  handleInputChange(sheet.id, "date", e.target.value)
-                }
-                disabled={!edit}
-              />
-            </Holds>
-
-            <Grids rows={"5"} className="w-full h-full">
-              <Holds position={"row"} className="gap-2">
+            <Buttons
+              background={"none"}
+              className="w-full h-full text-left font-semibold p-2  rounded"
+              onClick={() => toggleVisibility(sheet.id)}
+            >
+              {sheet.startTime && sheet.endTime ? (
+                <Holds
+                  position={"row"}
+                  className="justify-center items-center gap-3"
+                >
+                  <Texts size={"p4"}>
+                    {sheet.startTime
+                      ? formatTime(new Date(sheet.startTime))
+                      : ""}
+                  </Texts>
+                  <Texts size={"p4"}> - </Texts>
+                  <Texts size={"p4"}>
+                    {sheet.endTime ? formatTime(new Date(sheet.endTime)) : ""}
+                  </Texts>
+                  <Texts size={"p4"}>({sheet.workType})</Texts>
+                </Holds>
+              ) : (
+                <Texts> Incomplete Sheet </Texts>
+              )}
+              {/* Title */}
+            </Buttons>
+            {visibleSheetId === sheet.id && (
+              <div>
                 <Holds>
-                  <Labels size={"p6"} htmlFor="startTime">
-                    Start Time
+                  <Labels size={"p6"} htmlFor="date">
+                    Date of Shift
                   </Labels>
                   <Inputs
-                    name="startTime"
-                    type="time"
+                    name="date"
+                    type="date"
                     value={
-                      sheet.startTime
-                        ? new Date(sheet.startTime).toISOString().slice(11, 16)
+                      sheet.date
+                        ? new Date(sheet.date).toISOString().slice(0, 10)
                         : ""
                     }
                     onChange={(e) =>
-                      handleInputChange(sheet.id, "startTime", e.target.value)
+                      handleInputChange(sheet.id, "date", e.target.value)
                     }
                     disabled={!edit}
                   />
                 </Holds>
 
-                <Holds>
-                  <Labels size={"p6"} htmlFor="endTime">
-                    End Time
-                  </Labels>
-                  <Inputs
-                    name="endTime"
-                    type="time"
-                    value={
-                      sheet.endTime
-                        ? new Date(sheet.endTime).toISOString().slice(11, 16)
-                        : ""
-                    }
-                    onChange={(e) =>
-                      handleInputChange(sheet.id, "endTime", e.target.value)
-                    }
-                    disabled={!edit}
-                  />
-                </Holds>
-              </Holds>
+                <Grids rows={"5"} className="w-full h-full">
+                  <Holds position={"row"} className="gap-2">
+                    <Holds>
+                      <Labels size={"p6"} htmlFor="startTime">
+                        Start Time
+                      </Labels>
+                      <Inputs
+                        name="startTime"
+                        type="time"
+                        value={
+                          sheet.startTime
+                            ? new Date(sheet.startTime)
+                                .toISOString()
+                                .slice(11, 16)
+                            : ""
+                        }
+                        onChange={(e) =>
+                          handleInputChange(
+                            sheet.id,
+                            "startTime",
+                            e.target.value
+                          )
+                        }
+                        disabled={!edit}
+                      />
+                    </Holds>
 
-              <Holds>
-                <Labels size={"p6"} htmlFor="workType">
-                  Type of Labor
-                </Labels>
-                <Inputs
-                  name="workType"
-                  type="text"
-                  value={sheet.workType || ""}
-                  onChange={(e) =>
-                    handleInputChange(sheet.id, "workType", e.target.value)
-                  }
-                  disabled={!edit}
-                />
-              </Holds>
+                    <Holds>
+                      <Labels size={"p6"} htmlFor="endTime">
+                        End Time
+                      </Labels>
+                      <Inputs
+                        name="endTime"
+                        type="time"
+                        value={
+                          sheet.endTime
+                            ? new Date(sheet.endTime)
+                                .toISOString()
+                                .slice(11, 16)
+                            : ""
+                        }
+                        onChange={(e) =>
+                          handleInputChange(sheet.id, "endTime", e.target.value)
+                        }
+                        disabled={!edit}
+                      />
+                    </Holds>
+                  </Holds>
 
-              <Holds>
-                <Labels size={"p6"}>Comment</Labels>
-                <TextAreas
-                  name="comment"
-                  value={sheet.comment || ""}
-                  onChange={(e) =>
-                    handleInputChange(sheet.id, "comment", e.target.value)
-                  }
-                  disabled={!edit}
-                />
-              </Holds>
+                  <Holds>
+                    <Labels size={"p6"} htmlFor="workType">
+                      Type of Labor
+                    </Labels>
+                    <Inputs
+                      name="workType"
+                      type="text"
+                      value={sheet.workType || ""}
+                      onChange={(e) =>
+                        handleInputChange(sheet.id, "workType", e.target.value)
+                      }
+                      disabled={!edit}
+                    />
+                  </Holds>
 
-              <Holds>
-                <Labels size={"p6"}>Location of Shift</Labels>
-                <Inputs
-                  name="location"
-                  type="text"
-                  value={sheet.location || ""}
-                  onChange={(e) =>
-                    handleInputChange(sheet.id, "location", e.target.value)
-                  }
-                  disabled={!edit}
-                />
-              </Holds>
-            </Grids>
-          </Holds>
+                  <Holds>
+                    <Labels size={"p6"}>Comment</Labels>
+                    <TextAreas
+                      name="comment"
+                      value={sheet.comment || ""}
+                      onChange={(e) =>
+                        handleInputChange(sheet.id, "comment", e.target.value)
+                      }
+                      disabled={!edit}
+                    />
+                  </Holds>
+
+                  <Holds>
+                    <Labels size={"p6"}>Location of Shift</Labels>
+                    <Inputs
+                      name="location"
+                      type="text"
+                      value={sheet.location || ""}
+                      onChange={(e) =>
+                        handleInputChange(sheet.id, "location", e.target.value)
+                      }
+                      disabled={!edit}
+                    />
+                  </Holds>
+                </Grids>
+              </div>
+            )}
+          </div>
         ))}
       </Holds>
     </Holds>
