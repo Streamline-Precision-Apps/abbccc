@@ -4,7 +4,7 @@ model TimeSheet {
     date          DateTime   @db.Date //two dates are in the accounting software, for easy conversion they are implemented here
     id            String     @id @default(uuid())
     userId        String
-    jobsiteId     String // this will need to store options for jobsites and equipment
+    jobsiteId     String // this will need to store options for jobsites, truck driver jobsite,
     costcode      String // this is for tracking cost amounts in company
     nu            String     @default("nu") // non union {} default
     Fp            String     @default("fp") // field personal
@@ -90,17 +90,19 @@ model TascoLog {
 //--------------------------------------------------------------------------------------------------------------------------------
 // logs to keep track of what each truckDriver has done.
 model TruckingLog {
-    id              String    @id @default(uuid())
-    taskName        String? // auto default to drive or operator
-    equipmentId     String? // this is the equipment id vehicle id
-    timeSheetId     String?
-    startingMileage Int
-    endingMileage   Int?
-    startTime       DateTime
-    endTime         DateTime?
-    netWeight       Float?
-    comment         String?
-    createdAt       DateTime  @default(now())
+    id                String    @id @default(uuid())
+    truckingCCId      String
+    truckingJobSiteId String
+    taskName          String? // auto default to drive or operator
+    equipmentId       String? // this is the equipment id vehicle id
+    timeSheetId       String?
+    startingMileage   Int
+    endingMileage     Int?
+    startTime         DateTime
+    endTime           DateTime?
+    netWeight         Float?
+    comment           String?
+    createdAt         DateTime  @default(now())
 
     stateMileage    StateMileage[]
     Refueled        Refueled[]
@@ -109,6 +111,8 @@ model TruckingLog {
 
     equipment Equipment? @relation(fields: [equipmentId], references: [id])
     timeSheet TimeSheet? @relation(fields: [timeSheetId], references: [id])
+    Jobsite   Jobsite?   @relation(fields: [truckingJobSiteId], references: [id])
+    CostCode  CostCode?  @relation(fields: [truckingCCId], references: [id])
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------

@@ -42,17 +42,3 @@ export default async function SwitchJobs() {
     </Bases>
   );
 }
-{
-  /* <Bases size={"scroll"} className="min-h-screen">
-<Contents>
-  <Holds>
-    <ClockProcessor
-      type={"switchJobs"}
-      scannerType={"jobsite"}
-      locale={locale}
-      returnpath="/dashboard"
-    />
-  </Holds>
-</Contents>
-</Bases> */
-}

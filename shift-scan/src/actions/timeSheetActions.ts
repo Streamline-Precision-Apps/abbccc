@@ -286,7 +286,7 @@ export async function updateTimeSheetBySwitch(formData: FormData) {
       where: { id },
       data: {
         endTime: parseUTC(formData.get("endTime") as string).toISOString(),
-        comment: formData.get("timeSheetComments") as string,
+        comment: formData.get("timesheetComments") as string,
       },
     });
     console.log("Timesheet updated successfully.");
