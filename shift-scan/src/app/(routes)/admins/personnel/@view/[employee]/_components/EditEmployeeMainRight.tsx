@@ -61,7 +61,7 @@ export function EditEmployeeMainRight({
         {/* This section is for the permission level to display, the user will be able to change the permission level differently based on roles*/}
         {/*Super admin can change the permission level of anyone */}
         <Holds>
-          <Labels size={"p6"}>{t("PermissionLevel")}</Labels>
+          <Labels size={"p4"}>{t("PermissionLevel")}</Labels>
           <Selects
             value={editedData?.permission || "USER"} // Default to "USER" if no value
             onChange={(e) =>
@@ -86,7 +86,7 @@ export function EditEmployeeMainRight({
         </Holds>
 
         {/* Individual views with separate state bindings */}
-        <Labels size={"p6"}>{t("TruckView")}</Labels>
+        <Labels size={"p4"}>{t("TruckView")}</Labels>
         <Selects
           name="truckView"
           className="h-[50px]"
@@ -106,7 +106,7 @@ export function EditEmployeeMainRight({
           <Options value="false">{t("False")}</Options>
         </Selects>
 
-        <Labels size={"p6"}>{t("TascoView")}</Labels>
+        <Labels size={"p4"}>{t("TascoView")}</Labels>
         <Selects
           name="tascoView"
           className="h-[50px]"
@@ -126,7 +126,7 @@ export function EditEmployeeMainRight({
           <Options value="false">{t("False")}</Options>
         </Selects>
 
-        <Labels size={"p6"}>{t("LaborView")}</Labels>
+        <Labels size={"p4"}>{t("LaborView")}</Labels>
         <Selects
           name="laborView"
           className="h-[50px]"
@@ -146,7 +146,7 @@ export function EditEmployeeMainRight({
           <Options value="false">{t("False")}</Options>
         </Selects>
 
-        <Labels size={"p6"}>{t("MechanicView")}</Labels>
+        <Labels size={"p4"}>{t("MechanicView")}</Labels>
         <Selects
           name="mechanicView"
           className="h-[50px]"

@@ -107,7 +107,7 @@ export function EditEmployeeMainLeft({
           <Inputs type="hidden" name="id" value={editedData?.id || ""} />
 
           <Holds className="w-[50%] p-2">
-            <Labels size={"p6"}>{t("Username")}</Labels>
+            <Labels size={"p4"}>{t("Username")}</Labels>
             <Inputs
               className="h-[50px]"
               type="text"
@@ -118,7 +118,7 @@ export function EditEmployeeMainLeft({
             />
           </Holds>
           <Holds className="w-[50%] px-2">
-            <Labels size={"p6"} className="">
+            <Labels size={"p4"} className="">
               {t("FirstName")}
             </Labels>
             <Holds
@@ -152,7 +152,7 @@ export function EditEmployeeMainLeft({
             </Holds>
           </Holds>
           <Holds className="w-[50%] px-2">
-            <Labels size={"p6"}>{t("LastName")}</Labels>
+            <Labels size={"p4"}>{t("LastName")}</Labels>
             <Holds
               position={"row"}
               className="gap-2  h-[50px]  border-[3px] rounded-[10px] border-black"
@@ -185,7 +185,7 @@ export function EditEmployeeMainLeft({
           </Holds>
 
           <Holds className="w-[50%] px-2">
-            <Labels size={"p6"}>{t("Email")}</Labels>
+            <Labels size={"p4"}>{t("Email")}</Labels>
             <Holds
               position={"row"}
               className="gap-2  h-[50px]  border-[3px] rounded-[10px] border-black"
@@ -217,7 +217,7 @@ export function EditEmployeeMainLeft({
             </Holds>
           </Holds>
           <Holds className="w-[50%] px-2">
-            <Labels size={"p6"}>{t("DateOfBirth")}</Labels>
+            <Labels size={"p4"}>{t("DateOfBirth")}</Labels>
             <Holds
               position={"row"}
               className="gap-2  h-[50px]  border-[3px] rounded-[10px] border-black"
@@ -253,7 +253,7 @@ export function EditEmployeeMainLeft({
             </Holds>
           </Holds>
           <Holds className="w-[50%]  px-2">
-            <Labels size={"p6"}>{t("PhoneNumber")}</Labels>
+            <Labels size={"p4"}>{t("PhoneNumber")}</Labels>
             <Holds
               position={"row"}
               className="gap-2 h-[50px] border-[3px] rounded-[10px] border-black"
@@ -286,7 +286,7 @@ export function EditEmployeeMainLeft({
           </Holds>
 
           <Holds className="w-[50%] px-2">
-            <Labels size={"p6"}>{t("EmergencyContact")}</Labels>
+            <Labels size={"p4"}>{t("EmergencyContact")}</Labels>
             <Holds
               position={"row"}
               className="gap-2 h-[50px] border-[3px] rounded-[10px] border-black"
@@ -318,7 +318,7 @@ export function EditEmployeeMainLeft({
             </Holds>
           </Holds>
           <Holds className="w-[50%] px-2">
-            <Labels size={"p6"}>{t("EmergencyContactNumber")}</Labels>
+            <Labels size={"p4"}>{t("EmergencyContactNumber")}</Labels>
             <Holds
               position={"row"}
               className="gap-2 border-[3px] rounded-[10px] border-black"
@@ -350,7 +350,7 @@ export function EditEmployeeMainLeft({
             </Holds>
           </Holds>
           <Holds className="w-[50%] px-2">
-            <Labels size={"p6"}>{t("Signature")}</Labels>
+            <Labels size={"p4"}>{t("Signature")}</Labels>
             <Holds
               title="Edit Signature"
               className=" border-[3px] rounded-[10px] h-[50px] border-black cursor-pointer"
@@ -365,7 +365,7 @@ export function EditEmployeeMainLeft({
                   titleImg={signatureBase64String || ""}
                   titleImgAlt="personnel"
                   className="rounded-full my-auto m-auto"
-                  size="70"
+                  size="40"
                 />
               )}
             </Holds>
