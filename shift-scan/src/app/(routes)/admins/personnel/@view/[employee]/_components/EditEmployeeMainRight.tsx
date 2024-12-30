@@ -1,56 +1,41 @@
 "use client";
-import { editPersonnelInfo } from "@/actions/adminActions";
-import { useNotification } from "@/app/context/NotificationContext";
 import { Holds } from "@/components/(reusable)/holds";
 import { Labels } from "@/components/(reusable)/labels";
 import { Options } from "@/components/(reusable)/options";
 import { Selects } from "@/components/(reusable)/selects";
-import { EmployeeContactInfo, Permission, UserProfile } from "@/lib/types";
+import { UserProfile, EmployeeContactInfo } from "@/lib/types";
+import { Permission } from "@prisma/client";
 import { useTranslations } from "next-intl";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useState, useEffect } from "react";
 
-type Props = {
-  formRef: React.RefObject<HTMLFormElement>;
-  user: string;
-  userId: string | undefined;
-  editedData: UserProfile | null;
-  setEditedData: Dispatch<SetStateAction<UserProfile | null>>;
-  editedData1: EmployeeContactInfo | null;
-  setEditedData1: Dispatch<SetStateAction<EmployeeContactInfo | null>>;
-  initialEmployeeProfile: UserProfile | null;
-  initialEmployeeContactInfo: EmployeeContactInfo | null;
-  setRenderedData: Dispatch<SetStateAction<UserProfile | null>>;
-  setRenderedData1: Dispatch<SetStateAction<EmployeeContactInfo | null>>;
-  permission: string | undefined;
-  setPersonalSignature: Dispatch<SetStateAction<boolean>>;
-  signatureBase64String: string;
-};
-
-export const EditEmployeeForm = ({
-  formRef,
-  user,
+export function EditEmployeeMainRight({
   editedData,
   setEditedData,
-  editedData1,
-  setRenderedData,
-  setRenderedData1,
+  formRef,
+  user,
   userId,
   permission,
-}: Props) => {
+}: {
+  initialEmployeeProfile: UserProfile | null;
+  setRenderedData: Dispatch<SetStateAction<UserProfile | null>>;
+  initialEmployeeContactInfo: EmployeeContactInfo | null;
+  editedData: UserProfile | null;
+  editedData1: EmployeeContactInfo | null;
+  setEditedData: Dispatch<SetStateAction<UserProfile | null>>;
+  setEditedData1: Dispatch<SetStateAction<EmployeeContactInfo | null>>;
+  formRef: React.RefObject<HTMLFormElement>;
+  user: string;
+  setRenderedData1: Dispatch<SetStateAction<EmployeeContactInfo | null>>;
+  userId: string | undefined;
+  signatureBase64String: string;
+  setPersonalSignature: Dispatch<SetStateAction<boolean>>;
+  reloadEmployeeData: () => void;
+  reloadSignature: () => void;
+  permission: string | undefined;
+}) {
   const [restrictions, setRestrictions] = useState<boolean>(false);
   const t = useTranslations("Admins");
-  const { setNotification } = useNotification();
   // Handle changes in form inputs
-  const handleInputChange = (
-    e:
-      | React.ChangeEvent<HTMLInputElement>
-      | React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setEditedData((prevData) =>
-      prevData ? { ...prevData, [name]: value } : null
-    );
-  };
 
   // this is for the restrictions on what the user can do when they want to edit there own info
   useEffect(() => {
@@ -63,83 +48,48 @@ export const EditEmployeeForm = ({
     }
   }, [userId, user, permission]);
 
-  const handleSubmitEdits = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const formData = new FormData(formRef.current!);
-      console.log(formData);
-      const res = await editPersonnelInfo(formData);
-      if (res) {
-        setNotification(`${t("EmployeeInfoUpdatedSuccessfully")}`, "success");
-        setRenderedData(editedData);
-        setRenderedData1(editedData1);
-      } else {
-        setNotification(`${t("FailedToUpdateEmployeeInfo")}`, "error");
-      }
-    } catch (error) {
-      console.error(`${t("FailedToUpdateEmployeeInfo")}`, error);
-      setNotification(`${t("FailedToUpdateEmployeeInfo")}`, "error");
-    }
-  };
-
   return (
-    <Holds className="row-span-8 my-auto h-full p-3">
+    <Holds
+      background={"white"}
+      className="col-span-2 my-auto h-full w-full px-2 overflow-hidden overflow-y-auto no-scrollbar"
+    >
       <form
         ref={formRef}
-        onSubmit={handleSubmitEdits}
-        className="w-full h-full"
+        onSubmit={(e) => e.preventDefault()}
+        className="w-full h-full my-10"
       >
         {/* This section is for the permission level to display, the user will be able to change the permission level differently based on roles*/}
         {/*Super admin can change the permission level of anyone */}
         <Holds>
           <Labels size={"p6"}>{t("PermissionLevel")}</Labels>
-          {permission === "SUPERADMIN" || permission === "ADMIN" ? (
-            <Selects
-              value={editedData?.permission || "USER"} // Set default to "USER" if no value
-              onChange={(e) =>
-                setEditedData((prevData) =>
-                  prevData
-                    ? {
-                        ...prevData,
-                        permission: e.target.value as Permission,
-                      }
-                    : null
-                )
-              }
-              className="h-14"
-              name="permission"
-              disabled={restrictions}
-            >
-              <Options
-                value="SUPERADMIN"
-                disabled={editedData?.permission === "SUPERADMIN"}
-              >
-                Super Admin
-              </Options>
-              <Options value="ADMIN">Admin</Options>
-              <Options value="MANAGER">Manager</Options>
-              <Options value="USER"> User</Options>
-            </Selects>
-          ) : (
-            //the other cannot change the permission level
-            <Selects
-              value={editedData?.permission}
-              onChange={handleInputChange}
-              name="permission"
-            >
-              <Options value="SUPERADMIN">{t("SuperAdmin")}</Options>
-              <Options value="ADMIN">{t("Admin")}</Options>
-              <Options value="MANAGER">{t("Manager")}</Options>
-              <Options value="USER">{t("User")}</Options>
-            </Selects>
-          )}
+          <Selects
+            value={editedData?.permission || "USER"} // Default to "USER" if no value
+            onChange={(e) =>
+              setEditedData((prevData) =>
+                prevData
+                  ? {
+                      ...prevData,
+                      permission: e.target.value as Permission, // Ensure it's a valid value
+                    }
+                  : null
+              )
+            }
+            className="h-[50px]"
+            name="permission"
+            disabled={restrictions}
+          >
+            <Options value="SUPERADMIN">Super Admin</Options>
+            <Options value="ADMIN">Admin</Options>
+            <Options value="MANAGER">Manager</Options>
+            <Options value="USER">User</Options>
+          </Selects>
         </Holds>
 
         {/* Individual views with separate state bindings */}
         <Labels size={"p6"}>{t("TruckView")}</Labels>
         <Selects
           name="truckView"
-          className="h-14"
+          className="h-[50px]"
           value={editedData?.truckView ? "true" : "false"}
           onChange={(e) =>
             setEditedData((prevData) =>
@@ -159,7 +109,7 @@ export const EditEmployeeForm = ({
         <Labels size={"p6"}>{t("TascoView")}</Labels>
         <Selects
           name="tascoView"
-          className="h-14"
+          className="h-[50px]"
           value={editedData?.tascoView ? "true" : "false"}
           onChange={(e) =>
             setEditedData((prevData) =>
@@ -179,7 +129,7 @@ export const EditEmployeeForm = ({
         <Labels size={"p6"}>{t("LaborView")}</Labels>
         <Selects
           name="laborView"
-          className="h-14"
+          className="h-[50px]"
           value={editedData?.laborView ? "true" : "false"}
           onChange={(e) =>
             setEditedData((prevData) =>
@@ -199,7 +149,7 @@ export const EditEmployeeForm = ({
         <Labels size={"p6"}>{t("MechanicView")}</Labels>
         <Selects
           name="mechanicView"
-          className="h-14"
+          className="h-[50px]"
           value={editedData?.mechanicView ? "true" : "false"}
           onChange={(e) =>
             setEditedData((prevData) =>
@@ -218,4 +168,4 @@ export const EditEmployeeForm = ({
       </form>
     </Holds>
   );
-};
+}
