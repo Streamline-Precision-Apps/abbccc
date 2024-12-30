@@ -10,18 +10,18 @@ import { useTranslations } from "next-intl";
 
 type TimeSheet = {
   submitDate?: Date;
+  date?: Date;
   id: string;
   userId?: string;
-  date?: Date;
   jobsiteId?: string;
   costcode?: string;
   nu?: string;
   Fp?: string;
-  vehicleId?: number | null;
   startTime?: Date | string;
   endTime?: Date | string | null;
-  timeSheetComments?: string | null;
-  status?: string;
+  comment?: string | null;
+  statusComment?: string | null;
+  status?: string; 
   workType?: string;
 };
 
@@ -50,7 +50,8 @@ export const Filter = ({ params }: { params: { employee: string } }) => {
           throw new Error(`Failed to fetch: ${response.statusText}`);
         }
         const data = await response.json();
-        setUserTimeSheets(data.timesheets || []);
+        console.log("data: ", data);
+        setUserTimeSheets(data.timeSheet);
         setError(null);
       } catch (error) {
         console.error(`${t("FailedToFetch")} ${t("EmployeeData")}`, error);

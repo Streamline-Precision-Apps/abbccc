@@ -127,25 +127,18 @@ export type EmployeeEquipmentLogs = {
 };
 export type TimeSheetView = {
   submitDate?: string; // Changed to string since API returns string dates
+  date?: string;
   id: string;
   userId?: string;
-  date?: string;
   jobsiteId?: string;
   costcode?: string;
   nu?: string;
   Fp?: string;
-  vehicleId?: number | null;
   startTime?: string | null;
   endTime?: string | null;
   duration?: number | null;
-  startingMileage?: number | null;
-  endingMileage?: number | null;
-  leftIdaho?: boolean | null;
-  equipmentHauled?: string | null;
-  materialsHauled?: string | null;
-  hauledLoadsQuantity?: number | null;
-  refuelingGallons?: number | null;
-  timeSheetComments?: string | null;
+  comment?: string | null;
+  statusComment?: string | null;
   status?: string;
 };
 

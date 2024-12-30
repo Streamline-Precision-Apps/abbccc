@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { Holds } from "../(reusable)/holds";
 import MultipleRoles from "./multipleRoles";
 import QRStep from "./qr-handler";
@@ -69,6 +69,10 @@ export default function NewClockProcess({
     handleNextStep();
   };
 
+  const handleAlternativePathEQ = () => {
+    setStep(1);
+  };
+
   const handleReturn = () => {
     const jobsite = localStorage.getItem("jobSite");
     const costCode = localStorage.getItem("costCode");
@@ -124,26 +128,32 @@ export default function NewClockProcess({
     }
   }, [mechanicView, truckView, tascoView, laborView, type]);
 
+  useEffect(() => {
+    console.log("step", step);
+  }), [step, ];
+
+
   // Conditional render for equipment path
   if (type === "equipment") {
     return (
       <>
-        {step === 1 && (
+        {step === 0 && (
           <QRStep
+            option="equipment"
             type="equipment"
-            handleAlternativePath={handleAlternativePath}
+            handleAlternativePath={handleAlternativePathEQ}
             handleNextStep={handleNextStep}
             url="/dashboard"
             clockInRole={""}
           />
         )}
-        {step === 2 && (
+        {step === 1 && (
           <CodeStep datatype="equipment" handleNextStep={handleNextStep} />
         )}
-        {step === 3 && (
-          <VerificationEQStep type={type} handleNextStep={handleNextStep} />
+        {step === 2 && (
+          <VerificationEQStep handleNextStep={handleNextStep} />
         )}
-        {step === 4 && (
+        {step === 3 && (
           <>
             <Titles size={"h1"} className="bg-red-500">
               {t("Confirmation-eq-message-1")}

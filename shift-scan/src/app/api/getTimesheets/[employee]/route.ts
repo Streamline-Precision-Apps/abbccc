@@ -50,11 +50,12 @@ export async function GET(
         },
         orderBy: { date: "desc" },
       });
+      console.log("timeSheets: ", timeSheet);
     }
     // Process to group timeSheet by day
     const uniquetimeSheet = [];
     const seenDates = new Set();
-
+    
     for (const timesheet of timeSheet) {
       const dateOnly = new Date(timesheet.date).toISOString().split("T")[0];
       if (!seenDates.has(dateOnly)) {
