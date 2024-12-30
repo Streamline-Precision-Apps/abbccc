@@ -1,49 +1,42 @@
 "use client";
-import { editPersonnelInfo } from "@/actions/adminActions";
-import { useNotification } from "@/app/context/NotificationContext";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
 import { Texts } from "@/components/(reusable)/texts";
-import { EmployeeContactInfo, Permission, UserProfile } from "@/lib/types";
+import { UserProfile, EmployeeContactInfo } from "@/lib/types";
 import { useTranslations } from "next-intl";
 import { Dispatch, SetStateAction } from "react";
 
-type Props = {
-  formRef: React.RefObject<HTMLFormElement>;
-  user: string;
-  userId: string | undefined;
-  editedData: UserProfile | null;
-  setEditedData: Dispatch<SetStateAction<UserProfile | null>>;
-  editedData1: EmployeeContactInfo | null;
-  setEditedData1: Dispatch<SetStateAction<EmployeeContactInfo | null>>;
-  initialEmployeeProfile: UserProfile | null;
-  initialEmployeeContactInfo: EmployeeContactInfo | null;
-  setRenderedData: Dispatch<SetStateAction<UserProfile | null>>;
-  setRenderedData1: Dispatch<SetStateAction<EmployeeContactInfo | null>>;
-  permission: Permission;
-  setPersonalSignature: Dispatch<SetStateAction<boolean>>;
-  signatureBase64String: string;
-};
-
-export const EditEmployeeFormInfo = ({
-  formRef,
-
-  editedData,
-  setEditedData,
-  editedData1,
-  setEditedData1,
+export function EditEmployeeMainLeft({
   initialEmployeeProfile,
   initialEmployeeContactInfo,
-  setRenderedData,
-  setRenderedData1,
-  setPersonalSignature,
+  editedData,
+  editedData1,
+  setEditedData,
+  setEditedData1,
+  formRef,
   signatureBase64String,
-}: Props) => {
+  setPersonalSignature,
+}: {
+  initialEmployeeProfile: UserProfile | null;
+  setRenderedData: Dispatch<SetStateAction<UserProfile | null>>;
+  initialEmployeeContactInfo: EmployeeContactInfo | null;
+  editedData: UserProfile | null;
+  editedData1: EmployeeContactInfo | null;
+  setEditedData: Dispatch<SetStateAction<UserProfile | null>>;
+  setEditedData1: Dispatch<SetStateAction<EmployeeContactInfo | null>>;
+  formRef: React.RefObject<HTMLFormElement>;
+  user: string;
+  setRenderedData1: Dispatch<SetStateAction<EmployeeContactInfo | null>>;
+  userId: string | undefined;
+  signatureBase64String: string;
+  setPersonalSignature: Dispatch<SetStateAction<boolean>>;
+  reloadEmployeeData: () => void;
+  reloadSignature: () => void;
+}) {
   const t = useTranslations("Admins");
-  const { setNotification } = useNotification();
   // Handle changes in form inputs
   const handleInputChange = (
     e:
@@ -61,25 +54,6 @@ export const EditEmployeeFormInfo = ({
     setEditedData1((prevData) =>
       prevData ? { ...prevData, [name]: value } : null
     );
-  };
-
-  const handleSubmitEdits = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const formData = new FormData(formRef.current!);
-      console.log(formData);
-      const res = await editPersonnelInfo(formData);
-      if (res) {
-        setNotification(`${t("EmployeeInfoUpdatedSuccessfully")}`, "success");
-        setRenderedData(editedData);
-        setRenderedData1(editedData1);
-      } else {
-        setNotification(`${t("FailedToUpdateEmployeeInfo")}`, "error");
-      }
-    } catch (error) {
-      console.error(`${t("FailedToUpdateEmployeeInfo")}`, error);
-      setNotification(`${t("FailedToUpdateEmployeeInfo")}`, "error");
-    }
   };
 
   const revertField = (field: keyof UserProfile) => {
@@ -118,24 +92,24 @@ export const EditEmployeeFormInfo = ({
   return (
     <Holds
       background={"white"}
-      className=" col-span-4 my-auto h-full w-full overflow-y-scroll"
+      className=" col-span-4 my-auto h-full w-full overflow-y-scroll no-scrollbar"
     >
       <form
         ref={formRef}
-        onSubmit={handleSubmitEdits}
-        className="w-full h-full "
+        onSubmit={(e) => e.preventDefault()}
+        className="w-full h-full my-10"
       >
         {/* --------------------------------------------------------------------------------------------------------------------*/}
         {/* -----------------------------------------------  Employee Info  ----------------------------------------------------*/}
         {/* --------------------------------------------------------------------------------------------------------------------*/}
 
-        <Holds className="flex-row w-full h-full flex-wrap my-14">
+        <Holds className="flex-row w-full h-full flex-wrap">
           <Inputs type="hidden" name="id" value={editedData?.id || ""} />
 
           <Holds className="w-[50%] p-2">
             <Labels size={"p6"}>{t("Username")}</Labels>
             <Inputs
-              className="h-14"
+              className="h-[50px]"
               type="text"
               name="userName"
               value={editedData?.username || ""}
@@ -149,7 +123,7 @@ export const EditEmployeeFormInfo = ({
             </Labels>
             <Holds
               position={"row"}
-              className="gap-2 h-14 border-[3px] rounded-[10px] border-black"
+              className="gap-2 h-[50px] border-[3px] rounded-[10px] border-black"
             >
               <Inputs
                 className="h-full w-5/6 border-2 border-none focus:outline-none my-auto "
@@ -181,7 +155,7 @@ export const EditEmployeeFormInfo = ({
             <Labels size={"p6"}>{t("LastName")}</Labels>
             <Holds
               position={"row"}
-              className="gap-2  h-14  border-[3px] rounded-[10px] border-black"
+              className="gap-2  h-[50px]  border-[3px] rounded-[10px] border-black"
             >
               <Inputs
                 className="h-full w-5/6 border-2 border-none focus:outline-none my-auto "
@@ -214,7 +188,7 @@ export const EditEmployeeFormInfo = ({
             <Labels size={"p6"}>{t("Email")}</Labels>
             <Holds
               position={"row"}
-              className="gap-2  h-14  border-[3px] rounded-[10px] border-black"
+              className="gap-2  h-[50px]  border-[3px] rounded-[10px] border-black"
             >
               <Inputs
                 className="h-full w-5/6 border-2 border-none focus:outline-none my-auto "
@@ -246,7 +220,7 @@ export const EditEmployeeFormInfo = ({
             <Labels size={"p6"}>{t("DateOfBirth")}</Labels>
             <Holds
               position={"row"}
-              className="gap-2  h-14  border-[3px] rounded-[10px] border-black"
+              className="gap-2  h-[50px]  border-[3px] rounded-[10px] border-black"
             >
               <Inputs
                 className="h-full w-5/6 border-2 border-none focus:outline-none my-auto "
@@ -282,7 +256,7 @@ export const EditEmployeeFormInfo = ({
             <Labels size={"p6"}>{t("PhoneNumber")}</Labels>
             <Holds
               position={"row"}
-              className="gap-2 h-14 border-[3px] rounded-[10px] border-black"
+              className="gap-2 h-[50px] border-[3px] rounded-[10px] border-black"
             >
               <Inputs
                 className="h-full w-5/6 border-2 border-none focus:outline-none my-auto "
@@ -315,7 +289,7 @@ export const EditEmployeeFormInfo = ({
             <Labels size={"p6"}>{t("EmergencyContact")}</Labels>
             <Holds
               position={"row"}
-              className="gap-2 h-14 border-[3px] rounded-[10px] border-black"
+              className="gap-2 h-[50px] border-[3px] rounded-[10px] border-black"
             >
               <Inputs
                 className="h-full w-5/6 border-2 border-none focus:outline-none my-auto "
@@ -350,7 +324,7 @@ export const EditEmployeeFormInfo = ({
               className="gap-2 border-[3px] rounded-[10px] border-black"
             >
               <Inputs
-                className="h-14 w-5/6 border-2 border-none focus:outline-none my-auto "
+                className="h-[50px] w-5/6 border-2 border-none focus:outline-none my-auto "
                 type="tel"
                 name="emergencyContactNumber"
                 value={editedData1?.emergencyContactNumber || ""}
@@ -379,7 +353,7 @@ export const EditEmployeeFormInfo = ({
             <Labels size={"p6"}>{t("Signature")}</Labels>
             <Holds
               title="Edit Signature"
-              className=" border-[3px] rounded-[10px] h-14 border-black cursor-pointer"
+              className=" border-[3px] rounded-[10px] h-[50px] border-black cursor-pointer"
               onClick={() => setPersonalSignature(true)}
             >
               {!signatureBase64String ? (
@@ -400,4 +374,4 @@ export const EditEmployeeFormInfo = ({
       </form>
     </Holds>
   );
-};
+}
