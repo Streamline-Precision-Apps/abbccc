@@ -45,7 +45,11 @@ export default function AdminHours() {
           .toISOString()
           .split("T")[0];
         if (hoursMap[sheetDateKey] !== undefined) {
-          hoursMap[sheetDateKey] += sheet.duration ?? 0;
+          (hoursMap[sheetDateKey] +=
+            (new Date(sheet.endTime).getTime() -
+              new Date(sheet.startTime).getTime()) /
+            (1000 * 60 * 60)),
+            0;
         }
       });
     }
@@ -68,7 +72,6 @@ export default function AdminHours() {
       setCurrentIndex(todayIndex);
     }
   }, [dailyHours]);
-  console.log(dailyHours);
   // Calculate the slice range for a fixed window of 14 items
   const start = Math.max(0, currentIndex - 2);
   const end = start + 5;
