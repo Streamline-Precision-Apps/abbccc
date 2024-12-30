@@ -21,6 +21,7 @@ const Sidebar = () => {
   const toggle = () => setIsOpen(!isOpen);
   const [username, setUsername] = useState<string>("");
   const { data: session } = useSession();
+  const userId = session?.user.id;
   const permission = session?.user.permission;
   const router = useRouter();
 
@@ -63,7 +64,7 @@ const Sidebar = () => {
               <Grids rows={"1"} cols={"3"}>
                 <Holds
                   className="col-span-1 h-full"
-                  onClick={() => router.push("/admins/settings")}
+                  onClick={() => router.push(`/admins/personnel/${userId}`)}
                 >
                   <Images
                     titleImg="/person.svg"
@@ -297,7 +298,7 @@ const Sidebar = () => {
 
               <Holds
                 className="  w-24 h-24 "
-                onClick={() => router.push("/admins/settings")}
+                onClick={() => router.push(`/admins/personnel/${userId}`)}
               >
                 <Images
                   titleImg="/person.svg"
