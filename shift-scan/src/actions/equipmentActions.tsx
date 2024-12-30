@@ -219,45 +219,59 @@ export async function deleteEquipmentbyId(formData: FormData) {
     throw error;
   }
 }
-// todo: needs to be updated
+
 export async function CreateEmployeeEquipmentLog(formData: FormData) {
   try {
     console.log("Creating EmployeeEquipmentLog...");
     console.log(formData);
+
     const employeeId = formData.get("employeeId") as string;
-    const equipmentQrId = formData.get("equipmentId") as string;
+    const equipmentQRId = formData.get("equipmentId") as string;
     const jobsiteId = formData.get("jobsiteId") as string;
 
-    // Check if the related records exist form of errror handling
+    // Check if the related records exist
     const [employee, equipment, jobsite] = await Promise.all([
       prisma.user.findUnique({ where: { id: employeeId } }),
-      prisma.equipment.findUnique({ where: { qrId: equipmentQrId } }),
+      prisma.equipment.findUnique({ where: { qrId: equipmentQRId } }),
       prisma.jobsite.findUnique({ where: { qrId: jobsiteId } }),
     ]);
 
-    if (!employee)
+    if (!employee) {
       throw new Error(`Employee with id ${employeeId} does not exist`);
-    if (!equipment)
-      throw new Error(`Equipment with qrId ${equipmentQrId} does not exist`);
-    if (!jobsite)
+    }
+    if (!equipment) {
+      throw new Error(`Equipment with id ${equipmentQRId} does not exist`);
+    }
+    if (!jobsite) {
       throw new Error(`Jobsite with id ${jobsiteId} does not exist`);
+    }
 
+    // Create the EmployeeEquipmentLog entry
     const log = await prisma.employeeEquipmentLog.create({
       data: {
-        startTime: formData.get("startTime") as string,
-        endTime: formData.get("endTime") as string,
+        employeeId,
+        equipmentId: equipment.id,
+        jobsiteId,
+        startTime: formData.get("startTime") ? new Date(formData.get("startTime") as string) : null,
+        endTime: formData.get("endTime") ? new Date(formData.get("endTime") as string) : null,
         comment: formData.get("comment") as string,
-        employee: { connect: { id: employeeId } },
-        Equipment: { connect: { id: equipmentQrId } },
-        Job: { connect: { qrId: jobsiteId } },
+        isSubmitted: false, // default to false as per schema
+        status: "PENDING", // default status
       },
     });
 
+    // Revalidate the path to update any dependent front-end views
     revalidatePath("/");
+
     return log;
-  } catch (error) {
-    console.error("Error creating employee equipment log:", error);
-    throw new Error(`Failed to create employee equipment log: ${error}`);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error creating employee equipment log:", error);
+      throw new Error(`Failed to create employee equipment log: ${error.message}`);
+    } else {
+      console.error("An unknown error occurred:", error);
+      throw error;
+    }
   }
 }
 

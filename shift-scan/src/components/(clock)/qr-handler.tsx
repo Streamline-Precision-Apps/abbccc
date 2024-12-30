@@ -62,7 +62,9 @@ export default function QRStep({
           </Holds>
           <Holds className="row-span-1 h-full">
             <Buttons onClick={handleAlternativePath}>
-              {option !== "clockin" && option !== "break" ? (
+              {option !== "clockin" &&
+              option !== "break" &&
+              option !== "equipment" ? (
                 <Texts size={"p4"}>{t("SwitchSites")}</Texts>
               ) : (
                 <Texts size={"p4"}>{t("TroubleScanning")}</Texts>

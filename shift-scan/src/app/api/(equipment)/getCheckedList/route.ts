@@ -15,7 +15,7 @@ export async function GET() {
   const past24Hours = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
 
   try {
-    const logs = await prisma.employeeEquipmentLogs.findMany({
+    const logs = await prisma.employeeEquipmentLog.findMany({
       where: {
         employeeId: userId,
         createdAt: { lte: currentDate, gte: past24Hours },

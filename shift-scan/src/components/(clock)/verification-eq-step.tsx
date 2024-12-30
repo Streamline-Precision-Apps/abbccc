@@ -20,8 +20,6 @@ import { Grids } from "../(reusable)/grids";
 
 type VerifyProcessProps = {
   handleNextStep: () => void;
-  type: string;
-  option?: string;
 };
 
 const VerificationEQStep: React.FC<VerifyProcessProps> = ({
