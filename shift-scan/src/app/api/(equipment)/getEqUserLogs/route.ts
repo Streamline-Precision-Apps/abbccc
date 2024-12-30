@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 type Params = Promise<{ id: string }>;
-export async function GET(request: Request, { params: id }: { params: Params }) {
+export async function GET(request: Request) {
   const session = await auth();
   const userId = session?.user?.id;
 
@@ -12,18 +12,12 @@ export async function GET(request: Request, { params: id }: { params: Params }) 
   }
 
   try {
-    const formId = String((await id).id);
-    if (formId) {
-      return NextResponse.json({ error: "Invalid form ID" }, { status: 400 });
-    }
-
     const currentDate = new Date();
     const past24Hours = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
 
     const usersLogs = await prisma.employeeEquipmentLog.findMany({
       where: {
         employeeId: userId,
-        id: formId,
         createdAt: {
           lte: currentDate,
           gte: past24Hours,
@@ -35,7 +29,6 @@ export async function GET(request: Request, { params: id }: { params: Params }) 
           select: {
             name: true,
           },
-          
         },
       },
     });

@@ -404,12 +404,14 @@ export async function saveTimesheet(formData: FormData) {
       where: { id }, // Use an invalid ID for new entries
       create: {
         date: dateIsoString,
-        userId,
+        userId: userId,
         jobsiteId: formData.get("jobsiteId") as string,
         costcode: formData.get("costcode") as string,
         startTime: formData.get("startTime") as string,
         endTime: formData.get("endTime") as string,
-        comment: formData.get("timeSheetComments") as string,
+        comment: formData.get("comment") as string,
+        status: formData.get("status") as FormStatus,
+        statusComment: formData.get("statusComment") as string,
         workType: workType,
       },
       update: {
@@ -419,7 +421,9 @@ export async function saveTimesheet(formData: FormData) {
         costcode: formData.get("costcode") as string,
         startTime: formData.get("startTime") as string,
         endTime: formData.get("endTime") as string,
-        comment: formData.get("timeSheetComments") as string,
+        comment: formData.get("comment") as string,
+        status: formData.get("status") as FormStatus,
+        statusComment: formData.get("statusComment") as string,
         workType: workType,
       },
     });
