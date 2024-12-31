@@ -9,6 +9,9 @@ import { Grids } from "../(reusable)/grids";
 import { Images } from "../(reusable)/images";
 import { Texts } from "../(reusable)/texts";
 import { Contents } from "../(reusable)/contents";
+import { Titles } from "../(reusable)/titles";
+import { useTranslations } from "next-intl";
+
 
 const ProfilePictureSetup = ({
   id,
@@ -21,6 +24,8 @@ const ProfilePictureSetup = ({
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [showBanner, setShowBanner] = useState(false);
   const [bannerMessage, setBannerMessage] = useState("");
+
+  const t = useTranslations("SignUpProfilePicture");
 
   useEffect(() => {
     if (showBanner) {
@@ -64,39 +69,35 @@ const ProfilePictureSetup = ({
       {/* Show the banner at the top of the page */}
       {showBanner && (
         <Holds
-          style={{ position: "fixed", top: 0, width: "100%", zIndex: 1000 }}
+        style={{ position: "fixed", top: 0, width: "100%", zIndex: 1000 }}
         >
           <Banners background={"red"}>
             <Texts size={"p6"}>{bannerMessage}</Texts>
           </Banners>
         </Holds>
       )}
-      <Grids rows={"3"} gap={"5"}>
-        <Holds background={"white"} className="row-span-1 h-full">
+    <Grids rows={"10"} gap={"5"} className="mb-5">
+        <Holds background={"white"} className="row-span-1 h-full justify-center">
+          <Titles size={"h1"}>{t("AddProfilePicture")}</Titles>
+        </Holds>
+        <Holds background={"white"} className="row-span-8 h-full py-5">
           <Contents width={"section"}>
-            <Texts size={"p4"}>Please take a picture of yourself</Texts>
-            <Images
-              titleImg={"/Camera.svg"}
-              titleImgAlt={"camera"}
-              size={"30"}
-              className="my-auto"
-            />
+            <Texts>{t("LetsPickAPicture")}</Texts>
+            <Holds className="h-full">
+              {/* Integrating CameraComponent */}
+              <CameraComponent setBase64String={setBase64String} />
+            </Holds>
           </Contents>
         </Holds>
-        <Holds background={"white"} className="row-span-2 h-full">
-          <Holds size={"80"}>
-            {/* Integrating CameraComponent */}
-            <CameraComponent setBase64String={setBase64String} />
-          </Holds>
-        </Holds>
-        <Holds>
+        <Holds  className="row-span-1 h-full">
           <Buttons
-            onClick={handleSubmitImage}
-            background={"lightBlue"}
-            size={"80"}
-            disabled={isSubmitting} // Disable the button while submitting
+          onClick={handleSubmitImage}
+          background={"orange"}
+          disabled={isSubmitting} // Disable the button while submitting
           >
-            {isSubmitting ? "Submitting..." : "Next"}
+            <Titles>
+              {isSubmitting ? "Submitting..." : "Next"}
+            </Titles>
           </Buttons>
         </Holds>
       </Grids>

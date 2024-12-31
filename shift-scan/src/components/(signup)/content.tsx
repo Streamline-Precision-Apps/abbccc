@@ -38,7 +38,7 @@ export default function Content({
   accountSetup: boolean;
 }) {
   const isValid = validateProps(userId, accountSetup); // Ensure this is at the top
-  const [step, setStep] = useState(4); // Always call useState
+  const [step, setStep] = useState(3); // Always call useState
   const handleComplete = () => {
     try {
       setAuthStep("");
@@ -75,20 +75,21 @@ export default function Content({
   return (
     <Holds className="h-full" position={"row"}>
       <Contents width={"section"}>
-        {step === 1 && <ShiftScanIntro handleNextStep={handleNextStep} />}
+        {/* {step === 1 && <ShiftScanIntro handleNextStep={handleNextStep} />}
         {step === 2 && (
-          <ResetPassword userId={userId} handleNextStep={handleNextStep} />
+          <ResetPassword userId={userId} handleNextStep={handleNextStep} /> */}
+        {/* )} */}
+        {step === 1 && (
+          <NotificationSettings userId={userId} handleNextStep={handleNextStep} />
         )}
-        {step === 3 && (
-          <NotificationSettings id={userId} handleNextStep={handleNextStep} />
-        )}
-                {step === 4 && (
-          <Permissions id={userId} handleAccept={handleComplete}/>
-        )}
-                {step === 5 && (
+                        {step === 2 && (
           <ProfilePictureSetup id={userId} handleNextStep={handleNextStep} />
         )}
-        {step === 7 && (
+                {step === 3 && (
+          <Permissions id={userId} handleAccept={handleComplete}/>
+        )}
+
+        {step === 4 && (
           <SignatureSetup id={userId} handleNextStep={handleNextStep} />
         )}
         {step === 7 && (
