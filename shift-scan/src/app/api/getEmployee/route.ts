@@ -13,7 +13,7 @@ export async function GET() {
 
   try {
     // Fetch employee details
-    const employee = await prisma.users.findUnique({
+    const employee = await prisma.user.findUnique({
       where: {
         id: userId.toString(),
       },
@@ -21,8 +21,16 @@ export async function GET() {
         id: true,
         firstName: true,
         lastName: true,
+        email: true,
         image: true,
         signature: true,
+        contact: {
+          select: {
+            phoneNumber: true,
+            emergencyContact: true,
+            emergencyContactNumber: true,
+          },
+        }
       },
     });
 

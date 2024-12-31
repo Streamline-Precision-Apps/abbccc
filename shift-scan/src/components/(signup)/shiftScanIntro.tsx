@@ -7,11 +7,11 @@ import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
 import { Titles } from "../(reusable)/titles";
 import { Contents } from "../(reusable)/contents";
-import { Checkbox } from "../(inputs)/checkBox";
 import { ChangeEvent} from "react";
 import { setLocale } from "@/actions/cookieActions";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { Checkbox } from "../(inputs)/checkboxnew";
 
 const ShiftScanIntro = ({ handleNextStep }: { handleNextStep: () => void }) => {
   const router = useRouter();
@@ -68,7 +68,6 @@ const ShiftScanIntro = ({ handleNextStep }: { handleNextStep: () => void }) => {
             </Holds>
             <Holds size={"20"}>
               <Checkbox
-              size={"5"}
               id={"1"}
               label={" "}
               onChange={(e: ChangeEvent<HTMLInputElement>) => LocaleHandler(e)}
@@ -81,7 +80,6 @@ const ShiftScanIntro = ({ handleNextStep }: { handleNextStep: () => void }) => {
             </Holds>
             <Holds size={"20"}>
               <Checkbox
-              size={"16"}
               id={"1"}
               label={" "}
               onChange={(e: ChangeEvent<HTMLInputElement>) => LocaleHandler(e)}

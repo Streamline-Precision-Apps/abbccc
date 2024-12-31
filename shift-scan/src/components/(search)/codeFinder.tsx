@@ -80,15 +80,13 @@ export default function CodeFinder({ datatype, savedCode }: Props) {
         }
       } else {
         const defaultOption = options.find((opt) => opt.code === savedCode);
-        console.log(defaultOption);
         if (defaultOption) {
           setSelectedOption(defaultOption);
           setSearchTerm(defaultOption.label); // Update search term to display label in the search bar
         }
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [savedCode, jobsiteResults, options, setSelectedOption, setSearchTerm]);
 
   useEffect(() => {
     const filtered = options;

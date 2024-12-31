@@ -1,0 +1,26 @@
+// Holds a uniquely generated QR code that can be read to distinct Job Site and general Job Site information 
+model Jobsite {
+    id                    String                 @id @default(cuid())
+    qrId                  String                 @unique @default(cuid()) // qr-id
+    name                  String
+    description           String // what the job is about
+    isActive              Boolean                @default(true)
+    status                FormStatus             @default(PENDING)
+    address               String
+    city                  String
+    state                 String
+    zipCode               String
+    country               String                 @default("US")
+    comment               String? // for creation reasons to show admins why it was created
+    createdAt             DateTime               @default(now())
+    updatedAt             DateTime               @updatedAt
+    archiveDate           DateTime? // when the job Site was archived we remove the date to unarchive
+    employeeEquipmentLogs EmployeeEquipmentLog[] //connects a job Site to an equipment log
+    timeSheets            TimeSheet[] // connects a job Site to the timesheet
+    CCTags                CCTag[] // a filter for the job Site by a tag this connects the cost code to the Job Site
+    equipment             Equipment[] // all equipment on the job Site 
+    TruckingLog           TruckingLog[]
+
+    @@unique([name, address, city, state]) // unique job Site so only one is created
+    @@index([qrId])
+}

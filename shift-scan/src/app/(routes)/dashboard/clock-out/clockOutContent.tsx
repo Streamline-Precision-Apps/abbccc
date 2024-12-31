@@ -4,6 +4,7 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { InjuryReportContent } from "./(components)/injury-report/injuryReportContent";
 import { Titles } from "@/components/(reusable)/titles";
@@ -18,71 +19,16 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Images } from "@/components/(reusable)/images";
 import { Grids } from "@/components/(reusable)/grids";
 import Spinner from "@/components/(animations)/spinner";
-// import { z } from "zod";
 import { useTruckScanData } from "@/app/context/TruckScanDataContext";
 import { CheckBox } from "@/components/(inputs)/checkBox";
 import { useCurrentView } from "@/app/context/CurrentViewContext";
 import TruckClockOutForm from "./(components)/truckClockOutForm";
 import { useStartingMileage } from "@/app/context/StartingMileageContext";
+import Comment from "@/components/(clock)/comment";
 
-// Zod schema for component state
-// const ClockOutContentSchema = z.object({
-//   loading: z.boolean(),
-//   step: z.number(),
-//   path: z.string(),
-//   checked: z.boolean(),
-//   base64String: z.string(),
-//   isSubmitting: z.boolean(),
-//   scanResult: z
-//     .object({
-//       data: z.string().optional(),
-//     })
-//     .nullable(),
-//   savedCostCode: z.string().nullable(),
-//   savedTimeSheetData: z
-//     .object({
-//       id: z.union([z.string(), z.number()]).optional(),
-//     })
-//     .nullable(),
-//   savedVehicleId: z.string().nullable(),
-//   date: z.date(),
-// });
-
-// Define FormStatus Enum
-// const FormStatus = z.enum(["PENDING", "APPROVED", "REJECTED"]); // Update as per actual values
-
-// Define TimeSheetsSchema
-// const TimeSheetsSchema = z.object({
-//   submitDate: z.date().default(new Date()),
-//   id: z.number().int(), // Int type
-//   userId: z.string(),
-//   date: z.date(), // DateTime
-//   jobsiteId: z.string(),
-//   costcode: z.string(),
-//   nu: z.string().default("nu"),
-//   Fp: z.string().default("fp"),
-//   vehicleId: z.string().nullable(), // Nullable String
-//   startTime: z.date(),
-//   endTime: z.date().nullable(),
-//   duration: z.number().nullable(),
-//   startingMileage: z.number().int().nullable(),
-//   endingMileage: z.number().int().nullable(),
-//   leftIdaho: z.boolean().nullable().default(false),
-//   equipmentHauled: z.string().nullable(),
-//   materialsHauled: z.string().nullable(),
-//   hauledLoadsQuantity: z.number().int().nullable(),
-//   refuelingGallons: z.number().nullable(),
-//   timeSheetComments: z.string().nullable(),
-//   status: FormStatus.default("PENDING"),
-// });
-
-// Infer the TypeScript type for convenience
-// type TimeSheetsType = z.infer<typeof TimeSheetsSchema>;
-
-// Main component function
 export default function ClockOutContent() {
   const [loading, setLoading] = useState(true);
-  const [step, setStep] = useState(1); // Using setStep instead of incrementStep
+  const [step, setStep] = useState(0); // Using setStep instead of incrementStep
   const [path, setPath] = useState("ClockOut");
   const router = useRouter();
   const t = useTranslations("ClockOut");
@@ -103,6 +49,8 @@ export default function ClockOutContent() {
   const [hauledLoadsQuantity, setHauledLoadsQuantity] = useState<number>(0);
   const [materialsHauled, setMaterialsHauled] = useState<string>("");
   const [leftIdaho, setLeftIdaho] = useState<boolean>(false);
+
+  const [commentsValue, setCommentsValue] = useState("");
 
   const incrementStep = () => {
     setStep((prevStep) => prevStep + 1); // Increment function
@@ -144,7 +92,7 @@ export default function ClockOutContent() {
       }
     };
     fetchSignature();
-  }, []);
+  }, [currentView]);
 
   const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
     setChecked(event.currentTarget.checked);
@@ -200,9 +148,26 @@ export default function ClockOutContent() {
     if (currentView === "truck") {
       setPath("truck");
     } else {
-      setPath("ClockOut");
+      setPath("clockOut");
     }
   };
+  // step 0  is the comment step for clocking out
+  if (step === 0) {
+    return (
+      <Grids className="grid-rows-1 gap-5">
+        <Holds background={"white"} className="row-span-1 h-full">
+          <Contents width={"section"} className="py-4">
+            <Comment
+              handleClick={handleNextStep}
+              clockInRole={""}
+              setCommentsValue={setCommentsValue}
+              commentsValue={commentsValue}
+            />
+          </Contents>
+        </Holds>
+      </Grids>
+    );
+  }
 
   if (step === 1) {
     return (
@@ -229,12 +194,19 @@ export default function ClockOutContent() {
                     </Holds>
                   ) : (
                     <Holds className="my-auto">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={base64String}
-                        alt="Loading signature"
-                        className="w-[40%] mx-auto"
-                      />
+                      {base64String ? (
+                        <Image
+                          src={base64String}
+                          alt="Loading signature"
+                          width={200}
+                          height={100}
+                          className="w-[40%] mx-auto"
+                        />
+                      ) : (
+                        <Holds className="my-auto">
+                          <Texts>{t("NoSignature")}</Texts>
+                        </Holds>
+                      )}
                     </Holds>
                   )}
                 </Holds>
@@ -356,8 +328,8 @@ export default function ClockOutContent() {
                       />
                       <Inputs
                         type="hidden"
-                        name="timeSheetComments"
-                        value={""}
+                        name="timesheetComments"
+                        value={commentsValue}
                         readOnly
                       />
                       <Buttons
@@ -557,8 +529,8 @@ export default function ClockOutContent() {
                       />
                       <Inputs
                         type="hidden"
-                        name="timeSheetComments"
-                        value={""}
+                        name="timesheetComments"
+                        value={commentsValue}
                         readOnly
                       />
                       <Holds className="mb-2">

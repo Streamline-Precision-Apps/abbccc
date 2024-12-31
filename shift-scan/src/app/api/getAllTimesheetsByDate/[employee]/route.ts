@@ -51,7 +51,7 @@ export async function GET(
   console.log("date:", date, "startOfDay:", startOfDay, "endOfDay:", endOfDay);
 
   try {
-    const eqSheets = await prisma.employeeEquipmentLogs.findMany({
+    const eqSheets = await prisma.employeeEquipmentLog.findMany({
       where: {
         employeeId: employee,
         createdAt: {
@@ -59,12 +59,12 @@ export async function GET(
           lte: endOfDay.toISOString(), // End of the day (later)
         },
       },
-      orderBy: { date: "desc" },
+      orderBy: { createdAt: "desc" },
     });
 
     console.log("eqSheets:", eqSheets[0]?.startTime);
 
-    const timesheets = await prisma.timeSheets.findMany({
+    const timesheets = await prisma.timeSheet.findMany({
       where: {
         userId: employee,
         date: {

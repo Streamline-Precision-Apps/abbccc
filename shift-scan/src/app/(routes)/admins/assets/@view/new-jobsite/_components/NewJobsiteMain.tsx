@@ -12,10 +12,10 @@ export default function NewJobsitesMain({
 }: {
   formState: {
     name: string;
-    streetName: string;
-    streetNumber: string;
+    address: string;
     city: string;
     state: string;
+    zipCode: string;
     country: string;
     description: string;
     comment: string;
@@ -33,18 +33,8 @@ export default function NewJobsitesMain({
           </Labels>
           <Inputs
             type="text"
-            value={formState.streetNumber}
+            value={formState.address}
             onChange={(e) => handleFieldChange("streetNumber", e.target.value)}
-          />
-        </Holds>
-        <Holds className="h-full w-full">
-          <Labels size={"p6"}>
-            {t("StreetName")} <span className="text-red-500">*</span>
-          </Labels>
-          <Inputs
-            type="text"
-            value={formState.streetName}
-            onChange={(e) => handleFieldChange("streetName", e.target.value)}
           />
         </Holds>
         <Holds className="h-full w-full">
@@ -65,6 +55,16 @@ export default function NewJobsitesMain({
             type="text"
             value={formState.state}
             onChange={(e) => handleFieldChange("state", e.target.value)}
+          />
+        </Holds>
+        <Holds className="h-full w-full">
+          <Labels size={"p6"}>
+            {t("ZipCode")} <span className="text-red-500">*</span>
+          </Labels>
+          <Inputs
+            type="text"
+            value={formState.zipCode}
+            onChange={(e) => handleFieldChange("zipCode", e.target.value)}
           />
         </Holds>
         <Holds className="h-full w-full">

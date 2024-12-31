@@ -12,13 +12,17 @@ import { Images } from "@/components/(reusable)/images";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { useTranslations } from "next-intl";
 
+// Zod schema for PayPeriodTimesheets type
 const PayPeriodTimesheetsSchema = z.object({
   startTime: z.string().refine((date) => !isNaN(new Date(date).getTime()), {
     message: "Invalid date format",
   }),
-  duration: z.number().nullable(),
+  endTime: z.string().refine((date) => !isNaN(new Date(date).getTime()), {
+    message: "Invalid date format",
+  }),
 });
-// Zod schema for API response for pay period timesheets
+
+// Zod schema for an array of timesheets
 const PayPeriodSheetsArraySchema = z.array(PayPeriodTimesheetsSchema);
 
 export default function AdminHome() {
@@ -29,8 +33,10 @@ export default function AdminHome() {
   const [payPeriodSheets, setPayPeriodSheets] = useState<PayPeriodTimesheets[]>(
     []
   );
+
   const t = useTranslations("Admins");
 
+  // Load cached sheets from localStorage
   useEffect(() => {
     const storedSheets = localStorage.getItem("payPeriodSheets");
     if (storedSheets) {
@@ -38,19 +44,22 @@ export default function AdminHome() {
     }
   }, []);
 
+  // Fetch data from the API
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const response = await fetch("/api/getPayPeriodTimeSheets");
       const data = await response.json();
 
+      // Validate and transform the data
       const validatedData = PayPeriodSheetsArraySchema.parse(data);
       const transformedData = validatedData.map((item) => ({
         ...item,
         startTime: new Date(item.startTime),
+        endTime: new Date(item.endTime),
       }));
-
-      localStorage.setItem("payPeriodSheets", JSON.stringify(transformedData)); // Cache in localStorage
+      // Cache in localStorage
+      localStorage.setItem("payPeriodSheets", JSON.stringify(transformedData));
       setPayPeriodSheets(transformedData);
       setPayPeriodTimeSheets(transformedData);
     } catch (error) {
@@ -60,21 +69,34 @@ export default function AdminHome() {
           error.errors
         );
       } else {
-        console.error("PayPeriod-Fetch", error);
+        console.error("Error fetching pay period timesheets:", error);
       }
     } finally {
       setLoading(false);
     }
   }, [setPayPeriodTimeSheets]);
 
+  // Fetch data if no sheets are loaded
   useEffect(() => {
     if (!payPeriodSheets.length) fetchData();
   }, [fetchData, payPeriodSheets.length]);
 
+  // Calculate total hours using the duration field
   const totalPayPeriodHours = useMemo(() => {
+    if (!payPeriodSheets.length) return 0;
     return payPeriodSheets
-      .filter((sheet) => sheet.duration !== null)
-      .reduce((total, sheet) => total + (sheet.duration ?? 0), 0);
+      .filter(
+        (sheet: PayPeriodTimesheets) =>
+          sheet.startTime !== null || sheet.endTime !== null
+      )
+      .reduce(
+        (total, sheet: PayPeriodTimesheets) =>
+          total +
+          (new Date(sheet.endTime).getTime() -
+            new Date(sheet.startTime).getTime()) /
+            (1000 * 60 * 60),
+        0
+      );
   }, [payPeriodSheets]);
 
   useEffect(() => {
@@ -89,11 +111,11 @@ export default function AdminHome() {
             <Spinner />
           </Holds>
         </Holds>
-      ) : toggle === true ? (
+      ) : toggle ? (
         <Holds className="w-full h-full flex items-center justify-center">
           <Holds
             background={"darkBlue"}
-            className="h-fit border-0 w-[90%] md:w-[80%] lg:w-[70%] xl:w-[50%]  "
+            className="h-fit border-0 w-[90%] md:w-[80%] lg:w-[70%] xl:w-[50%]"
           >
             <Holds className="w-full h-full pt-2">
               <Holds className="w-full px-2">
@@ -108,9 +130,9 @@ export default function AdminHome() {
               </Holds>
               <Holds
                 background={"white"}
-                className=" h-[15%] p-4 rounded-t-none flex items-center justify-center"
+                className="h-[15%] p-4 rounded-t-none flex items-center justify-center"
               >
-                <Texts className="text-center ">
+                <Texts className="text-center">
                   {t("Totalhoursthispayperiod")} {payPeriodHours}
                 </Texts>
               </Holds>

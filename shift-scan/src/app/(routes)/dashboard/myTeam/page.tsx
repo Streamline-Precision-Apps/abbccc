@@ -13,12 +13,18 @@ import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import React from "react";
 import { z } from "zod";
+import { Texts } from "@/components/(reusable)/texts";
 
 // Zod schema for Team data
+const countSchema = z.object({
+  users: z.number(),
+});
+
+// Define the main schema
 const TeamSchema = z.object({
-  id: z.number(),
+  id: z.string(),
   name: z.string(),
-  totalMembers: z.number(),
+  _count: countSchema,
 });
 
 // Zod schema for the response containing an array of Teams
@@ -121,10 +127,13 @@ export default function Content() {
                         background="lightBlue"
                         href={`/dashboard/myTeam/${teams.id}`}
                       >
-                        <Holds>
-                          <Titles size="h1">
-                            {teams.name} ({teams.totalMembers})
-                          </Titles>
+                        <Holds position={"row"}>
+                          <Holds className="w-5/6">
+                            <Titles size="h1">{teams.name}</Titles>
+                          </Holds>
+                          <Holds className="w-1/6">
+                            <Texts>({teams._count.users})</Texts>
+                          </Holds>
                         </Holds>
                       </Buttons>
                     </Holds>

@@ -14,7 +14,7 @@ export async function GET() {
 
   try {
     // Fetch received requests based on `id` and `userId`
-    const receivedContent = await prisma.timeoffRequestForms.findMany({
+    const receivedContent = await prisma.timeOffRequestForm.findMany({
       where: {
         status: "PENDING",
       },

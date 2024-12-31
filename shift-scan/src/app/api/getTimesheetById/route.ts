@@ -16,9 +16,9 @@ export async function GET() {
   try {
     if (savedTimeSheetData && savedTimeSheetData.id) {
 
-      const timesheet = await prisma.timeSheets.findUnique({
+      const timesheet = await prisma.timeSheet.findUnique({
         where: {
-          id: Number(savedTimeSheetData.id),
+          id: String(savedTimeSheetData.id),
         },
       });
 

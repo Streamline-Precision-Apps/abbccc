@@ -14,11 +14,11 @@ export function EditJobsitesMain({
 }: {
   formState: {
     name: string;
-    streetName: string;
-    streetNumber: string;
+    address: string;
     city: string;
     state: string;
     country: string;
+    zipCode: string;
     description: string;
     comment: string;
   };
@@ -26,21 +26,21 @@ export function EditJobsitesMain({
   hasChanged: (
     field:
       | "name"
-      | "streetName"
-      | "streetNumber"
+      | "address"
       | "city"
       | "state"
       | "country"
+      | "zipCode"
       | "description"
       | "comment"
   ) => boolean;
   originalState: {
     name: string;
-    streetName: string;
-    streetNumber: string;
+    address: string;
     city: string;
     state: string;
     country: string;
+    zipCode: string;
     description: string;
     comment: string;
   };
@@ -55,31 +55,17 @@ export function EditJobsitesMain({
             {t("StreetName")} <span className="text-red-500">*</span>
           </Labels>
           <EditableFields
-            value={formState.streetName}
-            isChanged={hasChanged("streetName")}
-            onChange={(e) => handleFieldChange("streetName", e.target.value)}
+            value={formState.address}
+            isChanged={hasChanged("address")}
+            onChange={(e) => handleFieldChange("address", e.target.value)}
             onRevert={() =>
-              handleFieldChange("streetName", originalState.streetName)
+              handleFieldChange("streetName", originalState.address)
             }
             variant="default"
             size="default"
           />
         </Holds>
-        <Holds className="h-full w-full">
-          <Labels size={"p6"}>
-            {t("StreetNumber")} <span className="text-red-500">*</span>
-          </Labels>
-          <EditableFields
-            value={formState.streetNumber}
-            isChanged={hasChanged("streetNumber")}
-            onChange={(e) => handleFieldChange("streetNumber", e.target.value)}
-            onRevert={() =>
-              handleFieldChange("streetNumber", originalState.streetNumber)
-            }
-            variant="default"
-            size="default"
-          />
-        </Holds>
+
         <Holds className="h-full w-full">
           <Labels size={"p6"}>
             {t("City")} <span className="text-red-500">*</span>
@@ -102,6 +88,21 @@ export function EditJobsitesMain({
             isChanged={hasChanged("state")}
             onChange={(e) => handleFieldChange("state", e.target.value)}
             onRevert={() => handleFieldChange("state", originalState.state)}
+            variant="default"
+            size="default"
+          />
+        </Holds>
+        <Holds className="h-full w-full">
+          <Labels size={"p6"}>
+            {t("ZipCode")} <span className="text-red-500">*</span>
+          </Labels>
+          <EditableFields
+            value={formState.zipCode}
+            isChanged={hasChanged("zipCode")}
+            onChange={(e) => handleFieldChange("zipCode", e.target.value)}
+            onRevert={() =>
+              handleFieldChange("streetNumber", originalState.zipCode)
+            }
             variant="default"
             size="default"
           />

@@ -19,6 +19,8 @@ import { Bases } from "@/components/(reusable)/bases";
 import { Titles } from "@/components/(reusable)/titles";
 import { z } from "zod";
 import { useCurrentView } from "@/app/context/CurrentViewContext";
+import { NModals } from "@/components/(reusable)/newmodals";
+import { TextAreas } from "@/components/(reusable)/textareas";
 
 // Zod schema for component state, including logs
 const DbWidgetSectionSchema = z.object({
@@ -73,6 +75,8 @@ export default function DbWidgetSection({ session }: props) {
   const [additionalButtonsType, setAdditionalButtonsType] = useState<
     string | null
   >(null);
+  const [isModal2Open, setIsModal2Open] = useState(false);
+  const [comment, setComment] = useState("");
   const { currentView } = useCurrentView();
 
   // Validate initial state with Zod schema
@@ -124,6 +128,7 @@ export default function DbWidgetSection({ session }: props) {
     setIsModalOpen(false);
   };
 
+  // handleCOButton2 is used for taking a break
   const handleCOButton2 = async () => {
     try {
       if (logs.length === 0) {
@@ -132,7 +137,8 @@ export default function DbWidgetSection({ session }: props) {
         const t_id = JSON.parse(localeValue || "{}").id;
         formData2.append("id", t_id?.toString() || "");
         formData2.append("endTime", new Date().toISOString());
-        formData2.append("TimeSheetComments", "");
+        formData2.append("timesheetComments", comment);
+
         await updateTimeSheetBySwitch(formData2);
 
         setAuthStep("break");
@@ -249,7 +255,10 @@ export default function DbWidgetSection({ session }: props) {
                   </Buttons>
                 </Holds>
                 <Holds className="col-span-2 row-span-1 gap-5 h-full">
-                  <Buttons background={"orange"} onClick={handleCOButton2}>
+                  <Buttons
+                    background={"orange"}
+                    onClick={() => setIsModal2Open(true)}
+                  >
                     <Holds position={"row"} className="my-auto">
                       <Holds size={"60"}>
                         <Texts size={"p1"}>{t("Break")}</Texts>
@@ -264,6 +273,50 @@ export default function DbWidgetSection({ session }: props) {
                     </Holds>
                   </Buttons>
                 </Holds>
+                <NModals
+                  isOpen={isModal2Open}
+                  handleClose={() => setIsModal2Open(false)}
+                  size={"page"}
+                >
+                  <Holds background={"white"}>
+                    <Grids rows={"5"}>
+                      <Holds className="row-span-1 h-full">
+                        <Texts size={"p1"}>Current Shift Comment</Texts>
+                      </Holds>
+                      <Holds className="row-span-3 h-full">
+                        <TextAreas
+                          placeholder="Write a 40 character Comment"
+                          value={comment}
+                          onChange={(e) => setComment(e.target.value)}
+                          rows={9}
+                          maxLength={40}
+                          style={{ resize: "none" }}
+                        />
+                      </Holds>
+                      <Holds
+                        position={"row"}
+                        className="row-span-1 h-full space-x-4"
+                      >
+                        <Holds>
+                          <Buttons
+                            background={"orange"}
+                            onClick={() => handleCOButton2()}
+                          >
+                            <Texts size={"p3"}>Submit</Texts>
+                          </Buttons>
+                        </Holds>
+                        <Holds>
+                          <Buttons
+                            background={"red"}
+                            onClick={() => setIsModal2Open(false)}
+                          >
+                            <Texts size={"p3"}>Cancel</Texts>
+                          </Buttons>
+                        </Holds>
+                      </Holds>
+                    </Grids>
+                  </Holds>
+                </NModals>
                 <Holds className="col-span-2 row-span-1 gap-5 h-full">
                   <Buttons background={"red"} onClick={handleCOButton3}>
                     <Holds position={"row"} className="my-auto">

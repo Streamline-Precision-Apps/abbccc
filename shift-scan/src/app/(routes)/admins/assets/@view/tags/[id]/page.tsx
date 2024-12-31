@@ -44,7 +44,7 @@ const jobsSchema = z.array(
 
 const costCodesSchema = z.array(
   z.object({
-    id: z.number(),
+    id: z.string(),
     name: z.string().min(1, "Cost code name is required"),
     description: z.string(), // Ensure description matches type requirement
   })
@@ -67,7 +67,6 @@ export default function TagView({ params }: { params: { id: string } }) {
   );
   const t = useTranslations("Admins");
   const { setNotification } = useNotification();
-
 
   useEffect(() => {
     const fetchTag = async () => {
