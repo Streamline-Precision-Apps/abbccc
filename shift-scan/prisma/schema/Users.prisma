@@ -1,0 +1,74 @@
+// Holds the login and general app data of employee but not all the data
+model User {
+    id              String     @id @default(cuid())
+    firstName       String
+    lastName        String
+    username        String     @unique
+    email           String     @unique
+    password        String
+    signature       String?    @db.Text
+    DOB             String // used to check for duplicate users - manager can see this under profile
+    truckView       Boolean // view of truck info
+    tascoView       Boolean // view of tasco info
+    laborView       Boolean // view of labor info
+    mechanicView    Boolean // view of mechanic info
+    permission      Permission @default(USER) // sets default permission to user on creation
+    image           String?
+    activeEmployee  Boolean    @default(true)
+    startDate       DateTime?  @default(now())
+    terminationDate DateTime?
+    accountSetup    Boolean    @default(false)
+
+    passwordResetTokens    PasswordResetToken[]
+    timeSheets             TimeSheet[]
+    equipmentLogs          EmployeeEquipmentLog[]
+    contact                Contacts?
+    userSettings           UserSettings? // one to one relationship
+    injuryForms            InjuryForm[] // one to many relationship 
+    timeOffRequestForms    timeOffRequestForm[] // one to many relationship
+    maintenanceLogs        MaintenanceLog[]
+    passwordResetTokenId   String?
+    crews                  Crew[]
+
+    @@unique([firstName, lastName, DOB]) // prevent duplicate users
+    @@index([email])
+}
+
+model UserSettings {
+    id               String  @id @default(cuid())
+    userId           String  @unique
+    language         String  @default("en")
+    approvedRequests Boolean @default(false)
+    timeOffRequests  Boolean @default(false)
+    generalReminders Boolean @default(false)
+    biometric        Boolean @default(false)
+    cameraAccess     Boolean @default(false)
+    locationAccess   Boolean @default(false)
+    photoAlbumAccess       Boolean @default(false)
+    cookiesAccess          Boolean @default(false)
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+//Employee contact information section. Purpose get ahold of them or their emergency contact. 
+model Contacts {
+    id                     String      @id @default(cuid())
+    employeeId             String   @unique
+    phoneNumber            String
+    emergencyContact       String?
+    emergencyContactNumber String?
+    createdAt              DateTime @default(now())
+    updatedAt              DateTime @updatedAt
+    user                   User?   @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+}
+
+// password reset token
+model PasswordResetToken {
+    id         String   @id @default(cuid())
+    email      String
+    token      String   @unique
+    expiration DateTime
+    Users      User?   @relation(fields: [email], references: [email])
+
+    @@unique([email, token])
+}

@@ -6,11 +6,11 @@ import bcrypt from "bcryptjs";
 
 export async function createUser(formData: FormData) {
   try {
-    // prevent duplicate users as long as first name, last name, and DOB are the same
+    // prevent duplicate user as long as first name, last name, and DOB are the same
     const firstName = formData.get("firstName") as string;
     const lastName = formData.get("lastName") as string;
     const DOB = formData.get("DOB") as string;
-    const users = await prisma.users.findMany({
+    const user = await prisma.user.findMany({
       where: {
         firstName,
         lastName,
@@ -20,16 +20,16 @@ export async function createUser(formData: FormData) {
         id: true,
       },
     });
-    const existingUser = users[0]?.id;
+    const existingUser = user[0]?.id;
 
-    if (users.length > 0) {
+    if (user.length > 0) {
       console.log("User already exists");
       console.log(existingUser);
       return;
     }
 
     console.log("Creating user:", formData);
-    await prisma.users.create({
+    await prisma.user.create({
       data: {
         firstName: formData.get("firstName") as string,
         lastName: formData.get("lastName") as string,
@@ -68,8 +68,8 @@ export async function adminCreateUser(formData: FormData) {
       throw new Error("Required fields are missing.");
     }
 
-    // Check for duplicate users based on firstName, lastName, and DOB
-    const users = await prisma.users.findMany({
+    // Check for duplicate user based on firstName, lastName, and DOB
+    const user = await prisma.user.findMany({
       where: {
         firstName,
         lastName,
@@ -80,7 +80,7 @@ export async function adminCreateUser(formData: FormData) {
       },
     });
 
-    if (users.length > 0) {
+    if (user.length > 0) {
       console.log(
         "User already exists based on first name, last name, and DOB"
       );
@@ -88,7 +88,7 @@ export async function adminCreateUser(formData: FormData) {
     }
 
     // Check for duplicate email
-    const existingEmailUser = await prisma.users.findUnique({
+    const existingEmailUser = await prisma.user.findUnique({
       where: {
         email,
       },
@@ -100,7 +100,7 @@ export async function adminCreateUser(formData: FormData) {
     }
 
     console.log("Creating user:", formData);
-    const newUser = await prisma.users.create({
+    const newUser = await prisma.user.create({
       data: {
         firstName,
         lastName,
@@ -122,7 +122,6 @@ export async function adminCreateUser(formData: FormData) {
     await prisma.contacts.create({
       data: {
         employeeId,
-        email,
         phoneNumber: formData.get("phoneNumber") as string,
         emergencyContact: formData.get("emergencyContact") as string,
         emergencyContactNumber: formData.get(
@@ -153,7 +152,7 @@ export async function adminCreateUser(formData: FormData) {
 }
 
 export async function updateUser(formData: FormData) {
-  await prisma.users.update({
+  await prisma.user.update({
     where: { id: formData.get("id") as string },
     data: {
       firstName: formData.get("firstName") as string,
@@ -169,11 +168,33 @@ export async function updateUser(formData: FormData) {
     },
   });
 }
+export async function updateUserProfile(formData: FormData) {
+  try{
+    await prisma.user.update({
+    where: { id: formData.get("id") as string },
+    data: {
+      email: formData.get("email") as string,
+      contact: {
+        update: {
+          phoneNumber: formData.get("phoneNumber") as string,
+          emergencyContact: formData.get("emergencyContact") as string,
+          emergencyContactNumber: formData.get(
+            "emergencyContactNumber"
+          ) as string,
+        },
+      }
+    },
+  });
+  revalidatePath("/hamburger/profile");
+  } catch (error) {
+    console.error("Error updating user:", error);
+  }
+}
 
 export async function deleteUser(formData: FormData) {
   const date = new Date();
   const id = formData.get("id") as string;
-  await prisma.users.update({
+  await prisma.user.update({
     where: { id },
     data: {
       terminationDate: date.toISOString(),
@@ -183,7 +204,7 @@ export async function deleteUser(formData: FormData) {
 
 export async function uploadImage(formdata: FormData) {
   console.log(formdata);
-  await prisma.users.update({
+  await prisma.user.update({
     where: { id: formdata.get("id") as string },
     data: {
       image: formdata.get("image") as string,
@@ -194,7 +215,7 @@ export async function uploadImage(formdata: FormData) {
 
 export async function uploadFirstImage(formdata: FormData) {
   console.log(formdata);
-  await prisma.users.update({
+  await prisma.user.update({
     where: { id: formdata.get("id") as string },
     data: {
       image: formdata.get("image") as string,
@@ -204,10 +225,21 @@ export async function uploadFirstImage(formdata: FormData) {
 
 export async function uploadFirstSignature(formdata: FormData) {
   console.log(formdata);
-  const result = await prisma.users.update({
+  const result = await prisma.user.update({
     where: { id: formdata.get("id") as string },
     data: {
       signature: formdata.get("signature") as string,
+    },
+  });
+  console.log(result);
+}
+
+export async function uploadSignature(id: string, signature: string) {
+  console.log("id:", id, "signature:", signature);
+  const result = await prisma.user.update({
+    where: { id: id },
+    data: {
+      signature: signature,
     },
   });
   console.log(result);
@@ -236,26 +268,8 @@ export async function setUserLanguage(formdata: FormData) {
   return result.language;
 }
 
-export async function fetchByNameUser(name: string) {
-  try {
-    const user = await prisma.users.findFirst({
-      where: {
-        OR: [
-          { firstName: { contains: name, mode: "insensitive" } },
-          { lastName: { contains: name, mode: "insensitive" } },
-        ],
-      },
-    });
-    console.log(user);
-    return user;
-  } catch (error) {
-    console.error("Error fetching user:", error);
-    throw error;
-  }
-}
-
 export async function getUserFromDb(username: string, password: string) {
-  const user = await prisma.users.findUnique({
+  const user = await prisma.user.findUnique({
     where: {
       username: username,
       password: password,
@@ -270,7 +284,7 @@ export async function getUserFromDb(username: string, password: string) {
 }
 
 export async function finishUserSetup(id: string) {
-  await prisma.users.update({
+  await prisma.user.update({
     where: { id: id },
     data: {
       accountSetup: true,
@@ -279,7 +293,7 @@ export async function finishUserSetup(id: string) {
 }
 
 export async function setUserPassword(formData: FormData) {
-  await prisma.users.update({
+  await prisma.user.update({
     where: { id: formData.get("id") as string },
     data: {
       password: formData.get("password") as string,
@@ -292,7 +306,6 @@ export async function updateContactInfo(formData: FormData) {
   await prisma.contacts.update({
     where: { employeeId: formData.get("id") as string },
     data: {
-      email: formData.get("email") as string,
       phoneNumber: formData.get("phoneNumber") as string,
       emergencyContact: formData.get("emergencyContact") as string,
       emergencyContactNumber: formData.get("emergencyContactNumber") as string,

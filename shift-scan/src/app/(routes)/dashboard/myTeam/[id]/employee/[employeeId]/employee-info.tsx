@@ -17,17 +17,8 @@ const EmployeeSchema = z.object({
   firstName: z.string(),
   lastName: z.string(),
   DOB: z.string().optional(),
+  email: z.string(),
   image: z.string().nullable().optional(),
-  contacts: z
-    .array(
-      z.object({
-        phoneNumber: z.string().optional(),
-        email: z.string().optional(),
-        emergencyContact: z.string().optional(),
-        emergencyContactNumber: z.string().optional(),
-      })
-    )
-    .optional(),
 });
 
 type Employee = {
@@ -35,13 +26,12 @@ type Employee = {
   firstName: string;
   lastName: string;
   image: string;
+  email: string;
   DOB?: string;
-  contacts?: Contact[]; // Employee can have a list of contacts
 };
 
 type Contact = {
   phoneNumber: string;
-  email: string;
   emergencyContact?: string;
   emergencyContactNumber?: string;
 };
@@ -65,7 +55,7 @@ export default function EmployeeInfo() {
 
         // Validate fetched data using Zod
         try {
-          EmployeeSchema.parse(res);
+          EmployeeSchema.parse(res.employeeData);
         } catch (error) {
           if (error instanceof z.ZodError) {
             console.error("Validation error in employee data:", error.errors);
@@ -75,10 +65,8 @@ export default function EmployeeInfo() {
         if (res.error) {
           console.error(res.error);
         } else {
-          setEmployee(res);
-          if (res.contacts && res.contacts.length > 0) {
-            setContacts(res.contacts[0]);
-          }
+          setEmployee(res.employeeData);
+          setContacts(res.contact);
         }
       } catch (error) {
         console.error(error);
@@ -93,19 +81,17 @@ export default function EmployeeInfo() {
   return (
     <>
       <Holds background={"white"} className="mb-5">
-        <Contents width={"section"}>
-          <TitleBoxes
-            title={
-              loading
-                ? "loading..."
-                : `${employee?.firstName} ${employee?.lastName}`
-            }
-            titleImg={employee?.image ?? "/profile-default.svg"}
-            titleImgAlt="Team"
-            type="myTeamProfile"
-            title2={loading ? "" : `${t("ID")}${employee?.id}`}
-          />
-        </Contents>
+        <TitleBoxes
+          title={
+            loading
+              ? "loading..."
+              : `${employee?.firstName} ${employee?.lastName}`
+          }
+          titleImg={employee?.image ? employee.image : "/profile-default.svg"}
+          titleImgAlt="Team"
+          type="myTeamProfile"
+          title2={loading ? "" : `${t("ID")}${employee?.id}`}
+        />
       </Holds>
 
       {loading ? (
@@ -130,7 +116,7 @@ export default function EmployeeInfo() {
               </Labels>
               <Labels className="row-span-1 h-full">
                 {t("Email")}
-                <Inputs state="disabled" data={contacts?.email}></Inputs>
+                <Inputs state="disabled" data={employee?.email}></Inputs>
               </Labels>
               <Labels className="row-span-1 h-full">
                 {t("EmergencyContact")}

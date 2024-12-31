@@ -22,7 +22,7 @@ import { revalidatePath } from "next/cache";
 // Get all jobsite forms
 export async function getJobsiteForms() {
   try {
-    const jobsiteForms = await prisma.jobsites.findMany();
+    const jobsiteForms = await prisma.jobsite.findMany();
     console.log(jobsiteForms);
     return jobsiteForms;
   } catch (error) {
@@ -34,7 +34,7 @@ export async function getJobsiteForms() {
 // Check if jobsite exists
 export async function jobExists(id: string) {
   try {
-    const jobsite = await prisma.jobsites.findUnique({
+    const jobsite = await prisma.jobsite.findUnique({
       where: { id: id },
     });
     return jobsite;
@@ -49,34 +49,43 @@ export async function createJobsite(formData: FormData) {
   try {
     console.log("Creating jobsite...");
     console.log(formData);
-    const id = formData.get("id");
-    const idString = id?.toString() ?? "";
-    const verify = prisma.jobsites.findMany({
-      where: { id: idString },
+    const tags = formData.getAll("tags") as string[];
+    const qrId = formData.get("qrId") as string;
+    const name = formData.get("name") as string;
+    const address = formData.get("address") as string;
+    const zipCode = formData.get("zipCode") as string;
+    const city = formData.get("city") as string;
+    const state = formData.get("state") as string;
+    const description = formData.get("description") as string;
+    const comment = formData.get("jobsite_comment") as string;
+
+    const verify = await prisma.jobsite.findMany({
+      where: { name: name, address: address, city: city, zipCode: zipCode },
     });
-    // Check if jobsite already exists
-    if ((await verify).length > 0) {
+    // Check if jobsite already exists based on id
+
+    if (verify.length > 0) {
       console.log("Jobsite already exists.");
       throw new Error("Jobsite already exists.");
     }
 
-    await prisma.jobsites.create({
+    await prisma.jobsite.create({
       data: {
-        name: formData.get("name") as string,
-        streetNumber: (formData.get("streetNumber") as string) || null,
-        streetName: formData.get("streetName") as string,
-        city: formData.get("city") as string,
-        state: (formData.get("state") as string) || null,
-        country: formData.get("country") as string,
-        description: formData.get("description") as string,
-        comment: (formData.get("jobsite_comment") as string) || null,
+        qrId,
+        name,
+        description,
         isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        address,
+        city,
+        state,
+        zipCode,
+        comment: comment || null,
+        CCTags: {
+          connect: [...tags.map((tag) => ({ id: tag }))],
+        },
       },
     });
     console.log("Jobsite created successfully.");
-
     // Revalidate the path
     revalidatePath(`/dashboard/qr-generator`);
   } catch (error) {
@@ -88,7 +97,7 @@ export async function createJobsite(formData: FormData) {
 // Delete jobsite by id
 export async function deleteJobsite(id: string) {
   try {
-    await prisma.jobsites.delete({
+    await prisma.jobsite.delete({
       where: { id: id },
     });
     console.log("Jobsite deleted successfully.");

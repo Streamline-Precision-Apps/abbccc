@@ -1,12 +1,12 @@
 "use server";
 import prisma from "@/lib/prisma";
-import { FormStatus, Permission } from "@/lib/types";
+import { FormStatus, Permission, WorkType } from "@/lib/types";
 
 import { revalidatePath, revalidateTag } from "next/cache";
 
 export async function deleteAdminJobsite(id: string) {
   try {
-    await prisma.jobsites.delete({
+    await prisma.jobsite.delete({
       where: { id },
     });
     console.log("Jobsite deleted successfully.");
@@ -16,50 +16,51 @@ export async function deleteAdminJobsite(id: string) {
     return { success: false, message: "Failed to delete jobsite." };
   }
 }
-
+//#TODO: Test Server Action
 export async function createAdminJobsite(formData: FormData) {
   try {
     console.log("Saving jobsite changes...");
     console.log(formData);
-    const jobsite = await prisma.jobsites.create({
+    const jobsite = await prisma.jobsite.create({
       data: {
         name: formData.get("name") as string,
-        streetNumber: formData.get("streetNumber") as string,
-        streetName: formData.get("streetName") as string,
+        address: formData.get("address") as string,
         city: formData.get("city") as string,
         state: formData.get("state") as string,
         country: formData.get("country") as string,
+        zipCode: formData.get("zipCode") as string,
         description: formData.get("description") as string,
         comment: formData.get("comment") as string,
         CCTags: {
           connect: {
-            id: 1, //automatically connect to the first tag
+            id: "1", //automatically connect to the first tag
           },
         },
       },
     });
     console.log(jobsite);
-    revalidatePath("/admins/assets/jobsites");
+    revalidatePath("/admins/assets/jobsite");
     return jobsite;
   } catch (error) {
     console.error(error);
     throw new Error("Failed to save jobsite changes");
   }
 }
+//#TODO: Test Server Action
 export async function savejobsiteChanges(formData: FormData) {
   try {
     console.log("Saving jobsite changes...");
     console.log(formData);
     const jobsiteId = formData.get("id") as string;
-    const jobsite = await prisma.jobsites.update({
+    const jobsite = await prisma.jobsite.update({
       where: { id: jobsiteId },
       data: {
         name: formData.get("name") as string,
-        streetNumber: formData.get("streetNumber") as string,
-        streetName: formData.get("streetName") as string,
+        address: formData.get("address") as string,
         city: formData.get("city") as string,
         state: formData.get("state") as string,
         country: formData.get("country") as string,
+        zipCode: formData.get("zipCode") as string,
         description: formData.get("description") as string,
         comment: formData.get("comment") as string,
       },
@@ -77,9 +78,9 @@ export async function deleteTagById(tagId: string) {
   try {
     console.log("Deleting tag...");
     console.log(tagId);
-    const deletedTag = await prisma.cCTags.delete({
+    const deletedTag = await prisma.cCTag.delete({
       where: {
-        id: Number(tagId),
+        id: tagId,
       },
     });
     console.log(deletedTag);
@@ -90,24 +91,25 @@ export async function deleteTagById(tagId: string) {
     throw new Error("Failed to delete tag");
   }
 }
+//#TODO: Test Server Action
 export async function createTag(data: {
   name: string;
   description: string;
   jobs: string[];
-  costCodes: number[];
+  costCodes: string[];
 }) {
   try {
     console.log("Creating tag...");
     console.log(data);
 
-    const newTag = await prisma.cCTags.create({
+    const newTag = await prisma.cCTag.create({
       data: {
         name: data.name,
         description: data.description,
-        jobsite: {
+        jobsites: {
           connect: data.jobs.map((job) => ({ id: job })), // Connect jobs
         },
-        costCode: {
+        costCodes: {
           connect: data.costCodes.map((id) => ({ id })), // Connect cost codes
         },
       },
@@ -119,28 +121,29 @@ export async function createTag(data: {
     throw new Error("Failed to create tag");
   }
 }
+//#TODO: Test Server Action
 export async function changeTags(data: {
   id: string;
   name: string;
   description: string;
   jobs: string[];
   removeJobs: string[];
-  costCodes: number[];
-  removeCostCodes: number[];
+  costCodes: string[];
+  removeCostCodes: string[];
 }) {
   try {
-    const updateTags = await prisma.cCTags.update({
+    const updateTags = await prisma.cCTag.update({
       where: {
-        id: parseInt(data.id),
+        id: data.id,
       },
       data: {
         name: data.name,
         description: data.description,
-        jobsite: {
+        jobsites: {
           connect: data.jobs.map((id) => ({ id })), // Add new connections
           disconnect: data.removeJobs.map((id) => ({ id })), // Remove connections
         },
-        costCode: {
+        costCodes: {
           connect: data.costCodes.map((id) => ({ id })), // Add new connections
           disconnect: data.removeCostCodes.map((id) => ({ id })), // Remove connections
         },
@@ -154,11 +157,11 @@ export async function changeTags(data: {
   }
 }
 
-export async function deleteCostCodeById(costcodeId: number) {
+export async function deleteCostCodeById(costcodeId: string) {
   try {
     console.log("Deleting cost code...");
     console.log(costcodeId);
-    const deletedCostCode = await prisma.costCodes.delete({
+    const deletedCostCode = await prisma.costCode.delete({
       where: { id: costcodeId },
     });
     console.log(deletedCostCode);
@@ -168,6 +171,7 @@ export async function deleteCostCodeById(costcodeId: number) {
     return error;
   }
 }
+//#TODO: Test Server Action
 export async function changeCostCodeTags(formData: FormData) {
   try {
     console.log("Changing cost code tags...");
@@ -176,13 +180,13 @@ export async function changeCostCodeTags(formData: FormData) {
     const costcodeId = formData.get("costcodeId") as string;
     const newTags = formData
       .getAll("tags")
-      .map((tag) => ({ id: parseInt(tag as string) })); // Map tags to connect format
+      .map((tag) => ({ id: tag as string })); // Map tags to connect format
     const disconnectTags = formData
       .getAll("removeTags")
-      .map((tag) => ({ id: parseInt(tag as string) })); // Map tags to disconnect format
-    const updateCostcodeTags = await prisma.costCodes.update({
+      .map((tag) => ({ id: tag as string })); // Map tags to disconnect format
+    const updateCostcodeTags = await prisma.costCode.update({
       where: {
-        id: parseInt(costcodeId),
+        id: costcodeId,
       },
       data: {
         name: formData.get("name") as string,
@@ -194,33 +198,43 @@ export async function changeCostCodeTags(formData: FormData) {
       },
     });
     console.log(updateCostcodeTags);
+    revalidateTag("costCodes");
     return formData;
   } catch (error) {
     return error;
   }
 }
+//#TODO: Test Server Action
 export async function createNewCostCode(formData: FormData) {
   try {
     console.log("Creating new cost code...");
     console.log(formData);
-    const newTags = formData.getAll("tags").map((tag) => ({ id: Number(tag) })); // Ensure IDs are numbers
-    const type = (formData.get("type") as string) || "New Cost Code"; // Retrieve the type value from the formData
+    const newTags = formData
+      .getAll("tags")
+      .map((tag) => ({ id: tag as string })); // Ensure IDs are numbers
 
-    await prisma.costCodes.create({
+    const newCostCode = await prisma.costCode.create({
       data: {
         name: formData.get("name") as string,
         description: formData.get("description") as string,
-        type, // Add the type property to the data object
         CCTags: {
           connect: newTags, // Add new connections
         },
       },
     });
+
+    if (!newCostCode) {
+      throw new Error("Failed to create cost code");
+    }
+    revalidateTag("costCodes");
+
     return true;
   } catch (error) {
     return error;
   }
 }
+
+//#TODO: Test Server Action
 export async function createCrew(formData: FormData) {
   try {
     console.log("Creating new crew...");
@@ -228,8 +242,8 @@ export async function createCrew(formData: FormData) {
     // Extract data from formData
     const crewName = formData.get("crewName") as string;
     const crewDescription = formData.get("crewDescription") as string;
-    const crewRaw = formData.get("crew");
-    const teamLead = formData.get("teamLead");
+    const crewRaw = formData.get("crew") as string;
+    const teamLead = formData.get("teamLead") as string;
 
     if (!crewName || !crewName.trim()) {
       throw new Error("Crew name is required.");
@@ -243,32 +257,22 @@ export async function createCrew(formData: FormData) {
 
     const crew = JSON.parse(crewRaw as string) as Array<{
       id: string;
-      supervisor: boolean;
     }>;
 
     // Create the crew
-    const newCrew = await prisma.crews.create({
+    const newCrew = await prisma.crew.create({
       data: {
         name: crewName.trim(),
+        leadId: teamLead,
         description: crewDescription?.trim() || "",
+        users: {
+          connect: crew.map((user) => ({
+            id: user.id,
+          })),
+        },
       },
     });
-    console.log("Crew created:", newCrew);
 
-    // Add members to the crew
-    await Promise.all(
-      crew.map(async (member) => {
-        await prisma.crewMembers.create({
-          data: {
-            crewId: newCrew.id,
-            employeeId: member.id,
-            supervisor: member.id === teamLead,
-          },
-        });
-      })
-    );
-
-    console.log("Crew created successfully");
     revalidateTag("crews");
     revalidatePath(`/admins/personnel/crew/new-crew`);
     return {
@@ -291,21 +295,10 @@ export async function deleteCrewAction(id: string) {
     console.log("Deleting crew...");
 
     // Delete associated crew members first
-    await prisma.crewMembers.deleteMany({
-      where: { crewId: Number(id) },
+    await prisma.crew.deleteMany({
+      where: { id },
     });
 
-    // Delete associated crew jobsites
-    await prisma.crewJobsites.deleteMany({
-      where: { crewId: Number(id) },
-    });
-
-    // Delete the crew itself
-    await prisma.crews.delete({
-      where: { id: Number(id) },
-    });
-
-    // Revalidate the path or trigger a re-fetch for the related UI
     revalidateTag("crews");
     console.log("Crew deleted successfully");
   } catch (error) {
@@ -314,6 +307,7 @@ export async function deleteCrewAction(id: string) {
   }
 }
 
+// Todo: Test Server Action
 export async function updateCrew(id: string, formData: FormData) {
   try {
     console.log("Updating crew...");
@@ -323,16 +317,32 @@ export async function updateCrew(id: string, formData: FormData) {
     const crewDescription = formData.get("crewDescription") as string;
     const crew = JSON.parse(formData.get("crew") as string) as Array<{
       id: string;
-      supervisor: boolean;
     }>;
+    const initialUsersInCrew = JSON.parse(
+      formData.get("initialUsersInCrew") as string
+    ) as Array<{ id: string }>;
+
+    const disconnectUsers = initialUsersInCrew.filter(
+      (user) => !crew.some((crewUser) => crewUser.id === user.id)
+    );
+
+    const connectUsers = crew.filter(
+      (crewUser) => !initialUsersInCrew.some((user) => user.id === crewUser.id)
+    );
+
     const teamLead = formData.get("teamLead") as string;
 
     // Update the crew details
-    const updatedCrew = await prisma.crews.update({
-      where: { id: Number(id) },
+    const updatedCrew = await prisma.crew.update({
+      where: { id },
       data: {
         name: crewName,
         description: crewDescription,
+        leadId: teamLead,
+        users: {
+          connect: connectUsers,
+          disconnect: disconnectUsers,
+        },
       },
     });
 
@@ -340,65 +350,6 @@ export async function updateCrew(id: string, formData: FormData) {
       throw new Error("Crew not found");
     }
 
-    // Fetch current members of the crew
-    const currentMembers = await prisma.crewMembers.findMany({
-      where: { crewId: Number(id) },
-    });
-
-    const currentMemberIds = currentMembers.map((member) => member.employeeId);
-    const newMemberIds = crew.map((member) => member.id);
-
-    const membersToRemove = currentMembers.filter(
-      (member) => !newMemberIds.includes(member.employeeId)
-    );
-    const membersToAdd = crew.filter(
-      (member) => !currentMemberIds.includes(member.id)
-    );
-
-    // Remove members no longer in the crew
-    await Promise.all(
-      membersToRemove.map(async (member) => {
-        await prisma.crewMembers.delete({
-          where: { id: member.id },
-        });
-      })
-    );
-
-    // Add new members to the crew
-    await Promise.all(
-      membersToAdd.map(async (member) => {
-        await prisma.crewMembers.create({
-          data: {
-            crewId: Number(id),
-            employeeId: member.id,
-            supervisor: member.supervisor,
-          },
-        });
-      })
-    );
-
-    // Update supervisor
-    if (teamLead) {
-      const teamLeadMember = currentMembers.find(
-        (member) => member.employeeId === teamLead
-      );
-
-      if (teamLeadMember) {
-        // Reset all current supervisors
-        await prisma.crewMembers.updateMany({
-          where: { crewId: Number(id), supervisor: true },
-          data: { supervisor: false },
-        });
-
-        // Set the new supervisor
-        await prisma.crewMembers.update({
-          where: { id: teamLeadMember.id },
-          data: { supervisor: true },
-        });
-      } else {
-        console.error("Team lead not found among current members");
-      }
-    }
     revalidatePath(`/admins/personnel/crew/${id}`);
     revalidateTag("crews");
     console.log("Crew updated successfully");
@@ -409,9 +360,10 @@ export async function updateCrew(id: string, formData: FormData) {
   }
 }
 
-export async function deleteTimesheet(id: number) {
+// Todo: Test Server Action
+export async function deleteTimesheet(id: string) {
   try {
-    await prisma.timeSheets.delete({
+    await prisma.timeSheet.delete({
       where: { id },
     });
     revalidateTag("timesheets");
@@ -422,9 +374,10 @@ export async function deleteTimesheet(id: number) {
   }
 }
 
-export async function deleteLog(id: number) {
+// Todo: Test Server Action
+export async function deleteLog(id: string) {
   try {
-    await prisma.employeeEquipmentLogs.delete({
+    await prisma.employeeEquipmentLog.delete({
       where: { id },
     });
     revalidateTag("timesheets");
@@ -435,59 +388,43 @@ export async function deleteLog(id: number) {
   }
 }
 
+// Todo: Test Server Action
 export async function saveTimesheet(formData: FormData) {
   try {
     console.log("Saving timesheet...");
-    const id = formData.get("id")
-      ? parseInt(formData.get("id") as string)
+    const id = formData.get("id" as string)
+      ? (formData.get("id") as string)
       : undefined;
     const userId = formData.get("userId") as string;
-
     const date = formData.get("date") as string;
     const dateIsoString = new Date(date).toISOString();
+    const workType = formData.get("workType") as WorkType;
 
-    const timesheet = await prisma.timeSheets.upsert({
-      where: { id: id || -1 }, // Use an invalid ID for new entries
+    const timesheet = await prisma.timeSheet.upsert({
+      where: { id }, // Use an invalid ID for new entries
       create: {
-        userId,
+        date: dateIsoString,
+        userId: userId,
+        jobsiteId: formData.get("jobsiteId") as string,
+        costcode: formData.get("costcode") as string,
         startTime: formData.get("startTime") as string,
         endTime: formData.get("endTime") as string,
-        duration: parseFloat(formData.get("duration") as string),
-        date: dateIsoString,
-        costcode: formData.get("costcode") as string,
-        jobsiteId: formData.get("jobsiteId") as string,
-        timeSheetComments: formData.get("timeSheetComments") as string,
-        vehicleId: formData.get("vehicleId") as string,
-        startingMileage: parseInt(formData.get("startingMileage") as string),
-        endingMileage: parseInt(formData.get("endingMileage") as string),
-        leftIdaho: formData.get("leftIdaho") === "true",
-        refuelingGallons: parseInt(formData.get("refuelingGallons") as string),
-        hauledLoadsQuantity: parseInt(
-          formData.get("hauledLoadsQuantity") as string
-        ),
-        equipmentHauled: formData.get("equipmentHauled") as string,
-        materialsHauled: formData.get("materialsHauled") as string,
+        comment: formData.get("comment") as string,
+        status: formData.get("status") as FormStatus,
+        statusComment: formData.get("statusComment") as string,
+        workType: workType,
       },
       update: {
+        date: dateIsoString,
+        userId,
+        jobsiteId: formData.get("jobsiteId") as string,
+        costcode: formData.get("costcode") as string,
         startTime: formData.get("startTime") as string,
         endTime: formData.get("endTime") as string,
-        duration: parseFloat(formData.get("duration") as string),
-        submitDate: dateIsoString,
-        date: dateIsoString,
-        costcode: formData.get("costcode") as string,
-        jobsiteId: formData.get("jobsiteId") as string,
-        timeSheetComments: formData.get("timeSheetComments") as string,
-        vehicleId: formData.get("vehicleId") as string,
-        startingMileage: parseInt(formData.get("startingMileage") as string),
-        endingMileage: parseInt(formData.get("endingMileage") as string),
-        leftIdaho: formData.get("leftIdaho") === "true",
-        refuelingGallons: parseInt(formData.get("refuelingGallons") as string),
-        hauledLoadsQuantity: parseInt(
-          formData.get("hauledLoadsQuantity") as string
-        ),
+        comment: formData.get("comment") as string,
         status: formData.get("status") as FormStatus,
-        equipmentHauled: formData.get("equipmentHauled") as string,
-        materialsHauled: formData.get("materialsHauled") as string,
+        statusComment: formData.get("statusComment") as string,
+        workType: workType,
       },
     });
 
@@ -501,27 +438,20 @@ export async function saveTimesheet(formData: FormData) {
   }
 }
 
+// Todo: update this to make a new timesheet
 export async function CreateTimesheet(userId: string, date: string) {
   try {
-    const timesheet = await prisma.timeSheets.create({
+    const timesheet = await prisma.timeSheet.create({
       data: {
         submitDate: new Date().toISOString(),
         userId: userId,
         startTime: new Date(date).toISOString(),
         endTime: new Date(date).toISOString(),
-        duration: 0,
         date: new Date(date).toISOString(),
         costcode: "new",
         jobsiteId: "new",
-        timeSheetComments: null,
-        vehicleId: null,
-        startingMileage: null,
-        endingMileage: null,
-        leftIdaho: null,
-        refuelingGallons: null,
-        hauledLoadsQuantity: null,
-        equipmentHauled: null,
-        materialsHauled: null,
+        comment: null,
+        workType: "LABOR" as WorkType,
       },
     });
 
@@ -535,25 +465,21 @@ export async function CreateTimesheet(userId: string, date: string) {
   }
 }
 
+// Todo: Test Server Action - rewrite timesheet creation with logs included
 export async function CreateEquipmentLogs(userId: string, date: string) {
   try {
     console.log("Saving equipment logs...");
 
-    const equipmentLog = await prisma.employeeEquipmentLogs.create({
+    const equipmentLog = await prisma.employeeEquipmentLog.create({
       data: {
-        date: new Date(date).toISOString(),
         equipmentId: "new", // this is a placeholder equipment
         jobsiteId: "new", // this is a placeholder jobsite
         employeeId: userId,
         startTime: new Date(date).toISOString(),
         endTime: new Date(date).toISOString(),
-        duration: null,
-        isRefueled: false,
-        fuelUsed: null,
         comment: null,
-        isCompleted: true,
         isSubmitted: true,
-        status: "APPROVED",
+        status: "APPROVED" as FormStatus,
       },
     });
 
@@ -567,25 +493,25 @@ export async function CreateEquipmentLogs(userId: string, date: string) {
   }
 }
 
+// Todo: Check after testing
 export async function saveEquipmentLogs(formData: FormData) {
   try {
     console.log("Saving equipment logs...");
     console.log("Form data form saveEquipmentLogs", formData);
-    const id = formData.get("id")
-      ? parseInt(formData.get("id") as string)
-      : undefined;
+    const id = formData.get("id") ? (formData.get("id") as string) : undefined;
 
-    const equipmentLog = await prisma.employeeEquipmentLogs.update({
+    const equipmentLog = await prisma.employeeEquipmentLog.update({
       where: { id: id }, // Use an invalid ID for new entries
       data: {
         id: id,
         startTime: formData.get("startTime") as string,
         endTime: formData.get("endTime") as string,
         equipmentId: formData.get("equipmentId") as string,
-        duration: parseFloat(formData.get("duration") as string),
-        isRefueled: formData.get("isRefueled") === "true",
-        fuelUsed: parseInt(formData.get("fuelUsed") as string),
         comment: formData.get("comment") as string,
+        timeSheetId: (formData.get("timeSheetId") as string) || null,
+        tascoLogId: (formData.get("tascoLogId") as string) || null,
+        laborLogId: (formData.get("laborLogId") as string) || null,
+        maintenanceId: (formData.get("maintenanceId") as string) || null,
       },
     });
 
@@ -598,6 +524,7 @@ export async function saveEquipmentLogs(formData: FormData) {
   }
 }
 
+// Completed: Test
 export async function reactivatePersonnel(formData: FormData) {
   try {
     console.log("Archiving personnel...");
@@ -605,7 +532,7 @@ export async function reactivatePersonnel(formData: FormData) {
     const id = formData.get("userId") as string;
     const activeEmployee = formData.get("active") === "true";
 
-    const result = await prisma.users.update({
+    const result = await prisma.user.update({
       where: { id },
       data: {
         activeEmployee: activeEmployee,
@@ -622,13 +549,14 @@ export async function reactivatePersonnel(formData: FormData) {
   }
 }
 
+//todo: test after sean's changes
 export async function removeProfilePic(formData: FormData) {
   try {
     console.log("Removing profile pic...");
     console.log(formData);
     const id = formData.get("userId") as string;
 
-    const result = await prisma.users.update({
+    const result = await prisma.user.update({
       where: { id },
       data: {
         image: null,
@@ -642,7 +570,7 @@ export async function removeProfilePic(formData: FormData) {
     throw error;
   }
 }
-
+// Completed: Test
 export async function archivePersonnel(formData: FormData) {
   try {
     console.log("Archiving personnel...");
@@ -650,7 +578,7 @@ export async function archivePersonnel(formData: FormData) {
     const id = formData.get("userId") as string;
     const activeEmployee = formData.get("active") === "true";
 
-    const result = await prisma.users.update({
+    const result = await prisma.user.update({
       where: { id },
       data: {
         activeEmployee: activeEmployee,
@@ -666,7 +594,8 @@ export async function archivePersonnel(formData: FormData) {
     throw error;
   }
 }
-// Edit personnel info
+
+// Completed: Test
 export async function editPersonnelInfo(formData: FormData) {
   try {
     console.log("Editing personnel info...");
@@ -698,7 +627,7 @@ export async function editPersonnelInfo(formData: FormData) {
 
     console.log(truckView, tascoView, laborView, mechanicView);
 
-    await prisma.users.update({
+    await prisma.user.update({
       where: { id: id },
       data: {
         firstName: firstName,
@@ -722,7 +651,6 @@ export async function editPersonnelInfo(formData: FormData) {
     await prisma.contacts.update({
       where: { employeeId: id },
       data: {
-        email: email,
         phoneNumber: phoneNumber,
         emergencyContact: emergencyContact,
         emergencyContactNumber: emergencyContactNumber,
@@ -736,42 +664,19 @@ export async function editPersonnelInfo(formData: FormData) {
   }
 }
 
-export async function timecardData(formData: FormData) {
-  const startDate = formData.get("start") as string;
-  const endDate = formData.get("end") as string;
-
-  const startOfDay = new Date(startDate);
-  startOfDay.setUTCHours(0, 0, 0, 0);
-
-  const endOfDay = new Date(endDate);
-  endOfDay.setUTCHours(23, 59, 59, 999);
-
-  const timeSheets = await prisma.timeSheets.findMany({
-    where: {
-      date: {
-        gte: startOfDay.toISOString(),
-        lte: endOfDay.toISOString(),
-      },
-    },
-  });
-
-  console.log("\n\n\nTimeSheets:", timeSheets);
-  return timeSheets;
-}
-
 // Create jobsite admin
 export async function createJobsite(formData: FormData) {
   try {
     console.log("Creating jobsite...");
     console.log(formData);
 
-    await prisma.jobsites.create({
+    await prisma.jobsite.create({
       data: {
         name: formData.get("name") as string,
-        streetNumber: (formData.get("streetNumber") as string) || null,
-        streetName: formData.get("streetName") as string,
+        address: formData.get("address") as string,
         city: formData.get("city") as string,
-        state: (formData.get("state") as string) || null,
+        state: formData.get("state") as string,
+        zipCode: formData.get("zip") as string,
         country: formData.get("country") as string,
         description: formData.get("description") as string,
         comment: (formData.get("jobsite_comment") as string) || null,
@@ -795,8 +700,8 @@ export async function updateJobsite(formData: FormData) {
     console.log("Updating jobsite...");
     console.log(formData);
     const name = formData.get("name") as string;
-    const streetNumber = formData.get("streetNumber") as string;
-    const streetName = formData.get("streetName") as string;
+    const address = formData.get("address") as string;
+    const zipCode = formData.get("zipCode") as string;
     const city = formData.get("city") as string;
     const state = formData.get("state") as string;
     const country = formData.get("country") as string;
@@ -805,17 +710,17 @@ export async function updateJobsite(formData: FormData) {
     const isActive = Boolean(formData.get("isActive") as string);
 
     const id = formData.get("id") as string;
-    await prisma.jobsites.update({
+    await prisma.jobsite.update({
       where: {
         id: id,
       },
       data: {
         name: name,
-        streetNumber: streetNumber,
-        streetName: streetName,
+        address: address,
         city: city,
         state: state,
         country: country,
+        zipCode: zipCode,
         description: description,
         comment: comment,
         isActive: isActive,
@@ -830,7 +735,7 @@ export async function updateJobsite(formData: FormData) {
 
 // Fetch first jobsite
 export async function fetchByNameJobsite(name: string) {
-  const jobsite = await prisma.jobsites.findFirst({
+  const jobsite = await prisma.jobsite.findFirst({
     where: {
       name: name,
     },
@@ -843,7 +748,7 @@ export async function fetchByNameJobsite(name: string) {
 export async function deleteJobsite(formData: FormData) {
   const qrId = formData.get("qrId") as string;
   try {
-    await prisma.jobsites.delete({
+    await prisma.jobsite.delete({
       where: { qrId: qrId },
     });
     revalidatePath(`/admin/assets`);
@@ -859,7 +764,7 @@ export async function editGeneratedJobsite(formData: FormData) {
     const name = formData.get("name") as string;
     const qrId = formData.get("qrId") as string;
 
-    await prisma.jobsites.update({
+    await prisma.jobsite.update({
       where: {
         qrId: qrId,
       },
@@ -883,11 +788,10 @@ export async function createCostCode(formData: FormData) {
     console.log("Creating cost code...");
     console.log(formData);
     // Check if cost code already exists
-    await prisma.costCodes.create({
+    await prisma.costCode.create({
       data: {
         name: formData.get("name") as string,
         description: formData.get("description") as string,
-        type: formData.get("type") as string,
       },
     });
     revalidatePath(`/admin/assets`);
@@ -895,47 +799,22 @@ export async function createCostCode(formData: FormData) {
     console.error("Error creating cost code:", error);
     throw error;
   }
-}
-export async function fetchByNameCostCode(description: string) {
-  const costCode = await prisma.costCodes.findFirst({
-    where: {
-      description: description,
-    },
-  });
-  revalidatePath(`/admin/assets`);
-  return costCode;
-}
-
-export async function findAllCostCodesByTags(formData: FormData) {
-  console.log("findAllCostCodesByTags");
-  console.log(formData);
-
-  const type = formData.get("type") as string;
-  const costCodes = await prisma.costCodes.findMany({
-    where: {
-      type: type,
-    },
-  });
-  revalidatePath(`/admin/assets`);
-  return costCodes;
 }
 
 export async function EditCostCode(formData: FormData) {
   try {
     console.log("Creating cost code...");
     console.log(formData);
-    const id = Number(formData.get("id") as string);
+    const id = formData.get("id") as string;
     const name = formData.get("name") as string;
     const costCodeDescription = formData.get("description") as string;
-    const costCodeType = formData.get("type") as string;
-    await prisma.costCodes.update({
+    await prisma.costCode.update({
       where: {
         id: id,
       },
       data: {
         name: name,
         description: costCodeDescription,
-        type: costCodeType,
       },
     });
 
@@ -945,38 +824,17 @@ export async function EditCostCode(formData: FormData) {
     throw error;
   }
 }
+
 export async function deleteCostCode(formData: FormData) {
-  const id = Number(formData.get("id") as string);
+  const id = formData.get("id") as string;
   try {
-    await prisma.costCodes.delete({
+    await prisma.costCode.delete({
       where: { id: id },
     });
     revalidatePath(`/admin/assets`);
     return true;
   } catch (error) {
     console.error("Error deleting jobsite:", error);
-    throw error;
-  }
-}
-
-export async function TagCostCodeChange(formData: FormData) {
-  try {
-    console.log("Creating cost code...");
-    console.log(formData);
-    const id = Number(formData.get("id") as string);
-    const costCodeType = formData.get("type") as string;
-    await prisma.costCodes.update({
-      where: {
-        id: id,
-      },
-      data: {
-        type: costCodeType,
-      },
-    });
-
-    revalidatePath(`/admin/assets`);
-  } catch (error) {
-    console.error("Error creating cost code:", error);
     throw error;
   }
 }

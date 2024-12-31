@@ -60,7 +60,7 @@ const JobsitesRecentSchema = z
 // CostCodes schema
 const CostCodesSchema = z.array(
   z.object({
-    id: z.number(),
+    id: z.string(),
     name: z.string(),
     description: z.string(),
     type: z.string().default("DEFAULT_TYPE"),
@@ -70,7 +70,7 @@ const CostCodesSchema = z.array(
 const CostCodesRecentSchema = z
   .array(
     z.object({
-      id: z.number(),
+      id: z.string(),
       name: z.string(),
       description: z.string(),
       type: z.string().default("DEFAULT_TYPE"),

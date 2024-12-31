@@ -1,6 +1,8 @@
 // Form.tsx
 "use client";
 import { CreateInjuryForm } from "@/actions/injuryReportActions";
+import { Buttons } from "@/components/(reusable)/buttons";
+import { Inputs } from "@/components/(reusable)/inputs";
 import { useTranslations } from "next-intl";
 
 type FormProps = {
@@ -16,26 +18,26 @@ export const Form = ({ userId, checked, signature }: FormProps) => {
   return (
     <form action={CreateInjuryForm}>
       {/* Hidden inputs */}
-      <input type="hidden" name="date" value={new Date().toString()} />
-      <input
+      <Inputs type="hidden" name="date" value={new Date().toString()} />
+      <Inputs
         type="checkbox"
         name="contactedSupervisor"
         value={checked ? "true" : "false"}
       />
-      <input type="text" name="incidentDescription" value={""} />
-      <input type="hidden" name="signature" value={signature ?? ""} />
-      <input
+      <Inputs type="text" name="incidentDescription" value={""} />
+      <Inputs type="hidden" name="signature" value={signature ?? ""} />
+      <Inputs
         type="checkbox"
         name="verifyFormSignature"
         value={checked ? "true" : "false"}
       />
-      <input type="hidden" name="Id" value={userId} />
-      <button
+      <Inputs type="hidden" name="Id" value={userId} />
+      <Buttons
         type="submit"
         className="bg-app-blue w-1/2 h-1/6 py-4 px-5 rounded-lg text-black font-bold mt-5"
       >
         {t("SubmitButton")}
-      </button>
+      </Buttons>
     </form>
   );
 };

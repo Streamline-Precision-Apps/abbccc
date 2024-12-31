@@ -28,7 +28,7 @@ export async function GET() {
 
   try {
     // Fetch timesheets for the current pay period
-    const payPeriodSheets = await prisma.timeSheets.findMany({
+    const payPeriodSheets = await prisma.timeSheet.findMany({
       where: {
         startTime: {
           gte: payPeriodStart, // Start of the pay period
@@ -37,17 +37,12 @@ export async function GET() {
       },
       select: {
         startTime: true,
-        duration: true,
+        endTime: true,
       },
     });
 
-    // Filter out timesheets where duration is null
-    const validSheets = payPeriodSheets.filter(
-      (sheet) => sheet.duration !== null
-    );
-
     // Return the filtered timesheets with caching disabled
-    return NextResponse.json(validSheets, {
+    return NextResponse.json(payPeriodSheets, {
       headers: {
         "Cache-Control": "no-store", // Prevent caching of sensitive data
       },

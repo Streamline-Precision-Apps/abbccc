@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 type Params = Promise<{ id: string }>;
-export async function GET(request: Request, { params }: { params: Params }) {
+export async function GET(request: Request, { params: id }: { params: Params }) {
   const session = await auth();
   const userId = session?.user?.id;
 
@@ -12,15 +12,15 @@ export async function GET(request: Request, { params }: { params: Params }) {
   }
 
   try {
-    const formId = parseInt((await params).id);
-    if (isNaN(formId)) {
+    const formId = String((await id).id);
+    if (formId) {
       return NextResponse.json({ error: "Invalid form ID" }, { status: 400 });
     }
 
     const currentDate = new Date();
     const past24Hours = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
 
-    const usersLogs = await prisma.employeeEquipmentLogs.findMany({
+    const usersLogs = await prisma.employeeEquipmentLog.findMany({
       where: {
         employeeId: userId,
         id: formId,
@@ -35,10 +35,11 @@ export async function GET(request: Request, { params }: { params: Params }) {
           select: {
             name: true,
           },
+          
         },
       },
     });
-
+    console.log("usersLogs: ", usersLogs);
     return NextResponse.json(usersLogs);
   } catch (error) {
     console.error("Error fetching users logs:", error);

@@ -14,7 +14,7 @@ import { setLocale } from "@/actions/cookieActions";
 import { Forms } from "@/components/(reusable)/forms";
 import { Holds } from "@/components/(reusable)/holds";
 import Link from "next/link";
-import { Checkbox } from "@/components/(inputs)/checkBox";
+import { Checkbox } from "@/components/(inputs)/checkboxnew";
 
 export default function SignInForm() {
   const [viewSecret, setViewSecret] = useState(false);

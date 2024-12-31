@@ -1,0 +1,60 @@
+// This schema holds all the enums used in the database, and other smaller components of the database that are not schema related.
+// using the previewFeatures directive, we can use prismaSchemaFolder to generate a folder for the enums
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["prismaSchemaFolder"]
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+}
+
+enum Permission {
+  USER
+  MANAGER
+  ADMIN
+  SUPERADMIN
+}
+
+enum EquipmentTags {
+  TRUCK
+  TRAILER
+  EQUIPMENT
+  VEHICLE
+}
+
+enum EquipmentStatus {
+  OPERATIONAL
+  NEEDS_REPAIR
+  NEEDS_MAINTENANCE
+}
+
+// Provides options for form status column
+enum FormStatus {
+  PENDING
+  APPROVED
+  DENIED
+  // I "TEMPORARY" this for the search filter api call for admins.
+  TEMPORARY
+}
+
+enum IsActive {
+  ACTIVE
+  INACTIVE
+}
+
+enum WorkType {
+  MECHANIC
+  TRUCK_DRIVER
+  LABOR
+  TASCO
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}

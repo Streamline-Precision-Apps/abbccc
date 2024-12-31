@@ -12,13 +12,9 @@ export async function GET() {
   }
 
   // Fetch the crews where the logged-in user is a member and count the total crew members for each crew
-  const teams = await prisma.crews.findMany({
+  const teams = await prisma.crew.findMany({
     where: {
-      crewMembers: {
-        some: {
-          employeeId: userId, // Only fetch teams where the logged-in user is a member
-        },
-      },
+      leadId: userId,
     },
     select: {
       id: true,
@@ -26,23 +22,17 @@ export async function GET() {
       // Use _count to count the total crew members
       _count: {
         select: {
-          crewMembers: true, // Count the number of crew members
+          users: true, // Count the number of crew members
         },
       },
     },
   });
 
-  // Format the response to include crew name and total members
-  const formattedTeams = teams.map((team) => ({
-    id: team.id,
-    name: team.name,
-    totalMembers: team._count.crewMembers, // Use the count from _count.crewMembers
-  }));
-
   // Set Cache-Control header for caching
-  return NextResponse.json(formattedTeams, {
+  return NextResponse.json(teams, {
     headers: {
-      "Cache-Control": "public, max-age=60, s-maxage=60, stale-while-revalidate=30",
+      "Cache-Control":
+        "public, max-age=60, s-maxage=60, stale-while-revalidate=30",
     },
   });
 }

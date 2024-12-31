@@ -14,7 +14,7 @@ export async function GET(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const costcodeData = await prisma.jobsites.findUnique({
+  const costcodeData = await prisma.jobsite.findUnique({
     where: {
       id: params.id,
     },

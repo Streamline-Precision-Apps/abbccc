@@ -1,0 +1,8 @@
+model Error {
+    id           String   @id @default(uuid())
+    errorMessage String?
+    userId       String?
+    fileLocation String?
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+}
