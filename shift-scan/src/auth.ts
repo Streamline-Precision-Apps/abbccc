@@ -4,6 +4,7 @@ import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import prisma from "./lib/prisma";
 import type { Provider } from "next-auth/providers";
+import { isValid } from "zod";
 
 declare module "next-auth" {
   interface Session {
@@ -63,11 +64,24 @@ const providers: Provider[] = [
         throw new InvalidLoginError();
       }
 
-      const isValidPassword = await bcrypt.compare(passwords, user.password);
-      if (!isValidPassword) {
-        console.log("Invalid password");
-        throw new InvalidLoginError();
-      }
+      const isValidPassword = () => {
+        if (user.password === passwords) {
+          return true;
+        }
+        else {
+          return false;
+        }
+      };
+        if (!isValidPassword) {
+          console.log("Invalid password");
+          throw new InvalidLoginError();
+        };
+
+      // const isValidPassword = await bcrypt.compare(passwords, user.password);
+      // if (!isValidPassword) {
+      //   console.log("Invalid password");
+      //   throw new InvalidLoginError();
+      // }
 
       const userwithoutpassword = {
         id: user.id,
