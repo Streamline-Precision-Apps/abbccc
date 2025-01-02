@@ -1,21 +1,20 @@
 //  Time sheet that integrates with the accounting software. Accounting Software Data: {|submitDate | Form Id | empl ID| Date| ProfitID(jobsite)| CostCode| NU | FP| Start Time| END Time| Job Description | Duration |}
 model TimeSheet {
-    submitDate    DateTime   @default(now())
-    date          DateTime   @db.Date //two dates are in the accounting software, for easy conversion they are implemented here
-    id            String     @id @default(uuid())
-    userId        String
-    jobsiteId     String // this will need to store options for jobsites, truck driver jobsite,
-    costcode      String // this is for tracking cost amounts in company
-    nu            String     @default("nu") // non union {} default
-    Fp            String     @default("fp") // field personal
-    startTime     DateTime
-    endTime       DateTime?
-    comment       String? // comment for reporting what they did that day
-    statusComment String? // manager comment for reporting why they approved or rejected the timesheet
-    location      String? // location of clock in work
-    status        FormStatus @default(PENDING) // approving of the form
-    workType      WorkType // this was created to help filter the timesheet by work type
-
+    submitDate            DateTime               @default(now())
+    date                  DateTime               @db.Date //two dates are in the accounting software, for easy conversion they are implemented here
+    id                    String                 @id @default(uuid())
+    userId                String
+    jobsiteId             String // this will need to store options for jobsites, truck driver jobsite,
+    costcode              String // this is for tracking cost amounts in company
+    nu                    String                 @default("nu") // non union {} default
+    Fp                    String                 @default("fp") // field personal
+    startTime             DateTime
+    endTime               DateTime?
+    comment               String? // comment for reporting what they did that day
+    statusComment         String? // manager comment for reporting why they approved or rejected the timesheet
+    location              String? // location of clock in work
+    status                FormStatus             @default(PENDING) // approving of the form
+    workType              WorkType // this was created to help filter the timesheet by work type
     // links to other tables in schema
     tascoLogs             TascoLog[]
     maintenanceLogs       MaintenanceLog[]

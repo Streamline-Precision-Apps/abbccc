@@ -397,8 +397,8 @@
     "GeneralReminders": "General Reminders",
     "Security": "Security",
     "Biometrics": "Biometrics",
-    "CameraAccess": "Camera Access",
-    "LocationAccess": "Location Access",
+    "CameraAccess": "Camera",
+    "LocationAccess": "Location",
     "Inbox": "Inbox",
     "EmployeeID": "Employee ID",
     "PersonalEmail": "Email",
@@ -421,7 +421,8 @@
     "Loading": "Loading",
     "ChangeProfilePicture": "Change Profile Picture",
     "SubmitChanges": "Submit Changes",
-    "Language": "Language"
+    "Language": "Language",
+    "PhotoAlbumAccess": "Photo Album"
 },
 
 "Admins":{

@@ -225,6 +225,7 @@ export type UserSettings = {
   biometric?: boolean;
   cameraAccess?: boolean;
   locationAccess?: boolean;
+  photoAlbumAccess?: boolean;
 };
 
 // --------------------------------------
