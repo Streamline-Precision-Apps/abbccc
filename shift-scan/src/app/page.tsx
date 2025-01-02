@@ -15,6 +15,7 @@ import Capitalize from "@/utils/captitalize";
 import { redirect } from "next/navigation";
 import { AnimatedHamburgerButton } from "@/components/(animations)/hamburgerMenu";
 import capitalizeAll from "@/utils/capitalizeAll";
+
 export default async function Home() {
   //------------------------------------------------------------------------
   // Authentication: Get the current user
