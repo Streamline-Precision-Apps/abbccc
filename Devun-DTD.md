@@ -1,6 +1,6 @@
 ## January 2, 2025
 ### researched
-- redux for 2 hr
+- redux for 3 hr
   - dispatching react components
   - finished redux react series
 - capacitor for 30 mins
@@ -28,9 +28,9 @@ cookies().set({
 ```
 
 ### built/created
-- created a redux base for our app (1 hr)
+- created a redux base for our app (1.5 hr)
 - deleted redux and did research on local storage and cookies
-- found that cookies are great to prevent sxs attacks
+- found that cookies are great to prevent sxs attacks (30mins)
 ### Trello
 - update language selector (35mins)
-- Admin Build - Inbox Section
+- Admin Build - Inbox Section (1hr)
