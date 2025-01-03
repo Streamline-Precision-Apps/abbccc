@@ -426,6 +426,9 @@
 },
 
 "Admins":{
+    "CreateNewRequest": "Create New Request",
+   "NoRequestsFound":"No Requests Found",
+    "Inbox": "Inbox",
     "Totalhoursthispayperiod": "Total Hours This Pay Period",
     "Personnel": "Personnel",
     "Assets": "Assets",

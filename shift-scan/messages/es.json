@@ -400,6 +400,9 @@
     "PhotoAlbumAccess": " Album de Fotos"
 },
 "Admins":{
+    "CreateNewRequest": "Crear Nueva Solicitud",
+    "NoRequestsFound": "No se Encontraron Solicitudes",
+    "Inbox": "Bandeja de Entrada",
     "Totalhoursthispayperiod": "Horas Totales este Período de Pago",
     "Personnel": "Personnel",
     "Assets": "Recursos",

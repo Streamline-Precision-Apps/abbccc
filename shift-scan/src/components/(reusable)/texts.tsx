@@ -36,6 +36,7 @@ const TextVariants = cva(
         p4: "text-lg sm:text-lg md:text-xl lg:text-2xl",
         p5: "text-med sm:text-med md:text-lg lg:text-xl",
         p6: "text-sm sm:text-sm md:text-med lg:text-lg",
+        p7: "text-xs sm:text-xs md:text-sm lg:text-med",
       },
     },
     defaultVariants: {

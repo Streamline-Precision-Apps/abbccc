@@ -31,3 +31,6 @@ cookies().set({
 - created a redux base for our app (1 hr)
 - deleted redux and did research on local storage and cookies
 - found that cookies are great to prevent sxs attacks
+### Trello
+- update language selector (35mins)
+- Admin Build - Inbox Section

@@ -182,6 +182,38 @@ const Sidebar = () => {
                   </Holds>
                 </Buttons>
               </Holds>
+              {/* The button that says Reports */}
+              <Holds>
+                <Buttons
+                  className={`
+                    ${
+                      pathname === "/admins/inbox"
+                        ? "bg-slate-400 "
+                        : "bg-app-blue"
+                    } w-[90%] h-12 `}
+                  href="/admins/inbox"
+                >
+                  <Holds position={"row"} className="justify-evenly">
+                    <Holds className="w-1/3 h-full ">
+                      <Images
+                        titleImg="/inbox.svg"
+                        titleImgAlt="Inbox Icon"
+                        className="m-auto"
+                        size={"50"}
+                      />
+                    </Holds>
+                    <Texts size={"p6"}>{t("Inbox")}</Texts>
+                    <Holds className="hidden md:flex" size={"30"}>
+                      <Images
+                        titleImg="/drag.svg"
+                        titleImgAlt="draggable icon"
+                        className="my-auto flex items-center justify-center "
+                        size={"50"}
+                      />
+                    </Holds>
+                  </Holds>
+                </Buttons>
+              </Holds>
             </Holds>
             <Holds
               position={"row"}
@@ -362,6 +394,25 @@ const Sidebar = () => {
                     <Images
                       titleImg="/form.svg"
                       titleImgAlt="Reports Icon"
+                      className="m-auto"
+                    />
+                  </Holds>
+                </Buttons>
+              </Holds>
+              <Holds>
+                <Buttons
+                  className={`
+                    ${
+                      pathname === "/admins/inbox"
+                        ? "bg-slate-400 "
+                        : "bg-app-blue"
+                    } w-12 h-12 `}
+                  href="/admins/inbox"
+                >
+                  <Holds position={"row"}>
+                    <Images
+                      titleImg="/inbox.svg"
+                      titleImgAlt="Inbox Icon"
                       className="m-auto"
                     />
                   </Holds>
