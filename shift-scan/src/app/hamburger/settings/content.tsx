@@ -7,7 +7,7 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
 import "@/app/globals.css";
 import { Texts } from "@/components/(reusable)/texts";
-import { Modals } from "@/components/(reusable)/modals";
+// import { Modals } from "@/components/(reusable)/modals";
 import { updateSettings } from "@/actions/hamburgerActions";
 import { Contents } from "@/components/(reusable)/contents";
 import { UserSettings } from "@/lib/types";
@@ -16,8 +16,10 @@ import Spinner from "@/components/(animations)/spinner";
 import { useRouter } from "next/navigation";
 import { z } from "zod"; // Import Zod for validation
 import { Inputs } from "@/components/(reusable)/inputs";
-import { Selects } from "@/components/(reusable)/selects";
-import { setLocale } from "@/actions/cookieActions";
+// import { Selects } from "@/components/(reusable)/selects";
+// import { setLocale } from "@/actions/cookieActions";
+import { NModals } from "@/components/(reusable)/newmodals";
+import LanguageModal from "@/app/(routes)/admins/_pages/sidebar/LanguageModal";
 
 // Define Zod schema for UserSettings
 const userSettingsSchema = z.object({
@@ -27,6 +29,7 @@ const userSettingsSchema = z.object({
   biometric: z.boolean().optional(),
   cameraAccess: z.boolean().optional(),
   locationAccess: z.boolean().optional(),
+  photoAlbumAccess: z.boolean().optional(),
   language: z.string().optional(),
 });
 
@@ -40,7 +43,7 @@ export default function Index({ id }: Props) {
   const [data, setData] = useState<UserSettings | null>(null);
   const [updatedData, setUpdatedData] = useState<UserSettings | null>(null);
   const [initialData, setInitialData] = useState<UserSettings | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
+  // const [isSaving, setIsSaving] = useState(false);
   const [isLangModalOpen, setIsLangModalOpen] = useState(false);
 
   // Fetch data on component mount
@@ -66,21 +69,21 @@ export default function Index({ id }: Props) {
       }
     };
     fetchData();
-  }, []);
+  }, [id, isLangModalOpen]);
 
   // Automatically save settings when updated
   useEffect(() => {
     const saveChanges = async () => {
       if (updatedData && updatedData !== initialData) {
-        setIsSaving(true);
+        // setIsSaving(true);
         await updateSettings(updatedData);
 
-        setTimeout(() => setIsSaving(false), 1000);
+        // setTimeout(() => setIsSaving(false), 1000);
         setInitialData(updatedData);
       }
     };
     saveChanges();
-  }, [updatedData]);
+  }, [updatedData, initialData]);
 
   // Save settings before user navigates away from the page
   useEffect(() => {
@@ -100,10 +103,10 @@ export default function Index({ id }: Props) {
     setUpdatedData((prev) => (prev ? { ...prev, [key]: value } : null));
   };
 
-  const handleSelectChange = (key: keyof UserSettings, value: string) => {
-    setUpdatedData((prev) => (prev ? { ...prev, [key]: value } : null));
-    setLocale(value === "en" ? false : true);
-  };
+  // const handleSelectChange = (key: keyof UserSettings, value: string) => {
+  //   setUpdatedData((prev) => (prev ? { ...prev, [key]: value } : null));
+  //   setLocale(value === "en" ? false : true);
+  // };
   if (!data) {
     return (
       <Holds background={"white"} className="row-span-7 p-4 h-full">
@@ -115,36 +118,39 @@ export default function Index({ id }: Props) {
 
   return (
     <>
-      {isSaving && (
+      {/* {isSaving && (
         <Holds
           background={"green"}
           className="h-fit text-center absolute top-[20%]"
         >
           {t("Saving")}
         </Holds>
-      )}
+      )} */}
       <Grids rows={"5"} gap={"3"}>
         {/*-------------------------Notifications Settings------------------------------*/}
-        <Holds background={"white"} className="row-span-2 h-full py-4">
+        <Holds background={"white"} className="row-span-1 h-full py-4">
           <Contents width={"section"}>
-            <Grids rows={"4"} gap={"5"}>
-              <Holds className="row-span-1">
+            <Grids rows={"1"} gap={"5"}>
+              {/* <Holds className="row-span-1">
                 <Titles>{t("Notifications")}</Titles>
-              </Holds>
+              </Holds> */}
               <Holds position={"row"}>
                 <Holds size={"70"}>
-                  <Texts position={"left"}>{t("ApprovedRequests")}</Texts>
+                  <Texts position={"left"}>{t("Notifications")}</Texts>
+                  {/* <Texts position={"left"}>{t("ApprovedRequests")}</Texts> */}
                 </Holds>
                 <Holds size={"30"}>
                   <LocaleToggleSwitch
                     data={updatedData?.approvedRequests || false}
-                    onChange={(value: boolean) =>
-                      handleChange("approvedRequests", value)
-                    }
+                    onChange={(value: boolean) => {
+                      handleChange("approvedRequests", value);
+                      handleChange("timeOffRequests", value);
+                      handleChange("generalReminders", value);
+                    }}
                   />
                 </Holds>
               </Holds>
-              <Holds position={"row"}>
+              {/* <Holds position={"row"}>
                 <Holds size={"70"}>
                   <Texts position={"left"}>{t("TimeOffRequests")}</Texts>
                 </Holds>
@@ -169,18 +175,18 @@ export default function Index({ id }: Props) {
                     }
                   />
                 </Holds>
-              </Holds>
+              </Holds> */}
             </Grids>
           </Contents>
         </Holds>
 
         {/*---------------------Security Settings------------------------------*/}
-        <Holds background={"white"} className="row-span-2 h-full py-4">
+        <Holds background={"white"} className="row-span-1 h-full py-4">
           <Contents width={"section"}>
-            <Grids rows={"4"} gap={"5"}>
-              <Holds className="row-span-1">
+            <Grids rows={"1"} gap={"5"}>
+              {/* <Holds className="row-span-1">
                 <Titles>{t("Security")}</Titles>
-              </Holds>
+              </Holds> */}
               <Holds position={"row"}>
                 <Holds size={"70"}>
                   <Texts position={"left"}>{t("Biometrics")}</Texts>
@@ -194,6 +200,17 @@ export default function Index({ id }: Props) {
                   />
                 </Holds>
               </Holds>
+            </Grids>
+          </Contents>
+        </Holds>
+
+        <Holds background={"white"} className="row-span-1 h-full py-4">
+          <Contents width={"section"}>
+            <Grids rows={"1"} gap={"5"}>
+              {/* <Holds className="row-span-1">
+                <Titles>{t("Security")}</Titles>
+              </Holds> */}
+
               <Holds position={"row"}>
                 <Holds size={"70"}>
                   <Texts position={"left"}>{t("CameraAccess")}</Texts>
@@ -207,6 +224,15 @@ export default function Index({ id }: Props) {
                   />
                 </Holds>
               </Holds>
+            </Grids>
+          </Contents>
+        </Holds>
+        <Holds background={"white"} className="row-span-1 h-full py-4">
+          <Contents width={"section"}>
+            <Grids rows={"1"} gap={"5"}>
+              {/* <Holds className="row-span-1">
+                <Titles>{t("Security")}</Titles>
+              </Holds> */}
               <Holds position={"row"}>
                 <Holds size={"70"}>
                   <Texts position={"left"}>{t("LocationAccess")}</Texts>
@@ -223,18 +249,40 @@ export default function Index({ id }: Props) {
             </Grids>
           </Contents>
         </Holds>
+        <Holds background={"white"} className="row-span-1 h-full py-4">
+          <Contents width={"section"}>
+            <Grids rows={"1"} gap={"5"}>
+              {/* <Holds className="row-span-1">
+                <Titles>{t("Security")}</Titles>
+              </Holds> */}
+              <Holds position={"row"}>
+                <Holds size={"70"}>
+                  <Texts position={"left"}>{t("PhotoAlbumAccess")}</Texts>
+                </Holds>
+                <Holds size={"30"}>
+                  <LocaleToggleSwitch
+                    data={updatedData?.photoAlbumAccess || false}
+                    onChange={(value: boolean) =>
+                      handleChange("photoAlbumAccess", value)
+                    }
+                  />
+                </Holds>
+              </Holds>
+            </Grids>
+          </Contents>
+        </Holds>
 
         {/*---------------------Language Settings------------------------------*/}
         <Holds background={"white"} className="row-span-2 h-full py-4">
           <Contents width={"section"}>
-            <Grids rows={"2"} gap={"5"}>
+            <Grids rows={"1"} gap={"5"}>
               <Holds className="row-span-1 ">
                 <Titles>{t("Language")}</Titles>
               </Holds>
               <Holds className="row-span-1 mx-auto">
                 <Inputs
                   readOnly
-                  value={updatedData?.language === "en" ? "English" : "Spanish"}
+                  value={updatedData?.language === "en" ? "English" : "Español"}
                   data={updatedData?.language}
                   onClick={() => setIsLangModalOpen(true)}
                   className="bg-app-blue h-[2rem] w-1/2  mx-auto text-center"
@@ -245,7 +293,16 @@ export default function Index({ id }: Props) {
         </Holds>
 
         {/* Language Selection Modal */}
-        <Modals
+        <NModals
+          size={"xl"}
+          isOpen={isLangModalOpen}
+          handleClose={() => setIsLangModalOpen(false)}
+        >
+          <LanguageModal
+            setIsOpenLanguageSelector={() => setIsLangModalOpen(false)}
+          />
+        </NModals>
+        {/* <Modals
           isOpen={isLangModalOpen}
           handleClose={() => setIsLangModalOpen(false)}
           size={"lg"}
@@ -264,7 +321,7 @@ export default function Index({ id }: Props) {
               </Selects>
             </Contents>
           </Holds>
-        </Modals>
+        </Modals> */}
 
         {/*---------------------Change Password------------------------------*/}
         <Holds className="row-span-1 h-full">
