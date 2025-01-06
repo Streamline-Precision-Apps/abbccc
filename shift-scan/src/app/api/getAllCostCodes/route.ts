@@ -12,7 +12,7 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const costcodeData = await prisma.costCodes.findMany();
+  const costcodeData = await prisma.costCode.findMany();
   revalidateTag("costcodes");
 
   return NextResponse.json(costcodeData);

@@ -19,9 +19,12 @@ async function main() {
     // Insert users
     for (const user of initialUsers) {
       try {
-        const hashed = await hash(user.password, 10);
-        const newUser = await prisma.user.create({
-          data: { ...user, password: hashed },
+        // const hashed = await hash(user.password, 10);
+        const newUser = await prisma.user.create(
+          {
+          // TODO Come back to add the hash back in.
+          // data: { ...user, password: hashed },
+          data: user,
         });
         console.log("Created user with id: ", newUser.id);
       } catch (error) {
