@@ -11,26 +11,7 @@ import { RequestFooter } from "./_components/inboxFooter";
 import { RequestMain } from "./_components/inboxMainPending";
 import { RequestMainApproved } from "./_components/inboxMainApproved";
 import { RequestMainDenied } from "./_components/inboxMainDenied";
-
-export type LeaveRequest = {
-  id: string;
-  requestedStartDate: string;
-  requestedEndDate: string;
-  requestType: string;
-  comment: string;
-  managerComment: string;
-  status: string;
-  employeeId: string;
-  createdAt: string;
-  updatedAt: string;
-  decidedBy: string;
-  signature: string;
-  employee: {
-    firstName: string;
-    lastName: string;
-    image: string;
-  };
-};
+import { LeaveRequest } from "@/lib/types";
 
 export default function Page({ params }: { params: { id: string } }) {
   const { id } = params;
@@ -87,7 +68,6 @@ export default function Page({ params }: { params: { id: string } }) {
       try {
         const leaveRequestRes = await fetch("/api/getTimeOffRequestById/" + id);
         const leaveRequestData = await leaveRequestRes.json();
-        // const validatedLeaveRequest = leaveRequestSchema.parse(leaveRequestData);
         setInitialLeaveRequest(leaveRequestData);
         setLeaveRequest(leaveRequestData);
       } catch (error) {
@@ -145,67 +125,6 @@ export default function Page({ params }: { params: { id: string } }) {
     console.log(updateLeaveRequest);
   };
 
-  if (leaveRequest.status === "DENIED")
-    return (
-      <Holds className="w-full h-full">
-        <ReusableViewLayout
-          custom={true}
-          header={
-            <RequestHeader
-              leaveRequest={leaveRequest}
-              setLeaveRequest={setLeaveRequest}
-            />
-          }
-          mainHolds="h-full w-full flex flex-row row-span-5 col-span-2 bg-app-dark-blue px-4 py-2 rounded-[10px] gap-4"
-          main={
-            <RequestMainDenied
-              leaveRequest={leaveRequest}
-              setLeaveRequest={setLeaveRequest}
-              isSignatureShowing={isSignatureShowing}
-              setIsSignatureShowing={setIsSignatureShowing}
-              signature={signature}
-            />
-          }
-          footer={
-            <RequestFooter
-              SubmitButton={isSubmittable}
-              handlePendingEdit={handlePendingEdit}
-            />
-          }
-        />
-      </Holds>
-    );
-  if (leaveRequest.status === "APPROVED")
-    return (
-      <Holds className="w-full h-full">
-        <ReusableViewLayout
-          custom={true}
-          header={
-            <RequestHeader
-              leaveRequest={leaveRequest}
-              setLeaveRequest={setLeaveRequest}
-            />
-          }
-          mainHolds="h-full w-full flex flex-row row-span-5 col-span-2 bg-app-dark-blue px-4 py-2 rounded-[10px] gap-4"
-          main={
-            <RequestMainApproved
-              leaveRequest={leaveRequest}
-              setLeaveRequest={setLeaveRequest}
-              isSignatureShowing={isSignatureShowing}
-              setIsSignatureShowing={setIsSignatureShowing}
-              signature={signature}
-            />
-          }
-          footer={
-            <RequestFooter
-              SubmitButton={isSubmittable}
-              handlePendingEdit={handlePendingEdit}
-            />
-          }
-        />
-      </Holds>
-    );
-
   return (
     <Holds className="w-full h-full">
       <ReusableViewLayout
@@ -218,13 +137,31 @@ export default function Page({ params }: { params: { id: string } }) {
         }
         mainHolds="h-full w-full flex flex-row row-span-5 col-span-2 bg-app-dark-blue px-4 py-2 rounded-[10px] gap-4"
         main={
-          <RequestMain
-            leaveRequest={leaveRequest}
-            setLeaveRequest={setLeaveRequest}
-            isSignatureShowing={isSignatureShowing}
-            setIsSignatureShowing={setIsSignatureShowing}
-            signature={signature}
-          />
+          leaveRequest.status === "DENIED" ? (
+            <RequestMainDenied
+              leaveRequest={leaveRequest}
+              setLeaveRequest={setLeaveRequest}
+              isSignatureShowing={isSignatureShowing}
+              setIsSignatureShowing={setIsSignatureShowing}
+              signature={signature}
+            />
+          ) : leaveRequest.status === "PENDING" ? (
+            <RequestMain
+              leaveRequest={leaveRequest}
+              setLeaveRequest={setLeaveRequest}
+              isSignatureShowing={isSignatureShowing}
+              setIsSignatureShowing={setIsSignatureShowing}
+              signature={signature}
+            />
+          ) : leaveRequest.status === "APPROVED" ? (
+            <RequestMainApproved
+              leaveRequest={leaveRequest}
+              setLeaveRequest={setLeaveRequest}
+              isSignatureShowing={isSignatureShowing}
+              setIsSignatureShowing={setIsSignatureShowing}
+              signature={signature}
+            />
+          ) : null
         }
         footer={
           <RequestFooter

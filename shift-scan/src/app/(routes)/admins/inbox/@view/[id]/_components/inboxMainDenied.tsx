@@ -10,7 +10,7 @@ import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { useTranslations } from "next-intl";
 import { Dispatch, SetStateAction } from "react";
-import { LeaveRequest } from "../page";
+import { LeaveRequest } from "@/lib/types";
 
 export function RequestMainDenied({
   leaveRequest,
