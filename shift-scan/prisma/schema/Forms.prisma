@@ -26,7 +26,7 @@ model InjuryForm {
     incidentDescription String
     signature           String?  @db.Text
     verifyFormSignature Boolean  @default(false)
-    user                User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model timeOffRequestForm {
@@ -41,6 +41,7 @@ model timeOffRequestForm {
     createdAt          DateTime           @default(now())
     updatedAt          DateTime           @updatedAt
     decidedBy          String? // ment to hold the individual who approved/rejected the timesheet
+    signature          String? // ment to hold the individual who approved/rejected the timesheet
 
     employee User @relation(fields: [employeeId], references: [id], onDelete: Cascade)
 }

@@ -19,6 +19,7 @@ export type EquipmentTags = "TRUCK" | "TRAILER" | "EQUIPMENT" | "VEHICLE";
 export enum FormStatus {
   PENDING = "PENDING",
   APPROVED = "APPROVED",
+  DENIED = "DENIED",
   REJECTED = "REJECTED",
 }
 

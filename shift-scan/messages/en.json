@@ -426,6 +426,17 @@
 },
 
 "Admins":{
+    "DecidedBy": "Decided By",
+    "ApprovedSignature": "Approval Signature",
+    "NoSignatureFound": "No signature found",
+    "ClickToSign":"Click to Sign",
+    "MangerComment": "Approval Comment",
+    "PaidVacation": "Paid Vacation",
+    "Sick": "Sick",
+    "Military": "Military",
+    "FamilyMedical": "Family Medical",
+   "NonPaidPersonal": "Non-Paid Personal",
+    "RequestType": "Request Type",
     "NoComment": "No comments found",
     "EmployeeComment": "Employee Comments",
    "DateCreated": "Date Created",
