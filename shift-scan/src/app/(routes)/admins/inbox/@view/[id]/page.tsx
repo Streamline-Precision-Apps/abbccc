@@ -1,14 +1,12 @@
 "use client";
 import { Holds } from "@/components/(reusable)/holds";
-import { Texts } from "@/components/(reusable)/texts";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { ReusableViewLayout } from "../../../personnel/@view/[employee]/_components/reusableViewLayout";
-import { Images } from "@/components/(reusable)/images";
-import { Grids } from "@/components/(reusable)/grids";
-import { Inputs } from "@/components/(reusable)/inputs";
 
-type LeaveRequest = {
+import { RequestHeader } from "./_components/inboxHeader";
+
+export type LeaveRequest = {
   id: string;
   requestedStartDate: string;
   requestedEndDate: string;
@@ -64,77 +62,19 @@ export default function Page({ params }: { params: { id: string } }) {
   }, [id, t]);
 
   return (
-    <Holds>
+    <Holds className="w-full h-full">
       <ReusableViewLayout
         custom={true}
-        header={<RequestHeader leaveRequest={leaveRequest} />}
+        header={
+          <RequestHeader
+            leaveRequest={leaveRequest}
+            setLeaveRequest={setLeaveRequest}
+          />
+        }
         mainHolds="h-full w-full flex flex-row row-span-6 col-span-2 bg-app-dark-blue px-4 py-2 rounded-[10px] gap-4"
         main={<></>}
         footer={<></>}
       />
-    </Holds>
-  );
-}
-
-export function RequestHeader({
-  leaveRequest,
-}: {
-  leaveRequest: LeaveRequest;
-}) {
-  const t = useTranslations("Admins");
-  return (
-    <Holds className=" row-span-1 col-span-2 bg-white rounded-[10px] gap-4">
-      <Grids cols={"10"} rows={"3"} className="w-full h-full px-2 py-4">
-        {/* Image for employee*/}
-        <Holds className="row-start-1 row-end-4 col-start-1 col-end-3 ">
-          <Images
-            className="w-full h-full rounded bg-cover bg-center"
-            titleImg={"/person.svg"}
-            titleImgAlt={"Employee Image"}
-            size={"60"}
-          />
-        </Holds>
-        {/* Input for employee name*/}
-        <Holds className="row-start-1 row-end-4 col-start-3 col-end-7">
-          <Inputs
-            type={"text"}
-            readOnly={true}
-            name={"firstName"}
-            className=" text-[20px] font-bold h-16"
-            value={"Devun"}
-          />
-        </Holds>
-        {/* Date request was submitted*/}
-        <Holds className="row-start-4 row-end-5 col-start-3 col-end-6">
-          <Texts
-            position={"left"}
-            text={"black"}
-            size={"p6"}
-            className="font-bold"
-          >{`${t("DateCreated")}: ${new Date(
-            leaveRequest.createdAt
-          ).toLocaleString("en-US", {
-            day: "numeric",
-            month: "numeric",
-            year: "numeric",
-          })}`}</Texts>
-        </Holds>
-        {/* Date request was submitted*/}
-        <Holds className="row-start-4 row-end-5 col-start-9 col-end-11">
-          <Texts
-            position={"right"}
-            text={"black"}
-            size={"p6"}
-            className="font-bold"
-          >{`${t("EmployeeComment")}: ${new Date(
-            leaveRequest.createdAt
-          ).toLocaleString("en-US", {
-            day: "numeric",
-            month: "numeric",
-            year: "numeric",
-          })}`}</Texts>
-        </Holds>
-      </Grids>
     </Holds>
   );
 }

@@ -426,6 +426,8 @@
 },
 
 "Admins":{
+    "NoComment": "No comments found",
+    "EmployeeComment": "Employee Comments",
    "DateCreated": "Date Created",
     "AllRecent": "All Recent",
     "AllArchived": "All Archived",
