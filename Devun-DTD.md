@@ -34,3 +34,10 @@ cookies().set({
 ### Trello
 - update language selector (35mins)
 - Admin Build - Inbox Section (1hr)
+
+
+## January 6, 2025 - Monday
+### built/created
+- 
+### Trello
+- Admin Build - Inbox Section 

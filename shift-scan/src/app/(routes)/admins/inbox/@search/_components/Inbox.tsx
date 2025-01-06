@@ -61,15 +61,17 @@ export const InboxContent = ({ employees, setFilter }: Props) => {
       <Grids rows="10" gap="5" className="h-full">
         <Holds className=" bg-white h-full w-full  ">
           <Selects
-            defaultValue={"all"}
+            defaultValue={"pending"}
             onChange={(e) => setFilter(e.target.value)}
             className="w-full px-0 py-2 text-center"
           >
-            <option value="all">{t("SelectFilter")}</option>
-            <option value="all">{t("All")}</option>
             <option value="pending">{t("Pending")}</option>
             <option value="denied">{t("Denied")}</option>
             <option value="approved">{t("Approved")}</option>
+            <option value="archived-denied">{t("ArchivedDenied")}</option>
+            <option value="archived-approved">{t("ArchivedApproved")}</option>
+            <option value="all">{t("AllRecent")}</option>
+            <option value="all-archived">{t("AllArchived")}</option>
           </Selects>
         </Holds>
         {/* Search Input Section */}
