@@ -183,6 +183,26 @@ export type sentContent = {
   decidedBy: string | null;
 };
 
+export type LeaveRequest = {
+  id: string;
+  requestedStartDate: string;
+  requestedEndDate: string;
+  requestType: string;
+  comment: string;
+  managerComment: string;
+  status: string;
+  employeeId: string;
+  createdAt: string;
+  updatedAt: string;
+  decidedBy: string;
+  signature: string;
+  employee: {
+    firstName: string;
+    lastName: string;
+    image: string;
+  };
+};
+
 export type TimeSheets = {
   startTime: Date;
   duration: number | null;

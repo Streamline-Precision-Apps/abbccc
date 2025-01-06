@@ -1,4 +1,6 @@
 "use client";
+import EmptyView from "@/app/(routes)/admins/_pages/EmptyView";
+import Spinner from "@/components/(animations)/spinner";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
@@ -7,7 +9,14 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { useTranslations } from "next-intl";
-import { Dispatch, ReactNode, SetStateAction, useState } from "react";
+import {
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  use,
+  useEffect,
+  useState,
+} from "react";
 
 type ReusableViewLayoutProps = {
   header?: ReactNode; // Custom header content
@@ -37,10 +46,26 @@ export const ReusableViewLayout = ({
   mainHolds,
 }: ReusableViewLayoutProps) => {
   const [isCommentSectionOpen, setIsCommentSectionOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+
   const t = useTranslations("Admins");
   const openComment = () => {
     setIsCommentSectionOpen(!isCommentSectionOpen);
   };
+  useEffect(() => {
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+  }, []);
+
+  if (loading) {
+    return (
+      <Holds className="w-full h-full">
+        <EmptyView Children={<Spinner />} />
+      </Holds>
+    );
+  }
+
   if (custom === true) {
     return (
       <Holds
