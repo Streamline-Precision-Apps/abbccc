@@ -400,6 +400,17 @@
     "PhotoAlbumAccess": " Album de Fotos"
 },
 "Admins":{
+    "DecidedBy": "Aprobado por",
+    "ApprovedSignature": "Firma de Aprobación",
+    "NoSignatureFound": "No se Encontraron Firmas",
+   " ClickToSign" : "Firmar Solicitud",
+    "ManagerComments": "Comentarios de Aprobación",
+    "PaidVacation": "Vaccation",
+    "Sick": "Enfermedad",
+    "Military": "Militar",
+    "FamilyMedical": "Medical de Familia",
+   "NonPaidPersonal": "Personal no Pagado",
+    "RequestType": "Request Type",
     "NoComment": "No se Encontraron Comentarios",
     "EmployeeComment": "Comentarios de Empleado",
     "DateCreated": "Fecha de Creación",
