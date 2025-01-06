@@ -67,15 +67,14 @@ const providers: Provider[] = [
       const isValidPassword = () => {
         if (user.password === passwords) {
           return true;
-        }
-        else {
+        } else {
           return false;
         }
       };
-        if (!isValidPassword) {
-          console.log("Invalid password");
-          throw new InvalidLoginError();
-        };
+      if (!isValidPassword) {
+        console.log("Invalid password");
+        throw new InvalidLoginError();
+      }
 
       // const isValidPassword = await bcrypt.compare(passwords, user.password);
       // if (!isValidPassword) {

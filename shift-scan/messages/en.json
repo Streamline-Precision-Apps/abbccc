@@ -397,8 +397,8 @@
     "GeneralReminders": "General Reminders",
     "Security": "Security",
     "Biometrics": "Biometrics",
-    "CameraAccess": "Camera Access",
-    "LocationAccess": "Location Access",
+    "CameraAccess": "Camera",
+    "LocationAccess": "Location",
     "Inbox": "Inbox",
     "EmployeeID": "Employee ID",
     "PersonalEmail": "Email",
@@ -421,10 +421,19 @@
     "Loading": "Loading",
     "ChangeProfilePicture": "Change Profile Picture",
     "SubmitChanges": "Submit Changes",
-    "Language": "Language"
+    "Language": "Language",
+    "PhotoAlbumAccess": "Photo Album"
 },
 
 "Admins":{
+   "DateCreated": "Date Created",
+    "AllRecent": "All Recent",
+    "AllArchived": "All Archived",
+    "ArchivedDenied": "Archived Denied",
+    "ArchivedApproved": "Archived Approved",
+    "CreateNewRequest": "Create New Request",
+   "NoRequestsFound":"No Requests Found",
+    "Inbox": "Inbox",
     "Totalhoursthispayperiod": "Total Hours This Pay Period",
     "Personnel": "Personnel",
     "Assets": "Assets",

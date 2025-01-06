@@ -25,6 +25,7 @@ export async function GET() {
         biometric: true,
         cameraAccess: true,
         locationAccess: true,
+        photoAlbumAccess: true,
       },
     });
     return NextResponse.json(data);
