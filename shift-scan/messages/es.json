@@ -400,6 +400,8 @@
     "PhotoAlbumAccess": " Album de Fotos"
 },
 "Admins":{
+    "NoComment": "No se Encontraron Comentarios",
+    "EmployeeComment": "Comentarios de Empleado",
     "DateCreated": "Fecha de Creación",
     "AllRecent": "Todas Recientes",
     "AllArchived": "Todas Archivadas",
