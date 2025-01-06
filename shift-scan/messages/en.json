@@ -426,6 +426,10 @@
 },
 
 "Admins":{
+    "AllRecent": "All Recent",
+    "AllArchived": "All Archived",
+    "ArchivedDenied": "Archived Denied",
+    "ArchivedApproved": "Archived Approved",
     "CreateNewRequest": "Create New Request",
    "NoRequestsFound":"No Requests Found",
     "Inbox": "Inbox",

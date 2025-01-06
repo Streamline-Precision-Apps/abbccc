@@ -18,11 +18,6 @@ export async function GET(req: Request) {
     // Fetch sent requests based on `id` and `userId`
     if (filter === "all") {
       const sentContent = await prisma.timeOffRequestForm.findMany({
-        where: {
-          requestedEndDate: {
-            gte: today,
-          },
-        },
         orderBy: {
           requestedStartDate: "desc",
         },
@@ -82,6 +77,68 @@ export async function GET(req: Request) {
           status: "DENIED",
           requestedEndDate: {
             gte: today,
+          },
+        },
+        orderBy: {
+          requestedStartDate: "desc",
+        },
+        include: {
+          employee: {
+            select: {
+              firstName: true,
+              lastName: true,
+            },
+          },
+        },
+      });
+      return NextResponse.json(sentContent);
+    } else if (filter === "archived-denied") {
+      const sentContent = await prisma.timeOffRequestForm.findMany({
+        where: {
+          status: "DENIED",
+          requestedEndDate: {
+            lte: today,
+          },
+        },
+        orderBy: {
+          requestedStartDate: "desc",
+        },
+        include: {
+          employee: {
+            select: {
+              firstName: true,
+              lastName: true,
+            },
+          },
+        },
+      });
+      return NextResponse.json(sentContent);
+    } else if (filter === "archived-approved") {
+      const sentContent = await prisma.timeOffRequestForm.findMany({
+        where: {
+          status: "APPROVED",
+          requestedEndDate: {
+            lte: today,
+          },
+        },
+        orderBy: {
+          requestedStartDate: "desc",
+        },
+        include: {
+          employee: {
+            select: {
+              firstName: true,
+              lastName: true,
+            },
+          },
+        },
+      });
+      return NextResponse.json(sentContent);
+    } else if (filter === "all-archived") {
+      const sentContent = await prisma.timeOffRequestForm.findMany({
+        where: {
+          requestedEndDate: {
+            lte: today,
           },
         },
         orderBy: {

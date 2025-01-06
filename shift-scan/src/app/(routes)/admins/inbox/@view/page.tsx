@@ -1,10 +1,10 @@
 import { Holds } from "@/components/(reusable)/holds";
-import { Texts } from "@/components/(reusable)/texts";
+import EmptyView from "../../_pages/EmptyView";
 
 export default function Page() {
   return (
-    <Holds background="white">
-      <Texts>Inbox</Texts>
+    <Holds background="white" className="w-full h-full ">
+      <EmptyView Children={undefined} />
     </Holds>
   );
 }

@@ -400,6 +400,10 @@
     "PhotoAlbumAccess": " Album de Fotos"
 },
 "Admins":{
+    "AllRecent": "Todas Recientes",
+    "AllArchived": "Todas Archivadas",
+    "ArchivedDenied": "Denegadas Archivadas",
+    "ArchivedApproved": "Aprobadas Archivadas",
     "CreateNewRequest": "Crear Nueva Solicitud",
     "NoRequestsFound": "No se Encontraron Solicitudes",
     "Inbox": "Bandeja de Entrada",
