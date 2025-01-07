@@ -38,6 +38,7 @@ export default function Page({ params }: { params: { id: string } }) {
     decidedBy: "",
     signature: "",
     employee: {
+      id: "",
       firstName: "",
       lastName: "",
       image: "",
@@ -58,6 +59,7 @@ export default function Page({ params }: { params: { id: string } }) {
     decidedBy: "",
     signature: "",
     employee: {
+      id: "",
       firstName: "",
       lastName: "",
       image: "",

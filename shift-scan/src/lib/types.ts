@@ -13,6 +13,13 @@ import { clockInFormSchema } from "./validation";
 
 export type clockInForm = z.infer<typeof clockInFormSchema>;
 // -------------------------------------------------------------------------------------
+export enum TimeOffRequestType {
+  FAMILY_MEDICAL = "FAMILY_MEDICAL",
+  MILITARY = "MILITARY",
+  PAID_VACATION = "PAID_VACATION",
+  NON_PAID_PERSONAL = "NON_PAID_PERSONAL",
+  SICK = "SICK",
+}
 
 export type EquipmentTags = "TRUCK" | "TRAILER" | "EQUIPMENT" | "VEHICLE";
 
@@ -198,6 +205,7 @@ export type LeaveRequest = {
   decidedBy: string;
   signature: string;
   employee: {
+    id: string;
     firstName: string;
     lastName: string;
     image: string;
