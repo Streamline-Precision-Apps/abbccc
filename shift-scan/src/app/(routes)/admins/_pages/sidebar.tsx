@@ -29,6 +29,11 @@ const Sidebar = () => {
   const [isOpenLanguageSelector, setIsOpenLanguageSelector] = useState(false);
   const [isOpenSignOut, setIsOpenSignOut] = useState(false);
 
+  const isPersonnelPage = pathname.includes("/admins/personnel");
+  const isAssetsPage = pathname.includes("/admins/assets");
+  const isReportsPage = pathname.includes("/admins/reports");
+  const inboxPage = pathname.includes("/admins/inbox");
+
   useEffect(() => {
     setUsername(`${session?.user.firstName} ${session?.user.lastName}`);
   }, [session?.user.firstName, session?.user.lastName]);
@@ -91,9 +96,7 @@ const Sidebar = () => {
                 <Buttons
                   className={`
                     ${
-                      pathname === "/admins/personnel"
-                        ? "bg-slate-400 "
-                        : "bg-app-blue"
+                      isPersonnelPage ? "bg-slate-400 " : "bg-app-blue"
                     } w-[90%] h-12 `}
                   href="/admins/personnel"
                 >
@@ -123,9 +126,7 @@ const Sidebar = () => {
                 <Buttons
                   className={`
                     ${
-                      pathname === "/admins/assets"
-                        ? "bg-slate-400 "
-                        : "bg-app-blue"
+                      isAssetsPage ? "bg-slate-400 " : "bg-app-blue"
                     } w-[90%] h-12 `}
                   href="/admins/assets"
                 >
@@ -155,9 +156,7 @@ const Sidebar = () => {
                 <Buttons
                   className={`
                     ${
-                      pathname === "/admins/reports"
-                        ? "bg-slate-400 "
-                        : "bg-app-blue"
+                      isReportsPage ? "bg-slate-400 " : "bg-app-blue"
                     } w-[90%] h-12 `}
                   href="/admins/reports"
                 >
@@ -187,9 +186,7 @@ const Sidebar = () => {
                 <Buttons
                   className={`
                     ${
-                      pathname === "/admins/inbox"
-                        ? "bg-slate-400 "
-                        : "bg-app-blue"
+                      inboxPage ? "bg-slate-400 " : "bg-app-blue"
                     } w-[90%] h-12 `}
                   href="/admins/inbox"
                 >
@@ -345,9 +342,7 @@ const Sidebar = () => {
                 <Buttons
                   className={`
                     ${
-                      pathname === "/admins/personnel"
-                        ? "bg-slate-400 "
-                        : "bg-app-blue"
+                      isPersonnelPage ? "bg-slate-400 " : "bg-app-blue"
                     } w-12 h-12 `}
                   href="/admins/personnel"
                 >
@@ -364,9 +359,7 @@ const Sidebar = () => {
                 <Buttons
                   className={`
                     ${
-                      pathname === "/admins/assets"
-                        ? "bg-slate-400 "
-                        : "bg-app-blue"
+                      isAssetsPage ? "bg-slate-400 " : "bg-app-blue"
                     } w-12 h-12 `}
                   href="/admins/assets"
                 >
@@ -384,9 +377,7 @@ const Sidebar = () => {
                 <Buttons
                   className={`
                     ${
-                      pathname === "/admins/reports"
-                        ? "bg-slate-400 "
-                        : "bg-app-blue"
+                      isReportsPage ? "bg-slate-400 " : "bg-app-blue"
                     } w-12 h-12 `}
                   href="/admins/reports"
                 >
@@ -402,11 +393,7 @@ const Sidebar = () => {
               <Holds>
                 <Buttons
                   className={`
-                    ${
-                      pathname === "/admins/inbox"
-                        ? "bg-slate-400 "
-                        : "bg-app-blue"
-                    } w-12 h-12 `}
+                    ${inboxPage ? "bg-slate-400 " : "bg-app-blue"} w-12 h-12 `}
                   href="/admins/inbox"
                 >
                   <Holds position={"row"}>

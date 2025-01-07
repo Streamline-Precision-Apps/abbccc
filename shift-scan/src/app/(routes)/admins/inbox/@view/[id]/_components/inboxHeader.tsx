@@ -10,6 +10,7 @@ import { Texts } from "@/components/(reusable)/texts";
 import { useTranslations } from "next-intl";
 import { Dispatch, SetStateAction, useState } from "react";
 import { LeaveRequest } from "@/lib/types";
+import { Labels } from "@/components/(reusable)/labels";
 
 export function RequestHeader({
   leaveRequest,
@@ -20,19 +21,25 @@ export function RequestHeader({
 }) {
   const t = useTranslations("Admins");
   const [commentOpened, setCommentOpened] = useState(false);
+
   return (
     <Holds
       background={"white"}
       className={`h-full w-full col-span-2 rounded-[10px] ${
-        commentOpened ? "row-span-4" : "row-span-2"
+        commentOpened ? "row-span-3" : "row-span-2"
       }`}
     >
       {commentOpened ? (
-        <Grids cols={"10"} rows={"5"} className="w-full h-full px-3">
+        /* ============================================================================================================================================*/
+
+        /* =================================================   ** If comment is Opened  **     =======================================================*/
+
+        /* ==========================================================================================================================================*/
+        <Grids cols={"10"} rows={"3"} gap={"5"} className="w-full h-full p-3">
           {/* Image for employee*/}
-          <Holds className="row-start-1 row-end-3 col-start-1 col-end-3 ">
+          <Holds className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full">
             <Images
-              className={`w-full h-full rounded-full bg-cover bg-center ${
+              className={`w-full rounded-full  ${
                 leaveRequest.employee.image.length > 0
                   ? "border-[3px] border-black"
                   : ""
@@ -43,16 +50,15 @@ export function RequestHeader({
                   : "/person.svg"
               }
               titleImgAlt={"Employee Image"}
-              size={"60"}
             />
           </Holds>
           {/* Input for employee name*/}
-          <Holds className="row-start-1 row-end-3 col-start-3 col-end-7">
+          <Holds className="row-start-1 row-end-2 col-start-2 col-end-6 h-full w-full">
             <Inputs
               type={"text"}
               readOnly={true}
               name={"firstName"}
-              className=" text-[20px] font-bold h-16 px-5"
+              className="font-bold pl-5 h-full text-[20px]"
               value={
                 leaveRequest.employee.firstName +
                 " " +
@@ -60,38 +66,94 @@ export function RequestHeader({
               }
             />
           </Holds>
-          {/* Eployee comment*/}
-          <Holds className="flex flex-row row-start-3 row-end-4 col-start-9 col-end-11">
-            <Holds position={"right"} className="flex flex-row ">
-              <Texts text={"black"} size={"p6"} className="font-bold">{`${t(
-                "EmployeeComment"
-              )}`}</Texts>
-              <Images
-                className="ml-2 w-full h-full rounded bg-cover bg-center"
-                titleImg={"/comment.svg"}
-                titleImgAlt={"Employee Image"}
-                size={"30"}
-                onClick={() => setCommentOpened(!commentOpened)}
-              />
-            </Holds>
+
+          {/* Date request was submitted*/}
+          <Holds className="row-start-1 row-end-2 col-start-6 col-end-9">
+            <Texts
+              position={"left"}
+              text={"black"}
+              size={"p6"}
+              className="font-bold"
+            >{`${t("DateCreated")}: ${new Date(
+              leaveRequest.createdAt
+            ).toLocaleString("en-US", {
+              day: "numeric",
+              month: "numeric",
+              year: "numeric",
+            })}`}</Texts>
           </Holds>
-          <Holds className="row-start-3 row-end-6 col-start-1 col-end-11">
-            <TextAreas
-              variant={"default"}
-              readOnly={true}
-              name={"comment"}
-              className=" text-[20px] h-full"
-              rows={2}
-              style={{ resize: "none" }}
-              value={
-                leaveRequest.comment.length > 0
-                  ? leaveRequest.comment
-                  : t("NoComment")
-              }
-              maxLength={40}
-            />
+          <Holds className="row-start-2 row-end-4 col-start-1 col-end-11 h-full">
+            {leaveRequest.status === "PENDING" ? (
+              <>
+                <Holds position={"row"}>
+                  <Labels
+                    size={"p4"}
+                    htmlFor="comment"
+                    className="flex flex-row w-full"
+                  >
+                    {t("EmployeeComment")}
+                    <Holds className="w-[20%] h-full">
+                      <Images
+                        className="ml-2 w-full h-full rounded bg-cover bg-center"
+                        titleImg={"/comment.svg"}
+                        titleImgAlt={"Employee Image"}
+                        onClick={() => setCommentOpened(!commentOpened)}
+                      />
+                    </Holds>
+                  </Labels>
+                </Holds>
+                {/* Employee comment*/}
+                <TextAreas
+                  variant={"default"}
+                  readOnly={true}
+                  name={"comment"}
+                  className=" text-[20px] h-full"
+                  style={{ resize: "none" }}
+                  value={
+                    leaveRequest.comment.length > 0
+                      ? leaveRequest.comment
+                      : t("NoComment")
+                  }
+                  maxLength={40}
+                />
+              </>
+            ) : (
+              <>
+                <Holds position={"row"}>
+                  <Labels
+                    size={"p4"}
+                    htmlFor="managerComment"
+                    className="flex flex-row"
+                  >
+                    {t("MangerComment")}
+                    <Holds className="w-[25%] h-full">
+                      <Images
+                        className="ml-2 w-full h-full rounded bg-cover bg-center"
+                        titleImg={"/comment.svg"}
+                        titleImgAlt={"Employee Image"}
+                        onClick={() => setCommentOpened(!commentOpened)}
+                      />
+                    </Holds>
+                  </Labels>
+                </Holds>
+                {/* Manager comment*/}
+                <TextAreas
+                  variant={"default"}
+                  readOnly={true}
+                  name={"managerComment"}
+                  className=" text-[20px] h-full"
+                  style={{ resize: "none" }}
+                  value={
+                    leaveRequest.managerComment.length > 0
+                      ? leaveRequest.managerComment
+                      : t("NoComment")
+                  }
+                  maxLength={40}
+                />
+              </>
+            )}
           </Holds>
-          <Holds className="row-start-1 row-end-3 col-start-9 col-end-11">
+          <Holds className="row-start-1 row-end-2 col-start-9 col-end-11">
             <Selects
               name="status"
               value={leaveRequest.status}
@@ -116,12 +178,16 @@ export function RequestHeader({
           </Holds>
         </Grids>
       ) : (
-        // If comment is not opened
-        <Grids cols={"10"} rows={"3"} className="w-full h-full p-3 ">
+        /* ============================================================================================================================================*/
+
+        /* ==================================================   ** If comment is closed  **     =======================================================*/
+
+        /* ==========================================================================================================================================*/
+        <Grids cols={"10"} rows={"3"} className="w-full h-full p-3">
           {/* Image for employee*/}
-          <Holds className="row-start-1 row-end-4 col-start-1 col-end-3 ">
+          <Holds className="row-start-1 row-end-4 col-start-1 col-end-3 h-full w-full">
             <Images
-              className={`w-full h-full rounded-full bg-cover bg-center ${
+              className={`w-full  rounded-full bg-cover bg-center ${
                 leaveRequest.employee.image.length > 0
                   ? "border-[3px] border-black"
                   : ""
@@ -132,16 +198,15 @@ export function RequestHeader({
                   : "/person.svg"
               }
               titleImgAlt={"Employee Image"}
-              size={"60"}
             />
           </Holds>
           {/* Input for employee name*/}
-          <Holds className="row-start-1 row-end-4 col-start-3 col-end-7">
+          <Holds className="row-start-1 row-end-3 col-start-3 col-end-7 h-full w-full py-2">
             <Inputs
               type={"text"}
               readOnly={true}
               name={"firstName"}
-              className=" text-[20px] font-bold h-16 px-5"
+              className=" text-[24px] font-bold pl-5 h-full w-full"
               value={
                 leaveRequest.employee.firstName +
                 " " +
@@ -150,7 +215,7 @@ export function RequestHeader({
             />
           </Holds>
           {/* Date request was submitted*/}
-          <Holds className="row-start-4 row-end-5 col-start-3 col-end-6">
+          <Holds className="row-start-3 row-end-4 col-start-3 col-end-6 h-full w-full justify-end">
             <Texts
               position={"left"}
               text={"black"}
@@ -165,22 +230,43 @@ export function RequestHeader({
             })}`}</Texts>
           </Holds>
           {/* Date request was submitted*/}
-          <Holds className="flex flex-row row-start-4 row-end-5 col-start-9 col-end-11">
+          <Holds className="flex flex-row row-start-3 row-end-4 col-start-7 col-end-11 h-full w-full">
             <Holds position={"right"} className="flex flex-row ">
-              <Texts text={"black"} size={"p6"} className="font-bold">{`${t(
-                "EmployeeComment"
-              )}`}</Texts>
-              <Images
-                className="ml-2 w-full h-full rounded bg-cover bg-center"
-                titleImg={"/comment.svg"}
-                titleImgAlt={"Employee Image"}
-                size={"30"}
-                onClick={() => setCommentOpened(!commentOpened)}
-              />
+              <Holds className="w-[90%] h-full">
+                {leaveRequest.status === "PENDING" ? (
+                  <>
+                    {/* Employee comment*/}
+                    <Texts
+                      text={"black"}
+                      position={"right"}
+                      size={"p6"}
+                      className="font-bold"
+                    >{`${t("EmployeeComment")}`}</Texts>
+                  </>
+                ) : (
+                  <>
+                    {/* Manager comment*/}
+                    <Texts
+                      text={"black"}
+                      position={"right"}
+                      size={"p6"}
+                      className="font-bold"
+                    >{`${t("MangerComment")}`}</Texts>
+                  </>
+                )}
+              </Holds>
+              <Holds className="w-[10%]">
+                <Images
+                  className="ml-2 w-full h-full rounded bg-cover bg-center"
+                  titleImg={"/comment.svg"}
+                  titleImgAlt={"Employee Image"}
+                  onClick={() => setCommentOpened(!commentOpened)}
+                />
+              </Holds>
             </Holds>
           </Holds>
           {/* Request status*/}
-          <Holds className="row-start-1 row-end-4 col-start-9 col-end-11">
+          <Holds className="row-start-1 row-end-3 col-start-9 col-end-11 ">
             <Selects
               name="status"
               value={leaveRequest.status}

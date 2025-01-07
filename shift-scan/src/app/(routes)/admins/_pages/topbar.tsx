@@ -70,6 +70,7 @@ const Topbar = () => {
   const isAssetsPage = pathname.includes("/admins/assets");
   const isReportsPage = pathname.includes("/admins/reports");
   const settingsPage = pathname.includes("/admins/settings");
+  const inboxPage = pathname.includes("/admins/inbox");
 
   return (
     <Holds className="w-full h-full pb-8">
@@ -99,6 +100,8 @@ const Topbar = () => {
                           ? "/form.svg"
                           : settingsPage
                           ? "/person.svg"
+                          : inboxPage
+                          ? "/inbox.svg"
                           : ""
                       }
                       size={"30"}
@@ -114,6 +117,8 @@ const Topbar = () => {
                         ? t("Reports")
                         : settingsPage
                         ? `${firstName} ${lastName}`
+                        : inboxPage
+                        ? t("Inbox")
                         : ""}
                     </Titles>
                   </Holds>
