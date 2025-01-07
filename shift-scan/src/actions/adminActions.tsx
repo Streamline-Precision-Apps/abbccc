@@ -4,6 +4,44 @@ import { FormStatus, Permission, WorkType } from "@/lib/types";
 
 import { revalidatePath, revalidateTag } from "next/cache";
 
+export async function CreateLeaveRequest(formData: FormData) {
+  try {
+    console.log("Updating leave request...");
+    console.log(formData);
+    const id = parseInt(formData.get("id") as string);
+    const status = formData.get("status") as string;
+    const decidedBy = formData.get("decidedBy") as string;
+    let enumStatus = FormStatus.PENDING;
+    switch (status) {
+      case "APPROVED":
+        enumStatus = FormStatus.APPROVED;
+        break;
+      case "DENIED":
+        enumStatus = FormStatus.DENIED;
+        break;
+      case "PENDING":
+        enumStatus = FormStatus.PENDING;
+        break;
+    }
+    const managerComment = formData.get("managerComment") as string;
+    const leaveRequest = await prisma.timeOffRequestForm.update({
+      where: { id },
+      data: {
+        status: enumStatus,
+        managerComment: managerComment,
+        decidedBy: decidedBy,
+        signature: formData.get("signature") as string,
+      },
+    });
+    console.log(leaveRequest);
+    revalidatePath("/admins/leave-requests");
+    return leaveRequest;
+  } catch (error) {
+    console.error("Error updating leave request:", error);
+    throw error;
+  }
+}
+
 export async function UpdateLeaveRequest(formData: FormData) {
   try {
     console.log("Updating leave request...");

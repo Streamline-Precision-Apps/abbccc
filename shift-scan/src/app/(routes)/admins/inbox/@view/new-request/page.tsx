@@ -1,23 +1,18 @@
 "use client";
 import { Holds } from "@/components/(reusable)/holds";
-import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { ReusableViewLayout } from "../../../personnel/@view/[employee]/_components/reusableViewLayout";
 
 import { LeaveRequest } from "@/lib/types";
-import { UpdateLeaveRequest } from "@/actions/adminActions";
+
 import { useSession } from "next-auth/react";
 import { RequestFooter } from "../[id]/_components/inboxFooter";
-import { RequestHeader } from "../[id]/_components/inboxHeader";
-import { RequestMainApproved } from "../[id]/_components/inboxMainApproved";
-import { RequestMainDenied } from "../[id]/_components/inboxMainDenied";
-import { RequestMain } from "../[id]/_components/inboxMainPending";
-import { RequestMainCreate } from "../[id]/_components/inboxMainCreate";
-import { RequestHeaderCreate } from "../[id]/_components/inboxHeaderCreate";
-import { NModals } from "@/components/(reusable)/newmodals";
+import { RequestMainCreate } from "./_components/inboxMainCreate";
+import { RequestHeaderCreate } from "./_components/inboxHeaderCreate";
+import { createLeaveRequest } from "@/actions/inboxSentActions";
 
-export default function Page() {
-  const t = useTranslations("Admins");
+export default function NewInboxRequestPage() {
+  // const t = useTranslations("Admins");
   const [isSubmittable, setSubmittable] = useState(false);
   const [action1, setAction1] = useState(false);
   const [action2, setAction2] = useState(false);
@@ -27,33 +22,16 @@ export default function Page() {
   const user = session.data?.user.firstName + " " + session.data?.user.lastName;
   const [signature, setSignature] = useState("");
   const [userModalOpen, setUserModalOpen] = useState(false);
-  const [initialLeaveRequest, setInitialLeaveRequest] = useState<LeaveRequest>({
-    id: "",
-    requestedStartDate: "",
-    requestedEndDate: "",
-    requestType: "",
-    comment: "",
-    managerComment: "",
-    status: "APPROVED",
-    employeeId: "",
-    createdAt: "",
-    updatedAt: "",
-    decidedBy: "",
-    signature: "",
-    employee: {
-      firstName: "",
-      lastName: "",
-      image: "",
-    },
-  });
+
   const [leaveRequest, setLeaveRequest] = useState<LeaveRequest>({
     id: "",
+    name: "",
     requestedStartDate: "",
     requestedEndDate: "",
     requestType: "",
     comment: "",
     managerComment: "",
-    status: "APPROVED",
+    status: "PENDING",
     employeeId: "",
     createdAt: "",
     updatedAt: "",
@@ -78,27 +56,29 @@ export default function Page() {
 
   // Check if any of the fields have changed for action fields
   useEffect(() => {
-    if (initialLeaveRequest?.managerComment !== leaveRequest.managerComment) {
+    if (leaveRequest.comment.length > 0) {
       setAction1(true);
     }
-  }, [leaveRequest.managerComment, leaveRequest]);
+  }, [leaveRequest, leaveRequest.comment]);
 
   useEffect(() => {
-    if (leaveRequest.status !== initialLeaveRequest.status) {
+    if (leaveRequest.requestedStartDate && leaveRequest.requestedEndDate) {
       setAction2(true);
     }
-  }, [leaveRequest.status, leaveRequest]);
+  }, [leaveRequest]);
 
   useEffect(() => {
-    if (isSignatureShowing) {
+    if (leaveRequest.requestType) {
       setAction3(true);
     }
-  }, [isSignatureShowing]);
+  }, [leaveRequest]);
 
   // Check if all actions are completed before submitting
   useEffect(() => {
     if (action1 && action2 && action3) {
       setSubmittable(true);
+    } else {
+      setSubmittable(false);
     }
   }, [leaveRequest, action1, action2, action3]);
   // Handler for the server action to update the leave request
@@ -107,10 +87,9 @@ export default function Page() {
     const formData = new FormData();
     formData.append("id", leaveRequest.id);
     formData.append("status", leaveRequest.status);
-    formData.append("managerComment", leaveRequest.managerComment);
+    formData.append("comment", leaveRequest.comment);
     formData.append("decidedBy", user);
-    formData.append("signature", signature);
-    const updateLeaveRequest = await UpdateLeaveRequest(formData);
+    const updateLeaveRequest = await createLeaveRequest(formData);
     console.log(updateLeaveRequest);
   };
 

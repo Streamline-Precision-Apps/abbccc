@@ -1,13 +1,13 @@
 "use client";
-import { Buttons } from "@/components/(reusable)/buttons";
+
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
-import { Images } from "@/components/(reusable)/images";
+
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
 import { Selects } from "@/components/(reusable)/selects";
 import { TextAreas } from "@/components/(reusable)/textareas";
-import { Texts } from "@/components/(reusable)/texts";
+
 import { useTranslations } from "next-intl";
 import { Dispatch, SetStateAction } from "react";
 import { LeaveRequest } from "@/lib/types";
@@ -15,9 +15,6 @@ import { LeaveRequest } from "@/lib/types";
 export function RequestMainCreate({
   leaveRequest,
   setLeaveRequest,
-  isSignatureShowing,
-  setIsSignatureShowing,
-  signature,
 }: {
   leaveRequest: LeaveRequest;
   setLeaveRequest: Dispatch<SetStateAction<LeaveRequest>>;
@@ -30,7 +27,23 @@ export function RequestMainCreate({
   return (
     <Holds background={"white"} className="w-full h-full p-3">
       <Grids rows={"5"} cols={"4"} gap={"5"} className="w-full h-full px-3">
-        <Holds>{/* Optional Title Input */}</Holds>
+        <Holds>
+          {/* Optional Title Input */}
+          <Labels size={"p4"} htmlFor="title">
+            {t("TitleOptional")}
+          </Labels>
+          <Inputs
+            type="text"
+            id="title"
+            value={leaveRequest.name}
+            onChange={(e) => {
+              setLeaveRequest((prevLeaveRequest) => ({
+                ...prevLeaveRequest,
+                name: e.target.value,
+              }));
+            }}
+          />
+        </Holds>
         <Holds>
           <Labels size={"p4"} htmlFor="requestType">
             {t("RequestType")}

@@ -41,5 +41,11 @@ cookies().set({
 - 
 ### Trello
 - Admin Build - Inbox Section (8hours)
-- built apis and got the different pages made to display data
-- towards the end of creating an edit all section
+  - built apis and got the different pages made to display data
+  - towards the end of creating an edit all section
+
+## January 7, 2025 - Tuesday
+### built/created
+- 
+### Trello
+- Admin Build - Inbox Section 

@@ -185,6 +185,7 @@ export type sentContent = {
 
 export type LeaveRequest = {
   id: string;
+  name: string;
   requestedStartDate: string;
   requestedEndDate: string;
   requestType: string;
