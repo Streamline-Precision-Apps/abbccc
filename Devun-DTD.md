@@ -40,4 +40,6 @@ cookies().set({
 ### built/created
 - 
 ### Trello
-- Admin Build - Inbox Section 
+- Admin Build - Inbox Section (8hours)
+- built apis and got the different pages made to display data
+- towards the end of creating an edit all section
