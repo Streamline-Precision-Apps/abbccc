@@ -25,6 +25,7 @@ export default function Page({ params }: { params: { id: string } }) {
   const [signature, setSignature] = useState("");
   const [initialLeaveRequest, setInitialLeaveRequest] = useState<LeaveRequest>({
     id: "",
+    name: "",
     requestedStartDate: "",
     requestedEndDate: "",
     requestType: "",
@@ -44,6 +45,7 @@ export default function Page({ params }: { params: { id: string } }) {
   });
   const [leaveRequest, setLeaveRequest] = useState<LeaveRequest>({
     id: "",
+    name: "",
     requestedStartDate: "",
     requestedEndDate: "",
     requestType: "",
@@ -91,13 +93,17 @@ export default function Page({ params }: { params: { id: string } }) {
     if (initialLeaveRequest?.managerComment !== leaveRequest.managerComment) {
       setAction1(true);
     }
-  }, [leaveRequest.managerComment, leaveRequest]);
+  }, [
+    leaveRequest.managerComment,
+    leaveRequest,
+    initialLeaveRequest?.managerComment,
+  ]);
 
   useEffect(() => {
     if (leaveRequest.status !== initialLeaveRequest.status) {
       setAction2(true);
     }
-  }, [leaveRequest.status, leaveRequest]);
+  }, [leaveRequest.status, leaveRequest, initialLeaveRequest.status]);
 
   useEffect(() => {
     if (isSignatureShowing) {

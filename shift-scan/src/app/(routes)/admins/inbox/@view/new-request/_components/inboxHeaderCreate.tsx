@@ -2,16 +2,14 @@
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
-import { Inputs } from "@/components/(reusable)/inputs";
 import { Options } from "@/components/(reusable)/options";
 import { Selects } from "@/components/(reusable)/selects";
-import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { useTranslations } from "next-intl";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { LeaveRequest } from "@/lib/types";
-import { set } from "zod";
 import { NModals } from "@/components/(reusable)/newmodals";
+import { Inputs } from "@/components/(reusable)/inputs";
 
 export function RequestHeaderCreate({
   leaveRequest,
@@ -25,7 +23,6 @@ export function RequestHeaderCreate({
   userModalOpen: boolean;
 }) {
   const t = useTranslations("Admins");
-  const [commentOpened, setCommentOpened] = useState(false);
   return (
     <>
       <Holds
@@ -53,15 +50,52 @@ export function RequestHeaderCreate({
           </Holds>
           {/* Input for employee name*/}
           <Holds
-            className="row-start-2 row-end-3 col-start-3 col-end-7 border-[3px] border-black h-full rounded-[10px]"
-            onClick={() => setUserModelOpen(true)}
+            position={"row"}
+            className="row-start-2 row-end-3 col-start-3 col-end-7 h-full border-[3px] border-black rounded-[10px]"
           >
-            <Texts
-              position={"left"}
-              text={"black"}
-              size={"p6"}
-              className="font-bold"
-            >{`${leaveRequest.employee.firstName} ${leaveRequest.employee.lastName}`}</Texts>
+            <Grids cols={"5"} rows={"1"} gap={"2"} className="w-full h-full">
+              <Holds className="w-full h-full col-span-1">
+                <Images
+                  className="w-full h-full rounded-full bg-cover bg-center"
+                  titleImg={"/magnifyingGlass.svg"}
+                  titleImgAlt={"Employee Image"}
+                  size={"50"}
+                />
+              </Holds>
+              <Inputs
+                type="text"
+                placeholder={t("SelectEmployee")}
+                value={
+                  leaveRequest.employee.firstName &&
+                  leaveRequest.employee.lastName
+                    ? `${leaveRequest.employee.firstName} ${leaveRequest.employee.lastName}`
+                    : ""
+                }
+                readOnly={true}
+                className="w-full h-full text-[22px] font-bold text-black border-none col-span-3 focus-visible:outline-none"
+                onClick={() => setUserModelOpen(true)}
+              />
+              <Holds className="w-full h-full col-span-1">
+                <Images
+                  className="w-full h-full rounded-full bg-cover bg-center"
+                  titleImg={"/x.svg"}
+                  titleImgAlt={"Employee Image"}
+                  size={"50"}
+                  onClick={() => {
+                    console.log("click");
+                    setLeaveRequest({
+                      ...leaveRequest,
+                      employee: {
+                        ...leaveRequest.employee,
+                        firstName: "",
+                        lastName: "",
+                        image: "",
+                      },
+                    });
+                  }}
+                />
+              </Holds>
+            </Grids>
           </Holds>
           {/* Date request was submitted*/}
           <Holds className="row-start-3 row-end-4 col-start-3 col-end-6">
@@ -93,7 +127,7 @@ export function RequestHeaderCreate({
                   : "bg-app-red"
               } w-full h-16 px-5 text-[20px] font-bold`}
             >
-              <Options value="APPROVED">{t("Approved")}</Options>
+              <Options value="PENDING">{t("Pending")}</Options>
             </Selects>
           </Holds>
         </Grids>

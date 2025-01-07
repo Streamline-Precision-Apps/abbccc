@@ -82,59 +82,59 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     equipment: {
       connect: [], // No equipment are linked initially
     },
+  },
+  {
+    qrId: "j456",
+    name: "Jobsite 4",
+    description: "Description for Jobsite 4",
+    address: "101 Main St",
+    city: "City",
+    state: "State",
+    zipCode: "12345",
+    country: "Country",
+    comment: "Comments for Jobsite 4",
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    employeeEquipmentLogs: {
+      connect: [], // No employeeEquipmentLogs are linked initially
     },
-    {
-      qrId: "j456",
-      name: "Jobsite 4",
-      description: "Description for Jobsite 4",
-      address: "101 Main St",
-      city: "City",
-      state: "State",
-      zipCode: "12345",
-      country: "Country",
-      comment: "Comments for Jobsite 4",
-      isActive: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      employeeEquipmentLogs: {
-        connect: [], // No employeeEquipmentLogs are linked initially
-      },
-      timeSheets: {
-        connect: [], // No timeSheets are linked initially
-      },
-      CCTags: {
-        connect: [], // No CCTags are linked initially
-      },
-      equipment: {
-        connect: [], // No equipment are linked initially
-      },
+    timeSheets: {
+      connect: [], // No timeSheets are linked initially
     },
-    {
-      qrId: "j567",
-      name: "Jobsite 5",
-      description: "Description for Jobsite 5",
-      address: "102 Main St",
-      city: "City",
-      state: "State",
-      zipCode: "12345",
-      country: "Country",
-      comment: "Comments for Jobsite 5",
-      isActive: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      employeeEquipmentLogs: {
-        connect: [], // No employeeEquipmentLogs are linked initially
-      },
-      timeSheets: {
-        connect: [], // No timeSheets are linked initially
-      },
-      CCTags: {
-        connect: [], // No CCTags are linked initially
-      },
-      equipment: {
-        connect: [], // No equipment are linked initially
-      },
+    CCTags: {
+      connect: [], // No CCTags are linked initially
     },
+    equipment: {
+      connect: [], // No equipment are linked initially
+    },
+  },
+  {
+    qrId: "j567",
+    name: "Jobsite 5",
+    description: "Description for Jobsite 5",
+    address: "102 Main St",
+    city: "City",
+    state: "State",
+    zipCode: "12345",
+    country: "Country",
+    comment: "Comments for Jobsite 5",
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    employeeEquipmentLogs: {
+      connect: [], // No employeeEquipmentLogs are linked initially
+    },
+    timeSheets: {
+      connect: [], // No timeSheets are linked initially
+    },
+    CCTags: {
+      connect: [], // No CCTags are linked initially
+    },
+    equipment: {
+      connect: [], // No equipment are linked initially
+    },
+  },
 ];
 
 // intaializing crew
@@ -145,11 +145,7 @@ export const initialCrews: Prisma.CrewCreateInput[] = [
     description: "General Contrator Crew",
     createdAt: new Date(),
     updatedAt: new Date(),
-    users: { connect: [
-      { id: "1" },
-      { id: "2" },
-      { id: "3" },
-    ] },
+    users: { connect: [{ id: "1" }, { id: "2" }, { id: "3" }] },
   },
   {
     name: "Devun's Crew",
@@ -157,11 +153,7 @@ export const initialCrews: Prisma.CrewCreateInput[] = [
     description: "A Computer Science and App development Crew",
     createdAt: new Date(),
     updatedAt: new Date(),
-    users: { connect: [
-      { id: "7" },
-      { id: "8" },
-      { id: "9" },
-    ] },
+    users: { connect: [{ id: "7" }, { id: "8" }, { id: "9" }] },
   },
 ];
 
@@ -383,16 +375,6 @@ export const initialContacts: Prisma.ContactsCreateInput[] = [
 export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
   {
     id: "1",
-    name: "#01.10",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Engineering Material",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "2",
     name: "#01.20",
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -401,38 +383,9 @@ export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
       connect: [], // No CCTags are linked initially
     },
   },
+
   {
-    id: "3",
-    name: "#01.30",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Engineering Sub",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "4",
-    name: "#01.40",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Engineering Equipment",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "5",
-    name: "#02.10",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Earth Material",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "6",
+    id: "2",
     name: "#02.20",
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -441,38 +394,9 @@ export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
       connect: [], // No CCTags are linked initially
     },
   },
+
   {
-    id: "7",
-    name: "#02.30",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Earth Sub",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "8",
-    name: "#02.40",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Earth Equipment",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "9",
-    name: "#03.10",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Concrete Material",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "10",
+    id: "3",
     name: "#03.20",
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -481,38 +405,9 @@ export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
       connect: [], // No CCTags are linked initially
     },
   },
+
   {
-    id: "11",
-    name: "#03.30",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Concrete Sub",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "12",
-    name: "#03.40",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Concrete Equipment",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "13",
-    name: "#04.10",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Finishes Material",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "14",
+    id: "4",
     name: "#04.20",
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -522,37 +417,7 @@ export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
     },
   },
   {
-    id: "15",
-    name: "#04.30",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Finishes Sub",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "16",
-    name: "#04.40",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Finishes Equipment",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "17",
-    name: "#05.10",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Steel Material",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "18",
+    id: "5",
     name: "#05.20",
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -562,37 +427,7 @@ export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
     },
   },
   {
-    id: "19",
-    name: "#05.30",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Steel Sub",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "20",
-    name: "#05.40",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Steel Equipment",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "21",
-    name: "#06.10",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Wood Material",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "22",
+    id: "6",
     name: "#06.20",
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -602,37 +437,7 @@ export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
     },
   },
   {
-    id: "23",
-    name: "#06.30",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Wood Sub",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "24",
-    name: "#06.40",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Wood Equipment",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "25",
-    name: "#07.10",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Insulation Material",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "26",
+    id: "7",
     name: "#07.20",
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -641,38 +446,9 @@ export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
       connect: [], // No CCTags are linked initially
     },
   },
+
   {
-    id: "27",
-    name: "#07.30",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Insulation Sub",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "28",
-    name: "#07.40",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Insulation Equipment",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "29",
-    name: "#08.10",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Door and Window Material",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "30",
+    id: "8",
     name: "#08.20",
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -681,38 +457,9 @@ export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
       connect: [], // No CCTags are linked initially
     },
   },
+
   {
-    id: "31",
-    name: "#08.30",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Door and Window Sub",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "32",
-    name: "#08.40",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Door and Window Equipment",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "33",
-    name: "#09.10",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Utilities Material",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "34",
+    id: "9",
     name: "#09.20",
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -721,38 +468,9 @@ export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
       connect: [], // No CCTags are linked initially
     },
   },
+
   {
-    id: "35",
-    name: "#09.30",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Utilities Sub",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "36",
-    name: "#09.40",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Utilities Equipment",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "37",
-    name: "#10.10",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Process Material",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "38",
+    id: "10",
     name: "#10.20",
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -762,37 +480,7 @@ export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
     },
   },
   {
-    id: "39",
-    name: "#10.30",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Process Sub",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "40",
-    name: "#10.40",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Process Equipment",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "41",
-    name: "#11.10",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Shop Material",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "42",
+    id: "11",
     name: "#11.20",
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -802,37 +490,7 @@ export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
     },
   },
   {
-    id: "43",
-    name: "#11.30",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Shop Sub",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "44",
-    name: "#11.40",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Shop Equipment",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "45",
-    name: "#12.10",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Pipe Material",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "46",
+    id: "12",
     name: "#12.20",
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -842,61 +500,11 @@ export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
     },
   },
   {
-    id: "47",
-    name: "#12.30",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Pipe Sub",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "48",
-    name: "#12.40",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Pipe Equipment",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "49",
-    name: "#13.10",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Trucking Material",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "50",
+    id: "13",
     name: "#13.20",
     createdAt: new Date(),
     updatedAt: new Date(),
     description: "Trucking Labor",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "51",
-    name: "#13.30",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Trucking Sub",
-    CCTags: {
-      connect: [], // No CCTags are linked initially
-    },
-  },
-  {
-    id: "52",
-    name: "#13.40",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description: "Trucking Equipment",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
@@ -916,7 +524,9 @@ export const initialCCTags: Prisma.CCTagCreateInput[] = [
       ],
     },
     costCodes: {
-      connect: Array.from({ length: 52 }, (_, i) => ({ id: (i + 1).toString() })),
+      connect: Array.from({ length: 13 }, (_, i) => ({
+        id: (i + 1).toString(),
+      })),
     },
   },
 ];

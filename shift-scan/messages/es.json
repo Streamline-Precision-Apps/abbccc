@@ -400,6 +400,8 @@
     "PhotoAlbumAccess": " Album de Fotos"
 },
 "Admins":{
+    "SelectEmployee": "Seleccionar Empleado",
+    "TitleOptional": "Título (Opcional)",
     "TodaysDate": "Fecha de Hoy",
     "DecidedBy": "Aprobado por",
     "ApprovedSignature": "Firma de Aprobación",
