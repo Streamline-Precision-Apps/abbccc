@@ -426,6 +426,7 @@
 },
 
 "Admins":{
+    "TodaysDate": "Todays Date",
     "DecidedBy": "Decided By",
     "ApprovedSignature": "Approval Signature",
     "NoSignatureFound": "No signature found",

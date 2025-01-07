@@ -3,17 +3,20 @@ import { Holds } from "@/components/(reusable)/holds";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { ReusableViewLayout } from "../../../personnel/@view/[employee]/_components/reusableViewLayout";
-import { RequestHeader } from "./_components/inboxHeader";
+
+import { LeaveRequest } from "@/lib/types";
 import { UpdateLeaveRequest } from "@/actions/adminActions";
 import { useSession } from "next-auth/react";
-import { RequestFooter } from "./_components/inboxFooter";
-import { RequestMain } from "./_components/inboxMainPending";
-import { RequestMainApproved } from "./_components/inboxMainApproved";
-import { RequestMainDenied } from "./_components/inboxMainDenied";
-import { LeaveRequest } from "@/lib/types";
+import { RequestFooter } from "../[id]/_components/inboxFooter";
+import { RequestHeader } from "../[id]/_components/inboxHeader";
+import { RequestMainApproved } from "../[id]/_components/inboxMainApproved";
+import { RequestMainDenied } from "../[id]/_components/inboxMainDenied";
+import { RequestMain } from "../[id]/_components/inboxMainPending";
+import { RequestMainCreate } from "../[id]/_components/inboxMainCreate";
+import { RequestHeaderCreate } from "../[id]/_components/inboxHeaderCreate";
+import { NModals } from "@/components/(reusable)/newmodals";
 
-export default function Page({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function Page() {
   const t = useTranslations("Admins");
   const [isSubmittable, setSubmittable] = useState(false);
   const [action1, setAction1] = useState(false);
@@ -23,6 +26,7 @@ export default function Page({ params }: { params: { id: string } }) {
   const session = useSession();
   const user = session.data?.user.firstName + " " + session.data?.user.lastName;
   const [signature, setSignature] = useState("");
+  const [userModalOpen, setUserModalOpen] = useState(false);
   const [initialLeaveRequest, setInitialLeaveRequest] = useState<LeaveRequest>({
     id: "",
     requestedStartDate: "",
@@ -30,7 +34,7 @@ export default function Page({ params }: { params: { id: string } }) {
     requestType: "",
     comment: "",
     managerComment: "",
-    status: "",
+    status: "APPROVED",
     employeeId: "",
     createdAt: "",
     updatedAt: "",
@@ -49,7 +53,7 @@ export default function Page({ params }: { params: { id: string } }) {
     requestType: "",
     comment: "",
     managerComment: "",
-    status: "",
+    status: "APPROVED",
     employeeId: "",
     createdAt: "",
     updatedAt: "",
@@ -61,20 +65,6 @@ export default function Page({ params }: { params: { id: string } }) {
       image: "",
     },
   });
-
-  useEffect(() => {
-    const fetchLeaveRequest = async () => {
-      try {
-        const leaveRequestRes = await fetch("/api/getTimeOffRequestById/" + id);
-        const leaveRequestData = await leaveRequestRes.json();
-        setInitialLeaveRequest(leaveRequestData);
-        setLeaveRequest(leaveRequestData);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchLeaveRequest();
-  }, [id, t]);
 
   useEffect(() => {
     const fetchSignature = async () => {
@@ -129,38 +119,22 @@ export default function Page({ params }: { params: { id: string } }) {
       <ReusableViewLayout
         custom={true}
         header={
-          <RequestHeader
+          <RequestHeaderCreate
+            userModalOpen={userModalOpen}
+            setUserModelOpen={setUserModalOpen}
             leaveRequest={leaveRequest}
             setLeaveRequest={setLeaveRequest}
           />
         }
         mainHolds="h-full w-full flex flex-row row-span-5 col-span-2 bg-app-dark-blue px-4 py-2 rounded-[10px] gap-4"
         main={
-          leaveRequest.status === "DENIED" ? (
-            <RequestMainDenied
-              leaveRequest={leaveRequest}
-              setLeaveRequest={setLeaveRequest}
-              isSignatureShowing={isSignatureShowing}
-              setIsSignatureShowing={setIsSignatureShowing}
-              signature={signature}
-            />
-          ) : leaveRequest.status === "PENDING" ? (
-            <RequestMain
-              leaveRequest={leaveRequest}
-              setLeaveRequest={setLeaveRequest}
-              isSignatureShowing={isSignatureShowing}
-              setIsSignatureShowing={setIsSignatureShowing}
-              signature={signature}
-            />
-          ) : leaveRequest.status === "APPROVED" ? (
-            <RequestMainApproved
-              leaveRequest={leaveRequest}
-              setLeaveRequest={setLeaveRequest}
-              isSignatureShowing={isSignatureShowing}
-              setIsSignatureShowing={setIsSignatureShowing}
-              signature={signature}
-            />
-          ) : null
+          <RequestMainCreate
+            leaveRequest={leaveRequest}
+            setLeaveRequest={setLeaveRequest}
+            isSignatureShowing={isSignatureShowing}
+            setIsSignatureShowing={setIsSignatureShowing}
+            signature={signature}
+          />
         }
         footer={
           <RequestFooter
