@@ -53,7 +53,7 @@ export const InboxContent = ({ employees, setFilter }: Props) => {
   };
 
   const createEmployee = () => {
-    router.push(`/admins/personnel/new-employee`);
+    router.push(`/admins/inbox/new-request`);
   };
 
   return (
