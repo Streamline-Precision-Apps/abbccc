@@ -1,6 +1,11 @@
 "use server";
 import prisma from "@/lib/prisma";
-import { FormStatus, Permission, WorkType } from "@/lib/types";
+import {
+  FormStatus,
+  TimeOffRequestType,
+  Permission,
+  WorkType,
+} from "@/lib/types";
 
 import { revalidatePath, revalidateTag } from "next/cache";
 
@@ -8,9 +13,9 @@ export async function CreateLeaveRequest(formData: FormData) {
   try {
     console.log("Updating leave request...");
     console.log(formData);
-    const id = parseInt(formData.get("id") as string);
+    const requestType = formData.get("requestType") as string;
     const status = formData.get("status") as string;
-    const decidedBy = formData.get("decidedBy") as string;
+
     let enumStatus = FormStatus.PENDING;
     switch (status) {
       case "APPROVED":
@@ -23,14 +28,42 @@ export async function CreateLeaveRequest(formData: FormData) {
         enumStatus = FormStatus.PENDING;
         break;
     }
-    const managerComment = formData.get("managerComment") as string;
-    const leaveRequest = await prisma.timeOffRequestForm.update({
-      where: { id },
+    let enumRequestType = TimeOffRequestType.FAMILY_MEDICAL;
+    switch (requestType) {
+      case "FAMILY_MEDICAL":
+        enumRequestType = TimeOffRequestType.FAMILY_MEDICAL;
+        break;
+      case "MILITARY":
+        enumRequestType = TimeOffRequestType.MILITARY;
+        break;
+      case "PAID_VACATION":
+        enumRequestType = TimeOffRequestType.PAID_VACATION;
+        break;
+      case "UNPAID_VACATION":
+        enumRequestType = TimeOffRequestType.NON_PAID_PERSONAL;
+        break;
+      case "SICK":
+        enumRequestType = TimeOffRequestType.SICK;
+        break;
+    }
+
+    const leaveRequest = await prisma.timeOffRequestForm.create({
       data: {
+        name: (formData.get("name") as string) || null,
+
+        requestedStartDate: new Date(
+          formData.get("requestedStartDate") as string
+        ).toISOString(),
+
+        requestedEndDate: new Date(
+          formData.get("requestedEndDate") as string
+        ).toISOString(),
+
+        requestType: enumRequestType,
+        comment: formData.get("comment") as string,
+        managerComment: formData.get("managerComment") as string,
+        employeeId: formData.get("employeeId") as string,
         status: enumStatus,
-        managerComment: managerComment,
-        decidedBy: decidedBy,
-        signature: formData.get("signature") as string,
       },
     });
     console.log(leaveRequest);

@@ -2,14 +2,11 @@
 import { Holds } from "@/components/(reusable)/holds";
 import { useEffect, useState } from "react";
 import { ReusableViewLayout } from "../../../personnel/@view/[employee]/_components/reusableViewLayout";
-
 import { LeaveRequest } from "@/lib/types";
-
-import { useSession } from "next-auth/react";
 import { RequestFooter } from "../[id]/_components/inboxFooter";
 import { RequestMainCreate } from "./_components/inboxMainCreate";
 import { RequestHeaderCreate } from "./_components/inboxHeaderCreate";
-import { createLeaveRequest } from "@/actions/inboxSentActions";
+import { CreateLeaveRequest } from "@/actions/adminActions";
 
 export default function NewInboxRequestPage() {
   // const t = useTranslations("Admins");
@@ -17,10 +14,6 @@ export default function NewInboxRequestPage() {
   const [action1, setAction1] = useState(false);
   const [action2, setAction2] = useState(false);
   const [action3, setAction3] = useState(false);
-  const [isSignatureShowing, setIsSignatureShowing] = useState(false);
-  const session = useSession();
-  const user = session.data?.user.firstName + " " + session.data?.user.lastName;
-  const [signature, setSignature] = useState("");
   const [userModalOpen, setUserModalOpen] = useState(false);
 
   const [leaveRequest, setLeaveRequest] = useState<LeaveRequest>({
@@ -38,21 +31,12 @@ export default function NewInboxRequestPage() {
     decidedBy: "",
     signature: "",
     employee: {
+      id: "",
       firstName: "",
       lastName: "",
       image: "",
     },
   });
-
-  useEffect(() => {
-    const fetchSignature = async () => {
-      const response = await fetch("/api/getUserSignature");
-      const json = await response.json();
-      setSignature(json.signature);
-    };
-    fetchSignature();
-    console.log(signature);
-  }, [signature]);
 
   // Check if any of the fields have changed for action fields
   useEffect(() => {
@@ -86,10 +70,14 @@ export default function NewInboxRequestPage() {
     console.log("edit pending");
     const formData = new FormData();
     formData.append("id", leaveRequest.id);
-    formData.append("status", leaveRequest.status);
-    formData.append("comment", leaveRequest.comment);
-    formData.append("decidedBy", user);
-    const updateLeaveRequest = await createLeaveRequest(formData);
+    formData.append("name", leaveRequest.name); // to update the name of the leave request
+    formData.append("status", leaveRequest.status); // to update the status to pending
+    formData.append("comment", leaveRequest.comment); // to add the comment to the leave request
+    formData.append("employeeId", leaveRequest.employee.id); // to connect the leave request to the employee
+    formData.append("requestType", leaveRequest.requestType); // to add the request type to the leave request
+    formData.append("requestedStartDate", leaveRequest.requestedStartDate); // to add the start date to the leave request
+    formData.append("requestedEndDate", leaveRequest.requestedEndDate); // to add the end date to the leave request
+    const updateLeaveRequest = await CreateLeaveRequest(formData);
     console.log(updateLeaveRequest);
   };
 
@@ -110,9 +98,6 @@ export default function NewInboxRequestPage() {
           <RequestMainCreate
             leaveRequest={leaveRequest}
             setLeaveRequest={setLeaveRequest}
-            isSignatureShowing={isSignatureShowing}
-            setIsSignatureShowing={setIsSignatureShowing}
-            signature={signature}
           />
         }
         footer={

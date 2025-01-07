@@ -426,6 +426,7 @@
 },
 
 "Admins":{
+    "SelectRequestType": "Select Request Type",
     "SelectEmployee": "Select Employee",
     "TitleOptional": "Title (Optional)",
     "TodaysDate": "Todays Date",

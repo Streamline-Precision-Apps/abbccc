@@ -18,9 +18,6 @@ export function RequestMainCreate({
 }: {
   leaveRequest: LeaveRequest;
   setLeaveRequest: Dispatch<SetStateAction<LeaveRequest>>;
-  isSignatureShowing: boolean;
-  setIsSignatureShowing: Dispatch<SetStateAction<boolean>>;
-  signature: string;
 }) {
   const t = useTranslations("Admins");
 
@@ -58,6 +55,7 @@ export function RequestMainCreate({
               }));
             }}
           >
+            <option value="">{t("SelectRequestType")}</option>
             <option value="PAID_VACATION">{t("PaidVacation")}</option>
             <option value="SICK">{t("Sick")}</option>
             <option value="MILITARY">{t("Military")}</option>

@@ -6,10 +6,19 @@ import { Options } from "@/components/(reusable)/options";
 import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
 import { useTranslations } from "next-intl";
-import { Dispatch, SetStateAction } from "react";
-import { LeaveRequest } from "@/lib/types";
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import { LeaveRequest, SearchUser } from "@/lib/types";
 import { NModals } from "@/components/(reusable)/newmodals";
 import { Inputs } from "@/components/(reusable)/inputs";
+import { Buttons } from "@/components/(reusable)/buttons";
+import { Titles } from "@/components/(reusable)/titles";
 
 export function RequestHeaderCreate({
   leaveRequest,
@@ -23,6 +32,67 @@ export function RequestHeaderCreate({
   userModalOpen: boolean;
 }) {
   const t = useTranslations("Admins");
+  const [employees, setEmployees] = useState<SearchUser[]>([]);
+  const [term, setTerm] = useState<string>("");
+  const [firstName, setFirstName] = useState<string>("");
+  const [lastName, setLastName] = useState<string>("");
+  const [employeeId, setEmployeeId] = useState<string>("");
+
+  const filteredList = useMemo(() => {
+    if (!term.trim()) {
+      return [...employees].sort((a, b) =>
+        a.lastName.localeCompare(b.lastName)
+      );
+    } // Return the full list if no term is entered
+
+    return employees
+      .filter((employee) => {
+        const name = `${employee.firstName} ${employee.lastName}`.toLowerCase();
+        return name.includes(term.toLowerCase());
+      })
+      .sort((a, b) => a.lastName.localeCompare(b.lastName));
+  }, [term, employees]);
+
+  useEffect(() => {
+    const fetchEmployees = async () => {
+      try {
+        const employeesRes = await fetch("/api/getAllEmployees?filter=all");
+        const employeesData = await employeesRes.json();
+        // const validatedEmployees = employeesSchema.parse(employeesData);
+        setEmployees(employeesData);
+      } catch (error) {
+        console.error(`${t("FailedToFetch")} ${t("EmployeesData")}`, error);
+      }
+    };
+
+    fetchEmployees();
+  }, [t]);
+
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setTerm(e.target.value);
+    },
+    []
+  );
+
+  const selectEmployee = (employee: SearchUser) => {
+    setTerm(employee.firstName + " " + employee.lastName);
+    setEmployeeId(employee.id);
+    setFirstName(employee.firstName);
+    setLastName(employee.lastName);
+  };
+  const confirmSelectedEmployee = () => {
+    setLeaveRequest({
+      ...leaveRequest,
+      employee: {
+        ...leaveRequest.employee,
+        id: employeeId,
+        firstName: firstName,
+        lastName: lastName,
+      },
+    });
+  };
+
   return (
     <>
       <Holds
@@ -138,7 +208,77 @@ export function RequestHeaderCreate({
         isOpen={userModalOpen}
         handleClose={() => setUserModelOpen(false)}
       >
-        <Holds position={"row"} className="w-full h-full p-3"></Holds>
+        <Grids rows={"10"} cols={"1"} gap={"5"}>
+          <Holds>
+            <Titles>{t("SelectEmployee")}</Titles>
+          </Holds>
+          <Holds className="row-start-2 row-end-9 h-full border-[3px] border-black rounded-t-[10px]">
+            <>
+              <Holds
+                position={"row"}
+                className="py-2 border-b-[3px] border-black"
+              >
+                <Holds className="h-full w-[20%]">
+                  <Images
+                    titleImg="/magnifyingGlass.svg"
+                    titleImgAlt="search"
+                  />
+                </Holds>
+                <Holds className="w-[80%]">
+                  <Inputs
+                    type="search"
+                    placeholder={t("PersonalSearchPlaceholder")}
+                    value={term}
+                    onChange={handleSearchChange}
+                    className="border-none outline-none"
+                  />
+                </Holds>
+              </Holds>
+              <Holds className=" h-full mb-4  overflow-y-auto no-scrollbar ">
+                <Holds>
+                  {filteredList.length > 0 ? (
+                    filteredList.map((employee) => (
+                      <Holds
+                        key={employee.id}
+                        className="py-2 border-b"
+                        onClick={() => selectEmployee(employee)}
+                      >
+                        <Texts position={"left"} size="p6" className="pl-4">
+                          {employee.firstName} {employee.lastName}
+                        </Texts>
+                      </Holds>
+                    ))
+                  ) : (
+                    <Texts size="p6" className="text-center">
+                      {t("NoEmployeesFound")}
+                    </Texts>
+                  )}
+                </Holds>
+              </Holds>
+            </>
+          </Holds>
+
+          <Holds className="row-start-9 row-end-10 h-full">
+            <Buttons
+              background={"green"}
+              className="w-full h-full rounded-b-[10px] text-black"
+              onClick={() => {
+                setUserModelOpen(false);
+                confirmSelectedEmployee();
+              }}
+            >
+              {t("Submit")}
+            </Buttons>
+          </Holds>
+          <Holds className="row-start-10 row-end-11 h-full">
+            <Buttons
+              className="w-full h-full rounded-b-[10px] text-black"
+              onClick={() => setUserModelOpen(false)}
+            >
+              {t("Cancel")}
+            </Buttons>
+          </Holds>
+        </Grids>
       </NModals>
     </>
   );
