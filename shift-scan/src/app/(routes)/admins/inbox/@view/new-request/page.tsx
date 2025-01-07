@@ -40,20 +40,26 @@ export default function NewInboxRequestPage() {
 
   // Check if any of the fields have changed for action fields
   useEffect(() => {
-    if (leaveRequest.comment.length > 0) {
+    if (leaveRequest.comment.length > 3) {
       setAction1(true);
+    } else {
+      setAction1(false);
     }
   }, [leaveRequest, leaveRequest.comment]);
 
   useEffect(() => {
     if (leaveRequest.requestedStartDate && leaveRequest.requestedEndDate) {
       setAction2(true);
+    } else {
+      setAction2(false);
     }
   }, [leaveRequest]);
 
   useEffect(() => {
     if (leaveRequest.requestType) {
       setAction3(true);
+    } else {
+      setAction3(false);
     }
   }, [leaveRequest]);
 

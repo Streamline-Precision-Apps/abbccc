@@ -1,5 +1,4 @@
 "use client";
-import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
@@ -7,7 +6,6 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
 import { Selects } from "@/components/(reusable)/selects";
 import { TextAreas } from "@/components/(reusable)/textareas";
-import { Texts } from "@/components/(reusable)/texts";
 import { useTranslations } from "next-intl";
 import { Dispatch, SetStateAction } from "react";
 import { LeaveRequest } from "@/lib/types";
@@ -15,15 +13,9 @@ import { LeaveRequest } from "@/lib/types";
 export function RequestMainApproved({
   leaveRequest,
   setLeaveRequest,
-  isSignatureShowing,
-  setIsSignatureShowing,
-  signature,
 }: {
   leaveRequest: LeaveRequest;
   setLeaveRequest: Dispatch<SetStateAction<LeaveRequest>>;
-  isSignatureShowing: boolean;
-  setIsSignatureShowing: Dispatch<SetStateAction<boolean>>;
-  signature: string;
 }) {
   const t = useTranslations("Admins");
 
@@ -103,25 +95,17 @@ export function RequestMainApproved({
             }}
           />
         </Holds>
-        <Holds className="row-start-2 row-end-5 col-start-3 col-end-5 h-full ">
-          <Labels size={"p4"}>{t("ApprovedSignature")}</Labels>
-          <Holds className="w-full h-full justify-center border-[3px] border-black rounded-[10px]">
-            <Images
-              className="w-24 h-24 bg-cover bg-center"
-              titleImg={signature}
-              titleImgAlt={"signature"}
-            />
-          </Holds>
-        </Holds>
-        <Holds className="row-start-2 row-end-6 col-span-2 h-full w-full">
+
+        <Holds className="row-start-2 row-end-6 col-span-4 h-full w-full">
           <Grids cols={"1"}>
             <Holds className="col-start-1 col-end-2 h-full ">
               <Labels size={"p4"} htmlFor="comment">
-                {t("MangerComment")}
+                {t("EmployeeComment")}
               </Labels>
               <TextAreas
                 rows={6}
-                value={leaveRequest.managerComment || ""}
+                maxLength={40}
+                value={leaveRequest.comment || ""}
                 disabled
                 style={{ resize: "none" }}
               />

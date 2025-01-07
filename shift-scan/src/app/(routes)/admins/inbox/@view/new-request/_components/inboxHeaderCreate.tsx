@@ -37,6 +37,7 @@ export function RequestHeaderCreate({
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
   const [employeeId, setEmployeeId] = useState<string>("");
+  const [userPicture, setUserPicture] = useState<string>("");
 
   const filteredList = useMemo(() => {
     if (!term.trim()) {
@@ -80,6 +81,7 @@ export function RequestHeaderCreate({
     setEmployeeId(employee.id);
     setFirstName(employee.firstName);
     setLastName(employee.lastName);
+    setUserPicture(employee.image || "");
   };
   const confirmSelectedEmployee = () => {
     setLeaveRequest({
@@ -89,119 +91,106 @@ export function RequestHeaderCreate({
         id: employeeId,
         firstName: firstName,
         lastName: lastName,
+        image: userPicture,
       },
     });
   };
 
   return (
-    <>
-      <Holds
-        background={"white"}
-        className={`h-full w-full col-span-2 rounded-[10px] row-span-2
+    <Holds
+      background={"white"}
+      className={`h-full w-full col-span-2 rounded-[10px] row-span-2
         }`}
-      >
-        <Grids cols={"10"} rows={"3"} className="w-full h-full p-3 ">
-          {/* Image for employee*/}
-          <Holds className="row-start-1 row-end-4 col-start-1 col-end-3 ">
-            <Images
-              className={`w-full h-full rounded-full bg-cover bg-center ${
-                leaveRequest.employee.image.length > 0
-                  ? "border-[3px] border-black"
-                  : ""
-              }`}
-              titleImg={
-                leaveRequest.employee.image.length > 0
-                  ? leaveRequest.employee.image
-                  : "/person.svg"
-              }
-              titleImgAlt={"Employee Image"}
-              size={"60"}
-            />
-          </Holds>
-          {/* Input for employee name*/}
-          <Holds
-            position={"row"}
-            className="row-start-2 row-end-3 col-start-3 col-end-7 h-full border-[3px] border-black rounded-[10px]"
+    >
+      <Grids cols={"10"} rows={"2"} gap={"5"} className="w-full h-full p-3 ">
+        {/* Image for employee*/}
+        <Holds className="row-start-1 row-end-3 col-start-1 col-end-3 w-full h-full ">
+          <Images
+            className={`w-full h-full rounded-full bg-cover bg-center ${
+              leaveRequest.employee.image.length > 0
+                ? "border-[3px] border-black"
+                : ""
+            }`}
+            titleImg={
+              leaveRequest.employee.image.length > 0
+                ? leaveRequest.employee.image
+                : "/person.svg"
+            }
+            titleImgAlt={"Employee Image"}
+          />
+        </Holds>
+        {/* Input for employee name*/}
+        <Holds
+          position={"row"}
+          className="row-start-1 row-end-3 col-start-3 col-end-8 "
+        >
+          <Grids
+            cols={"5"}
+            rows={"1"}
+            gap={"2"}
+            className="w-full h-1/2  border-[3px] border-black rounded-[10px]"
           >
-            <Grids cols={"5"} rows={"1"} gap={"2"} className="w-full h-full">
-              <Holds className="w-full h-full col-span-1">
-                <Images
-                  className="w-full h-full rounded-full bg-cover bg-center"
-                  titleImg={"/magnifyingGlass.svg"}
-                  titleImgAlt={"Employee Image"}
-                  size={"50"}
-                />
-              </Holds>
-              <Inputs
-                type="text"
-                placeholder={t("SelectEmployee")}
-                value={
-                  leaveRequest.employee.firstName &&
-                  leaveRequest.employee.lastName
-                    ? `${leaveRequest.employee.firstName} ${leaveRequest.employee.lastName}`
-                    : ""
-                }
-                readOnly={true}
-                className="w-full h-full text-[22px] font-bold text-black border-none col-span-3 focus-visible:outline-none"
-                onClick={() => setUserModelOpen(true)}
+            <Holds className="w-full h-full col-span-1">
+              <Images
+                className="w-full h-full rounded-full bg-cover bg-center"
+                titleImg={"/magnifyingGlass.svg"}
+                titleImgAlt={"Employee Image"}
+                size={"50"}
               />
-              <Holds className="w-full h-full col-span-1">
-                <Images
-                  className="w-full h-full rounded-full bg-cover bg-center"
-                  titleImg={"/x.svg"}
-                  titleImgAlt={"Employee Image"}
-                  size={"50"}
-                  onClick={() => {
-                    console.log("click");
-                    setLeaveRequest({
-                      ...leaveRequest,
-                      employee: {
-                        ...leaveRequest.employee,
-                        firstName: "",
-                        lastName: "",
-                        image: "",
-                      },
-                    });
-                  }}
-                />
-              </Holds>
-            </Grids>
-          </Holds>
-          {/* Date request was submitted*/}
-          <Holds className="row-start-3 row-end-4 col-start-3 col-end-6">
-            <Texts
-              position={"left"}
-              text={"black"}
-              size={"p6"}
-              className="font-bold"
-            >{`${t("TodaysDate")}: ${new Date(new Date()).toLocaleString(
-              "en-US",
-              {
-                day: "numeric",
-                month: "numeric",
-                year: "numeric",
+            </Holds>
+            <Inputs
+              type="text"
+              placeholder={t("SelectEmployee")}
+              value={
+                leaveRequest.employee.firstName &&
+                leaveRequest.employee.lastName
+                  ? `${leaveRequest.employee.firstName} ${leaveRequest.employee.lastName}`
+                  : ""
               }
-            )}`}</Texts>
-          </Holds>
+              readOnly={true}
+              className="w-full h-full text-[22px] font-bold text-black border-none col-span-3 focus-visible:outline-none"
+              onClick={() => setUserModelOpen(true)}
+            />
+            <Holds className="w-full h-full col-span-1">
+              <Images
+                className="w-full h-full rounded-full bg-cover bg-center"
+                titleImg={"/x.svg"}
+                titleImgAlt={"Employee Image"}
+                size={"40"}
+                onClick={() => {
+                  console.log("click");
+                  setLeaveRequest({
+                    ...leaveRequest,
+                    employee: {
+                      ...leaveRequest.employee,
+                      firstName: "",
+                      lastName: "",
+                      image: "",
+                    },
+                  });
+                }}
+              />
+            </Holds>
+          </Grids>
+        </Holds>
 
-          {/* Request status*/}
-          <Holds className="row-start-1 row-end-5 col-start-9 col-end-11">
-            <Selects
-              name="status"
-              value={leaveRequest.status}
-              className={`${
-                leaveRequest.status === "PENDING"
-                  ? "bg-app-orange"
-                  : leaveRequest.status === "APPROVED"
-                  ? "bg-app-green"
-                  : "bg-app-red"
-              } w-full h-16 px-5 text-[20px] font-bold`}
-            >
-              <Options value="PENDING">{t("Pending")}</Options>
-            </Selects>
-          </Holds>
-        </Grids>
-      </Holds>
+        {/* Request status*/}
+        <Holds className="row-start-1 row-end-3 col-start-9 col-end-11">
+          <Selects
+            name="status"
+            value={leaveRequest.status}
+            className={`${
+              leaveRequest.status === "PENDING"
+                ? "bg-app-orange"
+                : leaveRequest.status === "APPROVED"
+                ? "bg-app-green"
+                : "bg-app-red"
+            } w-full h-16 px-5 text-[20px] font-bold`}
+          >
+            <Options value="PENDING">{t("Pending")}</Options>
+          </Selects>
+        </Holds>
+      </Grids>
       <NModals
         size={"medH"}
         background={"default"}
@@ -265,6 +254,7 @@ export function RequestHeaderCreate({
               onClick={() => {
                 setUserModelOpen(false);
                 confirmSelectedEmployee();
+                setTerm("");
               }}
             >
               {t("Submit")}
@@ -273,13 +263,16 @@ export function RequestHeaderCreate({
           <Holds className="row-start-10 row-end-11 h-full">
             <Buttons
               className="w-full h-full rounded-b-[10px] text-black"
-              onClick={() => setUserModelOpen(false)}
+              onClick={() => {
+                setUserModelOpen(false);
+                setTerm("");
+              }}
             >
               {t("Cancel")}
             </Buttons>
           </Holds>
         </Grids>
       </NModals>
-    </>
+    </Holds>
   );
 }

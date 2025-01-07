@@ -22,7 +22,7 @@ export type TimeRequest = {
 };
 export default function Search() {
   const [employees, setEmployees] = useState<TimeRequest[]>([]);
-  const [filter, setFilter] = useState("all");
+  const [filter, setFilter] = useState("pending");
   const { notification } = useNotification();
   const t = useTranslations("Admins");
   useEffect(() => {

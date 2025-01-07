@@ -29,9 +29,26 @@ export function RequestMain({
 
   return (
     <Holds background={"white"} className="w-full h-full p-3">
-      <Grids rows={"5"} cols={"4"} gap={"5"} className="w-full h-full px-3">
-        <Holds>{/* Optional Title Input */}</Holds>
-        <Holds>
+      <Grids rows={"5"} cols={"5"} gap={"5"} className="w-full h-full px-3">
+        <Holds className="row-start-1 row-end-2 col-start-1 col-end-2 h-full ">
+          {/* Optional Title Input */}
+          <Labels size={"p4"} htmlFor="title">
+            {t("TitleOptional")}
+          </Labels>
+          <Inputs
+            type="text"
+            id="title"
+            disabled
+            value={leaveRequest.name}
+            onChange={(e) => {
+              setLeaveRequest((prevLeaveRequest) => ({
+                ...prevLeaveRequest,
+                name: e.target.value,
+              }));
+            }}
+          />
+        </Holds>
+        <Holds className="row-start-1 row-end-2 col-start-2 col-end-3 h-full ">
           <Labels size={"p4"} htmlFor="requestType">
             {t("RequestType")}
           </Labels>
@@ -53,7 +70,7 @@ export function RequestMain({
             <option value="NON_PAID_PERSONAL">{t("NonPaidPersonal")}</option>
           </Selects>
         </Holds>
-        <Holds>
+        <Holds className="row-start-1 row-end-2 col-start-3 col-end-4 h-full ">
           <Labels size={"p4"} htmlFor="startDate">
             {t("StartDate")}
           </Labels>
@@ -70,7 +87,7 @@ export function RequestMain({
             }}
           />
         </Holds>
-        <Holds>
+        <Holds className="row-start-1 row-end-2 col-start-4 col-end-5 h-full ">
           <Labels size={"p4"} htmlFor="endDate">
             {t("EndDate")}
           </Labels>
@@ -87,14 +104,31 @@ export function RequestMain({
             }}
           />
         </Holds>
-        <Holds className="row-start-3 row-end-5 col-span-4 h-full w-full">
+        <Holds className="row-start-1 row-end-2 col-start-5 col-end-6 h-full ">
+          <Labels size={"p4"} htmlFor="decidedBy">
+            {t("DecidedBy")}
+          </Labels>
+          <Inputs
+            type="text"
+            id="decidedBy"
+            disabled
+            value={leaveRequest.decidedBy || ""}
+            onChange={(e) => {
+              setLeaveRequest((prevLeaveRequest) => ({
+                ...prevLeaveRequest,
+                requestedEndDate: e.target.value,
+              }));
+            }}
+          />
+        </Holds>
+        <Holds className="row-start-2 row-end-5 col-span-5 h-full w-full">
           <Grids cols={"5"} gap={"5"}>
             <Holds className="col-span-4 h-full ">
               <Labels size={"p4"} htmlFor="comment">
                 {t("MangerComment")}
               </Labels>
               <TextAreas
-                rows={5}
+                maxLength={40}
                 value={leaveRequest.managerComment || ""}
                 onChange={(e) =>
                   setLeaveRequest((prevLeaveRequest) => ({
@@ -102,6 +136,7 @@ export function RequestMain({
                     managerComment: e.target.value,
                   }))
                 }
+                className="w-full h-full"
                 style={{ resize: "none" }}
               />
             </Holds>
@@ -126,13 +161,19 @@ export function RequestMain({
                   </Holds>
                 )
               ) : (
-                <Buttons
-                  onClick={() => {
-                    setIsSignatureShowing(true);
-                  }}
-                >
-                  {t("ClickToSign")}
-                </Buttons>
+                <>
+                  <Labels size={"p4"}>{t("Signature")}</Labels>
+                  <Holds className="h-full w-full items-center justify-center ">
+                    <Buttons
+                      onClick={() => {
+                        setIsSignatureShowing(true);
+                      }}
+                      className="h1/2"
+                    >
+                      {t("ClickToSign")}
+                    </Buttons>
+                  </Holds>
+                </>
               )}
             </Holds>
           </Grids>
