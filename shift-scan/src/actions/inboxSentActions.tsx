@@ -4,43 +4,12 @@ import prisma from "@/lib/prisma";
 import { FormStatus, TimeOffRequestType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
-export async function createLeaveRequest(formData: FormData) {
-  // do we want to restrict the amount of requests that can be made?
-  // do we want  to check if the user has a pending request already that match the dates and type of request
-  try {
-    console.log(formData);
-    const userId = formData.get("userId") as string;
-    const requestType = formData.get("requestType") as TimeOffRequestType;
-    const status = formData.get("status") as string;
-
-    if (status) {
-      const result = await prisma.timeOffRequestForm.create({
-        data: {
-          requestedStartDate: new Date(formData.get("startDate") as string),
-          requestedEndDate: new Date(formData.get("endDate") as string),
-          requestType: requestType,
-          comment: formData.get("description") as string,
-          managerComment: null,
-          status: status as FormStatus,
-          employeeId: userId,
-        },
-      });
-      console.log(result);
-      revalidatePath("/hamburger/inbox");
-    }
-  } catch (error) {
-    console.log(error);
-  }
-}
-
 export async function EditLeaveRequest(formData: FormData) {
   try {
     console.log(formData);
     const id = formData.get("id") as string;
 
     const requestType = formData.get("requestType") as TimeOffRequestType;
-
-    const today = new Date();
 
     // Parse the start and end dates as local dates to avoid timezone shift
     const startDateString = formData.get("startDate") as string;
