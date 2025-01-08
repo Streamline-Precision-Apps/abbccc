@@ -1,3 +1,4 @@
+"use server";
 import NextAuth, { CredentialsSignin, type DefaultSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 // import Resend from "next-auth/providers/resend";
