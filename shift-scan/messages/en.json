@@ -156,6 +156,12 @@
     "Refueled": " Did you refuel?",
     "Gallons": "Total gallons refueled",
     "Duration": "Total Time used",
+    "FailedToFetch": "Failed to fetch equipment log.",
+    "FailedToSave": "Failed update equipment log.",
+    "FailedToDelete": "Failed delete equipment log.",
+    "ValidationError": "Validation error: ",
+    "Saved": "Changes successfully saved.",
+    "Deleted": "Equipment log deleted successfully.",
     "Notes": "Additional notes"
 },
 "Generator":{
