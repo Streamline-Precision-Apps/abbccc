@@ -93,10 +93,12 @@ import { CheckBox } from "@/components/(inputs)/checkBox";
 import { Bases } from "@/components/(reusable)/bases";
 import { FormStatus } from "@prisma/client";
 
-export default function CombinedForm({ id }: { id: string }) {
+export default function CombinedForm({ params }: { params: { id: string } }) {
   const router = useRouter();
+  const id = params.id;
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [banner, setBanner] = useState<string>("");
   const [logs, setLogs] = useState<EmployeeEquipmentLogs[]>([]);
   const [refueled, setRefueled] = useState(false);
   const [fuel, setFuel] = useState<number>(0);
@@ -166,6 +168,7 @@ export default function CombinedForm({ id }: { id: string }) {
         setChangedDuration(durationString);
       } catch (error) {
         setError((error as Error).message);
+        setBanner(t("FailedToFetch"));
       } finally {
         setIsLoading(false);
       }
@@ -180,9 +183,9 @@ export default function CombinedForm({ id }: { id: string }) {
   };
 
   useEffect(() => {
-    if (status) {
-      setIsEditMode(false);
-    }
+    // if (status) {
+    //   setIsEditMode(false);
+    // }
     if (Array.isArray(logs) && logs.length > 0 && !isEditMode) {
       const log = logs[0];
       setRefueled(log.isRefueled ?? false);
@@ -226,31 +229,34 @@ export default function CombinedForm({ id }: { id: string }) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     formData.append("endTime", new Date().toISOString());
-    formData.append("id", id.toString());
+    formData.append("id", String(id));
     formData.append("completed", "true");
     formData.append("comment", notes);
-    formData.append("isRefueled", refueled.toString());
-    formData.append("fuelUsed", fuel.toString());
+    formData.append("isRefueled", String(refueled));
+    formData.append("fuelUsed", String(fuel));
     formData.append("duration", changedDuration);
 
     try {
       FormDataSchema.parse({
-        id: id.toString(),
+        id: String(id),
         completed: "true",
         comment: notes,
-        isRefueled: refueled.toString(),
-        fuelUsed: fuel.toString(),
+        isRefueled: String(refueled),
+        fuelUsed: String(fuel),
         duration: changedDuration,
       });
 
       await updateEmployeeEquipmentLog(formData);
+      setBanner(t("Saved"));
       setIsEditMode(false);
       router.replace("/dashboard/equipment");
     } catch (error) {
       if (error instanceof z.ZodError) {
         console.error("Validation error in form data:", error.errors);
+        setBanner(t("ValidationError") + error.errors);
       } else {
         console.error("Error updating equipment log:", error);
+        setBanner(t("FailedToSave"));
       }
     }
   };
@@ -261,11 +267,22 @@ export default function CombinedForm({ id }: { id: string }) {
     formData.append("id", id.toString());
     try {
       await DeleteLogs(formData);
+      setBanner(t("Deleted"));
       router.replace("/dashboard/equipment");
     } catch (error) {
       console.error("Error deleting log:", error);
+      setBanner(t("FailedToDelete"));
     }
   };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setBanner('');
+    }, 8000);
+
+    // Cleanup the timer to avoid memory leaks
+    return () => clearTimeout(timer);
+  }, [banner]);
 
   if (isLoading) {
     return (
@@ -338,7 +355,7 @@ export default function CombinedForm({ id }: { id: string }) {
                 href="/dashboard/equipment"
               />
             </Contents>
-            {status && (
+            {banner !== "" && (
               <Banners background={"green"} className=" rounded-b-xl h-1/2">
                 <Texts
                   position={"center"}
@@ -346,7 +363,7 @@ export default function CombinedForm({ id }: { id: string }) {
                   size={"p6"}
                   className=""
                 >
-                  {t("Banner")}
+                  {banner}
                 </Texts>
               </Banners>
             )}
