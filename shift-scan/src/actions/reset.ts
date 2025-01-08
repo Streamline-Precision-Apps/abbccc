@@ -1,4 +1,5 @@
 "use server";
+import { sendPasswordResetEmail } from "@/lib/mail";
 import prisma from "@/lib/prisma";
 import { generatePasswordResetToken } from "@/lib/tokens";
 
@@ -68,7 +69,3 @@ export async function resetUserPassword(formData: FormData) {
     },
   });
 }
-function sendPasswordResetEmail(email: any, token: any) {
-  throw new Error("Function not implemented.");
-}
-
