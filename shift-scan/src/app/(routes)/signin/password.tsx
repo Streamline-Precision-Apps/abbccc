@@ -14,7 +14,7 @@ import { setLocale } from "@/actions/cookieActions";
 import { Forms } from "@/components/(reusable)/forms";
 import { Holds } from "@/components/(reusable)/holds";
 import Link from "next/link";
-import { Checkbox } from "@/components/(inputs)/checkBox";
+import { CheckBox } from "@/components/(inputs)/checkBox";
 
 export default function SignInForm() {
   const [viewSecret, setViewSecret] = useState(false);
@@ -124,10 +124,10 @@ export default function SignInForm() {
             <Texts size="p2" position={"left"}>{t("Spanish")}</Texts>
           </Holds>
           <Holds size={"30"} position={"right"}>
-            <Checkbox
+            <CheckBox
               disabled ={false}
               id={"1"}
-              label={"h"}
+              size={3}
               onChange={(e: ChangeEvent<HTMLInputElement>) => LocaleHandler(e)}
               name="locale"
             />

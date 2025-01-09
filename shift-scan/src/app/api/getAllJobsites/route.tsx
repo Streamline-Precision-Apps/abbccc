@@ -18,7 +18,7 @@ export async function GET(req: Request) {
     let jobsiteData = [];
 
     if (filter === "Temporary") {
-      jobsiteData = await prisma.jobsites.findMany({
+      jobsiteData = await prisma.jobsite.findMany({
         // TODO:Add this back once DB has been updated.
         // where: {
         //   status: "TEMPORARY",
@@ -30,8 +30,7 @@ export async function GET(req: Request) {
           isActive: true,
           status: true,
           name: true,
-          streetNumber: true,
-          streetName: true,
+          address: true,
           city: true,
           state: true,
           country: true,
@@ -40,7 +39,7 @@ export async function GET(req: Request) {
         },
       });
     } else if (filter === "Active") {
-      jobsiteData = await prisma.jobsites.findMany({
+      jobsiteData = await prisma.jobsite.findMany({
         where: {
           isActive: true,
         },
@@ -51,8 +50,7 @@ export async function GET(req: Request) {
           isActive: true,
           status: true,
           name: true,
-          streetNumber: true,
-          streetName: true,
+          address: true,
           city: true,
           state: true,
           country: true,
@@ -61,7 +59,7 @@ export async function GET(req: Request) {
         },
       });
     } else if (filter === "Inactive") {
-      jobsiteData = await prisma.jobsites.findMany({
+      jobsiteData = await prisma.jobsite.findMany({
         where: {
           isActive: false,
         },
@@ -72,8 +70,7 @@ export async function GET(req: Request) {
           isActive: true,
           status: true,
           name: true,
-          streetNumber: true,
-          streetName: true,
+          address: true,
           city: true,
           state: true,
           country: true,
@@ -82,7 +79,7 @@ export async function GET(req: Request) {
         },
       });
     } else {
-      jobsiteData = await prisma.jobsites.findMany({
+      jobsiteData = await prisma.jobsite.findMany({
         select: {
           CCTags: true,
           id: true,
@@ -90,8 +87,7 @@ export async function GET(req: Request) {
           isActive: true,
           status: true,
           name: true,
-          streetNumber: true,
-          streetName: true,
+          address: true,
           city: true,
           state: true,
           country: true,

@@ -31,6 +31,7 @@
     "NewPassword" : "New Password",
     "ConfirmPassword" : "Confirm Password",
     "Next" : "Next",
+    "Submitting" : "Submitting...",
     "NewPasswordEmptyError" : "Invalid Attempt. New Password cannot be empty!",
     "ConfirmPasswordEmptyError" : "Invalid Attempt. Confirm Password cannot be empty!",
     "PasswordMismatchError" : "Invalid Attempt. Passwords do not match!",
@@ -49,7 +50,10 @@
     "BiometricsLogin" : "Biometrics Login",
     "Notifications" : "Notifications",
     "PhotoAlbum" : "Photo Album",
-    "Next" : "Next"
+    "Next" : "Next",
+    "Submitting" : "Submitting...",
+    "FetchErrorMessage" : "Error occurred while fetching settings. Please try again.",
+    "RequiredPermissionsError" : "Please make sure to allow required permissions before proceeding."
 },
 
 "SignUpProfilePicture":{
@@ -58,6 +62,7 @@
     "UseCamera" : "Use Camera",
     "CameraRoll" : "Camera Roll",
     "Next" : "Next",
+    "Submitting" : "Submitting...",
     "ProfilePictureMissingError" : "Invalid Attempt. You must select a Profile Picture!",
     "ImageAlt" :"Profile Picture Image"
 },
@@ -65,10 +70,11 @@
 "SignUpVirtualSignature":{
     "AddASignature" : "Add A Signature",
     "LetsAddASignature" : "Let’s add an e-signature! make sure you like it, it will be imprinted on every form.",
-    "SingHere" : "Sign Here",
+    "SignHere" : "Sign Here",
     "Clear" : "Clear",
     "Save" : "Save",
     "Next" : "Next",
+    "Submitting" : "Submitting...",
     "SignatureMissingError" : "Invalid Attempt. You must add a Signature!"
 },
 
@@ -97,6 +103,7 @@
     "DA-Today": "Today",
     "TimeSheet-Label": "View my Timesheet",
     "Clock-btn": "Clock In",
+    "Clock-btn-break"   : "Return",
     "Title": "View Timesheets",
     "Header1":"Please enter a date to search for your timesheets.",
     "EnterDate": "Enter Date",
@@ -158,6 +165,13 @@
     "Notes": "Additional notes"
 },
 "Generator":{
+    "SelectJobsite": "Select Jobsite",
+    "NeedsMaintenance": "Needs Maintenance",
+    "Vehicle": "Vehicle",
+   "JobsiteLocation": "Where is this equipment located?",
+    "SelectCostCodeTags": "Select Cost Code Tags",
+    "SelectTag": "Select Tag",
+    "AddTag": "Add",
     "Loading": "Loading...",
     "Create": "Create",
     "Picture": "Picture of Equipment",
@@ -175,9 +189,9 @@
     "IsActive": "Is Site Active?",
     "Temporary": "Temporary",
     "NameExample": "Enter a name for the site",
-    "Address": "Address Information",
-    "StreetNumberDirection": "Street Number",
-    "StreetNameDirection": "Street Name",
+    "AddressInformation": "Address Information",
+    "Address": "Address",
+   "AddressExample": "100 Main Street",
     "CityTitle": "Burley",
     "ZipCode": "Zip Code",
     "ZipCodeTitle": "83318",
@@ -196,10 +210,11 @@
     "EquipmentTitle": "Equipment",
     "Name": "Name",
     "NamePlaceholder": "Enter Equipment Name",
+    "EquipmentDescription": "Description",
     "DescriptionPlaceholder": "Enter a Description in less than 40 characters",
     "Status": "Equipment status",
-    "Operational": "OPERATIONAL",
-    "NeedsRepair": "NEEDS REPAIR",
+    "Operational": "Operational",
+    "NeedsRepair": "Needs Repair",
     "Make": "Make",
     "MakePlaceholder": "Enter Make of Vehicle ",
     "Model": "Model",
@@ -243,6 +258,7 @@
     "Form3Submit" : "Submit form"    
 },
 "MyTeam": {
+    "NoTimesheetsFound": "No Timesheets Found",
     "Teams-Title": "My Teams",
     "Teams-Logo-Title": "Team Icon",
     "MyTeams-Title": "My Teams",
@@ -271,6 +287,14 @@
     "ID": "Id: #"
 },
 "Clock": {
+    "PleaseLeaveACommentOfWhatYouDid": "Please leave a comment of what you did.",
+    "TodayIDidTheFollowing": "Today I did the following...",
+    "General": "General",
+    "Truck": "Truck",
+    "Mechanic": "Mechanic",
+    "TASCO": "TASCO",
+    "PleaseChooseYourRole": "Please choose your role:",
+    "ChangeJobsite": "Change Jobsite",
     "ChangeCostCode": "Change Cost Code",
     "ScanJobSiteOrTruck": "Scan Job Site or Truck",
     "SwitchSites": "Switch Sites",
@@ -295,7 +319,7 @@
     "ScanQR": "Scan QR Code",
     "ScanEquipment": "Scan Equipment",
     "Cancel": "Cancel",
-    "ReturnToJobsite": "Switching CostCode?",
+    "ReturnToJobsite": "Return to Previous Role and Jobsite?",
     "VerifyEquipment": "Verify Equipment",
     "Equipment-label": "Equipment Found",
     "ClockIn-btn": "Clock In",
@@ -327,6 +351,7 @@
     "Submit": "Enviar"
 },
 "ClockOut":{
+    "NoSignature": "No Signature Registered.",
     "SignBelow": "By Checking the box below I certify I suffered no injuries this day.",
     "Jobsite" : "Job site # ",
     "CostCode" : "Cost Code ",
@@ -398,6 +423,10 @@
     "English": "English",
     "Spanish": "Spanish",
     "PhoneNumber": "Phone Number",
+    "Email": "Email",
+    "Loading": "Loading",
+    "ChangeProfilePicture": "Change Profile Picture",
+    "SubmitChanges": "Submit Changes",
     "Language": "Language"
 },
 
@@ -469,7 +498,7 @@
     "NoCrewsFound": "No Crews Found",
     "ChangeProfilePicture": "Change Profile Picture",
     "ChangeSignature": "Change Signature",
-    "YourProfile": "Your Profile",
+    "YourProfile": "Your Profile Profile",
     "SubmitEdit": "Submit Edit",
     "TerminateEmployee": "Terminate Employee",
     "ActivateEmployee": "Activate Employee",

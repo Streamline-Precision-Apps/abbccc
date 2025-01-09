@@ -36,15 +36,13 @@ export default function Content() {
 
   const params = useParams(); // remove typing here
   const { id } = params;
-  const idParsed = z.coerce.number().safeParse(id);
-  const crewId = idParsed.data;
 
   useEffect(() => {
     const fetchCrew = async () => {
       try {
         setIsLoading(true);
 
-        const response = await fetch(`/api/getCrewById/${crewId}`);
+        const response = await fetch(`/api/getCrewById/${id}`);
         const crewData: CrewResponse = await response.json();
 
         // Validate fetched crew data using Zod
@@ -58,7 +56,7 @@ export default function Content() {
         }
         setCrew(crewData);
         console.log("crewData is logged", crewData);
-        localStorage.setItem(`crew-${crewId}`, JSON.stringify(crewData));
+        localStorage.setItem(`crew-${id}`, JSON.stringify(crewData));
       } catch (error) {
         console.error("Error fetching crew data:", error);
       } finally {
@@ -67,7 +65,7 @@ export default function Content() {
     };
 
     fetchCrew();
-  }, [crewId, id]);
+  }, [id]);
 
   useEffect(() => {
     const fetchCrew = async () => {
@@ -78,13 +76,13 @@ export default function Content() {
       setTitles(setName);
     };
     fetchCrew();
-  }, [crewId, id]);
+  }, [id]);
 
   return (
     <Bases className="h-screen">
       <Contents className="h-full">
-        <Grids rows={"5"} gap={"5"} className="h-full">
-          <Holds background={"white"} className="row-span-1 h-full">
+        <Grids rows={"10"} gap={"4"} className="h-full">
+          <Holds background={"white"} className="row-span-2 h-full">
             <Contents width={"section"}>
               <TitleBoxes
                 title={`${titles}`}
@@ -96,7 +94,7 @@ export default function Content() {
           </Holds>
 
           {isLoading ? (
-            <Holds background={"white"} className="row-span-4 h-full">
+            <Holds background={"white"} className="row-span-8 h-full">
               <Contents width={"section"}>
                 <Holds className="my-auto">
                   <Spinner />
@@ -104,36 +102,49 @@ export default function Content() {
               </Contents>
             </Holds>
           ) : (
-            <Holds background={"white"} className="row-span-6 h-full">
-              <Contents width={"section"}>
-                <Grids rows={"4"} gap={"5"} className="my-5">
-                  {crew.map((member) => (
-                    <Holds className="row-span-1 h-full" key={member.id}>
-                      <Buttons
-                        href={`/dashboard/myTeam/${id}/employee/${member.id}`}
-                        background="lightBlue"
-                      >
-                        <Holds position={"row"}>
-                          <Holds size={"30"}>
-                            <Images
-                              titleImg={member.image || "/profile-default.svg"}
-                              titleImgAlt="profile picture"
-                              loading="lazy"
-                              className="rounded-xl"
-                            />
+            <>
+              <Holds background={"white"} className="row-span-7 h-full">
+                <Contents width={"section"}>
+                  <Grids rows={"4"} gap={"5"} className="my-5">
+                    {crew.map((member) => (
+                      <Holds className="row-span-1 h-full" key={member.id}>
+                        <Buttons
+                          href={`/dashboard/myTeam/${id}/employee/${member.id}`}
+                          background="lightBlue"
+                        >
+                          <Holds position={"row"}>
+                            <Holds size={"30"}>
+                              <Images
+                                titleImg={
+                                  member.image || "/profile-default.svg"
+                                }
+                                titleImgAlt="profile picture"
+                                loading="lazy"
+                                className="rounded-xl"
+                              />
+                            </Holds>
+                            <Holds>
+                              <Titles size="h2">
+                                {member.firstName} {member.lastName}
+                              </Titles>
+                            </Holds>
                           </Holds>
-                          <Holds>
-                            <Titles size="h2">
-                              {member.firstName} {member.lastName}
-                            </Titles>
-                          </Holds>
-                        </Holds>
-                      </Buttons>
-                    </Holds>
-                  ))}
-                </Grids>
-              </Contents>
-            </Holds>
+                        </Buttons>
+                      </Holds>
+                    ))}
+                  </Grids>
+                </Contents>
+              </Holds>
+              <Holds className="row-span-1 h-full">
+                <Buttons
+                  background={"orange"}
+                  className="w-5/6"
+                  href={`/dashboard/myTeam/${id}/timecards`}
+                >
+                  <Titles size={"h4"}>Approve Time Cards </Titles>
+                </Buttons>
+              </Holds>
+            </>
           )}
         </Grids>
       </Contents>

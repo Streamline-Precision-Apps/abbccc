@@ -6,20 +6,20 @@ import CameraComponent from "../(camera)/camera";
 import { Banners } from "@/components/(reusable)/banners";
 import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
-import { Images } from "../(reusable)/images";
+// import { Images } from "../(reusable)/images";
 import { Texts } from "../(reusable)/texts";
 import { Contents } from "../(reusable)/contents";
 import { Titles } from "../(reusable)/titles";
 import { useTranslations } from "next-intl";
+import { set } from "zod";
+import { user } from "@nextui-org/react";
 
-
-const ProfilePictureSetup = ({
-  id,
-  handleNextStep,
-}: {
-  id: string;
+type prop = {
+  userId: string;
   handleNextStep: () => void;
-}) => {
+};
+
+export default function ProfilePictureSetup({userId, handleNextStep}: prop) {
   const [base64String, setBase64String] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [showBanner, setShowBanner] = useState(false);
@@ -45,7 +45,7 @@ const ProfilePictureSetup = ({
     }
 
     const formData = new FormData();
-    formData.append("id", id);
+    formData.append("id", userId);
 
     formData.append("image", base64String);
 
@@ -82,7 +82,7 @@ const ProfilePictureSetup = ({
         </Holds>
         <Holds background={"white"} className="row-span-8 h-full py-5">
           <Contents width={"section"}>
-            <Texts>{t("LetsPickAPicture")}</Texts>
+            <Texts size={"p3"}>{t("LetsPickAPicture")}</Texts>
             <Holds className="h-full">
               {/* Integrating CameraComponent */}
               <CameraComponent setBase64String={setBase64String} />
@@ -92,11 +92,11 @@ const ProfilePictureSetup = ({
         <Holds  className="row-span-1 h-full">
           <Buttons
           onClick={handleSubmitImage}
-          background={"orange"}
+          background={base64String ? "orange" : "darkGrey"}
           disabled={isSubmitting} // Disable the button while submitting
           >
             <Titles>
-              {isSubmitting ? "Submitting..." : "Next"}
+              {isSubmitting ? "Submitting..." : `${t("Next")}`}
             </Titles>
           </Buttons>
         </Holds>
@@ -104,5 +104,3 @@ const ProfilePictureSetup = ({
     </>
   );
 };
-
-export default ProfilePictureSetup;

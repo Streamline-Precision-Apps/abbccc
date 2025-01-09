@@ -8,7 +8,8 @@ import ResetPassword from "./resetPassword";
 import ProfilePictureSetup from "./profilePictureSetup";
 import SignatureSetup from "./signatureSetup";
 import NotificationSettings from "./notificationSettings";
-import Permissions from "./permissions";
+// import Permissions from "./permissions";
+import SignUpOutro from "./signUpOutro";
 import { setAuthStep, getAuthStep } from "@/app/api/auth";
 import { signOut } from "next-auth/react";
 import { z } from "zod";
@@ -75,25 +76,24 @@ export default function Content({
   return (
     <Holds className="h-full" position={"row"}>
       <Contents width={"section"}>
-        {/* {step === 1 && <ShiftScanIntro handleNextStep={handleNextStep} />}
+        {step === 1 && <ShiftScanIntro handleNextStep={handleNextStep} />}
         {step === 2 && (
-          <ResetPassword userId={userId} handleNextStep={handleNextStep} /> */}
-        {/* )} */}
-        {step === 1 && (
+          <ResetPassword userId={userId} handleNextStep={handleNextStep} />
+        )} 
+        {step === 3 && (
           <NotificationSettings userId={userId} handleNextStep={handleNextStep} />
         )}
-                        {step === 2 && (
-          <ProfilePictureSetup id={userId} handleNextStep={handleNextStep} />
-        )}
-                {step === 3 && (
-          <Permissions id={userId} handleAccept={handleComplete}/>
-        )}
-
         {step === 4 && (
+          <ProfilePictureSetup userId={userId} handleNextStep={handleNextStep} />
+        )}
+        {/* {step === 5 && (
+          <Permissions id={userId} handleAccept={handleComplete}/>
+        )} */}
+        {step === 5 && (
           <SignatureSetup id={userId} handleNextStep={handleNextStep} />
         )}
-        {step === 7 && (
-          <Permissions id={userId} handleAccept={handleComplete}/>
+        {step === 6 && (
+          <SignUpOutro id={userId} handleAccept={handleComplete}/>
         )}
       </Contents>
     </Holds>

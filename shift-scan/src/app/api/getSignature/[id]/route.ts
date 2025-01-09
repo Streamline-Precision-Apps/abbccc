@@ -15,7 +15,7 @@ export async function GET(
   }
 
   try {
-    const Signature = await prisma.users.findUnique({
+    const Signature = await prisma.user.findUnique({
       where: {
         id: (await params).id,
       },

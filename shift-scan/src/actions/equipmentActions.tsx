@@ -1,33 +1,7 @@
 "use server";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-
-// Utility function to convert string to enum value
-function toEnumValue<T extends Record<string, string>>(
-  enumObject: T,
-  value: string
-): T[keyof T] | null {
-  const validValue = Object.values(enumObject).find((v) => v === value);
-  if (!validValue) {
-    console.error(`Invalid enum value: "${value}". Expected one of: ${Object.values(enumObject)}`);
-  }
-  return validValue as T[keyof T] || null;
-}
-
-// Enum for tags
-enum Tags {
-  TRUCK = "TRUCK",
-  TRAILER = "TRAILER",
-  EQUIPMENT = "EQUIPMENT",
-  VEHICLE = "VEHICLE",
-}
-
-// Enum for equipment statusOPERATIONAL
-enum EquipmentStatus {
-  OPERATIONAL = "OPERATIONAL",
-  NEEDS_REPAIR = "NEEDS_REPAIR",
-  NEEDS_MAINTENANCE = "NEEDS_MAINTENANCE",
-}
+import { EquipmentTags, EquipmentStatus } from "@/lib/types";
 
 export async function equipmentTagExists(id: string) {
   try {
@@ -50,7 +24,7 @@ export async function fetchEq(employeeId: string, date: string) {
   const endOfDay = new Date(date);
   endOfDay.setUTCHours(23, 59, 59, 999);
 
-  const eqlogs = await prisma.employeeEquipmentLogs.findMany({
+  const eqlogs = await prisma.employeeEquipmentLog.findMany({
     where: {
       employeeId: employeeId,
       startTime: {
@@ -84,13 +58,14 @@ export async function updateEq(formData1: FormData) {
 
     console.log(alter);
 
-    await prisma.employeeEquipmentLogs.update({
+    await prisma.employeeEquipmentLog.update({
       where: {
-        id: Number(id),
+        id,
       },
       data: {
         equipmentId: alter?.id,
-        duration: Number(formData1.get("duration") as string),
+        startTime: formData1.get("startTime") as string,
+        endTime: formData1.get("endTime") as string,
       },
     });
   }
@@ -139,42 +114,79 @@ export async function fetchByNameEquipment(name: string) {
 export async function createEquipment(formData: FormData) {
   try {
     console.log("Creating equipment...");
-    console.log(formData);
+    // Log form data values for debugging
+    console.log({
+      equipmentTag: formData.get("equipmentTag"),
+      status: formData.get("equipmentStatus"),
+    });
 
-    const equipmentTagValue = formData.get("equipmentTag") as Tags;
-    const equipmentStatusValue = formData.get("equipmentStatus") as EquipmentStatus;
+    // Retrieve form data
+    const name = formData.get("name") as string;
+    const description = formData.get("description") as string;
+    const equipmentTagSubmission = formData.get("equipmentTag") as string;
+    const statusSubmission = formData.get("equipmentStatus") as string;
+    let equipmentTag: EquipmentTags;
+    let EQstatus: EquipmentStatus;
+
+    // Update validation to include EQUIPMENT
+    if (equipmentTagSubmission.toUpperCase() === "TRUCK")
+      equipmentTag = "TRUCK";
+    else if (equipmentTagSubmission.toUpperCase() === "TRAILER")
+      equipmentTag = "TRAILER";
+    else if (equipmentTagSubmission.toUpperCase() === "EQUIPMENT")
+      // Changed from VEHICLE to EQUIPMENT
+      equipmentTag = "EQUIPMENT";
+    else throw new Error("Invalid enum value provided for equipmentTag.");
+
+    // Status validation remains the same
+    if (statusSubmission.toUpperCase() === "OPERATIONAL")
+      EQstatus = "OPERATIONAL";
+    else if (statusSubmission.toUpperCase() === "NEEDS_REPAIR")
+      EQstatus = "NEEDS_REPAIR";
+    else if (statusSubmission.toUpperCase() === "NEEDS_MAINTENANCE")
+      EQstatus = "NEEDS_MAINTENANCE";
+    else throw new Error("Invalid enum value provided for status.");
+
     const qrId = formData.get("qrId") as string;
-    const equipmentTag = toEnumValue(Tags, equipmentTagValue);
-    const equipmentStatus = toEnumValue(EquipmentStatus, equipmentStatusValue);
-    console.log(
-      "equipmentTag: " + equipmentTag,
-      "equipmentStatus: " + equipmentStatus,
-    )
+    const jobsiteLocation = formData.get("jobsiteLocation") as string;
+    // form data for trucks, trailers, and vehicles
+    const make = formData.get("make") as string;
+    const model = formData.get("model") as string;
+    const year = formData.get("year") as string;
+    const licensePlate = formData.get("licensePlate") as string;
+    const registrationExpiration = formData.get("registrationExpiration")
+      ? new Date(formData.get("registrationExpiration") as string)
+      : null;
+    const mileage = formData.get("mileage")
+      ? Number(formData.get("mileage"))
+      : null;
 
-    if (!equipmentTag || !equipmentStatus) {
+    if (!equipmentTag || !EQstatus) {
       throw new Error("Invalid enum value provided.");
     }
 
     await prisma.equipment.create({
       data: {
-        name: formData.get("name") as string,
-        description: formData.get("description") as string,
-        qrId: qrId,
+        name,
+        description,
+        qrId,
         equipmentTag: equipmentTag,
-        status: equipmentStatus,
-        make: (formData.get("make") as string) || null,
-        model: (formData.get("model") as string) || null,
-        year: (formData.get("year") as string) || null,
-        licensePlate: (formData.get("licensePlate") as string) || null,
-        registrationExpiration: formData.get("registrationExpiration")
-          ? new Date(formData.get("registrationExpiration") as string)
-          : null,
-        mileage: formData.get("mileage")
-          ? Number(formData.get("mileage"))
-          : null,
+        status: EQstatus,
+        make: make || null,
+        model: model || null,
+        year: year || null,
+        licensePlate: licensePlate || null,
+        registrationExpiration: registrationExpiration || null,
+        mileage: mileage || null,
+        jobsite: {
+          connect: {
+            qrId: jobsiteLocation,
+          },
+        },
       },
     });
     revalidatePath("/dashboard/qr-generator");
+    console.log("Equipment created successfully.");
   } catch (error) {
     console.error("Error creating equipment:", error);
     throw error;
@@ -212,77 +224,67 @@ export async function CreateEmployeeEquipmentLog(formData: FormData) {
   try {
     console.log("Creating EmployeeEquipmentLog...");
     console.log(formData);
+
     const employeeId = formData.get("employeeId") as string;
-    const equipmentQrId = formData.get("equipmentId") as string;
+    const equipmentQRId = formData.get("equipmentId") as string;
     const jobsiteId = formData.get("jobsiteId") as string;
 
-    // Check if the related records exist form of errror handling
+    // Check if the related records exist
     const [employee, equipment, jobsite] = await Promise.all([
-      prisma.users.findUnique({ where: { id: employeeId } }),
-      prisma.equipment.findUnique({ where: { qrId: equipmentQrId } }),
-      prisma.jobsites.findUnique({ where: { qrId: jobsiteId } }),
+      prisma.user.findUnique({ where: { id: employeeId } }),
+      prisma.equipment.findUnique({ where: { qrId: equipmentQRId } }),
+      prisma.jobsite.findUnique({ where: { qrId: jobsiteId } }),
     ]);
 
-    if (!employee)
+    if (!employee) {
       throw new Error(`Employee with id ${employeeId} does not exist`);
-    if (!equipment)
-      throw new Error(`Equipment with qrId ${equipmentQrId} does not exist`);
-    if (!jobsite)
+    }
+    if (!equipment) {
+      throw new Error(`Equipment with id ${equipmentQRId} does not exist`);
+    }
+    if (!jobsite) {
       throw new Error(`Jobsite with id ${jobsiteId} does not exist`);
+    }
 
-    const log = await prisma.employeeEquipmentLogs.create({
+    // Create the EmployeeEquipmentLog entry
+    const log = await prisma.employeeEquipmentLog.create({
       data: {
-        startTime: formData.get("startTime") as string,
-        endTime: formData.get("endTime") as string,
-        duration: Number(formData.get("duration") as string) || null,
+        employeeId,
+        equipmentId: equipment.id,
+        jobsiteId,
+        startTime: formData.get("startTime") ? new Date(formData.get("startTime") as string) : null,
+        endTime: formData.get("endTime") ? new Date(formData.get("endTime") as string) : null,
         comment: formData.get("comment") as string,
-        employee: { connect: { id: employeeId } },
-        Equipment: { connect: { qrId: equipmentQrId } },
-        Job: { connect: { qrId: jobsiteId } },
+        isSubmitted: false, // default to false as per schema
+        status: "PENDING", // default status
       },
     });
 
+    // Revalidate the path to update any dependent front-end views
     revalidatePath("/");
+
     return log;
-  } catch (error) {
-    console.error("Error creating employee equipment log:", error);
-    throw new Error(`Failed to create employee equipment log: ${error}`);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error creating employee equipment log:", error);
+      throw new Error(`Failed to create employee equipment log: ${error.message}`);
+    } else {
+      console.error("An unknown error occurred:", error);
+      throw error;
+    }
   }
 }
 
-export async function findEquipmentLog(id: number) {
-  try {
-    const log = await prisma.employeeEquipmentLogs.findUnique({
-      where: { id: Number(id) },
-    });
-    return log;
-  } catch (error) {
-    console.error("Error finding employee equipment log:", error);
-    throw new Error(`Failed to find employee equipment log: ${error}`);
-  }
-}
-
+// todo: needs to be updated
 export async function updateEmployeeEquipmentLog(formData: FormData) {
   try {
     console.log(formData);
     const id = formData.get("id") as string;
-    const duration = formData.get("duration") as string;
-    const hours = Number(duration.split(":")[0]);
-    const minutes = Number(duration.split(":")[1]);
-    const seconds = Number(duration.split(":")[2]);
-    const totalHours = hours + minutes / 60 + seconds / 3600;
-    const refueled =
-      (formData.get("isRefueled") as string) === "true" ? true : false;
-
-    const log = await prisma.employeeEquipmentLogs.update({
-      where: { id: Number(id) },
+    const log = await prisma.employeeEquipmentLog.update({
+      where: { id },
       data: {
         endTime: new Date(formData.get("endTime") as string).toISOString(),
-        duration: totalHours,
         comment: formData.get("comment") as string,
-        isRefueled: Boolean(refueled),
-        fuelUsed: Number(formData.get("fuelUsed") as string),
-        isCompleted: true,
       },
     });
     console.log(log);
@@ -294,21 +296,6 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
     throw new Error(`Failed to update employee equipment log: ${error}`);
   }
 }
-export async function updateEmployeeEquipment(formData: FormData) {
-  try {
-    console.log(formData);
-    const id = formData.get("id") as string;
-
-    await prisma.employeeEquipmentLogs.update({
-      where: { id: Number(id) },
-      data: {
-        isCompleted: true,
-      },
-    });
-  } catch (error) {
-    console.error("Error updating employee equipment log:", error);
-  }
-}
 
 export async function updateEquipment(formData: FormData) {
   try {
@@ -318,10 +305,8 @@ export async function updateEquipment(formData: FormData) {
       formData.get("registrationExpiration") as string
     ).toISOString();
 
-    const equipmentTagValue = formData.get("equipmentTag") as string;
-    const equipmentStatusValue = formData.get("status") as string;
-    const equipmentTag = toEnumValue(Tags, equipmentTagValue);
-    const equipmentStatus = toEnumValue(EquipmentStatus, equipmentStatusValue);
+    const equipmentTag = formData.get("equipmentTag") as EquipmentTags;
+    const equipmentStatus = formData.get("status") as EquipmentStatus;
 
     const log = await prisma.equipment.update({
       where: { id: id },
@@ -370,13 +355,12 @@ export async function Submit(formData: FormData) {
   try {
     const id = formData.get("id") as string;
 
-    const logs = await prisma.employeeEquipmentLogs.updateMany({
+    const logs = await prisma.employeeEquipmentLog.updateMany({
       where: {
         employeeId: id,
         isSubmitted: false,
       },
       data: {
-        isCompleted: true,
         isSubmitted: true,
       },
     });
@@ -395,8 +379,8 @@ export async function DeleteLogs(formData: FormData) {
     console.log(formData);
     const id = formData.get("id") as string;
 
-    const deletedLog = await prisma.employeeEquipmentLogs.delete({
-      where: { id: Number(id) },
+    const deletedLog = await prisma.employeeEquipmentLog.delete({
+      where: { id },
     });
     console.log(deletedLog);
     // Revalidate the path to reflect changes

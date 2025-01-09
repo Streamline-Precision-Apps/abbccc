@@ -1,20 +1,21 @@
 "use client";
 
-import { Buttons } from "@/components/(reusable)/buttons";
-import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
-import { Images } from "@/components/(reusable)/images";
-import { Texts } from "@/components/(reusable)/texts";
-import { Titles } from "@/components/(reusable)/titles";
+import { ReusableViewLayout } from "./_components/reusableViewLayout";
 import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import EmptyView from "../../../_pages/EmptyView";
 import Spinner from "@/components/(animations)/spinner";
-import { EditEmployeeForm } from "./_components/edit-employee-form";
 import { EmployeeContactInfo, UserProfile } from "@/lib/types";
 import { ModalsPage } from "./_components/modal";
 import { useTranslations } from "next-intl";
+import { EditEmployeeFooter } from "./_components/EditEmployeeFooter";
+import { EditEmployeeHeader } from "./_components/EditEmployeeHeader";
+import { EditEmployeeMainLeft } from "./_components/EditEmployeeMainLeft";
+import { EditEmployeeMainRight } from "./_components/EditEmployeeMainRight";
+import { useNotification } from "@/app/context/NotificationContext";
+import { editPersonnelInfo } from "@/actions/adminActions";
 
 export default function Employee({ params }: { params: { employee: string } }) {
   const t = useTranslations("Admins");
@@ -28,10 +29,12 @@ export default function Employee({ params }: { params: { employee: string } }) {
   const [lastName, setLastName] = useState<string>("");
 
   const formRef = useRef<HTMLFormElement>(null);
+  const formRef2 = useRef<HTMLFormElement>(null);
   const [editedData, setEditedData] = useState<UserProfile | null>(null);
   const [editedData1, setEditedData1] = useState<EmployeeContactInfo | null>(
     null
   );
+  const { setNotification } = useNotification();
   // modal
   const [isOpen, setIsOpen] = useState(false);
   const [isOpen2, setIsOpen2] = useState(false);
@@ -41,12 +44,6 @@ export default function Employee({ params }: { params: { employee: string } }) {
   const [personalSignature, setPersonalSignature] = useState(false);
   const [signatureBase64String, setSignatureBase64String] =
     useState<string>("");
-
-  const handleSubmitClick = () => {
-    formRef.current?.dispatchEvent(
-      new Event("submit", { bubbles: true, cancelable: true })
-    );
-  };
 
   const [userStatus, setUserStatus] = useState<boolean>(false);
   // this is for the employee info
@@ -120,6 +117,32 @@ export default function Employee({ params }: { params: { employee: string } }) {
     setTimeout(() => loadSignature(), 1000);
   };
 
+  const handleSubmitClick = async () => {
+    try {
+      const formData1 = new FormData(formRef.current!);
+      const formData2 = new FormData(formRef2.current!);
+
+      // Combine both FormData objects
+      for (const [key, value] of formData2.entries()) {
+        formData1.append(key, value.toString());
+      }
+
+      console.log("Combined FormData:", Array.from(formData1.entries()));
+
+      // Submit the combined FormData
+      const res = await editPersonnelInfo(formData1);
+
+      if (res) {
+        setNotification(`${t("EmployeeInfoUpdatedSuccessfully")}`, "success");
+      } else {
+        setNotification(`${t("FailedToUpdateEmployeeInfo")}`, "error");
+      }
+    } catch (error) {
+      console.error(`${t("FailedToUpdateEmployeeInfo")}`, error);
+      setNotification(`${t("FailedToUpdateEmployeeInfo")}`, "error");
+    }
+  };
+
   if (!initialEmployeeProfile || !initialEmployeeContactInfo) {
     return (
       <EmptyView
@@ -134,144 +157,97 @@ export default function Employee({ params }: { params: { employee: string } }) {
 
   return (
     <Holds className="w-full h-full">
-      <Grids rows="10" gap="5">
-        <Holds position="row" className="row-span-2 w-full h-full">
-          <Grids rows="3" cols={"8"} className="w-full h-full">
-            {/* --------------------------------------------------------------------------------------------------------------------*/}
-            {/* -----------------------------------------------  Image section  ----------------------------------------------------*/}
-            {/* --------------------------------------------------------------------------------------------------------------------*/}
-            <Holds
-              position="left"
-              className="row-start-1 row-end-2 col-start-1 col-end-3 h-full cursor-pointer"
-              title={t("ChangeProfilePicture")}
-              onClick={
-                userId !== user
-                  ? () => setIsProfilePic(true)
-                  : () => setIsPersonalProfile(true)
-              }
-            >
-              <Images
-                titleImg={image || "/person.svg"}
-                titleImgAlt="personnel"
-                className="rounded-full my-auto p-4"
-                size="70"
-              />
-            </Holds>
-
-            <Holds className="row-start-2 row-end-3 col-start-3 col-end-5 h-full">
-              <Holds position="right">
-                {userId !== user ? (
-                  <Titles size="h2" position="left">
-                    {firstName} {lastName}
-                  </Titles>
-                ) : (
-                  <Titles size="h2" position="left">
-                    {t("YourProfile")}
-                  </Titles>
-                )}
-              </Holds>
-              <Holds>
-                <Texts
-                  position="left"
-                  size="p6"
-                  text={userStatus ? "green" : "red"}
-                >
-                  {userStatus ? `${t("Active")}` : `${t("Terminated")}`}
-                </Texts>
-              </Holds>
-            </Holds>
-            {/* --------------------------------------------------------------------------------------------------------------------*/}
-            {/* -----------------------------------------------  Buttons Section   -------------------------------------------------*/}
-            {/* --------------------------------------------------------------------------------------------------------------------*/}
-            <Holds className="row-start-1 row-end-2 col-start-6 col-end-9 h-full w-full p-3">
-              <Holds position="row" className=" w-full justify-end flex gap-4 ">
-                <Holds>
-                  <Buttons
-                    background="green"
-                    type="button"
-                    onClick={handleSubmitClick}
-                    className="py-2"
-                  >
-                    <Titles size="h5">{t("SubmitEdit")}</Titles>
-                  </Buttons>
-                </Holds>
-                {userId !== user || permission === "SUPERADMIN" ? (
-                  <>
-                    {userStatus === true ? (
-                      <Holds>
-                        <Buttons
-                          className="py-2"
-                          background="red"
-                          onClick={() => setIsOpen(true)}
-                        >
-                          <Titles size="h5">{t("TerminateEmployee")}</Titles>
-                        </Buttons>
-                      </Holds>
-                    ) : (
-                      <Holds>
-                        <Buttons
-                          className="py-2"
-                          background="lightBlue"
-                          onClick={() => setIsOpen2(true)}
-                        >
-                          <Titles size="h5">{t("ActivateEmployee")}</Titles>
-                        </Buttons>
-                      </Holds>
-                    )}
-                  </>
-                ) : null}
-              </Holds>
-            </Holds>
-          </Grids>
-        </Holds>
-        {/* --------------------------------------------------------------------------------------------------------------------*/}
-        {/* -----------------------------------------------  Form Section  -----------------------------------------------------*/}
-        {/* --------------------------------------------------------------------------------------------------------------------*/}
-        <EditEmployeeForm
-          initialEmployeeProfile={initialEmployeeProfile}
-          setRenderedData={setRenderedData}
-          initialEmployeeContactInfo={initialEmployeeContactInfo}
-          editedData={editedData}
-          editedData1={editedData1}
-          setEditedData={setEditedData}
-          setEditedData1={setEditedData1}
-          formRef={formRef}
-          user={user}
-          setRenderedData1={setRenderedData1}
-          userId={userId}
-          permission={"USER"}
-          signatureBase64String={signatureBase64String}
-          setPersonalSignature={() => setPersonalSignature(true)}
-        />
-        {/* --------------------------------------------------------------------------------------------------------------------*/}
-        {/* ---------------------------------------------  Modals Section  -----------------------------------------------------*/}
-        {/* --------------------------------------------------------------------------------------------------------------------*/}
-        <ModalsPage
-          reloadEmployeeData={reloadEmployeeData}
-          reloadSignature={reloadSignature}
-          initialEmployeeProfile={initialEmployeeProfile}
-          initialEmployeeContactInfo={initialEmployeeContactInfo}
-          isOpen={isOpen}
-          setIsOpen={setIsOpen}
-          isOpen2={isOpen2}
-          setIsOpen2={setIsOpen2}
-          setUserStatus={setUserStatus}
-          setImage={setImage}
-          setSignatureBase64String={setSignatureBase64String}
-          setFirstName={setFirstName}
-          setLastName={setLastName}
-          user={user}
-          setPersonalSignature={setPersonalSignature}
-          personalSignature={personalSignature}
-          signatureBase64String={signatureBase64String}
-          setEditedData={setEditedData}
-          setEditedData1={setEditedData1}
-          setIsProfilePic={setIsProfilePic}
-          isProfilePic={isProfilePic}
-          isPersonalProfile={isPersonalProfile}
-          setIsPersonalProfile={setIsPersonalProfile}
-        />
-      </Grids>
+      <ReusableViewLayout
+        custom={true}
+        header={
+          <EditEmployeeHeader
+            userId={userId}
+            user={user}
+            image={image}
+            setIsProfilePic={setIsProfilePic}
+            setIsPersonalProfile={setIsPersonalProfile}
+            userStatus={userStatus}
+            firstName={firstName}
+            lastName={lastName}
+          />
+        }
+        mainHolds="h-full w-full flex flex-row row-span-6 col-span-2 grid grid-cols-6 grid-rows-1 bg-app-dark-blue px-3 py-2 rounded-[10px] gap-4"
+        mainLeft={
+          <EditEmployeeMainLeft
+            reloadEmployeeData={reloadEmployeeData}
+            reloadSignature={reloadSignature}
+            initialEmployeeProfile={initialEmployeeProfile}
+            initialEmployeeContactInfo={initialEmployeeContactInfo}
+            setRenderedData={setRenderedData}
+            setRenderedData1={setRenderedData1}
+            editedData={editedData}
+            editedData1={editedData1}
+            formRef={formRef2}
+            setPersonalSignature={setPersonalSignature}
+            signatureBase64String={signatureBase64String}
+            setEditedData={setEditedData}
+            setEditedData1={setEditedData1}
+            user={user}
+            userId={userId}
+          />
+        }
+        mainRight={
+          <EditEmployeeMainRight
+            reloadEmployeeData={reloadEmployeeData}
+            reloadSignature={reloadSignature}
+            initialEmployeeProfile={initialEmployeeProfile}
+            initialEmployeeContactInfo={initialEmployeeContactInfo}
+            setRenderedData={setRenderedData}
+            setRenderedData1={setRenderedData1}
+            editedData={editedData}
+            editedData1={editedData1}
+            formRef={formRef}
+            setPersonalSignature={setPersonalSignature}
+            signatureBase64String={signatureBase64String}
+            setEditedData={setEditedData}
+            setEditedData1={setEditedData1}
+            user={user}
+            userId={userId}
+            permission={permission}
+          />
+        }
+        footer={
+          <EditEmployeeFooter
+            userId={userId}
+            handleSubmitClick={handleSubmitClick}
+            setIsOpen={setIsOpen}
+            setIsOpen2={setIsOpen2}
+            permission={permission}
+            user={user}
+            userStatus={userStatus}
+          />
+        }
+      />
+      <ModalsPage
+        reloadEmployeeData={reloadEmployeeData}
+        reloadSignature={reloadSignature}
+        initialEmployeeProfile={initialEmployeeProfile}
+        initialEmployeeContactInfo={initialEmployeeContactInfo}
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        isOpen2={isOpen2}
+        setIsOpen2={setIsOpen2}
+        setUserStatus={setUserStatus}
+        setImage={setImage}
+        setSignatureBase64String={setSignatureBase64String}
+        setFirstName={setFirstName}
+        setLastName={setLastName}
+        user={user}
+        setPersonalSignature={setPersonalSignature}
+        personalSignature={personalSignature}
+        signatureBase64String={signatureBase64String}
+        setEditedData={setEditedData}
+        setEditedData1={setEditedData1}
+        setIsProfilePic={setIsProfilePic}
+        isProfilePic={isProfilePic}
+        isPersonalProfile={isPersonalProfile}
+        setIsPersonalProfile={setIsPersonalProfile}
+      />
     </Holds>
   );
 }

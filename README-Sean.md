@@ -384,3 +384,7 @@ I finished some more prisma DB research and Created the clock out dashboard page
 
 - Meet with devun for debugging of notification context.
 - Made API routes and folder structure for Assets sections of ADMINS.
+
+## 12/17/2024
+
+- Worked with Devun on Database reconfiguration.
