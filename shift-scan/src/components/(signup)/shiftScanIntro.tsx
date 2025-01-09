@@ -7,22 +7,20 @@ import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
 import { Titles } from "../(reusable)/titles";
 import { Contents } from "../(reusable)/contents";
-import { ChangeEvent } from "react";
-import { setLocale } from "@/actions/cookieActions";
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { CheckBox } from "../(inputs)/checkBox";
 
 const ShiftScanIntro = ({ handleNextStep }: { handleNextStep: () => void }) => {
-  const router = useRouter();
+  const [isTested, setIsTested] = React.useState(false);
   const t = useTranslations("SignUpIntro");
-  const LocaleHandler = async (event: ChangeEvent<HTMLInputElement>) => {
-    await setLocale(event.target.checked);
-    router.refresh();
+
+  const handleChange = async () => {
+    setIsTested(true);
   };
+
   return (
-    <Grids rows={"10"} gap={"5"} className="h-full mb-5">
-      <Holds background={"white"} className="row-span-3 h-full">
+    <Grids rows={"10"} gap={"5"} className=" mb-5">
+      <Holds background={"white"} className="row-span-3 h-full justify-center">
         <Images
           titleImg={"/shiftScanLogo.svg"}
           titleImgAlt={t("LogoAlt")}
@@ -36,76 +34,76 @@ const ShiftScanIntro = ({ handleNextStep }: { handleNextStep: () => void }) => {
         </Contents>
       </Holds>
       <Holds background={"white"} className="row-span-6 h-full">
-        <Contents width={"section"} className="my-5 justify-between">
-          <Titles size={"h2"} className="my-auto">
-            {t("ThingsWeNeedToDo")}
-          </Titles>
-          <Holds position={"row"}>
-            <Holds size={"80"}>
-              <Texts size={"p3"} position={"left"} className="my-5">
-                {t("ChooseNewPassword")}
-              </Texts>
+        <Contents width={"section"} className="mt-5 p-2">
+          <Titles size={"h3"}>{t("ThingsWeNeedToDo")}</Titles>
+          <Holds className="justify-around my-auto h-full">
+            <Holds position={"row"}>
+              <Holds size={"80"}>
+                <Texts size={"p4"} position={"left"} className="my-5">
+                  {t("ChooseNewPassword")}
+                </Texts>
+              </Holds>
+              <Holds size={"20"}>
+                <CheckBox
+                  size={3}
+                  id={"1"}
+                  label={" "}
+                  disabled={true}
+                  onChange={handleChange}
+                  name="locale"
+                />
+              </Holds>
             </Holds>
-            <Holds size={"20"}>
-              <CheckBox
-                id={"1"}
-                label={" "}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  LocaleHandler(e)
-                }
-                name="locale"
-              />
+            <Holds position={"row"}>
+              <Holds size={"80"}>
+                <Texts size={"p4"} position={"left"} className="my-5">
+                  {t("GivePermissions")}
+                </Texts>
+              </Holds>
+              <Holds size={"20"}>
+                <CheckBox
+                  size={3}
+                  id={"1"}
+                  label={" "}
+                  disabled={true}
+                  onChange={handleChange}
+                  name="locale"
+                />
+              </Holds>
             </Holds>
-          </Holds>
-          <Holds position={"row"}>
-            <Holds size={"80"}>
-              <Texts size={"p3"} position={"left"} className="my-5">
-                {t("GivePermissions")}
-              </Texts>
+            <Holds position={"row"}>
+              <Holds size={"80"}>
+                <Texts size={"p4"} position={"left"} className="my-5">
+                  {t("ChooseProfilePicture")}
+                </Texts>
+              </Holds>
+              <Holds size={"20"}>
+                <CheckBox
+                  size={3}
+                  id={"1"}
+                  label={" "}
+                  disabled={true}
+                  onChange={handleChange}
+                  name="locale"
+                />
+              </Holds>
             </Holds>
-            <Holds size={"20"}>
-              <CheckBox
-                id={"1"}
-                label={" "}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  LocaleHandler(e)
-                }
-                name="locale"
-              />
-            </Holds>
-          </Holds>
-          <Holds position={"row"}>
-            <Holds size={"80"}>
-              <Texts size={"p3"} position={"left"} className="my-5">
-                {t("ChooseProfilePicture")}
-              </Texts>
-            </Holds>
-            <Holds size={"20"}>
-              <CheckBox
-                id={"1"}
-                label={" "}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  LocaleHandler(e)
-                }
-                name="locale"
-              />
-            </Holds>
-          </Holds>
-          <Holds position={"row"}>
-            <Holds size={"80"}>
-              <Texts size={"p3"} position={"left"} className="my-5">
-                {t("CreateVirtualSignature")}
-              </Texts>
-            </Holds>
-            <Holds size={"20"}>
-              <CheckBox
-                id={"1"}
-                label={" "}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  LocaleHandler(e)
-                }
-                name="locale"
-              />
+            <Holds position={"row"}>
+              <Holds size={"80"}>
+                <Texts size={"p4"} position={"left"} className="my-5">
+                  {t("CreateVirtualSignature")}
+                </Texts>
+              </Holds>
+              <Holds size={"20"}>
+                <CheckBox
+                  size={3}
+                  id={"1"}
+                  label={""}
+                  disabled={true}
+                  onChange={handleChange}
+                  name="locale"
+                />
+              </Holds>
             </Holds>
           </Holds>
         </Contents>
