@@ -256,6 +256,7 @@ export type UserSettings = {
   cameraAccess?: boolean;
   locationAccess?: boolean;
   photoAlbumAccess?: boolean;
+  cookies?: boolean;
 };
 
 // --------------------------------------
