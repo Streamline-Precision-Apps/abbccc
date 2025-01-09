@@ -31,6 +31,7 @@
     "NewPassword" : "New Password",
     "ConfirmPassword" : "Confirm Password",
     "Next" : "Next",
+    "Submitting" : "Submitting...",
     "NewPasswordEmptyError" : "Invalid Attempt. New Password cannot be empty!",
     "ConfirmPasswordEmptyError" : "Invalid Attempt. Confirm Password cannot be empty!",
     "PasswordMismatchError" : "Invalid Attempt. Passwords do not match!",
@@ -48,8 +49,11 @@
     "OptionalButVeryHelpful" : "Optional, but very helpful",
     "BiometricsLogin" : "Biometrics Login",
     "Notifications" : "Notifications",
-    "Photo Album" : "Photo Album",
-    "Next" : "Next"
+    "PhotoAlbum" : "Photo Album",
+    "Next" : "Next",
+    "Submitting" : "Submitting...",
+    "FetchErrorMessage" : "Error occurred while fetching settings. Please try again.",
+    "RequiredPermissionsError" : "Please make sure to allow required permissions before proceeding."
 },
 
 "SignUpProfilePicture":{
@@ -58,6 +62,7 @@
     "UseCamera" : "Use Camera",
     "CameraRoll" : "Camera Roll",
     "Next" : "Next",
+    "Submitting" : "Submitting...",
     "ProfilePictureMissingError" : "Invalid Attempt. You must select a Profile Picture!",
     "ImageAlt" :"Profile Picture Image"
 },
@@ -65,10 +70,11 @@
 "SignUpVirtualSignature":{
     "AddASignature" : "Add A Signature",
     "LetsAddASignature" : "Let’s add an e-signature! make sure you like it, it will be imprinted on every form.",
-    "SingHere" : "Sign Here",
+    "SignHere" : "Sign Here",
     "Clear" : "Clear",
     "Save" : "Save",
     "Next" : "Next",
+    "Submitting" : "Submitting...",
     "SignatureMissingError" : "Invalid Attempt. You must add a Signature!"
 },
 

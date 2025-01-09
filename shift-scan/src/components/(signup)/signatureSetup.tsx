@@ -9,6 +9,8 @@ import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
 import { TitleBoxes } from "../(reusable)/titleBoxes";
 import { Contents } from "../(reusable)/contents";
+import { Titles } from "../(reusable)/titles";
+import { useTranslations } from "next-intl";
 
 const SignatureSetup = ({
   id,
@@ -21,6 +23,8 @@ const SignatureSetup = ({
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [showBanner, setShowBanner] = useState(false);
   const [bannerMessage, setBannerMessage] = useState("");
+
+  const t = useTranslations("SignUpVirtualSignature");
 
   useEffect(() => {
     if (showBanner) {
@@ -75,36 +79,36 @@ const SignatureSetup = ({
           </Banners>
         </Holds>
       )}
-      <Grids rows={"3"} gap={"5"}>
-        <Holds background={"white"} className="row-span-1 h-full">
+      <Grids rows={"10"} gap={"5"} className="mb-5">
+        <Holds background={"white"} className="row-span-1 h-full justify-center">
           <TitleBoxes
-            title="Signature Setup"
+            title={t("AddASignature")}
             titleImg="/signature.svg"
             titleImgAlt="Signature Setup"
             type="titleOnly"
             className="my-auto"
           />
         </Holds>
-        <Holds background={"white"} className="row-span-2 h-full">
+        <Holds background={"white"} className="row-span-8 h-full py-5">
           <Contents width={"section"}>
-            <Texts size={"p4"} className="mt-4">
-              Set up personal signature. Be sure to sign it well. It will be
-              used on every form.
-            </Texts>
-
-            <Holds className="my-auto">
+            <Texts size={"p4"}>{t("LetsAddASignature")}</Texts>
+            <Holds className="h-full">
               {/* Integrating Signature component */}
               <Signature setBase64String={setBase64String} />
             </Holds>
           </Contents>
         </Holds>
-        <Buttons
+        <Holds className="row-span-1 h-full">
+          <Buttons
           onClick={handleSubmitImage}
-          background={"lightBlue"}
+          background={base64String ? "orange" : "darkGrey"}
           disabled={isSubmitting} // Disable the button while submitting
-        >
-          {isSubmitting ? "Submitting..." : "Next"}
-        </Buttons>
+          >
+            <Titles>
+              {isSubmitting ? "Submitting..." : "Next"}
+            </Titles>
+          </Buttons>
+        </Holds>
       </Grids>
     </>
   );

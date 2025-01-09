@@ -127,8 +127,7 @@ export default function SignInForm() {
             <CheckBox
               disabled={false}
               id={"1"}
-              size={2}
-              label={""}
+              size={3}
               onChange={(e: ChangeEvent<HTMLInputElement>) => LocaleHandler(e)}
               name="locale"
             />
