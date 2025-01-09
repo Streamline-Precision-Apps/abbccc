@@ -7,11 +7,11 @@ import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
 import { Titles } from "../(reusable)/titles";
 import { Contents } from "../(reusable)/contents";
-import { ChangeEvent} from "react";
+import { ChangeEvent } from "react";
 import { setLocale } from "@/actions/cookieActions";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Checkbox } from "../(inputs)/checkboxnew";
+import { CheckBox } from "../(inputs)/checkBox";
 
 const ShiftScanIntro = ({ handleNextStep }: { handleNextStep: () => void }) => {
   const router = useRouter();
@@ -37,53 +37,75 @@ const ShiftScanIntro = ({ handleNextStep }: { handleNextStep: () => void }) => {
       </Holds>
       <Holds background={"white"} className="row-span-6 h-full">
         <Contents width={"section"} className="my-5 justify-between">
-          <Titles size={"h2"} className="my-auto">{t("ThingsWeNeedToDo")}</Titles>
+          <Titles size={"h2"} className="my-auto">
+            {t("ThingsWeNeedToDo")}
+          </Titles>
           <Holds position={"row"}>
             <Holds size={"80"}>
-              <Texts size={"p3"} position={"left"} className="my-5">{t("ChooseNewPassword")}</Texts>
+              <Texts size={"p3"} position={"left"} className="my-5">
+                {t("ChooseNewPassword")}
+              </Texts>
             </Holds>
             <Holds size={"20"}>
-              <Checkbox
-              id={"1"}
-              label={" "}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => LocaleHandler(e)}
-              name="locale"/>
+              <CheckBox
+                id={"1"}
+                label={" "}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  LocaleHandler(e)
+                }
+                name="locale"
+              />
             </Holds>
           </Holds>
           <Holds position={"row"}>
             <Holds size={"80"}>
-              <Texts size={"p3"} position={"left"} className="my-5">{t("GivePermissions")}</Texts>
+              <Texts size={"p3"} position={"left"} className="my-5">
+                {t("GivePermissions")}
+              </Texts>
             </Holds>
             <Holds size={"20"}>
-              <Checkbox
-              id={"1"}
-              label={" "}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => LocaleHandler(e)}
-              name="locale"/>
+              <CheckBox
+                id={"1"}
+                label={" "}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  LocaleHandler(e)
+                }
+                name="locale"
+              />
             </Holds>
           </Holds>
           <Holds position={"row"}>
             <Holds size={"80"}>
-              <Texts size={"p3"} position={"left"} className="my-5">{t("ChooseProfilePicture")}</Texts>
+              <Texts size={"p3"} position={"left"} className="my-5">
+                {t("ChooseProfilePicture")}
+              </Texts>
             </Holds>
             <Holds size={"20"}>
-              <Checkbox
-              id={"1"}
-              label={" "}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => LocaleHandler(e)}
-              name="locale"/>
+              <CheckBox
+                id={"1"}
+                label={" "}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  LocaleHandler(e)
+                }
+                name="locale"
+              />
             </Holds>
           </Holds>
           <Holds position={"row"}>
             <Holds size={"80"}>
-              <Texts size={"p3"} position={"left"} className="my-5">{t("CreateVirtualSignature")}</Texts>
+              <Texts size={"p3"} position={"left"} className="my-5">
+                {t("CreateVirtualSignature")}
+              </Texts>
             </Holds>
             <Holds size={"20"}>
-              <Checkbox
-              id={"1"}
-              label={" "}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => LocaleHandler(e)}
-              name="locale"/>
+              <CheckBox
+                id={"1"}
+                label={" "}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  LocaleHandler(e)
+                }
+                name="locale"
+              />
             </Holds>
           </Holds>
         </Contents>

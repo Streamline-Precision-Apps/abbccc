@@ -14,7 +14,7 @@ import { setLocale } from "@/actions/cookieActions";
 import { Forms } from "@/components/(reusable)/forms";
 import { Holds } from "@/components/(reusable)/holds";
 import Link from "next/link";
-import { Checkbox } from "@/components/(inputs)/checkboxnew";
+import { CheckBox } from "@/components/(inputs)/checkBox";
 
 export default function SignInForm() {
   const [viewSecret, setViewSecret] = useState(false);
@@ -56,13 +56,11 @@ export default function SignInForm() {
 
   return (
     <Contents width={"section"} className="pt-4">
-        {error && (
-          <Holds background={"red"} className="p-1 mb-3">
-            <Titles size={"h3"}>
-              {error}
-            </Titles>
-          </Holds>
-        )}
+      {error && (
+        <Holds background={"red"} className="p-1 mb-3">
+          <Titles size={"h3"}>{error}</Titles>
+        </Holds>
+      )}
       <Forms onSubmit={handleSubmit}>
         <Labels>{t("EmployeeID")}</Labels>
         <Inputs variant="default" name="username" type="text" required />
@@ -106,13 +104,13 @@ export default function SignInForm() {
             <Buttons background="green" type="submit">
               {animation && (
                 <Holds className="p-1">
-                <Images
-                  titleImg="/spinner.svg"
-                  titleImgAlt="login"
-                  size={"20"}
-                  position={"center"}
-                  className="animate-spin"
-                />
+                  <Images
+                    titleImg="/spinner.svg"
+                    titleImgAlt="login"
+                    size={"20"}
+                    position={"center"}
+                    className="animate-spin"
+                  />
                 </Holds>
               )}
               {!animation && <Titles className="p-3">{t("Btn-signIn")}</Titles>}
@@ -121,13 +119,16 @@ export default function SignInForm() {
         </Holds>
         <Holds position="row" className="mb-6">
           <Holds size={"70"}>
-            <Texts size="p2" position={"left"}>{t("Spanish")}</Texts>
+            <Texts size="p2" position={"left"}>
+              {t("Spanish")}
+            </Texts>
           </Holds>
           <Holds size={"30"} position={"right"}>
-            <Checkbox
-              disabled ={false}
+            <CheckBox
+              disabled={false}
               id={"1"}
-              label={"h"}
+              size={2}
+              label={""}
               onChange={(e: ChangeEvent<HTMLInputElement>) => LocaleHandler(e)}
               name="locale"
             />
