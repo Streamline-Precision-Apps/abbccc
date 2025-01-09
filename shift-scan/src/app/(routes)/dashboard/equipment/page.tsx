@@ -21,19 +21,19 @@ const EquipmentLogsSchema = z.object({
 });
 
 // Zod schema for individual log entry
-const LogEntrySchema = z.object({
-  id: z.string(),
-  isCompleted: z.boolean(),
-  Equipment: z
-    .object({
-      name: z.string(),
-    })
-    .nullable()
-    .optional(),
-});
+// const LogEntrySchema = z.object({
+//   id: z.string(),
+//   isCompleted: z.boolean(),
+//   Equipment: z
+//     .object({
+//       name: z.string(),
+//     })
+//     .nullable()
+//     .optional(),
+// });
 
 // Zod schema for the array of logs
-const LogsArraySchema = z.array(LogEntrySchema);
+// const LogsArraySchema = z.array(LogEntrySchema);
 import { EmployeeEquipmentLogs } from "@/lib/types";
 import { Bases } from "@/components/(reusable)/bases";
 
@@ -70,13 +70,13 @@ export default function EquipmentLogContent({ userId }: EquipmentLogs) {
           const data = await response.json();
 
           // Validate fetched data with Zod
-          try {
-            LogsArraySchema.parse(data);
-          } catch (error) {
-            if (error instanceof z.ZodError) {
-              console.error("Validation error in fetched logs:", error.errors);
-            }
-          }
+          // try {
+            // LogsArraySchema.parse(data);
+          // } catch (error) {
+          //   if (error instanceof z.ZodError) {
+          //     console.error("Validation error in fetched logs:", error.errors);
+          //   }
+          // }
 
           setLogs(data);
         } else {

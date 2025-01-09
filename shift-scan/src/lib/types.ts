@@ -13,12 +13,20 @@ import { clockInFormSchema } from "./validation";
 
 export type clockInForm = z.infer<typeof clockInFormSchema>;
 // -------------------------------------------------------------------------------------
+export enum TimeOffRequestType {
+  FAMILY_MEDICAL = "FAMILY_MEDICAL",
+  MILITARY = "MILITARY",
+  PAID_VACATION = "PAID_VACATION",
+  NON_PAID_PERSONAL = "NON_PAID_PERSONAL",
+  SICK = "SICK",
+}
 
 export type EquipmentTags = "TRUCK" | "TRAILER" | "EQUIPMENT" | "VEHICLE";
 
 export enum FormStatus {
   PENDING = "PENDING",
   APPROVED = "APPROVED",
+  DENIED = "DENIED",
   REJECTED = "REJECTED",
 }
 
@@ -180,6 +188,28 @@ export type sentContent = {
   createdAt: Date;
   updatedAt: Date;
   decidedBy: string | null;
+};
+
+export type LeaveRequest = {
+  id: string;
+  name: string;
+  requestedStartDate: string;
+  requestedEndDate: string;
+  requestType: string;
+  comment: string;
+  managerComment: string;
+  status: string;
+  employeeId: string;
+  createdAt: string;
+  updatedAt: string;
+  decidedBy: string;
+  signature: string;
+  employee: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    image: string;
+  };
 };
 
 export type TimeSheets = {
