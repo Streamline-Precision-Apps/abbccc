@@ -42,7 +42,7 @@ function SearchSelect<T extends JobCode | EquipmentCodes>({
   // Recent Options
   useEffect(() => {
     setRecentFilteredOptions(recentOptions);
-  }, [searchTerm, options]);
+  }, [searchTerm, options, recentOptions]);
 
   // Update `filteredOptions` when `searchTerm` changes
   useEffect(() => {
@@ -84,6 +84,8 @@ function SearchSelect<T extends JobCode | EquipmentCodes>({
           onSearchChange={handleSearchChange}
           placeholder={`${datatype}...`}
           selected={selectedTerm}
+          setSelectedTerm={setSelectedTerm}
+          setSearchTerm={setSearchTerm}
         />
       </Holds>
       {loading ? (

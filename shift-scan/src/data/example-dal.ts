@@ -11,7 +11,7 @@ if (!session) {
 console.error("Not Authorized", 201)
 redirect("/signin")
 }
-    const data = await prisma.users.findFirst()
+    const data = await prisma.user.findFirst()
 
     return {
         id: data?.id // this will return / filter out some sensitive fields

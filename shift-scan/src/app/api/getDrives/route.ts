@@ -26,15 +26,19 @@ export async function GET() {
     const payPeriodStart = calculatePayPeriodStart();
 
     // Fetch timesheet entries
-    const receivedContent = await prisma.timeSheets.findMany({
+    const receivedContent = await prisma.timeSheet.findMany({
       where: {
         userId,
         startTime: {
           gte: payPeriodStart,
         },
-        vehicleId: {
-          not: null, // Exclude null vehicleId entries
-        },
+        truckingLogs: {
+          every: {
+            equipmentId: {
+              not: null
+            }
+          }
+        }
       },
     });
 

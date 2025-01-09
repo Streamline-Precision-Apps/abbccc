@@ -1,103 +1,153 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import QrScanner from "qr-scanner";
 import { useRouter } from "next/navigation";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useTruckScanData } from "@/app/context/TruckScanDataContext";
 import { useCurrentView } from "@/app/context/CurrentViewContext";
+import { useEQScanData } from "@/app/context/equipmentContext";
 
 type QrReaderProps = {
   handleScanTruck: () => void;
   handleScanJobsite: () => void;
   url: string;
+  clockInRole: string;
+  type: string;
+  handleNextStep: () => void;
 };
 
 export default function QR({
   handleScanTruck,
   handleScanJobsite,
   url,
+  clockInRole,
+  type,
+  handleNextStep,
 }: QrReaderProps) {
-  const videoRef: React.MutableRefObject<HTMLVideoElement | null> =
-    useRef(null);
-  const qrScannerRef: React.MutableRefObject<QrScanner | null> = useRef(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const qrScannerRef = useRef<QrScanner | null>(null);
   const [scanCount, setScanCount] = useState(0);
-  const { setScanResult } = useScanData();
   const router = useRouter();
-  const SCAN_THRESHOLD = 200;
+
+  // Custom hooks
+  const { setScanResult } = useScanData();
   const { setTruckScanData } = useTruckScanData();
   const { setCurrentView } = useCurrentView();
+  const { setscanEQResult } = useEQScanData();
+  // Constants
+  const SCAN_THRESHOLD = 200;
 
-  const onScanSuccess = (result: QrScanner.ScanResult) => {
-    try {
-      if (result.data.startsWith("EQ")) {
-        // If the scan result starts with "EQ", set the view and do not call handleNextStep
-        setTruckScanData(result.data);
-        setCurrentView("truck");
-        handleScanTruck();
-      } else {
-        // Proceed as usual through clock in proccess.
-        setScanResult({ data: result.data });
-        qrScannerRef.current?.stop();
-        handleScanJobsite();
-      }
-    } catch (error) {
-      console.error("Error processing QR code:", error);
-      alert("Invalid QR code");
+  // ------------------- Different scan processes below----------------------------
+  // equipment process
+  const processEquipmentScan = useCallback(
+    (data: string) => {
+      setscanEQResult({ data: data });
       qrScannerRef.current?.stop();
-      router.back();
-      setTimeout(() => {
-        alert("Invalid QR code");
-      }, 100); // Delay the alert by 100 milliseconds
-    }
-  };
+      handleNextStep();
+    },
+    [setscanEQResult, handleNextStep]
+  );
+  // truck process
+  const processTruckScan = useCallback(
+    (data: string) => {
+      setTruckScanData(data);
+      setCurrentView("truck");
+      handleScanTruck();
+    },
+    [handleScanTruck, setTruckScanData, setCurrentView]
+  );
+  // general process
+  const processGeneralScan = useCallback(
+    (data: string) => {
+      setScanResult({ data });
+      qrScannerRef.current?.stop();
+      handleScanJobsite();
+    },
+    [setScanResult, handleScanJobsite]
+  );
+  ///-----------------------End of scan processes-----------------------------------
 
-  const onScanFail = () => {
-    setScanCount((prevCount) => prevCount + 1);
-  };
+  // QR code scan success handler, memoized with useCallback
+  const handleScanSuccess = useCallback(
+    (result: QrScanner.ScanResult) => {
+      try {
+        const { data } = result;
 
-  useEffect(() => {
-    if (videoRef.current) {
-      const scanner = new QrScanner(
-        videoRef.current,
-        (result: QrScanner.ScanResult) => onScanSuccess(result),
-        {
-          onDecodeError: onScanFail,
-          highlightScanRegion: true,
-          highlightCodeOutline: true,
-        }
-      );
-      qrScannerRef.current = scanner;
-
-      QrScanner.hasCamera().then((hasCamera: boolean) => {
-        if (hasCamera) {
-          scanner
-            .start()
-            .catch((error: Error) =>
-              console.error("Scanner start error:", error)
-            );
+        if (type === "equipment") {
+          processEquipmentScan(data);
+        } else if (clockInRole === "truck") {
+          processTruckScan(data);
+        } else if (clockInRole === "general" || clockInRole === "mechanic") {
+          processGeneralScan(data);
         } else {
-          console.error("No camera found");
+          throw new Error("Invalid QR code");
         }
-      });
+      } catch (error) {
+        console.error("QR Code Processing Error:", error);
+        qrScannerRef.current?.stop();
+        router.back();
+        alert("Invalid QR code");
+      }
+    },
+    [
+      type,
+      clockInRole,
+      processEquipmentScan,
+      processTruckScan,
+      processGeneralScan,
+      router,
+    ]
+  );
 
-      return () => {
-        scanner.stop();
-        scanner.destroy();
-      };
-    }
+  // QR code scan fail handler
+  const handleScanFail = useCallback(() => {
+    setScanCount((prev) => prev + 1);
   }, []);
 
+  // Initialize QR scanner
+  useEffect(() => {
+    if (!videoRef.current) return;
+
+    const scanner = new QrScanner(videoRef.current, handleScanSuccess, {
+      onDecodeError: handleScanFail,
+      highlightScanRegion: true,
+      highlightCodeOutline: true,
+    });
+
+    qrScannerRef.current = scanner;
+
+    QrScanner.hasCamera().then((hasCamera) => {
+      if (hasCamera) {
+        scanner
+          .start()
+          .catch((err) => console.error("Scanner Start Error:", err));
+      } else {
+        console.error("No camera found");
+      }
+    });
+
+    return () => {
+      scanner.stop();
+      scanner.destroy();
+    };
+  }, [handleScanSuccess, handleScanFail]);
+
+  // Handle excessive scan failures
   useEffect(() => {
     if (scanCount >= SCAN_THRESHOLD) {
       qrScannerRef.current?.stop();
       router.push(url);
     }
-  }, [scanCount, router]);
+  }, [scanCount, router, url]);
 
   return (
     <video
       ref={videoRef}
       className="h-full rounded-2xl border-4 bg-gray-300 border-black"
-    />
+      aria-label="QR scanner video stream"
+    >
+      Video stream not available. Please enable your camera.
+    </video>
   );
 }

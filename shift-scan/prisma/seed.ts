@@ -6,11 +6,8 @@ import {
   initialUsers,
   initialContacts,
   initialJobsites,
-  initialTimeSheets,
   initialCrews,
-  initialCrewMembers,
   initialCostCodes,
-  initialCrewJobsites,
   initialCCTags,
 } from "@/data/dataValues";
 import { hash } from "bcryptjs";
@@ -23,7 +20,7 @@ async function main() {
     for (const user of initialUsers) {
       try {
         const hashed = await hash(user.password, 10);
-        const newUser = await prisma.users.create({
+        const newUser = await prisma.user.create({
           data: { ...user, password: hashed },
         });
         console.log("Created user with id: ", newUser.id);
@@ -47,7 +44,7 @@ async function main() {
     // Insert jobsites
     for (const jobsite of initialJobsites) {
       try {
-        const newJobsite = await prisma.jobsites.create({ data: jobsite });
+        const newJobsite = await prisma.jobsite.create({ data: jobsite });
         console.log("Created jobsite with id: ", newJobsite.id);
       } catch (error) {
         console.log("Error creating jobsite:", error);
@@ -58,7 +55,7 @@ async function main() {
     // Insert cost codes
     for (const costCode of initialCostCodes) {
       try {
-        const newCostCode = await prisma.costCodes.create({ data: costCode });
+        const newCostCode = await prisma.costCode.create({ data: costCode });
         console.log("Created cost code with id: ", newCostCode.id);
       } catch (error) {
         console.log("Error creating cost code:", error);
@@ -68,10 +65,10 @@ async function main() {
 
     for (const cctag of initialCCTags) {
       try {
-        const newCCTag = await prisma.cCTags.create({ data: cctag });
-        console.log("Created cost code with id: ", newCCTag.id);
+        const newCCTag = await prisma.cCTag.create({ data: cctag });
+        console.log("Created CCTag with id: ", newCCTag.id);
       } catch (error) {
-        console.log("Error creating cost code:", error);
+        console.log("Error creating CCTag:", error);
         continue; // Skip to the next cost code
       }
     }
@@ -87,58 +84,14 @@ async function main() {
       }
     }
 
-    // Insert timesheets
-    for (const timesheet of initialTimeSheets) {
-      try {
-        const newTimeSheet = await prisma.timeSheets.create({
-          data: timesheet,
-        });
-        console.log("Created timesheet with id: ", newTimeSheet.id);
-      } catch (error) {
-        console.log("Error creating timesheet:", error);
-        continue; // Skip to the next timesheet
-      }
-    }
-
     // Insert crews
     for (const crew of initialCrews) {
       try {
-        const newCrew = await prisma.crews.create({ data: crew });
+        const newCrew = await prisma.crew.create({ data: crew });
         console.log("Created crew with id: ", newCrew.id);
       } catch (error) {
         console.log("Error creating crew:", error);
         continue; // Skip to the next crew
-      }
-    }
-
-    // Insert crew job sites
-    for (const crewjobsite of initialCrewJobsites) {
-      try {
-        const newCrewJobsite = await prisma.crewJobsites.create({
-          data: crewjobsite,
-        });
-        console.log("Created crew jobsite with id: ", newCrewJobsite.id);
-      } catch (error) {
-        console.log("Error creating crew jobsite:", error);
-        continue; // Skip to the next crew jobsite
-      }
-    }
-
-    // Insert crew members
-    for (const crewMember of initialCrewMembers) {
-      try {
-        const newCrewMember = await prisma.crewMembers.create({
-          data: crewMember,
-        });
-        console.log(
-          "Created crew member with crewId: ",
-          newCrewMember.crewId,
-          " and employeeId: ",
-          newCrewMember.employeeId
-        );
-      } catch (error) {
-        console.log("Error creating crew member:", error);
-        continue; // Skip to the next crew member
       }
     }
 

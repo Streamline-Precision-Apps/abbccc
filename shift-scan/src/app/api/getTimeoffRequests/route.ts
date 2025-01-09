@@ -14,7 +14,7 @@ export async function GET() {
 
   try {
     // Fetch sent requests based on `id` and `userId`
-    const sentContent = await prisma.timeoffRequestForms.findMany({
+    const sentContent = await prisma.timeOffRequestForm.findMany({
       where: {
         employeeId: userId,
       },

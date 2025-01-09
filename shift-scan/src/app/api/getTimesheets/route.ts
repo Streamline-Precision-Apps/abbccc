@@ -28,7 +28,7 @@ export async function GET(request: Request) {
       const nextDay = new Date(date);
       nextDay.setDate(date.getDate() + 1);
 
-      const timesheets = await prisma.timeSheets.findMany({
+      const timesheets = await prisma.timeSheet.findMany({
         where: {
           userId: userId,
           date: {

@@ -30,6 +30,7 @@
     "NewPassword": "Nueva contraseña",
     "ConfirmPassword": "Confirmar contraseña",
     "Next": "Siguiente",
+    "Submitting" : "Enviando...",
     "NewPasswordEmptyError": "Intento no válido. ¡La nueva contraseña no puede estar vacía!",
     "ConfirmPasswordEmptyError": "Intento no válido. ¡La confirmación de la contraseña no puede estar vacía!",
     "PasswordMismatchError": "Intento no válido. ¡Las contraseñas no coinciden!",
@@ -47,8 +48,11 @@
     "OptionalButVeryHelpful": "Opcional, pero muy útil",
     "BiometricsLogin": "Inicio de sesión biométrico",
     "Notifications": "Notificaciones",
-    "Photo Album": "Álbum de fotos",
-    "Next": "Siguiente"
+    "PhotoAlbum": "Álbum de fotos",
+    "Next": "Siguiente",
+    "Submitting" : "Enviando...",
+    "FetchErrorMessage" : "Se produjo un error al obtener la configuración. Por favor, inténtelo de nuevo.",
+    "RequiredPermissionsError" : "Por favor, asegúrese de permitir los permisos requeridos antes de continuar."
 },
 
 "SignUpProfilePicture":{
@@ -57,6 +61,7 @@
     "UseCamera": "Usar cámara",
     "CameraRoll": "Carrete de fotos",
     "Next": "Siguiente",
+    "Submitting" : "Enviando...",
     "ProfilePictureMissingError": "Intento no válido. ¡Debes seleccionar una foto de perfil!",
     "ImageAlt": "Imagen de foto de perfil"
 },
@@ -64,10 +69,11 @@
 "SignUpVirtualSignature":{
     "AddASignature": "Agregar una firma",
     "LetsAddASignature": "¡Añadamos una firma electrónica! Asegúrate de que te guste, aparecerá en todos los formularios.",
-    "SingHere": "Firma aquí",
+    "SignHere": "Firma aquí",
     "Clear": "Borrar",
     "Save": "Guardar",
     "Next": "Siguiente",
+    "Submitting" : "Enviando...",
     "SignatureMissingError": "Intento no válido. ¡Debes añadir una firma!"
 },
 
@@ -87,12 +93,13 @@
     "Name": "{firstName}",
     "Date": "{date}",
     "PayPeriodHours": "Horas totales",
-    "Break": "Tiempo de descanso",
+    "Break": "Descanso",
     "Unit": "hrs",
     "DA-Time-Label" : "Hrs",
     "DA-Today": "Hoy",
     "TimeSheet-Label": "Ver mi hoja de tiempo",
     "Clock-btn": "Fichar",
+    "Clock-btn-break"   : "Regresar",
     "Title": "Ver hojas de tiempo",
     "Header1":"Por favor, ingresa una fecha para buscar tus hojas de tiempo.",
     "EnterDate": "Ingresar fecha",
@@ -154,6 +161,14 @@
     "Notes": "Notas adicionales"
 },
 "Generator":{
+    "SelectJobsite": "Seleccionar un sitio de trabajo",
+    "EquipmentDescription": "Descripción",
+    "NeedsMaintenance": "Necesita mantenimiento",
+    "Vehicle": "Vehículo",
+    "JobsiteLocation": "¿En qué lugar de trabajo se encuentra este equipo?",
+    "SelectCostCodeTags": "Seleccionar una Etiqueta de Costo",
+    "SelectTag": "Seleccionar Etiqueta",
+    "AddTag": "Agregar",
     "Loading": "Cargando...",
     "Create": "Crear",
     "Picture": "Imagen del Equipo",
@@ -161,8 +176,9 @@
     "CheckedOut": "Prestado",
     "Banner": "Registrado",
     "JobsiteName": "Nombre del Sitio",
-    "StreetNumber": "Número de Calle",
-    "StreetName": "Nombre de Calle",
+    "AddressInformation": "Información de Dirección",
+    "Address": "Dirección",
+   "AddressExample": "Ingrese la dirección del sitio",
     "City": "Ciudad",
     "State": "Estado",
     "Country": "País",
@@ -171,7 +187,6 @@
     "IsActive": "¿El Sitio está Activo?",
     "Temporary": "Temporal",
     "NameExample": "Ingrese un nombre para el sitio",
-    "Address": "Información de Dirección",
     "StreetNumberDirection": "Número de Calle",
     "StreetNameDirection": "Nombre de Calle",
     "CityTitle": "Burley",
@@ -194,8 +209,8 @@
     "NamePlaceholder": "Ingrese Nombre del Equipo",
     "DescriptionPlaceholder": "Ingrese una Descripción en menos de 40 caracteres",
     "Status": "Estado del Equipo",
-    "Operational": "OPERATIONAL",
-    "NeedsRepair": "NEEDS REPAIR",
+    "Operational": "Operacional",
+    "NeedsRepair": "Necesita Reparación",
     "Make": "Marca",
     "MakePlaceholder": "Ingrese Marca del Vehículo",
     "Model": "Modelo",
@@ -239,6 +254,7 @@
     "Form3Submit" : "Enviar forma"    
 },
 "MyTeam": {
+    "NoTimesheetsFound": "No se Encontraron Hojas de Tiempo",
     "Teams-Title": "Mis Equipos",
     "Teams-Logo-Title": "Icono del Equipo",
     "MyTeams-Title": "",
@@ -267,6 +283,13 @@
     "ID": "Id: #"
 },
 "Clock": {
+    "PleaseLeaveACommentOfWhatYouDid": "Por favor, deje un comentario de lo que hizo.",
+    "TodayIDidTheFollowing": "Hoy, hice lo siguiente...",
+    "General": "General",
+    "Truck": "Operador de Camiones",
+    "Mechanic": "Mecánico",
+    "TASCO": "TASCO",
+    "PleaseChooseYourRole": "Por favor, elija su rol:",
     "ChangeCostCode": "Cambiar Código de Costo",
     "ScanJobSite": "Escanear Sitio de Trabajo",
     "SwitchSites": "Cambiar Sitios",
@@ -291,7 +314,7 @@
     "ScanQR": "Escanear Código QR",
     "ScanEquipment": "Escanear Equipo",
     "Cancel": "Cancelar",
-    "ReturnToJobsite": "¿Cambiar Código de Costo?",
+    "ReturnToJobsite": "Regresar al Rol de Trabajo y Sitio Anterior?",
     "VerifyEquipment": "Verificar Equipo",
     "Equipment-label": "Equipo Encontrado",
     "ClockIn-btn": "Fichar",
@@ -311,6 +334,7 @@
     "Mileage": "Mileage"
     },
 "ClockOut":{
+    "NoSignature": "No tiene firma registrada.",
     "SignBelow": "Al marcar la casilla a continuación, certifico que no sufrí lesiones este día.",
     "Jobsite" : "Sitio de trabajo # ",
     "CostCode" : "Código de Costo ",
@@ -346,6 +370,7 @@
     "Logs-Fetch": "Error al obtener registros:"
 },
 "Hamburger": {
+    "Saving": "Guardando Cambios",
     "loading": "Cargando...",
     "NewPassword": "Nueva Contraseña",
     "ConfirmPassword": "Confirmar Nueva Contraseña",
@@ -372,7 +397,11 @@
     "Signature": "Haga clic para Editar Firma",
     "EditSignature": "Editar Firma",
     "PhoneNumber": "Número de Teléfono",
+    "Email": "Correo",
     "LocationAccess": "Acceso a Ubicación",
+    "Loading": "Cargando",
+    "ChangeProfilePicture": "Cambiar Foto de Perfil",
+    "SubmitChanges": "Guardar Cambios",
     "Language": "Idioma"
 },
 "Admins":{
@@ -447,7 +476,7 @@
     "NoCrewsFound": "No Se Encontraron Equipos.",
     "ChangeProfilePicture": "Cambiar Foto de Perfil",
     "ChangeSignature": "Cambiar Firma",
-    "YourProfile": "Tu Perfil",
+    "YourProfile": "Su Perfil",
     "SubmitEdit": "Enviar Edición",
     "TerminateEmployee": "Terminar Personal",
     "ActivateEmployee": "Activar Personal",

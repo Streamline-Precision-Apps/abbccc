@@ -189,7 +189,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
       }
     });
     fetchTimesheets();
-  }, [dateByFilter, params.employee]);
+  }, [dateByFilter, params.employee, t]);
   //  ---------------------------------------------------------------------------------------
   // fetch all equipment names
   useEffect(() => {
@@ -216,7 +216,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
     };
 
     fetchEquipment();
-  }, []); // Keep the dependencies array empty to run the effect only once
+  }, [t]); // Keep the dependencies array empty to run the effect only once
 
   //  ---------------------------------------------------------------------------------------
   // useeffect are listening to the date and filter changes and then update based on that
@@ -254,7 +254,6 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
     if (!CreateTimesheetResponse) {
       return;
     }
-
     setOriginalTimeSheets(
       (prev) => [...prev, CreateTimesheetResponse] as TimeSheetView[]
     );
@@ -454,34 +453,14 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
         const formData = new FormData();
         formData.append("id", timesheet.id);
         formData.append("userId", timesheet.userId || "");
+        formData.append("jobsiteId", timesheet.jobsiteId || "");
+        formData.append("costcode", timesheet.costcode || "");
         formData.append("startTime", timesheet.startTime || "");
         formData.append("endTime", timesheet.endTime || "");
-        formData.append("duration", timesheet.duration?.toString() || "");
         formData.append("date", timesheet.date || "");
-        formData.append("costcode", timesheet.costcode || "");
-        formData.append("jobsiteId", timesheet.jobsiteId || "");
-        formData.append("timeSheetComments", timesheet.timeSheetComments || "");
-        formData.append("vehicleId", timesheet.vehicleId?.toString() || "");
+        formData.append("comment", timesheet.comment || "");
+        formData.append("statusComment", timesheet.statusComment || "");
         formData.append("status", timesheet.status || "");
-        formData.append(
-          "startingMileage",
-          timesheet.startingMileage?.toString() || ""
-        );
-        formData.append(
-          "endingMileage",
-          timesheet.endingMileage?.toString() || ""
-        );
-        formData.append("leftIdaho", timesheet.leftIdaho ? "true" : "false");
-        formData.append(
-          "refuelingGallons",
-          timesheet.refuelingGallons?.toString() || ""
-        );
-        formData.append(
-          "hauledLoadsQuantity",
-          timesheet.hauledLoadsQuantity?.toString() || ""
-        );
-        formData.append("equipmentHauled", timesheet.equipmentHauled || "");
-        formData.append("materialsHauled", timesheet.materialsHauled || "");
         console.log("formData:", formData);
 
         const result = await saveTimesheet(formData); // Handle updating existing timesheet
@@ -532,7 +511,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
   const handleDelete = async (id: string, type: string) => {
     try {
       if (type === "timesheet") {
-        const timesheetId = parseInt(id, 10);
+        const timesheetId = id;
         await deleteTimesheet(timesheetId);
         setUserTimeSheets((prev) => prev.filter((sheet) => sheet.id !== id));
         setOriginalTimeSheets((prev) =>
@@ -541,7 +520,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
         setNotification("Timesheet deleted successfully!", "success");
       }
       if (type === "log") {
-        const logId = parseInt(id, 10);
+        const logId = id;
         await deleteLog(logId);
         setEquipmentLogs((prev) =>
           prev.filter((log) => log.id?.toString() !== id)
@@ -607,28 +586,6 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
               />
             </Holds>
           </Holds>
-          <Holds
-            position={"row"}
-            className=" row-start-2 row-end-3 col-start-1 col-end-3 h-full"
-          >
-            <Grids rows={"1"} cols={"8"} className=" h-full w-full my-auto">
-              <Holds className="col-span-5 my-auto">
-                <Texts size={"p6"} className="">
-                  {t("Comments")}
-                </Texts>
-              </Holds>
-              <Holds>
-                <Images
-                  titleImg={"/comment.svg"}
-                  titleImgAlt={"comment icon"}
-                  className=" my-auto col-span-2"
-                  onClick={handleCommentSection}
-                />
-              </Holds>
-              <div className="w-2 h-2 mt-2 rounded-full bg-app-orange flex col-span-1"></div>
-            </Grids>
-          </Holds>
-
           <Holds className="row-start-2 row-end-3 col-start-4 col-end-6  h-full">
             <Holds className=" my-auto">
               <Texts position={"right"} size={"p6"}>
@@ -636,21 +593,8 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
               </Texts>
             </Holds>
           </Holds>
-          {showCommentSection && (
-            <Holds className="row-start-3 row-end-12 col-start-1 col-end-6 h-full w-full">
-              <TextAreas
-                maxLength={40}
-                className="w-full"
-                style={{ resize: "none" }}
-              ></TextAreas>
-            </Holds>
-          )}
           <Holds
-            className={`${
-              showCommentSection
-                ? "row-start-5 row-end-12 col-start-1 col-end-6  "
-                : "row-start-3 row-end-12 col-start-1 col-end-6 "
-            }  h-full w-full`}
+            className={`${"row-start-3 row-end-12 col-start-1 col-end-6 "}  h-full w-full`}
           >
             <Holds className="h-full w-full row-span-5 overflow-y-auto no-scrollbar border-[3px] border-black rounded-[10px]">
               {userTimeSheets.length > 0
@@ -911,7 +855,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                 </Labels>
                                 <TextAreas
                                   maxLength={40}
-                                  value={timesheet.timeSheetComments?.toString()}
+                                  value={timesheet.comment?.toString()}
                                   style={{ resize: "none" }}
                                   onChange={(e) =>
                                     handleInputChange(
@@ -924,14 +868,12 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                 <Texts
                                   size={"p6"}
                                   className={`text-app-gray absolute bottom-3 right-2 ${
-                                    timesheet.timeSheetComments?.length === 40
+                                    timesheet.comment?.length === 40
                                       ? "text-app-red"
                                       : ""
                                   }`}
                                 >
-                                  {`${
-                                    timesheet.timeSheetComments?.length ?? 0
-                                  }/40`}
+                                  {`${timesheet.comment?.length ?? 0}/40`}
                                 </Texts>
                               </Holds>
                             </Holds>
@@ -1054,77 +996,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                               placeholder="Search costcode by name"
                             />
                             {/* End of costcode search Modal*/}
-                            <Holds
-                              position={"row"}
-                              className="h-full w-full mb-2 gap-4"
-                            >
-                              <Holds>
-                                <Labels size={"p6"}>{t("VehicleID")}</Labels>
-                                <EditableFields
-                                  type="text"
-                                  value={timesheet.vehicleId?.toString() || ""}
-                                  onChange={(e) =>
-                                    handleInputChange(
-                                      timesheet.id,
-                                      "vehicleId",
-                                      e.target.value
-                                    )
-                                  }
-                                  isChanged={isFieldChanged(
-                                    timesheet.id,
-                                    "vehicleId"
-                                  )}
-                                  onRevert={() =>
-                                    revertTimesheet(timesheet.id, "vehicleId")
-                                  }
-                                  onClick={() =>
-                                    openVehicleSearch(
-                                      timesheet.id?.toString() || ""
-                                    )
-                                  }
-                                  variant="default"
-                                  size="default"
-                                />
-                              </Holds>
-                              <Holds
-                                position={"row"}
-                                className="h-full w-full mb-2 gap-4"
-                              >
-                                {timesheet.vehicleId && (
-                                  <Holds>
-                                    <Labels size={"p6"}>
-                                      {t("StartingMileage")}
-                                    </Labels>
-                                    <EditableFields
-                                      type="text"
-                                      value={
-                                        timesheet.startingMileage?.toString() ||
-                                        ""
-                                      }
-                                      onChange={(e) =>
-                                        handleInputChange(
-                                          timesheet.id,
-                                          "startingMileage",
-                                          e.target.value
-                                        )
-                                      }
-                                      isChanged={isFieldChanged(
-                                        timesheet.id,
-                                        "startingMileage"
-                                      )}
-                                      onRevert={() =>
-                                        revertTimesheet(
-                                          timesheet.id,
-                                          "startingMileage"
-                                        )
-                                      }
-                                      variant="default"
-                                      size="default"
-                                    />
-                                  </Holds>
-                                )}
-                              </Holds>
-                            </Holds>
+
                             {/* Start of jobsite search Modal*/}
                             <SearchModal
                               isOpen={
@@ -1163,7 +1035,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                               placeholder="Search Vehicle by name"
                             />
                             {/* If the time sheet has a vehicle ID, show Vehicle ID, Starting Mileage, and Ending Mileage and all truck details */}
-                            {timesheet.vehicleId && (
+                            {/* {timesheet.vehicleId && (
                               <>
                                 <Holds
                                   position={"row"}
@@ -1365,7 +1237,7 @@ export const TimesheetView = ({ params }: { params: { employee: string } }) => {
                                   </Holds>
                                 </Holds>
                               </>
-                            )}
+                            )} */}
                           </>
                         )}
                       </Holds>

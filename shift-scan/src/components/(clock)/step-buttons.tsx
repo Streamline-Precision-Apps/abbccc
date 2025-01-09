@@ -2,6 +2,7 @@
 import React from "react";
 import { Buttons } from "../(reusable)/buttons";
 import { useTranslations } from "next-intl";
+import { Holds } from "../(reusable)/holds";
 
 interface StepButtonsProps {
   handleNextStep: () => void;
@@ -14,8 +15,10 @@ export default function StepButtons({
 }: StepButtonsProps) {
   const t = useTranslations("Clock");
   return (
-    <Buttons background={"orange"} onClick={handleNextStep}>
-      {isLastStep ? t("Submit") : t("Continue")}
-    </Buttons>
+    <Holds className="h-full w-full">
+      <Buttons background={"orange"} onClick={handleNextStep}>
+        {isLastStep ? t("Submit") : t("Continue")}
+      </Buttons>
+    </Holds>
   );
 }

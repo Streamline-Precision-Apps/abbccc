@@ -12,7 +12,6 @@ import QrEquipmentContent from "./qrEquipmentContent";
 export default function QRGeneratorContent() {
   const [activeTab, setActiveTab] = useState(1);
   const t = useTranslations("Generator");
-  const u = useTranslations("Generator");
 
   return (
     <>
@@ -22,7 +21,7 @@ export default function QRGeneratorContent() {
             {t("Jobsite")}
           </Tab>
           <Tab onClick={() => setActiveTab(2)} isActive={activeTab === 2}>
-            {u("EquipmentTitle")}
+            {t("EquipmentTitle")}
           </Tab>
         </Holds>
         <Holds

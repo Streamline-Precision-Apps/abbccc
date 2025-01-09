@@ -1,4 +1,6 @@
+// Updated API endpoint to fetch crew details by crew ID
 "use server";
+
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
@@ -10,57 +12,56 @@ export async function GET(
   const session = await auth();
   const userId = session?.user?.id;
 
+  // Verify user authentication
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const crewId = Number(params.crew);
-  if (isNaN(crewId)) {
+  const crewId = params.crew;
+
+  // Validate crew ID
+  if (!crewId) {
     return NextResponse.json({ error: "Invalid crew ID" }, { status: 400 });
   }
 
   try {
-    const crewMembers = await prisma.crewMembers.findMany({
-      where: { crewId: crewId },
+    // Fetch the crew and its associated users
+    const crew = await prisma.crew.findUnique({
+      where: { id: crewId },
       include: {
-        crew: {
+        users: {
           select: {
-            name: true,
-            description: true,
-            crewMembers: {
-              select: {
-                supervisor: true,
-                user: {
-                  select: {
-                    id: true,
-                    firstName: true,
-                    lastName: true,
-                    permission: true,
-                    image: true, // Ensure base64 image field is included
-                  },
-                },
-              },
-            },
+            id: true,
+            firstName: true,
+            lastName: true,
+            image: true,
+            permission: true,
           },
         },
       },
     });
 
-    const crew = crewMembers[0].crew.crewMembers.map((member) => ({
-      id: member.user.id,
-      firstName: member.user.firstName,
-      lastName: member.user.lastName,
-      permission: member.user.permission,
-      supervisor: member.supervisor,
-      image: member.user.image, // Embed base64 string as a data URL
-    }));
-    const crewName = crewMembers[0].crew.name;
-    const crewDescription = crewMembers[0].crew.description;
+    // Handle case where crew is not found
+    if (!crew) {
+      return NextResponse.json({ error: "Crew not found" }, { status: 404 });
+    }
 
-    console.log(crew);
-    const data = { crew, crewName, crewDescription };
+    // Format the response data
+    const responseData = {
+      crewId: crew.id,
+      crewName: crew.name,
+      crewDescription: crew.description,
+      leadId: crew.leadId,
+      users: crew.users.map((user) => ({
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        image: user.image,
+        permission: user.permission,
+      })),
+    };
 
-    return NextResponse.json(data);
+    return NextResponse.json(responseData);
   } catch (error) {
     console.error("Error fetching crew data:", error);
     return NextResponse.json(

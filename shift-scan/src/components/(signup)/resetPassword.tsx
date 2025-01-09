@@ -8,7 +8,7 @@ import { Labels } from "@/components/(reusable)/labels";
 import { FormEvent, useEffect, useState, useRef } from "react";
 import { setUserPassword } from "@/actions/userActions";
 import { hash } from "bcryptjs";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import { Contents } from "@/components/(reusable)/contents";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
@@ -31,6 +31,9 @@ const ResetPassword = ({ userId, handleNextStep,} : {
   const [confirmPassword, setConfirmPassword] = useState("");
   const useFormRef = useRef<HTMLFormElement>(null);
 
+  const [isPasswordValid, setIsPasswordValid] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
   const viewPasscode1 = () => {
     setViewSecret1(!viewSecret1);
   };
@@ -38,7 +41,7 @@ const ResetPassword = ({ userId, handleNextStep,} : {
     setViewSecret2(!viewSecret2);
   };
 
-  const handleSubmitClick = () => {
+  const handleSubmitPassword = () => {
     useFormRef.current?.dispatchEvent(
       new Event("submit", { bubbles: true, cancelable: true })
     );
@@ -86,15 +89,19 @@ const ResetPassword = ({ userId, handleNextStep,} : {
     formData.append("id", userId);
     formData.append("password", hashed);
 
+    setIsSubmitting(true);
     try {
+
       await setUserPassword(formData);
-      handleNextStep();
+      handleNextStep(); // Proceed to the next step only if the image upload is successful
     } catch (error) {
       console.error("Error updating password:", error);
       setBannerMessage(
         "There was an error updating your password. Please try again."
       );
       setShowBanner(true);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -129,7 +136,18 @@ const ResetPassword = ({ userId, handleNextStep,} : {
       >
         <Texts size="p5" className="p-2">{label}</Texts>
       </Holds>
+      
   );
+
+  const handlePasswordValid = () => {
+    const passed = eightChar && oneNumber && oneSymbol;
+    if (!passed) {
+      setIsPasswordValid(false);
+      return;
+    }
+
+    setIsPasswordValid(true);
+  };
 
   return (
     <Grids rows={"10"} gap={"5"} className="mb-5">
@@ -155,7 +173,7 @@ const ResetPassword = ({ userId, handleNextStep,} : {
             {showBanner && (
             <Holds
             className="mb-2 p-1 border-black border-[3px] rounded-[10px] justify-center"
-            background="orange"
+            background="red"
             size="full"
             >
               <Texts size="p5">{bannerMessage}</Texts>
@@ -181,6 +199,7 @@ const ResetPassword = ({ userId, handleNextStep,} : {
               onChange={(e) => {
                 handlePasswordChange(e.target.value);
                 setNewPassword(e.target.value);
+                handlePasswordValid();
               }}
               />
               <Holds position="row" className="">
@@ -197,15 +216,24 @@ const ResetPassword = ({ userId, handleNextStep,} : {
               type={viewSecret2 ? "text" : "password"}
               id="confirm-password"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={(e) => {
+                setConfirmPassword(e.target.value)
+                handlePasswordValid();
+              }}
               />
             </Holds>
           </Contents>
         </form>
       </Holds>
       <Holds className="row-span-1 h-full">
-        <Buttons background={"orange"} onClick={() => handleSubmitClick()}>
-          <Titles size={"h2"}>{t("Next")}</Titles>
+        <Buttons 
+        onClick={() => handleSubmitPassword()}
+        background={isPasswordValid ? "orange" : "darkGrey"}
+        disabled={isSubmitting} // Disable the button while submitting
+        >
+          <Titles size={"h2"}>              
+            {isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}
+          </Titles>
         </Buttons>
       </Holds>
     </Grids>

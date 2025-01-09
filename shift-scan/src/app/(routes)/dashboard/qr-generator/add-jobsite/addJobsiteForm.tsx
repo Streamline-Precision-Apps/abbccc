@@ -11,6 +11,8 @@ import { useRouter } from "next/navigation";
 import { Holds } from "@/components/(reusable)/holds";
 import { Titles } from "@/components/(reusable)/titles";
 import { Contents } from "@/components/(reusable)/contents";
+import { CCTags } from "@/lib/types";
+import { Selects } from "@/components/(reusable)/selects";
 
 type Props = {
   handler: () => void;
@@ -25,6 +27,8 @@ export default function AddJobsiteForm({
   const t = useTranslations("Generator");
   const [qrCode, setQrCode] = useState("");
   const router = useRouter();
+  const [tags, setTags] = useState<CCTags[]>([]);
+  const [selectedTags, setSelectedTags] = useState<CCTags[]>([]);
 
   const randomQrCode = () => {
     const characters =
@@ -64,21 +68,61 @@ export default function AddJobsiteForm({
     }, 2300);
   }
 
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const allTagsRes = await fetch(`/api/getAllTags`);
+        const allTags = await allTagsRes.json();
+        setTags(allTags as CCTags[]);
+      } catch (error) {
+        console.error("Error fetching tags:", error);
+      }
+    };
+
+    fetchTags();
+  }, []);
+
+  const addTag = (tagId: string) => {
+    const tag = tags.find((t) => t.id === tagId);
+    if (tag && !selectedTags.some((t) => t.id === tagId)) {
+      setSelectedTags((prev) => [...prev, tag]);
+    }
+  };
+
+  const removeTag = (tagId: string) => {
+    setSelectedTags((prev) => prev.filter((tag) => tag.id !== tagId));
+  };
+
   return (
     <Forms
       action={createJobsite}
-      onSubmit={() => {
+      onSubmit={(e) => {
+        e.preventDefault();
+
+        const form = e.target as HTMLFormElement;
+        const formData = new FormData(form);
+
+        // Add selectedTags to the FormData
+        selectedTags.forEach((tag) => formData.append("tags", tag.id));
+
         setBanner(true);
         setBannerText("Created Jobsite Successfully");
         handler();
-        handleRoute();
+
+        // Call server action
+        createJobsite(formData)
+          .then(() => handleRoute())
+          .catch((error) => {
+            console.error("Error creating jobsite:", error);
+            setBannerText("Error: Failed to create jobsite");
+          });
       }}
     >
       <Holds background={"white"} className="my-5">
         <Contents width={"section"} className="mt-2 mb-5">
           <Labels size={"p4"}>
             {t("Temporary")}
-            <Inputs id="id" name="id" type="text" value={qrCode} disabled />
+            <Inputs id="qrId" name="qrId" type="text" value={qrCode} readOnly />
           </Labels>
           <Labels size={"p4"}>
             {t("Name")}
@@ -94,28 +138,17 @@ export default function AddJobsiteForm({
       <Holds background={"white"} className="my-5">
         <Contents width={"section"} className="mt-2 mb-5">
           <Titles size={"h3"} className="my-2">
-            {t("Address")}
+            {t("AddressInformation")}
           </Titles>
           <Labels size={"p4"}>
-            {t("StreetNumber")}
+            {t("Address")}
             <Inputs
               variant={"default"}
-              id="streetNumber"
-              name="streetNumber"
-              placeholder={`${t("StreetNumberDirection")} `}
+              id="address"
+              name="address"
+              placeholder={`${t("Address")} `}
             />
           </Labels>
-
-          <Labels size={"p4"}>
-            {t("StreetName")}
-            <Inputs
-              className="text-black"
-              id="streetName"
-              name="streetName"
-              placeholder={t("StreetNameDirection")}
-            />
-          </Labels>
-
           <Labels size={"p4"}>
             {t("City")}
             <Inputs
@@ -151,17 +184,70 @@ export default function AddJobsiteForm({
           </Holds>
         </Contents>
       </Holds>
-      {/* Commented out foreign country because its not that big of a concern right now*/}
-      {/* <Holds size={"full"} className="mr-4">
-        <Labels>
-          {t("Country")}
-          <Inputs
-          variant={"default"}
-          id="country"
-          name="country"
-          />
-          </Labels>
-          </Holds> */}
+
+      <Holds background={"white"} className="my-5">
+        <Contents width={"section"} className="mt-2 mb-5">
+          <Titles size={"h3"} className="my-2">
+            {t("SelectCostCodeTags")}
+          </Titles>
+          <Holds position={"row"} className="flex items-center gap-2">
+            <Holds className="w-3/4">
+              <Selects
+                id="tags"
+                name="tags"
+                className="p-2 border rounded"
+                onChange={(e) => addTag(e.target.value)}
+              >
+                <option value="">{t("SelectTag")}</option>
+                {tags.map((tag) => (
+                  <option key={tag.id} value={tag.id}>
+                    {tag.name}
+                  </option>
+                ))}
+              </Selects>
+            </Holds>
+            <Holds className="w-1/4">
+              <Buttons
+                type="button"
+                background={"green"}
+                className="p-2"
+                onClick={() => {
+                  const select = document.getElementById(
+                    "tags"
+                  ) as HTMLSelectElement;
+                  if (select?.value) addTag(select.value);
+                }}
+              >
+                {t("AddTag")}
+              </Buttons>
+            </Holds>
+          </Holds>
+
+          <Holds className="mt-4">
+            <Holds className="flex flex-wrap gap-2 mt-2">
+              {selectedTags.map((tag) => (
+                <Holds
+                  position={"row"}
+                  key={tag.id}
+                  className=" gap-2 p-2 border rounded bg-gray-100 w-1/3"
+                >
+                  <Holds className="w-full">
+                    <span>{tag.name}</span>
+                  </Holds>
+                  <Buttons
+                    type="button"
+                    onClick={() => removeTag(tag.id)}
+                    background={"none"}
+                    className="text-red-500 "
+                  >
+                    X
+                  </Buttons>
+                </Holds>
+              ))}
+            </Holds>
+          </Holds>
+        </Contents>
+      </Holds>
       <Holds background={"white"} className="my-5">
         <Contents width={"section"} className="mt-2 mb-5">
           <Titles size={"h3"} className="my-2">

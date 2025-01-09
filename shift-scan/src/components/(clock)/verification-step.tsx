@@ -4,9 +4,10 @@ import { useTranslations } from "next-intl";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
+
 import {
   CreateTimeSheet,
-  // updateTimeSheetBySwitch,
+  updateTimeSheetBySwitch,
 } from "@/actions/timeSheetActions";
 import { Clock } from "../clock";
 import { setAuthStep } from "@/app/api/auth";
@@ -23,10 +24,12 @@ import { useTruckScanData } from "@/app/context/TruckScanDataContext";
 import { useStartingMileage } from "@/app/context/StartingMileageContext";
 import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
+import { useCommentData } from "@/app/context/CommentContext";
 
 type VerifyProcessProps = {
   handleNextStep?: () => void;
   type: string;
+  role: string;
   option?: string;
   comments?: string;
 };
@@ -35,6 +38,7 @@ export default function VerificationStep({
   type,
   handleNextStep,
   comments,
+  role,
 }: VerifyProcessProps) {
   const t = useTranslations("Clock");
   const { scanResult } = useScanData();
@@ -44,7 +48,7 @@ export default function VerificationStep({
   const { data: session } = useSession();
   const { truckScanData } = useTruckScanData(); // Move this hook call to the top level.
   const { startingMileage } = useStartingMileage();
-
+  const { savedCommentData, setCommentData } = useCommentData();
   if (!session) return null; // Conditional rendering for session
 
   const { id } = session.user;
@@ -64,10 +68,17 @@ export default function VerificationStep({
           const formData2 = new FormData();
           formData2.append("id", tId?.toString() || "");
           formData2.append("endTime", new Date().toISOString());
-          formData2.append("timesheetComments", "");
-          formData2.append("appComment", "Switched jobs");
+          formData2.append(
+            "timesheetComments",
+            savedCommentData?.id.toString() || ""
+          );
 
-          // await updateTimeSheetBySwitch(formData2);
+          const responseOldSheet = await updateTimeSheetBySwitch(formData2);
+          if (responseOldSheet) {
+            // removing the old sheet comment so it doesn't show up on the new sheet
+            setCommentData(null);
+            localStorage.removeItem("savedCommentData");
+          }
 
           const formData = new FormData();
           if (truckScanData) {
@@ -79,12 +90,13 @@ export default function VerificationStep({
           formData.append("jobsiteId", scanResult?.data || "");
           formData.append("costcode", savedCostCode?.toString() || "");
           formData.append("startTime", new Date().toISOString());
-          formData.append("endTime", "");
+          formData.append("workType", role);
 
-          // const response = await CreateTimeSheet(formData);
-          // const result = { id: response.id.toString() };
-          // setTimeSheetData(result);
+          const response = await CreateTimeSheet(formData);
+          const result = { id: response.id.toString() };
+          setTimeSheetData(result);
           setAuthStep("success");
+          localStorage.setItem("workType", response.workType);
 
           if (handleNextStep) {
             handleNextStep();
@@ -109,10 +121,11 @@ export default function VerificationStep({
         formData.append("jobsiteId", scanResult?.data || "");
         formData.append("costcode", savedCostCode?.toString() || "");
         formData.append("startTime", new Date().toISOString());
+        formData.append("workType", role);
 
-        // const response = await CreateTimeSheet(formData);
-        // const result = { id: response.id.toString() };
-        // setTimeSheetData(result);
+        const response = await CreateTimeSheet(formData);
+        const result = { id: response.id.toString() };
+        setTimeSheetData(result);
         setAuthStep("success");
 
         if (handleNextStep) {
@@ -126,32 +139,48 @@ export default function VerificationStep({
 
   return (
     <>
-      <Contents width={"section"} className="h-full my-5">
-        <TitleBoxes
-          title={t("VerifyJobSite")}
-          titleImg="/clock-in.svg"
-          titleImgAlt="Verify"
-          variant="row"
-          size="default"
-          type="row"
-        />
-        <Forms onSubmit={handleSubmit} className="h-full my-5">
+      <Grids rows={"10"} gap={"2"} className="h-full w-full">
+        <Contents width={"section"} className="h-full row-span-1 ">
+          <TitleBoxes
+            title={t("VerifyJobSite")}
+            titleImg="/clock-in.svg"
+            titleImgAlt="Verify"
+            variant="row"
+            size="default"
+            type="row"
+          />
+        </Contents>
+        <Forms onSubmit={handleSubmit} className="h-full w-full row-span-9">
           <Holds className="h-full w-full">
-            <Contents width={"section"} className="h-full">
-              <Grids cols={"5"} rows={"5"} gap={"5"}>
-                <Holds className="row-start-1 row-end-2 col-start-5 col-end-6 h-full ">
-                  <Buttons type="submit" className="w-1/2 h-1/2 justify-center">
-                    <Images
-                      titleImg={"/downArrow.svg"}
-                      titleImgAlt={"downArrow"}
-                      className="mx-auto"
-                    />
+            <Grids cols={"5"} rows={"10"} className="h-full w-full">
+              <Holds className="row-start-2 row-end-3 col-start-5 col-end-6 w-full h-full">
+                <Holds className="h-full w-full pr-1">
+                  <Buttons
+                    type="submit"
+                    className="w-full h-full"
+                    background={"none"}
+                  >
+                    <Holds
+                      background={"lightBlue"}
+                      className="w-full h-full items-center justify-center "
+                    >
+                      <Images
+                        titleImg={"/downArrow.svg"}
+                        titleImgAlt={"downArrow"}
+                        className="p-1 w-10 h-10"
+                      />
+                    </Holds>
                   </Buttons>
                 </Holds>
-                <Holds className="row-start-2 row-end-5 col-start-1 col-end-6 h-full ">
+              </Holds>
+              <Holds className="row-start-3 row-end-7 col-start-1 col-end-6 h-full pt-1">
+                <Holds
+                  background={"lightBlue"}
+                  className="h-full w-[95%] sm:w-[85%] md:w-[75%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%]  border-[3px] rounded-b-none  border-black "
+                >
                   <Contents width={"section"} className="h-full">
                     <Labels>
-                      <Texts size={"p4"} position={"left"}>
+                      <Texts text={"white"} size={"p4"} position={"left"}>
                         {t("Date-label")}
                       </Texts>
                       <Inputs
@@ -166,7 +195,7 @@ export default function VerificationStep({
                     </Labels>
                     {truckScanData && (
                       <Labels>
-                        <Texts size={"p4"} position={"left"}>
+                        <Texts text={"white"} size={"p4"} position={"left"}>
                           {t("Truck-label")}
                         </Texts>
                         <Inputs
@@ -179,7 +208,7 @@ export default function VerificationStep({
                     )}
                     {truckScanData && (
                       <Labels>
-                        <Texts size={"p4"} position={"left"}>
+                        <Texts text={"white"} size={"p4"} position={"left"}>
                           {t("Mileage")}
                         </Texts>
                         <Inputs
@@ -191,7 +220,7 @@ export default function VerificationStep({
                       </Labels>
                     )}
                     <Labels>
-                      <Texts size={"p4"} position={"left"}>
+                      <Texts text={"white"} size={"p4"} position={"left"}>
                         {t("JobSite-label")}
                       </Texts>
                       <Inputs
@@ -202,7 +231,7 @@ export default function VerificationStep({
                       />
                     </Labels>
                     <Labels>
-                      <Texts size={"p4"} position={"left"}>
+                      <Texts text={"white"} size={"p4"} position={"left"}>
                         {t("CostCode-label")}
                       </Texts>
                       <Inputs
@@ -214,7 +243,7 @@ export default function VerificationStep({
                     </Labels>
                     {comments !== undefined && (
                       <Labels>
-                        <Texts size={"p4"} position={"left"}>
+                        <Texts text={"white"} size={"p4"} position={"left"}>
                           {t("Comments")}
                         </Texts>
                         <Inputs
@@ -227,35 +256,42 @@ export default function VerificationStep({
                     )}
                   </Contents>
                 </Holds>
-                <Holds className="row-start-5 row-end-6 col-start-1 col-end-6 h-full">
+              </Holds>
+
+              <Holds className="row-start-7 row-end-11 col-start-1 col-end-6 h-full  ">
+                <Holds
+                  background={"darkBlue"}
+                  className="h-full w-[100%] sm:w-[90%] md:w-[90%] lg:w-[80%] xl:w-[80%] 2xl:w-[80%]  border-[3px]   border-black p-8 "
+                >
                   <Buttons
                     type="submit"
-                    className="bg-app-green mx-auto flex justify-center items-center w-full h-full py-4 px-5 rounded-lg text-black font-bold"
+                    background={"none"}
+                    className="bg-app-green mx-auto flex justify-center items-center w-full h-full py-4 px-5 rounded-lg text-black font-bold border-[3px] border-black"
                   >
                     <Clock time={date.getTime()} />
                   </Buttons>
                 </Holds>
-                <Inputs
-                  type="hidden"
-                  name="submitDate"
-                  value={new Date().toISOString()}
-                />
-                <Inputs type="hidden" name="userId" value={id} />
-                <Inputs
-                  type="hidden"
-                  name="date"
-                  value={new Date().toISOString()}
-                />
-                <Inputs
-                  type="hidden"
-                  name="startTime"
-                  value={new Date().toISOString()}
-                />
-              </Grids>
-            </Contents>
+              </Holds>
+              <Inputs
+                type="hidden"
+                name="submitDate"
+                value={new Date().toISOString()}
+              />
+              <Inputs type="hidden" name="userId" value={id} />
+              <Inputs
+                type="hidden"
+                name="date"
+                value={new Date().toISOString()}
+              />
+              <Inputs
+                type="hidden"
+                name="startTime"
+                value={new Date().toISOString()}
+              />
+            </Grids>
           </Holds>
         </Forms>
-      </Contents>
+      </Grids>
     </>
   );
 }

@@ -9,7 +9,8 @@ import LocaleToggleSwitch from "../(inputs)/toggleSwitch";
 import { Contents } from "../(reusable)/contents";
 import { UserSettings } from "@/lib/types";
 import { useTranslations } from "next-intl";
-import { updateSettings } from "@/actions/hamburgerActions";
+import { Banners } from "../(reusable)/banners";
+import { setUserPermissions } from "@/actions/userActions";
 
 type prop = {
   userId: string;
@@ -18,10 +19,12 @@ type prop = {
 
 export default function NotificationSettings({userId, handleNextStep}: prop) {
   console.log(userId);
-  const [updatedData, setUpdatedData] = useState<UserSettings | null>(null);
-  const [initialData, setInitialData] = useState<UserSettings | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
   const t = useTranslations("SignUpPermissions");
+  const [showBanner, setShowBanner] = useState(false);
+  const [bannerMessage, setBannerMessage] = useState("");
+  const [updatedData, setUpdatedData] = useState<UserSettings | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isRequiredAcessed, setIsRequiredAcessed] = useState(false);
 
   const handleChange = (key: keyof UserSettings, value: boolean) => {
     setUpdatedData((prev) => (prev ? { ...prev, [key]: value } : null));
@@ -38,6 +41,16 @@ export default function NotificationSettings({userId, handleNextStep}: prop) {
     } : null));
   }
 
+  useEffect(() => {
+    if (showBanner) {
+      const timer = setTimeout(() => {
+        setShowBanner(false);
+      }, 8000); // Banner disappears after 5 seconds
+
+      return () => clearTimeout(timer); // Clear the timeout if the component unmounts
+    }
+  }, [showBanner]);
+
   // Fetch data on component mount
   useEffect(() => {
     const fetchData = async () => {
@@ -47,7 +60,6 @@ export default function NotificationSettings({userId, handleNextStep}: prop) {
           const settings = await response.json();
 
           setUpdatedData(settings);
-          setInitialData(settings); // Store initial data
         } else {
           console.error("Failed to fetch settings", response.statusText);
         }
@@ -58,30 +70,53 @@ export default function NotificationSettings({userId, handleNextStep}: prop) {
     fetchData();
   }, []);
 
-  // Automatically save settings when updated
   useEffect(() => {
-    const saveChanges = async () => {
-      if (updatedData && updatedData !== initialData) {
-        setIsSaving(true);
-        await updateSettings(updatedData);
+    if (updatedData?.cameraAccess === true && updatedData?.locationAccess === true && updatedData?.cookiesAccess === true) {
+      setIsRequiredAcessed(true);
+    }
+  }, [updatedData]);
+  
+  const handleSubmitSettings = async () => {
+    if (!isRequiredAcessed) {
+      setBannerMessage(`${t("RequiredPermissionsError")}`);
+      setShowBanner(true);
+      return;
+    }
+    try {
+      const data = new FormData();
+      data.append("id", userId);
+      data.append("biometrics", updatedData?.biometric?.toString() || "");
+      data.append("cameraAccess", updatedData?.cameraAccess?.toString() || "");
+      data.append("locationAccess", updatedData?.locationAccess?.toString() || "");
+      data.append("cookiesAccess", updatedData?.cookiesAccess?.toString() || "");
+      data.append("generalReminders", updatedData?.generalReminders?.toString() || "");
+      data.append("approvedRequests", updatedData?.approvedRequests?.toString() || "");
+      data.append("timeOffRequests", updatedData?.timeOffRequests?.toString() || "");
+      data.append("photoAlbumAccess", updatedData?.photoAlbumAccess?.toString() || "");
 
-        setTimeout(() => setIsSaving(false), 1000);
-        setInitialData(updatedData);
-      }
-    };
-    saveChanges();
-  }, [initialData, updatedData]);
+      await setUserPermissions(data);
+      handleNextStep();
+  } catch (error) {
+    console.error("Error occurred while fetching settings:", error);
+    setBannerMessage(`${t("FetchErrorMessage")}`);
+    setShowBanner(true);
+  } finally {
+    setIsSubmitting(false);
+  }
+}
 
   return (
     <>
-    {isSaving && (
-      <Holds
-        background={"green"}
-        className="h-fit text-center absolute top-[20%]"
-      >
-        {t("Saving")}
-      </Holds>
-    )}
+    {/* Show the banner at the top of the page */}
+    {showBanner && (
+        <Holds
+        style={{ position: "fixed", top: 0, width: "100%", zIndex: 1000 }}
+        >
+          <Banners background={"red"}>
+            <Texts size={"p6"}>{bannerMessage}</Texts>
+          </Banners>
+        </Holds>
+      )}
     <Grids rows={"10"} gap={"5"} className="mb-5">
       <Holds background={"white"} className="row-span-1 h-full justify-center">
         <Titles size={"h1"}>{t("GiveUsAccess")}</Titles>
@@ -104,9 +139,9 @@ export default function NotificationSettings({userId, handleNextStep}: prop) {
                 <Holds size={"30"}>
                   <LocaleToggleSwitch
                     data={updatedData?.cameraAccess || false}
-                    onChange={(value: boolean) =>
-                      handleChange("cameraAccess", value)
-                    }
+                    onChange={(value: boolean) => {
+                      handleChange("cameraAccess", value);
+                    }}
                   />
                 </Holds>
               </Holds>
@@ -117,9 +152,9 @@ export default function NotificationSettings({userId, handleNextStep}: prop) {
                 <Holds size={"30"}>
                   <LocaleToggleSwitch
                     data={updatedData?.locationAccess || false}
-                    onChange={(value: boolean) =>
+                    onChange={(value: boolean) => {
                       handleChange("locationAccess", value)
-                    }
+                    }}
                   />
                 </Holds>
               </Holds>
@@ -130,9 +165,9 @@ export default function NotificationSettings({userId, handleNextStep}: prop) {
                 <Holds size={"30"}>
                   <LocaleToggleSwitch
                     data={false}
-                    onChange={(value: boolean) =>
-                      handleChange("biometric", value)
-                    }
+                    onChange={(value: boolean) => {
+                      handleChange("cookiesAccess", value)
+                    }}
                   />
                 </Holds>
               </Holds>
@@ -180,7 +215,7 @@ export default function NotificationSettings({userId, handleNextStep}: prop) {
                   <LocaleToggleSwitch
                     data={false}
                     onChange={(value: boolean) =>
-                      handleChange("biometric", value)
+                      handleChange("photoAlbumAccess", value)
                     }
                   />
                 </Holds>
@@ -189,100 +224,16 @@ export default function NotificationSettings({userId, handleNextStep}: prop) {
           </Contents>
       </Holds>
       <Holds className="row-span-1 h-full">
-        <Buttons background={"orange"} onClick={handleNextStep}>
-          <Titles size={"h2"}>{t("Next")}</Titles>
+        <Buttons 
+        background={isRequiredAcessed ? "orange" : "darkGrey"} 
+        onClick={handleSubmitSettings}
+        disabled={isSubmitting}
+        >
+          <Titles size={"h2"}>
+            {isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}
+          </Titles>
         </Buttons>
       </Holds>
     </Grids>
     </>
   )};
-
-
-
-
-
-
-
-
-
-
-
-// "use client";
-// import React, { useState } from "react";
-// import { Buttons } from "../(reusable)/buttons";
-// import { setUserSettings } from "@/actions/userActions";
-
-// const NotificationSettings = ({
-//   id,
-//   handleNextStep,
-// }: {
-//   id: string;
-//   handleNextStep: () => void;
-// }) => {
-//   const [approvedRequests, setApprovedRequests] = useState(false);
-//   const [timeoffRequests, setTimeoffRequests] = useState(false);
-//   const [generalReminders, setGeneralReminders] = useState(false);
-//   const [isSubmitting, setIsSubmitting] = useState(false);
-
-//   const handleSubmitSettings = async () => {
-//     const formData = new FormData();
-//     formData.append("id", id);
-//     formData.append("approvedRequests", String(approvedRequests));
-//     formData.append("timeoffRequests", String(timeoffRequests));
-//     formData.append("GeneralReminders", String(generalReminders));
-
-//     setIsSubmitting(true);
-//     try {
-//       await setUserSettings(formData);
-//       handleNextStep(); // Proceed to the next step only if settings update is successful
-//     } catch (error) {
-//       console.error("Error updating settings:", error);
-//       alert("There was an error updating your settings. Please try again.");
-//     } finally {
-//       setIsSubmitting(false);
-//     }
-//   };
-
-//   return (
-//     <div style={{ textAlign: "center", padding: "20px" }}>
-//       <p>Would you like to receive reminder notifications for the following?</p>
-
-//       <div style={{ margin: "20px 0" }}>
-//         <div style={{ marginBottom: "15px" }}>
-//           <label style={{ marginRight: "10px" }}>Approved Requests</label>
-//           <input
-//             type="checkbox"
-//             checked={approvedRequests}
-//             onChange={(e) => setApprovedRequests(e.target.checked)}
-//           />
-//         </div>
-//         <div style={{ marginBottom: "15px" }}>
-//           <label style={{ marginRight: "10px" }}>Timeoff Requests</label>
-//           <input
-//             type="checkbox"
-//             checked={timeoffRequests}
-//             onChange={(e) => setTimeoffRequests(e.target.checked)}
-//           />
-//         </div>
-//         <div style={{ marginBottom: "15px" }}>
-//           <label style={{ marginRight: "10px" }}>General Reminders</label>
-//           <input
-//             type="checkbox"
-//             checked={generalReminders}
-//             onChange={(e) => setGeneralReminders(e.target.checked)}
-//           />
-//         </div>
-//       </div>
-
-//       <Buttons
-//         onClick={handleSubmitSettings}
-//         style={{ backgroundColor: "orange", color: "black" }}
-//         disabled={isSubmitting} // Disable the button while submitting
-//       >
-//         {isSubmitting ? "Submitting..." : "Next"}
-//       </Buttons>
-//     </div>
-//   );
-// };
-
-// export default NotificationSettings;

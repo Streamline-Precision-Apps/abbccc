@@ -11,7 +11,7 @@ const Permissions = ({
   handleAccept: () => void;
 }) => {
   const handleProceed = () => {
-    finishUserSetup(id);
+    finishUserSetup(user.id);
     handleAccept();
   };
 

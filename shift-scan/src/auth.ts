@@ -15,6 +15,7 @@ declare module "next-auth" {
       truckView: boolean;
       tascoView: boolean;
       mechanicView: boolean;
+      laborView: boolean;
       accountSetup: boolean; // Add accountSetup to Session
     } & DefaultSession["user"];
   }
@@ -26,6 +27,7 @@ declare module "next-auth" {
     lastName: string;
     truckView: boolean;
     tascoView: boolean;
+    laborView: boolean;
     mechanicView: boolean;
     accountSetup: boolean; // Add accountSetup to User
   }
@@ -52,7 +54,7 @@ const providers: Provider[] = [
       const passwords = credentials?.password as string;
 
       // Replace this with your own authentication logic
-      const user = await prisma.users.findUnique({
+      const user = await prisma.user.findUnique({
         where: { username: username },
       });
 
@@ -75,6 +77,7 @@ const providers: Provider[] = [
         lastName: user.lastName,
         truckView: user.truckView,
         tascoView: user.tascoView,
+        laborView: user.laborView,
         mechanicView: user.mechanicView,
         accountSetup: user.accountSetup, // Include accountSetup from user
       };
@@ -99,6 +102,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         token.lastName = user.lastName;
         token.truckView = user.truckView;
         token.tascoView = user.tascoView;
+        token.laborView = user.laborView;
         token.mechanicView = user.mechanicView;
         token.accountSetup = user.accountSetup; // Add accountSetup to token
       }
@@ -114,6 +118,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
           lastName: token.lastName as string,
           truckView: token.truckView as boolean,
           tascoView: token.tascoView as boolean,
+          laborView: token.laborView as boolean,
           mechanicView: token.mechanicView as boolean,
           accountSetup: token.accountSetup as boolean, // Add accountSetup to session
         };

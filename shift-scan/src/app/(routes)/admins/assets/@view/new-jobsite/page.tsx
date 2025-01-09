@@ -13,10 +13,10 @@ import NewJobsitesMain from "./_components/NewJobsiteMain";
 // Define the Zod schema for Jobsites
 const JobsiteSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  streetNumber: z.string().optional(),
-  streetName: z.string().optional(),
+  address: z.string().optional(),
   city: z.string().optional(),
   state: z.string().optional(),
+  zipCode: z.string().optional(),
   country: z.string().optional(),
   description: z.string().min(1, "Description is required"),
   comment: z.string().optional(),
@@ -27,11 +27,11 @@ export default function NewJobsite() {
   const { setNotification } = useNotification();
   const [formState, setFormState] = useState({
     name: "",
-    streetName: "",
-    streetNumber: "",
+    address: "",
     city: "",
     state: "",
-    country: "",
+    zipCode: "",
+    country: "US",
     description: "",
     comment: "",
   });
@@ -55,10 +55,10 @@ export default function NewJobsite() {
       }
       const formData = new FormData();
       formData.append("name", formState.name);
-      formData.append("streetName", formState.streetName);
-      formData.append("streetNumber", formState.streetNumber);
+      formData.append("address", formState.address);
       formData.append("city", formState.city);
       formData.append("state", formState.state);
+      formData.append("zipCode", formState.zipCode);
       formData.append("country", formState.country);
       formData.append("description", formState.description);
       formData.append("comment", formState.comment);
@@ -68,10 +68,10 @@ export default function NewJobsite() {
         setNotification(t("ChangesSavedSuccessfully"), "success");
         setFormState({
           name: "",
-          streetName: "",
-          streetNumber: "",
+          address: "",
           city: "",
           state: "",
+          zipCode: "",
           country: "",
           description: "",
           comment: "",
