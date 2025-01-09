@@ -84,6 +84,8 @@
 },
 
 "Home" : {
+    "EnjoyYourBreak": "Enjoy Your Break!",
+    "HitReturnToClockBackIn": "Hit Return to Clock Back In",
     "Today": "Today",
     "End-Pay-Period": "End of Current Pay Period",
     "CurrentRange": "Current Pay Period",

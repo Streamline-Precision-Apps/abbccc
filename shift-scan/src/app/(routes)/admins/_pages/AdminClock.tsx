@@ -1,3 +1,4 @@
+"use client";
 // import { useSavedCostCode } from "@/app/context/CostCodeContext";
 // import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { CreateTimeSheet } from "@/actions/timeSheetActions";
@@ -5,6 +6,7 @@ import useFetchAllData from "@/app/(content)/FetchData";
 import { setAuthStep } from "@/app/api/auth";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
+import { useNotification } from "@/app/context/NotificationContext";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
 
 import { Buttons } from "@/components/(reusable)/buttons";
@@ -26,6 +28,7 @@ export default function AdminClock({
   const { scanResult } = useScanData();
   const { savedCostCode } = useSavedCostCode();
   const { setTimeSheetData } = useTimeSheetData();
+  const { setNotification } = useNotification();
   const date = new Date();
   const [J, setJ] = useState("");
   const [CC, setCc] = useState("");
@@ -43,12 +46,18 @@ export default function AdminClock({
     const formData = new FormData(e.currentTarget);
     formData.append("jobsiteId", scanResult?.data || J || "");
     formData.append("costcode", savedCostCode?.toString() || CC || "");
+    formData.append("workType", "general");
 
     const response = await CreateTimeSheet(formData);
     if (response) {
       setAuthStep("success");
       const result = { id: response.id.toString() };
       setTimeSheetData(result);
+      if (response.id !== null) {
+        setNotification("Your Clock In was successful", "success");
+      }
+    } else {
+      setNotification("Your Clock In Failed", "error");
     }
     handleClose();
   };
