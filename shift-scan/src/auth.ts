@@ -1,7 +1,7 @@
 import NextAuth, { CredentialsSignin, type DefaultSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 // import Resend from "next-auth/providers/resend";
-import bcrypt from "bcryptjs";
+// import bcrypt from "bcryptjs";
 import prisma from "./lib/prisma";
 import type { Provider } from "next-auth/providers";
 
@@ -63,11 +63,23 @@ const providers: Provider[] = [
         throw new InvalidLoginError();
       }
 
-      const isValidPassword = await bcrypt.compare(passwords, user.password);
+      const isValidPassword = () => {
+        if (user.password === passwords) {
+          return true;
+        } else {
+          return false;
+        }
+      };
       if (!isValidPassword) {
         console.log("Invalid password");
         throw new InvalidLoginError();
       }
+
+      // const isValidPassword = await bcrypt.compare(passwords, user.password);
+      // if (!isValidPassword) {
+      //   console.log("Invalid password");
+      //   throw new InvalidLoginError();
+      // }
 
       const userwithoutpassword = {
         id: user.id,

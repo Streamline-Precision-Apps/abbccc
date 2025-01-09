@@ -29,6 +29,11 @@ const Sidebar = () => {
   const [isOpenLanguageSelector, setIsOpenLanguageSelector] = useState(false);
   const [isOpenSignOut, setIsOpenSignOut] = useState(false);
 
+  const isPersonnelPage = pathname.includes("/admins/personnel");
+  const isAssetsPage = pathname.includes("/admins/assets");
+  const isReportsPage = pathname.includes("/admins/reports");
+  const inboxPage = pathname.includes("/admins/inbox");
+
   useEffect(() => {
     setUsername(`${session?.user.firstName} ${session?.user.lastName}`);
   }, [session?.user.firstName, session?.user.lastName]);
@@ -91,9 +96,7 @@ const Sidebar = () => {
                 <Buttons
                   className={`
                     ${
-                      pathname === "/admins/personnel"
-                        ? "bg-slate-400 "
-                        : "bg-app-blue"
+                      isPersonnelPage ? "bg-slate-400 " : "bg-app-blue"
                     } w-[90%] h-12 `}
                   href="/admins/personnel"
                 >
@@ -123,9 +126,7 @@ const Sidebar = () => {
                 <Buttons
                   className={`
                     ${
-                      pathname === "/admins/assets"
-                        ? "bg-slate-400 "
-                        : "bg-app-blue"
+                      isAssetsPage ? "bg-slate-400 " : "bg-app-blue"
                     } w-[90%] h-12 `}
                   href="/admins/assets"
                 >
@@ -155,9 +156,7 @@ const Sidebar = () => {
                 <Buttons
                   className={`
                     ${
-                      pathname === "/admins/reports"
-                        ? "bg-slate-400 "
-                        : "bg-app-blue"
+                      isReportsPage ? "bg-slate-400 " : "bg-app-blue"
                     } w-[90%] h-12 `}
                   href="/admins/reports"
                 >
@@ -171,6 +170,36 @@ const Sidebar = () => {
                       />
                     </Holds>
                     <Texts size={"p6"}>{t("Reports")}</Texts>
+                    <Holds className="hidden md:flex" size={"30"}>
+                      <Images
+                        titleImg="/drag.svg"
+                        titleImgAlt="draggable icon"
+                        className="my-auto flex items-center justify-center "
+                        size={"50"}
+                      />
+                    </Holds>
+                  </Holds>
+                </Buttons>
+              </Holds>
+              {/* The button that says Reports */}
+              <Holds>
+                <Buttons
+                  className={`
+                    ${
+                      inboxPage ? "bg-slate-400 " : "bg-app-blue"
+                    } w-[90%] h-12 `}
+                  href="/admins/inbox"
+                >
+                  <Holds position={"row"} className="justify-evenly">
+                    <Holds className="w-1/3 h-full ">
+                      <Images
+                        titleImg="/inbox.svg"
+                        titleImgAlt="Inbox Icon"
+                        className="m-auto"
+                        size={"50"}
+                      />
+                    </Holds>
+                    <Texts size={"p6"}>{t("Inbox")}</Texts>
                     <Holds className="hidden md:flex" size={"30"}>
                       <Images
                         titleImg="/drag.svg"
@@ -313,9 +342,7 @@ const Sidebar = () => {
                 <Buttons
                   className={`
                     ${
-                      pathname === "/admins/personnel"
-                        ? "bg-slate-400 "
-                        : "bg-app-blue"
+                      isPersonnelPage ? "bg-slate-400 " : "bg-app-blue"
                     } w-12 h-12 `}
                   href="/admins/personnel"
                 >
@@ -332,9 +359,7 @@ const Sidebar = () => {
                 <Buttons
                   className={`
                     ${
-                      pathname === "/admins/assets"
-                        ? "bg-slate-400 "
-                        : "bg-app-blue"
+                      isAssetsPage ? "bg-slate-400 " : "bg-app-blue"
                     } w-12 h-12 `}
                   href="/admins/assets"
                 >
@@ -352,9 +377,7 @@ const Sidebar = () => {
                 <Buttons
                   className={`
                     ${
-                      pathname === "/admins/reports"
-                        ? "bg-slate-400 "
-                        : "bg-app-blue"
+                      isReportsPage ? "bg-slate-400 " : "bg-app-blue"
                     } w-12 h-12 `}
                   href="/admins/reports"
                 >
@@ -362,6 +385,21 @@ const Sidebar = () => {
                     <Images
                       titleImg="/form.svg"
                       titleImgAlt="Reports Icon"
+                      className="m-auto"
+                    />
+                  </Holds>
+                </Buttons>
+              </Holds>
+              <Holds>
+                <Buttons
+                  className={`
+                    ${inboxPage ? "bg-slate-400 " : "bg-app-blue"} w-12 h-12 `}
+                  href="/admins/inbox"
+                >
+                  <Holds position={"row"}>
+                    <Images
+                      titleImg="/inbox.svg"
+                      titleImgAlt="Inbox Icon"
                       className="m-auto"
                     />
                   </Holds>
