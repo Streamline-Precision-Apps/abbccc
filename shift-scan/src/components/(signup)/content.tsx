@@ -9,7 +9,6 @@ import ProfilePictureSetup from "./profilePictureSetup";
 import SignatureSetup from "./signatureSetup";
 import NotificationSettings from "./notificationSettings";
 // import Permissions from "./permissions";
-import SignUpOutro from "./signUpOutro";
 import { setAuthStep, getAuthStep } from "@/app/api/auth";
 import { signOut } from "next-auth/react";
 import { z } from "zod";
@@ -92,9 +91,9 @@ export default function Content({
         {step === 5 && (
           <SignatureSetup id={userId} handleNextStep={handleNextStep} />
         )}
-        {step === 6 && (
+        {/* {step === 6 && (
           <SignUpOutro id={userId} handleAccept={handleComplete}/>
-        )}
+        )} */}
       </Contents>
     </Holds>
   );

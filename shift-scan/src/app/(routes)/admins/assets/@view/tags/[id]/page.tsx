@@ -12,6 +12,7 @@ import EditTagMainLeft from "./_Component/EditTagLeftMain";
 import EditTagMainRight from "./_Component/EditTagRightMain";
 import EditTagFooter from "./_Component/EditTagFooter";
 import { useNotification } from "@/app/context/NotificationContext";
+import { costCodesTag, JobTags } from "@/lib/types";
 
 // Validation schema for CostCode
 const costCodeSchema = z.object({
