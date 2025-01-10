@@ -24,9 +24,9 @@ export async function GET(req: Request) {
   }
 
   // Include the date filter with the ISO date (optional: only keep the date part if time is not needed)
-  const equipmentData = await prisma.employeeEquipmentLogs.findMany({
+  const equipmentData = await prisma.employeeEquipmentLog.findMany({
     where: {
-      date: {
+      startTime: {
         gte: new Date(`${dateString}T00:00:00.000Z`), // Start of the day
         lt: new Date(`${dateString}T23:59:59.999Z`), // End of the day
       },

@@ -12,8 +12,8 @@ import { formatTime } from "@/utils/formatDateAMPMS";
 import { useTranslations } from "next-intl";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
-import { TimeSheet } from "../dashboard/myTeam/[id]/employee/[employeeId]/editWork";
 import { z } from "zod";
+import { TimeSheet } from "@/lib/types";
 
 // Zod schema for component state
 const ViewTimesheetsSchema = z.object({

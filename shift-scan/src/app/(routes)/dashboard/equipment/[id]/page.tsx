@@ -286,9 +286,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                     name="refueled"
                     label=""
                     checked={refueled}
-                    onChange={(e) => {
-                      handleChangeRefueled();
-                    }}
+                    onChange={() => handleChangeRefueled()}
                   />
                 </Holds>
 

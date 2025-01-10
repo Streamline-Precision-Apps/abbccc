@@ -13,12 +13,12 @@ import { Contents } from "@/components/(reusable)/contents";
 import { useRouter } from "next/navigation";
 import { Grids } from "@/components/(reusable)/grids";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
-import { z } from "zod";
+// import { z } from "zod";
 
 // Zod schema for EquipmentLogs props
-const EquipmentLogsSchema = z.object({
-  userId: z.string().optional(),
-});
+// const EquipmentLogsSchema = z.object({
+//   userId: z.string().optional(),
+// });
 
 // Zod schema for individual log entry
 // const LogEntrySchema = z.object({

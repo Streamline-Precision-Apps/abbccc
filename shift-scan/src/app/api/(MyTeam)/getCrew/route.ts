@@ -11,34 +11,26 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const userCrewData = await prisma.users.findUnique({
+  const userCrewData = await prisma.user.findUnique({
     where: { id: userId },
     select: {
-      crewMembers: {
+      crews: {
         select: {
-          crewId: true,
-          crew: {
+          id: true,
+          users: {
             select: {
-              crewMembers: {
-                select: {
-                  user: {
-                    select: {
-                      id: true,
-                      firstName: true,
-                      lastName: true,
-                      image: true,
+              id: true,
+              firstName: true,
+              lastName: true,
+              image: true,
                     },
                   },
                 },
               },
             },
-          },
-        },
-      },
-    },
-  });
+          });
 
-  const crew = userCrewData?.crewMembers[0]?.crew?.crewMembers || [];
+  const crew = userCrewData?.crews[0]?.users || [];
 
   // Set Cache-Control header for caching
   return NextResponse.json(crew, {
