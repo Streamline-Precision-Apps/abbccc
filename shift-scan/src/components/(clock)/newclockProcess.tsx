@@ -1,5 +1,5 @@
 "use client";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Holds } from "../(reusable)/holds";
 import MultipleRoles from "./multipleRoles";
 import QRStep from "./qr-handler";
@@ -17,6 +17,7 @@ import VerificationEQStep from "./verification-eq-step";
 import { Titles } from "../(reusable)/titles";
 import RedirectAfterDelay from "../redirectAfterDelay";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 
 type NewClockProcessProps = {
   mechanicView: boolean;
@@ -52,6 +53,7 @@ export default function NewClockProcess({
   const { scanResult, setScanResult } = useScanData();
   const { truckScanData } = useTruckScanData();
   const { startingMileage } = useStartingMileage();
+  const router = useRouter();
 
   // Helper functions
   const handleNextStep = () => setStep((prevStep) => prevStep + 1);
@@ -94,6 +96,9 @@ export default function NewClockProcess({
       setStep(0);
     }
   };
+  const handleReturnPath = () => {
+    return router.push(returnpath);
+  };
 
   // useEffect to reset step and role on mount/unmount
   useEffect(() => {
@@ -130,29 +135,30 @@ export default function NewClockProcess({
 
   useEffect(() => {
     console.log("step", step);
-  }), [step, ];
-
+  }),
+    [step];
 
   // Conditional render for equipment path
   if (type === "equipment") {
     return (
       <>
         {step === 0 && (
-          <QRStep
-            option="equipment"
-            type="equipment"
-            handleAlternativePath={handleAlternativePathEQ}
-            handleNextStep={handleNextStep}
-            url="/dashboard"
-            clockInRole={""}
-          />
+          <>
+            <QRStep
+              option="equipment"
+              type="equipment"
+              handleAlternativePath={handleAlternativePathEQ}
+              handleNextStep={handleNextStep}
+              url="/dashboard"
+              handleReturnPath={handleReturnPath}
+              clockInRole={""}
+            />
+          </>
         )}
         {step === 1 && (
           <CodeStep datatype="equipment" handleNextStep={handleNextStep} />
         )}
-        {step === 2 && (
-          <VerificationEQStep handleNextStep={handleNextStep} />
-        )}
+        {step === 2 && <VerificationEQStep handleNextStep={handleNextStep} />}
         {step === 3 && (
           <>
             <Titles size={"h1"} className="bg-red-500">
@@ -199,20 +205,24 @@ step 4 : confirmation page and redirect to dashboard with authorization
       {/* Multiple Role Selection */}
 
       {step === 0 && (
-        <MultipleRoles
-          handleNextStep={handleNextStep}
-          setClockInRole={setClockInRole}
-          clockInRole={clockInRole}
-          option={option}
-          handleReturn={handleReturn}
-          type={type}
-        />
+        <>
+          <MultipleRoles
+            handleNextStep={handleNextStep}
+            setClockInRole={setClockInRole}
+            clockInRole={clockInRole}
+            option={option}
+            handleReturn={handleReturn}
+            type={type}
+            handleReturnPath={handleReturnPath}
+          />
+        </>
       )}
 
       {/* Mechanic Role */}
       {step === 1 && clockInRole === "mechanic" && (
         <QRStep
           type="jobsite"
+          handleReturnPath={handleReturnPath}
           handleAlternativePath={handleAlternativePath}
           handleNextStep={handleNextStep}
           handleChangeJobsite={handleChangeJobsite}
@@ -228,6 +238,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
         <QRStep
           type="jobsite" // two types of types for qr, jobsite or equipment
           handleAlternativePath={handleAlternativePath} // handle alternative path
+          handleReturnPath={handleReturnPath}
           handleNextStep={handleNextStep}
           handleChangeJobsite={handleChangeJobsite}
           handleReturn={handleReturn}
@@ -279,6 +290,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
           handleNextStep={handleNextStep}
           handleChangeJobsite={handleChangeJobsite}
           handleReturn={handleReturn}
+          handleReturnPath={handleReturnPath}
           url={returnpath}
           option={option}
           clockInRole={clockInRole}
