@@ -16,9 +16,11 @@ import { useRouter } from "next/navigation";
 import { Session } from "next-auth";
 import { PayPeriodTimesheets } from "@/lib/types";
 import { z } from "zod";
-import { useSavedBreakTime } from "../context/BreakTimeContext";
+import { Banners } from "@/components/(reusable)/banners";
+import { Titles } from "@/components/(reusable)/titles";
+import Capitalize from "@/utils/captitalize";
+import capitalizeAll from "@/utils/capitalizeAll";
 
-// Zod schema for Session type
 const UserSchema = z.object({
   id: z.string(),
   username: z.string().optional(),
@@ -55,9 +57,10 @@ const PayPeriodSheetsArraySchema = z.array(PayPeriodTimesheetsSchema);
 
 type Props = {
   session: Session;
+  locale: string;
 };
 
-export default function WidgetSection({ session }: Props) {
+export default function WidgetSection({ session, locale }: Props) {
   // Validate the session prop using Zod
   try {
     WidgetSectionPropsSchema.parse({ session });
@@ -66,7 +69,13 @@ export default function WidgetSection({ session }: Props) {
       console.error("Validation error in WidgetSection props:", error.errors);
     }
   }
-
+  const date = new Date().toLocaleDateString(locale, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    weekday: "long",
+  });
+  const [hydrated, setHydrated] = useState(false); // Hydration state
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const f = useTranslations("Home");
@@ -77,40 +86,17 @@ export default function WidgetSection({ session }: Props) {
   const authStep = getAuthStep();
   const permission = session.user?.permission;
   const accountSetup = session.user?.accountSetup;
-
+  const t = useTranslations("Home");
   const { setPayPeriodHours } = usePayPeriodHours();
   const { setPayPeriodTimeSheets } = usePayPeriodTimeSheet();
   const [payPeriodSheets, setPayPeriodSheets] = useState<PayPeriodTimesheets[]>(
     []
   );
-  const { breakTime: getBreakTime, setBreakTime } = useSavedBreakTime();
-
+  const user = session.user;
+  // Hydration setup
   useEffect(() => {
-    const savedBreakTime = localStorage.getItem("breakTime");
-    if (savedBreakTime) {
-      setBreakTime(parseInt(savedBreakTime, 10));
-    }
-  }, [setBreakTime]);
-
-  useEffect(() => {
-    let timer: NodeJS.Timeout | undefined;
-
-    if (authStep === "break") {
-      timer = setInterval(() => {
-        setBreakTime((prevBreakTime) => {
-          const newBreakTime = prevBreakTime + 1;
-          localStorage.setItem("breakTime", newBreakTime.toString());
-          return newBreakTime;
-        });
-      }, 1000);
-    } else {
-      clearInterval(timer);
-    }
-
-    return () => {
-      if (timer) clearInterval(timer);
-    };
-  }, [authStep, setBreakTime]);
+    setHydrated(true);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -179,13 +165,70 @@ export default function WidgetSection({ session }: Props) {
   useEffect(() => {
     setPayPeriodHours(totalPayPeriodHours.toFixed(2));
   }, [totalPayPeriodHours, setPayPeriodHours]);
-
+  if (!hydrated)
+    return (
+      <>
+        <Holds className="row-span-1"></Holds>
+        <Holds background={"white"} className="row-span-5 h-full"></Holds>
+      </>
+    ); // Prevent rendering until hydration
   return (
-    <Contents width={"section"} className="py-5">
-      <Grids rows={"5"} cols={"2"} gap={"5"}>
-        {authStep === "break" ? (
-          <>
-            {toggle ? (
+    <>
+      <Holds className="row-span-1">
+        {authStep === "" && (
+          <Banners>
+            <Titles text={"white"} size={"h2"}>
+              {t("Banner")}
+              {t("Name", {
+                firstName: Capitalize(user.firstName),
+              })}
+              !
+            </Titles>
+            <Texts text={"white"} size={"p3"}>
+              {t("Date", { date: capitalizeAll(date) })}
+            </Texts>
+          </Banners>
+        )}
+        {authStep === "break" && (
+          <Banners>
+            <Titles text={"white"} size={"h2"}>
+              {t("EnjoyYourBreak")}
+            </Titles>
+            <Texts text={"white"} size={"p3"}>
+              {t("HitReturnToClockBackIn")}
+            </Texts>
+          </Banners>
+        )}
+      </Holds>
+      <Holds background={"white"} className="row-span-5 h-full">
+        <Contents width={"section"} className="py-5">
+          <Grids rows={"5"} cols={"2"} gap={"5"}>
+            {authStep === "break" ? (
+              <>
+                {toggle ? (
+                  <Holds
+                    className={
+                      toggle
+                        ? "col-span-2 row-span-1 gap-5 h-full"
+                        : "col-span-2 row-span-5 gap-5 h-full"
+                    }
+                  >
+                    <DisplayBreakTime
+                      setToggle={handleToggle}
+                      display={toggle}
+                    />
+                  </Holds>
+                ) : (
+                  <Holds className="col-span-2 row-span-5 gap-5 h-full">
+                    <Hours
+                      setToggle={handleToggle}
+                      display={toggle}
+                      loading={loading}
+                    />
+                  </Holds>
+                )}
+              </>
+            ) : (
               <Holds
                 className={
                   toggle
@@ -193,14 +236,6 @@ export default function WidgetSection({ session }: Props) {
                     : "col-span-2 row-span-5 gap-5 h-full"
                 }
               >
-                <DisplayBreakTime
-                  setToggle={handleToggle}
-                  display={toggle}
-                  getBreakTime={getBreakTime}
-                />
-              </Holds>
-            ) : (
-              <Holds className="col-span-2 row-span-5 gap-5 h-full">
                 <Hours
                   setToggle={handleToggle}
                   display={toggle}
@@ -208,123 +243,109 @@ export default function WidgetSection({ session }: Props) {
                 />
               </Holds>
             )}
-          </>
-        ) : (
-          <Holds
-            className={
-              toggle
-                ? "col-span-2 row-span-1 gap-5 h-full"
-                : "col-span-2 row-span-5 gap-5 h-full"
-            }
-          >
-            <Hours
-              setToggle={handleToggle}
-              display={toggle}
-              loading={loading}
-            />
-          </Holds>
-        )}
-        {toggle ? (
-          <>
-            {(permission === "ADMIN" ||
-              permission === "SUPERADMIN" ||
-              permission === "MANAGER") && (
-              <Holds
-                position={"row"}
-                className="col-span-2 row-span-2 gap-5 h-full"
-              >
-                <Buttons
-                  background={"lightBlue"}
-                  href="/dashboard/qr-generator"
-                >
-                  <Holds>
-                    <Images
-                      titleImg="/qr.svg"
-                      titleImgAlt="QR Code"
-                      size={"40"}
-                    />
-                  </Holds>
-                  <Holds>
-                    <Texts size={"p3"}>{w("QR")}</Texts>
-                  </Holds>
-                </Buttons>
-                <Buttons background={"lightBlue"} href="/dashboard/myTeam">
-                  <Holds>
-                    <Images
-                      titleImg="/team.svg"
-                      titleImgAlt="my team"
-                      size={"40"}
-                    />
-                  </Holds>
-                  <Holds>
-                    <Texts size={"p3"}>{w("MyTeam")}</Texts>
-                  </Holds>
-                </Buttons>
-              </Holds>
-            )}
-            {authStep === "break" ? (
-              <Holds className="col-span-2 row-span-2 gap-5 h-full">
-                <Buttons background={"orange"} href="/break">
-                  <Holds position={"row"} className="my-auto">
-                    <Holds size={"70"}>
-                      <Texts size={"p1"}>{f("Clock-btn-break")}</Texts>
-                    </Holds>
-                    <Holds size={"30"}>
-                      <Images
-                        titleImg="/clock-in.svg"
-                        titleImgAlt="Clock In Icon"
-                        size={"50"}
-                      />
-                    </Holds>
-                  </Holds>
-                </Buttons>
-              </Holds>
-            ) : (
-              <Holds
-                className={
-                  permission === "ADMIN" ||
+            {toggle ? (
+              <>
+                {(permission === "ADMIN" ||
                   permission === "SUPERADMIN" ||
-                  permission === "MANAGER"
-                    ? `col-span-2 row-span-2 gap-5 h-full`
-                    : `col-span-2 row-span-4 gap-5 h-full`
-                }
-              >
-                <Buttons background={"green"} href="/clock">
-                  {permission === "ADMIN" ||
-                  permission === "SUPERADMIN" ||
-                  permission === "MANAGER" ? (
-                    <Holds position={"row"} className="my-auto">
-                      <Holds size={"60"}>
-                        <Texts size={"p1"}>{f("Clock-btn")}</Texts>
-                      </Holds>
-                      <Holds size={"40"}>
+                  permission === "MANAGER") && (
+                  <Holds
+                    position={"row"}
+                    className="col-span-2 row-span-2 gap-5 h-full"
+                  >
+                    <Buttons
+                      background={"lightBlue"}
+                      href="/dashboard/qr-generator"
+                    >
+                      <Holds>
                         <Images
-                          titleImg="/clock-in.svg"
-                          titleImgAlt="Clock In Icon"
-                          size={"70"}
+                          titleImg="/qr.svg"
+                          titleImgAlt="QR Code"
+                          size={"40"}
                         />
                       </Holds>
-                    </Holds>
-                  ) : (
-                    <Holds className="my-auto">
-                      <Holds size={"50"}>
+                      <Holds>
+                        <Texts size={"p3"}>{w("QR")}</Texts>
+                      </Holds>
+                    </Buttons>
+                    <Buttons background={"lightBlue"} href="/dashboard/myTeam">
+                      <Holds>
                         <Images
-                          titleImg="/clock-in.svg"
-                          titleImgAlt="Clock In Icon"
-                          size={"70"}
+                          titleImg="/team.svg"
+                          titleImgAlt="my team"
+                          size={"40"}
                         />
                       </Holds>
-                      <Holds size={"60"}>
-                        <Texts size={"p1"}>{f("Clock-btn")}</Texts>
+                      <Holds>
+                        <Texts size={"p3"}>{w("MyTeam")}</Texts>
                       </Holds>
-                    </Holds>
-                  )}
-                </Buttons>
-              </Holds>
-            )}
-          </>
-        ) : null}
-      </Grids>
-    </Contents>
+                    </Buttons>
+                  </Holds>
+                )}
+                {authStep === "break" ? (
+                  <Holds className="col-span-2 row-span-2 gap-5 h-full">
+                    <Buttons background={"orange"} href="/break">
+                      <Holds position={"row"} className="my-auto">
+                        <Holds size={"70"}>
+                          <Texts size={"p1"}>{f("Clock-btn-break")}</Texts>
+                        </Holds>
+                        <Holds size={"30"}>
+                          <Images
+                            titleImg="/clock-in.svg"
+                            titleImgAlt="Clock In Icon"
+                            size={"50"}
+                          />
+                        </Holds>
+                      </Holds>
+                    </Buttons>
+                  </Holds>
+                ) : (
+                  <Holds
+                    className={
+                      permission === "ADMIN" ||
+                      permission === "SUPERADMIN" ||
+                      permission === "MANAGER"
+                        ? `col-span-2 row-span-2 gap-5 h-full`
+                        : `col-span-2 row-span-4 gap-5 h-full`
+                    }
+                  >
+                    <Buttons background={"green"} href="/clock">
+                      {permission === "ADMIN" ||
+                      permission === "SUPERADMIN" ||
+                      permission === "MANAGER" ? (
+                        <Holds position={"row"} className="my-auto">
+                          <Holds size={"60"}>
+                            <Texts size={"p1"}>{f("Clock-btn")}</Texts>
+                          </Holds>
+                          <Holds size={"40"}>
+                            <Images
+                              titleImg="/clock-in.svg"
+                              titleImgAlt="Clock In Icon"
+                              size={"70"}
+                            />
+                          </Holds>
+                        </Holds>
+                      ) : (
+                        <Holds className="my-auto">
+                          <Holds size={"50"}>
+                            <Images
+                              titleImg="/clock-in.svg"
+                              titleImgAlt="Clock In Icon"
+                              size={"70"}
+                            />
+                          </Holds>
+                          <Holds size={"60"}>
+                            <Texts size={"p1"}>{f("Clock-btn")}</Texts>
+                          </Holds>
+                        </Holds>
+                      )}
+                    </Buttons>
+                  </Holds>
+                )}
+              </>
+            ) : null}
+          </Grids>
+        </Contents>
+      </Holds>
+    </>
   );
 }

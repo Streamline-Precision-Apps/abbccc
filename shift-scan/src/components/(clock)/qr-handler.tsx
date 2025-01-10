@@ -8,12 +8,14 @@ import { Titles } from "../(reusable)/titles";
 import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
 import { Contents } from "../(reusable)/contents";
+import { Images } from "../(reusable)/images";
 
 type QRStepProps = {
   handleAlternativePath: () => void;
   handleNextStep: () => void;
   handleChangeJobsite?: () => void;
   handleReturn?: () => void;
+  handleReturnPath: () => void;
   handleScanTruck?: () => void;
   handleScanJobsite?: () => void;
   type: string;
@@ -25,6 +27,7 @@ type QRStepProps = {
 export default function QRStep({
   option,
   handleReturn,
+  handleReturnPath,
   handleAlternativePath,
   handleNextStep,
   handleChangeJobsite,
@@ -37,7 +40,18 @@ export default function QRStep({
   const t = useTranslations("Clock");
   return (
     <>
-      <Contents width={"section"}>
+      <Contents width={"section"} className="relative">
+        <Holds
+          className="absolute top-1 left-0 w-10"
+          onClick={handleReturnPath}
+        >
+          <Images
+            titleImg="/turnBack.svg"
+            titleImgAlt="back"
+            position={"left"}
+            size={"full"}
+          />
+        </Holds>
         <Grids rows={"7"} gap={"5"} className="my-5">
           <Holds className="row-span-1">
             {type === "equipment" ? (

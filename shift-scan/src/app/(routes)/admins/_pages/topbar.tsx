@@ -16,6 +16,7 @@ import AdminSwitch from "./AdminSwitch";
 import AdminClock from "./AdminClock";
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { NModals } from "@/components/(reusable)/newmodals";
 
 const Topbar = () => {
   const t = useTranslations("Admins");
@@ -305,14 +306,15 @@ const Topbar = () => {
       >
         <AdminSwitch handleClose={() => setIsSwitch(false)} />
       </Modals>
-      <Modals
+      <NModals
         isOpen={isEndofDay}
         handleClose={() => setIsEndofDay(false)}
-        type={"StartDay"}
-        size={"lg"}
+        size={"medH"}
       >
-        <AdminClockOut handleClose={() => setIsEndofDay(false)} />
-      </Modals>
+        <Holds className="h-full w-full justify-center items-center">
+          <AdminClockOut handleClose={() => setIsEndofDay(false)} />
+        </Holds>
+      </NModals>
     </Holds>
   );
 };
