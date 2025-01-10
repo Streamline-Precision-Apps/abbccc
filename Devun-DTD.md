@@ -62,3 +62,12 @@ cookies().set({
 ### Trello
 - Researching GeoFencing(1 hour) 
 - Adjusting the break counter (2 hours)
+
+## January 9, 2025 - Thursday
+### Meeting with company
+- proposed new ideas for company app
+- met with team to discuss things to help company understand
+### built/created
+- 
+### Trello
+- Building Pages and Resend (2 hour)
