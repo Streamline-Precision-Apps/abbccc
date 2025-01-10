@@ -17,7 +17,7 @@ export async function GET() {
         userId,
       },
       orderBy: {
-        date: "desc",
+        submitDate: "desc", // Sort by date starting with most recent date
       },
       select: {
         id: true,
@@ -25,7 +25,11 @@ export async function GET() {
       },
     });
 
-    return NextResponse.json(timesheet);
+    return NextResponse.json(timesheet, {
+      headers: {
+        "Cache-Control": "no-store", // Prevent caching of sensitive data
+      },
+    });
   } catch (error) {
     console.error("Error fetching Time Sheets:", error);
     return NextResponse.json(

@@ -11,12 +11,7 @@ import { useTranslations } from "next-intl";
 import { CheckBox } from "../(inputs)/checkBox";
 
 const ShiftScanIntro = ({ handleNextStep }: { handleNextStep: () => void }) => {
-  const [isTested, setIsTested] = React.useState(false);
   const t = useTranslations("SignUpIntro");
-
-  const handleChange = async () => {
-    setIsTested(true);
-  };
 
   return (
     <Grids rows={"10"} gap={"5"} className=" mb-5">
@@ -49,7 +44,6 @@ const ShiftScanIntro = ({ handleNextStep }: { handleNextStep: () => void }) => {
                   id={"1"}
                   label={" "}
                   disabled={true}
-                  onChange={handleChange}
                   name="locale"
                 />
               </Holds>
@@ -66,7 +60,6 @@ const ShiftScanIntro = ({ handleNextStep }: { handleNextStep: () => void }) => {
                   id={"1"}
                   label={" "}
                   disabled={true}
-                  onChange={handleChange}
                   name="locale"
                 />
               </Holds>
@@ -83,7 +76,6 @@ const ShiftScanIntro = ({ handleNextStep }: { handleNextStep: () => void }) => {
                   id={"1"}
                   label={" "}
                   disabled={true}
-                  onChange={handleChange}
                   name="locale"
                 />
               </Holds>
@@ -100,7 +92,6 @@ const ShiftScanIntro = ({ handleNextStep }: { handleNextStep: () => void }) => {
                   id={"1"}
                   label={""}
                   disabled={true}
-                  onChange={handleChange}
                   name="locale"
                 />
               </Holds>

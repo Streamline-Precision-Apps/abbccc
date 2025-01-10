@@ -82,8 +82,13 @@ export default function DisplayBreakTime({
   // Function to format time in hh:mm:ss
   const formatTime = (seconds: number) => {
     const hrs = Math.floor(seconds / 3600);
+    const hours = seconds / 3600;
     const mins = Math.floor((seconds % 3600) / 60);
-    return `${hrs} hrs ${mins} mins`;
+    if (hrs === 0) return `${mins} mins`;
+    else if (hours === 1) return `${hours.toFixed(1)} hr`;
+    else {
+      return `${hours.toFixed(1)} hrs`;
+    }
   };
   // Update elapsed time when breakTime changes
   useEffect(() => {
