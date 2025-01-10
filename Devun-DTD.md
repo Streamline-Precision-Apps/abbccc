@@ -32,7 +32,7 @@ cookies().set({
 - deleted redux and did research on local storage and cookies
 - found that cookies are great to prevent sxs attacks (30mins)
 ### Trello
-- update language selector (35mins)
+- update language selector (35 mins)
 - Admin Build - Inbox Section (1hr)
 
 
@@ -40,7 +40,7 @@ cookies().set({
 ### built/created
 - 
 ### Trello
-- Admin Build - Inbox Section (8hours)
+- Admin Build - Inbox Section (8 hours)
   - built apis and got the different pages made to display data
   - towards the end of creating an edit all section
 
@@ -48,6 +48,26 @@ cookies().set({
 ### built/created
 - 
 ### Trello
-- Admin Build - Inbox Section (8)
+- Admin Build - Inbox Section (8 hours)
   - finished the create table
   - need to do a better protection
+- Set up DNS for Resends
+
+## January 8, 2025 - Wednesday
+### built/created
+- Admin Inbox Section
+- Api for break counter 
+- fixed the timer and got the component up and running
+- fixing clocking and out on admins page
+### Trello
+- Researching GeoFencing(1 hour) 
+- Adjusting the break counter (2 hours)
+
+## January 9, 2025 - Thursday
+### Meeting with company
+- proposed new ideas for company app
+- met with team to discuss things to help company understand
+### built/created
+- 
+### Trello
+- Building Pages and Resend (2 hour)

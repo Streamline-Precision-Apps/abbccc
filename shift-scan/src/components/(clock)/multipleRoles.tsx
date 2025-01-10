@@ -8,6 +8,7 @@ import { useTranslations } from "next-intl";
 import { useCommentData } from "@/app/context/CommentContext";
 import { useEffect, useState } from "react";
 import Comment from "@/components/(clock)/comment";
+import { Images } from "../(reusable)/images";
 
 type Props = {
   handleNextStep: () => void;
@@ -15,6 +16,7 @@ type Props = {
   clockInRole: string;
   option?: string;
   handleReturn?: () => void;
+  handleReturnPath: () => void;
   type: string;
 };
 export default function MultipleRoles({
@@ -23,6 +25,7 @@ export default function MultipleRoles({
   clockInRole,
   option,
   handleReturn,
+  handleReturnPath,
   type,
 }: Props) {
   const [page, setPage] = useState<string>("switchJobs");
@@ -68,7 +71,18 @@ export default function MultipleRoles({
     );
   } else {
     return (
-      <Holds className="h-full w-full">
+      <Holds className="h-full w-full relative">
+        <Holds
+          className="absolute top-5 left-5 w-10"
+          onClick={handleReturnPath}
+        >
+          <Images
+            titleImg="/turnBack.svg"
+            titleImgAlt="back"
+            position={"left"}
+            size={"full"}
+          />
+        </Holds>
         <Grids rows={"7"} gap={"5"} className="my-5 h-full w-full">
           <Holds className="row-start-1 row-end-3 h-full w-full justify-center">
             <Titles size={"h3"}>{t("PleaseChooseYourRole")}</Titles>

@@ -22,10 +22,12 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Clock } from "@/components/clock";
 import { CheckBox } from "@/components/(inputs)/checkBox";
 import { useTruckScanData } from "@/app/context/TruckScanDataContext";
+import { TextAreas } from "@/components/(reusable)/textareas";
+import { useNotification } from "@/app/context/NotificationContext";
 
 export const AdminClockOut = ({ handleClose }: { handleClose: () => void }) => {
   const [loading, setLoading] = useState(true);
-  const [step, incrementStep] = useState(1);
+  const [step, incrementStep] = useState(0);
   const router = useRouter();
   const [path, setPath] = useState("ClockOut");
   const formRef = useRef<HTMLFormElement>(null);
@@ -39,6 +41,8 @@ export const AdminClockOut = ({ handleClose }: { handleClose: () => void }) => {
   const [checked, setChecked] = useState(false);
   const [base64String, setBase64String] = useState<string>("");
   const { setTruckScanData } = useTruckScanData();
+  const [comment, setComment] = useState<string>("");
+  const { setNotification } = useNotification();
 
   const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
     setChecked(event.currentTarget.checked);
@@ -81,12 +85,15 @@ export const AdminClockOut = ({ handleClose }: { handleClose: () => void }) => {
       hasSubmitted.current = true;
 
       const formData = new FormData(formRef.current as HTMLFormElement);
+      formData.append("comment", comment);
       await updateTimeSheet(formData);
-      setTruckScanData("")
+      setNotification("Clock Out was successful", "success");
+      setTruckScanData("");
       localStorage.clear();
-      router.push("/");
+      router.push("/admins");
     } catch (error) {
       console.error("Failed to submit the time sheet:", error);
+      setNotification("Failed to submit the time sheet", "error");
     } finally {
       setIsSubmitting(false);
       hasSubmitted.current = false;
@@ -110,6 +117,42 @@ export const AdminClockOut = ({ handleClose }: { handleClose: () => void }) => {
     };
     fetchSignature();
   }, []);
+  if (step === 0) {
+    return (
+      <>
+        <Holds background={"white"} className="h-full w-full ">
+          <Contents width={"section"} className="py-5 h-full">
+            <Holds className="h-full">
+              <Grids rows={"6"} gap={"3"} className="w-full h-full">
+                <Holds className="row-span-1 h-full my-auto">
+                  <Titles size="h1">{t("Comment")}</Titles>
+                </Holds>
+                <Holds className="row-span-4 h-full my-auto">
+                  <TextAreas
+                    onChange={(e) => setComment(e.target.value)}
+                    value={comment}
+                    name="comment"
+                    placeholder={t("Comment")}
+                    className="w-full h-full"
+                    style={{ resize: "none" }}
+                  />
+                </Holds>
+                <Holds className="row-span-1 h-full my-auto">
+                  <Buttons
+                    onClick={() => incrementStep(1)}
+                    className="bg-app-orange mx-auto flex justify-center w-full h-full py-4 px-5 rounded-lg text-black font-bold mt-5"
+                  >
+                    {t("Continue")}
+                  </Buttons>
+                </Holds>
+              </Grids>
+            </Holds>
+          </Contents>
+        </Holds>
+      </>
+    );
+  }
+
   if (step === 1) {
     return (
       <Holds className="h-[500px] overflow-y-auto ">
@@ -184,7 +227,7 @@ export const AdminClockOut = ({ handleClose }: { handleClose: () => void }) => {
   } else if (step === 2 && path === "ClockOut") {
     return (
       <>
-        <Holds background={"white"} className="row-span-3 ">
+        <Holds background={"white"} className="h-full w-5/6">
           <Contents width={"section"} className="py-5">
             <Holds className="h-full">
               <Grids rows={"6"} gap={"5"}>
@@ -256,7 +299,7 @@ export const AdminClockOut = ({ handleClose }: { handleClose: () => void }) => {
     );
   } else if (step === 3) {
     return (
-      <>
+      <Holds className="h-full w-full">
         <Grids rows={"4"} gap={"5"}>
           <Holds background={"white"} className="row-span-1 h-full">
             <Contents width={"section"}>
@@ -337,7 +380,7 @@ export const AdminClockOut = ({ handleClose }: { handleClose: () => void }) => {
             </Contents>
           </Holds>
         </Grids>
-      </>
+      </Holds>
     );
   } else {
     return null;
