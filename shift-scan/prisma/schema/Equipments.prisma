@@ -6,6 +6,8 @@ model Equipment {
     description            String
     equipmentTag           EquipmentTags   @default(EQUIPMENT)
     lastInspection         DateTime?
+    // nextInspection         DateTime?
+    // nextInspectionComment  String?
     lastRepair             DateTime?
     status                 EquipmentStatus @default(OPERATIONAL)
     createdAt              DateTime        @default(now())

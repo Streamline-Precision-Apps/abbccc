@@ -8,19 +8,19 @@ export async function GET(
 ) {
   try {
     const { id } = params;
-    const tags = await prisma.cCTags.findUnique({
+    const tags = await prisma.cCTag.findUnique({
       where: {
-        id: Number(id),
+        id: String(id),
       },
       include: {
-        jobsite: {
+        jobsites: {
           select: {
             id: true,
             qrId: true,
             name: true,
           },
         },
-        costCode: {
+        costCodes: {
           select: {
             id: true,
             name: true,

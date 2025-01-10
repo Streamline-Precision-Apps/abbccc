@@ -5,6 +5,7 @@ import { ChangeEvent } from "react";
 export interface CheckboxProps {
   disabled?: boolean;
   defaultChecked?: boolean;
+  checked?: boolean;
   id: string;
   name: string;
   label?: string;
@@ -15,6 +16,7 @@ export interface CheckboxProps {
 export const CheckBox = ({
   disabled,
   defaultChecked,
+  checked,
   id,
   name,
   label,
@@ -33,7 +35,7 @@ export const CheckBox = ({
       id={id}
       name={name}
       defaultChecked={defaultChecked}
-      checked={defaultChecked}
+      checked={checked}
       disabled={disabled}
       onChange={onChange}
       style={{ width: `${size}em`, height: `${size}em` }} // Dynamically setting size with inline styles
