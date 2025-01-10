@@ -7,9 +7,9 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const tags = await prisma.costCodes.findMany({
+    const tags = await prisma.costCode.findMany({
       where: {
-        id: Number(params.id),
+        id: String(params.id),
       },
       select: {
         CCTags: {
