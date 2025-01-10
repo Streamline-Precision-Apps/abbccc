@@ -5,19 +5,16 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
-import { Forms } from "@/components/(reusable)/forms";
 import { FormEvent, useEffect, useState, useRef } from "react";
 import { setUserPassword } from "@/actions/userActions";
 import { hash } from "bcryptjs";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import { Contents } from "@/components/(reusable)/contents";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { Images } from "@/components/(reusable)/images";
 
-const ResetPassword = ({   userId,
-  handleNextStep,
-} : {
+const ResetPassword = ({ userId, handleNextStep,} : {
   userId: string;
   handleNextStep: () => void}) => {
   const t = useTranslations("SignUpPassword");
@@ -33,7 +30,9 @@ const ResetPassword = ({   userId,
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const useFormRef = useRef<HTMLFormElement>(null);
-  const route = useRouter();
+
+  const [isPasswordValid, setIsPasswordValid] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const viewPasscode1 = () => {
     setViewSecret1(!viewSecret1);
@@ -42,7 +41,7 @@ const ResetPassword = ({   userId,
     setViewSecret2(!viewSecret2);
   };
 
-  const handleSubmitClick = () => {
+  const handleSubmitPassword = () => {
     useFormRef.current?.dispatchEvent(
       new Event("submit", { bubbles: true, cancelable: true })
     );
@@ -90,15 +89,19 @@ const ResetPassword = ({   userId,
     formData.append("id", userId);
     formData.append("password", hashed);
 
+    setIsSubmitting(true);
     try {
+
       await setUserPassword(formData);
-      handleNextStep();
+      handleNextStep(); // Proceed to the next step only if the image upload is successful
     } catch (error) {
       console.error("Error updating password:", error);
       setBannerMessage(
         "There was an error updating your password. Please try again."
       );
       setShowBanner(true);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -129,90 +132,108 @@ const ResetPassword = ({   userId,
   }) => (
       <Holds
       background={passed ? "green" : "red"}
-      className=" border-black border-[3px] rounded-[10px]"
+      className="h-full first:mr-1 last:ml-1 border-black border-[3px] rounded-[10px] justify-center"
       >
         <Texts size="p5" className="p-2">{label}</Texts>
       </Holds>
+      
   );
 
+  const handlePasswordValid = () => {
+    const passed = eightChar && oneNumber && oneSymbol;
+    if (!passed) {
+      setIsPasswordValid(false);
+      return;
+    }
+
+    setIsPasswordValid(true);
+  };
+
   return (
-    <Grids rows={"10"} gap={"5"} className="h-full mb-5">
+    <Grids rows={"10"} gap={"5"} className="mb-5">
       <Holds background={"white"} className="row-span-1 h-full justify-center">
-        <Titles size={"h1"}>{t("ChoosePasswordTitle")}</Titles>
+        <Titles size={"h2"}>{t("ChoosePasswordTitle")}</Titles>
       </Holds>
       <Holds background={"white"} className="row-span-8 h-full p-3">
-          <form
-          ref={useFormRef}
-          onSubmit={handleSubmit}
-          className="h-full flex flex-col items-center"
-          >
-            {/* <Grids rows={"5"} gap={"5"} className="h-full"> */}
-            <Contents width={"section"} className="">
-                <Holds background={"white"}>
-                  <Texts size="p2">{t("ChooseNewPassword")}</Texts>
-                </Holds>
-                <Holds background={"white"} className="my-5">
-                  <Texts position="left" size="p4">{t("PasswordRequirements")}</Texts>
-                  <Holds position="row" className="">
-                    <PasswordCriteria passed={oneNumber} label={t("NumberRequirement")}/>
-                    <PasswordCriteria passed={oneSymbol} label={t("SymbolRequirement")}/>
-                    <PasswordCriteria passed={eightChar} label={t("LengthRequirement")}/>
-                    </Holds>
-                    {showBanner && (
-                      <Contents width={"section"}>
-                    <Holds
-                    background="red"
-                    size="full"
-                    >
-                      <Texts size="p6">{bannerMessage}</Texts>
-                    </Holds>
-                    </Contents>
-                    )}
-                </Holds>
-                <Holds background={"white"} className="h-full">
-                  <Holds position="row">
-                    <Labels htmlFor="new-password">{t("NewPassword")}</Labels>
-                    <Images
-                    titleImg={viewSecret1 ? "/eye.svg" : "/eye-slash.svg"}
-                    titleImgAlt={t("EyeImageAlt")}
-                    background="none"
-                    size="10"
-                    onClick={viewPasscode1}
-                    />
-                  </Holds>
-                  <Inputs
-                  type={viewSecret1 ? "text" : "password"}
-                  id="new-password"
-                  value={newPassword}
-                  onChange={(e) => {
-                    handlePasswordChange(e.target.value);
-                    setNewPassword(e.target.value);
-                  }}
-                  />
-                  <Holds position="row" className="">
-                    <Labels htmlFor="confirm-password">{t("ConfirmPassword")}</Labels>
-                    <Images
-                    titleImg={viewSecret2 ? "/eye.svg" : "/eye-slash.svg"}
-                    titleImgAlt={t("EyeImageAlt")}
-                    background="none"
-                    size="10"
-                    onClick={viewPasscode2}
-                    />
-                  </Holds>
-                  <Inputs
-                  type={viewSecret2 ? "text" : "password"}
-                  id="confirm-password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  />
-                </Holds>
-              </Contents>
-            {/* </Grids> */}
-          </form>
-        </Holds>
-        <Holds className="row-span-1 h-full">
-          <Buttons background={"orange"} onClick={() => handleSubmitClick()}>
-          <Titles>{t("Next")}</Titles>
+        <form
+        ref={useFormRef}
+        onSubmit={handleSubmit}
+        className="h-full flex flex-col items-center"
+        >
+          <Contents width={"section"} className="">
+            <Holds background={"white"}>
+              <Texts size="p2">{t("ChooseNewPassword")}</Texts>
+            </Holds>
+            {/* <Texts position="left" size="p4">{t("PasswordRequirements")}</Texts> */}
+            <Holds position="row" background={"white"} className="my-3">
+              <PasswordCriteria passed={oneNumber} label={t("NumberRequirement")}/>
+              <PasswordCriteria passed={oneSymbol} label={t("SymbolRequirement")}/>
+              <PasswordCriteria passed={eightChar} label={t("LengthRequirement")}/>
+            </Holds>
+            {showBanner && (
+            <Holds
+            className="mb-2 p-1 border-black border-[3px] rounded-[10px] justify-center"
+            background="red"
+            size="full"
+            >
+              <Texts size="p5">{bannerMessage}</Texts>
+            </Holds>
+            )}
+          </Contents>
+          <Contents width={"section"}>
+            <Holds background={"white"} className="h-full">
+              <Holds position="row">
+                <Labels size={"p3"} htmlFor="new-password">{t("NewPassword")}</Labels>
+                <Images
+                titleImg={viewSecret1 ? "/eye.svg" : "/eye-slash.svg"}
+                titleImgAlt={t("EyeImageAlt")}
+                background="none"
+                size="10"
+                onClick={viewPasscode1}
+                />
+              </Holds>
+              <Inputs
+              type={viewSecret1 ? "text" : "password"}
+              id="new-password"
+              value={newPassword}
+              onChange={(e) => {
+                handlePasswordChange(e.target.value);
+                setNewPassword(e.target.value);
+                handlePasswordValid();
+              }}
+              />
+              <Holds position="row" className="">
+                <Labels size={"p3"} htmlFor="confirm-password">{t("ConfirmPassword")}</Labels>
+                <Images
+                titleImg={viewSecret2 ? "/eye.svg" : "/eye-slash.svg"}
+                titleImgAlt={t("EyeImageAlt")}
+                background="none"
+                size="10"
+                onClick={viewPasscode2}
+                />
+              </Holds>
+              <Inputs
+              type={viewSecret2 ? "text" : "password"}
+              id="confirm-password"
+              value={confirmPassword}
+              onChange={(e) => {
+                setConfirmPassword(e.target.value)
+                handlePasswordValid();
+              }}
+              />
+            </Holds>
+          </Contents>
+        </form>
+      </Holds>
+      <Holds className="row-span-1 h-full">
+        <Buttons 
+        onClick={() => handleSubmitPassword()}
+        background={isPasswordValid ? "orange" : "darkGrey"}
+        disabled={isSubmitting} // Disable the button while submitting
+        >
+          <Titles size={"h2"}>              
+            {isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}
+          </Titles>
         </Buttons>
       </Holds>
     </Grids>

@@ -257,6 +257,23 @@ export async function setUserSettings(formdata: FormData) {
   });
 }
 
+export async function setUserPermissions(formdata: FormData) {
+  console.log(formdata);
+  await prisma.userSettings.update({
+    where: { userId: formdata.get("id") as string },
+    data: {
+      biometric: Boolean(formdata.get("biometrics") as string),
+      cameraAccess: Boolean(formdata.get("cameraAccess") as string),
+      locationAccess: Boolean(formdata.get("locationAccess") as string),
+      approvedRequests: Boolean(formdata.get("approvedRequests") as string),
+      timeOffRequests: Boolean(formdata.get("timeOffRequests") as string),
+      generalReminders: Boolean(formdata.get("generalReminders") as string),     
+      photoAlbumAccess: Boolean(formdata.get("photoAlbumAccess") as string),
+      cookiesAccess: Boolean(formdata.get("cookiesAccess") as string),
+    },
+  });
+}
+
 export async function setUserLanguage(formdata: FormData) {
   console.log(formdata);
   const result = await prisma.userSettings.update({

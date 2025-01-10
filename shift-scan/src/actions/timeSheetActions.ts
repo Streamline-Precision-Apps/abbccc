@@ -30,6 +30,38 @@ export async function getTimeSheetsbyId() {
   return timesheets;
 }
 
+export async function processTimecards() {
+  try {
+    const timecards = await prisma.timeSheet.findMany({
+      where: { endTime: null }, // Find all timecards with empty endTime
+    });
+
+    const midnight = new Date(); // Create a reference for 11:59:59 PM
+    midnight.setHours(23, 59, 59, 999);
+
+    const nextDayStart = new Date(midnight); // Start the next segment at midnight
+    nextDayStart.setMilliseconds(1);
+
+    const updatedTimecards = timecards.map((card) => ({
+      ...card,
+      endTime: midnight.toISOString(), // Update endTime to current time
+    }));
+    const newTimecards = timecards.map((card) => ({
+      ...card,
+      id: "",
+      endTime: nextDayStart.toISOString(), // Update endTime to current time
+    }));
+
+    // Batch update the timecards
+    await prisma.timeSheet.updateMany({ data: updatedTimecards });
+    await prisma.timeSheet.createMany({ data: newTimecards });
+
+    console.log(`${updatedTimecards.length} timecards processed.`);
+  } catch (error) {
+    console.error("Error processing timecards:", error);
+  }
+}
+
 // Get TimeSheet by id
 export async function fetchTimesheets(employeeId: string, date: string) {
   console.log("Fetching timesheets for:", { employeeId, date });
