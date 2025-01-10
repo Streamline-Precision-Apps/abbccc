@@ -19,16 +19,16 @@ model User {
     terminationDate DateTime?
     accountSetup    Boolean    @default(false)
 
-    passwordResetTokens    PasswordResetToken[]
-    timeSheets             TimeSheet[]
-    equipmentLogs          EmployeeEquipmentLog[]
-    contact                Contacts?
-    userSettings           UserSettings? // one to one relationship
-    injuryForms            InjuryForm[] // one to many relationship 
-    timeOffRequestForms    timeOffRequestForm[] // one to many relationship
-    maintenanceLogs        MaintenanceLog[]
-    passwordResetTokenId   String?
-    crews                  Crew[]
+    passwordResetTokens  PasswordResetToken[]
+    timeSheets           TimeSheet[]
+    equipmentLogs        EmployeeEquipmentLog[]
+    contact              Contacts?
+    userSettings         UserSettings? // one to one relationship
+    injuryForms          InjuryForm[] // one to many relationship 
+    timeOffRequestForms  timeOffRequestForm[] // one to many relationship
+    maintenanceLogs      MaintenanceLog[]
+    passwordResetTokenId String?
+    crews                Crew[]
 
     @@unique([firstName, lastName, DOB]) // prevent duplicate users
     @@index([email])
@@ -44,22 +44,22 @@ model UserSettings {
     biometric        Boolean @default(false)
     cameraAccess     Boolean @default(false)
     locationAccess   Boolean @default(false)
-    photoAlbumAccess       Boolean @default(false)
-    cookiesAccess          Boolean @default(false)
+    photoAlbumAccess Boolean @default(false)
+    cookiesAccess    Boolean @default(false)
 
     user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 //Employee contact information section. Purpose get ahold of them or their emergency contact. 
 model Contacts {
-    id                     String      @id @default(cuid())
+    id                     String   @id @default(cuid())
     employeeId             String   @unique
     phoneNumber            String
     emergencyContact       String?
     emergencyContactNumber String?
     createdAt              DateTime @default(now())
     updatedAt              DateTime @updatedAt
-    user                   User?   @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+    user                   User?    @relation(fields: [employeeId], references: [id], onDelete: Cascade)
 }
 
 // password reset token
@@ -68,7 +68,7 @@ model PasswordResetToken {
     email      String
     token      String   @unique
     expiration DateTime
-    Users      User?   @relation(fields: [email], references: [email])
+    Users      User?    @relation(fields: [email], references: [email])
 
     @@unique([email, token])
 }
