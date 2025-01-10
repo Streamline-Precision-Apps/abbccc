@@ -34,23 +34,14 @@ const EquipmentLogsSchema = z.object({
 
 // Zod schema for the array of logs
 // const LogsArraySchema = z.array(LogEntrySchema);
-import { EmployeeEquipmentLogs } from "@/lib/types";
+import { EmployeeEquipmentLogs, FormStatus } from "@/lib/types";
 import { Bases } from "@/components/(reusable)/bases";
+import { useSession } from "next-auth/react";
 
-type EquipmentLogs = {
-  userId: string | undefined;
-};
+export default function EquipmentLogContent() {
 
-export default function EquipmentLogContent({ userId }: EquipmentLogs) {
-  // Validate userId prop using Zod
-  try {
-    EquipmentLogsSchema.parse({ userId });
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      console.error("Validation error in userId prop:", error.errors);
-    }
-  }
-
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
   const Router = useRouter();
   const [loading, setLoading] = useState(true);
   const [logs, setLogs] = useState<EmployeeEquipmentLogs[]>([]);
@@ -58,7 +49,7 @@ export default function EquipmentLogContent({ userId }: EquipmentLogs) {
   const t = useTranslations("Equipment");
   const b = useTranslations("Widgets");
   const total = logs.length;
-  const completed = logs.filter((log) => log.isCompleted).length;
+  const completed = logs.filter((log) => log.status === FormStatus.APPROVED).length;
   const green = total - completed;
 
   useEffect(() => {
@@ -202,7 +193,7 @@ export default function EquipmentLogContent({ userId }: EquipmentLogs) {
                   <Holds key={log.id} className="pb-5">
                     <Buttons
                       size={"80"}
-                      background={log.isCompleted ? "green" : "orange"}
+                      background={log.status === FormStatus.APPROVED ? "green" : "orange"}
                       href={`/dashboard/equipment/${log.id}`}
                       key={log.id}
                       className="py-2"

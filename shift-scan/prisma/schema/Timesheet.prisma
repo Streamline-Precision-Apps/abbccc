@@ -10,11 +10,14 @@ model TimeSheet {
     Fp                    String                 @default("fp") // field personal
     startTime             DateTime
     endTime               DateTime?
-    comment               String? // comment for reporting what they did that day
+    comment               String? // comment for reporting what they did for that time sheet
     statusComment         String? // manager comment for reporting why they approved or rejected the timesheet
     location              String? // location of clock in work
     status                FormStatus             @default(PENDING) // approving of the form
     workType              WorkType // this was created to help filter the timesheet by work type
+    editedByUserId        String?
+    newTimeSheetId        String?
+    createdByAdmin        Boolean                @default(false)
     // links to other tables in schema
     tascoLogs             TascoLog[]
     maintenanceLogs       MaintenanceLog[]

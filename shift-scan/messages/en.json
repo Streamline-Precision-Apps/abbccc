@@ -161,7 +161,18 @@
     "FailedToDelete": "Failed delete equipment log.",
     "ValidationError": "Validation error: ",
     "Saved": "Changes successfully saved.",
+    "Save": "Save Changes",
     "Deleted": "Equipment log deleted successfully.",
+    "Delete": "Delete Log",
+    "Comment": "Comment",
+    "NeedsMaintenance": "Needs Maintenance",
+    "NeedsRepair": "Needs Repair",
+    "Operational": "Operational",
+    "Status": "Status",
+    "Approved": "Approved",
+    "Pending": "Pending",
+    "LogStatus": "Log Status",
+    "Fuel": "Fuel",
     "Notes": "Additional notes"
 },
 "Generator":{
