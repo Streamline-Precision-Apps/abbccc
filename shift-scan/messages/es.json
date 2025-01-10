@@ -30,6 +30,7 @@
     "NewPassword": "Nueva contraseña",
     "ConfirmPassword": "Confirmar contraseña",
     "Next": "Siguiente",
+    "Submitting" : "Enviando...",
     "NewPasswordEmptyError": "Intento no válido. ¡La nueva contraseña no puede estar vacía!",
     "ConfirmPasswordEmptyError": "Intento no válido. ¡La confirmación de la contraseña no puede estar vacía!",
     "PasswordMismatchError": "Intento no válido. ¡Las contraseñas no coinciden!",
@@ -47,8 +48,11 @@
     "OptionalButVeryHelpful": "Opcional, pero muy útil",
     "BiometricsLogin": "Inicio de sesión biométrico",
     "Notifications": "Notificaciones",
-    "Photo Album": "Álbum de fotos",
-    "Next": "Siguiente"
+    "PhotoAlbum": "Álbum de fotos",
+    "Next": "Siguiente",
+    "Submitting" : "Enviando...",
+    "FetchErrorMessage" : "Se produjo un error al obtener la configuración. Por favor, inténtelo de nuevo.",
+    "RequiredPermissionsError" : "Por favor, asegúrese de permitir los permisos requeridos antes de continuar."
 },
 
 "SignUpProfilePicture":{
@@ -57,6 +61,7 @@
     "UseCamera": "Usar cámara",
     "CameraRoll": "Carrete de fotos",
     "Next": "Siguiente",
+    "Submitting" : "Enviando...",
     "ProfilePictureMissingError": "Intento no válido. ¡Debes seleccionar una foto de perfil!",
     "ImageAlt": "Imagen de foto de perfil"
 },
@@ -64,10 +69,11 @@
 "SignUpVirtualSignature":{
     "AddASignature": "Agregar una firma",
     "LetsAddASignature": "¡Añadamos una firma electrónica! Asegúrate de que te guste, aparecerá en todos los formularios.",
-    "SingHere": "Firma aquí",
+    "SignHere": "Firma aquí",
     "Clear": "Borrar",
     "Save": "Guardar",
     "Next": "Siguiente",
+    "Submitting" : "Enviando...",
     "SignatureMissingError": "Intento no válido. ¡Debes añadir una firma!"
 },
 
@@ -83,6 +89,8 @@
 },
 
 "Home" : {
+    "EnjoyYourBreak": "¡Disfruta tu descanso!",
+    "HitReturnToClockBackIn": "Presiona Retornado para volver a fichar",
     "Banner": "Bienvenido de nuevo, ",
     "Name": "{firstName}",
     "Date": "{date}",

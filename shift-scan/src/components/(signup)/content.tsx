@@ -8,7 +8,8 @@ import ResetPassword from "./resetPassword";
 import ProfilePictureSetup from "./profilePictureSetup";
 import SignatureSetup from "./signatureSetup";
 import NotificationSettings from "./notificationSettings";
-import Permissions from "./permissions";
+// import Permissions from "./permissions";
+import SignUpOutro from "./signUpOutro";
 import { setAuthStep, getAuthStep } from "@/app/api/auth";
 import { signOut } from "next-auth/react";
 import { z } from "zod";
@@ -38,7 +39,7 @@ export default function Content({
   accountSetup: boolean;
 }) {
   const isValid = validateProps(userId, accountSetup); // Ensure this is at the top
-  const [step, setStep] = useState(4); // Always call useState
+  const [step, setStep] = useState(3); // Always call useState
   const handleComplete = () => {
     try {
       setAuthStep("");
@@ -78,21 +79,21 @@ export default function Content({
         {step === 1 && <ShiftScanIntro handleNextStep={handleNextStep} />}
         {step === 2 && (
           <ResetPassword userId={userId} handleNextStep={handleNextStep} />
-        )}
+        )} 
         {step === 3 && (
-          <NotificationSettings id={userId} handleNextStep={handleNextStep} />
+          <NotificationSettings userId={userId} handleNextStep={handleNextStep} />
         )}
-                {step === 4 && (
+        {step === 4 && (
+          <ProfilePictureSetup userId={userId} handleNextStep={handleNextStep} />
+        )}
+        {/* {step === 5 && (
           <Permissions id={userId} handleAccept={handleComplete}/>
-        )}
-                {step === 5 && (
-          <ProfilePictureSetup id={userId} handleNextStep={handleNextStep} />
-        )}
-        {step === 7 && (
+        )} */}
+        {step === 5 && (
           <SignatureSetup id={userId} handleNextStep={handleNextStep} />
         )}
-        {step === 7 && (
-          <Permissions id={userId} handleAccept={handleComplete}/>
+        {step === 6 && (
+          <SignUpOutro id={userId} handleAccept={handleComplete}/>
         )}
       </Contents>
     </Holds>
