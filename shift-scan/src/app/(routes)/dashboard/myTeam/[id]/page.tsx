@@ -19,6 +19,7 @@ const CrewMemberSchema = z.object({
   firstName: z.string(),
   lastName: z.string(),
   image: z.string().nullable(), // image can be null
+  // clockedIn: z.boolean(),
 });
 
 // Zod schema for the response containing an array of CrewMember
@@ -55,8 +56,6 @@ export default function Content() {
           }
         }
         setCrew(crewData);
-        console.log("crewData is logged", crewData);
-        localStorage.setItem(`crew-${id}`, JSON.stringify(crewData));
       } catch (error) {
         console.error("Error fetching crew data:", error);
       } finally {
@@ -113,7 +112,7 @@ export default function Content() {
                           background="lightBlue"
                         >
                           <Holds position={"row"}>
-                            <Holds size={"30"}>
+                            <Holds size={"30"} className="relative">
                               <Images
                                 titleImg={
                                   member.image || "/profile-default.svg"
@@ -122,8 +121,24 @@ export default function Content() {
                                 loading="lazy"
                                 className="rounded-xl"
                               />
+                              <Holds className="absolute bottom-0 left-8">
+                                {
+                                  // member.clockedIn
+                                  false ? (
+                                    <Holds
+                                      background={"white"}
+                                      className="w-5 h-5 justify-center items-center rounded-full"
+                                    >
+                                      <Images
+                                        titleImg="/clockedIn.svg"
+                                        titleImgAlt="Active"
+                                      />
+                                    </Holds>
+                                  ) : null
+                                }
+                              </Holds>
                             </Holds>
-                            <Holds>
+                            <Holds size={"70"}>
                               <Titles size="h2">
                                 {member.firstName} {member.lastName}
                               </Titles>
