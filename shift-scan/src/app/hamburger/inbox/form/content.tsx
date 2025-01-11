@@ -12,7 +12,7 @@ import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { RequestForm } from "@/lib/types";
 import { useEffect, useState } from "react";
-import { createLeaveRequest } from "@/actions/inboxSentActions";
+// import { createLeaveRequest } from "@/actions/inboxSentActions";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { Grids } from "@/components/(reusable)/grids";
@@ -70,7 +70,7 @@ export default function Form({ session }: RequestForm) {
     // Validate form data using Zod
     try {
       leaveRequestSchema.parse(formValues);
-      await createLeaveRequest(formData);
+      // await createLeaveRequest(formData);
 
       setCloseBanner(true);
       setMessage("Time off request submitted");

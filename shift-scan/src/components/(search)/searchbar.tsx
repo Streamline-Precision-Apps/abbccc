@@ -10,8 +10,8 @@ type SearchBarProps = {
   onSearchChange: (e: ChangeEvent<HTMLInputElement>) => void;
   placeholder: string;
   selected: boolean;
-  setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
-  setSelectedTerm: React.Dispatch<React.SetStateAction<boolean>>;
+  setSearchTerm?: React.Dispatch<React.SetStateAction<string>>;
+  setSelectedTerm?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 // defines the searchbar component and what the input should look like
@@ -45,8 +45,9 @@ export default function SearchBar({
               background={"red"}
               size={"full"}
               onClick={() => {
-                setSearchTerm("");
-                setSelectedTerm(false);
+                //todo: i MAY HAVE BROKEN THIS. DOUBLE CHECK IT.
+                setSearchTerm?.("");
+                setSelectedTerm?.(false);
               }}
               className="w-[50px] h-full  justify-center items-center rounded-[10px]"
             >

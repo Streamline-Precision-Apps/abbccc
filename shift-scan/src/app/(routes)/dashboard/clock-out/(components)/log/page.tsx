@@ -20,12 +20,13 @@ export default function Log() {
     boolean | null
   >(null);
 
+  // TODO: Update this to use an API route instead.
   useEffect(() => {
     const fetchLogs = async () => {
       const currentDate = new Date();
       const past24Hours = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
 
-      const logs = await prisma.employeeEquipmentLogs.findMany({
+      const logs = await prisma.employeeEquipmentLog.findMany({
         where: {
           employeeId: userId,
           createdAt: { lte: currentDate, gte: past24Hours },

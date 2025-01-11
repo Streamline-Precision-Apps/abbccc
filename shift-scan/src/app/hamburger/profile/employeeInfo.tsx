@@ -9,7 +9,7 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Labels } from "@/components/(reusable)/labels";
 import { Modals } from "@/components/(reusable)/modals";
 import { Images } from "@/components/(reusable)/images";
-import { Contact, Employee } from "@/lib/types";
+import { Employee } from "@/lib/types";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
 import { Texts } from "@/components/(reusable)/texts";

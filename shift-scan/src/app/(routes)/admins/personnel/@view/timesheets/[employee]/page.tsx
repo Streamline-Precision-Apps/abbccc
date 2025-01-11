@@ -5,7 +5,7 @@ import { Images } from "@/components/(reusable)/images";
 import { Titles } from "@/components/(reusable)/titles";
 import { useEffect, useState } from "react";
 import { Filter } from "./_component/filter";
-import { TimesheetView } from "./_component/timesheetView";
+// import { TimesheetView } from "./_component/timesheetView";
 import Spinner from "@/components/(animations)/spinner";
 import useFetchAllData from "@/app/(content)/FetchData";
 import { useTranslations } from "next-intl";
@@ -70,7 +70,7 @@ export default function Timesheets({
           </Holds>
           {/*Result and display of time sheets */}
           <Holds className="row-start-1 row-end-11 col-start-3 col-end-6  h-full border-[3px] border-black rounded-[10px] p-4">
-            <TimesheetView params={params} />
+            {/* <TimesheetView params={params} /> */}
           </Holds>
         </Grids>
       )}

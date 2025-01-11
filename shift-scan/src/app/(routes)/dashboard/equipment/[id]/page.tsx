@@ -1,288 +1,203 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Holds } from "@/components/(reusable)/holds";
-import { Buttons } from "@/components/(reusable)/buttons";
-import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import {
   DeleteLogs,
   updateEmployeeEquipmentLog,
 } from "@/actions/equipmentActions";
-import { useRouter } from "next/navigation";
-import { Banners } from "@/components/(reusable)/banners";
-import { useTranslations } from "next-intl";
-import { Forms } from "@/components/(reusable)/forms";
-import { Labels } from "@/components/(reusable)/labels";
-import { Inputs } from "@/components/(reusable)/inputs";
-import { TextAreas } from "@/components/(reusable)/textareas";
-import { Texts } from "@/components/(reusable)/texts";
-import { calculateDuration } from "@/utils/calculateDuration";
-import { Contents } from "@/components/(reusable)/contents";
-import { Grids } from "@/components/(reusable)/grids";
-import Spinner from "@/components/(animations)/spinner";
-import { Titles } from "@/components/(reusable)/titles";
-import { z } from "zod";
-
-// Zod schema for params
-// const ParamsSchema = z.object({
-//   id: z.string(),
-// });
-
-// Zod schema for log data
-const LogDataSchema = z.object({
-  id: z.string(),
-  equipmentId: z.string(),
-  jobsiteId: z.string(),
-  employeeId: z.string(),
-  startTime: z.string().nullable().optional(),
-  endTime: z.string().nullable().optional(),
-  comment: z.string().nullable().optional(),
-  createdAt: z.string(),
-  updatedAt: z.string(),
-  isSubmitted: z.boolean().optional(),
-  status: z.enum(["PENDING", "APPROVED", "REJECTED"]), // Adjust enums based on actual values
-  timeSheetId: z.string().nullable().optional(),
-  tascoLogId: z.string().nullable().optional(),
-  laborLogId: z.string().nullable().optional(),
-  truckingLogId: z.string().nullable().optional(),
-  maintenanceId: z.string().nullable().optional(),
-  refueled: z.array(
-    z.object({
-      id: z.string(),
-      date: z.string(),
-      employeeEquipmentLogId: z.string().nullable(),
-      truckingLogId: z.string().nullable(),
-      gallonsRefueled: z.number().nullable(),
-    })
-  ).optional(),
-  Equipment: z
-    .object({
-      id: z.string(),
-      name: z.string(),
-      description: z.string(),
-      equipmentTag: z.enum(["EQUIPMENT", "OTHER_TAGS"]), // Replace with your actual enums
-      lastInspection: z.string().nullable(),
-      lastRepair: z.string().nullable(),
-      status: z.enum(["OPERATIONAL", "NON_OPERATIONAL"]), // Replace with actual values
-      createdAt: z.string(),
-      updatedAt: z.string(),
-      make: z.string().nullable(),
-      model: z.string().nullable(),
-      year: z.string().nullable(),
-      licensePlate: z.string().nullable(),
-      registrationExpiration: z.string().nullable(),
-      mileage: z.number().nullable(),
-      isActive: z.boolean(),
-      inUse: z.boolean(),
-      jobsiteId: z.string().nullable(),
-    })
-    .optional(),
-});
-
-// Zod schema for form data
-const FormDataSchema = z.object({
-  id: z.string(),
-  completed: z.string(),
-  comment: z.string(),
-  isRefueled: z.string(),
-  fuelUsed: z.string(),
-  duration: z.string(),
-});
-import { EmployeeEquipmentLogs } from "@/lib/types";
+import { useNotification } from "@/app/context/NotificationContext";
 import { CheckBox } from "@/components/(inputs)/checkBox";
 import { Bases } from "@/components/(reusable)/bases";
-import { FormStatus } from "@prisma/client";
+import { Contents } from "@/components/(reusable)/contents";
+import { Grids } from "@/components/(reusable)/grids";
+import { Holds } from "@/components/(reusable)/holds";
+import { Texts } from "@/components/(reusable)/texts";
+import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
+import { Spinner } from "@nextui-org/react";
+import { Buttons } from "@/components/(reusable)/buttons";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
+import { z } from "zod";
+// TODO Add a display to show duration of the equipment being used.
+// import { calculateDuration } from "@/utils/calculateDuration";
+import { Titles } from "@/components/(reusable)/titles";
+import SelectWtihRevert from "@/components/(reusable)/selectWithRevert";
+import TextInputWithRevert from "@/components/(reusable)/textInputWithRevert";
+import NumberInputWithRevert from "@/components/(reusable)/numberInputWithRevert";
+import { EquipmentStatus, FormStatus } from "@prisma/client";
+
+const EquipmentLogSchema = z.object({
+  id: z.string(),
+  equipmentId: z.string(),
+  employeeId: z.string(),
+  startTime: z.string(),
+  endTime: z.string().optional(),
+  comment: z.string().optional(),
+  isSubmitted: z.boolean(),
+  status: z.enum(["PENDING", "COMPLETED"]),
+  fuel: z.number().optional(),
+  Equipment: z.object({
+    name: z.string(),
+    status: z.string().optional(),
+  }),
+});
+
+type EquipmentLog = z.infer<typeof EquipmentLogSchema>;
 
 export default function CombinedForm({ params }: { params: { id: string } }) {
   const router = useRouter();
   const id = params.id;
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [banner, setBanner] = useState<string>("");
-  const [logs, setLogs] = useState<EmployeeEquipmentLogs[]>([]);
-  const [refueled, setRefueled] = useState(false);
-  const [fuel, setFuel] = useState<number>(0);
-  const [notes, setNotes] = useState<string>("");
-  const [characterCount, setCharacterCount] = useState<number>(40);
-  const [isEditMode, setIsEditMode] = useState<boolean>(false);
-  const [status, setStatus] = useState<FormStatus>("PENDING");
-  const [, setStartTime] = useState();
-  const [, setEndTime] = useState();
-  const [productName, setProductName] = useState("");
-  const [changedDuration, setChangedDuration] = useState<string>("");
-  const [changedDurationHours, setChangedDurationHours] = useState<string>("");
-  const [changedDurationMinutes, setChangedDurationMinutes] =
-    useState<string>("");
-  const [changedDurationSeconds, setChangedDurationSeconds] =
-    useState<string>("");
+  //TODO add a banner to show notification
+  const { setNotification } = useNotification();
   const t = useTranslations("Equipment");
-  const b = useTranslations("Widgets");
+  const [isLoading, setIsLoading] = useState(true);
+  const [refueled, setRefueled] = useState(false);
 
-  // Fetch Equipment Form Details
+  const [formState, setFormState] = useState({
+    id: "",
+    equipmentId: "",
+    employeeId: "",
+    startTime: "",
+    endTime: "",
+    comment: "",
+    isSubmitted: false,
+    status: FormStatus.PENDING,
+    fuel: 0,
+    Equipment: {
+      name: "",
+      status: EquipmentStatus.OPERATIONAL,
+    },
+  } as EquipmentLog);
+  const [originalState, setOriginalState] = useState(formState);
+
   useEffect(() => {
-    const fetchEquipmentForm = async () => {
-      setIsLoading(true);
-      setError(null);
-
+    const fetchEqLog = async () => {
       try {
-        const response = await fetch(`/api/getEqUserLogs`);
-        if (!response.ok) {
-          throw new Error(
-            `Failed to fetch equipment form: ${response.statusText}`
-          );
+        setIsLoading(true);
+        const response = await fetch(`/api/getEqUserLogs/${id}`);
+        const data = await response.json();
+
+        const processedData = {
+          id: data.id || "",
+          equipmentId: data.equipmentId || "",
+          employeeId: data.employeeId || "",
+          startTime: data.startTime || "",
+          endTime: data.endTime || "",
+          comment: data.comment || "",
+          isSubmitted: data.isSubmitted || false,
+          status: data.status || FormStatus.PENDING,
+          fuel: data.fuel || 0,
+          Equipment: {
+            name: data.Equipment?.name || "",
+            status: data.Equipment?.status || EquipmentStatus.OPERATIONAL,
+          },
+        } as EquipmentLog;
+
+        console.log("Processed Data: ", processedData);
+
+        const result = EquipmentLogSchema.safeParse(processedData);
+        if (!result.success) {
+          console.error("Schema validation failed:", result.error);
+          return;
         }
 
-        const recievedData = await response.json();
-        const data = recievedData[0];
+        // const validatedData = result.data;
 
-        try {
-          LogDataSchema.parse(data);
-        } catch (error) {
-          if (error instanceof z.ZodError) {
-            console.error("Validation error in fetched log data:", error.errors);
-          }
-        }
+        // setFormState(validatedData);
+        // setOriginalState(validatedData);
 
-        setLogs(data);
-        setRefueled(data.isRefueled ?? false);
-        setFuel(data.refueled?.[0]?.gallonsRefueled ?? 0);
-        setNotes(data.comment || "");
-        setStatus(data.status);
-        setStartTime(data.startTime);
-        setEndTime(data.endTime ?? new Date().toISOString());
-        setCharacterCount(40 - (data.comment?.length || 0));
-        setProductName(data.Equipment?.name || "");
-
-        const durationString = data.duration
-          ? calculateDuration(data.duration, data.startTime, data.endTime)
-          : calculateDuration(
-              null,
-              data.startTime,
-              data.endTime ?? new Date().toISOString()
-            );
-
-        const [hours, minutes, seconds] = durationString.split(":");
-        setChangedDurationHours(hours);
-        setChangedDurationMinutes(minutes);
-        setChangedDurationSeconds(seconds);
-        setChangedDuration(durationString);
+        setFormState(processedData);
+        setOriginalState(processedData);
       } catch (error) {
-        setError((error as Error).message);
-        setBanner(t("FailedToFetch"));
+        console.error("Error fetching equipment log:", error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchEquipmentForm();
+    fetchEqLog();
   }, [id]);
 
-  const handleRefueledChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRefueled(event.target.checked);
-    setFuel(0);
+  // const handleFieldChange = (fieldName: string, value: string | number | boolean | FormStatus | EquipmentStatus) => {
+  //   setFormState((prevState) => {
+  //     const newState = { ...prevState as EquipmentLog };
+  //     const keys = fieldName.split(".");
+  
+  //     let current = newState;
+  //     for (let i = 0; i < keys.length - 1; i++) {
+  //       if (!current[keys[i]]) {
+  //         current[keys[i]] = {};
+  //       }
+  //       current = current[keys[i]];
+  //     }
+  
+  //     current[keys[keys.length - 1]] = value;
+  //     return newState;
+  //   });
+  // };
+
+  const handleFieldChange = (field: string, value: string | number | boolean | FormStatus | EquipmentStatus) => {
+    if (field === "Equipment.status") {
+      setFormState((prev) => ({
+        ...prev,
+        Equipment: {
+          ...prev.Equipment,
+          status: value as EquipmentStatus,
+        },
+      }))
+    } else {
+    setFormState((prev) => ({
+      ...prev,
+      [field]: value,
+      }
+    ));
+    console.log("Field changed:", field);
+    console.log("Value:", value);
+  }};
+
+  const handleChangeRefueled = () => {
+    setRefueled((prev) => !prev);
   };
 
-  useEffect(() => {
-    // if (status) {
-    //   setIsEditMode(false);
-    // }
-    if (Array.isArray(logs) && logs.length > 0 && !isEditMode) {
-      const log = logs[0];
-      setRefueled(log.isRefueled ?? false);
-      setFuel(log.fuelUsed ?? 0);
-      setNotes(log.comment || "");
-    }
-  }, [isEditMode, status, logs]);
-
-  const handleDurationHrsChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setChangedDurationHours(event.target.value);
-    setChangedDuration(
-      `${event.target.value}:${changedDurationMinutes}:${changedDurationSeconds}`
-    );
-  };
-
-  const handleDurationMinChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setChangedDurationMinutes(event.target.value);
-    setChangedDuration(
-      `${changedDurationHours}:${event.target.value}:${changedDurationSeconds}`
-    );
-  };
-
-  const handleDurationSecChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setChangedDurationSeconds(event.target.value);
-    setChangedDuration(
-      `${changedDurationHours}:${changedDurationMinutes}:${event.target.value}`
-    );
-  };
-
-  const handleEditClick = () => {
-    setIsEditMode(true);
-  };
-
-  const handleSaveClick = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    formData.append("endTime", new Date().toISOString());
-    formData.append("id", String(id));
-    formData.append("completed", "true");
-    formData.append("comment", notes);
-    formData.append("isRefueled", String(refueled));
-    formData.append("fuelUsed", String(fuel));
-    formData.append("duration", changedDuration);
-
+  const saveEdits = async () => {
     try {
-      FormDataSchema.parse({
-        id: String(id),
-        completed: "true",
-        comment: notes,
-        isRefueled: String(refueled),
-        fuelUsed: String(fuel),
-        duration: changedDuration,
-      });
-
+      const formData = new FormData();
+      Object.entries(formState).forEach(([key, value]) => {
+        if (key === "Equipment") {
+        } else {
+        formData.append(key, String(value));
+      }});
+      formData.set("Equipment.status", formState.Equipment.status || EquipmentStatus.OPERATIONAL);
+      console.log("Form Data: ", formData);
       await updateEmployeeEquipmentLog(formData);
-      setBanner(t("Saved"));
-      setIsEditMode(false);
+      setNotification(t("Saved"), "success");
       router.replace("/dashboard/equipment");
     } catch (error) {
-      if (error instanceof z.ZodError) {
-        console.error("Validation error in form data:", error.errors);
-        setBanner(t("ValidationError") + error.errors);
-      } else {
-        console.error("Error updating equipment log:", error);
-        setBanner(t("FailedToSave"));
-      }
+      console.error("Error saving equipment log:", error);
+      setNotification(t("FailedToSave"), "error");
     }
   };
 
-  const deleteHandler = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    formData.append("id", id.toString());
+  const deleteLog = async () => {
     try {
+      const formData = new FormData();
+      formData.append("id", id);
       await DeleteLogs(formData);
-      setBanner(t("Deleted"));
+      setNotification(t("Deleted"), "success");
       router.replace("/dashboard/equipment");
     } catch (error) {
       console.error("Error deleting log:", error);
-      setBanner(t("FailedToDelete"));
+      setNotification(t("FailedToDelete"), "error");
     }
   };
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setBanner('');
-    }, 8000);
+    console.log("Form state changed:", formState);
+  }, [formState]);
 
-    // Cleanup the timer to avoid memory leaks
-    return () => clearTimeout(timer);
-  }, [banner]);
+  const hasChanges = () => {
+    return JSON.stringify(formState) !== JSON.stringify(originalState);
+  };
 
   if (isLoading) {
     return (
@@ -343,233 +258,121 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
     <Bases>
       <Contents>
         <Grids rows={"10"} gap={"5"}>
-          <Holds background={"white"} className="my-auto row-span-2 h-full">
-            <Contents width={"section"}>
-              <TitleBoxes
-                title={productName}
-                type="noIcon"
-                titleImg="/current.svg"
-                titleImgAlt="Current"
-                variant="default"
-                size="default"
-                href="/dashboard/equipment"
-              />
-            </Contents>
-            {banner !== "" && (
-              <Banners background={"green"} className=" rounded-b-xl h-1/2">
-                <Texts
-                  position={"center"}
-                  text={"white"}
-                  size={"p6"}
-                  className=""
-                >
-                  {banner}
-                </Texts>
-              </Banners>
-            )}
-            {error && (
-              <Banners background={"red"} className=" rounded-b-xl h-1/2">
-                <Texts
-                  position={"center"}
-                  text={"white"}
-                  size={"p6"}
-                  className=""
-                >
-                  {error}
-                </Texts>
-              </Banners>
-            )}
+          <Holds background={"white"} className="my-auto row-span-1 h-full">
+            <TitleBoxes
+              title={formState.Equipment.name}
+              type="noIcon"
+              titleImg="/current.svg"
+              titleImgAlt="Current"
+              variant="default"
+              size="default"
+            />
           </Holds>
 
-          <Holds background={"white"} className="row-span-2 h-full">
+          <Holds background={"white"} className="row-span-3 h-full">
             <Contents width={"section"} className="h-full">
-              <Grids rows={"2"} cols={"4"} className="h-full ">
-                <Holds
-                  className={`my-auto col-span-3 ${
-                    refueled ? "row-span-1" : "row-span-2"
-                  } `}
-                >
-                  <Holds>
-                    <Texts size={"p2"} position={"left"}>
-                      {t("Refueled")}
-                    </Texts>
-                  </Holds>
+              <Grids rows={"2"} cols={"4"} className="h-full">
+                <Holds className="my-auto col-span-3 row-span-1">
+                  <Texts size={"p2"} position={"left"}>
+                    {t("Refueled")}
+                  </Texts>
                 </Holds>
                 <Holds
                   position={"right"}
-                  className={`row-span-1 col-span-1 my-auto ${
-                    refueled ? "row-span-1" : "row-span-2"
-                  }`}
+                  className="col-span-1 my-auto row-span-1"
                 >
                   <CheckBox
-                    id={"1"}
-                    name={"refueled"}
-                    label={""}
-                    size={refueled ? 2 : 3}
-                    defaultChecked={refueled}
-                    disabled={isEditMode || !status ? false : true}
-                    onChange={handleRefueledChange}
+                    id="refueled"
+                    name="refueled"
+                    label=""
+                    checked={refueled}
+                    onChange={() => handleChangeRefueled()}
                   />
                 </Holds>
 
+                {/* Fuel Section */}
                 {refueled && (
-                  <>
-                    <Holds className="my-auto row-span-1 col-span-3">
-                      <Texts size={"p2"} position={"left"}>
-                        {t("Gallons")}
-                      </Texts>
-                    </Holds>
-                    <Holds className="my-auto row-span-1 col-span-1 ">
-                      <Inputs
-                        type="number"
-                        name="fuelUsed"
-                        value={fuel}
-                        min={0}
-                        onChange={(e) => setFuel(e.target.valueAsNumber)}
-                        disabled={isEditMode || !status ? false : true}
-                        className="border-[3px] text-center "
-                      />
-                    </Holds>
-                  </>
-                )}
-              </Grids>
-            </Contents>
-          </Holds>
-
-          <Holds background={"white"} className=" row-span-5 h-full ">
-            <Contents width={"section"}>
-              {/* Edit Form */}
-              <Grids rows={"3"}>
-                <Holds position={"row"} className="row-span-1  h-full">
-                  <Holds size={"50"}>
-                    <Texts position={"left"} size={"p2"}>
-                      {t("Duration")}
-                    </Texts>
-                  </Holds>
-                  <Holds
-                    position={"row"}
-                    size={"50"}
-                    className={`${
-                      !isEditMode && status ? "bg-gray-400" : "bg-white"
-                    } border-[3px] border-black rounded-2xl py-1 my-auto justify-between`}
-                  >
-                    <Holds>
-                      <Holds>
-                        <Inputs
-                          type="number"
-                          name="duration-hrs"
-                          min={0}
-                          value={changedDurationHours}
-                          onChange={handleDurationHrsChange}
-                          disabled={isEditMode || !status ? false : true}
-                          className="border-0 text-center "
-                        />
-                      </Holds>
-                    </Holds>
-
-                    <Texts size={"p4"}>:</Texts>
-                    <Holds>
-                      <Holds>
-                        <Inputs
-                          type="number"
-                          name="duration-min"
-                          min={0}
-                          max={59}
-                          value={changedDurationMinutes}
-                          onChange={handleDurationMinChange}
-                          disabled={isEditMode || !status ? false : true}
-                          className="border-0 text-center"
-                        />
-                      </Holds>
-                    </Holds>
-
-                    <Texts size={"p4"}>:</Texts>
-
-                    <Holds>
-                      <Holds>
-                        <Inputs
-                          type="number"
-                          name="duration-sec"
-                          min={0}
-                          max={59}
-                          value={changedDurationSeconds}
-                          onChange={handleDurationSecChange}
-                          disabled={isEditMode || !status ? false : true}
-                          className="border-0 text-center"
-                        />
-                      </Holds>
-                    </Holds>
-                  </Holds>
-                </Holds>
-
-                <Holds position={"row"} className="row-span-2 h-full">
-                  <Holds className=" relative">
-                    <Labels>{t("Notes")}</Labels>
-                    <TextAreas
-                      name="comment"
-                      value={notes}
-                      onChange={(e) => {
-                        setNotes(e.target.value);
-                        setCharacterCount(40 - e.target.value.length);
-                      }}
-                      maxLength={40}
-                      minLength={1}
-                      rows={5}
-                      placeholder="Enter notes here"
-                      disabled={isEditMode || !status ? false : true}
-                      style={{ resize: "none", width: "100%", height: "100%" }} // Disable resizing
+                  <Holds className="row-span-1 col-span-4 my-4">
+                    <NumberInputWithRevert
+                      label={t("Fuel")}
+                      size="large"
+                      value={formState.fuel || 0}
+                      onChange={(newValue) =>
+                        handleFieldChange("fuel", newValue)
+                      }
+                      showAsterisk={false}
+                      defaultValue={originalState.fuel || 0}
                     />
-                    <Holds className="absolute bottom-4 right-4">
-                      <Texts position={"right"} size="p6" text={"black"}>
-                        {characterCount}
-                      </Texts>
-                    </Holds>
                   </Holds>
-                </Holds>
+                )}
               </Grids>
             </Contents>
           </Holds>
 
-          <Holds position={"row"} className=" row-span-1 my-auto h-full">
-            {/* Delete Form */}
+          <Holds background={"white"} className="row-span-5 h-full">
             <Contents width={"section"}>
-              <Holds position={"row"} className="my-auto gap-4 h-full">
-                <Forms
-                  onSubmit={deleteHandler}
-                  className="my-auto space-x-4 h-full"
-                >
-                  <Buttons type="submit" background="red">
-                    <Titles>{b("Delete")}</Titles>
-                  </Buttons>
-                </Forms>
+              <Holds position={"row"} className="row-span-1 my-4">
+                <SelectWtihRevert
+                  label={t("LogStatus")}
+                  options={[
+                    { value: "PENDING", label: t("Pending") },
+                    { value: "APPROVED", label: t("Approved") },
+                  ]}
+                  size="large"
+                  value={formState.status}
+                  onChange={(value) => handleFieldChange("status", value)}
+                  defaultValue={originalState.status}
+                  showAsterisk
+                />
+              </Holds>
 
-                {/* Submit Form */}
-                {!status && (
-                  <Forms onSubmit={handleSaveClick} className="my-auto h-full">
-                    <Buttons type="submit" background="green">
-                      <Titles>{b("Submit")}</Titles>
-                    </Buttons>
-                  </Forms>
-                )}
-                {isEditMode && status && (
-                  <Forms onSubmit={handleSaveClick} className="my-auto h-full">
-                    <Buttons type="submit" background="green">
-                      <Titles>{b("Save")}</Titles>
-                    </Buttons>
-                  </Forms>
-                )}
-                {/* Edit Toggle */}
-                {!isEditMode && status && (
-                  <Forms className="my-auto h-full">
-                    <Buttons onClick={handleEditClick} background="orange">
-                      <Titles>{b("Edit")}</Titles>
-                    </Buttons>
-                  </Forms>
-                )}
+              {/* Status Section */}
+              <Holds position={"row"} className="row-span-1 my-4">
+                <SelectWtihRevert
+                  label={t("Status")}
+                  options={[
+                    { value: "OPERATIONAL", label: t("Operational") },
+                    { value: "NEEDS_REPAIR", label: t("NeedsRepair") },
+                    {
+                      value: "NEEDS_MAINTENANCE",
+                      label: t("NeedsMaintenance"),
+                    },
+                  ]}
+                  size="large"
+                  value={formState.Equipment.status || ""}
+                  onChange={(value) => handleFieldChange("Equipment.status", value)}
+                  defaultValue={originalState.Equipment.status || ""}
+                  showAsterisk
+                />
+              </Holds>
+
+              {/* Comments Section */}
+              <Holds position={"row"} className="row-span-2 h-full">
+                <TextInputWithRevert
+                  label={t("Comment")}
+                  size="large"
+                  value={formState.comment || ""}
+                  onChange={(newValue) =>
+                    handleFieldChange("comment", newValue)
+                  }
+                  showAsterisk={false}
+                  defaultValue={originalState.comment || ""}
+                />
               </Holds>
             </Contents>
           </Holds>
         </Grids>
+        {/* Buttons Section */}
+        <Holds position="row" className="mt-4 gap-4">
+          {hasChanges() && (
+            <Buttons onClick={saveEdits} background="green">
+              <Titles>{t("Save")}</Titles>
+            </Buttons>
+          )}
+          <Buttons onClick={deleteLog} background="red">
+            <Titles>{t("Delete")}</Titles>
+          </Buttons>
+        </Holds>
       </Contents>
     </Bases>
   );
