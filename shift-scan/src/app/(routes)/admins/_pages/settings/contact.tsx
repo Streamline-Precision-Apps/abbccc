@@ -188,7 +188,7 @@ export const AdminContact = () => {
 
               <Holds>
                 <Texts size={"p6"} position={"right"}>
-                  {contacts?.email?.split("@")[0]}
+                  {employee?.email?.split("@")[0]}
                 </Texts>
               </Holds>
             </Holds>

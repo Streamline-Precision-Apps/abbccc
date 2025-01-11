@@ -11,7 +11,7 @@ import { useTranslations } from "next-intl";
 
 // Zod schemas
 const CCTagSchema = z.object({
-  id: z.number().int(),
+  id: z.string(),
   name: z.string().min(1, "Tag name is required"),
 });
 

@@ -317,7 +317,7 @@ export const AdminEditContact = ({
                   <Inputs
                     type="email"
                     name="email"
-                    defaultValue={contacts?.email}
+                    defaultValue={employee?.email ?? ""}
                     placeholder="email@email.com"
                   />
                 </Holds>

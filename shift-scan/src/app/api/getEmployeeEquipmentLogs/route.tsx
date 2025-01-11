@@ -11,7 +11,7 @@ export async function GET() {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const equipmentData = await prisma.employeeEquipmentLogs.findMany({
+    const equipmentData = await prisma.employeeEquipmentLog.findMany({
         include: {
             Equipment: true
         }

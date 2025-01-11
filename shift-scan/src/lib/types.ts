@@ -318,10 +318,10 @@ export type TimeSheet = {
   workType: WorkType; // Enum: Type of work
 
   // Relations
-  tascoLogs: TascoLog[] | null;
-  truckingLogs: TruckingLog[] | null;
-  maintenanceLogs: MaintenanceLog[] | null;
-  employeeEquipmentLogs: EmployeeEquipmentLog[] | null;
+  tascoLogs?: TascoLog[] | null;
+  truckingLogs?: TruckingLog[] | null;
+  maintenanceLogs?: MaintenanceLog[] | null;
+  employeeEquipmentLogs?: EmployeeEquipmentLog[] | null;
 };
 
 export type TascoLog = {
