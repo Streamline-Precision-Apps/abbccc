@@ -36,6 +36,7 @@ enum FormStatus {
   PENDING
   APPROVED
   DENIED
+  // FLAGGED
   // I "TEMPORARY" this for the search filter api call for admins.
   TEMPORARY
 }

@@ -25,12 +25,14 @@ export default async function RootLayout({
   return (
     <html lang={locale}>
       <body>
-        <NextIntlClientProvider messages={messages}>
-          <Providers>
-            {children}
-            <SpeedInsights />
-          </Providers>
-        </NextIntlClientProvider>
+        <main>
+          <NextIntlClientProvider messages={messages}>
+            <Providers>
+              {children}
+              <SpeedInsights />
+            </Providers>
+          </NextIntlClientProvider>
+        </main>
       </body>
     </html>
   );

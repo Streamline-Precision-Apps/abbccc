@@ -162,6 +162,10 @@ export default function WidgetSection({ session, locale }: Props) {
       );
   }, [payPeriodSheets]);
 
+  const fetchCRONJob = () => {
+    fetch("/api/cron/midnight_clock_out");
+  };
+
   useEffect(() => {
     setPayPeriodHours(totalPayPeriodHours.toFixed(2));
   }, [totalPayPeriodHours, setPayPeriodHours]);
@@ -174,6 +178,7 @@ export default function WidgetSection({ session, locale }: Props) {
     ); // Prevent rendering until hydration
   return (
     <>
+      <Buttons background={"green"} onClick={() => fetchCRONJob()}></Buttons>
       <Holds className="row-span-1">
         {authStep === "" && (
           <Banners>
