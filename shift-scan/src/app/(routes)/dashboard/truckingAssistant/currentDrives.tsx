@@ -1,3 +1,4 @@
+"use client";
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { Buttons } from "@/components/(reusable)/buttons";
@@ -57,8 +58,8 @@ export default function CurrentDrives() {
         const data = await response.json();
         console.log("Raw data:", data);
 
-        const validatedData: ReceivedContent[] = data.map((item: ReceivedContent) =>
-          receivedContentSchema.parse(item)
+        const validatedData: ReceivedContent[] = data.map(
+          (item: ReceivedContent) => receivedContentSchema.parse(item)
         );
         console.log("Validated Data:", validatedData);
 
@@ -140,7 +141,9 @@ export default function CurrentDrives() {
               {drives.map((item) => (
                 <Buttons
                   key={item.id}
-                  background={item.id === highestIdDrive.id ? "green" : "lightBlue"}
+                  background={
+                    item.id === highestIdDrive.id ? "green" : "lightBlue"
+                  }
                   size={"90"}
                 >
                   <Titles>{`Starting Mileage: ${

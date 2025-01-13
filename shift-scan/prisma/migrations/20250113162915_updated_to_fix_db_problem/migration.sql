@@ -111,6 +111,7 @@ CREATE TABLE "Refueled" (
     "employeeEquipmentLogId" TEXT,
     "truckingLogId" TEXT,
     "gallonsRefueled" DOUBLE PRECISION,
+    "milesAtfueling" INTEGER,
     "tascoLogId" TEXT,
 
     CONSTRAINT "Refueled_pkey" PRIMARY KEY ("id")
@@ -145,6 +146,7 @@ CREATE TABLE "InjuryForm" (
 -- CreateTable
 CREATE TABLE "timeOffRequestForm" (
     "id" SERIAL NOT NULL,
+    "name" TEXT,
     "requestedStartDate" TIMESTAMP(3) NOT NULL,
     "requestedEndDate" TIMESTAMP(3) NOT NULL,
     "requestType" "TimeOffRequestType" NOT NULL,
@@ -155,6 +157,7 @@ CREATE TABLE "timeOffRequestForm" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "decidedBy" TEXT,
+    "signature" TEXT,
 
     CONSTRAINT "timeOffRequestForm_pkey" PRIMARY KEY ("id")
 );
@@ -197,6 +200,9 @@ CREATE TABLE "TimeSheet" (
     "location" TEXT,
     "status" "FormStatus" NOT NULL DEFAULT 'PENDING',
     "workType" "WorkType" NOT NULL,
+    "editedByUserId" TEXT,
+    "newTimeSheetId" TEXT,
+    "createdByAdmin" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "TimeSheet_pkey" PRIMARY KEY ("id")
 );
@@ -320,6 +326,7 @@ CREATE TABLE "User" (
     "startDate" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "terminationDate" TIMESTAMP(3),
     "accountSetup" BOOLEAN NOT NULL DEFAULT false,
+    "clockedIn" BOOLEAN NOT NULL DEFAULT false,
     "passwordResetTokenId" TEXT,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
