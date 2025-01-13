@@ -23,6 +23,7 @@ export default async function Home() {
   const locale = lang ? lang.value : "en";
 
   // Pass the fetched data to the client-side Content component
+
   return (
     <Bases>
       <Contents>

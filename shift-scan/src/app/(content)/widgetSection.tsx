@@ -172,6 +172,16 @@ export default function WidgetSection({ session, locale }: Props) {
         <Holds background={"white"} className="row-span-5 h-full"></Holds>
       </>
     ); // Prevent rendering until hydration
+
+  // Redirect to dashboard if user is an admin
+
+  if (
+    session?.user.permission === "ADMIN" ||
+    (session?.user.permission === "SUPERADMIN" && window.innerWidth >= 820)
+  ) {
+    router.push("/admins");
+  }
+
   return (
     <>
       <Holds className="row-span-1">
