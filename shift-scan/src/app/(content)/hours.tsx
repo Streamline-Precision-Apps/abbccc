@@ -14,7 +14,7 @@ type HoursProps = {
   display: boolean;
   setToggle: (toggle: boolean) => void;
   loading: boolean;
-}
+};
 
 export default function Hours({ setToggle, display, loading }: HoursProps) {
   const t = useTranslations("Home");
@@ -23,46 +23,42 @@ export default function Hours({ setToggle, display, loading }: HoursProps) {
   const handler = () => {
     setToggle(!display);
   };
-  if (loading) return (
-    <Buttons
-    background={"darkBlue"}
-    onClick={handler}>
-      <Contents width={"section"}>
-        <Holds position={"row"} className="my-auto">
-          <Holds>
-            <Texts text={"white"} size={"p2"}>
-              {t("PayPeriodHours")}
-            </Texts>
-          </Holds>
-          <Holds background={"white"} className="py-1">
-            <Spinner/>
-          </Holds>
-        </Holds>
-      </Contents>
-    </Buttons>
-  )
-
-  return display ? (  
-      <Buttons
-      background={"darkBlue"}
-      onClick={handler}>
+  if (loading)
+    return (
+      <Buttons background={"darkBlue"} onClick={handler}>
         <Contents width={"section"}>
           <Holds position={"row"} className="my-auto">
-            <Holds>
+            <Holds className="w-[60%]">
               <Texts text={"white"} size={"p2"}>
                 {t("PayPeriodHours")}
               </Texts>
             </Holds>
-            <Holds background={"white"} className="py-1">
-              <Texts text={"black"} size={"p2"}>
-                {payPeriodHours} {t("Unit")}
-              </Texts>
+            <Holds background={"white"} className="py-1 w-[40%]">
+              <Spinner size={30} />
             </Holds>
           </Holds>
         </Contents>
       </Buttons>
-  ) : (
-    
-    <ViewHoursComponent toggle={setToggle} />
     );
+
+  return display ? (
+    <Buttons background={"darkBlue"} onClick={handler}>
+      <Contents width={"section"}>
+        <Holds position={"row"} className="my-auto ">
+          <Holds className="w-[60%]">
+            <Texts text={"white"} size={"p2"}>
+              {t("PayPeriodHours")}
+            </Texts>
+          </Holds>
+          <Holds background={"white"} className="py-1 w-[40%]">
+            <Texts text={"black"} size={"p4"}>
+              {payPeriodHours} {t("Unit")}
+            </Texts>
+          </Holds>
+        </Holds>
+      </Contents>
+    </Buttons>
+  ) : (
+    <ViewHoursComponent toggle={setToggle} />
+  );
 }
