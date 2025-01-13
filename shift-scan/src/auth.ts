@@ -4,6 +4,7 @@ import Credentials from "next-auth/providers/credentials";
 // import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
 import type { Provider } from "next-auth/providers";
+import Resend from "next-auth/providers/resend";
 
 declare module "next-auth" {
   interface Session {
@@ -95,6 +96,10 @@ const providers: Provider[] = [
 
       return userwithoutpassword;
     },
+  }),
+  Resend({
+    apiKey: process.env.AUTH_RESEND_KEY,
+    from: "no-reply@shiftscanapp.com",
   }),
 ];
 
