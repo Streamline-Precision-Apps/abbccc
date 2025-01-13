@@ -53,18 +53,18 @@ const providers: Provider[] = [
       const passwords = credentials?.password as string;
 
       // Replace this with your own authentication logic
-      const user = await prisma.user.findUnique({
+      const userId = await prisma.user.findUnique({
         where: { username: username },
       });
-      console.log(user?.password);
+      console.log(userId?.password);
 
-      if (!user || !user.password) {
+      if (!userId || !userId.password) {
         console.log("User not found or password not found");
         throw new InvalidLoginError();
       }
 
       const isValidPassword = () => {
-        if (user.password === passwords) {
+        if (userId.password === passwords) {
           return true;
         } else {
           return false;
@@ -82,16 +82,16 @@ const providers: Provider[] = [
       // }
 
       const userwithoutpassword = {
-        id: user.id,
-        username: user.username,
-        permission: user.permission,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        truckView: user.truckView,
-        tascoView: user.tascoView,
-        laborView: user.laborView,
-        mechanicView: user.mechanicView,
-        accountSetup: user.accountSetup, // Include accountSetup from user
+        id: userId.id,
+        username: userId.username,
+        permission: userId.permission,
+        firstName: userId.firstName,
+        lastName: userId.lastName,
+        truckView: userId.truckView,
+        tascoView: userId.tascoView,
+        laborView: userId.laborView,
+        mechanicView: userId.mechanicView,
+        accountSetup: userId.accountSetup, // Include accountSetup from userId
       };
 
       return userwithoutpassword;
