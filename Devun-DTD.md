@@ -1,4 +1,5 @@
-## January 2, 2025
+#
+# January 2, 2025
 ### researched
 - redux for 3 hr
   - dispatching react components
@@ -35,16 +36,16 @@ cookies().set({
 - update language selector (35 mins)
 - Admin Build - Inbox Section (1hr)
 
-
-## January 6, 2025 - Monday
+#
+# January 6, 2025 - Monday
 ### built/created
 - 
 ### Trello
 - Admin Build - Inbox Section (8 hours)
   - built apis and got the different pages made to display data
   - towards the end of creating an edit all section
-
-## January 7, 2025 - Tuesday
+#
+# January 7, 2025 - Tuesday
 ### built/created
 - 
 ### Trello
@@ -53,7 +54,8 @@ cookies().set({
   - need to do a better protection
 - Set up DNS for Resends
 
-## January 8, 2025 - Wednesday
+#
+# January 8, 2025 - Wednesday
 ### built/created
 - Admin Inbox Section
 - Api for break counter 
@@ -62,8 +64,8 @@ cookies().set({
 ### Trello
 - Researching GeoFencing(1 hour) 
 - Adjusting the break counter (2 hours)
-
-## January 9, 2025 - Thursday
+#
+# January 9, 2025 - Thursday
 ### Meeting with company
 - proposed new ideas for company app
 - met with team to discuss things to help company understand
@@ -71,3 +73,24 @@ cookies().set({
 - 
 ### Trello
 - Building Pages and Resend (2 hour)
+#
+# January 10, 2025 - Friday
+### built/created
+- built the inbox section for the entire day
+- debugged with Sean and built app with him 
+- finished app build
+
+### Trello
+- Admin Build - Inbox Section (6 hour)
+- Debugging Equipment with Sean
+
+#
+# January 13, 2025 - Monday
+### researched
+- research prisma new database to see how to better optimize our data pulls and schemas
+### built/created
+- hosting up and ready!
+- Resend up and working!
+
+### Trello
+- Building Pages and Resend (4 hours)
