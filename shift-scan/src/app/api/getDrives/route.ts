@@ -35,10 +35,10 @@ export async function GET() {
         truckingLogs: {
           every: {
             equipmentId: {
-              not: null
-            }
-          }
-        }
+              not: null,
+            },
+          },
+        },
       },
     });
 

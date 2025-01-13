@@ -1,30 +1,69 @@
 -- CreateEnum
-CREATE TYPE "FormType" AS ENUM ('MEDICAL', 'INSPECTION', 'MANAGER', 'LEAVE', 'SAFETY', 'INJURY');
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'FormType') THEN
+    CREATE TYPE "FormType" AS ENUM ('MEDICAL', 'INSPECTION', 'MANAGER', 'LEAVE', 'SAFETY', 'INJURY');
+  END IF;
+END $$;
 
 -- CreateEnum
-CREATE TYPE "TimeOffRequestType" AS ENUM ('FAMILY_MEDICAL', 'MILITARY', 'PAID_VACATION', 'NON_PAID_PERSONAL', 'SICK');
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'TimeOffRequestType') THEN
+    CREATE TYPE "TimeOffRequestType" AS ENUM ('FAMILY_MEDICAL', 'MILITARY', 'PAID_VACATION', 'NON_PAID_PERSONAL', 'SICK');
+  END IF;
+END $$;
 
 -- CreateEnum
-CREATE TYPE "Permission" AS ENUM ('USER', 'MANAGER', 'ADMIN', 'SUPERADMIN');
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'Permission') THEN
+    CREATE TYPE "Permission" AS ENUM ('USER', 'MANAGER', 'ADMIN', 'SUPERADMIN');
+  END IF;
+END $$;
 
 -- CreateEnum
-CREATE TYPE "EquipmentTags" AS ENUM ('TRUCK', 'TRAILER', 'EQUIPMENT', 'VEHICLE');
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'EquipmentTags') THEN
+    CREATE TYPE "EquipmentTags" AS ENUM ('TRUCK', 'TRAILER', 'EQUIPMENT', 'VEHICLE');
+  END IF;
+END $$;
 
 -- CreateEnum
-CREATE TYPE "EquipmentStatus" AS ENUM ('OPERATIONAL', 'NEEDS_REPAIR', 'NEEDS_MAINTENANCE');
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'EquipmentStatus') THEN
+    CREATE TYPE "EquipmentStatus" AS ENUM ('OPERATIONAL', 'NEEDS_REPAIR', 'NEEDS_MAINTENANCE');
+  END IF;
+END $$;
 
 -- CreateEnum
-CREATE TYPE "FormStatus" AS ENUM ('PENDING', 'APPROVED', 'DENIED', 'TEMPORARY');
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'FormStatus') THEN
+    CREATE TYPE "FormStatus" AS ENUM ('PENDING', 'APPROVED', 'DENIED', 'TEMPORARY');
+  END IF;
+END $$;
 
 -- CreateEnum
-CREATE TYPE "IsActive" AS ENUM ('ACTIVE', 'INACTIVE');
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'IsActive') THEN
+    CREATE TYPE "IsActive" AS ENUM ('ACTIVE', 'INACTIVE');
+  END IF;
+END $$;
 
 -- CreateEnum
-CREATE TYPE "WorkType" AS ENUM ('MECHANIC', 'TRUCK_DRIVER', 'LABOR', 'TASCO');
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'WorkType') THEN
+    CREATE TYPE "WorkType" AS ENUM ('MECHANIC', 'TRUCK_DRIVER', 'LABOR', 'TASCO');
+  END IF;
+END $$;
 
 -- CreateEnum
-CREATE TYPE "Priority" AS ENUM ('LOW', 'MEDIUM', 'HIGH', 'URGENT');
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'Priority') THEN
+    CREATE TYPE "Priority" AS ENUM ('LOW', 'MEDIUM', 'HIGH', 'URGENT');
+  END IF;
+END $$;
 
+<<<<<<< HEAD:shift-scan/prisma/migrations/20250101182554_no_hash2/migration.sql
+-- CreateTable
+=======
 -- CreateTable
 CREATE TABLE "CostCode" (
     "id" TEXT NOT NULL,
@@ -111,6 +150,7 @@ CREATE TABLE "Refueled" (
     "employeeEquipmentLogId" TEXT,
     "truckingLogId" TEXT,
     "gallonsRefueled" DOUBLE PRECISION,
+    "milesAtfueling" INTEGER,
     "tascoLogId" TEXT,
 
     CONSTRAINT "Refueled_pkey" PRIMARY KEY ("id")
@@ -145,6 +185,7 @@ CREATE TABLE "InjuryForm" (
 -- CreateTable
 CREATE TABLE "timeOffRequestForm" (
     "id" SERIAL NOT NULL,
+    "name" TEXT,
     "requestedStartDate" TIMESTAMP(3) NOT NULL,
     "requestedEndDate" TIMESTAMP(3) NOT NULL,
     "requestType" "TimeOffRequestType" NOT NULL,
@@ -155,6 +196,7 @@ CREATE TABLE "timeOffRequestForm" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "decidedBy" TEXT,
+    "signature" TEXT,
 
     CONSTRAINT "timeOffRequestForm_pkey" PRIMARY KEY ("id")
 );
@@ -197,6 +239,9 @@ CREATE TABLE "TimeSheet" (
     "location" TEXT,
     "status" "FormStatus" NOT NULL DEFAULT 'PENDING',
     "workType" "WorkType" NOT NULL,
+    "editedByUserId" TEXT,
+    "newTimeSheetId" TEXT,
+    "createdByAdmin" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "TimeSheet_pkey" PRIMARY KEY ("id")
 );
@@ -320,6 +365,7 @@ CREATE TABLE "User" (
     "startDate" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "terminationDate" TIMESTAMP(3),
     "accountSetup" BOOLEAN NOT NULL DEFAULT false,
+    "clockedIn" BOOLEAN NOT NULL DEFAULT false,
     "passwordResetTokenId" TEXT,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
@@ -553,3 +599,4 @@ ALTER TABLE "_CrewToUser" ADD CONSTRAINT "_CrewToUser_A_fkey" FOREIGN KEY ("A") 
 
 -- AddForeignKey
 ALTER TABLE "_CrewToUser" ADD CONSTRAINT "_CrewToUser_B_fkey" FOREIGN KEY ("B") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+>>>>>>> 49f6eac8be0574906166e85f740eb05740f600bd:shift-scan/prisma/migrations/20250113174209_/migration.sql
