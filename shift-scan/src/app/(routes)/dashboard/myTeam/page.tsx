@@ -51,6 +51,7 @@ export default function Content() {
           try {
             TeamsResponseSchema.parse(myTeamsData);
             setMyTeams(myTeamsData);
+
             localStorage.setItem("myTeams", JSON.stringify(myTeamsData));
           } catch (error) {
             if (error instanceof z.ZodError) {

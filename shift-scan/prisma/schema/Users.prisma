@@ -18,6 +18,7 @@ model User {
     startDate       DateTime?  @default(now())
     terminationDate DateTime?
     accountSetup    Boolean    @default(false)
+    clockedIn       Boolean    @default(false) // indicates if employee is clocked in
 
     passwordResetTokens  PasswordResetToken[]
     timeSheets           TimeSheet[]
