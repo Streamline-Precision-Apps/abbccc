@@ -1,5 +1,10 @@
+
 {
-    "git": {
-      
-    }
+    "crons": [ 
+      {
+        "path": "/api/cron/midnight_clock_out",
+        "schedule": "59 59 14 * * *"
+        
+      }
+    ]
   }
