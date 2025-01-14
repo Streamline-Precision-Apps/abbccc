@@ -456,6 +456,7 @@
 },
 
 "Admins":{
+    "Description": "Description",
     "SelectRequestType": "Select Request Type",
     "SelectEmployee": "Select Employee",
     "TitleOptional": "Title (Optional)",

@@ -413,6 +413,7 @@
     "PhotoAlbumAccess": " Album de Fotos"
 },
 "Admins":{
+
     "SelectRequestType": "Seleccionar Tipo de Solicitud",
     "SelectEmployee": "Seleccionar Empleado",
     "TitleOptional": "Título (Opcional)",
