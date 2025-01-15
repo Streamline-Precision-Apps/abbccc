@@ -111,6 +111,7 @@ CREATE TABLE "Refueled" (
     "employeeEquipmentLogId" TEXT,
     "truckingLogId" TEXT,
     "gallonsRefueled" DOUBLE PRECISION,
+    "milesAtfueling" INTEGER,
     "tascoLogId" TEXT,
 
     CONSTRAINT "Refueled_pkey" PRIMARY KEY ("id")
@@ -145,6 +146,7 @@ CREATE TABLE "InjuryForm" (
 -- CreateTable
 CREATE TABLE "timeOffRequestForm" (
     "id" SERIAL NOT NULL,
+    "name" TEXT,
     "requestedStartDate" TIMESTAMP(3) NOT NULL,
     "requestedEndDate" TIMESTAMP(3) NOT NULL,
     "requestType" "TimeOffRequestType" NOT NULL,
@@ -155,6 +157,7 @@ CREATE TABLE "timeOffRequestForm" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "decidedBy" TEXT,
+    "signature" TEXT,
 
     CONSTRAINT "timeOffRequestForm_pkey" PRIMARY KEY ("id")
 );
@@ -197,6 +200,9 @@ CREATE TABLE "TimeSheet" (
     "location" TEXT,
     "status" "FormStatus" NOT NULL DEFAULT 'PENDING',
     "workType" "WorkType" NOT NULL,
+    "editedByUserId" TEXT,
+    "newTimeSheetId" TEXT,
+    "createdByAdmin" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "TimeSheet_pkey" PRIMARY KEY ("id")
 );
@@ -320,6 +326,7 @@ CREATE TABLE "User" (
     "startDate" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "terminationDate" TIMESTAMP(3),
     "accountSetup" BOOLEAN NOT NULL DEFAULT false,
+    "clockedIn" BOOLEAN NOT NULL DEFAULT false,
     "passwordResetTokenId" TEXT,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
@@ -368,19 +375,25 @@ CREATE TABLE "PasswordResetToken" (
 -- CreateTable
 CREATE TABLE "_CCTagToJobsite" (
     "A" TEXT NOT NULL,
-    "B" TEXT NOT NULL
+    "B" TEXT NOT NULL,
+
+    CONSTRAINT "_CCTagToJobsite_AB_pkey" PRIMARY KEY ("A","B")
 );
 
 -- CreateTable
 CREATE TABLE "_CCTagToCostCode" (
     "A" TEXT NOT NULL,
-    "B" TEXT NOT NULL
+    "B" TEXT NOT NULL,
+
+    CONSTRAINT "_CCTagToCostCode_AB_pkey" PRIMARY KEY ("A","B")
 );
 
 -- CreateTable
 CREATE TABLE "_CrewToUser" (
     "A" TEXT NOT NULL,
-    "B" TEXT NOT NULL
+    "B" TEXT NOT NULL,
+
+    CONSTRAINT "_CrewToUser_AB_pkey" PRIMARY KEY ("A","B")
 );
 
 -- CreateIndex
@@ -435,19 +448,10 @@ CREATE UNIQUE INDEX "PasswordResetToken_token_key" ON "PasswordResetToken"("toke
 CREATE UNIQUE INDEX "PasswordResetToken_email_token_key" ON "PasswordResetToken"("email", "token");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "_CCTagToJobsite_AB_unique" ON "_CCTagToJobsite"("A", "B");
-
--- CreateIndex
 CREATE INDEX "_CCTagToJobsite_B_index" ON "_CCTagToJobsite"("B");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "_CCTagToCostCode_AB_unique" ON "_CCTagToCostCode"("A", "B");
-
--- CreateIndex
 CREATE INDEX "_CCTagToCostCode_B_index" ON "_CCTagToCostCode"("B");
-
--- CreateIndex
-CREATE UNIQUE INDEX "_CrewToUser_AB_unique" ON "_CrewToUser"("A", "B");
 
 -- CreateIndex
 CREATE INDEX "_CrewToUser_B_index" ON "_CrewToUser"("B");

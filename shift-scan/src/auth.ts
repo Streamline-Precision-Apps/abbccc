@@ -2,7 +2,7 @@ import NextAuth, { CredentialsSignin, type DefaultSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 // import Resend from "next-auth/providers/resend";
 // import bcrypt from "bcryptjs";
-import prisma from "./lib/prisma";
+import prisma from "@/lib/prisma";
 import type { Provider } from "next-auth/providers";
 
 declare module "next-auth" {
@@ -46,7 +46,6 @@ const providers: Provider[] = [
       password: { label: "Password", type: "password" },
     },
     async authorize(credentials) {
-      console.log(credentials);
       if (!credentials?.username || !credentials?.password) {
         throw new InvalidLoginError();
       }
@@ -54,17 +53,17 @@ const providers: Provider[] = [
       const passwords = credentials?.password as string;
 
       // Replace this with your own authentication logic
-      const user = await prisma.user.findUnique({
+      const userId = await prisma.user.findUnique({
         where: { username: username },
       });
 
-      if (!user || !user.password) {
+      if (!userId || !userId.password) {
         console.log("User not found or password not found");
         throw new InvalidLoginError();
       }
 
       const isValidPassword = () => {
-        if (user.password === passwords) {
+        if (userId.password === passwords) {
           return true;
         } else {
           return false;
@@ -82,16 +81,16 @@ const providers: Provider[] = [
       // }
 
       const userwithoutpassword = {
-        id: user.id,
-        username: user.username,
-        permission: user.permission,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        truckView: user.truckView,
-        tascoView: user.tascoView,
-        laborView: user.laborView,
-        mechanicView: user.mechanicView,
-        accountSetup: user.accountSetup, // Include accountSetup from user
+        id: userId.id,
+        username: userId.username,
+        permission: userId.permission,
+        firstName: userId.firstName,
+        lastName: userId.lastName,
+        truckView: userId.truckView,
+        tascoView: userId.tascoView,
+        laborView: userId.laborView,
+        mechanicView: userId.mechanicView,
+        accountSetup: userId.accountSetup, // Include accountSetup from userId
       };
 
       return userwithoutpassword;
@@ -108,15 +107,18 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   callbacks: {
     jwt: async ({ token, user }) => {
       if (user) {
-        token.id = user.id as string;
-        token.permission = user.permission;
-        token.firstName = user.firstName;
-        token.lastName = user.lastName;
-        token.truckView = user.truckView;
-        token.tascoView = user.tascoView;
-        token.laborView = user.laborView;
-        token.mechanicView = user.mechanicView;
-        token.accountSetup = user.accountSetup; // Add accountSetup to token
+        token = {
+          ...token,
+          id: user.id,
+          permission: user.permission,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          truckView: user.truckView,
+          tascoView: user.tascoView,
+          laborView: user.laborView,
+          mechanicView: user.mechanicView,
+          accountSetup: user.accountSetup,
+        };
       }
       return token;
     },

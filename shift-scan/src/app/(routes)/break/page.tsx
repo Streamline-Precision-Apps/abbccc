@@ -19,7 +19,7 @@ export default async function Clock() {
   return (
     <Bases>
       <Contents>
-        <Holds background={"white"} className="w-full h-full ">
+        <Holds background={"white"} className="w-full h-full">
           <NewClockProcess
             type={"jobsite"}
             scannerType={"jobsite"}
