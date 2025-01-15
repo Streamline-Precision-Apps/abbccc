@@ -28,3 +28,8 @@
     stroke: black;
   }
 }
+
+.button__bar :global(li.slick-active) button {
+  opacity: .75;
+  color: #000
+}

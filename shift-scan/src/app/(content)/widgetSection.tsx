@@ -155,9 +155,9 @@ export default function WidgetSection({ session }: Props) {
       localStorage.clear();
       setAuthStep("");
     }
-    if (!accountSetup) {
-      router.push("/signin/signup");
-    }
+    // if (!accountSetup) {
+    //   router.push("/signin/signup");
+    // }
   }, [authStep, router, accountSetup]);
 
   //-----------------------------------------------------------------------
