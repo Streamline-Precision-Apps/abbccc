@@ -5,7 +5,7 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Tab } from "@/components/(reusable)/tab";
 
 import { useEffect, useState } from "react";
-import { Equipment, Jobsites, costCodes, CCTags } from "@/lib/types";
+import { Equipment, Jobsite, costCodes, CCTags } from "@/lib/types";
 import { z } from "zod";
 import { EquipmentComponent } from "./_components/EquipmentComponent";
 import { JobsiteComponent } from "./_components/JobsiteComponent";
@@ -19,7 +19,7 @@ import { NotificationComponent } from "@/components/(inputs)/NotificationCompone
 export default function Search() {
   const [activeTab, setActiveTab] = useState(1);
   const [equipments, setEquipments] = useState<Equipment[]>([]);
-  const [jobsites, setJobsites] = useState<Jobsites[]>([]);
+  const [jobsites, setJobsites] = useState<Jobsite[]>([]);
   const [costCodes, setCostCodes] = useState<costCodes[]>([]);
   const [tags, setTags] = useState<CCTags[]>([]);
   const [activeTab2, setActiveTab2] = useState(1);

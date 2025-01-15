@@ -130,6 +130,7 @@ export default function AdminHours() {
                      : " "
                  } `}
             >
+              {/* The background is is a certain color depending on the hours you worked  */}
               <Holds
                 className={`rounded-[10px] ${
                   data.date === new Date().toISOString().split("T")[0]
@@ -147,15 +148,29 @@ export default function AdminHours() {
                   border: data.hours ? "3px solid black" : "none",
                 }}
               >
-                <Texts size="p4">
+                {/*If the date text is black and greater than 0 */}
+                <Texts className="text-black" size="p4">
                   {data.hours !== 0 ? data.hours.toFixed(1) : ""}
                 </Texts>
-                <Texts size="p4">
+
+                {/*If the date is not the current date and the hours are 0  */}
+                <Texts className="text-black" size="p4">
                   {data.hours === 0 &&
-                  data.date <= new Date().toISOString().split("T")[0]
+                  data.date <= new Date().toISOString().split("T")[0] &&
+                  data.date !== new Date().toISOString().split("T")[0]
                     ? `0 `
                     : ""}
                 </Texts>
+
+                {/*If the date is the current date and the hours are 0  */}
+                <Texts className="text-white" size="p4">
+                  {data.hours === 0 &&
+                  data.date === new Date().toISOString().split("T")[0] &&
+                  data.date === new Date().toISOString().split("T")[0]
+                    ? `0 `
+                    : ""}
+                </Texts>
+                {/*If the date is the current date and the hours are 0 it is white */}
                 <Texts
                   size="p4"
                   className={`${
@@ -167,8 +182,6 @@ export default function AdminHours() {
                 >
                   {data.date <= new Date().toISOString().split("T")[0]
                     ? `${t("DA-Time-Label")}`
-                    : data.date === new Date().toISOString().split("T")[0]
-                    ? `${t("Today")}`
                     : ""}
                 </Texts>
               </Holds>

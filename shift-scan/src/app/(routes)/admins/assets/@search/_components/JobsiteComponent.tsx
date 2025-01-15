@@ -6,13 +6,13 @@ import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
-import { Jobsites } from "@/lib/types";
+import { Jobsite } from "@/lib/types";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState, useMemo, useCallback } from "react";
 
 type Props = {
-  jobsites: Jobsites[];
+  jobsites: Jobsite[];
   setFilter: (filter: string) => void;
 };
 
@@ -44,7 +44,7 @@ export const JobsiteComponent = ({ jobsites, setFilter }: Props) => {
     []
   );
 
-  const selectJobsite = (jobsite: Jobsites) => {
+  const selectJobsite = (jobsite: Jobsite) => {
     setTerm(jobsite.name);
     router.push(`/admins/assets/jobsite/${jobsite.id}`);
   };

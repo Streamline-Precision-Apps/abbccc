@@ -11,12 +11,7 @@ import { useTranslations } from "next-intl";
 import { CheckBox } from "../(inputs)/checkBox";
 
 const ShiftScanIntro = ({ handleNextStep }: { handleNextStep: () => void }) => {
-  const [isTested, setIsTested] = React.useState(false);
   const t = useTranslations("SignUpIntro");
-  
-  const handleChange = async () => {
-    setIsTested(true);
-  }
 
   return (
     <Grids rows={"10"} gap={"5"} className=" mb-5">
@@ -39,58 +34,66 @@ const ShiftScanIntro = ({ handleNextStep }: { handleNextStep: () => void }) => {
           <Holds className="justify-around my-auto h-full">
             <Holds position={"row"}>
               <Holds size={"80"}>
-                <Texts size={"p4"} position={"left"} className="my-5">{t("ChooseNewPassword")}</Texts>
+                <Texts size={"p4"} position={"left"} className="my-5">
+                  {t("ChooseNewPassword")}
+                </Texts>
               </Holds>
               <Holds size={"20"}>
                 <CheckBox
-                size={3}
-                id={"1"}
-                label={" "}
-                disabled={true}
-                onChange={handleChange}
-                name="locale"/>
+                  size={3}
+                  id={"1"}
+                  label={" "}
+                  disabled={true}
+                  name="locale"
+                />
               </Holds>
             </Holds>
             <Holds position={"row"}>
               <Holds size={"80"}>
-                <Texts size={"p4"} position={"left"} className="my-5">{t("GivePermissions")}</Texts>
+                <Texts size={"p4"} position={"left"} className="my-5">
+                  {t("GivePermissions")}
+                </Texts>
               </Holds>
               <Holds size={"20"}>
                 <CheckBox
-                size={3}
-                id={"1"}
-                label={" "}
-                disabled={true}
-                onChange={handleChange}
-                name="locale"/>
+                  size={3}
+                  id={"1"}
+                  label={" "}
+                  disabled={true}
+                  name="locale"
+                />
               </Holds>
             </Holds>
             <Holds position={"row"}>
               <Holds size={"80"}>
-                <Texts size={"p4"} position={"left"} className="my-5">{t("ChooseProfilePicture")}</Texts>
+                <Texts size={"p4"} position={"left"} className="my-5">
+                  {t("ChooseProfilePicture")}
+                </Texts>
               </Holds>
               <Holds size={"20"}>
                 <CheckBox
-                size={3}
-                id={"1"}
-                label={" "}
-                disabled={true}
-                onChange={handleChange}
-                name="locale"/>
+                  size={3}
+                  id={"1"}
+                  label={" "}
+                  disabled={true}
+                  name="locale"
+                />
               </Holds>
             </Holds>
             <Holds position={"row"}>
               <Holds size={"80"}>
-                <Texts size={"p4"} position={"left"} className="my-5">{t("CreateVirtualSignature")}</Texts>
+                <Texts size={"p4"} position={"left"} className="my-5">
+                  {t("CreateVirtualSignature")}
+                </Texts>
               </Holds>
               <Holds size={"20"}>
                 <CheckBox
-                size={3}
-                id={"1"}
-                label={""}
-                disabled={true}
-                onChange={handleChange}
-                name="locale"/>
+                  size={3}
+                  id={"1"}
+                  label={""}
+                  disabled={true}
+                  name="locale"
+                />
               </Holds>
             </Holds>
           </Holds>
@@ -98,8 +101,8 @@ const ShiftScanIntro = ({ handleNextStep }: { handleNextStep: () => void }) => {
       </Holds>
       <Holds className="row-span-1 h-full">
         <Buttons background={"green"} onClick={handleNextStep}>
-        <Titles>{t("LetsGetStarted")}</Titles>
-      </Buttons>
+          <Titles>{t("LetsGetStarted")}</Titles>
+        </Buttons>
       </Holds>
     </Grids>
   );

@@ -21,7 +21,6 @@ export async function GET() {
         phoneNumber: true,
         emergencyContact: true,
         emergencyContactNumber: true,
-        email: true,
       },
     });
 

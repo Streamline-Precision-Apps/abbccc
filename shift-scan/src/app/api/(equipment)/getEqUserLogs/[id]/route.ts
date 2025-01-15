@@ -13,14 +13,14 @@ export async function GET(request: Request, { params: id }: { params: Params }) 
 
   try {
     const formId = String((await id).id);
-    if (formId) {
+    if (!formId) {
       return NextResponse.json({ error: "Invalid form ID" }, { status: 400 });
     }
 
     const currentDate = new Date();
     const past24Hours = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
 
-    const usersLogs = await prisma.employeeEquipmentLog.findMany({
+    const usersLog = await prisma.employeeEquipmentLog.findUnique({
       where: {
         employeeId: userId,
         id: formId,
@@ -34,17 +34,18 @@ export async function GET(request: Request, { params: id }: { params: Params }) 
         Equipment: {
           select: {
             name: true,
+            status: true,
           },
-          
         },
+        refueled: true,
       },
     });
-    console.log("usersLogs: ", usersLogs);
-    return NextResponse.json(usersLogs);
+    console.log("usersLog: ", usersLog);
+    return NextResponse.json(usersLog);
   } catch (error) {
-    console.error("Error fetching users logs:", error);
+    console.error("Error fetching users log:", error);
     return NextResponse.json(
-      { error: "Failed to fetch users logs" },
+      { error: "Failed to fetch users log" },
       { status: 500 }
     );
   }

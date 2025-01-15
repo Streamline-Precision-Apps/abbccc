@@ -11,8 +11,6 @@ import { Texts } from "../(reusable)/texts";
 import { Contents } from "../(reusable)/contents";
 import { Titles } from "../(reusable)/titles";
 import { useTranslations } from "next-intl";
-import { set } from "zod";
-import { user } from "@nextui-org/react";
 
 type prop = {
   userId: string;

@@ -2,6 +2,7 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { EquipmentTags, EquipmentStatus } from "@/lib/types";
+import { FormStatus } from "@prisma/client";
 
 export async function equipmentTagExists(id: string) {
   try {
@@ -251,6 +252,7 @@ export async function CreateEmployeeEquipmentLog(formData: FormData) {
       data: {
         employeeId,
         equipmentId: equipment.id,
+        
         jobsiteId,
         startTime: formData.get("startTime") ? new Date(formData.get("startTime") as string) : null,
         endTime: formData.get("endTime") ? new Date(formData.get("endTime") as string) : null,
@@ -275,18 +277,35 @@ export async function CreateEmployeeEquipmentLog(formData: FormData) {
   }
 }
 
-// todo: needs to be updated
 export async function updateEmployeeEquipmentLog(formData: FormData) {
   try {
     console.log(formData);
     const id = formData.get("id") as string;
+    const fuel = parseFloat(formData.get("fuel") as string);
+    const equipmentStatus = formData.get("Equipment.status") as EquipmentStatus;
+    console.log("equipment status", equipmentStatus);
+
+    // Update the employee equipment log
     const log = await prisma.employeeEquipmentLog.update({
       where: { id },
       data: {
-        endTime: new Date(formData.get("endTime") as string).toISOString(),
+        endTime: new Date().toISOString(),
         comment: formData.get("comment") as string,
+        status: formData.get("status") as FormStatus,
+        Equipment: {
+          update: {
+            status: formData.get("Equipment.status") as EquipmentStatus,
+          },
+        },
+        // Create a new Refueled record
+        refueled: {
+          create: {
+            gallonsRefueled: fuel,
+          },
+        },
       },
     });
+
     console.log(log);
     revalidatePath("dashboard/equipment/" + id);
     revalidatePath("/dashboard/equipment");
@@ -353,6 +372,7 @@ export async function updateEquipmentID(formData: FormData) {
 
 export async function Submit(formData: FormData) {
   try {
+    console.log("Sever action formData: ", formData);
     const id = formData.get("id") as string;
 
     const logs = await prisma.employeeEquipmentLog.updateMany({
