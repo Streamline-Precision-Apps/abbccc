@@ -1,30 +1,69 @@
 -- CreateEnum
-CREATE TYPE "FormType" AS ENUM ('MEDICAL', 'INSPECTION', 'MANAGER', 'LEAVE', 'SAFETY', 'INJURY');
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'FormType') THEN
+    CREATE TYPE "FormType" AS ENUM ('MEDICAL', 'INSPECTION', 'MANAGER', 'LEAVE', 'SAFETY', 'INJURY');
+  END IF;
+END $$;
 
 -- CreateEnum
-CREATE TYPE "TimeOffRequestType" AS ENUM ('FAMILY_MEDICAL', 'MILITARY', 'PAID_VACATION', 'NON_PAID_PERSONAL', 'SICK');
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'TimeOffRequestType') THEN
+    CREATE TYPE "TimeOffRequestType" AS ENUM ('FAMILY_MEDICAL', 'MILITARY', 'PAID_VACATION', 'NON_PAID_PERSONAL', 'SICK');
+  END IF;
+END $$;
 
 -- CreateEnum
-CREATE TYPE "Permission" AS ENUM ('USER', 'MANAGER', 'ADMIN', 'SUPERADMIN');
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'Permission') THEN
+    CREATE TYPE "Permission" AS ENUM ('USER', 'MANAGER', 'ADMIN', 'SUPERADMIN');
+  END IF;
+END $$;
 
 -- CreateEnum
-CREATE TYPE "EquipmentTags" AS ENUM ('TRUCK', 'TRAILER', 'EQUIPMENT', 'VEHICLE');
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'EquipmentTags') THEN
+    CREATE TYPE "EquipmentTags" AS ENUM ('TRUCK', 'TRAILER', 'EQUIPMENT', 'VEHICLE');
+  END IF;
+END $$;
 
 -- CreateEnum
-CREATE TYPE "EquipmentStatus" AS ENUM ('OPERATIONAL', 'NEEDS_REPAIR', 'NEEDS_MAINTENANCE');
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'EquipmentStatus') THEN
+    CREATE TYPE "EquipmentStatus" AS ENUM ('OPERATIONAL', 'NEEDS_REPAIR', 'NEEDS_MAINTENANCE');
+  END IF;
+END $$;
 
 -- CreateEnum
-CREATE TYPE "FormStatus" AS ENUM ('PENDING', 'APPROVED', 'DENIED', 'TEMPORARY');
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'FormStatus') THEN
+    CREATE TYPE "FormStatus" AS ENUM ('PENDING', 'APPROVED', 'DENIED', 'TEMPORARY');
+  END IF;
+END $$;
 
 -- CreateEnum
-CREATE TYPE "IsActive" AS ENUM ('ACTIVE', 'INACTIVE');
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'IsActive') THEN
+    CREATE TYPE "IsActive" AS ENUM ('ACTIVE', 'INACTIVE');
+  END IF;
+END $$;
 
 -- CreateEnum
-CREATE TYPE "WorkType" AS ENUM ('MECHANIC', 'TRUCK_DRIVER', 'LABOR', 'TASCO');
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'WorkType') THEN
+    CREATE TYPE "WorkType" AS ENUM ('MECHANIC', 'TRUCK_DRIVER', 'LABOR', 'TASCO');
+  END IF;
+END $$;
 
 -- CreateEnum
-CREATE TYPE "Priority" AS ENUM ('LOW', 'MEDIUM', 'HIGH', 'URGENT');
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'Priority') THEN
+    CREATE TYPE "Priority" AS ENUM ('LOW', 'MEDIUM', 'HIGH', 'URGENT');
+  END IF;
+END $$;
 
+<<<<<<< HEAD:shift-scan/prisma/migrations/20250101182554_no_hash2/migration.sql
+-- CreateTable
+=======
 -- CreateTable
 CREATE TABLE "CostCode" (
     "id" TEXT NOT NULL,
@@ -560,3 +599,4 @@ ALTER TABLE "_CrewToUser" ADD CONSTRAINT "_CrewToUser_A_fkey" FOREIGN KEY ("A") 
 
 -- AddForeignKey
 ALTER TABLE "_CrewToUser" ADD CONSTRAINT "_CrewToUser_B_fkey" FOREIGN KEY ("B") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+>>>>>>> 49f6eac8be0574906166e85f740eb05740f600bd:shift-scan/prisma/migrations/20250113174209_/migration.sql
