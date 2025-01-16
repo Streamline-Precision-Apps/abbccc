@@ -119,6 +119,8 @@
     "CostCode": "Código de costo"
 },
 "Widgets":{
+    "Maintenance": "Mantenimiento",
+    "TascoAssistant": "Asistente de Tasco",
     "QR": "Generador",
     "MyTeam": "Personal",
     "Equipment": "Herramientas ",

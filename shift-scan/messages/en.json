@@ -123,6 +123,8 @@
     "CostCode": "Cost Code"
 },
 "Widgets":{
+    "Maintenance": "Maintenance",
+    "TascoAssistant": "Tasco Assistant",
     "QR": "Generator",
     "MyTeam": "Teams",
     "Equipment": "Equipment",

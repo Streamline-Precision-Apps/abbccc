@@ -94,3 +94,32 @@ cookies().set({
 
 ### Trello
 - Building Pages and Resend (4 hours)
+
+#
+# January 14, 2025 - Tuesday
+### researched
+- research prisma new database to see how to better optimize our data pulls and schemas
+### built/created
+- worked in figma on modern app design
+- created base Employee interactions
+
+### Trello
+- Building Pages and Resend (4 hours)
+
+#
+# January 15, 2025 - Wednesday
+### built/created
+- worked in figma on modern app design
+- created base Employee interactions
+- created Sean a diagram for inbox on what it should have
+- meet with team and discussed what to have for the meeting
+
+#
+# January 15, 2025 - Wednesday
+### built/created
+- built a power point to share with company
+- company cancelled weekly meetings
+- worked with Zack on figma discussed clock in progress 
+- discussed effective ways to update the application
+- bulit a key for zack to read about engineer view
+

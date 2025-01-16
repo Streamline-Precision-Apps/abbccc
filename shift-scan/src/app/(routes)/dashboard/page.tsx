@@ -27,9 +27,9 @@ export default async function Dashboard() {
   }
 
   const user = session.user;
-
+  const view = cookies().get("workRole")?.value || "general"; // Default to general view if not set
   // Get the current language from cookies
-  const lang = (await cookies()).get("locale");
+  const lang = cookies().get("locale");
   const locale = lang ? lang.value : "en";
 
   const date = new Date().toLocaleDateString(locale, {
@@ -72,7 +72,7 @@ export default async function Dashboard() {
             </Banners>
           </Holds>
           <Holds background={"white"} className="row-span-5 h-full">
-            <DbWidgetSection session={session} />
+            <DbWidgetSection session={session} view={view} />
           </Holds>
         </Grids>
       </Contents>
