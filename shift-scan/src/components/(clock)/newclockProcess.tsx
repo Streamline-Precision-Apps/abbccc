@@ -18,6 +18,7 @@ import { Titles } from "../(reusable)/titles";
 import RedirectAfterDelay from "../redirectAfterDelay";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
+import { setWorkRole } from "@/actions/cookieActions";
 
 type NewClockProcessProps = {
   mechanicView: boolean;
@@ -113,15 +114,20 @@ export default function NewClockProcess({
   // useEffect to choose role
   useEffect(() => {
     let role = "";
-    if (mechanicView && !laborView && !truckView && !tascoView)
+    setWorkRole(""); // Reset workRole so that the cokkie is never set for the wrong role
+    if (mechanicView && !laborView && !truckView && !tascoView) {
       role = "mechanic";
-    else if (laborView && !mechanicView && !truckView && !tascoView)
+      setWorkRole(role);
+    } else if (laborView && !mechanicView && !truckView && !tascoView) {
       role = "general";
-    else if (truckView && !mechanicView && !laborView && !tascoView)
+      setWorkRole(role);
+    } else if (truckView && !mechanicView && !laborView && !tascoView) {
       role = "truck";
-    else if (tascoView && !mechanicView && laborView && !truckView)
+      setWorkRole(role);
+    } else if (tascoView && !mechanicView && laborView && !truckView) {
       role = "tasco";
-    else {
+      setWorkRole(role);
+    } else {
       role = "";
     }
 
