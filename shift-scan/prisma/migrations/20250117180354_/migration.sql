@@ -65,6 +65,8 @@ CREATE TABLE "Equipment" (
     "description" TEXT NOT NULL,
     "equipmentTag" "EquipmentTags" NOT NULL DEFAULT 'EQUIPMENT',
     "lastInspection" TIMESTAMP(3),
+    "nextInspection" TIMESTAMP(3),
+    "nextInspectionComment" TEXT,
     "lastRepair" TIMESTAMP(3),
     "status" "EquipmentStatus" NOT NULL DEFAULT 'OPERATIONAL',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -491,6 +493,9 @@ ALTER TABLE "TimeSheet" ADD CONSTRAINT "TimeSheet_userId_fkey" FOREIGN KEY ("use
 
 -- AddForeignKey
 ALTER TABLE "TimeSheet" ADD CONSTRAINT "TimeSheet_jobsiteId_fkey" FOREIGN KEY ("jobsiteId") REFERENCES "Jobsite"("qrId") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "TimeSheet" ADD CONSTRAINT "TimeSheet_costcode_fkey" FOREIGN KEY ("costcode") REFERENCES "CostCode"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "MaintenanceLog" ADD CONSTRAINT "MaintenanceLog_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
