@@ -4,13 +4,21 @@ import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
 import { useTranslations } from "next-intl";
 
-export default function EngineerBtn({ permission }: { permission: string }) {
+export default function EngineerBtn({
+  permission,
+  view,
+}: {
+  permission: string;
+  view: string;
+}) {
   const t = useTranslations("Widgets");
   return (
     <Holds
       position={"row"}
       className={
-        permission !== "USER"
+        permission !== "USER" && view === "mechanic"
+          ? "row-span-1 col-span-2 gap-5"
+          : permission === "USER" && view === "mechanic"
           ? "row-span-1 col-span-2 gap-5"
           : "row-span-1 col-span-1 gap-5"
       }

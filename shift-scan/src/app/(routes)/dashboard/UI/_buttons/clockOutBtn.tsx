@@ -23,8 +23,10 @@ export default function ClockOutBtn({
           : permission !== "USER" && View === "mechanic"
           ? "row-span-1 col-span-2 gap-5"
           : permission !== "USER" && View === "truck"
-          ? "row-span-1 col-span-2 gap-5"
+          ? "row-span-1 col-span-1 gap-5"
           : permission !== "USER" && View === "equipment"
+          ? "row-span-1 col-span-1 gap-5"
+          : permission === "USER" && View === "truck"
           ? "row-span-1 col-span-1 gap-5"
           : "row-span-1 col-span-2 gap-5"
       }
@@ -36,7 +38,13 @@ export default function ClockOutBtn({
       >
         <Holds
           position={
-            permission !== "USER" && View === "general" ? undefined : "row"
+            permission !== "USER" && View === "general"
+              ? undefined
+              : permission !== "USER" && View === "truck"
+              ? undefined
+              : permission === "USER" && View === "truck"
+              ? undefined
+              : "row"
           }
         >
           <Holds
