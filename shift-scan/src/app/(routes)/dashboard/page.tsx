@@ -53,7 +53,7 @@ export default async function Dashboard() {
             </Holds>
           </Holds>
           <Holds className="row-span-1 bg-app-blue bg-opacity-20 w-full pt-2 pb-6 my-2 rounded-[10px]">
-            <BannerRotating />
+            <BannerRotating/>
           </Holds>
           <Holds background={"white"} className="row-span-5 h-full">
             <DbWidgetSection session={session} view={view} />
