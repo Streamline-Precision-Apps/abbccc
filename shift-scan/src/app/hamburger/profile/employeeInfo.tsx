@@ -20,6 +20,8 @@ import { Titles } from "@/components/(reusable)/titles";
 import { uploadSignature } from "@/actions/userActions";
 import { EditableFields } from "@/components/(reusable)/EditableField";
 import { updateUserProfile } from "@/actions/userActions";
+import { NModals } from "@/components/(reusable)/newmodals";
+import SignOutModal from "@/app/(routes)/admins/_pages/sidebar/SignOutModal";
 
 const contactSchema = z.object({
   phoneNumber: z.string().optional(),
@@ -129,23 +131,25 @@ export default function EmployeeInfo() {
 
   if (loading) {
     return (
-      <Grids className="grid-rows-7 gap-5 ">
-        <Holds
-          size={"full"}
-          background={"white"}
-          className="row-span-2 h-full "
-        ></Holds>
-        <Holds
-          size={"full"}
-          background={"white"}
-          className="row-span-5 h-full "
-        >
-          <Contents width={"section"}>
-            <Texts> {t("Loading")} </Texts>
-            <Spinner />
-          </Contents>
-        </Holds>
-      </Grids>
+      <Contents width={"section"}>
+        <Grids className="grid-rows-7 gap-5 ">
+          <Holds
+            size={"full"}
+            background={"white"}
+            className="row-span-2 h-full "
+          ></Holds>
+          <Holds
+            size={"full"}
+            background={"white"}
+            className="row-span-5 h-full "
+          >
+            <Contents width={"section"}>
+              <Texts> {t("Loading")} </Texts>
+              <Spinner />
+            </Contents>
+          </Holds>
+        </Grids>
+      </Contents>
     );
   }
 
@@ -153,7 +157,7 @@ export default function EmployeeInfo() {
     <>
       <Contents width={"section"}>
         <Grids rows={"10"} gap={"5"}>
-          <Holds background={"white"} className="row-span-3 h-full">
+          <Holds background={"white"} className="row-span-2 h-full">
             <Contents width={"section"}>
               <TitleBoxes
                 type="profilePic"
@@ -187,7 +191,12 @@ export default function EmployeeInfo() {
                   className="my-5"
                   row-span-7
                 >
-                  <Holds size={"50"} className="rounded-full">
+                  <Holds
+                    background={"white"}
+                    size={"50"}
+                    className="rounded-full"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element*/}
                     <img
                       src={employee?.image ?? ""}
                       alt={"image"}
@@ -217,154 +226,149 @@ export default function EmployeeInfo() {
             </Modals>
           </Holds>
           <Holds background={"white"} className="row-span-7 h-full">
-            <Holds className="h-full">
-              <Contents width={"section"}>
-                <Grids rows={"7"} gap={"5"}>
-                  <Holds className="h-full w-full">
-                    <Labels size={"p6"}>
-                      {t("PhoneNumber")} <span className="text-red-500">*</span>
-                    </Labels>
-                    <EditableFields
-                      value={formState.phoneNumber}
-                      isChanged={hasChanged("phoneNumber")}
-                      onChange={(e) =>
-                        handleFieldChange("phoneNumber", e.target.value)
-                      }
-                      onRevert={() =>
-                        handleFieldChange(
-                          "phoneNumber",
-                          originalState.phoneNumber
-                        )
-                      }
-                      variant="default"
-                      size="default"
+            <Contents width={"section"}>
+              <Grids rows={"6"} gap={"5"}>
+                <Holds className="h-full w-full row-span-1">
+                  <Labels size={"p6"}>
+                    {t("PhoneNumber")} <span className="text-red-500">*</span>
+                  </Labels>
+                  <EditableFields
+                    value={formState.phoneNumber}
+                    isChanged={hasChanged("phoneNumber")}
+                    onChange={(e) =>
+                      handleFieldChange("phoneNumber", e.target.value)
+                    }
+                    onRevert={() =>
+                      handleFieldChange(
+                        "phoneNumber",
+                        originalState.phoneNumber
+                      )
+                    }
+                    variant="default"
+                    size="default"
+                  />
+                </Holds>
+                <Holds className="h-full w-full row-span-1">
+                  <Labels size={"p6"}>
+                    {t("Email")} <span className="text-red-500">*</span>
+                  </Labels>
+                  <EditableFields
+                    value={formState.email}
+                    isChanged={hasChanged("email")}
+                    onChange={(e) => handleFieldChange("email", e.target.value)}
+                    onRevert={() =>
+                      handleFieldChange("email", originalState.email)
+                    }
+                    variant="default"
+                    size="default"
+                  />
+                </Holds>
+                <Holds className="h-full w-full row-span-1">
+                  <Labels size={"p6"}>
+                    {t("EmergencyContactName")}{" "}
+                    <span className="text-red-500">*</span>
+                  </Labels>
+                  <EditableFields
+                    value={formState.emergencyContact}
+                    isChanged={hasChanged("emergencyContact")}
+                    onChange={(e) =>
+                      handleFieldChange("emergencyContact", e.target.value)
+                    }
+                    onRevert={() =>
+                      handleFieldChange(
+                        "emergencyContact",
+                        originalState.emergencyContact
+                      )
+                    }
+                    variant="default"
+                    size="default"
+                  />
+                </Holds>
+                <Holds className="h-full w-full row-span-1">
+                  <Labels size={"p6"}>
+                    {t("EmergencyContact")}{" "}
+                    <span className="text-red-500">*</span>
+                  </Labels>
+                  <EditableFields
+                    value={formState.emergencyContactNumber}
+                    isChanged={hasChanged("emergencyContactNumber")}
+                    onChange={(e) =>
+                      handleFieldChange(
+                        "emergencyContactNumber",
+                        e.target.value
+                      )
+                    }
+                    onRevert={() =>
+                      handleFieldChange(
+                        "emergencyContactNumber",
+                        originalState.emergencyContactNumber
+                      )
+                    }
+                    variant="default"
+                    size="default"
+                  />
+                </Holds>
+                <Holds className="row-span-2 h-full py-1">
+                  <Labels size={"p4"}>{t("Signature")}</Labels>
+                  <Holds
+                    className="w-full h-1/2 md:h-2/3 lg:h-full rounded-[10px] border-[3px] border-black cursor-pointer justify-center items-center "
+                    onClick={() => setEditSignatureModalOpen(true)}
+                  >
+                    <Images
+                      titleImg={signatureBase64String}
+                      titleImgAlt={t("Signature")}
+                      size={"30"}
+                      className="p-1 "
                     />
                   </Holds>
-                  <Holds className="h-full w-full">
-                    <Labels size={"p6"}>
-                      {t("Email")} <span className="text-red-500">*</span>
-                    </Labels>
-                    <EditableFields
-                      value={formState.email}
-                      isChanged={hasChanged("email")}
-                      onChange={(e) =>
-                        handleFieldChange("email", e.target.value)
-                      }
-                      onRevert={() =>
-                        handleFieldChange("email", originalState.email)
-                      }
-                      variant="default"
-                      size="default"
-                    />
+                </Holds>
+                <NModals
+                  handleClose={() => handleSignatureClose()}
+                  size={"xlWS"}
+                  isOpen={editSignatureModalOpen}
+                >
+                  <Holds className="w-full h-full justify-center items-center">
+                    <Signature setBase64String={setSignatureBase64String} />
                   </Holds>
-                  <Holds className="h-full w-full">
-                    <Labels size={"p6"}>
-                      {t("EmergencyContactName")}{" "}
-                      <span className="text-red-500">*</span>
-                    </Labels>
-                    <EditableFields
-                      value={formState.emergencyContact}
-                      isChanged={hasChanged("emergencyContact")}
-                      onChange={(e) =>
-                        handleFieldChange("emergencyContact", e.target.value)
-                      }
-                      onRevert={() =>
-                        handleFieldChange(
-                          "emergencyContact",
-                          originalState.emergencyContact
-                        )
-                      }
-                      variant="default"
-                      size="default"
-                    />
-                  </Holds>
-                  <Holds className="h-full w-full">
-                    <Labels size={"p6"}>
-                      {t("EmergencyContact")}{" "}
-                      <span className="text-red-500">*</span>
-                    </Labels>
-                    <EditableFields
-                      value={formState.emergencyContactNumber}
-                      isChanged={hasChanged("emergencyContactNumber")}
-                      onChange={(e) =>
-                        handleFieldChange(
-                          "emergencyContactNumber",
-                          e.target.value
-                        )
-                      }
-                      onRevert={() =>
-                        handleFieldChange(
-                          "emergencyContactNumber",
-                          originalState.emergencyContactNumber
-                        )
-                      }
-                      variant="default"
-                      size="default"
-                    />
-                  </Holds>
-                  <Holds className=" row-span-2 h-full  ">
-                    <Holds className="h-full my-auto">
-                      <Labels size={"p4"}>{t("Signature")}</Labels>
-                      <Holds
-                        className="w-full rounded-3xl border-[3px] border-black cursor-pointer"
-                        onClick={() => setEditSignatureModalOpen(true)}
-                      >
-                        <Images
-                          titleImg={signatureBase64String}
-                          titleImgAlt={t("Signature")}
-                          size={"40"}
-                          className="p-1"
-                        />
-                      </Holds>
-                    </Holds>
-                    <Modals
-                      handleClose={() => handleSignatureClose()}
-                      type="signature"
-                      size="fullPage"
-                      isOpen={editSignatureModalOpen}
-                    >
-                      <Signature setBase64String={setSignatureBase64String} />
-                    </Modals>
-                  </Holds>
-                  <Holds className="row-span-2 h-full ">
-                    <Holds className="my-auto">
-                      {Object.keys(formState).every(
-                        (key) => !hasChanged(key as keyof typeof formState)
-                      ) ? (
-                        // Button for when no changes have been made
-                        <Buttons
-                          onClick={() => setIsOpen2(true)} // Mimics the Sign Out button functionality
-                          background={"red"}
-                          size={"full"}
-                          className="p-3 "
-                        >
-                          <Titles size={"h4"}>{t("SignOut")}</Titles>
-                        </Buttons>
-                      ) : (
-                        // Submit Changes button
-                        <Buttons
-                          onClick={handleSubmit}
-                          background={"green"}
-                          size={"full"}
-                          className="p-3 "
-                        >
-                          <Titles size={"h4"}>{t("SubmitChanges")}</Titles>
-                        </Buttons>
-                      )}
-                    </Holds>
+                </NModals>
+              </Grids>
+            </Contents>
+            <Holds className="row-span-1 h-full mt-2 ">
+              <Holds className="my-auto">
+                {Object.keys(formState).every(
+                  (key) => !hasChanged(key as keyof typeof formState)
+                ) ? (
+                  // Button for when no changes have been made
+                  <Buttons
+                    onClick={() => setIsOpen2(true)} // Mimics the Sign Out button functionality
+                    background={"red"}
+                    size={"full"}
+                    className="p-3 "
+                  >
+                    <Titles size={"h4"}>{t("SignOut")}</Titles>
+                  </Buttons>
+                ) : (
+                  // Submit Changes button
+                  <Buttons
+                    onClick={handleSubmit}
+                    background={"green"}
+                    size={"full"}
+                    className="p-3 "
+                  >
+                    <Titles size={"h4"}>{t("SubmitChanges")}</Titles>
+                  </Buttons>
+                )}
+              </Holds>
 
-                    {/* Modal for Sign Out confirmation */}
-                    <Modals
-                      handleClose={() => setIsOpen2(false)}
-                      isOpen={isOpen2}
-                      type="signOut"
-                      size="sm"
-                    >
-                      {t("SignOutConfirmation")}
-                    </Modals>
-                  </Holds>
-                </Grids>
-              </Contents>
+              {/* Modal for Sign Out confirmation */}
+
+              <NModals
+                size={"xlWS"}
+                isOpen={isOpen2}
+                handleClose={() => setIsOpen2(false)}
+              >
+                <SignOutModal setIsOpenSignOut={() => setIsOpen2(false)} />
+              </NModals>
             </Holds>
           </Holds>
         </Grids>

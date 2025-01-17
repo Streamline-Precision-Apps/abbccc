@@ -1,5 +1,6 @@
 "use client";
 import { Buttons } from "@/components/(reusable)/buttons";
+import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { useRef, useState, useEffect } from "react";
 
@@ -83,15 +84,27 @@ export default function Signature({ setBase64String }: SignatureProps) {
   };
 
   return (
-    <Holds>
-      <canvas
-        ref={canvasRef}
-        className="m-auto border border-black rounded-xl w-full h-48" // Responsive width, fixed height for this example
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-      />
-      <Buttons onClick={handleClear}>Clear</Buttons>
+    <Holds className="h-full w-full">
+      <Grids rows={"5"} gap={"5"} className="h-full w-full">
+        <Holds className="row-span-4 h-full w-full items-center justify-center">
+          <canvas
+            ref={canvasRef}
+            className="m-auto border border-black rounded-xl w-full h-48" // Responsive width, fixed height for this example
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+          />
+        </Holds>
+        <Holds
+          position={"row"}
+          className="row-span-1 gap-4 h-full justify-center"
+        >
+          <Buttons onClick={handleSave}>Save</Buttons>
+          <Buttons background={"red"} onClick={handleClear}>
+            Clear
+          </Buttons>
+        </Holds>
+      </Grids>
     </Holds>
   );
 }

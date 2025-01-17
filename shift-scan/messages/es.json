@@ -119,6 +119,8 @@
     "CostCode": "Código de costo"
 },
 "Widgets":{
+    "Maintenance": "Mantenimiento",
+    "TascoAssistant": "Asistente de Tasco",
     "QR": "Generador",
     "MyTeam": "Personal",
     "Equipment": "Herramientas ",
@@ -336,6 +338,11 @@
     "Mileage": "Mileage"
     },
 "ClockOut":{
+    "ReviewYourDayDirections": "Revisa tu día a continuación. Si tienes alguna pregunta, por favor, contacta a tu supervisor.",
+    "Current": "Actual",
+    "StartTime": "Inicio",
+    "EndTime": "Finalización",
+    "ReviewYourDay": "Revisa tu Día",
     "NoSignature": "No tiene firma registrada.",
     "SignBelow": "Al marcar la casilla a continuación, certifico que no sufrí lesiones este día.",
     "Jobsite" : "Sitio de trabajo # ",
@@ -408,6 +415,7 @@
     "PhotoAlbumAccess": " Album de Fotos"
 },
 "Admins":{
+
     "SelectRequestType": "Seleccionar Tipo de Solicitud",
     "SelectEmployee": "Seleccionar Empleado",
     "TitleOptional": "Título (Opcional)",

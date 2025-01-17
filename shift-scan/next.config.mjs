@@ -12,7 +12,7 @@ const pwaConfig = {
   reloadOnOnline: true,
 
   swcMinify: true,
-  disable: process.env.NODE_ENV === "development",
+  disable: process.env.NODE_ENV === "production",
   workboxOptions: {
     disableDevLogs: true,
   },
