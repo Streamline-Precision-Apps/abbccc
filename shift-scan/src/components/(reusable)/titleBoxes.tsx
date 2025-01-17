@@ -7,7 +7,6 @@ import { Titles } from "../(reusable)/titles";
 import { Images } from "../(reusable)/images";
 
 import { Holds } from "./holds";
-
 import { Grids } from "./grids";
 
 const TitleBoxVariants = cva(
@@ -27,10 +26,15 @@ const TitleBoxVariants = cva(
         med: "p-10 w-40 h-40",
         lg: "p-10 w-50 h-50",
       },
+      version: {
+        default: "",
+        horizontal: "flex-row items-center justify-between px-4 py-2",
+      },
     },
     defaultVariants: {
       variant: "default",
       size: "default",
+      version: "default",
     },
   }
 );
@@ -53,6 +57,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
   className,
   variant,
   size,
+  version,
   type,
   title,
   title2,
@@ -63,10 +68,34 @@ const TitleBoxes: FC<TitleBoxProps> = ({
   modalTitle,
   ...props
 }) => {
+  if (version === "horizontal") {
+    return (
+      <div
+        className={cn(TitleBoxVariants({ variant, size, version, className }))}
+        {...props}
+      >
+        <Buttons href={href} background={"none"} size={"50"}>
+          <Images titleImg="/turnBack.svg" titleImgAlt={titleImgAlt} size={"50"} />
+        </Buttons>
+        <div className="flex items-center justify-between w-full">
+          <Titles size={"h2"} className="mr-4">
+            {title}
+          </Titles>
+          <Images
+            titleImg={titleImg}
+            titleImgAlt={titleImgAlt}
+            size={"40"}
+            className="flex-shrink-0"
+          />
+        </div>
+      </div>
+    );
+  }
+
   if (type === "profilePic") {
     return (
       <div
-        className={cn(TitleBoxVariants({ variant, size, className }))}
+        className={cn(TitleBoxVariants({ variant, size, version, className }))}
         {...props}
       >
         <Grids cols={"4"} rows={"3"} className="w-full">
@@ -128,7 +157,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
   if (type === "myTeamProfile") {
     return (
       <div
-        className={cn(TitleBoxVariants({ variant, size, className }))}
+        className={cn(TitleBoxVariants({ variant, size, version, className }))}
         {...props}
       >
         <Grids cols={"4"} rows={"3"} className="w-full h-full p-4">
@@ -174,7 +203,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
   if (type === "titleOnly") {
     return (
       <div
-        className={cn(TitleBoxVariants({ variant, size, className }))}
+        className={cn(TitleBoxVariants({ variant, size, version, className }))}
         {...props}
       >
         <Titles size={"h1"}>{title}</Titles>
@@ -185,7 +214,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
   if (type === "noIcon") {
     return (
       <div
-        className={cn(TitleBoxVariants({ variant, size, className }))}
+        className={cn(TitleBoxVariants({ variant, size, version, className }))}
         {...props}
       >
         <Holds position={"absolute"}>
@@ -204,7 +233,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
   if (type === "withDate") {
     return (
       <div
-        className={cn(TitleBoxVariants({ variant, size, className }))}
+        className={cn(TitleBoxVariants({ variant, size, version, className }))}
         {...props}
       >
         <Buttons href={href}>
@@ -217,7 +246,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
   if (type === "titleForm") {
     return (
       <div
-        className={cn(TitleBoxVariants({ variant, size, className }))}
+        className={cn(TitleBoxVariants({ variant, size, version, className }))}
         {...props}
       >
         <Buttons href={href}>
@@ -230,7 +259,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
   if (type === "row") {
     return (
       <div
-        className={cn(TitleBoxVariants({ variant, size, className }))}
+        className={cn(TitleBoxVariants({ variant, size, version, className }))}
         {...props}
       >
         <Holds position={"absolute"}>
@@ -262,7 +291,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
   } else
     return (
       <div
-        className={cn(TitleBoxVariants({ variant, size, className }))}
+        className={cn(TitleBoxVariants({ variant, size, version, className }))}
         {...props}
       >
         <Grids cols={"4"} rows={"3"} className="w-full">

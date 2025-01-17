@@ -16,14 +16,29 @@ import { Grids } from "@/components/(reusable)/grids";
 import { z } from "zod";
 
 // Define Zod schema for received content
+// Define Zod schema for received content
+// Define Zod schema for received content
 const receivedContentSchema = z.object({
-  id: z.number(),
+  id: z.number(), // Adjusted to expect a number
   requestType: z.string(),
-  date: z.string().refine((date) => !isNaN(Date.parse(date)), {
-    message: "Invalid date format",
+  requestedStartDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+    message: "Invalid date format for requestedStartDate",
   }),
-  employeeId: z.string(),
+  requestedEndDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+    message: "Invalid date format for requestedEndDate",
+  }),
+  employee: z.object({
+    firstName: z.string(),
+    lastName: z.string(),
+    crews: z.array(
+      z.object({
+        leadId: z.string(), // leadId remains a string as per the received data
+      })
+    ),
+  }),
 });
+
+
 
 export default function RTab() {
   const { data: session } = useSession();
@@ -37,6 +52,7 @@ export default function RTab() {
     const fetchReceivedContent = async () => {
       try {
         setLoading(true);
+        console.log("Getting team request");
         const response = await fetch("/api/getTeamRequest");
 
         if (!response.ok) {
@@ -44,7 +60,7 @@ export default function RTab() {
         }
 
         const data = await response.json();
-
+        console.log("team request data:", data);
         // Validate the fetched data with Zod
         const validatedData = data.map((item: typeof receivedContentSchema) => {
           try {
@@ -54,6 +70,7 @@ export default function RTab() {
             throw new Error("Invalid data format");
           }
         });
+        
 
         setReceivedContent(validatedData);
         setLoading(false);

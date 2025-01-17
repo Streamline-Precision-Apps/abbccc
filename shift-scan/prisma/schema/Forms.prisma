@@ -18,7 +18,7 @@ enum TimeOffRequestType {
 }
 
 model InjuryForm {
-    id                  Int      @id @default(autoincrement())
+    id                  String      @id @default(cuid())
     userId              String
     submitDate          DateTime @default(now())
     date                DateTime @db.Date
@@ -30,7 +30,7 @@ model InjuryForm {
 }
 
 model timeOffRequestForm {
-    id                 Int                @id @default(autoincrement())
+    id                 String                @id @default(cuid())
     name               String? // a nickname for the request
     requestedStartDate DateTime // start date
     requestedEndDate   DateTime // end date
