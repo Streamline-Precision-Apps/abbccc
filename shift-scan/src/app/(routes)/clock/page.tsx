@@ -22,7 +22,7 @@ export default async function Clock() {
   return (
     <Bases>
       <Contents>
-        <Holds background={"white"} className="h-full">
+        <Holds className="h-full">
           <NewClockProcess
             mechanicView={user.mechanicView}
             tascoView={user.tascoView}
