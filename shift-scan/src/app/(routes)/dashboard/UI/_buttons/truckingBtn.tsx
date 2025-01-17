@@ -5,20 +5,32 @@ import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
 import { useTranslations } from "next-intl";
 
-export default function TruckingBtn() {
+export default function TruckingBtn({
+  view,
+  permission,
+}: {
+  view: string;
+  permission: string;
+}) {
   const t = useTranslations("Widgets");
   return (
-    <Holds className="row-span-1 col-span-1 h-full w-full">
+    <Holds
+      className={
+        view === "truck" && permission !== "USER"
+          ? "row-span-1 col-span-2 h-full w-full"
+          : "row-span-1 col-span-2 h-full w-full"
+      }
+    >
       <Buttons //----------------------This is the trucking assistant
         background={"orange"}
         href="/dashboard/truckingAssistant"
       >
-        <Holds className="justify-center items-center">
-          <Holds size={"90"}>
-            <Images titleImg="/trucking.svg" titleImgAlt="truck" size={"40"} />
+        <Holds position={"row"} className="justify-center items-center">
+          <Holds>
+            <Images titleImg="/trucking.svg" titleImgAlt="truck" size={"50"} />
           </Holds>
           <Holds className="justify-center items-center">
-            <Texts size={"p6"}>{t("TruckingAssistant")}</Texts>
+            <Texts size={"p3"}>{t("TruckingAssistant")}</Texts>
           </Holds>
         </Holds>
       </Buttons>

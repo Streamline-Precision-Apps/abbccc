@@ -199,7 +199,6 @@ export default function DbWidgetSection({ session, view }: props) {
         handleCloseModal={handleCloseModal}
         handleShowManagerButtons={handleShowManagerButtons}
         permission={permission}
-        currentView={currentView}
         handleShowAdditionalButtons={handleShowAdditionalButtons}
         additionalButtonsType={additionalButtonsType}
       />
@@ -255,7 +254,6 @@ export default function DbWidgetSection({ session, view }: props) {
         handleCloseModal={handleCloseModal}
         handleShowManagerButtons={handleShowManagerButtons}
         permission={permission}
-        currentView={currentView}
         handleShowAdditionalButtons={handleShowAdditionalButtons}
         additionalButtonsType={additionalButtonsType}
       />

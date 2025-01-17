@@ -71,14 +71,13 @@ export default function TascoDashboardView({
               />
             ) : (
               <>
+                <TascoBtn permission={permission} view={"tasco"} />
                 {permission !== "USER" && !additionalButtonsType && (
                   <GeneratorBtn />
                 )}
                 {permission !== "USER" && !additionalButtonsType && (
                   <MyTeamWidget />
                 )}
-
-                <TascoBtn permission={permission} />
 
                 <FormsBtn permission={permission} view={"tasco"} />
 

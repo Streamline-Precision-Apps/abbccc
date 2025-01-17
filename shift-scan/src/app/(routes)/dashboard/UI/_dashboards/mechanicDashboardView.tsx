@@ -71,7 +71,7 @@ export default function MechanicDashboardView({
               />
             ) : (
               <>
-                <EngineerBtn permission={permission} />
+                <EngineerBtn permission={permission} view={"mechanic"} />
                 {permission !== "USER" && !additionalButtonsType && (
                   <GeneratorBtn />
                 )}

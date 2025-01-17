@@ -27,7 +27,6 @@ export default function TruckDriverDashboardView({
   handleCloseModal,
   handleShowManagerButtons,
   permission,
-  currentView,
   handleShowAdditionalButtons,
 }: {
   loading: boolean;
@@ -42,7 +41,6 @@ export default function TruckDriverDashboardView({
   handleCloseModal: () => void;
   handleShowManagerButtons: () => void;
   permission: string;
-  currentView: string | null;
   handleShowAdditionalButtons: (button: string) => void;
 }) {
   return (
@@ -83,6 +81,7 @@ export default function TruckDriverDashboardView({
               />
             ) : (
               <>
+                <TruckingBtn permission={permission} view={"truck"} />
                 {permission !== "USER" && !additionalButtonsType && (
                   <GeneratorBtn />
                 )}
@@ -90,24 +89,13 @@ export default function TruckDriverDashboardView({
                 {permission !== "USER" && !additionalButtonsType && (
                   <MyTeamWidget />
                 )}
-                <TruckingBtn />
                 <EquipmentBtn
                   handleShowAdditionalButtons={handleShowAdditionalButtons}
                   permission={permission}
                 />
-                <FormsBtn permission={permission} view={currentView} />
-                <Holds
-                  position={"row"}
-                  className={
-                    permission === "ADMIN" ||
-                    permission === "SUPERADMIN" ||
-                    permission === "MANAGER"
-                      ? "row-span-1 col-span-1 gap-5"
-                      : "row-span-1 col-span-1 gap-5"
-                  }
-                >
-                  <SwitchJobsBtn permission={permission} />
-                </Holds>
+                <FormsBtn permission={permission} view={"truck"} />
+
+                <SwitchJobsBtn permission={permission} />
 
                 <ClockOutBtn
                   handleShowAdditionalButtons={handleShowAdditionalButtons}

@@ -40,7 +40,6 @@ export default function GeneralDashboardView({
   handleCloseModal: () => void;
   handleShowManagerButtons: () => void;
   permission: string;
-  currentView: string | null;
   handleShowAdditionalButtons: (button: string) => void;
 }) {
   return (
