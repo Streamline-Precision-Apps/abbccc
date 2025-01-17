@@ -139,159 +139,161 @@ export default function VerificationStep({
 
   return (
     <>
-      <Grids rows={"10"} gap={"2"} className="h-full w-full">
-        <Contents width={"section"} className="h-full row-span-1 ">
-          <TitleBoxes
-            title={t("VerifyJobSite")}
-            titleImg="/clock-in.svg"
-            titleImgAlt="Verify"
-            variant="row"
-            size="default"
-            type="row"
-          />
-        </Contents>
-        <Forms onSubmit={handleSubmit} className="h-full w-full row-span-9">
-          <Holds className="h-full w-full">
-            <Grids cols={"5"} rows={"10"} className="h-full w-full">
-              <Holds className="row-start-2 row-end-3 col-start-5 col-end-6 w-full h-full">
-                <Holds className="h-full w-full pr-1">
-                  <Buttons
-                    type="submit"
-                    className="w-full h-full"
-                    background={"none"}
-                  >
-                    <Holds
-                      background={"lightBlue"}
-                      className="w-full h-full items-center justify-center "
+      <Holds background={"white"} className="h-full w-full">
+        <Grids rows={"10"} gap={"2"} className="h-full w-full">
+          <Contents width={"section"} className="h-full row-span-1 ">
+            <TitleBoxes
+              title={t("VerifyJobSite")}
+              titleImg="/clock-in.svg"
+              titleImgAlt="Verify"
+              variant="row"
+              size="default"
+              type="row"
+            />
+          </Contents>
+          <Forms onSubmit={handleSubmit} className="h-full w-full row-span-9">
+            <Holds className="h-full w-full">
+              <Grids cols={"5"} rows={"10"} className="h-full w-full">
+                <Holds className="row-start-2 row-end-3 col-start-5 col-end-6 w-full h-full">
+                  <Holds className="h-full w-full pr-1">
+                    <Buttons
+                      type="submit"
+                      className="w-full h-full"
+                      background={"none"}
                     >
-                      <Images
-                        titleImg={"/downArrow.svg"}
-                        titleImgAlt={"downArrow"}
-                        className="p-1 w-10 h-10"
-                      />
-                    </Holds>
-                  </Buttons>
+                      <Holds
+                        background={"lightBlue"}
+                        className="w-full h-full items-center justify-center "
+                      >
+                        <Images
+                          titleImg={"/downArrow.svg"}
+                          titleImgAlt={"downArrow"}
+                          className="p-1 w-10 h-10"
+                        />
+                      </Holds>
+                    </Buttons>
+                  </Holds>
                 </Holds>
-              </Holds>
-              <Holds className="row-start-3 row-end-7 col-start-1 col-end-6 h-full pt-1">
-                <Holds
-                  background={"lightBlue"}
-                  className="h-full w-[95%] sm:w-[85%] md:w-[75%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%]  border-[3px] rounded-b-none  border-black "
-                >
-                  <Contents width={"section"} className="h-full">
-                    <Labels>
-                      <Texts text={"white"} size={"p4"} position={"left"}>
-                        {t("Date-label")}
-                      </Texts>
-                      <Inputs
-                        state="disabled"
-                        variant={"white"}
-                        data={date.toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "numeric",
-                          day: "numeric",
-                        })}
-                      />
-                    </Labels>
-                    {truckScanData && (
+                <Holds className="row-start-3 row-end-7 col-start-1 col-end-6 h-full pt-1">
+                  <Holds
+                    background={"lightBlue"}
+                    className="h-full w-[95%] sm:w-[85%] md:w-[75%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%]  border-[3px] rounded-b-none  border-black "
+                  >
+                    <Contents width={"section"} className="h-full">
                       <Labels>
                         <Texts text={"white"} size={"p4"} position={"left"}>
-                          {t("Truck-label")}
+                          {t("Date-label")}
+                        </Texts>
+                        <Inputs
+                          state="disabled"
+                          variant={"white"}
+                          data={date.toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "numeric",
+                            day: "numeric",
+                          })}
+                        />
+                      </Labels>
+                      {truckScanData && (
+                        <Labels>
+                          <Texts text={"white"} size={"p4"} position={"left"}>
+                            {t("Truck-label")}
+                          </Texts>
+                          <Inputs
+                            state="disabled"
+                            name="jobsiteId"
+                            variant={"white"}
+                            data={truckScanData}
+                          />
+                        </Labels>
+                      )}
+                      {truckScanData && (
+                        <Labels>
+                          <Texts text={"white"} size={"p4"} position={"left"}>
+                            {t("Mileage")}
+                          </Texts>
+                          <Inputs
+                            state="disabled"
+                            name="startingMileage"
+                            variant={"white"}
+                            data={startingMileage?.toString() || "0"}
+                          />
+                        </Labels>
+                      )}
+                      <Labels>
+                        <Texts text={"white"} size={"p4"} position={"left"}>
+                          {t("JobSite-label")}
                         </Texts>
                         <Inputs
                           state="disabled"
                           name="jobsiteId"
                           variant={"white"}
-                          data={truckScanData}
+                          data={scanResult?.data || ""}
                         />
                       </Labels>
-                    )}
-                    {truckScanData && (
                       <Labels>
                         <Texts text={"white"} size={"p4"} position={"left"}>
-                          {t("Mileage")}
+                          {t("CostCode-label")}
                         </Texts>
                         <Inputs
                           state="disabled"
-                          name="startingMileage"
+                          name="costcode"
                           variant={"white"}
-                          data={startingMileage?.toString() || "0"}
+                          data={savedCostCode?.toString() || ""}
                         />
                       </Labels>
-                    )}
-                    <Labels>
-                      <Texts text={"white"} size={"p4"} position={"left"}>
-                        {t("JobSite-label")}
-                      </Texts>
-                      <Inputs
-                        state="disabled"
-                        name="jobsiteId"
-                        variant={"white"}
-                        data={scanResult?.data || ""}
-                      />
-                    </Labels>
-                    <Labels>
-                      <Texts text={"white"} size={"p4"} position={"left"}>
-                        {t("CostCode-label")}
-                      </Texts>
-                      <Inputs
-                        state="disabled"
-                        name="costcode"
-                        variant={"white"}
-                        data={savedCostCode?.toString() || ""}
-                      />
-                    </Labels>
-                    {comments !== undefined && (
-                      <Labels>
-                        <Texts text={"white"} size={"p4"} position={"left"}>
-                          {t("Comments")}
-                        </Texts>
-                        <Inputs
-                          state="disabled"
-                          name="timeSheetComments"
-                          variant={"white"}
-                          data={comments}
-                        />
-                      </Labels>
-                    )}
-                  </Contents>
+                      {comments !== undefined && (
+                        <Labels>
+                          <Texts text={"white"} size={"p4"} position={"left"}>
+                            {t("Comments")}
+                          </Texts>
+                          <Inputs
+                            state="disabled"
+                            name="timeSheetComments"
+                            variant={"white"}
+                            data={comments}
+                          />
+                        </Labels>
+                      )}
+                    </Contents>
+                  </Holds>
                 </Holds>
-              </Holds>
 
-              <Holds className="row-start-7 row-end-11 col-start-1 col-end-6 h-full  ">
-                <Holds
-                  background={"darkBlue"}
-                  className="h-full w-[100%] sm:w-[90%] md:w-[90%] lg:w-[80%] xl:w-[80%] 2xl:w-[80%]  border-[3px]   border-black p-8 "
-                >
-                  <Buttons
-                    type="submit"
-                    background={"none"}
-                    className="bg-app-green mx-auto flex justify-center items-center w-full h-full py-4 px-5 rounded-lg text-black font-bold border-[3px] border-black"
+                <Holds className="row-start-7 row-end-11 col-start-1 col-end-6 h-full  ">
+                  <Holds
+                    background={"darkBlue"}
+                    className="h-full w-[100%] sm:w-[90%] md:w-[90%] lg:w-[80%] xl:w-[80%] 2xl:w-[80%]  border-[3px]   border-black p-8 "
                   >
-                    <Clock time={date.getTime()} />
-                  </Buttons>
+                    <Buttons
+                      type="submit"
+                      background={"none"}
+                      className="bg-app-green mx-auto flex justify-center items-center w-full h-full py-4 px-5 rounded-lg text-black font-bold border-[3px] border-black"
+                    >
+                      <Clock time={date.getTime()} />
+                    </Buttons>
+                  </Holds>
                 </Holds>
-              </Holds>
-              <Inputs
-                type="hidden"
-                name="submitDate"
-                value={new Date().toISOString()}
-              />
-              <Inputs type="hidden" name="userId" value={id} />
-              <Inputs
-                type="hidden"
-                name="date"
-                value={new Date().toISOString()}
-              />
-              <Inputs
-                type="hidden"
-                name="startTime"
-                value={new Date().toISOString()}
-              />
-            </Grids>
-          </Holds>
-        </Forms>
-      </Grids>
+                <Inputs
+                  type="hidden"
+                  name="submitDate"
+                  value={new Date().toISOString()}
+                />
+                <Inputs type="hidden" name="userId" value={id} />
+                <Inputs
+                  type="hidden"
+                  name="date"
+                  value={new Date().toISOString()}
+                />
+                <Inputs
+                  type="hidden"
+                  name="startTime"
+                  value={new Date().toISOString()}
+                />
+              </Grids>
+            </Holds>
+          </Forms>
+        </Grids>
+      </Holds>
     </>
   );
 }
