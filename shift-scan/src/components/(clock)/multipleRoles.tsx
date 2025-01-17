@@ -9,6 +9,7 @@ import { useCommentData } from "@/app/context/CommentContext";
 import { useEffect, useState } from "react";
 import Comment from "@/components/(clock)/comment";
 import { Images } from "../(reusable)/images";
+import { setWorkRole } from "@/actions/cookieActions";
 
 type Props = {
   handleNextStep: () => void;
@@ -40,6 +41,7 @@ export default function MultipleRoles({
 
   const selectView = (clockInRole: string) => {
     setClockInRole(clockInRole);
+    setWorkRole(clockInRole);
     localStorage.setItem("clockInRole", clockInRole);
     handleNextStep();
   };

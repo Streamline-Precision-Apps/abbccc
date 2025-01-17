@@ -123,6 +123,8 @@
     "CostCode": "Cost Code"
 },
 "Widgets":{
+    "Maintenance": "Maintenance",
+    "TascoAssistant": "Tasco Assistant",
     "QR": "Generator",
     "MyTeam": "Teams",
     "Equipment": "Equipment",
@@ -370,6 +372,11 @@
     "Submit": "Enviar"
 },
 "ClockOut":{
+    "ReviewYourDayDirections": "Review your day below. If you have any questions, please contact your supervisor.",
+    "Current": "Current",
+    "StartTime": "Start Time",
+    "EndTime": "End Time",
+    "ReviewYourDay": "Review Your Day",
     "NoSignature": "No Signature Registered.",
     "SignBelow": "By Checking the box below I certify I suffered no injuries this day.",
     "Jobsite" : "Job site # ",
@@ -451,6 +458,7 @@
 },
 
 "Admins":{
+    "Description": "Description",
     "SelectRequestType": "Select Request Type",
     "SelectEmployee": "Select Employee",
     "TitleOptional": "Title (Optional)",

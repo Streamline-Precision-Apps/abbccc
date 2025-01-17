@@ -69,16 +69,17 @@ const providers: Provider[] = [
           return false;
         }
       };
-      if (!isValidPassword) {
-        console.log("Invalid password");
-        throw new InvalidLoginError();
-      }
 
       // const isValidPassword = await bcrypt.compare(passwords, user.password);
       // if (!isValidPassword) {
       //   console.log("Invalid password");
       //   throw new InvalidLoginError();
       // }
+
+      if (!isValidPassword) {
+        console.log("Invalid password");
+        throw new InvalidLoginError();
+      }
 
       const userwithoutpassword = {
         id: userId.id,

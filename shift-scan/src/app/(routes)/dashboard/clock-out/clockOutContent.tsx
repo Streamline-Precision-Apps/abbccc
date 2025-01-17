@@ -25,6 +25,7 @@ import { useCurrentView } from "@/app/context/CurrentViewContext";
 import TruckClockOutForm from "./(components)/truckClockOutForm";
 import { useStartingMileage } from "@/app/context/StartingMileageContext";
 import Comment from "@/components/(clock)/comment";
+import ReviewYourDay from "./(components)/reviewYourDay";
 
 export default function ClockOutContent() {
   const [loading, setLoading] = useState(true);
@@ -168,8 +169,19 @@ export default function ClockOutContent() {
       </Grids>
     );
   }
-
   if (step === 1) {
+    return (
+      <Grids className="grid-rows-1 gap-5">
+        <Holds background={"white"} className="row-span-1 h-full">
+          <Contents width={"section"} className="py-4">
+            <ReviewYourDay handleClick={handleNextStep} />
+          </Contents>
+        </Holds>
+      </Grids>
+    );
+  }
+
+  if (step === 2) {
     return (
       <Grids className="grid-rows-4 gap-5">
         <Holds background={"white"} className="row-span-1 h-full">
@@ -242,7 +254,7 @@ export default function ClockOutContent() {
         </Holds>
       </Grids>
     );
-  } else if (step === 2 && path === "Injury") {
+  } else if (step === 3 && path === "Injury") {
     return (
       <Grids rows={"10"} gap={"5"}>
         <Holds background={"white"} className="h-full row-span-2">
@@ -263,7 +275,7 @@ export default function ClockOutContent() {
         </Holds>
       </Grids>
     );
-  } else if (step === 2 && path === "clockOut") {
+  } else if (step === 3 && path === "clockOut") {
     return (
       <>
         <Grids rows={"4"} gap={"5"}>
@@ -348,7 +360,7 @@ export default function ClockOutContent() {
         </Grids>
       </>
     );
-  } else if (step === 2 && path === "truck") {
+  } else if (step === 3 && path === "truck") {
     return (
       <>
         <TruckClockOutForm
@@ -368,7 +380,7 @@ export default function ClockOutContent() {
         />
       </>
     );
-  } else if (step === 3 && path === "clockOut") {
+  } else if (step === 4 && path === "clockOut") {
     return (
       <>
         <Grids rows={"4"} gap={"5"}>
@@ -453,7 +465,7 @@ export default function ClockOutContent() {
         </Grids>
       </>
     );
-  } else if (step === 3 && path === "truck") {
+  } else if (step === 4 && path === "truck") {
     return (
       <>
         <Grids rows={"4"} gap={"5"}>
