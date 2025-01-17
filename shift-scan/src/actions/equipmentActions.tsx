@@ -282,8 +282,6 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
     console.log(formData);
     const id = formData.get("id") as string;
     const fuel = parseFloat(formData.get("fuel") as string);
-    const equipmentStatus = formData.get("Equipment.status") as EquipmentStatus;
-    console.log("equipment status", equipmentStatus);
 
     // Update the employee equipment log
     const log = await prisma.employeeEquipmentLog.update({
@@ -291,7 +289,6 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
       data: {
         endTime: new Date().toISOString(),
         comment: formData.get("comment") as string,
-        status: formData.get("status") as FormStatus,
         Equipment: {
           update: {
             status: formData.get("Equipment.status") as EquipmentStatus,

@@ -17,6 +17,7 @@ import { useSession } from "next-auth/react";
 import { Holds } from "../(reusable)/holds";
 import Spinner from "../(animations)/spinner";
 import { Grids } from "../(reusable)/grids";
+import { Images } from "../(reusable)/images";
 
 type VerifyProcessProps = {
   handleNextStep: () => void;
@@ -80,8 +81,9 @@ const VerificationEQStep: React.FC<VerifyProcessProps> = ({
     <>
       <Contents width={"section"}>
         <Grids rows={"5"} gap={"5"}>
-          <Holds background={"white"} className="row-span-1 h-full">
+          <Holds background={"white"} className="row-span-1">
             <TitleBoxes
+              version="horizontal"
               title={t("VerifyEquipment")}
               titleImg="/equipment.svg"
               titleImgAlt="Equipment icon"
@@ -138,13 +140,17 @@ const VerificationEQStep: React.FC<VerifyProcessProps> = ({
                   </Holds>
                   <Holds size={"full"} className=" h-full row-span-1 ">
                     <Holds size={"80"} className="">
-                      <Buttons
-                        background={"lightBlue"}
+                      <button
                         type="submit"
                         className="my-auto"
                       >
-                        <Titles>{t("Next-btn")}</Titles>
-                      </Buttons>
+                        {/* <Titles>{t("Next-btn")}</Titles> */}
+                        <Images
+                          titleImg="/equipmentSubmit.png"
+                          titleImgAlt="Equipment Submit"
+                          position={"center"}
+                        />
+                      </button>
                     </Holds>
                   </Holds>
 
