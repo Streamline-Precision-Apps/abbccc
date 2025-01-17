@@ -18,8 +18,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { z } from "zod";
-// TODO Add a display to show duration of the equipment being used.
-// import { calculateDuration } from "@/utils/calculateDuration";
+import { calculateDuration } from "@/utils/calculateDuration";
 import { Titles } from "@/components/(reusable)/titles";
 import SelectWtihRevert from "@/components/(reusable)/selectWithRevert";
 import TextInputWithRevert from "@/components/(reusable)/textInputWithRevert";
@@ -34,7 +33,6 @@ const EquipmentLogSchema = z.object({
   endTime: z.string().optional(),
   comment: z.string().optional(),
   isSubmitted: z.boolean(),
-  status: z.enum(["PENDING", "COMPLETED"]),
   fuel: z.number().optional(),
   Equipment: z.object({
     name: z.string(),
@@ -52,6 +50,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
   const t = useTranslations("Equipment");
   const [isLoading, setIsLoading] = useState(true);
   const [refueled, setRefueled] = useState(false);
+  const [editTime, setEditTime] = useState(false);
 
   const [formState, setFormState] = useState({
     id: "",
@@ -61,7 +60,6 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
     endTime: "",
     comment: "",
     isSubmitted: false,
-    status: FormStatus.PENDING,
     fuel: 0,
     Equipment: {
       name: "",
@@ -85,7 +83,6 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
           endTime: data.endTime || "",
           comment: data.comment || "",
           isSubmitted: data.isSubmitted || false,
-          status: data.status || FormStatus.PENDING,
           fuel: data.fuel || 0,
           Equipment: {
             name: data.Equipment?.name || "",
@@ -209,6 +206,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
               className="row-span-2 h-full my-auto animate-pulse "
             >
               <TitleBoxes
+                version="horizontal"
                 title="Loading..."
                 type="noIcon"
                 titleImg="/current.svg"
@@ -260,10 +258,11 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
         <Grids rows={"10"} gap={"5"}>
           <Holds background={"white"} className="my-auto row-span-1 h-full">
             <TitleBoxes
+              version="horizontal"
               title={formState.Equipment.name}
               type="noIcon"
               titleImg="/current.svg"
-              titleImgAlt="Current"
+              titleImgAlt="No equipment image"
               variant="default"
               size="default"
             />

@@ -102,6 +102,7 @@ export default function EquipmentLogContent() {
             >
               <Contents width={"section"}>
                 <TitleBoxes
+                  version={"horizontal"}
                   title={t("Current")}
                   titleImg="/equipment.svg"
                   titleImgAlt="Current"
@@ -134,9 +135,10 @@ export default function EquipmentLogContent() {
     <Bases>
       <Contents>
         <Grids rows={"10"} gap={"5"} className="relative">
-          <Holds background={"white"} className="row-span-2 h-full">
+          <Holds background={"white"} className="row-span-2">
             <Contents width={"section"}>
               <TitleBoxes
+                version={"horizontal"}
                 title={t("Current")}
                 titleImg="/equipment.svg"
                 titleImgAlt="Current"
@@ -165,6 +167,23 @@ export default function EquipmentLogContent() {
                   <Texts>{t("NoCurrent")}</Texts>
                 </Holds>
               ) : null}
+              <Holds className="mt-5 h-full overflow-y-auto no-scrollbar">
+                {logs.map((log) => (
+                  <Holds key={log.id} className="pb-5">
+                    <Buttons
+                      size={"80"}
+                      background={log.status === FormStatus.APPROVED ? "green" : "orange"}
+                      href={`/dashboard/equipment/${log.id}`}
+                      key={log.id}
+                      className="py-2"
+                    >
+                      {log.Equipment?.name}
+                    </Buttons>
+                  </Holds>
+                ))}
+              </Holds>
+            </Contents>
+          </Holds>
               <Holds className="mt-5">
                 {green === 0 && total !== 0 ? (
                   <Forms action={Submit} onSubmit={handleSubmit}>
@@ -188,23 +207,6 @@ export default function EquipmentLogContent() {
                   </Buttons>
                 )}
               </Holds>
-              <Holds className="mt-5 h-full overflow-y-auto no-scrollbar">
-                {logs.map((log) => (
-                  <Holds key={log.id} className="pb-5">
-                    <Buttons
-                      size={"80"}
-                      background={log.status === FormStatus.APPROVED ? "green" : "orange"}
-                      href={`/dashboard/equipment/${log.id}`}
-                      key={log.id}
-                      className="py-2"
-                    >
-                      {log.Equipment?.name}
-                    </Buttons>
-                  </Holds>
-                ))}
-              </Holds>
-            </Contents>
-          </Holds>
         </Grids>
       </Contents>
     </Bases>
