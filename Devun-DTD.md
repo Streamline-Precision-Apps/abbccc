@@ -115,11 +115,21 @@ cookies().set({
 - meet with team and discussed what to have for the meeting
 
 #
-# January 15, 2025 - Wednesday
+# January 16, 2025 - thursday
 ### built/created
 - built a power point to share with company
 - company cancelled weekly meetings
 - worked with Zack on figma discussed clock in progress 
 - discussed effective ways to update the application
 - bulit a key for zack to read about engineer view
+
+#
+# January 17, 2025 - friday
+### Meeting 
+- walked through and drafted with Zack (4 hour)
+- cookies guides 
+- why use cookies? 
+- built home routes 
+### Trello
+- update widgets dashboard depending on role and privilege
 

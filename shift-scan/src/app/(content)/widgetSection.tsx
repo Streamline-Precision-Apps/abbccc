@@ -184,8 +184,8 @@ export default function WidgetSection({ session, locale }: Props) {
 
   return (
     <>
-      <Holds className="row-span-1">
-        {authStep === "" && (
+      <Holds className="row-span-2">
+        {authStep === null && (
           <Banners>
             <Titles text={"white"} size={"h2"}>
               {t("Banner")}
@@ -212,15 +212,15 @@ export default function WidgetSection({ session, locale }: Props) {
       </Holds>
       <Holds background={"white"} className="row-span-5 h-full">
         <Contents width={"section"} className="py-5">
-          <Grids rows={"5"} cols={"2"} gap={"5"}>
+          <Grids rows={"11"} cols={"2"} gap={"5"}>
             {authStep === "break" ? (
               <>
                 {toggle ? (
                   <Holds
                     className={
                       toggle
-                        ? "col-span-2 row-span-1 gap-5 h-full"
-                        : "col-span-2 row-span-5 gap-5 h-full"
+                        ? "col-span-2 row-span-3 gap-5 h-full"
+                        : "col-span-2 row-span-11 gap-5 h-full"
                     }
                   >
                     <DisplayBreakTime
@@ -229,7 +229,7 @@ export default function WidgetSection({ session, locale }: Props) {
                     />
                   </Holds>
                 ) : (
-                  <Holds className="col-span-2 row-span-5 gap-5 h-full">
+                  <Holds className="col-span-2 row-span-11 gap-5 h-full">
                     <Hours
                       setToggle={handleToggle}
                       display={toggle}
@@ -242,8 +242,8 @@ export default function WidgetSection({ session, locale }: Props) {
               <Holds
                 className={
                   toggle
-                    ? "col-span-2 row-span-1 gap-5 h-full"
-                    : "col-span-2 row-span-5 gap-5 h-full"
+                    ? "col-span-2 row-span-3 gap-5 h-full"
+                    : "col-span-2 row-span-11 gap-5 h-full"
                 }
               >
                 <Hours
@@ -260,7 +260,7 @@ export default function WidgetSection({ session, locale }: Props) {
                   permission === "MANAGER") && (
                   <Holds
                     position={"row"}
-                    className="col-span-2 row-span-2 gap-5 h-full"
+                    className="col-span-2 row-span-4 gap-5 h-full"
                   >
                     <Buttons
                       background={"lightBlue"}
@@ -292,18 +292,18 @@ export default function WidgetSection({ session, locale }: Props) {
                   </Holds>
                 )}
                 {authStep === "break" ? (
-                  <Holds className="col-span-2 row-span-2 gap-5 h-full">
+                  <Holds className="col-span-2 row-span-8 gap-5 h-full">
                     <Buttons background={"orange"} href="/break">
-                      <Holds position={"row"} className="my-auto">
-                        <Holds size={"70"}>
-                          <Texts size={"p1"}>{f("Clock-btn-break")}</Texts>
-                        </Holds>
-                        <Holds size={"30"}>
+                      <Holds className="my-auto">
+                        <Holds size={"50"}>
                           <Images
                             titleImg="/clock-in.svg"
                             titleImgAlt="Clock In Icon"
-                            size={"50"}
+                            size={"70"}
                           />
+                        </Holds>
+                        <Holds size={"50"}>
+                          <Texts size={"p1"}>{f("Clock-btn-break")}</Texts>
                         </Holds>
                       </Holds>
                     </Buttons>
@@ -315,7 +315,7 @@ export default function WidgetSection({ session, locale }: Props) {
                       permission === "SUPERADMIN" ||
                       permission === "MANAGER"
                         ? `col-span-2 row-span-2 gap-5 h-full`
-                        : `col-span-2 row-span-4 gap-5 h-full`
+                        : `col-span-2 row-span-8 gap-5 h-full`
                     }
                   >
                     <Buttons background={"green"} href="/clock">
@@ -343,7 +343,7 @@ export default function WidgetSection({ session, locale }: Props) {
                               size={"70"}
                             />
                           </Holds>
-                          <Holds size={"60"}>
+                          <Holds size={"50"}>
                             <Texts size={"p1"}>{f("Clock-btn")}</Texts>
                           </Holds>
                         </Holds>
