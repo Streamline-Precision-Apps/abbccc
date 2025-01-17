@@ -11,20 +11,21 @@ import { Texts } from "./texts";
 
 export default function BannerRotating() {
     const [bannerData, setBannerData] = useState({
+        id: "",
         jobsite: {
-            id: true,
-            qrId: true,
-            name: true,
+            id: "",
+            qrId: "",
+            name: "",
         },
-        costcode: true,
-        employeeEquipmentLogs: {
-            id: true,
-            startTime: true,
-            endTime: true,
+        costcode: "",
+        employeeEquipmentLog: [{
+            id: "",
+            startTime: "",
+            endTime: "",
             Equipment: {
-                id: true,
-                name: true,
-        }}});
+                id: "",
+                name: "",
+        }}]});
             
     const settings = {
         dots: true,
@@ -46,6 +47,7 @@ export default function BannerRotating() {
                 const response = await fetch("/api/getBannerData");
                 const data = await response.json();
                 setBannerData(data);
+                
             } catch (error) {
                 console.error("Error fetching job site:", error);
             }
@@ -66,12 +68,12 @@ export default function BannerRotating() {
                     <Titles text={"white"}>{bannerData.costcode}</Titles>
                     <Texts className="text-white" size={"p5"}>{bannerData.costcode}</Texts>
                 </Holds>
-                {Array.isArray(bannerData.employeeEquipmentLogs.Equipment) && bannerData.employeeEquipmentLogs.Equipment.map((equipment, index) => (
+                {bannerData.employeeEquipmentLog.map((equipment, index) => (
                 <Holds key={index}>
-                    <Titles text={"white"}>{equipment.name}</Titles>
+                    <Titles text={"white"}>{equipment.Equipment.name}</Titles>
                     <Texts className="text-white" size={"p5"}>{equipment.startTime}</Texts>
                 </Holds>
-))}
+                ))}
                 
                 {/* <Holds>
                     <Titles text={"white"}>Current Equipment 1</Titles>

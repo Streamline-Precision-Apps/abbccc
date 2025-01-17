@@ -11,12 +11,13 @@ export async function GET() {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const bannerData = await prisma.timeSheet.findFirst({
+    const jobCode = await prisma.timeSheet.findFirst({
         where: {
         userId,
         endTime: null,
         },
         select: {
+            id: true,
             jobsite: {
             select: {
                 id: true,
@@ -32,21 +33,47 @@ export async function GET() {
             //     description: true,
             // },
             // },
-            employeeEquipmentLogs: {
-            select: {
-                id: true,
-                startTime: true,
-                endTime: true,
-                Equipment: {
-                select: {
-                    id: true,
-                    name: true,
-                },
-                },
-            },
-            },
         }
     });
 
-    return NextResponse.json(bannerData);
+    const eqLog = await prisma.employeeEquipmentLog.findMany({
+        where: {
+            timeSheetId: jobCode?.id,
+            endTime: null,
+        },
+        select: {
+            id: true,
+            startTime: true,
+            endTime: true,
+            Equipment: {
+            select: {
+                id: true,
+                name: true,
+            },
+            },
+        },
+    });
+
+    const data = {
+        id: jobCode?.id,
+        jobsite: {
+            id: jobCode?.jobsite.id,
+            qrId: jobCode?.jobsite.qrId,
+            name: jobCode?.jobsite.name,
+        },
+        costcode: jobCode?.costcode,
+        employeeEquipmentLog: [{
+            id: eqLog[0].id,
+            startTime: eqLog[0].startTime,
+            endTime: eqLog[0].endTime,
+            Equipment: {
+                id: eqLog[0]?.Equipment?.id,
+                name: eqLog[0]?.Equipment?.name,
+            },
+        }],
+    };
+        
+
+
+    return NextResponse.json(data);
 }
