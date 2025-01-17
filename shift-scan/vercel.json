@@ -2,7 +2,7 @@
 {
     "crons": [ 
       {
-        "path": "/api/cron/midnight_clock_out",
+        "path": "/api/cron",
         "schedule": "59 59 23 * * *"
         
       }
