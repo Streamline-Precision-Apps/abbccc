@@ -207,7 +207,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
 */
 
   return (
-    <Holds className="h-full w-full">
+    <Holds className="h-full w-full pt-5">
       {/* Multiple Role Selection */}
 
       {step === 0 && (
