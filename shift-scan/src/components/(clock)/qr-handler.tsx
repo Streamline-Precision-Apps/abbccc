@@ -40,17 +40,18 @@ export default function QRStep({
   const t = useTranslations("Clock");
   return (
     <>
+        <Holds background={"white"} className="h-screen">
       <Contents width={"section"} className="relative">
         <Holds
           className="absolute top-1 left-0 w-10"
           onClick={handleReturnPath}
-        >
+          >
           <Images
             titleImg="/turnBack.svg"
             titleImgAlt="back"
             position={"left"}
             size={"full"}
-          />
+            />
         </Holds>
         <Grids rows={"7"} gap={"5"} className="my-5">
           <Holds className="row-span-1">
@@ -71,7 +72,7 @@ export default function QRStep({
                 clockInRole={clockInRole}
                 type={type}
                 handleNextStep={handleNextStep}
-              />
+                />
             </div>
           </Holds>
           <Holds className="row-span-1 h-full space-y-2">
@@ -99,6 +100,7 @@ export default function QRStep({
           </Holds>
         </Grids>
       </Contents>
+              </Holds>
     </>
   );
 }
