@@ -25,6 +25,7 @@ model TimeSheet {
     employeeEquipmentLogs EmployeeEquipmentLog[]
     user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
     jobsite               Jobsite                @relation(fields: [jobsiteId], references: [qrId])
+    costCode              CostCode               @relation(fields: [costcode], references: [id])
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
