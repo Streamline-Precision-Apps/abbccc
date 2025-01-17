@@ -287,6 +287,8 @@
     "ID": "Id: #"
 },
 "Clock": {
+    "ReturnToPrevShift": "Regresar al Turno Anterior",
+    "SelectWorkType": "Seleccionar Tipo de Trabajo",
     "PleaseLeaveACommentOfWhatYouDid": "Por favor, deje un comentario de lo que hizo.",
     "TodayIDidTheFollowing": "Hoy, hice lo siguiente...",
     "General": "General",
