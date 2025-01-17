@@ -5,30 +5,60 @@ import { auth } from "@/auth";
 
 export async function GET() {
   const session = await auth();
-  const userId = session?.user?.id;
-  const manager = `${session?.user?.firstName} ${session?.user?.lastName}`;
+  const managerId = session?.user?.id;
 
-  if (!userId) {
+  if (!managerId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    // Fetch received requests based on `id` and `userId`
-    const receivedContent = await prisma.timeOffRequestForm.findMany({
+    // Fetch crews where the session user is the lead
+    const managedCrews = await prisma.crew.findMany({
+      where: { leadId: managerId },
+      select: { id: true },
+    });
+
+    const managedCrewIds = managedCrews.map((crew) => crew.id);
+
+    if (managedCrewIds.length === 0) {
+      // If the user manages no crews, return an empty array
+      return NextResponse.json([]);
+    }
+
+    // Fetch timeOffRequestForms for employees in managed crews
+    const timeOffRequests = await prisma.timeOffRequestForm.findMany({
       where: {
+        employee: {
+          crews: {
+            some: {
+              id: { in: managedCrewIds },
+            },
+          },
+        },
         status: "PENDING",
       },
-      include: {
-        employee: true,
+      select: {
+        id: true,
+        employee: {
+          select: {
+            firstName: true,
+            lastName: true,
+            crews: {
+              select: {
+                leadId: true,
+              },
+            },
+          },
+        },
+        requestType: true,
+        requestedStartDate: true,
+        requestedEndDate: true,
       },
     });
 
-    const receivedContentWManager = receivedContent.map((request) => ({
-      manager: manager,
-      ...request,
-    }));
+    console.log("Crew memebers timeOffRequests:", timeOffRequests);
 
-    return NextResponse.json(receivedContentWManager);
+    return NextResponse.json(timeOffRequests);
   } catch (error) {
     console.error("Error fetching Time Off Requests:", error);
     return NextResponse.json(
