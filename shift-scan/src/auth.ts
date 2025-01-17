@@ -56,7 +56,6 @@ const providers: Provider[] = [
       const userId = await prisma.user.findUnique({
         where: { username: username },
       });
-      console.log(userId?.password);
 
       if (!userId || !userId.password) {
         console.log("User not found or password not found");
