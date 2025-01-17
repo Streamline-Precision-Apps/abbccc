@@ -129,9 +129,9 @@ export async function CreateTimeSheet(formData: FormData) {
         ).toISOString(),
         date: parseUTC(formData.get("date") as string).toISOString(),
         jobsite: { connect: { qrId: formData.get("jobsiteId") as string } },
-        costcode: formData.get("costcode") as string,
         comment: (formData.get("timeSheetComments") as string) || null,
         user: { connect: { id: formData.get("userId") as string } },
+        costCode: { connect: { name: formData.get("costcode") as string } },
         startTime: parseUTC(formData.get("startTime") as string).toISOString(),
         workType: formData.get("workType") as WorkType,
       },
@@ -164,7 +164,7 @@ export async function AddWholeTimeSheet(formData: FormData) {
         ).toISOString(),
         date: parseUTC(formData.get("date") as string).toISOString(),
         jobsite: { connect: { qrId: formData.get("jobsiteId") as string } },
-        costcode: formData.get("costcode") as string,
+        costCode: { connect: { id: formData.get("costcode") as string } }, // formData.get("costcode") as string,
         startTime: parseUTC(formData.get("startTime") as string).toISOString(),
         endTime: formData.get("endTime")
           ? parseUTC(formData.get("endTime") as string).toISOString()

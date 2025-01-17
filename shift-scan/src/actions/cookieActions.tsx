@@ -31,7 +31,7 @@ LOCALE COOKIES
 */
 export async function setLocale(isSpanish: boolean) {
   try {
-    (await cookies()).set("locale", isSpanish ? "es" : "en", {
+    cookies().set("locale", isSpanish ? "es" : "en", {
       path: "/",
       maxAge: 60 * 60 * 24 * 365, // 1 year
     });
@@ -56,18 +56,12 @@ Dashboard Access COOKIES
 */
 // setting the cookie for workRole to either mechanic, tasco, truck, general
 export async function setWorkRole(workRole: string) {
-  const session = await auth();
-  // Check if the user is authenticated
-  if (!session) {
-    console.error("Not Authorized", 201);
-    // Perform the redirect to the signin page
-    redirect("/signin");
-  }
   if (
     workRole !== "mechanic" &&
     workRole !== "tasco" &&
     workRole !== "truck" &&
-    workRole !== "general"
+    workRole !== "general" &&
+    workRole !== ""
   ) {
     console.error("Not Authorized", 201);
     // Perform the redirect to the signin page
@@ -93,7 +87,7 @@ export async function RemoveWorkRole() {
   const session = await auth();
   // Check if the user is authenticated
   if (!session) {
-    console.error("Not Authorized", 201);
+    console.error("Not Authorized - RemoveWorkRole", 201);
     // Perform the redirect to the signin page
     redirect("/signin");
   }
@@ -106,13 +100,6 @@ export async function RemoveWorkRole() {
 
 // idea of this cookie is to set it to true if the user has access to the dashboard and false if not
 export async function setDashboardAccess() {
-  const session = await auth();
-  // Check if the user is authenticated
-  if (!session) {
-    console.error("Not Authorized", 201);
-    // Perform the redirect to the signin page
-    redirect("/signin");
-  }
   try {
     cookies().set({
       name: "dashboardAccess",
@@ -129,13 +116,6 @@ export async function setDashboardAccess() {
 
 // cookie for setting job site access
 export async function setJobSite(jobSite: string) {
-  const session = await auth();
-  // Check if the user is authenticated
-  if (!session) {
-    console.error("Not Authorized", 201);
-    // Perform the redirect to the signin page
-    redirect("/signin");
-  }
   try {
     cookies().set({
       name: "jobSite",
@@ -151,13 +131,6 @@ export async function setJobSite(jobSite: string) {
 }
 
 export async function setCostCode(costCode: string) {
-  const session = await auth();
-  // Check if the user is authenticated
-  if (!session) {
-    console.error("Not Authorized", 201);
-    // Perform the redirect to the signin page
-    redirect("/signin");
-  }
   try {
     cookies().set({
       name: "costCode",
@@ -176,7 +149,7 @@ export async function setTimeSheet(timeSheetId: string) {
   const session = await auth();
   // Check if the user is authenticated
   if (!session) {
-    console.error("Not Authorized", 201);
+    console.error("Not Authorized - setTimeSheet", 201);
     // Perform the redirect to the signin page
     redirect("/signin");
   }
@@ -221,14 +194,14 @@ export async function setAdminAccess() {
   const session = await auth();
   // Check if the user is authenticated
   if (!session) {
-    console.error("Not Authorized", 201);
+    console.error("Not Authorized - setAdminAccess", 201);
     // Perform the redirect to the signin page
     redirect("/signin");
   }
   // Check if the user has the required permission
   const permission = session.user.permission;
   if (permission !== "ADMIN" && permission !== "SUPERADMIN") {
-    console.error("Not Authorized", 201);
+    console.error("Not Authorized - setAdminAccess", 201);
     // Perform the redirect to the signin page
     redirect("/dashboard");
   }
