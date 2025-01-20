@@ -28,12 +28,12 @@ type QRStepProps = {
 };
 
 export default function QRStep({
-  option,
-  handleReturn,
+  // option,
+  // handleReturn,
   handleReturnPath,
   handleAlternativePath,
   handleNextStep,
-  handleChangeJobsite,
+  // handleChangeJobsite,
   handleScanTruck,
   handleScanJobsite,
   clockInRole,
@@ -57,22 +57,15 @@ export default function QRStep({
   };
 
   useEffect(() => {
-    if (tascoView === true) {
-      setNumberOfViews((prevState) => prevState + 1);
-    }
+    let count = 0; // Reset count for fresh calculation
+    if (tascoView) count++;
+    if (truckView) count++;
+    if (mechanicView) count++;
+    if (laborView) count++;
 
-    if (truckView === true) {
-      setNumberOfViews((prevState) => prevState + 1);
-    }
-
-    if (mechanicView === true) {
-      setNumberOfViews((prevState) => prevState + 1);
-    }
-
-    if (laborView === true) {
-      setNumberOfViews((prevState) => prevState + 1);
-    }
+    setNumberOfViews(count); // Update state with fresh count
   }, [tascoView, truckView, mechanicView, laborView]);
+
   return (
     <>
       <Holds background={"white"} className="h-full w-full">
@@ -94,8 +87,8 @@ export default function QRStep({
               </Holds>
             </Grids>
           </Holds>
-          <Holds className="row-start-2 row-end-3 h-full w-full justify-center">
-            {numberOfViews > 1 ? (
+          {numberOfViews > 1 ? (
+            <Holds className="row-start-2 row-end-3 h-full w-full justify-center">
               <Holds className="h-full w-full justify-center border-[3px] border-black rounded-[10px] shadow-[6px_6px_0px_grey]">
                 <Holds className="h-full w-11/12 justify-center">
                   <Selects
@@ -119,10 +112,16 @@ export default function QRStep({
                   </Selects>
                 </Holds>
               </Holds>
-            ) : null}
-          </Holds>
+            </Holds>
+          ) : null}
           {!startCamera ? (
-            <Holds className="h-full w-full row-start-3 row-end-7">
+            <Holds
+              className={
+                numberOfViews > 1
+                  ? "h-full w-full row-start-3 row-end-7"
+                  : "h-full w-full row-start-2 row-end-7"
+              }
+            >
               <Holds className="h-full w-1/2 justify-center">
                 <Images
                   titleImg="/camera.svg"
@@ -132,118 +131,46 @@ export default function QRStep({
               </Holds>
             </Holds>
           ) : (
-            <Holds className="h-full w-full row-start-3 row-end-7">
-              <Holds>
-                <QR
-                  handleScanJobsite={handleScanJobsite || (() => {})}
-                  handleScanTruck={handleScanTruck || (() => {})}
-                  url={url}
-                  clockInRole={clockInRole}
-                  type={type}
-                  handleNextStep={handleNextStep}
-                />
-              </Holds>
+            <Holds
+              className={
+                numberOfViews > 1
+                  ? "h-full w-full row-start-3 row-end-7"
+                  : "h-full w-full row-start-3 row-end-7"
+              }
+            >
+              <Grids rows={"5"} gap={"2"}>
+                <Holds className="h-full w-full row-start-1 row-end-5 justify-center">
+                  <QR
+                    handleScanJobsite={handleScanJobsite || (() => {})}
+                    handleScanTruck={handleScanTruck || (() => {})}
+                    url={url}
+                    clockInRole={clockInRole}
+                    type={type}
+                    handleNextStep={handleNextStep}
+                  />
+                </Holds>
 
-              <Holds>
-                <Buttons background={"none"} onClick={handleAlternativePath}>
-                  {option !== "clockin" &&
-                  option !== "break" &&
-                  option !== "equipment" ? (
-                    <Texts size={"p4"}>{t("SwitchSites")}</Texts>
-                  ) : (
+                <Holds className="h-full w-full row-start-5 row-end-6 justify-center">
+                  <Buttons background={"none"} onClick={handleAlternativePath}>
                     <Texts size={"p4"}>{t("TroubleScanning")}</Texts>
-                  )}
-                </Buttons>
-                {option === "break" ? (
-                  <Buttons onClick={handleReturn} background={"red"}>
-                    {t("ReturnToJobsite")}
                   </Buttons>
-                ) : null}
-                {type !== "equipment" &&
-                  option !== "clockin" &&
-                  option !== "break" && (
-                    <Buttons onClick={handleChangeJobsite} background={"green"}>
-                      {t("ChangeJobsite")}
-                    </Buttons>
-                  )}
-              </Holds>
+                </Holds>
+              </Grids>
             </Holds>
           )}
-          <Holds className="row-start-7 row-end-8 h-full w-full justify-center">
-            <Buttons
-              onClick={() => setStartCamera(!startCamera)}
-              background={"lightBlue"}
-              className="w-5/6"
-            >
-              <Titles size={"h3"}>Begin Scanning</Titles>
-            </Buttons>
-          </Holds>
+          {!startCamera ? (
+            <Holds className="row-start-7 row-end-8 h-full w-full justify-center">
+              <Buttons
+                onClick={() => setStartCamera(!startCamera)}
+                background={"lightBlue"}
+                className="w-5/6"
+              >
+                <Titles size={"h3"}>Begin Scanning</Titles>
+              </Buttons>
+            </Holds>
+          ) : null}
         </Grids>
       </Holds>
     </>
   );
 }
-
-// <>
-// <Holds background={"white"} className="h-screen">
-// <Contents width={"section"} className="relative">
-// <Holds
-//   className="absolute top-1 left-0 w-10"
-//   onClick={handleReturnPath}
-//   >
-//   <Images
-//     titleImg="/turnBack.svg"
-//     titleImgAlt="back"
-//     position={"left"}
-//     size={"full"}
-//     />
-// </Holds>
-// <Grids rows={"7"} gap={"5"} className="my-5">
-//   <Holds className="row-span-1">
-//     {type === "equipment" ? (
-//       <Titles size={"h1"}>{t("ScanEquipment")}</Titles>
-//     ) : (
-//       <Titles size={"h1"} className="my-auto">
-//         {t("ScanJobSiteOrTruck")}
-//       </Titles>
-//     )}
-//   </Holds>
-//   <Holds className="row-span-5 ">
-//     <div className="">
-//       <QR
-//         handleScanJobsite={handleScanJobsite || (() => {})}
-//         handleScanTruck={handleScanTruck || (() => {})}
-//         url={url}
-//         clockInRole={clockInRole}
-//         type={type}
-//         handleNextStep={handleNextStep}
-//         />
-//     </div>
-//   </Holds>
-//   <Holds className="row-span-1 h-full space-y-2">
-//     <Buttons onClick={handleAlternativePath}>
-//       {option !== "clockin" &&
-//       option !== "break" &&
-//       option !== "equipment" ? (
-//         <Texts size={"p4"}>{t("SwitchSites")}</Texts>
-//       ) : (
-//         <Texts size={"p4"}>{t("TroubleScanning")}</Texts>
-//       )}
-//     </Buttons>
-//     {option === "break" ? (
-//       <Buttons onClick={handleReturn} background={"red"}>
-//         {t("ReturnToJobsite")}
-//       </Buttons>
-//     ) : null}
-//     {type !== "equipment" &&
-//       option !== "clockin" &&
-//       option !== "break" && (
-//         <Buttons onClick={handleChangeJobsite} background={"green"}>
-//           {t("ChangeJobsite")}
-//         </Buttons>
-//       )}
-//   </Holds>
-// </Grids>
-// </Contents>
-//       </Holds>
-// </>
