@@ -19,6 +19,8 @@ import RedirectAfterDelay from "../redirectAfterDelay";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { setWorkRole } from "@/actions/cookieActions";
+import MechanicVerificationStep from "./mechanicVerificationStep";
+import TascoVerificationStep from "./tascoVerificationStep";
 
 type NewClockProcessProps = {
   mechanicView: boolean;
@@ -223,6 +225,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
         </>
       )}
       {/* Mechanic Role */}
+      {/* ------------------------- Mechanic Role start ---------------------*/}
       {step === 1 && clockInRole === "mechanic" && (
         <QRStep
           type="jobsite"
@@ -237,12 +240,11 @@ step 4 : confirmation page and redirect to dashboard with authorization
           setClockInRole={setClockInRole}
         />
       )}
-      {/* Special Forms Section */} {/* Tasco Role */}
       {step === 3 && clockInRole === "mechanic" && (
-        <CodeStep datatype="jobsite" handleNextStep={handleNextStep} />
+        <CodeStep datatype="jobsite-mechanic" handleNextStep={handleNextStep} />
       )}
       {step === 4 && clockInRole === "mechanic" && (
-        <VerificationStep
+        <MechanicVerificationStep
           type={type}
           role={clockInRole}
           handleNextStep={handleNextStep}
@@ -261,8 +263,10 @@ step 4 : confirmation page and redirect to dashboard with authorization
           locale={locale}
         />
       )}
-      {/* ------------------------- Trucking Role section ---------------------*/}
+      {/* ------------------------- Mechanic Role end ---------------------*/}
+
       {/* Truck Role */}
+      {/* ------------------------- Trucking Role start ---------------------*/}
       {step === 1 && clockInRole === "truck" && (
         <QRStep
           type="jobsite" // two types of types for qr, jobsite or equipment
@@ -306,7 +310,9 @@ step 4 : confirmation page and redirect to dashboard with authorization
         />
       )}
       {/* ------------------------- End of Trucking Role section ---------------------*/}
+
       {/* Tasco Role */}
+      {/* ------------------------- Tasco Role start ---------------------*/}
       {step === 1 && clockInRole === "tasco" && (
         <QRStep
           type="jobsite"
@@ -323,10 +329,10 @@ step 4 : confirmation page and redirect to dashboard with authorization
       )}
       {/* Tasco Role */}
       {step === 3 && clockInRole === "tasco" && (
-        <CodeStep datatype="jobsite" handleNextStep={handleNextStep} />
+        <CodeStep datatype="jobsite-tasco" handleNextStep={handleNextStep} />
       )}
       {step === 4 && clockInRole === "tasco" && (
-        <VerificationStep
+        <TascoVerificationStep
           type={type}
           role={clockInRole}
           handleNextStep={handleNextStep}
@@ -345,8 +351,10 @@ step 4 : confirmation page and redirect to dashboard with authorization
           locale={locale}
         />
       )}
-      {/* ----------------------------------------- General Role ---------------------*/}
+      {/* ------------------------- Tasco Role End ---------------------*/}
+
       {/* General Role */}
+      {/* ------------------------- General Role ---------------------*/}
       {step === 1 && clockInRole === "general" && (
         <QRStep
           type="jobsite"
