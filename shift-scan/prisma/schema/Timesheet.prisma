@@ -95,7 +95,7 @@ model TascoLog {
 model TruckingLog {
     id                String    @id @default(uuid())
     truckingJobSiteId String
-    truckingCostCode  String?
+    truckingCostCode  String? // in case they do manual labor its here
     taskName          String? // auto default to drive or operator
     equipmentId       String? // this is the equipment id vehicle id
     timeSheetId       String?
