@@ -7,6 +7,7 @@ model CostCode {
     updatedAt   DateTime      @default(now()) @updatedAt
     CCTags      CCTag[]
     TruckingLog TruckingLog[]
+    TascoLog    TascoLog[]
     Timesheet   TimeSheet[]
 
     @@unique([name, description])
