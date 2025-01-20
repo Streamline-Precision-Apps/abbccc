@@ -136,7 +136,6 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     },
   },
   {
-    id: "6",
     qrId: "TASCO",
     name: "Tasco Jobsite",
     description: "Tasco Jobsite",
@@ -163,7 +162,6 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     },
   },
   {
-    id: "6",
     qrId: "MECHANIC",
     name: "Mechanic Jobsite",
     description: "Mechanic Jobsite",
@@ -190,7 +188,6 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     },
   },
   {
-    id: "6",
     qrId: "TRUCK",
     name: "Truck Jobsite",
     description: "Truck Jobsite",
