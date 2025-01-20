@@ -121,6 +121,13 @@ export async function CreateTimeSheet(formData: FormData) {
     if (workType === "truck") {
       formData.set("workType", "TRUCK_DRIVER");
     }
+    // check to determine if costCode is empty
+    const startCostCode = formData.get("costCode") as string;
+    if (startCostCode === "") {
+      formData.delete("costCode");
+    }
+    // this will set costcode to undefined if empty
+    const costCode = formData.get("costCode") as string;
 
     const newTimeSheet = await prisma.timeSheet.create({
       data: {
@@ -131,7 +138,7 @@ export async function CreateTimeSheet(formData: FormData) {
         jobsite: { connect: { qrId: formData.get("jobsiteId") as string } },
         comment: (formData.get("timeSheetComments") as string) || null,
         user: { connect: { id: formData.get("userId") as string } },
-        costCode: { connect: { name: formData.get("costcode") as string } },
+        costCode: costCode ? { connect: { name: costCode } } : undefined,
         startTime: parseUTC(formData.get("startTime") as string).toISOString(),
         workType: formData.get("workType") as WorkType,
       },
@@ -156,6 +163,12 @@ export async function AddWholeTimeSheet(formData: FormData) {
   try {
     console.log("Creating Timesheet...");
     console.log(formData);
+    const startCostCode = formData.get("costCode") as string;
+    if (startCostCode === "") {
+      formData.delete("costCode");
+    }
+    // this will set costcode to undefined if empty
+    const costCode = formData.get("costCode") as string;
 
     const newTimeSheet = await prisma.timeSheet.create({
       data: {
@@ -164,7 +177,7 @@ export async function AddWholeTimeSheet(formData: FormData) {
         ).toISOString(),
         date: parseUTC(formData.get("date") as string).toISOString(),
         jobsite: { connect: { qrId: formData.get("jobsiteId") as string } },
-        costCode: { connect: { id: formData.get("costcode") as string } }, // formData.get("costcode") as string,
+        costCode: costCode ? { connect: { name: costCode } } : undefined,
         startTime: parseUTC(formData.get("startTime") as string).toISOString(),
         endTime: formData.get("endTime")
           ? parseUTC(formData.get("endTime") as string).toISOString()

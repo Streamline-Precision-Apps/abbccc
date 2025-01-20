@@ -587,6 +587,36 @@ export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
       connect: [], // No CCTags are linked initially
     },
   },
+  {
+    id: "14",
+    name: "Truck Role", // Truck Driver cost code for clock in value not important
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    description: "Truck Driver",
+    CCTags: {
+      connect: [], // No CCTags are linked initially
+    },
+  },
+  {
+    id: "15",
+    name: "Mechanic Role", // Mechanic cost code for clock in value not important
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    description: "Mechanic",
+    CCTags: {
+      connect: [], // No CCTags are linked initially
+    },
+  },
+  {
+    id: "16",
+    name: "TASCO Role", // TASCO cost code for clock in value not important
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    description: "TASCO",
+    CCTags: {
+      connect: [], // No CCTags are linked initially
+    },
+  },
 ];
 
 export const initialCCTags: Prisma.CCTagCreateInput[] = [

@@ -314,7 +314,7 @@ export default function WidgetSection({ session, locale }: Props) {
                       permission === "ADMIN" ||
                       permission === "SUPERADMIN" ||
                       permission === "MANAGER"
-                        ? `col-span-2 row-span-2 gap-5 h-full`
+                        ? `col-span-2 row-span-4 gap-5 h-full`
                         : `col-span-2 row-span-8 gap-5 h-full`
                     }
                   >
