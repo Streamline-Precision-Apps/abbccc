@@ -71,6 +71,7 @@ model Maintenance {
 model TascoLog {
     id           String     @id @default(uuid())
     timeSheetId  String // link to timesheet
+    costcode     String? // in case they do manual labor its here
     shiftType    String // Tasco task
     startTime    DateTime
     endTime      DateTime?
@@ -88,6 +89,7 @@ model TascoLog {
     // connections to other tables
     equipment Equipment? @relation(fields: [equipmentId], references: [id])
     timeSheet TimeSheet? @relation(fields: [timeSheetId], references: [id])
+    costCode  CostCode?  @relation(fields: [costcode], references: [name])
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
