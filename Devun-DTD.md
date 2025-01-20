@@ -133,3 +133,10 @@ cookies().set({
 ### Trello
 - update widgets dashboard depending on role and privilege
 
+#
+# January 20, 2025 - Monday
+### Built/created
+- Making Data for a Way that Engineers, tasco, and Truck drivers can clock in
+
+### Trello
+- 

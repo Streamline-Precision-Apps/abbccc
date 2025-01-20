@@ -261,7 +261,6 @@ CREATE TABLE "TascoLog" (
 -- CreateTable
 CREATE TABLE "TruckingLog" (
     "id" TEXT NOT NULL,
-    "truckingCCId" TEXT NOT NULL,
     "truckingJobSiteId" TEXT NOT NULL,
     "taskName" TEXT,
     "equipmentId" TEXT,
@@ -273,6 +272,7 @@ CREATE TABLE "TruckingLog" (
     "netWeight" DOUBLE PRECISION,
     "comment" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "costCodeId" TEXT,
 
     CONSTRAINT "TruckingLog_pkey" PRIMARY KEY ("id")
 );
@@ -291,8 +291,10 @@ CREATE TABLE "StateMileage" (
 -- CreateTable
 CREATE TABLE "Material" (
     "id" TEXT NOT NULL,
+    "LocationOfMaterial" TEXT,
     "truckingLogId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "quantity" INTEGER,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Material_pkey" PRIMARY KEY ("id")
@@ -495,7 +497,7 @@ ALTER TABLE "TimeSheet" ADD CONSTRAINT "TimeSheet_userId_fkey" FOREIGN KEY ("use
 ALTER TABLE "TimeSheet" ADD CONSTRAINT "TimeSheet_jobsiteId_fkey" FOREIGN KEY ("jobsiteId") REFERENCES "Jobsite"("qrId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "TimeSheet" ADD CONSTRAINT "TimeSheet_costcode_fkey" FOREIGN KEY ("costcode") REFERENCES "CostCode"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "TimeSheet" ADD CONSTRAINT "TimeSheet_costcode_fkey" FOREIGN KEY ("costcode") REFERENCES "CostCode"("name") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "MaintenanceLog" ADD CONSTRAINT "MaintenanceLog_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -525,7 +527,7 @@ ALTER TABLE "TruckingLog" ADD CONSTRAINT "TruckingLog_timeSheetId_fkey" FOREIGN 
 ALTER TABLE "TruckingLog" ADD CONSTRAINT "TruckingLog_truckingJobSiteId_fkey" FOREIGN KEY ("truckingJobSiteId") REFERENCES "Jobsite"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "TruckingLog" ADD CONSTRAINT "TruckingLog_truckingCCId_fkey" FOREIGN KEY ("truckingCCId") REFERENCES "CostCode"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "TruckingLog" ADD CONSTRAINT "TruckingLog_costCodeId_fkey" FOREIGN KEY ("costCodeId") REFERENCES "CostCode"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "StateMileage" ADD CONSTRAINT "StateMileage_truckingLogId_fkey" FOREIGN KEY ("truckingLogId") REFERENCES "TruckingLog"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
