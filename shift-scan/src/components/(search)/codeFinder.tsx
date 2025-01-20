@@ -117,6 +117,25 @@ export default function CodeFinder({ datatype, savedCode }: Props) {
       if (selectedJobCode) addRecentlyUsedJobCode(selectedJobCode);
     }
 
+    if (datatype === "jobsite-mechanic") {
+      localStorage.setItem("jobSite", option.code);
+      setScanResult({ data: option.code });
+
+      const selectedJobCode = jobsiteResults.find(
+        (j) => j.qrId === option.code
+      );
+      if (selectedJobCode) addRecentlyUsedJobCode(selectedJobCode);
+    }
+    if (datatype === "jobsite-tasco") {
+      localStorage.setItem("jobSite", option.code);
+      setScanResult({ data: option.code });
+
+      const selectedJobCode = jobsiteResults.find(
+        (j) => j.qrId === option.code
+      );
+      if (selectedJobCode) addRecentlyUsedJobCode(selectedJobCode);
+    }
+
     if (datatype === "equipment") {
       setscanEQResult({ data: option.code });
       localStorage.setItem("previousEquipment", option.code);
