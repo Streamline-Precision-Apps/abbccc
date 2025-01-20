@@ -65,7 +65,7 @@ model Refueled {
     employeeEquipmentLogId String?
     truckingLogId          String?
     gallonsRefueled        Float?
-    milesAtfueling         Int?
+    milesAtfueling         Int? // miles at fueling for trucks
 
     EmployeeEquipmentLog EmployeeEquipmentLog? @relation(fields: [employeeEquipmentLogId], references: [id])
     TruckingLog          TruckingLog?          @relation(fields: [truckingLogId], references: [id])
