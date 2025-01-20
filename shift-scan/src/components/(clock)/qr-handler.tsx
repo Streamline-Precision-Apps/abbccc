@@ -10,6 +10,7 @@ import { Grids } from "../(reusable)/grids";
 import { Images } from "../(reusable)/images";
 import { Selects } from "../(reusable)/selects";
 import { useSession } from "next-auth/react";
+import { setWorkRole } from "@/actions/cookieActions";
 
 type QRStepProps = {
   handleAlternativePath: () => void;
@@ -23,6 +24,7 @@ type QRStepProps = {
   url: string;
   option?: string;
   clockInRole: string;
+  setClockInRole?: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export default function QRStep({
@@ -37,6 +39,7 @@ export default function QRStep({
   clockInRole,
   type,
   url,
+  setClockInRole,
 }: QRStepProps) {
   const t = useTranslations("Clock");
   const [startCamera, setStartCamera] = useState<boolean>(false); // set to false;
@@ -48,10 +51,9 @@ export default function QRStep({
   const [numberOfViews, setNumberOfViews] = useState(0);
 
   const selectView = (clockInRole: string) => {
-    setClockInRole(clockInRole);
+    setClockInRole && setClockInRole(clockInRole);
     setWorkRole(clockInRole);
     localStorage.setItem("clockInRole", clockInRole);
-    handleNextStep();
   };
 
   useEffect(() => {

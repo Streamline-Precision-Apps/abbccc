@@ -209,7 +209,6 @@ step 4 : confirmation page and redirect to dashboard with authorization
   return (
     <Holds className="h-full w-full pt-5">
       {/* Multiple Role Selection */}
-
       {step === 0 && (
         <>
           <MultipleRoles
@@ -223,7 +222,6 @@ step 4 : confirmation page and redirect to dashboard with authorization
           />
         </>
       )}
-
       {/* Mechanic Role */}
       {step === 1 && clockInRole === "mechanic" && (
         <QRStep
@@ -236,6 +234,31 @@ step 4 : confirmation page and redirect to dashboard with authorization
           url={returnpath}
           option={option}
           clockInRole={clockInRole} // clock in role will make the qr know which role to use
+          setClockInRole={setClockInRole}
+        />
+      )}
+      {/* Special Forms Section */} {/* Tasco Role */}
+      {step === 3 && clockInRole === "mechanic" && (
+        <CodeStep datatype="jobsite" handleNextStep={handleNextStep} />
+      )}
+      {step === 4 && clockInRole === "mechanic" && (
+        <VerificationStep
+          type={type}
+          role={clockInRole}
+          handleNextStep={handleNextStep}
+          option={option}
+          comments={undefined}
+        />
+      )}
+      {step === 5 && clockInRole === "mechanic" && (
+        <ConfirmationPage
+          option={option}
+          savedCostCode={savedCostCode}
+          scanResult={scanResult?.data}
+          truckScanData={truckScanData}
+          type={type}
+          startingMileage={startingMileage}
+          locale={locale}
         />
       )}
       {/* ------------------------- Trucking Role section ---------------------*/}
@@ -251,6 +274,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
           url={returnpath}
           option={option}
           clockInRole={clockInRole}
+          setClockInRole={setClockInRole}
         />
       )}
       {/* Special Forms Section */}
@@ -260,7 +284,6 @@ step 4 : confirmation page and redirect to dashboard with authorization
           setComments={setComments}
         />
       )}
-
       {/* Verification Page for truck drivers */}
       {step === 4 && clockInRole === "truck" && (
         <VerificationStep
@@ -284,10 +307,45 @@ step 4 : confirmation page and redirect to dashboard with authorization
       )}
       {/* ------------------------- End of Trucking Role section ---------------------*/}
       {/* Tasco Role */}
-      {step === 1 && clockInRole === "tasco" && <div>Step 1 - Tasco</div>}
-
+      {step === 1 && clockInRole === "tasco" && (
+        <QRStep
+          type="jobsite"
+          handleAlternativePath={handleAlternativePath}
+          handleNextStep={handleNextStep}
+          handleChangeJobsite={handleChangeJobsite}
+          handleReturn={handleReturn}
+          handleReturnPath={handleReturnPath}
+          url={returnpath}
+          option={option}
+          clockInRole={clockInRole}
+          setClockInRole={setClockInRole}
+        />
+      )}
+      {/* Tasco Role */}
+      {step === 3 && clockInRole === "tasco" && (
+        <CodeStep datatype="jobsite" handleNextStep={handleNextStep} />
+      )}
+      {step === 4 && clockInRole === "tasco" && (
+        <VerificationStep
+          type={type}
+          role={clockInRole}
+          handleNextStep={handleNextStep}
+          option={option}
+          comments={undefined}
+        />
+      )}
+      {step === 5 && clockInRole === "tasco" && (
+        <ConfirmationPage
+          option={option}
+          savedCostCode={savedCostCode}
+          scanResult={scanResult?.data}
+          truckScanData={truckScanData}
+          type={type}
+          startingMileage={startingMileage}
+          locale={locale}
+        />
+      )}
       {/* ----------------------------------------- General Role ---------------------*/}
-
       {/* General Role */}
       {step === 1 && clockInRole === "general" && (
         <QRStep
@@ -300,19 +358,17 @@ step 4 : confirmation page and redirect to dashboard with authorization
           url={returnpath}
           option={option}
           clockInRole={clockInRole}
+          setClockInRole={setClockInRole}
         />
       )}
-
       {/* Select Jobsite Section */}
       {step === 3 && clockInRole === "general" && (
         <CodeStep datatype="jobsite" handleNextStep={handleNextStep} />
       )}
-
       {/* Select Cost Code Section */}
       {step === 4 && clockInRole === "general" && (
         <CodeStep datatype="costcode" handleNextStep={handleNextStep} />
       )}
-
       {/* Verification Page */}
       {step === 5 && clockInRole === "general" && (
         <VerificationStep
@@ -323,7 +379,6 @@ step 4 : confirmation page and redirect to dashboard with authorization
           comments={undefined}
         />
       )}
-
       {/* Confirmation Page */}
       {step === 6 && clockInRole === "general" && (
         <ConfirmationPage
