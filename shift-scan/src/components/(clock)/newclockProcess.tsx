@@ -209,36 +209,40 @@ step 4 : confirmation page and redirect to dashboard with authorization
 */
 
   return (
-    <Holds className="h-full w-full pt-5">
+    <>
       {/* Multiple Role Selection */}
       {step === 0 && (
         <>
-          <MultipleRoles
-            handleNextStep={handleNextStep}
-            setClockInRole={setClockInRole}
-            clockInRole={clockInRole}
-            option={option}
-            handleReturn={handleReturn}
-            type={type}
-            handleReturnPath={handleReturnPath}
-          />
+          <Holds className="h-full w-full pt-5">
+            <MultipleRoles
+              handleNextStep={handleNextStep}
+              setClockInRole={setClockInRole}
+              clockInRole={clockInRole}
+              option={option}
+              handleReturn={handleReturn}
+              type={type}
+              handleReturnPath={handleReturnPath}
+            />
+          </Holds>
         </>
       )}
       {/* Mechanic Role */}
       {/* ------------------------- Mechanic Role start ---------------------*/}
       {step === 1 && clockInRole === "mechanic" && (
-        <QRStep
-          type="jobsite"
-          handleReturnPath={handleReturnPath}
-          handleAlternativePath={handleAlternativePath}
-          handleNextStep={handleNextStep}
-          handleChangeJobsite={handleChangeJobsite}
-          handleReturn={handleReturn}
-          url={returnpath}
-          option={option}
-          clockInRole={clockInRole} // clock in role will make the qr know which role to use
-          setClockInRole={setClockInRole}
-        />
+        <Holds className="h-full w-full pt-5">
+          <QRStep
+            type="jobsite"
+            handleReturnPath={handleReturnPath}
+            handleAlternativePath={handleAlternativePath}
+            handleNextStep={handleNextStep}
+            handleChangeJobsite={handleChangeJobsite}
+            handleReturn={handleReturn}
+            url={returnpath}
+            option={option}
+            clockInRole={clockInRole} // clock in role will make the qr know which role to use
+            setClockInRole={setClockInRole}
+          />
+        </Holds>
       )}
       {step === 3 && clockInRole === "mechanic" && (
         <CodeStep datatype="jobsite-mechanic" handleNextStep={handleNextStep} />
@@ -371,21 +375,27 @@ step 4 : confirmation page and redirect to dashboard with authorization
       )}
       {/* Select Jobsite Section */}
       {step === 3 && clockInRole === "general" && (
-        <CodeStep datatype="jobsite" handleNextStep={handleNextStep} />
+        <Holds className="h-full w-full py-5">
+          <CodeStep datatype="jobsite" handleNextStep={handleNextStep} />
+        </Holds>
       )}
       {/* Select Cost Code Section */}
       {step === 4 && clockInRole === "general" && (
-        <CodeStep datatype="costcode" handleNextStep={handleNextStep} />
+        <Holds className="h-full w-full py-5">
+          <CodeStep datatype="costcode" handleNextStep={handleNextStep} />
+        </Holds>
       )}
       {/* Verification Page */}
       {step === 5 && clockInRole === "general" && (
-        <VerificationStep
-          type={type}
-          role={clockInRole}
-          handleNextStep={handleNextStep}
-          option={option}
-          comments={undefined}
-        />
+        <Holds className="h-full w-full py-5">
+          <VerificationStep
+            type={type}
+            role={clockInRole}
+            handleNextStep={handleNextStep}
+            option={option}
+            comments={undefined}
+          />
+        </Holds>
       )}
       {/* Confirmation Page */}
       {step === 6 && clockInRole === "general" && (
@@ -399,6 +409,6 @@ step 4 : confirmation page and redirect to dashboard with authorization
           locale={locale}
         />
       )}
-    </Holds>
+    </>
   );
 }
