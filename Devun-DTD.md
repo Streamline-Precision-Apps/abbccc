@@ -169,5 +169,6 @@ cookies().set({
 
 
 ### Trello
-- /clock  update base employee select to not show
 - bug in hours view && / - display time to the 10th value to fix space issue
+- Starting the Engineer Role
+- Starting the Tasco Role

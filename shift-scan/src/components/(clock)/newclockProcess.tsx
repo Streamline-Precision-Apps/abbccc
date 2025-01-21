@@ -117,8 +117,8 @@ export default function NewClockProcess({
   // useEffect to choose role
   useEffect(() => {
     let role = "";
+    // Set number of roles to get total number of roles
     let numberOfRoles = 0;
-
     if (mechanicView) {
       numberOfRoles++;
     }
@@ -133,10 +133,13 @@ export default function NewClockProcess({
     }
     setNumberOfRoles(numberOfRoles);
 
+    // If switch jobs, reset step else choose role
     if (type === "switchJobs") {
       setStep(0);
-    } else {
-      setWorkRole(""); // Reset workRole so that the cokkie is never set for the wrong role
+    }
+    // If not switch jobs, choose role
+    else {
+      setWorkRole(""); // Reset workRole so that the cookie is never set for the wrong role
       if (mechanicView && !laborView && !truckView && !tascoView) {
         role = "mechanic";
         setWorkRole(role);
@@ -152,13 +155,8 @@ export default function NewClockProcess({
       } else {
         role = "";
       }
-
-      setClockInRole(role);
-      if (type === "switchJobs") {
-        setStep(0);
-      } else {
-        setStep(role === "" ? 0 : 1);
-      }
+      setClockInRole(role); // Set role
+      setStep(role === "" ? 0 : 1);
     }
   }, [mechanicView, truckView, tascoView, laborView, type]);
 
