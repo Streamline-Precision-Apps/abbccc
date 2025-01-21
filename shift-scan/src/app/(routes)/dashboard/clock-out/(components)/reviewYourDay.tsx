@@ -39,10 +39,12 @@ export default function ReviewYourDay({
             {t("ReviewYourDayDirections")}
           </Texts>
           <Holds position={"row"} className="gap-4 border-b-[3px] border-black">
-            <Titles size={"h6"}>{t("StartTime")}</Titles>
-            <Titles size={"h6"}>{t("EndTime")}</Titles>
-            <Titles size={"h6"}>{t("Jobsite")}</Titles>
-            <Titles size={"h6"}>{t("CostCode")}</Titles>
+            <Grids cols={"4"} gap={"4"} className="w-full h-full p-3">
+              <Titles size={"h6"}>{t("StartTime")}</Titles>
+              <Titles size={"h6"}>{t("EndTime")}</Titles>
+              <Titles size={"h6"}>{t("Jobsite")}</Titles>
+              <Titles size={"h6"}>{t("CostCode")}</Titles>
+            </Grids>
           </Holds>
           {timesheets.map((timesheet, index) => (
             <>
@@ -56,7 +58,7 @@ export default function ReviewYourDay({
                   </Titles>
                   {timesheets.length - 1 === index ? (
                     <Titles size={"h6"} className="col-start-2 col-end-3 ">
-                      {t("Current")}
+                      {t("Now")}
                     </Titles>
                   ) : (
                     <Titles size={"h6"} className="col-start-2 col-end-3 ">

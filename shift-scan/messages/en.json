@@ -317,7 +317,7 @@
     "Mechanic": "Mechanic",
     "TASCO": "TASCO",
     "PleaseChooseYourRole": "Please choose your role:",
-    "ChangeJobsite": "Change Jobsite",
+    "ChangeJobsite": "Change Jobsite", 
     "ChangeCostCode": "Change Cost Code",
     "ScanJobSiteOrTruck": "Scan Job Site or Truck",
     "SwitchSites": "Switch Sites",
@@ -343,7 +343,7 @@
     "ScanEquipment": "Scan Equipment",
     "Cancel": "Cancel",
     "ReturnToJobsite": "Same Jobsite",
-    "ReturnToPrevShift": "Return to Previous Site",
+    "ReturnToPrevShift": "Continue Previous Work",
     "VerifyEquipment": "Verify Equipment",
     "Equipment-label": "Equipment Found",
     "ClockIn-btn": "Clock In",
@@ -372,10 +372,11 @@
     "LeftIdaho": "Left Idaho?",
     "recentlyUsed" : "Recently Used",
     "CostCode-Label": "Cost Code:",
-    "Submit": "Enviar"
+    "Submit": "Submit"
 },
 "ClockOut":{
     "ReviewYourDayDirections": "Review your day below. If you have any questions, please contact your supervisor.",
+    "Now": "Now",
     "Current": "Current",
     "StartTime": "Start Time",
     "EndTime": "End Time",

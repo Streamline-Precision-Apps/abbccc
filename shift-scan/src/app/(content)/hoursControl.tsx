@@ -3,6 +3,12 @@ import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import ViewComponent from "../(content)/hourView";
 import { usePayPeriodTimeSheet } from "../context/PayPeriodTimeSheetsContext";
 import { useTranslations } from "next-intl";
+import { toZonedTime } from "date-fns-tz";
+import {
+  startOfWeek as startOfWeekFn,
+  differenceInCalendarWeeks as differenceInCalendarWeeksFn,
+  addWeeks as addWeeksFn,
+} from "date-fns";
 
 import { Texts } from "@/components/(reusable)/texts";
 import { Buttons } from "@/components/(reusable)/buttons";
@@ -12,6 +18,7 @@ import { Grids } from "@/components/(reusable)/grids";
 type ControlComponentProps = {
   toggle: (toggle: boolean) => void;
 };
+const MST_TIMEZONE = "America/Denver";
 
 export default function ControlComponent({ toggle }: ControlComponentProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -23,49 +30,73 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
   );
 
   const calculatePayPeriodStart = () => {
-    const startDate = new Date(2024, 7, 5); // August 5, 2024
-    const now = new Date();
-    const diff = now.getTime() - startDate.getTime();
-    const diffWeeks = Math.floor(diff / (2 * 7 * 24 * 60 * 60 * 1000)); // Two-week intervals
-    return new Date(
-      startDate.getTime() + diffWeeks * 2 * 7 * 24 * 60 * 60 * 1000
+    const startDate = new Date(2024, 7, 5); // August 5, 2024 (Monday)
+    const now = toZonedTime(new Date(), MST_TIMEZONE);
+
+    // Find the most recent Monday
+    const currentWeekStart = startOfWeekFn(now, { weekStartsOn: 1 }); // 1 = Monday
+
+    // Calculate the number of weeks since the startDate
+    const weeksSinceStart = differenceInCalendarWeeksFn(
+      currentWeekStart,
+      startDate,
+      {
+        weekStartsOn: 1,
+      }
     );
+
+    // Determine the current two-week period
+    const payPeriodNumber = Math.floor(weeksSinceStart / 2);
+
+    // Calculate the start of the current pay period
+    const payPeriodStart = addWeeksFn(startDate, payPeriodNumber * 2);
+
+    return toZonedTime(payPeriodStart, MST_TIMEZONE);
   };
 
   const calculateDailyHours = useCallback(() => {
-    const startDate = calculatePayPeriodStart();
-    const endDate = new Date(startDate);
-    endDate.setDate(endDate.getDate() + 13); // Two-week period
-    const dateKey = (date: Date) => date.toISOString().split("T")[0];
-    const hoursMap: Record<string, number> = {};
-    const currentDate = new Date(startDate);
+    const startDate = calculatePayPeriodStart(); // get the start of the current pay period
+    const endDate = new Date(startDate); // Clone to avoid mutating startDate
+    endDate.setDate(endDate.getDate() + 13); // Mutate the end date to add 13 days for a Two-week period (14 days)
 
+    const dateKey = (date: Date) => {
+      return date.toString(); // makes a Date key to group hours
+    };
+    const hoursMap: Record<string, number> = {}; // makes a record to hold date key and hours
+    const currentDate = new Date(startDate); // made a clone of startDate to avoid multiple date keys
+
+    // PreCalculate hours for each day in the pay period to have a zero value starting point
     while (currentDate <= endDate) {
-      hoursMap[dateKey(currentDate)] = 0;
+      const zonedDate = toZonedTime(currentDate, MST_TIMEZONE);
+      hoursMap[dateKey(zonedDate)] = 0;
       currentDate.setDate(currentDate.getDate() + 1);
     }
-
+    // take current time sheets and add them to the hours map
     if (payPeriodTimeSheet) {
       payPeriodTimeSheet.forEach((sheet) => {
-        const sheetDateKey = new Date(sheet.startTime)
-          .toISOString()
-          .split("T")[0];
+        // Convert sheet times to MST
+        const sheetStart = toZonedTime(sheet.startTime, MST_TIMEZONE); // get start time in MST
+        const sheetEnd = toZonedTime(sheet.endTime, MST_TIMEZONE); // get end time in MST
+        const sheetDateKey = toZonedTime(
+          sheetStart.toISOString().split("T")[0],
+          MST_TIMEZONE
+        ).toString(); // Get put the timesheet under the same date key
+
         if (hoursMap[sheetDateKey] !== undefined) {
-          (hoursMap[sheetDateKey] +=
-            (new Date(sheet.endTime).getTime() -
-              new Date(sheet.startTime).getTime()) /
-            (1000 * 60 * 60)),
-            0;
+          // makes sure the date key exists
+          const hours =
+            (sheetEnd.getTime() - sheetStart.getTime()) / (1000 * 60 * 60); // calculate hours
+          hoursMap[sheetDateKey] += hours; // add hours to the date key
         }
       });
     }
-
+    // sort the hours map by date
     return Object.entries(hoursMap)
       .map(([date, hours]) => ({ date, hours }))
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   }, [payPeriodTimeSheet]);
 
-  // calls the previous function and created a new array
+  // calls the previous function and creates a new array
   const dailyHours = useMemo(() => {
     if (dailyHoursCache.current) {
       return dailyHoursCache.current;
@@ -77,8 +108,14 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
   }, [calculateDailyHours]);
 
   useEffect(() => {
-    const today = new Date().toISOString().split("T")[0];
-    const todayIndex = dailyHours.findIndex((entry) => entry.date === today);
+    const today = toZonedTime(
+      new Date().toISOString().split("T")[0],
+      MST_TIMEZONE
+    ).toString(); // get today's date in MST
+
+    const todayIndex = dailyHours.findIndex(
+      (entry) => entry.date === today.toString()
+    );
     if (todayIndex !== -1) {
       setCurrentIndex(todayIndex);
       setTodayIndex(todayIndex);
@@ -89,10 +126,6 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
   const prevData = dailyHours[currentIndex - 1] || { date: "", hours: 0 };
   const currentData = dailyHours[currentIndex] || { date: "", hours: 0 };
   const nextData = dailyHours[currentIndex + 1] || { date: "", hours: 0 };
-
-  console.log("prevData", prevData);
-  console.log("currentData", currentData);
-  console.log("nextData", nextData);
 
   const calculateBarHeight = (value: number) => {
     if (value === 0) return 50;
@@ -110,14 +143,12 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
   const scrollLeft = () => {
     if (currentIndex > 0) {
       setCurrentIndex((prevIndex) => prevIndex - 1);
-      console.log(currentIndex);
     }
   };
 
   const scrollRight = () => {
     if (currentIndex < dailyHours.length - 1) {
       setCurrentIndex((prevIndex) => prevIndex + 1);
-      console.log(currentIndex);
     }
   };
   const returnToMain = () => {
@@ -153,7 +184,10 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
                   : "border-[3px] border-black"
               } ${
                 prevData.hours === 0 &&
-                prevData.date <= new Date().toISOString().split("T")[0]
+                prevData.date <=
+                  toZonedTime(new Date(), MST_TIMEZONE)
+                    .toISOString()
+                    .split("T")[0]
                   ? " "
                   : ""
               }`}
@@ -176,12 +210,18 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
                 </Texts>
                 <Texts size="p4">
                   {prevData.hours === 0 &&
-                  prevData.date <= new Date().toISOString().split("T")[0]
+                  prevData.date <=
+                    toZonedTime(new Date(), MST_TIMEZONE)
+                      .toISOString()
+                      .split("T")[0]
                     ? prevData.hours
                     : ""}
                 </Texts>
                 <Texts size="p4">
-                  {prevData.date <= new Date().toISOString().split("T")[0]
+                  {prevData.date <=
+                  toZonedTime(new Date(), MST_TIMEZONE)
+                    .toISOString()
+                    .split("T")[0]
                     ? `${t("DA-Time-Label")}`
                     : ""}
                 </Texts>
@@ -202,7 +242,10 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
                 : "border-[3px] border-black"
             } ${
               currentData.hours === 0 &&
-              currentData.date <= new Date().toISOString().split("T")[0]
+              currentData.date <=
+                toZonedTime(new Date(), MST_TIMEZONE)
+                  .toISOString()
+                  .split("T")[0]
                 ? " "
                 : ""
             }`}
@@ -225,12 +268,18 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
               </Texts>
               <Texts size="p4">
                 {currentData.hours === 0 &&
-                currentData.date <= new Date().toISOString().split("T")[0]
+                currentData.date <=
+                  toZonedTime(new Date(), MST_TIMEZONE)
+                    .toISOString()
+                    .split("T")[0]
                   ? currentData.hours
                   : ""}
               </Texts>
               <Texts size="p4">
-                {currentData.date <= new Date().toISOString().split("T")[0]
+                {currentData.date <=
+                toZonedTime(new Date(), MST_TIMEZONE)
+                  .toISOString()
+                  .split("T")[0]
                   ? `${t("DA-Time-Label")}`
                   : ""}
               </Texts>
@@ -249,7 +298,10 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
                   : "border-[3px] border-black"
               } ${
                 nextData.hours === 0 &&
-                nextData.date <= new Date().toISOString().split("T")[0]
+                nextData.date <=
+                  toZonedTime(new Date(), MST_TIMEZONE)
+                    .toISOString()
+                    .split("T")[0]
                   ? " "
                   : ""
               }`}
@@ -272,12 +324,18 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
                 </Texts>
                 <Texts size="p4">
                   {nextData.hours === 0 &&
-                  nextData.date <= new Date().toISOString().split("T")[0]
+                  nextData.date <=
+                    toZonedTime(new Date(), MST_TIMEZONE)
+                      .toISOString()
+                      .split("T")[0]
                     ? nextData.hours
                     : ""}
                 </Texts>
                 <Texts size="p4">
-                  {nextData.date <= new Date().toISOString().split("T")[0]
+                  {nextData.date <=
+                  toZonedTime(new Date(), MST_TIMEZONE)
+                    .toISOString()
+                    .split("T")[0]
                     ? `${t("DA-Time-Label")}`
                     : ""}
                 </Texts>

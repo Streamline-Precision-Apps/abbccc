@@ -115,7 +115,7 @@ cookies().set({
 - meet with team and discussed what to have for the meeting
 
 #
-# January 15, 2025 - Wednesday
+# January 16, 2025 - thursday
 ### built/created
 - built a power point to share with company
 - company cancelled weekly meetings
@@ -123,3 +123,50 @@ cookies().set({
 - discussed effective ways to update the application
 - bulit a key for zack to read about engineer view
 
+#
+# January 17, 2025 - friday
+### Meeting 
+- walked through and drafted with Zack (4 hour)
+- cookies guides 
+- why use cookies? 
+- built home routes 
+### Trello
+- update widgets dashboard depending on role and privilege
+
+#
+# January 20, 2025 - Monday
+### Built/created
+- Making Data for a Way that Engineers, tasco, and Truck drivers can clock in (2 hrs)
+- Clock In process made easier and able for Engineers, tasco, general, truck coming soon. (4 hours)
+- debugging hours display (2 hours)
+
+
+### Trello
+- /clock  update base employee select to not show
+- bug in hours view && / - display time to the 10th value to fix space issue
+
+#
+# January 21, 2025 - Tuesday
+### Meeting
+- Zach and I met with Jaxin on exported Data and Time Card integration
+- Sorting Method Take 3 data sheets from assignar and sort them into compiled info
+- insert by employee one at a time into view point
+
+**Reports to add**
+  - Tasco Reports - sort by DATE
+  - Employee Time Sheets - Sort Reports By Employee & Date - Base Data
+  - IFTA, Overweight Report - Sort Reports by Truck and date - extended
+    - IFTA - information Mackenzie Asked for
+    - OverWeight Report - Date, Truck Id, Operator, Equipment, Overweight Amount, Total Mileage
+
+**Things To Follow Up On**
+- Jaxin working on viewpoint imports
+- Jaxin getting Reports
+
+### Built/created
+- hours view update (2 hours)
+
+
+### Trello
+- /clock  update base employee select to not show
+- bug in hours view && / - display time to the 10th value to fix space issue
