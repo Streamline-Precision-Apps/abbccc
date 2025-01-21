@@ -274,7 +274,7 @@
     "Equipment" : "Equipo",
     "EQTotalTime" : "Tiempo Total",
     "NoData": "No se Encontraron Datos",
-    "EquipmentLogs": "Registros de Equipo",
+    "EquipmentLogs": "Registros de Equipo", 
     "PhoneNumber": "Registros de Equipo",
     "Email": "Correo Electrónico",
     "EmergencyContact": "Contacto de Emergencia",
@@ -287,7 +287,7 @@
     "ID": "Id: #"
 },
 "Clock": {
-    "ReturnToPrevShift": "Regresar al Turno Anterior",
+    "ReturnToPrevShift": "Regresar al trabajo anterior",
     "SelectWorkType": "Seleccionar Tipo de Trabajo",
     "PleaseLeaveACommentOfWhatYouDid": "Por favor, deje un comentario de lo que hizo.",
     "TodayIDidTheFollowing": "Hoy, hice lo siguiente...",
@@ -341,6 +341,7 @@
     },
 "ClockOut":{
     "ReviewYourDayDirections": "Revisa tu día a continuación. Si tienes alguna pregunta, por favor, contacta a tu supervisor.",
+    "Now": "Ahora",
     "Current": "Actual",
     "StartTime": "Inicio",
     "EndTime": "Finalización",

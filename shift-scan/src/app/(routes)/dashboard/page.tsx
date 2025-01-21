@@ -20,19 +20,19 @@ export default async function Dashboard() {
     redirect("/signin");
   }
 
-  const user = session.user;
+  // const user = session.user;
   const view = cookies().get("workRole")?.value || "general"; // Default to general view if not set
   // Get the current language from cookies
   // Get the current language from cookies
-  const lang = cookies().get("locale");
-  const locale = lang ? lang.value : "en";
+  // const lang = cookies().get("locale");
+  // const locale = lang ? lang.value : "en";
 
-  const date = new Date().toLocaleDateString(locale, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    weekday: "long",
-  });
+  // const date = new Date().toLocaleDateString(locale, {
+  //   year: "numeric",
+  //   month: "short",
+  //   day: "numeric",
+  //   weekday: "long",
+  // });
 
   return (
     <Bases>
@@ -53,7 +53,7 @@ export default async function Dashboard() {
             </Holds>
           </Holds>
           <Holds className="row-span-1 bg-app-blue bg-opacity-20 w-full pt-2 pb-6 my-2 rounded-[10px]">
-            <BannerRotating/>
+            <BannerRotating />
           </Holds>
           <Holds background={"white"} className="row-span-5 h-full">
             <DbWidgetSection session={session} view={view} />
