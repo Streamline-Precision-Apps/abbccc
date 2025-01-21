@@ -340,6 +340,9 @@
     "Mileage": "Mileage"
     },
 "ClockOut":{
+    "Next": "Siguiente",
+    "ChangeIfNecessary" : "Cambiar si es necesario",
+    "PreviousJobComment": "Comentarios del Trabajo Anterior",
     "ReviewYourDayDirections": "Revisa tu día a continuación. Si tienes alguna pregunta, por favor, contacta a tu supervisor.",
     "Now": "Ahora",
     "Current": "Actual",

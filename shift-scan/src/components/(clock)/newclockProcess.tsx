@@ -21,6 +21,7 @@ import { useRouter } from "next/navigation";
 import { setWorkRole } from "@/actions/cookieActions";
 import MechanicVerificationStep from "./mechanicVerificationStep";
 import TascoVerificationStep from "./tascoVerificationStep";
+import SwitchJobsMultiRoles from "./switchJobsMuiltipleRoles";
 
 type NewClockProcessProps = {
   mechanicView: boolean;
@@ -32,6 +33,7 @@ type NewClockProcessProps = {
   type: string;
   scannerType: string;
   locale: string;
+  currentRole?: string;
 };
 
 export default function NewClockProcess({
@@ -43,12 +45,13 @@ export default function NewClockProcess({
   returnpath,
   option,
   locale,
+  currentRole,
 }: NewClockProcessProps) {
   useFetchAllData(); // Fetch data on mount
 
   // State management
   const [step, setStep] = useState(0);
-  const [clockInRole, setClockInRole] = useState("");
+  const [clockInRole, setClockInRole] = useState(currentRole || "");
   const [comments, setComments] = useState(""); // for trucking
   const t = useTranslations("Clock");
   // Contexts
@@ -57,7 +60,7 @@ export default function NewClockProcess({
   const { truckScanData } = useTruckScanData();
   const { startingMileage } = useStartingMileage();
   const router = useRouter();
-
+  const [numberOfRoles, setNumberOfRoles] = useState(0);
   // Helper functions
   const handleNextStep = () => setStep((prevStep) => prevStep + 1);
 
@@ -106,38 +109,56 @@ export default function NewClockProcess({
   // useEffect to reset step and role on mount/unmount
   useEffect(() => {
     setStep(0);
-    setClockInRole("");
     return () => {
       setStep(0);
-      setClockInRole("");
     };
   }, []);
 
   // useEffect to choose role
   useEffect(() => {
     let role = "";
-    setWorkRole(""); // Reset workRole so that the cokkie is never set for the wrong role
-    if (mechanicView && !laborView && !truckView && !tascoView) {
-      role = "mechanic";
-      setWorkRole(role);
-    } else if (laborView && !mechanicView && !truckView && !tascoView) {
-      role = "general";
-      setWorkRole(role);
-    } else if (truckView && !mechanicView && !laborView && !tascoView) {
-      role = "truck";
-      setWorkRole(role);
-    } else if (tascoView && !mechanicView && laborView && !truckView) {
-      role = "tasco";
-      setWorkRole(role);
-    } else {
-      role = "";
-    }
+    let numberOfRoles = 0;
 
-    setClockInRole(role);
+    if (mechanicView) {
+      numberOfRoles++;
+    }
+    if (laborView) {
+      numberOfRoles++;
+    }
+    if (truckView) {
+      numberOfRoles++;
+    }
+    if (tascoView) {
+      numberOfRoles++;
+    }
+    setNumberOfRoles(numberOfRoles);
+
     if (type === "switchJobs") {
       setStep(0);
     } else {
-      setStep(role === "" ? 0 : 1);
+      setWorkRole(""); // Reset workRole so that the cokkie is never set for the wrong role
+      if (mechanicView && !laborView && !truckView && !tascoView) {
+        role = "mechanic";
+        setWorkRole(role);
+      } else if (laborView && !mechanicView && !truckView && !tascoView) {
+        role = "general";
+        setWorkRole(role);
+      } else if (truckView && !mechanicView && !laborView && !tascoView) {
+        role = "truck";
+        setWorkRole(role);
+      } else if (tascoView && !mechanicView && laborView && !truckView) {
+        role = "tasco";
+        setWorkRole(role);
+      } else {
+        role = "";
+      }
+
+      setClockInRole(role);
+      if (type === "switchJobs") {
+        setStep(0);
+      } else {
+        setStep(role === "" ? 0 : 1);
+      }
     }
   }, [mechanicView, truckView, tascoView, laborView, type]);
 
@@ -214,15 +235,27 @@ step 4 : confirmation page and redirect to dashboard with authorization
       {step === 0 && (
         <>
           <Holds className="h-full w-full pt-5">
-            <MultipleRoles
-              handleNextStep={handleNextStep}
-              setClockInRole={setClockInRole}
-              clockInRole={clockInRole}
-              option={option}
-              handleReturn={handleReturn}
-              type={type}
-              handleReturnPath={handleReturnPath}
-            />
+            {type === "switchJobs" && numberOfRoles > 1 ? (
+              <SwitchJobsMultiRoles
+                handleNextStep={handleNextStep}
+                setClockInRole={setClockInRole}
+                clockInRole={clockInRole}
+                option={option}
+                handleReturn={handleReturn}
+                type={type}
+                handleReturnPath={handleReturnPath}
+              />
+            ) : (
+              <MultipleRoles
+                handleNextStep={handleNextStep}
+                setClockInRole={setClockInRole}
+                clockInRole={clockInRole}
+                option={option}
+                handleReturn={handleReturn}
+                type={type}
+                handleReturnPath={handleReturnPath}
+              />
+            )}
           </Holds>
         </>
       )}

@@ -154,6 +154,7 @@ cookies().set({
 
 **Reports to add**
   - Tasco Reports - sort by DATE
+    - Id, Shift type, Submmitted Date, Employee, Date Worked, Labor Type, Equipment, Loads-ABCDE, Loads-F, Materials, Start Time, End Time, screened or unscreened
   - Employee Time Sheets - Sort Reports By Employee & Date - Base Data
   - IFTA, Overweight Report - Sort Reports by Truck and date - extended
     - IFTA - information Mackenzie Asked for
