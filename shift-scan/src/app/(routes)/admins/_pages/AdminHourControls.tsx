@@ -18,6 +18,8 @@ type ViewComponentProps = {
   dataRangeEnd: string;
   currentDate: string;
 };
+const MST_TIMEZONE = "America/Denver";
+
 export default function AdminHourControls({
   scrollLeft,
   scrollRight,
@@ -26,7 +28,6 @@ export default function AdminHourControls({
   currentDate,
 }: ViewComponentProps) {
   const [locale, setLocale] = useState("en-US"); // Default to 'en-US'
-
   useEffect(() => {
     const localeCookie = getCookieValue("locale");
     if (localeCookie) {
@@ -34,12 +35,12 @@ export default function AdminHourControls({
     }
   }, []);
   const rangeStart = new Date(dataRangeStart).toLocaleDateString(locale, {
-    timeZone: "UTC",
+    timeZone: MST_TIMEZONE,
     month: "short",
     day: "numeric",
   });
   const rangeEnd = new Date(dataRangeEnd).toLocaleDateString(locale, {
-    timeZone: "UTC",
+    timeZone: MST_TIMEZONE,
     month: "short",
     day: "numeric",
   });
@@ -47,20 +48,19 @@ export default function AdminHourControls({
   const t = useTranslations("Home");
   const today = new Date();
   let Weekday = new Date(currentDate).toLocaleDateString(locale, {
-    timeZone: "UTC",
+    timeZone: MST_TIMEZONE,
     weekday: "long",
   });
-
   if (
     Weekday === today.toLocaleDateString(locale, { weekday: "long" }) &&
     new Date(currentDate).toLocaleDateString(locale, {
-      timeZone: "UTC",
+      timeZone: MST_TIMEZONE,
       month: "short",
       day: "numeric",
       year: "numeric",
     }) ===
       new Date(today).toLocaleDateString(locale, {
-        timeZone: "UTC",
+        timeZone: MST_TIMEZONE,
         month: "short",
         day: "numeric",
         year: "numeric",
@@ -69,7 +69,7 @@ export default function AdminHourControls({
     Weekday = `${t("DA-Today")}`;
   }
   const dateToday = new Date(currentDate).toLocaleDateString(locale, {
-    timeZone: "UTC",
+    timeZone: MST_TIMEZONE,
     month: "short",
     day: "numeric",
     year: "numeric",
