@@ -163,7 +163,7 @@ export default function WidgetSection({ session, locale }: Props) {
   }, [payPeriodSheets]);
 
   useEffect(() => {
-    setPayPeriodHours(totalPayPeriodHours.toFixed(2));
+    setPayPeriodHours(totalPayPeriodHours.toFixed(1));
   }, [totalPayPeriodHours, setPayPeriodHours]);
   if (!hydrated)
     return (

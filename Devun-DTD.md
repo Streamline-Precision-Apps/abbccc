@@ -136,7 +136,10 @@ cookies().set({
 #
 # January 20, 2025 - Monday
 ### Built/created
-- Making Data for a Way that Engineers, tasco, and Truck drivers can clock in
+- Making Data for a Way that Engineers, tasco, and Truck drivers can clock in (2 hrs)
+- Clock In process made easier and able for Engineers, tasco, general, truck coming soon. (4 hours)
+
 
 ### Trello
-- 
+- /clock  update base employee select to not show
+- bug in hours view && / - display time to the 10th value to fix space issue

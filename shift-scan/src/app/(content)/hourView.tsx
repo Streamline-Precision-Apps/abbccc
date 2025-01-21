@@ -10,6 +10,8 @@ import { Holds } from "@/components/(reusable)/holds";
 import Capitalize from "@/utils/captitalize";
 import CapitalizeAll from "@/utils/capitalizeAll";
 import { Grids } from "@/components/(reusable)/grids";
+import { toZonedTime } from "date-fns-tz";
+import { format } from "date-fns";
 
 type ViewComponentProps = {
   scrollLeft: () => void;
@@ -17,6 +19,8 @@ type ViewComponentProps = {
   returnToMain: () => void;
   currentDate: string;
 };
+const MST_TIMEZONE = "America/Denver";
+
 export default function ViewComponent({
   scrollLeft,
   scrollRight,
@@ -33,36 +37,36 @@ export default function ViewComponent({
   }, []);
 
   const t = useTranslations("Home");
-  const today = new Date();
-  let Weekday = new Date(currentDate).toLocaleDateString(locale, {
-    timeZone: "UTC",
+
+  // Convert currentDate to MST
+  const zonedCurrentDate = toZonedTime(new Date(currentDate), MST_TIMEZONE); //new Date(currentDate);
+
+  const todayZoned = toZonedTime(new Date(), MST_TIMEZONE);
+
+  console.log("zonedCurrentDate", zonedCurrentDate);
+
+  // Get the weekday name in MST
+  let Weekday = zonedCurrentDate.toLocaleDateString(locale, {
+    timeZone: MST_TIMEZONE,
     weekday: "long",
   });
 
-  if (
-    Weekday ===
-      today.toLocaleDateString(locale, { timeZone: "UTC", weekday: "long" }) &&
-    new Date(currentDate).toLocaleDateString(locale, {
-      timeZone: "UTC",
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    }) ===
-      today.toLocaleDateString(locale, {
-        timeZone: "UTC",
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      })
-  ) {
+  // Check if the current date is today
+  if (zonedCurrentDate.toDateString() === todayZoned.toDateString()) {
     Weekday = `${t("DA-Today")}`;
   }
-  const dateToday = new Date(currentDate).toLocaleDateString(locale, {
-    timeZone: "UTC",
+
+  // Format the date as "Mon, Aug 5, 2024"
+  const dateToday = zonedCurrentDate.toLocaleDateString(locale, {
+    timeZone: MST_TIMEZONE,
     month: "short",
     day: "numeric",
     year: "numeric",
   });
+
+  console.log("Weekday", Weekday);
+  console.log("dateToday", dateToday);
+  console.log("today", todayZoned);
 
   return (
     <Contents width={"section"}>
