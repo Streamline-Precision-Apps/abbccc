@@ -372,10 +372,11 @@
     "LeftIdaho": "Left Idaho?",
     "recentlyUsed" : "Recently Used",
     "CostCode-Label": "Cost Code:",
-    "Submit": "Enviar"
+    "Submit": "Submit"
 },
 "ClockOut":{
     "ReviewYourDayDirections": "Review your day below. If you have any questions, please contact your supervisor.",
+    "Now": "Now",
     "Current": "Current",
     "StartTime": "Start Time",
     "EndTime": "End Time",
