@@ -5,6 +5,7 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
+import { Labels } from "@/components/(reusable)/labels";
 import { Modals } from "@/components/(reusable)/modals";
 import { NModals } from "@/components/(reusable)/newmodals";
 import { TextAreas } from "@/components/(reusable)/textareas";
@@ -34,6 +35,7 @@ export default function ClockOutWidget({
   handleCloseModal: () => void;
 }) {
   const t = useTranslations("Widgets");
+  const c = useTranslations("Clock");
   return (
     <>
       <Holds className="col-span-2 row-span-1 gap-5 h-full">
@@ -55,38 +57,64 @@ export default function ClockOutWidget({
       <NModals
         isOpen={isModal2Open}
         handleClose={() => setIsModal2Open(false)}
-        size={"page"}
+        size={"screen"}
+        background={"takeABreak"}
       >
-        <Holds background={"white"}>
-          <Grids rows={"5"}>
-            <Holds className="row-span-1 h-full">
-              <Texts size={"p1"}>Current Shift Comment</Texts>
+        <Holds background={"white"} className="h-full w-full p-2">
+          <Grids rows={"7"} gap={"5"} className="mb-5 h-full w-full">
+            <Holds className="row-start-1 row-end-2 h-full w-full justify-center">
+              <Grids rows={"1"} cols={"5"} gap={"3"} className=" h-full w-full">
+                <Holds
+                  className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center"
+                  onClick={() => setIsModal2Open(false)}
+                >
+                  <Images
+                    titleImg="/turnBack.svg"
+                    titleImgAlt="back"
+                    position={"left"}
+                  />
+                </Holds>
+              </Grids>
             </Holds>
-            <Holds className="row-span-3 h-full">
-              <TextAreas
-                placeholder="Write a 40 character Comment"
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                rows={9}
-                maxLength={40}
-                style={{ resize: "none" }}
-              />
+
+            <Holds className="row-start-2 row-end-4 h-full w-full justify-center relative">
+              <Holds className="h-full w-[90%] relative">
+                <Labels size={"p4"} htmlFor="comment">
+                  {c("PreviousJobComment")}
+                </Labels>
+                <TextAreas
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  placeholder={c("TodayIDidTheFollowing")}
+                  className="w-full h-full"
+                  maxLength={40}
+                  style={{ resize: "none" }}
+                />
+
+                <Texts
+                  size={"p2"}
+                  className={`${
+                    comment.length === 40
+                      ? "text-red-500 absolute bottom-5 right-2"
+                      : "absolute bottom-5 right-2"
+                  }`}
+                >
+                  {comment.length}/40
+                </Texts>
+              </Holds>
             </Holds>
-            <Holds position={"row"} className="row-span-1 h-full space-x-4">
+
+            <Holds
+              position={"row"}
+              className="row-start-7 row-end-8 h-full space-x-4"
+            >
               <Holds>
                 <Buttons
                   background={"orange"}
                   onClick={() => handleCOButton2()}
+                  className="w-[90%] h-full py-3"
                 >
-                  <Texts size={"p3"}>Submit</Texts>
-                </Buttons>
-              </Holds>
-              <Holds>
-                <Buttons
-                  background={"red"}
-                  onClick={() => setIsModal2Open(false)}
-                >
-                  <Texts size={"p3"}>Cancel</Texts>
+                  <Texts size={"p3"}>{c("Next")}</Texts>
                 </Buttons>
               </Holds>
             </Holds>
