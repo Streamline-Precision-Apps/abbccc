@@ -21,6 +21,8 @@ model Equipment {
     isActive               Boolean         @default(true)
     inUse                  Boolean         @default(false)
     jobsiteId              String? // show location of equipment
+    overWeight             Boolean?        @default(false)
+    currentWeight          Float?          @default(0)
 
     employeeEquipmentLogs EmployeeEquipmentLog[]
     Maintenance           Maintenance[]

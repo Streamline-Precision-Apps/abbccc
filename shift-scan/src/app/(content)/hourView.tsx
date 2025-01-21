@@ -11,7 +11,6 @@ import Capitalize from "@/utils/captitalize";
 import CapitalizeAll from "@/utils/capitalizeAll";
 import { Grids } from "@/components/(reusable)/grids";
 import { toZonedTime } from "date-fns-tz";
-import { format } from "date-fns";
 
 type ViewComponentProps = {
   scrollLeft: () => void;
@@ -43,8 +42,6 @@ export default function ViewComponent({
 
   const todayZoned = toZonedTime(new Date(), MST_TIMEZONE);
 
-  console.log("zonedCurrentDate", zonedCurrentDate);
-
   // Get the weekday name in MST
   let Weekday = zonedCurrentDate.toLocaleDateString(locale, {
     timeZone: MST_TIMEZONE,
@@ -63,10 +60,6 @@ export default function ViewComponent({
     day: "numeric",
     year: "numeric",
   });
-
-  console.log("Weekday", Weekday);
-  console.log("dateToday", dateToday);
-  console.log("today", todayZoned);
 
   return (
     <Contents width={"section"}>
