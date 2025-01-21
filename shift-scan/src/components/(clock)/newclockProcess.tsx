@@ -82,26 +82,26 @@ export default function NewClockProcess({
   };
 
   const handleReturn = () => {
-    const jobsite = localStorage.getItem("jobSite");
-    const costCode = localStorage.getItem("costCode");
-    const clockInRoleRes = localStorage.getItem("clockInRole") || clockInRole;
-
-    if (jobsite && costCode && clockInRole === "general") {
-      setClockInRole(clockInRoleRes || "");
+    const clockInRole = localStorage.getItem("clockInRole") || "";
+    const jobsite = localStorage.getItem("jobSite") || "";
+    const costCode = localStorage.getItem("costCode") || "";
+    // because I have seperate routes for each role
+    // I dont need to specify the role except to set the step
+    try {
       setScanResult({ data: jobsite });
       setCostCode(costCode);
       setAuthStep("success");
-      setStep(4);
-    } else if (jobsite && costCode && clockInRole === "truck") {
-      setClockInRole(clockInRoleRes || "");
-      setScanResult({ data: jobsite });
-      setCostCode(costCode);
-      setAuthStep("success");
-      setStep(3);
-    } else {
-      setStep(0);
+      setClockInRole(clockInRole);
+      if (clockInRole === "general") {
+        setStep(5);
+      } else {
+        setStep(4);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
+
   const handleReturnPath = () => {
     return router.push(returnpath);
   };
@@ -133,8 +133,12 @@ export default function NewClockProcess({
     }
     setNumberOfRoles(numberOfRoles);
 
-    // If switch jobs, reset step else choose role
+    // If switch jobs, reset step
     if (type === "switchJobs") {
+      setStep(0);
+    }
+    // If break, reset step
+    else if (option === "break") {
       setStep(0);
     }
     // If not switch jobs, choose role
@@ -158,7 +162,7 @@ export default function NewClockProcess({
       setClockInRole(role); // Set role
       setStep(role === "" ? 0 : 1);
     }
-  }, [mechanicView, truckView, tascoView, laborView, type]);
+  }, [mechanicView, truckView, tascoView, laborView, type, option]);
 
   useEffect(() => {
     console.log("step", step);
