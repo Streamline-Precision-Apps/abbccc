@@ -135,6 +135,84 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
       connect: [], // No equipment are linked initially
     },
   },
+  {
+    qrId: "TASCO",
+    name: "Tasco Jobsite",
+    description: "Tasco Jobsite",
+    address: "123 Main St",
+    city: "City",
+    state: "State",
+    zipCode: "12345",
+    country: "Country",
+    comment: "Comments for Jobsite 1",
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    employeeEquipmentLogs: {
+      connect: [], // No employeeEquipmentLogs are linked initially
+    },
+    timeSheets: {
+      connect: [], // No timeSheets are linked initially
+    },
+    CCTags: {
+      connect: [], // No CCTags are linked initially
+    },
+    equipment: {
+      connect: [], // No equipment are linked initially
+    },
+  },
+  {
+    qrId: "MECHANIC",
+    name: "Mechanic Jobsite",
+    description: "Mechanic Jobsite",
+    address: "123 Main St",
+    city: "City",
+    state: "State",
+    zipCode: "12345",
+    country: "Country",
+    comment: "Comment for Mechanic Jobsite",
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    employeeEquipmentLogs: {
+      connect: [], // No employeeEquipmentLogs are linked initially
+    },
+    timeSheets: {
+      connect: [], // No timeSheets are linked initially
+    },
+    CCTags: {
+      connect: [], // No CCTags are linked initially
+    },
+    equipment: {
+      connect: [], // No equipment are linked initially
+    },
+  },
+  {
+    qrId: "TRUCK",
+    name: "Truck Jobsite",
+    description: "Truck Jobsite",
+    address: "123 Main St",
+    city: "City",
+    state: "State",
+    zipCode: "12345",
+    country: "Country",
+    comment: "Comment for Truck Jobsite",
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    employeeEquipmentLogs: {
+      connect: [], // No employeeEquipmentLogs are linked initially
+    },
+    timeSheets: {
+      connect: [], // No timeSheets are linked initially
+    },
+    CCTags: {
+      connect: [], // No CCTags are linked initially
+    },
+    equipment: {
+      connect: [], // No equipment are linked initially
+    },
+  },
 ];
 
 // intaializing crew
@@ -509,6 +587,36 @@ export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
       connect: [], // No CCTags are linked initially
     },
   },
+  {
+    id: "14",
+    name: "Truck Role", // Truck Driver cost code for clock in value not important
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    description: "Truck Driver",
+    CCTags: {
+      connect: [], // No CCTags are linked initially
+    },
+  },
+  {
+    id: "15",
+    name: "Mechanic Role", // Mechanic cost code for clock in value not important
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    description: "Mechanic",
+    CCTags: {
+      connect: [], // No CCTags are linked initially
+    },
+  },
+  {
+    id: "16",
+    name: "TASCO Role", // TASCO cost code for clock in value not important
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    description: "TASCO",
+    CCTags: {
+      connect: [], // No CCTags are linked initially
+    },
+  },
 ];
 
 export const initialCCTags: Prisma.CCTagCreateInput[] = [
@@ -521,6 +629,9 @@ export const initialCCTags: Prisma.CCTagCreateInput[] = [
         { qrId: "j345" },
         { qrId: "j456" },
         { qrId: "j567" },
+        { qrId: "TRUCK" },
+        { qrId: "MECHANIC" },
+        { qrId: "TASCO" },
       ],
     },
     costCodes: {

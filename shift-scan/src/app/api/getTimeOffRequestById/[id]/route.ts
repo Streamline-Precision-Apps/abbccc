@@ -19,7 +19,7 @@ export async function GET(
     // Fetch sent requests based on `id` and `userId`
     const sentContent = await prisma.timeOffRequestForm.findUnique({
       where: {
-        id: Number(id),
+        id,
       },
       include: {
         employee: {
