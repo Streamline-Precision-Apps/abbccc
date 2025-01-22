@@ -308,6 +308,16 @@
     "ID": "Id: #"
 },
 "Clock": {
+    "Next": "Next",
+    "Title-jobsite-tasco": "Select Job Site",
+    "search-jobsite-tasco": "Search Job Site",
+    "Title-jobsite-mechanic": "Select Job Site",
+    "search-jobsite-mechanic": "Search Job Site",
+    "Title-jobsite-truck": "Select Job Site",
+    "ChangeIfNecessary" : "Change if necessary",
+    "PreviousJobComment": "Previous Job Comments",
+    "SelectWorkType": "Select Work Type",
+    "ScanJobSite": "Scan Jobsite",
     "PleaseLeaveACommentOfWhatYouDid": "Please leave a comment of what you did.",
     "TodayIDidTheFollowing": "Today I did the following...",
     "General": "General",
@@ -315,7 +325,7 @@
     "Mechanic": "Mechanic",
     "TASCO": "TASCO",
     "PleaseChooseYourRole": "Please choose your role:",
-    "ChangeJobsite": "Change Jobsite",
+    "ChangeJobsite": "Change Jobsite", 
     "ChangeCostCode": "Change Cost Code",
     "ScanJobSiteOrTruck": "Scan Job Site or Truck",
     "SwitchSites": "Switch Sites",
@@ -340,7 +350,8 @@
     "ScanQR": "Scan QR Code",
     "ScanEquipment": "Scan Equipment",
     "Cancel": "Cancel",
-    "ReturnToJobsite": "Return to Previous Role and Jobsite?",
+    "ReturnToJobsite": "Same Jobsite",
+    "ReturnToPrevShift": "Continue Previous Work",
     "VerifyEquipment": "Verify Equipment",
     "Equipment-label": "Equipment Found",
     "ClockIn-btn": "Clock In",
@@ -369,10 +380,11 @@
     "LeftIdaho": "Left Idaho?",
     "recentlyUsed" : "Recently Used",
     "CostCode-Label": "Cost Code:",
-    "Submit": "Enviar"
+    "Submit": "Submit"
 },
 "ClockOut":{
     "ReviewYourDayDirections": "Review your day below. If you have any questions, please contact your supervisor.",
+    "Now": "Now",
     "Current": "Current",
     "StartTime": "Start Time",
     "EndTime": "End Time",

@@ -18,7 +18,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { z } from "zod";
-import { calculateDuration } from "@/utils/calculateDuration";
+// import { calculateDuration } from "@/utils/calculateDuration";
 import { Titles } from "@/components/(reusable)/titles";
 import SelectWtihRevert from "@/components/(reusable)/selectWithRevert";
 import TextInputWithRevert from "@/components/(reusable)/textInputWithRevert";
@@ -50,7 +50,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
   const t = useTranslations("Equipment");
   const [isLoading, setIsLoading] = useState(true);
   const [refueled, setRefueled] = useState(false);
-  const [editTime, setEditTime] = useState(false);
+  // const [editTime, setEditTime] = useState(false);
 
   const [formState, setFormState] = useState({
     id: "",
@@ -119,7 +119,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
   //   setFormState((prevState) => {
   //     const newState = { ...prevState as EquipmentLog };
   //     const keys = fieldName.split(".");
-  
+
   //     let current = newState;
   //     for (let i = 0; i < keys.length - 1; i++) {
   //       if (!current[keys[i]]) {
@@ -127,13 +127,16 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
   //       }
   //       current = current[keys[i]];
   //     }
-  
+
   //     current[keys[keys.length - 1]] = value;
   //     return newState;
   //   });
   // };
 
-  const handleFieldChange = (field: string, value: string | number | boolean | FormStatus | EquipmentStatus) => {
+  const handleFieldChange = (
+    field: string,
+    value: string | number | boolean | FormStatus | EquipmentStatus
+  ) => {
     if (field === "Equipment.status") {
       setFormState((prev) => ({
         ...prev,
@@ -141,16 +144,16 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
           ...prev.Equipment,
           status: value as EquipmentStatus,
         },
-      }))
+      }));
     } else {
-    setFormState((prev) => ({
-      ...prev,
-      [field]: value,
-      }
-    ));
-    console.log("Field changed:", field);
-    console.log("Value:", value);
-  }};
+      setFormState((prev) => ({
+        ...prev,
+        [field]: value,
+      }));
+      console.log("Field changed:", field);
+      console.log("Value:", value);
+    }
+  };
 
   const handleChangeRefueled = () => {
     setRefueled((prev) => !prev);
@@ -162,9 +165,13 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
       Object.entries(formState).forEach(([key, value]) => {
         if (key === "Equipment") {
         } else {
-        formData.append(key, String(value));
-      }});
-      formData.set("Equipment.status", formState.Equipment.status || EquipmentStatus.OPERATIONAL);
+          formData.append(key, String(value));
+        }
+      });
+      formData.set(
+        "Equipment.status",
+        formState.Equipment.status || EquipmentStatus.OPERATIONAL
+      );
       console.log("Form Data: ", formData);
       await updateEmployeeEquipmentLog(formData);
       setNotification(t("Saved"), "success");
@@ -310,7 +317,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
 
           <Holds background={"white"} className="row-span-5 h-full">
             <Contents width={"section"}>
-              <Holds position={"row"} className="row-span-1 my-4">
+              {/* <Holds position={"row"} className="row-span-1 my-4">
                 <SelectWtihRevert
                   label={t("LogStatus")}
                   options={[
@@ -323,7 +330,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                   defaultValue={originalState.status}
                   showAsterisk
                 />
-              </Holds>
+              </Holds> */}
 
               {/* Status Section */}
               <Holds position={"row"} className="row-span-1 my-4">
@@ -339,7 +346,9 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                   ]}
                   size="large"
                   value={formState.Equipment.status || ""}
-                  onChange={(value) => handleFieldChange("Equipment.status", value)}
+                  onChange={(value) =>
+                    handleFieldChange("Equipment.status", value)
+                  }
                   defaultValue={originalState.Equipment.status || ""}
                   showAsterisk
                 />

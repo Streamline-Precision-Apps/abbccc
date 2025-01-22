@@ -4,10 +4,8 @@ import { useTranslations } from "next-intl";
 import { useEQScanData } from "@/app/context/equipmentContext";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { CreateEmployeeEquipmentLog } from "@/actions/equipmentActions";
-import { Titles } from "../(reusable)/titles";
 import { Forms } from "../(reusable)/forms";
 import { Contents } from "../(reusable)/contents";
-import { Buttons } from "../(reusable)/buttons";
 import { TextAreas } from "../(reusable)/textareas";
 import { Labels } from "../(reusable)/labels";
 import { Inputs } from "../(reusable)/inputs";
@@ -140,10 +138,7 @@ const VerificationEQStep: React.FC<VerifyProcessProps> = ({
                   </Holds>
                   <Holds size={"full"} className=" h-full row-span-1 ">
                     <Holds size={"80"} className="">
-                      <button
-                        type="submit"
-                        className="my-auto"
-                      >
+                      <button type="submit" className="my-auto">
                         {/* <Titles>{t("Next-btn")}</Titles> */}
                         <Images
                           titleImg="/equipmentSubmit.png"

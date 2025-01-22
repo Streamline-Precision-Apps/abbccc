@@ -7,7 +7,7 @@ model TimeSheet {
     jobsiteId             String // this will need to store options for jobsites, truck driver jobsite,
     costcode              String // this is for tracking cost amounts in company
     nu                    String                 @default("nu") // non union {} default
-    Fp                    String                 @default("fp") // field personal
+    Fp                    String                 @default("fp") // field personal, dwb, , 
     startTime             DateTime
     endTime               DateTime?
     comment               String? // comment for reporting what they did for that time sheet
@@ -25,7 +25,7 @@ model TimeSheet {
     employeeEquipmentLogs EmployeeEquipmentLog[]
     user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
     jobsite               Jobsite                @relation(fields: [jobsiteId], references: [qrId])
-    costCode              CostCode               @relation(fields: [costcode], references: [id])
+    costCode              CostCode               @relation(fields: [costcode], references: [name])
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
@@ -71,6 +71,7 @@ model Maintenance {
 model TascoLog {
     id           String     @id @default(uuid())
     timeSheetId  String // link to timesheet
+    costcode     String? // in case they do manual labor its here
     shiftType    String // Tasco task
     startTime    DateTime
     endTime      DateTime?
@@ -88,14 +89,15 @@ model TascoLog {
     // connections to other tables
     equipment Equipment? @relation(fields: [equipmentId], references: [id])
     timeSheet TimeSheet? @relation(fields: [timeSheetId], references: [id])
+    costCode  CostCode?  @relation(fields: [costcode], references: [name])
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
 // logs to keep track of what each truckDriver has done.
 model TruckingLog {
     id                String    @id @default(uuid())
-    truckingCCId      String
     truckingJobSiteId String
+    truckingCostCode  String? // in case they do manual labor its here
     taskName          String? // auto default to drive or operator
     equipmentId       String? // this is the equipment id vehicle id
     timeSheetId       String?
@@ -115,7 +117,7 @@ model TruckingLog {
     equipment Equipment? @relation(fields: [equipmentId], references: [id])
     timeSheet TimeSheet? @relation(fields: [timeSheetId], references: [id])
     Jobsite   Jobsite?   @relation(fields: [truckingJobSiteId], references: [id])
-    CostCode  CostCode?  @relation(fields: [truckingCCId], references: [id])
+    CostCode  CostCode?  @relation(fields: [truckingCostCode], references: [id])
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
@@ -125,7 +127,7 @@ model TruckingLog {
 model StateMileage {
     id               String   @id @default(uuid())
     truckingLogId    String
-    state            String
+    state            String // this is the state being crossed
     stateLineMileage Int
     createdAt        DateTime @default(now())
 
@@ -134,11 +136,12 @@ model StateMileage {
 
 //--------------------------------------------------------------------------------------------------------------------------------
 model Material {
-    id            String   @id @default(uuid())
-    truckingLogId String
-    name          String
-    // quantity       Int?  //potential to show quantity of material later
-    createdAt     DateTime @default(now())
+    id                 String   @id @default(uuid())
+    LocationOfMaterial String?
+    truckingLogId      String
+    name               String
+    quantity           Int? //potential to show quantity of material later
+    createdAt          DateTime @default(now())
 
     truckingLog TruckingLog? @relation(fields: [truckingLogId], references: [id])
 }
