@@ -34,7 +34,7 @@ export default function Hours({ setToggle, display, loading }: HoursProps) {
               </Texts>
             </Holds>
             <Holds background={"white"} className="py-1 w-[40%]">
-              <Spinner size={30} />
+              <Spinner size={20} />
             </Holds>
           </Holds>
         </Contents>
