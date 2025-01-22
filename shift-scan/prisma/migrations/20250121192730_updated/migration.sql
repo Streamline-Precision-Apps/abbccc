@@ -80,6 +80,8 @@ CREATE TABLE "Equipment" (
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "inUse" BOOLEAN NOT NULL DEFAULT false,
     "jobsiteId" TEXT,
+    "overWeight" BOOLEAN DEFAULT false,
+    "currentWeight" DOUBLE PRECISION DEFAULT 0,
 
     CONSTRAINT "Equipment_pkey" PRIMARY KEY ("id")
 );

@@ -8,13 +8,27 @@
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "project": ["**/tsconfig.json"],
     "sourceType": "module",
     "ecmaVersion": "latest"
   },
   "overrides": [
     {
-      "files": ["**/*.js", "**/*.jsx"],  // Add this override for JS/JSX files
+      "files": ["**/*.ts", "**/*.tsx"],  // Add this override for TS/TSX files
+      "parserOptions": {
+        "project": ["**/tsconfig.json"]
+      },
+      "rules": {
+        "@typescript-eslint/no-unused-vars": "off",  // Turn off TypeScript-specific rules
+        "@typescript-eslint/no-var-requires": "off"
+      }
+    },
+    {
+      "files": ["**/*.js", "**/*.jsx", "**/*.mjs"],  // Add this override for JS/JSX files
+      "parser": "espree", // Default ESLint parser for JavaScript
+      "parserOptions": {
+        "sourceType": "module",
+        "ecmaVersion": "latest"
+      },
       "rules": {
         "@typescript-eslint/no-unused-vars": "off",  // Turn off TypeScript-specific rules
         "@typescript-eslint/no-var-requires": "off"

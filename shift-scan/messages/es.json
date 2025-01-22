@@ -287,6 +287,11 @@
     "ID": "Id: #"
 },
 "Clock": {
+    "Title-jobsite-tasco": "Seleccionar sitio de trabajo",
+    "search-jobsite-tasco": "Buscar Sitio de Trabajo",
+    "Title-jobsite-mechanic": "Seleccionar sitio de trabajo",
+    "search-jobsite-mechanic": "Buscar Sitio de Trabajo",
+    "Title-jobsite-truck": "Seleccionar sitio de trabajo",
     "ReturnToPrevShift": "Regresar al trabajo anterior",
     "SelectWorkType": "Seleccionar Tipo de Trabajo",
     "PleaseLeaveACommentOfWhatYouDid": "Por favor, deje un comentario de lo que hizo.",
@@ -340,6 +345,9 @@
     "Mileage": "Mileage"
     },
 "ClockOut":{
+    "Next": "Siguiente",
+    "ChangeIfNecessary" : "Cambiar si es necesario",
+    "PreviousJobComment": "Comentarios del Trabajo Anterior",
     "ReviewYourDayDirections": "Revisa tu día a continuación. Si tienes alguna pregunta, por favor, contacta a tu supervisor.",
     "Now": "Ahora",
     "Current": "Actual",
