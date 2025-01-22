@@ -308,6 +308,14 @@
     "ID": "Id: #"
 },
 "Clock": {
+    "Next": "Next",
+    "Title-jobsite-tasco": "Select Job Site",
+    "search-jobsite-tasco": "Search Job Site",
+    "Title-jobsite-mechanic": "Select Job Site",
+    "search-jobsite-mechanic": "Search Job Site",
+    "Title-jobsite-truck": "Select Job Site",
+    "ChangeIfNecessary" : "Change if necessary",
+    "PreviousJobComment": "Previous Job Comments",
     "SelectWorkType": "Select Work Type",
     "ScanJobSite": "Scan Jobsite",
     "PleaseLeaveACommentOfWhatYouDid": "Please leave a comment of what you did.",

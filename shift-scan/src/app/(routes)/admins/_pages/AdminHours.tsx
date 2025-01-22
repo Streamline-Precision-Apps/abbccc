@@ -94,14 +94,15 @@ export default function AdminHours() {
   }, [calculateDailyHours]);
 
   useEffect(() => {
-    const today = toZonedTime(
-      new Date().toISOString().split("T")[0],
-      MST_TIMEZONE
-    ).toString(); // get today's date in MST
-
+    const today = toZonedTime(new Date(), MST_TIMEZONE); // get today in MST
+    today.setHours(0, 0, 0, 0).toString(); // set hours to 0 to match the date key
+    console.log("Today", today);
     const todayIndex = dailyHours.findIndex(
-      (entry) => entry.date === today.toString()
+      (entry) =>
+        toZonedTime(new Date(entry.date), MST_TIMEZONE).toString() ===
+        today.toString()
     );
+    console.log("todayIndex", todayIndex);
     if (todayIndex !== -1) {
       setCurrentIndex(todayIndex);
     }
