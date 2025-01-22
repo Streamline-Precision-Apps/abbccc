@@ -27,11 +27,31 @@ export const SavedCostCodeProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   // creates a state for the savedCostCode
   const [costcode, setCostCode] = useState<string | null>(null);
+
+  useEffect(() => {
+    const initializeCostCode = async () => {
+      try {
+        // Fetch cookie data once during initialization
+        const previousCostCode = await fetch(
+          "/api/cookies?method=get&name=costCode"
+        ).then((res) => res.json());
+
+        if (previousCostCode && previousCostCode !== "") {
+          setCostCode(previousCostCode);
+        }
+      } catch (error) {
+        console.error("Error fetching job site cookie:", error);
+      }
+    };
+
+    initializeCostCode();
+  }, []); // Run only on mount
+
   // when the provider is called it will return the value below
   useEffect(() => {
     const savedCostCode = async () => {
       try {
-        setCostCodeCookie(costcode || "");
+        if (costcode !== "") setCostCodeCookie(costcode || "");
       } catch (error) {
         console.error(error);
       }

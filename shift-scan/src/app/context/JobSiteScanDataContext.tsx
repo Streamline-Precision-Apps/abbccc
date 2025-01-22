@@ -27,16 +27,39 @@ export const ScanDataProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
+
   useEffect(() => {
-    const savedJobSite = async () => {
+    const initializeJobSite = async () => {
       try {
-        setJobSite(scanResult?.data || "");
+        // Fetch cookie data once during initialization
+        const previousJobsite = await fetch(
+          "/api/cookies?method=get&name=jobSite"
+        ).then((res) => res.json());
+
+        if (previousJobsite && previousJobsite !== "") {
+          setScanResult({ data: previousJobsite });
+        }
       } catch (error) {
-        console.error(error);
+        console.error("Error fetching job site cookie:", error);
       }
     };
-    savedJobSite();
-  }, [scanResult?.data]);
+
+    initializeJobSite();
+  }, []); // Run only on mount
+
+  useEffect(() => {
+    const saveJobSite = async () => {
+      try {
+        if (scanResult?.data && scanResult.data !== "") {
+          await setJobSite(scanResult.data); // Set the cookie if scanResult changes
+        }
+      } catch (error) {
+        console.error("Error setting job site cookie:", error);
+      }
+    };
+
+    saveJobSite();
+  }, [scanResult]); // Run whenever scanResult changes
   return (
     <ScanDataContext.Provider value={{ scanResult, setScanResult }}>
       {children}

@@ -52,7 +52,6 @@ export default function QRStep({
   const selectView = (clockInRole: string) => {
     setClockInRole && setClockInRole(clockInRole);
     setWorkRole(clockInRole);
-    localStorage.setItem("clockInRole", clockInRole);
   };
 
   useEffect(() => {

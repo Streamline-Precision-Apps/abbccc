@@ -10,7 +10,6 @@ import {
   updateTimeSheetBySwitch,
 } from "@/actions/timeSheetActions";
 import { Clock } from "../clock";
-import { setAuthStep } from "@/app/api/auth";
 import { TitleBoxes } from "../(reusable)/titleBoxes";
 import { Buttons } from "../(reusable)/buttons";
 import { Contents } from "../(reusable)/contents";
@@ -96,7 +95,7 @@ export default function VerificationStep({
           const response = await CreateTimeSheet(formData);
           const result = { id: response.id.toString() };
           setTimeSheetData(result);
-          setAuthStep("success");
+
           localStorage.setItem("workType", response.workType);
 
           if (handleNextStep) {
@@ -127,7 +126,7 @@ export default function VerificationStep({
         const response = await CreateTimeSheet(formData);
         const result = { id: response.id.toString() };
         setTimeSheetData(result);
-        setAuthStep("success");
+
         setCurrentPageView("dashboard");
 
         if (handleNextStep) {

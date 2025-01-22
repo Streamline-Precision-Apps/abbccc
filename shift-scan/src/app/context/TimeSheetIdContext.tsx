@@ -33,7 +33,10 @@ export const TimeSheetDataProvider: React.FC<{ children: ReactNode }> = ({
   useEffect(() => {
     const savedTimeSheet = async () => {
       try {
-        setPrevTimeSheet(savedTimeSheetData?.id || "");
+        const prevTimeSheet = await fetch("/api/getRecentTimecard");
+        const data = await prevTimeSheet.json();
+        setPrevTimeSheet(data.id);
+        setTimeSheetData(data);
       } catch (error) {
         console.error(error);
       }
