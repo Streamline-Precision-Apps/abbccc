@@ -1,9 +1,7 @@
 "use client";
-import React, { ChangeEvent, use, useEffect } from "react";
+import React, { ChangeEvent, useEffect } from "react";
 import { Images } from "../(reusable)/images";
 import { Holds } from "../(reusable)/holds";
-import { Buttons } from "../(reusable)/buttons";
-import { set } from "zod";
 
 // defines the searchbar type for typescript
 type SearchBarProps = {
@@ -22,7 +20,6 @@ export default function SearchBar({
   onSearchChange,
   placeholder,
   selected,
-  setSearchTerm,
   setSelectedTerm,
   clearSelection,
 }: SearchBarProps) {
@@ -33,7 +30,7 @@ export default function SearchBar({
       // Clear selection when the search term is erased
       clearSelection();
     }
-  }, [searchTerm, setSelectedTerm, clearSelection]);
+  }, [searchTerm, setSelectedTerm, clearSelection, previousTermLength]);
   return (
     <Holds
       position={"row"}

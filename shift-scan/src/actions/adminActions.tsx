@@ -79,7 +79,7 @@ export async function UpdateLeaveRequest(formData: FormData) {
   try {
     console.log("Updating leave request...");
     console.log(formData);
-    const id = parseInt(formData.get("id") as string);
+    const id = formData.get("id") as string;
     const status = formData.get("status") as string;
     const decidedBy = formData.get("decidedBy") as string;
     let enumStatus = FormStatus.PENDING;
