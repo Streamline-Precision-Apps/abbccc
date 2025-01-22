@@ -145,7 +145,7 @@ export async function setCostCode(costCode: string) {
   }
 }
 
-export async function setTimeSheet(timeSheetId: string) {
+export async function setPrevTimeSheet(timeSheetId: string) {
   const session = await auth();
   // Check if the user is authenticated
   if (!session) {
