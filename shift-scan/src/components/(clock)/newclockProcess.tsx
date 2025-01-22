@@ -4,7 +4,6 @@ import { Holds } from "../(reusable)/holds";
 import MultipleRoles from "./multipleRoles";
 import QRStep from "./qr-handler";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
-import { setAuthStep } from "@/app/api/auth";
 import CodeStep from "./code-step";
 import VerificationStep from "./verification-step";
 import { useTruckScanData } from "@/app/context/TruckScanDataContext";
@@ -21,17 +20,6 @@ import MechanicVerificationStep from "./mechanicVerificationStep";
 import TascoVerificationStep from "./tascoVerificationStep";
 import SwitchJobsMultiRoles from "./switchJobsMuiltipleRoles";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
-import {
-  useDBCostcode,
-  useDBEquipment,
-  useDBJobsite,
-} from "@/app/context/dbCodeContext";
-import {
-  useRecentDBCostcode,
-  useRecentDBEquipment,
-  useRecentDBJobsite,
-} from "@/app/context/dbRecentCodesContext";
-import { useDBCompleteEquipmentList } from "@/app/context/dbCompleteEquipmentList";
 
 type NewClockProcessProps = {
   mechanicView: boolean;
