@@ -106,8 +106,11 @@ export default function ClockOutContent() {
     try {
       setIsSubmitting(true);
       hasSubmitted.current = true;
-
+      const tId = await fetch("/api/cookies?method=get&name=timeSheetId").then(
+        (res) => res.json()
+      );
       const formData = new FormData(formRef.current as HTMLFormElement);
+      formData.append("id", tId?.toString() || ""); //temp solution
       await updateTimeSheet(formData);
       localStorage.clear();
       setTruckScanData("");
