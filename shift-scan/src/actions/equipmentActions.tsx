@@ -2,7 +2,6 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { EquipmentTags, EquipmentStatus } from "@/lib/types";
-import { FormStatus } from "@prisma/client";
 
 export async function equipmentTagExists(id: string) {
   try {
@@ -252,10 +251,14 @@ export async function CreateEmployeeEquipmentLog(formData: FormData) {
       data: {
         employeeId,
         equipmentId: equipment.id,
-        
+
         jobsiteId,
-        startTime: formData.get("startTime") ? new Date(formData.get("startTime") as string) : null,
-        endTime: formData.get("endTime") ? new Date(formData.get("endTime") as string) : null,
+        startTime: formData.get("startTime")
+          ? new Date(formData.get("startTime") as string)
+          : null,
+        endTime: formData.get("endTime")
+          ? new Date(formData.get("endTime") as string)
+          : null,
         comment: formData.get("comment") as string,
         isSubmitted: false, // default to false as per schema
         status: "PENDING", // default status
@@ -269,7 +272,9 @@ export async function CreateEmployeeEquipmentLog(formData: FormData) {
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.error("Error creating employee equipment log:", error);
-      throw new Error(`Failed to create employee equipment log: ${error.message}`);
+      throw new Error(
+        `Failed to create employee equipment log: ${error.message}`
+      );
     } else {
       console.error("An unknown error occurred:", error);
       throw error;

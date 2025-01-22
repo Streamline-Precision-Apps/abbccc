@@ -1,11 +1,10 @@
 "use client";
-import React, { useEffect } from "react";
+import React from "react";
 import "@/app/globals.css";
 import { useTranslations } from "next-intl";
 import { Holds } from "../(reusable)/holds";
 import { Texts } from "../(reusable)/texts";
 import { Buttons } from "../(reusable)/buttons";
-import { set } from "zod";
 
 type Option = {
   code: string;
