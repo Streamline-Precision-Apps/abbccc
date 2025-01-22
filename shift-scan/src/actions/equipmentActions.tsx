@@ -267,8 +267,6 @@ export async function CreateEmployeeEquipmentLog(formData: FormData) {
 
     // Revalidate the path to update any dependent front-end views
     revalidatePath("/");
-
-    return log;
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.error("Error creating employee equipment log:", error);
@@ -311,7 +309,6 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
     console.log(log);
     revalidatePath("dashboard/equipment/" + id);
     revalidatePath("/dashboard/equipment");
-    return log;
   } catch (error) {
     console.error("Error updating employee equipment log:", error);
     throw new Error(`Failed to update employee equipment log: ${error}`);
@@ -349,7 +346,6 @@ export async function updateEquipment(formData: FormData) {
     });
     revalidatePath("/admin/assets");
     console.log(log);
-    return log;
   } catch (error) {
     console.error("Error updating employee equipment log:", error);
   }
@@ -372,7 +368,7 @@ export async function updateEquipmentID(formData: FormData) {
   }
 }
 
-export async function Submit(formData: FormData) {
+export async function UpdateSubmit(formData: FormData) {
   try {
     console.log("Sever action formData: ", formData);
     const id = formData.get("id") as string;
@@ -389,7 +385,6 @@ export async function Submit(formData: FormData) {
 
     // Revalidate the path to reflect changes
     revalidatePath("/dashboard/equipment");
-    return logs;
   } catch (error) {
     console.error("Error updating employee equipment log:", error);
     throw new Error(`Failed to update employee equipment log: ${error}`);

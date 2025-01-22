@@ -1,7 +1,7 @@
 "use client";
 
 import { Buttons } from "@/components/(reusable)/buttons";
-import { Submit } from "@/actions/equipmentActions";
+import { UpdateSubmit } from "@/actions/equipmentActions";
 import { useTranslations } from "next-intl";
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
@@ -39,7 +39,6 @@ import { Bases } from "@/components/(reusable)/bases";
 import { useSession } from "next-auth/react";
 
 export default function EquipmentLogContent() {
-
   const { data: session } = useSession();
   const userId = session?.user?.id;
   const Router = useRouter();
@@ -49,7 +48,9 @@ export default function EquipmentLogContent() {
   const t = useTranslations("Equipment");
   const b = useTranslations("Widgets");
   const total = logs.length;
-  const completed = logs.filter((log) => log.status === FormStatus.APPROVED).length;
+  const completed = logs.filter(
+    (log) => log.status === FormStatus.APPROVED
+  ).length;
   const green = total - completed;
 
   useEffect(() => {
@@ -62,7 +63,7 @@ export default function EquipmentLogContent() {
 
           // Validate fetched data with Zod
           // try {
-            // LogsArraySchema.parse(data);
+          // LogsArraySchema.parse(data);
           // } catch (error) {
           //   if (error instanceof z.ZodError) {
           //     console.error("Validation error in fetched logs:", error.errors);
@@ -172,7 +173,9 @@ export default function EquipmentLogContent() {
                   <Holds key={log.id} className="pb-5">
                     <Buttons
                       size={"80"}
-                      background={log.status === FormStatus.APPROVED ? "green" : "orange"}
+                      background={
+                        log.status === FormStatus.APPROVED ? "green" : "orange"
+                      }
                       href={`/dashboard/equipment/${log.id}`}
                       key={log.id}
                       className="py-2"
@@ -184,29 +187,29 @@ export default function EquipmentLogContent() {
               </Holds>
             </Contents>
           </Holds>
-              <Holds className="mt-5">
-                {green === 0 && total !== 0 ? (
-                  <Forms action={Submit} onSubmit={handleSubmit}>
-                    <Holds>
-                      <Buttons
-                        size={"30"}
-                        type="submit"
-                        background={"lightBlue"}
-                        className="py-2 mx-auto"
-                        href={`/dashboard/equipment`}
-                      >
-                        {b("SubmitAll")}
-                      </Buttons>
-                      <Inputs type="hidden" name="id" value={userId} />
-                      <Inputs type="hidden" name="submitted" value={"true"} />
-                    </Holds>
-                  </Forms>
-                ) : (
-                  <Buttons size={"30"} disabled className="bg-gray-400 py-2">
+          <Holds className="mt-5">
+            {green === 0 && total !== 0 ? (
+              <Forms action={UpdateSubmit} onSubmit={handleSubmit}>
+                <Holds>
+                  <Buttons
+                    size={"30"}
+                    type="submit"
+                    background={"lightBlue"}
+                    className="py-2 mx-auto"
+                    href={`/dashboard/equipment`}
+                  >
                     {b("SubmitAll")}
                   </Buttons>
-                )}
-              </Holds>
+                  <Inputs type="hidden" name="id" value={userId} />
+                  <Inputs type="hidden" name="submitted" value={"true"} />
+                </Holds>
+              </Forms>
+            ) : (
+              <Buttons size={"30"} disabled className="bg-gray-400 py-2">
+                {b("SubmitAll")}
+              </Buttons>
+            )}
+          </Holds>
         </Grids>
       </Contents>
     </Bases>
