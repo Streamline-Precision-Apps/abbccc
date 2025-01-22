@@ -48,7 +48,7 @@ export async function CreateInjuryForm(formData: FormData) {
 
 // Delete injuryForm by id
 // will be used by Admin only
-export async function deleteInjuryForm(id: number) {
+export async function deleteInjuryForm(id: string) {
   await prisma.injuryForm.delete({
     where: { id },
   });

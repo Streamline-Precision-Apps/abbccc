@@ -128,13 +128,13 @@ export default function MultipleRoles({
             </Holds>
           </Holds>
           {option === "break" ? (
-            <Holds className="h-full w-full row-start-7 row-end-8 ">
+            <Holds className="w-full row-start-7 row-end-8 ">
               <Buttons
                 onClick={handleReturn}
-                background={"red"}
-                className="w-5/6"
+                background={"orange"}
+                className="w-full py-3"
               >
-                <Titles size={"h5"}>{t("ReturnToPrevShift")}</Titles>
+                <Titles size={"h3"}>{t("ReturnToPrevShift")}</Titles>
               </Buttons>
             </Holds>
           ) : null}

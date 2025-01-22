@@ -274,7 +274,7 @@
     "Equipment" : "Equipo",
     "EQTotalTime" : "Tiempo Total",
     "NoData": "No se Encontraron Datos",
-    "EquipmentLogs": "Registros de Equipo",
+    "EquipmentLogs": "Registros de Equipo", 
     "PhoneNumber": "Registros de Equipo",
     "Email": "Correo Electrónico",
     "EmergencyContact": "Contacto de Emergencia",
@@ -287,7 +287,12 @@
     "ID": "Id: #"
 },
 "Clock": {
-    "ReturnToPrevShift": "Regresar al Turno Anterior",
+    "Title-jobsite-tasco": "Seleccionar sitio de trabajo",
+    "search-jobsite-tasco": "Buscar Sitio de Trabajo",
+    "Title-jobsite-mechanic": "Seleccionar sitio de trabajo",
+    "search-jobsite-mechanic": "Buscar Sitio de Trabajo",
+    "Title-jobsite-truck": "Seleccionar sitio de trabajo",
+    "ReturnToPrevShift": "Regresar al trabajo anterior",
     "SelectWorkType": "Seleccionar Tipo de Trabajo",
     "PleaseLeaveACommentOfWhatYouDid": "Por favor, deje un comentario de lo que hizo.",
     "TodayIDidTheFollowing": "Hoy, hice lo siguiente...",
@@ -340,7 +345,11 @@
     "Mileage": "Mileage"
     },
 "ClockOut":{
+    "Next": "Siguiente",
+    "ChangeIfNecessary" : "Cambiar si es necesario",
+    "PreviousJobComment": "Comentarios del Trabajo Anterior",
     "ReviewYourDayDirections": "Revisa tu día a continuación. Si tienes alguna pregunta, por favor, contacta a tu supervisor.",
+    "Now": "Ahora",
     "Current": "Actual",
     "StartTime": "Inicio",
     "EndTime": "Finalización",
