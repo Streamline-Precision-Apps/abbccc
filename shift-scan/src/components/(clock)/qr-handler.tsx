@@ -16,7 +16,6 @@ import { Contents } from "../(reusable)/contents";
 type QRStepProps = {
   handleAlternativePath: () => void;
   handleNextStep: () => void;
-  handleChangeJobsite?: () => void;
   handleReturn?: () => void;
   handleReturnPath: () => void;
   handleScanTruck?: () => void;
@@ -34,7 +33,6 @@ export default function QRStep({
   handleReturnPath,
   handleAlternativePath,
   handleNextStep,
-  // handleChangeJobsite,
   handleScanTruck,
   handleScanJobsite,
   clockInRole,
@@ -150,7 +148,10 @@ export default function QRStep({
                   </Holds>
 
                   <Holds className="h-full w-full row-start-5 row-end-6 justify-center">
-                    <Buttons background={"none"} onClick={handleAlternativePath}>
+                    <Buttons
+                      background={"none"}
+                      onClick={handleAlternativePath}
+                    >
                       <Texts size={"p4"}>{t("TroubleScanning")}</Texts>
                     </Buttons>
                   </Holds>

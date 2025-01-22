@@ -101,7 +101,7 @@ const EquipmentSchema = z.array(
   })
 );
 
-const useFetchAllData = () => {
+const UseFetchAllData = () => {
   const [, setLoading] = useState(true);
 
   const { setJobsiteResults } = useDBJobsite();
@@ -278,4 +278,4 @@ const useFetchAllData = () => {
   ]);
 };
 
-export default useFetchAllData;
+export default UseFetchAllData;

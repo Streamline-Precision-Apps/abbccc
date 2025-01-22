@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { Holds } from "../(reusable)/holds";
 import MultipleRoles from "./multipleRoles";
 import QRStep from "./qr-handler";
-import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { setAuthStep } from "@/app/api/auth";
 import useFetchAllData from "@/app/(content)/FetchData";
@@ -18,10 +17,12 @@ import { Titles } from "../(reusable)/titles";
 import RedirectAfterDelay from "../redirectAfterDelay";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { setWorkRole } from "@/actions/cookieActions";
+import { setCostCode, setJobSite, setWorkRole } from "@/actions/cookieActions";
 import MechanicVerificationStep from "./mechanicVerificationStep";
 import TascoVerificationStep from "./tascoVerificationStep";
 import SwitchJobsMultiRoles from "./switchJobsMuiltipleRoles";
+import { useSavedCostCode } from "@/app/context/CostCodeContext";
+import UseFetchAllData from "@/app/(content)/FetchData";
 
 type NewClockProcessProps = {
   mechanicView: boolean;
@@ -47,7 +48,12 @@ export default function NewClockProcess({
   locale,
   currentRole,
 }: NewClockProcessProps) {
-  useFetchAllData(); // Fetch data on mount
+  useEffect(() => {
+    const getData = async () => {
+      UseFetchAllData(); // Fetch data on mount
+    };
+    getData();
+  }, []);
 
   // State management
   const [step, setStep] = useState(0);
@@ -55,56 +61,13 @@ export default function NewClockProcess({
   const [comments, setComments] = useState(""); // for trucking
   const t = useTranslations("Clock");
   // Contexts
-  const { savedCostCode, setCostCode } = useSavedCostCode();
+
   const { scanResult, setScanResult } = useScanData();
+  const { savedCostCode, setCostCode } = useSavedCostCode();
   const { truckScanData } = useTruckScanData();
   const { startingMileage } = useStartingMileage();
   const router = useRouter();
   const [numberOfRoles, setNumberOfRoles] = useState(0);
-  // Helper functions
-  const handleNextStep = () => setStep((prevStep) => prevStep + 1);
-
-  const handleChangeJobsite = () => {
-    const jobsite = localStorage.getItem("jobSite");
-    if (jobsite) {
-      setScanResult({ data: jobsite });
-      setStep(type === "equipment" ? 0 : 3); // Avoid throwing errors here
-    }
-  };
-
-  const handleAlternativePath = () => {
-    setStep(2);
-    handleNextStep();
-  };
-
-  const handleAlternativePathEQ = () => {
-    setStep(1);
-  };
-
-  const handleReturn = () => {
-    const clockInRole = localStorage.getItem("clockInRole") || "";
-    const jobsite = localStorage.getItem("jobSite") || "";
-    const costCode = localStorage.getItem("costCode") || "";
-    // because I have seperate routes for each role
-    // I dont need to specify the role except to set the step
-    try {
-      setScanResult({ data: jobsite });
-      setCostCode(costCode);
-      setAuthStep("success");
-      setClockInRole(clockInRole);
-      if (clockInRole === "general") {
-        setStep(5);
-      } else {
-        setStep(4);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleReturnPath = () => {
-    return router.push(returnpath);
-  };
 
   // useEffect to reset step and role on mount/unmount
   useEffect(() => {
@@ -168,6 +131,50 @@ export default function NewClockProcess({
     console.log("step", step);
   }),
     [step];
+
+  //------------------------------------------------------------------
+  //------------------------------------------------------------------
+  // Helper functions
+  //------------------------------------------------------------------
+  //------------------------------------------------------------------
+  const handleNextStep = () => setStep((prevStep) => prevStep + 1);
+
+  const handleAlternativePath = () => {
+    setStep(2);
+    handleNextStep();
+  };
+
+  const handleAlternativePathEQ = () => {
+    setStep(1);
+  };
+
+  const handleReturn = () => {
+    // because I have seperate routes for each role
+    // I dont need to specify the role except to set the step
+    try {
+      // setting the cookies below
+      setJobSite(scanResult?.data || "");
+      setCostCode(savedCostCode || "");
+      setClockInRole(clockInRole);
+
+      if (clockInRole === "general") {
+        setStep(5);
+      } else {
+        setStep(4);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleReturnPath = () => {
+    return router.push(returnpath);
+  };
+  //------------------------------------------------------------------
+  //------------------------------------------------------------------
+  // UseEffect  functions
+  //------------------------------------------------------------------
+  //------------------------------------------------------------------
 
   // Conditional render for equipment path
   if (type === "equipment") {
@@ -270,7 +277,6 @@ step 4 : confirmation page and redirect to dashboard with authorization
             handleReturnPath={handleReturnPath}
             handleAlternativePath={handleAlternativePath}
             handleNextStep={handleNextStep}
-            handleChangeJobsite={handleChangeJobsite}
             handleReturn={handleReturn}
             url={returnpath}
             option={option}
@@ -312,7 +318,6 @@ step 4 : confirmation page and redirect to dashboard with authorization
           handleAlternativePath={handleAlternativePath} // handle alternative path
           handleReturnPath={handleReturnPath}
           handleNextStep={handleNextStep}
-          handleChangeJobsite={handleChangeJobsite}
           handleReturn={handleReturn}
           url={returnpath}
           option={option}
@@ -357,7 +362,6 @@ step 4 : confirmation page and redirect to dashboard with authorization
           type="jobsite"
           handleAlternativePath={handleAlternativePath}
           handleNextStep={handleNextStep}
-          handleChangeJobsite={handleChangeJobsite}
           handleReturn={handleReturn}
           handleReturnPath={handleReturnPath}
           url={returnpath}
@@ -399,7 +403,6 @@ step 4 : confirmation page and redirect to dashboard with authorization
           type="jobsite"
           handleAlternativePath={handleAlternativePath}
           handleNextStep={handleNextStep}
-          handleChangeJobsite={handleChangeJobsite}
           handleReturn={handleReturn}
           handleReturnPath={handleReturnPath}
           url={returnpath}

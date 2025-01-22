@@ -26,6 +26,7 @@ import TruckClockOutForm from "./(components)/truckClockOutForm";
 import { useStartingMileage } from "@/app/context/StartingMileageContext";
 import Comment from "@/components/(clock)/comment";
 import ReviewYourDay from "./(components)/reviewYourDay";
+import { RemoveCookiesAtClockOut } from "@/actions/cookieActions";
 
 export default function ClockOutContent() {
   const [loading, setLoading] = useState(true);
@@ -109,9 +110,9 @@ export default function ClockOutContent() {
       const formData = new FormData(formRef.current as HTMLFormElement);
       await updateTimeSheet(formData);
       localStorage.clear();
-      setCurrentView("");
       setTruckScanData("");
       setStartingMileage(null);
+      RemoveCookiesAtClockOut();
       router.push("/");
     } catch (error) {
       console.error("Failed to submit the time sheet:", error);
