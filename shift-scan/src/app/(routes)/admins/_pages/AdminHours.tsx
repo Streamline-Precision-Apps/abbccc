@@ -6,15 +6,37 @@ import { Texts } from "@/components/(reusable)/texts";
 import { Holds } from "@/components/(reusable)/holds";
 import { Grids } from "@/components/(reusable)/grids";
 import AdminHourControls from "./AdminHourControls";
+import { toZonedTime } from "date-fns-tz";
+import {
+  startOfWeek as startOfWeekFn,
+  differenceInCalendarWeeks as differenceInCalendarWeeksFn,
+  addWeeks as addWeeksFn,
+} from "date-fns";
+const MST_TIMEZONE = "America/Denver";
 
 const calculatePayPeriodStart = () => {
-  const startDate = new Date(2024, 7, 5); // August 5, 2024
-  const now = new Date();
-  const diff = now.getTime() - startDate.getTime();
-  const diffWeeks = Math.floor(diff / (2 * 7 * 24 * 60 * 60 * 1000)); // Two-week intervals
-  return new Date(
-    startDate.getTime() + diffWeeks * 2 * 7 * 24 * 60 * 60 * 1000
+  const startDate = new Date(2024, 7, 5); // August 5, 2024 (Monday)
+  const now = toZonedTime(new Date(), MST_TIMEZONE);
+
+  // Find the most recent Monday
+  const currentWeekStart = startOfWeekFn(now, { weekStartsOn: 1 }); // 1 = Monday
+
+  // Calculate the number of weeks since the startDate
+  const weeksSinceStart = differenceInCalendarWeeksFn(
+    currentWeekStart,
+    startDate,
+    {
+      weekStartsOn: 1,
+    }
   );
+
+  // Determine the current two-week period
+  const payPeriodNumber = Math.floor(weeksSinceStart / 2);
+
+  // Calculate the start of the current pay period
+  const payPeriodStart = addWeeksFn(startDate, payPeriodNumber * 2);
+
+  return toZonedTime(payPeriodStart, MST_TIMEZONE);
 };
 
 export default function AdminHours() {
@@ -30,26 +52,32 @@ export default function AdminHours() {
     const startDate = calculatePayPeriodStart();
     const endDate = new Date(startDate);
     endDate.setDate(endDate.getDate() + 13); // Two-week period
-    const dateKey = (date: Date) => date.toISOString().split("T")[0];
+    const dateKey = (date: Date) => {
+      return date.toString(); // makes a Date key to group hours
+    };
     const hoursMap: Record<string, number> = {};
     const currentDate = new Date(startDate);
 
     while (currentDate <= endDate) {
-      hoursMap[dateKey(currentDate)] = 0;
+      const zonedDate = toZonedTime(currentDate, MST_TIMEZONE);
+      hoursMap[dateKey(zonedDate)] = 0;
       currentDate.setDate(currentDate.getDate() + 1);
     }
 
     if (payPeriodTimeSheet) {
       payPeriodTimeSheet.forEach((sheet) => {
-        const sheetDateKey = new Date(sheet.startTime)
-          .toISOString()
-          .split("T")[0];
+        const sheetStart = toZonedTime(sheet.startTime, MST_TIMEZONE); // get start time in MST
+        const sheetEnd = toZonedTime(sheet.endTime, MST_TIMEZONE); // get end time in MST
+        const sheetDateKey = toZonedTime(
+          sheetStart.toISOString().split("T")[0],
+          MST_TIMEZONE
+        ).toString();
+
         if (hoursMap[sheetDateKey] !== undefined) {
-          (hoursMap[sheetDateKey] +=
-            (new Date(sheet.endTime).getTime() -
-              new Date(sheet.startTime).getTime()) /
-            (1000 * 60 * 60)),
-            0;
+          // makes sure the date key exists
+          const hours =
+            (sheetEnd.getTime() - sheetStart.getTime()) / (1000 * 60 * 60); // calculate hours
+          hoursMap[sheetDateKey] += hours; // add hours to the date key
         }
       });
     }
@@ -66,8 +94,15 @@ export default function AdminHours() {
   }, [calculateDailyHours]);
 
   useEffect(() => {
-    const today = new Date().toISOString().split("T")[0];
-    const todayIndex = dailyHours.findIndex((entry) => entry.date === today);
+    const today = toZonedTime(new Date(), MST_TIMEZONE); // get today in MST
+    today.setHours(0, 0, 0, 0).toString(); // set hours to 0 to match the date key
+    console.log("Today", today);
+    const todayIndex = dailyHours.findIndex(
+      (entry) =>
+        toZonedTime(new Date(entry.date), MST_TIMEZONE).toString() ===
+        today.toString()
+    );
+    console.log("todayIndex", todayIndex);
     if (todayIndex !== -1) {
       setCurrentIndex(todayIndex);
     }
@@ -79,12 +114,12 @@ export default function AdminHours() {
 
   const calculateBarHeight = (value: number) => {
     if (value === 0) return 100;
-    if (value > 0 && value <= 1) return 50;
-    if (value > 1 && value <= 2) return 50;
-    if (value > 2 && value <= 3) return 50;
-    if (value > 3 && value <= 4) return 50;
-    if (value > 4 && value <= 5) return 60;
-    if (value > 5 && value <= 6) return 70;
+    if (value > 0 && value <= 1) return 20;
+    if (value > 1 && value <= 2) return 30;
+    if (value > 2 && value <= 3) return 30;
+    if (value > 3 && value <= 4) return 40;
+    if (value > 4 && value <= 5) return 50;
+    if (value > 5 && value <= 6) return 60;
     if (value > 6 && value <= 7) return 80;
     if (value > 7 && value <= 8) return 90;
     if (value > 8) return 100;
@@ -149,8 +184,10 @@ export default function AdminHours() {
                 }}
               >
                 {/*If the date text is black and greater than 0 */}
-                <Texts className="text-black" size="p4">
-                  {data.hours !== 0 ? data.hours.toFixed(1) : ""}
+                <Texts className="text-black" size="p6">
+                  {data.hours !== 0
+                    ? `${data.hours.toFixed(1)} ${t("DA-Time-Label")}`
+                    : ""}
                 </Texts>
 
                 {/*If the date is not the current date and the hours are 0  */}

@@ -119,11 +119,11 @@ export default function DisplayBreakTime({
           </Holds>
           <Holds
             background={"white"}
-            className="col-start-7 col-end-10 row-start-2 row-end-3 py-4 md:py-6 lg:py-8 border-[3px] border-black rounded-[10px] h-full"
+            className="col-start-7 col-end-10 row-start-1 row-end-4 py-4 md:py-6 lg:py-8 border-[3px] border-black rounded-[10px] "
           >
             <Holds className="h-full flex items-center justify-center">
               {loading ? (
-                <Spinner />
+                <Spinner size={20} />
               ) : (
                 <Texts text={"black"} size={"p6"}>
                   {formatTime(elapsedTime)}

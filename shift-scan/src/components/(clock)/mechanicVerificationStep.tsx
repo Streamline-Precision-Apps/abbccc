@@ -1,10 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { useTranslations } from "next-intl";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
-import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
-
 import {
   CreateTimeSheet,
   updateTimeSheetBySwitch,
@@ -34,23 +32,24 @@ type VerifyProcessProps = {
   comments?: string;
 };
 
-export default function VerificationStep({
+export default function MechanicVerificationStep({
   type,
   handleNextStep,
-  comments,
   role,
 }: VerifyProcessProps) {
   const t = useTranslations("Clock");
   const { scanResult } = useScanData();
-  const { savedCostCode } = useSavedCostCode();
   const { setTimeSheetData } = useTimeSheetData();
-  const [date] = useState(new Date());
+
+  const date = new Date();
   const { data: session } = useSession();
   const { truckScanData } = useTruckScanData(); // Move this hook call to the top level.
   const { startingMileage } = useStartingMileage();
   const { savedCommentData, setCommentData } = useCommentData();
-  if (!session) return null; // Conditional rendering for session
 
+  const costCode = "Mechanic Role";
+
+  if (!session) return null; // Conditional rendering for session
   const { id } = session.user;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -88,7 +87,7 @@ export default function VerificationStep({
           formData.append("userId", id?.toString() || "");
           formData.append("date", new Date().toISOString());
           formData.append("jobsiteId", scanResult?.data || "");
-          formData.append("costcode", savedCostCode?.toString() || "");
+          formData.append("costcode", costCode);
           formData.append("startTime", new Date().toISOString());
           formData.append("workType", role);
 
@@ -119,7 +118,7 @@ export default function VerificationStep({
         formData.append("userId", id.toString());
         formData.append("date", new Date().toISOString());
         formData.append("jobsiteId", scanResult?.data || "");
-        formData.append("costcode", savedCostCode?.toString() || "");
+        formData.append("costcode", costCode);
         formData.append("startTime", new Date().toISOString());
         formData.append("workType", role);
 
@@ -194,32 +193,6 @@ export default function VerificationStep({
                           })}
                         />
                       </Labels>
-                      {truckScanData && (
-                        <Labels>
-                          <Texts text={"white"} size={"p4"} position={"left"}>
-                            {t("Truck-label")}
-                          </Texts>
-                          <Inputs
-                            state="disabled"
-                            name="jobsiteId"
-                            variant={"white"}
-                            data={truckScanData}
-                          />
-                        </Labels>
-                      )}
-                      {truckScanData && (
-                        <Labels>
-                          <Texts text={"white"} size={"p4"} position={"left"}>
-                            {t("Mileage")}
-                          </Texts>
-                          <Inputs
-                            state="disabled"
-                            name="startingMileage"
-                            variant={"white"}
-                            data={startingMileage?.toString() || "0"}
-                          />
-                        </Labels>
-                      )}
                       <Labels>
                         <Texts text={"white"} size={"p4"} position={"left"}>
                           {t("JobSite-label")}
@@ -231,30 +204,6 @@ export default function VerificationStep({
                           data={scanResult?.data || ""}
                         />
                       </Labels>
-                      <Labels>
-                        <Texts text={"white"} size={"p4"} position={"left"}>
-                          {t("CostCode-label")}
-                        </Texts>
-                        <Inputs
-                          state="disabled"
-                          name="costcode"
-                          variant={"white"}
-                          data={savedCostCode?.toString() || ""}
-                        />
-                      </Labels>
-                      {comments !== undefined && (
-                        <Labels>
-                          <Texts text={"white"} size={"p4"} position={"left"}>
-                            {t("Comments")}
-                          </Texts>
-                          <Inputs
-                            state="disabled"
-                            name="timeSheetComments"
-                            variant={"white"}
-                            data={comments}
-                          />
-                        </Labels>
-                      )}
                     </Contents>
                   </Holds>
                 </Holds>
