@@ -213,7 +213,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
       {/* Multiple Role Selection */}
       {step === 0 && (
         <>
-          <Holds className="h-full w-full pt-5">
+          <Holds className="h-full w-full">
             <MultipleRoles
               handleNextStep={handleNextStep}
               setClockInRole={setClockInRole}
@@ -229,7 +229,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
       {/* Mechanic Role */}
       {/* ------------------------- Mechanic Role start ---------------------*/}
       {step === 1 && clockInRole === "mechanic" && (
-        <Holds className="h-full w-full pt-5">
+        <Holds className="h-full w-full">
           <QRStep
             type="jobsite"
             handleReturnPath={handleReturnPath}

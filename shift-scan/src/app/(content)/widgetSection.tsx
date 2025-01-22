@@ -186,7 +186,7 @@ export default function WidgetSection({ session, locale }: Props) {
 
   return (
     <>
-      <Holds className="row-span-2">
+      <Holds className="row-span-2 bg-app-blue bg-opacity-20 w-full p-10 my-2 rounded-[10px]">
         {authStep === null && (
           <Banners>
             <Titles text={"white"} size={"h2"}>
