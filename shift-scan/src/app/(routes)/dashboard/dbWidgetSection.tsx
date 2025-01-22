@@ -2,7 +2,6 @@
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getAuthStep, setAuthStep } from "@/app/api/auth";
 import React from "react";
 import { Session } from "next-auth";
 import { updateTimeSheetBySwitch } from "@/actions/timeSheetActions";
@@ -12,6 +11,7 @@ import TascoDashboardView from "./UI/_dashboards/tascoDashboardView";
 import TruckDriverDashboardView from "./UI/_dashboards/truckDriverDashboardView";
 import MechanicDashboardView from "./UI/_dashboards/mechanicDashboardView";
 import GeneralDashboardView from "./UI/_dashboards/generalDashboardView";
+import { setCurrentPageView } from "@/actions/cookieActions";
 
 // Zod schema for component state, including logs
 const DbWidgetSectionSchema = z.object({
@@ -62,7 +62,6 @@ export default function DbWidgetSection({ session, view }: props) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const e = useTranslations("Err-Msg");
-  const authStep = getAuthStep();
   const [additionalButtonsType, setAdditionalButtonsType] = useState<
     string | null
   >(null);
@@ -109,12 +108,6 @@ export default function DbWidgetSection({ session, view }: props) {
     fetchLogs();
   }, [e]);
 
-  useEffect(() => {
-    if (authStep !== "success") {
-      router.push("/");
-    }
-  }, [authStep, router]);
-
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
@@ -131,8 +124,7 @@ export default function DbWidgetSection({ session, view }: props) {
         formData2.append("timesheetComments", comment);
 
         await updateTimeSheetBySwitch(formData2);
-
-        setAuthStep("break");
+        setCurrentPageView("break");
         router.push("/");
       } else {
         setIsModalOpen(true);
