@@ -5,7 +5,6 @@ import MultipleRoles from "./multipleRoles";
 import QRStep from "./qr-handler";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { setAuthStep } from "@/app/api/auth";
-import useFetchAllData from "@/app/(content)/FetchData";
 import CodeStep from "./code-step";
 import VerificationStep from "./verification-step";
 import { useTruckScanData } from "@/app/context/TruckScanDataContext";
@@ -22,7 +21,17 @@ import MechanicVerificationStep from "./mechanicVerificationStep";
 import TascoVerificationStep from "./tascoVerificationStep";
 import SwitchJobsMultiRoles from "./switchJobsMuiltipleRoles";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
-import UseFetchAllData from "@/app/(content)/FetchData";
+import {
+  useDBCostcode,
+  useDBEquipment,
+  useDBJobsite,
+} from "@/app/context/dbCodeContext";
+import {
+  useRecentDBCostcode,
+  useRecentDBEquipment,
+  useRecentDBJobsite,
+} from "@/app/context/dbRecentCodesContext";
+import { useDBCompleteEquipmentList } from "@/app/context/dbCompleteEquipmentList";
 
 type NewClockProcessProps = {
   mechanicView: boolean;
@@ -48,26 +57,20 @@ export default function NewClockProcess({
   locale,
   currentRole,
 }: NewClockProcessProps) {
-  useEffect(() => {
-    const getData = async () => {
-      UseFetchAllData(); // Fetch data on mount
-    };
-    getData();
-  }, []);
-
   // State management
+
   const [step, setStep] = useState(0);
   const [clockInRole, setClockInRole] = useState(currentRole || "");
   const [comments, setComments] = useState(""); // for trucking
-  const t = useTranslations("Clock");
-  // Contexts
+  const [numberOfRoles, setNumberOfRoles] = useState(0);
 
+  const t = useTranslations("Clock");
+  const router = useRouter();
+  // Contexts
   const { scanResult, setScanResult } = useScanData();
   const { savedCostCode, setCostCode } = useSavedCostCode();
   const { truckScanData } = useTruckScanData();
   const { startingMileage } = useStartingMileage();
-  const router = useRouter();
-  const [numberOfRoles, setNumberOfRoles] = useState(0);
 
   // useEffect to reset step and role on mount/unmount
   useEffect(() => {
