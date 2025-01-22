@@ -42,8 +42,7 @@ export default async function Home() {
               <AnimatedHamburgerButton />
             </Holds>
           </Holds>
-
-          <WidgetSection locale={locale} session={session} />
+            <WidgetSection locale={locale} session={session} />
         </Grids>
       </Contents>
     </Bases>

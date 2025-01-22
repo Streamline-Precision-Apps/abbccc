@@ -11,6 +11,7 @@ import Comment from "@/components/(clock)/comment";
 import { Images } from "../(reusable)/images";
 import { setWorkRole } from "@/actions/cookieActions";
 import { Selects } from "../(reusable)/selects";
+import { Contents } from "../(reusable)/contents";
 
 type Props = {
   handleNextStep: () => void;
@@ -75,29 +76,28 @@ export default function MultipleRoles({
   } else {
     return (
       <Holds background={"white"} className="h-full w-full">
-        <Grids rows={"7"} gap={"5"} className="h-full w-full p-3">
-          <Holds className="row-start-1 row-end-2 h-full w-full justify-center ">
-            <Grids rows={"2"} cols={"5"} gap={"3"} className=" h-full w-full">
-              <Holds
-                className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center"
-                onClick={handleReturnPath}
-              >
-                <Images
-                  titleImg="/turnBack.svg"
-                  titleImgAlt="back"
-                  position={"left"}
-                />
-              </Holds>
-              <Holds className="row-start-2 row-end-3 col-span-5 h-full w-full justify-center">
-                <Titles size={"h1"}> {t("ScanJobSite")}</Titles>
-              </Holds>
-            </Grids>
-          </Holds>
-          <Holds className="row-start-2 row-end-3 h-full w-full justify-center">
-            <Holds className="h-full w-full justify-center border-[3px] border-black rounded-[10px] shadow-[6px_6px_0px_grey]">
-              <Holds className="h-full w-11/12 justify-center">
+        <Contents width={"section"}>
+          <Grids rows={"7"} gap={"5"} className="h-full w-full my-5">
+            <Holds className="row-start-1 row-end-2 h-full w-full justify-center ">
+              <Grids rows={"2"} cols={"5"} gap={"3"} className=" h-full w-full">
+                <Holds
+                  className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center"
+                  onClick={handleReturnPath}
+                >
+                  <Images
+                    titleImg="/turnBack.svg"
+                    titleImgAlt="back"
+                    position={"left"}
+                  />
+                </Holds>
+                <Holds className="row-start-2 row-end-3 col-span-5 h-full w-full justify-center">
+                  <Titles size={"h1"}> {t("ScanJobSite")}</Titles>
+                </Holds>
+              </Grids>
+            </Holds>
+              <Holds className="p-1 justify-center border-[3px] border-black rounded-[10px] shadow-[6px_6px_0px_grey]">
                 <Selects
-                  className="bg-app-blue text-center"
+                  className="bg-app-blue text-center p-3"
                   value={clockInRole}
                   onChange={(e) => selectView(e.target.value)}
                 >
@@ -116,29 +116,26 @@ export default function MultipleRoles({
                   )}
                 </Selects>
               </Holds>
-            </Holds>
-          </Holds>
-          <Holds className="h-full w-full row-start-3 row-end-7">
-            <Holds className="h-full w-1/2 justify-center">
-              <Images
-                titleImg="/camera.svg"
-                titleImgAlt="clockIn"
-                position={"center"}
-              />
-            </Holds>
-          </Holds>
-          {option === "break" ? (
-            <Holds className="w-full row-start-7 row-end-8 ">
-              <Buttons
-                onClick={handleReturn}
-                background={"orange"}
-                className="w-full py-3"
-              >
-                <Titles size={"h3"}>{t("ReturnToPrevShift")}</Titles>
-              </Buttons>
-            </Holds>
-          ) : null}
-        </Grids>
+              <Holds className="row-start-4 row-end-6 h-full m-auto">
+                <Images
+                  titleImg="/camera.svg"
+                  titleImgAlt="clockIn"
+                  position={"center"}
+                  size={"40"}
+                />
+              </Holds>
+            {option === "break" ? (
+              <Holds className="row-start-7 row-end-8 h-full w-full justify-center">
+                <Buttons
+                  onClick={handleReturn}
+                  background={"orange"}
+                >
+                  <Titles size={"h2"}>{t("ReturnToPrevShift")}</Titles>
+                </Buttons>
+              </Holds>
+            ) : null}
+          </Grids>
+        </Contents>
       </Holds>
     );
   }
