@@ -20,6 +20,7 @@ import MechanicVerificationStep from "./mechanicVerificationStep";
 import TascoVerificationStep from "./tascoVerificationStep";
 import SwitchJobsMultiRoles from "./switchJobsMuiltipleRoles";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
+import { number } from "zod";
 
 type NewClockProcessProps = {
   mechanicView: boolean;
@@ -89,6 +90,9 @@ export default function NewClockProcess({
 
     // If switch jobs, reset step
     if (type === "switchJobs") {
+      // if (numberOfRoles > 1) {
+      //   setStep(1);
+      // }
       setStep(0);
     }
     // If break, reset step
@@ -235,7 +239,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
       {step === 0 && (
         <>
           <Holds className="h-full w-full pt-5">
-            {type === "switchJobs" && numberOfRoles > 1 ? (
+            {type === "switchJobs" ? (
               <SwitchJobsMultiRoles
                 handleNextStep={handleNextStep}
                 setClockInRole={setClockInRole}
@@ -243,6 +247,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
                 option={option}
                 handleReturn={handleReturn}
                 type={type}
+                numberOfRoles={numberOfRoles}
                 handleReturnPath={handleReturnPath}
               />
             ) : (

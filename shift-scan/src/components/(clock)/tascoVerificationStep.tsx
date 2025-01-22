@@ -61,8 +61,9 @@ export default function TascoVerificationStep({
 
       if (type === "switchJobs") {
         try {
-          const localeValue = localStorage.getItem("savedtimeSheetData");
-          const tId = JSON.parse(localeValue || "{}").id;
+          const tId = await fetch(
+            "/api/cookies?method=get&name=timeSheetId"
+          ).then((res) => res.json());
           const formData2 = new FormData();
           formData2.append("id", tId?.toString() || "");
           formData2.append("endTime", new Date().toISOString());
