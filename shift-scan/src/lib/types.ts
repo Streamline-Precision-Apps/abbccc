@@ -282,19 +282,19 @@ export type CostCodes = {
 
 export type EquipmentCodes = {
   isActive: boolean;
-  mileage: number;
+  mileage: number | null;
   registrationExpiration: Date | null;
-  licensePlate: string;
-  year: string;
-  model: string;
-  make: string;
+  licensePlate?: string | null;
+  year?: string | null;
+  model?: string | null;
+  make?: string | null;
   updatedAt: Date;
   createdAt: Date;
   lastRepair: Date | null;
   lastInspection: Date | null;
-  equipmentTag: string;
-  description: string;
-  status: string;
+  equipmentTag: EquipmentTags;
+  description?: string;
+  status?: string;
   id: string;
   qrId: string;
   name: string;

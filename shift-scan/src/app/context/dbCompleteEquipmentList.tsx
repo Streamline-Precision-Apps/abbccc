@@ -1,5 +1,12 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+} from "react";
 import { Equipment } from "@/lib/types";
+import { z } from "zod";
 
 type EquipmentContextType = {
   equipmentListResults: Equipment[];
@@ -10,6 +17,33 @@ const EquipmentContext = createContext<EquipmentContextType>({
   equipmentListResults: [],
   setEquipmentListResults: () => {},
 });
+const EquipmentSchema = z.array(
+  z.object({
+    id: z.string(),
+    qrId: z.string(),
+    name: z.string(),
+    description: z.string().optional(),
+    equipmentTag: z.string().default("EQUIPMENT"),
+    lastInspection: z.date().refine((date) => !isNaN(date.getTime()), {
+      message: "Invalid date format",
+    }),
+    lastRepair: z.date().refine((date) => !isNaN(date.getTime()), {
+      message: "Invalid date format",
+    }),
+    status: z.string().optional(),
+    make: z.string().nullable().optional(),
+    model: z.string().nullable().optional(),
+    year: z.string().nullable().optional(),
+    licensePlate: z.string().nullable().optional(),
+    registrationExpiration: z.date().refine((date) => !isNaN(date.getTime()), {
+      message: "Invalid date format",
+    }),
+    mileage: z.number().nullable().optional(),
+    isActive: z.boolean().optional(),
+    image: z.string().nullable().optional(),
+    inUse: z.boolean().optional(),
+  })
+);
 
 export const EquipmentListProvider = ({
   children,
@@ -19,6 +53,25 @@ export const EquipmentListProvider = ({
   const [equipmentListResults, setEquipmentListResults] = useState<Equipment[]>(
     []
   );
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetch("/api/getEquipmentList");
+      const recentEquipmentList = await response.json();
+      try {
+        const validatedEquipmentList =
+          EquipmentSchema.parse(recentEquipmentList);
+        setEquipmentListResults(validatedEquipmentList);
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          console.error(
+            "Validation error in Equipment List schema:",
+            error.errors
+          );
+        }
+      }
+    };
+    fetchData();
+  }, []);
 
   return (
     <EquipmentContext.Provider
