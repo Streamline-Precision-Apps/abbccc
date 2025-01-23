@@ -163,6 +163,10 @@ cookies().set({
 **Things To Follow Up On**
 - Jaxin working on viewpoint imports
 - Jaxin getting Reports
+- tasco has 10 Cost Codes
+- engineer has 1
+- trucker has same as worker
+
 
 ### Built/created
 - hours view update (2 hours)
@@ -172,3 +176,21 @@ cookies().set({
 - bug in hours view && / - display time to the 10th value to fix space issue
 - Starting the Engineer Role
 - Starting the Tasco Role
+
+#
+# January 22, 2025 - Wednesday
+### Built/created 
+- built for my branch, made changes to help build, updated next system to have cleaner writings
+- revamp for clock in logic to make experience better and smoother.
+
+### Trello
+- building and debugging problems(2 hours)
+- Clock logic (6 hours)
+
+#
+# January 23, 2025 - Thursday
+### Built/created 
+- 
+
+### Trello
+- Clock logic 

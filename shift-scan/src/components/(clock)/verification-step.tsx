@@ -10,7 +10,6 @@ import {
   updateTimeSheetBySwitch,
 } from "@/actions/timeSheetActions";
 import { Clock } from "../clock";
-import { setAuthStep } from "@/app/api/auth";
 import { TitleBoxes } from "../(reusable)/titleBoxes";
 import { Buttons } from "../(reusable)/buttons";
 import { Contents } from "../(reusable)/contents";
@@ -25,6 +24,7 @@ import { useStartingMileage } from "@/app/context/StartingMileageContext";
 import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
 import { useCommentData } from "@/app/context/CommentContext";
+import { setCurrentPageView } from "@/actions/cookieActions";
 
 type VerifyProcessProps = {
   handleNextStep?: () => void;
@@ -63,8 +63,9 @@ export default function VerificationStep({
 
       if (type === "switchJobs") {
         try {
-          const localeValue = localStorage.getItem("savedtimeSheetData");
-          const tId = JSON.parse(localeValue || "{}").id;
+          const tId = await fetch(
+            "/api/cookies?method=get&name=timeSheetId"
+          ).then((res) => res.json());
           const formData2 = new FormData();
           formData2.append("id", tId?.toString() || "");
           formData2.append("endTime", new Date().toISOString());
@@ -95,7 +96,7 @@ export default function VerificationStep({
           const response = await CreateTimeSheet(formData);
           const result = { id: response.id.toString() };
           setTimeSheetData(result);
-          setAuthStep("success");
+
           localStorage.setItem("workType", response.workType);
 
           if (handleNextStep) {
@@ -126,7 +127,8 @@ export default function VerificationStep({
         const response = await CreateTimeSheet(formData);
         const result = { id: response.id.toString() };
         setTimeSheetData(result);
-        setAuthStep("success");
+
+        setCurrentPageView("dashboard");
 
         if (handleNextStep) {
           handleNextStep();
@@ -180,80 +182,108 @@ export default function VerificationStep({
                     className="h-full w-[95%] sm:w-[85%] md:w-[75%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%]  border-[3px] rounded-b-none  border-black "
                   >
                     <Contents width={"section"} className="h-full">
-                      <Labels>
-                        <Texts text={"white"} size={"p4"} position={"left"}>
-                          {t("Date-label")}
-                        </Texts>
-                        <Inputs
-                          state="disabled"
-                          variant={"white"}
-                          data={date.toLocaleDateString("en-US", {
-                            year: "numeric",
-                            month: "numeric",
-                            day: "numeric",
-                          })}
-                        />
+                      <Labels
+                        htmlFor="date"
+                        text={"white"}
+                        size={"p4"}
+                        position={"left"}
+                      >
+                        {t("Date-label")}
                       </Labels>
+                      <Inputs
+                        name="date"
+                        state="disabled"
+                        variant={"white"}
+                        data={date.toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "numeric",
+                          day: "numeric",
+                        })}
+                      />
                       {truckScanData && (
-                        <Labels>
-                          <Texts text={"white"} size={"p4"} position={"left"}>
+                        <>
+                          <Labels
+                            text={"white"}
+                            size={"p4"}
+                            htmlFor="jobsiteId"
+                          >
                             {t("Truck-label")}
-                          </Texts>
+                          </Labels>
                           <Inputs
                             state="disabled"
                             name="jobsiteId"
                             variant={"white"}
                             data={truckScanData}
                           />
-                        </Labels>
+                        </>
                       )}
                       {truckScanData && (
-                        <Labels>
-                          <Texts text={"white"} size={"p4"} position={"left"}>
-                            {t("Mileage")}
-                          </Texts>
+                        <>
+                          <Labels
+                            htmlFor="startingMileage"
+                            text={"white"}
+                            size={"p4"}
+                            position={"left"}
+                          >
+                            <Texts text={"white"} size={"p4"} position={"left"}>
+                              {t("Mileage")}
+                            </Texts>
+                          </Labels>
                           <Inputs
                             state="disabled"
                             name="startingMileage"
                             variant={"white"}
                             data={startingMileage?.toString() || "0"}
                           />
-                        </Labels>
+                        </>
                       )}
-                      <Labels>
+                      <Labels
+                        htmlFor="jobsiteId"
+                        text={"white"}
+                        size={"p4"}
+                        position={"left"}
+                      >
                         <Texts text={"white"} size={"p4"} position={"left"}>
                           {t("JobSite-label")}
                         </Texts>
-                        <Inputs
-                          state="disabled"
-                          name="jobsiteId"
-                          variant={"white"}
-                          data={scanResult?.data || ""}
-                        />
                       </Labels>
-                      <Labels>
-                        <Texts text={"white"} size={"p4"} position={"left"}>
-                          {t("CostCode-label")}
-                        </Texts>
-                        <Inputs
-                          state="disabled"
-                          name="costcode"
-                          variant={"white"}
-                          data={savedCostCode?.toString() || ""}
-                        />
+                      <Inputs
+                        state="disabled"
+                        name="jobsiteId"
+                        variant={"white"}
+                        data={scanResult?.data || ""}
+                      />
+                      <Labels
+                        htmlFor="costcode"
+                        text={"white"}
+                        size={"p4"}
+                        position={"left"}
+                      >
+                        {t("CostCode-label")}
                       </Labels>
+                      <Inputs
+                        state="disabled"
+                        name="costcode"
+                        variant={"white"}
+                        data={savedCostCode?.toString() || ""}
+                      />
                       {comments !== undefined && (
-                        <Labels>
-                          <Texts text={"white"} size={"p4"} position={"left"}>
+                        <>
+                          <Labels
+                            htmlFor="timeSheetComments"
+                            text={"white"}
+                            size={"p4"}
+                            position={"left"}
+                          >
                             {t("Comments")}
-                          </Texts>
+                          </Labels>
                           <Inputs
                             state="disabled"
                             name="timeSheetComments"
                             variant={"white"}
                             data={comments}
                           />
-                        </Labels>
+                        </>
                       )}
                     </Contents>
                   </Holds>
