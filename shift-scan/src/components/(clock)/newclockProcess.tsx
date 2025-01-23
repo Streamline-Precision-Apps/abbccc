@@ -236,7 +236,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
       {/* Multiple Role Selection */}
       {step === 0 && (
         <>
-          <Holds className="h-full w-full pt-5">
+          <Holds className="h-full w-full">
             {type === "switchJobs" && numberOfRoles > 1 ? (
               <SwitchJobsMultiRoles
                 handleNextStep={handleNextStep}
@@ -411,7 +411,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
       {/* Select Jobsite Section */}
       {step === 3 && clockInRole === "general" && (
         <Holds className="h-full w-full py-5">
-          <CodeStep datatype="jobsite" handleNextStep={handleNextStep} />
+          <CodeStep datatype="jobsite" handleNextStep={handleNextStep} handleReturnPath={handleReturnPath}/>
         </Holds>
       )}
       {/* Select Cost Code Section */}
