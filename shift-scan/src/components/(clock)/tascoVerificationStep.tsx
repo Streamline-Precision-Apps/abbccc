@@ -22,6 +22,8 @@ import { useStartingMileage } from "@/app/context/StartingMileageContext";
 import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
 import { useCommentData } from "@/app/context/CommentContext";
+import { setCurrentPageView } from "@/actions/cookieActions";
+import { useRouter } from "next/navigation";
 
 type VerifyProcessProps = {
   handleNextStep?: () => void;
@@ -45,7 +47,7 @@ export default function TascoVerificationStep({
   const { truckScanData } = useTruckScanData(); // Move this hook call to the top level.
   const { startingMileage } = useStartingMileage();
   const { savedCommentData, setCommentData } = useCommentData();
-
+  const router = useRouter();
   const costCode = "TASCO Role";
 
   if (!session) return null; // Conditional rendering for session
@@ -94,11 +96,8 @@ export default function TascoVerificationStep({
           const response = await CreateTimeSheet(formData);
           const result = { id: response.id.toString() };
           setTimeSheetData(result);
-          localStorage.setItem("workType", response.workType);
 
-          if (handleNextStep) {
-            handleNextStep();
-          }
+          router.push("/dashboard");
         } catch (error) {
           console.error(error);
         }
@@ -125,9 +124,9 @@ export default function TascoVerificationStep({
         const result = { id: response.id.toString() };
         setTimeSheetData(result);
 
-        if (handleNextStep) {
-          handleNextStep();
-        }
+        setCurrentPageView("dashboard");
+
+        router.push("/dashboard");
       }
     } catch (error) {
       console.error(error);

@@ -345,6 +345,22 @@ export async function updateTimeSheetBySwitch(formData: FormData) {
   }
 }
 
+export async function returnToPrevWork(formData: FormData) {
+  const id = formData.get("id") as string;
+  const PrevTimeSheet = await prisma.timeSheet.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      jobsiteId: true,
+      costcode: true,
+      workType: true,
+    },
+  });
+  console.log(PrevTimeSheet);
+
+  return PrevTimeSheet;
+}
+
 export async function GetAllTimeSheets(date: string) {
   date = new Date(date).toISOString();
   const timeSheet = await prisma.timeSheet.findMany({

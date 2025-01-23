@@ -51,10 +51,12 @@ export default function MultipleRoles({
     const fetchRole = async () => {
       const role = await fetch("/api/cookies?method=get&name=workRole");
       const data = await role.json();
-      setClockInRole(data);
+      if (option !== "break") {
+        setClockInRole(data);
+      }
     };
     fetchRole();
-  }, [setClockInRole]);
+  }, [setClockInRole, option]);
 
   const switchJobs = () => {
     setCommentData({ id: commentsValue }); // Ensure correct data structure

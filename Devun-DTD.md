@@ -189,6 +189,8 @@ cookies().set({
 
 #
 # January 23, 2025 - Thursday
+### Meeting
+- Worked with Zach on hours component and questions regarding new design.
 ### Built/created 
 - 
 
