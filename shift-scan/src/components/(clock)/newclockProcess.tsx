@@ -21,6 +21,7 @@ import TascoVerificationStep from "./tascoVerificationStep";
 import SwitchJobsMultiRoles from "./switchJobsMuiltipleRoles";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { returnToPrevWork } from "@/actions/timeSheetActions";
+import { set } from "date-fns";
 
 type NewClockProcessProps = {
   mechanicView: boolean;
@@ -185,6 +186,10 @@ export default function NewClockProcess({
     }
   };
 
+  const handleScanJobsite = () => {
+    setStep(4);
+  };
+
   const handleReturnPath = () => {
     return router.push(returnpath);
   };
@@ -298,6 +303,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
             handleAlternativePath={handleAlternativePath}
             handleNextStep={handleNextStep}
             handleReturn={handleReturn}
+            handleScanJobsite={handleScanJobsite}
             url={returnpath}
             option={type} // type is the method of clocking in ... general, switchJobs, or equipment
             clockInRole={clockInRole} // clock in role will make the qr know which role to use
@@ -332,6 +338,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
           handleReturnPath={handleReturnPath}
           handleNextStep={handleNextStep}
           handleReturn={handleReturn}
+          handleScanJobsite={handleScanJobsite}
           url={returnpath}
           option={type} // type is the method of clocking in ... general, switchJobs, or equipment
           clockInRole={clockInRole}
@@ -373,6 +380,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
           handleNextStep={handleNextStep}
           handleReturn={handleReturn}
           handleReturnPath={handleReturnPath}
+          handleScanJobsite={handleScanJobsite}
           url={returnpath}
           option={type} // type is the method of clocking in ... general, switchJobs, or equipment
           clockInRole={clockInRole}
@@ -406,6 +414,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
           handleNextStep={handleNextStep}
           handleReturn={handleReturn}
           handleReturnPath={handleReturnPath}
+          handleScanJobsite={handleScanJobsite}
           url={returnpath}
           option={type} // type is the method of clocking in ... general, switchJobs, or equipment
           clockInRole={clockInRole}
