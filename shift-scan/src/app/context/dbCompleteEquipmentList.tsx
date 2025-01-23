@@ -70,9 +70,7 @@ export const EquipmentListProvider = ({
           const recentEquipmentList = await response.json();
           const validatedEquipmentList =
             EquipmentSchema.parse(recentEquipmentList);
-          setEquipmentListResults(
-            validatedEquipmentList
-          ) as unknown as CompleteListEquipment[];
+          setEquipmentListResults(validatedEquipmentList);
         }
       } catch (error) {
         if (error instanceof z.ZodError) {
