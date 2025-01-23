@@ -20,6 +20,12 @@ export default async function Dashboard() {
     redirect("/signin");
   }
 
+  // kicks user out if they are not clocked in
+  const currentPageView = cookies().get("currentPageView")?.value;
+  if (currentPageView !== "dashboard") {
+    redirect("/");
+  }
+
   // const user = session.user;
   const view = cookies().get("workRole")?.value || "general"; // Default to general view if not set
   // Get the current language from cookies

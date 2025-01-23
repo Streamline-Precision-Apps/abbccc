@@ -104,16 +104,17 @@ const VerificationEQStep: React.FC<VerifyProcessProps> = ({
                     </Holds>
                   ) : null}
                   <Holds className=" h-full  row-span-1">
-                    <Labels>
+                    <Labels htmlFor="equipmentId">
                       {t("Equipment-result")}
-                      <Inputs
-                        defaultValue={
-                          equipment?.find(
-                            (equipment) => equipment.qrId === scanEQResult?.data
-                          )?.name
-                        }
-                      />
                     </Labels>
+                    <Inputs
+                      name="equipmentId"
+                      defaultValue={
+                        equipment?.find(
+                          (equipment) => equipment.qrId === scanEQResult?.data
+                        )?.name
+                      }
+                    />
                   </Holds>
 
                   {/* this in put is for displaying the id */}
@@ -124,17 +125,16 @@ const VerificationEQStep: React.FC<VerifyProcessProps> = ({
                     readOnly
                   />
                   <Holds className="row-span-2 h-full ">
-                    <Labels>
+                    <Labels htmlFor="comment">
                       {t("Equipment-notes-title")}
-
-                      <TextAreas
-                        name="comment"
-                        className="p-2 border-2 border-black w-full"
-                        rows={5}
-                        placeholder="You get 40 characters for notes. You can edit notes later."
-                        maxLength={40}
-                      />
                     </Labels>
+                    <TextAreas
+                      name="comment"
+                      className="p-2 border-2 border-black w-full"
+                      rows={5}
+                      placeholder="You get 40 characters for notes. You can edit notes later."
+                      maxLength={40}
+                    />
                   </Holds>
                   <Holds size={"full"} className=" h-full row-span-1 ">
                     <Holds size={"80"} className="">

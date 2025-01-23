@@ -102,7 +102,6 @@ export default function CodeFinder({ datatype, savedCode }: Props) {
     setSelectedTerm(true);
 
     if (datatype === "costcode") {
-      localStorage.setItem("costCode", option.code);
       setCostCode(option.code);
 
       const selectedCode = costcodeResults.find((c) => c.name === option.code);
@@ -110,7 +109,6 @@ export default function CodeFinder({ datatype, savedCode }: Props) {
     }
 
     if (datatype === "jobsite") {
-      localStorage.setItem("jobSite", option.code);
       setScanResult({ data: option.code });
 
       const selectedJobCode = jobsiteResults.find(
@@ -120,7 +118,6 @@ export default function CodeFinder({ datatype, savedCode }: Props) {
     }
 
     if (datatype === "jobsite-mechanic") {
-      localStorage.setItem("jobSite", option.code);
       setScanResult({ data: option.code });
 
       const selectedJobCode = jobsiteResults.find(
@@ -129,7 +126,6 @@ export default function CodeFinder({ datatype, savedCode }: Props) {
       if (selectedJobCode) addRecentlyUsedJobCode(selectedJobCode);
     }
     if (datatype === "jobsite-tasco") {
-      localStorage.setItem("jobSite", option.code);
       setScanResult({ data: option.code });
 
       const selectedJobCode = jobsiteResults.find(
@@ -140,7 +136,6 @@ export default function CodeFinder({ datatype, savedCode }: Props) {
 
     if (datatype === "equipment") {
       setscanEQResult({ data: option.code });
-      localStorage.setItem("previousEquipment", option.code);
 
       const selectedEquipment = equipmentResults.find(
         (e) => e.qrId === option.code
