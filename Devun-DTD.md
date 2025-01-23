@@ -181,7 +181,8 @@ cookies().set({
 # January 22, 2025 - Wednesday
 ### Built/created 
 - built for my branch, made changes to help build, updated next system to have cleaner writings
-
+- revamp for clock in logic to make experience better and smoother.
 
 ### Trello
-
+- building and debugging problems(2 hours)
+- Clock logic (6 hours)
