@@ -122,16 +122,16 @@ export default function NewClockProcess({
     }
   }, [mechanicView, truckView, tascoView, laborView, type, option]);
 
-  useEffect(() => {
-    console.log("step", step);
-  }),
-    [step];
+  // useEffect(() => {
+  //   console.log("step", step);
+  // }),
+  //   [step];
 
-  useEffect(() => {
-    console.log("clockInRole", clockInRole);
-    console.log("step", step);
-  }),
-    [step];
+  // useEffect(() => {
+  //   console.log("clockInRole", clockInRole);
+  //   console.log("step", step);
+  // }),
+  //   [step];
 
   //------------------------------------------------------------------
   //------------------------------------------------------------------
@@ -176,12 +176,7 @@ export default function NewClockProcess({
             : "";
 
         setClockInRole(prevWorkRole);
-
-        if (prevWorkRole === "general") {
-          setStep(5);
-        } else {
-          setStep(4);
-        }
+        setStep(5);
       } else {
         throw new Error("No response");
       }
@@ -314,6 +309,9 @@ step 4 : confirmation page and redirect to dashboard with authorization
         <CodeStep datatype="jobsite-mechanic" handleNextStep={handleNextStep} />
       )}
       {step === 4 && clockInRole === "mechanic" && (
+        <CodeStep datatype="costcode" handleNextStep={handleNextStep} />
+      )}
+      {step === 5 && clockInRole === "mechanic" && (
         <MechanicVerificationStep
           type={type}
           role={clockInRole}
@@ -341,20 +339,26 @@ step 4 : confirmation page and redirect to dashboard with authorization
         />
       )}
       {/* Special Forms Section */}
-      {step === 3 && clockInRole === "truck" && (
-        <TruckClockInForm
+      {/* <TruckClockInForm
           handleNextStep={handleNextStep}
           setComments={setComments}
-        />
+        /> */}
+      {step === 3 && clockInRole === "truck" && (
+        <CodeStep datatype="jobsite-truck" handleNextStep={handleNextStep} />
       )}
-      {/* Verification Page for truck drivers */}
+      {/* Special Forms Section */}
       {step === 4 && clockInRole === "truck" && (
+        <CodeStep datatype="costcode" handleNextStep={handleNextStep} />
+      )}
+
+      {/* Verification Page for truck drivers */}
+      {step === 5 && clockInRole === "truck" && (
         <VerificationStep
           type={type}
           role={clockInRole}
           handleNextStep={handleNextStep}
           option={option}
-          comments={comments}
+          comments={undefined}
         />
       )}
 
@@ -378,6 +382,9 @@ step 4 : confirmation page and redirect to dashboard with authorization
       {/* Tasco Role */}
       {step === 3 && clockInRole === "tasco" && (
         <CodeStep datatype="jobsite-tasco" handleNextStep={handleNextStep} />
+      )}
+      {step === 4 && clockInRole === "tasco" && (
+        <CodeStep datatype="costcode" handleNextStep={handleNextStep} />
       )}
       {step === 4 && clockInRole === "tasco" && (
         <TascoVerificationStep
