@@ -133,6 +133,14 @@ export default function CodeFinder({ datatype, savedCode }: Props) {
       );
       if (selectedJobCode) addRecentlyUsedJobCode(selectedJobCode);
     }
+    if (datatype === "jobsite-truck") {
+      setScanResult({ data: option.code });
+
+      const selectedJobCode = jobsiteResults.find(
+        (j) => j.qrId === option.code
+      );
+      if (selectedJobCode) addRecentlyUsedJobCode(selectedJobCode);
+    }
 
     if (datatype === "equipment") {
       setscanEQResult({ data: option.code });
