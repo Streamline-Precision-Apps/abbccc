@@ -186,3 +186,11 @@ cookies().set({
 ### Trello
 - building and debugging problems(2 hours)
 - Clock logic (6 hours)
+
+#
+# January 23, 2025 - Thursday
+### Built/created 
+- 
+
+### Trello
+- Clock logic 
