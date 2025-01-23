@@ -19,6 +19,7 @@ export default function Comment({
   setCommentsValue: React.Dispatch<React.SetStateAction<string>>;
 }) {
   const c = useTranslations("Clock");
+
   const returnRoute = () => {
     window.history.back();
   };

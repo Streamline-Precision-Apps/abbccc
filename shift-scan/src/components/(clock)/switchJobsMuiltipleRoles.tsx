@@ -8,7 +8,6 @@ import { useTranslations } from "next-intl";
 import { useCommentData } from "@/app/context/CommentContext";
 import { useState } from "react";
 import { Images } from "../(reusable)/images";
-import { setWorkRole } from "@/actions/cookieActions";
 import { Selects } from "../(reusable)/selects";
 import { TextAreas } from "../(reusable)/textareas";
 import { Texts } from "../(reusable)/texts";
@@ -40,13 +39,9 @@ export default function SwitchJobsMultiRoles({
   const laborView = session?.user.laborView;
   const { setCommentData } = useCommentData();
   const [commentsValue, setCommentsValue] = useState<string>("");
-  const [currentRole, setCurrentRole] = useState<string>(clockInRole || "");
 
   const selectView = (selectedRole: string) => {
-    setCurrentRole(selectedRole);
     setClockInRole(selectedRole); // Updates state
-    setWorkRole(selectedRole); // Updates cookie
-    localStorage.setItem("clockInRole", selectedRole); // Updates local storage
   };
 
   const saveCurrentData = () => {
@@ -170,7 +165,7 @@ export default function SwitchJobsMultiRoles({
                 <Holds className="h-full w-11/12 justify-center">
                   <Selects
                     className="bg-app-blue text-center"
-                    value={currentRole}
+                    value={clockInRole}
                     onChange={(e) => selectView(e.target.value)}
                   >
                     <option value="">{t("SelectWorkType")}</option>

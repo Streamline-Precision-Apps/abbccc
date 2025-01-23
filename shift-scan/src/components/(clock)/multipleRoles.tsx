@@ -43,7 +43,6 @@ export default function MultipleRoles({
 
   const selectView = (clockInRole: string) => {
     setClockInRole(clockInRole);
-    setWorkRole(clockInRole);
     handleNextStep();
   };
 

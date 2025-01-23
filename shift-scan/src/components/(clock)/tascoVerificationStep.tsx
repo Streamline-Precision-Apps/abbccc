@@ -22,7 +22,7 @@ import { useStartingMileage } from "@/app/context/StartingMileageContext";
 import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
 import { useCommentData } from "@/app/context/CommentContext";
-import { setCurrentPageView } from "@/actions/cookieActions";
+import { setCurrentPageView, setWorkRole } from "@/actions/cookieActions";
 import { useRouter } from "next/navigation";
 
 type VerifyProcessProps = {
@@ -60,7 +60,7 @@ export default function TascoVerificationStep({
       if (!id) {
         throw new Error("User id does not exist");
       }
-
+      await setWorkRole(role);
       if (type === "switchJobs") {
         try {
           const tId = await fetch(
@@ -125,7 +125,6 @@ export default function TascoVerificationStep({
         setTimeSheetData(result);
 
         setCurrentPageView("dashboard");
-
         router.push("/dashboard");
       }
     } catch (error) {

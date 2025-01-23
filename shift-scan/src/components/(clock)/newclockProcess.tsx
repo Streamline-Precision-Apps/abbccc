@@ -32,7 +32,7 @@ type NewClockProcessProps = {
   type: string;
   scannerType: string;
   locale: string;
-  currentRole?: string;
+  currentRole: string;
 };
 
 export default function NewClockProcess({
@@ -49,7 +49,7 @@ export default function NewClockProcess({
   // State management
 
   const [step, setStep] = useState(0);
-  const [clockInRole, setClockInRole] = useState(currentRole || "");
+  const [clockInRole, setClockInRole] = useState(currentRole);
   const [comments, setComments] = useState(""); // for trucking
   const [numberOfRoles, setNumberOfRoles] = useState(0);
 
@@ -104,16 +104,16 @@ export default function NewClockProcess({
       setWorkRole(""); // Reset workRole so that the cookie is never set for the wrong role
       if (mechanicView && !laborView && !truckView && !tascoView) {
         role = "mechanic";
-        setWorkRole(role);
+        setClockInRole(role);
       } else if (laborView && !mechanicView && !truckView && !tascoView) {
         role = "general";
-        setWorkRole(role);
+        setClockInRole(role);
       } else if (truckView && !mechanicView && !laborView && !tascoView) {
         role = "truck";
-        setWorkRole(role);
+        setClockInRole(role);
       } else if (tascoView && !mechanicView && laborView && !truckView) {
         role = "tasco";
-        setWorkRole(role);
+        setClockInRole(role);
       } else {
         role = "";
       }
@@ -127,13 +127,18 @@ export default function NewClockProcess({
   }),
     [step];
 
+  useEffect(() => {
+    console.log("clockInRole", clockInRole);
+    console.log("step", step);
+  }),
+    [step];
+
   //------------------------------------------------------------------
   //------------------------------------------------------------------
   // Helper functions
   //------------------------------------------------------------------
   //------------------------------------------------------------------
   const handleNextStep = () => setStep((prevStep) => prevStep + 1);
-  const handlePrevStep = () => setStep((prevStep) => prevStep - 1);
 
   const handleAlternativePath = () => {
     setStep(2);
@@ -171,7 +176,6 @@ export default function NewClockProcess({
             : "";
 
         setClockInRole(prevWorkRole);
-        setWorkRole(prevWorkRole);
 
         if (prevWorkRole === "general") {
           setStep(5);
@@ -209,6 +213,7 @@ export default function NewClockProcess({
               url="/dashboard"
               handleReturnPath={handleReturnPath}
               clockInRole={""}
+              setClockInRole={setClockInRole}
             />
           </>
         )}
