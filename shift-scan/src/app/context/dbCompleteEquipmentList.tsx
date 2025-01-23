@@ -5,13 +5,15 @@ import React, {
   ReactNode,
   useEffect,
 } from "react";
-import { Equipment } from "@/lib/types";
+import { CompleteListEquipment } from "@/lib/types";
 import { z } from "zod";
 import { usePathname } from "next/navigation";
 
 type EquipmentContextType = {
-  equipmentListResults: Equipment[];
-  setEquipmentListResults: React.Dispatch<React.SetStateAction<Equipment[]>>;
+  equipmentListResults: CompleteListEquipment[];
+  setEquipmentListResults: React.Dispatch<
+    React.SetStateAction<CompleteListEquipment[]>
+  >;
 };
 
 const EquipmentContext = createContext<EquipmentContextType>({
@@ -24,25 +26,25 @@ const EquipmentSchema = z.array(
     qrId: z.string(),
     name: z.string(),
     description: z.string().optional(),
-    equipmentTag: z.string().default("EQUIPMENT"),
-    lastInspection: z.date().refine((date) => !isNaN(date.getTime()), {
-      message: "Invalid date format",
-    }),
-    lastRepair: z.date().refine((date) => !isNaN(date.getTime()), {
-      message: "Invalid date format",
-    }),
-    status: z.string().optional(),
+    equipmentTag: z.enum(["EQUIPMENT", "VEHICLE", "TRUCK", "TRAILER"]),
+    lastInspection: z.string().nullable().optional(),
+    nextInspection: z.string().nullable().optional(),
+    nextInspectionComment: z.string().nullable().optional(),
+    lastRepair: z.string().nullable().optional(),
+    status: z.enum(["OPERATIONAL", "NEEDS_REPAIR", "NEEDS_MAINTENANCE"]),
+    createdAt: z.string(),
+    updatedAt: z.string(),
     make: z.string().nullable().optional(),
     model: z.string().nullable().optional(),
     year: z.string().nullable().optional(),
     licensePlate: z.string().nullable().optional(),
-    registrationExpiration: z.date().refine((date) => !isNaN(date.getTime()), {
-      message: "Invalid date format",
-    }),
+    registrationExpiration: z.string().nullable().optional(),
     mileage: z.number().nullable().optional(),
-    isActive: z.boolean().optional(),
-    image: z.string().nullable().optional(),
-    inUse: z.boolean().optional(),
+    isActive: z.boolean(),
+    inUse: z.boolean(),
+    jobsiteId: z.string().nullable().optional(),
+    overWeight: z.boolean().optional(),
+    currentWeight: z.number().nullable().optional(),
   })
 );
 
@@ -51,9 +53,9 @@ export const EquipmentListProvider = ({
 }: {
   children: ReactNode;
 }) => {
-  const [equipmentListResults, setEquipmentListResults] = useState<Equipment[]>(
-    []
-  );
+  const [equipmentListResults, setEquipmentListResults] = useState<
+    CompleteListEquipment[]
+  >([]);
 
   const url = usePathname();
   useEffect(() => {
@@ -68,7 +70,9 @@ export const EquipmentListProvider = ({
           const recentEquipmentList = await response.json();
           const validatedEquipmentList =
             EquipmentSchema.parse(recentEquipmentList);
-          setEquipmentListResults(validatedEquipmentList);
+          setEquipmentListResults(
+            validatedEquipmentList
+          ) as unknown as CompleteListEquipment[];
         }
       } catch (error) {
         if (error instanceof z.ZodError) {

@@ -280,6 +280,12 @@ export type CostCodes = {
   description: string;
 };
 
+export type EquipmentCode = {
+  id: string;
+  qrId: string;
+  name: string;
+};
+
 export type EquipmentCodes = {
   isActive: boolean;
   mileage: number | null;
@@ -475,6 +481,32 @@ export type Equipment = {
   mileage?: number | null | undefined;
   isActive?: boolean;
   inUse?: boolean;
+};
+
+export type CompleteListEquipment = {
+  id: string;
+  qrId: string;
+  name: string;
+  description?: string;
+  equipmentTag: "TRUCK" | "TRAILER" | "EQUIPMENT" | "VEHICLE";
+  lastInspection?: string | null;
+  nextInspection?: string | null;
+  nextInspectionComment?: string | null;
+  lastRepair?: string | null;
+  status: "OPERATIONAL" | "NEEDS_REPAIR" | "NEEDS_MAINTENANCE";
+  createdAt: string;
+  updatedAt: string;
+  make?: string | null;
+  model?: string | null;
+  year?: string | null;
+  licensePlate?: string | null;
+  registrationExpiration?: string | null;
+  mileage?: number | null;
+  isActive: boolean;
+  inUse: boolean;
+  jobsiteId?: string | null;
+  overWeight?: boolean;
+  currentWeight?: number | null;
 };
 
 export type Jobsite = {

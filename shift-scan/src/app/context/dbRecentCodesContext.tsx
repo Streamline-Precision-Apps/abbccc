@@ -8,7 +8,12 @@ import React, {
   use,
   useEffect,
 } from "react";
-import { JobCodes, CostCodes, EquipmentCodes } from "@/lib/types";
+import {
+  JobCodes,
+  CostCodes,
+  EquipmentCodes,
+  EquipmentCode,
+} from "@/lib/types";
 import { z } from "zod";
 import { usePathname } from "next/navigation";
 
@@ -28,26 +33,6 @@ const EquipmentSchema = z.array(
     id: z.string(),
     qrId: z.string(),
     name: z.string(),
-    description: z.string().optional(),
-    equipmentTag: z.string().default("EQUIPMENT"),
-    lastInspection: z.date().refine((date) => !isNaN(date.getTime()), {
-      message: "Invalid date format",
-    }),
-    lastRepair: z.date().refine((date) => !isNaN(date.getTime()), {
-      message: "Invalid date format",
-    }),
-    status: z.string().optional(),
-    make: z.string().nullable().optional(),
-    model: z.string().nullable().optional(),
-    year: z.string().nullable().optional(),
-    licensePlate: z.string().nullable().optional(),
-    registrationExpiration: z.date().refine((date) => !isNaN(date.getTime()), {
-      message: "Invalid date format",
-    }),
-    mileage: z.number().nullable().optional(),
-    isActive: z.boolean().optional(),
-    image: z.string().nullable().optional(),
-    inUse: z.boolean().optional(),
   })
 );
 
@@ -226,11 +211,11 @@ export const RecentCostCodeProvider = ({
 export const useRecentDBCostcode = () => useContext(RecentCostCodeContext);
 
 interface RecentEquipmentContextType {
-  recentlyUsedEquipment: EquipmentCodes[];
+  recentlyUsedEquipment: EquipmentCode[];
   setRecentlyUsedEquipment: React.Dispatch<
-    React.SetStateAction<EquipmentCodes[]>
+    React.SetStateAction<EquipmentCode[]>
   >;
-  addRecentlyUsedEquipment: (equipment: EquipmentCodes) => void;
+  addRecentlyUsedEquipment: (equipment: EquipmentCode) => void;
 }
 
 const RecentEquipmentContext = createContext<RecentEquipmentContextType>({
@@ -245,7 +230,7 @@ export const RecentEquipmentProvider = ({
   children: ReactNode;
 }) => {
   const [recentlyUsedEquipment, setRecentlyUsedEquipment] = useState<
-    EquipmentCodes[]
+    EquipmentCode[]
   >([]);
   const url = usePathname();
   useEffect(() => {
@@ -260,9 +245,7 @@ export const RecentEquipmentProvider = ({
           const recentEquipment = await response.json();
           const validatedRecentEquipment =
             EquipmentSchema.parse(recentEquipment);
-          setRecentlyUsedEquipment(
-            validatedRecentEquipment as EquipmentCodes[]
-          );
+          setRecentlyUsedEquipment(validatedRecentEquipment as EquipmentCode[]);
         }
       } catch (error) {
         if (error instanceof z.ZodError) {
@@ -276,7 +259,7 @@ export const RecentEquipmentProvider = ({
     fetchData();
   }, [url]);
 
-  const addRecentlyUsedEquipment = (equipment: EquipmentCodes) => {
+  const addRecentlyUsedEquipment = (equipment: EquipmentCode) => {
     setRecentlyUsedEquipment((prev) => {
       const updatedList = [
         equipment,
