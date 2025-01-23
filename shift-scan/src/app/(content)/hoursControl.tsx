@@ -14,6 +14,8 @@ import { Texts } from "@/components/(reusable)/texts";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Holds } from "@/components/(reusable)/holds";
 import { Grids } from "@/components/(reusable)/grids";
+import { Images } from "@/components/(reusable)/images";
+import { Titles } from "@/components/(reusable)/titles";
 
 type ControlComponentProps = {
   toggle: (toggle: boolean) => void;
@@ -157,29 +159,38 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
   };
 
   return (
-    <Grids rows="7" gap="5">
-      <Holds
-        background={"darkBlue"}
-        className="row-span-2 h-full shadow-[8px_8px_0px_grey]"
-      >
-        <ViewComponent
-          returnToMain={returnToMain}
-          scrollLeft={scrollLeft}
-          scrollRight={scrollRight}
-          currentDate={currentData.date}
-        />
+    <Grids rows="12" gap="5">
+      <Holds position={"row"} className="row-span-2">
+        <Holds size={"20"} className="h-full mr-5">
+          <Buttons
+            background={"red"}
+            onClick={returnToMain}
+          >
+            <Images
+              titleImg={"/turnBack.svg"}
+              titleImgAlt="return"
+              className="mx-auto p-2"
+            />
+          </Buttons>
+        </Holds>
+      <Holds size={"80"} className="h-full">
+        <Buttons href={"/timesheets"} background={"green"}>
+          <Titles size={"h3"}>{t("TimeSheet-Label")}</Titles>
+        </Buttons>
+      </Holds>
       </Holds>
 
       <Holds
-        position="row"
-        className="row-span-4 border-black border-[3px] rounded-2xl shadow-[8px_8px_0px_grey]"
+      background={"darkBlue"}
+        className="row-span-10 h-full border-black border-[3px] rounded-[10px] shadow-[8px_8px_0px_grey]"
       >
+        <Grids>
+        <Holds position="row" className="h-full p-2">
         {/* Render prevData only if it exists */}
         {prevData.date !== "" ? (
-          <Holds className="mx-auto px-2 py-4 h-full w-[25%]">
+          <Holds className="mx-auto pl-2 pb-2 pt-6 h-full w-[25%]">
             <Holds
-              background="darkBlue"
-              className={`h-full rounded-[10px] p-1 flex justify-end ${
+              className={`h-full rounded-[10px] bg-white p-1 justify-end ${
                 prevData.date === Today.date
                   ? "border-[5px] border-app-green"
                   : "border-[3px] border-black"
@@ -189,21 +200,19 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
                   toZonedTime(new Date(), MST_TIMEZONE)
                     .toISOString()
                     .split("T")[0]
-                  ? " "
+                  ? ""
                   : ""
               }`}
             >
               <Holds
-                className={`rounded-[10px] justify-end ${
-                  prevData.hours > 8 && prevData.hours !== 0
-                    ? "bg-app-green"
-                    : prevData.hours < 8 && prevData.hours !== 0
-                    ? "bg-app-orange"
+                className={`rounded-[10px] ${
+                  prevData.hours !== 0
+                    ? "bg-app-blue"
                     : ""
                 }`}
                 style={{
                   height: `${calculateBarHeight(prevData.hours)}%`,
-                  border: prevData.hours ? "3px solid black" : "none",
+                  border: prevData.hours ? "3px solid black" : "",
                 }}
               >
                 <Texts size="p4">
@@ -234,10 +243,9 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
         )}
 
         {/* Render currentData */}
-        <Holds className="mx-auto px-2 py-2 h-full w-[30%]">
+        <Holds className="mx-auto h-full w-[30%]">
           <Holds
-            background="darkBlue"
-            className={`h-full rounded-[10px] p-1 flex justify-end ${
+            className={`h-full rounded-[10px] bg-white p-1 flex justify-end ${
               currentData.date === Today.date
                 ? "border-[5px] border-app-green"
                 : "border-[3px] border-black"
@@ -253,11 +261,9 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
           >
             <Holds
               className={`rounded-[10px] justify-end ${
-                currentData.hours > 8 && currentData.hours !== 0
-                  ? "bg-app-green"
-                  : currentData.hours < 8 && currentData.hours !== 0
-                  ? "bg-app-orange"
-                  : ""
+                currentData.hours !== 0
+                ? "bg-app-blue"
+                : ""
               }`}
               style={{
                 height: `${calculateBarHeight(currentData.hours)}%`,
@@ -290,10 +296,10 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
 
         {/* Render nextData */}
         {nextData.date !== "" ? (
-          <Holds className="mx-auto px-2 py-4 h-full w-[25%]">
+          <Holds className="mx-auto pr-2 pb-2 pt-6 h-full w-[25%]">
             <Holds
               background="darkBlue"
-              className={`h-full rounded-[10px] p-1 flex justify-end ${
+              className={`h-full rounded-[10px] bg-white p-1 flex justify-end ${
                 nextData.date === Today.date
                   ? "border-[5px] border-app-green"
                   : "border-[3px] border-black"
@@ -308,11 +314,9 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
               }`}
             >
               <Holds
-                className={`rounded-[10px] justify-end ${
-                  nextData.hours > 8 && nextData.hours !== 0
-                    ? "bg-app-green"
-                    : nextData.hours < 8 && nextData.hours !== 0
-                    ? "bg-app-orange"
+                className={`rounded-[10px] ${
+                  prevData.hours !== 0
+                    ? "bg-app-blue"
                     : ""
                 }`}
                 style={{
@@ -346,12 +350,20 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
         ) : (
           <Holds className="mx-auto px-2 py-4 h-full w-[25%]" />
         )}
+        </Holds>
+
+        <Holds
+        className=" p-2 h-full"
+      >
+        <ViewComponent
+          scrollLeft={scrollLeft}
+          scrollRight={scrollRight}
+          currentDate={currentData.date}
+        />
       </Holds>
-      <Holds className="row-span-1 h-full">
-        <Buttons href={"/timesheets"} background={"green"}>
-          <Texts size={"p3"}>{t("TimeSheet-Label")}</Texts>
-        </Buttons>
+      </Grids>
       </Holds>
+
     </Grids>
   );
 }

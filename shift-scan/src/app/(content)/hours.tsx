@@ -7,6 +7,7 @@ import { Texts } from "@/components/(reusable)/texts";
 import { Holds } from "@/components/(reusable)/holds";
 import Spinner from "@/components/(animations)/spinner";
 import { Contents } from "@/components/(reusable)/contents";
+import { Grids } from "@/components/(reusable)/grids";
 
 // Assuming User has at least these fields, adjust accordingly
 
@@ -25,38 +26,34 @@ export default function Hours({ setToggle, display, loading }: HoursProps) {
   };
   if (loading)
     return (
-      <Buttons background={"darkBlue"} onClick={handler}>
-        <Contents width={"section"}>
-          <Holds position={"row"} className="my-auto">
-            <Holds className="w-[60%]">
-              <Texts text={"white"} size={"p2"}>
-                {t("PayPeriodHours")}
-              </Texts>
-            </Holds>
-            <Holds background={"white"} className="py-1 w-[40%]">
-              <Spinner size={20} />
-            </Holds>
-          </Holds>
-        </Contents>
-      </Buttons>
-    );
-
-  return display ? (
-    <Buttons background={"darkBlue"} onClick={handler}>
-      <Contents width={"section"}>
-        <Holds position={"row"} className="my-auto ">
-          <Holds className="w-[60%]">
+      <Buttons onClick={handler} background={"darkBlue"}>
+        <Grids cols={"10"} rows={"3"}>
+          <Holds className="col-start-1 col-end-7 row-span-3">
             <Texts text={"white"} size={"p2"}>
               {t("PayPeriodHours")}
             </Texts>
           </Holds>
-          <Holds background={"white"} className="py-1 w-[40%]">
+          <Holds background={"white"} className="col-start-7 col-end-10 row-start-1 row-end-4 p-3 border-[3px] border-black rounded-[10px]">
+            <Spinner size={30}/>
+          </Holds>
+        </Grids>
+      </Buttons>
+    );
+
+  return display ? (
+    <Buttons onClick={handler} background={"darkBlue"}>
+      <Grids cols={"10"} rows={"3"}>
+        <Holds className="col-start-1 col-end-7 row-span-3">
+            <Texts text={"white"} size={"p2"}>
+              {t("PayPeriodHours")}
+            </Texts>
+          </Holds>
+          <Holds background={"white"} className="col-start-7 col-end-10 row-start-1 row-end-4 p-3 border-[3px] border-black rounded-[10px]">
             <Texts text={"black"} size={"p4"}>
               {payPeriodHours} {t("Unit")}
             </Texts>
           </Holds>
-        </Holds>
-      </Contents>
+      </Grids>
     </Buttons>
   ) : (
     <ViewHoursComponent toggle={setToggle} />
