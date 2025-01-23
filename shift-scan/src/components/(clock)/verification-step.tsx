@@ -25,6 +25,7 @@ import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
 import { useCommentData } from "@/app/context/CommentContext";
 import { setCurrentPageView } from "@/actions/cookieActions";
+import { useRouter } from "next/navigation";
 
 type VerifyProcessProps = {
   handleNextStep?: () => void;
@@ -49,6 +50,7 @@ export default function VerificationStep({
   const { truckScanData } = useTruckScanData(); // Move this hook call to the top level.
   const { startingMileage } = useStartingMileage();
   const { savedCommentData, setCommentData } = useCommentData();
+  const router = useRouter();
   if (!session) return null; // Conditional rendering for session
 
   const { id } = session.user;
@@ -96,12 +98,9 @@ export default function VerificationStep({
           const response = await CreateTimeSheet(formData);
           const result = { id: response.id.toString() };
           setTimeSheetData(result);
+          setCurrentPageView("dashboard");
 
-          localStorage.setItem("workType", response.workType);
-
-          if (handleNextStep) {
-            handleNextStep();
-          }
+          router.push("/dashboard");
         } catch (error) {
           console.error(error);
         }
@@ -129,10 +128,7 @@ export default function VerificationStep({
         setTimeSheetData(result);
 
         setCurrentPageView("dashboard");
-
-        if (handleNextStep) {
-          handleNextStep();
-        }
+        router.push("/dashboard");
       }
     } catch (error) {
       console.error(error);

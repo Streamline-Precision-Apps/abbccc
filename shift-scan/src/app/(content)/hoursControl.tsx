@@ -112,13 +112,11 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
   useEffect(() => {
     const today = toZonedTime(new Date(), MST_TIMEZONE); // get today in MST
     today.setHours(0, 0, 0, 0).toString(); // set hours to 0 to match the date key
-    console.log("Today", today);
     const todayIndex = dailyHours.findIndex(
       (entry) =>
         toZonedTime(new Date(entry.date), MST_TIMEZONE).toString() ===
         today.toString()
     );
-    console.log("todayIndex", todayIndex);
     if (todayIndex !== -1) {
       setCurrentIndex(todayIndex);
       setTodayIndex(todayIndex);

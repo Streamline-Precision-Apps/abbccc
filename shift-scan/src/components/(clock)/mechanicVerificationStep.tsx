@@ -22,6 +22,8 @@ import { useStartingMileage } from "@/app/context/StartingMileageContext";
 import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
 import { useCommentData } from "@/app/context/CommentContext";
+import { useRouter } from "next/navigation";
+import { setCurrentPageView } from "@/actions/cookieActions";
 
 type VerifyProcessProps = {
   handleNextStep?: () => void;
@@ -39,7 +41,7 @@ export default function MechanicVerificationStep({
   const t = useTranslations("Clock");
   const { scanResult } = useScanData();
   const { setTimeSheetData } = useTimeSheetData();
-
+  const router = useRouter();
   const date = new Date();
   const { data: session } = useSession();
   const { truckScanData } = useTruckScanData(); // Move this hook call to the top level.
@@ -94,11 +96,8 @@ export default function MechanicVerificationStep({
           const response = await CreateTimeSheet(formData);
           const result = { id: response.id.toString() };
           setTimeSheetData(result);
-          localStorage.setItem("workType", response.workType);
 
-          if (handleNextStep) {
-            handleNextStep();
-          }
+          router.push("/dashboard");
         } catch (error) {
           console.error(error);
         }
@@ -124,10 +123,9 @@ export default function MechanicVerificationStep({
         const response = await CreateTimeSheet(formData);
         const result = { id: response.id.toString() };
         setTimeSheetData(result);
+        setCurrentPageView("dashboard");
 
-        if (handleNextStep) {
-          handleNextStep();
-        }
+        router.push("/dashboard");
       }
     } catch (error) {
       console.error(error);

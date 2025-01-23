@@ -20,7 +20,7 @@ import MechanicVerificationStep from "./mechanicVerificationStep";
 import TascoVerificationStep from "./tascoVerificationStep";
 import SwitchJobsMultiRoles from "./switchJobsMuiltipleRoles";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
-import { number } from "zod";
+import { returnToPrevWork } from "@/actions/timeSheetActions";
 
 type NewClockProcessProps = {
   mechanicView: boolean;
@@ -56,8 +56,8 @@ export default function NewClockProcess({
   const t = useTranslations("Clock");
   const router = useRouter();
   // Contexts
-  const { scanResult, setScanResult } = useScanData();
-  const { savedCostCode, setCostCode } = useSavedCostCode();
+  const { setScanResult } = useScanData();
+  const { setCostCode } = useSavedCostCode();
   const { truckScanData } = useTruckScanData();
   const { startingMileage } = useStartingMileage();
 
@@ -144,19 +144,42 @@ export default function NewClockProcess({
     setStep(1);
   };
 
-  const handleReturn = () => {
-    // because I have seperate routes for each role
-    // I dont need to specify the role except to set the step
+  // Lets the user return to the prev jobsite
+  const handleReturn = async () => {
     try {
-      // setting the cookies below
-      setJobSite(scanResult?.data || "");
-      setCostCode(savedCostCode || "");
-      setClockInRole(clockInRole);
+      // setting the cookies below to fetch the prev TimeSheet
+      const tId = await fetch("/api/cookies?method=get&name=timeSheetId").then(
+        (res) => res.json()
+      );
+      const formData = new FormData();
+      formData.append("id", tId?.toString() || "");
+      const response = await returnToPrevWork(formData);
+      // filtering response to match data with current role
+      if (response) {
+        setJobSite(response.jobsiteId);
+        setScanResult({ data: response.jobsiteId });
+        setCostCode(response.costcode);
+        const prevWorkRole =
+          response.workType === "LABOR"
+            ? "general"
+            : response.workType === "MECHANIC"
+            ? "mechanic"
+            : response.workType === "TASCO"
+            ? "tasco"
+            : response.workType === "TRUCK_DRIVER"
+            ? "truck"
+            : "";
 
-      if (clockInRole === "general") {
-        setStep(5);
+        setClockInRole(prevWorkRole);
+        setWorkRole(prevWorkRole);
+
+        if (prevWorkRole === "general") {
+          setStep(5);
+        } else {
+          setStep(4);
+        }
       } else {
-        setStep(4);
+        throw new Error("No response");
       }
     } catch (error) {
       console.log(error);
@@ -294,17 +317,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
           comments={undefined}
         />
       )}
-      {step === 5 && clockInRole === "mechanic" && (
-        <ConfirmationPage
-          option={option}
-          savedCostCode={savedCostCode}
-          scanResult={scanResult?.data}
-          truckScanData={truckScanData}
-          type={type}
-          startingMileage={startingMileage}
-          locale={locale}
-        />
-      )}
+
       {/* ------------------------- Mechanic Role end ---------------------*/}
 
       {/* Truck Role */}
@@ -339,17 +352,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
           comments={comments}
         />
       )}
-      {step === 4 && clockInRole === "truck" && (
-        <ConfirmationPage
-          option={option}
-          savedCostCode={savedCostCode}
-          scanResult={scanResult?.data}
-          truckScanData={truckScanData}
-          type={type}
-          startingMileage={startingMileage}
-          locale={locale}
-        />
-      )}
+
       {/* ------------------------- End of Trucking Role section ---------------------*/}
 
       {/* Tasco Role */}
@@ -378,17 +381,6 @@ step 4 : confirmation page and redirect to dashboard with authorization
           handleNextStep={handleNextStep}
           option={option}
           comments={undefined}
-        />
-      )}
-      {step === 5 && clockInRole === "tasco" && (
-        <ConfirmationPage
-          option={option}
-          savedCostCode={savedCostCode}
-          scanResult={scanResult?.data}
-          truckScanData={truckScanData}
-          type={type}
-          startingMileage={startingMileage}
-          locale={locale}
         />
       )}
       {/* ------------------------- Tasco Role End ---------------------*/}
@@ -436,7 +428,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
           />
         </Holds>
       )}
-      {/* Confirmation Page */}
+      {/* Confirmation Page
       {step === 6 && clockInRole === "general" && (
         <ConfirmationPage
           option={option}
@@ -447,7 +439,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
           startingMileage={startingMileage}
           locale={locale}
         />
-      )}
+      )} */}
     </>
   );
 }
