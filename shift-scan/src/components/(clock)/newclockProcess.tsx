@@ -133,6 +133,7 @@ export default function NewClockProcess({
   //------------------------------------------------------------------
   //------------------------------------------------------------------
   const handleNextStep = () => setStep((prevStep) => prevStep + 1);
+  const handlePrevStep = () => setStep((prevStep) => prevStep - 1);
 
   const handleAlternativePath = () => {
     setStep(2);
@@ -275,7 +276,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
             handleNextStep={handleNextStep}
             handleReturn={handleReturn}
             url={returnpath}
-            option={option}
+            option={type} // type is the method of clocking in ... general, switchJobs, or equipment
             clockInRole={clockInRole} // clock in role will make the qr know which role to use
             setClockInRole={setClockInRole}
           />
@@ -316,7 +317,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
           handleNextStep={handleNextStep}
           handleReturn={handleReturn}
           url={returnpath}
-          option={option}
+          option={type} // type is the method of clocking in ... general, switchJobs, or equipment
           clockInRole={clockInRole}
           setClockInRole={setClockInRole}
         />
@@ -361,7 +362,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
           handleReturn={handleReturn}
           handleReturnPath={handleReturnPath}
           url={returnpath}
-          option={option}
+          option={type} // type is the method of clocking in ... general, switchJobs, or equipment
           clockInRole={clockInRole}
           setClockInRole={setClockInRole}
         />
@@ -402,7 +403,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
           handleReturn={handleReturn}
           handleReturnPath={handleReturnPath}
           url={returnpath}
-          option={option}
+          option={type} // type is the method of clocking in ... general, switchJobs, or equipment
           clockInRole={clockInRole}
           setClockInRole={setClockInRole}
         />
@@ -410,7 +411,11 @@ step 4 : confirmation page and redirect to dashboard with authorization
       {/* Select Jobsite Section */}
       {step === 3 && clockInRole === "general" && (
         <Holds className="h-full w-full py-5">
-          <CodeStep datatype="jobsite" handleNextStep={handleNextStep} handleReturnPath={handleReturnPath}/>
+          <CodeStep
+            datatype="jobsite"
+            handleNextStep={handleNextStep}
+            handleReturnPath={handleReturnPath}
+          />
         </Holds>
       )}
       {/* Select Cost Code Section */}
