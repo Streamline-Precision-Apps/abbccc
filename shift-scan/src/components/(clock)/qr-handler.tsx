@@ -24,7 +24,7 @@ type QRStepProps = {
   url: string;
   option?: string;
   clockInRole: string;
-  setClockInRole?: React.Dispatch<React.SetStateAction<string>>;
+  setClockInRole: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export default function QRStep({
@@ -36,6 +36,8 @@ export default function QRStep({
   handleScanJobsite,
   type,
   url,
+  clockInRole,
+  setClockInRole,
 }: QRStepProps) {
   const t = useTranslations("Clock");
   const [startCamera, setStartCamera] = useState<boolean>(false); // set to false;
@@ -45,21 +47,10 @@ export default function QRStep({
   const mechanicView = session?.user.mechanicView;
   const laborView = session?.user.laborView;
   const [numberOfViews, setNumberOfViews] = useState(0);
-  const [clockInRole, setClockInRole] = useState("");
 
   const selectView = (clockInRole: string) => {
-    setClockInRole && setClockInRole(clockInRole);
-    setWorkRole(clockInRole);
+    setClockInRole(clockInRole);
   };
-
-  useEffect(() => {
-    const fetchRole = async () => {
-      const role = await fetch("/api/cookies?method=get&name=workRole");
-      const data = await role.json();
-      setClockInRole(data || "");
-    };
-    fetchRole();
-  }, [setClockInRole]);
 
   useEffect(() => {
     let count = 0; // Reset count for fresh calculation

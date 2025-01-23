@@ -24,7 +24,7 @@ import { useStartingMileage } from "@/app/context/StartingMileageContext";
 import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
 import { useCommentData } from "@/app/context/CommentContext";
-import { setCurrentPageView } from "@/actions/cookieActions";
+import { setCurrentPageView, setWorkRole } from "@/actions/cookieActions";
 import { useRouter } from "next/navigation";
 
 type VerifyProcessProps = {
@@ -63,6 +63,8 @@ export default function VerificationStep({
         throw new Error("User id does not exist");
       }
 
+      await setWorkRole(role);
+
       if (type === "switchJobs") {
         try {
           const tId = await fetch(
@@ -99,6 +101,8 @@ export default function VerificationStep({
           const result = { id: response.id.toString() };
           setTimeSheetData(result);
           setCurrentPageView("dashboard");
+          console.log("role before set", role);
+          setWorkRole(role);
 
           router.push("/dashboard");
         } catch (error) {
@@ -126,8 +130,8 @@ export default function VerificationStep({
         const response = await CreateTimeSheet(formData);
         const result = { id: response.id.toString() };
         setTimeSheetData(result);
-
         setCurrentPageView("dashboard");
+        setWorkRole(role);
         router.push("/dashboard");
       }
     } catch (error) {
