@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { Equipment } from "@/lib/types";
 import { z } from "zod";
+import { usePathname } from "next/navigation";
 
 type EquipmentContextType = {
   equipmentListResults: Equipment[];
@@ -53,14 +54,22 @@ export const EquipmentListProvider = ({
   const [equipmentListResults, setEquipmentListResults] = useState<Equipment[]>(
     []
   );
+
+  const url = usePathname();
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch("/api/getEquipmentList");
-      const recentEquipmentList = await response.json();
       try {
-        const validatedEquipmentList =
-          EquipmentSchema.parse(recentEquipmentList);
-        setEquipmentListResults(validatedEquipmentList);
+        if (
+          url === "/clock" ||
+          url === "/dashboard/log-new" ||
+          url === "/dashboard/switch-jobs"
+        ) {
+          const response = await fetch("/api/getEquipmentList");
+          const recentEquipmentList = await response.json();
+          const validatedEquipmentList =
+            EquipmentSchema.parse(recentEquipmentList);
+          setEquipmentListResults(validatedEquipmentList);
+        }
       } catch (error) {
         if (error instanceof z.ZodError) {
           console.error(
@@ -71,7 +80,7 @@ export const EquipmentListProvider = ({
       }
     };
     fetchData();
-  }, []);
+  }, [url]);
 
   return (
     <EquipmentContext.Provider

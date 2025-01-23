@@ -9,6 +9,7 @@ import React, {
 } from "react";
 import { CostCodes, JobCodes, EquipmentCodes } from "@/lib/types";
 import { z } from "zod";
+import { usePathname } from "next/navigation";
 
 const JobsitesSchema = z.array(
   z.object({
@@ -76,19 +77,28 @@ const JobSiteContext = createContext<JobSiteContextType>({
 
 export const JobSiteProvider = ({ children }: { children: ReactNode }) => {
   const [jobsiteResults, setJobsiteResults] = useState<JobCodes[]>([]);
+  const url = usePathname();
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch("/api/getJobsites");
-      const jobSites = await response.json();
       try {
-        const validatedJobSites = JobsitesSchema.parse(jobSites as JobCodes[]);
-        setJobsiteResults(
-          validatedJobSites.map((jobSite) => ({
-            ...jobSite,
-            toLowerCase: () => jobSite.name.toLowerCase(),
-          }))
-        );
+        if (
+          url === "/clock" ||
+          url === "/dashboard/log-new" ||
+          url === "/dashboard/switch-jobs"
+        ) {
+          const response = await fetch("/api/getJobsites");
+          const jobSites = await response.json();
+          const validatedJobSites = JobsitesSchema.parse(
+            jobSites as JobCodes[]
+          );
+          setJobsiteResults(
+            validatedJobSites.map((jobSite) => ({
+              ...jobSite,
+              toLowerCase: () => jobSite.name.toLowerCase(),
+            }))
+          );
+        }
       } catch (error) {
         if (error instanceof z.ZodError) {
           console.error("Validation error in JobSites schema:", error.errors);
@@ -96,7 +106,7 @@ export const JobSiteProvider = ({ children }: { children: ReactNode }) => {
       }
     };
     fetchData();
-  }, []);
+  }, [url]);
 
   return (
     <JobSiteContext.Provider value={{ jobsiteResults, setJobsiteResults }}>
@@ -119,16 +129,22 @@ const CostCodeContext = createContext<CostCodeContextType>({
 
 export const CostCodeProvider = ({ children }: { children: ReactNode }) => {
   const [costcodeResults, setCostcodeResults] = useState<CostCodes[]>([]);
-
+  const url = usePathname();
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch("/api/getCostCodes");
-      const costCodes = await response.json();
       try {
-        const validatedCostCodes = CostCodesSchema.parse(
-          costCodes as CostCodes[]
-        );
-        setCostcodeResults(validatedCostCodes);
+        if (
+          url === "/clock" ||
+          url === "/dashboard/log-new" ||
+          url === "/dashboard/switch-jobs"
+        ) {
+          const response = await fetch("/api/getCostCodes");
+          const costCodes = await response.json();
+          const validatedCostCodes = CostCodesSchema.parse(
+            costCodes as CostCodes[]
+          );
+          setCostcodeResults(validatedCostCodes);
+        }
       } catch (error) {
         if (error instanceof z.ZodError) {
           console.error("Validation error in CostCodes schema:", error.errors);
@@ -136,7 +152,7 @@ export const CostCodeProvider = ({ children }: { children: ReactNode }) => {
       }
     };
     fetchData();
-  }, []);
+  }, [url]);
 
   return (
     <CostCodeContext.Provider value={{ costcodeResults, setCostcodeResults }}>
@@ -161,14 +177,21 @@ export const EquipmentProvider = ({ children }: { children: ReactNode }) => {
   const [equipmentResults, setEquipmentResults] = useState<EquipmentCodes[]>(
     []
   );
+  const url = usePathname();
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch("/api/getEquipment");
-      const equipment = await response.json();
       try {
-        const validatedEquipment = EquipmentSchema.parse(equipment);
-        setEquipmentResults(validatedEquipment as EquipmentCodes[]);
+        if (
+          url === "/clock" ||
+          url === "/dashboard/log-new" ||
+          url === "/dashboard/switch-jobs"
+        ) {
+          const response = await fetch("/api/getEquipment");
+          const equipment = await response.json();
+          const validatedEquipment = EquipmentSchema.parse(equipment);
+          setEquipmentResults(validatedEquipment as EquipmentCodes[]);
+        }
       } catch (error) {
         if (error instanceof z.ZodError) {
           console.error("Validation error in Equipment schema:", error.errors);
@@ -176,7 +199,7 @@ export const EquipmentProvider = ({ children }: { children: ReactNode }) => {
       }
     };
     fetchData();
-  }, [equipmentResults]);
+  }, [equipmentResults, url]);
 
   return (
     <EquipmentContext.Provider
