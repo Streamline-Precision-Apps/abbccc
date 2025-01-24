@@ -40,7 +40,7 @@ export default function QRStep({
   setClockInRole,
 }: QRStepProps) {
   const t = useTranslations("Clock");
-  const [startCamera, setStartCamera] = useState<boolean>(false); // set to false;
+  const [startCamera, setStartCamera] = useState<boolean>(false);
   const { data: session } = useSession();
   const tascoView = session?.user.tascoView;
   const truckView = session?.user.truckView;
@@ -53,13 +53,13 @@ export default function QRStep({
   };
 
   useEffect(() => {
-    let count = 0; // Reset count for fresh calculation
+    let count = 0;
     if (tascoView) count++;
     if (truckView) count++;
     if (mechanicView) count++;
     if (laborView) count++;
 
-    setNumberOfViews(count); // Update state with fresh count
+    setNumberOfViews(count);
   }, [tascoView, truckView, mechanicView, laborView]);
 
   return (
@@ -67,46 +67,69 @@ export default function QRStep({
       <Holds background={"white"} className="h-full w-full">
         <Contents width={"section"}>
           <Grids rows={"7"} gap={"5"} className="h-full w-full my-5">
-            <Holds className="row-start-1 row-end-2 h-full w-full justify-center ">
-              <Grids rows={"2"} cols={"5"} gap={"3"} className=" h-full w-full">
-                <Holds
-                  className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center"
-                  onClick={handleReturnPath}
-                >
-                  <Images
-                    titleImg="/turnBack.svg"
-                    titleImgAlt="back"
-                    position={"left"}
-                  />
+            {type !== "equipment" ? (
+              <>
+                <Holds className="row-start-1 row-end-2 h-full w-full justify-center ">
+                  <Grids rows={"2"} cols={"5"} gap={"3"} className="h-full w-full">
+                    <Holds
+                      className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center"
+                      onClick={handleReturnPath}
+                    >
+                      <Images
+                        titleImg="/turnBack.svg"
+                        titleImgAlt="back"
+                        position={"left"}
+                      />
+                    </Holds>
+                    <Holds className="row-start-2 row-end-3 col-span-5 h-full w-full justify-center">
+                      <Titles size={"h1"}> {t("ScanJobSite")}</Titles>
+                    </Holds>
+                  </Grids>
                 </Holds>
-                <Holds className="row-start-2 row-end-3 col-span-5 h-full w-full justify-center">
-                  <Titles size={"h1"}> {t("ScanJobSite")}</Titles>
-                </Holds>
-              </Grids>
-            </Holds>
-            {numberOfViews > 1 && option !== "switchJobs" ? (
-              <Holds className="p-1 justify-center border-[3px] border-black rounded-[10px] shadow-[6px_6px_0px_grey]">
-                <Selects
-                  className="disabled:gray-400 bg-app-blue text-center p-3"
-                  value={clockInRole}
-                  disabled={startCamera}
-                  onChange={(e) => selectView(e.target.value)}
-                >
-                  {tascoView === true && (
-                    <option value="tasco">{t("TASCO")}</option>
-                  )}
-                  {truckView === true && (
-                    <option value="truck">{t("Truck")}</option>
-                  )}
-                  {mechanicView === true && (
-                    <option value="mechanic">{t("Mechanic")}</option>
-                  )}
-                  {laborView === true && (
-                    <option value="general">{t("General")}</option>
-                  )}
-                </Selects>
+                {numberOfViews > 1 && option !== "switchJobs" ? (
+                  <Holds className="p-1 justify-center border-[3px] border-black rounded-[10px] shadow-[6px_6px_0px_grey]">
+                    <Selects
+                      className="disabled:gray-400 bg-app-blue text-center p-3"
+                      value={clockInRole}
+                      disabled={startCamera}
+                      onChange={(e) => selectView(e.target.value)}
+                    >
+                      {tascoView === true && (
+                        <option value="tasco">{t("TASCO")}</option>
+                      )}
+                      {truckView === true && (
+                        <option value="truck">{t("Truck")}</option>
+                      )}
+                      {mechanicView === true && (
+                        <option value="mechanic">{t("Mechanic")}</option>
+                      )}
+                      {laborView === true && (
+                        <option value="general">{t("General")}</option>
+                      )}
+                    </Selects>
+                  </Holds>
+                ) : null}
+              </>
+            ) : (
+              <Holds className="row-start-1 row-end-2 h-full w-full justify-center ">
+                <Grids rows={"2"} cols={"5"} gap={"3"} className="h-full w-full">
+                  <Holds
+                    className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center"
+                    onClick={handleReturnPath}
+                  >
+                    <Images
+                      titleImg="/turnBack.svg"
+                      titleImgAlt="back"
+                      position={"left"}
+                    />
+                  </Holds>
+                  <Holds className="row-start-2 row-end-3 col-span-5 h-full w-full justify-center">
+                    <Titles size={"h1"}> {t("ScanEquipment")}</Titles>
+                  </Holds>
+                </Grids>
               </Holds>
-            ) : null}
+            )}
+
             {!startCamera ? (
               <Holds
                 className={
