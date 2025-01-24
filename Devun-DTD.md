@@ -192,7 +192,8 @@ cookies().set({
 ### Meeting
 - Worked with Zach on hours component and questions regarding new design.
 ### Built/created 
-- 
-
+- prevented infinite loops
+- fixed bugs from yesterday
+- left no new bugs
 ### Trello
-- Clock logic 
+- Clock logic (8hours)
