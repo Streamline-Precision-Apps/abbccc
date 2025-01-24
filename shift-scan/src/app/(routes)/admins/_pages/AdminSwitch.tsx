@@ -3,7 +3,6 @@ import {
   CreateTimeSheet,
   updateTimeSheetBySwitch,
 } from "@/actions/timeSheetActions";
-import useFetchAllData from "@/app/(content)/FetchData";
 import { setAuthStep } from "@/app/api/auth";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
@@ -25,7 +24,6 @@ export default function AdminSwitch({
 }: {
   handleClose: () => void;
 }) {
-  useFetchAllData(); //  the data fetching call
   const { scanResult } = useScanData();
   const { savedCostCode } = useSavedCostCode();
   const { setTimeSheetData } = useTimeSheetData();
