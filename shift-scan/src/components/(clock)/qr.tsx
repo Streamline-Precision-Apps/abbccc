@@ -54,8 +54,9 @@ export default function QR({
       setTruckScanData(data);
       setCurrentView("truck");
       handleScanTruck();
+      handleNextStep();
     },
-    [handleScanTruck, setTruckScanData, setCurrentView]
+    [handleScanTruck, setTruckScanData, setCurrentView, handleNextStep]
   );
   // general process
   const processGeneralScan = useCallback(
@@ -63,8 +64,9 @@ export default function QR({
       setScanResult({ data });
       qrScannerRef.current?.stop();
       handleScanJobsite();
+      handleNextStep();
     },
-    [setScanResult, handleScanJobsite]
+    [setScanResult, handleScanJobsite, handleNextStep]
   );
   ///-----------------------End of scan processes-----------------------------------
 

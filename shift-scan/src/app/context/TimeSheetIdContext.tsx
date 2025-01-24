@@ -1,7 +1,14 @@
 // Stores the id for the time sheet that is currently open (waiting to be submitted when you clock out).
 
 "use client";
-import React, { createContext, useState, ReactNode, useContext } from "react";
+import { setPrevTimeSheet } from "@/actions/cookieActions";
+import React, {
+  createContext,
+  useState,
+  ReactNode,
+  useContext,
+  useEffect,
+} from "react";
 
 type TimeSheetData = {
   id: string;
@@ -19,27 +26,23 @@ const TimeSheetDataContext = createContext<
 export const TimeSheetDataProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [savedTimeSheetData, setTimeSheetDataState] =
-    useState<TimeSheetData | null>(() => {
-      // Load initial state from localStorage if available
-      if (typeof window !== "undefined") {
-        const savedTimeSheetJSON = localStorage.getItem("savedTimeSheetData");
-        return savedTimeSheetJSON ? JSON.parse(savedTimeSheetJSON) : null;
-      } else {
-        return null;
-      }
-    });
+  const [savedTimeSheetData, setTimeSheetData] = useState<TimeSheetData | null>(
+    null
+  );
 
-  const setTimeSheetData = (timesheetData: TimeSheetData | null) => {
-    setTimeSheetDataState(timesheetData);
-    // Save to localStorage
-    if (typeof window !== "undefined") {
-      localStorage.setItem("savedtimeSheetData", JSON.stringify(timesheetData));
-    } else {
-      localStorage.removeItem("savedtimeSheetData");
-    }
-    return null;
-  };
+  useEffect(() => {
+    const savedTimeSheet = async () => {
+      try {
+        const prevTimeSheet = await fetch("/api/getRecentTimecard");
+        const data = await prevTimeSheet.json();
+        setPrevTimeSheet(data.id);
+        setTimeSheetData(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    savedTimeSheet();
+  }, [savedTimeSheetData?.id]);
 
   return (
     <TimeSheetDataContext.Provider

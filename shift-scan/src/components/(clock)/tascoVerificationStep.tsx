@@ -8,7 +8,6 @@ import {
   updateTimeSheetBySwitch,
 } from "@/actions/timeSheetActions";
 import { Clock } from "../clock";
-import { setAuthStep } from "@/app/api/auth";
 import { TitleBoxes } from "../(reusable)/titleBoxes";
 import { Buttons } from "../(reusable)/buttons";
 import { Contents } from "../(reusable)/contents";
@@ -23,6 +22,8 @@ import { useStartingMileage } from "@/app/context/StartingMileageContext";
 import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
 import { useCommentData } from "@/app/context/CommentContext";
+import { setCurrentPageView, setWorkRole } from "@/actions/cookieActions";
+import { useRouter } from "next/navigation";
 
 type VerifyProcessProps = {
   handleNextStep?: () => void;
@@ -46,7 +47,7 @@ export default function TascoVerificationStep({
   const { truckScanData } = useTruckScanData(); // Move this hook call to the top level.
   const { startingMileage } = useStartingMileage();
   const { savedCommentData, setCommentData } = useCommentData();
-
+  const router = useRouter();
   const costCode = "TASCO Role";
 
   if (!session) return null; // Conditional rendering for session
@@ -59,11 +60,12 @@ export default function TascoVerificationStep({
       if (!id) {
         throw new Error("User id does not exist");
       }
-
+      await setWorkRole(role);
       if (type === "switchJobs") {
         try {
-          const localeValue = localStorage.getItem("savedtimeSheetData");
-          const tId = JSON.parse(localeValue || "{}").id;
+          const tId = await fetch(
+            "/api/cookies?method=get&name=timeSheetId"
+          ).then((res) => res.json());
           const formData2 = new FormData();
           formData2.append("id", tId?.toString() || "");
           formData2.append("endTime", new Date().toISOString());
@@ -94,12 +96,8 @@ export default function TascoVerificationStep({
           const response = await CreateTimeSheet(formData);
           const result = { id: response.id.toString() };
           setTimeSheetData(result);
-          setAuthStep("success");
-          localStorage.setItem("workType", response.workType);
 
-          if (handleNextStep) {
-            handleNextStep();
-          }
+          router.push("/dashboard");
         } catch (error) {
           console.error(error);
         }
@@ -125,11 +123,9 @@ export default function TascoVerificationStep({
         const response = await CreateTimeSheet(formData);
         const result = { id: response.id.toString() };
         setTimeSheetData(result);
-        setAuthStep("success");
 
-        if (handleNextStep) {
-          handleNextStep();
-        }
+        setCurrentPageView("dashboard");
+        router.push("/dashboard");
       }
     } catch (error) {
       console.error(error);
