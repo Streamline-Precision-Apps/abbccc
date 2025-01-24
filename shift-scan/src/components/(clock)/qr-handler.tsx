@@ -16,7 +16,6 @@ import { Contents } from "../(reusable)/contents";
 type QRStepProps = {
   handleAlternativePath: () => void;
   handleNextStep: () => void;
-  handleChangeJobsite?: () => void;
   handleReturn?: () => void;
   handleReturnPath: () => void;
   handleScanTruck?: () => void;
@@ -25,18 +24,19 @@ type QRStepProps = {
   url: string;
   option?: string;
   clockInRole: string;
-  setClockInRole?: React.Dispatch<React.SetStateAction<string>>;
+  setClockInRole: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export default function QRStep({
+  option,
   handleReturnPath,
   handleAlternativePath,
   handleNextStep,
   handleScanTruck,
   handleScanJobsite,
-  clockInRole,
   type,
   url,
+  clockInRole,
   setClockInRole,
 }: QRStepProps) {
   const t = useTranslations("Clock");
@@ -49,9 +49,7 @@ export default function QRStep({
   const [numberOfViews, setNumberOfViews] = useState(0);
 
   const selectView = (clockInRole: string) => {
-    setClockInRole && setClockInRole(clockInRole);
-    setWorkRole(clockInRole);
-    localStorage.setItem("clockInRole", clockInRole);
+    setClockInRole(clockInRole);
   };
 
   useEffect(() => {
@@ -88,7 +86,7 @@ export default function QRStep({
                     </Holds>
                   </Grids>
                 </Holds>
-                {numberOfViews > 1 ? (
+                {numberOfViews > 1 && option !== "switchJobs" ? (
                   <Holds className="p-1 justify-center border-[3px] border-black rounded-[10px] shadow-[6px_6px_0px_grey]">
                     <Selects
                       className="disabled:gray-400 bg-app-blue text-center p-3"
@@ -170,7 +168,10 @@ export default function QRStep({
                   </Holds>
 
                   <Holds className="h-full w-full row-start-5 row-end-6 justify-center">
-                    <Buttons background={"none"} onClick={handleAlternativePath}>
+                    <Buttons
+                      background={"none"}
+                      onClick={handleAlternativePath}
+                    >
                       <Texts size={"p4"}>{t("TroubleScanning")}</Texts>
                     </Buttons>
                   </Holds>

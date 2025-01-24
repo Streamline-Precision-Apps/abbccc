@@ -9,7 +9,6 @@ import DisplayBreakTime from "./displayBreakTime";
 import { useEffect, useMemo, useState } from "react";
 import Hours from "./hours";
 import { Holds } from "@/components/(reusable)/holds";
-import { getAuthStep, setAuthStep } from "../api/auth";
 import { usePayPeriodHours } from "../context/PayPeriodHoursContext";
 import { usePayPeriodTimeSheet } from "../context/PayPeriodTimeSheetsContext";
 import { useRouter } from "next/navigation";
@@ -20,6 +19,7 @@ import { Banners } from "@/components/(reusable)/banners";
 import { Titles } from "@/components/(reusable)/titles";
 import Capitalize from "@/utils/captitalize";
 import capitalizeAll from "@/utils/capitalizeAll";
+import Spinner from "@/components/(animations)/spinner";
 
 const UserSchema = z.object({
   id: z.string(),
@@ -76,7 +76,7 @@ export default function WidgetSection({ session, locale }: Props) {
     weekday: "long",
   });
 
-
+  const [pageView, setPageView] = useState("");
   const [hydrated, setHydrated] = useState(false); // Hydration state
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -85,7 +85,6 @@ export default function WidgetSection({ session, locale }: Props) {
   const e = useTranslations("Err-Msg");
   const [toggle, setToggle] = useState(true);
   const handleToggle = () => setToggle(!toggle);
-  const authStep = getAuthStep();
   const permission = session.user?.permission;
   const accountSetup = session.user?.accountSetup;
   const t = useTranslations("Home");
@@ -95,11 +94,6 @@ export default function WidgetSection({ session, locale }: Props) {
     []
   );
   const user = session.user;
-  // Hydration setup
-  useEffect(() => {
-    setHydrated(true);
-  }, []);
-
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -133,20 +127,35 @@ export default function WidgetSection({ session, locale }: Props) {
     fetchData();
   }, [e, setPayPeriodTimeSheets]);
 
-  //---------------------------------------------------------------------
-  // Redirect to dashboard if authStep is success
   useEffect(() => {
-    if (authStep === "success") {
+    const fetchCookie = async () => {
+      try {
+        const response = await fetch(
+          "/api/cookies?method=get&name=currentPageView"
+        );
+        const data = await response.json();
+        console.log(data);
+        setPageView(data);
+      } catch (error) {
+        console.error("Error fetching page view:", error);
+      }
+    };
+    fetchCookie();
+  }, [pageView]);
+  //---------------------------------------------------------------------
+  // Redirect to dashboard if pageView is success
+  useEffect(() => {
+    if (pageView === "dashboard") {
       router.push("/dashboard");
     }
-    if (authStep === "removeLocalStorage") {
+    if (pageView === "removeLocalStorage") {
       localStorage.clear();
-      setAuthStep("");
+      setPageView("");
     }
     // if (!accountSetup) {
     //   router.push("/signin/signup");
     // }
-  }, [authStep, router, accountSetup]);
+  }, [pageView, router, accountSetup]);
 
   //-----------------------------------------------------------------------
   // Calculate total pay period hours
@@ -167,13 +176,6 @@ export default function WidgetSection({ session, locale }: Props) {
   useEffect(() => {
     setPayPeriodHours(totalPayPeriodHours.toFixed(1));
   }, [totalPayPeriodHours, setPayPeriodHours]);
-  if (!hydrated)
-    return (
-      <>
-        <Holds className="row-span-1"></Holds>
-        <Holds background={"white"} className="row-span-5 h-full"></Holds>
-      </>
-    ); // Prevent rendering until hydration
 
   // Redirect to dashboard if user is an admin
 
@@ -183,11 +185,24 @@ export default function WidgetSection({ session, locale }: Props) {
   // ) {
   //   router.push("/admins");
   // }
+  if (loading) {
+    return (
+      <>
+        <Holds className="row-span-2 bg-app-blue bg-opacity-20 w-full p-10 h-[80%] my-2 rounded-[10px]"></Holds>
+        <Holds
+          background={"white"}
+          className="row-span-5 h-full justify-center items-center"
+        >
+          <Spinner />
+        </Holds>
+      </>
+    );
+  }
 
   return (
     <>
       <Holds className="row-span-2 bg-app-blue bg-opacity-20 w-full p-10 my-2 rounded-[10px]">
-        {authStep === null && (
+        {pageView === "" && (
           <Banners>
             <Titles text={"white"} size={"h2"}>
               {t("Banner")}
@@ -201,7 +216,7 @@ export default function WidgetSection({ session, locale }: Props) {
             </Texts>
           </Banners>
         )}
-        {authStep === "break" && (
+        {pageView === "break" && (
           <Banners>
             <Titles text={"white"} size={"h2"}>
               {t("EnjoyYourBreak")}
@@ -215,7 +230,7 @@ export default function WidgetSection({ session, locale }: Props) {
       <Holds background={"white"} className="row-span-5 h-full">
         <Contents width={"section"} className="py-5">
           <Grids rows={"11"} cols={"2"} gap={"5"}>
-            {authStep === "break" ? (
+            {pageView === "break" ? (
               <>
                 {toggle ? (
                   <Holds
@@ -293,7 +308,7 @@ export default function WidgetSection({ session, locale }: Props) {
                     </Buttons>
                   </Holds>
                 )}
-                {authStep === "break" ? (
+                {pageView === "break" ? (
                   <Holds className="col-span-2 row-span-8 gap-5 h-full">
                     <Buttons background={"orange"} href="/break">
                       <Holds className="my-auto">

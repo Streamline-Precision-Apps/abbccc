@@ -71,11 +71,8 @@ model Maintenance {
 model TascoLog {
     id           String     @id @default(uuid())
     timeSheetId  String // link to timesheet
-    costcode     String? // in case they do manual labor its here
     shiftType    String // Tasco task
-    startTime    DateTime
-    endTime      DateTime?
-    equipmentId  String? // link to equipment 
+    equipmentId  String? // link to equipment , truck, etc
     laborType    String? // Labor being done. (E.G. manual labor vs. equipment)
     materialType String? // depend on tasco type
     loadsHauled  Int?
@@ -89,25 +86,20 @@ model TascoLog {
     // connections to other tables
     equipment Equipment? @relation(fields: [equipmentId], references: [id])
     timeSheet TimeSheet? @relation(fields: [timeSheetId], references: [id])
-    costCode  CostCode?  @relation(fields: [costcode], references: [name])
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
 // logs to keep track of what each truckDriver has done.
 model TruckingLog {
-    id                String    @id @default(uuid())
-    truckingJobSiteId String
-    truckingCostCode  String? // in case they do manual labor its here
-    taskName          String? // auto default to drive or operator
-    equipmentId       String? // this is the equipment id vehicle id
-    timeSheetId       String?
-    startingMileage   Int
-    endingMileage     Int?
-    startTime         DateTime
-    endTime           DateTime?
-    netWeight         Float?
-    comment           String?
-    createdAt         DateTime  @default(now())
+    id              String   @id @default(uuid())
+    taskName        String? // auto default to drive or operator
+    equipmentId     String? // this is the equipment id vehicle id
+    timeSheetId     String?
+    startingMileage Int
+    endingMileage   Int?
+    netWeight       Float?
+    comment         String?
+    createdAt       DateTime @default(now())
 
     stateMileage    StateMileage[]
     Refueled        Refueled[]
@@ -116,8 +108,6 @@ model TruckingLog {
 
     equipment Equipment? @relation(fields: [equipmentId], references: [id])
     timeSheet TimeSheet? @relation(fields: [timeSheetId], references: [id])
-    Jobsite   Jobsite?   @relation(fields: [truckingJobSiteId], references: [id])
-    CostCode  CostCode?  @relation(fields: [truckingCostCode], references: [id])
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------

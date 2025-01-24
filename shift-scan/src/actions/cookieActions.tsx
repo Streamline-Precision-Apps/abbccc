@@ -99,11 +99,11 @@ export async function RemoveWorkRole() {
 }
 
 // idea of this cookie is to set it to true if the user has access to the dashboard and false if not
-export async function setDashboardAccess() {
+export async function setCurrentPageView(currentPageView: string) {
   try {
     cookies().set({
-      name: "dashboardAccess",
-      value: "true",
+      name: "currentPageView",
+      value: currentPageView,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       path: "/",
@@ -145,7 +145,7 @@ export async function setCostCode(costCode: string) {
   }
 }
 
-export async function setTimeSheet(timeSheetId: string) {
+export async function setPrevTimeSheet(timeSheetId: string) {
   const session = await auth();
   // Check if the user is authenticated
   if (!session) {
@@ -174,8 +174,8 @@ export async function RemoveCookiesAtClockOut() {
     cookies().delete("costCode");
     cookies().delete("jobSite");
     cookies().delete("workRole");
-    cookies().delete("dashboardAccess");
     cookies().delete("adminAccess");
+    cookies().set("currentPageView", "");
   } catch (error) {
     console.error("Failed to delete locale cookie:", error);
   }

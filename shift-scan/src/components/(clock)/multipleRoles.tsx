@@ -31,7 +31,7 @@ export default function MultipleRoles({
   handleReturnPath,
   type,
 }: Props) {
-  const [page, setPage] = useState<string>("switchJobs");
+  const [page, setPage] = useState("");
   const t = useTranslations("Clock");
   const { data: session } = useSession();
   const tascoView = session?.user.tascoView;
@@ -43,18 +43,19 @@ export default function MultipleRoles({
 
   const selectView = (clockInRole: string) => {
     setClockInRole(clockInRole);
-    setWorkRole(clockInRole);
-    localStorage.setItem("clockInRole", clockInRole);
     handleNextStep();
   };
 
   useEffect(() => {
-    if (type === "switchJobs") {
-      setPage("switchJobs");
-    } else {
-      setPage("");
-    }
-  }, [type]);
+    const fetchRole = async () => {
+      const role = await fetch("/api/cookies?method=get&name=workRole");
+      const data = await role.json();
+      if (option !== "break") {
+        setClockInRole(data);
+      }
+    };
+    fetchRole();
+  }, [setClockInRole, option]);
 
   const switchJobs = () => {
     setCommentData({ id: commentsValue }); // Ensure correct data structure
@@ -95,41 +96,38 @@ export default function MultipleRoles({
                 </Holds>
               </Grids>
             </Holds>
-              <Holds className="p-1 justify-center border-[3px] border-black rounded-[10px] shadow-[6px_6px_0px_grey]">
-                <Selects
-                  className="bg-app-blue text-center p-3"
-                  value={clockInRole}
-                  onChange={(e) => selectView(e.target.value)}
-                >
-                  <option value="">{t("SelectWorkType")}</option>
-                  {tascoView === true && (
-                    <option value="tasco">{t("TASCO")}</option>
-                  )}
-                  {truckView === true && (
-                    <option value="truck">{t("Truck")}</option>
-                  )}
-                  {mechanicView === true && (
-                    <option value="mechanic">{t("Mechanic")}</option>
-                  )}
-                  {laborView === true && (
-                    <option value="general">{t("General")}</option>
-                  )}
-                </Selects>
-              </Holds>
-              <Holds className="row-start-4 row-end-6 h-full m-auto">
-                <Images
-                  titleImg="/camera.svg"
-                  titleImgAlt="clockIn"
-                  position={"center"}
-                  size={"40"}
-                />
-              </Holds>
+            <Holds className="p-1 justify-center border-[3px] border-black rounded-[10px] shadow-[6px_6px_0px_grey]">
+              <Selects
+                className="bg-app-blue text-center p-3"
+                value={clockInRole}
+                onChange={(e) => selectView(e.target.value)}
+              >
+                <option value="">{t("SelectWorkType")}</option>
+                {tascoView === true && (
+                  <option value="tasco">{t("TASCO")}</option>
+                )}
+                {truckView === true && (
+                  <option value="truck">{t("Truck")}</option>
+                )}
+                {mechanicView === true && (
+                  <option value="mechanic">{t("Mechanic")}</option>
+                )}
+                {laborView === true && (
+                  <option value="general">{t("General")}</option>
+                )}
+              </Selects>
+            </Holds>
+            <Holds className="row-start-4 row-end-6 h-full m-auto">
+              <Images
+                titleImg="/camera.svg"
+                titleImgAlt="clockIn"
+                position={"center"}
+                size={"40"}
+              />
+            </Holds>
             {option === "break" ? (
               <Holds className="row-start-7 row-end-8 h-full w-full justify-center">
-                <Buttons
-                  onClick={handleReturn}
-                  background={"orange"}
-                >
+                <Buttons onClick={handleReturn} background={"orange"}>
                   <Titles size={"h2"}>{t("ReturnToPrevShift")}</Titles>
                 </Buttons>
               </Holds>
