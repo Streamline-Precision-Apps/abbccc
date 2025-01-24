@@ -7,12 +7,7 @@ import React, {
   ReactNode,
   useEffect,
 } from "react";
-import {
-  CostCodes,
-  JobCodes,
-  EquipmentCodes,
-  EquipmentCode,
-} from "@/lib/types";
+import { CostCodes, JobCodes, EquipmentCode } from "@/lib/types";
 import { z } from "zod";
 import { usePathname } from "next/navigation";
 
