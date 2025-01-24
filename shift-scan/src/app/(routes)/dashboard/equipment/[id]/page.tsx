@@ -18,12 +18,11 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { z } from "zod";
-// import { calculateDuration } from "@/utils/calculateDuration";
-import { Titles } from "@/components/(reusable)/titles";
 import SelectWtihRevert from "@/components/(reusable)/selectWithRevert";
 import TextInputWithRevert from "@/components/(reusable)/textInputWithRevert";
 import NumberInputWithRevert from "@/components/(reusable)/numberInputWithRevert";
 import { EquipmentStatus, FormStatus } from "@prisma/client";
+import { Titles } from "@/components/(reusable)/titles";
 
 const EquipmentLogSchema = z.object({
   id: z.string(),
@@ -45,19 +44,16 @@ type EquipmentLog = z.infer<typeof EquipmentLogSchema>;
 export default function CombinedForm({ params }: { params: { id: string } }) {
   const router = useRouter();
   const id = params.id;
-  //TODO add a banner to show notification
   const { setNotification } = useNotification();
   const t = useTranslations("Equipment");
   const [isLoading, setIsLoading] = useState(true);
-  const [refueled, setRefueled] = useState(false);
-  // const [editTime, setEditTime] = useState(false);
-
+  const [isEditingTime, setIsEditingTime] = useState(false);
   const [formState, setFormState] = useState({
     id: "",
     equipmentId: "",
     employeeId: "",
     startTime: "",
-    endTime: "",
+    endTime: new Date().toISOString().slice(11, 16),
     comment: "",
     isSubmitted: false,
     fuel: 0,
@@ -74,16 +70,17 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
         setIsLoading(true);
         const response = await fetch(`/api/getEqUserLogs/${id}`);
         const data = await response.json();
+        const fuel = data.fuel === undefined ? 0 : data.fuel;
 
         const processedData = {
           id: data.id || "",
           equipmentId: data.equipmentId || "",
           employeeId: data.employeeId || "",
-          startTime: data.startTime || "",
-          endTime: data.endTime || "",
+          startTime: new Date(data.startTime).toISOString().slice(11, 16),
+          endTime: data.endTime ? new Date(data.endTime).toISOString().slice(11, 16) : new Date().toISOString().slice(11, 16),
           comment: data.comment || "",
           isSubmitted: data.isSubmitted || false,
-          fuel: data.fuel || 0,
+          fuel: fuel,
           Equipment: {
             name: data.Equipment?.name || "",
             status: data.Equipment?.status || EquipmentStatus.OPERATIONAL,
@@ -98,11 +95,6 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
           return;
         }
 
-        // const validatedData = result.data;
-
-        // setFormState(validatedData);
-        // setOriginalState(validatedData);
-
         setFormState(processedData);
         setOriginalState(processedData);
       } catch (error) {
@@ -114,24 +106,6 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
 
     fetchEqLog();
   }, [id]);
-
-  // const handleFieldChange = (fieldName: string, value: string | number | boolean | FormStatus | EquipmentStatus) => {
-  //   setFormState((prevState) => {
-  //     const newState = { ...prevState as EquipmentLog };
-  //     const keys = fieldName.split(".");
-
-  //     let current = newState;
-  //     for (let i = 0; i < keys.length - 1; i++) {
-  //       if (!current[keys[i]]) {
-  //         current[keys[i]] = {};
-  //       }
-  //       current = current[keys[i]];
-  //     }
-
-  //     current[keys[keys.length - 1]] = value;
-  //     return newState;
-  //   });
-  // };
 
   const handleFieldChange = (
     field: string,
@@ -155,8 +129,38 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
     }
   };
 
+  const calculateTotalUsage = (startTime: string, endTime: string) => {
+    const start = new Date(startTime);
+    const end = new Date(endTime);
+    const duration = Math.abs(end.getTime() - start.getTime());
+    const hours = Math.floor(duration / 3600000);
+    const minutes = Math.floor((duration % 3600000) / 60000);
+    return `${hours} hours, ${minutes} minutes`;
+  };
+
+  const saveTimeChanges = () => {
+    setOriginalState((prev) => ({
+      ...prev,
+      startTime: formState.startTime,
+      endTime: formState.endTime,
+    }));
+    setIsEditingTime(false);
+  };
+
+  const revertTimeChanges = () => {
+    setFormState((prev) => ({
+      ...prev,
+      startTime: originalState.startTime,
+      endTime: originalState.endTime,
+    }));
+    setIsEditingTime(false);
+  };
+
   const handleChangeRefueled = () => {
-    setRefueled((prev) => !prev);
+    setFormState((prev) => ({
+      ...prev,
+      fuel: (prev.fuel ?? 0) > 0 ? 0 : 1,
+    }));
   };
 
   const saveEdits = async () => {
@@ -182,26 +186,8 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
     }
   };
 
-  const deleteLog = async () => {
-    try {
-      const formData = new FormData();
-      formData.append("id", id);
-      await DeleteLogs(formData);
-      setNotification(t("Deleted"), "success");
-      router.replace("/dashboard/equipment");
-    } catch (error) {
-      console.error("Error deleting log:", error);
-      setNotification(t("FailedToDelete"), "error");
-    }
-  };
-
-  useEffect(() => {
-    console.log("Form state changed:", formState);
-  }, [formState]);
-
-  const hasChanges = () => {
-    return JSON.stringify(formState) !== JSON.stringify(originalState);
-  };
+  const hasComment = () =>
+    formState.comment && formState.comment.trim().length > 0;
 
   if (isLoading) {
     return (
@@ -262,8 +248,8 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
   return (
     <Bases>
       <Contents>
-        <Grids rows={"10"} gap={"5"}>
-          <Holds background={"white"} className="my-auto row-span-1 h-full">
+        <Grids rows={isEditingTime ? "14" : "15"} cols="5" gap="6">
+          <Holds background="white" className="row-span-2 col-span-5 p-4">
             <TitleBoxes
               version="horizontal"
               title={formState.Equipment.name}
@@ -275,112 +261,124 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
             />
           </Holds>
 
-          <Holds background={"white"} className="row-span-3 h-full">
-            <Contents width={"section"} className="h-full">
-              <Grids rows={"2"} cols={"4"} className="h-full">
-                <Holds className="my-auto col-span-3 row-span-1">
-                  <Texts size={"p2"} position={"left"}>
-                    {t("Refueled")}
-                  </Texts>
-                </Holds>
-                <Holds
-                  position={"right"}
-                  className="col-span-1 my-auto row-span-1"
-                >
-                  <CheckBox
-                    id="refueled"
-                    name="refueled"
-                    label=""
-                    checked={refueled}
-                    onChange={() => handleChangeRefueled()}
-                  />
-                </Holds>
-
-                {/* Fuel Section */}
-                {refueled && (
-                  <Holds className="row-span-1 col-span-4 my-4">
-                    <NumberInputWithRevert
-                      label={t("Fuel")}
-                      size="large"
-                      value={formState.fuel || 0}
-                      onChange={(newValue) =>
-                        handleFieldChange("fuel", newValue)
-                      }
-                      showAsterisk={false}
-                      defaultValue={originalState.fuel || 0}
-                    />
-                  </Holds>
-                )}
-              </Grids>
-            </Contents>
+          <Holds
+            background="white"
+            className={
+              isEditingTime
+                ? "row-span-3 col-span-5 p-4"
+                : "row-span-1 col-span-5 p-4"
+            }
+          >
+            <Texts size="p2">Total Usage</Texts>
+            {!isEditingTime ? (
+              <div className="flex items-center justify-between">
+                <input
+                  type="text"
+                  disabled
+                  value={calculateTotalUsage(
+                    formState.startTime,
+                    formState.endTime || new Date().toISOString()
+                  )}
+                  className="border p-2 w-full"
+                />
+                <button onClick={() => setIsEditingTime(true)} className="ml-2">
+                  Edit
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-4 col-span-5 gap-4">
+                <button onClick={revertTimeChanges}>Revert Changes</button>
+                <input
+                  type="time"
+                  value={formState.startTime}
+                  defaultValue={originalState.startTime}
+                  onChange={(e) =>
+                    handleFieldChange("startTime", e.target.value)
+                  }
+                />
+                <input
+                  type="time"
+                  value={formState.endTime || ""}
+                  defaultValue={originalState.endTime}
+                  onChange={(e) => handleFieldChange("endTime", e.target.value)}
+                />
+                <button onClick={saveTimeChanges}>Save Changes</button>
+              </div>
+            )}
           </Holds>
 
-          <Holds background={"white"} className="row-span-5 h-full">
-            <Contents width={"section"}>
-              {/* <Holds position={"row"} className="row-span-1 my-4">
-                <SelectWtihRevert
-                  label={t("LogStatus")}
-                  options={[
-                    { value: "PENDING", label: t("Pending") },
-                    { value: "APPROVED", label: t("Approved") },
-                  ]}
-                  size="large"
-                  value={formState.status}
-                  onChange={(value) => handleFieldChange("status", value)}
-                  defaultValue={originalState.status}
-                  showAsterisk
-                />
-              </Holds> */}
-
-              {/* Status Section */}
-              <Holds position={"row"} className="row-span-1 my-4">
-                <SelectWtihRevert
-                  label={t("Status")}
-                  options={[
-                    { value: "OPERATIONAL", label: t("Operational") },
-                    { value: "NEEDS_REPAIR", label: t("NeedsRepair") },
-                    {
-                      value: "NEEDS_MAINTENANCE",
-                      label: t("NeedsMaintenance"),
-                    },
-                  ]}
-                  size="large"
-                  value={formState.Equipment.status || ""}
-                  onChange={(value) =>
-                    handleFieldChange("Equipment.status", value)
-                  }
-                  defaultValue={originalState.Equipment.status || ""}
-                  showAsterisk
-                />
-              </Holds>
-
-              {/* Comments Section */}
-              <Holds position={"row"} className="row-span-2 h-full">
-                <TextInputWithRevert
-                  label={t("Comment")}
-                  size="large"
-                  value={formState.comment || ""}
-                  onChange={(newValue) =>
-                    handleFieldChange("comment", newValue)
-                  }
-                  showAsterisk={false}
-                  defaultValue={originalState.comment || ""}
-                />
-              </Holds>
-            </Contents>
+          <Holds background="white" className="row-span-1 col-span-5 p-4">
+            <Texts size="p2">Equipment Status</Texts>
+            <SelectWtihRevert
+              label={t("Status")}
+              options={[
+                { value: "OPERATIONAL", label: t("Operational") },
+                { value: "NEEDS_REPAIR", label: t("NeedsRepair") },
+                {
+                  value: "NEEDS_MAINTENANCE",
+                  label: t("NeedsMaintenance"),
+                },
+              ]}
+              size="large"
+              value={formState.Equipment.status || ""}
+              onChange={(value) => handleFieldChange("Equipment.status", value)}
+              defaultValue={originalState.Equipment.status || ""}
+              showAsterisk
+            />
           </Holds>
-        </Grids>
-        {/* Buttons Section */}
-        <Holds position="row" className="mt-4 gap-4">
-          {hasChanges() && (
-            <Buttons onClick={saveEdits} background="green">
+
+          <Holds background="white" className="row-span-1 col-span-5 p-4">
+            <Texts size="p2">Did you refuel?</Texts>
+            <CheckBox
+              id="refueled"
+              name="refueled"
+              label=""
+              checked={(formState.fuel ?? 0) > 0}
+              onChange={() => handleChangeRefueled()}
+            />
+          </Holds>
+          {(formState.fuel ?? 0) > 0 && (
+            <Holds background="white" className="row-span-1 col-span-5 p-4">
+              <NumberInputWithRevert
+                label={t("Fuel")}
+                size="large"
+                value={formState.fuel || 0}
+                onChange={(newValue) => handleFieldChange("fuel", newValue)}
+                showAsterisk={false}
+                defaultValue={originalState.fuel || 0}
+              />
+            </Holds>
+          )}
+
+          <Holds
+            position="row"
+            background="white"
+            className="row-span-2 col-span-5 p-4"
+          >
+            <TextInputWithRevert
+              label={t("Comment")}
+              size="large"
+              value={formState.comment || ""}
+              onChange={(newValue) => handleFieldChange("comment", newValue)}
+              showAsterisk={false}
+              defaultValue={originalState.comment || ""}
+            />
+          </Holds>
+
+          <Holds
+            background="white"
+            position="row"
+            className="row-span-1 col-span-5 gap-4"
+          >
+            <Buttons
+              onClick={saveEdits}
+              background="green"
+              disabled={!hasComment()}
+            >
               <Titles>{t("Save")}</Titles>
             </Buttons>
-          )}
-          <Buttons onClick={deleteLog} background="red">
-            <Titles>{t("Delete")}</Titles>
-          </Buttons>
-        </Holds>
+          </Holds>
+        </Grids>
       </Contents>
     </Bases>
   );
