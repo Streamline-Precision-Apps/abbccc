@@ -86,7 +86,7 @@ export async function setLaborType(laborType: string) {
   if (
     laborType !== "operator" &&
     laborType !== "truckDriver" &&
-    laborType !== "labor"
+    laborType !== "manualLabor"
   ) {
     console.error("Not Authorized", 201);
     // Perform the redirect to the signin page
@@ -187,8 +187,23 @@ export async function setEquipment(equipment: string) {
 export async function setTruck(truck: string) {
   try {
     cookies().set({
-      name: "truck",
+      name: "truckId",
       value: truck,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days - made this to not have errors occur is logging out is forgotten
+    });
+  } catch (error) {
+    console.error("Failed to set locale cookie:", error);
+  }
+}
+
+export async function setStartingMileage(startingMileage: string) {
+  try {
+    cookies().set({
+      name: "startingMileage",
+      value: startingMileage,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       path: "/",
@@ -229,6 +244,10 @@ export async function RemoveCookiesAtClockOut() {
     cookies().delete("jobSite");
     cookies().delete("workRole");
     cookies().delete("adminAccess");
+    cookies().delete("laborType");
+    cookies().delete("truckId");
+    cookies().delete("equipment");
+    cookies().delete("startingMileage");
     cookies().set("currentPageView", "");
   } catch (error) {
     console.error("Failed to delete locale cookie:", error);

@@ -108,6 +108,22 @@ export const CostCodeOptions = (
               }));
       break;
 
+    case "equipment-operator":
+      if (!equipmentResults) {
+        throw new Error("equipmentResults is undefined");
+      }
+      options =
+        searchTerm === ""
+          ? recentlyUsedEquipment.map((equipment: EquipmentCode) => ({
+              code: equipment.qrId,
+              label: equipment.name,
+            }))
+          : equipmentResults.map((equipment: EquipmentCode) => ({
+              code: equipment.qrId,
+              label: equipment.name,
+            }));
+      break;
+
     case "equipment":
       if (!equipmentResults) {
         throw new Error("equipmentResults is undefined");

@@ -6,7 +6,6 @@ import React, {
   ReactNode,
   useContext,
   useEffect,
-  use,
 } from "react";
 
 type TruckScanDataProps = {
@@ -26,7 +25,7 @@ export const TruckScanDataProvider: React.FC<{ children: ReactNode }> = ({
       try {
         // Fetch cookie data once during initialization
         const previousTruck = await fetch(
-          "/api/cookies?method=get&name=truck"
+          "/api/cookies?method=get&name=truckId"
         ).then((res) => res.json());
 
         if (previousTruck && previousTruck !== "") {

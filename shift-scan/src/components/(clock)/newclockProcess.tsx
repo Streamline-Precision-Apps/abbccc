@@ -60,6 +60,7 @@ export default function NewClockProcess({
 
   const [laborType, setLaborType] = useState<string>("");
   const [truck, setTruck] = useState<string>("");
+  const [equipment, setEquipment] = useState<string>("");
   const [startingMileage, setStartingMileage] = useState<number>(0);
 
   // useEffect to reset step and role on mount/unmount
