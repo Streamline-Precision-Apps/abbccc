@@ -150,6 +150,7 @@ export default function CodeFinder({ datatype, savedCode }: Props) {
       );
       if (selectedEquipment) addRecentlyUsedEquipment(selectedEquipment);
     }
+
     setSearchTerm(option.label); // Set the search term to the selected option label
   };
 

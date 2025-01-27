@@ -1,5 +1,13 @@
 "use client";
-import React, { createContext, useState, ReactNode, useContext } from "react";
+import { setTruck } from "@/actions/cookieActions";
+import React, {
+  createContext,
+  useState,
+  ReactNode,
+  useContext,
+  useEffect,
+  use,
+} from "react";
 
 type TruckScanDataProps = {
   truckScanData: string | null;
@@ -11,30 +19,43 @@ const TruckScanData = createContext<TruckScanDataProps | undefined>(undefined);
 export const TruckScanDataProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [truckScanData, setTruckScanDataState] = useState<string | null>(() => {
-    // Load initial state from localStorage if available
-    if (typeof window !== "undefined") {
-      const savedData = localStorage.getItem("truckScanData");
-      return savedData ? savedData : null;
-    } else {
-      return null;
-    }
-  });
+  const [truckScanData, setTruckScanDataState] = useState<string | null>(null);
+  // Load initial state from localStorage if available
+  useEffect(() => {
+    const initializeTruck = async () => {
+      try {
+        // Fetch cookie data once during initialization
+        const previousTruck = await fetch(
+          "/api/cookies?method=get&name=truck"
+        ).then((res) => res.json());
 
-  const setTruckScanData = (data: string | null) => {
-    setTruckScanDataState(data);
-    // Save to localStorage
-    if (typeof window !== "undefined") {
-      if (data) {
-        localStorage.setItem("truckScanData", data);
-      } else {
-        localStorage.removeItem("truckScanData");
+        if (previousTruck && previousTruck !== "") {
+          setTruckScanDataState(previousTruck);
+        }
+      } catch (error) {
+        console.error("Error fetching job site cookie:", error);
       }
-    }
-  };
+    };
 
+    initializeTruck();
+  }, []); // Run only on mount
+
+  useEffect(() => {
+    const setTruckScanData = async () => {
+      try {
+        if (truckScanData !== "") {
+          await setTruck(truckScanData || ""); // Set the cookie if scanResult changes
+        }
+      } catch (error) {
+        console.error("Error saving job site cookie:", error);
+      }
+    };
+    setTruckScanData();
+  }, [truckScanData]);
   return (
-    <TruckScanData.Provider value={{ truckScanData, setTruckScanData }}>
+    <TruckScanData.Provider
+      value={{ truckScanData, setTruckScanData: setTruckScanDataState }}
+    >
       {children}
     </TruckScanData.Provider>
   );

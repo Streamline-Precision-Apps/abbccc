@@ -9,7 +9,6 @@ import { useCurrentView } from "@/app/context/CurrentViewContext";
 import { useEQScanData } from "@/app/context/equipmentContext";
 
 type QrReaderProps = {
-  handleScanTruck: () => void;
   handleScanJobsite: () => void;
   url: string;
   clockInRole: string;
@@ -18,7 +17,6 @@ type QrReaderProps = {
 };
 
 export default function QR({
-  handleScanTruck,
   handleScanJobsite,
   url,
   clockInRole,
@@ -48,25 +46,14 @@ export default function QR({
     },
     [setscanEQResult, handleNextStep]
   );
-  // truck process
-  const processTruckScan = useCallback(
-    (data: string) => {
-      setTruckScanData(data);
-      setCurrentView("truck");
-      handleScanTruck();
-      handleNextStep();
-    },
-    [handleScanTruck, setTruckScanData, setCurrentView, handleNextStep]
-  );
   // general process
   const processGeneralScan = useCallback(
     (data: string) => {
       setScanResult({ data });
       qrScannerRef.current?.stop();
       handleScanJobsite();
-      handleNextStep();
     },
-    [setScanResult, handleScanJobsite, handleNextStep]
+    [setScanResult, handleScanJobsite]
   );
   ///-----------------------End of scan processes-----------------------------------
 
@@ -78,8 +65,6 @@ export default function QR({
 
         if (type === "equipment") {
           processEquipmentScan(data);
-        } else if (clockInRole === "truck") {
-          processTruckScan(data);
         } else if (clockInRole === "general" || clockInRole === "mechanic") {
           processGeneralScan(data);
         } else {
@@ -92,14 +77,7 @@ export default function QR({
         alert("Invalid QR code");
       }
     },
-    [
-      type,
-      clockInRole,
-      processEquipmentScan,
-      processTruckScan,
-      processGeneralScan,
-      router,
-    ]
+    [type, clockInRole, processEquipmentScan, processGeneralScan, router]
   );
 
   // QR code scan fail handler

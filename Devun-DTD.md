@@ -197,3 +197,30 @@ cookies().set({
 - left no new bugs
 ### Trello
 - Clock logic (8hours)
+
+
+#
+# January 24, 2025 - Friday
+### Meeting
+- Meet with sean talked over new truck and tasco design
+### Built/created 
+- created boards for tasco and how it should be upon clock in
+### Trello
+- Clock logic (4 hours)
+- Looking and reflection sprint
+### Figma 
+- 3 hours
+- Worked on making clock In process smoother and more in one place then others
+- Designed tasco and trucking with data in database.
+
+#
+# January 27, 2025 - Monday
+### Research
+- SCRUM Research to make more efficient and better scrums for team (1 hour)
+### Figma
+- finished Tasco last tweaks
+- Created board for engineer up to clock In logic on organized view
+### Built/created 
+
+### Trello
+- 

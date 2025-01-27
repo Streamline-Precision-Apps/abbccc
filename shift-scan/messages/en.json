@@ -308,6 +308,11 @@
     "ID": "Id: #"
 },
 "Clock": {
+    "SelectTruck": "Select Truck",
+    "Operator": "Operator",
+    "TruckDriver": "Truck Driver",
+    "ManualLabor": "Manual Labor",
+   "SelectLaborType": "Select Labor Type",
     "Next": "Next",
     "Title-jobsite-tasco": "Select Job Site",
     "search-jobsite-tasco": "Search Job Site",

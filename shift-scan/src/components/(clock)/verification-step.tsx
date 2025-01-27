@@ -24,7 +24,11 @@ import { useStartingMileage } from "@/app/context/StartingMileageContext";
 import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
 import { useCommentData } from "@/app/context/CommentContext";
-import { setCurrentPageView, setWorkRole } from "@/actions/cookieActions";
+import {
+  setCurrentPageView,
+  setLaborType,
+  setWorkRole,
+} from "@/actions/cookieActions";
 import { useRouter } from "next/navigation";
 
 type VerifyProcessProps = {
@@ -33,6 +37,9 @@ type VerifyProcessProps = {
   role: string;
   option?: string;
   comments?: string;
+  laborType?: string;
+  truck?: string;
+  startingMileage?: number;
 };
 
 export default function VerificationStep({
@@ -40,6 +47,9 @@ export default function VerificationStep({
   handleNextStep,
   comments,
   role,
+  truck,
+  startingMileage,
+  laborType,
 }: VerifyProcessProps) {
   const t = useTranslations("Clock");
   const { scanResult } = useScanData();
@@ -47,9 +57,9 @@ export default function VerificationStep({
   const { setTimeSheetData } = useTimeSheetData();
   const [date] = useState(new Date());
   const { data: session } = useSession();
-  const { truckScanData } = useTruckScanData(); // Move this hook call to the top level.
-  const { startingMileage } = useStartingMileage();
+  const { setStartingMileage } = useStartingMileage();
   const { savedCommentData, setCommentData } = useCommentData();
+  const { setTruckScanData } = useTruckScanData();
   const router = useRouter();
   if (!session) return null; // Conditional rendering for session
 
@@ -86,9 +96,7 @@ export default function VerificationStep({
           }
 
           const formData = new FormData();
-          if (truckScanData) {
-            formData.append("vehicleId", truckScanData);
-          }
+
           formData.append("submitDate", new Date().toISOString());
           formData.append("userId", id?.toString() || "");
           formData.append("date", new Date().toISOString());
@@ -102,7 +110,10 @@ export default function VerificationStep({
           setTimeSheetData(result);
           setCurrentPageView("dashboard");
           console.log("role before set", role);
-          setWorkRole(role);
+          await setWorkRole(role);
+          await setLaborType(laborType || "");
+          setTruckScanData(truck || null);
+          setStartingMileage(startingMileage || null);
 
           router.push("/dashboard");
         } catch (error) {
@@ -110,9 +121,6 @@ export default function VerificationStep({
         }
       } else {
         const formData = new FormData();
-        if (truckScanData) {
-          formData.append("vehicleId", truckScanData);
-        }
         if (startingMileage !== undefined) {
           formData.append(
             "startingMileage",
@@ -131,7 +139,12 @@ export default function VerificationStep({
         const result = { id: response.id.toString() };
         setTimeSheetData(result);
         setCurrentPageView("dashboard");
-        setWorkRole(role);
+        await setWorkRole(role);
+        setTruckScanData(truck || null);
+        setStartingMileage(startingMileage || null);
+        if (laborType) {
+          await setLaborType(laborType);
+        }
         router.push("/dashboard");
       }
     } catch (error) {
@@ -200,24 +213,7 @@ export default function VerificationStep({
                           day: "numeric",
                         })}
                       />
-                      {truckScanData && (
-                        <>
-                          <Labels
-                            text={"white"}
-                            size={"p4"}
-                            htmlFor="jobsiteId"
-                          >
-                            {t("Truck-label")}
-                          </Labels>
-                          <Inputs
-                            state="disabled"
-                            name="jobsiteId"
-                            variant={"white"}
-                            data={truckScanData}
-                          />
-                        </>
-                      )}
-                      {truckScanData && (
+                      {startingMileage && (
                         <>
                           <Labels
                             htmlFor="startingMileage"
