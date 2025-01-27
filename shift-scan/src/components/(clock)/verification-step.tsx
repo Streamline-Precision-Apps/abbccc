@@ -32,6 +32,7 @@ import {
 } from "@/actions/cookieActions";
 import { useRouter } from "next/navigation";
 import { useOperator } from "@/app/context/operatorContext";
+import { set } from "date-fns";
 
 type VerifyProcessProps = {
   handleNextStep?: () => void;
@@ -113,11 +114,25 @@ export default function VerificationStep({
           setTimeSheetData(result);
           setCurrentPageView("dashboard");
           console.log("role before set", role);
-          await setEquipment(equipmentId || "");
+          // logic to set truck scan data null
+          if (laborType === "operator" && role === "truck") {
+            await setEquipment(equipmentId || "");
+            setTruckScanData(null);
+          }
+          // set Equipment to null
+          if (laborType === "truckDriver" && role === "truck") {
+            setTruckScanData(truck || null);
+            setStartingMileage(startingMileage || null);
+            setEquipment("");
+          }
+          // set Equipment and truck to null
+          if (laborType === "manualLabor" && role === "truck") {
+            setTruckScanData(null);
+            setEquipment("");
+            setStartingMileage(null);
+          }
           await setWorkRole(role);
           await setLaborType(laborType || "");
-          setTruckScanData(truck || null);
-          setStartingMileage(startingMileage || null);
 
           router.push("/dashboard");
         } catch (error) {

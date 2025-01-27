@@ -21,6 +21,7 @@ import TascoVerificationStep from "./tascoVerificationStep";
 import SwitchJobsMultiRoles from "./switchJobsMuiltipleRoles";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { returnToPrevWork } from "@/actions/timeSheetActions";
+import { useDBEquipment } from "@/app/context/dbCodeContext";
 
 type NewClockProcessProps = {
   mechanicView: boolean;
@@ -60,7 +61,6 @@ export default function NewClockProcess({
 
   const [laborType, setLaborType] = useState<string>("");
   const [truck, setTruck] = useState<string>("");
-  const [equipment, setEquipment] = useState<string>("");
   const [startingMileage, setStartingMileage] = useState<number>(0);
 
   // useEffect to reset step and role on mount/unmount
@@ -167,7 +167,11 @@ export default function NewClockProcess({
             : "";
 
         setClockInRole(prevWorkRole);
-        setStep(5);
+        if (prevWorkRole === "truck") {
+          setStep(5);
+        } else {
+          setStep(5);
+        }
       } else {
         throw new Error("No response");
       }
@@ -354,6 +358,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
           setTruck={setTruck}
           setStartingMileage={setStartingMileage}
           laborType={laborType}
+          truck={truck}
         />
       )}
 

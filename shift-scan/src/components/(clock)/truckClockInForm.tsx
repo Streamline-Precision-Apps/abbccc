@@ -15,6 +15,7 @@ import CodeStep from "./code-step";
 type TruckClockInFormProps = {
   handleNextStep: () => void;
   laborType: string;
+  truck: string;
   setLaborType: React.Dispatch<React.SetStateAction<string>>;
   setTruck: React.Dispatch<React.SetStateAction<string>>;
   setStartingMileage: React.Dispatch<React.SetStateAction<number>>;
@@ -23,6 +24,7 @@ type TruckClockInFormProps = {
 export default function TruckClockInForm({
   handleNextStep,
   laborType,
+  truck,
   setLaborType,
   setTruck,
   setStartingMileage,
@@ -74,7 +76,7 @@ export default function TruckClockInForm({
                   className="row-start-1 row-end-3 justify-center p-1 py-2 border-[3px] border-black rounded-[10px]"
                 >
                   <Selects
-                    value={""}
+                    value={truck}
                     onChange={(e) => {
                       setTruck(e.target.value);
                     }}

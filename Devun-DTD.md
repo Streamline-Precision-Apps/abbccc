@@ -222,6 +222,6 @@ cookies().set({
 - Created board for engineer up to clock In logic on organized view
 ### Built/created 
 - working on truck clock in logic
-
+- logic to clock in as every labor type of truck driver works
 ### Trello
 - Starting Truck Driving role
