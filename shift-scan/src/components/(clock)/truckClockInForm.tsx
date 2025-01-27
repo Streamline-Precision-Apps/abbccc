@@ -4,17 +4,13 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Holds } from "@/components/(reusable)/holds";
 import { Selects } from "@/components/(reusable)/selects";
-import { useEffect, useState } from "react";
 import React from "react";
 import { Grids } from "@/components/(reusable)/grids";
 import { useTranslations } from "next-intl";
-import { z } from "zod";
-import { useStartingMileage } from "@/app/context/StartingMileageContext";
 import { Images } from "../(reusable)/images";
 import { Texts } from "../(reusable)/texts";
 import { Labels } from "../(reusable)/labels";
 import CodeStep from "./code-step";
-import { useTruckScanData } from "@/app/context/TruckScanDataContext";
 
 type TruckClockInFormProps = {
   handleNextStep: () => void;
@@ -117,7 +113,7 @@ export default function TruckClockInForm({
             )}
             {laborType === "operator" && (
               <CodeStep
-                datatype="equipment"
+                datatype="equipment-operator" // using this to set the title of equipment
                 handleNextStep={handleNextStep}
                 backArrow={false}
               />

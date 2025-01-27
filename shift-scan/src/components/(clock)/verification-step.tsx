@@ -26,10 +26,12 @@ import { Grids } from "../(reusable)/grids";
 import { useCommentData } from "@/app/context/CommentContext";
 import {
   setCurrentPageView,
+  setEquipment,
   setLaborType,
   setWorkRole,
 } from "@/actions/cookieActions";
 import { useRouter } from "next/navigation";
+import { useOperator } from "@/app/context/operatorContext";
 
 type VerifyProcessProps = {
   handleNextStep?: () => void;
@@ -55,6 +57,7 @@ export default function VerificationStep({
   const { scanResult } = useScanData();
   const { savedCostCode } = useSavedCostCode();
   const { setTimeSheetData } = useTimeSheetData();
+  const { equipmentId } = useOperator();
   const [date] = useState(new Date());
   const { data: session } = useSession();
   const { setStartingMileage } = useStartingMileage();
@@ -110,6 +113,7 @@ export default function VerificationStep({
           setTimeSheetData(result);
           setCurrentPageView("dashboard");
           console.log("role before set", role);
+          await setEquipment(equipmentId || "");
           await setWorkRole(role);
           await setLaborType(laborType || "");
           setTruckScanData(truck || null);
@@ -121,12 +125,6 @@ export default function VerificationStep({
         }
       } else {
         const formData = new FormData();
-        if (startingMileage !== undefined) {
-          formData.append(
-            "startingMileage",
-            startingMileage?.toString() || "0"
-          );
-        }
         formData.append("submitDate", new Date().toISOString());
         formData.append("userId", id.toString());
         formData.append("date", new Date().toISOString());
@@ -140,6 +138,7 @@ export default function VerificationStep({
         setTimeSheetData(result);
         setCurrentPageView("dashboard");
         await setWorkRole(role);
+        await setEquipment(equipmentId || "");
         setTruckScanData(truck || null);
         setStartingMileage(startingMileage || null);
         if (laborType) {
@@ -213,35 +212,13 @@ export default function VerificationStep({
                           day: "numeric",
                         })}
                       />
-                      {startingMileage && (
-                        <>
-                          <Labels
-                            htmlFor="startingMileage"
-                            text={"white"}
-                            size={"p4"}
-                            position={"left"}
-                          >
-                            <Texts text={"white"} size={"p4"} position={"left"}>
-                              {t("Mileage")}
-                            </Texts>
-                          </Labels>
-                          <Inputs
-                            state="disabled"
-                            name="startingMileage"
-                            variant={"white"}
-                            data={startingMileage?.toString() || "0"}
-                          />
-                        </>
-                      )}
                       <Labels
                         htmlFor="jobsiteId"
                         text={"white"}
                         size={"p4"}
                         position={"left"}
                       >
-                        <Texts text={"white"} size={"p4"} position={"left"}>
-                          {t("JobSite-label")}
-                        </Texts>
+                        {t("JobSite-label")}
                       </Labels>
                       <Inputs
                         state="disabled"

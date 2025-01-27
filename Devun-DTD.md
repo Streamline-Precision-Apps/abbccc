@@ -221,6 +221,7 @@ cookies().set({
 - finished Tasco last tweaks
 - Created board for engineer up to clock In logic on organized view
 ### Built/created 
+- working on truck clock in logic
 
 ### Trello
-- 
+- Starting Truck Driving role

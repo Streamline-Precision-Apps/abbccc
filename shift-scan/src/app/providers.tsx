@@ -27,7 +27,7 @@ import { CurrentViewProvider } from "./context/CurrentViewContext";
 import { StartingMileageProvider } from "./context/StartingMileageContext";
 import { TimeSheetCommentsProvider } from "./context/TimeSheetCommentsContext";
 import { CommentDataProvider } from "./context/CommentContext";
-
+import { EquipmentIdProvider } from "./context/operatorContext";
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <>
@@ -53,7 +53,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
                                           <RecentEquipmentProvider>
                                             <NotificationProvider>
                                               <CommentDataProvider>
-                                                {children}
+                                                <EquipmentIdProvider>
+                                                  {children}
+                                                </EquipmentIdProvider>
                                               </CommentDataProvider>
                                             </NotificationProvider>
                                           </RecentEquipmentProvider>

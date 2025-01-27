@@ -28,6 +28,7 @@ import {
 } from "@/app/context/dbRecentCodesContext";
 import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
+import { useOperator } from "@/app/context/operatorContext";
 
 type Option = {
   code: string;
@@ -58,6 +59,8 @@ export default function CodeFinder({ datatype, savedCode }: Props) {
 
   const { equipmentResults } = useDBEquipment();
   const { addRecentlyUsedEquipment } = useRecentDBEquipment();
+
+  const { setEquipmentId } = useOperator();
 
   // Use useMemo to avoid recalculating options unnecessarily
   const options = useMemo(
@@ -140,6 +143,10 @@ export default function CodeFinder({ datatype, savedCode }: Props) {
         (j) => j.qrId === option.code
       );
       if (selectedJobCode) addRecentlyUsedJobCode(selectedJobCode);
+    }
+    if (datatype === "equipment-operator") {
+      setEquipmentId(option.code);
+      console.log(option.code);
     }
 
     if (datatype === "equipment") {
