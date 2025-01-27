@@ -9,7 +9,7 @@ import {
   useRecentDBCostcode,
   useRecentDBEquipment,
 } from "@/app/context/dbRecentCodesContext";
-import { JobCodes, CostCodes, EquipmentCodes } from "@/lib/types";
+import { JobCodes, CostCodes, EquipmentCode } from "@/lib/types";
 
 interface Option {
   code: string;
@@ -108,57 +108,17 @@ export const CostCodeOptions = (
               }));
       break;
 
-    case "jobsite-tasco":
-      if (!jobsiteResults) {
-        throw new Error("jobsiteResults is undefined");
-      }
-      options =
-        searchTerm === ""
-          ? recentlyUsedJobCodes
-              .filter((jobcode: JobCodes) => jobcode.name === "Tasco Jobsite")
-              .map((jobcode: JobCodes) => ({
-                code: jobcode.qrId,
-                label: jobcode.name,
-              }))
-          : jobsiteResults
-              .filter((jobcode: JobCodes) => jobcode.name === "Tasco Jobsite")
-              .map((jobcode: JobCodes) => ({
-                code: jobcode.qrId,
-                label: jobcode.name,
-              }));
-      break;
-
-    case "jobsite-truck":
-      if (!jobsiteResults) {
-        throw new Error("jobsiteResults is undefined");
-      }
-      options =
-        searchTerm === ""
-          ? recentlyUsedJobCodes
-              .filter((jobcode: JobCodes) => jobcode.name === "Truck Jobsite")
-              .map((jobcode: JobCodes) => ({
-                code: jobcode.qrId,
-                label: jobcode.name,
-              }))
-          : jobsiteResults
-              .filter((jobcode: JobCodes) => jobcode.name === "Truck Jobsite")
-              .map((jobcode: JobCodes) => ({
-                code: jobcode.qrId,
-                label: jobcode.name,
-              }));
-      break;
-
     case "equipment":
       if (!equipmentResults) {
         throw new Error("equipmentResults is undefined");
       }
       options =
         searchTerm === ""
-          ? recentlyUsedEquipment.map((equipment: EquipmentCodes) => ({
+          ? recentlyUsedEquipment.map((equipment: EquipmentCode) => ({
               code: equipment.qrId,
               label: equipment.name,
             }))
-          : equipmentResults.map((equipment: EquipmentCodes) => ({
+          : equipmentResults.map((equipment: EquipmentCode) => ({
               code: equipment.qrId,
               label: equipment.name,
             }));

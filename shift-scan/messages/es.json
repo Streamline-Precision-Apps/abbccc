@@ -287,6 +287,11 @@
     "ID": "Id: #"
 },
 "Clock": {
+    "SelectTruck": "Seleccione un Camion",
+    "Operator": "Operador",
+    "TruckDriver": "Camionero",
+    "ManualLabor": "trabajo manual",
+    "SelectLaborType": "Seleccionar Tipo de Trabajo",
     "Title-jobsite-tasco": "Seleccionar sitio de trabajo",
     "search-jobsite-tasco": "Buscar Sitio de Trabajo",
     "Title-jobsite-mechanic": "Seleccionar sitio de trabajo",

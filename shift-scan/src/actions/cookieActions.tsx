@@ -82,6 +82,31 @@ export async function setWorkRole(workRole: string) {
   }
 }
 
+export async function setLaborType(laborType: string) {
+  if (
+    laborType !== "operator" &&
+    laborType !== "truckDriver" &&
+    laborType !== "labor"
+  ) {
+    console.error("Not Authorized", 201);
+    // Perform the redirect to the signin page
+    redirect("/");
+  }
+
+  try {
+    cookies().set({
+      name: "laborType",
+      value: laborType,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days - made this to not have errors occur is logging out is forgotten
+    });
+  } catch (error) {
+    console.error("Failed to set locale cookie:", error);
+  }
+}
+
 // deletes the cookie for workRole to either mechanic, tasco, truck, general
 export async function RemoveWorkRole() {
   const session = await auth();
@@ -135,6 +160,35 @@ export async function setCostCode(costCode: string) {
     cookies().set({
       name: "costCode",
       value: costCode,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days - made this to not have errors occur is logging out is forgotten
+    });
+  } catch (error) {
+    console.error("Failed to set locale cookie:", error);
+  }
+}
+
+export async function setEquipment(equipment: string) {
+  try {
+    cookies().set({
+      name: "equipment",
+      value: equipment,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days - made this to not have errors occur is logging out is forgotten
+    });
+  } catch (error) {
+    console.error("Failed to set locale cookie:", error);
+  }
+}
+export async function setTruck(truck: string) {
+  try {
+    cookies().set({
+      name: "truck",
+      value: truck,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       path: "/",
