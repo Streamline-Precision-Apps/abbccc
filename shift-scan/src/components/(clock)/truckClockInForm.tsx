@@ -4,13 +4,14 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Holds } from "@/components/(reusable)/holds";
 import { Selects } from "@/components/(reusable)/selects";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Grids } from "@/components/(reusable)/grids";
 import { useTranslations } from "next-intl";
 import { Images } from "../(reusable)/images";
 import { Texts } from "../(reusable)/texts";
 import { Labels } from "../(reusable)/labels";
 import CodeStep from "./code-step";
+import { json } from "stream/consumers";
 
 type TruckClockInFormProps = {
   handleNextStep: () => void;
@@ -19,6 +20,11 @@ type TruckClockInFormProps = {
   setLaborType: React.Dispatch<React.SetStateAction<string>>;
   setTruck: React.Dispatch<React.SetStateAction<string>>;
   setStartingMileage: React.Dispatch<React.SetStateAction<number>>;
+};
+type TruckListSchema = {
+  id: string;
+  qrId: string;
+  name: string;
 };
 
 export default function TruckClockInForm({
@@ -30,6 +36,16 @@ export default function TruckClockInForm({
   setStartingMileage,
 }: TruckClockInFormProps) {
   const t = useTranslations("Clock");
+  const [truckList, setTruckList] = useState<TruckListSchema[]>([]);
+  useEffect(() => {
+    const truckList = async () => {
+      const fetchTruckList = await fetch("/api/getTruckData").then((res) =>
+        res.json()
+      );
+      setTruckList(fetchTruckList);
+    };
+    truckList();
+  }, []);
   return (
     <Holds background={"white"} className="w-full h-full py-4">
       <Contents width="section">
@@ -85,9 +101,15 @@ export default function TruckClockInForm({
                     <option value="" className="text-center">
                       {t("SelectTruck")}
                     </option>
-                    <option value="trx1242" className="text-center">
-                      Truck 1
-                    </option>
+                    {truckList.map((truck) => (
+                      <option
+                        key={truck.id}
+                        value={truck.qrId}
+                        className="text-center"
+                      >
+                        {truck.name}
+                      </option>
+                    ))}
                   </Selects>
                 </Holds>
                 <Holds className="row-start-3 row-end-4">
