@@ -11,7 +11,6 @@ import { Images } from "../(reusable)/images";
 import { Texts } from "../(reusable)/texts";
 import { Labels } from "../(reusable)/labels";
 import CodeStep from "./code-step";
-import { json } from "stream/consumers";
 
 type TruckClockInFormProps = {
   handleNextStep: () => void;

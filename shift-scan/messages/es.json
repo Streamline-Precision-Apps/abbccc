@@ -287,6 +287,11 @@
     "ID": "Id: #"
 },
 "Clock": {
+    "search-equipment-operator": "Buscar Equipo",
+    "Title-equipment-operator": "Seleccionar Equipo",
+    "SelectShiftType": "Seleccionar tipo de trabajo",
+    "SelectMaterialType": "Seleccionar Tipo de Material",
+    "EquipmentOperator": "Operador del Equipo",
     "SelectTruck": "Seleccione un Camion",
     "Operator": "Operador",
     "TruckDriver": "Camionero",
