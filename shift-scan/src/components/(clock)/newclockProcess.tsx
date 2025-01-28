@@ -16,12 +16,13 @@ import RedirectAfterDelay from "../redirectAfterDelay";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { setJobSite, setWorkRole } from "@/actions/cookieActions";
-import MechanicVerificationStep from "./mechanicVerificationStep";
-import TascoVerificationStep from "./tascoVerificationStep";
+import MechanicVerificationStep from "./Verification-step-mechanic";
+import TascoVerificationStep from "./Verification-step-tasco";
 import SwitchJobsMultiRoles from "./switchJobsMuiltipleRoles";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { returnToPrevWork } from "@/actions/timeSheetActions";
 import { useDBEquipment } from "@/app/context/dbCodeContext";
+import TruckVerificationStep from "./Verification-step-truck";
 
 type NewClockProcessProps = {
   mechanicView: boolean;
@@ -364,7 +365,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
 
       {/* Verification Page for truck drivers */}
       {step === 6 && clockInRole === "truck" && (
-        <VerificationStep
+        <TruckVerificationStep
           laborType={laborType}
           truck={truck}
           startingMileage={startingMileage}

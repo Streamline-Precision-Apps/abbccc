@@ -224,4 +224,19 @@ cookies().set({
 - working on truck clock in logic
 - logic to clock in as every labor type of truck driver works
 ### Trello
-- Starting Truck Driving role
+- Starting Truck Driving role (3hrs)
+- clock Logic - (4 hours)
+
+#
+# January 28, 2025 - Tuesday
+### Figma
+- 
+### Built/created 
+- built logic for trucking log to save its data upon creation, 
+- removed some cookies from the process like truck, starting mileage, and task name
+- defaulted task name to be same as labor type and that we can change it later if user wants.
+- altered tables just a bit to make connection to trucking logs and time Sheet easier
+### Trello
+- 4 (hours)
+  - Starting Truck Driving role 
+  - clock Logic
