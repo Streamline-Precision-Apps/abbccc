@@ -308,12 +308,16 @@
     "ID": "Id: #"
 },
 "Clock": {
-    "SelectTruck": "Select Truck",
+    "search-equipment-operator": "Search Equipment",
+    "SelectShiftType": "Select Shift Type",
+    "SelectMaterialType": "Select Material Type",
+    "EquipmentOperator": "Equipment Operator",
     "Operator": "Operator",
     "TruckDriver": "Truck Driver",
     "ManualLabor": "Manual Labor",
    "SelectLaborType": "Select Labor Type",
     "Next": "Next",
+    "Title-equipment-operator": "Select Equipment",
     "Title-jobsite-tasco": "Select Job Site",
     "search-jobsite-tasco": "Search Job Site",
     "Title-jobsite-mechanic": "Select Job Site",

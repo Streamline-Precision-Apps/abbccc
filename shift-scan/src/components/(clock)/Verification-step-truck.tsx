@@ -115,7 +115,7 @@ export default function TruckVerificationStep({
           await setWorkRole(role);
           await setLaborType(laborType || "");
           // go to dashboard
-          router.push("/dashboard");
+          return router.push("/dashboard");
         } catch (error) {
           console.error(error);
         }
@@ -142,7 +142,7 @@ export default function TruckVerificationStep({
         await setWorkRole(role); // set work role
         await setLaborType(laborType || ""); // set labor role
         // go to dashboard
-        router.push("/dashboard");
+        return router.push("/dashboard");
       }
     } catch (error) {
       console.error(error);

@@ -84,7 +84,7 @@ model TascoLog {
     refueled     Refueled[] // link to refueled
 
     // connections to other tables
-    equipment Equipment? @relation(fields: [equipmentId], references: [id])
+    equipment Equipment? @relation(fields: [equipmentId], references: [qrId])
     timeSheet TimeSheet? @relation(fields: [timeSheetId], references: [id])
 }
 

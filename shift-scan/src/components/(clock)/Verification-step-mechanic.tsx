@@ -5,7 +5,7 @@ import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
 import {
   CreateTimeSheet,
-  updateTimeSheetBySwitch,
+  updateMechanicTSBySwitch,
 } from "@/actions/timeSheetActions";
 import { Clock } from "../clock";
 import { TitleBoxes } from "../(reusable)/titleBoxes";
@@ -48,7 +48,7 @@ export default function MechanicVerificationStep({
   const { startingMileage } = useStartingMileage();
   const { savedCommentData, setCommentData } = useCommentData();
 
-  const costCode = "Mechanic Role";
+  const costCode = "#00.50";
 
   if (!session) return null; // Conditional rendering for session
   const { id } = session.user;
@@ -75,7 +75,7 @@ export default function MechanicVerificationStep({
             savedCommentData?.id.toString() || ""
           );
 
-          const responseOldSheet = await updateTimeSheetBySwitch(formData2);
+          const responseOldSheet = await updateMechanicTSBySwitch(formData2);
           if (responseOldSheet) {
             // removing the old sheet comment so it doesn't show up on the new sheet
             setCommentData(null);
@@ -98,7 +98,7 @@ export default function MechanicVerificationStep({
           const result = { id: response.id.toString() };
           setTimeSheetData(result);
 
-          router.push("/dashboard");
+          return router.push("/dashboard");
         } catch (error) {
           console.error(error);
         }
@@ -126,7 +126,7 @@ export default function MechanicVerificationStep({
         setTimeSheetData(result);
         setCurrentPageView("dashboard");
 
-        router.push("/dashboard");
+        return router.push("/dashboard");
       }
     } catch (error) {
       console.error(error);

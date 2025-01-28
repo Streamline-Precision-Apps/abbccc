@@ -34,35 +34,26 @@ import { useRouter } from "next/navigation";
 import { useOperator } from "@/app/context/operatorContext";
 
 type VerifyProcessProps = {
-  handleNextStep?: () => void;
   type: string;
   role: string;
   option?: string;
   comments?: string;
   laborType?: string;
-  truck?: string;
-  startingMileage?: number;
 };
 
 export default function VerificationStep({
   type,
-  handleNextStep,
   comments,
   role,
-  truck,
-  startingMileage,
   laborType,
 }: VerifyProcessProps) {
   const t = useTranslations("Clock");
   const { scanResult } = useScanData();
   const { savedCostCode } = useSavedCostCode();
   const { setTimeSheetData } = useTimeSheetData();
-  const { equipmentId } = useOperator();
   const [date] = useState(new Date());
   const { data: session } = useSession();
-  const { setStartingMileage } = useStartingMileage();
   const { savedCommentData, setCommentData } = useCommentData();
-  const { setTruckScanData } = useTruckScanData();
   const router = useRouter();
   if (!session) return null; // Conditional rendering for session
 
@@ -114,26 +105,10 @@ export default function VerificationStep({
           setCurrentPageView("dashboard");
           console.log("role before set", role);
           // logic to set truck scan data null
-          if (laborType === "operator" && role === "truck") {
-            await setEquipment(equipmentId || "");
-            setTruckScanData(null);
-          }
-          // set Equipment to null
-          if (laborType === "truckDriver" && role === "truck") {
-            setTruckScanData(truck || null);
-            setStartingMileage(startingMileage || null);
-            setEquipment("");
-          }
-          // set Equipment and truck to null
-          if (laborType === "manualLabor" && role === "truck") {
-            setTruckScanData(null);
-            setEquipment("");
-            setStartingMileage(null);
-          }
           await setWorkRole(role);
           await setLaborType(laborType || "");
 
-          router.push("/dashboard");
+          return router.push("/dashboard");
         } catch (error) {
           console.error(error);
         }
@@ -152,13 +127,8 @@ export default function VerificationStep({
         setTimeSheetData(result);
         setCurrentPageView("dashboard");
         await setWorkRole(role);
-        await setEquipment(equipmentId || "");
-        setTruckScanData(truck || null);
-        setStartingMileage(startingMileage || null);
-        if (laborType) {
-          await setLaborType(laborType);
-        }
-        router.push("/dashboard");
+
+        return router.push("/dashboard");
       }
     } catch (error) {
       console.error(error);
