@@ -64,7 +64,8 @@ export const EquipmentListProvider = ({
         if (
           url === "/clock" ||
           url === "/dashboard/log-new" ||
-          url === "/dashboard/switch-jobs"
+          url === "/dashboard/switch-jobs" ||
+          url === "/break"
         ) {
           const response = await fetch("/api/getEquipmentList");
           const recentEquipmentList = await response.json();

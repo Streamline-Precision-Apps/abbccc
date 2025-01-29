@@ -18,7 +18,6 @@ type QRStepProps = {
   handleNextStep: () => void;
   handleReturn?: () => void;
   handleReturnPath: () => void;
-  handleScanTruck?: () => void;
   handleScanJobsite?: () => void;
   type: string;
   url: string;
@@ -32,7 +31,6 @@ export default function QRStep({
   handleReturnPath,
   handleAlternativePath,
   handleNextStep,
-  handleScanTruck,
   handleScanJobsite,
   type,
   url,
@@ -70,7 +68,12 @@ export default function QRStep({
             {type !== "equipment" ? (
               <>
                 <Holds className="row-start-1 row-end-2 h-full w-full justify-center ">
-                  <Grids rows={"2"} cols={"5"} gap={"3"} className="h-full w-full">
+                  <Grids
+                    rows={"2"}
+                    cols={"5"}
+                    gap={"3"}
+                    className="h-full w-full"
+                  >
                     <Holds
                       className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center"
                       onClick={handleReturnPath}
@@ -112,7 +115,12 @@ export default function QRStep({
               </>
             ) : (
               <Holds className="row-start-1 row-end-2 h-full w-full justify-center ">
-                <Grids rows={"2"} cols={"5"} gap={"3"} className="h-full w-full">
+                <Grids
+                  rows={"2"}
+                  cols={"5"}
+                  gap={"3"}
+                  className="h-full w-full"
+                >
                   <Holds
                     className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center"
                     onClick={handleReturnPath}
@@ -159,7 +167,6 @@ export default function QRStep({
                   <Holds className="h-full w-full row-start-1 row-end-5 justify-center">
                     <QR
                       handleScanJobsite={handleScanJobsite || (() => {})}
-                      handleScanTruck={handleScanTruck || (() => {})}
                       url={url}
                       clockInRole={clockInRole}
                       type={type}

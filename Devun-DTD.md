@@ -1,3 +1,5 @@
+**DAILY TASKS DONE CHART**
+
 #
 # January 2, 2025
 ### researched
@@ -197,3 +199,57 @@ cookies().set({
 - left no new bugs
 ### Trello
 - Clock logic (8hours)
+
+
+#
+# January 24, 2025 - Friday
+### Meeting
+- Meet with sean talked over new truck and tasco design
+### Built/created 
+- created boards for tasco and how it should be upon clock in
+### Trello
+- Clock logic (4 hours)
+- Looking and reflection sprint
+### Figma 
+- 3 hours
+- Worked on making clock In process smoother and more in one place then others
+- Designed tasco and trucking with data in database.
+
+#
+# January 27, 2025 - Monday
+### Research
+- SCRUM Research to make more efficient and better scrums for team (1 hour)
+### Figma
+- finished Tasco last tweaks
+- Created board for engineer up to clock In logic on organized view
+### Built/created 
+- working on truck clock in logic
+- logic to clock in as every labor type of truck driver works
+### Trello
+- Starting Truck Driving role (3hrs)
+- clock Logic - (4 hours)
+
+#
+# January 28, 2025 - Tuesday
+### Built/created 
+- built logic for trucking log to save its data upon creation, 
+- removed some cookies from the process like truck, starting mileage, and task name
+- defaulted task name to be same as labor type and that we can change it later if user wants.
+- altered tables just a bit to make connection to trucking logs and time Sheet easier
+### Trello
+- 4 hours
+  - Starting Truck Driving role 
+  - clock Logic
+- 4 hours
+  - Starting Tasco Role
+  - Starting the Engineer Role
+
+  #
+# January 29, 2025 - wednesday
+### Research
+- Taking Notes on Jest located at file jest-testing.md
+
+
+### Built/created 
+
+### Trello
