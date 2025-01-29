@@ -77,7 +77,6 @@ export default function WidgetSection({ session, locale }: Props) {
   });
 
   const [pageView, setPageView] = useState("");
-  const [hydrated, setHydrated] = useState(false); // Hydration state
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const f = useTranslations("Home");
@@ -134,8 +133,7 @@ export default function WidgetSection({ session, locale }: Props) {
           "/api/cookies?method=get&name=currentPageView"
         );
         const data = await response.json();
-        console.log(data);
-        setPageView(data);
+        setPageView(data || "");
       } catch (error) {
         console.error("Error fetching page view:", error);
       }
@@ -149,7 +147,6 @@ export default function WidgetSection({ session, locale }: Props) {
       router.push("/dashboard");
     }
     if (pageView === "removeLocalStorage") {
-      localStorage.clear();
       setPageView("");
     }
     // if (!accountSetup) {
