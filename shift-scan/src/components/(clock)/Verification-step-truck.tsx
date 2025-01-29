@@ -140,9 +140,9 @@ export default function TruckVerificationStep({
         const response = await CreateTruckDriverTimeSheet(formData);
         const result = { id: response.id.toString() };
         setTimeSheetData(result); // set new recent timecard
+        setLaborType(laborType || ""); // set labor role
         setCurrentPageView("dashboard"); // set page view
         setWorkRole(role); // set work role
-        setLaborType(laborType || ""); // set labor role
         // go to dashboard
         setTimeout(() => {
           router.push("/dashboard");

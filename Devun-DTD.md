@@ -249,7 +249,11 @@ cookies().set({
 ### Research
 - Taking Notes on Jest located at file jest-testing.md (4 hour)
   - probably will not use jest because of an unknown bug that occurred each set up.
-
 ### Built/created 
+- working on debugging home page
 
 ### Trello
+- Starting Tasco Role && Starting the Engineer Role (2 hours)
+- / comment component on clock out/ switch jobs 40/40 breaks
+- / clock jobsite page to look like other examples
+- /clock display the recent 5 costcode
