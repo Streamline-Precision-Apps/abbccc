@@ -119,6 +119,8 @@
     "CostCode": "Código de costo"
 },
 "Widgets":{
+    "Maintenance": "Mantenimiento",
+    "TascoAssistant": "Asistente de Tasco",
     "QR": "Generador",
     "MyTeam": "Personal",
     "Equipment": "Herramientas ",
@@ -272,7 +274,7 @@
     "Equipment" : "Equipo",
     "EQTotalTime" : "Tiempo Total",
     "NoData": "No se Encontraron Datos",
-    "EquipmentLogs": "Registros de Equipo",
+    "EquipmentLogs": "Registros de Equipo", 
     "PhoneNumber": "Registros de Equipo",
     "Email": "Correo Electrónico",
     "EmergencyContact": "Contacto de Emergencia",
@@ -285,6 +287,23 @@
     "ID": "Id: #"
 },
 "Clock": {
+    "search-equipment-operator": "Buscar Equipo",
+    "Title-equipment-operator": "Seleccionar Equipo",
+    "SelectShiftType": "Seleccionar tipo de trabajo",
+    "SelectMaterialType": "Seleccionar Tipo de Material",
+    "EquipmentOperator": "Operador del Equipo",
+    "SelectTruck": "Seleccione un Camion",
+    "Operator": "Operador",
+    "TruckDriver": "Camionero",
+    "ManualLabor": "trabajo manual",
+    "SelectLaborType": "Seleccionar Tipo de Trabajo",
+    "Title-jobsite-tasco": "Seleccionar sitio de trabajo",
+    "search-jobsite-tasco": "Buscar Sitio de Trabajo",
+    "Title-jobsite-mechanic": "Seleccionar sitio de trabajo",
+    "search-jobsite-mechanic": "Buscar Sitio de Trabajo",
+    "Title-jobsite-truck": "Seleccionar sitio de trabajo",
+    "ReturnToPrevShift": "Regresar al trabajo anterior",
+    "SelectWorkType": "Seleccionar Tipo de Trabajo",
     "PleaseLeaveACommentOfWhatYouDid": "Por favor, deje un comentario de lo que hizo.",
     "TodayIDidTheFollowing": "Hoy, hice lo siguiente...",
     "General": "General",
@@ -336,6 +355,15 @@
     "Mileage": "Mileage"
     },
 "ClockOut":{
+    "Next": "Siguiente",
+    "ChangeIfNecessary" : "Cambiar si es necesario",
+    "PreviousJobComment": "Comentarios del Trabajo Anterior",
+    "ReviewYourDayDirections": "Revisa tu día a continuación. Si tienes alguna pregunta, por favor, contacta a tu supervisor.",
+    "Now": "Ahora",
+    "Current": "Actual",
+    "StartTime": "Inicio",
+    "EndTime": "Finalización",
+    "ReviewYourDay": "Revisa tu Día",
     "NoSignature": "No tiene firma registrada.",
     "SignBelow": "Al marcar la casilla a continuación, certifico que no sufrí lesiones este día.",
     "Jobsite" : "Sitio de trabajo # ",
@@ -408,6 +436,7 @@
     "PhotoAlbumAccess": " Album de Fotos"
 },
 "Admins":{
+
     "SelectRequestType": "Seleccionar Tipo de Solicitud",
     "SelectEmployee": "Seleccionar Empleado",
     "TitleOptional": "Título (Opcional)",

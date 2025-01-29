@@ -28,6 +28,7 @@ import {
 } from "@/app/context/dbRecentCodesContext";
 import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
+import { useOperator } from "@/app/context/operatorContext";
 
 type Option = {
   code: string;
@@ -43,6 +44,7 @@ export default function CodeFinder({ datatype, savedCode }: Props) {
   const [searchTerm, setSearchTerm] = useState(savedCode || "");
   const [filteredOptions, setFilteredOptions] = useState<Option[]>([]);
   const [selectedOption, setSelectedOption] = useState<Option | null>(null);
+  const [selectedTerm, setSelectedTerm] = useState(false);
   const t = useTranslations("Clock");
 
   const { setScanResult } = useScanData();
@@ -57,6 +59,8 @@ export default function CodeFinder({ datatype, savedCode }: Props) {
 
   const { equipmentResults } = useDBEquipment();
   const { addRecentlyUsedEquipment } = useRecentDBEquipment();
+
+  const { setEquipmentId } = useOperator();
 
   // Use useMemo to avoid recalculating options unnecessarily
   const options = useMemo(
@@ -98,9 +102,9 @@ export default function CodeFinder({ datatype, savedCode }: Props) {
 
   const handleOptionSelect = (option: Option) => {
     setSelectedOption(option);
+    setSelectedTerm(true);
 
     if (datatype === "costcode") {
-      localStorage.setItem("costCode", option.code);
       setCostCode(option.code);
 
       const selectedCode = costcodeResults.find((c) => c.name === option.code);
@@ -108,7 +112,6 @@ export default function CodeFinder({ datatype, savedCode }: Props) {
     }
 
     if (datatype === "jobsite") {
-      localStorage.setItem("jobSite", option.code);
       setScanResult({ data: option.code });
 
       const selectedJobCode = jobsiteResults.find(
@@ -117,15 +120,44 @@ export default function CodeFinder({ datatype, savedCode }: Props) {
       if (selectedJobCode) addRecentlyUsedJobCode(selectedJobCode);
     }
 
+    if (datatype === "jobsite-mechanic") {
+      setScanResult({ data: option.code });
+
+      const selectedJobCode = jobsiteResults.find(
+        (j) => j.qrId === option.code
+      );
+      if (selectedJobCode) addRecentlyUsedJobCode(selectedJobCode);
+    }
+    if (datatype === "jobsite-tasco") {
+      setScanResult({ data: option.code });
+
+      const selectedJobCode = jobsiteResults.find(
+        (j) => j.qrId === option.code
+      );
+      if (selectedJobCode) addRecentlyUsedJobCode(selectedJobCode);
+    }
+    if (datatype === "jobsite-truck") {
+      setScanResult({ data: option.code });
+
+      const selectedJobCode = jobsiteResults.find(
+        (j) => j.qrId === option.code
+      );
+      if (selectedJobCode) addRecentlyUsedJobCode(selectedJobCode);
+    }
+    if (datatype === "equipment-operator") {
+      setEquipmentId(option.code);
+      console.log(option.code);
+    }
+
     if (datatype === "equipment") {
       setscanEQResult({ data: option.code });
-      localStorage.setItem("previousEquipment", option.code);
 
       const selectedEquipment = equipmentResults.find(
         (e) => e.qrId === option.code
       );
       if (selectedEquipment) addRecentlyUsedEquipment(selectedEquipment);
     }
+
     setSearchTerm(option.label); // Set the search term to the selected option label
   };
 
@@ -133,23 +165,33 @@ export default function CodeFinder({ datatype, savedCode }: Props) {
     setSearchTerm(e.target.value);
   };
 
+  const clearSelection = () => {
+    setSelectedOption(null);
+    setSearchTerm("");
+    setSelectedTerm(false);
+  };
+
   return (
     <Holds className="w-full h-full">
-      <Grids cols={"1"} rows={"5"} gap={"5"}>
+      <Grids rows={"5"} gap={"5"}>
         <Holds className="row-span-1 h-full">
           <SearchBar
-            selected={false}
+            selected={selectedTerm}
             placeholder={t(`search-${datatype}`)}
             searchTerm={searchTerm}
             onSearchChange={handleSearchChange}
+            setSearchTerm={setSearchTerm}
+            setSelectedTerm={setSelectedTerm}
+            clearSelection={clearSelection}
           />
         </Holds>
 
-        <Holds className="row-span-4 h-full">
+        <Holds className="row-span-4 h-full border-[3px] border-black rounded-[10px] ">
           <CustomSelect
             options={filteredOptions}
             onOptionSelect={handleOptionSelect}
             selectedOption={selectedOption}
+            clearSelection={clearSelection}
           />
         </Holds>
       </Grids>

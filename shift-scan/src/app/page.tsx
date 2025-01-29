@@ -23,10 +23,11 @@ export default async function Home() {
   const locale = lang ? lang.value : "en";
 
   // Pass the fetched data to the client-side Content component
+
   return (
     <Bases>
       <Contents>
-        <Grids rows={"7"}>
+        <Grids rows={"8"}>
           <Holds position={"row"} background={"white"} className="row-span-1">
             <Holds size={"30"}>
               <Images
@@ -41,8 +42,7 @@ export default async function Home() {
               <AnimatedHamburgerButton />
             </Holds>
           </Holds>
-
-          <WidgetSection locale={locale} session={session} />
+            <WidgetSection locale={locale} session={session} />
         </Grids>
       </Contents>
     </Bases>

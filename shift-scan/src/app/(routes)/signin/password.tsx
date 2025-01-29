@@ -118,12 +118,12 @@ export default function SignInForm() {
           </Holds>
         </Holds>
         <Holds position="row" className="mb-6">
-          <Holds size={"70"}>
-            <Texts size="p2" position={"left"}>
+          <Holds size={"80"}>
+            <Texts size="p3" position={"left"}>
               {t("Spanish")}
             </Texts>
           </Holds>
-          <Holds size={"30"} position={"right"}>
+          <Holds size={"20"} position={"right"}>
             <CheckBox
               disabled={false}
               id={"1"}

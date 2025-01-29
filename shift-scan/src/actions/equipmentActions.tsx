@@ -2,7 +2,6 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { EquipmentTags, EquipmentStatus } from "@/lib/types";
-import { FormStatus } from "@prisma/client";
 
 export async function equipmentTagExists(id: string) {
   try {
@@ -252,10 +251,14 @@ export async function CreateEmployeeEquipmentLog(formData: FormData) {
       data: {
         employeeId,
         equipmentId: equipment.id,
-        
+
         jobsiteId,
-        startTime: formData.get("startTime") ? new Date(formData.get("startTime") as string) : null,
-        endTime: formData.get("endTime") ? new Date(formData.get("endTime") as string) : null,
+        startTime: formData.get("startTime")
+          ? new Date(formData.get("startTime") as string)
+          : null,
+        endTime: formData.get("endTime")
+          ? new Date(formData.get("endTime") as string)
+          : null,
         comment: formData.get("comment") as string,
         isSubmitted: false, // default to false as per schema
         status: "PENDING", // default status
@@ -264,12 +267,12 @@ export async function CreateEmployeeEquipmentLog(formData: FormData) {
 
     // Revalidate the path to update any dependent front-end views
     revalidatePath("/");
-
-    return log;
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.error("Error creating employee equipment log:", error);
-      throw new Error(`Failed to create employee equipment log: ${error.message}`);
+      throw new Error(
+        `Failed to create employee equipment log: ${error.message}`
+      );
     } else {
       console.error("An unknown error occurred:", error);
       throw error;
@@ -282,8 +285,6 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
     console.log(formData);
     const id = formData.get("id") as string;
     const fuel = parseFloat(formData.get("fuel") as string);
-    const equipmentStatus = formData.get("Equipment.status") as EquipmentStatus;
-    console.log("equipment status", equipmentStatus);
 
     // Update the employee equipment log
     const log = await prisma.employeeEquipmentLog.update({
@@ -291,7 +292,6 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
       data: {
         endTime: new Date().toISOString(),
         comment: formData.get("comment") as string,
-        status: formData.get("status") as FormStatus,
         Equipment: {
           update: {
             status: formData.get("Equipment.status") as EquipmentStatus,
@@ -309,7 +309,6 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
     console.log(log);
     revalidatePath("dashboard/equipment/" + id);
     revalidatePath("/dashboard/equipment");
-    return log;
   } catch (error) {
     console.error("Error updating employee equipment log:", error);
     throw new Error(`Failed to update employee equipment log: ${error}`);
@@ -347,7 +346,6 @@ export async function updateEquipment(formData: FormData) {
     });
     revalidatePath("/admin/assets");
     console.log(log);
-    return log;
   } catch (error) {
     console.error("Error updating employee equipment log:", error);
   }
@@ -370,7 +368,7 @@ export async function updateEquipmentID(formData: FormData) {
   }
 }
 
-export async function Submit(formData: FormData) {
+export async function UpdateSubmit(formData: FormData) {
   try {
     console.log("Sever action formData: ", formData);
     const id = formData.get("id") as string;
@@ -387,7 +385,6 @@ export async function Submit(formData: FormData) {
 
     // Revalidate the path to reflect changes
     revalidatePath("/dashboard/equipment");
-    return logs;
   } catch (error) {
     console.error("Error updating employee equipment log:", error);
     throw new Error(`Failed to update employee equipment log: ${error}`);

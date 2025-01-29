@@ -202,13 +202,9 @@ const Modals: FC<ModalProps> = ({
             onClick={handleClose}
             background={"red"}
             className="close-btn"
-            size={"10"}
+            size={"20"}
           >
-            <Images
-              titleImg="/camera.svg"
-              titleImgAlt="x"
-              className="mx-auto"
-            />
+            <Images titleImg="/x.svg" titleImgAlt="x" className="mx-auto p-2" />
           </Buttons>
           <div className="modal-content-wrapper max-h-[80vh] overflow-y-auto scrollbar-hide">
             {props.children}

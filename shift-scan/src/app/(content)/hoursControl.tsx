@@ -3,15 +3,24 @@ import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import ViewComponent from "../(content)/hourView";
 import { usePayPeriodTimeSheet } from "../context/PayPeriodTimeSheetsContext";
 import { useTranslations } from "next-intl";
+import { toZonedTime } from "date-fns-tz";
+import {
+  startOfWeek as startOfWeekFn,
+  differenceInCalendarWeeks as differenceInCalendarWeeksFn,
+  addWeeks as addWeeksFn,
+} from "date-fns";
 
 import { Texts } from "@/components/(reusable)/texts";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Holds } from "@/components/(reusable)/holds";
 import { Grids } from "@/components/(reusable)/grids";
+import { Images } from "@/components/(reusable)/images";
+import { Titles } from "@/components/(reusable)/titles";
 
 type ControlComponentProps = {
   toggle: (toggle: boolean) => void;
 };
+const MST_TIMEZONE = "America/Denver";
 
 export default function ControlComponent({ toggle }: ControlComponentProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -23,49 +32,73 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
   );
 
   const calculatePayPeriodStart = () => {
-    const startDate = new Date(2024, 7, 5); // August 5, 2024
-    const now = new Date();
-    const diff = now.getTime() - startDate.getTime();
-    const diffWeeks = Math.floor(diff / (2 * 7 * 24 * 60 * 60 * 1000)); // Two-week intervals
-    return new Date(
-      startDate.getTime() + diffWeeks * 2 * 7 * 24 * 60 * 60 * 1000
+    const startDate = new Date(2024, 7, 5); // August 5, 2024 (Monday)
+    const now = toZonedTime(new Date(), MST_TIMEZONE);
+
+    // Find the most recent Monday
+    const currentWeekStart = startOfWeekFn(now, { weekStartsOn: 1 }); // 1 = Monday
+
+    // Calculate the number of weeks since the startDate
+    const weeksSinceStart = differenceInCalendarWeeksFn(
+      currentWeekStart,
+      startDate,
+      {
+        weekStartsOn: 1,
+      }
     );
+
+    // Determine the current two-week period
+    const payPeriodNumber = Math.floor(weeksSinceStart / 2);
+
+    // Calculate the start of the current pay period
+    const payPeriodStart = addWeeksFn(startDate, payPeriodNumber * 2);
+
+    return toZonedTime(payPeriodStart, MST_TIMEZONE);
   };
 
   const calculateDailyHours = useCallback(() => {
-    const startDate = calculatePayPeriodStart();
-    const endDate = new Date(startDate);
-    endDate.setDate(endDate.getDate() + 13); // Two-week period
-    const dateKey = (date: Date) => date.toISOString().split("T")[0];
-    const hoursMap: Record<string, number> = {};
-    const currentDate = new Date(startDate);
+    const startDate = calculatePayPeriodStart(); // get the start of the current pay period
+    const endDate = new Date(startDate); // Clone to avoid mutating startDate
+    endDate.setDate(endDate.getDate() + 13); // Mutate the end date to add 13 days for a Two-week period (14 days)
 
+    const dateKey = (date: Date) => {
+      return date.toString(); // makes a Date key to group hours
+    };
+    const hoursMap: Record<string, number> = {}; // makes a record to hold date key and hours
+    const currentDate = new Date(startDate); // made a clone of startDate to avoid multiple date keys
+
+    // PreCalculate hours for each day in the pay period to have a zero value starting point
     while (currentDate <= endDate) {
-      hoursMap[dateKey(currentDate)] = 0;
+      const zonedDate = toZonedTime(currentDate, MST_TIMEZONE);
+      hoursMap[dateKey(zonedDate)] = 0;
       currentDate.setDate(currentDate.getDate() + 1);
     }
-
+    // take current time sheets and add them to the hours map
     if (payPeriodTimeSheet) {
       payPeriodTimeSheet.forEach((sheet) => {
-        const sheetDateKey = new Date(sheet.startTime)
-          .toISOString()
-          .split("T")[0];
+        // Convert sheet times to MST
+        const sheetStart = toZonedTime(sheet.startTime, MST_TIMEZONE); // get start time in MST
+        const sheetEnd = toZonedTime(sheet.endTime, MST_TIMEZONE); // get end time in MST
+        const sheetDateKey = toZonedTime(
+          sheetStart.toISOString().split("T")[0],
+          MST_TIMEZONE
+        ).toString(); // Get put the timesheet under the same date key
+
         if (hoursMap[sheetDateKey] !== undefined) {
-          (hoursMap[sheetDateKey] +=
-            (new Date(sheet.endTime).getTime() -
-              new Date(sheet.startTime).getTime()) /
-            (1000 * 60 * 60)),
-            0;
+          // makes sure the date key exists
+          const hours =
+            (sheetEnd.getTime() - sheetStart.getTime()) / (1000 * 60 * 60); // calculate hours
+          hoursMap[sheetDateKey] += hours; // add hours to the date key
         }
       });
     }
-
+    // sort the hours map by date
     return Object.entries(hoursMap)
       .map(([date, hours]) => ({ date, hours }))
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   }, [payPeriodTimeSheet]);
 
-  // calls the previous function and created a new array
+  // calls the previous function and creates a new array
   const dailyHours = useMemo(() => {
     if (dailyHoursCache.current) {
       return dailyHoursCache.current;
@@ -77,8 +110,13 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
   }, [calculateDailyHours]);
 
   useEffect(() => {
-    const today = new Date().toISOString().split("T")[0];
-    const todayIndex = dailyHours.findIndex((entry) => entry.date === today);
+    const today = toZonedTime(new Date(), MST_TIMEZONE); // get today in MST
+    today.setHours(0, 0, 0, 0).toString(); // set hours to 0 to match the date key
+    const todayIndex = dailyHours.findIndex(
+      (entry) =>
+        toZonedTime(new Date(entry.date), MST_TIMEZONE).toString() ===
+        today.toString()
+    );
     if (todayIndex !== -1) {
       setCurrentIndex(todayIndex);
       setTodayIndex(todayIndex);
@@ -89,10 +127,6 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
   const prevData = dailyHours[currentIndex - 1] || { date: "", hours: 0 };
   const currentData = dailyHours[currentIndex] || { date: "", hours: 0 };
   const nextData = dailyHours[currentIndex + 1] || { date: "", hours: 0 };
-
-  console.log("prevData", prevData);
-  console.log("currentData", currentData);
-  console.log("nextData", nextData);
 
   const calculateBarHeight = (value: number) => {
     if (value === 0) return 50;
@@ -110,14 +144,12 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
   const scrollLeft = () => {
     if (currentIndex > 0) {
       setCurrentIndex((prevIndex) => prevIndex - 1);
-      console.log(currentIndex);
     }
   };
 
   const scrollRight = () => {
     if (currentIndex < dailyHours.length - 1) {
       setCurrentIndex((prevIndex) => prevIndex + 1);
-      console.log(currentIndex);
     }
   };
   const returnToMain = () => {
@@ -125,173 +157,200 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
   };
 
   return (
-    <Grids rows="7" gap="5">
+    <Grids rows="12" gap="5">
+      <Holds position={"row"} className="row-span-2">
+        <Holds size={"20"} className="h-full mr-5">
+          <Buttons background={"red"} onClick={returnToMain}>
+            <Images
+              titleImg={"/turnBack.svg"}
+              titleImgAlt="return"
+              className="mx-auto p-2"
+            />
+          </Buttons>
+        </Holds>
+        <Holds size={"80"} className="h-full">
+          <Buttons href={"/timesheets"} background={"green"}>
+            <Titles size={"h3"}>{t("TimeSheet-Label")}</Titles>
+          </Buttons>
+        </Holds>
+      </Holds>
+
       <Holds
         background={"darkBlue"}
-        className="row-span-2 h-full shadow-[8px_8px_0px_grey]"
+        className="row-span-10 h-full border-black border-[3px] rounded-[10px] shadow-[8px_8px_0px_grey]"
       >
-        <ViewComponent
-          returnToMain={returnToMain}
-          scrollLeft={scrollLeft}
-          scrollRight={scrollRight}
-          currentDate={currentData.date}
-        />
-      </Holds>
+        <Grids>
+          <Holds position="row" className="h-full p-2">
+            {/* Render prevData only if it exists */}
+            {prevData.date !== "" ? (
+              <Holds className="mx-auto pl-2 pb-2 pt-6 h-full w-[25%]">
+                <Holds
+                  className={`h-full rounded-[10px] bg-white p-1 justify-end ${
+                    prevData.date === Today.date
+                      ? "border-[5px] border-app-green"
+                      : "border-[3px] border-black"
+                  } ${
+                    prevData.hours === 0 &&
+                    prevData.date <=
+                      toZonedTime(new Date(), MST_TIMEZONE)
+                        .toISOString()
+                        .split("T")[0]
+                      ? ""
+                      : ""
+                  }`}
+                >
+                  <Holds
+                    className={`rounded-[10px] ${
+                      prevData.hours !== 0 ? "bg-app-blue" : ""
+                    }`}
+                    style={{
+                      height: `${calculateBarHeight(prevData.hours)}%`,
+                      border: prevData.hours ? "3px solid black" : "",
+                    }}
+                  >
+                    <Texts size="p4">
+                      {prevData.hours !== 0 ? prevData.hours.toFixed(1) : ""}
+                    </Texts>
+                    <Texts size="p4">
+                      {prevData.hours === 0 &&
+                      prevData.date <=
+                        toZonedTime(new Date(), MST_TIMEZONE)
+                          .toISOString()
+                          .split("T")[0]
+                        ? prevData.hours
+                        : ""}
+                    </Texts>
+                    <Texts size="p4">
+                      {prevData.date <=
+                      toZonedTime(new Date(), MST_TIMEZONE)
+                        .toISOString()
+                        .split("T")[0]
+                        ? `${t("DA-Time-Label")}`
+                        : ""}
+                    </Texts>
+                  </Holds>
+                </Holds>
+              </Holds>
+            ) : (
+              <Holds className="mx-auto px-2 py-4 h-full w-[25%]" />
+            )}
 
-      <Holds
-        position="row"
-        className="row-span-4 border-black border-[3px] rounded-2xl shadow-[8px_8px_0px_grey]"
-      >
-        {/* Render prevData only if it exists */}
-        {prevData.date !== "" ? (
-          <Holds className="mx-auto px-2 py-4 h-full w-[25%]">
-            <Holds
-              background="darkBlue"
-              className={`h-full rounded-[10px] p-1 flex justify-end ${
-                prevData.date === Today.date
-                  ? "border-[5px] border-app-green"
-                  : "border-[3px] border-black"
-              } ${
-                prevData.hours === 0 &&
-                prevData.date <= new Date().toISOString().split("T")[0]
-                  ? " "
-                  : ""
-              }`}
-            >
+            {/* Render currentData */}
+            <Holds className="mx-auto h-full w-[30%]">
               <Holds
-                className={`rounded-[10px] justify-end ${
-                  prevData.hours > 8 && prevData.hours !== 0
-                    ? "bg-app-green"
-                    : prevData.hours < 8 && prevData.hours !== 0
-                    ? "bg-app-orange"
+                className={`h-full rounded-[10px] bg-white p-1 flex justify-end ${
+                  currentData.date === Today.date
+                    ? "border-[5px] border-app-green"
+                    : "border-[3px] border-black"
+                } ${
+                  currentData.hours === 0 &&
+                  currentData.date <=
+                    toZonedTime(new Date(), MST_TIMEZONE)
+                      .toISOString()
+                      .split("T")[0]
+                    ? " "
                     : ""
                 }`}
-                style={{
-                  height: `${calculateBarHeight(prevData.hours)}%`,
-                  border: prevData.hours ? "3px solid black" : "none",
-                }}
               >
-                <Texts size="p4">
-                  {prevData.hours !== 0 ? prevData.hours.toFixed(1) : ""}
-                </Texts>
-                <Texts size="p4">
-                  {prevData.hours === 0 &&
-                  prevData.date <= new Date().toISOString().split("T")[0]
-                    ? prevData.hours
-                    : ""}
-                </Texts>
-                <Texts size="p4">
-                  {prevData.date <= new Date().toISOString().split("T")[0]
-                    ? `${t("DA-Time-Label")}`
-                    : ""}
-                </Texts>
+                <Holds
+                  className={`rounded-[10px] justify-end ${
+                    currentData.hours !== 0 ? "bg-app-blue" : ""
+                  }`}
+                  style={{
+                    height: `${calculateBarHeight(currentData.hours)}%`,
+                    border: currentData.hours ? "3px solid black" : "none",
+                  }}
+                >
+                  <Texts size="p4">
+                    {currentData.hours !== 0
+                      ? currentData.hours.toFixed(1)
+                      : ""}
+                  </Texts>
+                  <Texts size="p4">
+                    {currentData.hours === 0 &&
+                    currentData.date <=
+                      toZonedTime(new Date(), MST_TIMEZONE)
+                        .toISOString()
+                        .split("T")[0]
+                      ? currentData.hours
+                      : ""}
+                  </Texts>
+                  <Texts size="p4">
+                    {currentData.date <=
+                    toZonedTime(new Date(), MST_TIMEZONE)
+                      .toISOString()
+                      .split("T")[0]
+                      ? `${t("DA-Time-Label")}`
+                      : ""}
+                  </Texts>
+                </Holds>
               </Holds>
             </Holds>
-          </Holds>
-        ) : (
-          <Holds className="mx-auto px-2 py-4 h-full w-[25%]" />
-        )}
 
-        {/* Render currentData */}
-        <Holds className="mx-auto px-2 py-2 h-full w-[30%]">
-          <Holds
-            background="darkBlue"
-            className={`h-full rounded-[10px] p-1 flex justify-end ${
-              currentData.date === Today.date
-                ? "border-[5px] border-app-green"
-                : "border-[3px] border-black"
-            } ${
-              currentData.hours === 0 &&
-              currentData.date <= new Date().toISOString().split("T")[0]
-                ? " "
-                : ""
-            }`}
-          >
-            <Holds
-              className={`rounded-[10px] justify-end ${
-                currentData.hours > 8 && currentData.hours !== 0
-                  ? "bg-app-green"
-                  : currentData.hours < 8 && currentData.hours !== 0
-                  ? "bg-app-orange"
-                  : ""
-              }`}
-              style={{
-                height: `${calculateBarHeight(currentData.hours)}%`,
-                border: currentData.hours ? "3px solid black" : "none",
-              }}
-            >
-              <Texts size="p4">
-                {currentData.hours !== 0 ? currentData.hours.toFixed(1) : ""}
-              </Texts>
-              <Texts size="p4">
-                {currentData.hours === 0 &&
-                currentData.date <= new Date().toISOString().split("T")[0]
-                  ? currentData.hours
-                  : ""}
-              </Texts>
-              <Texts size="p4">
-                {currentData.date <= new Date().toISOString().split("T")[0]
-                  ? `${t("DA-Time-Label")}`
-                  : ""}
-              </Texts>
-            </Holds>
-          </Holds>
-        </Holds>
-
-        {/* Render nextData */}
-        {nextData.date !== "" ? (
-          <Holds className="mx-auto px-2 py-4 h-full w-[25%]">
-            <Holds
-              background="darkBlue"
-              className={`h-full rounded-[10px] p-1 flex justify-end ${
-                nextData.date === Today.date
-                  ? "border-[5px] border-app-green"
-                  : "border-[3px] border-black"
-              } ${
-                nextData.hours === 0 &&
-                nextData.date <= new Date().toISOString().split("T")[0]
-                  ? " "
-                  : ""
-              }`}
-            >
-              <Holds
-                className={`rounded-[10px] justify-end ${
-                  nextData.hours > 8 && nextData.hours !== 0
-                    ? "bg-app-green"
-                    : nextData.hours < 8 && nextData.hours !== 0
-                    ? "bg-app-orange"
-                    : ""
-                }`}
-                style={{
-                  height: `${calculateBarHeight(nextData.hours)}%`,
-                  border: nextData.hours ? "3px solid black" : "none",
-                }}
-              >
-                <Texts size="p4">
-                  {nextData.hours !== 0 ? nextData.hours.toFixed(1) : ""}
-                </Texts>
-                <Texts size="p4">
-                  {nextData.hours === 0 &&
-                  nextData.date <= new Date().toISOString().split("T")[0]
-                    ? nextData.hours
-                    : ""}
-                </Texts>
-                <Texts size="p4">
-                  {nextData.date <= new Date().toISOString().split("T")[0]
-                    ? `${t("DA-Time-Label")}`
-                    : ""}
-                </Texts>
+            {/* Render nextData */}
+            {nextData.date !== "" ? (
+              <Holds className="mx-auto pr-2 pb-2 pt-6 h-full w-[25%]">
+                <Holds
+                  background="darkBlue"
+                  className={`h-full rounded-[10px] bg-white p-1 flex justify-end ${
+                    nextData.date === Today.date
+                      ? "border-[5px] border-app-green"
+                      : "border-[3px] border-black"
+                  } ${
+                    nextData.hours === 0 &&
+                    nextData.date <=
+                      toZonedTime(new Date(), MST_TIMEZONE)
+                        .toISOString()
+                        .split("T")[0]
+                      ? " "
+                      : ""
+                  }`}
+                >
+                  <Holds
+                    className={`rounded-[10px] ${
+                      prevData.hours !== 0 ? "bg-app-blue" : ""
+                    }`}
+                    style={{
+                      height: `${calculateBarHeight(nextData.hours)}%`,
+                      border: nextData.hours ? "3px solid black" : "none",
+                    }}
+                  >
+                    <Texts size="p4">
+                      {nextData.hours !== 0 ? nextData.hours.toFixed(1) : ""}
+                    </Texts>
+                    <Texts size="p4">
+                      {nextData.hours === 0 &&
+                      nextData.date <=
+                        toZonedTime(new Date(), MST_TIMEZONE)
+                          .toISOString()
+                          .split("T")[0]
+                        ? nextData.hours
+                        : ""}
+                    </Texts>
+                    <Texts size="p4">
+                      {nextData.date <=
+                      toZonedTime(new Date(), MST_TIMEZONE)
+                        .toISOString()
+                        .split("T")[0]
+                        ? `${t("DA-Time-Label")}`
+                        : ""}
+                    </Texts>
+                  </Holds>
+                </Holds>
               </Holds>
-            </Holds>
+            ) : (
+              <Holds className="mx-auto px-2 py-4 h-full w-[25%]" />
+            )}
           </Holds>
-        ) : (
-          <Holds className="mx-auto px-2 py-4 h-full w-[25%]" />
-        )}
-      </Holds>
-      <Holds className="row-span-1 h-full">
-        <Buttons href={"/timesheets"} background={"green"}>
-          <Texts size={"p3"}>{t("TimeSheet-Label")}</Texts>
-        </Buttons>
+
+          <Holds className=" p-2 h-full">
+            <ViewComponent
+              scrollLeft={scrollLeft}
+              scrollRight={scrollRight}
+              currentDate={currentData.date}
+            />
+          </Holds>
+        </Grids>
       </Holds>
     </Grids>
   );

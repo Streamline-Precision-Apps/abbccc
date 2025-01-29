@@ -74,6 +74,11 @@ function SearchSelect<T extends JobCode | EquipmentCodes>({
     setSelectedTerm(true);
     onSelect(option); // Call the onSelect prop with the selected option
   };
+  const handleClearSelection = () => {
+    setSearchTerm("");
+    setSelectedTerm(false);
+    setIsMenuOpen(false);
+  };
 
   return (
     <Grids rows={"6"} className="border-[3px] border-black rounded-[10px]">
@@ -86,6 +91,7 @@ function SearchSelect<T extends JobCode | EquipmentCodes>({
           selected={selectedTerm}
           setSelectedTerm={setSelectedTerm}
           setSearchTerm={setSearchTerm}
+          clearSelection={handleClearSelection}
         />
       </Holds>
       {loading ? (

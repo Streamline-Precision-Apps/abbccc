@@ -25,6 +25,8 @@ import { useCurrentView } from "@/app/context/CurrentViewContext";
 import TruckClockOutForm from "./(components)/truckClockOutForm";
 import { useStartingMileage } from "@/app/context/StartingMileageContext";
 import Comment from "@/components/(clock)/comment";
+import ReviewYourDay from "./(components)/reviewYourDay";
+import { RemoveCookiesAtClockOut } from "@/actions/cookieActions";
 
 export default function ClockOutContent() {
   const [loading, setLoading] = useState(true);
@@ -104,13 +106,16 @@ export default function ClockOutContent() {
     try {
       setIsSubmitting(true);
       hasSubmitted.current = true;
-
+      const tId = await fetch("/api/cookies?method=get&name=timeSheetId").then(
+        (res) => res.json()
+      );
       const formData = new FormData(formRef.current as HTMLFormElement);
+      formData.append("id", tId?.toString() || ""); // Append the timeSheetId to the form data
       await updateTimeSheet(formData);
       localStorage.clear();
-      setCurrentView("");
       setTruckScanData("");
       setStartingMileage(null);
+      RemoveCookiesAtClockOut();
       router.push("/");
     } catch (error) {
       console.error("Failed to submit the time sheet:", error);
@@ -168,8 +173,19 @@ export default function ClockOutContent() {
       </Grids>
     );
   }
-
   if (step === 1) {
+    return (
+      <Grids className="grid-rows-1 gap-5">
+        <Holds background={"white"} className="row-span-1 h-full">
+          <Contents width={"section"} className="py-4">
+            <ReviewYourDay handleClick={handleNextStep} />
+          </Contents>
+        </Holds>
+      </Grids>
+    );
+  }
+
+  if (step === 2) {
     return (
       <Grids className="grid-rows-4 gap-5">
         <Holds background={"white"} className="row-span-1 h-full">
@@ -242,7 +258,7 @@ export default function ClockOutContent() {
         </Holds>
       </Grids>
     );
-  } else if (step === 2 && path === "Injury") {
+  } else if (step === 3 && path === "Injury") {
     return (
       <Grids rows={"10"} gap={"5"}>
         <Holds background={"white"} className="h-full row-span-2">
@@ -263,7 +279,7 @@ export default function ClockOutContent() {
         </Holds>
       </Grids>
     );
-  } else if (step === 2 && path === "clockOut") {
+  } else if (step === 3 && path === "clockOut") {
     return (
       <>
         <Grids rows={"4"} gap={"5"}>
@@ -313,15 +329,6 @@ export default function ClockOutContent() {
                     <form ref={formRef}>
                       <Inputs
                         type="hidden"
-                        name="id"
-                        value={(
-                          savedTimeSheetData?.id ||
-                          localStorageData?.timesheet.id
-                        )?.toString()}
-                        readOnly
-                      />
-                      <Inputs
-                        type="hidden"
                         name="endTime"
                         value={new Date().toISOString()}
                         readOnly
@@ -348,7 +355,7 @@ export default function ClockOutContent() {
         </Grids>
       </>
     );
-  } else if (step === 2 && path === "truck") {
+  } else if (step === 3 && path === "truck") {
     return (
       <>
         <TruckClockOutForm
@@ -368,7 +375,7 @@ export default function ClockOutContent() {
         />
       </>
     );
-  } else if (step === 3 && path === "clockOut") {
+  } else if (step === 4 && path === "clockOut") {
     return (
       <>
         <Grids rows={"4"} gap={"5"}>
@@ -418,15 +425,6 @@ export default function ClockOutContent() {
                     <form ref={formRef}>
                       <Inputs
                         type="hidden"
-                        name="id"
-                        value={(
-                          savedTimeSheetData?.id ||
-                          localStorageData?.timesheet.id
-                        )?.toString()}
-                        readOnly
-                      />
-                      <Inputs
-                        type="hidden"
                         name="endTime"
                         value={new Date().toISOString()}
                         readOnly
@@ -453,7 +451,7 @@ export default function ClockOutContent() {
         </Grids>
       </>
     );
-  } else if (step === 3 && path === "truck") {
+  } else if (step === 4 && path === "truck") {
     return (
       <>
         <Grids rows={"4"} gap={"5"}>
@@ -512,15 +510,6 @@ export default function ClockOutContent() {
                         handleButtonClick(); // Call your custom submit logic
                       }}
                     >
-                      <Inputs
-                        type="hidden"
-                        name="id"
-                        value={(
-                          savedTimeSheetData?.id ||
-                          localStorageData?.timesheet.id
-                        )?.toString()}
-                        readOnly
-                      />
                       <Inputs
                         type="hidden"
                         name="endTime"

@@ -1,7 +1,7 @@
 "use server";
 import { getTranslations } from "next-intl/server";
 import "@/app/globals.css";
-import ClockOutButtons from "@/components/clockOutButtons";
+import ClockOutButtons from "@/app/(routes)/dashboard/clock-out/(components)/injury-verification/clockOutButtons";
 import { Bases } from "@/components/(reusable)/bases";
 import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
