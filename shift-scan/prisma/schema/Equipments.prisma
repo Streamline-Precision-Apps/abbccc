@@ -6,8 +6,8 @@ model Equipment {
     description            String
     equipmentTag           EquipmentTags   @default(EQUIPMENT)
     lastInspection         DateTime?
-    // nextInspection         DateTime?
-    // nextInspectionComment  String?
+    nextInspection         DateTime?
+    nextInspectionComment  String?
     lastRepair             DateTime?
     status                 EquipmentStatus @default(OPERATIONAL)
     createdAt              DateTime        @default(now())
@@ -21,6 +21,8 @@ model Equipment {
     isActive               Boolean         @default(true)
     inUse                  Boolean         @default(false)
     jobsiteId              String? // show location of equipment
+    overWeight             Boolean?        @default(false) // Admin 
+    currentWeight          Float?          @default(0) // Admin 
 
     employeeEquipmentLogs EmployeeEquipmentLog[]
     Maintenance           Maintenance[]
@@ -65,7 +67,7 @@ model Refueled {
     employeeEquipmentLogId String?
     truckingLogId          String?
     gallonsRefueled        Float?
-    milesAtfueling         Int?
+    milesAtfueling         Int? // miles at fueling for trucks
 
     EmployeeEquipmentLog EmployeeEquipmentLog? @relation(fields: [employeeEquipmentLogId], references: [id])
     TruckingLog          TruckingLog?          @relation(fields: [truckingLogId], references: [id])

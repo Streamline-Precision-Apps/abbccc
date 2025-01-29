@@ -13,9 +13,11 @@ import { LeaveRequest } from "@/lib/types";
 import { Labels } from "@/components/(reusable)/labels";
 
 export function RequestHeader({
+  initialLeaveRequest,
   leaveRequest,
   setLeaveRequest,
 }: {
+  initialLeaveRequest: LeaveRequest;
   leaveRequest: LeaveRequest;
   setLeaveRequest: Dispatch<SetStateAction<LeaveRequest>>;
 }) {
@@ -83,7 +85,7 @@ export function RequestHeader({
             })}`}</Texts>
           </Holds>
           <Holds className="row-start-2 row-end-4 col-start-1 col-end-11 h-full">
-            {leaveRequest.status === "PENDING" ? (
+            {initialLeaveRequest.status === "PENDING" ? (
               <>
                 <Holds position={"row"}>
                   <Labels
@@ -233,7 +235,7 @@ export function RequestHeader({
           <Holds className="flex flex-row row-start-3 row-end-4 col-start-7 col-end-11 h-full w-full">
             <Holds position={"right"} className="flex flex-row ">
               <Holds className="w-[90%] h-full">
-                {leaveRequest.status === "PENDING" ? (
+                {initialLeaveRequest.status === "PENDING" ? (
                   <>
                     {/* Employee comment*/}
                     <Texts

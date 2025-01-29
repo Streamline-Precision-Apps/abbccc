@@ -3,7 +3,7 @@ import withPWA from "@ducanh2912/next-pwa";
 
 /** @type {import('next').NextConfig} */
 
-const withNextIntl = createNextIntlPlugin();
+const withNextIntl = createNextIntlPlugin("./src/i18n.ts");
 
 const pwaConfig = {
   dest: "public",
@@ -12,7 +12,8 @@ const pwaConfig = {
   reloadOnOnline: true,
 
   swcMinify: true,
-  disable: process.env.NODE_ENV === "development",
+  // disable: process.env.NODE_ENV !== "production",
+  disable: false,
   workboxOptions: {
     disableDevLogs: true,
   },

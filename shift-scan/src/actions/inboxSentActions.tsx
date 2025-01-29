@@ -21,7 +21,7 @@ export async function EditLeaveRequest(formData: FormData) {
     console.log(startDate, endDate);
 
     await prisma.timeOffRequestForm.update({
-      where: { id: Number(id) },
+      where: { id },
       data: {
         requestedStartDate: startDate,
         requestedEndDate: endDate,
@@ -43,14 +43,14 @@ export async function ManagerLeaveRequest(formData: FormData) {
     const managerComment = formData.get("mangerComments") as string;
     const status = formData.get("decision") as string;
     const name = formData.get("decidedBy") as string;
-    const id = formData.get("id");
+    const id = formData.get("id") as string;
 
     console.log("Form Data:", { managerComment, status, name, id });
 
     if (id && status && managerComment) {
       // Perform the Prisma update
       const result = await prisma.timeOffRequestForm.update({
-        where: { id: Number(id) },
+        where: { id },
         data: {
           managerComment: managerComment,
           status: status as FormStatus,
@@ -80,7 +80,7 @@ export async function DeleteLeaveRequest(
   userId: string | undefined
 ): Promise<boolean> {
   try {
-    const deleteId = Number(id);
+    const deleteId = id;
 
     // Perform the deletion
     await prisma.timeOffRequestForm.delete({

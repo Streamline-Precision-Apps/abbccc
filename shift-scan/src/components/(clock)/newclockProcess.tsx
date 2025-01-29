@@ -3,21 +3,23 @@ import { useEffect, useState } from "react";
 import { Holds } from "../(reusable)/holds";
 import MultipleRoles from "./multipleRoles";
 import QRStep from "./qr-handler";
-import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
-import { setAuthStep } from "@/app/api/auth";
-import useFetchAllData from "@/app/(content)/FetchData";
 import CodeStep from "./code-step";
 import VerificationStep from "./verification-step";
-import { useTruckScanData } from "@/app/context/TruckScanDataContext";
-import { useStartingMileage } from "@/app/context/StartingMileageContext";
 import TruckClockInForm from "./truckClockInForm";
-import { ConfirmationPage } from "./confirmation-Page";
 import VerificationEQStep from "./verification-eq-step";
 import { Titles } from "../(reusable)/titles";
 import RedirectAfterDelay from "../redirectAfterDelay";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
+import { setJobSite, setWorkRole } from "@/actions/cookieActions";
+import MechanicVerificationStep from "./Verification-step-mechanic";
+import TascoVerificationStep from "./Verification-step-tasco";
+import SwitchJobsMultiRoles from "./switchJobsMuiltipleRoles";
+import { useSavedCostCode } from "@/app/context/CostCodeContext";
+import { returnToPrevWork } from "@/actions/timeSheetActions";
+import TruckVerificationStep from "./Verification-step-truck";
+import TascoClockInForm from "./tascoClockInForm";
 
 type NewClockProcessProps = {
   mechanicView: boolean;
@@ -29,6 +31,7 @@ type NewClockProcessProps = {
   type: string;
   scannerType: string;
   locale: string;
+  currentRole: string;
 };
 
 export default function NewClockProcess({
@@ -40,32 +43,95 @@ export default function NewClockProcess({
   returnpath,
   option,
   locale,
+  currentRole,
 }: NewClockProcessProps) {
-  useFetchAllData(); // Fetch data on mount
-
   // State management
+
   const [step, setStep] = useState(0);
-  const [clockInRole, setClockInRole] = useState("");
-  const [comments, setComments] = useState(""); // for trucking
+  const [clockInRole, setClockInRole] = useState(currentRole);
+  const [numberOfRoles, setNumberOfRoles] = useState(0);
+
   const t = useTranslations("Clock");
-  // Contexts
-  const { savedCostCode, setCostCode } = useSavedCostCode();
-  const { scanResult, setScanResult } = useScanData();
-  const { truckScanData } = useTruckScanData();
-  const { startingMileage } = useStartingMileage();
   const router = useRouter();
+  // Contexts
+  const { setScanResult } = useScanData();
+  const { setCostCode } = useSavedCostCode();
 
-  // Helper functions
-  const handleNextStep = () => setStep((prevStep) => prevStep + 1);
+  const [laborType, setLaborType] = useState<string>("");
+  const [truck, setTruck] = useState<string>("");
+  const [startingMileage, setStartingMileage] = useState<number>(0);
 
-  const handleChangeJobsite = () => {
-    const jobsite = localStorage.getItem("jobSite");
-    if (jobsite) {
-      setScanResult({ data: jobsite });
-      setStep(type === "equipment" ? 0 : 3); // Avoid throwing errors here
+  const [materialType, setMaterialType] = useState<string>("");
+  const [shiftType, setShiftType] = useState<string>("");
+
+  // useEffect to reset step and role on mount/unmount
+  useEffect(() => {
+    setStep(0);
+    return () => {
+      setStep(0);
+    };
+  }, []);
+
+  // useEffect to choose role
+  useEffect(() => {
+    let role = "";
+    // Set number of roles to get total number of roles
+    let numberOfRoles = 0;
+    if (mechanicView) {
+      numberOfRoles++;
     }
-  };
+    if (laborView) {
+      numberOfRoles++;
+    }
+    if (truckView) {
+      numberOfRoles++;
+    }
+    if (tascoView) {
+      numberOfRoles++;
+    }
+    setNumberOfRoles(numberOfRoles);
 
+    // If switch jobs, reset step
+    if (type === "switchJobs") {
+      // if (numberOfRoles > 1) {
+      //   setStep(1);
+      // }
+      setStep(0);
+    }
+    // If break, reset step
+    else if (option === "break") {
+      setStep(0);
+    }
+    // If not switch jobs, choose role
+    else {
+      setWorkRole(""); // Reset workRole so that the cookie is never set for the wrong role
+      if (mechanicView && !laborView && !truckView && !tascoView) {
+        role = "mechanic";
+        setClockInRole(role);
+      } else if (laborView && !mechanicView && !truckView && !tascoView) {
+        role = "general";
+        setClockInRole(role);
+      } else if (truckView && !mechanicView && !laborView && !tascoView) {
+        role = "truck";
+        setClockInRole(role);
+      } else if (tascoView && !mechanicView && laborView && !truckView) {
+        role = "tasco";
+        setClockInRole(role);
+      } else {
+        role = "";
+      }
+      setClockInRole(role); // Set role
+      setStep(role === "" ? 0 : 1);
+    }
+  }, [mechanicView, truckView, tascoView, laborView, type, option]);
+
+  //------------------------------------------------------------------
+  //------------------------------------------------------------------
+  // Helper functions
+  //------------------------------------------------------------------
+  //------------------------------------------------------------------
+  const handleNextStep = () => setStep((prevStep) => prevStep + 1);
+  const handlePrevStep = () => setStep((prevStep) => prevStep - 1);
   const handleAlternativePath = () => {
     setStep(2);
     handleNextStep();
@@ -75,68 +141,58 @@ export default function NewClockProcess({
     setStep(1);
   };
 
-  const handleReturn = () => {
-    const jobsite = localStorage.getItem("jobSite");
-    const costCode = localStorage.getItem("costCode");
-    const clockInRoleRes = localStorage.getItem("clockInRole") || clockInRole;
+  // Lets the user return to the prev jobsite
+  const handleReturn = async () => {
+    try {
+      // setting the cookies below to fetch the prev TimeSheet
+      const tId = await fetch("/api/cookies?method=get&name=timeSheetId").then(
+        (res) => res.json()
+      );
+      const formData = new FormData();
+      formData.append("id", tId?.toString() || "");
+      const response = await returnToPrevWork(formData);
+      // filtering response to match data with current role
+      if (response) {
+        setJobSite(response.jobsiteId);
+        setScanResult({ data: response.jobsiteId });
+        setCostCode(response.costcode);
+        const prevWorkRole =
+          response.workType === "LABOR"
+            ? "general"
+            : response.workType === "MECHANIC"
+            ? "mechanic"
+            : response.workType === "TASCO"
+            ? "tasco"
+            : response.workType === "TRUCK_DRIVER"
+            ? "truck"
+            : "";
 
-    if (jobsite && costCode && clockInRole === "general") {
-      setClockInRole(clockInRoleRes || "");
-      setScanResult({ data: jobsite });
-      setCostCode(costCode);
-      setAuthStep("success");
-      setStep(4);
-    } else if (jobsite && costCode && clockInRole === "truck") {
-      setClockInRole(clockInRoleRes || "");
-      setScanResult({ data: jobsite });
-      setCostCode(costCode);
-      setAuthStep("success");
-      setStep(3);
-    } else {
-      setStep(0);
+        setClockInRole(prevWorkRole);
+        if (prevWorkRole === "truck") {
+          setStep(5);
+        } else {
+          setStep(5);
+        }
+      } else {
+        throw new Error("No response");
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
+
+  const handleScanJobsite = () => {
+    setStep(4);
+  };
+
   const handleReturnPath = () => {
     return router.push(returnpath);
   };
-
-  // useEffect to reset step and role on mount/unmount
-  useEffect(() => {
-    setStep(0);
-    setClockInRole("");
-    return () => {
-      setStep(0);
-      setClockInRole("");
-    };
-  }, []);
-
-  // useEffect to choose role
-  useEffect(() => {
-    let role = "";
-    if (mechanicView && !laborView && !truckView && !tascoView)
-      role = "mechanic";
-    else if (laborView && !mechanicView && !truckView && !tascoView)
-      role = "general";
-    else if (truckView && !mechanicView && !laborView && !tascoView)
-      role = "truck";
-    else if (tascoView && !mechanicView && laborView && !truckView)
-      role = "tasco";
-    else {
-      role = "";
-    }
-
-    setClockInRole(role);
-    if (type === "switchJobs") {
-      setStep(0);
-    } else {
-      setStep(role === "" ? 0 : 1);
-    }
-  }, [mechanicView, truckView, tascoView, laborView, type]);
-
-  useEffect(() => {
-    console.log("step", step);
-  }),
-    [step];
+  //------------------------------------------------------------------
+  //------------------------------------------------------------------
+  // UseEffect  functions
+  //------------------------------------------------------------------
+  //------------------------------------------------------------------
 
   // Conditional render for equipment path
   if (type === "equipment") {
@@ -152,6 +208,7 @@ export default function NewClockProcess({
               url="/dashboard"
               handleReturnPath={handleReturnPath}
               clockInRole={""}
+              setClockInRole={setClockInRole}
             />
           </>
         )}
@@ -201,115 +258,62 @@ step 4 : confirmation page and redirect to dashboard with authorization
 */
 
   return (
-    <Holds className="h-full w-full">
+    <>
       {/* Multiple Role Selection */}
-
       {step === 0 && (
         <>
-          <MultipleRoles
-            handleNextStep={handleNextStep}
-            setClockInRole={setClockInRole}
-            clockInRole={clockInRole}
-            option={option}
-            handleReturn={handleReturn}
-            type={type}
-            handleReturnPath={handleReturnPath}
-          />
+          <Holds className="h-full w-full">
+            {type === "switchJobs" ? (
+              <SwitchJobsMultiRoles
+                handleNextStep={handleNextStep}
+                setClockInRole={setClockInRole}
+                clockInRole={clockInRole}
+                option={option}
+                handleReturn={handleReturn}
+                type={type}
+                numberOfRoles={numberOfRoles}
+                handleReturnPath={handleReturnPath}
+              />
+            ) : (
+              <MultipleRoles
+                handleNextStep={handleNextStep}
+                setClockInRole={setClockInRole}
+                clockInRole={clockInRole}
+                option={option}
+                handleReturn={handleReturn}
+                type={type}
+                handleReturnPath={handleReturnPath}
+              />
+            )}
+          </Holds>
         </>
       )}
-
       {/* Mechanic Role */}
+      {/* ------------------------- Mechanic Role start ---------------------*/}
       {step === 1 && clockInRole === "mechanic" && (
-        <QRStep
-          type="jobsite"
-          handleReturnPath={handleReturnPath}
-          handleAlternativePath={handleAlternativePath}
-          handleNextStep={handleNextStep}
-          handleChangeJobsite={handleChangeJobsite}
-          handleReturn={handleReturn}
-          url={returnpath}
-          option={option}
-          clockInRole={clockInRole} // clock in role will make the qr know which role to use
-        />
+        <Holds className="h-full w-full">
+          <QRStep
+            type="jobsite"
+            handleReturnPath={handleReturnPath}
+            handleAlternativePath={handleAlternativePath}
+            handleNextStep={handleNextStep}
+            handleReturn={handleReturn}
+            handleScanJobsite={handleScanJobsite}
+            url={returnpath}
+            option={type} // type is the method of clocking in ... general, switchJobs, or equipment
+            clockInRole={clockInRole} // clock in role will make the qr know which role to use
+            setClockInRole={setClockInRole}
+          />
+        </Holds>
       )}
-      {/* ------------------------- Trucking Role section ---------------------*/}
-      {/* Truck Role */}
-      {step === 1 && clockInRole === "truck" && (
-        <QRStep
-          type="jobsite" // two types of types for qr, jobsite or equipment
-          handleAlternativePath={handleAlternativePath} // handle alternative path
-          handleReturnPath={handleReturnPath}
-          handleNextStep={handleNextStep}
-          handleChangeJobsite={handleChangeJobsite}
-          handleReturn={handleReturn}
-          url={returnpath}
-          option={option}
-          clockInRole={clockInRole}
-        />
+      {step === 3 && clockInRole === "mechanic" && (
+        <CodeStep datatype="jobsite-mechanic" handleNextStep={handleNextStep} />
       )}
-      {/* Special Forms Section */}
-      {step === 3 && clockInRole === "truck" && (
-        <TruckClockInForm
-          handleNextStep={handleNextStep}
-          setComments={setComments}
-        />
-      )}
-
-      {/* Verification Page for truck drivers */}
-      {step === 4 && clockInRole === "truck" && (
-        <VerificationStep
-          type={type}
-          role={clockInRole}
-          handleNextStep={handleNextStep}
-          option={option}
-          comments={comments}
-        />
-      )}
-      {step === 4 && clockInRole === "truck" && (
-        <ConfirmationPage
-          option={option}
-          savedCostCode={savedCostCode}
-          scanResult={scanResult?.data}
-          truckScanData={truckScanData}
-          type={type}
-          startingMileage={startingMileage}
-          locale={locale}
-        />
-      )}
-      {/* ------------------------- End of Trucking Role section ---------------------*/}
-      {/* Tasco Role */}
-      {step === 1 && clockInRole === "tasco" && <div>Step 1 - Tasco</div>}
-
-      {/* ----------------------------------------- General Role ---------------------*/}
-
-      {/* General Role */}
-      {step === 1 && clockInRole === "general" && (
-        <QRStep
-          type="jobsite"
-          handleAlternativePath={handleAlternativePath}
-          handleNextStep={handleNextStep}
-          handleChangeJobsite={handleChangeJobsite}
-          handleReturn={handleReturn}
-          handleReturnPath={handleReturnPath}
-          url={returnpath}
-          option={option}
-          clockInRole={clockInRole}
-        />
-      )}
-
-      {/* Select Jobsite Section */}
-      {step === 3 && clockInRole === "general" && (
-        <CodeStep datatype="jobsite" handleNextStep={handleNextStep} />
-      )}
-
-      {/* Select Cost Code Section */}
-      {step === 4 && clockInRole === "general" && (
+      {step === 4 && clockInRole === "mechanic" && (
         <CodeStep datatype="costcode" handleNextStep={handleNextStep} />
       )}
-
-      {/* Verification Page */}
-      {step === 5 && clockInRole === "general" && (
-        <VerificationStep
+      {step === 5 && clockInRole === "mechanic" && (
+        <MechanicVerificationStep
           type={type}
           role={clockInRole}
           handleNextStep={handleNextStep}
@@ -318,7 +322,156 @@ step 4 : confirmation page and redirect to dashboard with authorization
         />
       )}
 
-      {/* Confirmation Page */}
+      {/* ------------------------- Mechanic Role end ---------------------*/}
+
+      {/* Truck Role */}
+      {/* ------------------------- Trucking Role start ---------------------*/}
+      {step === 1 && clockInRole === "truck" && (
+        <QRStep
+          type="jobsite" // two types of types for qr, jobsite or equipment
+          handleAlternativePath={handleAlternativePath} // handle alternative path
+          handleReturnPath={handleReturnPath}
+          handleNextStep={handleNextStep}
+          handleReturn={handleReturn}
+          handleScanJobsite={handleScanJobsite}
+          url={returnpath}
+          option={type} // type is the method of clocking in ... general, switchJobs, or equipment
+          clockInRole={clockInRole}
+          setClockInRole={setClockInRole}
+        />
+      )}
+      {/* Special Forms Section */}
+      {/* <TruckClockInForm
+          handleNextStep={handleNextStep}
+          setComments={setComments}
+        /> */}
+      {step === 3 && clockInRole === "truck" && (
+        <CodeStep datatype="jobsite" handleNextStep={handleNextStep} />
+      )}
+      {/* Special Forms Section */}
+      {step === 4 && clockInRole === "truck" && (
+        <CodeStep datatype="costcode" handleNextStep={handleNextStep} />
+      )}
+      {step === 5 && clockInRole === "truck" && (
+        <TruckClockInForm
+          handleNextStep={handleNextStep}
+          setLaborType={setLaborType}
+          setTruck={setTruck}
+          setStartingMileage={setStartingMileage}
+          laborType={laborType}
+          truck={truck}
+        />
+      )}
+
+      {/* Verification Page for truck drivers */}
+      {step === 6 && clockInRole === "truck" && (
+        <TruckVerificationStep
+          laborType={laborType}
+          truck={truck}
+          startingMileage={startingMileage}
+          type={type}
+          role={clockInRole}
+          handleNextStep={handleNextStep}
+          option={option}
+          comments={undefined}
+        />
+      )}
+
+      {/* ------------------------- End of Trucking Role section ---------------------*/}
+
+      {/* Tasco Role */}
+      {/* ------------------------- Tasco Role start ---------------------*/}
+      {step === 1 && clockInRole === "tasco" && (
+        <QRStep
+          type="jobsite"
+          handleAlternativePath={handleAlternativePath}
+          handleNextStep={handleNextStep}
+          handleReturn={handleReturn}
+          handleReturnPath={handleReturnPath}
+          handleScanJobsite={handleScanJobsite}
+          url={returnpath}
+          option={type} // type is the method of clocking in ... general, switchJobs, or equipment
+          clockInRole={clockInRole}
+          setClockInRole={setClockInRole}
+        />
+      )}
+      {/* Tasco Role */}
+      {step === 3 && clockInRole === "tasco" && (
+        <CodeStep datatype="jobsite" handleNextStep={handleNextStep} />
+      )}
+      {step === 4 && clockInRole === "tasco" && (
+        <CodeStep datatype="costcode" handleNextStep={handleNextStep} />
+      )}
+      {step === 5 && clockInRole === "tasco" && (
+        <TascoClockInForm
+          handleNextStep={handleNextStep}
+          handlePrevStep={handlePrevStep}
+          setLaborType={setLaborType}
+          laborType={laborType}
+          materialType={materialType}
+          setMaterialType={setMaterialType}
+          shiftType={shiftType}
+          setShiftType={setShiftType}
+        />
+      )}
+      {step === 6 && clockInRole === "tasco" && (
+        <TascoVerificationStep
+          type={type}
+          role={clockInRole}
+          handleNextStep={handleNextStep}
+          option={option}
+          laborType={laborType}
+          materialType={materialType}
+          shiftType={shiftType}
+          comments={undefined}
+        />
+      )}
+      {/* ------------------------- Tasco Role End ---------------------*/}
+
+      {/* General Role */}
+      {/* ------------------------- General Role ---------------------*/}
+      {step === 1 && clockInRole === "general" && (
+        <QRStep
+          type="jobsite"
+          handleAlternativePath={handleAlternativePath}
+          handleNextStep={handleNextStep}
+          handleReturn={handleReturn}
+          handleReturnPath={handleReturnPath}
+          handleScanJobsite={handleScanJobsite}
+          url={returnpath}
+          option={type} // type is the method of clocking in ... general, switchJobs, or equipment
+          clockInRole={clockInRole}
+          setClockInRole={setClockInRole}
+        />
+      )}
+      {/* Select Jobsite Section */}
+      {step === 3 && clockInRole === "general" && (
+        <Holds className="h-full w-full py-5">
+          <CodeStep
+            datatype="jobsite"
+            handleNextStep={handleNextStep}
+            handleReturnPath={handleReturnPath}
+          />
+        </Holds>
+      )}
+      {/* Select Cost Code Section */}
+      {step === 4 && clockInRole === "general" && (
+        <Holds className="h-full w-full py-5">
+          <CodeStep datatype="costcode" handleNextStep={handleNextStep} />
+        </Holds>
+      )}
+      {/* Verification Page */}
+      {step === 5 && clockInRole === "general" && (
+        <Holds className="h-full w-full py-5">
+          <VerificationStep
+            type={type}
+            role={clockInRole}
+            option={option}
+            comments={undefined}
+          />
+        </Holds>
+      )}
+      {/* Confirmation Page
       {step === 6 && clockInRole === "general" && (
         <ConfirmationPage
           option={option}
@@ -329,7 +482,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
           startingMileage={startingMileage}
           locale={locale}
         />
-      )}
-    </Holds>
+      )} */}
+    </>
   );
 }

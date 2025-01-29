@@ -1,26 +1,17 @@
 "use client";
-
-import { Buttons } from "@/components/(reusable)/buttons";
-import { Images } from "@/components/(reusable)/images";
-import { Texts } from "@/components/(reusable)/texts";
 import { useTranslations } from "next-intl";
-import { Grids } from "@/components/(reusable)/grids";
 import { useEffect, useState } from "react";
-import { Holds } from "@/components/(reusable)/holds";
-import { Contents } from "@/components/(reusable)/contents";
 import { useRouter } from "next/navigation";
-import { getAuthStep, setAuthStep } from "@/app/api/auth";
-import Spinner from "@/components/(animations)/spinner";
 import React from "react";
 import { Session } from "next-auth";
 import { updateTimeSheetBySwitch } from "@/actions/timeSheetActions";
-import { Modals } from "@/components/(reusable)/modals";
-import { Bases } from "@/components/(reusable)/bases";
-import { Titles } from "@/components/(reusable)/titles";
 import { z } from "zod";
 import { useCurrentView } from "@/app/context/CurrentViewContext";
-import { NModals } from "@/components/(reusable)/newmodals";
-import { TextAreas } from "@/components/(reusable)/textareas";
+import TascoDashboardView from "./UI/_dashboards/tascoDashboardView";
+import TruckDriverDashboardView from "./UI/_dashboards/truckDriverDashboardView";
+import MechanicDashboardView from "./UI/_dashboards/mechanicDashboardView";
+import GeneralDashboardView from "./UI/_dashboards/generalDashboardView";
+import { setCurrentPageView } from "@/actions/cookieActions";
 
 // Zod schema for component state, including logs
 const DbWidgetSectionSchema = z.object({
@@ -50,9 +41,10 @@ const DbWidgetSectionSchema = z.object({
 
 type props = {
   session: Session;
+  view: string;
 };
 
-export default function DbWidgetSection({ session }: props) {
+export default function DbWidgetSection({ session, view }: props) {
   const permission = session.user.permission;
   const [logs, setLogs] = useState<
     {
@@ -69,9 +61,7 @@ export default function DbWidgetSection({ session }: props) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const t = useTranslations("Widgets");
   const e = useTranslations("Err-Msg");
-  const authStep = getAuthStep();
   const [additionalButtonsType, setAdditionalButtonsType] = useState<
     string | null
   >(null);
@@ -118,12 +108,6 @@ export default function DbWidgetSection({ session }: props) {
     fetchLogs();
   }, [e]);
 
-  useEffect(() => {
-    if (authStep !== "success") {
-      router.push("/");
-    }
-  }, [authStep, router]);
-
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
@@ -133,15 +117,15 @@ export default function DbWidgetSection({ session }: props) {
     try {
       if (logs.length === 0) {
         const formData2 = new FormData();
-        const localeValue = localStorage.getItem("savedtimeSheetData");
-        const t_id = JSON.parse(localeValue || "{}").id;
-        formData2.append("id", t_id?.toString() || "");
+        const tId = await fetch(
+          "/api/cookies?method=get&name=timeSheetId"
+        ).then((res) => res.json()); // retrieving cookie
+        formData2.append("id", tId?.toString() || "");
         formData2.append("endTime", new Date().toISOString());
         formData2.append("timesheetComments", comment);
 
         await updateTimeSheetBySwitch(formData2);
-
-        setAuthStep("break");
+        setCurrentPageView("break");
         router.push("/");
       } else {
         setIsModalOpen(true);
@@ -158,427 +142,116 @@ export default function DbWidgetSection({ session }: props) {
       setIsModalOpen(true);
     }
   };
+  {
+    /* ------------------------------------------------------------------------------------------------------------------------
+  --------------------------------------------------------------------------------------------------------------------------
+   General View for tasco
+  --------------------------------------------------------------------------------------------------------------------------
+  --------------------------------------------------------------------------------------------------------------------------
+*/
+  }
+  if (view === "tasco") {
+    return (
+      <TascoDashboardView
+        loading={loading}
+        isModalOpen={isModalOpen}
+        setIsModal2Open={setIsModal2Open}
+        isModal2Open={isModal2Open}
+        comment={comment}
+        setComment={setComment}
+        handleCOButton2={handleCOButton2}
+        handleCOButton3={handleCOButton3}
+        handleCloseModal={handleCloseModal}
+        handleShowManagerButtons={handleShowManagerButtons}
+        permission={permission}
+        currentView={currentView}
+        handleShowAdditionalButtons={handleShowAdditionalButtons}
+        additionalButtonsType={additionalButtonsType}
+      />
+    );
+  }
+  {
+    /* ------------------------------------------------------------------------------------------------------------------------
+  --------------------------------------------------------------------------------------------------------------------------
+   General View for truck drivers
+  --------------------------------------------------------------------------------------------------------------------------
+  --------------------------------------------------------------------------------------------------------------------------
+*/
+  }
+  if (view === "truck") {
+    return (
+      <TruckDriverDashboardView
+        loading={loading}
+        isModalOpen={isModalOpen}
+        setIsModal2Open={setIsModal2Open}
+        isModal2Open={isModal2Open}
+        comment={comment}
+        setComment={setComment}
+        handleCOButton2={handleCOButton2}
+        handleCOButton3={handleCOButton3}
+        handleCloseModal={handleCloseModal}
+        handleShowManagerButtons={handleShowManagerButtons}
+        permission={permission}
+        handleShowAdditionalButtons={handleShowAdditionalButtons}
+        additionalButtonsType={additionalButtonsType}
+      />
+    );
+  }
 
-  return (
-    <>
-      {loading ? (
-        <Holds className="my-auto">
-          <Spinner />
-        </Holds>
-      ) : (
-        <Contents width={"section"} className="py-5">
-          <Grids
-            cols={"2"}
-            rows={
-              permission === "ADMIN" ||
-              permission === "SUPERADMIN" ||
-              permission === "MANAGER"
-                ? "3"
-                : "3"
-            }
-            gap={"5"}
-          >
-            {/* Render buttons based on state */}
-            {additionalButtonsType === "equipment" ? (
-              <>
-                <Holds className="col-span-2 row-span-1 gap-5 h-full">
-                  <Buttons
-                    background={"lightBlue"}
-                    onClick={handleShowManagerButtons}
-                  >
-                    <Holds position={"row"} className="my-auto">
-                      <Holds size={"60"}>
-                        <Texts size={"p1"}>{t("GoHome")}</Texts>
-                      </Holds>
-                      <Holds size={"40"}>
-                        <Images
-                          titleImg="/home.svg"
-                          titleImgAlt="Home Icon"
-                          size={"50"}
-                        />
-                      </Holds>
-                    </Holds>
-                  </Buttons>
-                </Holds>
-                <Holds className="col-span-2 row-span-1 gap-5 h-full">
-                  <Buttons background={"green"} href="/dashboard/log-new">
-                    <Holds position={"row"} className="my-auto">
-                      <Holds size={"60"}>
-                        <Texts size={"p1"}>{t("LogNew")}</Texts>
-                      </Holds>
-                      <Holds size={"40"}>
-                        <Images
-                          titleImg="/equipment.svg"
-                          titleImgAlt="Equipment Icon"
-                          size={"40"}
-                        />
-                      </Holds>
-                    </Holds>
-                  </Buttons>
-                </Holds>
-                <Holds className="col-span-2 row-span-1 gap-5 h-full">
-                  <Buttons background={"orange"} href="/dashboard/equipment">
-                    <Holds position={"row"} className="my-auto">
-                      <Holds size={"60"}>
-                        <Texts size={"p1"}>{t("LogOut")}</Texts>
-                      </Holds>
-                      <Holds size={"40"}>
-                        <Images
-                          titleImg="/current-equipment.svg"
-                          titleImgAlt="Equipment Icon"
-                          size={"50"}
-                        />
-                      </Holds>
-                    </Holds>
-                  </Buttons>
-                </Holds>
-              </>
-            ) : additionalButtonsType === "clockOut" ? (
-              <>
-                <Holds className="col-span-2 row-span-1 gap-5 h-full">
-                  <Buttons
-                    background={"lightBlue"}
-                    onClick={handleShowManagerButtons}
-                  >
-                    <Holds position={"row"} className="my-auto">
-                      <Holds size={"60"}>
-                        <Texts size={"p1"}>{t("GoHome")}</Texts>
-                      </Holds>
-                      <Holds size={"40"}>
-                        <Images
-                          titleImg="/home.svg"
-                          titleImgAlt="Home Icon"
-                          size={"50"}
-                        />
-                      </Holds>
-                    </Holds>
-                  </Buttons>
-                </Holds>
-                <Holds className="col-span-2 row-span-1 gap-5 h-full">
-                  <Buttons
-                    background={"orange"}
-                    onClick={() => setIsModal2Open(true)}
-                  >
-                    <Holds position={"row"} className="my-auto">
-                      <Holds size={"60"}>
-                        <Texts size={"p1"}>{t("Break")}</Texts>
-                      </Holds>
-                      <Holds size={"40"}>
-                        <Images
-                          titleImg="/break.svg"
-                          titleImgAlt="Break Icon"
-                          size={"50"}
-                        />
-                      </Holds>
-                    </Holds>
-                  </Buttons>
-                </Holds>
-                <NModals
-                  isOpen={isModal2Open}
-                  handleClose={() => setIsModal2Open(false)}
-                  size={"page"}
-                >
-                  <Holds background={"white"}>
-                    <Grids rows={"5"}>
-                      <Holds className="row-span-1 h-full">
-                        <Texts size={"p1"}>Current Shift Comment</Texts>
-                      </Holds>
-                      <Holds className="row-span-3 h-full">
-                        <TextAreas
-                          placeholder="Write a 40 character Comment"
-                          value={comment}
-                          onChange={(e) => setComment(e.target.value)}
-                          rows={9}
-                          maxLength={40}
-                          style={{ resize: "none" }}
-                        />
-                      </Holds>
-                      <Holds
-                        position={"row"}
-                        className="row-span-1 h-full space-x-4"
-                      >
-                        <Holds>
-                          <Buttons
-                            background={"orange"}
-                            onClick={() => handleCOButton2()}
-                          >
-                            <Texts size={"p3"}>Submit</Texts>
-                          </Buttons>
-                        </Holds>
-                        <Holds>
-                          <Buttons
-                            background={"red"}
-                            onClick={() => setIsModal2Open(false)}
-                          >
-                            <Texts size={"p3"}>Cancel</Texts>
-                          </Buttons>
-                        </Holds>
-                      </Holds>
-                    </Grids>
-                  </Holds>
-                </NModals>
-                <Holds className="col-span-2 row-span-1 gap-5 h-full">
-                  <Buttons background={"red"} onClick={handleCOButton3}>
-                    <Holds position={"row"} className="my-auto">
-                      <Holds size={"70"}>
-                        <Texts size={"p1"}>{t("EndDay")}</Texts>
-                      </Holds>
-                      <Holds size={"30"}>
-                        <Images
-                          titleImg="/end-day.svg"
-                          titleImgAlt="End Icon"
-                          size={"50"}
-                        />
-                      </Holds>
-                    </Holds>
-                  </Buttons>
-                </Holds>
-                <Modals
-                  isOpen={isModalOpen}
-                  handleClose={handleCloseModal}
-                  size={"clock"}
-                >
-                  <Bases>
-                    <Contents>
-                      <Holds background={"white"} className="h-full">
-                        <Holds className="h-full py-10">
-                          <Contents width={"section"}>
-                            <Grids rows={"4"} gap={"5"}>
-                              <Holds className="h-full span-3 my-auto">
-                                <Titles size={"h1"}>{t("Whoops")}</Titles>
-                                <br />
-                                <Texts size={"p2"}>{t("ReturnToLogOut")}</Texts>
-                              </Holds>
-                              <Holds className="h-full span-1 my-auto">
-                                <Buttons
-                                  background={"orange"}
-                                  size={"full"}
-                                  href={`/dashboard/equipment`}
-                                >
-                                  <Texts size={"p3"}>
-                                    {t("ClickToLogOut")}
-                                  </Texts>
-                                </Buttons>
-                              </Holds>
-                            </Grids>
-                          </Contents>
-                        </Holds>
-                      </Holds>
-                    </Contents>
-                  </Bases>
-                </Modals>
-              </>
-            ) : (
-              <>
-                {permission !== "USER" && !additionalButtonsType && (
-                  <>
-                    <Holds
-                      position={"row"}
-                      className="row-span-1 col-span-1 gap-5"
-                    >
-                      <Buttons //----------------------This is the QR Generator Widget
-                        background={"lightBlue"}
-                        href="/dashboard/qr-generator"
-                      >
-                        <Holds>
-                          <Images
-                            titleImg="/qr.svg"
-                            titleImgAlt="QR Code"
-                            size={"40"}
-                          />
-                        </Holds>
-                        <Holds>
-                          <Texts size={"p3"}>{t("QR")}</Texts>
-                        </Holds>
-                      </Buttons>
-                    </Holds>
-                  </>
-                )}
-                {permission !== "USER" &&
-                  !additionalButtonsType &&
-                  currentView === "truck" && (
-                    <>
-                      <Holds
-                        position={"row"}
-                        className="row-span-1 col-span-1 gap-5"
-                      >
-                        <Buttons //----------------------This is the trucking assistant
-                          background={"lightBlue"}
-                          href="/dashboard/truckingAssistant"
-                        >
-                          <Holds>
-                            <Images
-                              titleImg="/trucking.svg"
-                              titleImgAlt="truck"
-                              size={"40"}
-                            />
-                          </Holds>
-                          <Holds>
-                            <Texts size={"p3"}>{t("TruckingAssistant")}</Texts>
-                          </Holds>
-                        </Buttons>
-                      </Holds>
-                    </>
-                  )}
-
-                {permission !== "USER" && !additionalButtonsType && (
-                  <>
-                    <Holds
-                      position={"row"}
-                      className="row-span-1 col-span-1 gap-5"
-                    >
-                      <Buttons //----------------------This is the My Team Widget
-                        background={"lightBlue"}
-                        href="/dashboard/myTeam"
-                      >
-                        <Holds>
-                          <Images
-                            titleImg="/team.svg"
-                            titleImgAlt={t("MyTeam")}
-                            size={"40"}
-                          />
-                        </Holds>
-                        <Holds>
-                          <Texts size={"p3"}>{t("MyTeam")}</Texts>
-                        </Holds>
-                      </Buttons>
-                    </Holds>
-                  </>
-                )}
-                <Holds
-                  position={"row"}
-                  className={
-                    permission === "ADMIN" ||
-                    permission === "SUPERADMIN" ||
-                    permission === "MANAGER"
-                      ? "row-span-1 col-span-1 gap-5"
-                      : "row-span-1 col-span-1 gap-5"
-                  }
-                >
-                  <Buttons //----------------------This is the Equipment Widget
-                    background={"green"}
-                    href="/dashboard/equipment"
-                    onClick={() => handleShowAdditionalButtons("equipment")}
-                  >
-                    <Holds>
-                      <Holds>
-                        <Images
-                          titleImg="/equipment.svg"
-                          titleImgAlt="Equipment Icon"
-                          size={"30"}
-                        />
-                      </Holds>
-                      <Holds>
-                        <Texts size={"p3"}>{t("Equipment")}</Texts>
-                      </Holds>
-                    </Holds>
-                  </Buttons>
-                </Holds>
-                <Holds
-                  position={"row"}
-                  className={
-                    permission === "ADMIN" ||
-                    permission === "SUPERADMIN" ||
-                    permission === "MANAGER"
-                      ? "row-span-1 col-span-1 gap-5"
-                      : "row-start-2 col-span-2 gap-5"
-                  }
-                >
-                  <Buttons //----------------------This is the Forms Widget
-                    background={"green"}
-                    href="/dashboard/forms"
-                  >
-                    <Holds
-                      position={
-                        permission === "ADMIN" ||
-                        permission === "SUPERADMIN" ||
-                        permission === "MANAGER"
-                          ? undefined
-                          : "row"
-                      }
-                    >
-                      <Holds>
-                        <Images
-                          titleImg="/form.svg"
-                          titleImgAlt="Forms Icon"
-                          size={"40"}
-                          className="ml-2"
-                        />
-                      </Holds>
-                      <Holds>
-                        <Texts size={"p3"}>{t("Forms")}</Texts>
-                      </Holds>
-                    </Holds>
-                  </Buttons>
-                </Holds>
-                <Holds
-                  position={"row"}
-                  className={
-                    permission === "ADMIN" ||
-                    permission === "SUPERADMIN" ||
-                    permission === "MANAGER"
-                      ? "row-span-1 col-span-1 gap-5"
-                      : "row-span-1 col-span-1 gap-5"
-                  }
-                >
-                  <Buttons //----------------------This is the Switch Jobs Widget
-                    background={"orange"}
-                    href="/dashboard/switch-jobs"
-                  >
-                    <Holds>
-                      <Images
-                        titleImg="/jobsite.svg"
-                        titleImgAlt="Jobsite Icon"
-                        size={"40"}
-                      />
-                    </Holds>
-                    <Holds>
-                      <Texts size={"p3"}>{t("Switch")}</Texts>
-                    </Holds>
-                  </Buttons>
-                </Holds>
-                <Holds
-                  position={"row"}
-                  className={
-                    permission === "ADMIN" ||
-                    permission === "SUPERADMIN" ||
-                    permission === "MANAGER"
-                      ? "row-span-1 col-span-1 gap-5"
-                      : "row-span-1 col-span-2 gap-5"
-                  }
-                >
-                  <Buttons //----------------------This is the Clock Out Widget
-                    href="/dashboard/clock-out"
-                    background={"red"}
-                    onClick={() => handleShowAdditionalButtons("clockOut")}
-                  >
-                    <Holds
-                      position={
-                        permission === "ADMIN" ||
-                        permission === "SUPERADMIN" ||
-                        permission === "MANAGER"
-                          ? undefined
-                          : "row"
-                      }
-                    >
-                      <Holds>
-                        <Images
-                          titleImg="/clock-out.svg"
-                          titleImgAlt="Clock Out Icon"
-                          size={"40"}
-                        />
-                      </Holds>
-                      <Holds>
-                        <Texts size={"p3"}>{t("ClockOut")}</Texts>
-                      </Holds>
-                    </Holds>
-                  </Buttons>
-                </Holds>
-              </>
-            )}
-          </Grids>
-        </Contents>
-      )}
-    </>
-  );
+  {
+    /* ------------------------------------------------------------------------------------------------------------------------
+  --------------------------------------------------------------------------------------------------------------------------
+   Mechanic View - View for mechanics
+  --------------------------------------------------------------------------------------------------------------------------
+  --------------------------------------------------------------------------------------------------------------------------
+*/
+  }
+  if (view === "mechanic") {
+    return (
+      <MechanicDashboardView
+        loading={loading}
+        isModalOpen={isModalOpen}
+        setIsModal2Open={setIsModal2Open}
+        isModal2Open={isModal2Open}
+        comment={comment}
+        setComment={setComment}
+        handleCOButton2={handleCOButton2}
+        handleCOButton3={handleCOButton3}
+        handleCloseModal={handleCloseModal}
+        handleShowManagerButtons={handleShowManagerButtons}
+        permission={permission}
+        handleShowAdditionalButtons={handleShowAdditionalButtons}
+        additionalButtonsType={additionalButtonsType}
+      />
+    );
+  }
+  {
+    /* ------------------------------------------------------------------------------------------------------------------------
+  --------------------------------------------------------------------------------------------------------------------------
+   General View for all users 
+  --------------------------------------------------------------------------------------------------------------------------
+  --------------------------------------------------------------------------------------------------------------------------
+*/
+  }
+  if (view === "general") {
+    return (
+      <GeneralDashboardView
+        loading={loading}
+        isModalOpen={isModalOpen}
+        setIsModal2Open={setIsModal2Open}
+        isModal2Open={isModal2Open}
+        comment={comment}
+        setComment={setComment}
+        handleCOButton2={handleCOButton2}
+        handleCOButton3={handleCOButton3}
+        handleCloseModal={handleCloseModal}
+        handleShowManagerButtons={handleShowManagerButtons}
+        permission={permission}
+        handleShowAdditionalButtons={handleShowAdditionalButtons}
+        additionalButtonsType={additionalButtonsType}
+      />
+    );
+  } else {
+    return null;
+  }
 }

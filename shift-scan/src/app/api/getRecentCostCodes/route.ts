@@ -31,16 +31,19 @@ export async function GET() {
   // Fetch full cost code details based on the grouped costCode IDs
   const costCodeDetails = await Promise.all(
     recentCostCodes.map(async (log) => {
-      return prisma.costCode.findUnique({
-        where: {
-          name: log.costcode,
-        },
-        select: {
-          id: true,
-          name: true,
-          description: true,
-        },
-      });
+      if (log.costcode) {
+        return prisma.costCode.findUnique({
+          where: {
+            name: log.costcode,
+          },
+          select: {
+            id: true,
+            name: true,
+            description: true,
+          },
+        });
+      }
+      return null;
     })
   );
 

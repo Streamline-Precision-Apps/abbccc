@@ -12,6 +12,8 @@ const NModalVariants = cva(
     variants: {
       background: {
         default: "bg-white opacity-90 rounded-2xl p-1",
+        takeABreak:
+          "bg-gradient-to-b from-app-dark-blue to-app-blue pb-3 pt-7 px-2",
       },
       position: {
         center: "relative",
@@ -27,6 +29,8 @@ const NModalVariants = cva(
         xl: "fixed rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-3/4 h-3/4",
         xlWS: "fixed rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-3/4 h-1/3 max-w-lg ",
         page: "fixed rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-5/6 h-5/6",
+        screen:
+          "fixed bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-screen h-dvh",
       },
     },
     defaultVariants: {

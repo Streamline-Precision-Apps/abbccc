@@ -166,6 +166,7 @@ export default function Page({ params }: { params: { id: string } }) {
         custom={true}
         header={
           <RequestHeader
+            initialLeaveRequest={initialLeaveRequest}
             leaveRequest={leaveRequest}
             setLeaveRequest={setLeaveRequest}
           />
