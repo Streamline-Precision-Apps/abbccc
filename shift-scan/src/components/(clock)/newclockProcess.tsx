@@ -307,12 +307,9 @@ step 4 : confirmation page and redirect to dashboard with authorization
         </Holds>
       )}
       {step === 3 && clockInRole === "mechanic" && (
-        <CodeStep datatype="jobsite-mechanic" handleNextStep={handleNextStep} />
+        <CodeStep datatype="jobsite" handleNextStep={handleNextStep} />
       )}
       {step === 4 && clockInRole === "mechanic" && (
-        <CodeStep datatype="costcode" handleNextStep={handleNextStep} />
-      )}
-      {step === 5 && clockInRole === "mechanic" && (
         <MechanicVerificationStep
           type={type}
           role={clockInRole}

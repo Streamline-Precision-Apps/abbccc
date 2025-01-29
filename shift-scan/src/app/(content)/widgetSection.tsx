@@ -6,10 +6,9 @@ import { Texts } from "@/components/(reusable)/texts";
 import { useTranslations } from "next-intl";
 import { Grids } from "@/components/(reusable)/grids";
 import DisplayBreakTime from "./displayBreakTime";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Hours from "./hours";
 import { Holds } from "@/components/(reusable)/holds";
-import { usePayPeriodHours } from "../context/PayPeriodHoursContext";
 import { usePayPeriodTimeSheet } from "../context/PayPeriodTimeSheetsContext";
 import { useRouter } from "next/navigation";
 import { Session } from "next-auth";
@@ -20,6 +19,7 @@ import { Titles } from "@/components/(reusable)/titles";
 import Capitalize from "@/utils/captitalize";
 import capitalizeAll from "@/utils/capitalizeAll";
 import Spinner from "@/components/(animations)/spinner";
+import { UseTotalPayPeriodHours } from "@/app/(content)/calculateTotal";
 
 const UserSchema = z.object({
   id: z.string(),
@@ -87,61 +87,57 @@ export default function WidgetSection({ session, locale }: Props) {
   const permission = session.user?.permission;
   const accountSetup = session.user?.accountSetup;
   const t = useTranslations("Home");
-  const { setPayPeriodHours } = usePayPeriodHours();
   const { setPayPeriodTimeSheets } = usePayPeriodTimeSheet();
   const [payPeriodSheets, setPayPeriodSheets] = useState<PayPeriodTimesheets[]>(
     []
   );
   const user = session.user;
+  // all the data will be rendered at once
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
       try {
-        const response = await fetch("/api/getPayPeriodTimeSheets");
-        const data = await response.json();
+        // Start loading state
+        setLoading(true);
+        // Fetch pay period timesheets
+        const payPeriodResponse = fetch("/api/getPayPeriodTimeSheets")
+          .then((res) => res.json())
+          .then((data) => {
+            const validatedData = PayPeriodSheetsArraySchema.parse(data);
+            const transformedData = validatedData.map((item) => ({
+              ...item,
+              startTime: new Date(item.startTime),
+              endTime: new Date(item.endTime),
+            }));
+            setPayPeriodSheets(transformedData);
+            setPayPeriodTimeSheets(transformedData);
+          });
 
-        // Validate fetched data with Zod
-        const validatedData = PayPeriodSheetsArraySchema.parse(data);
-        const transformedData = validatedData.map((item) => ({
-          ...item,
-          startTime: new Date(item.startTime),
-          endTime: new Date(item.endTime),
-        }));
-        setPayPeriodSheets(transformedData);
-        setPayPeriodTimeSheets(transformedData);
+        // Fetch cookie value
+        const pageViewResponse = fetch(
+          "/api/cookies?method=get&name=currentPageView"
+        )
+          .then((res) => res.json())
+          .then((data) => {
+            setPageView(data || "");
+          });
+
+        // Wait for all API calls to complete
+        await Promise.all([payPeriodResponse, pageViewResponse]);
       } catch (error) {
-        if (error instanceof z.ZodError) {
-          console.error(
-            "Validation error in fetched pay period sheets:",
-            error.errors
-          );
-        } else {
-          console.error(e("PayPeriod-Fetch"), error);
-        }
+        console.error("Error fetching data:", error);
       } finally {
+        // Stop loading when all data is loaded
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [e, setPayPeriodTimeSheets]);
+  }, [setPayPeriodTimeSheets]);
 
-  useEffect(() => {
-    const fetchCookie = async () => {
-      try {
-        const response = await fetch(
-          "/api/cookies?method=get&name=currentPageView"
-        );
-        const data = await response.json();
-        setPageView(data || "");
-      } catch (error) {
-        console.error("Error fetching page view:", error);
-      }
-    };
-    fetchCookie();
-  }, [pageView]);
-  //---------------------------------------------------------------------
-  // Redirect to dashboard if pageView is success
+  // moved the calulate total hours here
+  UseTotalPayPeriodHours(payPeriodSheets);
+
+  // Handle page redirects in a separate useEffect
   useEffect(() => {
     if (pageView === "dashboard") {
       router.push("/dashboard");
@@ -149,30 +145,13 @@ export default function WidgetSection({ session, locale }: Props) {
     if (pageView === "removeLocalStorage") {
       setPageView("");
     }
+    // Uncomment if necessary
     // if (!accountSetup) {
     //   router.push("/signin/signup");
     // }
   }, [pageView, router, accountSetup]);
 
   //-----------------------------------------------------------------------
-  // Calculate total pay period hours
-  const totalPayPeriodHours = useMemo(() => {
-    if (!payPeriodSheets.length) return 0;
-    return payPeriodSheets
-      .filter((sheet: PayPeriodTimesheets) => sheet.startTime !== null)
-      .reduce(
-        (total, sheet: PayPeriodTimesheets) =>
-          total +
-          (new Date(sheet.endTime).getTime() -
-            new Date(sheet.startTime).getTime()) /
-            (1000 * 60 * 60),
-        0
-      );
-  }, [payPeriodSheets]);
-
-  useEffect(() => {
-    setPayPeriodHours(totalPayPeriodHours.toFixed(1));
-  }, [totalPayPeriodHours, setPayPeriodHours]);
 
   // Redirect to dashboard if user is an admin
 
@@ -185,10 +164,10 @@ export default function WidgetSection({ session, locale }: Props) {
   if (loading) {
     return (
       <>
-        <Holds className="row-span-2 bg-app-blue bg-opacity-20 w-full p-10 h-[80%] my-2 rounded-[10px]"></Holds>
+        <Holds className="row-span-2 bg-app-blue bg-opacity-20 w-full p-10 h-[80%] my-2 rounded-[10px] animate-pulse"></Holds>
         <Holds
           background={"white"}
-          className="row-span-5 h-full justify-center items-center"
+          className="row-span-5 h-full justify-center items-center animate-pulse"
         >
           <Spinner />
         </Holds>

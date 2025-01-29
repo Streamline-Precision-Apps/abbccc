@@ -308,6 +308,7 @@
     "ID": "Id: #"
 },
 "Clock": {
+    "SelectTruck": "Select Truck",
     "search-equipment-operator": "Search Equipment",
     "SelectShiftType": "Select Shift Type",
     "SelectMaterialType": "Select Material Type",
