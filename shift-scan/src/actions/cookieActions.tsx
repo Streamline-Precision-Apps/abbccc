@@ -82,6 +82,31 @@ export async function setWorkRole(workRole: string) {
   }
 }
 
+export async function setLaborType(laborType: string) {
+  if (
+    laborType !== "operator" &&
+    laborType !== "truckDriver" &&
+    laborType !== "manualLabor"
+  ) {
+    console.error("Not Authorized", 201);
+    // Perform the redirect to the signin page
+    redirect("/");
+  }
+
+  try {
+    cookies().set({
+      name: "laborType",
+      value: laborType,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days - made this to not have errors occur is logging out is forgotten
+    });
+  } catch (error) {
+    console.error("Failed to set locale cookie:", error);
+  }
+}
+
 // deletes the cookie for workRole to either mechanic, tasco, truck, general
 export async function RemoveWorkRole() {
   const session = await auth();
@@ -145,6 +170,50 @@ export async function setCostCode(costCode: string) {
   }
 }
 
+export async function setEquipment(equipment: string) {
+  try {
+    cookies().set({
+      name: "equipment",
+      value: equipment,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days - made this to not have errors occur is logging out is forgotten
+    });
+  } catch (error) {
+    console.error("Failed to set locale cookie:", error);
+  }
+}
+export async function setTruck(truck: string) {
+  try {
+    cookies().set({
+      name: "truckId",
+      value: truck,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days - made this to not have errors occur is logging out is forgotten
+    });
+  } catch (error) {
+    console.error("Failed to set locale cookie:", error);
+  }
+}
+
+export async function setStartingMileage(startingMileage: string) {
+  try {
+    cookies().set({
+      name: "startingMileage",
+      value: startingMileage,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days - made this to not have errors occur is logging out is forgotten
+    });
+  } catch (error) {
+    console.error("Failed to set locale cookie:", error);
+  }
+}
+
 export async function setPrevTimeSheet(timeSheetId: string) {
   const session = await auth();
   // Check if the user is authenticated
@@ -175,7 +244,11 @@ export async function RemoveCookiesAtClockOut() {
     cookies().delete("jobSite");
     cookies().delete("workRole");
     cookies().delete("adminAccess");
-    cookies().set("currentPageView", "");
+    cookies().delete("laborType");
+    cookies().delete("truckId");
+    cookies().delete("equipment");
+    cookies().delete("startingMileage");
+    cookies().delete("currentPageView");
   } catch (error) {
     console.error("Failed to delete locale cookie:", error);
   }

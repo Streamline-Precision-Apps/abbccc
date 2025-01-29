@@ -13,7 +13,7 @@ const ClockOutButtons = () => {
     try {
       // bt = buttonType
       console.log(`Navigating to /dashboard/clock-out/log?bt=${bt}`); // Debug line
-      await router.push(`/dashboard/clock-out/log?bt=${bt}`);
+      router.push(`/dashboard/clock-out/log?bt=${bt}`);
     } catch (err) {
       console.error("Navigation error:", err);
       setError("Failed to navigate. Please try again.");
@@ -22,7 +22,7 @@ const ClockOutButtons = () => {
 
   const handleHomeNavigation = async () => {
     try {
-      await router.push("/dashboard");
+      router.push("/dashboard");
     } catch (err) {
       console.error("Navigation error:", err);
       setError("Failed to navigate. Please try again.");

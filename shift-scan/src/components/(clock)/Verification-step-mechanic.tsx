@@ -5,7 +5,7 @@ import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
 import {
   CreateTimeSheet,
-  updateTimeSheetBySwitch,
+  updateMechanicTSBySwitch,
 } from "@/actions/timeSheetActions";
 import { Clock } from "../clock";
 import { TitleBoxes } from "../(reusable)/titleBoxes";
@@ -22,8 +22,8 @@ import { useStartingMileage } from "@/app/context/StartingMileageContext";
 import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
 import { useCommentData } from "@/app/context/CommentContext";
-import { setCurrentPageView, setWorkRole } from "@/actions/cookieActions";
 import { useRouter } from "next/navigation";
+import { setCurrentPageView, setWorkRole } from "@/actions/cookieActions";
 
 type VerifyProcessProps = {
   handleNextStep?: () => void;
@@ -33,7 +33,7 @@ type VerifyProcessProps = {
   comments?: string;
 };
 
-export default function TascoVerificationStep({
+export default function MechanicVerificationStep({
   type,
   handleNextStep,
   role,
@@ -41,14 +41,14 @@ export default function TascoVerificationStep({
   const t = useTranslations("Clock");
   const { scanResult } = useScanData();
   const { setTimeSheetData } = useTimeSheetData();
-
+  const router = useRouter();
   const date = new Date();
   const { data: session } = useSession();
   const { truckScanData } = useTruckScanData(); // Move this hook call to the top level.
   const { startingMileage } = useStartingMileage();
   const { savedCommentData, setCommentData } = useCommentData();
-  const router = useRouter();
-  const costCode = "TASCO Role";
+
+  const costCode = "#00.50";
 
   if (!session) return null; // Conditional rendering for session
   const { id } = session.user;
@@ -61,6 +61,7 @@ export default function TascoVerificationStep({
         throw new Error("User id does not exist");
       }
       await setWorkRole(role);
+
       if (type === "switchJobs") {
         try {
           const tId = await fetch(
@@ -74,7 +75,7 @@ export default function TascoVerificationStep({
             savedCommentData?.id.toString() || ""
           );
 
-          const responseOldSheet = await updateTimeSheetBySwitch(formData2);
+          const responseOldSheet = await updateMechanicTSBySwitch(formData2);
           if (responseOldSheet) {
             // removing the old sheet comment so it doesn't show up on the new sheet
             setCommentData(null);
@@ -97,7 +98,7 @@ export default function TascoVerificationStep({
           const result = { id: response.id.toString() };
           setTimeSheetData(result);
 
-          router.push("/dashboard");
+          return router.push("/dashboard");
         } catch (error) {
           console.error(error);
         }
@@ -123,9 +124,9 @@ export default function TascoVerificationStep({
         const response = await CreateTimeSheet(formData);
         const result = { id: response.id.toString() };
         setTimeSheetData(result);
-
         setCurrentPageView("dashboard");
-        router.push("/dashboard");
+
+        return router.push("/dashboard");
       }
     } catch (error) {
       console.error(error);

@@ -6,22 +6,20 @@ import QRStep from "./qr-handler";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import CodeStep from "./code-step";
 import VerificationStep from "./verification-step";
-import { useTruckScanData } from "@/app/context/TruckScanDataContext";
-import { useStartingMileage } from "@/app/context/StartingMileageContext";
 import TruckClockInForm from "./truckClockInForm";
-// import { ConfirmationPage } from "./confirmation-Page";
 import VerificationEQStep from "./verification-eq-step";
 import { Titles } from "../(reusable)/titles";
 import RedirectAfterDelay from "../redirectAfterDelay";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { setJobSite, setWorkRole } from "@/actions/cookieActions";
-import MechanicVerificationStep from "./mechanicVerificationStep";
-import TascoVerificationStep from "./tascoVerificationStep";
+import MechanicVerificationStep from "./Verification-step-mechanic";
+import TascoVerificationStep from "./Verification-step-tasco";
 import SwitchJobsMultiRoles from "./switchJobsMuiltipleRoles";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { returnToPrevWork } from "@/actions/timeSheetActions";
-import { set } from "date-fns";
+import TruckVerificationStep from "./Verification-step-truck";
+import TascoClockInForm from "./tascoClockInForm";
 
 type NewClockProcessProps = {
   mechanicView: boolean;
@@ -51,7 +49,6 @@ export default function NewClockProcess({
 
   const [step, setStep] = useState(0);
   const [clockInRole, setClockInRole] = useState(currentRole);
-  const [comments, setComments] = useState(""); // for trucking
   const [numberOfRoles, setNumberOfRoles] = useState(0);
 
   const t = useTranslations("Clock");
@@ -59,8 +56,13 @@ export default function NewClockProcess({
   // Contexts
   const { setScanResult } = useScanData();
   const { setCostCode } = useSavedCostCode();
-  const { truckScanData } = useTruckScanData();
-  const { startingMileage } = useStartingMileage();
+
+  const [laborType, setLaborType] = useState<string>("");
+  const [truck, setTruck] = useState<string>("");
+  const [startingMileage, setStartingMileage] = useState<number>(0);
+
+  const [materialType, setMaterialType] = useState<string>("");
+  const [shiftType, setShiftType] = useState<string>("");
 
   // useEffect to reset step and role on mount/unmount
   useEffect(() => {
@@ -123,24 +125,13 @@ export default function NewClockProcess({
     }
   }, [mechanicView, truckView, tascoView, laborView, type, option]);
 
-  // useEffect(() => {
-  //   console.log("step", step);
-  // }),
-  //   [step];
-
-  // useEffect(() => {
-  //   console.log("clockInRole", clockInRole);
-  //   console.log("step", step);
-  // }),
-  //   [step];
-
   //------------------------------------------------------------------
   //------------------------------------------------------------------
   // Helper functions
   //------------------------------------------------------------------
   //------------------------------------------------------------------
   const handleNextStep = () => setStep((prevStep) => prevStep + 1);
-
+  const handlePrevStep = () => setStep((prevStep) => prevStep - 1);
   const handleAlternativePath = () => {
     setStep(2);
     handleNextStep();
@@ -177,7 +168,11 @@ export default function NewClockProcess({
             : "";
 
         setClockInRole(prevWorkRole);
-        setStep(5);
+        if (prevWorkRole === "truck") {
+          setStep(5);
+        } else {
+          setStep(5);
+        }
       } else {
         throw new Error("No response");
       }
@@ -187,9 +182,6 @@ export default function NewClockProcess({
   };
 
   const handleScanJobsite = () => {
-    setStep(4);
-  };
-  const handleScanTruck = () => {
     setStep(4);
   };
 
@@ -307,7 +299,6 @@ step 4 : confirmation page and redirect to dashboard with authorization
             handleNextStep={handleNextStep}
             handleReturn={handleReturn}
             handleScanJobsite={handleScanJobsite}
-            handleScanTruck={handleScanTruck}
             url={returnpath}
             option={type} // type is the method of clocking in ... general, switchJobs, or equipment
             clockInRole={clockInRole} // clock in role will make the qr know which role to use
@@ -343,7 +334,6 @@ step 4 : confirmation page and redirect to dashboard with authorization
           handleNextStep={handleNextStep}
           handleReturn={handleReturn}
           handleScanJobsite={handleScanJobsite}
-          handleScanTruck={handleScanTruck}
           url={returnpath}
           option={type} // type is the method of clocking in ... general, switchJobs, or equipment
           clockInRole={clockInRole}
@@ -356,16 +346,29 @@ step 4 : confirmation page and redirect to dashboard with authorization
           setComments={setComments}
         /> */}
       {step === 3 && clockInRole === "truck" && (
-        <CodeStep datatype="jobsite-truck" handleNextStep={handleNextStep} />
+        <CodeStep datatype="jobsite" handleNextStep={handleNextStep} />
       )}
       {/* Special Forms Section */}
       {step === 4 && clockInRole === "truck" && (
         <CodeStep datatype="costcode" handleNextStep={handleNextStep} />
       )}
+      {step === 5 && clockInRole === "truck" && (
+        <TruckClockInForm
+          handleNextStep={handleNextStep}
+          setLaborType={setLaborType}
+          setTruck={setTruck}
+          setStartingMileage={setStartingMileage}
+          laborType={laborType}
+          truck={truck}
+        />
+      )}
 
       {/* Verification Page for truck drivers */}
-      {step === 5 && clockInRole === "truck" && (
-        <VerificationStep
+      {step === 6 && clockInRole === "truck" && (
+        <TruckVerificationStep
+          laborType={laborType}
+          truck={truck}
+          startingMileage={startingMileage}
           type={type}
           role={clockInRole}
           handleNextStep={handleNextStep}
@@ -386,7 +389,6 @@ step 4 : confirmation page and redirect to dashboard with authorization
           handleReturn={handleReturn}
           handleReturnPath={handleReturnPath}
           handleScanJobsite={handleScanJobsite}
-          handleScanTruck={handleScanTruck}
           url={returnpath}
           option={type} // type is the method of clocking in ... general, switchJobs, or equipment
           clockInRole={clockInRole}
@@ -395,17 +397,32 @@ step 4 : confirmation page and redirect to dashboard with authorization
       )}
       {/* Tasco Role */}
       {step === 3 && clockInRole === "tasco" && (
-        <CodeStep datatype="jobsite-tasco" handleNextStep={handleNextStep} />
+        <CodeStep datatype="jobsite" handleNextStep={handleNextStep} />
       )}
       {step === 4 && clockInRole === "tasco" && (
         <CodeStep datatype="costcode" handleNextStep={handleNextStep} />
       )}
-      {step === 4 && clockInRole === "tasco" && (
+      {step === 5 && clockInRole === "tasco" && (
+        <TascoClockInForm
+          handleNextStep={handleNextStep}
+          handlePrevStep={handlePrevStep}
+          setLaborType={setLaborType}
+          laborType={laborType}
+          materialType={materialType}
+          setMaterialType={setMaterialType}
+          shiftType={shiftType}
+          setShiftType={setShiftType}
+        />
+      )}
+      {step === 6 && clockInRole === "tasco" && (
         <TascoVerificationStep
           type={type}
           role={clockInRole}
           handleNextStep={handleNextStep}
           option={option}
+          laborType={laborType}
+          materialType={materialType}
+          shiftType={shiftType}
           comments={undefined}
         />
       )}
@@ -421,7 +438,6 @@ step 4 : confirmation page and redirect to dashboard with authorization
           handleReturn={handleReturn}
           handleReturnPath={handleReturnPath}
           handleScanJobsite={handleScanJobsite}
-          handleScanTruck={handleScanTruck}
           url={returnpath}
           option={type} // type is the method of clocking in ... general, switchJobs, or equipment
           clockInRole={clockInRole}
@@ -450,7 +466,6 @@ step 4 : confirmation page and redirect to dashboard with authorization
           <VerificationStep
             type={type}
             role={clockInRole}
-            handleNextStep={handleNextStep}
             option={option}
             comments={undefined}
           />
