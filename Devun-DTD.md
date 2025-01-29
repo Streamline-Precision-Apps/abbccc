@@ -247,8 +247,8 @@ cookies().set({
   #
 # January 29, 2025 - wednesday
 ### Research
-- Taking Notes on Jest located at file jest-testing.md
-
+- Taking Notes on Jest located at file jest-testing.md (4 hour)
+  - probably will not use jest because of an unknown bug that occurred each set up.
 
 ### Built/created 
 
