@@ -105,10 +105,12 @@ export default function VerificationStep({
           setCurrentPageView("dashboard");
           console.log("role before set", role);
           // logic to set truck scan data null
-          await setWorkRole(role);
-          await setLaborType(laborType || "");
+          setWorkRole(role);
+          setLaborType(laborType || "");
 
-          return router.push("/dashboard");
+          setTimeout(() => {
+            router.push("/dashboard");
+          }, 100);
         } catch (error) {
           console.error(error);
         }
@@ -126,9 +128,11 @@ export default function VerificationStep({
         const result = { id: response.id.toString() };
         setTimeSheetData(result);
         setCurrentPageView("dashboard");
-        await setWorkRole(role);
+        setWorkRole(role);
 
-        return router.push("/dashboard");
+        setTimeout(() => {
+          router.push("/dashboard");
+        }, 100);
       }
     } catch (error) {
       console.error(error);
