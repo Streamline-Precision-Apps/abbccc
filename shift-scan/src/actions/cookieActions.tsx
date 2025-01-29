@@ -248,7 +248,7 @@ export async function RemoveCookiesAtClockOut() {
     cookies().delete("truckId");
     cookies().delete("equipment");
     cookies().delete("startingMileage");
-    cookies().set("currentPageView", "");
+    cookies().delete("currentPageView");
   } catch (error) {
     console.error("Failed to delete locale cookie:", error);
   }
