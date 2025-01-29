@@ -229,14 +229,25 @@ cookies().set({
 
 #
 # January 28, 2025 - Tuesday
-### Figma
-- 
 ### Built/created 
 - built logic for trucking log to save its data upon creation, 
 - removed some cookies from the process like truck, starting mileage, and task name
 - defaulted task name to be same as labor type and that we can change it later if user wants.
 - altered tables just a bit to make connection to trucking logs and time Sheet easier
 ### Trello
-- 4 (hours)
+- 4 hours
   - Starting Truck Driving role 
   - clock Logic
+- 4 hours
+  - Starting Tasco Role
+  - Starting the Engineer Role
+
+  #
+# January 29, 2025 - wednesday
+### Research
+- Taking Notes on Jest located at file jest-testing.md
+
+
+### Built/created 
+
+### Trello
