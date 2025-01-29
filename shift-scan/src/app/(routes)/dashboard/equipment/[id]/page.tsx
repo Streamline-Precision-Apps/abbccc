@@ -202,8 +202,8 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                 version="horizontal"
                 title="Loading..."
                 type="noIcon"
-                titleImg="/current.svg"
-                titleImgAlt="Current"
+                titleImg=""
+                titleImgAlt=""
                 variant="default"
                 size="default"
                 className="my-auto"
@@ -254,7 +254,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
               version="horizontal"
               title={formState.Equipment.name}
               type="noIcon"
-              titleImg="/current.svg"
+              titleImg=""
               titleImgAlt="No equipment image"
               variant="default"
               size="default"
@@ -265,8 +265,8 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
             background="white"
             className={
               isEditingTime
-                ? "row-span-3 col-span-5 p-4"
-                : "row-span-1 col-span-5 p-4"
+                ? "row-span-3 col-span-5 p-1"
+                : "row-span-1 col-span-5 p-1"
             }
           >
             <Texts size="p2">Total Usage</Texts>
