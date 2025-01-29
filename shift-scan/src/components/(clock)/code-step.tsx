@@ -12,12 +12,14 @@ type CodeStepProps = {
   datatype: string;
   handleNextStep?: () => void;
   handleReturnPath?: () => void;
+  backArrow?: boolean;
 };
 
 export default function CodeStep({
   datatype,
   handleNextStep,
   handleReturnPath,
+  backArrow = true,
 }: CodeStepProps) {
   const t = useTranslations("Clock");
 
@@ -28,16 +30,18 @@ export default function CodeStep({
         <Grids rows={"7"} gap={"5"} className="h-full w-full">
           <Holds className="h-full w-full row-start-1 row-end-2">
             <Grids rows={"2"} cols={"5"} gap={"3"} className=" h-full w-full">
-              <Holds
-                className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center"
-                onClick={handleReturnPath}
-              >
-                <Images
-                  titleImg="/turnBack.svg"
-                  titleImgAlt="back"
-                  position={"left"}
-                />
-              </Holds>
+              {backArrow && (
+                <Holds
+                  className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center"
+                  onClick={handleReturnPath}
+                >
+                  <Images
+                    titleImg="/turnBack.svg"
+                    titleImgAlt="back"
+                    position={"left"}
+                  />
+                </Holds>
+              )}
               <Holds className="row-start-2 row-end-3 col-span-5 h-full w-full justify-center">
                 <Titles size={"h1"}>{t(`Title-${datatype}`)}</Titles>
               </Holds>

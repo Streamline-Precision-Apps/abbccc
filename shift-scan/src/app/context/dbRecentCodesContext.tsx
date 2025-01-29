@@ -83,7 +83,8 @@ export const RecentJobSiteProvider = ({
         if (
           url === "/clock" ||
           url === "/dashboard/log-new" ||
-          url === "/dashboard/switch-jobs"
+          url === "/dashboard/switch-jobs" ||
+          url === "/break"
         ) {
           const response = await fetch("/api/getRecentJobsites");
           const recentJobSites = await response.json();
@@ -161,7 +162,8 @@ export const RecentCostCodeProvider = ({
         if (
           url === "/clock" ||
           url === "/dashboard/log-new" ||
-          url === "/dashboard/switch-jobs"
+          url === "/dashboard/switch-jobs" ||
+          url === "/break"
         ) {
           const response = await fetch("/api/getRecentCostCodes");
           const recentCostCodes = await response.json();
@@ -239,7 +241,8 @@ export const RecentEquipmentProvider = ({
         if (
           url === "/clock" ||
           url === "/dashboard/log-new" ||
-          url === "/dashboard/switch-jobs"
+          url === "/dashboard/switch-jobs" ||
+          url === "/break"
         ) {
           const response = await fetch("/api/getRecentEquipment");
           const recentEquipment = await response.json();
