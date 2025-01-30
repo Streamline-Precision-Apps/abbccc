@@ -50,6 +50,7 @@ export default function NewClockProcess({
   const [step, setStep] = useState(1);
   const [clockInRole, setClockInRole] = useState(currentRole);
   const [numberOfRoles, setNumberOfRoles] = useState(0);
+  const [scanned, setScanned] = useState(false);
 
   const t = useTranslations("Clock");
   const router = useRouter();
@@ -129,6 +130,7 @@ export default function NewClockProcess({
   //------------------------------------------------------------------
   const handleNextStep = () => setStep((prevStep) => prevStep + 1);
   const handlePrevStep = () => setStep((prevStep) => prevStep - 1);
+  const handleScannedPrevStep = () => setStep(1);
   const handleAlternativePath = () => {
     setStep(3);
   };
@@ -215,14 +217,16 @@ export default function NewClockProcess({
               handleReturnPath={handleReturnPath}
               clockInRole={""}
               setClockInRole={setClockInRole}
+              setScanned={setScanned}
             />
           </>
         )}
         {step === 2 && (
           <CodeStep
             datatype="equipment"
-            handleNextStep={handleNextStep}
             handlePrevStep={handlePrevStep}
+            handleScannedPrevStep={handleScannedPrevStep}
+            scanned={scanned}
           />
         )}
         {step === 3 && <VerificationEQStep handleNextStep={handleNextStep} />}
@@ -313,6 +317,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
             option={type} // type is the method of clocking in ... general, switchJobs, or equipment
             clockInRole={clockInRole} // clock in role will make the qr know which role to use
             setClockInRole={setClockInRole}
+            setScanned={setScanned}
           />
         </Holds>
       )}
@@ -321,6 +326,8 @@ step 4 : confirmation page and redirect to dashboard with authorization
           datatype="jobsite"
           handleNextStep={handleNextStep}
           handlePrevStep={handlePrevStep}
+          handleScannedPrevStep={handleScannedPrevStep}
+          scanned={scanned}
         />
       )}
       {step === 4 && clockInRole === "mechanic" && (
@@ -349,6 +356,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
           option={type} // type is the method of clocking in ... general, switchJobs, or equipment
           clockInRole={clockInRole}
           setClockInRole={setClockInRole}
+          setScanned={setScanned}
         />
       )}
       {/* Special Forms Section */}
@@ -361,6 +369,8 @@ step 4 : confirmation page and redirect to dashboard with authorization
           datatype="jobsite"
           handleNextStep={handleNextStep}
           handlePrevStep={handlePrevStep}
+          handleScannedPrevStep={handleScannedPrevStep}
+          scanned={scanned}
         />
       )}
       {/* Special Forms Section */}
@@ -369,6 +379,8 @@ step 4 : confirmation page and redirect to dashboard with authorization
           datatype="costcode"
           handleNextStep={handleNextStep}
           handlePrevStep={handlePrevStep}
+          handleScannedPrevStep={handleScannedPrevStep}
+          scanned={scanned}
         />
       )}
       {step === 5 && clockInRole === "truck" && (
@@ -413,6 +425,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
           option={type} // type is the method of clocking in ... general, switchJobs, or equipment
           clockInRole={clockInRole}
           setClockInRole={setClockInRole}
+          setScanned={setScanned}
         />
       )}
       {/* Tasco Role */}
@@ -421,6 +434,8 @@ step 4 : confirmation page and redirect to dashboard with authorization
           datatype="jobsite"
           handleNextStep={handleNextStep}
           handlePrevStep={handlePrevStep}
+          handleScannedPrevStep={handleScannedPrevStep}
+          scanned={scanned}
         />
       )}
       {step === 4 && clockInRole === "tasco" && (
@@ -428,6 +443,8 @@ step 4 : confirmation page and redirect to dashboard with authorization
           datatype="costcode"
           handleNextStep={handleNextStep}
           handlePrevStep={handlePrevStep}
+          handleScannedPrevStep={handleScannedPrevStep}
+          scanned={scanned}
         />
       )}
       {step === 5 && clockInRole === "tasco" && (
@@ -470,6 +487,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
           option={type} // type is the method of clocking in ... general, switchJobs, or equipment
           clockInRole={clockInRole}
           setClockInRole={setClockInRole}
+          setScanned={setScanned}
         />
       )}
       {/* Select Jobsite Section */}
@@ -478,6 +496,8 @@ step 4 : confirmation page and redirect to dashboard with authorization
           datatype="jobsite"
           handleNextStep={handleNextStep}
           handlePrevStep={handlePrevStep}
+          handleScannedPrevStep={handleScannedPrevStep}
+          scanned={scanned}
         />
       )}
       {/* Select Cost Code Section */}
@@ -486,6 +506,8 @@ step 4 : confirmation page and redirect to dashboard with authorization
           datatype="costcode"
           handleNextStep={handleNextStep}
           handlePrevStep={handlePrevStep}
+          handleScannedPrevStep={handleScannedPrevStep}
+          scanned={scanned}
         />
       )}
       {/* Verification Page */}
