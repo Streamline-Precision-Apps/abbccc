@@ -8,51 +8,62 @@ import { Holds } from "./holds";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Texts } from "./texts";
+// Type for Equipment
+interface Equipment {
+  id: string;
+  name: string;
+  qrId?: string;
+}
+
+// Type for Employee Equipment Log
+interface EmployeeEquipmentLog {
+  id: string;
+  startTime: string;
+  endTime?: string | null;
+  equipment: Equipment;
+}
+
+// Type for Tasco Logs
+interface TascoLog {
+  laborType: string;
+  equipment: Equipment;
+}
+
+// Type for Trucking Logs
+interface TruckingLog {
+  laborType: string;
+  equipment: Equipment;
+}
+
+// Type for Job Site
+interface Jobsite {
+  id: string;
+  qrId: string;
+  name: string;
+}
+
+// Type for Cost Code
+interface CostCode {
+  id: string;
+  name: string;
+  description: string;
+}
+
+// Type for API Response
+interface BannerData {
+  id: string;
+  jobsite: Jobsite;
+  costCode: CostCode;
+  employeeEquipmentLog: EmployeeEquipmentLog[];
+  tascoLogs: TascoLog[];
+  truckingLogs: TruckingLog[];
+}
 
 export default function BannerRotating() {
   const [timeSheetId, setTimeSheetId] = useState("");
-  const [bannerData, setBannerData] = useState({
-    id: "",
-    jobsite: {
-      id: "",
-      qrId: "",
-      name: "",
-    },
-    costcode: {
-      id: "",
-      name: "",
-      description: "",
-    },
-    employeeEquipmentLog: [
-      {
-        id: "",
-        startTime: "",
-        endTime: "",
-        Equipment: {
-          id: "",
-          name: "",
-        },
-      },
-    ],
-    tascoLogs: [
-      {
-        laborType: "",
-        equipment: {
-          qrId: "",
-          name: "",
-        },
-      },
-    ],
-    truckingLogs: [
-      {
-        laborType: "",
-        equipment: {
-          qrId: "",
-          name: "",
-        },
-      },
-    ],
-  });
+  const [bannerData, setBannerData] = useState<BannerData | null>(null);
+  const [loading, setLoading] = useState(true); // Track loading state
+  const [error, setError] = useState(null); // Track error state
 
   const settings = {
     dots: true,
@@ -67,39 +78,67 @@ export default function BannerRotating() {
     pauseOnHover: true,
     pauseOnFocus: true,
   };
+
+  // Fetch timeSheetId and banner data together
   useEffect(() => {
-    const fetchTimeSheetId = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch(
-          "/api/cookies?method=get&name=timeSheetId"
+        // Step 1: Fetch the most recent timeSheetId
+        const timeSheetResponse = await fetch("/api/getRecentTimecard");
+        const timeSheetData = await timeSheetResponse.json();
+
+        if (!timeSheetData?.id) {
+          throw new Error("No valid timesheet ID found.");
+        }
+
+        setTimeSheetId(timeSheetData.id);
+
+        // Step 2: Fetch banner data using the obtained timeSheetId
+        const bannerResponse = await fetch(
+          `/api/getBannerData?id=${timeSheetData.id}`
         );
-        const data = await response.json();
-        setTimeSheetId(data.id);
-      } catch (error) {
-        console.error("Error fetching time sheet ID:", error);
-      }
-      fetchTimeSheetId();
-    };
-  }, [timeSheetId]);
+        const bannerData = await bannerResponse.json();
 
-  useEffect(() => {
-    const fetchJobSite = async () => {
-      try {
-        const response = await fetch("/api/getBannerData?id=" + timeSheetId);
-        const data = await response.json();
-        setBannerData(data);
+        if (!bannerResponse.ok) {
+          throw new Error(bannerData.error || "Failed to fetch job site data.");
+        }
+
+        setBannerData(bannerData);
       } catch (error) {
-        console.error("Error fetching job site:", error);
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchJobSite();
-  }, [timeSheetId]);
+    fetchData();
+  }, []);
+
+  // Show loading message
+  if (loading) {
+    return (
+      <Holds className="w-[80%] flex justify-center items-center h-[300px]">
+        <Titles text={"white"} size={"h4"}>
+          Loading...
+        </Titles>
+      </Holds>
+    );
+  }
+
+  // Ensure we have valid data before rendering
+  if (!bannerData || !bannerData.jobsite) {
+    return (
+      <Holds className="w-[80%] flex justify-center items-center h-[300px]">
+        <Titles text={"white"}>No available timesheet data.</Titles>
+      </Holds>
+    );
+  }
 
   return (
     <Holds className="w-[80%]">
       <Slider {...settings} className="">
-        {bannerData.jobsite.name && bannerData.jobsite.qrId && (
+        {/* Jobsite Information */}
+        {bannerData.jobsite && (
           <Holds position={"row"}>
             <Titles text={"white"} size={"h2"}>
               {bannerData.jobsite.name}
@@ -109,27 +148,39 @@ export default function BannerRotating() {
             </Texts>
           </Holds>
         )}
-        {bannerData.costcode.description && bannerData.costcode.name && (
+
+        {/* Cost Code Information */}
+        {bannerData.costCode && (
           <Holds>
-            <Titles text={"white"}>{bannerData.costcode.description}</Titles>
+            <Titles text={"white"}>{bannerData.costCode.description}</Titles>
             <Texts className="text-white" size={"p5"}>
-              {bannerData.costcode.name}
+              {bannerData.costCode.name}
             </Texts>
           </Holds>
         )}
-        {bannerData.employeeEquipmentLog.length > 0 &&
+
+        {/* Employee Equipment Logs */}
+        {bannerData.employeeEquipmentLog &&
           bannerData.employeeEquipmentLog.map((equipment, index) => (
             <Holds key={index}>
-              <Titles text={"white"}>{equipment.Equipment.name}</Titles>
+              <Titles text={"white"}>
+                {equipment.equipment?.name || "Unknown Equipment"}
+              </Titles>
               <Texts className="text-white" size={"p5"}>
-                {equipment.startTime}
+                {equipment.startTime
+                  ? `Start Time: ${equipment.startTime}`
+                  : "No Start Time"}
               </Texts>
             </Holds>
           ))}
-        {bannerData.tascoLogs.length > 0 &&
+
+        {/* Tasco Logs */}
+        {bannerData.tascoLogs &&
           bannerData.tascoLogs.map((equipment, index) => (
             <Holds key={index}>
-              <Titles text={"white"}>{equipment.equipment.name}</Titles>
+              <Titles text={"white"}>
+                {equipment.equipment?.name || "Unknown Equipment"}
+              </Titles>
               <Texts className="text-white" size={"p5"}>
                 {equipment.laborType === "operator"
                   ? "Equipment Operator"
@@ -137,10 +188,14 @@ export default function BannerRotating() {
               </Texts>
             </Holds>
           ))}
-        {bannerData.truckingLogs.length > 0 &&
+
+        {/* Trucking Logs */}
+        {bannerData.truckingLogs &&
           bannerData.truckingLogs.map((equipment, index) => (
             <Holds key={index}>
-              <Titles text={"white"}>{equipment.equipment.name}</Titles>
+              <Titles text={"white"}>
+                {equipment.equipment?.name || "Unknown Equipment"}
+              </Titles>
               <Texts className="text-white" size={"p5"}>
                 {equipment.laborType === "operator"
                   ? "Operator"
