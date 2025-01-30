@@ -65,7 +65,7 @@ export default function BannerRotating() {
 
   return (
     <Holds className="w-[80%]">
-      <Slider {...settings} className="">
+      {/* <Slider {...settings} className="">
         <Holds position={"row"}>
           <Titles text={"white"} size={"h2"}>
             {bannerData.jobsite.name}
@@ -89,7 +89,7 @@ export default function BannerRotating() {
               </Texts>
             </Holds>
           ))}
-      </Slider>
+      </Slider> */}
     </Holds>
   );
 }

@@ -9,6 +9,7 @@ import { Holds } from "../(reusable)/holds";
 import { Images } from "../(reusable)/images";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
+import { Contents } from "../(reusable)/contents";
 
 type CodeStepProps = {
   datatype: string;
@@ -29,8 +30,8 @@ export default function CodeStep({
   // TODO: This has an error inside of the browser console.
   return (
     <Holds background={"white"} className="h-full w-full">
-      <Holds className="h-full w-[90%] px-1 py-3">
-        <Grids rows={"7"} gap={"5"} className="h-full w-full">
+      <Contents width={"section"}>
+        <Grids rows={"7"} gap={"5"} className="h-full w-full my-5">
           <Holds className="h-full w-full row-start-1 row-end-2">
             <Grids rows={"2"} cols={"5"} gap={"3"} className=" h-full w-full">
               {backArrow && (
@@ -66,7 +67,7 @@ export default function CodeStep({
             </Holds>
           )}
         </Grids>
-      </Holds>
+      </Contents>
     </Holds>
   );
 }
