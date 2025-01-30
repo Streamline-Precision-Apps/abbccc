@@ -86,6 +86,7 @@ export async function setLaborType(laborType: string) {
     laborType !== "truckDriver" &&
     laborType !== "manualLabor"
   ) {
+    console.log(laborType);
     throw new Error("Not Authorized - Invalid labor type");
   }
 

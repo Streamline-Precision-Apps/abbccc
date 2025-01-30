@@ -251,6 +251,7 @@ cookies().set({
   - probably will not use jest because of an unknown bug that occurred each set up.
 ### Built/created 
 - working on debugging home page
+- building page
 
 ### Trello
 - Starting Tasco Role && Starting the Engineer Role (2 hours)
