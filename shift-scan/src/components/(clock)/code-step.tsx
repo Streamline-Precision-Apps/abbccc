@@ -29,9 +29,9 @@ export default function CodeStep({
   const [selectedOpt, setSelectedOpt] = useState<boolean>(false);
   // TODO: This has an error inside of the browser console.
   return (
-    <Holds background={"white"} className="h-full w-full">
+    <Holds background={"white"} className="h-full w-full py-5">
       <Contents width={"section"}>
-        <Grids rows={"7"} gap={"5"} className="h-full w-full my-5">
+        <Grids rows={"7"} gap={"5"} className="h-full w-full">
           <Holds className="h-full w-full row-start-1 row-end-2">
             <Grids rows={"2"} cols={"5"} gap={"3"} className=" h-full w-full">
               {backArrow && (
@@ -51,7 +51,7 @@ export default function CodeStep({
               </Holds>
             </Grids>
           </Holds>
-          <Holds className="row-span-5 h-full w-full">
+          <Holds className="row-start-2 row-end-7 h-full w-full">
             <CodeFinder
               datatype={datatype}
               savedJS={scanResult?.data || ""}
@@ -59,7 +59,7 @@ export default function CodeStep({
             />
           </Holds>
           {handleNextStep && (
-            <Holds className="row-span-1">
+            <Holds className="row-start-7 row-end-8 h-full w-full">
               <StepButtons
                 handleNextStep={handleNextStep}
                 disabled={!selectedOpt}
