@@ -49,7 +49,7 @@ export default function EquipmentLogContent() {
   const b = useTranslations("Widgets");
   const total = logs.length;
   const completed = logs.filter(
-    (log) => log.status === FormStatus.APPROVED
+    (log) => log.endTime !== null
   ).length;
   const green = total - completed;
 
@@ -174,7 +174,7 @@ export default function EquipmentLogContent() {
                     <Buttons
                       size={"80"}
                       background={
-                        log.status === FormStatus.APPROVED ? "green" : "orange"
+                        log.endTime !== null ? "green" : "orange"
                       }
                       href={`/dashboard/equipment/${log.id}`}
                       key={log.id}

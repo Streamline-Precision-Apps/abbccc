@@ -18,105 +18,133 @@ type QRStepProps = {
   handleNextStep: () => void;
   handleReturn?: () => void;
   handleReturnPath: () => void;
-  handleScanTruck?: () => void;
-  handleScanJobsite?: () => void;
+  handleScanJobsite?: (type: string) => void;
   type: string;
   url: string;
   option?: string;
   clockInRole: string;
-  setClockInRole?: React.Dispatch<React.SetStateAction<string>>;
+  setClockInRole: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export default function QRStep({
-  // option,
-  // handleReturn,
+  option,
   handleReturnPath,
   handleAlternativePath,
   handleNextStep,
-  handleScanTruck,
   handleScanJobsite,
   type,
   url,
+  clockInRole,
+  setClockInRole,
 }: QRStepProps) {
   const t = useTranslations("Clock");
-  const [startCamera, setStartCamera] = useState<boolean>(false); // set to false;
+  const [startCamera, setStartCamera] = useState<boolean>(false);
   const { data: session } = useSession();
   const tascoView = session?.user.tascoView;
   const truckView = session?.user.truckView;
   const mechanicView = session?.user.mechanicView;
   const laborView = session?.user.laborView;
   const [numberOfViews, setNumberOfViews] = useState(0);
-  const [clockInRole, setClockInRole] = useState("");
+  const [failedToScan, setFailedToScan] = useState(false);
 
   const selectView = (clockInRole: string) => {
-    setClockInRole && setClockInRole(clockInRole);
-    setWorkRole(clockInRole);
+    setClockInRole(clockInRole);
   };
 
   useEffect(() => {
-    const fetchRole = async () => {
-      const role = await fetch("/api/cookies?method=get&name=workRole");
-      const data = await role.json();
-      setClockInRole(data || "");
-    };
-    fetchRole();
-  }, [setClockInRole]);
-
-  useEffect(() => {
-    let count = 0; // Reset count for fresh calculation
+    let count = 0;
     if (tascoView) count++;
     if (truckView) count++;
     if (mechanicView) count++;
     if (laborView) count++;
 
-    setNumberOfViews(count); // Update state with fresh count
+    setNumberOfViews(count);
   }, [tascoView, truckView, mechanicView, laborView]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setFailedToScan(false);
+    }, 5000);
+  }, [failedToScan]);
 
   return (
     <>
       <Holds background={"white"} className="h-full w-full">
         <Contents width={"section"}>
           <Grids rows={"7"} gap={"5"} className="h-full w-full my-5">
-            <Holds className="row-start-1 row-end-2 h-full w-full justify-center ">
-              <Grids rows={"2"} cols={"5"} gap={"3"} className=" h-full w-full">
-                <Holds
-                  className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center"
-                  onClick={handleReturnPath}
-                >
-                  <Images
-                    titleImg="/turnBack.svg"
-                    titleImgAlt="back"
-                    position={"left"}
-                  />
+            {type !== "equipment" ? (
+              <>
+                <Holds className="row-start-1 row-end-2 h-full w-full justify-center ">
+                  <Grids
+                    rows={"2"}
+                    cols={"5"}
+                    gap={"3"}
+                    className="h-full w-full"
+                  >
+                    <Holds
+                      className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center"
+                      onClick={handleReturnPath}
+                    >
+                      <Images
+                        titleImg="/turnBack.svg"
+                        titleImgAlt="back"
+                        position={"left"}
+                      />
+                    </Holds>
+                    <Holds className="row-start-2 row-end-3 col-span-5 h-full w-full justify-center">
+                      <Titles size={"h1"}> {t("ScanJobSite")}</Titles>
+                    </Holds>
+                  </Grids>
                 </Holds>
-                <Holds className="row-start-2 row-end-3 col-span-5 h-full w-full justify-center">
-                  <Titles size={"h1"}> {t("ScanJobSite")}</Titles>
-                </Holds>
-              </Grids>
-            </Holds>
-            {numberOfViews > 1 ? (
-              <Holds className="p-1 justify-center border-[3px] border-black rounded-[10px] shadow-[6px_6px_0px_grey]">
-                <Selects
-                  className="disabled:gray-400 bg-app-blue text-center p-3"
-                  value={clockInRole}
-                  disabled={startCamera}
-                  onChange={(e) => selectView(e.target.value)}
+                {numberOfViews > 1 && option !== "switchJobs" ? (
+                  <Holds className="p-1 justify-center border-[3px] border-black rounded-[10px] shadow-[6px_6px_0px_grey]">
+                    <Selects
+                      className="disabled:gray-400 bg-app-blue text-center p-3"
+                      value={clockInRole}
+                      disabled={startCamera}
+                      onChange={(e) => selectView(e.target.value)}
+                    >
+                      {tascoView === true && (
+                        <option value="tasco">{t("TASCO")}</option>
+                      )}
+                      {truckView === true && (
+                        <option value="truck">{t("Truck")}</option>
+                      )}
+                      {mechanicView === true && (
+                        <option value="mechanic">{t("Mechanic")}</option>
+                      )}
+                      {laborView === true && (
+                        <option value="general">{t("General")}</option>
+                      )}
+                    </Selects>
+                  </Holds>
+                ) : null}
+              </>
+            ) : (
+              <Holds className="row-start-1 row-end-2 h-full w-full justify-center ">
+                <Grids
+                  rows={"2"}
+                  cols={"5"}
+                  gap={"3"}
+                  className="h-full w-full"
                 >
-                  {tascoView === true && (
-                    <option value="tasco">{t("TASCO")}</option>
-                  )}
-                  {truckView === true && (
-                    <option value="truck">{t("Truck")}</option>
-                  )}
-                  {mechanicView === true && (
-                    <option value="mechanic">{t("Mechanic")}</option>
-                  )}
-                  {laborView === true && (
-                    <option value="general">{t("General")}</option>
-                  )}
-                </Selects>
+                  <Holds
+                    className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center"
+                    onClick={handleReturnPath}
+                  >
+                    <Images
+                      titleImg="/turnBack.svg"
+                      titleImgAlt="back"
+                      position={"left"}
+                    />
+                  </Holds>
+                  <Holds className="row-start-2 row-end-3 col-span-5 h-full w-full justify-center">
+                    <Titles size={"h1"}> {t("ScanEquipment")}</Titles>
+                  </Holds>
+                </Grids>
               </Holds>
-            ) : null}
+            )}
+
             {!startCamera ? (
               <Holds
                 className={
@@ -132,6 +160,13 @@ export default function QRStep({
                     position={"center"}
                     size={"40"}
                   />
+                  {failedToScan === true && (
+                    <Holds className="pt-5">
+                      <Texts text={"red"} size={"p4"}>
+                        {t("FailedToScanJobSiteDoesNotExist")}
+                      </Texts>
+                    </Holds>
+                  )}
                 </Holds>
               </Holds>
             ) : (
@@ -145,12 +180,14 @@ export default function QRStep({
                 <Grids rows={"5"} gap={"2"}>
                   <Holds className="h-full w-full row-start-1 row-end-5 justify-center">
                     <QR
-                      handleScanJobsite={handleScanJobsite || (() => {})}
-                      handleScanTruck={handleScanTruck || (() => {})}
+                      handleScanJobsite={handleScanJobsite}
                       url={url}
                       clockInRole={clockInRole}
                       type={type}
                       handleNextStep={handleNextStep}
+                      startCamera={startCamera}
+                      setStartCamera={setStartCamera}
+                      setFailedToScan={setFailedToScan}
                     />
                   </Holds>
 

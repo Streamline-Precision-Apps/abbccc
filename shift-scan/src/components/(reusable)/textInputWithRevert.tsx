@@ -1,3 +1,4 @@
+import Image from "next/image";
 import React, { useState } from "react";
 
 interface TextInputWithRevertProps {
@@ -60,7 +61,7 @@ const TextInputWithRevert: React.FC<TextInputWithRevertProps> = ({
               title="Revert changes"
               onClick={handleRevert}
             >
-              <img src="/turnBack.svg" alt="revert" className="w-5 h-5" />
+              <Image src="/turnBack.svg" alt="revert" className="w-5 h-5" />
             </button>
           )}
         </div>

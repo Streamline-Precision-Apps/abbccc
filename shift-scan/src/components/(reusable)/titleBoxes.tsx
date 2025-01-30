@@ -74,19 +74,23 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         className={cn(TitleBoxVariants({ variant, size, version, className }))}
         {...props}
       >
+        <div className="flex items-center justify-between w-full">
         <Buttons href={href} background={"none"} size={"50"}>
           <Images titleImg="/turnBack.svg" titleImgAlt={titleImgAlt} size={"50"} />
         </Buttons>
+        </div>
         <div className="flex items-center justify-between w-full">
           <Titles size={"h2"} className="mr-4">
             {title}
           </Titles>
-          <Images
-            titleImg={titleImg}
-            titleImgAlt={titleImgAlt}
-            size={"40"}
-            className="flex-shrink-0"
-          />
+          {titleImg !== "" && (
+            <Images
+              titleImg={titleImg}
+              titleImgAlt={titleImgAlt}
+              size={"40"}
+              className="flex-shrink-0"
+            />
+          )}
         </div>
       </div>
     );
