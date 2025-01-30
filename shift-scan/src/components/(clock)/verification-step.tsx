@@ -4,35 +4,24 @@ import { useTranslations } from "next-intl";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
-
 import {
   CreateTimeSheet,
   updateTimeSheetBySwitch,
 } from "@/actions/timeSheetActions";
 import { Clock } from "../clock";
-import { TitleBoxes } from "../(reusable)/titleBoxes";
 import { Buttons } from "../(reusable)/buttons";
 import { Contents } from "../(reusable)/contents";
 import { Labels } from "../(reusable)/labels";
 import { Inputs } from "../(reusable)/inputs";
 import { Forms } from "../(reusable)/forms";
 import { Images } from "../(reusable)/images";
-import { Texts } from "../(reusable)/texts";
 import { useSession } from "next-auth/react";
-import { useTruckScanData } from "@/app/context/TruckScanDataContext";
-import { useStartingMileage } from "@/app/context/StartingMileageContext";
 import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
 import { useCommentData } from "@/app/context/CommentContext";
-import {
-  setCurrentPageView,
-  setEquipment,
-  setLaborType,
-  setWorkRole,
-} from "@/actions/cookieActions";
+import { setCurrentPageView, setWorkRole } from "@/actions/cookieActions";
 import { Titles } from "../(reusable)/titles";
 import { useRouter } from "next/navigation";
-import { useOperator } from "@/app/context/operatorContext";
 
 type VerifyProcessProps = {
   type: string;
@@ -140,172 +129,161 @@ export default function VerificationStep({
   };
 
   return (
-    <>
-      <Holds background={"white"} className="h-full w-full">
+    <Holds className="h-full w-full">
+      <Holds background={"white"} className="h-full w-full py-5">
         <Contents width={"section"}>
-          <Grids rows={"7"} gap={"5"} className="h-full w-full my-5">
+          <Grids rows={"7"} gap={"5"} className="h-full w-full">
             <Holds className="h-full w-full row-start-1 row-end-2">
               <Grids rows={"2"} cols={"5"} gap={"3"} className=" h-full w-full">
-                <Holds 
-                className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center"
-                onClick={handlePreviousStep}>
+                <Holds
+                  className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center"
+                  onClick={handlePreviousStep}
+                >
                   <Images
                     titleImg="/turnBack.svg"
                     titleImgAlt="back"
                     position={"left"}
                   />
                 </Holds>
-                <Holds className="row-start-2 row-end-3 col-span-3 h-full w-full justify-center">
-                  <Holds position={"row"}>
-                    <Holds>
-                      <Titles size={"h1"}>{t("VerifyJobSite")}</Titles>
+                <Holds className="row-start-2 row-end-3 col-span-5 h-full w-full justify-center">
+                  <Grids
+                    cols={"5"}
+                    rows={"1"}
+                    gap={"5"}
+                    className="h-full w-full relative"
+                  >
+                    <Holds className="col-start-1 col-end-4 h-full w-full justify-center">
+                      <Titles size={"h1"} position={"right"}>
+                        {t("VerifyJobSite")}
+                      </Titles>
                     </Holds>
-                    <Holds>
+                    <Holds className="col-start-4 col-end-5 h-full w-full justify-center absolute">
                       <Images
                         titleImg="/clock-in.svg"
                         titleImgAlt="Verify"
-                        size={"40"}
+                        size={"full"}
                       />
                     </Holds>
-                  </Holds>
+                  </Grids>
                 </Holds>
               </Grids>
             </Holds>
-            <Forms onSubmit={handleSubmit} className="h-full w-full row-span-6">
-              <Holds className="h-full w-full">
-                <Grids cols={"5"} rows={"10"} className="h-full w-full">
-                  <Holds className="row-start-2 row-end-3 col-start-5 col-end-6 w-full h-full">
-                    <Holds className="h-full w-full pr-1">
-                      <Buttons
-                        type="submit"
-                        className="w-full h-full"
-                        background={"none"}
-                      >
-                        <Holds
-                          background={"lightBlue"}
-                          className="w-full h-full items-center justify-center "
-                        >
-                          <Images
-                            titleImg={"/downArrow.svg"}
-                            titleImgAlt={"downArrow"}
-                            className="p-1 w-10 h-10"
-                          />
-                        </Holds>
-                      </Buttons>
-                    </Holds>
-                  </Holds>
-                  <Holds className="row-start-3 row-end-7 col-start-1 col-end-6 h-full pt-1">
-                    <Holds
-                      background={"lightBlue"}
-                      className="h-full w-[95%] sm:w-[85%] md:w-[75%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%]  border-[3px] rounded-b-none  border-black "
+            <Forms
+              onSubmit={handleSubmit}
+              className="h-full w-full row-start-2 row-end-8"
+            >
+              <Grids cols={"5"} rows={"10"} className="h-full w-full">
+                <Holds className="row-start-2 row-end-3 col-start-5 col-end-6 w-full h-full">
+                  <Holds className="h-full w-full pr-1">
+                    <Buttons
+                      type="submit"
+                      className="w-full h-full"
+                      background={"none"}
                     >
-                      <Contents width={"section"} className="h-full">
-                        <Labels
-                          htmlFor="date"
-                          text={"white"}
-                          size={"p4"}
-                          position={"left"}
-                        >
-                          {t("Date-label")}
-                        </Labels>
-                        <Inputs
-                          name="date"
-                          state="disabled"
-                          variant={"white"}
-                          data={date.toLocaleDateString("en-US", {
-                            year: "numeric",
-                            month: "numeric",
-                            day: "numeric",
-                          })}
+                      <Holds
+                        background={"lightBlue"}
+                        className="w-full h-full items-center justify-center "
+                      >
+                        <Images
+                          titleImg={"/downArrow.svg"}
+                          titleImgAlt={"downArrow"}
+                          className="p-1 w-10 h-10"
                         />
-                        <Labels
-                          htmlFor="jobsiteId"
-                          text={"white"}
-                          size={"p4"}
-                          position={"left"}
-                        >
-                          <Texts text={"white"} size={"p4"} position={"left"}>
-                            {t("JobSite-label")}
-                          </Texts>
-                        </Labels>
-                        <Inputs
-                          state="disabled"
-                          name="jobsiteId"
-                          variant={"white"}
-                          data={scanResult?.data || ""}
-                        />
-                        <Labels
-                          htmlFor="costcode"
-                          text={"white"}
-                          size={"p4"}
-                          position={"left"}
-                        >
-                          {t("CostCode-label")}
-                        </Labels>
-                        <Inputs
-                          state="disabled"
-                          name="costcode"
-                          variant={"white"}
-                          data={savedCostCode?.toString() || ""}
-                        />
-                        {comments !== undefined && (
-                          <>
-                            <Labels
-                              htmlFor="timeSheetComments"
-                              text={"white"}
-                              size={"p4"}
-                              position={"left"}
-                            >
-                              {t("Comments")}
-                            </Labels>
-                            <Inputs
-                              state="disabled"
-                              name="timeSheetComments"
-                              variant={"white"}
-                              data={comments}
-                            />
-                          </>
-                        )}
-                      </Contents>
-                    </Holds>
+                      </Holds>
+                    </Buttons>
                   </Holds>
+                </Holds>
+                <Holds className="row-start-3 row-end-8 col-start-1 col-end-6 h-full pt-1">
+                  <Holds
+                    background={"lightBlue"}
+                    className="h-full w-[95%] sm:w-[85%] md:w-[75%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%]  border-[3px] rounded-b-none  border-black "
+                  >
+                    <Contents width={"section"} className="h-full">
+                      <Labels
+                        htmlFor="date"
+                        text={"white"}
+                        size={"p4"}
+                        position={"left"}
+                      >
+                        {t("Date-label")}
+                      </Labels>
+                      <Inputs
+                        name="date"
+                        state="disabled"
+                        variant={"white"}
+                        data={date.toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "numeric",
+                          day: "numeric",
+                        })}
+                      />
+                      <Labels
+                        htmlFor="jobsiteId"
+                        text={"white"}
+                        size={"p4"}
+                        position={"left"}
+                      >
+                        {t("JobSite-label")}
+                      </Labels>
+                      <Inputs
+                        state="disabled"
+                        name="jobsiteId"
+                        variant={"white"}
+                        data={scanResult?.data || ""}
+                      />
+                      <Labels
+                        htmlFor="costcode"
+                        text={"white"}
+                        size={"p4"}
+                        position={"left"}
+                      >
+                        {t("CostCode-label")}
+                      </Labels>
+                      <Inputs
+                        state="disabled"
+                        name="costcode"
+                        variant={"white"}
+                        data={savedCostCode?.toString() || ""}
+                      />
+                    </Contents>
+                  </Holds>
+                </Holds>
 
-                  <Holds className="row-start-7 row-end-11 col-start-1 col-end-6 h-full  ">
-                    <Holds
-                      background={"darkBlue"}
-                      className="h-full w-[100%] sm:w-[90%] md:w-[90%] lg:w-[80%] xl:w-[80%] 2xl:w-[80%]  border-[3px]   border-black p-8 "
+                <Holds className="row-start-8 row-end-11 col-start-1 col-end-6 h-full  ">
+                  <Holds
+                    background={"darkBlue"}
+                    className="h-full w-[100%] sm:w-[90%] md:w-[90%] lg:w-[80%] xl:w-[80%] 2xl:w-[80%]  border-[3px]   border-black p-8 "
+                  >
+                    <Buttons
+                      type="submit"
+                      background={"none"}
+                      className="bg-app-green mx-auto flex justify-center items-center w-full h-full py-4 px-5 rounded-lg text-black font-bold border-[3px] border-black"
                     >
-                      <Buttons
-                        type="submit"
-                        background={"none"}
-                        className="bg-app-green mx-auto flex justify-center items-center w-full h-full py-4 px-5 rounded-lg text-black font-bold border-[3px] border-black"
-                      >
-                        <Clock time={date.getTime()} />
-                      </Buttons>
-                    </Holds>
+                      <Clock time={date.getTime()} />
+                    </Buttons>
                   </Holds>
-                  <Inputs
-                    type="hidden"
-                    name="submitDate"
-                    value={new Date().toISOString()}
-                  />
-                  <Inputs type="hidden" name="userId" value={id} />
-                  <Inputs
-                    type="hidden"
-                    name="date"
-                    value={new Date().toISOString()}
-                  />
-                  <Inputs
-                    type="hidden"
-                    name="startTime"
-                    value={new Date().toISOString()}
-                  />
-                </Grids>
-              </Holds>
+                </Holds>
+                <Inputs
+                  type="hidden"
+                  name="submitDate"
+                  value={new Date().toISOString()}
+                />
+                <Inputs type="hidden" name="userId" value={id} />
+                <Inputs
+                  type="hidden"
+                  name="date"
+                  value={new Date().toISOString()}
+                />
+                <Inputs
+                  type="hidden"
+                  name="startTime"
+                  value={new Date().toISOString()}
+                />
+              </Grids>
             </Forms>
-            </Grids>
+          </Grids>
         </Contents>
       </Holds>
-    </>
+    </Holds>
   );
 }
