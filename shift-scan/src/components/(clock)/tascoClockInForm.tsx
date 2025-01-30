@@ -99,6 +99,7 @@ export default function TascoClockInForm({
                 datatype="equipment-operator" // using this to set the title of equipment
                 handleNextStep={handleNextStep}
                 backArrow={false}
+                handlePrevStep={handlePrevStep}
               />
             )}
             {shiftType === "eShift" && (
@@ -106,6 +107,7 @@ export default function TascoClockInForm({
                 datatype="equipment-operator" // using this to set the title of equipment
                 handleNextStep={handleNextStep}
                 backArrow={false}
+                handlePrevStep={handlePrevStep}
               />
             )}
 
@@ -173,6 +175,7 @@ export default function TascoClockInForm({
                         datatype="equipment-operator" // using this to set the title of equipment
                         handleNextStep={handleNextStep}
                         backArrow={false}
+                        handlePrevStep={handlePrevStep}
                       />
                     </Grids>
                   </Holds>

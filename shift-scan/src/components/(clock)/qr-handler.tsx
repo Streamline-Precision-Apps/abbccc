@@ -18,7 +18,7 @@ type QRStepProps = {
   handleNextStep: () => void;
   handleReturn?: () => void;
   handleReturnPath: () => void;
-  handleScanJobsite?: () => void;
+  handleScanJobsite?: (type: string) => void;
   type: string;
   url: string;
   option?: string;
@@ -45,6 +45,7 @@ export default function QRStep({
   const mechanicView = session?.user.mechanicView;
   const laborView = session?.user.laborView;
   const [numberOfViews, setNumberOfViews] = useState(0);
+  const [failedToScan, setFailedToScan] = useState(false);
 
   const selectView = (clockInRole: string) => {
     setClockInRole(clockInRole);
@@ -59,6 +60,12 @@ export default function QRStep({
 
     setNumberOfViews(count);
   }, [tascoView, truckView, mechanicView, laborView]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setFailedToScan(false);
+    }, 5000);
+  }, [failedToScan]);
 
   return (
     <>
@@ -153,6 +160,13 @@ export default function QRStep({
                     position={"center"}
                     size={"40"}
                   />
+                  {failedToScan === true && (
+                    <Holds className="pt-5">
+                      <Texts text={"red"} size={"p4"}>
+                        {t("FailedToScanJobSiteDoesNotExist")}
+                      </Texts>
+                    </Holds>
+                  )}
                 </Holds>
               </Holds>
             ) : (
@@ -166,11 +180,14 @@ export default function QRStep({
                 <Grids rows={"5"} gap={"2"}>
                   <Holds className="h-full w-full row-start-1 row-end-5 justify-center">
                     <QR
-                      handleScanJobsite={handleScanJobsite || (() => {})}
+                      handleScanJobsite={handleScanJobsite}
                       url={url}
                       clockInRole={clockInRole}
                       type={type}
                       handleNextStep={handleNextStep}
+                      startCamera={startCamera}
+                      setStartCamera={setStartCamera}
+                      setFailedToScan={setFailedToScan}
                     />
                   </Holds>
 

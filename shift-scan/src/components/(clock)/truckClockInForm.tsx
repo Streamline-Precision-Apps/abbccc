@@ -14,6 +14,7 @@ import CodeStep from "./code-step";
 
 type TruckClockInFormProps = {
   handleNextStep: () => void;
+  handlePrevStep: () => void;
   laborType: string;
   truck: string;
   setLaborType: React.Dispatch<React.SetStateAction<string>>;
@@ -33,6 +34,7 @@ export default function TruckClockInForm({
   setLaborType,
   setTruck,
   setStartingMileage,
+  handlePrevStep,
 }: TruckClockInFormProps) {
   const t = useTranslations("Clock");
   const [truckList, setTruckList] = useState<TruckListSchema[]>([]);
@@ -139,6 +141,7 @@ export default function TruckClockInForm({
                 datatype="equipment-operator" // using this to set the title of equipment
                 handleNextStep={handleNextStep}
                 backArrow={false}
+                handlePrevStep={handlePrevStep}
               />
             )}
             {laborType === "manualLabor" && (

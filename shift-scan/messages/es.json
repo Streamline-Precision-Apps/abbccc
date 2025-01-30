@@ -283,10 +283,11 @@
     "Edit": "Editar",
     "Delete": "Eliminar",
     "SelectDate": "Seleccionar Fecha",
-    "NoEquipmentLogs": "No se encontraron registros para el día seleccionado.",
+    "NoEquipmentLogs": "No se han encontrado registros para el día seleccionado.",
     "ID": "Id: #"
 },
 "Clock": {
+    "FailedToScanJobSiteDoesNotExist": "Error de escaneo, el código QR no existe",
     "search-equipment-operator": "Buscar Equipo",
     "Title-equipment-operator": "Seleccionar Equipo",
     "SelectShiftType": "Seleccionar tipo de trabajo",
