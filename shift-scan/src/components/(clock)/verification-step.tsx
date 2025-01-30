@@ -103,10 +103,7 @@ export default function VerificationStep({
           const result = { id: response.id.toString() };
           setTimeSheetData(result);
           setCurrentPageView("dashboard");
-          console.log("role before set", role);
-          // logic to set truck scan data null
           setWorkRole(role);
-          setLaborType(laborType || "");
 
           setTimeout(() => {
             router.push("/dashboard");
