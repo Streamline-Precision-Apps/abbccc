@@ -81,9 +81,6 @@ export default function CodeFinder({
         const selectedJobCode = jobsiteResults.find((j) => j.qrId === savedJS);
         if (selectedJobCode)
           setSelectedOption({ code: savedJS, label: savedJS });
-        setSearchTerm(savedJS);
-        setSelectedTerm(true);
-        setSelectedOpt(true);
       }
     } else {
       return;
@@ -171,28 +168,26 @@ export default function CodeFinder({
   };
 
   return (
-    // <Holds className="w-full h-full">
-      <Grids rows={"5"} gap={"5"}>
-        <Holds className="row-span-1 h-full">
-          <SearchBar
-            selected={selectedTerm}
-            placeholder={t(`search-${datatype}`)}
-            searchTerm={searchTerm}
-            onSearchChange={handleSearchChange}
-            setSearchTerm={setSearchTerm}
-            setSelectedTerm={setSelectedTerm}
-            clearSelection={clearSelection}
-          />
-        </Holds>
-        <Holds className="row-span-4 h-full border-[3px] border-black rounded-[10px] overflow-y-auto no-scrollbar">
-          <CustomSelect
-            options={filteredOptions}
-            onOptionSelect={handleOptionSelect}
-            selectedOption={selectedOption}
-            clearSelection={clearSelection}
-          />
-        </Holds>
-      </Grids>
-    // </Holds>
+    <Grids rows={"5"} gap={"5"} className="h-full w-full">
+      <Holds className="row-span-1 h-full">
+        <SearchBar
+          selected={selectedTerm}
+          placeholder={t(`search-${datatype}`)}
+          searchTerm={searchTerm}
+          onSearchChange={handleSearchChange}
+          setSearchTerm={setSearchTerm}
+          setSelectedTerm={setSelectedTerm}
+          clearSelection={clearSelection}
+        />
+      </Holds>
+      <Holds className="row-span-4 h-full border-[3px] border-black rounded-[10px] overflow-y-auto no-scrollbar">
+        <CustomSelect
+          options={filteredOptions}
+          onOptionSelect={handleOptionSelect}
+          selectedOption={selectedOption}
+          clearSelection={clearSelection}
+        />
+      </Holds>
+    </Grids>
   );
 }

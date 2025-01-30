@@ -16,28 +16,38 @@ type CodeStepProps = {
   handleNextStep?: () => void;
   backArrow?: boolean;
   handlePrevStep: () => void;
+  handleScannedPrevStep: () => void;
+  scanned: boolean;
 };
 
 export default function CodeStep({
   datatype,
   handleNextStep,
   handlePrevStep,
+  handleScannedPrevStep,
   backArrow = true,
+  scanned,
 }: CodeStepProps) {
   const t = useTranslations("Clock");
   const { scanResult } = useScanData();
   const [selectedOpt, setSelectedOpt] = useState<boolean>(false);
-  // TODO: This has an error inside of the browser console.
+
+  const handleBack = () => {
+    if (scanned) {
+      handleScannedPrevStep();
+    } else handlePrevStep();
+  };
+
   return (
-    <Holds background={"white"} className="h-full w-full">
+    <Holds background={"white"} className="h-full w-full py-5">
       <Contents width={"section"}>
-        <Grids rows={"7"} gap={"5"} className="h-full w-full my-5">
+        <Grids rows={"7"} gap={"5"} className="h-full w-full">
           <Holds className="h-full w-full row-start-1 row-end-2">
             <Grids rows={"2"} cols={"5"} gap={"3"} className=" h-full w-full">
               {backArrow && (
                 <Holds
                   className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center"
-                  onClick={handlePrevStep}
+                  onClick={handleBack}
                 >
                   <Images
                     titleImg="/turnBack.svg"
@@ -51,7 +61,7 @@ export default function CodeStep({
               </Holds>
             </Grids>
           </Holds>
-          <Holds className="row-span-5 h-full w-full">
+          <Holds className="row-start-2 row-end-7 h-full w-full">
             <CodeFinder
               datatype={datatype}
               savedJS={scanResult?.data || ""}
@@ -59,7 +69,7 @@ export default function CodeStep({
             />
           </Holds>
           {handleNextStep && (
-            <Holds className="row-span-1">
+            <Holds className="row-start-7 row-end-8 h-full w-full">
               <StepButtons
                 handleNextStep={handleNextStep}
                 disabled={!selectedOpt}
