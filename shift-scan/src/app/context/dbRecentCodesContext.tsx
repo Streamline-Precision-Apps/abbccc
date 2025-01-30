@@ -8,8 +8,14 @@ import React, {
   use,
   useEffect,
 } from "react";
-import { JobCodes, CostCodes, EquipmentCodes } from "@/lib/types";
+import {
+  JobCodes,
+  CostCodes,
+  EquipmentCodes,
+  EquipmentCode,
+} from "@/lib/types";
 import { z } from "zod";
+import { usePathname } from "next/navigation";
 
 const CostCodesRecentSchema = z
   .array(
@@ -27,26 +33,6 @@ const EquipmentSchema = z.array(
     id: z.string(),
     qrId: z.string(),
     name: z.string(),
-    description: z.string().optional(),
-    equipmentTag: z.string().default("EQUIPMENT"),
-    lastInspection: z.date().refine((date) => !isNaN(date.getTime()), {
-      message: "Invalid date format",
-    }),
-    lastRepair: z.date().refine((date) => !isNaN(date.getTime()), {
-      message: "Invalid date format",
-    }),
-    status: z.string().optional(),
-    make: z.string().nullable().optional(),
-    model: z.string().nullable().optional(),
-    year: z.string().nullable().optional(),
-    licensePlate: z.string().nullable().optional(),
-    registrationExpiration: z.date().refine((date) => !isNaN(date.getTime()), {
-      message: "Invalid date format",
-    }),
-    mileage: z.number().nullable().optional(),
-    isActive: z.boolean().optional(),
-    image: z.string().nullable().optional(),
-    inUse: z.boolean().optional(),
   })
 );
 
@@ -89,23 +75,31 @@ export const RecentJobSiteProvider = ({
   const [recentlyUsedJobCodes, setRecentlyUsedJobCodes] = useState<JobCodes[]>(
     []
   );
+  const url = usePathname();
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch("/api/getRecentJobsites");
-      const recentJobSites = await response.json();
       try {
-        const validatedRecentJobSites =
-          JobsitesRecentSchema.parse(recentJobSites);
-        if (validatedRecentJobSites === null) {
-          setRecentlyUsedJobCodes([]);
-        } else {
-          setRecentlyUsedJobCodes(
-            validatedRecentJobSites.map((jobSite) => ({
-              ...jobSite,
-              toLowerCase: () => jobSite.name.toLowerCase(),
-            }))
-          );
+        if (
+          url === "/clock" ||
+          url === "/dashboard/log-new" ||
+          url === "/dashboard/switch-jobs" ||
+          url === "/break"
+        ) {
+          const response = await fetch("/api/getRecentJobsites");
+          const recentJobSites = await response.json();
+          const validatedRecentJobSites =
+            JobsitesRecentSchema.parse(recentJobSites);
+          if (validatedRecentJobSites === null) {
+            setRecentlyUsedJobCodes([]);
+          } else {
+            setRecentlyUsedJobCodes(
+              validatedRecentJobSites.map((jobSite) => ({
+                ...jobSite,
+                toLowerCase: () => jobSite.name.toLowerCase(),
+              }))
+            );
+          }
         }
       } catch (error) {
         if (error instanceof z.ZodError) {
@@ -117,7 +111,7 @@ export const RecentJobSiteProvider = ({
       }
     };
     fetchData();
-  }, []);
+  }, [url]);
 
   const addRecentlyUsedJobCode = (code: JobCodes) => {
     setRecentlyUsedJobCodes((prev) => {
@@ -161,17 +155,25 @@ export const RecentCostCodeProvider = ({
   const [recentlyUsedCostCodes, setRecentlyUsedCostCodes] = useState<
     CostCodes[]
   >([]);
+  const url = usePathname();
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch("/api/getRecentCostCodes");
-      const recentCostCodes = await response.json();
       try {
-        const validatedRecentCostCodes =
-          CostCodesRecentSchema.parse(recentCostCodes);
-        if (validatedRecentCostCodes === null) {
-          setRecentlyUsedCostCodes([]);
-        } else {
-          setRecentlyUsedCostCodes(validatedRecentCostCodes);
+        if (
+          url === "/clock" ||
+          url === "/dashboard/log-new" ||
+          url === "/dashboard/switch-jobs" ||
+          url === "/break"
+        ) {
+          const response = await fetch("/api/getRecentCostCodes");
+          const recentCostCodes = await response.json();
+          const validatedRecentCostCodes =
+            CostCodesRecentSchema.parse(recentCostCodes);
+          if (validatedRecentCostCodes === null) {
+            setRecentlyUsedCostCodes([]);
+          } else {
+            setRecentlyUsedCostCodes(validatedRecentCostCodes);
+          }
         }
       } catch (error) {
         if (error instanceof z.ZodError) {
@@ -183,7 +185,7 @@ export const RecentCostCodeProvider = ({
       }
     };
     fetchData();
-  }, []);
+  }, [url]);
 
   const addRecentlyUsedCostCode = (code: CostCodes) => {
     setRecentlyUsedCostCodes((prev) => {
@@ -211,11 +213,11 @@ export const RecentCostCodeProvider = ({
 export const useRecentDBCostcode = () => useContext(RecentCostCodeContext);
 
 interface RecentEquipmentContextType {
-  recentlyUsedEquipment: EquipmentCodes[];
+  recentlyUsedEquipment: EquipmentCode[];
   setRecentlyUsedEquipment: React.Dispatch<
-    React.SetStateAction<EquipmentCodes[]>
+    React.SetStateAction<EquipmentCode[]>
   >;
-  addRecentlyUsedEquipment: (equipment: EquipmentCodes) => void;
+  addRecentlyUsedEquipment: (equipment: EquipmentCode) => void;
 }
 
 const RecentEquipmentContext = createContext<RecentEquipmentContextType>({
@@ -230,15 +232,24 @@ export const RecentEquipmentProvider = ({
   children: ReactNode;
 }) => {
   const [recentlyUsedEquipment, setRecentlyUsedEquipment] = useState<
-    EquipmentCodes[]
+    EquipmentCode[]
   >([]);
+  const url = usePathname();
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch("/api/getRecentEquipment");
-      const recentEquipment = await response.json();
       try {
-        const validatedRecentEquipment = EquipmentSchema.parse(recentEquipment);
-        setRecentlyUsedEquipment(validatedRecentEquipment as EquipmentCodes[]);
+        if (
+          url === "/clock" ||
+          url === "/dashboard/log-new" ||
+          url === "/dashboard/switch-jobs" ||
+          url === "/break"
+        ) {
+          const response = await fetch("/api/getRecentEquipment");
+          const recentEquipment = await response.json();
+          const validatedRecentEquipment =
+            EquipmentSchema.parse(recentEquipment);
+          setRecentlyUsedEquipment(validatedRecentEquipment as EquipmentCode[]);
+        }
       } catch (error) {
         if (error instanceof z.ZodError) {
           console.error(
@@ -249,9 +260,9 @@ export const RecentEquipmentProvider = ({
       }
     };
     fetchData();
-  }, []);
+  }, [url]);
 
-  const addRecentlyUsedEquipment = (equipment: EquipmentCodes) => {
+  const addRecentlyUsedEquipment = (equipment: EquipmentCode) => {
     setRecentlyUsedEquipment((prev) => {
       const updatedList = [
         equipment,

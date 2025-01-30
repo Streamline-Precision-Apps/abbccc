@@ -5,7 +5,8 @@
  * Provides search and selection features for different options by datatype, storing and retrieving recent selections.
  *
  * @param {string} datatype - The type of data to search (e.g., 'costcode', 'jobsite', 'equipment')
- * @param {string} [savedCode] - Optional initial code to be preloaded in the search field.
+ * @param {string} savedCC - Previously selected cost code (if available)
+ * @param {string} savedJS - Previously selected job site (if available)
  */
 
 import React, { useState, useEffect, ChangeEvent, useMemo } from "react";
@@ -28,6 +29,7 @@ import {
 } from "@/app/context/dbRecentCodesContext";
 import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
+import { useOperator } from "@/app/context/operatorContext";
 
 type Option = {
   code: string;
@@ -36,11 +38,16 @@ type Option = {
 
 type Props = {
   datatype: string;
-  savedCode?: string;
+  savedJS: string;
+  setSelectedOpt: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export default function CodeFinder({ datatype, savedCode }: Props) {
-  const [searchTerm, setSearchTerm] = useState(savedCode || "");
+export default function CodeFinder({
+  datatype,
+  savedJS,
+  setSelectedOpt,
+}: Props) {
+  const [searchTerm, setSearchTerm] = useState("");
   const [filteredOptions, setFilteredOptions] = useState<Option[]>([]);
   const [selectedOption, setSelectedOption] = useState<Option | null>(null);
   const [selectedTerm, setSelectedTerm] = useState(false);
@@ -59,6 +66,8 @@ export default function CodeFinder({ datatype, savedCode }: Props) {
   const { equipmentResults } = useDBEquipment();
   const { addRecentlyUsedEquipment } = useRecentDBEquipment();
 
+  const { setEquipmentId } = useOperator();
+
   // Use useMemo to avoid recalculating options unnecessarily
   const options = useMemo(
     () => CostCodeOptions(datatype, searchTerm),
@@ -67,27 +76,19 @@ export default function CodeFinder({ datatype, savedCode }: Props) {
 
   // Set default selected option if `storedCode` is found
   useEffect(() => {
-    if (savedCode) {
-      if (savedCode.toLowerCase().slice(0, 1) === "j") {
-        const defaultOption = jobsiteResults.find(
-          (opt) => opt.qrId === savedCode
-        );
-        if (defaultOption) {
-          setSelectedOption({
-            code: defaultOption.qrId,
-            label: defaultOption.name,
-          });
-          setSearchTerm(defaultOption.name); // Update search term to display label in the search bar
-        }
-      } else {
-        const defaultOption = options.find((opt) => opt.code === savedCode);
-        if (defaultOption) {
-          setSelectedOption(defaultOption);
-          setSearchTerm(defaultOption.label); // Update search term to display label in the search bar
-        }
+    if (datatype === "jobsite") {
+      if (savedJS) {
+        const selectedJobCode = jobsiteResults.find((j) => j.qrId === savedJS);
+        if (selectedJobCode)
+          setSelectedOption({ code: savedJS, label: savedJS });
+        setSearchTerm(savedJS);
+        setSelectedTerm(true);
+        setSelectedOpt(true);
       }
+    } else {
+      return;
     }
-  }, [savedCode, jobsiteResults, options, setSelectedOption, setSearchTerm]);
+  }, [costcodeResults, datatype, jobsiteResults, savedJS, setSelectedOpt]);
 
   useEffect(() => {
     const filtered = options;
@@ -100,6 +101,7 @@ export default function CodeFinder({ datatype, savedCode }: Props) {
   const handleOptionSelect = (option: Option) => {
     setSelectedOption(option);
     setSelectedTerm(true);
+    setSelectedOpt(true);
 
     if (datatype === "costcode") {
       setCostCode(option.code);
@@ -133,6 +135,18 @@ export default function CodeFinder({ datatype, savedCode }: Props) {
       );
       if (selectedJobCode) addRecentlyUsedJobCode(selectedJobCode);
     }
+    if (datatype === "jobsite-truck") {
+      setScanResult({ data: option.code });
+
+      const selectedJobCode = jobsiteResults.find(
+        (j) => j.qrId === option.code
+      );
+      if (selectedJobCode) addRecentlyUsedJobCode(selectedJobCode);
+    }
+    if (datatype === "equipment-operator") {
+      setEquipmentId(option.code);
+      console.log(option.code);
+    }
 
     if (datatype === "equipment") {
       setscanEQResult({ data: option.code });
@@ -142,6 +156,7 @@ export default function CodeFinder({ datatype, savedCode }: Props) {
       );
       if (selectedEquipment) addRecentlyUsedEquipment(selectedEquipment);
     }
+
     setSearchTerm(option.label); // Set the search term to the selected option label
   };
 

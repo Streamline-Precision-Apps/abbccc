@@ -1,3 +1,5 @@
+**DAILY TASKS DONE CHART**
+
 #
 # January 2, 2025
 ### researched
@@ -119,14 +121,14 @@ cookies().set({
 ### built/created
 - built a power point to share with company
 - company cancelled weekly meetings
-- worked with Zack on figma discussed clock in progress 
+- worked with Zach on figma discussed clock in progress 
 - discussed effective ways to update the application
-- bulit a key for zack to read about engineer view
+- built a key for Zach to read about engineer view
 
 #
 # January 17, 2025 - friday
 ### Meeting 
-- walked through and drafted with Zack (4 hour)
+- walked through and drafted with Zach (4 hour)
 - cookies guides 
 - why use cookies? 
 - built home routes 
@@ -149,12 +151,12 @@ cookies().set({
 # January 21, 2025 - Tuesday
 ### Meeting
 - Zach and I met with Jaxin on exported Data and Time Card integration
-- Sorting Method Take 3 data sheets from assignar and sort them into compiled info
+- Sorting Method Take 3 data sheets from Assignar and sort them into compiled info
 - insert by employee one at a time into view point
 
 **Reports to add**
   - Tasco Reports - sort by DATE
-    - Id, Shift type, Submmitted Date, Employee, Date Worked, Labor Type, Equipment, Loads-ABCDE, Loads-F, Materials, Start Time, End Time, screened or unscreened
+    - Id, Shift type, Submitted Date, Employee, Date Worked, Labor Type, Equipment, Loads-ABCDE, Loads-F, Materials, Start Time, End Time, screened or unscreened
   - Employee Time Sheets - Sort Reports By Employee & Date - Base Data
   - IFTA, Overweight Report - Sort Reports by Truck and date - extended
     - IFTA - information Mackenzie Asked for
@@ -189,8 +191,79 @@ cookies().set({
 
 #
 # January 23, 2025 - Thursday
+### Meeting
+- Worked with Zach on hours component and questions regarding new design.
 ### Built/created 
-- 
+- prevented infinite loops
+- fixed bugs from yesterday
+- left no new bugs
+### Trello
+- Clock logic (8hours)
+
+
+#
+# January 24, 2025 - Friday
+### Meeting
+- Meet with sean talked over new truck and tasco design
+### Built/created 
+- created boards for tasco and how it should be upon clock in
+### Trello
+- Clock logic (4 hours)
+- Looking and reflection sprint
+### Figma 
+- 3 hours
+- Worked on making clock In process smoother and more in one place then others
+- Designed tasco and trucking with data in database.
+
+#
+# January 27, 2025 - Monday
+### Research
+- SCRUM Research to make more efficient and better scrums for team (1 hour)
+### Figma
+- finished Tasco last tweaks
+- Created board for engineer up to clock In logic on organized view
+### Built/created 
+- working on truck clock in logic
+- logic to clock in as every labor type of truck driver works
+### Trello
+- Starting Truck Driving role (3hrs)
+- clock Logic - (4 hours)
+
+#
+# January 28, 2025 - Tuesday
+### Built/created 
+- built logic for trucking log to save its data upon creation, 
+- removed some cookies from the process like truck, starting mileage, and task name
+- defaulted task name to be same as labor type and that we can change it later if user wants.
+- altered tables just a bit to make connection to trucking logs and time Sheet easier
+### Trello
+- 4 hours
+  - Starting Truck Driving role 
+  - clock Logic
+- 4 hours
+  - Starting Tasco Role
+  - Starting the Engineer Role
+
+  #
+# January 29, 2025 - wednesday
+### Research
+- Taking Notes on Jest located at file jest-testing.md (4 hour)
+  - probably will not use jest because of an unknown bug that occurred each set up.
+### Built/created 
+- working on debugging home page
+- building page
 
 ### Trello
-- Clock logic 
+- Starting Tasco Role && Starting the Engineer Role (2 hours)
+- / comment component on clock out/ switch jobs 40/40 breaks
+- / clock jobsite page to look like other examples
+- /clock display the recent 5 costcode
+
+  #
+# January 30, 2025 - Thursday
+### Built/created 
+- working on debugging home page
+- building page
+
+### Trello
+- Fixing clock in scanner to not destroy and toggle of instead. 

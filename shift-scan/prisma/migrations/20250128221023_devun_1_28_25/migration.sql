@@ -80,6 +80,8 @@ CREATE TABLE "Equipment" (
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "inUse" BOOLEAN NOT NULL DEFAULT false,
     "jobsiteId" TEXT,
+    "overWeight" BOOLEAN DEFAULT false,
+    "currentWeight" DOUBLE PRECISION DEFAULT 0,
 
     CONSTRAINT "Equipment_pkey" PRIMARY KEY ("id")
 );
@@ -243,8 +245,6 @@ CREATE TABLE "TascoLog" (
     "id" TEXT NOT NULL,
     "timeSheetId" TEXT NOT NULL,
     "shiftType" TEXT NOT NULL,
-    "startTime" TIMESTAMP(3) NOT NULL,
-    "endTime" TIMESTAMP(3),
     "equipmentId" TEXT,
     "laborType" TEXT,
     "materialType" TEXT,
@@ -261,15 +261,12 @@ CREATE TABLE "TascoLog" (
 -- CreateTable
 CREATE TABLE "TruckingLog" (
     "id" TEXT NOT NULL,
-    "truckingCCId" TEXT NOT NULL,
-    "truckingJobSiteId" TEXT NOT NULL,
+    "timeSheetId" TEXT NOT NULL,
+    "laborType" TEXT NOT NULL,
     "taskName" TEXT,
     "equipmentId" TEXT,
-    "timeSheetId" TEXT,
-    "startingMileage" INTEGER NOT NULL,
+    "startingMileage" INTEGER,
     "endingMileage" INTEGER,
-    "startTime" TIMESTAMP(3) NOT NULL,
-    "endTime" TIMESTAMP(3),
     "netWeight" DOUBLE PRECISION,
     "comment" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -291,8 +288,10 @@ CREATE TABLE "StateMileage" (
 -- CreateTable
 CREATE TABLE "Material" (
     "id" TEXT NOT NULL,
+    "LocationOfMaterial" TEXT,
     "truckingLogId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "quantity" INTEGER,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Material_pkey" PRIMARY KEY ("id")
@@ -510,22 +509,16 @@ ALTER TABLE "MaintenanceLog" ADD CONSTRAINT "MaintenanceLog_maintenanceId_fkey" 
 ALTER TABLE "Maintenance" ADD CONSTRAINT "Maintenance_equipmentId_fkey" FOREIGN KEY ("equipmentId") REFERENCES "Equipment"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "TascoLog" ADD CONSTRAINT "TascoLog_equipmentId_fkey" FOREIGN KEY ("equipmentId") REFERENCES "Equipment"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "TascoLog" ADD CONSTRAINT "TascoLog_equipmentId_fkey" FOREIGN KEY ("equipmentId") REFERENCES "Equipment"("qrId") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "TascoLog" ADD CONSTRAINT "TascoLog_timeSheetId_fkey" FOREIGN KEY ("timeSheetId") REFERENCES "TimeSheet"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "TruckingLog" ADD CONSTRAINT "TruckingLog_equipmentId_fkey" FOREIGN KEY ("equipmentId") REFERENCES "Equipment"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "TruckingLog" ADD CONSTRAINT "TruckingLog_equipmentId_fkey" FOREIGN KEY ("equipmentId") REFERENCES "Equipment"("qrId") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "TruckingLog" ADD CONSTRAINT "TruckingLog_timeSheetId_fkey" FOREIGN KEY ("timeSheetId") REFERENCES "TimeSheet"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "TruckingLog" ADD CONSTRAINT "TruckingLog_truckingJobSiteId_fkey" FOREIGN KEY ("truckingJobSiteId") REFERENCES "Jobsite"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "TruckingLog" ADD CONSTRAINT "TruckingLog_truckingCCId_fkey" FOREIGN KEY ("truckingCCId") REFERENCES "CostCode"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "TruckingLog" ADD CONSTRAINT "TruckingLog_timeSheetId_fkey" FOREIGN KEY ("timeSheetId") REFERENCES "TimeSheet"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "StateMileage" ADD CONSTRAINT "StateMileage_truckingLogId_fkey" FOREIGN KEY ("truckingLogId") REFERENCES "TruckingLog"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -110,7 +110,7 @@ export default function ClockOutContent() {
         (res) => res.json()
       );
       const formData = new FormData(formRef.current as HTMLFormElement);
-      formData.append("id", tId?.toString() || ""); //temp solution
+      formData.append("id", tId?.toString() || ""); // Append the timeSheetId to the form data
       await updateTimeSheet(formData);
       localStorage.clear();
       setTruckScanData("");
@@ -329,15 +329,6 @@ export default function ClockOutContent() {
                     <form ref={formRef}>
                       <Inputs
                         type="hidden"
-                        name="id"
-                        value={(
-                          savedTimeSheetData?.id ||
-                          localStorageData?.timesheet.id
-                        )?.toString()}
-                        readOnly
-                      />
-                      <Inputs
-                        type="hidden"
                         name="endTime"
                         value={new Date().toISOString()}
                         readOnly
@@ -434,15 +425,6 @@ export default function ClockOutContent() {
                     <form ref={formRef}>
                       <Inputs
                         type="hidden"
-                        name="id"
-                        value={(
-                          savedTimeSheetData?.id ||
-                          localStorageData?.timesheet.id
-                        )?.toString()}
-                        readOnly
-                      />
-                      <Inputs
-                        type="hidden"
                         name="endTime"
                         value={new Date().toISOString()}
                         readOnly
@@ -528,15 +510,6 @@ export default function ClockOutContent() {
                         handleButtonClick(); // Call your custom submit logic
                       }}
                     >
-                      <Inputs
-                        type="hidden"
-                        name="id"
-                        value={(
-                          savedTimeSheetData?.id ||
-                          localStorageData?.timesheet.id
-                        )?.toString()}
-                        readOnly
-                      />
                       <Inputs
                         type="hidden"
                         name="endTime"

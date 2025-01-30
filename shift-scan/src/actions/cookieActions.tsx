@@ -63,15 +63,37 @@ export async function setWorkRole(workRole: string) {
     workRole !== "general" &&
     workRole !== ""
   ) {
-    console.error("Not Authorized", 201);
-    // Perform the redirect to the signin page
-    redirect("/");
+    throw new Error("Not Authorized - Invalid Work Role");
   }
 
   try {
     cookies().set({
       name: "workRole",
       value: workRole,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days - made this to not have errors occur is logging out is forgotten
+    });
+  } catch (error) {
+    console.error("Failed to set locale cookie:", error);
+  }
+}
+
+export async function setLaborType(laborType: string) {
+  if (
+    laborType !== "operator" &&
+    laborType !== "truckDriver" &&
+    laborType !== "manualLabor"
+  ) {
+    console.log(laborType);
+    throw new Error("Not Authorized - Invalid labor type");
+  }
+
+  try {
+    cookies().set({
+      name: "laborType",
+      value: laborType,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       path: "/",
@@ -145,13 +167,55 @@ export async function setCostCode(costCode: string) {
   }
 }
 
+export async function setEquipment(equipment: string) {
+  try {
+    cookies().set({
+      name: "equipment",
+      value: equipment,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days - made this to not have errors occur is logging out is forgotten
+    });
+  } catch (error) {
+    console.error("Failed to set locale cookie:", error);
+  }
+}
+export async function setTruck(truck: string) {
+  try {
+    cookies().set({
+      name: "truckId",
+      value: truck,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days - made this to not have errors occur is logging out is forgotten
+    });
+  } catch (error) {
+    console.error("Failed to set locale cookie:", error);
+  }
+}
+
+export async function setStartingMileage(startingMileage: string) {
+  try {
+    cookies().set({
+      name: "startingMileage",
+      value: startingMileage,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days - made this to not have errors occur is logging out is forgotten
+    });
+  } catch (error) {
+    console.error("Failed to set locale cookie:", error);
+  }
+}
+
 export async function setPrevTimeSheet(timeSheetId: string) {
   const session = await auth();
   // Check if the user is authenticated
   if (!session) {
-    console.error("Not Authorized - setTimeSheet", 201);
-    // Perform the redirect to the signin page
-    redirect("/signin");
+    throw new Error("Not Authorized - setPrevTimeSheet");
   }
   try {
     cookies().set({
@@ -173,9 +237,13 @@ export async function RemoveCookiesAtClockOut() {
     cookies().delete("timeSheetId");
     cookies().delete("costCode");
     cookies().delete("jobSite");
-    cookies().delete("workRole");
     cookies().delete("adminAccess");
-    cookies().set("currentPageView", "");
+    cookies().delete("laborType");
+    cookies().delete("truckId");
+    cookies().delete("equipment");
+    cookies().delete("startingMileage");
+    cookies().delete("currentPageView");
+    cookies().set("workRole", "");
   } catch (error) {
     console.error("Failed to delete locale cookie:", error);
   }

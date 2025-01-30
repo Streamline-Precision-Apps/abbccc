@@ -13,7 +13,7 @@ const ClockOut = () => {
     setIsOpen(false);
   };
 
-  const handleOptionClick = (option) => {
+  const handleOptionClick = (option: string) => {
     console.log(option);
     closeModal();
   };
@@ -25,7 +25,7 @@ const ClockOut = () => {
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
         contentLabel="Clock Out options"
-        ClassName="modal"
+        className="modal"
         overlayClassName="overlay"
       >
         <button onClick={() => handleOptionClick("End Shift")}>

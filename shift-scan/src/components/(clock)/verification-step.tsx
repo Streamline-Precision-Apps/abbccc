@@ -24,24 +24,31 @@ import { useStartingMileage } from "@/app/context/StartingMileageContext";
 import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
 import { useCommentData } from "@/app/context/CommentContext";
-import { setCurrentPageView } from "@/actions/cookieActions";
+import {
+  setCurrentPageView,
+  setEquipment,
+  setLaborType,
+  setWorkRole,
+} from "@/actions/cookieActions";
 import { Titles } from "../(reusable)/titles";
+import { useRouter } from "next/navigation";
+import { useOperator } from "@/app/context/operatorContext";
 
 type VerifyProcessProps = {
-  handleNextStep?: () => void;
   type: string;
   role: string;
   option?: string;
   comments?: string;
   handlePreviousStep?: () => void;
+  laborType?: string;
 };
 
 export default function VerificationStep({
   type,
-  handleNextStep,
   comments,
   role,
   handlePreviousStep
+  laborType,
 }: VerifyProcessProps) {
   const t = useTranslations("Clock");
   const { scanResult } = useScanData();
@@ -49,9 +56,8 @@ export default function VerificationStep({
   const { setTimeSheetData } = useTimeSheetData();
   const [date] = useState(new Date());
   const { data: session } = useSession();
-  const { truckScanData } = useTruckScanData(); // Move this hook call to the top level.
-  const { startingMileage } = useStartingMileage();
   const { savedCommentData, setCommentData } = useCommentData();
+  const router = useRouter();
   if (!session) return null; // Conditional rendering for session
 
   const { id } = session.user;
@@ -63,6 +69,8 @@ export default function VerificationStep({
       if (!id) {
         throw new Error("User id does not exist");
       }
+
+      await setWorkRole(role);
 
       if (type === "switchJobs") {
         try {
@@ -85,9 +93,7 @@ export default function VerificationStep({
           }
 
           const formData = new FormData();
-          if (truckScanData) {
-            formData.append("vehicleId", truckScanData);
-          }
+
           formData.append("submitDate", new Date().toISOString());
           formData.append("userId", id?.toString() || "");
           formData.append("date", new Date().toISOString());
@@ -99,26 +105,17 @@ export default function VerificationStep({
           const response = await CreateTimeSheet(formData);
           const result = { id: response.id.toString() };
           setTimeSheetData(result);
+          setCurrentPageView("dashboard");
+          setWorkRole(role);
 
-          localStorage.setItem("workType", response.workType);
-
-          if (handleNextStep) {
-            handleNextStep();
-          }
+          setTimeout(() => {
+            router.push("/dashboard");
+          }, 100);
         } catch (error) {
           console.error(error);
         }
       } else {
         const formData = new FormData();
-        if (truckScanData) {
-          formData.append("vehicleId", truckScanData);
-        }
-        if (startingMileage !== undefined) {
-          formData.append(
-            "startingMileage",
-            startingMileage?.toString() || "0"
-          );
-        }
         formData.append("submitDate", new Date().toISOString());
         formData.append("userId", id.toString());
         formData.append("date", new Date().toISOString());
@@ -130,12 +127,12 @@ export default function VerificationStep({
         const response = await CreateTimeSheet(formData);
         const result = { id: response.id.toString() };
         setTimeSheetData(result);
-
         setCurrentPageView("dashboard");
+        setWorkRole(role);
 
-        if (handleNextStep) {
-          handleNextStep();
-        }
+        setTimeout(() => {
+          router.push("/dashboard");
+        }, 100);
       }
     } catch (error) {
       console.error(error);

@@ -9,7 +9,7 @@ import {
   useRecentDBCostcode,
   useRecentDBEquipment,
 } from "@/app/context/dbRecentCodesContext";
-import { JobCodes, CostCodes, EquipmentCodes } from "@/lib/types";
+import { JobCodes, CostCodes, EquipmentCode } from "@/lib/types";
 
 interface Option {
   code: string;
@@ -31,137 +31,79 @@ export const CostCodeOptions = (
 
   switch (dataType) {
     case "costcode":
-      if (!costcodeResults) {
-        throw new Error("costcodeResults is undefined");
-      }
+      if (!costcodeResults) throw new Error("costcodeResults is undefined");
 
-      // Check if recentlyUsedCostCodes contains any null values
-      const hasNullInRecent = recentlyUsedCostCodes.some(
-        (costcode) => costcode === null
-      );
+      // Get recently used first, remove nulls
+      const recentCostCodes = recentlyUsedCostCodes
+        .filter((costcode) => costcode !== null)
+        .map((costcode: CostCodes) => ({
+          code: costcode.name,
+          label: `${costcode.name} - ${costcode.description}`,
+        }));
 
-      // Use recent codes if no search term and no nulls, otherwise use costcodeResults
-      options =
-        searchTerm === "" && !hasNullInRecent
-          ? recentlyUsedCostCodes.map((costcode: CostCodes) => ({
-              code: costcode.name,
-              label: costcode.name + " - " + costcode.description,
-            }))
-          : costcodeResults
-              .filter((costcode: CostCodes | null) => costcode !== null) // Check for null in costcodeResults
-              .map((costcode: CostCodes) => ({
-                code: costcode.name,
-                label: costcode.name + " - " + costcode.description,
-              }));
+      // Append all cost codes while avoiding duplicates
+      const allCostCodes = costcodeResults
+        .filter((costcode) => costcode !== null)
+        .map((costcode: CostCodes) => ({
+          code: costcode.name,
+          label: `${costcode.name} - ${costcode.description}`,
+        }))
+        .filter(
+          (costcode) =>
+            !recentCostCodes.some((recent) => recent.code === costcode.code)
+        );
+
+      options = [...recentCostCodes, ...allCostCodes];
       break;
 
     case "jobsite":
-      if (!jobsiteResults) {
-        throw new Error("jobsiteResults is undefined");
-      }
-      options =
-        searchTerm === ""
-          ? recentlyUsedJobCodes
-              .filter(
-                (jobcode: JobCodes) =>
-                  jobcode.name !== "Tasco Jobsite" &&
-                  jobcode.name !== "Mechanic Jobsite" &&
-                  jobcode.name !== "Truck Jobsite"
-              )
-              .map((jobcode: JobCodes) => ({
-                code: jobcode.qrId,
-                label: jobcode.name,
-              }))
-          : jobsiteResults
-              .filter(
-                (jobcode: JobCodes) =>
-                  jobcode.name !== "Tasco Jobsite" &&
-                  jobcode.name !== "Mechanic Jobsite" &&
-                  jobcode.name !== "Truck Jobsite"
-              )
-              .map((jobcode: JobCodes) => ({
-                code: jobcode.qrId,
-                label: jobcode.name,
-              }));
-      break;
-    case "jobsite-mechanic":
-      if (!jobsiteResults) {
-        throw new Error("jobsiteResults is undefined");
-      }
-      options =
-        searchTerm === ""
-          ? recentlyUsedJobCodes
-              .filter(
-                (jobcode: JobCodes) => jobcode.name === "Mechanic Jobsite"
-              )
-              .map((jobcode: JobCodes) => ({
-                code: jobcode.qrId,
-                label: jobcode.name,
-              }))
-          : jobsiteResults
-              .filter(
-                (jobcode: JobCodes) => jobcode.name === "Mechanic Jobsite"
-              )
-              .map((jobcode: JobCodes) => ({
-                code: jobcode.qrId,
-                label: jobcode.name,
-              }));
+      if (!jobsiteResults) throw new Error("jobsiteResults is undefined");
+
+      // Recently used jobsites first
+      const recentJobsites = recentlyUsedJobCodes.map((jobcode: JobCodes) => ({
+        code: jobcode.qrId,
+        label: jobcode.name,
+      }));
+
+      // Append other jobsites while avoiding duplicates
+      const allJobsites = jobsiteResults
+        .filter((jobcode) => jobcode !== null)
+        .map((jobcode: JobCodes) => ({
+          code: jobcode.qrId,
+          label: jobcode.name,
+        }))
+        .filter(
+          (jobcode) =>
+            !recentJobsites.some((recent) => recent.code === jobcode.code)
+        );
+
+      options = [...recentJobsites, ...allJobsites];
       break;
 
-    case "jobsite-tasco":
-      if (!jobsiteResults) {
-        throw new Error("jobsiteResults is undefined");
-      }
-      options =
-        searchTerm === ""
-          ? recentlyUsedJobCodes
-              .filter((jobcode: JobCodes) => jobcode.name === "Tasco Jobsite")
-              .map((jobcode: JobCodes) => ({
-                code: jobcode.qrId,
-                label: jobcode.name,
-              }))
-          : jobsiteResults
-              .filter((jobcode: JobCodes) => jobcode.name === "Tasco Jobsite")
-              .map((jobcode: JobCodes) => ({
-                code: jobcode.qrId,
-                label: jobcode.name,
-              }));
-      break;
-
-    case "jobsite-truck":
-      if (!jobsiteResults) {
-        throw new Error("jobsiteResults is undefined");
-      }
-      options =
-        searchTerm === ""
-          ? recentlyUsedJobCodes
-              .filter((jobcode: JobCodes) => jobcode.name === "Truck Jobsite")
-              .map((jobcode: JobCodes) => ({
-                code: jobcode.qrId,
-                label: jobcode.name,
-              }))
-          : jobsiteResults
-              .filter((jobcode: JobCodes) => jobcode.name === "Truck Jobsite")
-              .map((jobcode: JobCodes) => ({
-                code: jobcode.qrId,
-                label: jobcode.name,
-              }));
-      break;
-
+    case "equipment-operator":
     case "equipment":
-      if (!equipmentResults) {
-        throw new Error("equipmentResults is undefined");
-      }
-      options =
-        searchTerm === ""
-          ? recentlyUsedEquipment.map((equipment: EquipmentCodes) => ({
-              code: equipment.qrId,
-              label: equipment.name,
-            }))
-          : equipmentResults.map((equipment: EquipmentCodes) => ({
-              code: equipment.qrId,
-              label: equipment.name,
-            }));
+      if (!equipmentResults) throw new Error("equipmentResults is undefined");
+
+      // Recently used equipment first
+      const recentEquipment = recentlyUsedEquipment.map(
+        (equipment: EquipmentCode) => ({
+          code: equipment.qrId,
+          label: equipment.name,
+        })
+      );
+
+      // Append other equipment while avoiding duplicates
+      const allEquipment = equipmentResults
+        .map((equipment: EquipmentCode) => ({
+          code: equipment.qrId,
+          label: equipment.name,
+        }))
+        .filter(
+          (equipment) =>
+            !recentEquipment.some((recent) => recent.code === equipment.code)
+        );
+
+      options = [...recentEquipment, ...allEquipment];
       break;
 
     default:

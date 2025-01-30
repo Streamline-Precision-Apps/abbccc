@@ -1,7 +1,10 @@
 "use server";
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
-
+// example of using cookies- only works in async
+// const tId = await fetch("/api/cookies?method=get&name=timeSheetId").then(
+//   (res) => res.json()
+// );
 export async function GET(request: NextRequest) {
   const method = request.nextUrl.searchParams.get("method");
 

@@ -71,11 +71,8 @@ model Maintenance {
 model TascoLog {
     id           String     @id @default(uuid())
     timeSheetId  String // link to timesheet
-    costcode     String? // in case they do manual labor its here
     shiftType    String // Tasco task
-    startTime    DateTime
-    endTime      DateTime?
-    equipmentId  String? // link to equipment 
+    equipmentId  String? // link to equipment , truck, etc
     laborType    String? // Labor being done. (E.G. manual labor vs. equipment)
     materialType String? // depend on tasco type
     loadsHauled  Int?
@@ -87,37 +84,31 @@ model TascoLog {
     refueled     Refueled[] // link to refueled
 
     // connections to other tables
-    equipment Equipment? @relation(fields: [equipmentId], references: [id])
+    equipment Equipment? @relation(fields: [equipmentId], references: [qrId])
     timeSheet TimeSheet? @relation(fields: [timeSheetId], references: [id])
-    costCode  CostCode?  @relation(fields: [costcode], references: [name])
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
 // logs to keep track of what each truckDriver has done.
 model TruckingLog {
-    id                String    @id @default(uuid())
-    truckingJobSiteId String
-    truckingCostCode  String? // in case they do manual labor its here
-    taskName          String? // auto default to drive or operator
-    equipmentId       String? // this is the equipment id vehicle id
-    timeSheetId       String?
-    startingMileage   Int
-    endingMileage     Int?
-    startTime         DateTime
-    endTime           DateTime?
-    netWeight         Float?
-    comment           String?
-    createdAt         DateTime  @default(now())
+    id              String   @id @default(uuid())
+    timeSheetId     String
+    laborType       String // shows whether truckDriver, operator, or manual Labor was chosen
+    taskName        String? // auto default to labor type but can be changed
+    equipmentId     String? // this is the equipment id vehicle id
+    startingMileage Int? // needed if truckDriver else not needed
+    endingMileage   Int?
+    netWeight       Float?
+    comment         String?
+    createdAt       DateTime @default(now())
 
     stateMileage    StateMileage[]
     Refueled        Refueled[]
     Material        Material[]
     EquipmentHauled EquipmentHauled[]
 
-    equipment Equipment? @relation(fields: [equipmentId], references: [id])
+    equipment Equipment? @relation(fields: [equipmentId], references: [qrId])
     timeSheet TimeSheet? @relation(fields: [timeSheetId], references: [id])
-    Jobsite   Jobsite?   @relation(fields: [truckingJobSiteId], references: [id])
-    CostCode  CostCode?  @relation(fields: [truckingCostCode], references: [id])
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
@@ -127,8 +118,8 @@ model TruckingLog {
 model StateMileage {
     id               String   @id @default(uuid())
     truckingLogId    String
-    state            String // this is the state being crossed
-    stateLineMileage Int
+    state            String // what state is being crossed
+    stateLineMileage Int // mileage at crossing
     createdAt        DateTime @default(now())
 
     truckingLog TruckingLog? @relation(fields: [truckingLogId], references: [id])
@@ -137,10 +128,10 @@ model StateMileage {
 //--------------------------------------------------------------------------------------------------------------------------------
 model Material {
     id                 String   @id @default(uuid())
-    LocationOfMaterial String?
-    truckingLogId      String
-    name               String
-    quantity           Int? //potential to show quantity of material later
+    LocationOfMaterial String? //company name or location of material
+    truckingLogId      String // connection to log
+    name               String //type of material
+    quantity           Int? //number of loads
     createdAt          DateTime @default(now())
 
     truckingLog TruckingLog? @relation(fields: [truckingLogId], references: [id])

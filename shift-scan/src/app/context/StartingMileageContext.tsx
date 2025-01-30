@@ -1,5 +1,12 @@
 "use client";
-import React, { createContext, useState, ReactNode, useContext } from "react";
+import { setStartingMileage } from "@/actions/cookieActions";
+import React, {
+  createContext,
+  useState,
+  ReactNode,
+  useContext,
+  useEffect,
+} from "react";
 
 type StartingMileageProps = {
   startingMileage: number | null;
@@ -13,30 +20,44 @@ const StartingMileage = createContext<StartingMileageProps | undefined>(
 export const StartingMileageProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [startingMileage, setStartingMileageState] = useState<number | null>(() => {
-    // Load initial state from localStorage if available
-    if (typeof window !== "undefined") {
-      const savedMileage = localStorage.getItem("startingMileage");
-      return savedMileage ? parseFloat(savedMileage) : null;
-    } else {
-      return null;
-    }
-  });
+  const [startingMileage, setStartingMileageState] = useState<number | null>(
+    null
+  );
+  useEffect(() => {
+    const initializeMileage = async () => {
+      try {
+        // Fetch cookie data once during initialization
+        const previousStartingMileage = await fetch(
+          "/api/cookies?method=get&name=truck"
+        ).then((res) => res.json());
 
-  const setStartingMileage = (mileage: number | null) => {
-    setStartingMileageState(mileage);
-    // Save to localStorage
-    if (typeof window !== "undefined") {
-      if (mileage !== null) {
-        localStorage.setItem("startingMileage", mileage.toString());
-      } else {
-        localStorage.removeItem("startingMileage");
+        if (previousStartingMileage && previousStartingMileage !== "") {
+          setStartingMileageState(previousStartingMileage);
+        }
+      } catch (error) {
+        console.error("Error fetching job site cookie:", error);
       }
-    }
-  };
+    };
 
+    initializeMileage();
+  }, []); // Run only on mount
+
+  useEffect(() => {
+    const setStartingMileageState = async () => {
+      try {
+        if (startingMileage !== null) {
+          await setStartingMileage(startingMileage?.toString() || ""); // Set the cookie if scanResult changes
+        }
+      } catch (error) {
+        console.error("Error saving job site cookie:", error);
+      }
+    };
+    setStartingMileageState();
+  }, [startingMileage]);
   return (
-    <StartingMileage.Provider value={{ startingMileage, setStartingMileage }}>
+    <StartingMileage.Provider
+      value={{ startingMileage, setStartingMileage: setStartingMileageState }}
+    >
       {children}
     </StartingMileage.Provider>
   );
