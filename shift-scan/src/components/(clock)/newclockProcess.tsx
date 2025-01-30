@@ -500,7 +500,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
             role={clockInRole}
             option={option}
             comments={undefined}
-            handlePreviousStep={handlePreviousStep}
+            handlePreviousStep={handlePrevStep}
           />
         </Holds>
       )}

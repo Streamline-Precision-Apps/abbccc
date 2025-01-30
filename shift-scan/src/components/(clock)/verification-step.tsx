@@ -47,7 +47,7 @@ export default function VerificationStep({
   type,
   comments,
   role,
-  handlePreviousStep
+  handlePreviousStep,
   laborType,
 }: VerifyProcessProps) {
   const t = useTranslations("Clock");
@@ -218,43 +218,6 @@ export default function VerificationStep({
                             day: "numeric",
                           })}
                         />
-                        {truckScanData && (
-                          <>
-                            <Labels
-                              text={"white"}
-                              size={"p4"}
-                              htmlFor="jobsiteId"
-                            >
-                              {t("Truck-label")}
-                            </Labels>
-                            <Inputs
-                              state="disabled"
-                              name="jobsiteId"
-                              variant={"white"}
-                              data={truckScanData}
-                            />
-                          </>
-                        )}
-                        {truckScanData && (
-                          <>
-                            <Labels
-                              htmlFor="startingMileage"
-                              text={"white"}
-                              size={"p4"}
-                              position={"left"}
-                            >
-                              <Texts text={"white"} size={"p4"} position={"left"}>
-                                {t("Mileage")}
-                              </Texts>
-                            </Labels>
-                            <Inputs
-                              state="disabled"
-                              name="startingMileage"
-                              variant={"white"}
-                              data={startingMileage?.toString() || "0"}
-                            />
-                          </>
-                        )}
                         <Labels
                           htmlFor="jobsiteId"
                           text={"white"}
