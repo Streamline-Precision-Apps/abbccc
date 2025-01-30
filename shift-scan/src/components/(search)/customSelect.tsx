@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Holds } from "../(reusable)/holds";
 import { Texts } from "../(reusable)/texts";
 import { Buttons } from "../(reusable)/buttons";
+import { Contents } from "../(reusable)/contents";
 
 type Option = {
   code: string;
@@ -27,16 +28,15 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   const t = useTranslations("Clock");
 
   return (
-    <Holds className=" overflow-y-auto no-scrollbar text-center ">
+    <>
       {options.length > 0 ? (
-        <Holds>
-          <Texts>{t("SearchedCodes")}</Texts>
-          <Holds className="flex flex-col w-[95%]">
+        <Contents width={"section"}>
+            {/* <Texts>{t("SearchedCodes")}</Texts> */}
             {options.map((option) => (
               <Holds key={option.code} className="py-2">
                 <Buttons
                   key={option.code}
-                  className={`text-3xl p-2 cursor-pointer ${
+                  className={` p-2 cursor-pointer ${
                     selectedOption?.code === option.code
                       ? "border-[3px] border-app-green"
                       : ""
@@ -48,16 +48,15 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
                         : onOptionSelect(option) // Select the option
                   }
                 >
-                  <Texts>{option.label}</Texts>
+                  <Texts size={"p3"}>{option.label}</Texts>
                 </Buttons>
               </Holds>
             ))}
-          </Holds>
-        </Holds>
+        </Contents>
       ) : (
         <Texts>{t("noResults")}</Texts>
       )}
-    </Holds>
+    </>
   );
 };
 

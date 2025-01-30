@@ -133,10 +133,11 @@ export default function NewClockProcess({
   //------------------------------------------------------------------
   //------------------------------------------------------------------
   const handleNextStep = () => setStep((prevStep) => prevStep + 1);
+  const handlePreviousStep = () => setStep((prevStep) => prevStep - 1);
+  const handleGoBack2Step = () => setStep((prevStep) => prevStep - 2);
 
   const handleAlternativePath = () => {
     setStep(2);
-    handleNextStep();
   };
 
   const handleAlternativePathEQ = () => {
@@ -281,10 +282,10 @@ step 4 : confirmation page and redirect to dashboard with authorization
           />
         </Holds>
       )}
-      {step === 3 && clockInRole === "mechanic" && (
+      {step === 2 && clockInRole === "mechanic" && (
         <CodeStep datatype="jobsite-mechanic" handleNextStep={handleNextStep} />
       )}
-      {step === 4 && clockInRole === "mechanic" && (
+      {step === 3 && clockInRole === "mechanic" && (
         <MechanicVerificationStep
           type={type}
           role={clockInRole}
@@ -293,7 +294,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
           comments={undefined}
         />
       )}
-      {step === 5 && clockInRole === "mechanic" && (
+      {step ===4 && clockInRole === "mechanic" && (
         <ConfirmationPage
           option={option}
           savedCostCode={savedCostCode}
@@ -326,6 +327,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
         <TruckClockInForm
           handleNextStep={handleNextStep}
           setComments={setComments}
+          handlePreviousStep={handlePreviousStep}
         />
       )}
       {/* Verification Page for truck drivers */}
@@ -367,10 +369,10 @@ step 4 : confirmation page and redirect to dashboard with authorization
         />
       )}
       {/* Tasco Role */}
-      {step === 3 && clockInRole === "tasco" && (
+      {step === 2 && clockInRole === "tasco" && (
         <CodeStep datatype="jobsite-tasco" handleNextStep={handleNextStep} />
       )}
-      {step === 4 && clockInRole === "tasco" && (
+      {step === 3 && clockInRole === "tasco" && (
         <TascoVerificationStep
           type={type}
           role={clockInRole}
@@ -379,7 +381,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
           comments={undefined}
         />
       )}
-      {step === 5 && clockInRole === "tasco" && (
+      {step === 4 && clockInRole === "tasco" && (
         <ConfirmationPage
           option={option}
           savedCostCode={savedCostCode}
@@ -408,31 +410,35 @@ step 4 : confirmation page and redirect to dashboard with authorization
         />
       )}
       {/* Select Jobsite Section */}
-      {step === 3 && clockInRole === "general" && (
-        <Holds className="h-full w-full py-5">
-          <CodeStep datatype="jobsite" handleNextStep={handleNextStep} handleReturnPath={handleReturnPath}/>
+      {step === 2 && clockInRole === "general" && (
+        <Holds className="h-full w-full">
+          <CodeStep datatype="jobsite" 
+          handleNextStep={handleNextStep} 
+          handlePreviousStep={handlePreviousStep}
+          handleGoBack2={handleGoBack2Step}/>
         </Holds>
       )}
       {/* Select Cost Code Section */}
-      {step === 4 && clockInRole === "general" && (
-        <Holds className="h-full w-full py-5">
-          <CodeStep datatype="costcode" handleNextStep={handleNextStep} />
+      {step === 3 && clockInRole === "general" && (
+        <Holds className="h-full w-full">
+          <CodeStep datatype="costcode" handleNextStep={handleNextStep} handlePreviousStep={handlePreviousStep}/>
         </Holds>
       )}
       {/* Verification Page */}
-      {step === 5 && clockInRole === "general" && (
-        <Holds className="h-full w-full py-5">
+      {step === 4 && clockInRole === "general" && (
+        <Holds className="h-full w-full">
           <VerificationStep
             type={type}
             role={clockInRole}
             handleNextStep={handleNextStep}
             option={option}
             comments={undefined}
+            handlePreviousStep={handlePreviousStep}
           />
         </Holds>
       )}
       {/* Confirmation Page */}
-      {step === 6 && clockInRole === "general" && (
+      {step === 5 && clockInRole === "general" && (
         <ConfirmationPage
           option={option}
           savedCostCode={savedCostCode}
