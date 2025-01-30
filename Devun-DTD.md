@@ -264,6 +264,7 @@ cookies().set({
 ### Built/created 
 - working on debugging home page
 - building page
+- going through each step and making appropriate routes for each action 
 
 ### Trello
 - Fixing clock in scanner to not destroy and toggle of instead. 
