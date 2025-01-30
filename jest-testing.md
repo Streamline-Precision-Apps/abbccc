@@ -11,10 +11,21 @@ JEST Documentation
 - [Jest Getting Started Docs](https://jestjs.io/docs/getting-started) 
 
 Recommended Youtube Videos 
-- [Introduction to Jest Testing | JavaScript Unit Tests](https://youtu.be/x6NUZ8dc9Qg?si=qgzabhqfY1iO684j)
 - [Next.js with React Testing Library, Jest, TypeScript](https://youtu.be/AS79oJ3Fcf0?si=LuawN9ObsH4RMquT)
+- [Introduction to Jest Testing | JavaScript Unit Tests](https://youtu.be/x6NUZ8dc9Qg?si=qgzabhqfY1iO684j)
 
-# Notes on JEST
+
+
+
+# Lesson Learned
+After researching into this i tested again auth.js and it was difficult to do so since server does not work for jest
+Feel free to learn but Play wright will probably be the way to go. 
+
+
+
+
+
+# Notes on JEST Javascript from video
 *For a refresher on key things and formats read this section.*
 
 
@@ -69,6 +80,9 @@ Congrats you created your first test but now lets run it.
     ```
     "script":{
         "test" : "jest"
+        /* you can add "jest --coverage to get the coverage details 
+        if we tested all code
+        */
     },
     ```
 3. open terminal and state
@@ -85,6 +99,7 @@ What we just ran is called a unit test, we tested a pure function to see if it g
 
 ### Another Test Case
 
+Next Test Case
 ```
 /isPalindrome.js
 
@@ -97,10 +112,114 @@ module.exports = isPalindrome
 
 ```
 
+Test File Reports under a Test Suite
+```
+/isPalindrome.test.js
+
+const isPalindrome = require('./isPalindrome')
 
 
+// testing for true
+
+test('Tacocat returns true', () => {
+    expect(isPalindrome('Tacocat')).toBe(true)
+})
 
 
+// testing for false
+
+test('Devun returns false', () => {
+    expect(isPalindrome('Devun')).toBe(false)
+})
+```
+
+### Another Test Case
+
+/ShallowObjClone.js
+
+```
+function shallowObjectClone(obj){
+    return { ...obj}
+}
+module.exports = shallowObjectClone
+```
+
+```
+/shallowObjectClone.test.js
+
+const shallowObjectClone = require('./shallowObjectClone')
+
+test('create a clone of the object parameter',() => {
+    const myObj = { person: "Hitchhiker", number: 42}
+    expect(shallowObjectClone(myObj)).toStrictEquals(myObj)
+})
+
+```
+
+when should I use the following matchers?
+- .toBe()
+- .toStrictEquals()
+- ..toEquals()
+- ...etc
+
+Visit the Docs [Here](https://jestjs.io/docs/expect) to test the different possibilities. 
+
+***
+### Revisiting and making is Palindrome function better.  
+***
+**Reverse String function**
+
+*/reverseString.js*
+```
+
+function reverseString(word){
+    return word.split('').reverse().join('').replaceAll(',','')
+}
+module.exports = reverseString
+```
+
+**Is Palindrome function**
+
+*/isPalindrome.js*
+```
+
+const reverseString = require('./reverseString')
+
+function isPalindrome(word) {
+    return word.toLowercase() === reverseString(word).lowercase()
+}
+
+module.exports = isPalindrome
+
+```
+*** 
+**Reverse String test**
+
+*/reverseString.test.js*
+```
+
+const reverseString = require('./reverseString')
+
+
+// testing for true
+
+test('Reverse any given string', () => {
+    expect(reverseString('Dave')).toBe('evaD')
+})
+
+```
+**Is Palindrome test**
+
+*/isPalindrome.test.js*
+```
+
+const isPalindrome = require('./isPalindrome')
+
+test('Tacocat returns true', () => {
+    expect(isPalindrome('Tacocat')).toBe(true)
+})
+
+```
 
 
 

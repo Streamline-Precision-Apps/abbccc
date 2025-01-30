@@ -98,7 +98,9 @@ export default function MechanicVerificationStep({
           const result = { id: response.id.toString() };
           setTimeSheetData(result);
 
-          return router.push("/dashboard");
+          setTimeout(() => {
+            router.push("/dashboard");
+          }, 100);
         } catch (error) {
           console.error(error);
         }
@@ -126,7 +128,9 @@ export default function MechanicVerificationStep({
         setTimeSheetData(result);
         setCurrentPageView("dashboard");
 
-        return router.push("/dashboard");
+        setTimeout(() => {
+          router.push("/dashboard");
+        }, 100);
       }
     } catch (error) {
       console.error(error);

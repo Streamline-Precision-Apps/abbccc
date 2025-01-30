@@ -15,7 +15,7 @@ import { useRouter } from "next/navigation";
 import { setJobSite, setWorkRole } from "@/actions/cookieActions";
 import MechanicVerificationStep from "./Verification-step-mechanic";
 import TascoVerificationStep from "./Verification-step-tasco";
-import SwitchJobsMultiRoles from "./switchJobsMuiltipleRoles";
+import SwitchJobsMultiRoles from "./switchJobsMultipleRoles";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { returnToPrevWork } from "@/actions/timeSheetActions";
 import TruckVerificationStep from "./Verification-step-truck";
@@ -47,7 +47,7 @@ export default function NewClockProcess({
 }: NewClockProcessProps) {
   // State management
 
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(1);
   const [clockInRole, setClockInRole] = useState(currentRole);
   const [numberOfRoles, setNumberOfRoles] = useState(0);
 
@@ -66,9 +66,9 @@ export default function NewClockProcess({
 
   // useEffect to reset step and role on mount/unmount
   useEffect(() => {
-    setStep(0);
+    setStep(1);
     return () => {
-      setStep(0);
+      setStep(1);
     };
   }, []);
 
@@ -93,14 +93,11 @@ export default function NewClockProcess({
 
     // If switch jobs, reset step
     if (type === "switchJobs") {
-      // if (numberOfRoles > 1) {
-      //   setStep(1);
-      // }
-      setStep(0);
+      setStep(1);
     }
     // If break, reset step
     else if (option === "break") {
-      setStep(0);
+      setStep(1);
     }
     // If not switch jobs, choose role
     else {
@@ -121,7 +118,7 @@ export default function NewClockProcess({
         role = "";
       }
       setClockInRole(role); // Set role
-      setStep(role === "" ? 0 : 1);
+      setStep(role === "" ? 1 : 2);
     }
   }, [mechanicView, truckView, tascoView, laborView, type, option]);
 
@@ -133,8 +130,7 @@ export default function NewClockProcess({
   const handleNextStep = () => setStep((prevStep) => prevStep + 1);
   const handlePrevStep = () => setStep((prevStep) => prevStep - 1);
   const handleAlternativePath = () => {
-    setStep(2);
-    handleNextStep();
+    setStep(3);
   };
 
   const handleAlternativePathEQ = () => {
@@ -181,8 +177,18 @@ export default function NewClockProcess({
     }
   };
 
-  const handleScanJobsite = () => {
-    setStep(4);
+  const handleScanJobsite = (type: string) => {
+    switch (type) {
+      case "general":
+        setStep(4);
+      case "mechanic":
+        setStep(4);
+      case "tasco":
+        setStep(4);
+      case "truck":
+        setStep(4);
+        break;
+    }
   };
 
   const handleReturnPath = () => {
@@ -198,7 +204,7 @@ export default function NewClockProcess({
   if (type === "equipment") {
     return (
       <>
-        {step === 0 && (
+        {step === 1 && (
           <>
             <QRStep
               option="equipment"
@@ -212,19 +218,23 @@ export default function NewClockProcess({
             />
           </>
         )}
-        {step === 1 && (
-          <CodeStep datatype="equipment" handleNextStep={handleNextStep} />
+        {step === 2 && (
+          <CodeStep
+            datatype="equipment"
+            handleNextStep={handleNextStep}
+            handlePrevStep={handlePrevStep}
+          />
         )}
-        {step === 2 && <VerificationEQStep handleNextStep={handleNextStep} />}
-        {step === 3 && (
+        {step === 3 && <VerificationEQStep handleNextStep={handleNextStep} />}
+        {step === 4 && (
           <>
             <Titles size={"h1"} className="bg-red-500">
               {t("Confirmation-eq-message-1")}
             </Titles>
             <Titles size={"h4"}>{t("Confirmation-eq-message-2")}</Titles>
             <RedirectAfterDelay delay={5000} to="/dashboard" />{" "}
-            {/* In Order for bug to be overcomed, the refresh must occur otherwise the unmounted qr code wont work*
-                best solution for now is this becuase at least it does it behind the modal*/}
+            {/* In Order for bug to be overcome, the refresh must occur otherwise the unmounted qr code wont work*
+                best solution for now is this because at least it does it behind the modal*/}
           </>
         )}
       </>
@@ -260,7 +270,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
   return (
     <>
       {/* Multiple Role Selection */}
-      {step === 0 && (
+      {step === 1 && (
         <>
           <Holds className="h-full w-full">
             {type === "switchJobs" ? (
@@ -290,7 +300,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
       )}
       {/* Mechanic Role */}
       {/* ------------------------- Mechanic Role start ---------------------*/}
-      {step === 1 && clockInRole === "mechanic" && (
+      {step === 2 && clockInRole === "mechanic" && (
         <Holds className="h-full w-full">
           <QRStep
             type="jobsite"
@@ -307,12 +317,13 @@ step 4 : confirmation page and redirect to dashboard with authorization
         </Holds>
       )}
       {step === 3 && clockInRole === "mechanic" && (
-        <CodeStep datatype="jobsite-mechanic" handleNextStep={handleNextStep} />
+        <CodeStep
+          datatype="jobsite"
+          handleNextStep={handleNextStep}
+          handlePrevStep={handlePrevStep}
+        />
       )}
       {step === 4 && clockInRole === "mechanic" && (
-        <CodeStep datatype="costcode" handleNextStep={handleNextStep} />
-      )}
-      {step === 5 && clockInRole === "mechanic" && (
         <MechanicVerificationStep
           type={type}
           role={clockInRole}
@@ -326,7 +337,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
 
       {/* Truck Role */}
       {/* ------------------------- Trucking Role start ---------------------*/}
-      {step === 1 && clockInRole === "truck" && (
+      {step === 2 && clockInRole === "truck" && (
         <QRStep
           type="jobsite" // two types of types for qr, jobsite or equipment
           handleAlternativePath={handleAlternativePath} // handle alternative path
@@ -346,15 +357,24 @@ step 4 : confirmation page and redirect to dashboard with authorization
           setComments={setComments}
         /> */}
       {step === 3 && clockInRole === "truck" && (
-        <CodeStep datatype="jobsite" handleNextStep={handleNextStep} />
+        <CodeStep
+          datatype="jobsite"
+          handleNextStep={handleNextStep}
+          handlePrevStep={handlePrevStep}
+        />
       )}
       {/* Special Forms Section */}
       {step === 4 && clockInRole === "truck" && (
-        <CodeStep datatype="costcode" handleNextStep={handleNextStep} />
+        <CodeStep
+          datatype="costcode"
+          handleNextStep={handleNextStep}
+          handlePrevStep={handlePrevStep}
+        />
       )}
       {step === 5 && clockInRole === "truck" && (
         <TruckClockInForm
           handleNextStep={handleNextStep}
+          handlePrevStep={handlePrevStep}
           setLaborType={setLaborType}
           setTruck={setTruck}
           setStartingMileage={setStartingMileage}
@@ -381,7 +401,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
 
       {/* Tasco Role */}
       {/* ------------------------- Tasco Role start ---------------------*/}
-      {step === 1 && clockInRole === "tasco" && (
+      {step === 2 && clockInRole === "tasco" && (
         <QRStep
           type="jobsite"
           handleAlternativePath={handleAlternativePath}
@@ -397,10 +417,18 @@ step 4 : confirmation page and redirect to dashboard with authorization
       )}
       {/* Tasco Role */}
       {step === 3 && clockInRole === "tasco" && (
-        <CodeStep datatype="jobsite" handleNextStep={handleNextStep} />
+        <CodeStep
+          datatype="jobsite"
+          handleNextStep={handleNextStep}
+          handlePrevStep={handlePrevStep}
+        />
       )}
       {step === 4 && clockInRole === "tasco" && (
-        <CodeStep datatype="costcode" handleNextStep={handleNextStep} />
+        <CodeStep
+          datatype="costcode"
+          handleNextStep={handleNextStep}
+          handlePrevStep={handlePrevStep}
+        />
       )}
       {step === 5 && clockInRole === "tasco" && (
         <TascoClockInForm
@@ -430,7 +458,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
 
       {/* General Role */}
       {/* ------------------------- General Role ---------------------*/}
-      {step === 1 && clockInRole === "general" && (
+      {step === 2 && clockInRole === "general" && (
         <QRStep
           type="jobsite"
           handleAlternativePath={handleAlternativePath}
@@ -450,14 +478,18 @@ step 4 : confirmation page and redirect to dashboard with authorization
           <CodeStep
             datatype="jobsite"
             handleNextStep={handleNextStep}
-            handleReturnPath={handleReturnPath}
+            handlePrevStep={handlePrevStep}
           />
         </Holds>
       )}
       {/* Select Cost Code Section */}
       {step === 4 && clockInRole === "general" && (
         <Holds className="h-full w-full py-5">
-          <CodeStep datatype="costcode" handleNextStep={handleNextStep} />
+          <CodeStep
+            datatype="costcode"
+            handleNextStep={handleNextStep}
+            handlePrevStep={handlePrevStep}
+          />
         </Holds>
       )}
       {/* Verification Page */}

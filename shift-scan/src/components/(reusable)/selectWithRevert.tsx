@@ -1,3 +1,4 @@
+import Image from "next/image";
 import React, { useState } from "react";
 
 interface SelectWithRevertProps {
@@ -67,7 +68,7 @@ const SelectWithRevert: React.FC<SelectWithRevertProps> = ({
               title="Revert changes"
               onClick={handleRevert}
             >
-              <img src="/turnBack.svg" alt="revert" className="w-5 h-5" />
+              <Image src="/turnBack.svg" alt="revert" className="w-5 h-5" />
             </button>
           )}
         </div>

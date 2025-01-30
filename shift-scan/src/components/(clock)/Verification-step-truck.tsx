@@ -112,10 +112,12 @@ export default function TruckVerificationStep({
           const result = { id: response.id.toString() };
           setTimeSheetData(result);
           setCurrentPageView("dashboard");
-          await setWorkRole(role);
-          await setLaborType(laborType || "");
+          setWorkRole(role);
+          setLaborType(laborType || "");
           // go to dashboard
-          return router.push("/dashboard");
+          setTimeout(() => {
+            router.push("/dashboard");
+          }, 100);
         } catch (error) {
           console.error(error);
         }
@@ -138,11 +140,13 @@ export default function TruckVerificationStep({
         const response = await CreateTruckDriverTimeSheet(formData);
         const result = { id: response.id.toString() };
         setTimeSheetData(result); // set new recent timecard
+        setLaborType(laborType || ""); // set labor role
         setCurrentPageView("dashboard"); // set page view
-        await setWorkRole(role); // set work role
-        await setLaborType(laborType || ""); // set labor role
+        setWorkRole(role); // set work role
         // go to dashboard
-        return router.push("/dashboard");
+        setTimeout(() => {
+          router.push("/dashboard");
+        }, 100);
       }
     } catch (error) {
       console.error(error);
