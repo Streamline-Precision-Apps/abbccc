@@ -171,7 +171,7 @@ export default function CodeFinder({
   };
 
   return (
-    <Holds className="w-full h-full">
+    // <Holds className="w-full h-full">
       <Grids rows={"5"} gap={"5"}>
         <Holds className="row-span-1 h-full">
           <SearchBar
@@ -184,8 +184,7 @@ export default function CodeFinder({
             clearSelection={clearSelection}
           />
         </Holds>
-
-        <Holds className="row-span-4 h-full border-[3px] border-black rounded-[10px] ">
+        <Holds className="row-span-4 h-full border-[3px] border-black rounded-[10px] overflow-y-auto no-scrollbar">
           <CustomSelect
             options={filteredOptions}
             onOptionSelect={handleOptionSelect}
@@ -194,6 +193,6 @@ export default function CodeFinder({
           />
         </Holds>
       </Grids>
-    </Holds>
+    // </Holds>
   );
 }

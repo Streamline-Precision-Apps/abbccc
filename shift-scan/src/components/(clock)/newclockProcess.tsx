@@ -323,7 +323,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
           handlePrevStep={handlePrevStep}
         />
       )}
-      {step === 4 && clockInRole === "mechanic" && (
+      {step === 3 && clockInRole === "mechanic" && (
         <MechanicVerificationStep
           type={type}
           role={clockInRole}
@@ -493,13 +493,14 @@ step 4 : confirmation page and redirect to dashboard with authorization
         </Holds>
       )}
       {/* Verification Page */}
-      {step === 5 && clockInRole === "general" && (
-        <Holds className="h-full w-full py-5">
+      {step === 4 && clockInRole === "general" && (
+        <Holds className="h-full w-full">
           <VerificationStep
             type={type}
             role={clockInRole}
             option={option}
             comments={undefined}
+            handlePreviousStep={handlePrevStep}
           />
         </Holds>
       )}
