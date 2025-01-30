@@ -323,7 +323,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
           handlePrevStep={handlePrevStep}
         />
       )}
-      {step === 3 && clockInRole === "mechanic" && (
+      {step === 4 && clockInRole === "mechanic" && (
         <MechanicVerificationStep
           type={type}
           role={clockInRole}
@@ -474,35 +474,29 @@ step 4 : confirmation page and redirect to dashboard with authorization
       )}
       {/* Select Jobsite Section */}
       {step === 3 && clockInRole === "general" && (
-        <Holds className="h-full w-full py-5">
-          <CodeStep
-            datatype="jobsite"
-            handleNextStep={handleNextStep}
-            handlePrevStep={handlePrevStep}
-          />
-        </Holds>
+        <CodeStep
+          datatype="jobsite"
+          handleNextStep={handleNextStep}
+          handlePrevStep={handlePrevStep}
+        />
       )}
       {/* Select Cost Code Section */}
       {step === 4 && clockInRole === "general" && (
-        <Holds className="h-full w-full py-5">
-          <CodeStep
-            datatype="costcode"
-            handleNextStep={handleNextStep}
-            handlePrevStep={handlePrevStep}
-          />
-        </Holds>
+        <CodeStep
+          datatype="costcode"
+          handleNextStep={handleNextStep}
+          handlePrevStep={handlePrevStep}
+        />
       )}
       {/* Verification Page */}
-      {step === 4 && clockInRole === "general" && (
-        <Holds className="h-full w-full">
-          <VerificationStep
-            type={type}
-            role={clockInRole}
-            option={option}
-            comments={undefined}
-            handlePreviousStep={handlePrevStep}
-          />
-        </Holds>
+      {step === 5 && clockInRole === "general" && (
+        <VerificationStep
+          type={type}
+          role={clockInRole}
+          option={option}
+          comments={undefined}
+          handlePreviousStep={handlePrevStep}
+        />
       )}
       {/* Confirmation Page
       {step === 6 && clockInRole === "general" && (
