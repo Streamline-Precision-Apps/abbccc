@@ -308,6 +308,7 @@
     "ID": "Id: #"
 },
 "Clock": {
+    "FailedToScanJobSiteDoesNotExist": "Scan Failed, QR code does not exist",
     "SelectTruck": "Select Truck",
     "search-equipment-operator": "Search Equipment",
     "SelectShiftType": "Select Shift Type",

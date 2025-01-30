@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import CodeFinder from "@/components/(search)/codeFinder";
 import StepButtons from "./step-buttons";
 import { useTranslations } from "next-intl";
@@ -7,22 +7,25 @@ import { Titles } from "../(reusable)/titles";
 import { Grids } from "../(reusable)/grids";
 import { Holds } from "../(reusable)/holds";
 import { Images } from "../(reusable)/images";
+import { useSavedCostCode } from "@/app/context/CostCodeContext";
+import { useScanData } from "@/app/context/JobSiteScanDataContext";
 
 type CodeStepProps = {
   datatype: string;
   handleNextStep?: () => void;
-  handleReturnPath?: () => void;
   backArrow?: boolean;
+  handlePrevStep: () => void;
 };
 
 export default function CodeStep({
   datatype,
   handleNextStep,
-  handleReturnPath,
+  handlePrevStep,
   backArrow = true,
 }: CodeStepProps) {
   const t = useTranslations("Clock");
-
+  const { scanResult } = useScanData();
+  const [selectedOpt, setSelectedOpt] = useState<boolean>(false);
   // TODO: This has an error inside of the browser console.
   return (
     <Holds background={"white"} className="h-full w-full">
@@ -33,7 +36,7 @@ export default function CodeStep({
               {backArrow && (
                 <Holds
                   className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center"
-                  onClick={handleReturnPath}
+                  onClick={handlePrevStep}
                 >
                   <Images
                     titleImg="/turnBack.svg"
@@ -48,11 +51,18 @@ export default function CodeStep({
             </Grids>
           </Holds>
           <Holds className="row-span-5 h-full w-full">
-            <CodeFinder datatype={datatype} />
+            <CodeFinder
+              datatype={datatype}
+              savedJS={scanResult?.data || ""}
+              setSelectedOpt={setSelectedOpt}
+            />
           </Holds>
           {handleNextStep && (
             <Holds className="row-span-1">
-              <StepButtons handleNextStep={handleNextStep} />
+              <StepButtons
+                handleNextStep={handleNextStep}
+                disabled={!selectedOpt}
+              />
             </Holds>
           )}
         </Grids>
