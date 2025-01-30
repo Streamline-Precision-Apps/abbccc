@@ -18,10 +18,12 @@ import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useTranslations } from "next-intl";
 import { z } from "zod";
 import { useStartingMileage } from "@/app/context/StartingMileageContext";
+import { Images } from "../(reusable)/images";
 
 type TruckClockInFormProps = {
   handleNextStep: () => void;
   setComments: React.Dispatch<React.SetStateAction<string>>;
+  handlePreviousStep?: () => void;
 };
 
 // Define the Zod schema
@@ -40,6 +42,7 @@ const formSchema = z.object({
 export default function TruckClockInForm({
   handleNextStep,
   setComments,
+  handlePreviousStep,
 }: TruckClockInFormProps) {
   const [complete, setComplete] = useState(false);
   const [siteNumber, setSiteNumber] = useState(""); // State to track site number
@@ -89,6 +92,17 @@ export default function TruckClockInForm({
         <Holds background={"white"} className="mb-3">
           <Contents width="section">
             <Grids className="grid-rows-7">
+            <Grids rows={"2"} cols={"5"} gap={"3"} className="">
+                <Holds 
+                className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center"
+                onClick={handlePreviousStep}>
+                  <Images
+                    titleImg="/turnBack.svg"
+                    titleImgAlt="back"
+                    position={"left"}
+                  />
+                </Holds>
+              </Grids>
               <Holds className="row-span-4">
                 <Labels>{t("Truck-label")}</Labels>
                 <Inputs

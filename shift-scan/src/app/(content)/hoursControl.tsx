@@ -262,7 +262,7 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
             <Holds
               className={`rounded-[10px] justify-end ${
                 currentData.hours !== 0
-                ? "bg-app-blue"
+                ? "bg-app-green"
                 : ""
               }`}
               style={{
