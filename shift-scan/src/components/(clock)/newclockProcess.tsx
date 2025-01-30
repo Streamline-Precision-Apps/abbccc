@@ -130,7 +130,7 @@ export default function NewClockProcess({
   //------------------------------------------------------------------
   const handleNextStep = () => setStep((prevStep) => prevStep + 1);
   const handlePrevStep = () => setStep((prevStep) => prevStep - 1);
-  const handleScannedPrevStep = () => setStep(1);
+  const handleScannedPrevStep = () => setStep(2);
   const handleAlternativePath = () => {
     setStep(3);
   };
