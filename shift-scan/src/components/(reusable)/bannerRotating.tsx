@@ -10,6 +10,7 @@ import "slick-carousel/slick/slick-theme.css";
 import { Texts } from "./texts";
 
 export default function BannerRotating() {
+  const [timeSheetId, setTimeSheetId] = useState("");
   const [bannerData, setBannerData] = useState({
     id: "",
     jobsite: {
@@ -33,6 +34,24 @@ export default function BannerRotating() {
         },
       },
     ],
+    tascoLogs: [
+      {
+        laborType: "",
+        equipment: {
+          qrId: "",
+          name: "",
+        },
+      },
+    ],
+    truckingLogs: [
+      {
+        laborType: "",
+        equipment: {
+          qrId: "",
+          name: "",
+        },
+      },
+    ],
   });
 
   const settings = {
@@ -48,11 +67,25 @@ export default function BannerRotating() {
     pauseOnHover: true,
     pauseOnFocus: true,
   };
+  useEffect(() => {
+    const fetchTimeSheetId = async () => {
+      try {
+        const response = await fetch(
+          "/api/cookies?method=get&name=timeSheetId"
+        );
+        const data = await response.json();
+        setTimeSheetId(data.id);
+      } catch (error) {
+        console.error("Error fetching time sheet ID:", error);
+      }
+      fetchTimeSheetId();
+    };
+  }, [timeSheetId]);
 
   useEffect(() => {
     const fetchJobSite = async () => {
       try {
-        const response = await fetch("/api/getBannerData");
+        const response = await fetch("/api/getBannerData?id=" + timeSheetId);
         const data = await response.json();
         setBannerData(data);
       } catch (error) {
@@ -61,25 +94,29 @@ export default function BannerRotating() {
     };
 
     fetchJobSite();
-  }, []);
+  }, [timeSheetId]);
 
   return (
     <Holds className="w-[80%]">
-      {/* <Slider {...settings} className="">
-        <Holds position={"row"}>
-          <Titles text={"white"} size={"h2"}>
-            {bannerData.jobsite.name}
-          </Titles>
-          <Texts className="text-white" size={"p5"}>
-            {bannerData.jobsite.qrId}
-          </Texts>
-        </Holds>
-        <Holds>
-          <Titles text={"white"}>{bannerData.costcode.description}</Titles>
-          <Texts className="text-white" size={"p5"}>
-            {bannerData.costcode.name}
-          </Texts>
-        </Holds>
+      <Slider {...settings} className="">
+        {bannerData.jobsite.name && bannerData.jobsite.qrId && (
+          <Holds position={"row"}>
+            <Titles text={"white"} size={"h2"}>
+              {bannerData.jobsite.name}
+            </Titles>
+            <Texts className="text-white" size={"p5"}>
+              {bannerData.jobsite.qrId}
+            </Texts>
+          </Holds>
+        )}
+        {bannerData.costcode.description && bannerData.costcode.name && (
+          <Holds>
+            <Titles text={"white"}>{bannerData.costcode.description}</Titles>
+            <Texts className="text-white" size={"p5"}>
+              {bannerData.costcode.name}
+            </Texts>
+          </Holds>
+        )}
         {bannerData.employeeEquipmentLog.length > 0 &&
           bannerData.employeeEquipmentLog.map((equipment, index) => (
             <Holds key={index}>
@@ -89,7 +126,31 @@ export default function BannerRotating() {
               </Texts>
             </Holds>
           ))}
-      </Slider> */}
+        {bannerData.tascoLogs.length > 0 &&
+          bannerData.tascoLogs.map((equipment, index) => (
+            <Holds key={index}>
+              <Titles text={"white"}>{equipment.equipment.name}</Titles>
+              <Texts className="text-white" size={"p5"}>
+                {equipment.laborType === "operator"
+                  ? "Equipment Operator"
+                  : "Manual Labor"}
+              </Texts>
+            </Holds>
+          ))}
+        {bannerData.truckingLogs.length > 0 &&
+          bannerData.truckingLogs.map((equipment, index) => (
+            <Holds key={index}>
+              <Titles text={"white"}>{equipment.equipment.name}</Titles>
+              <Texts className="text-white" size={"p5"}>
+                {equipment.laborType === "operator"
+                  ? "Operator"
+                  : equipment.laborType === "truckDriver"
+                  ? "Truck Driver"
+                  : "Manual Labor"}
+              </Texts>
+            </Holds>
+          ))}
+      </Slider>
     </Holds>
   );
 }
