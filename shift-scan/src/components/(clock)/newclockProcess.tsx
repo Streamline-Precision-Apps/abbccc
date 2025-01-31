@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Holds } from "../(reusable)/holds";
 import MultipleRoles from "./multipleRoles";
 import QRStep from "./qr-handler";
@@ -20,6 +20,8 @@ import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { returnToPrevWork } from "@/actions/timeSheetActions";
 import TruckVerificationStep from "./Verification-step-truck";
 import TascoClockInForm from "./tascoClockInForm";
+import { useSession } from "next-auth/react";
+import QRMultiRoles from "./qr-mulit-handler";
 
 type NewClockProcessProps = {
   mechanicView: boolean;
@@ -46,6 +48,7 @@ export default function NewClockProcess({
   currentRole,
 }: NewClockProcessProps) {
   // State management
+  const { data: session } = useSession();
 
   const [step, setStep] = useState(1);
   const [clockInRole, setClockInRole] = useState(currentRole);
@@ -74,67 +77,45 @@ export default function NewClockProcess({
   }, []);
 
   // useEffect to choose role
-  useLayoutEffect(() => {
-    // Set number of roles to get total number of roles
-    let numberOfRoles = 0;
-    if (mechanicView) {
-      numberOfRoles++;
-    }
-    if (laborView) {
-      numberOfRoles++;
-    }
-    if (truckView) {
-      numberOfRoles++;
-    }
-    if (tascoView) {
-      numberOfRoles++;
-    }
-    setNumberOfRoles(numberOfRoles);
-    console.log(numberOfRoles);
+  useEffect(() => {
+    if (!session) return; // Wait until session is defined
 
-    // If switch jobs, reset step
-    if (type === "switchJobs") {
+    let count = 0;
+    if (mechanicView) count++;
+    if (laborView) count++;
+    if (truckView) count++;
+    if (tascoView) count++;
+    setNumberOfRoles(count);
+
+    if (type === "switchJobs" || option === "break") {
       setStep(1);
-    }
-    // If break, reset step
-    else if (option === "break") {
-      setStep(1);
-    }
-    // If not switch jobs, choose role
-    else {
-      // If only one role, set role to that role
-      if (numberOfRoles === 1) {
-        if (mechanicView) {
+    } else {
+      // Only one role available? Automatically set it.
+      if (count === 1) {
+        if (mechanicView && !laborView && !truckView && !tascoView) {
           setClockInRole("mechanic");
           setWorkRole("mechanic");
-          setStep(1);
-        } else if (laborView) {
+          setStep(2);
+        } else if (laborView && !mechanicView && !truckView && !tascoView) {
           setClockInRole("general");
           setWorkRole("general");
-          setStep(1);
-        } else if (truckView) {
+          setStep(2);
+        } else if (truckView && !mechanicView && !laborView && !tascoView) {
           setClockInRole("truck");
           setWorkRole("truck");
-          setStep(1);
-        } else if (tascoView) {
+          setStep(2);
+        } else if (tascoView && !mechanicView && !laborView && !truckView) {
           setClockInRole("tasco");
           setWorkRole("tasco");
-          setStep(1);
-        } else {
-          setClockInRole("");
-          setWorkRole("");
-          setStep(1);
+          setStep(2);
         }
-      }
-      // If more than one role, set blank role
-      else {
-        setClockInRole(""); // Set role
+      } else {
+        setClockInRole("");
         setWorkRole("");
-        setStep(1);
-        console.log("Else path");
+        setStep(2);
       }
     }
-  }, [mechanicView, truckView, tascoView, laborView, type, option]);
+  }, [mechanicView, truckView, tascoView, laborView, type, option, session]);
 
   //------------------------------------------------------------------
   //------------------------------------------------------------------
@@ -196,12 +177,17 @@ export default function NewClockProcess({
     switch (type) {
       case "general":
         setStep(4);
+        break;
       case "mechanic":
         setStep(4);
+        break;
       case "tasco":
         setStep(4);
+        break;
       case "truck":
         setStep(4);
+        break;
+      default:
         break;
     }
   };
@@ -290,7 +276,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
       {step === 1 && (
         <>
           <Holds className="h-full w-full">
-            {type === "switchJobs" ? (
+            {type === "switchJobs" && (
               <SwitchJobsMultiRoles
                 handleNextStep={handleNextStep}
                 setClockInRole={setClockInRole}
@@ -301,7 +287,8 @@ step 4 : confirmation page and redirect to dashboard with authorization
                 numberOfRoles={numberOfRoles}
                 handleReturnPath={handleReturnPath}
               />
-            ) : (
+            )}
+            {type === "jobsite" && (
               <MultipleRoles
                 handleNextStep={handleNextStep}
                 setClockInRole={setClockInRole}
@@ -317,19 +304,36 @@ step 4 : confirmation page and redirect to dashboard with authorization
       )}
       {step === 2 && (
         <Holds className="h-full w-full">
-          <QRStep
-            type="jobsite"
-            handleReturnPath={handleReturnPath}
-            handleAlternativePath={handleAlternativePath}
-            handleNextStep={handleNextStep}
-            handleReturn={handleReturn}
-            handleScanJobsite={handleScanJobsite}
-            url={returnpath}
-            option={type} // type is the method of clocking in ... general, switchJobs, or equipment
-            clockInRole={clockInRole} // clock in role will make the qr know which role to use
-            setClockInRole={setClockInRole}
-            setScanned={setScanned}
-          />
+          {numberOfRoles === 1 && (
+            <QRStep
+              type="jobsite"
+              handleReturnPath={handleReturnPath}
+              handleAlternativePath={handleAlternativePath}
+              handleNextStep={handleNextStep}
+              handleReturn={handleReturn}
+              handleScanJobsite={handleScanJobsite}
+              url={returnpath}
+              option={type} // type is the method of clocking in ... general, switchJobs, or equipment
+              clockInRole={clockInRole} // clock in role will make the qr know which role to use
+              setClockInRole={setClockInRole}
+              setScanned={setScanned}
+            />
+          )}
+          {numberOfRoles > 1 && (
+            <QRMultiRoles
+              type="jobsite"
+              handleReturnPath={handleReturnPath}
+              handleAlternativePath={handleAlternativePath}
+              handleNextStep={handleNextStep}
+              handleReturn={handleReturn}
+              handleScanJobsite={handleScanJobsite}
+              url={returnpath}
+              option={type} // type is the method of clocking in ... general, switchJobs, or equipment
+              clockInRole={clockInRole} // clock in role will make the qr know which role to use
+              setClockInRole={setClockInRole}
+              setScanned={setScanned}
+            />
+          )}
         </Holds>
       )}
       {/* Mechanic Role */}

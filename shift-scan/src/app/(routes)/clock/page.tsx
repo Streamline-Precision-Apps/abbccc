@@ -15,7 +15,7 @@ export default async function Clock() {
   }
 
   const user = session.user;
-
+  const workRoleCookie = cookies().get("workRole")?.value || "";
   // Get the current language from cookies
   const lang = cookies().get("locale");
   const locale = lang?.value || "en";
@@ -24,29 +24,19 @@ export default async function Clock() {
       <Contents>
         <Holds className="h-full">
           <NewClockProcess
-            mechanicView={user.mechanicView}
-            tascoView={user.tascoView}
-            truckView={user.truckView}
-            laborView={user.laborView}
+            mechanicView={user.mechanicView ?? false}
+            tascoView={user.tascoView ?? false}
+            truckView={user.truckView ?? false}
+            laborView={user.laborView ?? false}
             option="clockin"
             returnpath="/"
             type={"jobsite"}
             scannerType={"jobsite"}
             locale={locale}
-            currentRole={""}
+            currentRole={workRoleCookie}
           />
         </Holds>
       </Contents>
     </Bases>
   );
-}
-
-{
-  /* <ClockProcessor
-  type={"jobsite"}
-  scannerType={"jobsite"}
-  option="clockin"
-  locale={locale}
-  returnpath="/"
-/> */
 }
