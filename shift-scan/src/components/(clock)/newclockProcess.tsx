@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { Holds } from "../(reusable)/holds";
 import MultipleRoles from "./multipleRoles";
 import QRStep from "./qr-handler";
@@ -74,8 +74,7 @@ export default function NewClockProcess({
   }, []);
 
   // useEffect to choose role
-  useEffect(() => {
-    let role = "";
+  useLayoutEffect(() => {
     // Set number of roles to get total number of roles
     let numberOfRoles = 0;
     if (mechanicView) {
@@ -91,6 +90,7 @@ export default function NewClockProcess({
       numberOfRoles++;
     }
     setNumberOfRoles(numberOfRoles);
+    console.log(numberOfRoles);
 
     // If switch jobs, reset step
     if (type === "switchJobs") {
@@ -102,24 +102,37 @@ export default function NewClockProcess({
     }
     // If not switch jobs, choose role
     else {
-      setWorkRole(""); // Reset workRole so that the cookie is never set for the wrong role
-      if (mechanicView && !laborView && !truckView && !tascoView) {
-        role = "mechanic";
-        setClockInRole(role);
-      } else if (laborView && !mechanicView && !truckView && !tascoView) {
-        role = "general";
-        setClockInRole(role);
-      } else if (truckView && !mechanicView && !laborView && !tascoView) {
-        role = "truck";
-        setClockInRole(role);
-      } else if (tascoView && !mechanicView && laborView && !truckView) {
-        role = "tasco";
-        setClockInRole(role);
-      } else {
-        role = "";
+      // If only one role, set role to that role
+      if (numberOfRoles === 1) {
+        if (mechanicView) {
+          setClockInRole("mechanic");
+          setWorkRole("mechanic");
+          setStep(1);
+        } else if (laborView) {
+          setClockInRole("general");
+          setWorkRole("general");
+          setStep(1);
+        } else if (truckView) {
+          setClockInRole("truck");
+          setWorkRole("truck");
+          setStep(1);
+        } else if (tascoView) {
+          setClockInRole("tasco");
+          setWorkRole("tasco");
+          setStep(1);
+        } else {
+          setClockInRole("");
+          setWorkRole("");
+          setStep(1);
+        }
       }
-      setClockInRole(role); // Set role
-      setStep(role === "" ? 1 : 2);
+      // If more than one role, set blank role
+      else {
+        setClockInRole(""); // Set role
+        setWorkRole("");
+        setStep(1);
+        console.log("Else path");
+      }
     }
   }, [mechanicView, truckView, tascoView, laborView, type, option]);
 
@@ -302,9 +315,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
           </Holds>
         </>
       )}
-      {/* Mechanic Role */}
-      {/* ------------------------- Mechanic Role start ---------------------*/}
-      {step === 2 && clockInRole === "mechanic" && (
+      {step === 2 && (
         <Holds className="h-full w-full">
           <QRStep
             type="jobsite"
@@ -321,6 +332,8 @@ step 4 : confirmation page and redirect to dashboard with authorization
           />
         </Holds>
       )}
+      {/* Mechanic Role */}
+      {/* ------------------------- Mechanic Role start ---------------------*/}
       {step === 3 && clockInRole === "mechanic" && (
         <CodeStep
           datatype="jobsite"
@@ -344,26 +357,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
 
       {/* Truck Role */}
       {/* ------------------------- Trucking Role start ---------------------*/}
-      {step === 2 && clockInRole === "truck" && (
-        <QRStep
-          type="jobsite" // two types of types for qr, jobsite or equipment
-          handleAlternativePath={handleAlternativePath} // handle alternative path
-          handleReturnPath={handleReturnPath}
-          handleNextStep={handleNextStep}
-          handleReturn={handleReturn}
-          handleScanJobsite={handleScanJobsite}
-          url={returnpath}
-          option={type} // type is the method of clocking in ... general, switchJobs, or equipment
-          clockInRole={clockInRole}
-          setClockInRole={setClockInRole}
-          setScanned={setScanned}
-        />
-      )}
-      {/* Special Forms Section */}
-      {/* <TruckClockInForm
-          handleNextStep={handleNextStep}
-          setComments={setComments}
-        /> */}
+
       {step === 3 && clockInRole === "truck" && (
         <CodeStep
           datatype="jobsite"
@@ -413,21 +407,6 @@ step 4 : confirmation page and redirect to dashboard with authorization
 
       {/* Tasco Role */}
       {/* ------------------------- Tasco Role start ---------------------*/}
-      {step === 2 && clockInRole === "tasco" && (
-        <QRStep
-          type="jobsite"
-          handleAlternativePath={handleAlternativePath}
-          handleNextStep={handleNextStep}
-          handleReturn={handleReturn}
-          handleReturnPath={handleReturnPath}
-          handleScanJobsite={handleScanJobsite}
-          url={returnpath}
-          option={type} // type is the method of clocking in ... general, switchJobs, or equipment
-          clockInRole={clockInRole}
-          setClockInRole={setClockInRole}
-          setScanned={setScanned}
-        />
-      )}
       {/* Tasco Role */}
       {step === 3 && clockInRole === "tasco" && (
         <CodeStep
@@ -475,21 +454,6 @@ step 4 : confirmation page and redirect to dashboard with authorization
 
       {/* General Role */}
       {/* ------------------------- General Role ---------------------*/}
-      {step === 2 && clockInRole === "general" && (
-        <QRStep
-          type="jobsite"
-          handleAlternativePath={handleAlternativePath}
-          handleNextStep={handleNextStep}
-          handleReturn={handleReturn}
-          handleReturnPath={handleReturnPath}
-          handleScanJobsite={handleScanJobsite}
-          url={returnpath}
-          option={type} // type is the method of clocking in ... general, switchJobs, or equipment
-          clockInRole={clockInRole}
-          setClockInRole={setClockInRole}
-          setScanned={setScanned}
-        />
-      )}
       {/* Select Jobsite Section */}
       {step === 3 && clockInRole === "general" && (
         <CodeStep
