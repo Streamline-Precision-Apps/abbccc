@@ -142,6 +142,8 @@ export default function TruckClockInForm({
                 handleNextStep={handleNextStep}
                 backArrow={false}
                 handlePrevStep={handlePrevStep}
+                scanned={false}
+                handleScannedPrevStep={handlePrevStep}
               />
             )}
             {laborType === "manualLabor" && (
