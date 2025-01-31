@@ -8,6 +8,9 @@ import { Titles } from "../(reusable)/titles";
 import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
 import { Images } from "../(reusable)/images";
+import { Selects } from "../(reusable)/selects";
+import { useSession } from "next-auth/react";
+import { setWorkRole } from "@/actions/cookieActions";
 import { Contents } from "../(reusable)/contents";
 
 type QRStepProps = {
@@ -24,7 +27,7 @@ type QRStepProps = {
   setScanned: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export default function QRStep({
+export default function QRMultiRoles({
   option,
   handleReturnPath,
   handleAlternativePath,
@@ -38,7 +41,28 @@ export default function QRStep({
 }: QRStepProps) {
   const t = useTranslations("Clock");
   const [startCamera, setStartCamera] = useState<boolean>(false);
+  const { data: session } = useSession();
+  const tascoView = session?.user.tascoView;
+  const truckView = session?.user.truckView;
+  const mechanicView = session?.user.mechanicView;
+  const laborView = session?.user.laborView;
+  const [numberOfViews, setNumberOfViews] = useState(0);
   const [failedToScan, setFailedToScan] = useState(false);
+
+  const selectView = (clockInRole: string) => {
+    setClockInRole(clockInRole);
+  };
+
+  useEffect(() => {
+    let count = 0;
+    if (tascoView) count++;
+    if (truckView) count++;
+    if (mechanicView) count++;
+    if (laborView) count++;
+
+    setNumberOfViews(count);
+    console.log(count);
+  }, [tascoView, truckView, mechanicView, laborView]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -75,6 +99,29 @@ export default function QRStep({
                     </Holds>
                   </Grids>
                 </Holds>
+                {numberOfViews > 1 && option !== "switchJobs" ? (
+                  <Holds className="p-1 justify-center border-[3px] border-black rounded-[10px] shadow-[6px_6px_0px_grey]">
+                    <Selects
+                      className="disabled:gray-400 bg-app-blue text-center p-3"
+                      value={clockInRole}
+                      disabled={startCamera}
+                      onChange={(e) => selectView(e.target.value)}
+                    >
+                      {tascoView === true && (
+                        <option value="tasco">{t("TASCO")}</option>
+                      )}
+                      {truckView === true && (
+                        <option value="truck">{t("Truck")}</option>
+                      )}
+                      {mechanicView === true && (
+                        <option value="mechanic">{t("Mechanic")}</option>
+                      )}
+                      {laborView === true && (
+                        <option value="general">{t("General")}</option>
+                      )}
+                    </Selects>
+                  </Holds>
+                ) : null}
               </>
             ) : (
               <Holds className="row-start-1 row-end-2 h-full w-full justify-center ">
@@ -102,7 +149,13 @@ export default function QRStep({
             )}
 
             {!startCamera ? (
-              <Holds className={"h-full w-full row-start-2 row-end-7"}>
+              <Holds
+                className={
+                  numberOfViews > 1
+                    ? "h-full w-full row-start-4 row-end-6"
+                    : "h-full w-full row-start-2 row-end-7"
+                }
+              >
                 <Holds className="h-full m-auto">
                   <Images
                     titleImg="/camera.svg"
@@ -120,7 +173,13 @@ export default function QRStep({
                 </Holds>
               </Holds>
             ) : (
-              <Holds className={"h-full w-full row-start-3 row-end-7"}>
+              <Holds
+                className={
+                  numberOfViews > 1
+                    ? "h-full w-full row-start-3 row-end-7"
+                    : "h-full w-full row-start-3 row-end-7"
+                }
+              >
                 <Grids rows={"5"} gap={"2"}>
                   <Holds className="h-full w-full row-start-1 row-end-5 justify-center">
                     <QR
