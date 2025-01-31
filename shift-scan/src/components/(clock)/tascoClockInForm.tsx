@@ -100,6 +100,8 @@ export default function TascoClockInForm({
                 handleNextStep={handleNextStep}
                 backArrow={false}
                 handlePrevStep={handlePrevStep}
+                handleScannedPrevStep={handlePrevStep}
+                scanned={false}
               />
             )}
             {shiftType === "eShift" && (
@@ -108,6 +110,8 @@ export default function TascoClockInForm({
                 handleNextStep={handleNextStep}
                 backArrow={false}
                 handlePrevStep={handlePrevStep}
+                handleScannedPrevStep={handlePrevStep}
+                scanned={false}
               />
             )}
 
@@ -176,6 +180,8 @@ export default function TascoClockInForm({
                         handleNextStep={handleNextStep}
                         backArrow={false}
                         handlePrevStep={handlePrevStep}
+                        handleScannedPrevStep={handlePrevStep}
+                        scanned={false}
                       />
                     </Grids>
                   </Holds>
