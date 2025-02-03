@@ -21,8 +21,9 @@ import { returnToPrevWork } from "@/actions/timeSheetActions";
 import TruckVerificationStep from "./Verification-step-truck";
 import TascoClockInForm from "./tascoClockInForm";
 import { useSession } from "next-auth/react";
-import QRMultiRoles from "./qr-mulit-handler";
+import QRMultiRoles from "./qr-multi-handler";
 import ClockLoadingPage from "./clock-loading-page";
+import { Contents } from "../(reusable)/contents";
 
 type NewClockProcessProps = {
   mechanicView: boolean;
@@ -341,13 +342,17 @@ step 4 : confirmation page and redirect to dashboard with authorization
       {/* Mechanic Role */}
       {/* ------------------------- Mechanic Role start ---------------------*/}
       {step === 3 && clockInRole === "mechanic" && (
-        <CodeStep
-          datatype="jobsite"
-          handleNextStep={handleNextStep}
-          handlePrevStep={handlePrevStep}
-          handleScannedPrevStep={handleScannedPrevStep}
-          scanned={scanned}
-        />
+        <Holds background={"white"} className="h-full w-full py-5">
+          <Contents width="section">
+            <CodeStep
+              datatype="jobsite"
+              handleNextStep={handleNextStep}
+              handlePrevStep={handlePrevStep}
+              handleScannedPrevStep={handleScannedPrevStep}
+              scanned={scanned}
+            />
+          </Contents>
+        </Holds>
       )}
       {step === 4 && clockInRole === "mechanic" && (
         <MechanicVerificationStep
@@ -365,23 +370,31 @@ step 4 : confirmation page and redirect to dashboard with authorization
       {/* ------------------------- Trucking Role start ---------------------*/}
 
       {step === 3 && clockInRole === "truck" && (
-        <CodeStep
-          datatype="jobsite"
-          handleNextStep={handleNextStep}
-          handlePrevStep={handlePrevStep}
-          handleScannedPrevStep={handleScannedPrevStep}
-          scanned={scanned}
-        />
+        <Holds background={"white"} className="h-full w-full py-5">
+          <Contents width="section">
+            <CodeStep
+              datatype="jobsite"
+              handleNextStep={handleNextStep}
+              handlePrevStep={handlePrevStep}
+              handleScannedPrevStep={handleScannedPrevStep}
+              scanned={scanned}
+            />
+          </Contents>
+        </Holds>
       )}
       {/* Special Forms Section */}
       {step === 4 && clockInRole === "truck" && (
-        <CodeStep
-          datatype="costcode"
-          handleNextStep={handleNextStep}
-          handlePrevStep={handlePrevStep}
-          handleScannedPrevStep={handleScannedPrevStep}
-          scanned={scanned}
-        />
+        <Holds background={"white"} className="h-full w-full py-5">
+          <Contents width="section">
+            <CodeStep
+              datatype="costcode"
+              handleNextStep={handleNextStep}
+              handlePrevStep={handlePrevStep}
+              handleScannedPrevStep={handleScannedPrevStep}
+              scanned={scanned}
+            />
+          </Contents>
+        </Holds>
       )}
       {step === 5 && clockInRole === "truck" && (
         <TruckClockInForm
@@ -415,22 +428,30 @@ step 4 : confirmation page and redirect to dashboard with authorization
       {/* ------------------------- Tasco Role start ---------------------*/}
       {/* Tasco Role */}
       {step === 3 && clockInRole === "tasco" && (
-        <CodeStep
-          datatype="jobsite"
-          handleNextStep={handleNextStep}
-          handlePrevStep={handlePrevStep}
-          handleScannedPrevStep={handleScannedPrevStep}
-          scanned={scanned}
-        />
+        <Holds background={"white"} className="h-full w-full py-5">
+          <Contents width="section">
+            <CodeStep
+              datatype="jobsite"
+              handleNextStep={handleNextStep}
+              handlePrevStep={handlePrevStep}
+              handleScannedPrevStep={handleScannedPrevStep}
+              scanned={scanned}
+            />
+          </Contents>
+        </Holds>
       )}
       {step === 4 && clockInRole === "tasco" && (
-        <CodeStep
-          datatype="costcode"
-          handleNextStep={handleNextStep}
-          handlePrevStep={handlePrevStep}
-          handleScannedPrevStep={handleScannedPrevStep}
-          scanned={scanned}
-        />
+        <Holds background={"white"} className="h-full w-full py-5">
+          <Contents width="section">
+            <CodeStep
+              datatype="costcode"
+              handleNextStep={handleNextStep}
+              handlePrevStep={handlePrevStep}
+              handleScannedPrevStep={handleScannedPrevStep}
+              scanned={scanned}
+            />
+          </Contents>
+        </Holds>
       )}
       {step === 5 && clockInRole === "tasco" && (
         <TascoClockInForm
@@ -462,23 +483,31 @@ step 4 : confirmation page and redirect to dashboard with authorization
       {/* ------------------------- General Role ---------------------*/}
       {/* Select Jobsite Section */}
       {step === 3 && clockInRole === "general" && (
-        <CodeStep
-          datatype="jobsite"
-          handleNextStep={handleNextStep}
-          handlePrevStep={handlePrevStep}
-          handleScannedPrevStep={handleScannedPrevStep}
-          scanned={scanned}
-        />
+        <Holds background={"white"} className="h-full w-full py-5">
+          <Contents width="section">
+            <CodeStep
+              datatype="jobsite"
+              handleNextStep={handleNextStep}
+              handlePrevStep={handlePrevStep}
+              handleScannedPrevStep={handleScannedPrevStep}
+              scanned={scanned}
+            />
+          </Contents>
+        </Holds>
       )}
       {/* Select Cost Code Section */}
       {step === 4 && clockInRole === "general" && (
-        <CodeStep
-          datatype="costcode"
-          handleNextStep={handleNextStep}
-          handlePrevStep={handlePrevStep}
-          handleScannedPrevStep={handleScannedPrevStep}
-          scanned={scanned}
-        />
+        <Holds background={"white"} className="h-full w-full py-5">
+          <Contents width="section">
+            <CodeStep
+              datatype="costcode"
+              handleNextStep={handleNextStep}
+              handlePrevStep={handlePrevStep}
+              handleScannedPrevStep={handleScannedPrevStep}
+              scanned={scanned}
+            />
+          </Contents>
+        </Holds>
       )}
       {/* Verification Page */}
       {step === 5 && clockInRole === "general" && (
