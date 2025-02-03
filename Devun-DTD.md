@@ -293,3 +293,20 @@ cookies().set({
 - /clock type  update scan job site to select work type
 - /gray continue added validation 
 - clock out bug with tasco?
+
+  #
+# February 4, 2025 - Tueday
+### Goals
+- Create all stuff for backend for Sign up steps
+  - /sign-up
+  -/ Update Test data to have every role with a generic name
+### Built/created 
+- debugging clock in path
+- making changes based on what zach stated
+- created loading UI for clocking route to help loading state
+
+### Trello
+- /clock - "Start Camera" instead of begin scan
+- /clock type  update scan job site to select work type
+- /gray continue added validation 
+- clock out bug with tasco?
