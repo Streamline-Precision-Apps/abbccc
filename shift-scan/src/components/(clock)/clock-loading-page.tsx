@@ -12,7 +12,6 @@ export default function ClockLoadingPage({
 }: {
   handleReturnPath: () => void;
 }) {
-  const t = useTranslations("Clock");
   return (
     <Holds background={"white"} className="h-full w-full animate-pulse">
       <Contents width={"section"}>
