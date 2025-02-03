@@ -106,6 +106,8 @@ export default function NewClockProcess({
         }
       };
       autoSelectRole();
+    } else {
+      setStep(1);
     }
   }, [session, mechanicView, laborView, truckView, tascoView, type, option]);
 

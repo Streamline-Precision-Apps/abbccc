@@ -12,7 +12,6 @@ import { Selects } from "../(reusable)/selects";
 import { TextAreas } from "../(reusable)/textareas";
 import { Texts } from "../(reusable)/texts";
 import { Labels } from "../(reusable)/labels";
-import { number } from "zod";
 
 type Props = {
   handleNextStep: () => void;
@@ -40,6 +39,7 @@ export default function SwitchJobsMultiRoles({
   const laborView = session?.user.laborView;
   const { setCommentData } = useCommentData();
   const [commentsValue, setCommentsValue] = useState<string>("");
+  const [submittable, setSubmittable] = useState<boolean>(false);
 
   const selectView = (selectedRole: string) => {
     setClockInRole(selectedRole); // Updates state
@@ -48,6 +48,11 @@ export default function SwitchJobsMultiRoles({
   const saveCurrentData = () => {
     setCommentData({ id: commentsValue }); // Ensure correct data structure
   };
+
+  useEffect(() => {
+    setSubmittable(commentsValue.length >= 3);
+  }, [commentsValue]);
+
   if (numberOfRoles === 1) {
     return (
       <Holds background={"white"} className="h-full w-full">
@@ -71,6 +76,7 @@ export default function SwitchJobsMultiRoles({
                     {t("PreviousJobComment")}
                   </Labels>
                   <TextAreas
+                    name="comments"
                     onChange={(e) => {
                       setCommentsValue(e.target.value);
                     }}
@@ -97,11 +103,12 @@ export default function SwitchJobsMultiRoles({
           <Holds className="row-start-4 row-end-6 h-full w-full justify-center"></Holds>
           <Holds className="row-start-7 row-end-8 h-full w-full justify-center">
             <Buttons
+              disabled={!submittable}
               onClick={() => {
                 saveCurrentData();
                 handleNextStep();
               }}
-              background={"orange"}
+              background={submittable === false ? "grey" : "orange"}
             >
               <Titles size={"h3"}>{t("Next")}</Titles>
             </Buttons>
@@ -190,11 +197,12 @@ export default function SwitchJobsMultiRoles({
         </Holds>
         <Holds className="row-start-7 row-end-8 h-full w-full justify-center">
           <Buttons
+            disabled={!submittable}
             onClick={() => {
               saveCurrentData();
               handleNextStep();
             }}
-            background={"orange"}
+            background={submittable === false ? "grey" : "orange"}
           >
             <Titles size={"h3"}>{t("Next")}</Titles>
           </Buttons>
