@@ -83,6 +83,7 @@ export async function setWorkRole(workRole: string) {
 export async function setLaborType(laborType: string) {
   if (
     laborType !== "operator" &&
+    laborType !== "equipmentOperator" &&
     laborType !== "truckDriver" &&
     laborType !== "manualLabor"
   ) {

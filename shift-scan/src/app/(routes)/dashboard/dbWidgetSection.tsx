@@ -117,10 +117,15 @@ export default function DbWidgetSection({ session, view }: props) {
     try {
       if (logs.length === 0) {
         const formData2 = new FormData();
-        const tId = await fetch(
-          "/api/cookies?method=get&name=timeSheetId"
-        ).then((res) => res.json()); // retrieving cookie
-        formData2.append("id", tId?.toString() || "");
+
+        let timeSheetId = null;
+        // retrieving cookie to get timeSheetId or use recent one from api call
+
+        const response = await fetch("/api/getRecentTimecard");
+        const tsId = await response.json();
+        timeSheetId = tsId.id;
+
+        formData2.append("id", timeSheetId?.toString() || "");
         formData2.append("endTime", new Date().toISOString());
         formData2.append("timesheetComments", comment);
 

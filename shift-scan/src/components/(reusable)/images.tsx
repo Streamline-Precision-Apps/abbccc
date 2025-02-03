@@ -1,7 +1,6 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { ImgHTMLAttributes, FC } from "react";
 import { cn } from "@/components/(reusable)/utils";
-import Image from "next/image";
 
 //this determines styles of all images
 const ImageVariants = cva(
@@ -42,11 +41,12 @@ const ImageVariants = cva(
 );
 
 interface ImageProps
-  extends Omit<React.ComponentProps<typeof Image>, "src" | "alt">,
+  extends ImgHTMLAttributes<HTMLImageElement>,
     VariantProps<typeof ImageVariants> {
   titleImg: string;
   titleImgAlt: string;
 }
+
 const Images: FC<ImageProps> = ({
   className,
   background,
@@ -57,14 +57,11 @@ const Images: FC<ImageProps> = ({
   ...props
 }) => {
   return (
-    <Image
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
       src={titleImg}
       alt={titleImgAlt}
       className={cn(ImageVariants({ background, position, size, className }))}
-      width={500} // ✅ Adjust width as needed
-      height={300} // ✅ Adjust height as needed
-      layout="intrinsic" // ✅ Uses intrinsic layout
-      priority // ✅ Optimize for faster loading (use for important images)
       {...props}
     />
   );
