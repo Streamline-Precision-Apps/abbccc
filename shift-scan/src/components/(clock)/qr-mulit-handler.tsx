@@ -151,12 +151,10 @@ export default function QRMultiRoles({
             {!startCamera ? (
               <Holds
                 className={
-                  numberOfViews > 1
-                    ? "h-full w-full row-start-4 row-end-6"
-                    : "h-full w-full row-start-2 row-end-7"
+                  "h-full w-full row-start-3 row-end-6 border-[3px] border-black rounded-[10px] p-3 "
                 }
               >
-                <Holds className="h-full m-auto">
+                <Holds className="h-full w-full justify-center border-[3px] border-black rounded-[10px]">
                   <Images
                     titleImg="/camera.svg"
                     titleImgAlt="clockIn"
@@ -173,15 +171,9 @@ export default function QRMultiRoles({
                 </Holds>
               </Holds>
             ) : (
-              <Holds
-                className={
-                  numberOfViews > 1
-                    ? "h-full w-full row-start-3 row-end-7"
-                    : "h-full w-full row-start-3 row-end-7"
-                }
-              >
-                <Grids rows={"5"} gap={"2"}>
-                  <Holds className="h-full w-full row-start-1 row-end-5 justify-center">
+              <Holds className={"h-full w-full row-start-3 row-end-7"}>
+                <Grids rows={"6"} gap={"2"}>
+                  <Holds className="h-full w-full row-start-1 row-end-6 justify-center border-[3px] border-black rounded-[10px] p-3">
                     <QR
                       handleScanJobsite={handleScanJobsite}
                       url={url}
@@ -195,7 +187,7 @@ export default function QRMultiRoles({
                     />
                   </Holds>
 
-                  <Holds className="h-full w-full row-start-5 row-end-6 justify-center">
+                  <Holds className="h-full w-full row-start-6 row-end-7 justify-center">
                     <Buttons
                       background={"none"}
                       onClick={handleAlternativePath}
@@ -212,7 +204,7 @@ export default function QRMultiRoles({
                   onClick={() => setStartCamera(!startCamera)}
                   background={"green"}
                 >
-                  <Titles size={"h2"}>Begin Scanning</Titles>
+                  <Titles size={"h2"}>{t("StartCamera")}</Titles>
                 </Buttons>
               </Holds>
             ) : null}

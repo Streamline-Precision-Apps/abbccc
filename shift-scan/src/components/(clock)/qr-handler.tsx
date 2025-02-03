@@ -13,6 +13,7 @@ import { Contents } from "../(reusable)/contents";
 type QRStepProps = {
   handleAlternativePath: () => void;
   handleNextStep: () => void;
+  handlePrevStep: () => void;
   handleReturn?: () => void;
   handleReturnPath: () => void;
   handleScanJobsite?: (type: string) => void;
@@ -33,7 +34,7 @@ export default function QRStep({
   type,
   url,
   clockInRole,
-  setClockInRole,
+  handlePrevStep,
 
   setScanned,
 }: QRStepProps) {
@@ -50,8 +51,8 @@ export default function QRStep({
   return (
     <>
       <Holds background={"white"} className="h-full w-full">
-        <Contents width={"section"}>
-          <Grids rows={"7"} gap={"5"} className="h-full w-full my-5">
+        <Contents width={"section"} className="h-full py-5">
+          <Grids rows={"7"} gap={"5"} className="h-full w-full ">
             {type !== "equipment" ? (
               <>
                 <Holds className="row-start-1 row-end-2 h-full w-full justify-center ">
@@ -87,7 +88,7 @@ export default function QRStep({
                 >
                   <Holds
                     className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center"
-                    onClick={handleReturnPath}
+                    onClick={handlePrevStep}
                   >
                     <Images
                       titleImg="/turnBack.svg"
@@ -103,27 +104,31 @@ export default function QRStep({
             )}
 
             {!startCamera ? (
-              <Holds className={"h-full w-full row-start-2 row-end-7"}>
-                <Holds className="h-full m-auto">
-                  <Images
-                    titleImg="/camera.svg"
-                    titleImgAlt="clockIn"
-                    position={"center"}
-                    size={"40"}
-                  />
-                  {failedToScan === true && (
-                    <Holds className="pt-5">
-                      <Texts text={"red"} size={"p4"}>
-                        {t("FailedToScanJobSiteDoesNotExist")}
-                      </Texts>
+              <Holds className={"h-full w-full row-start-2 row-end-7 "}>
+                <Grids rows={"6"} gap={"2"} className="h-full w-full">
+                  <Holds className="h-full w-full row-start-2 row-end-6 justify-center border-[3px] border-black rounded-[10px] p-3">
+                    <Holds className="h-full w-full justify-center bg-slate-300 border-[3px] border-black rounded-[10px]">
+                      <Images
+                        titleImg="/camera.svg"
+                        titleImgAlt="clockIn"
+                        position={"center"}
+                        size={"40"}
+                      />
                     </Holds>
-                  )}
-                </Holds>
+                    {failedToScan === true && (
+                      <Holds className="h-full w-full row-start-6 row-end-7 justify-center">
+                        <Texts text={"red"} size={"p4"}>
+                          {t("FailedToScanJobSiteDoesNotExist")}
+                        </Texts>
+                      </Holds>
+                    )}
+                  </Holds>
+                </Grids>
               </Holds>
             ) : (
-              <Holds className={"h-full w-full row-start-3 row-end-7"}>
-                <Grids rows={"5"} gap={"2"}>
-                  <Holds className="h-full w-full row-start-1 row-end-5 justify-center">
+              <Holds className={"h-full w-full row-start-2 row-end-7"}>
+                <Grids rows={"6"} gap={"2"}>
+                  <Holds className="h-full w-full row-start-2 row-end-6 justify-center border-[3px] p-3 border-black rounded-[10px] ">
                     <QR
                       handleScanJobsite={handleScanJobsite}
                       url={url}
@@ -137,7 +142,7 @@ export default function QRStep({
                     />
                   </Holds>
 
-                  <Holds className="h-full w-full row-start-5 row-end-6 justify-center">
+                  <Holds className="h-full w-full row-start-6 row-end-7 justify-center">
                     <Buttons
                       background={"none"}
                       onClick={handleAlternativePath}
@@ -154,7 +159,7 @@ export default function QRStep({
                   onClick={() => setStartCamera(!startCamera)}
                   background={"green"}
                 >
-                  <Titles size={"h2"}>Begin Scanning</Titles>
+                  <Titles size={"h2"}>{t("StartCamera")}</Titles>
                 </Buttons>
               </Holds>
             ) : null}
