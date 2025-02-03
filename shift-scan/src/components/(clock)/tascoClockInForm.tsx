@@ -116,10 +116,10 @@ export default function TascoClockInForm({
             )}
 
             {shiftType === "abcdShift" && (
-              <Grids rows={"8"} cols={"2"} gap={"3"}>
+              <Grids rows={"8"}>
                 <Holds
                   background={"white"}
-                  className=" row-start-1 row-end-2 col-span-1 justify-center p-1 py-2 border-[3px] border-black rounded-[10px]"
+                  className=" row-start-1 row-end-2  justify-center p-1 py-2 border-[3px] border-black rounded-[10px]"
                 >
                   <Selects
                     value={materialType}
@@ -141,7 +141,7 @@ export default function TascoClockInForm({
                 </Holds>
                 <Holds
                   background={"white"}
-                  className=" row-start-1 row-end-2 col-span-1 justify-center p-1 py-2 border-[3px] border-black rounded-[10px]"
+                  className=" row-start-2 row-end-3  justify-center p-1 py-2 border-[3px] border-black rounded-[10px]"
                 >
                   <Selects
                     value={laborType}
@@ -173,7 +173,7 @@ export default function TascoClockInForm({
                   </Holds>
                 )}
                 {laborType === "equipmentOperator" && (
-                  <Holds className="row-start-2 row-end-9 col-span-2 h-full w-full">
+                  <Holds className="row-start-3 row-end-9 col-span-2 h-full w-full">
                     <Grids rows={"1"} cols={"1"}>
                       <CodeStep
                         datatype="equipment-operator" // using this to set the title of equipment

@@ -287,4 +287,6 @@ cookies().set({
 - debugging clockin path
 
 ### Trello
-
+- /clock - "Start Camera" instead of begin scan
+- /clock type  update scan job site to select work type
+- /gray continue added validation 

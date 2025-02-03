@@ -23,7 +23,7 @@ export default function StepButtons({
         background={disabled ? "grey" : "orange"}
         onClick={handleNextStep}
         disabled={disabled}
-        className="py-3"
+        className="py-2"
       >
         <Titles size={"h2"}>{isLastStep ? t("Submit") : t("Continue")}</Titles>
       </Buttons>

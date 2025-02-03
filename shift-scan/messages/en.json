@@ -308,6 +308,7 @@
     "ID": "Id: #"
 },
 "Clock": {
+    "ViewSelected": "View Selected Options",
     "ScanJobsite": "Scan Job Site",
     "StartCamera": "Start Camera",
     "StopCamera": "Stop Camera",
