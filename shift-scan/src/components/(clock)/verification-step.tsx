@@ -82,7 +82,7 @@ export default function VerificationStep({
             );
           }
           const formData2 = new FormData();
-          formData2.append("id", tId?.toString() || "");
+          formData2.append("id", timeSheetId?.toString() || "");
           formData2.append("endTime", new Date().toISOString());
           formData2.append(
             "timesheetComments",
