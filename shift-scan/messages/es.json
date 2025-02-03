@@ -287,6 +287,9 @@
     "ID": "Id: #"
 },
 "Clock": {
+    "ScanJobsite": "Escaneo de Sitio de Trabajo",
+    "StartCamera": "Iniciar la cámara",
+    "StopCamera": "Detener la cámara",
     "FailedToScanJobSiteDoesNotExist": "Error de escaneo, el código QR no existe",
     "search-equipment-operator": "Buscar Equipo",
     "Title-equipment-operator": "Seleccionar Equipo",

@@ -115,6 +115,22 @@ export default function QR({
         highlightCodeOutline: true,
         returnDetailedScanResult: true,
         preferredCamera: "environment",
+        calculateScanRegion: (video) => {
+          const videoWidth = video.videoWidth;
+          const videoHeight = video.videoHeight;
+          const regionWidth = videoWidth * 0.3; // 80% of the video width
+          const regionHeight = videoHeight * 0.5; // 80% of the video height
+          const x = (videoWidth - regionWidth) / 2; // Center the region horizontally
+          const y = (videoHeight - regionHeight) / 2; // Center the region vertically
+          return {
+            x,
+            y,
+            width: regionWidth,
+            height: regionHeight,
+            downScaledWidth: 400,
+            downScaledHeight: 400,
+          };
+        },
       });
 
       qrScannerRef.current = scanner;
@@ -149,7 +165,7 @@ export default function QR({
   return (
     <video
       ref={videoRef}
-      className="h-fit w-full rounded-2xl border-4 bg-black bg-opacity-85 border-black p-[2%]"
+      className="w-full h-full rounded-[10px] border-[3px] border-black bg-black bg-opacity-85  object-cover"
       aria-label="QR scanner video stream"
     >
       Video stream not available. Please enable your camera.

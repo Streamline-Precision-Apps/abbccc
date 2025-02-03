@@ -206,6 +206,7 @@ export default function NewClockProcess({
               type="equipment"
               handleAlternativePath={handleAlternativePathEQ}
               handleNextStep={handleNextStep}
+              handlePrevStep={handlePrevStep}
               url="/dashboard"
               handleReturnPath={handleReturnPath}
               clockInRole={""}
@@ -289,6 +290,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
             )}
             {type === "jobsite" && (
               <MultipleRoles
+                numberOfRoles={numberOfRoles}
                 handleNextStep={handleNextStep}
                 setClockInRole={setClockInRole}
                 clockInRole={clockInRole}
@@ -309,6 +311,7 @@ step 4 : confirmation page and redirect to dashboard with authorization
               handleReturnPath={handleReturnPath}
               handleAlternativePath={handleAlternativePath}
               handleNextStep={handleNextStep}
+              handlePrevStep={handlePrevStep}
               handleReturn={handleReturn}
               handleScanJobsite={handleScanJobsite}
               url={returnpath}
