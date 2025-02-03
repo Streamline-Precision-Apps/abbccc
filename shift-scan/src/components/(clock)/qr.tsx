@@ -6,12 +6,11 @@ import { useRouter } from "next/navigation";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useEQScanData } from "@/app/context/equipmentContext";
 import { useDBJobsite } from "@/app/context/dbCodeContext";
-import { start } from "repl";
 
 type QrReaderProps = {
   handleScanJobsite?: (type: string) => void;
   url: string;
-  clockInRole: string;
+  clockInRole: string | undefined;
   type: string;
   handleNextStep: () => void;
   startCamera: boolean;
@@ -59,7 +58,7 @@ export default function QR({
       setScanResult({ data });
       qrScannerRef.current?.stop();
       if (handleScanJobsite) {
-        handleScanJobsite(clockInRole);
+        handleScanJobsite(clockInRole || "");
       }
     },
     [setScanResult, handleScanJobsite, clockInRole]

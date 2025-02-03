@@ -6,17 +6,16 @@ import { Grids } from "../(reusable)/grids";
 import { Titles } from "../(reusable)/titles";
 import { useTranslations } from "next-intl";
 import { useCommentData } from "@/app/context/CommentContext";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Comment from "@/components/(clock)/comment";
 import { Images } from "../(reusable)/images";
-import { setWorkRole } from "@/actions/cookieActions";
 import { Selects } from "../(reusable)/selects";
 import { Contents } from "../(reusable)/contents";
 
 type Props = {
   handleNextStep: () => void;
-  setClockInRole: React.Dispatch<React.SetStateAction<string>>;
-  clockInRole: string;
+  setClockInRole: React.Dispatch<React.SetStateAction<string | undefined>>;
+  clockInRole: string | undefined;
   option?: string;
   handleReturn?: () => void;
   handleReturnPath: () => void;
@@ -45,17 +44,6 @@ export default function MultipleRoles({
     setClockInRole(clockInRole);
     handleNextStep();
   };
-
-  useEffect(() => {
-    const fetchRole = async () => {
-      const role = await fetch("/api/cookies?method=get&name=workRole");
-      const data = await role.json();
-      if (option !== "break") {
-        setClockInRole(data);
-      }
-    };
-    fetchRole();
-  }, [setClockInRole, option]);
 
   const switchJobs = () => {
     setCommentData({ id: commentsValue }); // Ensure correct data structure

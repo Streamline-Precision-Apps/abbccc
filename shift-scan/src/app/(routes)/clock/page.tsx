@@ -15,7 +15,6 @@ export default async function Clock() {
   }
 
   const user = session.user;
-  const workRoleCookie = cookies().get("workRole")?.value || "";
   // Get the current language from cookies
   const lang = cookies().get("locale");
   const locale = lang?.value || "en";
@@ -33,7 +32,6 @@ export default async function Clock() {
             type={"jobsite"}
             scannerType={"jobsite"}
             locale={locale}
-            currentRole={workRoleCookie}
           />
         </Holds>
       </Contents>

@@ -22,6 +22,7 @@ import TruckVerificationStep from "./Verification-step-truck";
 import TascoClockInForm from "./tascoClockInForm";
 import { useSession } from "next-auth/react";
 import QRMultiRoles from "./qr-mulit-handler";
+import ClockLoadingPage from "./clock-loading-page";
 
 type NewClockProcessProps = {
   mechanicView: boolean;
@@ -33,7 +34,6 @@ type NewClockProcessProps = {
   type: string;
   scannerType: string;
   locale: string;
-  currentRole: string;
 };
 
 export default function NewClockProcess({
@@ -45,13 +45,13 @@ export default function NewClockProcess({
   returnpath,
   option,
   locale,
-  currentRole,
 }: NewClockProcessProps) {
   // State management
   const { data: session } = useSession();
 
-  const [step, setStep] = useState(1);
-  const [clockInRole, setClockInRole] = useState(currentRole);
+  const [step, setStep] = useState<number>(0);
+  const [clockInRole, setClockInRole] = useState<string | undefined>(undefined);
+
   const [numberOfRoles, setNumberOfRoles] = useState(0);
   const [scanned, setScanned] = useState(false);
 
@@ -70,52 +70,44 @@ export default function NewClockProcess({
 
   // useEffect to reset step and role on mount/unmount
   useEffect(() => {
-    setStep(1);
+    setStep(0);
     return () => {
-      setStep(1);
+      setStep(0);
     };
   }, []);
 
-  // useEffect to choose role
   useEffect(() => {
-    if (!session) return; // Wait until session is defined
+    if (!session) {
+      console.log("Session not available yet");
+      return;
+    }
 
-    let count = 0;
-    if (mechanicView) count++;
-    if (laborView) count++;
-    if (truckView) count++;
-    if (tascoView) count++;
-    setNumberOfRoles(count);
+    // Build a list of available roles based on the view flags.
+    const availableRoles: string[] = [];
+    if (mechanicView) availableRoles.push("mechanic");
+    if (laborView) availableRoles.push("general");
+    if (truckView) availableRoles.push("truck");
+    if (tascoView) availableRoles.push("tasco");
+    console.log("Available roles:", availableRoles);
+    setNumberOfRoles(availableRoles.length);
 
-    if (type === "switchJobs" || option === "break") {
-      setStep(1);
-    } else {
-      // Only one role available? Automatically set it.
-      if (count === 1) {
-        if (mechanicView && !laborView && !truckView && !tascoView) {
-          setClockInRole("mechanic");
-          setWorkRole("mechanic");
-          setStep(2);
-        } else if (laborView && !mechanicView && !truckView && !tascoView) {
-          setClockInRole("general");
-          setWorkRole("general");
-          setStep(2);
-        } else if (truckView && !mechanicView && !laborView && !tascoView) {
-          setClockInRole("truck");
-          setWorkRole("truck");
-          setStep(2);
-        } else if (tascoView && !mechanicView && !laborView && !truckView) {
-          setClockInRole("tasco");
-          setWorkRole("tasco");
+    // Auto-select if exactly one role is available.
+    if (availableRoles.length === 1) {
+      const selectedRole = availableRoles[0];
+      console.log("Auto-selecting role:", selectedRole);
+      const autoSelectRole = async () => {
+        setClockInRole(selectedRole);
+        await setWorkRole(selectedRole); // Ensure setWorkRole returns a promise
+        if (type === "switchJobs" || option === "break") {
+          setStep(1);
+          return;
+        } else {
           setStep(2);
         }
-      } else {
-        setClockInRole("");
-        setWorkRole("");
-        setStep(2);
-      }
+      };
+      autoSelectRole();
     }
-  }, [mechanicView, truckView, tascoView, laborView, type, option, session]);
+  }, [session, mechanicView, laborView, truckView, tascoView, type, option]);
 
   //------------------------------------------------------------------
   //------------------------------------------------------------------
@@ -215,7 +207,7 @@ export default function NewClockProcess({
               url="/dashboard"
               handleReturnPath={handleReturnPath}
               clockInRole={""}
-              setClockInRole={setClockInRole}
+              setClockInRole={() => {}}
               setScanned={setScanned}
             />
           </>
@@ -272,6 +264,11 @@ step 4 : confirmation page and redirect to dashboard with authorization
 
   return (
     <>
+      {step === 0 && (
+        <>
+          <ClockLoadingPage handleReturnPath={handleReturnPath} />
+        </>
+      )}
       {/* Multiple Role Selection */}
       {step === 1 && (
         <>
