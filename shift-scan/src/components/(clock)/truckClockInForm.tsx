@@ -52,7 +52,10 @@ export default function TruckClockInForm({
       <Contents width="section">
         <Grids rows={"10"} cols={"1"} className="h-full w-full">
           <Grids rows={"3"} cols={"5"} gap={"3"} className="row-span-2">
-            <Holds className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center">
+            <Holds
+              className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center "
+              onClick={handlePrevStep}
+            >
               <Images
                 titleImg="/turnBack.svg"
                 titleImgAlt="back"
@@ -142,6 +145,8 @@ export default function TruckClockInForm({
                 handleNextStep={handleNextStep}
                 backArrow={false}
                 handlePrevStep={handlePrevStep}
+                scanned={false}
+                handleScannedPrevStep={handlePrevStep}
               />
             )}
             {laborType === "manualLabor" && (

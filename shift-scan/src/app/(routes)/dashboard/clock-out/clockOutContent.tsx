@@ -39,14 +39,13 @@ export default function ClockOutContent() {
   const hasSubmitted = useRef(false);
   const { scanResult } = useScanData();
   const { savedCostCode } = useSavedCostCode();
-  const { savedTimeSheetData } = useTimeSheetData();
   const { truckScanData, setTruckScanData } = useTruckScanData();
   const { setStartingMileage } = useStartingMileage();
   const [date] = useState(new Date());
   const [base64String, setBase64String] = useState<string>("");
   const [endingMileage, setEndingMileage] = useState<number>(0);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const { currentView, setCurrentView } = useCurrentView();
+  const { currentView } = useCurrentView();
   const [refuelingGallons, setRefuelingGallons] = useState<number>(0);
   const [hauledLoadsQuantity, setHauledLoadsQuantity] = useState<number>(0);
   const [materialsHauled, setMaterialsHauled] = useState<string>("");
@@ -57,19 +56,6 @@ export default function ClockOutContent() {
   const incrementStep = () => {
     setStep((prevStep) => prevStep + 1); // Increment function
   };
-
-  // Optimizing localStorage access using useMemo
-  const localStorageData = useMemo(() => {
-    return typeof window !== "undefined"
-      ? {
-          jobsite: localStorage.getItem("jobSite"),
-          costCode: localStorage.getItem("costCode"),
-          timesheet: JSON.parse(
-            localStorage.getItem("savedtimeSheetData") || "{}"
-          ),
-        }
-      : {};
-  }, []);
 
   useEffect(() => {
     console.log("path:", path);
@@ -102,15 +88,30 @@ export default function ClockOutContent() {
 
   const handleSubmit = async () => {
     if (isSubmitting || hasSubmitted.current) return;
-
     try {
       setIsSubmitting(true);
       hasSubmitted.current = true;
+      let timeSheetId = null;
+      // retrieving cookie to get timeSheetId or use recent one from api call
       const tId = await fetch("/api/cookies?method=get&name=timeSheetId").then(
         (res) => res.json()
       );
+      if (tId) {
+        timeSheetId = tId.toString();
+      } else {
+        const response = await fetch("/api/getRecentTimecard");
+        const tsId = await response.json();
+        timeSheetId = tsId.id;
+      }
+
+      if (!timeSheetId) {
+        alert("No valid TimeSheet ID was found. Please try again later.");
+        return;
+      }
+
       const formData = new FormData(formRef.current as HTMLFormElement);
-      formData.append("id", tId?.toString() || ""); // Append the timeSheetId to the form data
+
+      formData.append("id", timeSheetId); // Append the timeSheetId to the form data
       await updateTimeSheet(formData);
       localStorage.clear();
       setTruckScanData("");
@@ -315,14 +316,12 @@ export default function ClockOutContent() {
                   </Holds>
                   <Holds className="row-span-1 h-full my-auto">
                     <Texts>
-                      {t("Jobsite")}{" "}
-                      {scanResult?.data || localStorageData?.jobsite}
+                      {t("Jobsite")} {scanResult?.data}
                     </Texts>
                   </Holds>
                   <Holds className="row-span-1 h-full my-auto">
                     <Texts>
-                      {t("CostCode")}{" "}
-                      {savedCostCode || localStorageData?.costCode}
+                      {t("CostCode")} {savedCostCode}
                     </Texts>
                   </Holds>
                   <Holds className="row-span-1 h-full my-auto">
@@ -411,14 +410,12 @@ export default function ClockOutContent() {
                   </Holds>
                   <Holds className="row-span-1 h-full my-auto">
                     <Texts>
-                      {t("Jobsite")}{" "}
-                      {scanResult?.data || localStorageData?.jobsite}
+                      {t("Jobsite")} {scanResult?.data}
                     </Texts>
                   </Holds>
                   <Holds className="row-span-1 h-full my-auto">
                     <Texts>
-                      {t("CostCode")}{" "}
-                      {savedCostCode || localStorageData?.costCode}
+                      {t("CostCode")} {savedCostCode}
                     </Texts>
                   </Holds>
                   <Holds className="row-span-1 h-full my-auto">
@@ -487,14 +484,12 @@ export default function ClockOutContent() {
                   </Holds>
                   <Holds className="row-span-1 h-full my-auto">
                     <Texts>
-                      {t("Jobsite")}{" "}
-                      {scanResult?.data || localStorageData?.jobsite}
+                      {t("Jobsite")} {scanResult?.data}
                     </Texts>
                   </Holds>
                   <Holds className="row-span-1 h-full my-auto">
                     <Texts>
-                      {t("CostCode")}{" "}
-                      {savedCostCode || localStorageData?.costCode}
+                      {t("CostCode")} {savedCostCode}
                     </Texts>
                   </Holds>
                   <Holds className="row-span-1 h-full my-auto">

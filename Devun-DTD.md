@@ -264,6 +264,49 @@ cookies().set({
 ### Built/created 
 - working on debugging home page
 - building page
+- going through each step and making appropriate routes for each action 
 
 ### Trello
 - Fixing clock in scanner to not destroy and toggle of instead. 
+
+  #
+# January 31, 2025 - Thursday
+### Built/created 
+- met with Zack on fixes through walk through
+- fixed numerous changes but initial login of a user is still buggy
+
+### Trello
+- break time smaller loading animation
+- jobsite pages to look like examples
+
+  #
+# February 3, 2025 - Monday
+### Planning
+- Spend time figuring what Figma pages need to be done, create stories for sprints, prepping for next sprint (2 hours)
+### Built/created 
+- debugging clock in path
+- making changes based on what zach stated
+- created loading UI for clocking route to help loading state
+
+### Trello
+- /clock - "Start Camera" instead of begin scan
+- /clock type  update scan job site to select work type
+- /gray continue added validation 
+- clock out bug with tasco?
+
+  #
+# February 4, 2025 - Tueday
+### Goals
+- Create all stuff for backend for Sign up steps
+  - /sign-up
+  -/ Update Test data to have every role with a generic name
+### Built/created 
+- debugging clock in path
+- making changes based on what zach stated
+- created loading UI for clocking route to help loading state
+
+### Trello
+- /clock - "Start Camera" instead of begin scan
+- /clock type  update scan job site to select work type
+- /gray continue added validation 
+- clock out bug with tasco?
