@@ -268,3 +268,23 @@ cookies().set({
 
 ### Trello
 - Fixing clock in scanner to not destroy and toggle of instead. 
+
+  #
+# January 31, 2025 - Thursday
+### Built/created 
+- met with Zack on fixes through walk through
+- fixed numerous changes but initial login of a user is still buggy
+
+### Trello
+- break time smaller loading animation
+- jobsite pages to look like examples
+
+  #
+# February 3, 2025 - Monday
+### Planning
+- Spend time figuring what Figma pages need to be done, create stories for sprints, prepping for next sprint (2 hours)
+### Built/created 
+- debugging clockin path
+
+### Trello
+

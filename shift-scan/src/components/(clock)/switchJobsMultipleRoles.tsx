@@ -6,17 +6,18 @@ import { Grids } from "../(reusable)/grids";
 import { Titles } from "../(reusable)/titles";
 import { useTranslations } from "next-intl";
 import { useCommentData } from "@/app/context/CommentContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Images } from "../(reusable)/images";
 import { Selects } from "../(reusable)/selects";
 import { TextAreas } from "../(reusable)/textareas";
 import { Texts } from "../(reusable)/texts";
 import { Labels } from "../(reusable)/labels";
+import { number } from "zod";
 
 type Props = {
   handleNextStep: () => void;
-  setClockInRole: React.Dispatch<React.SetStateAction<string>>;
-  clockInRole: string;
+  setClockInRole: React.Dispatch<React.SetStateAction<string | undefined>>;
+  clockInRole: string | undefined;
   option?: string;
   handleReturn?: () => void;
   handleReturnPath: () => void;

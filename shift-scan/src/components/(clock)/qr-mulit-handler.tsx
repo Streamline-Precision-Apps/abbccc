@@ -22,8 +22,8 @@ type QRStepProps = {
   type: string;
   url: string;
   option?: string;
-  clockInRole: string;
-  setClockInRole: React.Dispatch<React.SetStateAction<string>>;
+  clockInRole: string | undefined;
+  setClockInRole: React.Dispatch<React.SetStateAction<string | undefined>>;
   setScanned: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
