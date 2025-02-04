@@ -1,5 +1,5 @@
 "use server";
-import Index from "@/app/hamburger/settings/content";
+import SettingSelections from "@/app/hamburger/settings/content";
 import { auth } from "@/auth";
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
@@ -19,24 +19,16 @@ export default async function Settings() {
   return (
     <Bases>
       <Contents>
-        <Grids rows={"10"} gap={"6"}>
-          <Holds
-            background={"white"}
-            className="row-span-2 justify-center h-full "
-          >
-            <Contents width={"section"}>
-              <TitleBoxes
-                title={t("Title")}
-                titleImg="/Settings.svg"
-                titleImgAlt="Settings"
-                variant={"default"}
-                size={"default"}
-              />
-            </Contents>
+        <Grids rows={"10"} gap={"5"}>
+          <Holds background={"white"} className="row-span-2 ">
+            <TitleBoxes
+              title={t("Title")}
+              titleImg="/Settings.svg"
+              titleImgAlt="Settings"
+              size={"default"}
+            />
           </Holds>
-          <Holds className="row-span-8 h-full">
-            <Index id={userId} />
-          </Holds>
+          <SettingSelections id={userId} />
         </Grids>
       </Contents>
     </Bases>
