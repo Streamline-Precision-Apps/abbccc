@@ -135,10 +135,8 @@ export async function adminCreateUser(formData: FormData) {
       data: {
         userId: employeeId,
         language: "en",
-        approvedRequests: formData.get("approvedRequests") === "true",
-        timeOffRequests: formData.get("timeoffRequests") === "true",
+        personalReminders: formData.get("personalReminders") === "true",
         generalReminders: formData.get("GeneralReminders") === "true",
-        biometric: formData.get("biometric") === "false",
         cameraAccess: formData.get("cameraAccess") === "false",
         locationAccess: formData.get("locationAccess") === "false",
       },
@@ -251,9 +249,8 @@ export async function setUserSettings(formdata: FormData) {
   await prisma.userSettings.update({
     where: { userId: formdata.get("id") as string },
     data: {
-      approvedRequests: formdata.get("approvedRequests") === "true",
-      timeOffRequests: formdata.get("timeoffRequests") === "true",
-      generalReminders: formdata.get("GeneralReminders") === "true",
+      personalReminders: formdata.get("personalReminders") === "true",
+      generalReminders: formdata.get("generalReminders") === "true",
     },
   });
 }
@@ -263,13 +260,10 @@ export async function setUserPermissions(formdata: FormData) {
   await prisma.userSettings.update({
     where: { userId: formdata.get("id") as string },
     data: {
-      biometric: Boolean(formdata.get("biometrics") as string),
       cameraAccess: Boolean(formdata.get("cameraAccess") as string),
       locationAccess: Boolean(formdata.get("locationAccess") as string),
-      approvedRequests: Boolean(formdata.get("approvedRequests") as string),
-      timeOffRequests: Boolean(formdata.get("timeOffRequests") as string),
+      personalReminders: Boolean(formdata.get("personalReminders") as string),
       generalReminders: Boolean(formdata.get("generalReminders") as string),
-      photoAlbumAccess: Boolean(formdata.get("photoAlbumAccess") as string),
       cookiesAccess: Boolean(formdata.get("cookiesAccess") as string),
     },
   });

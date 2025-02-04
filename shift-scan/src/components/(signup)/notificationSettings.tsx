@@ -267,7 +267,7 @@ export default function NotificationSettings({ userId, handleNextStep }: prop) {
               </Holds>
               <Holds position={"row"} className="row-start-2 row-end-3">
                 <Holds size={"70"}>
-                  <Texts position={"left"}>{t("Notifications")}</Texts>
+                  <Texts position={"left"}>{t("GeneralReminders")}</Texts>
                 </Holds>
                 <Holds size={"30"}>
                   <LocaleToggleSwitch
@@ -280,7 +280,7 @@ export default function NotificationSettings({ userId, handleNextStep }: prop) {
               </Holds>
               <Holds position={"row"} className="row-start-3 row-end-4">
                 <Holds size={"70"}>
-                  <Texts position={"left"}>{t("Notifications")}</Texts>
+                  <Texts position={"left"}>{t("PersonalReminders")}</Texts>
                 </Holds>
                 <Holds size={"30"}>
                   <LocaleToggleSwitch

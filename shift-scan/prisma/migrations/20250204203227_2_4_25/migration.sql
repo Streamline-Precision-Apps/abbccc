@@ -236,6 +236,7 @@ CREATE TABLE "Maintenance" (
     "priority" "Priority" NOT NULL,
     "delay" TIMESTAMP(3),
     "repaired" BOOLEAN NOT NULL DEFAULT false,
+    "selected" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Maintenance_pkey" PRIMARY KEY ("id")
 );
@@ -338,13 +339,10 @@ CREATE TABLE "UserSettings" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "language" TEXT NOT NULL DEFAULT 'en',
-    "approvedRequests" BOOLEAN NOT NULL DEFAULT false,
-    "timeOffRequests" BOOLEAN NOT NULL DEFAULT false,
     "generalReminders" BOOLEAN NOT NULL DEFAULT false,
-    "biometric" BOOLEAN NOT NULL DEFAULT false,
+    "personalReminders" BOOLEAN NOT NULL DEFAULT false,
     "cameraAccess" BOOLEAN NOT NULL DEFAULT false,
     "locationAccess" BOOLEAN NOT NULL DEFAULT false,
-    "photoAlbumAccess" BOOLEAN NOT NULL DEFAULT false,
     "cookiesAccess" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "UserSettings_pkey" PRIMARY KEY ("id")
