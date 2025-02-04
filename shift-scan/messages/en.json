@@ -444,6 +444,7 @@
     "Logs-Fetch": "Error fetching logs:"
 },
 "Hamburger": {
+    "PersonalReminders" : "Personal Reminders",
     "ContactDetails": "Edit Contact Details",
     "Saving": "Savings changes",
     "Save": "Save Changes",

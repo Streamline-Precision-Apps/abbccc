@@ -126,7 +126,7 @@ export default function Index({ id }: Props) {
           {t("Saving")}
         </Holds>
       )} */}
-      <Grids rows={"5"} gap={"3"}>
+      <Grids rows={"6"} gap={"3"}>
         {/*-------------------------Notifications Settings------------------------------*/}
         <Holds background={"white"} className="row-span-1 h-full py-4">
           <Contents width={"section"}>
@@ -136,73 +136,43 @@ export default function Index({ id }: Props) {
               </Holds> */}
               <Holds position={"row"}>
                 <Holds size={"70"}>
-                  <Texts position={"left"}>{t("Notifications")}</Texts>
+                  <Texts position={"left"}>{t("GeneralReminders")}</Texts>
                   {/* <Texts position={"left"}>{t("ApprovedRequests")}</Texts> */}
                 </Holds>
                 <Holds size={"30"}>
                   <LocaleToggleSwitch
-                    data={updatedData?.approvedRequests || false}
+                    data={updatedData?.generalReminders || false}
                     onChange={(value: boolean) => {
-                      handleChange("approvedRequests", value);
-                      handleChange("timeOffRequests", value);
                       handleChange("generalReminders", value);
                     }}
                   />
                 </Holds>
               </Holds>
-              {/* <Holds position={"row"}>
+            </Grids>
+          </Contents>
+        </Holds>
+
+        <Holds background={"white"} className="row-span-1 h-full py-4">
+          <Contents width={"section"}>
+            <Grids rows={"1"} gap={"5"}>
+              <Holds position={"row"}>
                 <Holds size={"70"}>
-                  <Texts position={"left"}>{t("TimeOffRequests")}</Texts>
+                  <Texts position={"left"}>{t("PersonalReminders")}</Texts>
                 </Holds>
                 <Holds size={"30"}>
                   <LocaleToggleSwitch
-                    data={updatedData?.timeOffRequests || false}
-                    onChange={(value: boolean) =>
-                      handleChange("timeOffRequests", value)
-                    }
+                    data={updatedData?.personalReminders || false}
+                    onChange={(value: boolean) => {
+                      handleChange("personalReminders", value);
+                    }}
                   />
                 </Holds>
               </Holds>
-              <Holds position={"row"}>
-                <Holds size={"70"}>
-                  <Texts position={"left"}>{t("GeneralReminders")}</Texts>
-                </Holds>
-                <Holds size={"30"}>
-                  <LocaleToggleSwitch
-                    data={updatedData?.generalReminders || false}
-                    onChange={(value: boolean) =>
-                      handleChange("generalReminders", value)
-                    }
-                  />
-                </Holds>
-              </Holds> */}
             </Grids>
           </Contents>
         </Holds>
 
         {/*---------------------Security Settings------------------------------*/}
-        <Holds background={"white"} className="row-span-1 h-full py-4">
-          <Contents width={"section"}>
-            <Grids rows={"1"} gap={"5"}>
-              {/* <Holds className="row-span-1">
-                <Titles>{t("Security")}</Titles>
-              </Holds> */}
-              <Holds position={"row"}>
-                <Holds size={"70"}>
-                  <Texts position={"left"}>{t("Biometrics")}</Texts>
-                </Holds>
-                <Holds size={"30"}>
-                  <LocaleToggleSwitch
-                    data={updatedData?.biometric || false}
-                    onChange={(value: boolean) =>
-                      handleChange("biometric", value)
-                    }
-                  />
-                </Holds>
-              </Holds>
-            </Grids>
-          </Contents>
-        </Holds>
 
         <Holds background={"white"} className="row-span-1 h-full py-4">
           <Contents width={"section"}>
@@ -242,28 +212,6 @@ export default function Index({ id }: Props) {
                     data={updatedData?.locationAccess || false}
                     onChange={(value: boolean) =>
                       handleChange("locationAccess", value)
-                    }
-                  />
-                </Holds>
-              </Holds>
-            </Grids>
-          </Contents>
-        </Holds>
-        <Holds background={"white"} className="row-span-1 h-full py-4">
-          <Contents width={"section"}>
-            <Grids rows={"1"} gap={"5"}>
-              {/* <Holds className="row-span-1">
-                <Titles>{t("Security")}</Titles>
-              </Holds> */}
-              <Holds position={"row"}>
-                <Holds size={"70"}>
-                  <Texts position={"left"}>{t("PhotoAlbumAccess")}</Texts>
-                </Holds>
-                <Holds size={"30"}>
-                  <LocaleToggleSwitch
-                    data={updatedData?.photoAlbumAccess || false}
-                    onChange={(value: boolean) =>
-                      handleChange("photoAlbumAccess", value)
                     }
                   />
                 </Holds>
