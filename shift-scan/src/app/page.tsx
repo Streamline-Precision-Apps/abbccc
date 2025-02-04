@@ -26,7 +26,7 @@ export default async function Home() {
   return (
     <Bases>
       <Contents>
-        <Grids rows={"8"}>
+        <Grids rows={"8"} gap={"2"}>
           <Holds position={"row"} background={"white"} className="row-span-1">
             <Holds size={"30"}>
               <Images
