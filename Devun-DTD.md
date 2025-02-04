@@ -296,6 +296,8 @@ cookies().set({
 
   #
 # February 4, 2025 - Tueday
+### Planning
+- spend time on next sprint
 ### Goals
 - Create all stuff for backend for Sign up steps
   - /sign-up
