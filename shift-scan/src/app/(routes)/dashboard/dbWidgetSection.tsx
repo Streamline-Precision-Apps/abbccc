@@ -12,6 +12,8 @@ import TruckDriverDashboardView from "./UI/_dashboards/truckDriverDashboardView"
 import MechanicDashboardView from "./UI/_dashboards/mechanicDashboardView";
 import GeneralDashboardView from "./UI/_dashboards/generalDashboardView";
 import { setCurrentPageView } from "@/actions/cookieActions";
+import Dashboard from "./page";
+import DashboardLoadingView from "./UI/_dashboards/dashboardLoadingView";
 
 // Zod schema for component state, including logs
 const DbWidgetSectionSchema = z.object({
@@ -147,6 +149,9 @@ export default function DbWidgetSection({ session, view }: props) {
       setIsModalOpen(true);
     }
   };
+  if (loading) {
+    return <DashboardLoadingView loading={loading} />;
+  }
   {
     /* ------------------------------------------------------------------------------------------------------------------------
   --------------------------------------------------------------------------------------------------------------------------
@@ -158,7 +163,6 @@ export default function DbWidgetSection({ session, view }: props) {
   if (view === "tasco") {
     return (
       <TascoDashboardView
-        loading={loading}
         isModalOpen={isModalOpen}
         setIsModal2Open={setIsModal2Open}
         isModal2Open={isModal2Open}
@@ -186,7 +190,6 @@ export default function DbWidgetSection({ session, view }: props) {
   if (view === "truck") {
     return (
       <TruckDriverDashboardView
-        loading={loading}
         isModalOpen={isModalOpen}
         setIsModal2Open={setIsModal2Open}
         isModal2Open={isModal2Open}
@@ -214,7 +217,6 @@ export default function DbWidgetSection({ session, view }: props) {
   if (view === "mechanic") {
     return (
       <MechanicDashboardView
-        loading={loading}
         isModalOpen={isModalOpen}
         setIsModal2Open={setIsModal2Open}
         isModal2Open={isModal2Open}
@@ -241,7 +243,6 @@ export default function DbWidgetSection({ session, view }: props) {
   if (view === "general") {
     return (
       <GeneralDashboardView
-        loading={loading}
         isModalOpen={isModalOpen}
         setIsModal2Open={setIsModal2Open}
         isModal2Open={isModal2Open}

@@ -289,6 +289,8 @@
     "ID": "Id: #"
 },
 "Clock": {
+    "Next": "Siguiente",
+    "PreviousJobComment":"Comentarios del Trabajo Anterior",
     "ScanJobsite": "Escaneo de Sitio de Trabajo",
     "StartCamera": "Iniciar la cámara",
     "StopCamera": "Detener la cámara",
