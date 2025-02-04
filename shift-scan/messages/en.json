@@ -40,6 +40,8 @@
 },
 
 "SignUpPermissions":{
+    "GeneralReminders" : "General Reminders",
+    "PersonalReminders" : "Personal Reminders",
     "GiveUsAccess" : "Give Us Access",
     "YesToEverything" : "Yes to Everything!",
     "RequiredForAppUse" : "Required for App Use",
