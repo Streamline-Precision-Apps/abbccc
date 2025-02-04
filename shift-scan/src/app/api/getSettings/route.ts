@@ -26,6 +26,7 @@ export async function GET() {
         cameraAccess: true,
         locationAccess: true,
         photoAlbumAccess: true,
+        cookiesAccess: true,
       },
     });
     return NextResponse.json(data);

@@ -14,10 +14,7 @@ export default async function SignUpPage() {
     <Bases>
       <Contents>
         <Holds className="h-full">
-          <Content
-              userId={userid ?? ""}
-              accountSetup={accountSetup ?? true}
-            />
+          <Content userId={userid ?? ""} accountSetup={accountSetup ?? true} />
         </Holds>
       </Contents>
     </Bases>

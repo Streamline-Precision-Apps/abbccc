@@ -303,9 +303,8 @@ cookies().set({
   - /sign-up
   -/ Update Test data to have every role with a generic name
 ### Built/created 
-- debugging clock in path
-- making changes based on what zach stated
-- created loading UI for clocking route to help loading state
+- updated the test data, it now has every role with a generic name
+
 
 ### Trello
 - /clock - "Start Camera" instead of begin scan
