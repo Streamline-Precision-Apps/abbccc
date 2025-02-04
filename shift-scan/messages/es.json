@@ -406,6 +406,7 @@
     "Logs-Fetch": "Error al obtener registros:"
 },
 "Hamburger": {
+    "PersonalReminders" : "Recordatorios Personales",
     "Saving": "Guardando Cambios",
     "loading": "Cargando...",
     "NewPassword": "Nueva Contraseña",
