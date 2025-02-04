@@ -19,13 +19,10 @@ export async function GET() {
       select: {
         userId: true,
         language: true,
-        approvedRequests: true,
-        timeOffRequests: true,
+        personalReminders: true,
         generalReminders: true,
-        biometric: true,
         cameraAccess: true,
         locationAccess: true,
-        photoAlbumAccess: true,
         cookiesAccess: true,
       },
     });

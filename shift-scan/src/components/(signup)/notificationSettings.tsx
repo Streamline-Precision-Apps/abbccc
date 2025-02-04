@@ -53,9 +53,8 @@ export default function NotificationSettings({ userId, handleNextStep }: prop) {
       prev
         ? {
             ...prev,
-            approvedRequests: true,
-            timeOffRequests: true,
             generalReminders: true,
+            personalReminders: true,
             cameraAccess: true,
             locationAccess: true,
             cookiesAccess: true,
@@ -172,12 +171,8 @@ export default function NotificationSettings({ userId, handleNextStep }: prop) {
         updatedData?.generalReminders?.toString() || ""
       );
       data.append(
-        "approvedRequests",
-        updatedData?.approvedRequests?.toString() || ""
-      );
-      data.append(
-        "timeOffRequests",
-        updatedData?.timeOffRequests?.toString() || ""
+        "personalReminders",
+        updatedData?.personalReminders?.toString() || ""
       );
 
       await setUserPermissions(data);
@@ -289,22 +284,9 @@ export default function NotificationSettings({ userId, handleNextStep }: prop) {
                 </Holds>
                 <Holds size={"30"}>
                   <LocaleToggleSwitch
-                    data={updatedData?.timeOffRequests || false}
+                    data={updatedData?.personalReminders || false}
                     onChange={(value: boolean) => {
-                      handleChange("timeOffRequests", value);
-                    }}
-                  />
-                </Holds>
-              </Holds>
-              <Holds position={"row"} className="row-start-4 row-end-5">
-                <Holds size={"70"}>
-                  <Texts position={"left"}>{t("Notifications")}</Texts>
-                </Holds>
-                <Holds size={"30"}>
-                  <LocaleToggleSwitch
-                    data={updatedData?.approvedRequests || false}
-                    onChange={(value: boolean) => {
-                      handleChange("approvedRequests", value);
+                      handleChange("personalReminders", value);
                     }}
                   />
                 </Holds>
