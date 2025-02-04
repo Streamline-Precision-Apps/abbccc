@@ -169,23 +169,23 @@ export async function updateUser(formData: FormData) {
   });
 }
 export async function updateUserProfile(formData: FormData) {
-  try{
+  try {
     await prisma.user.update({
-    where: { id: formData.get("id") as string },
-    data: {
-      email: formData.get("email") as string,
-      contact: {
-        update: {
-          phoneNumber: formData.get("phoneNumber") as string,
-          emergencyContact: formData.get("emergencyContact") as string,
-          emergencyContactNumber: formData.get(
-            "emergencyContactNumber"
-          ) as string,
+      where: { id: formData.get("id") as string },
+      data: {
+        email: formData.get("email") as string,
+        contact: {
+          update: {
+            phoneNumber: formData.get("phoneNumber") as string,
+            emergencyContact: formData.get("emergencyContact") as string,
+            emergencyContactNumber: formData.get(
+              "emergencyContactNumber"
+            ) as string,
+          },
         },
-      }
-    },
-  });
-  revalidatePath("/hamburger/profile");
+      },
+    });
+    revalidatePath("/hamburger/profile");
   } catch (error) {
     console.error("Error updating user:", error);
   }
@@ -225,6 +225,7 @@ export async function uploadFirstImage(formdata: FormData) {
 
 export async function uploadFirstSignature(formdata: FormData) {
   console.log(formdata);
+
   const result = await prisma.user.update({
     where: { id: formdata.get("id") as string },
     data: {
@@ -267,7 +268,7 @@ export async function setUserPermissions(formdata: FormData) {
       locationAccess: Boolean(formdata.get("locationAccess") as string),
       approvedRequests: Boolean(formdata.get("approvedRequests") as string),
       timeOffRequests: Boolean(formdata.get("timeOffRequests") as string),
-      generalReminders: Boolean(formdata.get("generalReminders") as string),     
+      generalReminders: Boolean(formdata.get("generalReminders") as string),
       photoAlbumAccess: Boolean(formdata.get("photoAlbumAccess") as string),
       cookiesAccess: Boolean(formdata.get("cookiesAccess") as string),
     },
