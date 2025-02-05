@@ -7,29 +7,23 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
 import "@/app/globals.css";
 import { Texts } from "@/components/(reusable)/texts";
-// import { Modals } from "@/components/(reusable)/modals";
 import { updateSettings } from "@/actions/hamburgerActions";
 import { Contents } from "@/components/(reusable)/contents";
 import { UserSettings } from "@/lib/types";
 import { Grids } from "@/components/(reusable)/grids";
 import Spinner from "@/components/(animations)/spinner";
 import { useRouter } from "next/navigation";
-import { z } from "zod"; // Import Zod for validation
+import { z } from "zod";
 import { Inputs } from "@/components/(reusable)/inputs";
-// import { Selects } from "@/components/(reusable)/selects";
-// import { setLocale } from "@/actions/cookieActions";
 import { NModals } from "@/components/(reusable)/newmodals";
 import LanguageModal from "@/app/(routes)/admins/_pages/sidebar/LanguageModal";
 
 // Define Zod schema for UserSettings
 const userSettingsSchema = z.object({
-  approvedRequests: z.boolean().optional(),
-  timeOffRequests: z.boolean().optional(),
+  personalReminders: z.boolean().optional(),
   generalReminders: z.boolean().optional(),
-  biometric: z.boolean().optional(),
   cameraAccess: z.boolean().optional(),
   locationAccess: z.boolean().optional(),
-  photoAlbumAccess: z.boolean().optional(),
   language: z.string().optional(),
 });
 
@@ -37,7 +31,7 @@ type Props = {
   id: string;
 };
 
-export default function Index({ id }: Props) {
+export default function SettingSelections({ id }: Props) {
   const router = useRouter();
   const t = useTranslations("Hamburger");
   const [data, setData] = useState<UserSettings | null>(null);
@@ -45,6 +39,8 @@ export default function Index({ id }: Props) {
   const [initialData, setInitialData] = useState<UserSettings | null>(null);
   // const [isSaving, setIsSaving] = useState(false);
   const [isLangModalOpen, setIsLangModalOpen] = useState(false);
+  const [showBanner, setShowBanner] = useState(false);
+  const [bannerMessage, setBannerMessage] = useState("");
 
   // Fetch data on component mount
   useEffect(() => {
@@ -77,7 +73,6 @@ export default function Index({ id }: Props) {
       if (updatedData && updatedData !== initialData) {
         // setIsSaving(true);
         await updateSettings(updatedData);
-
         // setTimeout(() => setIsSaving(false), 1000);
         setInitialData(updatedData);
       }
@@ -98,241 +93,215 @@ export default function Index({ id }: Props) {
     };
   }, [updatedData, initialData]);
 
-  // Handle setting changes
+  // Helper function: update permission setting in state
   const handleChange = (key: keyof UserSettings, value: boolean) => {
     setUpdatedData((prev) => (prev ? { ...prev, [key]: value } : null));
   };
 
-  // const handleSelectChange = (key: keyof UserSettings, value: string) => {
-  //   setUpdatedData((prev) => (prev ? { ...prev, [key]: value } : null));
-  //   setLocale(value === "en" ? false : true);
-  // };
+  // --- Updated toggles with permission requests ---
+
+  // CameraAccess toggle: request permission when turned on
+  const handleCameraAccessChange = (value: boolean) => {
+    if (value) {
+      // Request camera permission
+      navigator.mediaDevices
+        .getUserMedia({ video: true })
+        .then(() => {
+          handleChange("cameraAccess", true);
+        })
+        .catch(() => {
+          setBannerMessage("Camera permission denied by the browser.");
+          setShowBanner(true);
+          handleChange("cameraAccess", false);
+        });
+    } else {
+      // When turning off, simply update the state.
+      handleChange("cameraAccess", false);
+    }
+  };
+
+  // LocationAccess toggle: request permission when turned on
+  const handleLocationAccessChange = (value: boolean) => {
+    if (value) {
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          () => {
+            handleChange("locationAccess", true);
+          },
+          () => {
+            setBannerMessage("Location permission denied by the browser.");
+            setShowBanner(true);
+            handleChange("locationAccess", false);
+          }
+        );
+      } else {
+        setBannerMessage("Geolocation is not supported by your browser.");
+        setShowBanner(true);
+        handleChange("locationAccess", false);
+      }
+    } else {
+      handleChange("locationAccess", false);
+    }
+  };
+
   if (!data) {
     return (
-      <Holds background={"white"} className="row-span-7 p-4 h-full">
-        <Titles>{t("loading")}</Titles>
-        <Spinner />
-      </Holds>
+      <>
+        <Holds
+          background="white"
+          className="row-span-7 p-4 h-full justify-center items-center animate-pulse"
+        >
+          <Spinner />
+        </Holds>
+        <Holds className="row-span-1">
+          <Buttons
+            onClick={() => router.push("/hamburger/changePassword")}
+            background="orange"
+            className="py-2"
+          >
+            <Titles>{t("ChangePassword")}</Titles>
+          </Buttons>
+        </Holds>
+      </>
     );
   }
 
   return (
     <>
-      {/* {isSaving && (
+      {/* Banner for error/feedback */}
+      {showBanner && (
         <Holds
-          background={"green"}
-          className="h-fit text-center absolute top-[20%]"
+          style={{ position: "fixed", top: 0, width: "100%", zIndex: 1000 }}
         >
-          {t("Saving")}
-        </Holds>
-      )} */}
-      <Grids rows={"5"} gap={"3"}>
-        {/*-------------------------Notifications Settings------------------------------*/}
-        <Holds background={"white"} className="row-span-1 h-full py-4">
-          <Contents width={"section"}>
-            <Grids rows={"1"} gap={"5"}>
-              {/* <Holds className="row-span-1">
-                <Titles>{t("Notifications")}</Titles>
-              </Holds> */}
-              <Holds position={"row"}>
-                <Holds size={"70"}>
-                  <Texts position={"left"}>{t("Notifications")}</Texts>
-                  {/* <Texts position={"left"}>{t("ApprovedRequests")}</Texts> */}
-                </Holds>
-                <Holds size={"30"}>
-                  <LocaleToggleSwitch
-                    data={updatedData?.approvedRequests || false}
-                    onChange={(value: boolean) => {
-                      handleChange("approvedRequests", value);
-                      handleChange("timeOffRequests", value);
-                      handleChange("generalReminders", value);
-                    }}
-                  />
-                </Holds>
-              </Holds>
-              {/* <Holds position={"row"}>
-                <Holds size={"70"}>
-                  <Texts position={"left"}>{t("TimeOffRequests")}</Texts>
-                </Holds>
-                <Holds size={"30"}>
-                  <LocaleToggleSwitch
-                    data={updatedData?.timeOffRequests || false}
-                    onChange={(value: boolean) =>
-                      handleChange("timeOffRequests", value)
-                    }
-                  />
-                </Holds>
-              </Holds>
-              <Holds position={"row"}>
-                <Holds size={"70"}>
-                  <Texts position={"left"}>{t("GeneralReminders")}</Texts>
-                </Holds>
-                <Holds size={"30"}>
-                  <LocaleToggleSwitch
-                    data={updatedData?.generalReminders || false}
-                    onChange={(value: boolean) =>
-                      handleChange("generalReminders", value)
-                    }
-                  />
-                </Holds>
-              </Holds> */}
-            </Grids>
-          </Contents>
-        </Holds>
-
-        {/*---------------------Security Settings------------------------------*/}
-        <Holds background={"white"} className="row-span-1 h-full py-4">
-          <Contents width={"section"}>
-            <Grids rows={"1"} gap={"5"}>
-              {/* <Holds className="row-span-1">
-                <Titles>{t("Security")}</Titles>
-              </Holds> */}
-              <Holds position={"row"}>
-                <Holds size={"70"}>
-                  <Texts position={"left"}>{t("Biometrics")}</Texts>
-                </Holds>
-                <Holds size={"30"}>
-                  <LocaleToggleSwitch
-                    data={updatedData?.biometric || false}
-                    onChange={(value: boolean) =>
-                      handleChange("biometric", value)
-                    }
-                  />
-                </Holds>
-              </Holds>
-            </Grids>
-          </Contents>
-        </Holds>
-
-        <Holds background={"white"} className="row-span-1 h-full py-4">
-          <Contents width={"section"}>
-            <Grids rows={"1"} gap={"5"}>
-              {/* <Holds className="row-span-1">
-                <Titles>{t("Security")}</Titles>
-              </Holds> */}
-
-              <Holds position={"row"}>
-                <Holds size={"70"}>
-                  <Texts position={"left"}>{t("CameraAccess")}</Texts>
-                </Holds>
-                <Holds size={"30"}>
-                  <LocaleToggleSwitch
-                    data={updatedData?.cameraAccess || false}
-                    onChange={(value: boolean) =>
-                      handleChange("cameraAccess", value)
-                    }
-                  />
-                </Holds>
-              </Holds>
-            </Grids>
-          </Contents>
-        </Holds>
-        <Holds background={"white"} className="row-span-1 h-full py-4">
-          <Contents width={"section"}>
-            <Grids rows={"1"} gap={"5"}>
-              {/* <Holds className="row-span-1">
-                <Titles>{t("Security")}</Titles>
-              </Holds> */}
-              <Holds position={"row"}>
-                <Holds size={"70"}>
-                  <Texts position={"left"}>{t("LocationAccess")}</Texts>
-                </Holds>
-                <Holds size={"30"}>
-                  <LocaleToggleSwitch
-                    data={updatedData?.locationAccess || false}
-                    onChange={(value: boolean) =>
-                      handleChange("locationAccess", value)
-                    }
-                  />
-                </Holds>
-              </Holds>
-            </Grids>
-          </Contents>
-        </Holds>
-        <Holds background={"white"} className="row-span-1 h-full py-4">
-          <Contents width={"section"}>
-            <Grids rows={"1"} gap={"5"}>
-              {/* <Holds className="row-span-1">
-                <Titles>{t("Security")}</Titles>
-              </Holds> */}
-              <Holds position={"row"}>
-                <Holds size={"70"}>
-                  <Texts position={"left"}>{t("PhotoAlbumAccess")}</Texts>
-                </Holds>
-                <Holds size={"30"}>
-                  <LocaleToggleSwitch
-                    data={updatedData?.photoAlbumAccess || false}
-                    onChange={(value: boolean) =>
-                      handleChange("photoAlbumAccess", value)
-                    }
-                  />
-                </Holds>
-              </Holds>
-            </Grids>
-          </Contents>
-        </Holds>
-
-        {/*---------------------Language Settings------------------------------*/}
-        <Holds background={"white"} className="row-span-2 h-full py-4">
-          <Contents width={"section"}>
-            <Grids rows={"1"} gap={"5"}>
-              <Holds className="row-span-1 ">
-                <Titles>{t("Language")}</Titles>
-              </Holds>
-              <Holds className="row-span-1 mx-auto">
-                <Inputs
-                  readOnly
-                  value={updatedData?.language === "en" ? "English" : "Español"}
-                  data={updatedData?.language}
-                  onClick={() => setIsLangModalOpen(true)}
-                  className="bg-app-blue h-[2rem] w-1/2  mx-auto text-center"
-                />
-              </Holds>
-            </Grids>
-          </Contents>
-        </Holds>
-
-        {/* Language Selection Modal */}
-        <NModals
-          size={"xl"}
-          isOpen={isLangModalOpen}
-          handleClose={() => setIsLangModalOpen(false)}
-        >
-          <LanguageModal
-            setIsOpenLanguageSelector={() => setIsLangModalOpen(false)}
-          />
-        </NModals>
-        {/* <Modals
-          isOpen={isLangModalOpen}
-          handleClose={() => setIsLangModalOpen(false)}
-          size={"lg"}
-          title="Language Selection"
-          background={"default"}
-        >
-          <Holds size={"full"} className="h-[20rem]">
-            <Contents width={"section"} className="h-full">
-              <Selects
-                value={updatedData?.language || "en"}
-                onChange={(e) => handleSelectChange("language", e.target.value)}
-              >
-                <option value="default">Choose a Language</option>
-                <option value="en">English</option>
-                <option value="es">Spanish</option>
-              </Selects>
-            </Contents>
-          </Holds>
-        </Modals> */}
-
-        {/*---------------------Change Password------------------------------*/}
-        <Holds className="row-span-1 h-full">
-          <Buttons
-            onClick={() => router.push("/hamburger/changePassword")}
-            background={"orange"}
-          >
-            <Titles>{t("ChangePassword")}</Titles>
+          <Buttons onClick={() => setShowBanner(false)} background="red">
+            <Texts size="p6">{bannerMessage}</Texts>
           </Buttons>
         </Holds>
-      </Grids>
+      )}
+      <Holds className="row-span-7 h-full p-4">
+        <Grids rows="5" gap="3">
+          {/*-------------------------Notifications Settings------------------------------*/}
+          <Holds background="white" className="row-span-1 h-full py-4">
+            <Contents width="section">
+              <Grids rows="1" gap="5">
+                <Holds position="row">
+                  <Holds size="70">
+                    <Texts position="left">{t("GeneralReminders")}</Texts>
+                  </Holds>
+                  <Holds size="30">
+                    <LocaleToggleSwitch
+                      data={updatedData?.generalReminders || false}
+                      onChange={(value: boolean) => {
+                        handleChange("generalReminders", value);
+                      }}
+                    />
+                  </Holds>
+                </Holds>
+              </Grids>
+            </Contents>
+          </Holds>
+
+          <Holds background="white" className="row-span-1 h-full py-4">
+            <Contents width="section">
+              <Grids rows="1" gap="5">
+                <Holds position="row">
+                  <Holds size="70">
+                    <Texts position="left">{t("PersonalReminders")}</Texts>
+                  </Holds>
+                  <Holds size="30">
+                    <LocaleToggleSwitch
+                      data={updatedData?.personalReminders || false}
+                      onChange={(value: boolean) => {
+                        handleChange("personalReminders", value);
+                      }}
+                    />
+                  </Holds>
+                </Holds>
+              </Grids>
+            </Contents>
+          </Holds>
+
+          {/*-------------------------App Usage settings------------------------------*/}
+          <Holds background="white" className="row-span-1 h-full py-4">
+            <Contents width="section">
+              <Grids rows="1" gap="5">
+                <Holds position="row">
+                  <Holds size="70">
+                    <Texts position="left">{t("CameraAccess")}</Texts>
+                  </Holds>
+                  <Holds size="30">
+                    <LocaleToggleSwitch
+                      data={updatedData?.cameraAccess || false}
+                      onChange={handleCameraAccessChange}
+                    />
+                  </Holds>
+                </Holds>
+              </Grids>
+            </Contents>
+          </Holds>
+          <Holds background="white" className="row-span-1 h-full py-4">
+            <Contents width="section">
+              <Grids rows="1" gap="5">
+                <Holds position="row">
+                  <Holds size="70">
+                    <Texts position="left">{t("LocationAccess")}</Texts>
+                  </Holds>
+                  <Holds size="30">
+                    <LocaleToggleSwitch
+                      data={updatedData?.locationAccess || false}
+                      onChange={handleLocationAccessChange}
+                    />
+                  </Holds>
+                </Holds>
+              </Grids>
+            </Contents>
+          </Holds>
+
+          {/*---------------------Language Settings------------------------------*/}
+          <Holds background="white" className="row-span-1 h-full py-4">
+            <Contents width="section">
+              <Grids rows="1" gap="5">
+                <Holds className="row-span-1">
+                  <Titles>{t("Language")}</Titles>
+                </Holds>
+                <Holds className="row-span-1 mx-auto">
+                  <Inputs
+                    readOnly
+                    value={
+                      updatedData?.language === "en" ? "English" : "Español"
+                    }
+                    data={updatedData?.language}
+                    onClick={() => setIsLangModalOpen(true)}
+                    className="bg-app-blue h-[2rem] w-1/2 mx-auto text-center"
+                  />
+                </Holds>
+              </Grids>
+            </Contents>
+          </Holds>
+
+          {/* Language Selection Modal */}
+          <NModals
+            size="xl"
+            isOpen={isLangModalOpen}
+            handleClose={() => setIsLangModalOpen(false)}
+          >
+            <LanguageModal
+              setIsOpenLanguageSelector={() => setIsLangModalOpen(false)}
+            />
+          </NModals>
+        </Grids>
+      </Holds>
+
+      {/*---------------------Change Password------------------------------*/}
+      <Holds className="row-span-1 h-full">
+        <Buttons
+          onClick={() => router.push("/hamburger/changePassword")}
+          background="orange"
+          className="py-2"
+        >
+          <Titles>{t("ChangePassword")}</Titles>
+        </Buttons>
+      </Holds>
     </>
   );
 }

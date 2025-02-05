@@ -14,7 +14,6 @@ import { Dispatch, SetStateAction } from "react";
 import TascoBtn from "../_buttons/TascoBtn";
 
 export default function TascoDashboardView({
-  loading,
   additionalButtonsType,
   isModalOpen,
   isModal2Open,
@@ -28,7 +27,6 @@ export default function TascoDashboardView({
   permission,
   handleShowAdditionalButtons,
 }: {
-  loading: boolean;
   additionalButtonsType: string | null;
   isModalOpen: boolean;
   isModal2Open: boolean;
@@ -45,54 +43,48 @@ export default function TascoDashboardView({
 }) {
   return (
     <>
-      {loading ? (
-        <Holds className="my-auto">
-          <Spinner />
-        </Holds>
-      ) : (
-        <Contents width={"section"} className="py-5">
-          <Grids cols={"2"} rows={permission !== "USER" ? "4" : "3"} gap={"5"}>
-            {/* Render buttons based on state */}
-            {additionalButtonsType === "equipment" ? (
-              <EquipmentWidget
-                handleShowManagerButtons={handleShowManagerButtons}
+      <Contents width={"section"} className="py-5">
+        <Grids cols={"2"} rows={permission !== "USER" ? "4" : "3"} gap={"5"}>
+          {/* Render buttons based on state */}
+          {additionalButtonsType === "equipment" ? (
+            <EquipmentWidget
+              handleShowManagerButtons={handleShowManagerButtons}
+            />
+          ) : additionalButtonsType === "clockOut" ? (
+            <ClockOutWidget
+              handleShowManagerButtons={handleShowManagerButtons}
+              setIsModal2Open={setIsModal2Open}
+              isModal2Open={isModal2Open}
+              isModalOpen={isModalOpen}
+              comment={comment}
+              setComment={setComment}
+              handleCOButton2={handleCOButton2}
+              handleCOButton3={handleCOButton3}
+              handleCloseModal={handleCloseModal}
+            />
+          ) : (
+            <>
+              <TascoBtn permission={permission} view={"tasco"} />
+              {permission !== "USER" && !additionalButtonsType && (
+                <GeneratorBtn />
+              )}
+              {permission !== "USER" && !additionalButtonsType && (
+                <MyTeamWidget />
+              )}
+
+              <FormsBtn permission={permission} view={"tasco"} />
+
+              <SwitchJobsBtn permission={permission} />
+
+              <ClockOutBtn
+                handleShowAdditionalButtons={handleShowAdditionalButtons}
+                permission={permission}
+                View={"mechanic"}
               />
-            ) : additionalButtonsType === "clockOut" ? (
-              <ClockOutWidget
-                handleShowManagerButtons={handleShowManagerButtons}
-                setIsModal2Open={setIsModal2Open}
-                isModal2Open={isModal2Open}
-                isModalOpen={isModalOpen}
-                comment={comment}
-                setComment={setComment}
-                handleCOButton2={handleCOButton2}
-                handleCOButton3={handleCOButton3}
-                handleCloseModal={handleCloseModal}
-              />
-            ) : (
-              <>
-                <TascoBtn permission={permission} view={"tasco"} />
-                {permission !== "USER" && !additionalButtonsType && (
-                  <GeneratorBtn />
-                )}
-                {permission !== "USER" && !additionalButtonsType && (
-                  <MyTeamWidget />
-                )}
-
-                <FormsBtn permission={permission} view={"tasco"} />
-
-                <SwitchJobsBtn permission={permission} />
-
-                <ClockOutBtn
-                  handleShowAdditionalButtons={handleShowAdditionalButtons}
-                  permission={permission}
-                  View={"mechanic"}
-                />
-              </>
-            )}
-          </Grids>
-        </Contents>
-      )}
+            </>
+          )}
+        </Grids>
+      </Contents>
     </>
   );
 }
