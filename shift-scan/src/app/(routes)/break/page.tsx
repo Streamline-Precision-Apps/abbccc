@@ -15,6 +15,7 @@ export default async function Clock() {
   }
   const user = session.user;
   const lang = cookies().get("locale");
+  const role = cookies().get("workRole")?.value || "";
   const locale = lang ? lang.value : "en"; // Default to English
   return (
     <Bases>
@@ -30,6 +31,7 @@ export default async function Clock() {
             tascoView={user.tascoView}
             truckView={user.truckView}
             laborView={user.laborView}
+            currentRole={role}
           />
         </Holds>
       </Contents>

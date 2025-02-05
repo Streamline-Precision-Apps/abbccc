@@ -4,16 +4,19 @@ import React, { useEffect, useRef, useState, useCallback } from "react";
 import QrScanner from "qr-scanner";
 import { useRouter } from "next/navigation";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
-import { useTruckScanData } from "@/app/context/TruckScanDataContext";
-import { useCurrentView } from "@/app/context/CurrentViewContext";
 import { useEQScanData } from "@/app/context/equipmentContext";
+import { useDBJobsite } from "@/app/context/dbCodeContext";
 
 type QrReaderProps = {
-  handleScanJobsite: () => void;
+  handleScanJobsite?: (type: string) => void;
   url: string;
-  clockInRole: string;
+  clockInRole: string | undefined;
   type: string;
   handleNextStep: () => void;
+  startCamera: boolean;
+  setStartCamera: React.Dispatch<React.SetStateAction<boolean>>;
+  setFailedToScan: React.Dispatch<React.SetStateAction<boolean>>;
+  setScanned: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export default function QR({
@@ -22,6 +25,10 @@ export default function QR({
   clockInRole,
   type,
   handleNextStep,
+  startCamera,
+  setStartCamera,
+  setFailedToScan,
+  setScanned,
 }: QrReaderProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const qrScannerRef = useRef<QrScanner | null>(null);
@@ -29,9 +36,8 @@ export default function QR({
   const router = useRouter();
 
   // Custom hooks
+  const { jobsiteResults } = useDBJobsite();
   const { setScanResult } = useScanData();
-  const { setTruckScanData } = useTruckScanData();
-  const { setCurrentView } = useCurrentView();
   const { setscanEQResult } = useEQScanData();
   // Constants
   const SCAN_THRESHOLD = 200;
@@ -51,9 +57,11 @@ export default function QR({
     (data: string) => {
       setScanResult({ data });
       qrScannerRef.current?.stop();
-      handleScanJobsite();
+      if (handleScanJobsite) {
+        handleScanJobsite(clockInRole || "");
+      }
     },
-    [setScanResult, handleScanJobsite]
+    [setScanResult, handleScanJobsite, clockInRole]
   );
   ///-----------------------End of scan processes-----------------------------------
 
@@ -62,22 +70,33 @@ export default function QR({
     (result: QrScanner.ScanResult) => {
       try {
         const { data } = result;
-
+        // Check if the scanned data is a valid QR code
+        if (!jobsiteResults?.some((j) => j.qrId === data)) {
+          throw new Error("Invalid QR code Scanned!");
+        }
         if (type === "equipment") {
           processEquipmentScan(data);
-        } else if (clockInRole === "general" || clockInRole === "mechanic") {
-          processGeneralScan(data);
+          setScanned(true);
         } else {
-          throw new Error("Invalid QR code");
+          processGeneralScan(data);
+          setScanned(true);
         }
       } catch (error) {
         console.error("QR Code Processing Error:", error);
         qrScannerRef.current?.stop();
-        router.back();
-        alert("Invalid QR code");
+        setStartCamera(false);
+        setFailedToScan(true);
       }
     },
-    [type, clockInRole, processEquipmentScan, processGeneralScan, router]
+    [
+      jobsiteResults,
+      type,
+      processEquipmentScan,
+      processGeneralScan,
+      setScanned,
+      setStartCamera,
+      setFailedToScan,
+    ]
   );
 
   // QR code scan fail handler
@@ -89,42 +108,64 @@ export default function QR({
   useEffect(() => {
     if (!videoRef.current) return;
 
-    const scanner = new QrScanner(videoRef.current, handleScanSuccess, {
-      onDecodeError: handleScanFail,
-      highlightScanRegion: true,
-      highlightCodeOutline: true,
-    });
+    if (startCamera) {
+      const scanner = new QrScanner(videoRef.current, handleScanSuccess, {
+        onDecodeError: handleScanFail,
+        highlightScanRegion: true,
+        highlightCodeOutline: true,
+        returnDetailedScanResult: true,
+        preferredCamera: "environment",
+        calculateScanRegion: (video) => {
+          const videoWidth = video.videoWidth;
+          const videoHeight = video.videoHeight;
+          const regionWidth = videoWidth * 0.3; // 80% of the video width
+          const regionHeight = videoHeight * 0.5; // 80% of the video height
+          const x = (videoWidth - regionWidth) / 2; // Center the region horizontally
+          const y = (videoHeight - regionHeight) / 2; // Center the region vertically
+          return {
+            x,
+            y,
+            width: regionWidth,
+            height: regionHeight,
+            downScaledWidth: 400,
+            downScaledHeight: 400,
+          };
+        },
+      });
 
-    qrScannerRef.current = scanner;
+      qrScannerRef.current = scanner;
 
-    QrScanner.hasCamera().then((hasCamera) => {
-      if (hasCamera) {
-        scanner
-          .start()
-          .catch((err) => console.error("Scanner Start Error:", err));
-      } else {
-        console.error("No camera found");
-      }
-    });
+      QrScanner.hasCamera().then((hasCamera) => {
+        if (hasCamera) {
+          scanner
+            .start()
+            .catch((err) => console.error("Scanner Start Error:", err));
+        } else {
+          console.error("No camera found");
+        }
+      });
+    } else {
+      // Stop scanner when startCamera is false
+      qrScannerRef.current?.stop();
+    }
 
     return () => {
-      scanner.stop();
-      scanner.destroy();
+      qrScannerRef.current?.stop();
     };
-  }, [handleScanSuccess, handleScanFail]);
+  }, [handleScanSuccess, handleScanFail, startCamera]);
 
   // Handle excessive scan failures
   useEffect(() => {
     if (scanCount >= SCAN_THRESHOLD) {
       qrScannerRef.current?.stop();
-      router.push(url);
+      setStartCamera(false);
     }
-  }, [scanCount, router, url]);
+  }, [scanCount, router, setStartCamera]);
 
   return (
     <video
       ref={videoRef}
-      className="h-full rounded-2xl border-4 bg-gray-300 border-black"
+      className="w-full h-full rounded-[10px] border-[3px] border-black bg-black bg-opacity-85  object-cover"
       aria-label="QR scanner video stream"
     >
       Video stream not available. Please enable your camera.

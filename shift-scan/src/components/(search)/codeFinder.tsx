@@ -5,7 +5,8 @@
  * Provides search and selection features for different options by datatype, storing and retrieving recent selections.
  *
  * @param {string} datatype - The type of data to search (e.g., 'costcode', 'jobsite', 'equipment')
- * @param {string} [savedCode] - Optional initial code to be preloaded in the search field.
+ * @param {string} savedCC - Previously selected cost code (if available)
+ * @param {string} savedJS - Previously selected job site (if available)
  */
 
 import React, { useState, useEffect, ChangeEvent, useMemo } from "react";
@@ -37,11 +38,16 @@ type Option = {
 
 type Props = {
   datatype: string;
-  savedCode?: string;
+  savedJS: string;
+  setSelectedOpt: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export default function CodeFinder({ datatype, savedCode }: Props) {
-  const [searchTerm, setSearchTerm] = useState(savedCode || "");
+export default function CodeFinder({
+  datatype,
+  savedJS,
+  setSelectedOpt,
+}: Props) {
+  const [searchTerm, setSearchTerm] = useState("");
   const [filteredOptions, setFilteredOptions] = useState<Option[]>([]);
   const [selectedOption, setSelectedOption] = useState<Option | null>(null);
   const [selectedTerm, setSelectedTerm] = useState(false);
@@ -70,27 +76,16 @@ export default function CodeFinder({ datatype, savedCode }: Props) {
 
   // Set default selected option if `storedCode` is found
   useEffect(() => {
-    if (savedCode) {
-      if (savedCode.toLowerCase().slice(0, 1) === "j") {
-        const defaultOption = jobsiteResults.find(
-          (opt) => opt.qrId === savedCode
-        );
-        if (defaultOption) {
-          setSelectedOption({
-            code: defaultOption.qrId,
-            label: defaultOption.name,
-          });
-          setSearchTerm(defaultOption.name); // Update search term to display label in the search bar
-        }
-      } else {
-        const defaultOption = options.find((opt) => opt.code === savedCode);
-        if (defaultOption) {
-          setSelectedOption(defaultOption);
-          setSearchTerm(defaultOption.label); // Update search term to display label in the search bar
-        }
+    if (datatype === "jobsite") {
+      if (savedJS) {
+        const selectedJobCode = jobsiteResults.find((j) => j.qrId === savedJS);
+        if (selectedJobCode)
+          setSelectedOption({ code: savedJS, label: savedJS });
       }
+    } else {
+      return;
     }
-  }, [savedCode, jobsiteResults, options, setSelectedOption, setSearchTerm]);
+  }, [costcodeResults, datatype, jobsiteResults, savedJS, setSelectedOpt]);
 
   useEffect(() => {
     const filtered = options;
@@ -103,6 +98,7 @@ export default function CodeFinder({ datatype, savedCode }: Props) {
   const handleOptionSelect = (option: Option) => {
     setSelectedOption(option);
     setSelectedTerm(true);
+    setSelectedOpt(true);
 
     if (datatype === "costcode") {
       setCostCode(option.code);
@@ -172,29 +168,26 @@ export default function CodeFinder({ datatype, savedCode }: Props) {
   };
 
   return (
-    <Holds className="w-full h-full">
-      <Grids rows={"5"} gap={"5"}>
-        <Holds className="row-span-1 h-full">
-          <SearchBar
-            selected={selectedTerm}
-            placeholder={t(`search-${datatype}`)}
-            searchTerm={searchTerm}
-            onSearchChange={handleSearchChange}
-            setSearchTerm={setSearchTerm}
-            setSelectedTerm={setSelectedTerm}
-            clearSelection={clearSelection}
-          />
-        </Holds>
-
-        <Holds className="row-span-4 h-full border-[3px] border-black rounded-[10px] ">
-          <CustomSelect
-            options={filteredOptions}
-            onOptionSelect={handleOptionSelect}
-            selectedOption={selectedOption}
-            clearSelection={clearSelection}
-          />
-        </Holds>
-      </Grids>
-    </Holds>
+    <Grids rows={"5"} gap={"5"} className="h-full w-full">
+      <Holds className="row-span-1 h-full">
+        <SearchBar
+          selected={selectedTerm}
+          placeholder={t(`search-${datatype}`)}
+          searchTerm={searchTerm}
+          onSearchChange={handleSearchChange}
+          setSearchTerm={setSearchTerm}
+          setSelectedTerm={setSelectedTerm}
+          clearSelection={clearSelection}
+        />
+      </Holds>
+      <Holds className="row-span-4 h-full border-[3px] border-black rounded-[10px] overflow-y-auto no-scrollbar">
+        <CustomSelect
+          options={filteredOptions}
+          onOptionSelect={handleOptionSelect}
+          selectedOption={selectedOption}
+          clearSelection={clearSelection}
+        />
+      </Holds>
+    </Grids>
   );
 }

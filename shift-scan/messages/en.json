@@ -308,6 +308,12 @@
     "ID": "Id: #"
 },
 "Clock": {
+    "ViewSelected": "View Selected Options",
+    "ScanJobsite": "Scan Job Site",
+    "StartCamera": "Start Camera",
+    "StopCamera": "Stop Camera",
+    "FailedToScanJobSiteDoesNotExist": "Scan Failed, QR code does not exist",
+    "SelectTruck": "Select Truck",
     "search-equipment-operator": "Search Equipment",
     "SelectShiftType": "Select Shift Type",
     "SelectMaterialType": "Select Material Type",
