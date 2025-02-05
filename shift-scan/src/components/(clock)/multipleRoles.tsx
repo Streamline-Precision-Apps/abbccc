@@ -110,14 +110,27 @@ export default function MultipleRoles({
                 </Selects>
               </Holds>
             )}
-            <Holds className="row-start-4 row-end-6 h-full m-auto">
-              <Images
-                titleImg="/camera.svg"
-                titleImgAlt="clockIn"
-                position={"center"}
-                size={"40"}
-              />
+            <Holds
+              className={
+                "h-full w-full row-start-3 row-end-7 border-[3px] border-black rounded-[10px] p-3 "
+              }
+            >
+              <Holds className="h-full w-full justify-center border-[3px] border-black rounded-[10px]">
+                <Images
+                  titleImg="/camera.svg"
+                  titleImgAlt="clockIn"
+                  position={"center"}
+                  size={"40"}
+                />
+              </Holds>
             </Holds>
+            {numberOfRoles >= 1 && option !== "break" && (
+              <Holds className="row-start-8 row-end-9 h-full w-full justify-center">
+                <Buttons onClick={handleNextStep} disabled background={"grey"}>
+                  <Titles size={"h2"}>{t("StartCamera")}</Titles>
+                </Buttons>
+              </Holds>
+            )}
             {numberOfRoles === 1 && (
               <Holds className="row-start-7 row-end-8 h-full w-full justify-center">
                 <Buttons onClick={handleNextStep} background={"green"}>
