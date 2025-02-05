@@ -19,7 +19,7 @@ import { z } from "zod";
 // Define Zod schema for received content
 // Define Zod schema for received content
 const receivedContentSchema = z.object({
-  id: z.number(), // Adjusted to expect a number
+  id: z.string(), // Adjusted to expect a number
   requestType: z.string(),
   requestedStartDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
     message: "Invalid date format for requestedStartDate",
