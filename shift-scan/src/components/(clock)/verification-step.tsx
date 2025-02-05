@@ -4,40 +4,31 @@ import { useTranslations } from "next-intl";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
-
 import {
   CreateTimeSheet,
   updateTimeSheetBySwitch,
 } from "@/actions/timeSheetActions";
 import { Clock } from "../clock";
-import { TitleBoxes } from "../(reusable)/titleBoxes";
 import { Buttons } from "../(reusable)/buttons";
 import { Contents } from "../(reusable)/contents";
 import { Labels } from "../(reusable)/labels";
 import { Inputs } from "../(reusable)/inputs";
 import { Forms } from "../(reusable)/forms";
 import { Images } from "../(reusable)/images";
-import { Texts } from "../(reusable)/texts";
 import { useSession } from "next-auth/react";
-import { useTruckScanData } from "@/app/context/TruckScanDataContext";
-import { useStartingMileage } from "@/app/context/StartingMileageContext";
 import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
 import { useCommentData } from "@/app/context/CommentContext";
-import {
-  setCurrentPageView,
-  setEquipment,
-  setLaborType,
-  setWorkRole,
-} from "@/actions/cookieActions";
+import { setCurrentPageView, setWorkRole } from "@/actions/cookieActions";
+import { Titles } from "../(reusable)/titles";
 import { useRouter } from "next/navigation";
-import { useOperator } from "@/app/context/operatorContext";
 
 type VerifyProcessProps = {
   type: string;
   role: string;
   option?: string;
   comments?: string;
+  handlePreviousStep?: () => void;
   laborType?: string;
 };
 
@@ -45,6 +36,7 @@ export default function VerificationStep({
   type,
   comments,
   role,
+  handlePreviousStep,
   laborType,
 }: VerifyProcessProps) {
   const t = useTranslations("Clock");
@@ -71,11 +63,26 @@ export default function VerificationStep({
 
       if (type === "switchJobs") {
         try {
+          let timeSheetId = null;
+          // retrieving cookie to get timeSheetId or use recent one from api call
           const tId = await fetch(
             "/api/cookies?method=get&name=timeSheetId"
           ).then((res) => res.json());
+          if (tId) {
+            timeSheetId = tId.toString();
+          } else {
+            const response = await fetch("/api/getRecentTimecard");
+            const tsId = await response.json();
+            timeSheetId = tsId.id;
+          }
+
+          if (!timeSheetId) {
+            throw new Error(
+              "No valid TimeSheet ID was found. Please try again later."
+            );
+          }
           const formData2 = new FormData();
-          formData2.append("id", tId?.toString() || "");
+          formData2.append("id", timeSheetId?.toString() || "");
           formData2.append("endTime", new Date().toISOString());
           formData2.append(
             "timesheetComments",
@@ -103,12 +110,11 @@ export default function VerificationStep({
           const result = { id: response.id.toString() };
           setTimeSheetData(result);
           setCurrentPageView("dashboard");
-          console.log("role before set", role);
-          // logic to set truck scan data null
-          await setWorkRole(role);
-          await setLaborType(laborType || "");
+          setWorkRole(role);
 
-          return router.push("/dashboard");
+          setTimeout(() => {
+            router.push("/dashboard");
+          }, 100);
         } catch (error) {
           console.error(error);
         }
@@ -126,9 +132,11 @@ export default function VerificationStep({
         const result = { id: response.id.toString() };
         setTimeSheetData(result);
         setCurrentPageView("dashboard");
-        await setWorkRole(role);
+        setWorkRole(role);
 
-        return router.push("/dashboard");
+        setTimeout(() => {
+          router.push("/dashboard");
+        }, 100);
       }
     } catch (error) {
       console.error(error);
@@ -136,21 +144,49 @@ export default function VerificationStep({
   };
 
   return (
-    <>
-      <Holds background={"white"} className="h-full w-full">
-        <Grids rows={"10"} gap={"2"} className="h-full w-full">
-          <Contents width={"section"} className="h-full row-span-1 ">
-            <TitleBoxes
-              title={t("VerifyJobSite")}
-              titleImg="/clock-in.svg"
-              titleImgAlt="Verify"
-              variant="row"
-              size="default"
-              type="row"
-            />
-          </Contents>
-          <Forms onSubmit={handleSubmit} className="h-full w-full row-span-9">
-            <Holds className="h-full w-full">
+    <Holds className="h-full w-full">
+      <Holds background={"white"} className="h-full w-full py-5">
+        <Contents width={"section"}>
+          <Grids rows={"7"} gap={"5"} className="h-full w-full">
+            <Holds className="h-full w-full row-start-1 row-end-2">
+              <Grids rows={"2"} cols={"5"} gap={"3"} className=" h-full w-full">
+                <Holds
+                  className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center"
+                  onClick={handlePreviousStep}
+                >
+                  <Images
+                    titleImg="/turnBack.svg"
+                    titleImgAlt="back"
+                    position={"left"}
+                  />
+                </Holds>
+                <Holds className="row-start-2 row-end-3 col-span-5 h-full w-full justify-center">
+                  <Grids
+                    cols={"5"}
+                    rows={"1"}
+                    gap={"5"}
+                    className="h-full w-full relative"
+                  >
+                    <Holds className="col-start-1 col-end-4 h-full w-full justify-center">
+                      <Titles size={"h1"} position={"right"}>
+                        {t("VerifyJobSite")}
+                      </Titles>
+                    </Holds>
+                    <Holds className="col-start-4 col-end-5 h-full w-full justify-center absolute">
+                      <Images
+                        titleImg="/clock-in.svg"
+                        titleImgAlt="Verify"
+                        size={"full"}
+                      />
+                    </Holds>
+                  </Grids>
+                </Holds>
+              </Grids>
+            </Holds>
+            <Forms
+              onSubmit={handleSubmit}
+              className="h-full w-full row-start-2 row-end-8"
+            >
               <Grids cols={"5"} rows={"10"} className="h-full w-full">
                 <Holds className="row-start-2 row-end-3 col-start-5 col-end-6 w-full h-full">
                   <Holds className="h-full w-full pr-1">
@@ -172,7 +208,7 @@ export default function VerificationStep({
                     </Buttons>
                   </Holds>
                 </Holds>
-                <Holds className="row-start-3 row-end-7 col-start-1 col-end-6 h-full pt-1">
+                <Holds className="row-start-3 row-end-8 col-start-1 col-end-6 h-full pt-1">
                   <Holds
                     background={"lightBlue"}
                     className="h-full w-[95%] sm:w-[85%] md:w-[75%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%]  border-[3px] rounded-b-none  border-black "
@@ -224,29 +260,11 @@ export default function VerificationStep({
                         variant={"white"}
                         data={savedCostCode?.toString() || ""}
                       />
-                      {comments !== undefined && (
-                        <>
-                          <Labels
-                            htmlFor="timeSheetComments"
-                            text={"white"}
-                            size={"p4"}
-                            position={"left"}
-                          >
-                            {t("Comments")}
-                          </Labels>
-                          <Inputs
-                            state="disabled"
-                            name="timeSheetComments"
-                            variant={"white"}
-                            data={comments}
-                          />
-                        </>
-                      )}
                     </Contents>
                   </Holds>
                 </Holds>
 
-                <Holds className="row-start-7 row-end-11 col-start-1 col-end-6 h-full  ">
+                <Holds className="row-start-8 row-end-11 col-start-1 col-end-6 h-full  ">
                   <Holds
                     background={"darkBlue"}
                     className="h-full w-[100%] sm:w-[90%] md:w-[90%] lg:w-[80%] xl:w-[80%] 2xl:w-[80%]  border-[3px]   border-black p-8 "
@@ -277,10 +295,10 @@ export default function VerificationStep({
                   value={new Date().toISOString()}
                 />
               </Grids>
-            </Holds>
-          </Forms>
-        </Grids>
+            </Forms>
+          </Grids>
+        </Contents>
       </Holds>
-    </>
+    </Holds>
   );
 }

@@ -20,7 +20,6 @@ export default async function SwitchJobs() {
   // Get the current language from cookies
   const lang = cookies().get("locale");
   const locale = lang?.value || "en";
-  const currentRole = cookies().get("workRole")?.value || "";
   return (
     <Bases>
       <Contents>
@@ -35,7 +34,6 @@ export default async function SwitchJobs() {
             type={"switchJobs"}
             scannerType={"jobsite"}
             locale={locale}
-            currentRole={currentRole}
           />
         </Holds>
       </Contents>

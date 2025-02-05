@@ -64,11 +64,28 @@ export default function MechanicVerificationStep({
 
       if (type === "switchJobs") {
         try {
+          // retrieve old time Sheet Id, end Time set to now, and the Time Sheet Comment data recorded
+          let timeSheetId = null;
+          // retrieving cookie to get timeSheetId or use recent one from api call
           const tId = await fetch(
             "/api/cookies?method=get&name=timeSheetId"
           ).then((res) => res.json());
+          if (tId) {
+            timeSheetId = tId.toString();
+          } else {
+            const response = await fetch("/api/getRecentTimecard");
+            const tsId = await response.json();
+            timeSheetId = tsId.id;
+          }
+
+          if (!timeSheetId) {
+            throw new Error(
+              "No valid TimeSheet ID was found. Please try again later."
+            );
+          }
+
           const formData2 = new FormData();
-          formData2.append("id", tId?.toString() || "");
+          formData2.append("id", timeSheetId?.toString() || "");
           formData2.append("endTime", new Date().toISOString());
           formData2.append(
             "timesheetComments",
@@ -98,7 +115,9 @@ export default function MechanicVerificationStep({
           const result = { id: response.id.toString() };
           setTimeSheetData(result);
 
-          return router.push("/dashboard");
+          setTimeout(() => {
+            router.push("/dashboard");
+          }, 100);
         } catch (error) {
           console.error(error);
         }
@@ -126,7 +145,9 @@ export default function MechanicVerificationStep({
         setTimeSheetData(result);
         setCurrentPageView("dashboard");
 
-        return router.push("/dashboard");
+        setTimeout(() => {
+          router.push("/dashboard");
+        }, 100);
       }
     } catch (error) {
       console.error(error);

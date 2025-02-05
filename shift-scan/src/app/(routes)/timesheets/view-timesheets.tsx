@@ -14,6 +14,7 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { z } from "zod";
 import { TimeSheet } from "@/lib/types";
+import EmptyView from "@/components/(reusable)/emptyView";
 
 // Zod schema for component state
 const ViewTimesheetsSchema = z.object({
@@ -41,24 +42,8 @@ export default function ViewTimesheets({ user }: Props) {
   const [showTimesheets, setShowTimesheets] = useState(false);
   const [timesheetData, setTimesheetData] = useState<TimeSheet[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const t = useTranslations("Home");
-
-  // Validate initial state with Zod schema
-  try {
-    ViewTimesheetsSchema.parse({
-      user,
-      showTimesheets,
-      timesheetData,
-      loading,
-      error,
-    });
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      console.error("Initial state validation error:", error.errors);
-    }
-  }
 
   // Function to calculate duration
   const calculateDuration = (
@@ -78,7 +63,6 @@ export default function ViewTimesheets({ user }: Props) {
   // Fetch timesheets from the API
   const fetchTimesheets = async (date?: string) => {
     setLoading(true);
-    setError(null);
     try {
       const dateIso = date
         ? new Date(date).toISOString().slice(0, 10)
@@ -86,15 +70,10 @@ export default function ViewTimesheets({ user }: Props) {
       const queryParam = dateIso ? `?date=${dateIso}` : "";
       const response = await fetch(`/api/getTimesheets${queryParam}`);
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch timesheets");
-      }
-
       const data: TimeSheet[] = await response.json();
       setTimesheetData(data);
       setShowTimesheets(true);
     } catch (error) {
-      setError("Error fetching timesheets");
       console.error(error);
     } finally {
       setLoading(false);
@@ -111,28 +90,56 @@ export default function ViewTimesheets({ user }: Props) {
   const currentDate = new Date().toISOString().split("T")[0]; // Format date as YYYY-MM-DD
 
   return (
-    <>
-      <Holds background={"white"} className="my-5 h-full">
-        <Contents width={"section"}>
-          <Grids rows={"2"} gap={"2"} className="py-5">
-            <Forms onSubmit={handleSubmit} className="row-span-2">
-              <Inputs type="hidden" name="id" value={user} readOnly />
-              <Labels>{t("EnterDate")}</Labels>
-              <Inputs type="date" name="date" defaultValue={currentDate} />
-              <Buttons type="submit" background={"lightBlue"} className="py-2">
-                <Titles size={"h3"}>{t("SearchTimesheets")}</Titles>
-              </Buttons>
-            </Forms>
-          </Grids>
-          {error && <Texts className="text-red-500">{error}</Texts>}
+    <Grids rows={"7"} gap={"3"} className="h-full">
+      <Holds
+        background={"white"}
+        className="py-2 px-4 h-full row-start-1 row-end-3"
+      >
+        <Contents width={"section"} className="h-full">
+          <Forms onSubmit={handleSubmit} className="row-span-2 h-full">
+            <Grids rows={"2"} className="h-full">
+              <Holds className="row-start-1 row-end-2">
+                <Inputs type="hidden" name="id" value={user} readOnly />
+                <Labels size={"p4"}>{t("EnterDate")}</Labels>
+                <Inputs type="date" name="date" defaultValue={currentDate} />
+              </Holds>
+              <Holds>
+                <Buttons
+                  type="submit"
+                  background={"lightBlue"}
+                  className="py-1"
+                >
+                  <Titles size={"h5"}>{t("SearchTimesheets")}</Titles>
+                </Buttons>
+              </Holds>
+            </Grids>
+          </Forms>
         </Contents>
       </Holds>
+      {!showTimesheets && !loading && (
+        <Holds
+          background={"white"}
+          size={"full"}
+          className="h-full row-start-3 row-end-8"
+        >
+          <Holds position={"center"} className="h-full p-1">
+            <EmptyView
+              TopChild={
+                <Titles size={"h3"} className="mt-4">
+                  Search to view you old timesheets
+                </Titles>
+              }
+              color={"bg-white"}
+            />
+          </Holds>
+        </Holds>
+      )}
 
       {loading ? (
         <Holds
           background={"white"}
           size={"full"}
-          className="h-full min-h-[50vh]"
+          className="h-full row-start-3 row-end-8"
         >
           <Holds position={"center"} size={"50"} className="my-10 ">
             <Spinner />
@@ -146,14 +153,14 @@ export default function ViewTimesheets({ user }: Props) {
           <Holds
             background={"white"}
             size={"full"}
-            className="h-full min-h-[50vh]"
+            className="h-full row-start-3 row-end-8 overflow-auto no-scrollbar p-2"
           >
             {timesheetData.length > 0 ? (
               timesheetData.map((timesheet) => (
                 <Holds
                   key={timesheet.id}
                   size={"full"}
-                  className="odd:bg-app-blue rounded"
+                  className="odd:bg-app-blue rounded "
                 >
                   <Holds size={"70"} className="p-4 py-8">
                     <Labels>
@@ -211,6 +218,6 @@ export default function ViewTimesheets({ user }: Props) {
           </Holds>
         )
       )}
-    </>
+    </Grids>
   );
 }

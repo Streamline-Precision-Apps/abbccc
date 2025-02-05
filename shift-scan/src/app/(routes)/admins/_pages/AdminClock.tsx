@@ -16,7 +16,7 @@ import CodeFinder from "@/components/(search)/codeFinder";
 
 import { Clock } from "@/components/clock";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 
 export default function AdminClock({
   handleClose,
@@ -66,10 +66,18 @@ export default function AdminClock({
     <Holds className=" ">
       <Holds position={"row"}>
         <Holds>
-          <CodeFinder datatype="jobsite" savedCode={J ?? undefined} />
+          <CodeFinder
+            datatype="jobsite"
+            savedJS={""}
+            setSelectedOpt={() => {}}
+          />
         </Holds>
         <Holds>
-          <CodeFinder datatype="costcode" savedCode={CC ?? undefined} />
+          <CodeFinder
+            datatype="costcode"
+            savedJS={""}
+            setSelectedOpt={() => {}}
+          />
         </Holds>
       </Holds>
       <Holds>
