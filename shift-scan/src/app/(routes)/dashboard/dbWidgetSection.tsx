@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { Session } from "next-auth";
-import { updateTimeSheetBySwitch } from "@/actions/timeSheetActions";
+import { breakOutTimeSheet } from "@/actions/timeSheetActions";
 import { z } from "zod";
 import { useCurrentView } from "@/app/context/CurrentViewContext";
 import TascoDashboardView from "./UI/_dashboards/tascoDashboardView";
@@ -127,11 +127,11 @@ export default function DbWidgetSection({ session, view }: props) {
         const tsId = await response.json();
         timeSheetId = tsId.id;
 
-        formData2.append("id", timeSheetId?.toString() || "");
+        formData2.append("id", timeSheetId || "");
         formData2.append("endTime", new Date().toISOString());
         formData2.append("timesheetComments", comment);
 
-        await updateTimeSheetBySwitch(formData2);
+        await breakOutTimeSheet(formData2);
         setCurrentPageView("break");
         router.push("/");
       } else {
