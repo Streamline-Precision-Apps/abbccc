@@ -63,6 +63,7 @@ export default function VerificationStep({
 
       if (type === "switchJobs") {
         try {
+          console.log("Initiating switchJobs");
           let timeSheetId = null;
           // retrieving cookie to get timeSheetId or use recent one from api call
           const tId = await fetch(
@@ -111,7 +112,7 @@ export default function VerificationStep({
           setTimeSheetData(result);
           setCurrentPageView("dashboard");
           setWorkRole(role);
-
+          console.log("finishing switchJobs");
           setTimeout(() => {
             router.push("/dashboard");
           }, 100);
@@ -119,6 +120,7 @@ export default function VerificationStep({
           console.error(error);
         }
       } else {
+        console.log("Initiating Normal");
         const formData = new FormData();
         formData.append("submitDate", new Date().toISOString());
         formData.append("userId", id.toString());
@@ -133,7 +135,7 @@ export default function VerificationStep({
         setTimeSheetData(result);
         setCurrentPageView("dashboard");
         setWorkRole(role);
-
+        console.log("finishing Normal clock out");
         setTimeout(() => {
           router.push("/dashboard");
         }, 100);
