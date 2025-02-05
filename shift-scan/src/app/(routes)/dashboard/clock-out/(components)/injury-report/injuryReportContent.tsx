@@ -11,6 +11,7 @@ import { useSession } from "next-auth/react";
 import { Grids } from "@/components/(reusable)/grids";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { CheckBox } from "@/components/(inputs)/checkBox";
+import { Texts } from "@/components/(reusable)/texts";
 
 type FormProps = {
   base64String: string | null;
@@ -51,10 +52,6 @@ export const InjuryReportContent = ({
       setError("Please describe what happened.");
       return;
     }
-    if (!base64String) {
-      setError("Please add a signature.");
-      return;
-    }
     if (!signatureChecked) {
       setError("Please verify your signature.");
       return;
@@ -85,8 +82,30 @@ export const InjuryReportContent = ({
   return (
     <>
       <Contents width={"section"}>
-        <Grids rows={"10"} gap={"5"}>
-          <Holds position={"row"} className="h-full row-span-2 my-auto">
+        {error && (
+          <Texts size="p6" className="text-red-500">
+            {error ?? ""}
+          </Texts>
+        )}
+        <Grids rows={"7"} gap={"5"}>
+          <Holds className="row-start-1 row-end-3">
+            <label htmlFor="incidentDescription">
+              <Titles position={"left"} size="h4">
+                {t("incidentDescription")}
+              </Titles>
+            </label>
+            <TextAreas
+              id="incidentDescription"
+              value={textarea}
+              onChange={handleChange}
+              minLength={1}
+              maxLength={500}
+              style={{ resize: "none", width: "100%", height: "100%" }}
+              className="border-[3px] border-black"
+            />
+          </Holds>
+
+          <Holds position={"row"} className="row-start-3 row-end-4">
             <Holds size={"70"}>
               <Titles position={"left"} size="h3">
                 {t("ContactedSupervisor")}
@@ -98,44 +117,12 @@ export const InjuryReportContent = ({
                 onChange={handleSupervisorCheckboxChange}
                 id={"1"}
                 name={""}
-                size={2}
+                size={3}
               />
             </Holds>
           </Holds>
 
-          <Holds className="row-span-4">
-            <label htmlFor="incidentDescription">
-              <Titles position={"left"} size="h3">
-                {t("incidentDescription")}
-              </Titles>
-            </label>
-            <TextAreas
-              id="incidentDescription"
-              value={textarea}
-              onChange={handleChange}
-              rows={5}
-              minLength={1}
-              maxLength={40}
-              style={{ resize: "none", width: "100%", height: "100%" }}
-              className="border-[3px] border-black"
-            />
-            {error && <p className="text-red-500">{error ?? ""}</p>}
-          </Holds>
-
-          <Holds className="row-span-2">
-            <Holds className="my-auto border-[3px] border-black">
-              {base64String ? (
-                <img
-                  src={base64String}
-                  alt="Loading signature"
-                  className="w-[30%] mx-auto"
-                />
-              ) : (
-                <p>No Signature </p>
-              )}
-            </Holds>
-          </Holds>
-          <Holds position={"row"}>
+          <Holds position={"row"} className="row-start-4 row-end-5">
             <Holds size={"70"}>
               <Titles position={"left"} size="h3">
                 {t("SignatureVerify")}
@@ -147,12 +134,34 @@ export const InjuryReportContent = ({
                 onChange={handleSignatureCheckboxChange}
                 id={"2"}
                 name={""}
-                size={2}
+                size={3}
               />
             </Holds>
           </Holds>
-          <Holds className="row-span-2">
-            <Buttons onClick={handleSubmit}>
+          <Holds className="row-start-5 row-end-7 h-full">
+            <Holds className="h-full my-auto border-[3px] border-black rounded-[10px]">
+              {base64String ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={base64String}
+                  alt="Loading signature"
+                  className="w-[40%] m-auto"
+                />
+              ) : (
+                <p>No Signature </p>
+              )}
+            </Holds>
+          </Holds>
+          <Holds className="row-start-7 row-end-9 h-full">
+            <Buttons
+              background={
+                textarea && base64String && signatureChecked
+                  ? "lightBlue"
+                  : "grey"
+              }
+              disabled={textarea && signatureChecked ? false : true}
+              onClick={handleSubmit}
+            >
               <Titles>{t("SubmitButton")}</Titles>
             </Buttons>
           </Holds>
