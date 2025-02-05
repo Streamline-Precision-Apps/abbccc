@@ -1,3 +1,4 @@
+import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
@@ -11,31 +12,37 @@ import { Clock } from "@/components/clock";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
+type ScanResult = {
+  data: string;
+};
 export const LaborClockOut = ({
   handleButtonClick,
   scanResult,
   savedCostCode,
   formRef,
   isSubmitting,
+  prevStep,
 }: {
   handleButtonClick: () => void;
-  scanResult: string | null;
+  scanResult: string | undefined;
   savedCostCode: string | null;
   formRef: React.RefObject<HTMLFormElement>;
   isSubmitting: boolean;
+  prevStep: () => void;
 }) => {
   const t = useTranslations("ClockOut");
   const [date] = useState(new Date());
+
   return (
     <Bases>
       <Contents>
         <Holds background={"white"} className="h-full w-full">
-          <Grids rows={"7"} gap={"5"}>
+          <Grids rows={"8"} gap={"5"} className="h-full w-full">
             <Holds className="h-full w-full row-start-1 row-end-2 p-3">
               <Grids rows={"2"} cols={"5"} gap={"3"} className=" h-full w-full">
                 <Holds
                   className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center"
-                  onClick={() => {}}
+                  onClick={prevStep}
                 >
                   <Images
                     titleImg="/turnBack.svg"
@@ -66,9 +73,11 @@ export const LaborClockOut = ({
                 </Holds>
               </Grids>
             </Holds>
-            <Holds className="row-start-2 row-end-8 ">
-              <Grids rows={"10"} cols={"5"} className="h-full w-full">
-                <Holds className="row-start-2 row-end-8 col-start-1 col-end-6 h-full pt-1">
+
+            {/* form Grid */}
+            <Holds className="row-start-2 row-end-9 h-full w-full ">
+              <Grids rows={"10"} cols={"5"}>
+                <Holds className="row-start-2 row-end-7 col-start-1 col-end-6 h-full pt-1">
                   <Holds
                     background={"lightBlue"}
                     className="h-full w-[95%] sm:w-[85%] md:w-[75%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%]  border-[3px] rounded-b-none  border-black "
@@ -124,12 +133,12 @@ export const LaborClockOut = ({
                   </Holds>
                 </Holds>
 
-                <Holds className="row-start-8 row-end-11 col-start-1 col-end-6">
+                <Holds className="row-start-7 row-end-11 col-start-1 col-end-6 h-full">
                   <Holds
                     background={"darkBlue"}
                     className="h-full w-[100%] sm:w-[90%] md:w-[90%] lg:w-[80%] xl:w-[80%] 2xl:w-[80%]  border-[3px]   border-black p-8 "
                   >
-                    <form ref={formRef} className="w-full h-full">
+                    <form ref={formRef} className="h-full">
                       <Inputs
                         type="hidden"
                         name="endTime"
@@ -144,7 +153,7 @@ export const LaborClockOut = ({
                       />
                       <Buttons
                         onClick={handleButtonClick}
-                        className="bg-app-red flex justify-center w-full h-full p-4 rounded-[10px] text-black font-bold"
+                        className="bg-app-red flex justify-center items-center p-4 rounded-[10px] text-black font-bold"
                         disabled={isSubmitting}
                       >
                         <Clock time={date.getTime()} />
