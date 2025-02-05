@@ -92,17 +92,10 @@ export default function ClockOutContent() {
       setIsSubmitting(true);
       hasSubmitted.current = true;
       let timeSheetId = null;
-      // retrieving cookie to get timeSheetId or use recent one from api call
-      const tId = await fetch("/api/cookies?method=get&name=timeSheetId").then(
-        (res) => res.json()
-      );
-      if (tId) {
-        timeSheetId = tId.toString();
-      } else {
-        const response = await fetch("/api/getRecentTimecard");
-        const tsId = await response.json();
-        timeSheetId = tsId.id;
-      }
+
+      const response = await fetch("/api/getRecentTimecard");
+      const tsId = await response.json();
+      timeSheetId = tsId.id;
 
       if (!timeSheetId) {
         alert("No valid TimeSheet ID was found. Please try again later.");
