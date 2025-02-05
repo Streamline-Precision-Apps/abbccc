@@ -28,22 +28,11 @@ export default async function Dashboard() {
 
   // const user = session.user;
   const view = cookies().get("workRole")?.value || "general"; // Default to general view if not set
-  // Get the current language from cookies
-  // Get the current language from cookies
-  // const lang = cookies().get("locale");
-  // const locale = lang ? lang.value : "en";
-
-  // const date = new Date().toLocaleDateString(locale, {
-  //   year: "numeric",
-  //   month: "short",
-  //   day: "numeric",
-  //   weekday: "long",
-  // });
 
   return (
     <Bases>
       <Contents>
-        <Grids rows={"7"}>
+        <Grids rows={"7"} gap={"2"}>
           <Holds position={"row"} background={"white"} className="row-span-1">
             <Holds size={"30"}>
               <Images

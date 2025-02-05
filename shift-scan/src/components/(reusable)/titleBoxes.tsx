@@ -66,6 +66,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
   href = "back",
   modal,
   modalTitle,
+  onClick = () => {},
   ...props
 }) => {
   if (version === "horizontal") {
@@ -75,7 +76,12 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         {...props}
       >
         <div className="flex items-center justify-between w-full">
-          <Buttons href={href} background={"none"} size={"50"}>
+          <Buttons
+            href={href}
+            background={"none"}
+            size={"50"}
+            onClick={onClick}
+          >
             <Images
               titleImg="/turnBack.svg"
               titleImgAlt={titleImgAlt}
@@ -302,7 +308,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         className={cn(TitleBoxVariants({ variant, size, version, className }))}
         {...props}
       >
-        <Grids cols={"4"} rows={"3"} className="w-full h-full p-4">
+        <Grids cols={"4"} rows={"3"} className="w-full h-full p-3">
           <Holds className="col-span-1 row-span-1 flex items-center justify-center">
             <Buttons
               href={href}

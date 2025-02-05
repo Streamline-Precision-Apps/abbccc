@@ -67,16 +67,10 @@ export default function MechanicVerificationStep({
           // retrieve old time Sheet Id, end Time set to now, and the Time Sheet Comment data recorded
           let timeSheetId = null;
           // retrieving cookie to get timeSheetId or use recent one from api call
-          const tId = await fetch(
-            "/api/cookies?method=get&name=timeSheetId"
-          ).then((res) => res.json());
-          if (tId) {
-            timeSheetId = tId.toString();
-          } else {
-            const response = await fetch("/api/getRecentTimecard");
-            const tsId = await response.json();
-            timeSheetId = tsId.id;
-          }
+
+          const res = await fetch("/api/getRecentTimecard");
+          const tsId = await res.json();
+          timeSheetId = tsId.id;
 
           if (!timeSheetId) {
             throw new Error(

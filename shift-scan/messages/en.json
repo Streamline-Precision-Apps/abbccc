@@ -40,6 +40,8 @@
 },
 
 "SignUpPermissions":{
+    "GeneralReminders" : "General Reminders",
+    "PersonalReminders" : "Personal Reminders",
     "GiveUsAccess" : "Give Us Access",
     "YesToEverything" : "Yes to Everything!",
     "RequiredForAppUse" : "Required for App Use",
@@ -398,6 +400,7 @@
     "Submit": "Submit"
 },
 "ClockOut":{
+    "ClockOut": "Clock Out",
     "ReviewYourDayDirections": "Review your day below. If you have any questions, please contact your supervisor.",
     "Now": "Now",
     "Current": "Current",
@@ -442,6 +445,7 @@
     "Logs-Fetch": "Error fetching logs:"
 },
 "Hamburger": {
+    "PersonalReminders" : "Personal Reminders",
     "ContactDetails": "Edit Contact Details",
     "Saving": "Savings changes",
     "Save": "Save Changes",

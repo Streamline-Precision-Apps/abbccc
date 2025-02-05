@@ -71,19 +71,14 @@ export default function Comment({
           </Holds>
         </Holds>
 
-        <Holds
-          position={"row"}
-          className="row-start-7 row-end-8 h-full space-x-4"
-        >
-          <Holds>
-            <Buttons
-              background={"orange"}
-              onClick={() => handleClick()}
-              className="w-[90%] h-full py-3"
-            >
-              <Texts size={"p3"}>{c("Next")}</Texts>
-            </Buttons>
-          </Holds>
+        <Holds position={"row"} className="row-start-7 row-end-8 h-full ">
+          <Buttons
+            background={"orange"}
+            onClick={() => handleClick()}
+            className="w-full h-full py-3"
+          >
+            <Texts size={"p3"}>{c("Continue")}</Texts>
+          </Buttons>
         </Holds>
       </Grids>
     </Holds>
