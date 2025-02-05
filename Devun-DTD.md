@@ -296,14 +296,15 @@ cookies().set({
 
   #
 # February 4, 2025 - Tueday
+### Planning
+- spend time on next sprint
 ### Goals
 - Create all stuff for backend for Sign up steps
   - /sign-up
   -/ Update Test data to have every role with a generic name
 ### Built/created 
-- debugging clock in path
-- making changes based on what zach stated
-- created loading UI for clocking route to help loading state
+- updated the test data, it now has every role with a generic name
+
 
 ### Trello
 - /clock - "Start Camera" instead of begin scan

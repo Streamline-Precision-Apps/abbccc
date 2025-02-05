@@ -74,7 +74,7 @@ export default function QRMultiRoles({
     <>
       <Holds background={"white"} className="h-full w-full">
         <Contents width={"section"}>
-          <Grids rows={"7"} gap={"5"} className="h-full w-full my-5">
+          <Grids rows={"8"} gap={"5"} className="h-full w-full py-5">
             {type !== "equipment" ? (
               <>
                 <Holds className="row-start-1 row-end-2 h-full w-full justify-center ">
@@ -151,7 +151,7 @@ export default function QRMultiRoles({
             {!startCamera ? (
               <Holds
                 className={
-                  "h-full w-full row-start-3 row-end-6 border-[3px] border-black rounded-[10px] p-3 "
+                  "h-full w-full row-start-3 row-end-7 border-[3px] border-black rounded-[10px] p-3 "
                 }
               >
                 <Holds className="h-full w-full justify-center border-[3px] border-black rounded-[10px]">
@@ -171,7 +171,7 @@ export default function QRMultiRoles({
                 </Holds>
               </Holds>
             ) : (
-              <Holds className={"h-full w-full row-start-3 row-end-7"}>
+              <Holds className={"h-full w-full row-start-3 row-end-8"}>
                 <Grids rows={"6"} gap={"2"}>
                   <Holds className="h-full w-full row-start-1 row-end-6 justify-center border-[3px] border-black rounded-[10px] p-3">
                     <QR
@@ -199,7 +199,7 @@ export default function QRMultiRoles({
               </Holds>
             )}
             {!startCamera ? (
-              <Holds className="row-start-7 row-end-8 h-full w-full justify-center">
+              <Holds className="row-start-8 row-end-9 h-full w-full justify-center">
                 <Buttons
                   onClick={() => setStartCamera(!startCamera)}
                   background={"green"}

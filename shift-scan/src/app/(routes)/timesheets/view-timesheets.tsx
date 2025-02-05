@@ -93,7 +93,7 @@ export default function ViewTimesheets({ user }: Props) {
     <Grids rows={"7"} gap={"3"} className="h-full">
       <Holds
         background={"white"}
-        className="py-2 px-4 h-full row-start-1 row-end-3"
+        className={`py-2 px-4 h-full row-start-1 row-end-3`}
       >
         <Contents width={"section"} className="h-full">
           <Forms onSubmit={handleSubmit} className="row-span-2 h-full">
@@ -139,9 +139,13 @@ export default function ViewTimesheets({ user }: Props) {
         <Holds
           background={"white"}
           size={"full"}
-          className="h-full row-start-3 row-end-8"
+          className="h-full row-start-3 row-end-8 animate-pulse"
         >
-          <Holds position={"center"} size={"50"} className="my-10 ">
+          <Holds
+            position={"center"}
+            size={"50"}
+            className="h-full flex flex-col justify-center items-center "
+          >
             <Spinner />
             <Titles size={"h3"} className="mt-4">
               {t("Loading")}
@@ -211,9 +215,16 @@ export default function ViewTimesheets({ user }: Props) {
                 </Holds>
               ))
             ) : (
-              <Titles size={"h2"} className="pt-8">
-                {t("NoData")}
-              </Titles>
+              <Holds
+                size={"full"}
+                className="h-full justify-center items-center"
+              >
+                {" "}
+                <EmptyView
+                  TopChild={<Titles size={"h2"}>{t("NoData")}</Titles>}
+                  color={"bg-white"}
+                />
+              </Holds>
             )}
           </Holds>
         )

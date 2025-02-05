@@ -209,6 +209,39 @@ export async function updateTimeSheetBySwitch(formData: FormData) {
     console.log(error);
   }
 }
+//------------------------------------------------------------------------
+//--------- Update Time Sheet
+
+export async function breakOutTimeSheet(formData: FormData) {
+  try {
+    console.log("formData:", formData);
+    console.log("switch jobsite, updating Timesheet...");
+    const id = formData.get("id") as string;
+    const endTime = parseUTC(formData.get("endTime") as string).toISOString();
+    const comment = formData.get("timesheetComments") as string;
+
+    const updatedTimeSheet = await prisma.timeSheet.update({
+      where: { id },
+      data: {
+        endTime,
+        comment,
+      },
+    });
+    console.log("Timesheet updated successfully.");
+    console.log(updatedTimeSheet);
+
+    // Revalidate the path
+    revalidatePath(`/`);
+    revalidatePath("/admins/settings");
+    revalidatePath("/admins/assets");
+    revalidatePath("/admins/reports");
+    revalidatePath("/admins/personnel");
+    revalidatePath("/admins");
+    return { success: true };
+  } catch (error) {
+    console.log(error);
+  }
+}
 
 //-------------------------------------------------------------------------------------------------------------------------------
 //-----------------------------------------------  TRUCKING CRUD  ---------------------------------------------------------------

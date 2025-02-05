@@ -249,13 +249,10 @@ export type RequestForm = {
 export type UserSettings = {
   userId: string;
   language?: string;
-  approvedRequests?: boolean;
-  timeOffRequests?: boolean;
+  personalReminders?: boolean;
   generalReminders?: boolean;
-  biometric?: boolean;
   cameraAccess?: boolean;
   locationAccess?: boolean;
-  photoAlbumAccess?: boolean;
   cookiesAccess?: boolean;
 };
 

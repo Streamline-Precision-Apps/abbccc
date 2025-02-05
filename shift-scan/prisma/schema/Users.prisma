@@ -36,17 +36,14 @@ model User {
 }
 
 model UserSettings {
-    id               String  @id @default(cuid())
-    userId           String  @unique
-    language         String  @default("en")
-    approvedRequests Boolean @default(false)
-    timeOffRequests  Boolean @default(false)
-    generalReminders Boolean @default(false)
-    biometric        Boolean @default(false)
-    cameraAccess     Boolean @default(false)
-    locationAccess   Boolean @default(false)
-    photoAlbumAccess Boolean @default(false)
-    cookiesAccess    Boolean @default(false)
+    id                String  @id @default(cuid())
+    userId            String  @unique
+    language          String  @default("en")
+    generalReminders  Boolean @default(false) // all general reminders set by employee
+    personalReminders Boolean @default(false) // all personal reminders set by employee
+    cameraAccess      Boolean @default(false)
+    locationAccess    Boolean @default(false)
+    cookiesAccess     Boolean @default(false)
 
     user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

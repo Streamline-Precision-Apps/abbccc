@@ -15,6 +15,7 @@ export async function GET() {
     const timesheet = await prisma.timeSheet.findFirst({
       where: {
         userId,
+        endTime: null,
       },
       orderBy: {
         submitDate: "desc", // Sort by date starting with most recent date

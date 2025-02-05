@@ -12,6 +12,8 @@ import NotificationSettings from "./notificationSettings";
 import { setAuthStep, getAuthStep } from "@/app/api/auth";
 import { signOut } from "next-auth/react";
 import { z } from "zod";
+import { SignUpOutro } from "./signUpOutro";
+import { finishUserSetup } from "@/actions/userActions";
 
 // Define Zod schema for validating props
 const propsSchema = z.object({
@@ -38,9 +40,11 @@ export default function Content({
   accountSetup: boolean;
 }) {
   const isValid = validateProps(userId, accountSetup); // Ensure this is at the top
-  const [step, setStep] = useState(3); // Always call useState
-  const handleComplete = () => {
+  const [step, setStep] = useState(1); // Always call useState
+  const handleComplete = async () => {
     try {
+      // mark accountSetup as true
+      await finishUserSetup(userId);
       setAuthStep("");
       signOut({ callbackUrl: "/signin" });
     } catch (error) {
@@ -57,14 +61,6 @@ export default function Content({
     }
   }, []);
 
-  useEffect(() => {
-    if (accountSetup) {
-      handleComplete();
-    } else {
-      setStep(1);
-    }
-  }, [accountSetup]);
-
   const handleNextStep = () => {
     setStep((prevStep) => prevStep + 1);
   };
@@ -78,12 +74,18 @@ export default function Content({
         {step === 1 && <ShiftScanIntro handleNextStep={handleNextStep} />}
         {step === 2 && (
           <ResetPassword userId={userId} handleNextStep={handleNextStep} />
-        )} 
+        )}
         {step === 3 && (
-          <NotificationSettings userId={userId} handleNextStep={handleNextStep} />
+          <NotificationSettings
+            userId={userId}
+            handleNextStep={handleNextStep}
+          />
         )}
         {step === 4 && (
-          <ProfilePictureSetup userId={userId} handleNextStep={handleNextStep} />
+          <ProfilePictureSetup
+            userId={userId}
+            handleNextStep={handleNextStep}
+          />
         )}
         {/* {step === 5 && (
           <Permissions id={userId} handleAccept={handleComplete}/>
@@ -91,9 +93,7 @@ export default function Content({
         {step === 5 && (
           <SignatureSetup id={userId} handleNextStep={handleNextStep} />
         )}
-        {/* {step === 6 && (
-          <SignUpOutro id={userId} handleAccept={handleComplete}/>
-        )} */}
+        {step === 6 && <SignUpOutro handleComplete={handleComplete} />}
       </Contents>
     </Holds>
   );

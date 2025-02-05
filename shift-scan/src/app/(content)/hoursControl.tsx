@@ -187,7 +187,7 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
                 <Holds
                   className={`h-full rounded-[10px] bg-white p-1 justify-end ${
                     prevData.date === Today.date
-                      ? "border-[5px] border-app-green"
+                      ? "border-[5px] border-[#09814a]"
                       : "border-[3px] border-black"
                   } ${
                     prevData.hours === 0 &&
@@ -235,57 +235,57 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
               <Holds className="mx-auto px-2 py-4 h-full w-[25%]" />
             )}
 
-        {/* Render currentData */}
-        <Holds className="mx-auto h-full w-[30%]">
-          <Holds
-            className={`h-full rounded-[10px] bg-white p-1 flex justify-end ${
-              currentData.date === Today.date
-                ? "border-[5px] border-app-green"
-                : "border-[3px] border-black"
-            } ${
-              currentData.hours === 0 &&
-              currentData.date <=
-                toZonedTime(new Date(), MST_TIMEZONE)
-                  .toISOString()
-                  .split("T")[0]
-                ? " "
-                : ""
-            }`}
-          >
-            <Holds
-              className={`rounded-[10px] justify-end ${
-                currentData.hours !== 0
-                ? "bg-app-green"
-                : ""
-              }`}
-              style={{
-                height: `${calculateBarHeight(currentData.hours)}%`,
-                border: currentData.hours ? "3px solid black" : "none",
-              }}
-            >
-              <Texts size="p4">
-                {currentData.hours !== 0 ? currentData.hours.toFixed(1) : ""}
-              </Texts>
-              <Texts size="p4">
-                {currentData.hours === 0 &&
-                currentData.date <=
-                  toZonedTime(new Date(), MST_TIMEZONE)
-                    .toISOString()
-                    .split("T")[0]
-                  ? currentData.hours
-                  : ""}
-              </Texts>
-              <Texts size="p4">
-                {currentData.date <=
-                toZonedTime(new Date(), MST_TIMEZONE)
-                  .toISOString()
-                  .split("T")[0]
-                  ? `${t("DA-Time-Label")}`
-                  : ""}
-              </Texts>
+            {/* Render currentData */}
+            <Holds className="mx-auto h-full w-[30%]">
+              <Holds
+                className={`h-full rounded-[10px] bg-white p-1 flex justify-end ${
+                  currentData.date === Today.date
+                    ? "border-[5px] border-[#09814a]"
+                    : "border-[3px] border-black"
+                } ${
+                  currentData.hours === 0 &&
+                  currentData.date <=
+                    toZonedTime(new Date(), MST_TIMEZONE)
+                      .toISOString()
+                      .split("T")[0]
+                    ? " "
+                    : ""
+                }`}
+              >
+                <Holds
+                  className={`rounded-[10px] justify-end ${
+                    currentData.hours !== 0 ? "bg-app-green" : ""
+                  }`}
+                  style={{
+                    height: `${calculateBarHeight(currentData.hours)}%`,
+                    border: currentData.hours ? "3px solid black" : "none",
+                  }}
+                >
+                  <Texts size="p4">
+                    {currentData.hours !== 0
+                      ? currentData.hours.toFixed(1)
+                      : ""}
+                  </Texts>
+                  <Texts size="p4">
+                    {currentData.hours === 0 &&
+                    currentData.date <=
+                      toZonedTime(new Date(), MST_TIMEZONE)
+                        .toISOString()
+                        .split("T")[0]
+                      ? currentData.hours
+                      : ""}
+                  </Texts>
+                  <Texts size="p4">
+                    {currentData.date <=
+                    toZonedTime(new Date(), MST_TIMEZONE)
+                      .toISOString()
+                      .split("T")[0]
+                      ? `${t("DA-Time-Label")}`
+                      : ""}
+                  </Texts>
+                </Holds>
+              </Holds>
             </Holds>
-          </Holds>
-        </Holds>
 
             {/* Render nextData */}
             {nextData.date !== "" ? (
@@ -294,7 +294,7 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
                   background="darkBlue"
                   className={`h-full rounded-[10px] bg-white p-1 flex justify-end ${
                     nextData.date === Today.date
-                      ? "border-[5px] border-app-green"
+                      ? "border-[5px] border-[#09814a]"
                       : "border-[3px] border-black"
                   } ${
                     nextData.hours === 0 &&
@@ -308,7 +308,7 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
                 >
                   <Holds
                     className={`rounded-[10px] ${
-                      prevData.hours !== 0 ? "bg-app-blue" : ""
+                      nextData.hours !== 0 ? "bg-app-blue" : ""
                     }`}
                     style={{
                       height: `${calculateBarHeight(nextData.hours)}%`,
