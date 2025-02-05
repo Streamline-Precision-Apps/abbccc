@@ -29,8 +29,7 @@ const config: Config = {
       colors: {
         "app-blue": "#57BDE9",
         "app-dark-blue": "#233861",
-        "app-green": "#74E957",
-        "app-dark-green": "#4FCF62",
+        "app-green": "#4FCF62",
         "app-red": "#FC3939",
         "app-orange": "#FC8F2B",
         "app-yellow": "#FCE700",
