@@ -31,10 +31,18 @@
 # Janurary 24, 2025 - Friday
 ### built/created
 - Made some adjustments to the Equipment clock in section. (2 hours)
-- Fixed bugs that were making the use time in the equipment section display wrong and adjust server action for it to work right. (4.5 hours)
+- Fixed bugs that were making the use time in the equipment section display wrong and adjust server action for it to work right. (5.5 hours)
 - Meeting with Devun and merge. (2 hours)
 
-# Janurary 27, 2025 - Monday
+# Janurary 29, 2025 - Wednesday
 ### built/created
 - our merge caused a bug in the creation of equipment log. I fixed that. (1.5 hours)
-- 
+- Worked on construction and bug fixes for the inbox section. (9 hours)
+
+# Februrary 1, 2025 - Saturday
+### built/created
+- Worked on inbox section. (5 hours)
+
+# Februrary 5, 2025 - Wednesday
+### built/created
+- Worked on inbox section. ( hours)

@@ -12,7 +12,7 @@ import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { RequestForm } from "@/lib/types";
 import { useEffect, useState } from "react";
-// import { createLeaveRequest } from "@/actions/inboxSentActions";
+import { createLeaveRequest } from "@/actions/inboxSentActions";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { Grids } from "@/components/(reusable)/grids";
@@ -20,13 +20,14 @@ import { z } from "zod";
 
 // Zod schema for form validation
 const leaveRequestSchema = z.object({
-  startDate: z.string().nonempty({ message: "Start date is required" }),
-  endDate: z.string().nonempty({ message: "End date is required" }),
-  requestType: z.enum(["Vacation", "Medical", "Military", "Personal", "Sick"]),
-  description: z.string().max(40, { message: "Max 40 characters" }),
-  userId: z.string().nonempty({ message: "User ID is required" }),
+  name: z.string().optional(),
+  startDate: z.string().min(1, { message: "Start date is required" }),
+  endDate: z.string().min(1, { message: "End date is required" }),
+  requestType: z.enum(["FAMILY_MEDICAL", "MILITARY", "MILITARY", "PAID_VACATION", "NON_PAID_PERSONAL", "SICK"]),
+  description: z.string().min(4, { message: "Description is required" }).max(40, { message: "Max 40 characters" }),
+  userId: z.string().min(1, { message: "User ID is required" }),
   status: z.literal("PENDING"),
-  date: z.string().nonempty({ message: "Date is required" }),
+  date: z.string().min(1, { message: "Date is required" }),
 });
 
 export default function Form({ session }: RequestForm) {
@@ -58,6 +59,7 @@ export default function Form({ session }: RequestForm) {
 
     const formData = new FormData(event.target as HTMLFormElement);
     const formValues = {
+      name: formData.get("name") as string,
       startDate: formData.get("startDate") as string,
       endDate: formData.get("endDate") as string,
       requestType: formData.get("requestType") as string,
@@ -70,7 +72,7 @@ export default function Form({ session }: RequestForm) {
     // Validate form data using Zod
     try {
       leaveRequestSchema.parse(formValues);
-      // await createLeaveRequest(formData);
+      await createLeaveRequest(formData);
 
       setCloseBanner(true);
       setMessage("Time off request submitted");
@@ -104,11 +106,13 @@ export default function Form({ session }: RequestForm) {
           <Contents width="section">
             <Grids className="grid-rows-7">
               <Holds className="row-span-4">
-                <Labels>Start Date</Labels>
+                <Labels>Title (Optional)</Labels>
+                <Inputs type="text" name="name" id="name" />
+                <Labels>Start Date*</Labels>
                 <Inputs type="date" name="startDate" id="startDate" required />
-                <Labels>End Date</Labels>
+                <Labels>End Date*</Labels>
                 <Inputs type="date" name="endDate" id="endDate" required />
-                <Labels>Request Type</Labels>
+                <Labels>Request Type*</Labels>
                 <Selects
                   id="requestType"
                   name="requestType"
@@ -116,13 +120,13 @@ export default function Form({ session }: RequestForm) {
                   required
                 >
                   <option value="">Choose a request</option>
-                  <option value="Vacation">Vacation</option>
-                  <option value="Medical">Family/Medical Leave</option>
-                  <option value="Military">Military Leave</option>
-                  <option value="Personal">Non Paid Personal Leave</option>
-                  <option value="Sick">Sick Time</option>
+                  <option value="PAID_VACATION">Vacation</option>
+                  <option value="FAMILY_MEDICAL">Family/Medical Leave</option>
+                  <option value="MILITARY">Military Leave</option>
+                  <option value="NON_PAID_PERSONAL">Non Paid Personal Leave</option>
+                  <option value="SICK">Sick Time</option>
                 </Selects>
-                <Labels>Comments</Labels>
+                <Labels>Comments*</Labels>
                 <TextAreas
                   name="description"
                   id="description"
