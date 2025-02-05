@@ -289,6 +289,7 @@
     "ID": "Id: #"
 },
 "Clock": {
+    "ChangeIfNecessary" : "Cambiar si es necesario",
     "Next": "Siguiente",
     "PreviousJobComment":"Comentarios del Trabajo Anterior",
     "ScanJobsite": "Escaneo de Sitio de Trabajo",

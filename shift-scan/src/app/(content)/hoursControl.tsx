@@ -169,7 +169,7 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
           </Buttons>
         </Holds>
         <Holds size={"80"} className="h-full">
-          <Buttons href={"/timesheets"} className="bg-app-dark-green">
+          <Buttons href={"/timesheets"} background={"green"}>
             <Titles size={"h3"}>{t("TimeSheet-Label")}</Titles>
           </Buttons>
         </Holds>
@@ -187,7 +187,7 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
                 <Holds
                   className={`h-full rounded-[10px] bg-white p-1 justify-end ${
                     prevData.date === Today.date
-                      ? "border-[5px] border-app-green"
+                      ? "border-[5px] border-[#09814a]"
                       : "border-[3px] border-black"
                   } ${
                     prevData.hours === 0 &&
@@ -240,7 +240,7 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
               <Holds
                 className={`h-full rounded-[10px] bg-white p-1 flex justify-end ${
                   currentData.date === Today.date
-                    ? "border-[5px] border-app-dark-green"
+                    ? "border-[5px] border-[#09814a]"
                     : "border-[3px] border-black"
                 } ${
                   currentData.hours === 0 &&
@@ -254,7 +254,7 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
               >
                 <Holds
                   className={`rounded-[10px] justify-end ${
-                    currentData.hours !== 0 ? "bg-app-dark-green" : ""
+                    currentData.hours !== 0 ? "bg-app-green" : ""
                   }`}
                   style={{
                     height: `${calculateBarHeight(currentData.hours)}%`,
@@ -294,7 +294,7 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
                   background="darkBlue"
                   className={`h-full rounded-[10px] bg-white p-1 flex justify-end ${
                     nextData.date === Today.date
-                      ? "border-[5px] border-app-dark-green"
+                      ? "border-[5px] border-[#09814a]"
                       : "border-[3px] border-black"
                   } ${
                     nextData.hours === 0 &&
