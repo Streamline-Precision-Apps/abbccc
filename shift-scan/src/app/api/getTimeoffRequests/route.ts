@@ -19,7 +19,7 @@ export async function GET() {
         employeeId: userId,
       },
     });
-
+    console.log("Sent Requests:", sentContent);
     return NextResponse.json(sentContent);
   } catch (error) {
     console.error("Error fetching Time Off Requests:", error);
