@@ -8,6 +8,7 @@ import { Holds } from "./holds";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Texts } from "./texts";
+import Spinner from "../(animations)/spinner";
 // Type for Equipment
 interface Equipment {
   id: string;
@@ -117,10 +118,8 @@ export default function BannerRotating() {
   // Show loading message
   if (loading) {
     return (
-      <Holds className="w-[80%] flex justify-center items-center h-[300px]">
-        <Titles text={"white"} size={"h4"}>
-          Loading...
-        </Titles>
+      <Holds className="w-[80%] h-full animate-pulse justify-center items-center ">
+        <Spinner size={50} color="white" />
       </Holds>
     );
   }
@@ -128,7 +127,7 @@ export default function BannerRotating() {
   // Ensure we have valid data before rendering
   if (!bannerData || !bannerData.jobsite) {
     return (
-      <Holds className="w-[80%] flex justify-center items-center h-[300px]">
+      <Holds className="w-[80%] ">
         <Titles text={"white"}>No available timesheet data.</Titles>
       </Holds>
     );

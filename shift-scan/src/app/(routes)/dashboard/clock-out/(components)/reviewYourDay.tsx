@@ -30,11 +30,11 @@ export default function ReviewYourDay({
 
   return (
     <Holds className="h-full w-full">
-      <Grids rows={"6"} gap={"5"}>
+      <Grids rows={"8"} gap={"5"}>
         <Holds className="row-span-1">
           <Titles size={"h1"}>{t("ReviewYourDay")}</Titles>
         </Holds>
-        <Holds className="row-span-4 h-full overflow-y-scroll no-scrollbar">
+        <Holds className="row-span-6 h-full overflow-y-scroll no-scrollbar">
           <Texts size={"p4"} className="mb-5">
             {t("ReviewYourDayDirections")}
           </Texts>
@@ -80,7 +80,9 @@ export default function ReviewYourDay({
           ))}
         </Holds>
         <Holds className="row-span-1 h-full">
-          <Buttons onClick={handleClick}>{t("Continue")}</Buttons>
+          <Buttons onClick={handleClick}>
+            <Titles size={"h2"}>{t("Continue")}</Titles>
+          </Buttons>
         </Holds>
       </Grids>
     </Holds>

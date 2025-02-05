@@ -110,7 +110,7 @@ export default function SwitchJobsMultiRoles({
               }}
               background={submittable === false ? "grey" : "orange"}
             >
-              <Titles size={"h3"}>{t("Next")}</Titles>
+              <Titles size={"h2"}>{t("Continue")}</Titles>
             </Buttons>
           </Holds>
         </Grids>
@@ -164,12 +164,12 @@ export default function SwitchJobsMultiRoles({
           </Grids>
         </Holds>
         <Holds className="row-start-4 row-end-6 h-full w-full justify-center">
-          <Grids rows={"3"} gap={"2"}>
-            <Titles size={"h1"} className="row-start-1 row-end-2 h-full">
-              {t("ChangeIfNecessary")}
-            </Titles>
-            <Holds className="row-start-2 row-end-3 h-full w-full justify-center">
-              <Holds className=" h-full w-full justify-center border-[3px] border-black rounded-[10px] shadow-[6px_6px_0px_grey]">
+          <Grids rows={"3"}>
+            <Holds className="row-start-2 row-end-4 h-full w-full justify-center">
+              <Titles size={"h1"} className=" ">
+                {t("ChangeIfNecessary")}
+              </Titles>
+              <Holds className=" w-full py-3 justify-center border-[3px] border-black rounded-[10px] shadow-[6px_6px_0px_grey]">
                 <Holds className="h-full w-11/12 justify-center">
                   <Selects
                     className="bg-app-blue text-center"
@@ -204,7 +204,7 @@ export default function SwitchJobsMultiRoles({
             }}
             background={submittable === false ? "grey" : "orange"}
           >
-            <Titles size={"h3"}>{t("Next")}</Titles>
+            <Titles size={"h2"}>{t("Continue")}</Titles>
           </Buttons>
         </Holds>
       </Grids>
