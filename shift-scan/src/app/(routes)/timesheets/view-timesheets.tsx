@@ -12,29 +12,9 @@ import { formatTime } from "@/utils/formatDateAMPMS";
 import { useTranslations } from "next-intl";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
-import { z } from "zod";
 import { TimeSheet } from "@/lib/types";
 import EmptyView from "@/components/(reusable)/emptyView";
-import { LongPressable } from "@/utils/mobile/longPressable";
 import { Images } from "@/components/(reusable)/images";
-
-// Zod schema for component state
-const ViewTimesheetsSchema = z.object({
-  user: z.string(),
-  showTimesheets: z.boolean(),
-  startingEntry: z.boolean(),
-  timesheetData: z.array(
-    z.object({
-      id: z.string().nullable(),
-      startTime: z.union([z.string(), z.instanceof(Date)]).nullable(),
-      endTime: z.union([z.string(), z.instanceof(Date)]).nullable(),
-      jobsiteId: z.string().nullable(),
-      costcode: z.string().nullable(),
-    })
-  ),
-  loading: z.boolean(),
-  error: z.string().nullable(),
-});
 
 type Props = {
   user: string;
