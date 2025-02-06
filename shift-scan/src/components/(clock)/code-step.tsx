@@ -7,9 +7,7 @@ import { Titles } from "../(reusable)/titles";
 import { Grids } from "../(reusable)/grids";
 import { Holds } from "../(reusable)/holds";
 import { Images } from "../(reusable)/images";
-import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
-import { Contents } from "../(reusable)/contents";
 
 type CodeStepProps = {
   datatype: string;
@@ -29,7 +27,6 @@ export default function CodeStep({
   scanned,
 }: CodeStepProps) {
   const t = useTranslations("Clock");
-  const { scanResult } = useScanData();
   const [selectedOpt, setSelectedOpt] = useState<boolean>(false);
 
   const handleBack = () => {
@@ -60,11 +57,7 @@ export default function CodeStep({
         </Grids>
       </Holds>
       <Holds className="row-start-2 row-end-7 h-full w-full">
-        <CodeFinder
-          datatype={datatype}
-          savedJS={scanResult?.data || ""}
-          setSelectedOpt={setSelectedOpt}
-        />
+        <CodeFinder datatype={datatype} setSelectedOpt={setSelectedOpt} />
       </Holds>
       {handleNextStep && (
         <Holds className="row-start-7 row-end-8 h-full w-full justify-center">

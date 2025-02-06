@@ -156,26 +156,23 @@ export default function VerificationStep({
                     position={"left"}
                   />
                 </Holds>
-                <Holds className="row-start-2 row-end-3 col-span-5 h-full w-full justify-center">
-                  <Grids
-                    cols={"5"}
-                    rows={"1"}
-                    gap={"5"}
-                    className="h-full w-full relative"
-                  >
-                    <Holds className="col-start-1 col-end-4 h-full w-full justify-center">
-                      <Titles size={"h1"} position={"right"}>
-                        {t("VerifyJobSite")}
-                      </Titles>
-                    </Holds>
-                    <Holds className="col-start-4 col-end-5 h-full w-full justify-center absolute">
-                      <Images
-                        titleImg="/clock-in.svg"
-                        titleImgAlt="Verify"
-                        size={"full"}
-                      />
-                    </Holds>
-                  </Grids>
+                <Holds
+                  position={"row"}
+                  className="row-start-2 row-end-3 col-start-1 col-end-6 "
+                >
+                  <Holds size={"50"}>
+                    <Titles size={"h1"} position={"right"}>
+                      {t("VerifyJobSite")}
+                    </Titles>
+                  </Holds>
+
+                  <Holds size={"50"}>
+                    <Images
+                      titleImg="/clock-in.svg"
+                      titleImgAlt="Verify"
+                      size={"50"}
+                    />
+                  </Holds>
                 </Holds>
               </Grids>
             </Holds>
@@ -184,26 +181,6 @@ export default function VerificationStep({
               className="h-full w-full row-start-2 row-end-8"
             >
               <Grids cols={"5"} rows={"10"} className="h-full w-full">
-                <Holds className="row-start-2 row-end-3 col-start-5 col-end-6 w-full h-full">
-                  <Holds className="h-full w-full pr-1">
-                    <Buttons
-                      type="submit"
-                      className="w-full h-full"
-                      background={"none"}
-                    >
-                      <Holds
-                        background={"lightBlue"}
-                        className="w-full h-full items-center justify-center "
-                      >
-                        <Images
-                          titleImg={"/downArrow.svg"}
-                          titleImgAlt={"downArrow"}
-                          className="p-1 w-10 h-10"
-                        />
-                      </Holds>
-                    </Buttons>
-                  </Holds>
-                </Holds>
                 <Holds className="row-start-3 row-end-8 col-start-1 col-end-6 h-full pt-1">
                   <Holds
                     background={"lightBlue"}

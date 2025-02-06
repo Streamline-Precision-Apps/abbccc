@@ -37,9 +37,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
               <Buttons
                 key={option.code}
                 className={` p-2 cursor-pointer ${
-                  selectedOption?.code === option.code
-                    ? "border-[3px] border-app-green"
-                    : ""
+                  selectedOption?.code === option.code ? " bg-app-green" : ""
                 }`}
                 onClick={
                   () =>
