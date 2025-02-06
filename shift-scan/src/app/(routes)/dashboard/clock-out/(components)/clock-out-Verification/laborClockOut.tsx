@@ -47,26 +47,24 @@ export const LaborClockOut = ({
                     position={"left"}
                   />
                 </Holds>
-                <Holds className="row-start-2 row-end-3 col-span-5 h-full w-full justify-center">
-                  <Grids
-                    cols={"5"}
-                    rows={"1"}
-                    gap={"5"}
-                    className="h-full w-full relative"
-                  >
-                    <Holds className="col-start-1 col-end-4 h-full w-full justify-center">
-                      <Titles size={"h1"} position={"right"}>
-                        {t("ClockOut")}
-                      </Titles>
-                    </Holds>
-                    <Holds className="col-start-4 col-end-5 h-full w-full justify-center absolute">
-                      <Images
-                        titleImg="/clock-out.svg"
-                        titleImgAlt="Verify"
-                        size={"full"}
-                      />
-                    </Holds>
-                  </Grids>
+
+                <Holds
+                  position={"row"}
+                  className="row-start-2 row-end-3 col-start-1 col-end-6 "
+                >
+                  <Holds size={"50"}>
+                    <Titles size={"h1"} position={"right"}>
+                      {t("ClockOut")}
+                    </Titles>
+                  </Holds>
+
+                  <Holds size={"50"}>
+                    <Images
+                      titleImg="/clock-out.svg"
+                      titleImgAlt="Verify"
+                      size={"50"}
+                    />
+                  </Holds>
                 </Holds>
               </Grids>
             </Holds>
