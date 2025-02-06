@@ -12,9 +12,6 @@ import { Clock } from "@/components/clock";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
-type ScanResult = {
-  data: string;
-};
 export const LaborClockOut = ({
   handleButtonClick,
   scanResult,
@@ -151,9 +148,11 @@ export const LaborClockOut = ({
                         value={""}
                         readOnly
                       />
+                      {/* Cancel out the button shadow with none background  and then add a class name */}
                       <Buttons
+                        background={"none"}
                         onClick={handleButtonClick}
-                        className="bg-app-red flex justify-center items-center p-4 rounded-[10px] text-black font-bold"
+                        className="bg-app-green flex justify-center items-center p-4 rounded-[10px] text-black font-bold"
                         disabled={isSubmitting}
                       >
                         <Clock time={date.getTime()} />
