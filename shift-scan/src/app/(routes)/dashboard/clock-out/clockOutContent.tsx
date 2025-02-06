@@ -182,24 +182,11 @@ export default function ClockOutContent() {
     );
   } else if (step === 3 && path === "Injury") {
     return (
-      <Bases>
-        <Contents>
-          <Holds background={"white"}>
-            <TitleBoxes
-              title={t("InjuryVerification")}
-              titleImg="/injury.svg"
-              titleImgAlt={"injury icon"}
-            />
-          </Holds>
-          <Holds background={"white"} className="h-full mt-5 py-4 ">
-            {/* Injury Report Content */}
-            <InjuryReportContent
-              base64String={base64String}
-              handleNextStep={handleSubmitInjury}
-            />
-          </Holds>
-        </Contents>
-      </Bases>
+      <InjuryReportContent
+        base64String={base64String}
+        handleNextStep={handleSubmitInjury}
+        prevStep={prevStep}
+      />
     );
   } else if (step === 3 && path === "clockOut") {
     return (

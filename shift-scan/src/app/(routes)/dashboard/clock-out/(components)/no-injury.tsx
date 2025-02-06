@@ -61,12 +61,14 @@ export const PreInjuryReport = ({
                   </Holds>
                 </Grids>
               </Holds>
-              <Holds className="row-start-2 row-end-3">
+              <Holds className="row-start-3 row-end-4">
                 <Texts size={"p3"}>{t("SignBelow")}</Texts>
               </Holds>
-              <Holds position={"row"} className="row-start-3 row-end-5">
+              <Holds position={"row"} className="row-start-5 row-end-6">
                 <Holds size={"70"}>
-                  <Titles size={"h2"}>{t("SignatureVerify")}</Titles>
+                  <Titles size={"h3"} position={"left"}>
+                    {t("SignatureVerify")}
+                  </Titles>
                 </Holds>
                 <Holds size={"30"}>
                   <CheckBox
@@ -74,10 +76,11 @@ export const PreInjuryReport = ({
                     name="injury-verify"
                     onChange={handleCheckboxChange}
                     defaultChecked={checked}
+                    size={3}
                   />
                 </Holds>
               </Holds>
-              <Holds className="row-start-5 row-end-7 h-full ">
+              <Holds className="row-start-6 row-end-8 h-full ">
                 <Holds className="border-[3px] border-black rounded-[10px] h-full">
                   {loading ? (
                     <Holds className="my-auto">
