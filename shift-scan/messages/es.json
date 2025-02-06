@@ -91,6 +91,7 @@
 },
 
 "Home" : {
+    "TotalHoursWorked": "Horas trabajadas",
     "EnjoyYourBreak": "¡Disfruta tu descanso!",
     "HitReturnToClockBackIn": "Presiona Retornado para volver a fichar",
     "Banner": "Bienvenido de nuevo, ",

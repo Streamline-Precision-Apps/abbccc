@@ -15,6 +15,8 @@ import { Grids } from "@/components/(reusable)/grids";
 import { z } from "zod";
 import { TimeSheet } from "@/lib/types";
 import EmptyView from "@/components/(reusable)/emptyView";
+import { LongPressable } from "@/utils/mobile/longPressable";
+import { Images } from "@/components/(reusable)/images";
 
 // Zod schema for component state
 const ViewTimesheetsSchema = z.object({
@@ -77,6 +79,16 @@ export default function ViewTimesheets({ user }: Props) {
       console.error(error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const copyToClipboard = async (timesheet: string) => {
+    try {
+      await navigator.clipboard.writeText(timesheet);
+      // Optionally, provide user feedback:
+      alert("Copied to clipboard!");
+    } catch (err) {
+      console.error("Failed to copy!", err);
     }
   };
 
@@ -164,14 +176,32 @@ export default function ViewTimesheets({ user }: Props) {
                 <Holds
                   key={timesheet.id}
                   size={"full"}
-                  className="odd:bg-app-blue rounded "
+                  className="px-5 py-3 border-[3px] border-black rounded-[10px] mb-5"
                 >
-                  <Holds size={"70"} className="p-4 py-8">
-                    <Labels>
-                      {t("TimesheetID")}
-                      <Inputs value={timesheet.id} readOnly />
-                    </Labels>
-                    <Labels>
+                  <Grids cols={"8"} className="pb-4">
+                    <Holds className="col-start-8 col-end-9">
+                      <Images
+                        titleImg={"/document-duplicate.svg"}
+                        titleImgAlt={"Copy And Paste"}
+                        onClick={() => copyToClipboard(timesheet.id)}
+                      />
+                    </Holds>
+                  </Grids>
+                  <Grids rows={"4"} cols={"2"} gap={"2"}>
+                    <Holds className="col-start-1 col-end-3  h-full">
+                      <Titles size={"h3"} className="underline">
+                        {t("TotalHoursWorked")}
+                      </Titles>
+                      <Texts size={"p4"}>
+                        {calculateDuration(
+                          timesheet.startTime,
+                          timesheet.endTime
+                        )}{" "}
+                        {"Hrs"}
+                      </Texts>
+                    </Holds>
+
+                    <Labels size={"p4"}>
                       {t("StartTime")}
                       <Inputs
                         value={
@@ -180,9 +210,10 @@ export default function ViewTimesheets({ user }: Props) {
                             : "N/A"
                         }
                         readOnly
+                        className="text-center"
                       />
                     </Labels>
-                    <Labels>
+                    <Labels size={"p4"}>
                       {t("EndTime")}
                       <Inputs
                         value={
@@ -191,27 +222,27 @@ export default function ViewTimesheets({ user }: Props) {
                             : "N/A"
                         }
                         readOnly
+                        className="text-center"
                       />
                     </Labels>
-                    <Labels>
-                      {t("Duration")}
-                      <Inputs
-                        value={calculateDuration(
-                          timesheet.startTime,
-                          timesheet.endTime
-                        )}
-                        readOnly
-                      />
-                    </Labels>
-                    <Labels>
+
+                    <Labels size={"p4"}>
                       {t("Jobsite")}
-                      <Inputs value={timesheet.jobsiteId} readOnly />
+                      <Inputs
+                        value={timesheet.jobsiteId}
+                        readOnly
+                        className="pl-2"
+                      />
                     </Labels>
-                    <Labels>
+                    <Labels size={"p4"}>
                       {t("CostCode")}
-                      <Inputs value={timesheet.costcode} readOnly />
+                      <Inputs
+                        value={timesheet.costcode}
+                        readOnly
+                        className="pl-2"
+                      />
                     </Labels>
-                  </Holds>
+                  </Grids>
                 </Holds>
               ))
             ) : (
