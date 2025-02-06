@@ -92,6 +92,7 @@
 },
 
 "Home" : {
+    "TotalHoursWorked": "Hours Worked",
     "EnjoyYourBreak": "Enjoy Your Break!",
     "HitReturnToClockBackIn": "Hit Return to Clock Back In",
     "Today": "Today",
