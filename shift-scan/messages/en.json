@@ -400,6 +400,9 @@
     "Submit": "Submit"
 },
 "ClockOut":{
+    "Date-label": "Date",
+    "JobSite-label": "Job Site #",
+    "CostCode-label": "Cost Code",
     "ClockOut": "Clock Out",
     "ReviewYourDayDirections": "Review your day below. If you have any questions, please contact your supervisor.",
     "Now": "Now",
