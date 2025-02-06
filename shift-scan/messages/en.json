@@ -189,10 +189,12 @@
     "Notes": "Additional notes"
 },
 "Generator":{
+    "SearchJobsite": "Search Jobsite...",
+    "NoResults": "No Results Found",
     "SelectJobsite": "Select Jobsite",
     "NeedsMaintenance": "Needs Maintenance",
     "Vehicle": "Vehicle",
-   "JobsiteLocation": "Where is this equipment located?",
+   "JobsiteLocation": "Location of equipment?",
     "SelectCostCodeTags": "Select Cost Code Tags",
     "SelectTag": "Select Tag",
     "AddTag": "Add",

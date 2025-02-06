@@ -19,7 +19,7 @@ export const AddEquipmentContent = () => {
   };
 
   return (
-    <Holds>
+    <>
       {banner && (
         <Holds background="green" className="my-3">
           <Texts>{bannerText}</Texts>
@@ -31,6 +31,6 @@ export const AddEquipmentContent = () => {
         setBannerText={setBannerText}
         handler={() => handleBanner}
       />
-    </Holds>
+    </>
   );
 };

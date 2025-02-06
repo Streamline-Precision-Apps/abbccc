@@ -168,11 +168,13 @@
     "Notes": "Notas adicionales"
 },
 "Generator":{
+    "SearchJobsite": "Buscar sitios de trabajo",
+    "NoResults": "No se encontraron resultados",
     "SelectJobsite": "Seleccionar un sitio de trabajo",
     "EquipmentDescription": "Descripción",
     "NeedsMaintenance": "Necesita mantenimiento",
     "Vehicle": "Vehículo",
-    "JobsiteLocation": "¿En qué lugar de trabajo se encuentra este equipo?",
+    "JobsiteLocation": "Ubicación del equipo?",
     "SelectCostCodeTags": "Seleccionar una Etiqueta de Costo",
     "SelectTag": "Seleccionar Etiqueta",
     "AddTag": "Agregar",

@@ -127,8 +127,8 @@ export default function QrEquipmentContent() {
   return (
     <>
       {loading ? (
-        <Grids rows={"5"} cols={"3"} gap={"5"}>
-          <Holds className="row-span-4 col-span-3 h-full">
+        <Grids rows={"6"} cols={"3"} gap={"5"}>
+          <Holds className="row-span-5 col-span-3 h-full">
             <SearchSelect
               loading={true}
               datatype={`${t("Loading")}`}
@@ -155,8 +155,8 @@ export default function QrEquipmentContent() {
           </Holds>
         </Grids>
       ) : (
-        <Grids rows={"5"} cols={"3"} gap={"5"}>
-          <Holds className="row-span-4 col-span-3 h-full">
+        <Grids rows={"6"} cols={"3"} gap={"5"}>
+          <Holds className="row-span-5 col-span-3 h-full">
             <SearchSelect
               loading={false}
               datatype={`${t("EquipmentDatatype")}`}
