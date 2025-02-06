@@ -116,7 +116,7 @@ export default function ClockOutWidget({
                   onClick={() => handleCOButton2()}
                   className="w-full py-4 "
                 >
-                  <Texts size={"p3"}>{c("Continue")}</Texts>
+                  <Titles size={"h2"}>{c("Continue")}</Titles>
                 </Buttons>
               </Holds>
             </Grids>

@@ -74,8 +74,9 @@ export default function Comment({
 
         <Holds position={"row"} className="row-start-8 row-end-9 h-full ">
           <Buttons
-            background={"orange"}
+            background={commentsValue.length < 3 ? "grey" : "orange"}
             onClick={() => handleClick()}
+            disabled={commentsValue.length < 3}
             className="w-full h-full py-3"
           >
             <Titles size={"h2"}>{c("Continue")}</Titles>
