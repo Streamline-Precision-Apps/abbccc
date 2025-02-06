@@ -47,7 +47,9 @@ export default function SearchBar({
               onClick={clearSelection}
               className=" w-full h-full bg-app-green text-center text-bold border-[3px] border-black rounded-[10px] shadow-none py-2 "
             >
-              <Texts size={"p2"}>{selectTerm.split("-")[1]}</Texts>
+              <Texts size={"p2"}>
+                {selectTerm.split("-")[1] || selectTerm}
+              </Texts>
             </Buttons>
           </Holds>
         ) : (
