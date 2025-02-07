@@ -37,14 +37,12 @@ export const LaborClockOut = ({
           <Grids rows={"8"} gap={"5"} className="h-full w-full">
             <Holds className="h-full w-full row-start-1 row-end-2 p-3">
               <Grids rows={"2"} cols={"5"} gap={"3"} className=" h-full w-full">
-                <Holds
-                  className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center"
-                  onClick={prevStep}
-                >
+                <Holds className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center">
                   <Images
                     titleImg="/turnBack.svg"
                     titleImgAlt="back"
                     position={"left"}
+                    onClick={prevStep}
                   />
                 </Holds>
 
@@ -148,10 +146,8 @@ export const LaborClockOut = ({
                       />
                       {/* Cancel out the button shadow with none background  and then add a class name */}
                       <Buttons
-                        background={"none"}
                         onClick={handleButtonClick}
                         className="bg-app-green flex justify-center items-center p-4 rounded-[10px] text-black font-bold"
-                        type="submit"
                       >
                         <Clock time={date.getTime()} />
                       </Buttons>
