@@ -2,6 +2,7 @@
 
 "use client";
 import { setPrevTimeSheet } from "@/actions/cookieActions";
+import { usePathname } from "next/navigation";
 import React, {
   createContext,
   useState,
@@ -29,20 +30,28 @@ export const TimeSheetDataProvider: React.FC<{ children: ReactNode }> = ({
   const [savedTimeSheetData, setTimeSheetData] = useState<TimeSheetData | null>(
     null
   );
+  const url = usePathname();
 
   useEffect(() => {
     const savedTimeSheet = async () => {
       try {
-        const prevTimeSheet = await fetch("/api/getRecentTimecard");
-        const data = await prevTimeSheet.json();
-        setPrevTimeSheet(data.id);
-        setTimeSheetData(data);
+        if (
+          url === "/clock" ||
+          url === "/dashboard/log-new" ||
+          url === "/dashboard/switch-jobs" ||
+          url === "/break"
+        ) {
+          const prevTimeSheet = await fetch("/api/getRecentTimecard");
+          const data = await prevTimeSheet.json();
+          setTimeSheetData(data);
+          setPrevTimeSheet(data.id as string);
+        }
       } catch (error) {
         console.error(error);
       }
     };
     savedTimeSheet();
-  }, [savedTimeSheetData?.id]);
+  }, [url]);
 
   return (
     <TimeSheetDataContext.Provider

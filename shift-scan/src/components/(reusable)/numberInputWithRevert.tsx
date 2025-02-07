@@ -1,3 +1,4 @@
+import Image from "next/image";
 import React, { useState } from "react";
 
 interface NumberInputWithRevertProps {
@@ -63,7 +64,7 @@ const NumberInputWithRevert: React.FC<NumberInputWithRevertProps> = ({
               title="Revert changes"
               onClick={handleRevert}
             >
-              <img src="/turnBack.svg" alt="revert" className="w-5 h-5" />
+              <Image src="/turnBack.svg" alt="revert" className="w-5 h-5" />
             </button>
           )}
         </div>

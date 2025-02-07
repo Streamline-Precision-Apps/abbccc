@@ -40,6 +40,8 @@
 },
 
 "SignUpPermissions":{
+    "GeneralReminders" : "General Reminders",
+    "PersonalReminders" : "Personal Reminders",
     "GiveUsAccess" : "Give Us Access",
     "YesToEverything" : "Yes to Everything!",
     "RequiredForAppUse" : "Required for App Use",
@@ -90,6 +92,7 @@
 },
 
 "Home" : {
+    "TotalHoursWorked": "Hours Worked",
     "EnjoyYourBreak": "Enjoy Your Break!",
     "HitReturnToClockBackIn": "Hit Return to Clock Back In",
     "Today": "Today",
@@ -186,10 +189,12 @@
     "Notes": "Additional notes"
 },
 "Generator":{
+    "SearchJobsite": "Search Jobsite...",
+    "NoResults": "No Results Found",
     "SelectJobsite": "Select Jobsite",
     "NeedsMaintenance": "Needs Maintenance",
     "Vehicle": "Vehicle",
-   "JobsiteLocation": "Where is this equipment located?",
+   "JobsiteLocation": "Location of equipment?",
     "SelectCostCodeTags": "Select Cost Code Tags",
     "SelectTag": "Select Tag",
     "AddTag": "Add",
@@ -308,6 +313,12 @@
     "ID": "Id: #"
 },
 "Clock": {
+    "ViewSelected": "View Selected Options",
+    "ScanJobsite": "Scan Job Site",
+    "StartCamera": "Start Camera",
+    "StopCamera": "Stop Camera",
+    "FailedToScanJobSiteDoesNotExist": "Scan Failed, QR code does not exist",
+    "SelectTruck": "Select Truck",
     "search-equipment-operator": "Search Equipment",
     "SelectShiftType": "Select Shift Type",
     "SelectMaterialType": "Select Material Type",
@@ -392,6 +403,10 @@
     "Submit": "Submit"
 },
 "ClockOut":{
+    "Date-label": "Date",
+    "JobSite-label": "Job Site #",
+    "CostCode-label": "Cost Code",
+    "ClockOut": "Clock Out",
     "ReviewYourDayDirections": "Review your day below. If you have any questions, please contact your supervisor.",
     "Now": "Now",
     "Current": "Current",
@@ -436,6 +451,7 @@
     "Logs-Fetch": "Error fetching logs:"
 },
 "Hamburger": {
+    "PersonalReminders" : "Personal Reminders",
     "ContactDetails": "Edit Contact Details",
     "Saving": "Savings changes",
     "Save": "Save Changes",

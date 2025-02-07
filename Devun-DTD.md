@@ -121,14 +121,14 @@ cookies().set({
 ### built/created
 - built a power point to share with company
 - company cancelled weekly meetings
-- worked with Zack on figma discussed clock in progress 
+- worked with Zach on figma discussed clock in progress 
 - discussed effective ways to update the application
-- bulit a key for zack to read about engineer view
+- built a key for Zach to read about engineer view
 
 #
 # January 17, 2025 - friday
 ### Meeting 
-- walked through and drafted with Zack (4 hour)
+- walked through and drafted with Zach (4 hour)
 - cookies guides 
 - why use cookies? 
 - built home routes 
@@ -151,12 +151,12 @@ cookies().set({
 # January 21, 2025 - Tuesday
 ### Meeting
 - Zach and I met with Jaxin on exported Data and Time Card integration
-- Sorting Method Take 3 data sheets from assignar and sort them into compiled info
+- Sorting Method Take 3 data sheets from Assignar and sort them into compiled info
 - insert by employee one at a time into view point
 
 **Reports to add**
   - Tasco Reports - sort by DATE
-    - Id, Shift type, Submmitted Date, Employee, Date Worked, Labor Type, Equipment, Loads-ABCDE, Loads-F, Materials, Start Time, End Time, screened or unscreened
+    - Id, Shift type, Submitted Date, Employee, Date Worked, Labor Type, Equipment, Loads-ABCDE, Loads-F, Materials, Start Time, End Time, screened or unscreened
   - Employee Time Sheets - Sort Reports By Employee & Date - Base Data
   - IFTA, Overweight Report - Sort Reports by Truck and date - extended
     - IFTA - information Mackenzie Asked for
@@ -247,9 +247,67 @@ cookies().set({
   #
 # January 29, 2025 - wednesday
 ### Research
-- Taking Notes on Jest located at file jest-testing.md
-
-
+- Taking Notes on Jest located at file jest-testing.md (4 hour)
+  - probably will not use jest because of an unknown bug that occurred each set up.
 ### Built/created 
+- working on debugging home page
+- building page
 
 ### Trello
+- Starting Tasco Role && Starting the Engineer Role (2 hours)
+- / comment component on clock out/ switch jobs 40/40 breaks
+- / clock jobsite page to look like other examples
+- /clock display the recent 5 costcode
+
+  #
+# January 30, 2025 - Thursday
+### Built/created 
+- working on debugging home page
+- building page
+- going through each step and making appropriate routes for each action 
+
+### Trello
+- Fixing clock in scanner to not destroy and toggle of instead. 
+
+  #
+# January 31, 2025 - Thursday
+### Built/created 
+- met with Zack on fixes through walk through
+- fixed numerous changes but initial login of a user is still buggy
+
+### Trello
+- break time smaller loading animation
+- jobsite pages to look like examples
+
+  #
+# February 3, 2025 - Monday
+### Planning
+- Spend time figuring what Figma pages need to be done, create stories for sprints, prepping for next sprint (2 hours)
+### Built/created 
+- debugging clock in path
+- making changes based on what zach stated
+- created loading UI for clocking route to help loading state
+
+### Trello
+- /clock - "Start Camera" instead of begin scan
+- /clock type  update scan job site to select work type
+- /gray continue added validation 
+- clock out bug with tasco?
+
+  #
+# February 4, 2025 - Tueday
+### Planning
+- spend time on next sprint
+### Goals
+- Create all stuff for backend for Sign up steps
+  - /sign-up
+  -/ Update Test data to have every role with a generic name
+### Built/created 
+- updated the test data, it now has every role with a generic name
+
+
+### Trello
+- /clock - "Start Camera" instead of begin scan
+- /clock type  update scan job site to select work type
+- /gray continue added validation 
+- clock out bug with tasco?

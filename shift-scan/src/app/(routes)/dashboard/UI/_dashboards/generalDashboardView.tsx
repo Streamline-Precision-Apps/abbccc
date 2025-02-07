@@ -14,7 +14,6 @@ import SwitchJobsBtn from "../_buttons/switchJobsBtn";
 import { Dispatch, SetStateAction } from "react";
 
 export default function GeneralDashboardView({
-  loading,
   additionalButtonsType,
   isModalOpen,
   isModal2Open,
@@ -28,7 +27,6 @@ export default function GeneralDashboardView({
   permission,
   handleShowAdditionalButtons,
 }: {
-  loading: boolean;
   additionalButtonsType: string | null;
   isModalOpen: boolean;
   isModal2Open: boolean;
@@ -44,69 +42,63 @@ export default function GeneralDashboardView({
 }) {
   return (
     <>
-      {loading ? (
-        <Holds className="my-auto">
-          <Spinner />
-        </Holds>
-      ) : (
-        <Contents width={"section"} className="py-5">
-          <Grids
-            cols={"2"}
-            rows={
-              permission === "ADMIN" ||
-              permission === "SUPERADMIN" ||
-              permission === "MANAGER"
-                ? "3"
-                : "3"
-            }
-            gap={"5"}
-          >
-            {/* Render buttons based on state */}
-            {additionalButtonsType === "equipment" ? (
-              <EquipmentWidget
-                handleShowManagerButtons={handleShowManagerButtons}
+      <Contents width={"section"} className="py-5">
+        <Grids
+          cols={"2"}
+          rows={
+            permission === "ADMIN" ||
+            permission === "SUPERADMIN" ||
+            permission === "MANAGER"
+              ? "3"
+              : "3"
+          }
+          gap={"5"}
+        >
+          {/* Render buttons based on state */}
+          {additionalButtonsType === "equipment" ? (
+            <EquipmentWidget
+              handleShowManagerButtons={handleShowManagerButtons}
+            />
+          ) : additionalButtonsType === "clockOut" ? (
+            <ClockOutWidget
+              handleShowManagerButtons={handleShowManagerButtons}
+              setIsModal2Open={setIsModal2Open}
+              isModal2Open={isModal2Open}
+              isModalOpen={isModalOpen}
+              comment={comment}
+              setComment={setComment}
+              handleCOButton2={handleCOButton2}
+              handleCOButton3={handleCOButton3}
+              handleCloseModal={handleCloseModal}
+            />
+          ) : (
+            <>
+              {permission !== "USER" && !additionalButtonsType && (
+                <GeneratorBtn />
+              )}
+
+              {permission !== "USER" && !additionalButtonsType && (
+                <MyTeamWidget />
+              )}
+
+              <EquipmentBtn
+                handleShowAdditionalButtons={handleShowAdditionalButtons}
+                permission={permission}
               />
-            ) : additionalButtonsType === "clockOut" ? (
-              <ClockOutWidget
-                handleShowManagerButtons={handleShowManagerButtons}
-                setIsModal2Open={setIsModal2Open}
-                isModal2Open={isModal2Open}
-                isModalOpen={isModalOpen}
-                comment={comment}
-                setComment={setComment}
-                handleCOButton2={handleCOButton2}
-                handleCOButton3={handleCOButton3}
-                handleCloseModal={handleCloseModal}
+
+              <FormsBtn permission={permission} view={"general"} />
+
+              <SwitchJobsBtn permission={permission} />
+
+              <ClockOutBtn
+                handleShowAdditionalButtons={handleShowAdditionalButtons}
+                permission={permission}
+                View={"general"}
               />
-            ) : (
-              <>
-                {permission !== "USER" && !additionalButtonsType && (
-                  <GeneratorBtn />
-                )}
-
-                {permission !== "USER" && !additionalButtonsType && (
-                  <MyTeamWidget />
-                )}
-
-                <EquipmentBtn
-                  handleShowAdditionalButtons={handleShowAdditionalButtons}
-                  permission={permission}
-                />
-
-                <FormsBtn permission={permission} view={"general"} />
-
-                <SwitchJobsBtn permission={permission} />
-
-                <ClockOutBtn
-                  handleShowAdditionalButtons={handleShowAdditionalButtons}
-                  permission={permission}
-                  View={"general"}
-                />
-              </>
-            )}
-          </Grids>
-        </Contents>
-      )}
+            </>
+          )}
+        </Grids>
+      </Contents>
     </>
   );
 }

@@ -11,17 +11,25 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const jobsiteDetails = await prisma.jobsite.findMany({
+  const jobsiteDetails = await prisma.timeSheet.findMany({
+    where: {
+      userId: userId,
+    },
     select: {
-      id: true,
-      qrId: true,
-      name: true,
+      jobsite: {
+        select: {
+          id: true,
+          qrId: true,
+          name: true,
+        },
+      },
     },
     orderBy: {
-      createdAt: "desc",
+      submitDate: "desc",
     },
     take: 5,
+    distinct: ["jobsiteId"],
   });
 
-  return NextResponse.json(jobsiteDetails);
+  return NextResponse.json(jobsiteDetails.map((log) => log.jobsite));
 }

@@ -26,11 +26,12 @@ import Spinner from "@/components/(animations)/spinner";
 
 // Define Zod schema for form validation
 const editLeaveRequestSchema = z.object({
-  id: z.string().nonempty("Request ID is required"),
-  startDate: z.string().nonempty("Start date is required"),
-  endDate: z.string().nonempty("End date is required"),
-  requestType: z.string().nonempty("Request type is required"),
-  description: z.string().max(200, "Comments must be at most 200 characters"),
+  name: z.string().optional(),
+  startDate: z.string().min(1, { message: "Start date is required" }),
+  endDate: z.string().min(1, { message: "End date is required" }),
+  requestType: z.enum(["FAMILY_MEDICAL", "MILITARY", "MILITARY", "PAID_VACATION", "NON_PAID_PERSONAL", "SICK"]),
+  description: z.string().min(4, { message: "Description is required" }).max(40, { message: "Max 40 characters" }),
+  status: z.literal("PENDING"),
 });
 
 type Props = {
@@ -206,22 +207,9 @@ export default function Content({ session }: Props) {
                     value={sentContent[0].id}
                     disabled
                   />
-                  <Inputs
-                    type="hidden"
-                    name="status"
-                    value={sentContent[0].status}
-                    disabled
-                  />
-                  <Inputs
-                    type="hidden"
-                    name="date"
-                    value={sentContent[0].date.toString()}
-                    disabled
-                  />
-                  <Inputs type="hidden" name="userId" value={userId} disabled />
 
                   <Labels>
-                    Start Date
+                    Request Start Date
                     <Inputs
                       type="date"
                       name="startDate"
@@ -233,7 +221,7 @@ export default function Content({ session }: Props) {
                   </Labels>
 
                   <Labels>
-                    End Date
+                    Request End Date
                     <Inputs
                       type="date"
                       name="endDate"
@@ -262,15 +250,15 @@ export default function Content({ session }: Props) {
                         key={sentContent[0].requestType}
                       >
                         <option value="">Choose a request</option>
-                        <option value="Vacation">Vacation</option>
-                        <option value="Family/Medical Leave">
+                        <option value="PAID_VACATION">Vacation</option>
+                        <option value="FAMILY_MEDICAL">
                           Family/Medical Leave
                         </option>
-                        <option value="Military Leave">Military Leave</option>
-                        <option value="Non Paid Personal Leave">
+                        <option value="MILITARY">Military Leave</option>
+                        <option value="NON_PAID_PERSONAL">
                           Non Paid Personal Leave
                         </option>
-                        <option value="Sick Time">Sick Time</option>
+                        <option value="SICK">Sick Time</option>
                       </Selects>
                     )}
                   </Labels>

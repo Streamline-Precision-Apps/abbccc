@@ -21,14 +21,15 @@ export async function GET(
       where: {
         id,
       },
-      include: {
-        employee: {
-          select: {
-            firstName: true,
-            lastName: true,
-            image: true,
-          },
-        },
+      select: {
+        name: true,
+        requestedStartDate: true,
+        requestedEndDate: true,
+        requestType: true,
+        comment: true,
+        status: true,
+        managerComment: true,
+        decidedBy: true,
       },
     });
 

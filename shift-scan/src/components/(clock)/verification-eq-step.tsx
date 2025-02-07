@@ -97,7 +97,7 @@ const VerificationEQStep: React.FC<VerifyProcessProps> = ({
                 <Grids rows={"5"}>
                   {/*If image is not found it will be null */}
                   {equipment?.find(
-                    (equipment) => equipment.qrId === scanEQResult?.data
+                    (equipment) => equipment.qrId === scanEQResult?.data[1]
                   ) ? (
                     <Holds className="row-span-1 h-full ">
                       <Holds size={"30"}></Holds>
@@ -120,9 +120,12 @@ const VerificationEQStep: React.FC<VerifyProcessProps> = ({
                   {/* this in put is for displaying the id */}
                   <Inputs
                     type="hidden"
-                    value={scanEQResult?.data || ""}
-                    className="p-2 text-center"
-                    readOnly
+                    name="equipmentId"
+                    value={
+                      Array.isArray(scanEQResult?.data)
+                        ? scanEQResult?.data[1]
+                        : ""
+                    }
                   />
                   <Holds className="row-span-2 h-full ">
                     <Labels htmlFor="comment">

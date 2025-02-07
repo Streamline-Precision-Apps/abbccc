@@ -14,7 +14,7 @@ import { z } from "zod";
 
 // Define Zod schema for sent content
 const sentContentSchema = z.object({
-  id: z.number(),
+  id: z.string(),
   requestType: z.string(),
   status: z.enum(["APPROVED", "PENDING", "DENIED"]),
   requestedStartDate: z.string(),
