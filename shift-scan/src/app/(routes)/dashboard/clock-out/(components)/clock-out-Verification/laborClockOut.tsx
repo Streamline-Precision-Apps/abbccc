@@ -21,17 +21,18 @@ export const LaborClockOut = ({
   scanResult,
   savedCostCode,
   prevStep,
+  commentsValue,
 }: {
   scanResult: string | undefined;
   savedCostCode: string | null;
   prevStep: () => void;
+  commentsValue: string;
 }) => {
   const t = useTranslations("ClockOut");
   const [date] = useState(new Date());
   const router = useRouter();
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); // Prevents default form submission
 
+  const handleSubmit = async () => {
     try {
       let timeSheetId = null;
       const response = await fetch("/api/getRecentTimecard");
@@ -44,8 +45,10 @@ export const LaborClockOut = ({
       }
 
       // Collect form data
-      const formData = new FormData(event.currentTarget);
+      const formData = new FormData();
       formData.append("id", timeSheetId); // Ensure TimeSheet ID is included
+      formData.append("endTime", new Date().toISOString());
+      formData.append("timeSheetComments", commentsValue);
 
       await updateTimeSheet(formData);
       localStorage.clear();
@@ -158,27 +161,13 @@ export const LaborClockOut = ({
                     background={"darkBlue"}
                     className="h-full w-[100%] sm:w-[90%] md:w-[90%] lg:w-[80%] xl:w-[80%] 2xl:w-[80%]  border-[3px]   border-black p-8 "
                   >
-                    <form onClick={handleSubmit} className="h-full">
-                      <Inputs
-                        type="hidden"
-                        name="endTime"
-                        value={new Date().toISOString()}
-                        readOnly
-                      />
-                      <Inputs
-                        type="hidden"
-                        name="timeSheetComments"
-                        value={""}
-                        readOnly
-                      />
-                      {/* Cancel out the button shadow with none background  and then add a class name */}
-                      <Buttons
-                        type="submit"
-                        className="bg-app-green flex justify-center items-center p-4 rounded-[10px] text-black font-bold"
-                      >
-                        <Clock time={date.getTime()} />
-                      </Buttons>
-                    </form>
+                    {/* Cancel out the button shadow with none background  and then add a class name */}
+                    <Buttons
+                      onClick={handleSubmit}
+                      className="bg-app-green flex justify-center items-center p-4 rounded-[10px] text-black font-bold"
+                    >
+                      <Clock time={date.getTime()} />
+                    </Buttons>
                   </Holds>
                 </Holds>
               </Grids>
