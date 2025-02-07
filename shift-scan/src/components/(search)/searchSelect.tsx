@@ -21,6 +21,7 @@ type Props<T> = {
   options: T[];
   recentOptions: T[];
   onSelect: (option: T) => void;
+  setSelectedJobSite: React.Dispatch<React.SetStateAction<string>>;
 };
 
 function SearchSelect<T extends JobCode | EquipmentCode>({
@@ -30,8 +31,10 @@ function SearchSelect<T extends JobCode | EquipmentCode>({
   recentOptions,
   onSelect,
   loading,
+  setSelectedJobSite,
 }: Props<T>) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectTerm, setSelectOption] = useState("");
   const [filteredOptions, setFilteredOptions] = useState<T[]>(options);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [recentFilteredOptions, setRecentFilteredOptions] =
@@ -70,7 +73,7 @@ function SearchSelect<T extends JobCode | EquipmentCode>({
 
   // Handle selecting an option from the dropdown
   const handleOptionSelect = (option: T) => {
-    setSearchTerm(option.name); // Set the search input to the selected option
+    setSelectOption(option.name); // Set the search input to the selected option
     setIsMenuOpen(false); // Close the dropdown menu
     setSelectedTerm(true);
     onSelect(option); // Call the onSelect prop with the selected option
@@ -79,6 +82,7 @@ function SearchSelect<T extends JobCode | EquipmentCode>({
     setSearchTerm("");
     setSelectedTerm(false);
     setIsMenuOpen(false);
+    setSelectedJobSite("");
   };
 
   return (
@@ -93,7 +97,7 @@ function SearchSelect<T extends JobCode | EquipmentCode>({
           setSelectedTerm={setSelectedTerm}
           setSearchTerm={setSearchTerm}
           clearSelection={handleClearSelection}
-          selectTerm={searchTerm}
+          selectTerm={selectTerm}
         />
       </Holds>
       {loading ? (
@@ -104,25 +108,35 @@ function SearchSelect<T extends JobCode | EquipmentCode>({
         </Holds>
       ) : (
         <Holds className="h-full row-span-5 border-[3px] border-black rounded-[10px] mt-5">
-          {!selectedTerm && (
-            <Holds className="overflow-y-auto rounded-b-[10px] no-scrollbar">
-              {filteredOptions.map((option) => (
-                <Holds
-                  key={option.qrId}
-                  onClick={() => handleOptionSelect(option)}
-                  className="py-3 cursor-pointer last:border-0"
-                >
-                  <Holds>
-                    <Contents width={"section"}>
-                      <Buttons className="p-3">
-                        <Texts size={"p4"}>{option.name}</Texts>
-                      </Buttons>
-                    </Contents>
-                  </Holds>
+          <Holds className="overflow-y-auto rounded-b-[10px] no-scrollbar">
+            {filteredOptions.map((option) => (
+              <Holds
+                key={option.qrId}
+                onClick={
+                  selectedTerm && option.name === selectTerm
+                    ? () => handleClearSelection()
+                    : () => handleOptionSelect(option)
+                }
+                className="py-3 cursor-pointer last:border-0"
+              >
+                <Holds>
+                  <Contents width={"section"}>
+                    <Buttons
+                      background={
+                        selectedTerm && option.name === selectTerm
+                          ? "green"
+                          : "lightBlue"
+                      }
+                      className="p-3"
+                    >
+                      <Texts size={"p4"}>{option.name}</Texts>
+                    </Buttons>
+                  </Contents>
                 </Holds>
-              ))}
-            </Holds>
-          )}
+              </Holds>
+            ))}
+          </Holds>
+
           {!selectedTerm && filteredOptions.length === 0 && (
             <EmptyView
               TopChild={
@@ -131,16 +145,6 @@ function SearchSelect<T extends JobCode | EquipmentCode>({
                 </Texts>
               }
             />
-          )}
-
-          {searchTerm && !isMenuOpen && (
-            <Holds className="h-full">
-              <Holds size={"90"} className="my-[10%] h-full">
-                <Buttons background={"orange"} onClick={handleGenerate}>
-                  <Titles size={"h2"}>{t("GenerateCode")}</Titles>
-                </Buttons>
-              </Holds>
-            </Holds>
           )}
         </Holds>
       )}
