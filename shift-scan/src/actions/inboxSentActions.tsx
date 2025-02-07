@@ -4,6 +4,44 @@ import prisma from "@/lib/prisma";
 import { FormStatus, TimeOffRequestType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
+export async function createLeaveRequest(formData: FormData) {
+  // Extract values from the form data.
+  // Note: "name" is optional so we allow it to be null or an empty string.
+  const name = formData.get("name") as string | null;
+  const startDate = formData.get("startDate") as string;
+  const endDate = formData.get("endDate") as string;
+  const requestType = formData.get("requestType") as string;
+  const description = formData.get("description") as string;
+  const employeeId = formData.get("userId") as string;
+  const status = formData.get("status") as string;
+
+  // Convert the start and end dates from strings into Date objects.
+  const requestedStartDate = new Date(startDate);
+  const requestedEndDate = new Date(endDate);
+
+  // Create the new time off request record in the database.
+  // The mapping is as follows:
+  // - "name" maps to the optional title field.
+  // - "startDate" and "endDate" are converted to Date objects.
+  // - "requestType" comes directly from the form (make sure the value matches your enum).
+  // - "description" is saved as "comment".
+  // - "userId" becomes "employeeId".
+  // - "status" is taken from the hidden input (e.g. "PENDING").
+  const newRequest = await prisma.timeOffRequestForm.create({
+    data: {
+      name: name && name.trim() !== "" ? name : undefined,
+      requestedStartDate,
+      requestedEndDate,
+      requestType: requestType as TimeOffRequestType, // adjust/cast as needed to match your enum type
+      comment: description,
+      employeeId,
+      status: status as FormStatus, // adjust/cast as needed to match your enum type (e.g., FormStatus)
+    },
+  });
+
+  return newRequest;
+}
+
 export async function EditLeaveRequest(formData: FormData) {
   try {
     console.log(formData);

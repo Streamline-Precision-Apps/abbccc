@@ -44,6 +44,9 @@ export const AdminClockOut = ({ handleClose }: { handleClose: () => void }) => {
   const [comment, setComment] = useState<string>("");
   const { setNotification } = useNotification();
 
+  const prevStep = () => {
+    incrementStep((prevStep) => prevStep - 1);
+  };
   const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
     setChecked(event.currentTarget.checked);
   };
@@ -220,6 +223,7 @@ export const AdminClockOut = ({ handleClose }: { handleClose: () => void }) => {
             handleComplete={handleNextStepAndSubmit}
             handleSubmitImage={handleSubmit}
             handleNextStep={handleNextStep}
+            prevStep={prevStep}
           />
         </Holds>
       </Grids>

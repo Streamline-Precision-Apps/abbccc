@@ -74,11 +74,20 @@ export default function TascoVerificationStep({
       if (type === "switchJobs") {
         try {
           // retrieve old time Sheet Id, end Time set to now, and the Time Sheet Comment data recorded
-          const tId = await fetch(
-            "/api/cookies?method=get&name=timeSheetId"
-          ).then((res) => res.json());
+          let timeSheetId = null;
+          // retrieving cookie to get timeSheetId or use recent one from api call
+
+          const res = await fetch("/api/getRecentTimecard");
+          const tsId = await res.json();
+          timeSheetId = tsId.id;
+
+          if (!timeSheetId) {
+            throw new Error(
+              "No valid TimeSheet ID was found. Please try again later."
+            );
+          }
           const formData2 = new FormData();
-          formData2.append("id", tId?.toString() || "");
+          formData2.append("id", timeSheetId?.toString() || "");
           formData2.append("endTime", new Date().toISOString());
           formData2.append(
             "timeSheetComments",
@@ -111,10 +120,12 @@ export default function TascoVerificationStep({
           const result = { id: response.id.toString() };
           setTimeSheetData(result);
           setCurrentPageView("dashboard");
-          await setWorkRole(role);
-          await setLaborType(laborType || "");
+          setWorkRole(role);
+          setLaborType(laborType || "");
           // go to dashboard
-          return router.push("/dashboard");
+          setTimeout(() => {
+            router.push("/dashboard");
+          }, 100);
         } catch (error) {
           console.error(error);
         }
@@ -138,10 +149,12 @@ export default function TascoVerificationStep({
         const result = { id: response.id.toString() };
         setTimeSheetData(result); // set new recent timecard
         setCurrentPageView("dashboard"); // set page view
-        await setWorkRole(role); // set work role
-        await setLaborType(laborType || ""); // set labor role
+        setWorkRole(role); // set work role
+        setLaborType(laborType || ""); // set labor role
         // go to dashboard
-        return router.push("/dashboard");
+        setTimeout(() => {
+          router.push("/dashboard");
+        }, 100);
       }
     } catch (error) {
       console.error(error);

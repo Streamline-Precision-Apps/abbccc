@@ -16,9 +16,8 @@ export default async function SwitchJobs() {
   }
   //   const equipment = await prisma.equipment.findMany();
 
-  const lang = (await cookies()).get("locale");
+  const lang = cookies().get("locale");
   const locale = lang ? lang.value : "en"; // Default to English
-  const currentRole = cookies().get("workRole")?.value || "";
   return (
     <Bases>
       <Contents>
@@ -34,7 +33,6 @@ export default async function SwitchJobs() {
               scannerType={"equipment"}
               option={"equipment"}
               locale={locale}
-              currentRole={currentRole}
             />
           </Holds>
         </Grids>

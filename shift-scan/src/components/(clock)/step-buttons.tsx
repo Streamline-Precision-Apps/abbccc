@@ -8,16 +8,23 @@ import { Titles } from "../(reusable)/titles";
 interface StepButtonsProps {
   handleNextStep: () => void;
   isLastStep?: boolean;
+  disabled: boolean;
 }
 
 export default function StepButtons({
   handleNextStep,
   isLastStep,
+  disabled,
 }: StepButtonsProps) {
   const t = useTranslations("Clock");
   return (
     <Holds className="h-full w-full">
-      <Buttons background={"orange"} onClick={handleNextStep} className="py-3">
+      <Buttons
+        background={disabled ? "grey" : "orange"}
+        onClick={handleNextStep}
+        disabled={disabled}
+        className="py-2"
+      >
         <Titles size={"h2"}>{isLastStep ? t("Submit") : t("Continue")}</Titles>
       </Buttons>
     </Holds>

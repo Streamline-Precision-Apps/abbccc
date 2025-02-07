@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { Session } from "next-auth";
-import { updateTimeSheetBySwitch } from "@/actions/timeSheetActions";
+import { breakOutTimeSheet } from "@/actions/timeSheetActions";
 import { z } from "zod";
 import { useCurrentView } from "@/app/context/CurrentViewContext";
 import TascoDashboardView from "./UI/_dashboards/tascoDashboardView";
@@ -12,6 +12,8 @@ import TruckDriverDashboardView from "./UI/_dashboards/truckDriverDashboardView"
 import MechanicDashboardView from "./UI/_dashboards/mechanicDashboardView";
 import GeneralDashboardView from "./UI/_dashboards/generalDashboardView";
 import { setCurrentPageView } from "@/actions/cookieActions";
+import Dashboard from "./page";
+import DashboardLoadingView from "./UI/_dashboards/dashboardLoadingView";
 
 // Zod schema for component state, including logs
 const DbWidgetSectionSchema = z.object({
@@ -117,14 +119,19 @@ export default function DbWidgetSection({ session, view }: props) {
     try {
       if (logs.length === 0) {
         const formData2 = new FormData();
-        const tId = await fetch(
-          "/api/cookies?method=get&name=timeSheetId"
-        ).then((res) => res.json()); // retrieving cookie
-        formData2.append("id", tId?.toString() || "");
+
+        let timeSheetId = null;
+        // retrieving cookie to get timeSheetId or use recent one from api call
+
+        const response = await fetch("/api/getRecentTimecard");
+        const tsId = await response.json();
+        timeSheetId = tsId.id;
+
+        formData2.append("id", timeSheetId || "");
         formData2.append("endTime", new Date().toISOString());
         formData2.append("timesheetComments", comment);
 
-        await updateTimeSheetBySwitch(formData2);
+        await breakOutTimeSheet(formData2);
         setCurrentPageView("break");
         router.push("/");
       } else {
@@ -142,6 +149,9 @@ export default function DbWidgetSection({ session, view }: props) {
       setIsModalOpen(true);
     }
   };
+  if (loading) {
+    return <DashboardLoadingView loading={loading} />;
+  }
   {
     /* ------------------------------------------------------------------------------------------------------------------------
   --------------------------------------------------------------------------------------------------------------------------
@@ -153,7 +163,6 @@ export default function DbWidgetSection({ session, view }: props) {
   if (view === "tasco") {
     return (
       <TascoDashboardView
-        loading={loading}
         isModalOpen={isModalOpen}
         setIsModal2Open={setIsModal2Open}
         isModal2Open={isModal2Open}
@@ -181,7 +190,6 @@ export default function DbWidgetSection({ session, view }: props) {
   if (view === "truck") {
     return (
       <TruckDriverDashboardView
-        loading={loading}
         isModalOpen={isModalOpen}
         setIsModal2Open={setIsModal2Open}
         isModal2Open={isModal2Open}
@@ -209,7 +217,6 @@ export default function DbWidgetSection({ session, view }: props) {
   if (view === "mechanic") {
     return (
       <MechanicDashboardView
-        loading={loading}
         isModalOpen={isModalOpen}
         setIsModal2Open={setIsModal2Open}
         isModal2Open={isModal2Open}
@@ -236,7 +243,6 @@ export default function DbWidgetSection({ session, view }: props) {
   if (view === "general") {
     return (
       <GeneralDashboardView
-        loading={loading}
         isModalOpen={isModalOpen}
         setIsModal2Open={setIsModal2Open}
         isModal2Open={isModal2Open}

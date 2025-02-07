@@ -14,6 +14,7 @@ const NModalVariants = cva(
         default: "bg-white opacity-90 rounded-2xl p-1",
         takeABreak:
           "bg-gradient-to-b from-app-dark-blue to-app-blue pb-3 pt-7 px-2",
+        white: "bg-white rounded-2xl p-1",
       },
       position: {
         center: "relative",

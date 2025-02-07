@@ -66,6 +66,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
   href = "back",
   modal,
   modalTitle,
+  onClick = () => {},
   ...props
 }) => {
   if (version === "horizontal") {
@@ -74,19 +75,32 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         className={cn(TitleBoxVariants({ variant, size, version, className }))}
         {...props}
       >
-        <Buttons href={href} background={"none"} size={"50"}>
-          <Images titleImg="/turnBack.svg" titleImgAlt={titleImgAlt} size={"50"} />
-        </Buttons>
+        <div className="flex items-center justify-between w-full">
+          <Buttons
+            href={href}
+            background={"none"}
+            size={"50"}
+            onClick={onClick}
+          >
+            <Images
+              titleImg="/turnBack.svg"
+              titleImgAlt={titleImgAlt}
+              size={"50"}
+            />
+          </Buttons>
+        </div>
         <div className="flex items-center justify-between w-full">
           <Titles size={"h2"} className="mr-4">
             {title}
           </Titles>
-          <Images
-            titleImg={titleImg}
-            titleImgAlt={titleImgAlt}
-            size={"40"}
-            className="flex-shrink-0"
-          />
+          {titleImg !== "" && (
+            <Images
+              titleImg={titleImg}
+              titleImgAlt={titleImgAlt}
+              size={"40"}
+              className="flex-shrink-0"
+            />
+          )}
         </div>
       </div>
     );
@@ -288,32 +302,41 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         </Holds>
       </div>
     );
-  } else
+  } else {
     return (
       <div
         className={cn(TitleBoxVariants({ variant, size, version, className }))}
         {...props}
       >
-        <Grids cols={"4"} rows={"3"} className="w-full">
-          <Holds className="col-span-1 row-span-1">
+        <Grids cols={"4"} rows={"3"} className="w-full h-full p-3">
+          <Holds className="col-span-1 row-span-1 flex items-center justify-center">
             <Buttons
               href={href}
               background={"none"}
               position={"left"}
               size={"50"}
             >
-              <Images titleImg="/turnBack.svg" titleImgAlt={titleImgAlt} />
+              <Images
+                titleImg="/turnBack.svg"
+                titleImgAlt={titleImgAlt}
+                className="max-w-8 h-auto object-contain"
+              />
             </Buttons>
           </Holds>
-          <Holds className="col-span-2 row-span-2 ">
-            <Images titleImg={titleImg} titleImgAlt={titleImgAlt} size={"40"} />
+          <Holds className="col-start-2 col-end-4 row-span-2 flex items-center justify-center">
+            <Images
+              titleImg={titleImg}
+              titleImgAlt={titleImgAlt}
+              className="max-w-10 h-auto object-contain"
+            />
           </Holds>
-          <Holds className="col-span-4 row-span-1">
-            <Titles size={"h3"}>{title}</Titles>
+          <Holds className="col-start-1 col-end-5 row-span-1 flex items-center justify-center">
+            <Titles size={"h4"}>{title}</Titles>
           </Holds>
         </Grids>
       </div>
     );
+  }
 };
 
 export { TitleBoxes, TitleBoxVariants };
