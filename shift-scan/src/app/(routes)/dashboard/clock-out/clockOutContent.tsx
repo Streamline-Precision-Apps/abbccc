@@ -48,13 +48,6 @@ export default function ClockOutContent() {
   };
 
   useEffect(() => {
-    console.log("path:", path);
-  }, [path]);
-
-  useEffect(() => {
-    if (currentView === "truck") {
-      setPath("truck");
-    }
     // Fetching the signature only once
     const fetchSignature = async () => {
       setLoading(true);
@@ -147,6 +140,7 @@ export default function ClockOutContent() {
         scanResult={scanResult?.data}
         savedCostCode={savedCostCode}
         prevStep={prevStep}
+        commentsValue={commentsValue}
       />
     );
   } else {
