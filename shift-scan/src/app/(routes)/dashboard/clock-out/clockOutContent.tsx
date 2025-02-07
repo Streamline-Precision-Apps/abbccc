@@ -32,17 +32,10 @@ export default function ClockOutContent() {
   const [loading, setLoading] = useState(true);
   const [step, setStep] = useState(0); // Using setStep instead of incrementStep
   const [path, setPath] = useState("ClockOut");
-  const router = useRouter();
-  const t = useTranslations("ClockOut");
   const [checked, setChecked] = useState(false);
-  const formRef = useRef<HTMLFormElement>(null);
-  const hasSubmitted = useRef(false);
   const { scanResult } = useScanData();
   const { savedCostCode } = useSavedCostCode();
-  const { setStartingMileage } = useStartingMileage();
-  const [date] = useState(new Date());
   const [base64String, setBase64String] = useState<string>("");
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const { currentView } = useCurrentView();
   const [commentsValue, setCommentsValue] = useState("");
 
@@ -83,38 +76,6 @@ export default function ClockOutContent() {
     setChecked(event.currentTarget.checked);
   };
 
-  const handleSubmit = async () => {
-    if (isSubmitting || hasSubmitted.current) return;
-    try {
-      setIsSubmitting(true);
-      hasSubmitted.current = true;
-      let timeSheetId = null;
-
-      const response = await fetch("/api/getRecentTimecard");
-      const tsId = await response.json();
-      timeSheetId = tsId.id;
-
-      if (!timeSheetId) {
-        alert("No valid TimeSheet ID was found. Please try again later.");
-        return;
-      }
-
-      const formData = new FormData(formRef.current as HTMLFormElement);
-
-      formData.append("id", timeSheetId); // Append the timeSheetId to the form data
-      await updateTimeSheet(formData);
-      localStorage.clear();
-      setStartingMileage(null);
-      RemoveCookiesAtClockOut();
-      router.push("/");
-    } catch (error) {
-      console.error("Failed to submit the time sheet:", error);
-    } finally {
-      setIsSubmitting(false);
-      hasSubmitted.current = false;
-    }
-  };
-
   const handleNextStepAndSubmit = async () => {
     if (!checked) {
       setPath("Injury");
@@ -135,16 +96,8 @@ export default function ClockOutContent() {
     incrementStep();
   };
 
-  const handleButtonClick = () => {
-    handleSubmit();
-  };
-
   const handleSubmitInjury = async () => {
-    if (currentView === "truck") {
-      setPath("truck");
-    } else {
-      setPath("clockOut");
-    }
+    setPath("clockOut");
   };
   // step 0  is the comment step for clocking out
   if (step === 0) {
@@ -191,11 +144,8 @@ export default function ClockOutContent() {
   } else if (step === 3 && path === "clockOut") {
     return (
       <LaborClockOut
-        handleButtonClick={handleButtonClick}
         scanResult={scanResult?.data}
         savedCostCode={savedCostCode}
-        formRef={formRef}
-        isSubmitting={isSubmitting}
         prevStep={prevStep}
       />
     );
