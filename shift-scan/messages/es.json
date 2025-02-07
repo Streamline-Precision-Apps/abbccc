@@ -367,6 +367,10 @@
     "Mileage": "Mileage"
     },
 "ClockOut":{
+    "ClockOut": "Fichar al Salir",
+    "Date-label": "Fecha",
+    "JobSite-label": "Sitio de Trabajo",
+    "CostCode-label": "Código de Costo",
     "Next": "Siguiente",
     "ChangeIfNecessary" : "Cambiar si es necesario",
     "PreviousJobComment": "Comentarios del Trabajo Anterior",

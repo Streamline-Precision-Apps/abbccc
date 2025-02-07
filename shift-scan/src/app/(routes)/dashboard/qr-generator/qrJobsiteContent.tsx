@@ -11,6 +11,7 @@ import SearchSelect from "@/components/(search)/searchSelect";
 import { Grids } from "@/components/(reusable)/grids";
 import { z } from "zod";
 import { NModals } from "@/components/(reusable)/newmodals";
+import { Titles } from "@/components/(reusable)/titles";
 
 // Zod schema for JobCodes
 const JobCodesSchema = z.object({
@@ -139,6 +140,7 @@ export default function QrJobsiteContent() {
               handleGenerate={handleGenerate}
               recentOptions={generatedRecentList}
               onSelect={handleSearchSelectChange}
+              setSelectedJobSite={setSelectedJobSite}
             />
           </Holds>
 
@@ -167,12 +169,21 @@ export default function QrJobsiteContent() {
               handleGenerate={handleGenerate}
               recentOptions={generatedRecentList}
               onSelect={handleSearchSelectChange}
+              setSelectedJobSite={setSelectedJobSite}
             />
           </Holds>
-
+          <Holds className="row-start-6 row-end-7 col-start-1 col-end-3 h-full">
+            <Buttons
+              background={selectedJobSite === "" ? "grey" : "orange"}
+              disabled={!selectedJobSite}
+              onClick={handleGenerate}
+            >
+              <Titles size={"h3"}>{t("GenerateCode")}</Titles>
+            </Buttons>
+          </Holds>
           <Holds
             size={"full"}
-            className="row-span-1 col-start-3 col-end-4 h-full"
+            className="row-start-6 row-end-7 col-start-3 col-end-4 h-full"
           >
             <Buttons background={"green"} onClick={handleNew}>
               <Holds>

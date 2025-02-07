@@ -9,7 +9,6 @@ import WidgetSection from "@/app/(content)/widgetSection";
 import { Images } from "@/components/(reusable)/images";
 import { redirect } from "next/navigation";
 import { AnimatedHamburgerButton } from "@/components/(animations)/hamburgerMenu";
-import { setWorkRole } from "@/actions/cookieActions";
 
 export default async function Home() {
   //------------------------------------------------------------------------
