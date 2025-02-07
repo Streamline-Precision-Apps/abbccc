@@ -61,7 +61,7 @@ export const AdminNotifications = ({ id }: { id: string }) => {
       }
     };
     fetchData();
-  }, []);
+  }, [id]);
 
   // Automatically save settings when updated
   useEffect(() => {
@@ -72,7 +72,7 @@ export const AdminNotifications = ({ id }: { id: string }) => {
       }
     };
     saveChanges();
-  }, [updatedData]);
+  }, [initialData, updatedData]);
 
   // Save settings before user navigates away from the page
   useEffect(() => {
@@ -126,8 +126,7 @@ export const AdminNotifications = ({ id }: { id: string }) => {
                     data={updatedData?.generalReminders || false}
                     onChange={(value: boolean) => {
                       handleChange("generalReminders", value);
-                      handleChange("timeOffRequests", value);
-                      handleChange("approvedRequests", value);
+                      handleChange("personalReminders", value);
                     }}
                   />
                 </Holds>
