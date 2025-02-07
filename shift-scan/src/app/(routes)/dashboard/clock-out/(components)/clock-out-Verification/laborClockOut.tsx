@@ -151,7 +151,7 @@ export const LaborClockOut = ({
                         background={"none"}
                         onClick={handleButtonClick}
                         className="bg-app-green flex justify-center items-center p-4 rounded-[10px] text-black font-bold"
-                        disabled={isSubmitting}
+                        type="submit"
                       >
                         <Clock time={date.getTime()} />
                       </Buttons>
