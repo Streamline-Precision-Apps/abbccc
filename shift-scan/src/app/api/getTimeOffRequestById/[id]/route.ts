@@ -21,7 +21,7 @@ export async function GET(
       where: {
         id,
       },
-      include: {
+      select: {
         name: true,
         requestedStartDate: true,
         requestedEndDate: true,
@@ -30,7 +30,6 @@ export async function GET(
         status: true,
         managerComment: true,
         decidedBy: true,
-        },
       },
     });
 

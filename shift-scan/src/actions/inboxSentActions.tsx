@@ -4,7 +4,6 @@ import prisma from "@/lib/prisma";
 import { FormStatus, TimeOffRequestType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
-
 export async function createLeaveRequest(formData: FormData) {
   // Extract values from the form data.
   // Note: "name" is optional so we allow it to be null or an empty string.
@@ -33,10 +32,10 @@ export async function createLeaveRequest(formData: FormData) {
       name: name && name.trim() !== "" ? name : undefined,
       requestedStartDate,
       requestedEndDate,
-      requestType: requestType as any, // adjust/cast as needed to match your enum type
+      requestType: requestType as TimeOffRequestType, // adjust/cast as needed to match your enum type
       comment: description,
       employeeId,
-      status: status as any, // adjust/cast as needed to match your enum type (e.g., FormStatus)
+      status: status as FormStatus, // adjust/cast as needed to match your enum type (e.g., FormStatus)
     },
   });
 
