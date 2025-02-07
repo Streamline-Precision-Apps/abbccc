@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
 import {
+  CreateMechanicTimeSheet,
   CreateTimeSheet,
   updateMechanicTSBySwitch,
 } from "@/actions/timeSheetActions";
@@ -105,7 +106,7 @@ export default function MechanicVerificationStep({
           formData.append("startTime", new Date().toISOString());
           formData.append("workType", role);
 
-          const response = await CreateTimeSheet(formData);
+          const response = await CreateMechanicTimeSheet(formData);
           const result = { id: response.id.toString() };
           setTimeSheetData(result);
 
@@ -117,9 +118,7 @@ export default function MechanicVerificationStep({
         }
       } else {
         const formData = new FormData();
-        if (truckScanData) {
-          formData.append("vehicleId", truckScanData);
-        }
+
         if (startingMileage !== undefined) {
           formData.append(
             "startingMileage",
@@ -134,10 +133,11 @@ export default function MechanicVerificationStep({
         formData.append("startTime", new Date().toISOString());
         formData.append("workType", role);
 
-        const response = await CreateTimeSheet(formData);
+        const response = await CreateMechanicTimeSheet(formData);
         const result = { id: response.id.toString() };
         setTimeSheetData(result);
         setCurrentPageView("dashboard");
+        setWorkRole(role);
 
         setTimeout(() => {
           router.push("/dashboard");
