@@ -402,6 +402,21 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     permission: "ADMIN",
     image: "",
   },
+  {
+    id: "12",
+    firstName: "Zane",
+    lastName: "Gillette",
+    username: "zanegillette",
+    email: "zane@streamlineprecision.com",
+    password: "securepassword",
+    DOB: "01-01-2000",
+    truckView: true,
+    tascoView: true,
+    laborView: true,
+    mechanicView: true,
+    permission: "SUPERADMIN",
+    image: "",
+  },
 ];
 
 // initializing contacts
@@ -488,6 +503,14 @@ export const initialContacts: Prisma.ContactsCreateInput[] = [
   },
   {
     user: { connect: { id: "11" } },
+    phoneNumber: "987-654-3210",
+    emergencyContact: "your wife",
+    emergencyContactNumber: "218-765-4311",
+    createdAt: "2021-06-01T00:00:00.000Z",
+    updatedAt: "2021-06-01T00:00:00.000Z",
+  },
+  {
+    user: { connect: { id: "12" } },
     phoneNumber: "987-654-3210",
     emergencyContact: "your wife",
     emergencyContactNumber: "218-765-4311",
@@ -1864,4 +1887,5 @@ export const initialUserSettings: Prisma.UserSettingsCreateInput[] = [
   { user: { connect: { id: "9" } } },
   { user: { connect: { id: "10" } } },
   { user: { connect: { id: "11" } } },
+  { user: { connect: { id: "12" } } },
 ];
