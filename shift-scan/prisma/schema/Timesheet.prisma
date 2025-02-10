@@ -42,8 +42,8 @@ model MaintenanceLog {
     endTime       DateTime?
     comment       String?
 
-    user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-    timeSheet   TimeSheet?   @relation(fields: [timeSheetId], references: [id])
+    user        User         @relation(fields: [userId], references: [id])
+    timeSheet   TimeSheet?   @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
     maintenance Maintenance? @relation(fields: [maintenanceId], references: [id])
 }
 
@@ -86,7 +86,7 @@ model TascoLog {
 
     // connections to other tables
     equipment Equipment? @relation(fields: [equipmentId], references: [qrId])
-    timeSheet TimeSheet? @relation(fields: [timeSheetId], references: [id])
+    timeSheet TimeSheet? @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
@@ -109,7 +109,7 @@ model TruckingLog {
     EquipmentHauled EquipmentHauled[]
 
     equipment Equipment? @relation(fields: [equipmentId], references: [qrId])
-    timeSheet TimeSheet? @relation(fields: [timeSheetId], references: [id])
+    timeSheet TimeSheet? @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
