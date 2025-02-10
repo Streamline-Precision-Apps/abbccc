@@ -1,7 +1,4 @@
-import {
-  RemoveCookiesAtClockOut,
-  setStartingMileage,
-} from "@/actions/cookieActions";
+"use client";
 import { updateTimeSheet } from "@/actions/timeSheetActions";
 import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
@@ -32,33 +29,47 @@ export const LaborClockOut = ({
   const [date] = useState(new Date());
   const router = useRouter();
 
-  const handleSubmit = async () => {
+  const awaitAllProcesses = async () => {
+    // Fetch data for a form submit and process them concurrently
+    await processOne();
+    // remove cookies from previous session and clear local storage
+    await processTwo();
+
+    return router.push("/dashboard");
+  };
+
+  async function processOne() {
     try {
-      let timeSheetId = null;
+      // Step 1: Get the recent timecard ID.
       const response = await fetch("/api/getRecentTimecard");
       const tsId = await response.json();
-      timeSheetId = tsId.id;
+      const timeSheetId = tsId.id;
 
       if (!timeSheetId) {
         alert("No valid TimeSheet ID was found. Please try again later.");
         return;
       }
 
-      // Collect form data
       const formData = new FormData();
-      formData.append("id", timeSheetId); // Ensure TimeSheet ID is included
+      formData.append("id", timeSheetId);
       formData.append("endTime", new Date().toISOString());
       formData.append("timeSheetComments", commentsValue);
 
       await updateTimeSheet(formData);
-      localStorage.clear();
-      setStartingMileage("");
-      RemoveCookiesAtClockOut();
-      router.push("/");
     } catch (error) {
-      console.error("Failed to submit the time sheet:", error);
+      console.error("Failed to process the time sheet:", error);
     }
-  };
+  }
+
+  async function processTwo() {
+    try {
+      // Step 4: Delete cookies and clear localStorage.
+      await fetch("/api/cookies?method=deleteAll");
+      localStorage.clear();
+    } catch (error) {
+      console.error("Failed to process the time sheet:", error);
+    }
+  }
 
   return (
     <Bases>
@@ -163,7 +174,7 @@ export const LaborClockOut = ({
                   >
                     {/* Cancel out the button shadow with none background  and then add a class name */}
                     <Buttons
-                      onClick={handleSubmit}
+                      onClick={awaitAllProcesses}
                       className="bg-app-green flex justify-center items-center p-4 rounded-[10px] text-black font-bold"
                     >
                       <Clock time={date.getTime()} />

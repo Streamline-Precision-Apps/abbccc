@@ -26,6 +26,43 @@ export async function GET(request: NextRequest) {
         }
         return NextResponse.json(requestedCookie);
 
+      case "deleteAll":
+        const cookieNames = [
+          "costCode",
+          "currentPageView",
+          "equipment",
+          "jobSite",
+          "startingMileage",
+          "timeSheetId",
+          "truckId",
+          "adminAccess",
+          "laborType",
+        ];
+        cookieNames.forEach((name) => {
+          return cookies().delete({
+            name: name,
+            path: "/",
+            httpOnly: true,
+            sameSite: "lax",
+            domain: "shiftscanapp.com",
+            secure: process.env.NODE_ENV === "production",
+            maxAge: 0,
+          });
+        });
+
+        // Reset `workRole` as well
+        cookies().set({
+          name: "workRole",
+          value: "",
+          path: "/",
+          httpOnly: true,
+          sameSite: "lax",
+          domain: "shiftscanapp.com",
+          secure: process.env.NODE_ENV === "production",
+        });
+
+        return NextResponse.json("");
+
       default:
         return NextResponse.json({ error: "Invalid method" });
     }

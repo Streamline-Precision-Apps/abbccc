@@ -519,18 +519,6 @@ step 4 : confirmation page and redirect to dashboard with authorization
           handlePreviousStep={handlePrevStep}
         />
       )}
-      {/* Confirmation Page
-      {step === 6 && clockInRole === "general" && (
-        <ConfirmationPage
-          option={option}
-          savedCostCode={savedCostCode}
-          scanResult={scanResult?.data}
-          truckScanData={truckScanData}
-          type={type}
-          startingMileage={startingMileage}
-          locale={locale}
-        />
-      )} */}
     </>
   );
 }
