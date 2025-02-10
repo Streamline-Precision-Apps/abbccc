@@ -232,44 +232,6 @@ export async function setPrevTimeSheet(timeSheetId: string) {
   }
 }
 
-// removes all the cookies at clock out
-export async function RemoveCookiesAtClockOut() {
-  try {
-    // List of cookies to delete
-    const cookieNames = [
-      "timeSheetId",
-      "costCode",
-      "jobSite",
-      "adminAccess",
-      "laborType",
-      "truckId",
-      "equipment",
-      "startingMileage",
-      "currentPageView",
-    ];
-
-    // Delete each cookie properly
-    cookieNames.forEach((name) => {
-      return cookies().set(name, "", {
-        path: "/",
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        maxAge: 0,
-      });
-    });
-
-    // Reset `workRole` as well
-    cookies().set("workRole", "", {
-      path: "/",
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 0, // Deletes the cookie immediately
-    });
-  } catch (error) {
-    console.error("Failed to delete cookies:", error);
-  }
-}
-
 /*-----------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------------------------
 
