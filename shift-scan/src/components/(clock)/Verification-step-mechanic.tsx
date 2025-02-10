@@ -1,11 +1,10 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
 import {
   CreateMechanicTimeSheet,
-  CreateTimeSheet,
   updateMechanicTSBySwitch,
 } from "@/actions/timeSheetActions";
 import { Clock } from "../clock";
@@ -18,13 +17,12 @@ import { Forms } from "../(reusable)/forms";
 import { Images } from "../(reusable)/images";
 import { Texts } from "../(reusable)/texts";
 import { useSession } from "next-auth/react";
-import { useTruckScanData } from "@/app/context/TruckScanDataContext";
-import { useStartingMileage } from "@/app/context/StartingMileageContext";
 import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
 import { useCommentData } from "@/app/context/CommentContext";
 import { useRouter } from "next/navigation";
 import { setCurrentPageView, setWorkRole } from "@/actions/cookieActions";
+import Spinner from "../(animations)/spinner";
 
 type VerifyProcessProps = {
   handleNextStep?: () => void;
@@ -43,7 +41,8 @@ export default function MechanicVerificationStep({
   const { scanResult } = useScanData();
   const { setTimeSheetData } = useTimeSheetData();
   const router = useRouter();
-  const date = new Date();
+  const [date] = useState(new Date());
+  const [loading, setLoading] = useState<boolean>(false);
   const { data: session } = useSession();
   const { savedCommentData, setCommentData } = useCommentData();
 
@@ -97,13 +96,11 @@ export default function MechanicVerificationStep({
     try {
       const response = await CreateMechanicTimeSheet(formData);
       const result = { id: response.id.toString() };
-      setTimeSheetData(result);
-      setCurrentPageView("dashboard");
-      setWorkRole(role);
-      console.log("finishing switchJobs");
-      setTimeout(() => {
-        router.push("/dashboard");
-      }, 100);
+      await Promise.all([
+        setTimeSheetData(result),
+        setCurrentPageView("dashboard"),
+        setWorkRole(role),
+      ]).then(() => router.push("/dashboard"));
     } catch (error) {
       console.error(error);
     }
@@ -111,25 +108,38 @@ export default function MechanicVerificationStep({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     if (!id) {
       console.error("User ID does not exist");
       return;
     }
-    await setWorkRole(role);
-    if (type === "switchJobs") {
-      const isUpdated = await updatePreviousTimeSheet();
-      if (isUpdated) {
+    setLoading(true);
+    try {
+      if (type === "switchJobs") {
+        const isUpdated = await updatePreviousTimeSheet();
+        if (isUpdated) {
+          await createNewTimeSheet();
+        }
+      } else {
         await createNewTimeSheet();
       }
-    } else {
-      await createNewTimeSheet();
+    } catch (error) {
+      console.error("Error in handleSubmit:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <>
-      <Holds background={"white"} className="h-full w-full">
+      {loading && (
+        <Holds className="h-full absolute justify-center items-center">
+          <Spinner size={40} />
+        </Holds>
+      )}
+      <Holds
+        background={"white"}
+        className={loading ? `h-full w-full opacity-[0.50]` : `h-full w-full`}
+      >
         <Grids rows={"10"} gap={"2"} className="h-full w-full">
           <Contents width={"section"} className="h-full row-span-1 ">
             <TitleBoxes
