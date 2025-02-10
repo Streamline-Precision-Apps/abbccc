@@ -22,6 +22,7 @@ import { useCommentData } from "@/app/context/CommentContext";
 import { setCurrentPageView, setWorkRole } from "@/actions/cookieActions";
 import { Titles } from "../(reusable)/titles";
 import { useRouter } from "next/navigation";
+import { promise } from "zod";
 
 type VerifyProcessProps = {
   type: string;
@@ -97,13 +98,12 @@ export default function VerificationStep({
     try {
       const response = await CreateTimeSheet(formData);
       const result = { id: response.id.toString() };
-      setTimeSheetData(result);
-      setCurrentPageView("dashboard");
-      setWorkRole(role);
-      console.log("finishing switchJobs");
-      setTimeout(() => {
-        router.push("/dashboard");
-      }, 100);
+
+      await Promise.all([
+        setWorkRole(role),
+        setTimeSheetData(result),
+        setCurrentPageView("dashboard"),
+      ]).then(() => router.push("/dashboard"));
     } catch (error) {
       console.error(error);
     }
@@ -116,14 +116,18 @@ export default function VerificationStep({
       console.error("User ID does not exist");
       return;
     }
-    await setWorkRole(role);
-    if (type === "switchJobs") {
-      const isUpdated = await updatePreviousTimeSheet();
-      if (isUpdated) {
+
+    try {
+      if (type === "switchJobs") {
+        const isUpdated = await updatePreviousTimeSheet();
+        if (isUpdated) {
+          await createNewTimeSheet();
+        }
+      } else {
         await createNewTimeSheet();
       }
-    } else {
-      await createNewTimeSheet();
+    } catch (error) {
+      console.error("Error in handleSubmit:", error);
     }
   };
 
