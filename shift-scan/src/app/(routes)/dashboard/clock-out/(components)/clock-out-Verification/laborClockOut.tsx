@@ -1,5 +1,6 @@
 "use client";
 import { updateTimeSheet } from "@/actions/timeSheetActions";
+import Spinner from "@/components/(animations)/spinner";
 import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
@@ -27,14 +28,16 @@ export const LaborClockOut = ({
 }) => {
   const t = useTranslations("ClockOut");
   const [date] = useState(new Date());
+  const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
 
   const awaitAllProcesses = async () => {
     // Fetch data for a form submit and process them concurrently
+    setLoading(true);
     await processOne();
     // remove cookies from previous session and clear local storage
     await processTwo();
-
+    setLoading(false);
     return router.push("/dashboard");
   };
 
@@ -74,7 +77,15 @@ export const LaborClockOut = ({
   return (
     <Bases>
       <Contents>
-        <Holds background={"white"} className="h-full w-full">
+        {loading && (
+          <Holds className="h-full absolute justify-center items-center">
+            <Spinner size={40} />
+          </Holds>
+        )}
+        <Holds
+          background={"white"}
+          className={loading ? `h-full w-full opacity-[0.50]` : `h-full w-full`}
+        >
           <Grids rows={"8"} gap={"5"} className="h-full w-full">
             <Holds className="h-full w-full row-start-1 row-end-2 p-3">
               <Grids rows={"2"} cols={"5"} gap={"3"} className=" h-full w-full">
