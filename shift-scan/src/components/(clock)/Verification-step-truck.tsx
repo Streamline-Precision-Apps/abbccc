@@ -4,7 +4,6 @@ import { useTranslations } from "next-intl";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
-
 import {
   CreateTruckDriverTimeSheet,
   updateTruckDriverTSBySwitch,
@@ -58,108 +57,88 @@ export default function TruckVerificationStep({
   const { data: session } = useSession();
   const { savedCommentData, setCommentData } = useCommentData();
   const router = useRouter();
-  if (!session) return null; // Conditional rendering for session
 
+  if (!session) return null; // Conditional rendering for session
   const { id } = session.user;
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const fetchRecentTimeSheetId = async (): Promise<string | null> => {
     try {
-      e.preventDefault();
-      if (!id) {
-        throw new Error("User id does not exist");
-      }
+      const res = await fetch("/api/getRecentTimecard");
+      const data = await res.json();
+      return data?.id || null;
+    } catch (error) {
+      console.error("Error fetching recent timesheet ID:", error);
+      return null;
+    }
+  };
 
-      await setWorkRole(role);
+  const updatePreviousTimeSheet = async (): Promise<boolean> => {
+    try {
+      const timeSheetId = await fetchRecentTimeSheetId();
+      if (!timeSheetId) throw new Error("No valid TimeSheet ID found.");
 
-      if (type === "switchJobs") {
-        try {
-          // retrieve old time Sheet Id, end Time set to now, and the Time Sheet Comment data recorded
-          let timeSheetId = null;
-          // retrieving cookie to get timeSheetId or use recent one from api call
+      const formData = new FormData();
+      formData.append("id", timeSheetId);
+      formData.append("endTime", new Date().toISOString());
+      formData.append(
+        "timeSheetComments",
+        savedCommentData?.id.toString() || ""
+      );
 
-          const res = await fetch("/api/getRecentTimecard");
-          const tsId = await res.json();
-          timeSheetId = tsId.id;
+      await updateTruckDriverTSBySwitch(formData);
+      setCommentData(null);
+      localStorage.removeItem("savedCommentData");
+      return true;
+    } catch (error) {
+      console.error("Failed to update previous timesheet:", error);
+      return false;
+    }
+  };
 
-          if (!timeSheetId) {
-            throw new Error(
-              "No valid TimeSheet ID was found. Please try again later."
-            );
-          }
-
-          const formData2 = new FormData();
-          formData2.append("id", timeSheetId?.toString() || "");
-          formData2.append("endTime", new Date().toISOString());
-          formData2.append(
-            "timeSheetComments",
-            savedCommentData?.id.toString() || ""
-          );
-
-          // send data to update and close out the previous time Sheet, log will be update another way.
-          const responseOldSheet = await updateTruckDriverTSBySwitch(formData2);
-          if (responseOldSheet) {
-            // removing the old sheet comment so it doesn't show up on the new sheet
-            setCommentData(null);
-            localStorage.removeItem("savedCommentData"); // update this to a cookie for consistency
-          }
-          // create new form for the new Time Sheet
-          const formData = new FormData();
-
-          formData.append("submitDate", new Date().toISOString());
-          formData.append("userId", id?.toString() || "");
-          formData.append("date", new Date().toISOString());
-          formData.append("jobsiteId", scanResult?.data || "");
-          formData.append("costcode", savedCostCode?.toString() || "");
-          formData.append("startTime", new Date().toISOString());
-          formData.append("workType", role);
-          formData.append("laborType", laborType || ""); // sets the title of task to the labor type worked on
-          formData.append("startingMileage", startingMileage?.toString() || ""); // sets new starting mileage
-          formData.append("truck", truck || ""); // sets truck ID if applicable
-          formData.append("equipment", equipmentId || ""); // sets equipment Id if applicable
-
-          // set a cookie for: recent timecard, pageView, workRole, LaborRole
-          const response = await CreateTruckDriverTimeSheet(formData);
-          const result = { id: response.id.toString() };
-          setTimeSheetData(result);
-          setCurrentPageView("dashboard");
-          setWorkRole(role);
-          setLaborType(laborType || "");
-          // go to dashboard
-          setTimeout(() => {
-            router.push("/dashboard");
-          }, 100);
-        } catch (error) {
-          console.error(error);
-        }
-      } else {
-        //create a new Time Sheet with a Truck Log
-        const formData = new FormData();
-        formData.append("submitDate", new Date().toISOString());
-        formData.append("userId", id.toString());
-        formData.append("date", new Date().toISOString());
-        formData.append("jobsiteId", scanResult?.data || "");
-        formData.append("costcode", savedCostCode?.toString() || "");
-        formData.append("startTime", new Date().toISOString());
-        formData.append("workType", role);
-        formData.append("laborType", laborType || "");
-        formData.append("startingMileage", startingMileage?.toString() || "");
-        formData.append("truck", truck || "");
-        formData.append("equipment", equipmentId || "");
-
-        // set a cookie for: recent timecard, pageView, workRole, LaborRole
-        const response = await CreateTruckDriverTimeSheet(formData);
-        const result = { id: response.id.toString() };
-        setTimeSheetData(result); // set new recent timecard
-        setLaborType(laborType || ""); // set labor role
-        setCurrentPageView("dashboard"); // set page view
-        setWorkRole(role); // set work role
-        // go to dashboard
-        setTimeout(() => {
-          router.push("/dashboard");
-        }, 100);
-      }
+  const createNewTimeSheet = async (): Promise<void> => {
+    const formData = new FormData();
+    formData.append("submitDate", new Date().toISOString());
+    formData.append("userId", id?.toString() || "");
+    formData.append("date", new Date().toISOString());
+    formData.append("jobsiteId", scanResult?.data || "");
+    formData.append("costcode", savedCostCode?.toString() || "");
+    formData.append("startTime", new Date().toISOString());
+    formData.append("workType", role);
+    formData.append("laborType", laborType || ""); // sets the title of task to the labor type worked on
+    formData.append("startingMileage", startingMileage?.toString() || ""); // sets new starting mileage
+    formData.append("truck", truck || ""); // sets truck ID if applicable
+    formData.append("equipment", equipmentId || ""); // sets equipment Id if applicable
+    try {
+      const response = await CreateTruckDriverTimeSheet(formData);
+      const result = { id: response.id.toString() };
+      setTimeSheetData(result);
+      setCurrentPageView("dashboard");
+      setWorkRole(role);
+      setLaborType(laborType || "");
+      // go to dashboard
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 100);
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!id) {
+      console.error("User ID does not exist");
+      return;
+    }
+    await setWorkRole(role);
+    if (type === "switchJobs") {
+      const isUpdated = await updatePreviousTimeSheet();
+      if (isUpdated) {
+        await createNewTimeSheet();
+      }
+    } else {
+      await createNewTimeSheet();
     }
   };
 
