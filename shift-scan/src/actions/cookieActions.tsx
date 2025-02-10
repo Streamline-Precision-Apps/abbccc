@@ -72,8 +72,6 @@ export async function setWorkRole(workRole: string) {
       value: workRole,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      domain: "shiftscanapp.com",
       path: "/",
       expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days - made this to not have errors occur is logging out is forgotten
     });
@@ -99,8 +97,6 @@ export async function setLaborType(laborType: string) {
       value: laborType,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      domain: "shiftscanapp.com",
       path: "/",
       expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days - made this to not have errors occur is logging out is forgotten
     });
@@ -133,8 +129,6 @@ export async function setCurrentPageView(currentPageView: string) {
       value: currentPageView,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      domain: "shiftscanapp.com",
       path: "/",
       expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days  // Expires in 30 days - made this to not have errors occur is logging out is forgotten
     });
@@ -151,8 +145,6 @@ export async function setJobSite(jobSite: string) {
       value: jobSite,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      domain: "shiftscanapp.com",
       path: "/",
       expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days - made this to not have errors occur is logging out is forgotten
     });
@@ -168,8 +160,6 @@ export async function setCostCode(costCode: string) {
       value: costCode,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      domain: "shiftscanapp.com",
       path: "/",
       expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days - made this to not have errors occur is logging out is forgotten
     });
@@ -185,8 +175,6 @@ export async function setEquipment(equipment: string) {
       value: equipment,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      domain: "shiftscanapp.com",
       path: "/",
       expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days - made this to not have errors occur is logging out is forgotten
     });
@@ -201,8 +189,6 @@ export async function setTruck(truck: string) {
       value: truck,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      domain: "shiftscanapp.com",
       path: "/",
       expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days - made this to not have errors occur is logging out is forgotten
     });
@@ -218,8 +204,6 @@ export async function setStartingMileage(startingMileage: string) {
       value: startingMileage,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      domain: "shiftscanapp.com",
       path: "/",
       expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days - made this to not have errors occur is logging out is forgotten
     });
@@ -240,8 +224,6 @@ export async function setPrevTimeSheet(timeSheetId: string) {
       value: timeSheetId,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      domain: "shiftscanapp.com",
       path: "/",
       expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days - made this to not have errors occur is logging out is forgotten
     });
@@ -282,8 +264,6 @@ export async function setAdminAccess() {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       path: "/",
-      sameSite: "lax",
-      domain: "shiftscanapp.com",
       expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days  // Expires in 30 days - made this to not have errors occur is logging out is forgotten
     });
   } catch (error) {
