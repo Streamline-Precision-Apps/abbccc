@@ -10,9 +10,9 @@ export default function Spinner({
   color = "border-app-dark-blue",
 }: SpinnerProps) {
   return (
-    <div className="flex justify-center items-center">
+    <div className="flex justify-center items-center opacity-100">
       <div
-        className={`animate-spin-custom rounded-full border-b-2 ${color}`}
+        className={`animate-spin-custom rounded-full border-b-2 ${color} opacity-100`}
         style={{ height: size, width: size }}
       ></div>
     </div>

@@ -28,6 +28,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useOperator } from "@/app/context/operatorContext";
+import Spinner from "../(animations)/spinner";
 
 type VerifyProcessProps = {
   handleNextStep?: () => void;
@@ -55,6 +56,7 @@ export default function TascoVerificationStep({
   const { setTimeSheetData } = useTimeSheetData();
   const { equipmentId } = useOperator();
   const [date] = useState(new Date());
+  const [loading, setLoading] = useState<boolean>(false);
   const { data: session } = useSession();
   const { savedCommentData, setCommentData } = useCommentData();
   const router = useRouter();
@@ -112,13 +114,14 @@ export default function TascoVerificationStep({
     try {
       const response = await CreateTascoTimeSheet(formData);
       setTimeSheetData({ id: response.id.toString() });
-      setCurrentPageView("dashboard");
-      setWorkRole(role);
-      setLaborType(laborType || "");
 
-      setTimeout(() => router.push("/dashboard"), 100);
+      await Promise.all([
+        setCurrentPageView("dashboard"),
+        setWorkRole(role),
+        setLaborType(laborType || ""),
+      ]).then(() => router.push("/dashboard"));
     } catch (error) {
-      console.error("Failed to create new timesheet:", error);
+      console.error(error);
     }
   };
 
@@ -128,22 +131,34 @@ export default function TascoVerificationStep({
       console.error("User ID does not exist");
       return;
     }
-
-    await setWorkRole(role);
-
-    if (type === "switchJobs") {
-      const isUpdated = await updatePreviousTimeSheet();
-      if (isUpdated) {
+    setLoading(true);
+    try {
+      if (type === "switchJobs") {
+        const isUpdated = await updatePreviousTimeSheet();
+        if (isUpdated) {
+          await createNewTimeSheet();
+        }
+      } else {
         await createNewTimeSheet();
       }
-    } else {
-      await createNewTimeSheet();
+    } catch (error) {
+      console.error("Error in handleSubmit:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <>
-      <Holds background={"white"} className="h-full w-full">
+      {loading && (
+        <Holds className="h-full absolute justify-center items-center">
+          <Spinner size={40} />
+        </Holds>
+      )}
+      <Holds
+        background={"white"}
+        className={loading ? `h-full w-full opacity-[0.50]` : `h-full w-full`}
+      >
         <Grids rows={"10"} gap={"2"} className="h-full w-full">
           <Contents width={"section"} className="h-full row-span-1 ">
             <TitleBoxes

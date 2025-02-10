@@ -22,7 +22,7 @@ import { useCommentData } from "@/app/context/CommentContext";
 import { setCurrentPageView, setWorkRole } from "@/actions/cookieActions";
 import { Titles } from "../(reusable)/titles";
 import { useRouter } from "next/navigation";
-import { promise } from "zod";
+import Spinner from "../(animations)/spinner";
 
 type VerifyProcessProps = {
   type: string;
@@ -45,6 +45,7 @@ export default function VerificationStep({
   const { savedCostCode } = useSavedCostCode();
   const { setTimeSheetData } = useTimeSheetData();
   const [date] = useState(new Date());
+  const [loading, setLoading] = useState<boolean>(false);
   const { data: session } = useSession();
   const { savedCommentData, setCommentData } = useCommentData();
   const router = useRouter();
@@ -116,7 +117,7 @@ export default function VerificationStep({
       console.error("User ID does not exist");
       return;
     }
-
+    setLoading(true);
     try {
       if (type === "switchJobs") {
         const isUpdated = await updatePreviousTimeSheet();
@@ -128,12 +129,24 @@ export default function VerificationStep({
       }
     } catch (error) {
       console.error("Error in handleSubmit:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <Holds className="h-full w-full">
-      <Holds background={"white"} className="h-full w-full py-5">
+    <Holds className="h-full w-full relative">
+      {loading && (
+        <Holds className="h-full absolute justify-center items-center">
+          <Spinner size={40} />
+        </Holds>
+      )}
+      <Holds
+        background={"white"}
+        className={
+          loading ? `h-full w-full py-5 opacity-[0.50]` : `h-full w-full py-5`
+        }
+      >
         <Contents width={"section"}>
           <Grids rows={"7"} gap={"5"} className="h-full w-full">
             <Holds className="h-full w-full row-start-1 row-end-2">
