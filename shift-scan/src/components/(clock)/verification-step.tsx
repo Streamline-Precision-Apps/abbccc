@@ -47,95 +47,83 @@ export default function VerificationStep({
   const { data: session } = useSession();
   const { savedCommentData, setCommentData } = useCommentData();
   const router = useRouter();
-  if (!session) return null; // Conditional rendering for session
 
+  if (!session) return null; // Conditional rendering for session
   const { id } = session.user;
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const fetchRecentTimeSheetId = async (): Promise<string | null> => {
     try {
-      e.preventDefault();
+      const res = await fetch("/api/getRecentTimecard");
+      const data = await res.json();
+      return data?.id || null;
+    } catch (error) {
+      console.error("Error fetching recent timesheet ID:", error);
+      return null;
+    }
+  };
 
-      if (!id) {
-        throw new Error("User id does not exist");
-      }
+  const updatePreviousTimeSheet = async (): Promise<boolean> => {
+    try {
+      const timeSheetId = await fetchRecentTimeSheetId();
+      if (!timeSheetId) throw new Error("No valid TimeSheet ID found.");
 
-      await setWorkRole(role);
+      const formData = new FormData();
+      formData.append("id", timeSheetId);
+      formData.append("endTime", new Date().toISOString());
+      formData.append(
+        "timeSheetComments",
+        savedCommentData?.id.toString() || ""
+      );
 
-      if (type === "switchJobs") {
-        try {
-          console.log("Initiating switchJobs");
-          let timeSheetId = null;
-          // retrieving cookie to get timeSheetId or use recent one from api call
+      await updateTimeSheetBySwitch(formData);
+      setCommentData(null);
+      localStorage.removeItem("savedCommentData");
+      return true;
+    } catch (error) {
+      console.error("Failed to update previous timesheet:", error);
+      return false;
+    }
+  };
 
-          const res = await fetch("/api/getRecentTimecard");
-          const tsId = await res.json();
-          timeSheetId = tsId.id;
-
-          if (!timeSheetId) {
-            throw new Error(
-              "No valid TimeSheet ID was found. Please try again later."
-            );
-          }
-          const formData2 = new FormData();
-          formData2.append("id", timeSheetId?.toString() || "");
-          formData2.append("endTime", new Date().toISOString());
-          formData2.append(
-            "timesheetComments",
-            savedCommentData?.id.toString() || ""
-          );
-
-          const responseOldSheet = await updateTimeSheetBySwitch(formData2);
-          if (responseOldSheet) {
-            // removing the old sheet comment so it doesn't show up on the new sheet
-            setCommentData(null);
-            localStorage.removeItem("savedCommentData");
-          }
-
-          const formData = new FormData();
-
-          formData.append("submitDate", new Date().toISOString());
-          formData.append("userId", id?.toString() || "");
-          formData.append("date", new Date().toISOString());
-          formData.append("jobsiteId", scanResult?.data || "");
-          formData.append("costcode", savedCostCode?.toString() || "");
-          formData.append("startTime", new Date().toISOString());
-          formData.append("workType", role);
-
-          const response = await CreateTimeSheet(formData);
-          const result = { id: response.id.toString() };
-          setTimeSheetData(result);
-          setCurrentPageView("dashboard");
-          setWorkRole(role);
-          console.log("finishing switchJobs");
-          setTimeout(() => {
-            router.push("/dashboard");
-          }, 100);
-        } catch (error) {
-          console.error(error);
-        }
-      } else {
-        console.log("Initiating Normal");
-        const formData = new FormData();
-        formData.append("submitDate", new Date().toISOString());
-        formData.append("userId", id.toString());
-        formData.append("date", new Date().toISOString());
-        formData.append("jobsiteId", scanResult?.data || "");
-        formData.append("costcode", savedCostCode?.toString() || "");
-        formData.append("startTime", new Date().toISOString());
-        formData.append("workType", role);
-
-        const response = await CreateTimeSheet(formData);
-        const result = { id: response.id.toString() };
-        setTimeSheetData(result);
-        setCurrentPageView("dashboard");
-        setWorkRole(role);
-        console.log("finishing Normal clock out");
-        setTimeout(() => {
-          router.push("/dashboard");
-        }, 100);
-      }
+  const createNewTimeSheet = async (): Promise<void> => {
+    const formData = new FormData();
+    formData.append("submitDate", new Date().toISOString());
+    formData.append("userId", id?.toString() || "");
+    formData.append("date", new Date().toISOString());
+    formData.append("jobsiteId", scanResult?.data || "");
+    formData.append("costcode", savedCostCode?.toString() || "");
+    formData.append("startTime", new Date().toISOString());
+    formData.append("workType", role);
+    try {
+      const response = await CreateTimeSheet(formData);
+      const result = { id: response.id.toString() };
+      setTimeSheetData(result);
+      setCurrentPageView("dashboard");
+      setWorkRole(role);
+      console.log("finishing switchJobs");
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 100);
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!id) {
+      console.error("User ID does not exist");
+      return;
+    }
+    await setWorkRole(role);
+    if (type === "switchJobs") {
+      const isUpdated = await updatePreviousTimeSheet();
+      if (isUpdated) {
+        await createNewTimeSheet();
+      }
+    } else {
+      await createNewTimeSheet();
     }
   };
 

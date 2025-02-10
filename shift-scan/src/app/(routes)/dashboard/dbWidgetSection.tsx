@@ -110,6 +110,17 @@ export default function DbWidgetSection({ session, view }: props) {
     fetchLogs();
   }, [e]);
 
+  const fetchRecentTimeSheetId = async (): Promise<string | null> => {
+    try {
+      const res = await fetch("/api/getRecentTimecard");
+      const data = await res.json();
+      return data?.id || null;
+    } catch (error) {
+      console.error("Error fetching recent timesheet ID:", error);
+      return null;
+    }
+  };
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
@@ -118,22 +129,19 @@ export default function DbWidgetSection({ session, view }: props) {
   const handleCOButton2 = async () => {
     try {
       if (logs.length === 0) {
+        const timeSheetId = await fetchRecentTimeSheetId();
+        if (!timeSheetId) throw new Error("No valid TimeSheet ID found.");
+
         const formData2 = new FormData();
-
-        let timeSheetId = null;
-        // retrieving cookie to get timeSheetId or use recent one from api call
-
-        const response = await fetch("/api/getRecentTimecard");
-        const tsId = await response.json();
-        timeSheetId = tsId.id;
-
         formData2.append("id", timeSheetId || "");
         formData2.append("endTime", new Date().toISOString());
         formData2.append("timesheetComments", comment);
 
-        await breakOutTimeSheet(formData2);
+        const isUpdated = await breakOutTimeSheet(formData2);
         setCurrentPageView("break");
-        router.push("/");
+        if (isUpdated) {
+          router.push("/");
+        }
       } else {
         setIsModalOpen(true);
       }
