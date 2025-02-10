@@ -43,6 +43,8 @@ export async function GET(request: NextRequest) {
             name: name,
             path: "/",
             httpOnly: true,
+            sameSite: "lax",
+            domain: "shiftscanapp.com",
             secure: process.env.NODE_ENV === "production",
             maxAge: 0,
           });
@@ -54,6 +56,8 @@ export async function GET(request: NextRequest) {
           value: "",
           path: "/",
           httpOnly: true,
+          sameSite: "lax",
+          domain: "shiftscanapp.com",
           secure: process.env.NODE_ENV === "production",
         });
 
