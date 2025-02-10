@@ -9,20 +9,20 @@ import { revalidatePath } from "next/cache";
 // Parse UTC function to handle timezone conversion
 const parseUTC = (timestamp: string): Date => {
   const date = new Date(timestamp);
-  // if (isNaN(date.getTime())) {
-  //   throw new RangeError(`Invalid time value: ${timestamp}`);
-  // }
-  // date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
-  // console.log("Parse UTC date:", date);
+  if (isNaN(date.getTime())) {
+    throw new RangeError(`Invalid time value: ${timestamp}`);
+  }
+  date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+  console.log("Parse UTC date:", date);
   return date;
 };
 const parseUTCNoTz = (timestamp: string): Date => {
   const date = new Date(timestamp);
-  // if (isNaN(date.getTime())) {
-  //   throw new RangeError(`Invalid time value: ${timestamp}`);
-  // }
-  // date.setMinutes(date.getMinutes());
-  // console.log("Parse UTC date:", date);
+  if (isNaN(date.getTime())) {
+    throw new RangeError(`Invalid time value: ${timestamp}`);
+  }
+  date.setMinutes(date.getMinutes());
+  console.log("Parse UTC date:", date);
   return date;
 };
 // Get all TimeSheets
