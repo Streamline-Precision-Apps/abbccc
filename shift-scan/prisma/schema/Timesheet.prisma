@@ -77,8 +77,7 @@ model TascoLog {
     laborType    String? // Labor being done. (E.G. manual labor vs. equipment)
     materialType String? // depend on tasco type
     loadsHauled  Int?
-    loadType     String? // uncovered, screened, etc
-    loadWeight   Float?
+    loads        Loads[]
     comment      String?
     createdAt    DateTime   @default(now())
     completed    Boolean    @default(false)
@@ -87,6 +86,14 @@ model TascoLog {
     // connections to other tables
     equipment Equipment? @relation(fields: [equipmentId], references: [qrId])
     timeSheet TimeSheet? @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
+}
+
+model Loads {
+    id         String    @id @default(uuid())
+    tascoLogId String?
+    loadType   String? // uncovered, screened, etc
+    loadWeight Float?
+    TascoLog   TascoLog? @relation(fields: [tascoLogId], references: [id])
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
