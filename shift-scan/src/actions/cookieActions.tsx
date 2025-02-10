@@ -81,12 +81,14 @@ export async function setWorkRole(workRole: string) {
 }
 
 export async function setLaborType(laborType: string) {
-  if (
-    laborType !== "operator" &&
-    laborType !== "equipmentOperator" &&
-    laborType !== "truckDriver" &&
-    laborType !== "manualLabor"
-  ) {
+  const VALID_LABOR_TYPES = [
+    "operator",
+    "equipmentOperator",
+    "truckDriver",
+    "manualLabor",
+  ];
+
+  if (!VALID_LABOR_TYPES.includes(laborType)) {
     console.log(laborType);
     throw new Error("Not Authorized - Invalid labor type");
   }
