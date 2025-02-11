@@ -182,6 +182,8 @@ export default function BannerRotating() {
               </Titles>
               <Texts className="text-white" size={"p5"}>
                 {equipment.laborType === "operator"
+                  ? "Operator"
+                  : equipment.laborType === "equipmentOperator"
                   ? "Equipment Operator"
                   : "Manual Labor"}
               </Texts>

@@ -6,7 +6,7 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { getTranslations } from "next-intl/server";
-import Content from "./content";
+import TruckingAssistant from "./TruckingAssistant";
 
 export default async function Inbox() {
   const session = await auth();
@@ -15,19 +15,17 @@ export default async function Inbox() {
 
   return (
     <Bases>
-      <Contents height={"page"}>
-        <Grids rows={"10"} gap={"5"}>
-          <Holds background={"white"} className="row-span-2 h-full">
-            <Contents width={"section"}>
-              <TitleBoxes
-                title={t("TruckingAssistant")}
-                titleImg="/trucking.svg"
-                titleImgAlt="Truck"
-              />
-            </Contents>
+      <Contents>
+        <Grids rows={"7"} gap={"5"}>
+          <Holds background={"white"} className="row-span-1 h-full">
+            <TitleBoxes
+              title={t("TruckingAssistant")}
+              titleImg="/trucking.svg"
+              titleImgAlt="Truck"
+            />
           </Holds>
-          <Holds className="row-span-8 h-full">
-            <Content />
+          <Holds className="row-span-6 h-full">
+            <TruckingAssistant />
           </Holds>
         </Grids>
       </Contents>

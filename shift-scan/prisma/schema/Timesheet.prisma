@@ -42,8 +42,8 @@ model MaintenanceLog {
     endTime       DateTime?
     comment       String?
 
-    user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-    timeSheet   TimeSheet?   @relation(fields: [timeSheetId], references: [id])
+    user        User         @relation(fields: [userId], references: [id])
+    timeSheet   TimeSheet?   @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
     maintenance Maintenance? @relation(fields: [maintenanceId], references: [id])
 }
 
@@ -77,8 +77,7 @@ model TascoLog {
     laborType    String? // Labor being done. (E.G. manual labor vs. equipment)
     materialType String? // depend on tasco type
     loadsHauled  Int?
-    loadType     String? // uncovered, screened, etc
-    loadWeight   Float?
+    loads        Loads[]
     comment      String?
     createdAt    DateTime   @default(now())
     completed    Boolean    @default(false)
@@ -86,7 +85,15 @@ model TascoLog {
 
     // connections to other tables
     equipment Equipment? @relation(fields: [equipmentId], references: [qrId])
-    timeSheet TimeSheet? @relation(fields: [timeSheetId], references: [id])
+    timeSheet TimeSheet? @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
+}
+
+model Loads {
+    id         String    @id @default(uuid())
+    tascoLogId String?
+    loadType   String? // uncovered, screened, etc
+    loadWeight Float?
+    TascoLog   TascoLog? @relation(fields: [tascoLogId], references: [id])
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
@@ -109,7 +116,7 @@ model TruckingLog {
     EquipmentHauled EquipmentHauled[]
 
     equipment Equipment? @relation(fields: [equipmentId], references: [qrId])
-    timeSheet TimeSheet? @relation(fields: [timeSheetId], references: [id])
+    timeSheet TimeSheet? @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
@@ -128,12 +135,14 @@ model StateMileage {
 
 //--------------------------------------------------------------------------------------------------------------------------------
 model Material {
-    id                 String   @id @default(uuid())
+    id                 String    @id @default(uuid())
     LocationOfMaterial String? //company name or location of material
     truckingLogId      String // connection to log
     name               String //type of material
     quantity           Int? //number of loads
-    createdAt          DateTime @default(now())
+    loadType           LoadType? //covered, screened, or none
+    LoadWeight         Float? // weight of material
+    createdAt          DateTime  @default(now())
 
     truckingLog TruckingLog? @relation(fields: [truckingLogId], references: [id])
 }

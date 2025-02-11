@@ -59,3 +59,8 @@ enum Priority {
   HIGH
   URGENT
 }
+
+enum LoadType {
+  UNSCREENED
+  SCREENED
+}
