@@ -15,6 +15,8 @@ export default function MechanicPriority() {
     "mechanic",
     "mechanic",
     "mechanic",
+    "mechanic",
+    "mechanic",
   ];
 
   // Ensure there are always at least 7 items
@@ -46,10 +48,10 @@ export default function MechanicPriority() {
   }
 
   return (
-    <Holds className="no-scrollbar overflow-y-auto">
-      <Contents width={"section"} className="">
+    <Holds className="no-scrollbar overflow-y-auto ">
+      <Contents width={"section"} className="py-5">
         {projects.map((project, index) => (
-          <Holds key={index} className="h-full relative pt-4 pb-3">
+          <Holds key={index} className="h-full relative py-3">
             {project === "mechanic" && (
               <Holds
                 background={"green"}

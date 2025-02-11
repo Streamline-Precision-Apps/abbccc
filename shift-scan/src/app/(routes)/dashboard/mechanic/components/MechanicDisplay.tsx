@@ -9,7 +9,7 @@ import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import MechanicSelectList from "./MechanicSelectList";
 
 export default function MechanicDisplay() {
-  const [isManager, setIsManager] = useState(true);
+  const [isManager, setIsManager] = useState(false);
   const [activeTab, setActiveTab] = useState(1);
   const t = useTranslations("Mechanic");
 
@@ -28,7 +28,7 @@ export default function MechanicDisplay() {
               type="row"
             />
           </Holds>
-          <Holds className="row-span-7 h-full">
+          <Holds background={"white"} className="row-span-7 h-full">
             <MechanicPriority />
           </Holds>
         </Grids>
