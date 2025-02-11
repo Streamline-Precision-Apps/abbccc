@@ -25,6 +25,9 @@ CREATE TYPE "WorkType" AS ENUM ('MECHANIC', 'TRUCK_DRIVER', 'LABOR', 'TASCO');
 -- CreateEnum
 CREATE TYPE "Priority" AS ENUM ('LOW', 'MEDIUM', 'HIGH', 'URGENT');
 
+-- CreateEnum
+CREATE TYPE "LoadType" AS ENUM ('UNSCREENED', 'SCREENED');
+
 -- CreateTable
 CREATE TABLE "CostCode" (
     "id" TEXT NOT NULL,
@@ -250,13 +253,21 @@ CREATE TABLE "TascoLog" (
     "laborType" TEXT,
     "materialType" TEXT,
     "loadsHauled" INTEGER,
-    "loadType" TEXT,
-    "loadWeight" DOUBLE PRECISION,
     "comment" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "completed" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "TascoLog_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Loads" (
+    "id" TEXT NOT NULL,
+    "tascoLogId" TEXT,
+    "loadType" TEXT,
+    "loadWeight" DOUBLE PRECISION,
+
+    CONSTRAINT "Loads_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -293,6 +304,8 @@ CREATE TABLE "Material" (
     "truckingLogId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "quantity" INTEGER,
+    "loadType" "LoadType",
+    "LoadWeight" DOUBLE PRECISION,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Material_pkey" PRIMARY KEY ("id")
@@ -495,10 +508,10 @@ ALTER TABLE "TimeSheet" ADD CONSTRAINT "TimeSheet_jobsiteId_fkey" FOREIGN KEY ("
 ALTER TABLE "TimeSheet" ADD CONSTRAINT "TimeSheet_costcode_fkey" FOREIGN KEY ("costcode") REFERENCES "CostCode"("name") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "MaintenanceLog" ADD CONSTRAINT "MaintenanceLog_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "MaintenanceLog" ADD CONSTRAINT "MaintenanceLog_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "MaintenanceLog" ADD CONSTRAINT "MaintenanceLog_timeSheetId_fkey" FOREIGN KEY ("timeSheetId") REFERENCES "TimeSheet"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "MaintenanceLog" ADD CONSTRAINT "MaintenanceLog_timeSheetId_fkey" FOREIGN KEY ("timeSheetId") REFERENCES "TimeSheet"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "MaintenanceLog" ADD CONSTRAINT "MaintenanceLog_maintenanceId_fkey" FOREIGN KEY ("maintenanceId") REFERENCES "Maintenance"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -510,13 +523,16 @@ ALTER TABLE "Maintenance" ADD CONSTRAINT "Maintenance_equipmentId_fkey" FOREIGN 
 ALTER TABLE "TascoLog" ADD CONSTRAINT "TascoLog_equipmentId_fkey" FOREIGN KEY ("equipmentId") REFERENCES "Equipment"("qrId") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "TascoLog" ADD CONSTRAINT "TascoLog_timeSheetId_fkey" FOREIGN KEY ("timeSheetId") REFERENCES "TimeSheet"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "TascoLog" ADD CONSTRAINT "TascoLog_timeSheetId_fkey" FOREIGN KEY ("timeSheetId") REFERENCES "TimeSheet"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Loads" ADD CONSTRAINT "Loads_tascoLogId_fkey" FOREIGN KEY ("tascoLogId") REFERENCES "TascoLog"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "TruckingLog" ADD CONSTRAINT "TruckingLog_equipmentId_fkey" FOREIGN KEY ("equipmentId") REFERENCES "Equipment"("qrId") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "TruckingLog" ADD CONSTRAINT "TruckingLog_timeSheetId_fkey" FOREIGN KEY ("timeSheetId") REFERENCES "TimeSheet"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "TruckingLog" ADD CONSTRAINT "TruckingLog_timeSheetId_fkey" FOREIGN KEY ("timeSheetId") REFERENCES "TimeSheet"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "StateMileage" ADD CONSTRAINT "StateMileage_truckingLogId_fkey" FOREIGN KEY ("truckingLogId") REFERENCES "TruckingLog"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
