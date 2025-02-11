@@ -289,22 +289,20 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         {...props}
       >
         <Grids cols={"4"} rows={"1"} className="w-full h-full p-3 ">
-          <Holds className="col-start-1 col-end-2 row-start-1 row-end-2 flex items-center justify-center">
-            <Buttons
-              href={href}
-              background={"none"}
-              position={"left"}
-              className="justify-center"
-            >
-              <Images
-                titleImg="/turnBack.svg"
-                titleImgAlt={titleImgAlt}
-                className="max-w-8 h-auto object-contain"
-              />
-            </Buttons>
-          </Holds>
+          <Buttons
+            href={href}
+            background={"none"}
+            position={"left"}
+            className="justify-center col-start-1 col-end-2 row-start-1 row-end-2"
+          >
+            <Images
+              titleImg="/turnBack.svg"
+              titleImgAlt={titleImgAlt}
+              className="max-w-8 h-auto object-contain"
+            />
+          </Buttons>
 
-          <Holds className="col-start-1 col-end-5 row-start-1 row-end-2 flex items-center justify-center">
+          <Holds className="col-start-2 col-end-4 row-start-1 row-end-2 flex items-center justify-center">
             <Titles size={"h1"}>{title}</Titles>
           </Holds>
         </Grids>
