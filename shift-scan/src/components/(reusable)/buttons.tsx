@@ -18,6 +18,7 @@ const ButtonVariants = cva(
         red: "bg-app-red",
         orange: "bg-app-orange",
         white: "bg-white",
+        lightGray: "bg-[#C5C5C5]",
         grey: "bg-slate-400",
         darkGrey: "bg-zinc-500",
         none: "bg-none border-0 shadow-none",

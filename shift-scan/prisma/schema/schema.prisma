@@ -54,10 +54,11 @@ enum WorkType {
 }
 
 enum Priority {
+  PENDING
   LOW
   MEDIUM
   HIGH
-  URGENT
+  TODAY
 }
 
 enum LoadType {
