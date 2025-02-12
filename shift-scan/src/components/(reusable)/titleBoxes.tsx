@@ -45,6 +45,8 @@ interface TitleBoxProps
   type?: string;
   title: string;
   title2?: string;
+  subtitle?: string;
+  header?: string;
   titleImg: string;
   titleImgAlt: string;
   href?: string;
@@ -61,6 +63,8 @@ const TitleBoxes: FC<TitleBoxProps> = ({
   type,
   title,
   title2,
+  subtitle,
+  header,
   titleImg,
   titleImgAlt,
   href = "back",
@@ -221,6 +225,41 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         {...props}
       >
         <Titles size={"h1"}>{title}</Titles>
+        {props.children}
+      </div>
+    );
+  }
+
+  if (type === "titleAndSubtitleAndHeader") {
+    return (
+      <div
+        className={cn(TitleBoxVariants({ variant, size, version, className }))}
+        {...props}
+      >
+        <Grids cols={"4"} rows={"3"} gap={"2"}>
+          {/* Back Button */}
+          <Holds className="col-span-1 row-span-3 flex items-center">
+            <Buttons
+              href={href}
+              background={"none"}
+              position={"left"}
+              size={"50"}
+            >
+              <Images titleImg="/turnBack.svg" titleImgAlt={titleImgAlt} />
+            </Buttons>
+          </Holds>
+
+          {/* Main Title and Subtitle */}
+          <Holds className="col-span-2 row-span-3 flex flex-col justify-center">
+            <Titles size={"h1"}>{title}</Titles>
+            <Titles size={"h4"}>{subtitle}</Titles>
+          </Holds>
+
+          {/* Header (Top Right) */}
+          <Holds className="col-span-1 row-span-1 flex justify-end items-end">
+            <Titles size={"h4"}>{header}</Titles>
+          </Holds>
+        </Grids>
         {props.children}
       </div>
     );

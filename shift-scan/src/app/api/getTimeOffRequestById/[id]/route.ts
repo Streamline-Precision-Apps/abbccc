@@ -29,7 +29,14 @@ export async function GET(
         comment: true,
         status: true,
         managerComment: true,
+        createdAt: true,
         decidedBy: true,
+        employee: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+          },
         },
       },
     });
