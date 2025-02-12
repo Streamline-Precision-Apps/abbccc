@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { Holds } from "../(reusable)/holds";
 import MultipleRoles from "./multipleRoles";
 import QRStep from "./qr-handler";
@@ -78,6 +78,10 @@ export default function NewClockProcess({
   }, []);
 
   useEffect(() => {
+    console.log("step:", step);
+  }, [step]);
+
+  useEffect(() => {
     if (!session) {
       console.log("Session not available yet");
       return;
@@ -125,7 +129,7 @@ export default function NewClockProcess({
   };
 
   const handleAlternativePathEQ = () => {
-    setStep(1);
+    setStep(2);
   };
 
   // Lets the user return to the prev jobsite
