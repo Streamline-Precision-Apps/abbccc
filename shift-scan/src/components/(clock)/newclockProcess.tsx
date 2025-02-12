@@ -9,7 +9,7 @@ import VerificationStep from "./verification-step";
 import TruckClockInForm from "./truckClockInForm";
 import VerificationEQStep from "./verification-eq-step";
 import { Titles } from "../(reusable)/titles";
-import RedirectAfterDelay from "../redirectAfterDelay";
+
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { setJobSite, setWorkRole } from "@/actions/cookieActions";
@@ -235,7 +235,7 @@ export default function NewClockProcess({
               {t("Confirmation-eq-message-1")}
             </Titles>
             <Titles size={"h4"}>{t("Confirmation-eq-message-2")}</Titles>
-            <RedirectAfterDelay delay={5000} to="/dashboard" />{" "}
+
             {/* In Order for bug to be overcome, the refresh must occur otherwise the unmounted qr code wont work*
                 best solution for now is this because at least it does it behind the modal*/}
           </>
@@ -523,18 +523,6 @@ step 4 : confirmation page and redirect to dashboard with authorization
           handlePreviousStep={handlePrevStep}
         />
       )}
-      {/* Confirmation Page
-      {step === 6 && clockInRole === "general" && (
-        <ConfirmationPage
-          option={option}
-          savedCostCode={savedCostCode}
-          scanResult={scanResult?.data}
-          truckScanData={truckScanData}
-          type={type}
-          startingMileage={startingMileage}
-          locale={locale}
-        />
-      )} */}
     </>
   );
 }

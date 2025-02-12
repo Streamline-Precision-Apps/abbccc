@@ -2,6 +2,8 @@
 import React, { ChangeEvent, useEffect } from "react";
 import { Images } from "../(reusable)/images";
 import { Holds } from "../(reusable)/holds";
+import { Buttons } from "../(reusable)/buttons";
+import { Texts } from "../(reusable)/texts";
 
 // defines the searchbar type for typescript
 type SearchBarProps = {
@@ -12,6 +14,7 @@ type SearchBarProps = {
   setSearchTerm?: React.Dispatch<React.SetStateAction<string>>;
   setSelectedTerm?: React.Dispatch<React.SetStateAction<boolean>>;
   clearSelection: () => void;
+  selectTerm: string;
 };
 
 // defines the searchbar component and what the input should look like
@@ -22,6 +25,7 @@ export default function SearchBar({
   selected,
   setSelectedTerm,
   clearSelection,
+  selectTerm,
 }: SearchBarProps) {
   const previousTermLength = searchTerm.length;
 
@@ -36,31 +40,37 @@ export default function SearchBar({
       position={"row"}
       className="px-4 border-[3px] border-black rounded-[10px] h-full"
     >
-      <Holds size={"10"}>
-        <Images
-          titleImg="/magnifyingGlass.svg"
-          titleImgAlt="search"
-          size={"full"}
-        />
-      </Holds>
-      <Holds size={"90"} className="rounded-[10px] pl-3">
+      <Holds className="rounded-[10px]">
         {selected ? (
           <Holds position={"row"} className="h-full w-full space-x-2">
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={onSearchChange}
-              className="w-full h-full py-3 bg-app-blue text-center text-bold border-2 border-black rounded-[10px] "
-            />
+            <Buttons
+              onClick={clearSelection}
+              className=" w-full h-full bg-app-green text-center text-bold border-[3px] border-black rounded-[10px] shadow-none py-2 "
+            >
+              <Texts size={"p2"}>
+                {selectTerm.split("-")[1] || selectTerm}
+              </Texts>
+            </Buttons>
           </Holds>
         ) : (
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={onSearchChange}
-            placeholder={placeholder}
-            className="w-full h-full placeholder-gray-500 placeholder:text-xl focus:outline-none rounded-[10px]"
-          />
+          <Holds position={"row"} className="h-full w-full">
+            <Holds size={"10"}>
+              <Images
+                titleImg="/magnifyingGlass.svg"
+                titleImgAlt="search"
+                size={"full"}
+              />
+            </Holds>
+            <Holds size={"90"} className="pl-4 text-xl">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={onSearchChange}
+                placeholder={placeholder}
+                className="w-full h-full placeholder-gray-500 placeholder:text-xl focus:outline-none rounded-[10px]"
+              />
+            </Holds>
+          </Holds>
         )}
       </Holds>
     </Holds>

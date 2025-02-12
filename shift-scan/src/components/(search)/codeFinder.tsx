@@ -38,16 +38,17 @@ type Option = {
 
 type Props = {
   datatype: string;
-  savedJS: string;
   setSelectedOpt: React.Dispatch<React.SetStateAction<boolean>>;
+  setScannedId: React.Dispatch<React.SetStateAction<string | null>> | undefined;
 };
 
 export default function CodeFinder({
   datatype,
-  savedJS,
   setSelectedOpt,
+  setScannedId,
 }: Props) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectTerm, setSelectTerm] = useState("");
   const [filteredOptions, setFilteredOptions] = useState<Option[]>([]);
   const [selectedOption, setSelectedOption] = useState<Option | null>(null);
   const [selectedTerm, setSelectedTerm] = useState(false);
@@ -73,19 +74,6 @@ export default function CodeFinder({
     () => CostCodeOptions(datatype, searchTerm),
     [datatype, searchTerm]
   );
-
-  // Set default selected option if `storedCode` is found
-  useEffect(() => {
-    if (datatype === "jobsite") {
-      if (savedJS) {
-        const selectedJobCode = jobsiteResults.find((j) => j.qrId === savedJS);
-        if (selectedJobCode)
-          setSelectedOption({ code: savedJS, label: savedJS });
-      }
-    } else {
-      return;
-    }
-  }, [costcodeResults, datatype, jobsiteResults, savedJS, setSelectedOpt]);
 
   useEffect(() => {
     const filtered = options;
@@ -146,7 +134,11 @@ export default function CodeFinder({
     }
 
     if (datatype === "equipment") {
-      setscanEQResult({ data: option.code });
+      if (setScannedId) {
+        setScannedId(option.code);
+      } else {
+        setscanEQResult({ data: option.code });
+      }
 
       const selectedEquipment = equipmentResults.find(
         (e) => e.qrId === option.code
@@ -154,7 +146,7 @@ export default function CodeFinder({
       if (selectedEquipment) addRecentlyUsedEquipment(selectedEquipment);
     }
 
-    setSearchTerm(option.label); // Set the search term to the selected option label
+    setSelectTerm(option.label); // Set the search term to the selected option label
   };
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -164,6 +156,7 @@ export default function CodeFinder({
   const clearSelection = () => {
     setSelectedOption(null);
     setSearchTerm("");
+    setSelectTerm("");
     setSelectedTerm(false);
   };
 
@@ -174,6 +167,7 @@ export default function CodeFinder({
           selected={selectedTerm}
           placeholder={t(`search-${datatype}`)}
           searchTerm={searchTerm}
+          selectTerm={selectTerm}
           onSearchChange={handleSearchChange}
           setSearchTerm={setSearchTerm}
           setSelectedTerm={setSelectedTerm}

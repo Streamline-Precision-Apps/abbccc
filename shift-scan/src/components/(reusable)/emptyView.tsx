@@ -4,7 +4,7 @@ import { Images } from "@/components/(reusable)/images";
 export default function EmptyView({
   Children,
   TopChild,
-  color = "bg-[#CACACA]",
+  color = "bg-app-gray",
 }: {
   Children?: React.ReactNode;
   TopChild?: React.ReactNode;

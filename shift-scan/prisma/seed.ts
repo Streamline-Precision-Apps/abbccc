@@ -10,7 +10,7 @@ import {
   initialCostCodes,
   initialCCTags,
 } from "@/data/dataValues";
-import { hash } from "bcryptjs";
+// import { hash } from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function main() {

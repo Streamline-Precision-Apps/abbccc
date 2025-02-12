@@ -21,7 +21,7 @@ export async function GET(
       where: {
         id,
       },
-      include: {
+      select: {
         name: true,
         requestedStartDate: true,
         requestedEndDate: true,

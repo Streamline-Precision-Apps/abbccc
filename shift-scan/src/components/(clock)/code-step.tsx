@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import CodeFinder from "@/components/(search)/codeFinder";
 import StepButtons from "./step-buttons";
 import { useTranslations } from "next-intl";
@@ -7,9 +7,8 @@ import { Titles } from "../(reusable)/titles";
 import { Grids } from "../(reusable)/grids";
 import { Holds } from "../(reusable)/holds";
 import { Images } from "../(reusable)/images";
-import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
-import { Contents } from "../(reusable)/contents";
+import { TitleBoxes } from "../(reusable)/titleBoxes";
 
 type CodeStepProps = {
   datatype: string;
@@ -18,6 +17,7 @@ type CodeStepProps = {
   handlePrevStep: () => void;
   handleScannedPrevStep: () => void;
   scanned: boolean;
+  setScannedId?: Dispatch<SetStateAction<string | null>>;
 };
 
 export default function CodeStep({
@@ -27,9 +27,9 @@ export default function CodeStep({
   handleScannedPrevStep,
   backArrow = true,
   scanned,
+  setScannedId = undefined,
 }: CodeStepProps) {
   const t = useTranslations("Clock");
-  const { scanResult } = useScanData();
   const [selectedOpt, setSelectedOpt] = useState<boolean>(false);
 
   const handleBack = () => {
@@ -40,29 +40,21 @@ export default function CodeStep({
 
   return (
     <Grids rows={"7"} gap={"5"} className="h-full w-full">
-      <Holds className="h-full w-full row-start-1 row-end-2">
-        <Grids rows={"2"} cols={"5"} gap={"3"} className=" h-full w-full">
-          {backArrow && (
-            <Holds
-              className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center"
-              onClick={handleBack}
-            >
-              <Images
-                titleImg="/turnBack.svg"
-                titleImgAlt="back"
-                position={"left"}
-              />
-            </Holds>
-          )}
-          <Holds className="row-start-2 row-end-3 col-span-5 h-full w-full justify-center">
-            <Titles size={"h1"}>{t(`Title-${datatype}`)}</Titles>
-          </Holds>
-        </Grids>
-      </Holds>
-      <Holds className="row-start-2 row-end-7 h-full w-full">
+      {backArrow && (
+        <Holds className="h-full  row-start-1 row-end-2">
+          <TitleBoxes
+            title={t(`Title-${datatype}`)}
+            titleImg="/mechanic.svg"
+            titleImgAlt="Mechanic"
+            onClick={handleBack}
+            type="noIcon-NoHref"
+          />
+        </Holds>
+      )}
+      <Holds className="row-start-2 row-end-7 h-full w-full pt-5">
         <CodeFinder
+          setScannedId={setScannedId}
           datatype={datatype}
-          savedJS={scanResult?.data || ""}
           setSelectedOpt={setSelectedOpt}
         />
       </Holds>

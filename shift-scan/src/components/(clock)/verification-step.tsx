@@ -22,6 +22,7 @@ import { useCommentData } from "@/app/context/CommentContext";
 import { setCurrentPageView, setWorkRole } from "@/actions/cookieActions";
 import { Titles } from "../(reusable)/titles";
 import { useRouter } from "next/navigation";
+import Spinner from "../(animations)/spinner";
 
 type VerifyProcessProps = {
   type: string;
@@ -44,104 +45,108 @@ export default function VerificationStep({
   const { savedCostCode } = useSavedCostCode();
   const { setTimeSheetData } = useTimeSheetData();
   const [date] = useState(new Date());
+  const [loading, setLoading] = useState<boolean>(false);
   const { data: session } = useSession();
   const { savedCommentData, setCommentData } = useCommentData();
   const router = useRouter();
-  if (!session) return null; // Conditional rendering for session
 
+  if (!session) return null; // Conditional rendering for session
   const { id } = session.user;
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const fetchRecentTimeSheetId = async (): Promise<string | null> => {
     try {
-      e.preventDefault();
+      const res = await fetch("/api/getRecentTimecard");
+      const data = await res.json();
+      return data?.id || null;
+    } catch (error) {
+      console.error("Error fetching recent timesheet ID:", error);
+      return null;
+    }
+  };
 
-      if (!id) {
-        throw new Error("User id does not exist");
-      }
+  const updatePreviousTimeSheet = async (): Promise<boolean> => {
+    try {
+      const timeSheetId = await fetchRecentTimeSheetId();
+      if (!timeSheetId) throw new Error("No valid TimeSheet ID found.");
 
-      await setWorkRole(role);
+      const formData = new FormData();
+      formData.append("id", timeSheetId);
+      formData.append("endTime", new Date().toISOString());
+      formData.append(
+        "timeSheetComments",
+        savedCommentData?.id.toString() || ""
+      );
 
-      if (type === "switchJobs") {
-        try {
-          console.log("Initiating switchJobs");
-          let timeSheetId = null;
-          // retrieving cookie to get timeSheetId or use recent one from api call
+      await updateTimeSheetBySwitch(formData);
+      setCommentData(null);
+      localStorage.removeItem("savedCommentData");
+      return true;
+    } catch (error) {
+      console.error("Failed to update previous timesheet:", error);
+      return false;
+    }
+  };
 
-          const res = await fetch("/api/getRecentTimecard");
-          const tsId = await res.json();
-          timeSheetId = tsId.id;
+  const createNewTimeSheet = async (): Promise<void> => {
+    const formData = new FormData();
+    formData.append("submitDate", new Date().toISOString());
+    formData.append("userId", id?.toString() || "");
+    formData.append("date", new Date().toISOString());
+    formData.append("jobsiteId", scanResult?.data || "");
+    formData.append("costcode", savedCostCode?.toString() || "");
+    formData.append("startTime", new Date().toISOString());
+    formData.append("workType", role);
+    try {
+      const response = await CreateTimeSheet(formData);
+      const result = { id: response.id.toString() };
 
-          if (!timeSheetId) {
-            throw new Error(
-              "No valid TimeSheet ID was found. Please try again later."
-            );
-          }
-          const formData2 = new FormData();
-          formData2.append("id", timeSheetId?.toString() || "");
-          formData2.append("endTime", new Date().toISOString());
-          formData2.append(
-            "timesheetComments",
-            savedCommentData?.id.toString() || ""
-          );
-
-          const responseOldSheet = await updateTimeSheetBySwitch(formData2);
-          if (responseOldSheet) {
-            // removing the old sheet comment so it doesn't show up on the new sheet
-            setCommentData(null);
-            localStorage.removeItem("savedCommentData");
-          }
-
-          const formData = new FormData();
-
-          formData.append("submitDate", new Date().toISOString());
-          formData.append("userId", id?.toString() || "");
-          formData.append("date", new Date().toISOString());
-          formData.append("jobsiteId", scanResult?.data || "");
-          formData.append("costcode", savedCostCode?.toString() || "");
-          formData.append("startTime", new Date().toISOString());
-          formData.append("workType", role);
-
-          const response = await CreateTimeSheet(formData);
-          const result = { id: response.id.toString() };
-          setTimeSheetData(result);
-          setCurrentPageView("dashboard");
-          setWorkRole(role);
-          console.log("finishing switchJobs");
-          setTimeout(() => {
-            router.push("/dashboard");
-          }, 100);
-        } catch (error) {
-          console.error(error);
-        }
-      } else {
-        console.log("Initiating Normal");
-        const formData = new FormData();
-        formData.append("submitDate", new Date().toISOString());
-        formData.append("userId", id.toString());
-        formData.append("date", new Date().toISOString());
-        formData.append("jobsiteId", scanResult?.data || "");
-        formData.append("costcode", savedCostCode?.toString() || "");
-        formData.append("startTime", new Date().toISOString());
-        formData.append("workType", role);
-
-        const response = await CreateTimeSheet(formData);
-        const result = { id: response.id.toString() };
-        setTimeSheetData(result);
-        setCurrentPageView("dashboard");
-        setWorkRole(role);
-        console.log("finishing Normal clock out");
-        setTimeout(() => {
-          router.push("/dashboard");
-        }, 100);
-      }
+      await Promise.all([
+        setWorkRole(role),
+        setTimeSheetData(result),
+        setCurrentPageView("dashboard"),
+      ]).then(() => router.push("/dashboard"));
     } catch (error) {
       console.error(error);
     }
   };
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!id) {
+      console.error("User ID does not exist");
+      return;
+    }
+    setLoading(true);
+    try {
+      if (type === "switchJobs") {
+        const isUpdated = await updatePreviousTimeSheet();
+        if (isUpdated) {
+          await createNewTimeSheet();
+        }
+      } else {
+        await createNewTimeSheet();
+      }
+    } catch (error) {
+      console.error("Error in handleSubmit:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <Holds className="h-full w-full">
-      <Holds background={"white"} className="h-full w-full py-5">
+    <Holds className="h-full w-full relative">
+      {loading && (
+        <Holds className="h-full absolute justify-center items-center">
+          <Spinner size={40} />
+        </Holds>
+      )}
+      <Holds
+        background={"white"}
+        className={
+          loading ? `h-full w-full py-5 opacity-[0.50]` : `h-full w-full py-5`
+        }
+      >
         <Contents width={"section"}>
           <Grids rows={"7"} gap={"5"} className="h-full w-full">
             <Holds className="h-full w-full row-start-1 row-end-2">
@@ -156,26 +161,23 @@ export default function VerificationStep({
                     position={"left"}
                   />
                 </Holds>
-                <Holds className="row-start-2 row-end-3 col-span-5 h-full w-full justify-center">
-                  <Grids
-                    cols={"5"}
-                    rows={"1"}
-                    gap={"5"}
-                    className="h-full w-full relative"
-                  >
-                    <Holds className="col-start-1 col-end-4 h-full w-full justify-center">
-                      <Titles size={"h1"} position={"right"}>
-                        {t("VerifyJobSite")}
-                      </Titles>
-                    </Holds>
-                    <Holds className="col-start-4 col-end-5 h-full w-full justify-center absolute">
-                      <Images
-                        titleImg="/clock-in.svg"
-                        titleImgAlt="Verify"
-                        size={"full"}
-                      />
-                    </Holds>
-                  </Grids>
+                <Holds
+                  position={"row"}
+                  className="row-start-2 row-end-3 col-start-1 col-end-6 "
+                >
+                  <Holds size={"50"}>
+                    <Titles size={"h1"} position={"right"}>
+                      {t("VerifyJobSite")}
+                    </Titles>
+                  </Holds>
+
+                  <Holds size={"50"}>
+                    <Images
+                      titleImg="/clock-in.svg"
+                      titleImgAlt="Verify"
+                      size={"50"}
+                    />
+                  </Holds>
                 </Holds>
               </Grids>
             </Holds>
@@ -184,26 +186,6 @@ export default function VerificationStep({
               className="h-full w-full row-start-2 row-end-8"
             >
               <Grids cols={"5"} rows={"10"} className="h-full w-full">
-                <Holds className="row-start-2 row-end-3 col-start-5 col-end-6 w-full h-full">
-                  <Holds className="h-full w-full pr-1">
-                    <Buttons
-                      type="submit"
-                      className="w-full h-full"
-                      background={"none"}
-                    >
-                      <Holds
-                        background={"lightBlue"}
-                        className="w-full h-full items-center justify-center "
-                      >
-                        <Images
-                          titleImg={"/downArrow.svg"}
-                          titleImgAlt={"downArrow"}
-                          className="p-1 w-10 h-10"
-                        />
-                      </Holds>
-                    </Buttons>
-                  </Holds>
-                </Holds>
                 <Holds className="row-start-3 row-end-8 col-start-1 col-end-6 h-full pt-1">
                   <Holds
                     background={"lightBlue"}
