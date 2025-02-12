@@ -51,6 +51,8 @@ model Maintenance {
     id                 String    @id @default(uuid())
     equipmentId        String
     equipmentIssue     String?
+    additionalInfo     String? // any additional info on manager side
+    location           String?
     problemDiagnosis   String?
     solution           String?
     totalHoursLaboured Float? // total hours of employee that worked on the job

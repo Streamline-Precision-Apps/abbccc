@@ -1,6 +1,6 @@
 "use client";
+
 import CodeStep from "@/components/(clock)/code-step";
-import QRStep from "@/components/(clock)/qr-handler";
 import SimpleQr from "@/components/(clock)/simple-qr";
 import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
@@ -8,18 +8,48 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
+import { Labels } from "@/components/(reusable)/labels";
+import { Selects } from "@/components/(reusable)/selects";
+import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
-import { set } from "date-fns";
+import { Priority } from "@prisma/client";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+
+type Equipment = {
+  id: string;
+  name: string;
+  qrId: string;
+  lastInspection: Date | null;
+  lastRepair: Date | null;
+  mileage: number | null;
+};
 
 export default function CreateMechanicProjectProcess() {
   const [scannedId, setScannedId] = useState<string | null>(null);
   const t = useTranslations("Clock");
   const [step, setStep] = useState(1);
   const [scanned, setScanned] = useState(false);
+  const [equipment, setEquipment] = useState<Equipment | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const [equipmentIssue, setEquipmentIssue] = useState<string>("");
+  const [additionalInfo, setAdditionalInfo] = useState<string>("");
+  const [location, setLocation] = useState<string>("");
+  const [status, setStatus] = useState<
+    "TODAY" | "HIGH" | "MEDIUM" | "LOW" | "PENDING" | ""
+  >("");
+
+  const PriorityOptions = [
+    { label: "Select Priority", value: "" },
+    { label: "High Priority", value: "HIGH" },
+    { label: "Medium Priority", value: "MEDIUM" },
+    { label: "Low Priority", value: "LOW" },
+    { label: "TODAY", value: "TODAY" },
+  ];
+
   const nextStep = () => {
     setStep((prevStep) => prevStep + 1);
   };
@@ -27,81 +57,120 @@ export default function CreateMechanicProjectProcess() {
   const prevStep = () => {
     setStep((prevStep) => prevStep - 1);
   };
+
+  // This effect will fetch the equipment data when a scannedId is available,
+  // and only then will it move the process to step 4.
   useEffect(() => {
     if (scannedId) {
-      setScanned(true);
-      nextStep();
-      nextStep();
+      const fetchEquipment = async () => {
+        setLoading(true);
+        try {
+          const response = await fetch(`/api/getEquipmentbyQrId/${scannedId}`);
+          if (response.ok) {
+            const data = await response.json();
+            setEquipment(data);
+            if (scanned) {
+              setStep(4); // Proceed to step 4 only after successfully fetching data.
+            }
+          } else {
+            console.error("Error fetching equipment:", response.statusText);
+          }
+        } catch (error) {
+          console.error("Error:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchEquipment();
     }
-  }, [scannedId]);
+  }, [scanned, scannedId]);
+
+  const handleSubmit = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("equipmentId", equipment?.id ?? "");
+      formData.append("equipmentIssue", equipmentIssue);
+      formData.append("additionalInfo", additionalInfo);
+      formData.append("location", location);
+      formData.append("status", status);
+      formData.append("priority", status);
+      const response = await CreateMechanicProject(formData);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
   return (
     <>
       <Bases>
         <Contents>
-          {/*Select Scanning Option */}
+          {/* Step 1: Select Scanning Option */}
           {step === 1 && (
-            <Holds background={"white"} className="w-full h-full py-4">
-              <Grids rows={"7"} gap={"5"} className="w-full h-full ">
+            <Holds background="white" className="w-full h-full py-4">
+              <Grids rows="7" gap="5" className="w-full h-full">
                 <Holds className="row-start-1 row-end-2 h-full">
                   <TitleBoxes
                     title="Select Equipment"
                     titleImg="/mechanic.svg"
-                    titleImgAlt={"Mechanic"}
+                    titleImgAlt="Mechanic"
                     type="noIcon"
                   />
                 </Holds>
                 <Holds className="row-start-3 row-end-5">
-                  <Images titleImg="/camera.svg" titleImgAlt={""} size={"40"} />
+                  <Images titleImg="/camera.svg" titleImgAlt="" size="40" />
                 </Holds>
                 <Holds className="row-start-6 row-end-7 h-full">
                   <Contents>
-                    <Buttons background={"lightBlue"} onClick={nextStep}>
-                      <Titles size={"h4"}>Scan Equipment</Titles>
+                    <Buttons background="lightBlue" onClick={nextStep}>
+                      <Titles size="h4">Scan Equipment</Titles>
                     </Buttons>
                   </Contents>
                 </Holds>
                 <Holds className="row-start-7 row-end-8 h-full">
                   <Contents>
                     <Buttons
-                      background={"lightBlue"}
+                      background="lightBlue"
                       onClick={() => {
                         nextStep();
                         nextStep();
                       }}
                     >
-                      <Titles size={"h4"}>Select Manually</Titles>
+                      <Titles size="h4">Select Manually</Titles>
                     </Buttons>
                   </Contents>
                 </Holds>
               </Grids>
             </Holds>
           )}
-          {/*Qr Scan Equipment option */}
+
+          {/* Step 2: QR Scan Equipment Option */}
           {step === 2 && (
             <Holds>
-              <Holds background={"white"} className="w-full h-full py-4">
-                <Grids rows={"7"} gap={"5"} className="w-full h-full ">
-                  <Holds>
+              <Holds background="white" className="w-full h-full py-4">
+                <Grids rows="7" gap="5" className="w-full h-full">
+                  <Holds className="row-start-1 row-end-2 h-full">
                     <TitleBoxes
                       title="Select Equipment"
                       titleImg="/mechanic.svg"
-                      titleImgAlt={"Mechanic"}
+                      titleImgAlt="Mechanic"
                       onClick={prevStep}
                       type="noIcon-NoHref"
                     />
                   </Holds>
-
-                  <Holds className="row-start-2 row-end-5 h-full ">
+                  <Holds className="row-start-2 row-end-5 h-full">
                     <Contents>
-                      <Holds className="h-full w-full row-start-2 row-end-6 justify-center border-[3px] p-3 border-black rounded-[10px] ">
-                        <SimpleQr setScannedId={setScannedId} />
+                      <Holds className="h-full w-full row-start-2 row-end-6 justify-center border-[3px] p-3 border-black rounded-[10px]">
+                        <SimpleQr
+                          setScannedId={setScannedId}
+                          setScanned={setScanned}
+                        />
                       </Holds>
                     </Contents>
                   </Holds>
                   <Holds>
-                    <Buttons background={"none"} onClick={() => setStep(3)}>
-                      <Texts size={"p4"}>{t("TroubleScanning")}</Texts>
+                    <Buttons background="none" onClick={() => setStep(3)}>
+                      <Texts size="p4">{t("TroubleScanning")}</Texts>
                     </Buttons>
                   </Holds>
                 </Grids>
@@ -109,14 +178,14 @@ export default function CreateMechanicProjectProcess() {
             </Holds>
           )}
 
-          {/*Manual Entry of Equipment */}
+          {/* Step 3: Manual Entry of Equipment */}
           {step === 3 && (
-            <Holds background={"white"} className="w-full h-full py-4">
+            <Holds background="white" className="w-full h-full py-4">
               <Contents>
                 <CodeStep
                   datatype="equipment" // using this to set the title of equipment
                   handlePrevStep={prevStep}
-                  handleNextStep={nextStep}
+                  handleNextStep={() => setStep(4)}
                   handleScannedPrevStep={() => setStep(1)}
                   scanned={scanned}
                   setScannedId={setScannedId}
@@ -125,9 +194,129 @@ export default function CreateMechanicProjectProcess() {
             </Holds>
           )}
 
-          {/*Creation of Project with problem, jobsite, status*/}
+          {/* Step 4: Creation of Project with problem, jobsite, status */}
           {step === 4 && (
-            <Holds>{scanned && <Texts size={"p3"}>{scannedId}</Texts>}</Holds>
+            <Holds background="white" className="w-full h-full py-4">
+              {loading ? (
+                <Holds className="flex items-center justify-center h-full">
+                  <Texts size="p4">Loading equipment...</Texts>
+                </Holds>
+              ) : (
+                <Grids rows="7" gap="5" className="w-full h-full">
+                  <Holds className="row-start-1 row-end-2">
+                    <TitleBoxes
+                      title={
+                        equipment ? equipment.name.slice(0, 18) + "..." : ""
+                      }
+                      titleImg=""
+                      titleImgAlt=""
+                      onClick={() => setStep(1)}
+                      type="noIcon-NoHref"
+                    />
+                  </Holds>
+                  <Holds className="row-start-2 row-end-6 h-full ">
+                    <Contents width={"section"} className="h-full">
+                      <Holds className="h-full">
+                        <Labels size="p4" htmlFor="equipmentIssue">
+                          Equipment Issue
+                        </Labels>
+                        <TextAreas
+                          name="equipmentIssue"
+                          value={equipmentIssue}
+                          onChange={(e) => setEquipmentIssue(e.target.value)}
+                          placeholder="Enter a problem description..."
+                          rows={2}
+                          style={{ resize: "none" }}
+                        />
+                      </Holds>
+                      <Holds className="h-full ">
+                        <Labels size="p4" htmlFor="additionalInfo">
+                          Additional Info
+                        </Labels>
+                        <TextAreas
+                          name="additionalInfo"
+                          value={additionalInfo}
+                          onChange={(e) => setAdditionalInfo(e.target.value)}
+                          placeholder="Enter a problem description..."
+                          style={{ resize: "none" }}
+                          className="h-full"
+                        />
+                      </Holds>
+                      <Holds className="h-full">
+                        <Labels size="p4" htmlFor="location">
+                          Location
+                        </Labels>
+                        <TextAreas
+                          name="jobsite"
+                          value={location}
+                          onChange={(e) => setLocation(e.target.value)}
+                          placeholder="Enter a location if applicable..."
+                          rows={2}
+                          style={{ resize: "none" }}
+                        />
+                      </Holds>
+                      <Holds className="h-full relative">
+                        <Labels size="p4" htmlFor="additionalInfo">
+                          Status
+                        </Labels>
+                        <Selects
+                          name="status"
+                          value={status}
+                          onChange={(e) =>
+                            setStatus(
+                              e.target.value as
+                                | ""
+                                | "TODAY"
+                                | "HIGH"
+                                | "MEDIUM"
+                                | "LOW"
+                            )
+                          }
+                        >
+                          {PriorityOptions.map((option) => (
+                            <option
+                              key={option.value}
+                              value={option.value}
+                              className="text-center"
+                            >
+                              {option.label}
+                            </option>
+                          ))}
+                        </Selects>
+                        <Holds className="w-full absolute top-10 right-[40%] ">
+                          <Images
+                            titleImg={
+                              status === "TODAY"
+                                ? "/todayPriority.svg"
+                                : status === "HIGH"
+                                ? "/highPriority.svg"
+                                : status === "MEDIUM"
+                                ? "/mediumPriority.svg"
+                                : status === "LOW"
+                                ? "/lowPriority.svg"
+                                : "/pending.svg"
+                            }
+                            className="w-7 h-7"
+                            titleImgAlt="status"
+                          />
+                        </Holds>
+                      </Holds>
+                    </Contents>
+                  </Holds>
+                  <Holds className="row-start-7 row-end-8 ">
+                    <Contents width={"section"}>
+                      <Buttons
+                        background={"green"}
+                        onClick={handleSubmit}
+                        className="py-4"
+                      >
+                        <Titles size={"h4"}>Create Project</Titles>
+                      </Buttons>
+                    </Contents>
+                  </Holds>
+                </Grids>
+              )}
+            </Holds>
           )}
         </Contents>
       </Bases>
