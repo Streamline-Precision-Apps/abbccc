@@ -28,6 +28,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useOperator } from "@/app/context/operatorContext";
+import Spinner from "../(animations)/spinner";
 
 type VerifyProcessProps = {
   handleNextStep?: () => void;
@@ -55,115 +56,109 @@ export default function TascoVerificationStep({
   const { setTimeSheetData } = useTimeSheetData();
   const { equipmentId } = useOperator();
   const [date] = useState(new Date());
+  const [loading, setLoading] = useState<boolean>(false);
   const { data: session } = useSession();
   const { savedCommentData, setCommentData } = useCommentData();
   const router = useRouter();
-  if (!session) return null; // Conditional rendering for session
 
+  if (!session) return null; // Conditional rendering for session
   const { id } = session.user;
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const fetchRecentTimeSheetId = async (): Promise<string | null> => {
     try {
-      e.preventDefault();
-      if (!id) {
-        throw new Error("User id does not exist");
-      }
+      const res = await fetch("/api/getRecentTimecard");
+      const data = await res.json();
+      return data?.id || null;
+    } catch (error) {
+      console.error("Error fetching recent timesheet ID:", error);
+      return null;
+    }
+  };
 
-      await setWorkRole(role);
+  const updatePreviousTimeSheet = async (): Promise<boolean> => {
+    try {
+      const timeSheetId = await fetchRecentTimeSheetId();
+      if (!timeSheetId) throw new Error("No valid TimeSheet ID found.");
 
-      if (type === "switchJobs") {
-        try {
-          // retrieve old time Sheet Id, end Time set to now, and the Time Sheet Comment data recorded
-          let timeSheetId = null;
-          // retrieving cookie to get timeSheetId or use recent one from api call
+      const formData = new FormData();
+      formData.append("id", timeSheetId);
+      formData.append("endTime", new Date().toISOString());
+      formData.append(
+        "timeSheetComments",
+        savedCommentData?.id.toString() || ""
+      );
 
-          const res = await fetch("/api/getRecentTimecard");
-          const tsId = await res.json();
-          timeSheetId = tsId.id;
+      await updateTascoTSBySwitch(formData);
+      setCommentData(null);
+      localStorage.removeItem("savedCommentData");
+      return true;
+    } catch (error) {
+      console.error("Failed to update previous timesheet:", error);
+      return false;
+    }
+  };
 
-          if (!timeSheetId) {
-            throw new Error(
-              "No valid TimeSheet ID was found. Please try again later."
-            );
-          }
-          const formData2 = new FormData();
-          formData2.append("id", timeSheetId?.toString() || "");
-          formData2.append("endTime", new Date().toISOString());
-          formData2.append(
-            "timeSheetComments",
-            savedCommentData?.id.toString() || ""
-          );
+  const createNewTimeSheet = async (): Promise<void> => {
+    const formData = new FormData();
+    formData.append("submitDate", new Date().toISOString());
+    formData.append("userId", id);
+    formData.append("date", new Date().toISOString());
+    formData.append("jobsiteId", scanResult?.data || "");
+    formData.append("costcode", savedCostCode?.toString() || "");
+    formData.append("startTime", new Date().toISOString());
+    formData.append("laborType", laborType || "");
+    formData.append("materialType", materialType || "");
+    formData.append("shiftType", shiftType || "");
+    formData.append("equipment", equipmentId || "");
 
-          // send data to update and close out the previous time Sheet, log will be update another way.
-          const responseOldSheet = await updateTascoTSBySwitch(formData2);
-          if (responseOldSheet) {
-            // removing the old sheet comment so it doesn't show up on the new sheet
-            setCommentData(null);
-            localStorage.removeItem("savedCommentData"); // update this to a cookie for consistency
-          }
-          // create new form for the new Time Sheet
-          const formData = new FormData();
+    try {
+      const response = await CreateTascoTimeSheet(formData);
+      setTimeSheetData({ id: response.id.toString() });
 
-          formData.append("submitDate", new Date().toISOString());
-          formData.append("userId", id?.toString() || "");
-          formData.append("date", new Date().toISOString());
-          formData.append("jobsiteId", scanResult?.data || "");
-          formData.append("costcode", savedCostCode?.toString() || "");
-          formData.append("startTime", new Date().toISOString());
-          formData.append("laborType", laborType || ""); // sets the title of task to the labor type worked on
-          formData.append("materialType", materialType || ""); // sets the title of task to the material type worked on
-          formData.append("shiftType", shiftType || "");
-          formData.append("equipment", equipmentId || ""); // sets equipment Id if applicable
-
-          // set a cookie for: recent timecard, pageView, workRole, LaborRole
-          const response = await CreateTascoTimeSheet(formData);
-          const result = { id: response.id.toString() };
-          setTimeSheetData(result);
-          setCurrentPageView("dashboard");
-          setWorkRole(role);
-          setLaborType(laborType || "");
-          // go to dashboard
-          setTimeout(() => {
-            router.push("/dashboard");
-          }, 100);
-        } catch (error) {
-          console.error(error);
-        }
-      } else {
-        //create a new Time Sheet with a Truck Log
-        const formData = new FormData();
-        formData.append("submitDate", new Date().toISOString());
-        formData.append("userId", id.toString());
-        formData.append("date", new Date().toISOString());
-        formData.append("jobsiteId", scanResult?.data || "");
-        formData.append("costcode", savedCostCode?.toString() || "");
-        formData.append("startTime", new Date().toISOString());
-        formData.append("workType", role);
-        formData.append("laborType", laborType || "");
-        formData.append("equipment", equipmentId || "");
-        formData.append("materialType", materialType || ""); // sets the title of task to the material type worked on
-        formData.append("shiftType", shiftType || "");
-
-        // set a cookie for: recent timecard, pageView, workRole, LaborRole
-        const response = await CreateTascoTimeSheet(formData);
-        const result = { id: response.id.toString() };
-        setTimeSheetData(result); // set new recent timecard
-        setCurrentPageView("dashboard"); // set page view
-        setWorkRole(role); // set work role
-        setLaborType(laborType || ""); // set labor role
-        // go to dashboard
-        setTimeout(() => {
-          router.push("/dashboard");
-        }, 100);
-      }
+      await Promise.all([
+        setCurrentPageView("dashboard"),
+        setWorkRole(role),
+        setLaborType(laborType || ""),
+      ]).then(() => router.push("/dashboard"));
     } catch (error) {
       console.error(error);
     }
   };
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!id) {
+      console.error("User ID does not exist");
+      return;
+    }
+    setLoading(true);
+    try {
+      if (type === "switchJobs") {
+        const isUpdated = await updatePreviousTimeSheet();
+        if (isUpdated) {
+          await createNewTimeSheet();
+        }
+      } else {
+        await createNewTimeSheet();
+      }
+    } catch (error) {
+      console.error("Error in handleSubmit:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
-      <Holds background={"white"} className="h-full w-full">
+      {loading && (
+        <Holds className="h-full absolute justify-center items-center">
+          <Spinner size={40} />
+        </Holds>
+      )}
+      <Holds
+        background={"white"}
+        className={loading ? `h-full w-full opacity-[0.50]` : `h-full w-full`}
+      >
         <Grids rows={"10"} gap={"2"} className="h-full w-full">
           <Contents width={"section"} className="h-full row-span-1 ">
             <TitleBoxes

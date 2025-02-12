@@ -42,26 +42,29 @@ model MaintenanceLog {
     endTime       DateTime?
     comment       String?
 
-    user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-    timeSheet   TimeSheet?   @relation(fields: [timeSheetId], references: [id])
+    user        User         @relation(fields: [userId], references: [id])
+    timeSheet   TimeSheet?   @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
     maintenance Maintenance? @relation(fields: [maintenanceId], references: [id])
 }
 
 model Maintenance {
-    id                 String    @id @default(uuid())
+    id                 String           @id @default(uuid())
     equipmentId        String
     equipmentIssue     String?
+    additionalInfo     String? // any additional info on manager side
+    location           String?
     problemDiagnosis   String?
     solution           String?
     totalHoursLaboured Float? // total hours of employee that worked on the job
-    createdAt          DateTime  @default(now())
+    createdAt          DateTime         @default(now())
     priority           Priority // level of priority
     delay              DateTime? // this shows priority as delay if the date has not passed
-    repaired           Boolean   @default(false) // finished request are marked as repaired
-    selected           Boolean   @default(false) // if they are selected they can be view by employees
-
-    equipment       Equipment        @relation(fields: [equipmentId], references: [id])
-    maintenanceLogs MaintenanceLog[]
+    repaired           Boolean          @default(false) // finished request are marked as repaired
+    selected           Boolean          @default(false) // if they are selected they can be view by employees
+    hasBeenDelayed     Boolean          @default(false) // 
+    createdBy          String?
+    equipment          Equipment        @relation(fields: [equipmentId], references: [id])
+    maintenanceLogs    MaintenanceLog[]
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
@@ -77,8 +80,7 @@ model TascoLog {
     laborType    String? // Labor being done. (E.G. manual labor vs. equipment)
     materialType String? // depend on tasco type
     loadsHauled  Int?
-    loadType     String? // uncovered, screened, etc
-    loadWeight   Float?
+    loads        Loads[]
     comment      String?
     createdAt    DateTime   @default(now())
     completed    Boolean    @default(false)
@@ -86,7 +88,15 @@ model TascoLog {
 
     // connections to other tables
     equipment Equipment? @relation(fields: [equipmentId], references: [qrId])
-    timeSheet TimeSheet? @relation(fields: [timeSheetId], references: [id])
+    timeSheet TimeSheet? @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
+}
+
+model Loads {
+    id         String    @id @default(uuid())
+    tascoLogId String?
+    loadType   String? // uncovered, screened, etc
+    loadWeight Float?
+    TascoLog   TascoLog? @relation(fields: [tascoLogId], references: [id])
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
@@ -109,7 +119,7 @@ model TruckingLog {
     EquipmentHauled EquipmentHauled[]
 
     equipment Equipment? @relation(fields: [equipmentId], references: [qrId])
-    timeSheet TimeSheet? @relation(fields: [timeSheetId], references: [id])
+    timeSheet TimeSheet? @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
@@ -128,12 +138,14 @@ model StateMileage {
 
 //--------------------------------------------------------------------------------------------------------------------------------
 model Material {
-    id                 String   @id @default(uuid())
+    id                 String    @id @default(uuid())
     LocationOfMaterial String? //company name or location of material
     truckingLogId      String // connection to log
     name               String //type of material
     quantity           Int? //number of loads
-    createdAt          DateTime @default(now())
+    loadType           LoadType? //covered, screened, or none
+    LoadWeight         Float? // weight of material
+    createdAt          DateTime  @default(now())
 
     truckingLog TruckingLog? @relation(fields: [truckingLogId], references: [id])
 }

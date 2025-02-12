@@ -1,4 +1,5 @@
 import { Prisma } from "@prisma/client";
+import { clear } from "console";
 
 export const now = new Date();
 
@@ -402,6 +403,21 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     permission: "ADMIN",
     image: "",
   },
+  {
+    id: "12",
+    firstName: "Zane",
+    lastName: "Gillette",
+    username: "zanegillette",
+    email: "zane@streamlineprecision.com",
+    password: "securepassword",
+    DOB: "01-01-2000",
+    truckView: true,
+    tascoView: true,
+    laborView: true,
+    mechanicView: true,
+    permission: "SUPERADMIN",
+    image: "",
+  },
 ];
 
 // initializing contacts
@@ -488,6 +504,14 @@ export const initialContacts: Prisma.ContactsCreateInput[] = [
   },
   {
     user: { connect: { id: "11" } },
+    phoneNumber: "987-654-3210",
+    emergencyContact: "your wife",
+    emergencyContactNumber: "218-765-4311",
+    createdAt: "2021-06-01T00:00:00.000Z",
+    updatedAt: "2021-06-01T00:00:00.000Z",
+  },
+  {
+    user: { connect: { id: "12" } },
     phoneNumber: "987-654-3210",
     emergencyContact: "your wife",
     emergencyContactNumber: "218-765-4311",
@@ -635,30 +659,60 @@ export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
   },
   {
     id: "14",
-    name: "Truck Role", // Truck Driver cost code for clock in value not important
+    name: "#00.50",
     createdAt: new Date(),
     updatedAt: new Date(),
-    description: "Truck Driver",
+    description: "Mechanics",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
     id: "15",
-    name: "Mechanic Role", // Mechanic cost code for clock in value not important
+    name: "#99.99",
     createdAt: new Date(),
     updatedAt: new Date(),
-    description: "Mechanic",
+    description: "General Office",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
     id: "16",
-    name: "TASCO Role", // TASCO cost code for clock in value not important
+    name: "#80.20",
     createdAt: new Date(),
     updatedAt: new Date(),
-    description: "TASCO",
+    description: "Amalgamated Labor",
+    CCTags: {
+      connect: [], // No CCTags are linked initially
+    },
+  },
+  {
+    id: "17",
+    name: "#80.40",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    description: "Amalgamated Equipment",
+    CCTags: {
+      connect: [], // No CCTags are linked initially
+    },
+  },
+  {
+    id: "18",
+    name: "#1000",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    description: "Gillette Farms",
+    CCTags: {
+      connect: [], // No CCTags are linked initially
+    },
+  },
+  {
+    id: "19",
+    name: "#1001",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    description: "Chicken Barn",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
@@ -675,13 +729,10 @@ export const initialCCTags: Prisma.CCTagCreateInput[] = [
         { qrId: "j345" },
         { qrId: "j456" },
         { qrId: "j567" },
-        { qrId: "TRUCK" },
-        { qrId: "MECHANIC" },
-        { qrId: "TASCO" },
       ],
     },
     costCodes: {
-      connect: Array.from({ length: 13 }, (_, i) => ({
+      connect: Array.from({ length: 19 }, (_, i) => ({
         id: (i + 1).toString(),
       })),
     },
@@ -1864,4 +1915,5 @@ export const initialUserSettings: Prisma.UserSettingsCreateInput[] = [
   { user: { connect: { id: "9" } } },
   { user: { connect: { id: "10" } } },
   { user: { connect: { id: "11" } } },
+  { user: { connect: { id: "12" } } },
 ];

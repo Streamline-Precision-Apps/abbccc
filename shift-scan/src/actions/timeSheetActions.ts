@@ -5,8 +5,6 @@ import { TimeSheet } from "@/lib/types";
 import { WorkType } from "@prisma/client";
 import { error } from "console";
 import { revalidatePath } from "next/cache";
-import { parse } from "path";
-import { string } from "zod";
 
 // Parse UTC function to handle timezone conversion
 const parseUTC = (timestamp: string): Date => {
@@ -156,6 +154,8 @@ export async function CreateTimeSheet(formData: FormData) {
     revalidatePath("/admins/reports");
     revalidatePath("/admins/personnel");
     revalidatePath("/admins");
+    revalidatePath("/dashboard");
+
     return newTimeSheet;
   } catch (error) {
     console.error("Error creating timesheet:", error);
@@ -204,6 +204,7 @@ export async function updateTimeSheetBySwitch(formData: FormData) {
     revalidatePath("/admins/reports");
     revalidatePath("/admins/personnel");
     revalidatePath("/admins");
+
     return { success: true };
   } catch (error) {
     console.log(error);
@@ -232,6 +233,7 @@ export async function breakOutTimeSheet(formData: FormData) {
 
     // Revalidate the path
     revalidatePath(`/`);
+    revalidatePath("/dashboard");
     revalidatePath("/admins/settings");
     revalidatePath("/admins/assets");
     revalidatePath("/admins/reports");
@@ -332,6 +334,8 @@ export async function CreateTruckDriverTimeSheet(formData: FormData) {
     revalidatePath("/admins/reports");
     revalidatePath("/admins/personnel");
     revalidatePath("/admins");
+    revalidatePath("/dashboard");
+
     return createdTimeSheet;
   } catch (error) {
     console.error("Error creating timesheet:", error);
@@ -391,8 +395,6 @@ export async function CreateTascoTimeSheet(formData: FormData) {
     const equipmentId = formData.get("equipment") as string;
     const timeSheetComments = formData.get("timeSheetComments") as string;
     const costCode = formData.get("costcode") as string;
-    const laborType = formData.get("laborType") as string;
-    const materialType = formData.get("materialType") as string;
     const shiftType = formData.get("shiftType") as string;
 
     // Create TimeSheet and TruckingLog within a transaction
@@ -410,6 +412,15 @@ export async function CreateTascoTimeSheet(formData: FormData) {
         workType: "TASCO",
       },
     });
+
+    let materialType;
+    let laborType = formData.get("laborType") as string;
+    if (shiftType === "abcdShift") {
+      materialType = formData.get("materialType") as string;
+    } else {
+      materialType = "";
+      laborType = "equipmentOperator";
+    }
 
     // Create a tasco log to be edited in tasco manager
     const tascoLog = await prisma.tascoLog.create({
@@ -432,6 +443,7 @@ export async function CreateTascoTimeSheet(formData: FormData) {
     revalidatePath("/admins/reports");
     revalidatePath("/admins/personnel");
     revalidatePath("/admins");
+    revalidatePath("/dashboard");
 
     return createdTimeSheet;
   } catch (error) {
@@ -515,6 +527,7 @@ export async function CreateMechanicTimeSheet(formData: FormData) {
     revalidatePath("/admins/reports");
     revalidatePath("/admins/personnel");
     revalidatePath("/admins");
+    revalidatePath("/dashboard");
 
     return createdTimeSheet;
   } catch (error) {
@@ -551,6 +564,7 @@ export async function updateMechanicTSBySwitch(formData: FormData) {
     revalidatePath("/admins/reports");
     revalidatePath("/admins/personnel");
     revalidatePath("/admins");
+    revalidatePath("/dashboard");
     return { success: true };
   } catch (error) {
     console.log(error);

@@ -92,6 +92,7 @@
 },
 
 "Home" : {
+    "TotalHoursWorked": "Hours Worked",
     "EnjoyYourBreak": "Enjoy Your Break!",
     "HitReturnToClockBackIn": "Hit Return to Clock Back In",
     "Today": "Today",
@@ -188,10 +189,12 @@
     "Notes": "Additional notes"
 },
 "Generator":{
+    "SearchJobsite": "Search Jobsite...",
+    "NoResults": "No Results Found",
     "SelectJobsite": "Select Jobsite",
     "NeedsMaintenance": "Needs Maintenance",
     "Vehicle": "Vehicle",
-   "JobsiteLocation": "Where is this equipment located?",
+   "JobsiteLocation": "Location of equipment?",
     "SelectCostCodeTags": "Select Cost Code Tags",
     "SelectTag": "Select Tag",
     "AddTag": "Add",
@@ -400,6 +403,9 @@
     "Submit": "Submit"
 },
 "ClockOut":{
+    "Date-label": "Date",
+    "JobSite-label": "Job Site #",
+    "CostCode-label": "Cost Code",
     "ClockOut": "Clock Out",
     "ReviewYourDayDirections": "Review your day below. If you have any questions, please contact your supervisor.",
     "Now": "Now",

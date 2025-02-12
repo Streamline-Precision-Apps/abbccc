@@ -4,7 +4,7 @@
 import React, { useState, useEffect, ChangeEvent } from "react";
 import SearchBar from "@/components/(search)/searchbar";
 import { Holds } from "@/components/(reusable)/holds";
-import { JobCode, EquipmentCodes } from "@/lib/types";
+import { JobCode, EquipmentCode } from "@/lib/types";
 import { useTranslations } from "next-intl";
 import { Grids } from "@/components/(reusable)/grids";
 import { Texts } from "../(reusable)/texts";
@@ -12,6 +12,7 @@ import { Buttons } from "../(reusable)/buttons";
 import { Contents } from "../(reusable)/contents";
 import { Titles } from "../(reusable)/titles";
 import Spinner from "../(animations)/spinner";
+import EmptyView from "../(reusable)/emptyView";
 
 type Props<T> = {
   datatype: string;
@@ -20,17 +21,20 @@ type Props<T> = {
   options: T[];
   recentOptions: T[];
   onSelect: (option: T) => void;
+  setSelectedJobSite: React.Dispatch<React.SetStateAction<string>>;
 };
 
-function SearchSelect<T extends JobCode | EquipmentCodes>({
+function SearchSelect<T extends JobCode | EquipmentCode>({
   datatype,
   options,
   handleGenerate,
   recentOptions,
   onSelect,
   loading,
+  setSelectedJobSite,
 }: Props<T>) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectTerm, setSelectOption] = useState("");
   const [filteredOptions, setFilteredOptions] = useState<T[]>(options);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [recentFilteredOptions, setRecentFilteredOptions] =
@@ -69,7 +73,7 @@ function SearchSelect<T extends JobCode | EquipmentCodes>({
 
   // Handle selecting an option from the dropdown
   const handleOptionSelect = (option: T) => {
-    setSearchTerm(option.name); // Set the search input to the selected option
+    setSelectOption(option.name); // Set the search input to the selected option
     setIsMenuOpen(false); // Close the dropdown menu
     setSelectedTerm(true);
     onSelect(option); // Call the onSelect prop with the selected option
@@ -78,11 +82,12 @@ function SearchSelect<T extends JobCode | EquipmentCodes>({
     setSearchTerm("");
     setSelectedTerm(false);
     setIsMenuOpen(false);
+    setSelectedJobSite("");
   };
 
   return (
-    <Grids rows={"6"} className="border-[3px] border-black rounded-[10px]">
-      <Holds className="h-full rounded-[10px] rounded-b-none border-b-[3px] border-black row-span-1">
+    <Grids rows={"6"} className=" rounded-[10px]">
+      <Holds className="h-full rounded-[10px] rounded-b-none row-span-1">
         {/* Search bar for filtering */}
         <SearchBar
           searchTerm={searchTerm}
@@ -92,76 +97,54 @@ function SearchSelect<T extends JobCode | EquipmentCodes>({
           setSelectedTerm={setSelectedTerm}
           setSearchTerm={setSearchTerm}
           clearSelection={handleClearSelection}
+          selectTerm={selectTerm}
         />
       </Holds>
       {loading ? (
-        <Holds className="h-full row-span-5 my-auto">
-          <Contents width={"section"} className="my-auto h-full">
-            <Holds className="my-auto h-full justify-center items-center">
-              <Spinner />
-            </Holds>
-          </Contents>
+        <Holds className="h-full row-span-5 border-[3px] border-black rounded-[10px] mt-5 ">
+          <Holds className="my-auto h-full justify-center items-center rounded-[10px]">
+            <Spinner size={50} />
+          </Holds>
         </Holds>
       ) : (
-        <Holds className="h-full row-span-5">
-          {/* Dropdown menu for recent options */}
-          {!searchTerm && (
-            <ul className="h-full overflow-y-auto rounded-b-[10px] no-scrollbar">
-              {recentFilteredOptions.map((recentOptions) => (
-                <li
-                  key={recentOptions.qrId}
-                  onClick={() => handleOptionSelect(recentOptions)}
-                  className="py-3 cursor-pointer last:border-0"
-                >
-                  <Holds>
-                    <Contents width={"section"}>
-                      <Buttons className="p-4">
-                        <Texts size={"p4"}>
-                          {recentOptions.name} - {recentOptions.qrId}
-                        </Texts>
-                      </Buttons>
-                    </Contents>
-                  </Holds>
-                </li>
-              ))}
-            </ul>
-          )}
-          {/* Dropdown menu that displays when `isMenuOpen` is true */}
-          {isMenuOpen && (
-            <ul className="h-full overflow-y-auto rounded-b-[10px] no-scrollbar">
-              {filteredOptions.length > 0 ? (
-                filteredOptions.map((option) => (
-                  <li
-                    key={option.qrId}
-                    onClick={() => handleOptionSelect(option)}
-                    className="py-3 cursor-pointer last:border-0"
-                  >
-                    <Holds>
-                      <Contents width={"section"}>
-                        <Buttons className="p-4">
-                          <Texts size={"p4"}>
-                            {option.name} - {option.qrId}
-                          </Texts>
-                        </Buttons>
-                      </Contents>
-                    </Holds>
-                  </li>
-                ))
-              ) : (
-                <li className="p-2 h-28 text-black text-center flex items-center justify-center text-xl">
-                  {t("NoResults")}
-                </li>
-              )}
-            </ul>
-          )}
-          {searchTerm && !isMenuOpen && (
-            <Holds className="h-full">
-              <Holds size={"90"} className="my-[10%] h-full">
-                <Buttons background={"orange"} onClick={handleGenerate}>
-                  <Titles size={"h2"}>{t("GenerateCode")}</Titles>
-                </Buttons>
+        <Holds className="h-full row-span-5 border-[3px] border-black rounded-[10px] mt-5">
+          <Holds className="overflow-y-auto rounded-b-[10px] no-scrollbar">
+            {filteredOptions.map((option) => (
+              <Holds
+                key={option.qrId}
+                onClick={
+                  selectedTerm && option.name === selectTerm
+                    ? () => handleClearSelection()
+                    : () => handleOptionSelect(option)
+                }
+                className="py-3 cursor-pointer last:border-0"
+              >
+                <Holds>
+                  <Contents width={"section"}>
+                    <Buttons
+                      background={
+                        selectedTerm && option.name === selectTerm
+                          ? "green"
+                          : "lightBlue"
+                      }
+                      className="p-3"
+                    >
+                      <Texts size={"p4"}>{option.name}</Texts>
+                    </Buttons>
+                  </Contents>
+                </Holds>
               </Holds>
-            </Holds>
+            ))}
+          </Holds>
+
+          {!selectedTerm && filteredOptions.length === 0 && (
+            <EmptyView
+              TopChild={
+                <Texts className=" text-black text-center flex justify-center text-2xl">
+                  {t("NoResults")}
+                </Texts>
+              }
+            />
           )}
         </Holds>
       )}

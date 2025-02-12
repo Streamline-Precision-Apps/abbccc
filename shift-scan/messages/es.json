@@ -91,6 +91,7 @@
 },
 
 "Home" : {
+    "TotalHoursWorked": "Horas trabajadas",
     "EnjoyYourBreak": "¡Disfruta tu descanso!",
     "HitReturnToClockBackIn": "Presiona Retornado para volver a fichar",
     "Banner": "Bienvenido de nuevo, ",
@@ -167,11 +168,13 @@
     "Notes": "Notas adicionales"
 },
 "Generator":{
+    "SearchJobsite": "Buscar sitios de trabajo",
+    "NoResults": "No se encontraron resultados",
     "SelectJobsite": "Seleccionar un sitio de trabajo",
     "EquipmentDescription": "Descripción",
     "NeedsMaintenance": "Necesita mantenimiento",
     "Vehicle": "Vehículo",
-    "JobsiteLocation": "¿En qué lugar de trabajo se encuentra este equipo?",
+    "JobsiteLocation": "Ubicación del equipo?",
     "SelectCostCodeTags": "Seleccionar una Etiqueta de Costo",
     "SelectTag": "Seleccionar Etiqueta",
     "AddTag": "Agregar",
@@ -364,6 +367,10 @@
     "Mileage": "Mileage"
     },
 "ClockOut":{
+    "ClockOut": "Fichar al Salir",
+    "Date-label": "Fecha",
+    "JobSite-label": "Sitio de Trabajo",
+    "CostCode-label": "Código de Costo",
     "Next": "Siguiente",
     "ChangeIfNecessary" : "Cambiar si es necesario",
     "PreviousJobComment": "Comentarios del Trabajo Anterior",

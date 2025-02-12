@@ -7,6 +7,7 @@ import { Labels } from "../(reusable)/labels";
 import { TextAreas } from "../(reusable)/textareas";
 import { Texts } from "../(reusable)/texts";
 import { useTranslations } from "next-intl";
+import { Titles } from "../(reusable)/titles";
 
 export default function Comment({
   handleClick,
@@ -26,7 +27,7 @@ export default function Comment({
 
   return (
     <Holds background={"white"} className="h-full w-full">
-      <Grids rows={"7"} gap={"5"} className="mb-5 h-full w-full">
+      <Grids rows={"8"} gap={"5"}>
         <Holds className="row-start-1 row-end-2 h-full w-full justify-center">
           <Grids rows={"1"} cols={"5"} gap={"3"} className=" h-full w-full">
             <Holds
@@ -71,13 +72,14 @@ export default function Comment({
           </Holds>
         </Holds>
 
-        <Holds position={"row"} className="row-start-7 row-end-8 h-full ">
+        <Holds position={"row"} className="row-start-8 row-end-9 h-full ">
           <Buttons
-            background={"orange"}
+            background={commentsValue.length < 3 ? "grey" : "orange"}
             onClick={() => handleClick()}
+            disabled={commentsValue.length < 3}
             className="w-full h-full py-3"
           >
-            <Texts size={"p3"}>{c("Continue")}</Texts>
+            <Titles size={"h2"}>{c("Continue")}</Titles>
           </Buttons>
         </Holds>
       </Grids>

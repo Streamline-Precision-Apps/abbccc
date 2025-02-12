@@ -122,34 +122,37 @@ export default function AddEquipmentForm({
         handler();
         handleRoute();
       }}
+      className="w-full h-full py-5"
     >
-      <Holds background={"white"} className="my-5">
-        <Contents width={"section"} className="mt-2 mb-5">
-          <Labels size={"p4"}>
-            {t("Temporary")}
-            <span className="text-red-500">*</span>
-            <Inputs name="qrId" type="text" value={eqCode} disabled />
-          </Labels>
+      <Holds
+        background={"white"}
+        className="w-full h-full overflow-y-auto no-scrollbar"
+      >
+        <Contents width={"section"}>
+          <Inputs name="qrId" type="text" value={eqCode} disabled hidden />
           <Holds>
-            <Labels size={"p4"}>
+            <Labels size={"p6"} htmlFor="equipmentTag">
               {t("Tag")}
               <span className="text-red-500">*</span>
-              <Selects
-                id="equipmentTag"
-                name="equipmentTag"
-                onChange={handleChange}
-                required
-              >
-                <Options value="">{t("Select")}</Options>
-                <Options value="TRUCK">{t("Truck")}</Options>
-                <Options value="VEHICLE">{t("Vehicle")}</Options>
-                <Options value="TRAILER">{t("Trailer")}</Options>
-                <Options value="EQUIPMENT">{t("Equipment")}</Options>
-              </Selects>
             </Labels>
+            <Selects
+              id="equipmentTag"
+              name="equipmentTag"
+              onChange={handleChange}
+              required
+              className="text-sm"
+            >
+              <Options value="">{t("Select")}</Options>
+              <Options value="TRUCK">{t("Truck")}</Options>
+              <Options value="VEHICLE">{t("Vehicle")}</Options>
+              <Options value="TRAILER">{t("Trailer")}</Options>
+              <Options value="EQUIPMENT">{t("Equipment")}</Options>
+            </Selects>
           </Holds>
-          <Labels size={"p4"}>
-            {t("Name")} <span className="text-red-500">*</span>
+          <Holds>
+            <Labels size={"p6"} htmlFor="name">
+              {t("Name")} <span className="text-red-500">*</span>
+            </Labels>
             <Inputs
               id="name"
               name="name"
@@ -157,25 +160,34 @@ export default function AddEquipmentForm({
               placeholder={`${t("NamePlaceholder")}`}
               required
               pattern="^[A-Za-z0-9\s]+$"
+              className="text-sm"
             />
-          </Labels>
-          <Labels size={"p4"}>
-            {t("EquipmentDescription")} <span className="text-red-500">*</span>
+          </Holds>
+          <Holds>
+            <Labels size={"p4"} htmlFor="description">
+              {t("EquipmentDescription")}{" "}
+              <span className="text-red-500">*</span>
+            </Labels>
             <TextAreas
               id="description"
               name="description"
               placeholder={`${t("DescriptionPlaceholder")}`}
               required
               maxLength={40}
+              className="text-sm"
             />
-          </Labels>
-          <Labels size={"p4"}>
-            {t("Status")} <span className="text-red-500">*</span>
+          </Holds>
+
+          <Holds>
+            <Labels size={"p4"} htmlFor="equipmentStatus">
+              {t("Status")} <span className="text-red-500">*</span>
+            </Labels>
             <Selects
               id="equipmentStatus"
               name="equipmentStatus"
               onChange={handleChange}
               required
+              className="text-sm"
             >
               <Options value="">{t("Select")}</Options>
               <Options value="OPERATIONAL">{t("Operational")}</Options>
@@ -184,105 +196,123 @@ export default function AddEquipmentForm({
                 {t("NeedsMaintenance")}
               </Options>
             </Selects>
-          </Labels>
+          </Holds>
 
           {equipmentTag === "TRUCK" ||
           equipmentTag === "TRAILER" ||
           equipmentTag === "VEHICLE" ? (
             <>
-              <Labels size={"p3"}>
-                {t("Make")} <span className="text-red-500">*</span>
-                <Inputs
-                  id="make"
-                  name="make"
-                  type="text"
-                  placeholder={`${t("MakePlaceholder")}`}
-                  required={
-                    equipmentTag === "TRUCK" || equipmentTag === "TRAILER"
-                      ? true
-                      : false
-                  }
-                />
-              </Labels>
+              <Holds>
+                <Labels size={"p4"}>
+                  {t("Make")} <span className="text-red-500">*</span>
+                  <Inputs
+                    id="make"
+                    name="make"
+                    type="text"
+                    placeholder={`${t("MakePlaceholder")}`}
+                    required={
+                      equipmentTag === "TRUCK" || equipmentTag === "TRAILER"
+                        ? true
+                        : false
+                    }
+                    className="text-sm"
+                  />
+                </Labels>
+              </Holds>
 
-              <Labels size={"p3"}>
-                {t("Model")} <span className="text-red-500">*</span>
-                <Inputs
-                  id="model"
-                  name="model"
-                  type="text"
-                  placeholder={`${t("ModelPlaceholder")}`}
-                  required={
-                    equipmentTag === "TRUCK" || equipmentTag === "TRAILER"
-                      ? true
-                      : false
-                  }
-                />
-              </Labels>
+              <Holds>
+                <Labels size={"p4"}>
+                  {t("Model")} <span className="text-red-500">*</span>
+                  <Inputs
+                    id="model"
+                    name="model"
+                    type="text"
+                    placeholder={`${t("ModelPlaceholder")}`}
+                    required={
+                      equipmentTag === "TRUCK" || equipmentTag === "TRAILER"
+                        ? true
+                        : false
+                    }
+                    className="text-sm"
+                  />
+                </Labels>
+              </Holds>
 
-              <Labels size={"p3"}>
-                {t("Year")} <span className="text-red-500">*</span>
-                <Inputs
-                  id="year"
-                  name="year"
-                  type="number"
-                  min="1900"
-                  max="2099"
-                  defaultValue={new Date().getFullYear()}
-                  step="1"
-                  placeholder={`${t("YearPlaceholder")}`}
-                  required={
-                    equipmentTag === "TRUCK" || equipmentTag === "TRAILER"
-                      ? true
-                      : false
-                  }
-                />
-              </Labels>
+              <Holds>
+                <Labels size={"p4"}>
+                  {t("Year")} <span className="text-red-500">*</span>
+                  <Inputs
+                    id="year"
+                    name="year"
+                    type="number"
+                    min="1900"
+                    max="2099"
+                    defaultValue={new Date().getFullYear()}
+                    step="1"
+                    placeholder={`${t("YearPlaceholder")}`}
+                    required={
+                      equipmentTag === "TRUCK" || equipmentTag === "TRAILER"
+                        ? true
+                        : false
+                    }
+                    className="text-sm"
+                  />
+                </Labels>
+              </Holds>
 
-              <Labels size={"p3"}>
-                {t("LicensePlate")} <span className="text-red-500">*</span>
-                <Inputs
-                  id="licensePlate"
-                  name="licensePlate"
-                  type="text"
-                  placeholder={`${t("LicensePlatePlaceholder")}`}
-                  required={
-                    equipmentTag === "TRUCK" || equipmentTag === "TRAILER"
-                      ? true
-                      : false
-                  }
-                />
-              </Labels>
+              <Holds>
+                <Labels size={"p4"}>
+                  {t("LicensePlate")} <span className="text-red-500">*</span>
+                  <Inputs
+                    id="licensePlate"
+                    name="licensePlate"
+                    type="text"
+                    placeholder={`${t("LicensePlatePlaceholder")}`}
+                    required={
+                      equipmentTag === "TRUCK" || equipmentTag === "TRAILER"
+                        ? true
+                        : false
+                    }
+                    className="text-sm"
+                  />
+                </Labels>
+              </Holds>
 
-              <Labels size={"p3"}>
-                {t("RegistrationExpiration")}{" "}
-                <span className="text-red-500">*</span>
-                <Inputs
-                  id="registrationExpiration"
-                  name="registrationExpiration"
-                  type="date"
-                  required={
-                    equipmentTag === "TRUCK" || equipmentTag === "TRAILER"
-                      ? true
-                      : false
-                  }
-                />
-              </Labels>
+              <Holds>
+                <Labels size={"p4"}>
+                  {t("RegistrationExpiration")}{" "}
+                  <span className="text-red-500">*</span>
+                  <Inputs
+                    id="registrationExpiration"
+                    name="registrationExpiration"
+                    type="date"
+                    required={
+                      equipmentTag === "TRUCK" || equipmentTag === "TRAILER"
+                        ? true
+                        : false
+                    }
+                    className="text-sm"
+                  />
+                </Labels>
+              </Holds>
 
-              <Labels size={"p3"}>
-                {t("Mileage")} <span className="text-red-500">*</span>
-                <Inputs
-                  id="mileage"
-                  name="mileage"
-                  type="number"
-                  placeholder={`${t("MileagePlaceholder")}`}
-                  required={
-                    equipmentTag === "TRUCK" || equipmentTag === "TRAILER"
-                      ? true
-                      : false
-                  }
-                />
-              </Labels>
+              <Holds>
+                <Labels size={"p4"}>
+                  {t("Mileage")} <span className="text-red-500">*</span>
+                  <Inputs
+                    id="mileage"
+                    name="mileage"
+                    type="number"
+                    placeholder={`${t("MileagePlaceholder")}`}
+                    required={
+                      equipmentTag === "TRUCK" || equipmentTag === "TRAILER"
+                        ? true
+                        : false
+                    }
+                    className="text-sm"
+                  />
+                </Labels>
+              </Holds>
             </>
           ) : null}
           <Holds background={"white"} className="my-5">
@@ -303,12 +333,14 @@ export default function AddEquipmentForm({
 
             {/* Modal for jobsite dropdown */}
             <NModals
-              size={"page"}
+              size={"xlWS"}
               isOpen={isJobsiteDropdownOpen}
               handleClose={() => setIsJobsiteDropdownOpen(false)}
+              background={"white"}
             >
-              <Holds className="w-full h-full">
+              <Holds className="w-full h-full ">
                 {/* Search Input */}
+
                 <Inputs
                   type="text"
                   id="jobsiteSearch"
@@ -321,7 +353,7 @@ export default function AddEquipmentForm({
 
                 {/* Filtered Results */}
                 {filteredJobsites.length > 0 && (
-                  <Holds className=" bg-white border rounded shadow-lg w-full  overflow-y-auto gap-5">
+                  <Holds className=" rounded-[10px] w-full  overflow-y-auto no-scrollbar p-4 gap-5">
                     {filteredJobsites.map((jobCode: JobCode) => (
                       <Buttons
                         key={jobCode.id}
@@ -330,7 +362,7 @@ export default function AddEquipmentForm({
                           selectJobsite(jobCode);
                           setIsJobsiteDropdownOpen(false);
                         }}
-                        className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                        className="py-2"
                       >
                         {jobCode.name}
                       </Buttons>
@@ -341,13 +373,11 @@ export default function AddEquipmentForm({
             </NModals>
           </Holds>
           <Inputs id="qrId" name="qrId" type="hidden" value={eqCode} />
-        </Contents>
-      </Holds>
-      <Holds>
-        <Contents width={"section"} className="my-5">
-          <Buttons background={"green"} type="submit" className="p-2">
-            <Titles size={"h3"}>{t("CreateNew")}</Titles>
-          </Buttons>
+          <Holds className="pb-5 ">
+            <Buttons background={"green"} type="submit" className="py-3">
+              <Titles size={"h3"}>{t("CreateNew")}</Titles>
+            </Buttons>
+          </Holds>
         </Contents>
       </Holds>
     </Forms>

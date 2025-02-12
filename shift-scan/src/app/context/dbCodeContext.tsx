@@ -166,7 +166,8 @@ export const EquipmentProvider = ({ children }: { children: ReactNode }) => {
           url === "/clock" ||
           url === "/dashboard/log-new" ||
           url === "/dashboard/switch-jobs" ||
-          url === "/break"
+          url === "/break" ||
+          url === "/dashboard/mechanic/new-repair"
         ) {
           const response = await fetch("/api/getEquipment");
           const equipment = await response.json();
