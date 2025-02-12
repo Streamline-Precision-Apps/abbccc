@@ -311,3 +311,38 @@ cookies().set({
 - /clock type  update scan job site to select work type
 - /gray continue added validation 
 - clock out bug with tasco?
+
+
+#
+# February 5 - 6 , 2025 - Wednesday, Thursday
+### Trello
+- finishing clock process and bugs
+
+#
+# February 7 , 2025 - Friday
+### Trello
+- finishing clock process and bugs for dev env
+
+#
+# February 10 , 2025 - Monday
+# Goals
+- Debugging time clock under the production environment
+- Create Tasco selection section
+### Trello
+- finishing clock process and bugs
+
+#
+# February 11 , 2025 - Tuesday
+# Goals
+- get UI of Priority list done
+- make small edits on Figma
+### Trello
+- Mechanic section - Priority List all page
+
+#
+# February 12 , 2025 - Wednesday
+# Goals
+- finish create project section
+- enable user to edit a real project
+### Trello
+- Mechanic section - Priority List all page
