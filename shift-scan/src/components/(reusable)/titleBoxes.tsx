@@ -282,6 +282,35 @@ const TitleBoxes: FC<TitleBoxProps> = ({
       </div>
     );
   }
+  if (type === "noIcon-NoHref") {
+    return (
+      <div
+        className={cn(TitleBoxVariants({ variant, size, version, className }))}
+        {...props}
+      >
+        <Grids cols={"4"} rows={"3"} className="w-full h-full p-3">
+          <Holds className="col-span-1 row-span-1 flex items-center justify-center">
+            <Buttons
+              onClick={onClick}
+              background={"none"}
+              position={"left"}
+              size={"50"}
+            >
+              <Images
+                titleImg="/turnBack.svg"
+                titleImgAlt={titleImgAlt}
+                className="max-w-8 h-auto object-contain"
+              />
+            </Buttons>
+          </Holds>
+
+          <Holds className="col-start-1 col-end-5 row-start-3 row-end-4 flex items-center justify-center">
+            <Titles size={"h2"}>{title}</Titles>
+          </Holds>
+        </Grids>
+      </div>
+    );
+  }
   if (type === "row") {
     return (
       <div

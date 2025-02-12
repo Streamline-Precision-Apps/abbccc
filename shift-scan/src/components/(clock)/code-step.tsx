@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import CodeFinder from "@/components/(search)/codeFinder";
 import StepButtons from "./step-buttons";
 import { useTranslations } from "next-intl";
@@ -16,6 +16,7 @@ type CodeStepProps = {
   handlePrevStep: () => void;
   handleScannedPrevStep: () => void;
   scanned: boolean;
+  setScannedId?: Dispatch<SetStateAction<string | null>>;
 };
 
 export default function CodeStep({
@@ -25,6 +26,7 @@ export default function CodeStep({
   handleScannedPrevStep,
   backArrow = true,
   scanned,
+  setScannedId = undefined,
 }: CodeStepProps) {
   const t = useTranslations("Clock");
   const [selectedOpt, setSelectedOpt] = useState<boolean>(false);
@@ -57,7 +59,11 @@ export default function CodeStep({
         </Grids>
       </Holds>
       <Holds className="row-start-2 row-end-7 h-full w-full">
-        <CodeFinder datatype={datatype} setSelectedOpt={setSelectedOpt} />
+        <CodeFinder
+          setScannedId={setScannedId}
+          datatype={datatype}
+          setSelectedOpt={setSelectedOpt}
+        />
       </Holds>
       {handleNextStep && (
         <Holds className="row-start-7 row-end-8 h-full w-full justify-center">
