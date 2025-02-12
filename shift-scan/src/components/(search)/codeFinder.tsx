@@ -39,9 +39,14 @@ type Option = {
 type Props = {
   datatype: string;
   setSelectedOpt: React.Dispatch<React.SetStateAction<boolean>>;
+  setScannedId: React.Dispatch<React.SetStateAction<string | null>> | undefined;
 };
 
-export default function CodeFinder({ datatype, setSelectedOpt }: Props) {
+export default function CodeFinder({
+  datatype,
+  setSelectedOpt,
+  setScannedId,
+}: Props) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectTerm, setSelectTerm] = useState("");
   const [filteredOptions, setFilteredOptions] = useState<Option[]>([]);
@@ -129,7 +134,11 @@ export default function CodeFinder({ datatype, setSelectedOpt }: Props) {
     }
 
     if (datatype === "equipment") {
-      setscanEQResult({ data: option.code });
+      if (setScannedId) {
+        setScannedId(option.code);
+      } else {
+        setscanEQResult({ data: option.code });
+      }
 
       const selectedEquipment = equipmentResults.find(
         (e) => e.qrId === option.code

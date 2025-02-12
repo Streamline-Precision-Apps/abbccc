@@ -9,7 +9,7 @@ import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import MechanicSelectList from "./MechanicSelectList";
 
 export default function MechanicDisplay() {
-  const [isManager, setIsManager] = useState(false);
+  const [isManager, setIsManager] = useState(true);
   const [activeTab, setActiveTab] = useState(1);
   const t = useTranslations("Mechanic");
 

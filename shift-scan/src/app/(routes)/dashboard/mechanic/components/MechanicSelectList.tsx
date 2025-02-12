@@ -128,6 +128,7 @@ export default function MechanicSelectList() {
     <Grids rows={"8"} cols={"4"} gap={"5"} className="h-full p-4">
       <Holds className="col-start-1 col-end-2 row-start-1 row-end-2 h-full w-full">
         <Buttons
+          href="/dashboard/mechanic/new-repair"
           background={"green"}
           className="h-full justify-center items-center"
         >
