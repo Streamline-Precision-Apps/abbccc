@@ -4,32 +4,64 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
+import { Priority } from "@/lib/types";
 import { useEffect, useState } from "react";
 
+type Equipment = {
+  id: string;
+  name: string;
+};
+
+type MaintenanceLog = {
+  id: string;
+  startTime: string;
+  endTime: string;
+  userId: string;
+};
+
+type Projects = {
+  id: string;
+  equipmentId: string;
+  selected: boolean;
+  priority: Priority;
+  delay: Date | null;
+  maintenanceLogs: MaintenanceLog[];
+  equipment: Equipment;
+};
+
 export default function MechanicPriority() {
-  const [loading, setLoading] = useState(true);
-  const initialProjects = [
-    "mechanic",
-    "mechanic",
-    "mechanic",
-    "mechanic",
-    "mechanic",
-    "mechanic",
-    "mechanic",
-    "mechanic",
-  ];
+  const [loading, setLoading] = useState(false);
+  const [projects, setProjects] = useState<Projects[]>([]);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch("/api/getMaintenanceProjects");
+        const data = await response.json();
+        const filteredData = data.filter(
+          (project: Projects) => project.selected
+        );
+        setProjects(filteredData);
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      }
+      setLoading(false);
+    };
+
+    fetchProjects();
+  }, []);
 
   // Ensure there are always at least 7 items
-  const projects = [
-    ...initialProjects,
-    ...Array(Math.max(0, 6 - initialProjects.length)).fill(""),
-  ];
+  while (projects.length < 7) {
+    projects.push({ id: "" } as Projects);
+  }
 
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
     }, 3000);
-  }, []); // Added dependency array to prevent infinite effect runs
+  }, []);
 
   if (loading) {
     return (
@@ -40,7 +72,7 @@ export default function MechanicPriority() {
               key={index}
               background={"lightGray"}
               className="h-1/6 my-2 py-7 animate-pulse"
-            ></Holds>
+            />
           ))}
         </Contents>
       </Holds>
@@ -50,31 +82,43 @@ export default function MechanicPriority() {
   return (
     <Holds className="no-scrollbar overflow-y-auto ">
       <Contents width={"section"} className="py-5">
-        {projects.map((project, index) => (
-          <Holds key={index} className="h-full relative py-3">
-            {project === "mechanic" && (
+        {projects.map((project: Projects, index) => {
+          if (project.id === "") {
+            return (
               <Holds
-                background={"green"}
-                className="absolute top-2 left-4 w-1/4 h-5 rounded-[10px] border-[3px] border-black items-center justify-center"
+                key={index}
+                background={"lightGray"}
+                className="h-1/6 my-2 py-7 "
+              />
+            );
+          }
+          // Check if any maintenance log is active (has a startTime but no endTime)
+          const isActive = project.maintenanceLogs.some(
+            (log) => log.startTime && !log.endTime
+          );
+
+          return (
+            <Holds key={project.id} className="h-full relative py-3">
+              {isActive && (
+                <Holds
+                  background={"green"}
+                  className="absolute top-2 left-4 w-1/4 h-5 rounded-[10px] border-[3px] border-black flex items-center justify-center"
+                >
+                  <Texts size={"p7"} className="text-center">
+                    Active
+                  </Texts>
+                </Holds>
+              )}
+              <Buttons
+                background="lightBlue"
+                href={`/dashboard/mechanic/${project.id}`}
+                className="w-full h-full py-4 rounded-[10px]"
               >
-                <Texts size={"p7"} className="text-center">
-                  Active
-                </Texts>
-              </Holds>
-            )}
-            <Buttons
-              background={project ? "lightBlue" : "lightGray"}
-              href={project ? `/dashboard/mechanic/${project}` : undefined}
-              className={
-                project
-                  ? "w-full h-full py-4 rounded-[10px]"
-                  : `w-full h-full py-8 rounded-[10px} border-none shadow-none`
-              }
-            >
-              <Titles size={"h2"}>{project || ""}</Titles>
-            </Buttons>
-          </Holds>
-        ))}
+                <Titles size={"h2"}>{project?.equipment?.name}</Titles>
+              </Buttons>
+            </Holds>
+          );
+        })}
       </Contents>
     </Holds>
   );

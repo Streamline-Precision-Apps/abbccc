@@ -4,17 +4,32 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
-import { useRef, useState } from "react";
+import { Priority } from "@/lib/types";
+import { useRouter } from "next/navigation";
+import { useRef, useState, useEffect } from "react";
 
-type Priority = "PENDING" | "LOW" | "MEDIUM" | "HIGH" | "TODAY";
+type Equipment = {
+  id: string;
+  name: string;
+};
 
-type Projects = {
+type MaintenanceLog = {
+  id: string;
+  startTime: string;
+  endTime: string;
+  userId: string;
+};
+
+export type Projects = {
   id: string;
   equipmentId: string;
   selected: boolean;
   priority: Priority;
   delay: Date | null;
+  maintenanceLogs: MaintenanceLog[];
+  equipment: Equipment;
 };
+
 export const SearchAndCheck = ({
   AllProjects,
 }: {
@@ -22,22 +37,29 @@ export const SearchAndCheck = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
+  // Create a local state copy of the projects for immediate UI updates.
+  const [projectsState, setProjectsState] = useState<Projects[]>(AllProjects);
+
+  // When the incoming projects prop changes, update the local state.
+  useEffect(() => {
+    setProjectsState(AllProjects);
+  }, [AllProjects]);
 
   const focusInput = () => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
+    inputRef.current?.focus();
   };
 
   const priorityOrder: Priority[] = [
-    "TODAY",
-    "HIGH",
-    "MEDIUM",
-    "LOW",
-    "PENDING",
+    Priority.TODAY,
+    Priority.HIGH,
+    Priority.MEDIUM,
+    Priority.LOW,
+    Priority.PENDING,
   ];
 
-  const sortedProjects = AllProjects.sort((a, b) => {
+  // Use the local projects state for sorting and filtering.
+  const sortedProjects = projectsState.slice().sort((a, b) => {
     const indexA = priorityOrder.indexOf(a.priority);
     const indexB = priorityOrder.indexOf(b.priority);
     return indexA - indexB;
@@ -47,11 +69,29 @@ export const SearchAndCheck = ({
     return project.equipmentId.toLowerCase().includes(searchTerm.toLowerCase());
   });
 
+  // Toggle the "selected" property locally and call the action.
+  const handleToggle = (projectId: string) => {
+    setProjectsState((prevProjects) =>
+      prevProjects.map((project) =>
+        project.id === projectId
+          ? { ...project, selected: !project.selected }
+          : project
+      )
+    );
+    // Optionally, call your backend action.
+    // Use a functional update if needed to ensure correct toggle value:
+    const toggledProject = projectsState.find((p) => p.id === projectId);
+    if (toggledProject) {
+      setProjectSelected(projectId, !toggledProject.selected);
+    }
+  };
+
   return (
     <Grids rows={"8"} className="h-full w-full">
+      {/* Search bar */}
       <Holds
         position={"row"}
-        className="row-start-1 row-end-2 h-full w-full border-b-[3px] border-b-black "
+        className="row-start-1 row-end-2 h-full w-full border-b-[3px] border-b-black"
       >
         <Holds size={"20"} className="mr-4" onClick={focusInput}>
           <Images
@@ -64,17 +104,16 @@ export const SearchAndCheck = ({
           <input
             ref={inputRef}
             type="text"
-            className=" border-none focus:outline-none"
+            className="border-none focus:outline-none"
             value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-            }}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
         </Holds>
         <Holds size={"20"} onClick={() => setSearchTerm("")}>
           <Texts size={"p1"}>X</Texts>
         </Holds>
       </Holds>
+      {/* Projects list */}
       <Holds
         background={"darkBlue"}
         className="row-start-2 row-end-9 h-full w-full overflow-y-auto no-scrollbar rounded-none"
@@ -84,36 +123,48 @@ export const SearchAndCheck = ({
             background={"white"}
             position={"row"}
             key={index}
-            className=" w-full border-[3px] border-black rounded-[10px] mb-2 py-2 "
+            className="w-full border-[3px] border-black rounded-[10px] mb-2 py-2"
           >
-            <Holds size={"20"}>
-              <Images
-                titleImg={
-                  project.delay
-                    ? "/delayPriority.svg"
-                    : project.priority === "PENDING"
-                    ? "/pending.svg"
-                    : project.priority === "LOW"
-                    ? "/lowPriority.svg"
-                    : project.priority === "MEDIUM"
-                    ? "/mediumPriority.svg"
-                    : project.priority === "HIGH"
-                    ? "/highPriority.svg"
-                    : "/todayPriority.svg"
-                }
-                titleImgAlt="priority"
-                size={"80"}
-              />
-            </Holds>
-            <Holds size={"60"}>
-              <Texts size={"p1"}>{project.equipmentId}</Texts>
+            <Holds
+              position={"row"}
+              size={"80"}
+              className="justify-between"
+              onClick={() =>
+                router.push(
+                  `/dashboard/mechanic/edit-repair-details/${project.id}`
+                )
+              }
+            >
+              <Holds size={"20"}>
+                <Images
+                  titleImg={
+                    project.delay
+                      ? "/delayPriority.svg"
+                      : project.priority === "PENDING"
+                      ? "/pending.svg"
+                      : project.priority === "LOW"
+                      ? "/lowPriority.svg"
+                      : project.priority === "MEDIUM"
+                      ? "/mediumPriority.svg"
+                      : project.priority === "HIGH"
+                      ? "/highPriority.svg"
+                      : "/todayPriority.svg"
+                  }
+                  titleImgAlt="priority"
+                  size={"80"}
+                />
+              </Holds>
+              <Holds size={"80"}>
+                <Texts size={"p6"}>{`${project.equipment.name.slice(
+                  0,
+                  16
+                )}...`}</Texts>
+              </Holds>
             </Holds>
             <Holds size={"20"}>
               <Holds
                 className="h-8 w-8 rounded-[10px] shadow-[6px_6px_0px_grey]"
-                onClick={() =>
-                  setProjectSelected(project.id, !project.selected)
-                }
+                onClick={() => handleToggle(project.id)}
               >
                 {project.selected ? (
                   <svg

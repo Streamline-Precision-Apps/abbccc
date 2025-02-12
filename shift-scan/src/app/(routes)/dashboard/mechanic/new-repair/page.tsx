@@ -1,5 +1,6 @@
 "use client";
 
+import { CreateMechanicProject } from "@/actions/mechanicActions";
 import CodeStep from "@/components/(clock)/code-step";
 import SimpleQr from "@/components/(clock)/simple-qr";
 import { Bases } from "@/components/(reusable)/bases";
@@ -14,9 +15,9 @@ import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
-import { Priority } from "@prisma/client";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 type Equipment = {
   id: string;
@@ -41,6 +42,8 @@ export default function CreateMechanicProjectProcess() {
   const [status, setStatus] = useState<
     "TODAY" | "HIGH" | "MEDIUM" | "LOW" | "PENDING" | ""
   >("");
+
+  const router = useRouter();
 
   const PriorityOptions = [
     { label: "Select Priority", value: "" },
@@ -93,9 +96,11 @@ export default function CreateMechanicProjectProcess() {
       formData.append("equipmentIssue", equipmentIssue);
       formData.append("additionalInfo", additionalInfo);
       formData.append("location", location);
-      formData.append("status", status);
       formData.append("priority", status);
       const response = await CreateMechanicProject(formData);
+      if (response) {
+        router.push("/dashboard/mechanic");
+      }
     } catch (error) {
       console.error("Error:", error);
     }
