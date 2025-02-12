@@ -48,7 +48,7 @@ model MaintenanceLog {
 }
 
 model Maintenance {
-    id                 String    @id @default(uuid())
+    id                 String           @id @default(uuid())
     equipmentId        String
     equipmentIssue     String?
     additionalInfo     String? // any additional info on manager side
@@ -56,14 +56,15 @@ model Maintenance {
     problemDiagnosis   String?
     solution           String?
     totalHoursLaboured Float? // total hours of employee that worked on the job
-    createdAt          DateTime  @default(now())
+    createdAt          DateTime         @default(now())
     priority           Priority // level of priority
     delay              DateTime? // this shows priority as delay if the date has not passed
-    repaired           Boolean   @default(false) // finished request are marked as repaired
-    selected           Boolean   @default(false) // if they are selected they can be view by employees
-
-    equipment       Equipment        @relation(fields: [equipmentId], references: [id])
-    maintenanceLogs MaintenanceLog[]
+    repaired           Boolean          @default(false) // finished request are marked as repaired
+    selected           Boolean          @default(false) // if they are selected they can be view by employees
+    hasBeenDelayed     Boolean          @default(false) // 
+    createdBy          String?
+    equipment          Equipment        @relation(fields: [equipmentId], references: [id])
+    maintenanceLogs    MaintenanceLog[]
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------

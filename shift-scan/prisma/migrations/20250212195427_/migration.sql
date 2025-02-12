@@ -23,7 +23,7 @@ CREATE TYPE "IsActive" AS ENUM ('ACTIVE', 'INACTIVE');
 CREATE TYPE "WorkType" AS ENUM ('MECHANIC', 'TRUCK_DRIVER', 'LABOR', 'TASCO');
 
 -- CreateEnum
-CREATE TYPE "Priority" AS ENUM ('LOW', 'MEDIUM', 'HIGH', 'URGENT');
+CREATE TYPE "Priority" AS ENUM ('PENDING', 'LOW', 'MEDIUM', 'HIGH', 'TODAY');
 
 -- CreateEnum
 CREATE TYPE "LoadType" AS ENUM ('UNSCREENED', 'SCREENED');
@@ -232,6 +232,8 @@ CREATE TABLE "Maintenance" (
     "id" TEXT NOT NULL,
     "equipmentId" TEXT NOT NULL,
     "equipmentIssue" TEXT,
+    "additionalInfo" TEXT,
+    "location" TEXT,
     "problemDiagnosis" TEXT,
     "solution" TEXT,
     "totalHoursLaboured" DOUBLE PRECISION,
@@ -240,6 +242,8 @@ CREATE TABLE "Maintenance" (
     "delay" TIMESTAMP(3),
     "repaired" BOOLEAN NOT NULL DEFAULT false,
     "selected" BOOLEAN NOT NULL DEFAULT false,
+    "hasBeenDelayed" BOOLEAN NOT NULL DEFAULT false,
+    "createdBy" TEXT,
 
     CONSTRAINT "Maintenance_pkey" PRIMARY KEY ("id")
 );

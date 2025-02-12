@@ -5,8 +5,19 @@ import { Images } from "@/components/(reusable)/images";
 import { Selects } from "@/components/(reusable)/selects";
 import { SearchAndCheck } from "./SearchAndCheck";
 import { useEffect, useState } from "react";
+import { Priority } from "@/lib/types";
 
-type Priority = "PENDING" | "LOW" | "MEDIUM" | "HIGH" | "TODAY";
+type Equipment = {
+  id: string;
+  name: string;
+};
+
+type MaintenanceLog = {
+  id: string;
+  startTime: string;
+  endTime: string;
+  userId: string;
+};
 
 type Projects = {
   id: string;
@@ -14,6 +25,8 @@ type Projects = {
   selected: boolean;
   priority: Priority;
   delay: Date | null;
+  maintenanceLogs: MaintenanceLog[];
+  equipment: Equipment;
 };
 
 export default function MechanicSelectList() {
@@ -33,71 +46,13 @@ export default function MechanicSelectList() {
 
   useEffect(() => {
     const fetchProjects = async () => {
-      setAllProjects([
-        {
-          id: "1",
-          equipmentId: "abc",
-          selected: false,
-          priority: "HIGH",
-          delay: null,
-        },
-        {
-          id: "2",
-          equipmentId: "def",
-          selected: false,
-          priority: "MEDIUM",
-          delay: null,
-        },
-        {
-          id: "3",
-          equipmentId: "ghi",
-          selected: true,
-          priority: "LOW",
-          delay: null,
-        },
-        {
-          id: "4",
-          equipmentId: "jkl",
-          selected: false,
-          priority: "PENDING",
-          delay: null,
-        },
-        {
-          id: "5",
-          equipmentId: "mno",
-          selected: false,
-          priority: "TODAY",
-          delay: null,
-        },
-        {
-          id: "6",
-          equipmentId: "pqr",
-          selected: false,
-          priority: "MEDIUM",
-          delay: new Date(),
-        },
-        {
-          id: "7",
-          equipmentId: "stu",
-          selected: false,
-          priority: "HIGH",
-          delay: null,
-        },
-        {
-          id: "8",
-          equipmentId: "vwx",
-          selected: false,
-          priority: "MEDIUM",
-          delay: null,
-        },
-        {
-          id: "9",
-          equipmentId: "yz",
-          selected: true,
-          priority: "LOW",
-          delay: null,
-        },
-      ]);
+      try {
+        const response = await fetch("/api/getMaintenanceProjects");
+        const data = await response.json();
+        setAllProjects(data);
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      }
     };
 
     fetchProjects();
