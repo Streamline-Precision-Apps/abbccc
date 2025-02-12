@@ -13,7 +13,9 @@ import { Holds } from "../(reusable)/holds";
 
 export default function SimpleQr({
   setScannedId,
+  setScanned,
 }: {
+  setScanned: Dispatch<SetStateAction<boolean>>;
   setScannedId: Dispatch<SetStateAction<string | null>>;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -26,12 +28,13 @@ export default function SimpleQr({
 
         if (data) {
           setScannedId(data);
+          setScanned(true);
         }
       } catch (error) {
         console.error("Error processing scanned data:", error);
       }
     },
-    [setScannedId]
+    [setScanned, setScannedId]
   );
 
   useEffect(() => {
