@@ -126,7 +126,11 @@ export default function MultipleRoles({
             </Holds>
             {numberOfRoles >= 1 && option !== "break" && (
               <Holds className="row-start-8 row-end-9 h-full w-full justify-center">
-                <Buttons onClick={handleNextStep} disabled background={"grey"}>
+                <Buttons
+                  onClick={handleNextStep}
+                  disabled
+                  background={"lightGray"}
+                >
                   <Titles size={"h2"}>{t("StartCamera")}</Titles>
                 </Buttons>
               </Holds>
