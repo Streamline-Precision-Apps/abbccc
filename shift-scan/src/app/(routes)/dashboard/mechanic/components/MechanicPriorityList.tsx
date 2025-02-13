@@ -57,69 +57,67 @@ export default function MechanicPriority() {
     projects.push({ id: "" } as Projects);
   }
 
-  useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 3000);
-  }, []);
-
   if (loading) {
     return (
-      <Holds className="no-scrollbar overflow-y-auto">
-        <Contents width={"section"} className="py-5">
-          {projects.map((_, index) => (
-            <Holds
-              key={index}
-              background={"lightGray"}
-              className="h-1/6 my-2 py-7 animate-pulse"
-            />
-          ))}
-        </Contents>
+      <Holds background={"white"} className="row-span-7 h-full animate-pulse">
+        <Holds className="no-scrollbar overflow-y-auto ">
+          <Contents width={"section"} className="py-5 ">
+            {projects.map((_, index) => (
+              <Holds
+                key={index}
+                background={"lightGray"}
+                className="h-1/6 my-2 py-7"
+              />
+            ))}
+          </Contents>
+        </Holds>
       </Holds>
     );
   }
 
   return (
-    <Holds className="no-scrollbar overflow-y-auto ">
-      <Contents width={"section"} className="py-5">
-        {projects.map((project: Projects, index) => {
-          if (project.id === "") {
-            return (
-              <Holds
-                key={index}
-                background={"lightGray"}
-                className="h-1/6 my-2 py-7 "
-              />
-            );
-          }
-          // Check if any maintenance log is active (has a startTime but no endTime)
-          const isActive = project.maintenanceLogs.some(
-            (log) => log.startTime && !log.endTime
-          );
-
-          return (
-            <Holds key={project.id} className="h-full relative py-3">
-              {isActive && (
+    <Holds background={"white"} className="row-span-7 h-full">
+      <Holds className="no-scrollbar overflow-y-auto ">
+        <Contents width={"section"} className="py-5">
+          {projects.map((project: Projects, index) => {
+            if (project.id === "") {
+              return (
                 <Holds
-                  background={"green"}
-                  className="absolute top-2 left-4 w-1/4 h-5 rounded-[10px] border-[3px] border-black flex items-center justify-center"
+                  key={index}
+                  background={"lightGray"}
+                  className="h-1/6 my-2 py-7 "
+                />
+              );
+            }
+            // Check if any maintenance log is active (has a startTime but no endTime)
+            const isActive = project.maintenanceLogs.some(
+              (log) => log.startTime && !log.endTime
+            );
+
+            return (
+              <Holds key={project.id} className="h-full relative py-3">
+                {isActive && (
+                  <Holds
+                    background={"green"}
+                    className="absolute top-2 left-4 w-1/4 h-5 rounded-[10px] border-[3px] border-black flex items-center justify-center"
+                  >
+                    <Texts size={"p7"} className="text-center">
+                      Active
+                    </Texts>
+                  </Holds>
+                )}
+                <Buttons
+                  background="lightBlue"
+                  href={`/dashboard/mechanic/${project.id}`}
+                  className="w-full h-full py-4 rounded-[10px]"
                 >
-                  <Texts size={"p7"} className="text-center">
-                    Active
-                  </Texts>
-                </Holds>
-              )}
-              <Buttons
-                background="lightBlue"
-                href={`/dashboard/mechanic/${project.id}`}
-                className="w-full h-full py-4 rounded-[10px]"
-              >
-                <Titles size={"h2"}>{project?.equipment?.name}</Titles>
-              </Buttons>
-            </Holds>
-          );
-        })}
-      </Contents>
+                  <Titles size={"h2"}>{project?.equipment?.name}</Titles>
+                </Buttons>
+              </Holds>
+            );
+          })}
+        </Contents>
+      </Holds>
     </Holds>
   );
 }

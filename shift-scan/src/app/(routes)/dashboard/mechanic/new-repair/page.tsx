@@ -272,7 +272,7 @@ export default function CreateMechanicProjectProcess() {
                             Status
                           </Labels>
                           <Selects
-                            name="status"
+                            name="additionalInfo"
                             value={status}
                             onChange={(e) =>
                               setStatus(
