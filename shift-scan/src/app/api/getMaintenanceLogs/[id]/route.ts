@@ -13,28 +13,27 @@ export async function GET(
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
   const { id } = params;
 
-  const projects = await prisma.maintenance.findUnique({
+  const projects = await prisma.maintenance.findMany({
     where: {
       id: id,
     },
     select: {
       id: true,
-      equipmentId: true,
-      equipmentIssue: true,
-      additionalInfo: true,
-      location: true,
-      priority: true,
-      createdBy: true,
-      createdAt: true,
-      hasBeenDelayed: true,
-      delay: true,
-      totalHoursLaboured: true,
-      equipment: {
+      maintenanceLogs: {
         select: {
           id: true,
-          name: true,
+          startTime: true,
+          endTime: true,
+          comment: true,
+          user: {
+            select: {
+              firstName: true,
+              lastName: true,
+            },
+          },
         },
       },
     },

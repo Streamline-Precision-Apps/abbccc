@@ -74,3 +74,58 @@ export async function CreateMechanicProject(formData: FormData) {
     throw error;
   }
 }
+
+export async function setEditForProjectInfo(formData: FormData) {
+  try {
+    console.log(formData);
+    const location = formData.get("location") as string;
+    const stringPriority = formData.get("priority") as string;
+
+    let priority;
+
+    switch (stringPriority) {
+      case "LOW":
+        priority = Priority.LOW;
+        break;
+      case "MEDIUM":
+        priority = Priority.MEDIUM;
+        break;
+      case "HIGH":
+        priority = Priority.HIGH;
+        break;
+      case "PENDING":
+        priority = Priority.PENDING;
+        break;
+      case "TODAY":
+        priority = Priority.TODAY;
+        break;
+      default:
+        priority = Priority.PENDING;
+    }
+
+    await prisma.maintenance.update({
+      where: {
+        id: formData.get("id") as string,
+      },
+      data: {
+        location,
+        priority,
+      },
+    });
+  } catch (error) {
+    console.error("Error updating project:", error);
+  }
+}
+
+export async function deleteMaintenanceProject(id: string) {
+  try {
+    await prisma.maintenance.delete({
+      where: {
+        id,
+      },
+    });
+    return true;
+  } catch (error) {
+    console.error("Error updating project:", error);
+  }
+}
