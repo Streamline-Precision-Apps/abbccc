@@ -229,7 +229,7 @@ export default function AddJobsiteForm({
                 <Holds
                   position={"row"}
                   key={tag.id}
-                  className=" gap-2 p-2 border rounded bg-gray-100 w-1/3"
+                  className=" gap-2 p-2 border rounded bg-app-gray w-1/3"
                 >
                   <Holds className="w-full">
                     <span>{tag.name}</span>

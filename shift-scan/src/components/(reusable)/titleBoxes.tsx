@@ -288,7 +288,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         className={cn(TitleBoxVariants({ variant, size, version, className }))}
         {...props}
       >
-        <Grids cols={"4"} rows={"2"} className="w-full h-full p-3">
+        <Grids cols={"3"} rows={"2"} className="w-full h-full p-3">
           <Holds className="col-span-1 row-span-1 flex items-center justify-center">
             <Buttons
               onClick={onClick}

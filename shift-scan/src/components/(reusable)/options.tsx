@@ -12,7 +12,7 @@ const OptionsVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-white border border-2 border-black disabled:bg-gray-400 mb-3 last:mb-0 w-full p-3",
+          "bg-white border border-2 border-black disabled:bg-app-dark-gray mb-3 last:mb-0 w-full p-3",
       },
       size: {
         default: "p-10 w-100 h-100",

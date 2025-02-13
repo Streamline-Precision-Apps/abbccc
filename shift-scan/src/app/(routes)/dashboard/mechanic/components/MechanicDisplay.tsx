@@ -7,22 +7,11 @@ import { Tab } from "@/components/(reusable)/tab";
 // import { useTranslations } from "next-intl";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import MechanicSelectList from "./MechanicSelectList";
-import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
-export default function MechanicDisplay() {
-  const [isManager, setIsManager] = useState(false);
+export default function MechanicDisplay({ isManager }: { isManager: boolean }) {
   const [activeTab, setActiveTab] = useState(1);
-  // const t = useTranslations("Mechanic");
-  const { data: session } = useSession();
-
-  // useEffect(() => {
-  //   if (session?.user.permission !== "USER") {
-  //     setIsManager(true);
-  //   } else {
-  //     setIsManager(false);
-  //   }
-  // }, [session]);
-
+  const router = useRouter();
   return (
     <>
       {!isManager && (
@@ -52,7 +41,8 @@ export default function MechanicDisplay() {
               title={activeTab === 1 ? "Priority List" : "Projects"}
               titleImg="/mechanic.svg"
               titleImgAlt="Mechanic"
-              type="row"
+              onClick={() => router.push("/dashboard")}
+              type="noIcon-NoHref"
             />
           </Holds>
           <Holds className="row-span-7 h-full">

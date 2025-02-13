@@ -122,7 +122,7 @@ export default function ReportView() {
           <Holds className="w-full h-full overflow-x-scroll row-start-2 row-end-13 border-[3px] border-app-dark-blue ">
             <table className="min-w-full border-collapse border border-gray-300 text-left">
               <thead>
-                <tr className="bg-gray-200 ">
+                <tr className="bg-app-gray ">
                   {headers.map((header) => (
                     <th
                       key={header.key}
@@ -137,7 +137,7 @@ export default function ReportView() {
                 {timeSheets.map((sheet, index) => (
                   <tr
                     key={index}
-                    className={index % 2 === 0 ? "bg-white" : "bg-gray-100 "}
+                    className={index % 2 === 0 ? "bg-white" : "bg-app-gray "}
                   >
                     <td className="px-4 py-2 border border-gray-300">
                       {new Date(sheet.submitDate).toLocaleDateString()}

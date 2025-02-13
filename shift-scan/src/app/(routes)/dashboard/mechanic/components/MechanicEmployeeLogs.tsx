@@ -81,7 +81,7 @@ export default function MechanicEmployeeLogs({
                   <Grids
                     key={mLog.id}
                     rows={"3"}
-                    className="mb-4 bg-slate-200 rounded-[10px] p-3"
+                    className="mb-4 bg-app-gray rounded-[10px] p-3"
                   >
                     <Holds
                       position={"row"}
