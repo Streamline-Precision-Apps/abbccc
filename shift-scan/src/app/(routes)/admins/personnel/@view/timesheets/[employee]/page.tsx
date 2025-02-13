@@ -40,7 +40,7 @@ export default function Timesheets({
   return (
     <Holds className="h-full w-full">
       {loading ? (
-        <Holds className="bg-[#CACACA] rounded-[10px] h-full w-full justify-center items-center">
+        <Holds className="bg-app-gray rounded-[10px] h-full w-full justify-center items-center">
           <Titles size={"h1"}>{t("Loading")}</Titles>
           <Spinner />
         </Holds>

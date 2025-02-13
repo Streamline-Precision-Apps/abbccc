@@ -96,7 +96,7 @@ export const Filter = ({ params }: { params: { employee: string } }) => {
           </Holds>
           <Holds className="h-full w-full row-span-5 overflow-y-auto no-scrollbar border-[3px] border-black rounded-[10px] ">
             {loading ? (
-              <Holds className=" bg-[#CACACA] h-full w-full justify-center">
+              <Holds className=" bg-app-gray h-full w-full justify-center">
                 <Spinner />
               </Holds>
             ) : (
@@ -146,7 +146,7 @@ export const Filter = ({ params }: { params: { employee: string } }) => {
                     </Holds>
                   ))
                 ) : (
-                  <Holds className=" bg-[#CACACA] h-full w-full justify-center">
+                  <Holds className=" bg-app-gray h-full w-full justify-center">
                     <Texts size="p5">{t("NoTimeSheetsFound")}</Texts>
                   </Holds>
                 )}
