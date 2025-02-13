@@ -1,17 +1,27 @@
 "use client";
 import { Holds } from "@/components/(reusable)/holds";
-import { useState } from "react";
+import { use, useEffect, useState } from "react";
 import MechanicPriority from "./MechanicPriorityList";
 import { Grids } from "@/components/(reusable)/grids";
 import { Tab } from "@/components/(reusable)/tab";
-import { useTranslations } from "next-intl";
+// import { useTranslations } from "next-intl";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import MechanicSelectList from "./MechanicSelectList";
+import { useSession } from "next-auth/react";
 
 export default function MechanicDisplay() {
-  const [isManager, setIsManager] = useState(true);
+  const [isManager, setIsManager] = useState(false);
   const [activeTab, setActiveTab] = useState(1);
-  const t = useTranslations("Mechanic");
+  // const t = useTranslations("Mechanic");
+  const { data: session } = useSession();
+
+  // useEffect(() => {
+  //   if (session?.user.permission !== "USER") {
+  //     setIsManager(true);
+  //   } else {
+  //     setIsManager(false);
+  //   }
+  // }, [session]);
 
   return (
     <>
@@ -28,9 +38,8 @@ export default function MechanicDisplay() {
               type="row"
             />
           </Holds>
-          <Holds background={"white"} className="row-span-7 h-full">
-            <MechanicPriority />
-          </Holds>
+
+          <MechanicPriority />
         </Grids>
       )}
       {isManager && (
