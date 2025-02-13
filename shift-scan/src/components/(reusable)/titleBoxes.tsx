@@ -275,7 +275,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
             </Buttons>
           </Holds>
 
-          <Holds className="col-start-1 col-end-5 row-start-3 row-end-4 flex items-center justify-center">
+          <Holds className="col-start-1 col-end-5 row-start-2 row-end-3 flex items-center justify-center">
             <Titles size={"h2"}>{title}</Titles>
           </Holds>
         </Grids>
@@ -288,7 +288,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         className={cn(TitleBoxVariants({ variant, size, version, className }))}
         {...props}
       >
-        <Grids cols={"4"} rows={"3"} className="w-full h-full p-3">
+        <Grids cols={"4"} rows={"2"} className="w-full h-full p-3">
           <Holds className="col-span-1 row-span-1 flex items-center justify-center">
             <Buttons
               onClick={onClick}
@@ -304,7 +304,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
             </Buttons>
           </Holds>
 
-          <Holds className="col-start-1 col-end-5 row-start-3 row-end-4 flex items-center justify-center">
+          <Holds className="col-start-1 col-end-5 row-start-2 row-end-3 flex items-center justify-center">
             <Titles size={"h2"}>{title}</Titles>
           </Holds>
         </Grids>
