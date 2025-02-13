@@ -59,6 +59,7 @@ model Maintenance {
     createdAt          DateTime         @default(now())
     priority           Priority // level of priority
     delay              DateTime? // this shows priority as delay if the date has not passed
+    delayReasoning     String?
     repaired           Boolean          @default(false) // finished request are marked as repaired
     selected           Boolean          @default(false) // if they are selected they can be view by employees
     hasBeenDelayed     Boolean          @default(false) // 
