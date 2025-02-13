@@ -122,7 +122,7 @@ export default function ReportSearch() {
             <Inputs type="hidden" name="startDate" value={startDate} />
             <Inputs type="hidden" name="endDate" value={endDate} />
             <Buttons
-              background={readyToSubmit ? "green" : "grey"}
+              background={readyToSubmit ? "green" : "darkGray"}
               type="submit"
               disabled={!readyToSubmit}
             >

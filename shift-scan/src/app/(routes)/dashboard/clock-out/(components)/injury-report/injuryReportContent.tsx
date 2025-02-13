@@ -196,7 +196,7 @@ export const InjuryReportContent = ({
                   background={
                     textarea && base64String && signatureChecked
                       ? "lightBlue"
-                      : "grey"
+                      : "darkGray"
                   }
                   disabled={textarea && signatureChecked ? false : true}
                   onClick={handleSubmit}

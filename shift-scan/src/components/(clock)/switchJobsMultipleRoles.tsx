@@ -108,7 +108,7 @@ export default function SwitchJobsMultiRoles({
                 saveCurrentData();
                 handleNextStep();
               }}
-              background={submittable === false ? "grey" : "orange"}
+              background={submittable === false ? "darkGray" : "orange"}
             >
               <Titles size={"h2"}>{t("Continue")}</Titles>
             </Buttons>
@@ -202,7 +202,7 @@ export default function SwitchJobsMultiRoles({
               saveCurrentData();
               handleNextStep();
             }}
-            background={submittable === false ? "grey" : "orange"}
+            background={submittable === false ? "darkGray" : "orange"}
           >
             <Titles size={"h2"}>{t("Continue")}</Titles>
           </Buttons>

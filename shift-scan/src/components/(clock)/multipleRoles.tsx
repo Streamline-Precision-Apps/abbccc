@@ -129,7 +129,7 @@ export default function MultipleRoles({
                 <Buttons
                   onClick={handleNextStep}
                   disabled
-                  background={"lightGray"}
+                  background={"darkGray"}
                 >
                   <Titles size={"h2"}>{t("StartCamera")}</Titles>
                 </Buttons>
