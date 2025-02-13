@@ -10,7 +10,7 @@ const tabStyles = cva(
     variants: {
       isActive: {
         true: "bg-white border-blue-500",
-        false: "bg-gray-400 border-transparent",
+        false: "bg-app-dark-gray border-transparent",
       },
       size: {
         sm: "text-sm",

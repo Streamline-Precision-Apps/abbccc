@@ -18,12 +18,21 @@ export async function GET() {
       selected: true,
       priority: true,
       delay: true,
+      equipmentIssue: true,
+      additionalInfo: true,
       maintenanceLogs: {
         select: {
           id: true,
           startTime: true,
           endTime: true,
           userId: true,
+          user: {
+            select: {
+              firstName: true,
+              lastName: true,
+              image: true,
+            },
+          },
         },
       },
       equipment: {

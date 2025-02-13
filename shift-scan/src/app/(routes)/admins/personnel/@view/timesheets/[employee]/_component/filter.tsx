@@ -21,7 +21,7 @@ type TimeSheet = {
   endTime?: Date | string | null;
   comment?: string | null;
   statusComment?: string | null;
-  status?: string; 
+  status?: string;
   workType?: string;
 };
 
@@ -106,7 +106,7 @@ export const Filter = ({ params }: { params: { employee: string } }) => {
                   userTimeSheets.map((timesheet) => (
                     <Holds
                       key={timesheet.id}
-                      className="h-full w-full even:bg-gray-200 odd:bg-gray-100 rounded-[10px] px-2 py-4"
+                      className="h-full w-full even:bg-app-gray odd:bg-gray-100 rounded-[10px] px-2 py-4"
                       onClick={() =>
                         handleDateClick(
                           timesheet.submitDate

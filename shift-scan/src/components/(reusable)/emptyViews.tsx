@@ -26,7 +26,7 @@ const EmptyViewsVariants = cva(
       },
 
       background: {
-        default: "bg-slate-200",
+        default: "bg-app-gray",
         none: "bg-none",
         white: "bg-white",
       },

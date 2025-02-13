@@ -15,11 +15,11 @@ const InputVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-white border border-[3px] border-black disabled:bg-gray-400 mb-3 last:mb-0 w-full p-1",
+          "bg-white border border-[3px] border-black disabled:bg-app-dark-gray mb-3 last:mb-0 w-full p-1",
         white:
           "bg-white border border-2 border-black mb-3 last:mb-0 w-full p-1",
         titleFont: `bg-white border border-2 border-black mb-3 last:mb-0 w-full p-1 ${anton.className}`,
-        matchSelects: `border border-[3px] border-black disabled:bg-gray-400 mb-3 last:mb-0 w-full p-1`,
+        matchSelects: `border border-[3px] border-black disabled:bg-app-dark-gray mb-3 last:mb-0 w-full p-1`,
       },
     },
     defaultVariants: {
