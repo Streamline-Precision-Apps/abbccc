@@ -240,6 +240,7 @@ CREATE TABLE "Maintenance" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "priority" "Priority" NOT NULL,
     "delay" TIMESTAMP(3),
+    "delayReasoning" TEXT,
     "repaired" BOOLEAN NOT NULL DEFAULT false,
     "selected" BOOLEAN NOT NULL DEFAULT false,
     "hasBeenDelayed" BOOLEAN NOT NULL DEFAULT false,

@@ -18,6 +18,7 @@ import { Titles } from "@/components/(reusable)/titles";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Spinner from "@/components/(animations)/spinner";
 
 type Equipment = {
   id: string;
@@ -30,7 +31,7 @@ type Equipment = {
 
 export default function CreateMechanicProjectProcess() {
   const [scannedId, setScannedId] = useState<string | null>(null);
-  const t = useTranslations("Clock");
+
   const [step, setStep] = useState(1);
   const [scanned, setScanned] = useState(false);
   const [equipment, setEquipment] = useState<Equipment | null>(null);
@@ -175,7 +176,7 @@ export default function CreateMechanicProjectProcess() {
                   </Holds>
                   <Holds>
                     <Buttons background="none" onClick={() => setStep(3)}>
-                      <Texts size="p4">{t("TroubleScanning")}</Texts>
+                      <Texts size="p4">Trouble Scanning?</Texts>
                     </Buttons>
                   </Holds>
                 </Grids>
@@ -201,127 +202,134 @@ export default function CreateMechanicProjectProcess() {
 
           {/* Step 4: Creation of Project with problem, jobsite, status */}
           {step === 4 && (
-            <Holds background="white" className="w-full h-full py-4">
+            <>
               {loading ? (
-                <Holds className="flex items-center justify-center h-full">
-                  <Texts size="p4">Loading equipment...</Texts>
+                <Holds
+                  background="white"
+                  className="w-full h-full py-4 animate-pulse "
+                >
+                  <Holds className="flex items-center justify-center h-full animate-pulse">
+                    <Spinner />
+                  </Holds>
                 </Holds>
               ) : (
-                <Grids rows="7" gap="5" className="w-full h-full">
-                  <Holds className="row-start-1 row-end-2">
-                    <TitleBoxes
-                      title={
-                        equipment ? equipment.name.slice(0, 18) + "..." : ""
-                      }
-                      titleImg=""
-                      titleImgAlt=""
-                      onClick={() => setStep(1)}
-                      type="noIcon-NoHref"
-                    />
-                  </Holds>
-                  <Holds className="row-start-2 row-end-6 h-full ">
-                    <Contents width={"section"} className="h-full">
-                      <Holds className="h-full">
-                        <Labels size="p4" htmlFor="equipmentIssue">
-                          Equipment Issue
-                        </Labels>
-                        <TextAreas
-                          name="equipmentIssue"
-                          value={equipmentIssue}
-                          onChange={(e) => setEquipmentIssue(e.target.value)}
-                          placeholder="Enter a problem description..."
-                          rows={2}
-                          style={{ resize: "none" }}
-                        />
-                      </Holds>
-                      <Holds className="h-full ">
-                        <Labels size="p4" htmlFor="additionalInfo">
-                          Additional Info
-                        </Labels>
-                        <TextAreas
-                          name="additionalInfo"
-                          value={additionalInfo}
-                          onChange={(e) => setAdditionalInfo(e.target.value)}
-                          placeholder="Enter a problem description..."
-                          style={{ resize: "none" }}
-                          className="h-full"
-                        />
-                      </Holds>
-                      <Holds className="h-full">
-                        <Labels size="p4" htmlFor="location">
-                          Location
-                        </Labels>
-                        <TextAreas
-                          name="jobsite"
-                          value={location}
-                          onChange={(e) => setLocation(e.target.value)}
-                          placeholder="Enter a location if applicable..."
-                          rows={2}
-                          style={{ resize: "none" }}
-                        />
-                      </Holds>
-                      <Holds className="h-full relative">
-                        <Labels size="p4" htmlFor="additionalInfo">
-                          Status
-                        </Labels>
-                        <Selects
-                          name="status"
-                          value={status}
-                          onChange={(e) =>
-                            setStatus(
-                              e.target.value as
-                                | ""
-                                | "TODAY"
-                                | "HIGH"
-                                | "MEDIUM"
-                                | "LOW"
-                            )
-                          }
-                        >
-                          {PriorityOptions.map((option) => (
-                            <option
-                              key={option.value}
-                              value={option.value}
-                              className="text-center"
-                            >
-                              {option.label}
-                            </option>
-                          ))}
-                        </Selects>
-                        <Holds className="w-full absolute top-10 right-[40%] ">
-                          <Images
-                            titleImg={
-                              status === "TODAY"
-                                ? "/todayPriority.svg"
-                                : status === "HIGH"
-                                ? "/highPriority.svg"
-                                : status === "MEDIUM"
-                                ? "/mediumPriority.svg"
-                                : status === "LOW"
-                                ? "/lowPriority.svg"
-                                : "/pending.svg"
-                            }
-                            className="w-7 h-7"
-                            titleImgAlt="status"
+                <Holds background="white" className="w-full h-full py-4 ">
+                  <Grids rows="7" gap="5" className="w-full h-full">
+                    <Holds className="row-start-1 row-end-2">
+                      <TitleBoxes
+                        title={
+                          equipment ? equipment.name.slice(0, 18) + "..." : ""
+                        }
+                        titleImg=""
+                        titleImgAlt=""
+                        onClick={() => setStep(1)}
+                        type="noIcon-NoHref"
+                      />
+                    </Holds>
+                    <Holds className="row-start-2 row-end-6 h-full ">
+                      <Contents width={"section"} className="h-full">
+                        <Holds className="h-full">
+                          <Labels size="p4" htmlFor="equipmentIssue">
+                            Equipment Issue
+                          </Labels>
+                          <TextAreas
+                            name="equipmentIssue"
+                            value={equipmentIssue}
+                            onChange={(e) => setEquipmentIssue(e.target.value)}
+                            placeholder="Enter a problem description..."
+                            rows={2}
+                            style={{ resize: "none" }}
                           />
                         </Holds>
-                      </Holds>
-                    </Contents>
-                  </Holds>
-                  <Holds className="row-start-7 row-end-8 ">
-                    <Contents width={"section"}>
-                      <Buttons
-                        background={"green"}
-                        onClick={handleSubmit}
-                        className="py-4"
-                      >
-                        <Titles size={"h4"}>Create Project</Titles>
-                      </Buttons>
-                    </Contents>
-                  </Holds>
-                </Grids>
+                        <Holds className="h-full ">
+                          <Labels size="p4" htmlFor="additionalInfo">
+                            Additional Info
+                          </Labels>
+                          <TextAreas
+                            name="additionalInfo"
+                            value={additionalInfo}
+                            onChange={(e) => setAdditionalInfo(e.target.value)}
+                            placeholder="Enter a problem description..."
+                            style={{ resize: "none" }}
+                            className="h-full"
+                          />
+                        </Holds>
+                        <Holds className="h-full">
+                          <Labels size="p4" htmlFor="location">
+                            Location
+                          </Labels>
+                          <TextAreas
+                            name="jobsite"
+                            value={location}
+                            onChange={(e) => setLocation(e.target.value)}
+                            placeholder="Enter a location if applicable..."
+                            rows={2}
+                            style={{ resize: "none" }}
+                          />
+                        </Holds>
+                        <Holds className="h-full relative">
+                          <Labels size="p4" htmlFor="additionalInfo">
+                            Status
+                          </Labels>
+                          <Selects
+                            name="status"
+                            value={status}
+                            onChange={(e) =>
+                              setStatus(
+                                e.target.value as
+                                  | ""
+                                  | "TODAY"
+                                  | "HIGH"
+                                  | "MEDIUM"
+                                  | "LOW"
+                              )
+                            }
+                          >
+                            {PriorityOptions.map((option) => (
+                              <option
+                                key={option.value}
+                                value={option.value}
+                                className="text-center"
+                              >
+                                {option.label}
+                              </option>
+                            ))}
+                          </Selects>
+                          <Holds className="w-full absolute top-10 right-[40%] ">
+                            <Images
+                              titleImg={
+                                status === "TODAY"
+                                  ? "/todayPriority.svg"
+                                  : status === "HIGH"
+                                  ? "/highPriority.svg"
+                                  : status === "MEDIUM"
+                                  ? "/mediumPriority.svg"
+                                  : status === "LOW"
+                                  ? "/lowPriority.svg"
+                                  : "/pending.svg"
+                              }
+                              className="w-7 h-7"
+                              titleImgAlt="status"
+                            />
+                          </Holds>
+                        </Holds>
+                      </Contents>
+                    </Holds>
+                    <Holds className="row-start-7 row-end-8 ">
+                      <Contents width={"section"}>
+                        <Buttons
+                          background={"green"}
+                          onClick={handleSubmit}
+                          className="py-4"
+                        >
+                          <Titles size={"h4"}>Create Project</Titles>
+                        </Buttons>
+                      </Contents>
+                    </Holds>
+                  </Grids>
+                </Holds>
               )}
-            </Holds>
+            </>
           )}
         </Contents>
       </Bases>

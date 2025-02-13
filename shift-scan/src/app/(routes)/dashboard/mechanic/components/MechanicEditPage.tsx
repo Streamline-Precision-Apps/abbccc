@@ -9,7 +9,7 @@ import { Labels } from "@/components/(reusable)/labels";
 import { Selects } from "@/components/(reusable)/selects";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Titles } from "@/components/(reusable)/titles";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { Priority } from "@/lib/types";
 import {
   deleteMaintenanceProject,
@@ -19,6 +19,8 @@ import debounce from "lodash.debounce";
 import { useRouter } from "next/navigation";
 import { NModals } from "@/components/(reusable)/newmodals";
 import { Texts } from "@/components/(reusable)/texts";
+import Spinner from "@/components/(animations)/spinner";
+import { Inputs } from "@/components/(reusable)/inputs";
 
 type Equipment = {
   id: string;
@@ -36,6 +38,7 @@ type RepairDetails = {
   createdAt: Date;
   hasBeenDelayed: boolean;
   delay: Date | null;
+  delayReasoning?: string;
   totalHoursLaboured: number;
   equipment: Equipment;
 };
@@ -45,11 +48,13 @@ type MechanicEditPageProps = {
   setRepairDetails: React.Dispatch<
     React.SetStateAction<RepairDetails | undefined>
   >;
+  totalLogs: number;
 };
 
 export default function MechanicEditPage({
   repairDetails,
   setRepairDetails,
+  totalLogs,
 }: MechanicEditPageProps) {
   // Use local state if needed for additional UI aspects (e.g. image selection)
   const router = useRouter();
@@ -66,22 +71,14 @@ export default function MechanicEditPage({
 
   // Ensure repairDetails is loaded before rendering the form
   if (!repairDetails) {
-    return <div>Loading...</div>;
+    return (
+      <Grids rows={"8"} gap={"5"} className="pb-4">
+        <Holds className="row-span-8 h-full justify-center items-center">
+          <Spinner />
+        </Holds>
+      </Grids>
+    );
   }
-
-  const debouncedUpdate = useCallback(
-    debounce(async (updatedDetails: RepairDetails) => {
-      const formData = new FormData();
-      // Iterate over every key in updatedDetails.
-      Object.keys(updatedDetails).forEach((key) => {
-        // Append the key with its value or blank if value is null/undefined.
-        const value = updatedDetails[key as keyof RepairDetails] ?? "";
-        formData.append(key, value as string);
-      });
-      await setEditForProjectInfo(formData);
-    }, 500),
-    []
-  );
 
   // Helper function to update a field in repairDetails
   const updateField = (field: keyof RepairDetails, value: string) => {
@@ -99,61 +96,74 @@ export default function MechanicEditPage({
     }
   };
 
+  const debouncedUpdate = debounce(async (updatedDetails: RepairDetails) => {
+    const formData = new FormData();
+    Object.keys(updatedDetails).forEach((key) => {
+      const value = updatedDetails[key as keyof RepairDetails] ?? "";
+      formData.append(key, value as string);
+    });
+    await setEditForProjectInfo(formData);
+  }, 500);
+
   return (
-    <Grids rows={"8"} gap={"5"} className="pb-4">
-      <Holds className="row-start-1 row-end-6 h-full">
-        <Contents width={"section"} className="h-full">
-          <Holds className="h-full">
-            <Labels size="p4" htmlFor="equipmentIssue">
-              Equipment Issue
-            </Labels>
-            <TextAreas
-              name="equipmentIssue"
-              value={repairDetails.equipmentIssue}
-              onChange={(e) => updateField("equipmentIssue", e.target.value)}
-              placeholder="Enter a problem description..."
-              rows={2}
-              style={{ resize: "none" }}
-            />
-          </Holds>
-          <Holds className="h-full ">
-            <Labels size="p4" htmlFor="additionalInfo">
-              Additional Info
-            </Labels>
-            <TextAreas
-              name="additionalInfo"
-              value={repairDetails.additionalInfo}
-              onChange={(e) => updateField("additionalInfo", e.target.value)}
-              placeholder="Enter additional info..."
-              style={{ resize: "none" }}
-              className="h-full"
-            />
-          </Holds>
-          <Holds className="h-full">
-            <Labels size="p4" htmlFor="location">
-              Location
-            </Labels>
-            <TextAreas
-              name="location"
-              value={repairDetails.location}
-              onChange={(e) => updateField("location", e.target.value)}
-              placeholder="Enter a location if applicable..."
-              rows={2}
-              style={{ resize: "none" }}
-            />
-          </Holds>
-          <Holds className="h-full relative">
-            <Labels size="p4" htmlFor="priority">
-              Status
-            </Labels>
+    <>
+      <Holds className=" h-full overflow-y-auto no-scrollbar px-4  ">
+        <Holds>
+          <Labels size="p6" htmlFor="equipmentIssue">
+            Equipment Issue
+          </Labels>
+          <TextAreas
+            name="equipmentIssue"
+            value={repairDetails?.equipmentIssue || ""}
+            onChange={(e) => updateField("equipmentIssue", e.target.value)}
+            placeholder="Enter a problem description..."
+            rows={2}
+            className="text-sm"
+            style={{ resize: "none" }}
+          />
+        </Holds>
+        <Holds>
+          <Labels size="p6" htmlFor="additionalInfo">
+            Additional Info
+          </Labels>
+          <TextAreas
+            name="additionalInfo"
+            value={repairDetails.additionalInfo}
+            onChange={(e) => updateField("additionalInfo", e.target.value)}
+            placeholder="Enter additional info..."
+            rows={2}
+            style={{ resize: "none" }}
+            className="text-sm"
+          />
+        </Holds>
+        {/* Location */}
+        <Holds>
+          <Labels size="p6" htmlFor="location">
+            Location
+          </Labels>
+          <Inputs
+            name="location"
+            value={repairDetails.location}
+            onChange={(e) => updateField("location", e.target.value)}
+            placeholder="Enter a location if applicable..."
+            className="text-sm pl-4"
+          />
+        </Holds>
+        {/* Priority Status */}
+        <Holds className="relative">
+          <Labels size="p6" htmlFor="priority">
+            Status
+          </Labels>
+
+          <div className="relative w-full">
             <Selects
               name="priority"
               value={repairDetails.priority}
               onChange={(e) => {
                 const newPriority = e.target.value as Priority;
-
                 updateField("priority", newPriority);
               }}
+              className="w-full "
             >
               {PriorityOptions.map((option) => (
                 <option
@@ -165,26 +175,73 @@ export default function MechanicEditPage({
                 </option>
               ))}
             </Selects>
-            <Holds className="w-full absolute top-10 right-[40%]">
-              <Images
-                titleImg={
-                  repairDetails.priority === "TODAY"
-                    ? "/todayPriority.svg"
-                    : repairDetails.priority === "HIGH"
-                    ? "/highPriority.svg"
-                    : repairDetails.priority === "MEDIUM"
-                    ? "/mediumPriority.svg"
-                    : repairDetails.priority === "LOW"
-                    ? "/lowPriority.svg"
-                    : "/pending.svg"
-                }
-                className="w-7 h-7"
-                titleImgAlt="status"
+
+            {/* Adjust Image to Overlay Select Box */}
+            <Images
+              titleImg={
+                repairDetails.delay
+                  ? "/delayPriority.svg"
+                  : repairDetails.priority === "TODAY"
+                  ? "/todayPriority.svg"
+                  : repairDetails.priority === "HIGH"
+                  ? "/highPriority.svg"
+                  : repairDetails.priority === "MEDIUM"
+                  ? "/mediumPriority.svg"
+                  : repairDetails.priority === "LOW"
+                  ? "/lowPriority.svg"
+                  : "/pending.svg"
+              }
+              className="absolute left-2 top-1/4 transform -translate-y-1/4 w-6 h-6"
+              titleImgAlt="status"
+            />
+          </div>
+        </Holds>
+
+        {repairDetails.delay && (
+          <>
+            <Holds>
+              <Labels size="p6" htmlFor="delayReasoning">
+                Delay Reasoning
+              </Labels>
+              <Inputs
+                name="delayReasoning"
+                value={repairDetails.delayReasoning}
+                onChange={(e) => {
+                  updateField("delayReasoning", e.target.value);
+                }}
+                className="text-sm pl-4"
               />
             </Holds>
+            <Holds>
+              <Labels size="p6" htmlFor="delay">
+                Expect Arrival
+              </Labels>
+              <Inputs
+                type="date"
+                name="delay"
+                value={repairDetails.delay?.toString().split("T")[0]}
+                onChange={(e) => {
+                  const newDelay = new Date(e.target.value).toISOString();
+                  updateField("delay", newDelay);
+                }}
+                className="text-center text-sm"
+              />
+            </Holds>
+          </>
+        )}
+        {totalLogs === 0 && (
+          <Holds className="mt-5">
+            <Buttons
+              background={"red"}
+              onClick={() => setOpenDeleteModal(true)}
+              className="py-4"
+            >
+              <Titles size={"h4"}>Delete</Titles>
+            </Buttons>
           </Holds>
-        </Contents>
+        )}
       </Holds>
+
       <NModals
         size={"medWW"}
         isOpen={openDeleteModal}
@@ -203,21 +260,16 @@ export default function MechanicEditPage({
               </Buttons>
             </Holds>
             <Holds className="row-span-1 col-span-1  ">
-              <Buttons background={"red"} onClick={deleteProject}>
-                <Titles size={"h4"}>Delete</Titles>
+              <Buttons
+                background={"red"}
+                onClick={() => setOpenDeleteModal(false)}
+              >
+                <Titles size={"h4"}>Cancel</Titles>
               </Buttons>
             </Holds>
           </Grids>
         </Holds>
       </NModals>
-
-      <Holds className="row-start-8 row-end-9 h-full">
-        <Contents width={"section"}>
-          <Buttons background={"red"} onClick={() => setOpenDeleteModal(true)}>
-            <Titles size={"h4"}>Delete</Titles>
-          </Buttons>
-        </Contents>
-      </Holds>
-    </Grids>
+    </>
   );
 }

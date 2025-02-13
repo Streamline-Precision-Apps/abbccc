@@ -30,6 +30,7 @@ export async function GET(
       createdAt: true,
       hasBeenDelayed: true,
       delay: true,
+      delayReasoning: true,
       totalHoursLaboured: true,
       equipment: {
         select: {
