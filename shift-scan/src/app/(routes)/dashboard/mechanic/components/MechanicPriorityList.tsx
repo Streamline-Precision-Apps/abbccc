@@ -10,9 +10,11 @@ import { Texts } from "@/components/(reusable)/texts";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { Priority } from "@/lib/types";
-import { set } from "date-fns";
 import { useEffect, useState } from "react";
 import Slider from "react-slick";
+import { formatISO } from "date-fns";
+import { getFormattedDuration } from "@/utils/getFormattedDuration";
+import { Inputs } from "@/components/(reusable)/inputs";
 
 type Equipment = {
   id: string;
@@ -64,8 +66,19 @@ export default function MechanicPriority() {
   const [isOpenProjectPreview, setIsOpenProjectPreview] = useState(false);
   const [projectPreviewId, setProjectPreviewId] = useState<string | null>(null); // [setProjectPreviewId]
   const [previewedProjectData, setPreviewedProjectData] = useState<Projects>();
+  const [endTime] = useState(
+    new Date(
+      new Date().getTime() - new Date().getTimezoneOffset() * 60 * 1000
+    ).toISOString()
+  );
+
   const [activeUsers, setActiveUsers] = useState<
-    { id: string; name: string; image: string }[]
+    {
+      id: string;
+      name: string;
+      image: string;
+      startTime: string;
+    }[]
   >([]);
   {
     /* #create api to fetch a single project  */
@@ -102,6 +115,7 @@ export default function MechanicPriority() {
             id: log.user.id,
             name: `${log.user.firstName} ${log.user.lastName}`,
             image: log.user.image, // If you want to display images
+            startTime: new Date(log.startTime).toISOString(),
           }));
 
         setActiveUsers(activeUsersList);
@@ -204,32 +218,53 @@ export default function MechanicPriority() {
               </Holds>
               <Holds className="flex justify-center items-center h-full w-full row-start-2 row-end-8">
                 <Contents width={"section"}>
-                  <Holds>
+                  <Holds position={"row"} className="w-full">
                     <Labels size={"p6"}>Active Workers</Labels>
-                    <Holds className="border-[3px] border-black rounded-[10px] p-3">
-                      <Slider {...settings}>
-                        {activeUsers.length > 0 ? (
-                          activeUsers.map((user) => (
-                            <Holds
-                              key={user.id}
-                              className="p-2 flex items-center gap-2"
-                            >
-                              <img
-                                src={user.image}
-                                alt={user.name}
-                                className="w-10 h-10 rounded-full object-cover"
-                                title={`${user.name}`}
+
+                    {activeUsers.length > 0 ? (
+                      activeUsers.map((user) => (
+                        <div key={user.id}>
+                          <Holds className="p-4 flex items-center gap-2 ">
+                            <img
+                              src={user.image || "/person.svg"}
+                              alt={user.name}
+                              className={
+                                user.image
+                                  ? "w-20 h-20 rounded-full object-cover mx-auto border-[3px] border-black"
+                                  : "w-16 h-16 rounded-full object-cover mx-auto"
+                              }
+                              title={user.name}
+                            />
+                            <Titles size={"h4"}>{user.name}</Titles>
+                            <Holds className="flex flex-col w-3/4 mx-auto">
+                              <Labels
+                                position={"left"}
+                                size={"p6"}
+                                htmlFor="totalTime"
+                              >
+                                Project total time
+                              </Labels>
+                              <Inputs
+                                name="totalTime"
+                                readOnly
+                                className="text-center text-sm"
+                                type="text"
+                                value={getFormattedDuration(
+                                  user.startTime,
+                                  endTime
+                                )}
                               />
-                              <Texts size={"p6"}>{user.name}</Texts>
                             </Holds>
-                          ))
-                        ) : (
-                          <Holds background={"lightGray"} className="p-10">
-                            <Texts size={"p6"}>No active workers</Texts>
                           </Holds>
-                        )}
-                      </Slider>
-                    </Holds>
+                        </div>
+                      ))
+                    ) : (
+                      <div>
+                        <Holds background={"lightGray"} className="p-10">
+                          <Texts size={"p6"}>No active workers</Texts>
+                        </Holds>
+                      </div>
+                    )}
                   </Holds>
 
                   <Holds>
