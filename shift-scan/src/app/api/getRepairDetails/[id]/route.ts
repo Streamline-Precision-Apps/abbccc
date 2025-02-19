@@ -32,6 +32,7 @@ export async function GET(
       delay: true,
       delayReasoning: true,
       totalHoursLaboured: true,
+      repaired: true,
       equipment: {
         select: {
           id: true,

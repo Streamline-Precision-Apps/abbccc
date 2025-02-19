@@ -196,15 +196,12 @@ export default function Project({ params }: { params: { id: string } }) {
       submitProject.append("solution", solution);
       submitProject.append("diagnosedProblem", diagnosedProblem);
       submitProject.append("totalHoursLaboured", totalLaborHours?.toString());
-
       const res = await SubmitEngineerProject(submitProject);
       await setMechanicProjectID("");
       if (res) {
         router.push("/dashboard/mechanic");
       }
-    } catch (error) {
-      console.error("Exception in finishProject:", error);
-    }
+    } catch (error) {}
   };
 
   const LeaveProject = async () => {
@@ -232,7 +229,6 @@ export default function Project({ params }: { params: { id: string } }) {
       formData.append("endTime", new Date().toISOString());
 
       const submitMechanicLog = await LeaveEngineerProject(formData);
-      await setMechanicProjectID("");
 
       if (delayReasoning !== "") {
         const delayForm = new FormData();
@@ -242,12 +238,12 @@ export default function Project({ params }: { params: { id: string } }) {
 
         await updateDelay(delayForm);
       }
-
+      await setMechanicProjectID("");
       if (submitMechanicLog) {
         router.push("/dashboard/mechanic");
       }
-    } catch (error) {
-      console.error("Exception in LeaveProject:", error);
+    } catch (e) {
+      console.log(e);
     }
   };
 
@@ -384,7 +380,7 @@ export default function Project({ params }: { params: { id: string } }) {
                 <Holds className="row-start-8 row-end-9">
                   <Contents width="section">
                     <Buttons
-                      onClick={finishProject}
+                      onClick={() => finishProject}
                       background="green"
                       className="py-3"
                     >

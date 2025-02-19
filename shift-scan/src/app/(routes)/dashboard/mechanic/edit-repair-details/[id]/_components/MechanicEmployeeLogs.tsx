@@ -102,9 +102,10 @@ export default function MechanicEmployeeLogs({
                       <TextAreas
                         className={`${mLog.comment} ? 'text-xs' : text-xs font-bold `}
                         disabled
-                      >
-                        {mLog.comment === "" ? "No comment" : mLog.comment}
-                      </TextAreas>
+                        defaultValue={
+                          mLog.comment === "" ? "No comment" : mLog.comment
+                        }
+                      ></TextAreas>
                     </Holds>
                   </Grids>
                 ))}

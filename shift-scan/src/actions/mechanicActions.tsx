@@ -34,6 +34,7 @@ export async function CreateMechanicProject(formData: FormData) {
     const additionalInfo = formData.get("additionalInfo") as string;
     const location = formData.get("location") as string;
     const stringPriority = formData.get("priority") as string;
+    const createdBy = formData.get("createdBy") as string;
 
     let priority = Priority.PENDING;
 
@@ -64,6 +65,7 @@ export async function CreateMechanicProject(formData: FormData) {
         additionalInfo,
         location,
         priority,
+        createdBy,
       },
     });
     console.log("Project created successfully.");

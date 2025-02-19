@@ -18,6 +18,7 @@ import { Titles } from "@/components/(reusable)/titles";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Spinner from "@/components/(animations)/spinner";
+import { useSession } from "next-auth/react";
 
 type Equipment = {
   id: string;
@@ -35,7 +36,6 @@ export default function CreateMechanicProjectProcess() {
   const [scanned, setScanned] = useState(false);
   const [equipment, setEquipment] = useState<Equipment | null>(null);
   const [loading, setLoading] = useState(false);
-
   const [equipmentIssue, setEquipmentIssue] = useState<string>("");
   const [additionalInfo, setAdditionalInfo] = useState<string>("");
   const [location, setLocation] = useState<string>("");
@@ -43,6 +43,10 @@ export default function CreateMechanicProjectProcess() {
     "TODAY" | "HIGH" | "MEDIUM" | "LOW" | "PENDING" | ""
   >("");
 
+  const { data: session } = useSession();
+  if (!session) {
+    return null;
+  }
   const router = useRouter();
 
   const PriorityOptions = [
@@ -97,6 +101,10 @@ export default function CreateMechanicProjectProcess() {
       formData.append("additionalInfo", additionalInfo || "");
       formData.append("location", location);
       formData.append("priority", status);
+      formData.append(
+        "createdBy",
+        `${session?.user?.firstName} ${session?.user?.lastName}`
+      );
       const response = await CreateMechanicProject(formData);
       if (response) {
         router.push("/dashboard/mechanic");
@@ -272,36 +280,45 @@ export default function CreateMechanicProjectProcess() {
                           </Labels>
                           <Holds className="relative w-full">
                             {/* Image positioned inside the Select at the top-left */}
-                           
-                              <Images
-                                titleImg={
-                                  status === "TODAY"
-                                    ? "/todayPriority.svg"
-                                    : status === "HIGH"
-                                    ? "/highPriority.svg"
-                                    : status === "MEDIUM"
-                                    ? "/mediumPriority.svg"
-                                    : status === "LOW"
-                                    ? "/lowPriority.svg"
-                                    : "/pending.svg"
-                                }
-                                className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2"
-                                titleImgAlt="status"
-                              />
-                           
+
+                            <Images
+                              titleImg={
+                                status === "TODAY"
+                                  ? "/todayPriority.svg"
+                                  : status === "HIGH"
+                                  ? "/highPriority.svg"
+                                  : status === "MEDIUM"
+                                  ? "/mediumPriority.svg"
+                                  : status === "LOW"
+                                  ? "/lowPriority.svg"
+                                  : "/pending.svg"
+                              }
+                              className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2"
+                              titleImgAlt="status"
+                            />
+
                             {/* Select dropdown with padding-left to prevent overlap */}
                             <Selects
                               name="additionalInfo"
                               value={status}
                               onChange={(e) =>
                                 setStatus(
-                                  e.target.value as "" | "TODAY" | "HIGH" | "MEDIUM" | "LOW"
+                                  e.target.value as
+                                    | ""
+                                    | "TODAY"
+                                    | "HIGH"
+                                    | "MEDIUM"
+                                    | "LOW"
                                 )
                               }
                               className="pl-8" // Adjust padding to move text away from the image
                             >
                               {PriorityOptions.map((option) => (
-                                <option key={option.value} value={option.value} className="text-center">
+                                <option
+                                  key={option.value}
+                                  value={option.value}
+                                  className="text-center"
+                                >
                                   {option.label}
                                 </option>
                               ))}
