@@ -15,9 +15,7 @@ import {
 } from "@/actions/mechanicActions";
 import ReceivedInfo from "./_components/receivedInfo";
 import MyCommentFinishProject from "./_components/myComment";
-import { auth } from "@/auth";
 import { useSession } from "next-auth/react";
-import { user } from "@nextui-org/theme";
 
 type maintenanceLogSchema = {
   id: string;
@@ -41,7 +39,7 @@ export default function Project({ params }: { params: { id: string } }) {
   const [activeUsers, setActiveUsers] = useState<number>(0);
   const [myMaintenanceLogs, setMyMaintenanceLogs] =
     useState<maintenanceLogSchema>();
-
+  const [hasBeenDelayed, setHasBeenDelayed] = useState(false);
   useEffect(() => {
     const fetchReceivedInfo = async () => {
       try {
@@ -55,6 +53,7 @@ export default function Project({ params }: { params: { id: string } }) {
         setAdditionalNotes(data.additionalInfo);
         setDelayReasoning(data.delayReasoning || "");
         setExpectedArrival(data.delay);
+        setHasBeenDelayed(data.hasBeenDelayed);
 
         // ✅ Find the log associated with the current logged-in user
         const userMaintenanceLog = data.maintenanceLogs.find(
@@ -74,13 +73,6 @@ export default function Project({ params }: { params: { id: string } }) {
           data.maintenanceLogs.map((log: any) => log.userId)
         ).size;
         setActiveUsers(uniqueUserCount || 0);
-
-        console.log(
-          "Current User Log ID:",
-          userMaintenanceLog?.id,
-          "User ID:",
-          userMaintenanceLog?.userId
-        );
       } catch (e) {
         console.log("Error fetching received info:", e);
       } finally {
@@ -103,11 +95,7 @@ export default function Project({ params }: { params: { id: string } }) {
 
   const LeaveProject = async () => {
     try {
-      // verify if there are multiple users in the project
-      const res = await fetch(`/api/getReceivedInfo/${params.id}`);
-      const data = await res.json();
       const userForm = new FormData();
-
       session && userForm.append("userId", session.data?.user.id || "");
       userForm.append("maintenanceId", params.id);
 
@@ -192,18 +180,18 @@ export default function Project({ params }: { params: { id: string } }) {
                   }
                 >
                   {activeTab === 1 && (
-                    <>
-                      <ReceivedInfo
-                        loading={loading}
-                        leaveProject={LeaveProject}
-                        problemReceived={problemReceived}
-                        additionalNotes={additionalNotes}
-                        delayReasoning={delayReasoning}
-                        expectedArrival={expectedArrival}
-                        setDelayReasoning={setDelayReasoning}
-                        setExpectedArrival={setExpectedArrival}
-                      />
-                    </>
+                    <ReceivedInfo
+                      loading={loading}
+                      leaveProject={LeaveProject}
+                      problemReceived={problemReceived}
+                      additionalNotes={additionalNotes}
+                      delayReasoning={delayReasoning}
+                      expectedArrival={expectedArrival}
+                      setDelayReasoning={setDelayReasoning}
+                      setExpectedArrival={setExpectedArrival}
+                      myComment={myComment}
+                      hasBeenDelayed={hasBeenDelayed}
+                    />
                   )}
                   {activeTab === 2 && (
                     <MyCommentFinishProject
