@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import {
   findUniqueUser,
   LeaveEngineerProject,
+  SubmitEngineerProject,
   updateDelay,
 } from "@/actions/mechanicActions";
 import ReceivedInfo from "./_components/receivedInfo";
@@ -23,6 +24,7 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
+import { parse } from "path";
 
 // ✅ Define a full type for each maintenance log returned by the API
 interface MaintenanceLog {
@@ -69,7 +71,7 @@ export default function Project({ params }: { params: { id: string } }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [diagnosedProblem, setDiagnosedProblem] = useState("");
   const [solution, setSolution] = useState("");
-  const [totalLaborHours, setTotalLaborHours] = useState(0);
+  const [totalLaborHours, setTotalLaborHours] = useState<number>(0);
 
   useEffect(() => {
     if (!userId) return;
@@ -110,7 +112,9 @@ export default function Project({ params }: { params: { id: string } }) {
             return sum + (end - start);
           }, 0);
 
-        const totalHours = totalMilliseconds / 1000 / 60 / 60;
+        const totalHours = parseFloat(
+          (totalMilliseconds / 1000 / 60 / 60).toFixed(2)
+        );
         setTotalLaborHours(totalHours);
 
         // ✅ Unique user count calculation
@@ -144,7 +148,9 @@ export default function Project({ params }: { params: { id: string } }) {
             return sum + (end - start);
           }, 0);
 
-        const totalHours = totalMilliseconds / 1000 / 60 / 60;
+        const totalHours = parseFloat(
+          (totalMilliseconds / 1000 / 60 / 60).toFixed(2)
+        );
         setTotalLaborHours(totalHours);
       })
       .catch((e) => {
@@ -162,12 +168,38 @@ export default function Project({ params }: { params: { id: string } }) {
 
   const finishProject = async () => {
     try {
-      const submitProject = new FormData();
-      submitProject.append("maintenanceId", params.id);
-      submitProject.append("userId", userId || "");
-      submitProject.append("diagnosedProblem", diagnosedProblem);
+      const userForm = new FormData();
+      if (session.data) {
+        userForm.append("userId", session.data.user?.id || "");
+      }
+      userForm.append("maintenanceId", params.id);
 
-      await LeaveProject();
+      const uniqueUserCount = await findUniqueUser(userForm);
+
+      if (!uniqueUserCount) {
+        throw new Error("No maintenance log found for the current user");
+      }
+
+      // We are sure myMaintenanceLogs is not null here.
+      const { id, userId } = myMaintenanceLogs as MaintenanceLogSchema;
+
+      const formData = new FormData();
+      formData.append("comment", myComment);
+      formData.append("maintenanceId", id);
+      formData.append("userId", userId);
+      formData.append("endTime", new Date().toISOString());
+      await LeaveEngineerProject(formData);
+
+      const submitProject = new FormData();
+      submitProject.append("id", params.id);
+      submitProject.append("solution", solution);
+      submitProject.append("diagnosedProblem", diagnosedProblem);
+      submitProject.append("totalHoursLaboured", totalLaborHours?.toString());
+
+      const res = await SubmitEngineerProject(submitProject);
+      if (res) {
+        router.push("/dashboard/mechanic");
+      }
     } catch (e) {
       console.log(e);
     }
