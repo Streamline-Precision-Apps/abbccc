@@ -5,11 +5,15 @@ import { Images } from "./images";
 import { Grids } from "./grids";
 
 const EmptyViewsVariants = cva(
-  " h-full w-full relative ", //this applies to all variants
+  " h-full w-full relative rounded-[10px] ", //this applies to all variants
   {
     variants: {
       size: {
         default: "h-full w-full",
+      },
+      topChildPosition:{
+        default: "",
+        
       },
       logoPosition: {
         default: "row-start-2 row-end-3 justify-center items-center",
@@ -18,11 +22,12 @@ const EmptyViewsVariants = cva(
         bottom: "row-start-3 row-end-4 justify-center items-center",
       },
       logoSize: {
-        default: "mx-auto w-4/5",
-        xs: "mx-auto w-2/3",
-        sm: "mx-auto w-3/4",
-        med: "mx-auto w-4/5",
-        lg: "mx-auto w-5/6",
+        default: "mx-auto p-3",
+        xs: "mx-auto px-5",
+        sm: "mx-auto px-4",
+        med: "mx-auto px-3",
+        lg: "mx-auto p-2",
+        full: "mx-auto p-1",
       },
 
       background: {
@@ -54,7 +59,7 @@ const EmptyViews: FC<EmptyViewsProps> = ({
   logoPosition,
   logoSize,
   TopChild,
-
+  topChildPosition,
   BottomChild,
   ...props
 }) => {
@@ -64,7 +69,7 @@ const EmptyViews: FC<EmptyViewsProps> = ({
       {...props}
     >
       <Grids rows={"3"} className="h-full w-full">
-        <div className="row-span-1 h-full w-full">{TopChild}</div>
+        {TopChild}
         <div className={cn(EmptyViewsVariants({ logoPosition }))}>
           <Images
             titleImg={"/shiftScanLogoHorizontal.svg"}

@@ -15,7 +15,6 @@ import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
-import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Spinner from "@/components/(animations)/spinner";
@@ -95,7 +94,7 @@ export default function CreateMechanicProjectProcess() {
       const formData = new FormData();
       formData.append("equipmentId", equipment?.id ?? "");
       formData.append("equipmentIssue", equipmentIssue);
-      formData.append("additionalInfo", additionalInfo);
+      formData.append("additionalInfo", additionalInfo || "");
       formData.append("location", location);
       formData.append("priority", status);
       const response = await CreateMechanicProject(formData);
@@ -271,46 +270,42 @@ export default function CreateMechanicProjectProcess() {
                           <Labels size="p4" htmlFor="additionalInfo">
                             Status
                           </Labels>
-                          <Selects
-                            name="additionalInfo"
-                            value={status}
-                            onChange={(e) =>
-                              setStatus(
-                                e.target.value as
-                                  | ""
-                                  | "TODAY"
-                                  | "HIGH"
-                                  | "MEDIUM"
-                                  | "LOW"
-                              )
-                            }
-                          >
-                            {PriorityOptions.map((option) => (
-                              <option
-                                key={option.value}
-                                value={option.value}
-                                className="text-center"
-                              >
-                                {option.label}
-                              </option>
-                            ))}
-                          </Selects>
-                          <Holds className="w-full absolute top-10 right-[40%] ">
-                            <Images
-                              titleImg={
-                                status === "TODAY"
-                                  ? "/todayPriority.svg"
-                                  : status === "HIGH"
-                                  ? "/highPriority.svg"
-                                  : status === "MEDIUM"
-                                  ? "/mediumPriority.svg"
-                                  : status === "LOW"
-                                  ? "/lowPriority.svg"
-                                  : "/pending.svg"
+                          <Holds className="relative w-full">
+                            {/* Image positioned inside the Select at the top-left */}
+                           
+                              <Images
+                                titleImg={
+                                  status === "TODAY"
+                                    ? "/todayPriority.svg"
+                                    : status === "HIGH"
+                                    ? "/highPriority.svg"
+                                    : status === "MEDIUM"
+                                    ? "/mediumPriority.svg"
+                                    : status === "LOW"
+                                    ? "/lowPriority.svg"
+                                    : "/pending.svg"
+                                }
+                                className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2"
+                                titleImgAlt="status"
+                              />
+                           
+                            {/* Select dropdown with padding-left to prevent overlap */}
+                            <Selects
+                              name="additionalInfo"
+                              value={status}
+                              onChange={(e) =>
+                                setStatus(
+                                  e.target.value as "" | "TODAY" | "HIGH" | "MEDIUM" | "LOW"
+                                )
                               }
-                              className="w-7 h-7"
-                              titleImgAlt="status"
-                            />
+                              className="pl-8" // Adjust padding to move text away from the image
+                            >
+                              {PriorityOptions.map((option) => (
+                                <option key={option.value} value={option.value} className="text-center">
+                                  {option.label}
+                                </option>
+                              ))}
+                            </Selects>
                           </Holds>
                         </Holds>
                       </Contents>

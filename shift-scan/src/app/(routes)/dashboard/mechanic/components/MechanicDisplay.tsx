@@ -9,7 +9,7 @@ import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import MechanicSelectList from "./MechanicSelectList";
 import { useRouter } from "next/navigation";
 
-export default function MechanicDisplay({ isManager }: { isManager: boolean }) {
+export default function MechanicDisplay({ isManager}: { isManager: boolean }) {
   const [activeTab, setActiveTab] = useState(1);
   const router = useRouter();
   return (

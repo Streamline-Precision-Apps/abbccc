@@ -111,6 +111,7 @@ export default function MechanicSelectList() {
         </Selects>
       </Holds>
       <Holds className="col-start-1 col-end-6 row-start-2 row-end-9 h-full w-full border-[3px] border-black rounded-[10px]">
+        
         <SearchAndCheck AllProjects={filteredProjects} />
       </Holds>
     </Grids>

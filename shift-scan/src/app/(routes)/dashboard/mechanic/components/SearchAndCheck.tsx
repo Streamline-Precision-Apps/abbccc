@@ -1,9 +1,12 @@
 "use client";
 import { setProjectSelected } from "@/actions/mechanicActions";
+import EmptyView from "@/components/(reusable)/emptyView";
+import { EmptyViews } from "@/components/(reusable)/emptyViews";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
+import { Titles } from "@/components/(reusable)/titles";
 import { Priority } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { useRef, useState, useEffect } from "react";
@@ -100,7 +103,7 @@ export const SearchAndCheck = ({
             size={"50"}
           />
         </Holds>
-        <Holds size={"60"}>
+        <Holds size={"60"} >
           <input
             ref={inputRef}
             type="text"
@@ -118,7 +121,20 @@ export const SearchAndCheck = ({
         background={"darkBlue"}
         className="row-start-2 row-end-9 h-full w-full overflow-y-auto no-scrollbar rounded-none"
       >
-        {filteredProjects.map((project, index) => (
+        {filteredProjects.length === 0 &&
+        <Holds className="h-full w-full">
+            <EmptyViews TopChild={
+              <Holds className="px-2">
+
+            <Titles size={"h5"}>
+            No projects found. Start a new project or check back later!
+              </Titles>
+              
+              </Holds>
+            } topChildPosition={"default"}/>
+          </Holds>
+        }
+        {filteredProjects.length > 0  && filteredProjects.map((project, index) => (
           <Holds
             background={"white"}
             position={"row"}

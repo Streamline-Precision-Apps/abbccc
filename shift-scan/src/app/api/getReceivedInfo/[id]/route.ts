@@ -3,47 +3,44 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 
-export async function GET() {
+export async function GET(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
   const session = await auth();
   const userId = session?.user.id;
 
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  const { id } = params;
 
-  const projects = await prisma.maintenance.findMany({
+  const receivedInfo = await prisma.maintenance.findUnique({
+    where: {
+      id: id,
+    },
     select: {
       id: true,
-      equipmentId: true,
-      selected: true,
-      priority: true,
-      delay: true,
       equipmentIssue: true,
       additionalInfo: true,
+      delay: true,
+      delayReasoning: true,
+      equipment: {
+        select: {
+          name: true,
+        },
+      },
       maintenanceLogs: {
         select: {
           id: true,
           startTime: true,
           endTime: true,
           userId: true,
-          timeSheetId: true,
-          user: {
-            select: {
-              firstName: true,
-              lastName: true,
-              image: true,
-            },
-          },
-        },
-      },
-      equipment: {
-        select: {
-          id: true,
-          name: true,
+          comment: true,
         },
       },
     },
   });
 
-  return NextResponse.json(projects);
+  return NextResponse.json(receivedInfo);
 }
