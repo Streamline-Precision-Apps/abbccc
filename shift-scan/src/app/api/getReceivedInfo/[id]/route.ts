@@ -24,8 +24,8 @@ export async function GET(
       equipmentIssue: true,
       additionalInfo: true,
       delay: true,
-      delayReasoning: true,
       hasBeenDelayed: true,
+      delayReasoning: true,
       equipment: {
         select: {
           name: true,

@@ -16,18 +16,44 @@ import {
 import ReceivedInfo from "./_components/receivedInfo";
 import MyCommentFinishProject from "./_components/myComment";
 import { useSession } from "next-auth/react";
+import { NModals } from "@/components/(reusable)/newmodals";
+import { Labels } from "@/components/(reusable)/labels";
+import { TextAreas } from "@/components/(reusable)/textareas";
+import { Inputs } from "@/components/(reusable)/inputs";
+import { Buttons } from "@/components/(reusable)/buttons";
+import { Texts } from "@/components/(reusable)/texts";
+import { Titles } from "@/components/(reusable)/titles";
 
-type maintenanceLogSchema = {
+// ✅ Define a full type for each maintenance log returned by the API
+interface MaintenanceLog {
   id: string;
   userId: string;
-};
+  startTime?: string;
+  endTime?: string | null;
+}
+
+// ✅ Define the expected shape of the data from /api/getReceivedInfo/:id
+interface ReceivedInfoData {
+  equipment: {
+    name: string;
+  };
+  equipmentIssue: string;
+  additionalInfo: string;
+  delayReasoning?: string;
+  delay: string;
+  hasBeenDelayed: boolean;
+  maintenanceLogs: MaintenanceLog[];
+}
+
+// ✅ Define a type for the minimal maintenance log used in state
+type MaintenanceLogSchema = Pick<MaintenanceLog, "id" | "userId">;
+
 export default function Project({ params }: { params: { id: string } }) {
   const router = useRouter();
-
   const session = useSession();
-  const userId = session.data?.user.id;
+  const userId = session.data?.user?.id;
 
-  // ✅ Ensure hooks always run in the same order
+  // ✅ State definitions
   const [activeTab, setActiveTab] = useState(1);
   const [problemReceived, setProblemReceived] = useState("");
   const [additionalNotes, setAdditionalNotes] = useState("");
@@ -38,15 +64,20 @@ export default function Project({ params }: { params: { id: string } }) {
   const [loading, setLoading] = useState(false);
   const [activeUsers, setActiveUsers] = useState<number>(0);
   const [myMaintenanceLogs, setMyMaintenanceLogs] =
-    useState<maintenanceLogSchema>();
+    useState<MaintenanceLogSchema | null>(null);
   const [hasBeenDelayed, setHasBeenDelayed] = useState(false);
-  useEffect(() => {
-    const fetchReceivedInfo = async () => {
-      try {
-        setLoading(true);
-        const res = await fetch(`/api/getReceivedInfo/${params.id}`);
-        const data = await res.json();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [diagnosedProblem, setDiagnosedProblem] = useState("");
+  const [solution, setSolution] = useState("");
+  const [totalLaborHours, setTotalLaborHours] = useState(0);
 
+  useEffect(() => {
+    if (!userId) return;
+
+    setLoading(true);
+    fetch(`/api/getReceivedInfo/${params.id}`)
+      .then((res) => res.json())
+      .then((data: ReceivedInfoData) => {
         // ✅ Set project information
         setTitles(data.equipment.name);
         setProblemReceived(data.equipmentIssue);
@@ -57,10 +88,9 @@ export default function Project({ params }: { params: { id: string } }) {
 
         // ✅ Find the log associated with the current logged-in user
         const userMaintenanceLog = data.maintenanceLogs.find(
-          (log: any) => log.userId === userId && log.endTime === null
+          (log) => log.userId === userId && log.endTime === null
         );
 
-        // ✅ Update state only if the log exists
         if (userMaintenanceLog) {
           setMyMaintenanceLogs({
             id: userMaintenanceLog.id,
@@ -68,25 +98,75 @@ export default function Project({ params }: { params: { id: string } }) {
           });
         }
 
+        // ✅ Calculate and set total labor hours
+        const totalMilliseconds = data.maintenanceLogs
+          .filter((log) => log.startTime) // only require a start time
+          .reduce((sum, log) => {
+            const start = new Date(log.startTime!).getTime();
+            // Use new Date() if endTime is null (or falsy), otherwise use log.endTime.
+            const end = log.endTime
+              ? new Date(log.endTime).getTime()
+              : new Date().getTime();
+            return sum + (end - start);
+          }, 0);
+
+        const totalHours = totalMilliseconds / 1000 / 60 / 60;
+        setTotalLaborHours(totalHours);
+
         // ✅ Unique user count calculation
         const uniqueUserCount = new Set(
-          data.maintenanceLogs.map((log: any) => log.userId)
+          data.maintenanceLogs.map((log) => log.userId)
         ).size;
         setActiveUsers(uniqueUserCount || 0);
-      } catch (e) {
+      })
+      .catch((e) => {
         console.log("Error fetching received info:", e);
-      } finally {
+      })
+      .finally(() => {
         setLoading(false);
-      }
-    };
+      });
+  }, [params.id, userId]);
 
-    if (userId) {
-      fetchReceivedInfo();
-    }
-  }, [params.id, userId]); // ✅ Added `userId` to dependency array
+  // Function to reload total labor hours
+  const reloadTotalLaborHours = () => {
+    setLoading(true);
+    fetch(`/api/getReceivedInfo/${params.id}`)
+      .then((res) => res.json())
+      .then((data: ReceivedInfoData) => {
+        const totalMilliseconds = data.maintenanceLogs
+          .filter((log) => log.startTime) // only require a start time
+          .reduce((sum, log) => {
+            const start = new Date(log.startTime!).getTime();
+            // Use new Date() if endTime is null (or falsy), otherwise use log.endTime.
+            const end = log.endTime
+              ? new Date(log.endTime).getTime()
+              : new Date().getTime();
+            return sum + (end - start);
+          }, 0);
+
+        const totalHours = totalMilliseconds / 1000 / 60 / 60;
+        setTotalLaborHours(totalHours);
+      })
+      .catch((e) => {
+        console.log("Error reloading total labor hours:", e);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  const openFinishProject = () => {
+    reloadTotalLaborHours();
+    setModalOpen(true);
+  };
 
   const finishProject = async () => {
     try {
+      const submitProject = new FormData();
+      submitProject.append("maintenanceId", params.id);
+      submitProject.append("userId", userId || "");
+      submitProject.append("diagnosedProblem", diagnosedProblem);
+
       await LeaveProject();
     } catch (e) {
       console.log(e);
@@ -96,7 +176,9 @@ export default function Project({ params }: { params: { id: string } }) {
   const LeaveProject = async () => {
     try {
       const userForm = new FormData();
-      session && userForm.append("userId", session.data?.user.id || "");
+      if (session.data) {
+        userForm.append("userId", session.data.user?.id || "");
+      }
       userForm.append("maintenanceId", params.id);
 
       const uniqueUserCount = await findUniqueUser(userForm);
@@ -105,7 +187,8 @@ export default function Project({ params }: { params: { id: string } }) {
         throw new Error("No maintenance log found for the current user");
       }
 
-      const { id, userId } = myMaintenanceLogs as maintenanceLogSchema;
+      // We are sure myMaintenanceLogs is not null here.
+      const { id, userId } = myMaintenanceLogs as MaintenanceLogSchema;
 
       // ✅ Save mechanic log before leaving
       const formData = new FormData();
@@ -117,13 +200,12 @@ export default function Project({ params }: { params: { id: string } }) {
       const submitMechanicLog = await LeaveEngineerProject(formData);
 
       if (delayReasoning !== "") {
-        const delay = new FormData();
+        const delayForm = new FormData();
+        delayForm.append("maintenanceId", id);
+        delayForm.append("delayReasoning", delayReasoning);
+        delayForm.append("delay", expectedArrival);
 
-        delay.append("maintenanceId", id);
-        delay.append("delayReasoning", delayReasoning);
-        delay.append("delay", expectedArrival);
-
-        await updateDelay(formData);
+        await updateDelay(delayForm);
       }
 
       if (submitMechanicLog) {
@@ -134,16 +216,21 @@ export default function Project({ params }: { params: { id: string } }) {
     }
   };
 
+  // Format total labor hours for display
+  const hours = Math.floor(totalLaborHours);
+  const minutes = Math.round((totalLaborHours - hours) * 60);
+  const formattedLaborTime = `${hours} hrs ${minutes} min`;
+
   return (
     <Bases>
       <Contents>
-        <Grids rows={"8"} gap={"5"}>
-          <Holds background={"white"}>
+        <Grids rows="8" gap="5">
+          <Holds background="white">
             <TitleBoxes
               title={loading ? "" : titles}
-              titleImg={""}
-              titleImgAlt={""}
-              type={"noIcon-NoHref"}
+              titleImg=""
+              titleImgAlt=""
+              type="noIcon-NoHref"
             />
           </Holds>
           <Holds className="h-full row-span-7">
@@ -154,30 +241,26 @@ export default function Project({ params }: { params: { id: string } }) {
                   : "h-full row-span-7"
               }
             >
-              <Grids rows={"10"} className="h-full">
-                <Holds position={"row"} className="row-span-1 gap-2">
+              <Grids rows="10" className="h-full">
+                <Holds position="row" className="row-span-1 gap-2">
                   <Tab
                     onClick={() => setActiveTab(1)}
                     isActive={activeTab === 1}
-                    size={"md"}
+                    size="md"
                   >
                     Received Info
                   </Tab>
                   <Tab
                     onClick={() => setActiveTab(2)}
                     isActive={activeTab === 2}
-                    size={"md"}
+                    size="md"
                   >
                     My Comments
                   </Tab>
                 </Holds>
                 <Holds
-                  background={"white"}
-                  className={
-                    loading
-                      ? " rounded-t-none row-span-9 h-full py-2"
-                      : "rounded-t-none row-span-9 h-full py-2"
-                  }
+                  background="white"
+                  className="rounded-t-none row-span-9 h-full py-2"
                 >
                   {activeTab === 1 && (
                     <ReceivedInfo
@@ -199,12 +282,84 @@ export default function Project({ params }: { params: { id: string } }) {
                       myComment={myComment}
                       setMyComment={setMyComment}
                       loading={loading}
+                      openFinishProject={openFinishProject}
                     />
                   )}
                 </Holds>
               </Grids>
             </Holds>
           </Holds>
+          <NModals
+            isOpen={modalOpen}
+            handleClose={() => setModalOpen(false)}
+            size="screen"
+            background="takeABreak"
+          >
+            <Holds background="white" className="w-full h-full py-2">
+              <Grids rows="8" gap="5">
+                {/* Modal Header */}
+                <Holds className="row-span-1 h-full justify-center">
+                  <TitleBoxes
+                    title={titles.slice(0, 20) + "..."}
+                    titleImg="/mechanic.svg"
+                    titleImgAlt="Mechanic"
+                    onClick={() => setModalOpen(false)}
+                    type="noIcon-NoHref"
+                  />
+                </Holds>
+                <Holds className="row-start-2 row-end-8 h-full">
+                  <Contents width="section">
+                    <Holds className="py-1">
+                      <Labels size="p3">Diagnosed Problem</Labels>
+                      <TextAreas
+                        value={diagnosedProblem}
+                        onChange={(e) => setDiagnosedProblem(e.target.value)}
+                        rows={3}
+                      />
+                    </Holds>
+                    <Holds className="py-1 relative">
+                      <Labels size="p3">Solution</Labels>
+                      <TextAreas
+                        value={solution}
+                        onChange={(e) => setSolution(e.target.value)}
+                        rows={3}
+                        maxLength={40}
+                      />
+                      <Texts
+                        size="p4"
+                        className={`absolute bottom-5 right-3 ${
+                          solution.length >= 40 ? "text-red-500" : ""
+                        }`}
+                      >
+                        {`${solution.length}/40`}
+                      </Texts>
+                    </Holds>
+                    <Holds className="py-1">
+                      <Labels size="p3">Total Labor Hours</Labels>
+                      <Inputs
+                        type="text"
+                        placeholder="Enter labor hours"
+                        value={formattedLaborTime}
+                        disabled
+                        className="py-2"
+                      />
+                    </Holds>
+                  </Contents>
+                </Holds>
+                <Holds className="row-start-8 row-end-9">
+                  <Contents width="section">
+                    <Buttons
+                      onClick={finishProject}
+                      background="green"
+                      className="py-3"
+                    >
+                      <Titles>Submit Project</Titles>
+                    </Buttons>
+                  </Contents>
+                </Holds>
+              </Grids>
+            </Holds>
+          </NModals>
         </Grids>
       </Contents>
     </Bases>

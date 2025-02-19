@@ -13,11 +13,13 @@ export default function MyCommentFinishProject({
   setMyComment,
   activeUsers,
   loading,
+  openFinishProject,
 }: {
   myComment: string;
   setMyComment: React.Dispatch<React.SetStateAction<string>>;
   activeUsers: number;
   loading: boolean;
+  openFinishProject: () => void;
 }) {
   if (loading)
     return (
@@ -51,6 +53,9 @@ export default function MyCommentFinishProject({
             <Buttons
               background={activeUsers > 1 ? "lightGray" : "orange"}
               disabled={activeUsers > 1}
+              onClick={() => {
+                openFinishProject();
+              }}
             >
               <Titles size="h2">Finish Project</Titles>
             </Buttons>

@@ -105,7 +105,7 @@ export default function ReceivedInfo({
             )}
             {myComment.length < 3 && (
               <Texts size="p6" className="text-red-500 px-5 pt-10 ">
-                * Record a comment of at least 3 characters to leave the project
+                * Record a comment to leave the project
               </Texts>
             )}
           </Holds>
