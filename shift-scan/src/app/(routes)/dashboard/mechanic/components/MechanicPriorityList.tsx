@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 // Components
@@ -24,6 +24,8 @@ import { startEngineerProject } from "@/actions/mechanicActions";
 // Types
 import { Priority } from "@/lib/types";
 import { useSession } from "next-auth/react";
+import { set } from "date-fns";
+import { setMechanicProjectID } from "@/actions/cookieActions";
 
 type Equipment = {
   id: string;
@@ -50,6 +52,7 @@ type Projects = {
   equipmentIssue: string;
   additionalInfo: string;
   selected: boolean;
+  repaired: boolean;
   priority: Priority;
   delay: Date | null;
   maintenanceLogs: MaintenanceLog[];
@@ -81,14 +84,11 @@ export default function MechanicPriority() {
   const [isOpenProjectPreview, setIsOpenProjectPreview] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const workersPerPage = 1;
-
-  // Get current time adjusted to timezone
-  const [endTime] = useState(
+  const [endTime, setEndTime] = useState<string>(
     new Date(
       Date.now() - new Date().getTimezoneOffset() * 60 * 1000
     ).toISOString()
   );
-  console.log("End Time:", endTime);
 
   // Fetch projects from API on mount
   useEffect(() => {
@@ -98,7 +98,7 @@ export default function MechanicPriority() {
         const response = await fetch("/api/getMaintenanceProjects");
         const data = await response.json();
         const filteredData = data.filter(
-          (project: Projects) => project.selected
+          (project: Projects) => project.selected && project.repaired === false
         );
         setProjects(filteredData);
       } catch (error) {
@@ -158,12 +158,6 @@ export default function MechanicPriority() {
     startIndex + workersPerPage
   );
 
-  // Debug log for button click event
-  const handleStartProjectClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    console.log("Start Project button clicked", e);
-    StartLogAndSaveProject(e);
-  };
-
   // Start project action
   const StartLogAndSaveProject = async (
     e: React.MouseEvent<HTMLButtonElement>
@@ -174,6 +168,7 @@ export default function MechanicPriority() {
       formData.append("maintenanceId", previewedProjectData?.id ?? "");
       formData.append("timeSheetId", timeSheetId ?? "");
       formData.append("userId", userId ?? "");
+      await setMechanicProjectID(previewedProjectData?.id ?? "");
 
       const res = await startEngineerProject(formData);
       if (res) {
@@ -424,7 +419,7 @@ export default function MechanicPriority() {
                   <Buttons
                     background="green"
                     className="py-3"
-                    onClick={handleStartProjectClick}
+                    onClick={StartLogAndSaveProject}
                   >
                     <Titles size="h2">Start Project</Titles>
                   </Buttons>

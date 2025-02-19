@@ -43,6 +43,7 @@ export enum Priority {
   HIGH = "HIGH",
   PENDING = "PENDING",
   TODAY = "TODAY",
+  repaired = "REPAIRED",
 }
 
 export type EquipmentStatus =

@@ -20,6 +20,7 @@ export async function GET() {
       delay: true,
       equipmentIssue: true,
       additionalInfo: true,
+      repaired: true,
       maintenanceLogs: {
         select: {
           id: true,

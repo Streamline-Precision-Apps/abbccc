@@ -35,7 +35,7 @@ export async function CreateMechanicProject(formData: FormData) {
     const location = formData.get("location") as string;
     const stringPriority = formData.get("priority") as string;
 
-    let priority;
+    let priority = Priority.PENDING;
 
     switch (stringPriority) {
       case "LOW":
@@ -82,7 +82,7 @@ export async function setEditForProjectInfo(formData: FormData) {
     const location = formData.get("location") as string;
     const stringPriority = formData.get("priority") as string;
 
-    let priority;
+    let priority = Priority.PENDING;
 
     switch (stringPriority) {
       case "LOW":
@@ -110,7 +110,7 @@ export async function setEditForProjectInfo(formData: FormData) {
       },
       data: {
         location,
-        priority,
+        priority: priority,
       },
     });
   } catch (error) {
@@ -247,8 +247,11 @@ export async function SubmitEngineerProject(formData: FormData) {
     console.log(formData);
 
     const id = formData.get("id") as string;
-    const problemDiagnosis = formData.get("problemDiagnosis") as string;
+    const problemDiagnosis = formData.get("diagnosedProblem") as string;
     const solution = formData.get("solution") as string;
+    const totalHoursLaboured = parseFloat(
+      formData.get("totalHoursLaboured") as string
+    );
 
     await prisma.maintenance.update({
       where: {
@@ -258,6 +261,7 @@ export async function SubmitEngineerProject(formData: FormData) {
         problemDiagnosis,
         solution,
         repaired: true,
+        totalHoursLaboured,
       },
     });
 

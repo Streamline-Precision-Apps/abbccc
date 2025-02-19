@@ -3,6 +3,7 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
 import { useTranslations } from "next-intl";
+import { use, useEffect, useState } from "react";
 
 export default function EngineerBtn({
   permission,
@@ -12,6 +13,19 @@ export default function EngineerBtn({
   view: string;
 }) {
   const t = useTranslations("Widgets");
+  const [projectID, setProjectID] = useState("");
+
+  useEffect(() => {
+    const checkCookie = async () => {
+      const response = await fetch(
+        "/api/cookie?method=get&name=mechanicProjectID"
+      );
+      const data = await response.json();
+      if (data) {
+        setProjectID(data);
+      }
+    };
+  });
   return (
     <Holds
       position={"row"}
@@ -25,7 +39,11 @@ export default function EngineerBtn({
     >
       <Buttons //----------------------This is the Switch Jobs Widget
         background={"orange"}
-        href="/dashboard/mechanic"
+        href={
+          projectID
+            ? `/dashboard/mechanic/projects/${projectID}`
+            : "/dashboard/mechanic"
+        }
       >
         <Holds className="justify-center items-center">
           <Holds size={"50"}>

@@ -33,6 +33,7 @@ type RepairDetails = {
   equipmentIssue: string;
   additionalInfo: string;
   location: string;
+  repaired: boolean;
   priority: string;
   createdBy: string;
   createdAt: Date;
@@ -120,6 +121,7 @@ export default function MechanicEditPage({
             rows={2}
             className="text-sm"
             style={{ resize: "none" }}
+            disabled={!repairDetails?.repaired}
           />
         </Holds>
         <Holds>
@@ -134,6 +136,7 @@ export default function MechanicEditPage({
             rows={2}
             style={{ resize: "none" }}
             className="text-sm"
+            disabled={!repairDetails?.repaired}
           />
         </Holds>
         {/* Location */}
@@ -147,6 +150,7 @@ export default function MechanicEditPage({
             onChange={(e) => updateField("location", e.target.value)}
             placeholder="Enter a location if applicable..."
             className="text-sm pl-4"
+            disabled={!repairDetails?.repaired}
           />
         </Holds>
         {/* Priority Status */}
@@ -156,25 +160,34 @@ export default function MechanicEditPage({
           </Labels>
 
           <div className="relative w-full">
-            <Selects
-              name="priority"
-              value={repairDetails.priority}
-              onChange={(e) => {
-                const newPriority = e.target.value as Priority;
-                updateField("priority", newPriority);
-              }}
-              className="w-full "
-            >
-              {PriorityOptions.map((option) => (
-                <option
-                  key={option.value}
-                  value={option.value}
-                  className="text-center"
-                >
-                  {option.label}
-                </option>
-              ))}
-            </Selects>
+            {!repairDetails?.repaired ? (
+              <Inputs
+                name="priority"
+                value={repairDetails.priority}
+                className="w-full text-center"
+                disabled
+              />
+            ) : (
+              <Selects
+                name="priority"
+                value={repairDetails.priority}
+                onChange={(e) => {
+                  const newPriority = e.target.value as Priority;
+                  updateField("priority", newPriority);
+                }}
+                className="w-full "
+              >
+                {PriorityOptions.map((option) => (
+                  <option
+                    key={option.value}
+                    value={option.value}
+                    className="text-center"
+                  >
+                    {option.label}
+                  </option>
+                ))}
+              </Selects>
+            )}
 
             {/* Adjust Image to Overlay Select Box */}
             <Images

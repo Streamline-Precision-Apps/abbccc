@@ -1,6 +1,6 @@
 "use client";
 import { Holds } from "@/components/(reusable)/holds";
-import { use, useEffect, useState } from "react";
+import { useState } from "react";
 import MechanicPriority from "./MechanicPriorityList";
 import { Grids } from "@/components/(reusable)/grids";
 import { Tab } from "@/components/(reusable)/tab";
@@ -9,7 +9,7 @@ import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import MechanicSelectList from "./MechanicSelectList";
 import { useRouter } from "next/navigation";
 
-export default function MechanicDisplay({ isManager}: { isManager: boolean }) {
+export default function MechanicDisplay({ isManager }: { isManager: boolean }) {
   const [activeTab, setActiveTab] = useState(1);
   const router = useRouter();
   return (

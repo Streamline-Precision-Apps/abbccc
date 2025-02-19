@@ -25,6 +25,7 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { parse } from "path";
+import { setMechanicProjectID } from "@/actions/cookieActions";
 
 // ✅ Define a full type for each maintenance log returned by the API
 interface MaintenanceLog {
@@ -123,8 +124,8 @@ export default function Project({ params }: { params: { id: string } }) {
         ).size;
         setActiveUsers(uniqueUserCount || 0);
       })
-      .catch((e) => {
-        console.log("Error fetching received info:", e);
+      .catch((error) => {
+        console.log("Error fetching received info:", error);
       })
       .finally(() => {
         setLoading(false);
@@ -153,8 +154,8 @@ export default function Project({ params }: { params: { id: string } }) {
         );
         setTotalLaborHours(totalHours);
       })
-      .catch((e) => {
-        console.log("Error reloading total labor hours:", e);
+      .catch((error) => {
+        console.log("Error reloading total labor hours:", error);
       })
       .finally(() => {
         setLoading(false);
@@ -197,11 +198,12 @@ export default function Project({ params }: { params: { id: string } }) {
       submitProject.append("totalHoursLaboured", totalLaborHours?.toString());
 
       const res = await SubmitEngineerProject(submitProject);
+      await setMechanicProjectID("");
       if (res) {
         router.push("/dashboard/mechanic");
       }
-    } catch (e) {
-      console.log(e);
+    } catch (error) {
+      console.error("Exception in finishProject:", error);
     }
   };
 
@@ -230,6 +232,7 @@ export default function Project({ params }: { params: { id: string } }) {
       formData.append("endTime", new Date().toISOString());
 
       const submitMechanicLog = await LeaveEngineerProject(formData);
+      await setMechanicProjectID("");
 
       if (delayReasoning !== "") {
         const delayForm = new FormData();
@@ -243,8 +246,8 @@ export default function Project({ params }: { params: { id: string } }) {
       if (submitMechanicLog) {
         router.push("/dashboard/mechanic");
       }
-    } catch (e) {
-      console.log(e);
+    } catch (error) {
+      console.error("Exception in LeaveProject:", error);
     }
   };
 
