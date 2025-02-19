@@ -111,10 +111,10 @@ export default function ReceivedInfo({
           </Holds>
           <Holds className="row-start-8 row-end-9 h-full">
             <Buttons
-              disabled={isButtonDisabled}
+              disabled={!isButtonDisabled}
               background={isButtonDisabled ? "red" : "darkGray"}
               className="h-full"
-              onClick={() => leaveProject()}
+              onClick={leaveProject}
             >
               <Titles size={"h2"}>Leave Project</Titles>
             </Buttons>

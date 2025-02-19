@@ -5,10 +5,10 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Tab } from "@/components/(reusable)/tab";
 import { Texts } from "@/components/(reusable)/texts";
-import { useEffect, useState } from "react";
-import MechanicEditPage from "../../components/MechanicEditPage";
+import { use, useEffect, useState } from "react";
+import MechanicEditPage from "./_components/MechanicEditPage";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
-import MechanicEmployeeLogs from "../../components/MechanicEmployeeLogs";
+import MechanicEmployeeLogs from "./_components/MechanicEmployeeLogs";
 
 type Equipment = {
   id: string;
@@ -79,6 +79,10 @@ export default function EditRepairDetails({
       });
   }, [params.id]);
 
+  useEffect(() => {
+    console.log(logs);
+  }, [logs]);
+
   return (
     <Bases>
       <Contents>
@@ -126,15 +130,13 @@ export default function EditRepairDetails({
               </Holds>
               <Holds
                 background={"white"}
-                className="rounded-t-none row-span-9 h-full py-3 "
+                className="rounded-t-none row-span-9 h-full "
               >
                 {activeTab === 1 && (
                   <MechanicEditPage
                     repairDetails={repairDetails}
                     setRepairDetails={setRepairDetails}
-                    totalLogs={
-                      logs?.map((log) => log.maintenanceLogs).length || 0
-                    }
+                    totalLogs={logs ? logs[0].maintenanceLogs.length : 0}
                   />
                 )}
                 {activeTab === 2 && (

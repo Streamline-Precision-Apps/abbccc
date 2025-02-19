@@ -18,13 +18,14 @@ export default function EngineerBtn({
   useEffect(() => {
     const checkCookie = async () => {
       const response = await fetch(
-        "/api/cookie?method=get&name=mechanicProjectID"
+        "/api/cookies?method=get&name=mechanicProjectID"
       );
       const data = await response.json();
-      if (data) {
-        setProjectID(data);
-      }
+      console.log(data);
+      setProjectID(data);
     };
+
+    checkCookie();
   });
   return (
     <Holds

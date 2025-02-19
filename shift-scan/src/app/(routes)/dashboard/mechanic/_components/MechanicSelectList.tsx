@@ -6,6 +6,7 @@ import { Selects } from "@/components/(reusable)/selects";
 import { SearchAndCheck } from "./SearchAndCheck";
 import { useEffect, useState } from "react";
 import { Priority } from "@/lib/types";
+import Spinner from "@/components/(animations)/spinner";
 
 type Equipment = {
   id: string;
@@ -34,6 +35,7 @@ export default function MechanicSelectList() {
   const [allProjects, setAllProjects] = useState<Projects[]>([]);
   const [filteredProjects, setFilteredProjects] = useState<Projects[]>([]);
   const [selectedFilter, setSelectedFilter] = useState<string>("");
+  const [loading, setLoading] = useState(false);
 
   const PriorityOptions = [
     { label: "Select Filter", value: "" },
@@ -49,12 +51,14 @@ export default function MechanicSelectList() {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
+        setLoading(true);
         const response = await fetch("/api/getMaintenanceProjects");
         const data = await response.json();
         setAllProjects(data);
       } catch (error) {
         console.error("Error fetching projects:", error);
       }
+      setLoading(false);
     };
 
     fetchProjects();
@@ -122,8 +126,14 @@ export default function MechanicSelectList() {
           ))}
         </Selects>
       </Holds>
-      <Holds className="col-start-1 col-end-6 row-start-2 row-end-9 h-full w-full border-[3px] border-black rounded-[10px]">
-        <SearchAndCheck AllProjects={filteredProjects} />
+      <Holds
+        className={
+          loading
+            ? "col-start-1 col-end-6 row-start-2 row-end-9 h-full w-full border-[3px] border-black rounded-[10px] "
+            : "col-start-1 col-end-6 row-start-2 row-end-9 h-full w-full border-[3px] border-black rounded-[10px]"
+        }
+      >
+        <SearchAndCheck AllProjects={filteredProjects} loading={loading} />
       </Holds>
     </Grids>
   );
