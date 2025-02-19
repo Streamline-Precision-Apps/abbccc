@@ -11,10 +11,12 @@ import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { Priority } from "@/lib/types";
 import { useEffect, useState } from "react";
-import Slider from "react-slick";
-import { formatISO } from "date-fns";
 import { getFormattedDuration } from "@/utils/getFormattedDuration";
 import { Inputs } from "@/components/(reusable)/inputs";
+import { Images } from "@/components/(reusable)/images";
+import { startEngineerProject } from "@/actions/mechanicActions";
+
+import { useRouter } from "next/navigation";
 
 type Equipment = {
   id: string;
@@ -26,6 +28,7 @@ type MaintenanceLog = {
   startTime: string;
   endTime: string;
   userId: string;
+  timeSheetId: string;
   user: {
     id: string;
     firstName: string;
@@ -46,31 +49,21 @@ type Projects = {
   equipment: Equipment;
 };
 
-const settings = {
-  dots: true,
-  draggable: true,
-  speed: 500,
-  arrows: true,
-  slidesToShow: 1,
-  slidesToScroll: 1,
-  infinite: false,
-  autoplay: true,
-  autoplaySpeed: 4000,
-  pauseOnHover: true,
-  pauseOnFocus: true,
-};
-
 export default function MechanicPriority() {
   const [loading, setLoading] = useState(false);
   const [projects, setProjects] = useState<Projects[]>([]);
   const [isOpenProjectPreview, setIsOpenProjectPreview] = useState(false);
   const [projectPreviewId, setProjectPreviewId] = useState<string | null>(null); // [setProjectPreviewId]
   const [previewedProjectData, setPreviewedProjectData] = useState<Projects>();
+  const [currentPage, setCurrentPage] = useState(1);
+  const workersPerPage = 1;
+  const router = useRouter();
   const [endTime] = useState(
     new Date(
       new Date().getTime() - new Date().getTimezoneOffset() * 60 * 1000
     ).toISOString()
   );
+  console.log(endTime);
 
   const [activeUsers, setActiveUsers] = useState<
     {
@@ -116,6 +109,7 @@ export default function MechanicPriority() {
             name: `${log.user.firstName} ${log.user.lastName}`,
             image: log.user.image, // If you want to display images
             startTime: new Date(log.startTime).toISOString(),
+            timeSheetId: log.timeSheetId,
           }));
 
         setActiveUsers(activeUsersList);
@@ -127,6 +121,12 @@ export default function MechanicPriority() {
   while (projects.length < 7) {
     projects.push({ id: "" } as Projects);
   }
+  const totalPages = activeUsers.length / workersPerPage;
+  const startIndex = (currentPage - 1) * workersPerPage;
+  const currentWorker = activeUsers.slice(
+    startIndex,
+    startIndex + workersPerPage
+  );
 
   if (loading) {
     return (
@@ -145,6 +145,30 @@ export default function MechanicPriority() {
       </Holds>
     );
   }
+
+  const StartLogAndSaveProject = async () => {
+    try {
+      const formData = new FormData();
+
+      formData.append("maintenanceId", previewedProjectData?.id ?? "");
+      formData.append(
+        "timeSheetId",
+        previewedProjectData?.maintenanceLogs[0].timeSheetId ?? ""
+      );
+      formData.append(
+        "userId",
+        previewedProjectData?.maintenanceLogs[0].userId ?? ""
+      );
+
+      const res = await startEngineerProject(formData);
+
+      if (res) {
+        router.push(`/dashboard/mechanic/projects/${previewedProjectData?.id}`);
+      } else {
+        console.log("error", res);
+      }
+    } catch (error) {}
+  };
 
   return (
     <Holds background={"white"} className="row-span-7 h-full">
@@ -218,13 +242,43 @@ export default function MechanicPriority() {
               </Holds>
               <Holds className="flex justify-center items-center h-full w-full row-start-2 row-end-8">
                 <Contents width={"section"}>
-                  <Holds position={"row"} className="w-full">
-                    <Labels size={"p6"}>Active Workers</Labels>
+                  <Holds className="w-full relative">
+                    <Buttons
+                      className={`absolute top-[30%] left-0 w-9 h-9 flex items-center justify-center ${
+                        currentPage <= 1 ? "hidden" : ""
+                      } `}
+                      onClick={() => setCurrentPage(currentPage - 1)}
+                      disabled={currentPage <= 1}
+                    >
+                      <Images
+                        titleImg="/backArrow.svg"
+                        titleImgAlt="Mechanic"
+                      />
+                    </Buttons>
 
-                    {activeUsers.length > 0 ? (
-                      activeUsers.map((user) => (
-                        <div key={user.id}>
-                          <Holds className="p-4 flex items-center gap-2 ">
+                    <Buttons
+                      className={`absolute top-[30%] right-0 w-9 h-9 flex items-center justify-center ${
+                        currentPage <= 1 ? "hidden" : ""
+                      } `}
+                      onClick={() => setCurrentPage(currentPage + 1)}
+                      disabled={currentPage === activeUsers.length}
+                    >
+                      <Images
+                        titleImg="/forwardArrow.svg"
+                        titleImgAlt="Mechanic"
+                      />
+                    </Buttons>
+                    <Labels position={"left"} size={"p6"}>
+                      Active Workers
+                    </Labels>
+
+                    {currentWorker.length > 0 ? (
+                      currentWorker.map((user) => (
+                        <Holds key={user.id}>
+                          <Holds
+                            background={"lightGray"}
+                            className="p-4 flex items-center gap-2 "
+                          >
                             <img
                               src={user.image || "/person.svg"}
                               alt={user.name}
@@ -254,16 +308,41 @@ export default function MechanicPriority() {
                                   endTime
                                 )}
                               />
+                              <Holds
+                                position={"row"}
+                                className={`flex items-center justify-center" ${
+                                  currentPage <= 1 ? "hidden" : ""
+                                } `}
+                              >
+                                {Array.from({ length: totalPages }).map(
+                                  (_, index) => (
+                                    <span key={index}>
+                                      <Texts
+                                        key={index}
+                                        className={`text-xxl ${
+                                          index + 1 === currentPage
+                                            ? "text-app-blue"
+                                            : "text-app-gray"
+                                        }`}
+                                        size={"p1"}
+                                      >
+                                        .
+                                      </Texts>
+                                    </span>
+                                  )
+                                )}
+                              </Holds>
                             </Holds>
+                            <Holds></Holds>
                           </Holds>
-                        </div>
+                        </Holds>
                       ))
                     ) : (
-                      <div>
+                      <Holds>
                         <Holds background={"lightGray"} className="p-10">
                           <Texts size={"p6"}>No active workers</Texts>
                         </Holds>
-                      </div>
+                      </Holds>
                     )}
                   </Holds>
 
@@ -297,8 +376,8 @@ export default function MechanicPriority() {
                 <Contents width={"section"}>
                   <Buttons
                     background={"green"}
-                    href={`/dashboard/mechanic/projects/${projectPreviewId}`}
                     className="py-3"
+                    onClick={() => StartLogAndSaveProject()}
                   >
                     <Titles size={"h2"}>Start Project</Titles>
                   </Buttons>
