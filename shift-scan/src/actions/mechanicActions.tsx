@@ -240,3 +240,29 @@ export async function findUniqueUser(formData: FormData) {
     console.error("Error finding user:", error);
   }
 }
+
+export async function SubmitEngineerProject(formData: FormData) {
+  try {
+    console.log("Leaving project...");
+    console.log(formData);
+
+    const id = formData.get("id") as string;
+    const problemDiagnosis = formData.get("problemDiagnosis") as string;
+    const solution = formData.get("solution") as string;
+
+    await prisma.maintenance.update({
+      where: {
+        id,
+      },
+      data: {
+        problemDiagnosis,
+        solution,
+        repaired: true,
+      },
+    });
+
+    revalidatePath("/dashboard/mechanic");
+    revalidateTag("projects");
+    return true;
+  } catch (error) {}
+}
