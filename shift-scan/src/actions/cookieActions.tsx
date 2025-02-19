@@ -199,6 +199,21 @@ export async function setTruck(truck: string) {
   }
 }
 
+export async function setMechanicProjectID(mechanicProjectID: string) {
+  try {
+    cookies().set({
+      name: "mechanicProjectID",
+      value: mechanicProjectID,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days - made this to not have errors occur is logging out is forgotten
+    });
+  } catch (error) {
+    console.error("Failed to set locale cookie:", error);
+  }
+}
+
 export async function setStartingMileage(startingMileage: string) {
   try {
     cookies().set({

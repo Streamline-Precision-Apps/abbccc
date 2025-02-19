@@ -25,6 +25,7 @@ type RepairDetails = {
   createdBy: string;
   createdAt: Date;
   hasBeenDelayed: boolean;
+  repaired: boolean;
   delay: Date | null;
   delayReasoning?: string;
   totalHoursLaboured: number;
@@ -125,7 +126,7 @@ export default function EditRepairDetails({
               </Holds>
               <Holds
                 background={"white"}
-                className="rounded-t-none row-span-9 h-full "
+                className="rounded-t-none row-span-9 h-full py-3 "
               >
                 {activeTab === 1 && (
                   <MechanicEditPage

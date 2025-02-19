@@ -27,6 +27,7 @@ export type Projects = {
   id: string;
   equipmentId: string;
   selected: boolean;
+  repaired: boolean;
   priority: Priority;
   delay: Date | null;
   maintenanceLogs: MaintenanceLog[];
@@ -103,7 +104,7 @@ export const SearchAndCheck = ({
             size={"50"}
           />
         </Holds>
-        <Holds size={"60"} >
+        <Holds size={"60"}>
           <input
             ref={inputRef}
             type="text"
@@ -121,98 +122,102 @@ export const SearchAndCheck = ({
         background={"darkBlue"}
         className="row-start-2 row-end-9 h-full w-full overflow-y-auto no-scrollbar rounded-none"
       >
-        {filteredProjects.length === 0 &&
-        <Holds className="h-full w-full">
-            <EmptyViews TopChild={
-              <Holds className="px-2">
-
-            <Titles size={"h5"}>
-            No projects found. Start a new project or check back later!
-              </Titles>
-              
-              </Holds>
-            } topChildPosition={"default"}/>
-          </Holds>
-        }
-        {filteredProjects.length > 0  && filteredProjects.map((project, index) => (
-          <Holds
-            background={"white"}
-            position={"row"}
-            key={index}
-            className="w-full border-[3px] border-black rounded-[10px] mb-2 py-2"
-          >
-            <Holds
-              position={"row"}
-              size={"80"}
-              className="justify-between"
-              onClick={() =>
-                router.push(
-                  `/dashboard/mechanic/edit-repair-details/${project.id}`
-                )
+        {filteredProjects.length === 0 && (
+          <Holds className="h-full w-full">
+            <EmptyViews
+              TopChild={
+                <Holds className="px-2">
+                  <Titles size={"h5"}>
+                    No projects found. Start a new project or check back later!
+                  </Titles>
+                </Holds>
               }
-            >
-              <Holds size={"20"}>
-                <Images
-                  titleImg={
-                    project.delay
-                      ? "/delayPriority.svg"
-                      : project.priority === "PENDING"
-                      ? "/pending.svg"
-                      : project.priority === "LOW"
-                      ? "/lowPriority.svg"
-                      : project.priority === "MEDIUM"
-                      ? "/mediumPriority.svg"
-                      : project.priority === "HIGH"
-                      ? "/highPriority.svg"
-                      : "/todayPriority.svg"
-                  }
-                  titleImgAlt="priority"
-                  size={"80"}
-                />
-              </Holds>
-              <Holds size={"80"}>
-                <Texts size={"p6"}>{`${project.equipment.name.slice(
-                  0,
-                  16
-                )}...`}</Texts>
-              </Holds>
-            </Holds>
-            <Holds size={"20"}>
-              <Holds
-                className="h-8 w-8 rounded-[10px] shadow-[6px_6px_0px_grey]"
-                onClick={() => handleToggle(project.id)}
-              >
-                {project.selected ? (
-                  <svg
-                    className="stroke-black bg-app-green rounded-[10px] border-[3px] border-black"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                  </svg>
-                ) : (
-                  <svg
-                    className="stroke-white bg-white rounded-[10px] border-[3px] border-black"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="0"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                  </svg>
-                )}
-              </Holds>
-            </Holds>
+              topChildPosition={"default"}
+            />
           </Holds>
-        ))}
+        )}
+        {filteredProjects.length > 0 &&
+          filteredProjects.map((project, index) => (
+            <Holds
+              background={"white"}
+              position={"row"}
+              key={index}
+              className="w-full border-[3px] border-black rounded-[10px] mb-2 py-2"
+            >
+              <Holds
+                position={"row"}
+                size={project.repaired ? "full" : "80"}
+                className="justify-between"
+                onClick={() =>
+                  router.push(
+                    `/dashboard/mechanic/edit-repair-details/${project.id}`
+                  )
+                }
+              >
+                <Holds size={"20"}>
+                  <Images
+                    titleImg={
+                      project.delay
+                        ? "/delayPriority.svg"
+                        : project.priority === "PENDING"
+                        ? "/pending.svg"
+                        : project.priority === "LOW"
+                        ? "/lowPriority.svg"
+                        : project.priority === "MEDIUM"
+                        ? "/mediumPriority.svg"
+                        : project.priority === "HIGH"
+                        ? "/highPriority.svg"
+                        : "/todayPriority.svg"
+                    }
+                    titleImgAlt="priority"
+                    size={"80"}
+                  />
+                </Holds>
+                <Holds>
+                  <Texts
+                    className="text-center"
+                    size={"p6"}
+                  >{`${project.equipment.name.slice(0, 16)}...`}</Texts>
+                </Holds>
+              </Holds>
+              {project.repaired === false && (
+                <Holds size={"20"}>
+                  <Holds
+                    className="h-8 w-8 rounded-[10px] shadow-[6px_6px_0px_grey]"
+                    onClick={() => handleToggle(project.id)}
+                  >
+                    {project.selected ? (
+                      <svg
+                        className="stroke-black bg-app-green rounded-[10px] border-[3px] border-black"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                    ) : (
+                      <svg
+                        className="stroke-white bg-white rounded-[10px] border-[3px] border-black"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="0"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                    )}
+                  </Holds>
+                </Holds>
+              )}
+            </Holds>
+          ))}
       </Holds>
     </Grids>
   );

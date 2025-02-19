@@ -81,7 +81,7 @@ export default function MechanicEmployeeLogs({
                   <Grids
                     key={mLog.id}
                     rows={"3"}
-                    className="mb-4 bg-app-gray rounded-[10px] p-3"
+                    className="mb-4 bg-app-gray rounded-[10px] px-3 "
                   >
                     <Holds
                       position={"row"}
@@ -97,9 +97,14 @@ export default function MechanicEmployeeLogs({
                         {mLog.endTime ? formatTime(mLog.endTime) : "Active"}
                       </Texts>
                     </Holds>
-                    <Holds className="row-start-2 row-end-4  h-full w-full ">
+                    <Holds className="row-start-2 row-end-4 h-full w-full pb-2 ">
                       <Labels size={"p6"}>Comment</Labels>
-                      <TextAreas className="text-xs">{mLog.comment}</TextAreas>
+                      <TextAreas
+                        className={`${mLog.comment} ? 'text-xs' : text-xs font-bold `}
+                        disabled
+                      >
+                        {mLog.comment === "" ? "No comment" : mLog.comment}
+                      </TextAreas>
                     </Holds>
                   </Grids>
                 ))}

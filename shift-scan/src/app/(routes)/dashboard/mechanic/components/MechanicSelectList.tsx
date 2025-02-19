@@ -23,6 +23,7 @@ type Projects = {
   id: string;
   equipmentId: string;
   selected: boolean;
+  repaired: boolean;
   priority: Priority;
   delay: Date | null;
   maintenanceLogs: MaintenanceLog[];
@@ -42,6 +43,7 @@ export default function MechanicSelectList() {
     { label: "Medium Priority", value: "MEDIUM" },
     { label: "Low Priority", value: "LOW" },
     { label: "TODAY", value: "TODAY" },
+    { label: "REPAIRED", value: "REPAIRED" },
   ];
 
   useEffect(() => {
@@ -61,19 +63,29 @@ export default function MechanicSelectList() {
   // Filter logic
   useEffect(() => {
     if (!selectedFilter) {
-      setFilteredProjects(allProjects);
+      setFilteredProjects(
+        allProjects.filter((project) => project.repaired === false)
+      );
       return;
     }
 
     if (selectedFilter === "DELAYED") {
       setFilteredProjects(
-        allProjects.filter((project) => project.delay !== null)
+        allProjects.filter(
+          (project) => project.delay !== null && project.repaired === false
+        )
+      );
+    } else if (selectedFilter === "REPAIRED") {
+      setFilteredProjects(
+        allProjects.filter((project) => project.repaired === true)
       );
     } else {
       setFilteredProjects(
         allProjects.filter(
           (project) =>
-            project.priority === selectedFilter && project.delay === null
+            project.priority === selectedFilter &&
+            project.delay === null &&
+            project.repaired === false
         )
       );
     }
@@ -111,7 +123,6 @@ export default function MechanicSelectList() {
         </Selects>
       </Holds>
       <Holds className="col-start-1 col-end-6 row-start-2 row-end-9 h-full w-full border-[3px] border-black rounded-[10px]">
-        
         <SearchAndCheck AllProjects={filteredProjects} />
       </Holds>
     </Grids>
