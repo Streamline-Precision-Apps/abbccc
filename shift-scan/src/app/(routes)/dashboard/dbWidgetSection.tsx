@@ -194,6 +194,7 @@ export default function DbWidgetSection({
           additionalButtonsType={additionalButtonsType}
           logs={logs}
           permission={permission}
+          mechanicProjectID={mechanicProjectID}
         />
       );
     case "general":

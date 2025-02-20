@@ -31,6 +31,7 @@ export default function MechanicDashboardView({
   permission,
   handleShowAdditionalButtons,
   logs,
+  mechanicProjectID,
 }: {
   additionalButtonsType: string | null;
   isModalOpen: boolean;
@@ -45,6 +46,7 @@ export default function MechanicDashboardView({
   permission: string;
   handleShowAdditionalButtons: (button: string) => void;
   logs: LogItem[];
+  mechanicProjectID: string;
 }) {
   const modalState = useModalState();
   return (
@@ -85,7 +87,13 @@ export default function MechanicDashboardView({
           ) : (
             <>
               <MechanicBtn permission={permission} view={"mechanic"} />
-              <SwitchJobsBtn permission={permission} />
+              <SwitchJobsBtn
+                {...modalState}
+                handleShowManagerButtons={handleShowManagerButtons}
+                permission={permission}
+                mechanicProjectID={mechanicProjectID}
+                logs={logs}
+              />
               {permission !== "USER" && !additionalButtonsType && (
                 <GeneratorBtn />
               )}

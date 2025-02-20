@@ -48,7 +48,7 @@ interface NModalProps
   extends HTMLAttributes<HTMLElement>,
     VariantProps<typeof NModalVariants> {
   isOpen: boolean;
-  handleClose: () => void;
+  handleClose: () => void | Promise<void>;
 }
 
 const NModals: FC<NModalProps> = ({
@@ -57,6 +57,7 @@ const NModals: FC<NModalProps> = ({
   position,
   size,
   isOpen,
+  handleClose,
   ...props
 }) => {
   useEffect(() => {
@@ -79,7 +80,7 @@ const NModals: FC<NModalProps> = ({
         background={"modal"}
         position={"start"}
         size={"screen"}
-        onClick={props.handleClose}
+        onClick={handleClose}
       >
         <div
           onClick={(e) => e.stopPropagation()}
