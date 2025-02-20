@@ -232,7 +232,6 @@ export default function MechanicPriority() {
                 <Buttons
                   background="lightBlue"
                   onClick={() => {
-                    console.log("Project clicked:", project.id);
                     setProjectPreviewId(project.id);
                     setIsOpenProjectPreview(true);
                   }}
@@ -270,7 +269,6 @@ export default function MechanicPriority() {
                   titleImg="/mechanic.svg"
                   titleImgAlt="Mechanic"
                   onClick={() => {
-                    console.log("Modal header clicked");
                     setIsOpenProjectPreview(false);
                   }}
                   type="noIcon-NoHref"
@@ -287,7 +285,6 @@ export default function MechanicPriority() {
                         currentPage <= 1 ? "hidden" : ""
                       }`}
                       onClick={() => {
-                        console.log("Previous page");
                         setCurrentPage(currentPage - 1);
                       }}
                       disabled={currentPage <= 1}
@@ -301,7 +298,6 @@ export default function MechanicPriority() {
                         currentPage <= 1 ? "hidden" : ""
                       }`}
                       onClick={() => {
-                        console.log("Next page");
                         setCurrentPage(currentPage + 1);
                       }}
                       disabled={currentPage === activeUsers.length}
