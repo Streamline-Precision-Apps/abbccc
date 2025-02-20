@@ -506,3 +506,23 @@ cookies().set({
 ### Trello
 
 - Mechanic section - Priority List all page
+
+# February 19 , 2025 - Wednesday
+
+# Notes
+
+- working on building mechanic section
+
+### Trello
+
+- Mechanic section - Priority List all page
+
+# February 20 , 2025 - Thursday
+
+# Notes
+
+- working on building mechanic section
+
+### Trello
+
+- Mechanic section - Priority List all page
