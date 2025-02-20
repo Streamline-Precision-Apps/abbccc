@@ -14,6 +14,7 @@ export async function GET() {
   const currentDate = new Date();
   const past24Hours = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
 
+  // Fetching employee equipment logs
   const getlogs = await prisma.employeeEquipmentLog.findMany({
     where: {
       employeeId: userId,
@@ -31,8 +32,22 @@ export async function GET() {
     },
   });
 
-  const logs = getlogs.map((log) => ({
+  // Fetching maintenance logs
+  const maintenanceLogs = await prisma.maintenanceLog.findMany({
+    where: {
+      userId: userId,
+      endTime: null,
+    },
+    select: {
+      id: true,
+      maintenanceId: true,
+    },
+  });
+
+  // Mapping employee equipment logs
+  const equipmentLogs = getlogs.map((log) => ({
     id: log.id.toString(),
+    type: "equipment",
     userId: log.employeeId,
     equipment: log.Equipment
       ? {
@@ -44,5 +59,17 @@ export async function GET() {
     submitted: log.isSubmitted,
   }));
 
-  return NextResponse.json(logs);
+  // Mapping maintenance logs
+  const mappedMaintenanceLogs = maintenanceLogs.map((log) => ({
+    id: log.id.toString(),
+    type: "mechanic",
+    maintenanceId: log.maintenanceId,
+    userId: userId,
+    submitted: false,
+  }));
+
+  // Merging both logs into one array
+  const combinedLogs = [...equipmentLogs, ...mappedMaintenanceLogs];
+
+  return NextResponse.json(combinedLogs);
 }

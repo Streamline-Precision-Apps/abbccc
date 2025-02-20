@@ -59,6 +59,7 @@ export default function EditRepairDetails({
   const [repairDetails, setRepairDetails] = useState<RepairDetails>();
   const [logs, setLogs] = useState<LogItem[]>();
   const [loading, setLoading] = useState(false);
+  const [totalHours, setTotalHours] = useState<number>(0);
 
   useEffect(() => {
     setLoading(true);
@@ -70,6 +71,7 @@ export default function EditRepairDetails({
       .then(([repairDetails, logs]) => {
         setRepairDetails(repairDetails);
         setLogs(logs);
+        setTotalHours(repairDetails.totalHoursLaboured);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
@@ -112,7 +114,7 @@ export default function EditRepairDetails({
             }
           >
             <Grids rows={"10"} className="h-full">
-              <Holds position={"row"} className="row-span-1 gap-2">
+              <Holds position={"row"} className="row-span-1 h-full gap-2">
                 <Tab
                   onClick={() => setActiveTab(1)}
                   isActive={activeTab === 1}
@@ -140,7 +142,11 @@ export default function EditRepairDetails({
                   />
                 )}
                 {activeTab === 2 && (
-                  <MechanicEmployeeLogs logs={logs} loading={loading} />
+                  <MechanicEmployeeLogs
+                    logs={logs}
+                    loading={loading}
+                    totalHours={totalHours}
+                  />
                 )}
               </Holds>
             </Grids>

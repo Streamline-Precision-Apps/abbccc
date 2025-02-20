@@ -169,37 +169,37 @@ export default function Project({ params }: { params: { id: string } }) {
 
   const finishProject = async () => {
     try {
-      const userForm = new FormData();
-      if (session.data) {
-        userForm.append("userId", session.data.user?.id || "");
+      if (!session.data) {
+        return;
       }
-      userForm.append("maintenanceId", params.id);
+      const userForm = new FormData();
 
+      userForm.append("userId", session.data.user?.id || "");
+      userForm.append("maintenanceId", params.id);
       const uniqueUserCount = await findUniqueUser(userForm);
 
       if (!uniqueUserCount) {
-        throw new Error("No maintenance log found for the current user");
+        return;
       }
-
-      // We are sure myMaintenanceLogs is not null here.
-      const { id, userId } = myMaintenanceLogs as MaintenanceLogSchema;
 
       const formData = new FormData();
       formData.append("comment", myComment);
-      formData.append("maintenanceId", id);
-      formData.append("userId", userId);
+      formData.append("maintenanceId", uniqueUserCount?.id || "");
+      formData.append("userId", session.data.user?.id || "");
       formData.append("endTime", new Date().toISOString());
-      await LeaveEngineerProject(formData);
 
-      const submitProject = new FormData();
-      submitProject.append("id", params.id);
-      submitProject.append("solution", solution);
-      submitProject.append("diagnosedProblem", diagnosedProblem);
-      submitProject.append("totalHoursLaboured", totalLaborHours?.toString());
-      const res = await SubmitEngineerProject(submitProject);
-      await setMechanicProjectID("");
-      if (res) {
-        router.push("/dashboard/mechanic");
+      const clock = await LeaveEngineerProject(formData);
+      if (clock) {
+        const submitProject = new FormData();
+        submitProject.append("id", params.id);
+        submitProject.append("solution", solution);
+        submitProject.append("diagnosedProblem", diagnosedProblem);
+        submitProject.append("totalHoursLaboured", totalLaborHours?.toString());
+        const res = await SubmitEngineerProject(submitProject);
+        await setMechanicProjectID("");
+        if (res) {
+          router.push("/dashboard/mechanic");
+        }
       }
     } catch (error) {}
   };
@@ -261,6 +261,7 @@ export default function Project({ params }: { params: { id: string } }) {
               title={loading ? "" : titles}
               titleImg=""
               titleImgAlt=""
+              onClick={() => router.push("/dashboard")}
               type="noIcon-NoHref"
             />
           </Holds>
@@ -380,7 +381,7 @@ export default function Project({ params }: { params: { id: string } }) {
                 <Holds className="row-start-8 row-end-9">
                   <Contents width="section">
                     <Buttons
-                      onClick={() => finishProject}
+                      onClick={() => finishProject()}
                       background="green"
                       className="py-3"
                     >

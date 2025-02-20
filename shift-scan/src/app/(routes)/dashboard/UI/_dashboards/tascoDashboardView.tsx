@@ -12,6 +12,8 @@ import MyTeamWidget from "../_buttons/myTeamBtn";
 import SwitchJobsBtn from "../_buttons/switchJobsBtn";
 import { Dispatch, SetStateAction } from "react";
 import TascoBtn from "../_buttons/TascoBtn";
+import { LogItem } from "@/lib/types";
+import { useModalState } from "@/hooks/(dashboard)/useModalState";
 
 export default function TascoDashboardView({
   additionalButtonsType,
@@ -26,6 +28,7 @@ export default function TascoDashboardView({
   handleShowManagerButtons,
   permission,
   handleShowAdditionalButtons,
+  logs,
 }: {
   additionalButtonsType: string | null;
   isModalOpen: boolean;
@@ -40,7 +43,9 @@ export default function TascoDashboardView({
   permission: string;
   currentView: string | null;
   handleShowAdditionalButtons: (button: string) => void;
+  logs: LogItem[];
 }) {
+  const modalState = useModalState();
   return (
     <>
       <Contents width={"section"} className="py-5">
@@ -53,14 +58,12 @@ export default function TascoDashboardView({
           ) : additionalButtonsType === "clockOut" ? (
             <ClockOutWidget
               handleShowManagerButtons={handleShowManagerButtons}
-              setIsModal2Open={setIsModal2Open}
-              isModal2Open={isModal2Open}
-              isModalOpen={isModalOpen}
+              {...modalState}
               comment={comment}
               setComment={setComment}
               handleCOButton2={handleCOButton2}
               handleCOButton3={handleCOButton3}
-              handleCloseModal={handleCloseModal}
+              logs={logs}
             />
           ) : (
             <>

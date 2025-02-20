@@ -74,7 +74,7 @@ export default function Comment({
 
         <Holds position={"row"} className="row-start-8 row-end-9 h-full ">
           <Buttons
-            background={commentsValue.length < 3 ? "grey" : "orange"}
+            background={commentsValue.length < 3 ? "darkGray" : "orange"}
             onClick={() => handleClick()}
             disabled={commentsValue.length < 3}
             className="w-full h-full py-3"
