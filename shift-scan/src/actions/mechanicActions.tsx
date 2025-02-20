@@ -235,6 +235,7 @@ export async function findUniqueUser(formData: FormData) {
       },
       select: {
         id: true,
+        userId: true,
       },
     });
     return user;

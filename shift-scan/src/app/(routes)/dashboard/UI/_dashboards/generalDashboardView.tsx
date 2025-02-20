@@ -12,6 +12,8 @@ import GeneratorBtn from "../_buttons/generatorBtn";
 import MyTeamWidget from "../_buttons/myTeamBtn";
 import SwitchJobsBtn from "../_buttons/switchJobsBtn";
 import { Dispatch, SetStateAction } from "react";
+import { LogItem } from "@/lib/types";
+import useModalState from "@/hooks/(dashboard)/useModalState";
 
 export default function GeneralDashboardView({
   additionalButtonsType,
@@ -26,6 +28,7 @@ export default function GeneralDashboardView({
   handleShowManagerButtons,
   permission,
   handleShowAdditionalButtons,
+  logs,
 }: {
   additionalButtonsType: string | null;
   isModalOpen: boolean;
@@ -39,7 +42,9 @@ export default function GeneralDashboardView({
   handleShowManagerButtons: () => void;
   permission: string;
   handleShowAdditionalButtons: (button: string) => void;
+  logs: LogItem[];
 }) {
+  const modalState = useModalState();
   return (
     <>
       <Contents width={"section"} className="py-5">
@@ -61,15 +66,13 @@ export default function GeneralDashboardView({
             />
           ) : additionalButtonsType === "clockOut" ? (
             <ClockOutWidget
+              {...modalState}
               handleShowManagerButtons={handleShowManagerButtons}
-              setIsModal2Open={setIsModal2Open}
-              isModal2Open={isModal2Open}
-              isModalOpen={isModalOpen}
               comment={comment}
               setComment={setComment}
               handleCOButton2={handleCOButton2}
               handleCOButton3={handleCOButton3}
-              handleCloseModal={handleCloseModal}
+              logs={logs}
             />
           ) : (
             <>

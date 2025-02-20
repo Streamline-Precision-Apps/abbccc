@@ -145,7 +145,7 @@
     "Admin": "Admin",
     "GoHome": "Home",
     "Whoops": "Whoops!",
-    "ReturnToLogOut": "You forgot to Clock out Equipment!",
+    "ReturnToLogOut": "You forgot to Clock out the following:",
     "ClickToLogOut": "Click Here to fix it.",
     "Save": "Save Changes",
     "Delete": "Delete",

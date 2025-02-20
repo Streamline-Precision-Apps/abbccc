@@ -51,6 +51,19 @@ export type EquipmentStatus =
   | "NEEDS_REPAIR"
   | "NEEDS_MAINTENANCE";
 
+export type LogItem = {
+  id: string;
+  userId: string;
+  equipment?: {
+    id: string;
+    qrId: string;
+    name: string;
+  } | null;
+  maintenanceId?: string;
+  submitted: boolean;
+  type: "equipment" | "mechanic";
+};
+
 export type User = {
   id: string;
   username?: string;
