@@ -91,7 +91,12 @@ export default function GeneralDashboardView({
 
               <FormsBtn permission={permission} view={"general"} />
 
-              <SwitchJobsBtn permission={permission} />
+              <SwitchJobsBtn
+                {...modalState}
+                handleShowManagerButtons={handleShowManagerButtons}
+                permission={permission}
+                logs={logs}
+              />
 
               <ClockOutBtn
                 handleShowAdditionalButtons={handleShowAdditionalButtons}

@@ -77,7 +77,12 @@ export default function TascoDashboardView({
 
               <FormsBtn permission={permission} view={"tasco"} />
 
-              <SwitchJobsBtn permission={permission} />
+              <SwitchJobsBtn
+                {...modalState}
+                handleShowManagerButtons={handleShowManagerButtons}
+                permission={permission}
+                logs={logs}
+              />
 
               <ClockOutBtn
                 handleShowAdditionalButtons={handleShowAdditionalButtons}
