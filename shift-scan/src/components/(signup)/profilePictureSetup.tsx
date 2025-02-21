@@ -17,7 +17,7 @@ type prop = {
   handleNextStep: () => void;
 };
 
-export default function ProfilePictureSetup({userId, handleNextStep}: prop) {
+export default function ProfilePictureSetup({ userId, handleNextStep }: prop) {
   const [base64String, setBase64String] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [showBanner, setShowBanner] = useState(false);
@@ -67,15 +67,18 @@ export default function ProfilePictureSetup({userId, handleNextStep}: prop) {
       {/* Show the banner at the top of the page */}
       {showBanner && (
         <Holds
-        style={{ position: "fixed", top: 0, width: "100%", zIndex: 1000 }}
+          style={{ position: "fixed", top: 0, width: "100%", zIndex: 1000 }}
         >
           <Banners background={"red"}>
             <Texts size={"p6"}>{bannerMessage}</Texts>
           </Banners>
         </Holds>
       )}
-    <Grids rows={"10"} gap={"5"} className="mb-5">
-        <Holds background={"white"} className="row-span-1 h-full justify-center">
+      <Grids rows={"10"} gap={"5"} className="mb-5">
+        <Holds
+          background={"white"}
+          className="row-span-1 h-full justify-center"
+        >
           <Titles size={"h1"}>{t("AddProfilePicture")}</Titles>
         </Holds>
         <Holds background={"white"} className="row-span-8 h-full py-5">
@@ -87,18 +90,16 @@ export default function ProfilePictureSetup({userId, handleNextStep}: prop) {
             </Holds>
           </Contents>
         </Holds>
-        <Holds  className="row-span-1 h-full">
+        <Holds className="row-span-1 h-full">
           <Buttons
-          onClick={handleSubmitImage}
-          background={base64String ? "orange" : "darkGrey"}
-          disabled={isSubmitting} // Disable the button while submitting
+            onClick={handleSubmitImage}
+            background={base64String ? "orange" : "darkGray"}
+            disabled={isSubmitting} // Disable the button while submitting
           >
-            <Titles>
-              {isSubmitting ? "Submitting..." : `${t("Next")}`}
-            </Titles>
+            <Titles>{isSubmitting ? "Submitting..." : `${t("Next")}`}</Titles>
           </Buttons>
         </Holds>
       </Grids>
     </>
   );
-};
+}

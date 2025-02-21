@@ -18,6 +18,8 @@ import { Titles } from "@/components/(reusable)/titles";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Spinner from "@/components/(animations)/spinner";
+import { useSession } from "next-auth/react";
+import { useTranslations } from "next-intl";
 
 type Equipment = {
   id: string;
@@ -29,13 +31,13 @@ type Equipment = {
 };
 
 export default function CreateMechanicProjectProcess() {
+  const t = useTranslations("MechanicWidget");
+  const router = useRouter(); // ALWAYS call hooks at the top
   const [scannedId, setScannedId] = useState<string | null>(null);
-
   const [step, setStep] = useState(1);
   const [scanned, setScanned] = useState(false);
   const [equipment, setEquipment] = useState<Equipment | null>(null);
   const [loading, setLoading] = useState(false);
-
   const [equipmentIssue, setEquipmentIssue] = useState<string>("");
   const [additionalInfo, setAdditionalInfo] = useState<string>("");
   const [location, setLocation] = useState<string>("");
@@ -43,14 +45,40 @@ export default function CreateMechanicProjectProcess() {
     "TODAY" | "HIGH" | "MEDIUM" | "LOW" | "PENDING" | ""
   >("");
 
-  const router = useRouter();
+  const { data: session } = useSession();
+
+  // Fetch equipment data when scannedId is available
+  useEffect(() => {
+    const fetchEquipment = async () => {
+      if (!scannedId) return; // Check inside the async function
+      setLoading(true);
+      try {
+        const response = await fetch(`/api/getEquipmentbyQrId/${scannedId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setEquipment(data);
+          if (scanned) {
+            setStep(4); // Proceed to step 4 only after successfully fetching data.
+          }
+        } else {
+          console.error(t("ErrorFetchingEquipment"), response.statusText);
+        }
+      } catch (error) {
+        console.error(t("Error:"), error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEquipment();
+  }, [scanned, scannedId, t]);
 
   const PriorityOptions = [
-    { label: "Select Priority", value: "" },
-    { label: "High Priority", value: "HIGH" },
-    { label: "Medium Priority", value: "MEDIUM" },
-    { label: "Low Priority", value: "LOW" },
-    { label: "TODAY", value: "TODAY" },
+    { label: t("SelectPriority"), value: "" },
+    { label: t("HighPriority"), value: "HIGH" },
+    { label: t("MediumPriority"), value: "MEDIUM" },
+    { label: t("LowPriority"), value: "LOW" },
+    { label: t("Today"), value: "TODAY" },
   ];
 
   const nextStep = () => {
@@ -61,34 +89,6 @@ export default function CreateMechanicProjectProcess() {
     setStep((prevStep) => prevStep - 1);
   };
 
-  // This effect will fetch the equipment data when a scannedId is available,
-  // and only then will it move the process to step 4.
-  useEffect(() => {
-    if (scannedId) {
-      const fetchEquipment = async () => {
-        setLoading(true);
-        try {
-          const response = await fetch(`/api/getEquipmentbyQrId/${scannedId}`);
-          if (response.ok) {
-            const data = await response.json();
-            setEquipment(data);
-            if (scanned) {
-              setStep(4); // Proceed to step 4 only after successfully fetching data.
-            }
-          } else {
-            console.error("Error fetching equipment:", response.statusText);
-          }
-        } catch (error) {
-          console.error("Error:", error);
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      fetchEquipment();
-    }
-  }, [scanned, scannedId]);
-
   const handleSubmit = async () => {
     try {
       const formData = new FormData();
@@ -97,12 +97,16 @@ export default function CreateMechanicProjectProcess() {
       formData.append("additionalInfo", additionalInfo || "");
       formData.append("location", location);
       formData.append("priority", status);
+      formData.append(
+        "createdBy",
+        `${session?.user?.firstName} ${session?.user?.lastName}`
+      );
       const response = await CreateMechanicProject(formData);
       if (response) {
         router.push("/dashboard/mechanic");
       }
     } catch (error) {
-      console.error("Error:", error);
+      console.error(t("Error:"), error);
     }
   };
 
@@ -116,19 +120,23 @@ export default function CreateMechanicProjectProcess() {
               <Grids rows="7" gap="5" className="w-full h-full">
                 <Holds className="row-start-1 row-end-2 h-full">
                   <TitleBoxes
-                    title="Select Equipment"
+                    title={t("SelectEquipment")}
                     titleImg="/mechanic.svg"
-                    titleImgAlt="Mechanic"
+                    titleImgAlt={t("Mechanic")}
                     type="noIcon"
                   />
                 </Holds>
                 <Holds className="row-start-3 row-end-5">
-                  <Images titleImg="/camera.svg" titleImgAlt="" size="40" />
+                  <Images
+                    titleImg="/camera.svg"
+                    titleImgAlt={t("Camera")}
+                    size="40"
+                  />
                 </Holds>
                 <Holds className="row-start-6 row-end-7 h-full">
                   <Contents>
                     <Buttons background="lightBlue" onClick={nextStep}>
-                      <Titles size="h4">Scan Equipment</Titles>
+                      <Titles size="h4">{t("ScanEquipment")}</Titles>
                     </Buttons>
                   </Contents>
                 </Holds>
@@ -141,7 +149,7 @@ export default function CreateMechanicProjectProcess() {
                         nextStep();
                       }}
                     >
-                      <Titles size="h4">Select Manually</Titles>
+                      <Titles size="h4">{t("SelectManually")}</Titles>
                     </Buttons>
                   </Contents>
                 </Holds>
@@ -156,9 +164,9 @@ export default function CreateMechanicProjectProcess() {
                 <Grids rows="7" gap="5" className="w-full h-full">
                   <Holds className="row-start-1 row-end-2 h-full">
                     <TitleBoxes
-                      title="Select Equipment"
+                      title={t("SelectEquipment")}
                       titleImg="/mechanic.svg"
-                      titleImgAlt="Mechanic"
+                      titleImgAlt={t("Mechanic")}
                       onClick={prevStep}
                       type="noIcon-NoHref"
                     />
@@ -175,7 +183,7 @@ export default function CreateMechanicProjectProcess() {
                   </Holds>
                   <Holds>
                     <Buttons background="none" onClick={() => setStep(3)}>
-                      <Texts size="p4">Trouble Scanning?</Texts>
+                      <Texts size="p4">{t("TroubleScanning")}</Texts>
                     </Buttons>
                   </Holds>
                 </Grids>
@@ -188,7 +196,7 @@ export default function CreateMechanicProjectProcess() {
             <Holds background="white" className="w-full h-full py-4">
               <Contents>
                 <CodeStep
-                  datatype="equipment" // using this to set the title of equipment
+                  datatype="equipment"
                   handlePrevStep={prevStep}
                   handleNextStep={() => setStep(4)}
                   handleScannedPrevStep={() => setStep(1)}
@@ -205,14 +213,14 @@ export default function CreateMechanicProjectProcess() {
               {loading ? (
                 <Holds
                   background="white"
-                  className="w-full h-full py-4 animate-pulse "
+                  className="w-full h-full py-4 animate-pulse"
                 >
                   <Holds className="flex items-center justify-center h-full animate-pulse">
                     <Spinner />
                   </Holds>
                 </Holds>
               ) : (
-                <Holds background="white" className="w-full h-full py-4 ">
+                <Holds background="white" className="w-full h-full py-4">
                   <Grids rows="7" gap="5" className="w-full h-full">
                     <Holds className="row-start-1 row-end-2">
                       <TitleBoxes
@@ -225,11 +233,11 @@ export default function CreateMechanicProjectProcess() {
                         type="noIcon-NoHref"
                       />
                     </Holds>
-                    <Holds className="row-start-2 row-end-6 h-full ">
+                    <Holds className="row-start-2 row-end-6 h-full">
                       <Contents width={"section"} className="h-full">
                         <Holds className="h-full">
                           <Labels size="p4" htmlFor="equipmentIssue">
-                            Equipment Issue
+                            {t("EquipmentIssue")}
                           </Labels>
                           <TextAreas
                             name="equipmentIssue"
@@ -240,68 +248,73 @@ export default function CreateMechanicProjectProcess() {
                             style={{ resize: "none" }}
                           />
                         </Holds>
-                        <Holds className="h-full ">
+                        <Holds className="h-full">
                           <Labels size="p4" htmlFor="additionalInfo">
-                            Additional Info
+                            {t("AdditionalInfo")}
                           </Labels>
                           <TextAreas
                             name="additionalInfo"
                             value={additionalInfo}
                             onChange={(e) => setAdditionalInfo(e.target.value)}
-                            placeholder="Enter a problem description..."
+                            placeholder="Enter any additional information..."
                             style={{ resize: "none" }}
                             className="h-full"
                           />
                         </Holds>
                         <Holds className="h-full">
                           <Labels size="p4" htmlFor="location">
-                            Location
+                            {t("Location")}
                           </Labels>
                           <TextAreas
                             name="jobsite"
                             value={location}
                             onChange={(e) => setLocation(e.target.value)}
-                            placeholder="Enter a location if applicable..."
+                            placeholder={t("LocationPlaceholder")}
                             rows={2}
                             style={{ resize: "none" }}
                           />
                         </Holds>
                         <Holds className="h-full relative">
                           <Labels size="p4" htmlFor="additionalInfo">
-                            Status
+                            {t("Status")}
                           </Labels>
                           <Holds className="relative w-full">
-                            {/* Image positioned inside the Select at the top-left */}
-                           
-                              <Images
-                                titleImg={
-                                  status === "TODAY"
-                                    ? "/todayPriority.svg"
-                                    : status === "HIGH"
-                                    ? "/highPriority.svg"
-                                    : status === "MEDIUM"
-                                    ? "/mediumPriority.svg"
-                                    : status === "LOW"
-                                    ? "/lowPriority.svg"
-                                    : "/pending.svg"
-                                }
-                                className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2"
-                                titleImgAlt="status"
-                              />
-                           
-                            {/* Select dropdown with padding-left to prevent overlap */}
+                            <Images
+                              titleImg={
+                                status === "TODAY"
+                                  ? "/todayPriority.svg"
+                                  : status === "HIGH"
+                                  ? "/highPriority.svg"
+                                  : status === "MEDIUM"
+                                  ? "/mediumPriority.svg"
+                                  : status === "LOW"
+                                  ? "/lowPriority.svg"
+                                  : "/pending.svg"
+                              }
+                              className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2"
+                              titleImgAlt="status"
+                            />
                             <Selects
                               name="additionalInfo"
                               value={status}
                               onChange={(e) =>
                                 setStatus(
-                                  e.target.value as "" | "TODAY" | "HIGH" | "MEDIUM" | "LOW"
+                                  e.target.value as
+                                    | ""
+                                    | "TODAY"
+                                    | "HIGH"
+                                    | "MEDIUM"
+                                    | "LOW"
                                 )
                               }
-                              className="pl-8" // Adjust padding to move text away from the image
+                              className="pl-8"
                             >
                               {PriorityOptions.map((option) => (
-                                <option key={option.value} value={option.value} className="text-center">
+                                <option
+                                  key={option.value}
+                                  value={option.value}
+                                  className="text-center"
+                                >
                                   {option.label}
                                 </option>
                               ))}
@@ -310,14 +323,14 @@ export default function CreateMechanicProjectProcess() {
                         </Holds>
                       </Contents>
                     </Holds>
-                    <Holds className="row-start-7 row-end-8 ">
+                    <Holds className="row-start-7 row-end-8">
                       <Contents width={"section"}>
                         <Buttons
                           background={"green"}
                           onClick={handleSubmit}
                           className="py-4"
                         >
-                          <Titles size={"h4"}>Create Project</Titles>
+                          <Titles size={"h4"}>{t("CreateProject")}</Titles>
                         </Buttons>
                       </Contents>
                     </Holds>

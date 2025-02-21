@@ -180,31 +180,28 @@ export default function MechanicVerificationStep({
                     className="h-full w-[95%] sm:w-[85%] md:w-[75%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%]  border-[3px] rounded-b-none  border-black "
                   >
                     <Contents width={"section"} className="h-full">
-                      <Labels>
-                        <Texts text={"white"} size={"p4"} position={"left"}>
-                          {t("Date-label")}
-                        </Texts>
-                        <Inputs
-                          state="disabled"
-                          variant={"white"}
-                          data={date.toLocaleDateString("en-US", {
-                            year: "numeric",
-                            month: "numeric",
-                            day: "numeric",
-                          })}
-                        />
+                      <Labels text={"white"} size={"p4"} position={"left"}>
+                        {t("Date-label")}
                       </Labels>
-                      <Labels>
-                        <Texts text={"white"} size={"p4"} position={"left"}>
-                          {t("JobSite-label")}
-                        </Texts>
-                        <Inputs
-                          state="disabled"
-                          name="jobsiteId"
-                          variant={"white"}
-                          data={scanResult?.data || ""}
-                        />
+                      <Inputs
+                        state="disabled"
+                        variant={"white"}
+                        data={date.toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "numeric",
+                          day: "numeric",
+                        })}
+                      />
+
+                      <Labels text={"white"} size={"p4"} position={"left"}>
+                        {t("JobSite-label")}
                       </Labels>
+                      <Inputs
+                        state="disabled"
+                        name="jobsiteId"
+                        variant={"white"}
+                        data={scanResult?.data || ""}
+                      />
                     </Contents>
                   </Holds>
                 </Holds>

@@ -34,8 +34,9 @@ export async function CreateMechanicProject(formData: FormData) {
     const additionalInfo = formData.get("additionalInfo") as string;
     const location = formData.get("location") as string;
     const stringPriority = formData.get("priority") as string;
+    const createdBy = formData.get("createdBy") as string;
 
-    let priority;
+    let priority = Priority.PENDING;
 
     switch (stringPriority) {
       case "LOW":
@@ -64,6 +65,7 @@ export async function CreateMechanicProject(formData: FormData) {
         additionalInfo,
         location,
         priority,
+        createdBy,
       },
     });
     console.log("Project created successfully.");
@@ -82,7 +84,7 @@ export async function setEditForProjectInfo(formData: FormData) {
     const location = formData.get("location") as string;
     const stringPriority = formData.get("priority") as string;
 
-    let priority;
+    let priority = Priority.PENDING;
 
     switch (stringPriority) {
       case "LOW":
@@ -110,7 +112,7 @@ export async function setEditForProjectInfo(formData: FormData) {
       },
       data: {
         location,
-        priority,
+        priority: priority,
       },
     });
   } catch (error) {
@@ -233,10 +235,41 @@ export async function findUniqueUser(formData: FormData) {
       },
       select: {
         id: true,
+        userId: true,
       },
     });
     return user;
   } catch (error) {
     console.error("Error finding user:", error);
   }
+}
+
+export async function SubmitEngineerProject(formData: FormData) {
+  try {
+    console.log("Leaving project...");
+    console.log(formData);
+
+    const id = formData.get("id") as string;
+    const problemDiagnosis = formData.get("diagnosedProblem") as string;
+    const solution = formData.get("solution") as string;
+    const totalHoursLaboured = parseFloat(
+      formData.get("totalHoursLaboured") as string
+    );
+
+    await prisma.maintenance.update({
+      where: {
+        id,
+      },
+      data: {
+        problemDiagnosis,
+        solution,
+        repaired: true,
+        totalHoursLaboured,
+      },
+    });
+
+    revalidatePath("/dashboard/mechanic");
+    revalidateTag("projects");
+    return true;
+  } catch (error) {}
 }

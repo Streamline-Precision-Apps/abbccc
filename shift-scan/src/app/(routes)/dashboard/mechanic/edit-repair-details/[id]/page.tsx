@@ -5,10 +5,11 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Tab } from "@/components/(reusable)/tab";
 import { Texts } from "@/components/(reusable)/texts";
-import { useEffect, useState } from "react";
-import MechanicEditPage from "../../components/MechanicEditPage";
+import { use, useEffect, useState } from "react";
+import MechanicEditPage from "./_components/MechanicEditPage";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
-import MechanicEmployeeLogs from "../../components/MechanicEmployeeLogs";
+import MechanicEmployeeLogs from "./_components/MechanicEmployeeLogs";
+import { useTranslations } from "next-intl";
 
 type Equipment = {
   id: string;
@@ -25,6 +26,7 @@ type RepairDetails = {
   createdBy: string;
   createdAt: Date;
   hasBeenDelayed: boolean;
+  repaired: boolean;
   delay: Date | null;
   delayReasoning?: string;
   totalHoursLaboured: number;
@@ -58,6 +60,8 @@ export default function EditRepairDetails({
   const [repairDetails, setRepairDetails] = useState<RepairDetails>();
   const [logs, setLogs] = useState<LogItem[]>();
   const [loading, setLoading] = useState(false);
+  const [totalHours, setTotalHours] = useState<number>(0);
+  const t = useTranslations("MechanicWidget");
 
   useEffect(() => {
     setLoading(true);
@@ -69,9 +73,10 @@ export default function EditRepairDetails({
       .then(([repairDetails, logs]) => {
         setRepairDetails(repairDetails);
         setLogs(logs);
+        setTotalHours(repairDetails.totalHoursLaboured);
       })
       .catch((error) => {
-        console.error("Error fetching data:", error);
+        console.error(t("ErrorFetchingRepairDetails"), error);
       })
       .finally(() => {
         setLoading(false);
@@ -107,20 +112,20 @@ export default function EditRepairDetails({
             }
           >
             <Grids rows={"10"} className="h-full">
-              <Holds position={"row"} className="row-span-1 gap-2">
+              <Holds position={"row"} className="row-span-1 h-full gap-2">
                 <Tab
                   onClick={() => setActiveTab(1)}
                   isActive={activeTab === 1}
                   size={"md"}
                 >
-                  Project Info
+                  {t("ProjectInfo")}
                 </Tab>
                 <Tab
                   onClick={() => setActiveTab(2)}
                   isActive={activeTab === 2}
                   size={"md"}
                 >
-                  Logs
+                  {t("Logs")}
                 </Tab>
               </Holds>
               <Holds
@@ -131,13 +136,15 @@ export default function EditRepairDetails({
                   <MechanicEditPage
                     repairDetails={repairDetails}
                     setRepairDetails={setRepairDetails}
-                    totalLogs={
-                      logs?.map((log) => log.maintenanceLogs).length || 0
-                    }
+                    totalLogs={logs ? logs[0].maintenanceLogs.length : 0}
                   />
                 )}
                 {activeTab === 2 && (
-                  <MechanicEmployeeLogs logs={logs} loading={loading} />
+                  <MechanicEmployeeLogs
+                    logs={logs}
+                    loading={loading}
+                    totalHours={totalHours}
+                  />
                 )}
               </Holds>
             </Grids>

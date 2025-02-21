@@ -296,7 +296,7 @@ export default function NotificationSettings({ userId, handleNextStep }: prop) {
         </Holds>
         <Holds className="row-span-1 h-full">
           <Buttons
-            background={isRequiredAcessed ? "orange" : "darkGrey"}
+            background={isRequiredAcessed ? "orange" : "darkGray"}
             onClick={handleSubmitSettings}
             disabled={isSubmitting}
           >

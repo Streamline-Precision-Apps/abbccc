@@ -1,6 +1,6 @@
 "use client";
 import { Holds } from "@/components/(reusable)/holds";
-import { use, useEffect, useState } from "react";
+import { useState } from "react";
 import MechanicPriority from "./MechanicPriorityList";
 import { Grids } from "@/components/(reusable)/grids";
 import { Tab } from "@/components/(reusable)/tab";
@@ -8,10 +8,12 @@ import { Tab } from "@/components/(reusable)/tab";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import MechanicSelectList from "./MechanicSelectList";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
-export default function MechanicDisplay({ isManager}: { isManager: boolean }) {
+export default function MechanicDisplay({ isManager }: { isManager: boolean }) {
   const [activeTab, setActiveTab] = useState(1);
   const router = useRouter();
+  const t = useTranslations("MechanicWidget");
   return (
     <>
       {!isManager && (
@@ -21,9 +23,9 @@ export default function MechanicDisplay({ isManager}: { isManager: boolean }) {
             className="row-span-1 h-full justify-center"
           >
             <TitleBoxes
-              title="Projects"
+              title={t("Projects")}
               titleImg="/mechanic.svg"
-              titleImgAlt="Mechanic"
+              titleImgAlt={t("Mechanic")}
               type="row"
             />
           </Holds>
@@ -38,9 +40,9 @@ export default function MechanicDisplay({ isManager}: { isManager: boolean }) {
             className="row-span-1 h-full justify-center"
           >
             <TitleBoxes
-              title={activeTab === 1 ? "Priority List" : "Projects"}
+              title={activeTab === 1 ? t("PriorityList") : t("Projects")}
               titleImg="/mechanic.svg"
-              titleImgAlt="Mechanic"
+              titleImgAlt={t("Mechanic")}
               onClick={() => router.push("/dashboard")}
               type="noIcon-NoHref"
             />
@@ -53,14 +55,14 @@ export default function MechanicDisplay({ isManager}: { isManager: boolean }) {
                   isActive={activeTab === 1}
                   size={"md"}
                 >
-                  Todays
+                  {t("Todays")}
                 </Tab>
                 <Tab
                   onClick={() => setActiveTab(2)}
                   isActive={activeTab === 2}
                   size={"md"}
                 >
-                  All
+                  {t("All")}
                 </Tab>
               </Holds>
               <Holds

@@ -1,6 +1,6 @@
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
-import MechanicDisplay from "./components/MechanicDisplay";
+import MechanicDisplay from "./_components/MechanicDisplay";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 

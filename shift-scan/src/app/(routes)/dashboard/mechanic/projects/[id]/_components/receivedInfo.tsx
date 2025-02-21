@@ -7,7 +7,9 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
 import { Selects } from "@/components/(reusable)/selects";
 import { TextAreas } from "@/components/(reusable)/textareas";
+import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
+import { useTranslations } from "next-intl";
 
 export default function ReceivedInfo({
   loading,
@@ -18,6 +20,8 @@ export default function ReceivedInfo({
   setDelayReasoning,
   setExpectedArrival,
   leaveProject,
+  myComment,
+  hasBeenDelayed,
 }: {
   loading: boolean;
   problemReceived: string;
@@ -27,10 +31,15 @@ export default function ReceivedInfo({
   setDelayReasoning: React.Dispatch<React.SetStateAction<string>>;
   setExpectedArrival: React.Dispatch<React.SetStateAction<string>>;
   leaveProject: () => void;
+  myComment: string;
+  hasBeenDelayed: boolean;
 }) {
+  const t = useTranslations("MechanicWidget");
   const isButtonDisabled =
-    delayReasoning === "" ||
-    (delayReasoning === "Delay" && expectedArrival !== "");
+    (myComment.length > 3 && delayReasoning === "") ||
+    (delayReasoning === "Delay" &&
+      expectedArrival === "" &&
+      myComment.length > 3);
 
   if (loading)
     return (
@@ -43,10 +52,10 @@ export default function ReceivedInfo({
     <Holds className="h-full py-2">
       <Contents width={"section"}>
         <Grids rows={"8"} gap={"5"} className="h-full">
-          <Holds className="row-start-1 row-end-8 h-full">
+          <Holds className="row-start-1 row-end-8 h-full flex flex-col">
             <Holds>
               <Labels size={"p4"} htmlFor="problemReceived">
-                Problem Received
+                {t("ProblemReceived")}
               </Labels>
               <TextAreas
                 disabled
@@ -57,7 +66,7 @@ export default function ReceivedInfo({
             </Holds>
             <Holds>
               <Labels size={"p4"} htmlFor="additionalNotes">
-                Additional Notes
+                {t("AdditionalNotes")}
               </Labels>
               <TextAreas
                 disabled
@@ -68,21 +77,21 @@ export default function ReceivedInfo({
             </Holds>
             <Holds>
               <Labels size={"p4"} htmlFor="delayReasoning">
-                Delay Status
+                {t("DelayStatus")}
               </Labels>
               <Selects
                 name="delayReasoning"
                 value={delayReasoning}
                 onChange={(e) => setDelayReasoning(e.target.value)}
               >
-                <option value="">No Delay</option>
-                <option value="Delay">Delay</option>
+                <option value="">{t("NoDelay")}</option>
+                <option value="Delay">{t("Delay")}</option>
               </Selects>
             </Holds>
             {delayReasoning === "Delay" && (
               <Holds>
                 <Labels size={"p4"} htmlFor="delayDate">
-                  Expected Arrival
+                  {t("ExpectArrival")}
                 </Labels>
                 <Inputs
                   type="date"
@@ -90,7 +99,15 @@ export default function ReceivedInfo({
                   value={expectedArrival}
                   onChange={(e) => setExpectedArrival(e.target.value)}
                 />
+                <span className="text-red-500">
+                  {hasBeenDelayed ? t("ProjectHasAlreadyBeenDelayed") : ""}
+                </span>
               </Holds>
+            )}
+            {myComment.length < 3 && (
+              <Texts size="p6" className="text-red-500 px-5 pt-10 ">
+                {`* ${t("RecordToLeaveProject")}`}
+              </Texts>
             )}
           </Holds>
           <Holds className="row-start-8 row-end-9 h-full">
@@ -98,9 +115,9 @@ export default function ReceivedInfo({
               disabled={!isButtonDisabled}
               background={isButtonDisabled ? "red" : "darkGray"}
               className="h-full"
-              onClick={() => leaveProject()}
+              onClick={leaveProject}
             >
-              <Titles size={"h2"}>Leave Project</Titles>
+              <Titles size={"h2"}>{t("LeaveProject")}</Titles>
             </Buttons>
           </Holds>
         </Grids>
