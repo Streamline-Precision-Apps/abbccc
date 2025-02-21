@@ -866,6 +866,7 @@
     "ProjectHasAlreadyBeenDelayed": "El proyecto ya se ha retrasado",
     "Delay": "Demora",
     "NoDelay": "Sin retraso",
-    "DelayStatus": "Estado de retraso"
+    "DelayStatus": "Estado de retraso",
+    "SubmitProject": "Proyecto de envío"
   }
 }
