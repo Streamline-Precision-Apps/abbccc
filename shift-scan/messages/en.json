@@ -924,6 +924,7 @@
     "ProjectHasAlreadyBeenDelayed": "Project has already been delayed",
     "Delay": "Delay",
     "NoDelay": "No Delay",
-    "DelayStatus": "Delay Status"
+    "DelayStatus": "Delay Status",
+    "SubmitProject": "Submit Project"
   }
 }
