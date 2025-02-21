@@ -20,7 +20,7 @@ export default function StepButtons({
   return (
     <Holds className="h-full w-full">
       <Buttons
-        background={disabled ? "grey" : "orange"}
+        background={disabled ? "darkGray" : "orange"}
         onClick={handleNextStep}
         disabled={disabled}
         className="py-2"

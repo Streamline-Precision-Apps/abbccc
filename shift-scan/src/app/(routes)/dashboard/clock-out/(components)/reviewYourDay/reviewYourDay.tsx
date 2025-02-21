@@ -88,55 +88,54 @@ export default function ReviewYourDay({
                     </Holds>
                   ) : (
                     timesheets.map((timesheet, index) => (
-                      <>
-                        <Holds
-                          position={"row"}
-                          className="gap-4 border-b-[3px] border-black"
+                      <Holds
+                        position={"row"}
+                        className="gap-4 border-b-[3px] border-black"
+                        key={index}
+                      >
+                        <Grids
+                          cols={"4"}
+                          gap={"4"}
+                          className="w-full h-full p-4"
                         >
-                          <Grids
-                            cols={"4"}
-                            gap={"4"}
-                            className="w-full h-full p-4"
+                          <Titles
+                            size={"h6"}
+                            className="col-start-1 col-end-2 "
                           >
+                            {timesheet.startTime.toString().slice(11, 16)}
+                          </Titles>
+                          {timesheets.length - 1 === index ? (
                             <Titles
                               size={"h6"}
-                              className="col-start-1 col-end-2 "
+                              className="col-start-2 col-end-3 "
                             >
-                              {timesheet.startTime.toString().slice(11, 16)}
+                              {t("Now")}
                             </Titles>
-                            {timesheets.length - 1 === index ? (
-                              <Titles
-                                size={"h6"}
-                                className="col-start-2 col-end-3 "
-                              >
-                                {t("Now")}
-                              </Titles>
-                            ) : (
-                              <Titles
-                                size={"h6"}
-                                className="col-start-2 col-end-3 "
-                              >
-                                {timesheet.endTime
-                                  ? timesheet.endTime.toString().slice(11, 16)
-                                  : " - "}
-                              </Titles>
-                            )}
+                          ) : (
+                            <Titles
+                              size={"h6"}
+                              className="col-start-2 col-end-3 "
+                            >
+                              {timesheet.endTime
+                                ? timesheet.endTime.toString().slice(11, 16)
+                                : " - "}
+                            </Titles>
+                          )}
 
-                            <Titles
-                              size={"h6"}
-                              className="col-start-3 col-end-4 "
-                            >
-                              {timesheet.jobsiteId}
-                            </Titles>
-                            <Titles
-                              size={"h6"}
-                              className="col-start-4 col-end-5 "
-                            >
-                              {timesheet.costcode}
-                            </Titles>
-                          </Grids>
-                        </Holds>
-                      </>
+                          <Titles
+                            size={"h6"}
+                            className="col-start-3 col-end-4 "
+                          >
+                            {timesheet.jobsiteId}
+                          </Titles>
+                          <Titles
+                            size={"h6"}
+                            className="col-start-4 col-end-5 "
+                          >
+                            {timesheet.costcode}
+                          </Titles>
+                        </Grids>
+                      </Holds>
                     ))
                   )}
                 </Holds>

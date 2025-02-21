@@ -43,12 +43,26 @@ export enum Priority {
   HIGH = "HIGH",
   PENDING = "PENDING",
   TODAY = "TODAY",
+  repaired = "REPAIRED",
 }
 
 export type EquipmentStatus =
   | "OPERATIONAL"
   | "NEEDS_REPAIR"
   | "NEEDS_MAINTENANCE";
+
+export type LogItem = {
+  id: string;
+  userId: string;
+  equipment?: {
+    id: string;
+    qrId: string;
+    name: string;
+  } | null;
+  maintenanceId?: string;
+  submitted: boolean;
+  type: "equipment" | "mechanic";
+};
 
 export type User = {
   id: string;

@@ -1,5 +1,3 @@
-// Stores the id for the time sheet that is currently open (waiting to be submitted when you clock out).
-
 "use client";
 import { setPrevTimeSheet } from "@/actions/cookieActions";
 import { usePathname } from "next/navigation";
@@ -43,8 +41,18 @@ export const TimeSheetDataProvider: React.FC<{ children: ReactNode }> = ({
         ) {
           const prevTimeSheet = await fetch("/api/getRecentTimecard");
           const data = await prevTimeSheet.json();
-          setTimeSheetData(data);
-          setPrevTimeSheet(data.id as string);
+
+          if (data) {
+            setTimeSheetData(data);
+            // Only attempt to setPrevTimeSheet if data.id exists
+            if (data.id) {
+              setPrevTimeSheet(data.id as string);
+            } else {
+              console.warn("TimeSheet data received without an id.");
+            }
+          } else {
+            console.warn("No TimeSheet data received from the API.");
+          }
         }
       } catch (error) {
         console.error(error);

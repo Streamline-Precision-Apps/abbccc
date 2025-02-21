@@ -7,18 +7,22 @@ import { Labels } from "@/components/(reusable)/labels";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
+import { useTranslations } from "next-intl";
 
 export default function MyCommentFinishProject({
   myComment,
   setMyComment,
   activeUsers,
   loading,
+  openFinishProject,
 }: {
   myComment: string;
   setMyComment: React.Dispatch<React.SetStateAction<string>>;
   activeUsers: number;
   loading: boolean;
+  openFinishProject: () => void;
 }) {
+  const t = useTranslations("MechanicWidget");
   if (loading)
     return (
       <Holds className="h-full py-2 justify-center items-center">
@@ -33,7 +37,7 @@ export default function MyCommentFinishProject({
           {/* Ensure TextArea Expands Fully */}
           <Holds className="row-start-1 row-end-8 h-full relative">
             <Labels size="p4" htmlFor="MyComments">
-              Additional Notes
+              {t("AdditionalNotes")}
             </Labels>
             <TextAreas
               name="MyComments"
@@ -51,8 +55,11 @@ export default function MyCommentFinishProject({
             <Buttons
               background={activeUsers > 1 ? "lightGray" : "orange"}
               disabled={activeUsers > 1}
+              onClick={() => {
+                openFinishProject();
+              }}
             >
-              <Titles size="h2">Finish Project</Titles>
+              <Titles size="h2">{t("FinishProject")}</Titles>
             </Buttons>
           </Holds>
         </Grids>

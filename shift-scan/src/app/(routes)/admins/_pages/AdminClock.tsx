@@ -66,10 +66,18 @@ export default function AdminClock({
     <Holds className=" ">
       <Holds position={"row"}>
         <Holds>
-          <CodeFinder datatype="jobsite" setSelectedOpt={() => {}} />
+          <CodeFinder
+            datatype="jobsite"
+            setSelectedOpt={() => {}}
+            setScannedId={undefined}
+          />
         </Holds>
         <Holds>
-          <CodeFinder datatype="costcode" setSelectedOpt={() => {}} />
+          <CodeFinder
+            datatype="costcode"
+            setSelectedOpt={() => {}}
+            setScannedId={undefined}
+          />
         </Holds>
       </Holds>
       <Holds>

@@ -81,10 +81,18 @@ export default function AdminSwitch({
       <Contents width={"section"}>
         <Grids cols={"2"} gap={"5"}>
           <Holds className="col-span-1 overflow-y-hidden h-[300px]">
-            <CodeFinder datatype={"jobsite"} setSelectedOpt={() => {}} />
+            <CodeFinder
+              datatype={"jobsite"}
+              setSelectedOpt={() => {}}
+              setScannedId={undefined}
+            />
           </Holds>
           <Holds className=" col-span-1 overflow-y-hidden h-[300px] ">
-            <CodeFinder datatype="costcode" setSelectedOpt={() => {}} />
+            <CodeFinder
+              datatype="costcode"
+              setSelectedOpt={() => {}}
+              setScannedId={undefined}
+            />
           </Holds>
 
           <Holds className="col-span-2">
