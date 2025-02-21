@@ -19,6 +19,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Spinner from "@/components/(animations)/spinner";
 import { useSession } from "next-auth/react";
+import { useTranslations } from "next-intl";
 
 type Equipment = {
   id: string;
@@ -30,6 +31,7 @@ type Equipment = {
 };
 
 export default function CreateMechanicProjectProcess() {
+  const t = useTranslations("MechanicWidget");
   const [scannedId, setScannedId] = useState<string | null>(null);
 
   const [step, setStep] = useState(1);
@@ -50,11 +52,11 @@ export default function CreateMechanicProjectProcess() {
   const router = useRouter();
 
   const PriorityOptions = [
-    { label: "Select Priority", value: "" },
-    { label: "High Priority", value: "HIGH" },
-    { label: "Medium Priority", value: "MEDIUM" },
-    { label: "Low Priority", value: "LOW" },
-    { label: "TODAY", value: "TODAY" },
+    { label: t("SelectPriority"), value: "" },
+    { label: t("HighPriority"), value: "HIGH" },
+    { label: t("MediumPriority"), value: "MEDIUM" },
+    { label: t("LowPriority"), value: "LOW" },
+    { label: t("Today"), value: "TODAY" },
   ];
 
   const nextStep = () => {
@@ -80,10 +82,10 @@ export default function CreateMechanicProjectProcess() {
               setStep(4); // Proceed to step 4 only after successfully fetching data.
             }
           } else {
-            console.error("Error fetching equipment:", response.statusText);
+            console.error(t("ErrorFetchingEquipment"), response.statusText);
           }
         } catch (error) {
-          console.error("Error:", error);
+          console.error(t("Error:"), error);
         } finally {
           setLoading(false);
         }
@@ -110,7 +112,7 @@ export default function CreateMechanicProjectProcess() {
         router.push("/dashboard/mechanic");
       }
     } catch (error) {
-      console.error("Error:", error);
+      console.error(t("Error:"), error);
     }
   };
 
@@ -124,19 +126,23 @@ export default function CreateMechanicProjectProcess() {
               <Grids rows="7" gap="5" className="w-full h-full">
                 <Holds className="row-start-1 row-end-2 h-full">
                   <TitleBoxes
-                    title="Select Equipment"
+                    title={t("SelectEquipment")}
                     titleImg="/mechanic.svg"
-                    titleImgAlt="Mechanic"
+                    titleImgAlt={t("Mechanic")}
                     type="noIcon"
                   />
                 </Holds>
                 <Holds className="row-start-3 row-end-5">
-                  <Images titleImg="/camera.svg" titleImgAlt="" size="40" />
+                  <Images
+                    titleImg="/camera.svg"
+                    titleImgAlt={t("Camera")}
+                    size="40"
+                  />
                 </Holds>
                 <Holds className="row-start-6 row-end-7 h-full">
                   <Contents>
                     <Buttons background="lightBlue" onClick={nextStep}>
-                      <Titles size="h4">Scan Equipment</Titles>
+                      <Titles size="h4">{t("ScanEquipment")}</Titles>
                     </Buttons>
                   </Contents>
                 </Holds>
@@ -149,7 +155,7 @@ export default function CreateMechanicProjectProcess() {
                         nextStep();
                       }}
                     >
-                      <Titles size="h4">Select Manually</Titles>
+                      <Titles size="h4">{t("SelectManually")}</Titles>
                     </Buttons>
                   </Contents>
                 </Holds>
@@ -164,9 +170,9 @@ export default function CreateMechanicProjectProcess() {
                 <Grids rows="7" gap="5" className="w-full h-full">
                   <Holds className="row-start-1 row-end-2 h-full">
                     <TitleBoxes
-                      title="Select Equipment"
+                      title={t("SelectEquipment")}
                       titleImg="/mechanic.svg"
-                      titleImgAlt="Mechanic"
+                      titleImgAlt={t("Mechanic")}
                       onClick={prevStep}
                       type="noIcon-NoHref"
                     />
@@ -183,7 +189,7 @@ export default function CreateMechanicProjectProcess() {
                   </Holds>
                   <Holds>
                     <Buttons background="none" onClick={() => setStep(3)}>
-                      <Texts size="p4">Trouble Scanning?</Texts>
+                      <Texts size="p4">{t("TroubleScanning")}</Texts>
                     </Buttons>
                   </Holds>
                 </Grids>
@@ -237,7 +243,7 @@ export default function CreateMechanicProjectProcess() {
                       <Contents width={"section"} className="h-full">
                         <Holds className="h-full">
                           <Labels size="p4" htmlFor="equipmentIssue">
-                            Equipment Issue
+                            {t("EquipmentIssue")}
                           </Labels>
                           <TextAreas
                             name="equipmentIssue"
@@ -250,33 +256,33 @@ export default function CreateMechanicProjectProcess() {
                         </Holds>
                         <Holds className="h-full ">
                           <Labels size="p4" htmlFor="additionalInfo">
-                            Additional Info
+                            {t("AdditionalInfo")}
                           </Labels>
                           <TextAreas
                             name="additionalInfo"
                             value={additionalInfo}
                             onChange={(e) => setAdditionalInfo(e.target.value)}
-                            placeholder="Enter a problem description..."
+                            placeholder="Enter any additional information..."
                             style={{ resize: "none" }}
                             className="h-full"
                           />
                         </Holds>
                         <Holds className="h-full">
                           <Labels size="p4" htmlFor="location">
-                            Location
+                            {t("Location")}
                           </Labels>
                           <TextAreas
                             name="jobsite"
                             value={location}
                             onChange={(e) => setLocation(e.target.value)}
-                            placeholder="Enter a location if applicable..."
+                            placeholder={t("LocationPlaceholder")}
                             rows={2}
                             style={{ resize: "none" }}
                           />
                         </Holds>
                         <Holds className="h-full relative">
                           <Labels size="p4" htmlFor="additionalInfo">
-                            Status
+                            {t("Status")}
                           </Labels>
                           <Holds className="relative w-full">
                             {/* Image positioned inside the Select at the top-left */}
@@ -334,7 +340,7 @@ export default function CreateMechanicProjectProcess() {
                           onClick={handleSubmit}
                           className="py-4"
                         >
-                          <Titles size={"h4"}>Create Project</Titles>
+                          <Titles size={"h4"}>{t("CreateProject")}</Titles>
                         </Buttons>
                       </Contents>
                     </Holds>

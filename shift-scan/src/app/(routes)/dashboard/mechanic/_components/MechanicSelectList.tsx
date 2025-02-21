@@ -7,6 +7,7 @@ import { SearchAndCheck } from "./SearchAndCheck";
 import { useEffect, useState } from "react";
 import { Priority } from "@/lib/types";
 import Spinner from "@/components/(animations)/spinner";
+import { useTranslations } from "next-intl";
 
 type Equipment = {
   id: string;
@@ -36,16 +37,17 @@ export default function MechanicSelectList() {
   const [filteredProjects, setFilteredProjects] = useState<Projects[]>([]);
   const [selectedFilter, setSelectedFilter] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const t = useTranslations("MechanicWidget");
 
   const PriorityOptions = [
-    { label: "Select Filter", value: "" },
-    { label: "Pending", value: "PENDING" },
-    { label: "Delayed", value: "DELAYED" },
-    { label: "High Priority", value: "HIGH" },
-    { label: "Medium Priority", value: "MEDIUM" },
-    { label: "Low Priority", value: "LOW" },
-    { label: "TODAY", value: "TODAY" },
-    { label: "REPAIRED", value: "REPAIRED" },
+    { label: t("SelectFilter"), value: "" },
+    { label: t("Pending"), value: "PENDING" },
+    { label: t("Delayed"), value: "DELAYED" },
+    { label: t("HighPriority"), value: "HIGH" },
+    { label: t("MediumPriority"), value: "MEDIUM" },
+    { label: t("LowPriority"), value: "LOW" },
+    { label: t("Today"), value: "TODAY" },
+    { label: t("Repaired"), value: "REPAIRED" },
   ];
 
   useEffect(() => {
@@ -56,7 +58,7 @@ export default function MechanicSelectList() {
         const data = await response.json();
         setAllProjects(data);
       } catch (error) {
-        console.error("Error fetching projects:", error);
+        console.error(t("ErrorFetchingProjects"), error);
       }
       setLoading(false);
     };
@@ -105,7 +107,7 @@ export default function MechanicSelectList() {
         >
           <Images
             titleImg="/plus.svg"
-            titleImgAlt="Add New Repair"
+            titleImgAlt={t("AddNewRepair")}
             className="mx-auto"
           />
         </Buttons>

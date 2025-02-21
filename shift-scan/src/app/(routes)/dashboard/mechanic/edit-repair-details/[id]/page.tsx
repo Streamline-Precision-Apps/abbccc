@@ -9,6 +9,7 @@ import { use, useEffect, useState } from "react";
 import MechanicEditPage from "./_components/MechanicEditPage";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import MechanicEmployeeLogs from "./_components/MechanicEmployeeLogs";
+import { useTranslations } from "next-intl";
 
 type Equipment = {
   id: string;
@@ -60,6 +61,7 @@ export default function EditRepairDetails({
   const [logs, setLogs] = useState<LogItem[]>();
   const [loading, setLoading] = useState(false);
   const [totalHours, setTotalHours] = useState<number>(0);
+  const t = useTranslations("MechanicWidget");
 
   useEffect(() => {
     setLoading(true);
@@ -74,16 +76,12 @@ export default function EditRepairDetails({
         setTotalHours(repairDetails.totalHoursLaboured);
       })
       .catch((error) => {
-        console.error("Error fetching data:", error);
+        console.error(t("ErrorFetchingRepairDetails"), error);
       })
       .finally(() => {
         setLoading(false);
       });
   }, [params.id]);
-
-  useEffect(() => {
-    console.log(logs);
-  }, [logs]);
 
   return (
     <Bases>
@@ -120,14 +118,14 @@ export default function EditRepairDetails({
                   isActive={activeTab === 1}
                   size={"md"}
                 >
-                  Project Info
+                  {t("ProjectInfo")}
                 </Tab>
                 <Tab
                   onClick={() => setActiveTab(2)}
                   isActive={activeTab === 2}
                   size={"md"}
                 >
-                  Logs
+                  {t("Logs")}
                 </Tab>
               </Holds>
               <Holds

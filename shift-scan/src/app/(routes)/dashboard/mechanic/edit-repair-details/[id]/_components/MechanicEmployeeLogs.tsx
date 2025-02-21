@@ -10,6 +10,7 @@ import { Labels } from "@/components/(reusable)/labels";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import EmptyView from "@/components/(reusable)/emptyView";
 import { EmptyViews } from "@/components/(reusable)/emptyViews";
+import { useTranslations } from "next-intl";
 
 type User = {
   firstName: string;
@@ -52,7 +53,7 @@ export default function MechanicEmployeeLogs({
 
   const hours = Math.floor(totalHours / 60);
   const minutes = totalHours * 60 - hours * 60;
-
+  const t = useTranslations("MechanicWidget");
   const formattedTotalHours = `${hours} hrs ${minutes.toFixed(0)} mins`;
 
   // If still loading, show the loading skeleton UI.
@@ -82,7 +83,7 @@ export default function MechanicEmployeeLogs({
           className="w-full justify-between  py-2 border-y-[3px] border-black"
         >
           <Titles size={"h4"} position={"left"}>
-            Total Labor Hours:
+            {t("TotalLaborHours")}
           </Titles>
           <Texts size={"p3"}>{formattedTotalHours}</Texts>
         </Holds>
@@ -115,12 +116,12 @@ export default function MechanicEmployeeLogs({
                         </Texts>
                       </Holds>
                       <Holds className="row-start-2 row-end-4 h-full w-full pb-2 ">
-                        <Labels size={"p6"}>Comment</Labels>
+                        <Labels size={"p6"}>{t("Comment")}</Labels>
                         <TextAreas
                           className={`${mLog.comment} ? 'text-xs' : text-xs font-bold `}
                           disabled
                           defaultValue={
-                            mLog.comment === "" ? "No comment" : mLog.comment
+                            mLog.comment === "" ? t("NoComment") : mLog.comment
                           }
                         ></TextAreas>
                       </Holds>
@@ -133,7 +134,7 @@ export default function MechanicEmployeeLogs({
                       <EmptyViews
                         TopChild={
                           <Holds className="h-full justify-center">
-                            <Titles size={"h3"}>No Logs Found!</Titles>
+                            <Titles size={"h3"}>{t("NoLogsFound")}</Titles>
                           </Holds>
                         }
                       />

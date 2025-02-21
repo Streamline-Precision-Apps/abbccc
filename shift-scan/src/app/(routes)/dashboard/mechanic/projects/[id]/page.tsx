@@ -24,8 +24,8 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import { parse } from "path";
 import { setMechanicProjectID } from "@/actions/cookieActions";
+import { useTranslations } from "next-intl";
 
 // ✅ Define a full type for each maintenance log returned by the API
 interface MaintenanceLog {
@@ -52,6 +52,7 @@ interface ReceivedInfoData {
 type MaintenanceLogSchema = Pick<MaintenanceLog, "id" | "userId">;
 
 export default function Project({ params }: { params: { id: string } }) {
+  const t = useTranslations("MechanicWidget");
   const router = useRouter();
   const session = useSession();
   const userId = session.data?.user?.id;
@@ -125,7 +126,7 @@ export default function Project({ params }: { params: { id: string } }) {
         setActiveUsers(uniqueUserCount || 0);
       })
       .catch((error) => {
-        console.log("Error fetching received info:", error);
+        console.log(t("ErrorReceivedInfo"), error);
       })
       .finally(() => {
         setLoading(false);
@@ -155,7 +156,7 @@ export default function Project({ params }: { params: { id: string } }) {
         setTotalLaborHours(totalHours);
       })
       .catch((error) => {
-        console.log("Error reloading total labor hours:", error);
+        console.log(t("ErrorReloadingTotalLaborHours"), error);
       })
       .finally(() => {
         setLoading(false);
@@ -215,7 +216,7 @@ export default function Project({ params }: { params: { id: string } }) {
       const uniqueUserCount = await findUniqueUser(userForm);
 
       if (!uniqueUserCount) {
-        throw new Error("No maintenance log found for the current user");
+        throw new Error(t("NoMaintenanceLogFoundForCurrentUser"));
       }
 
       // We are sure myMaintenanceLogs is not null here.
@@ -280,14 +281,14 @@ export default function Project({ params }: { params: { id: string } }) {
                     isActive={activeTab === 1}
                     size="md"
                   >
-                    Received Info
+                    {t("ReceivedInfo")}
                   </Tab>
                   <Tab
                     onClick={() => setActiveTab(2)}
                     isActive={activeTab === 2}
                     size="md"
                   >
-                    My Comments
+                    {t("MyComments")}
                   </Tab>
                 </Holds>
                 <Holds
@@ -334,7 +335,7 @@ export default function Project({ params }: { params: { id: string } }) {
                   <TitleBoxes
                     title={titles.slice(0, 20) + "..."}
                     titleImg="/mechanic.svg"
-                    titleImgAlt="Mechanic"
+                    titleImgAlt={t("Mechanic")}
                     onClick={() => setModalOpen(false)}
                     type="noIcon-NoHref"
                   />
@@ -342,7 +343,7 @@ export default function Project({ params }: { params: { id: string } }) {
                 <Holds className="row-start-2 row-end-8 h-full">
                   <Contents width="section">
                     <Holds className="py-1">
-                      <Labels size="p3">Diagnosed Problem</Labels>
+                      <Labels size="p3">{t("DiagnosedProblem")}</Labels>
                       <TextAreas
                         value={diagnosedProblem}
                         onChange={(e) => setDiagnosedProblem(e.target.value)}
@@ -350,7 +351,7 @@ export default function Project({ params }: { params: { id: string } }) {
                       />
                     </Holds>
                     <Holds className="py-1 relative">
-                      <Labels size="p3">Solution</Labels>
+                      <Labels size="p3">{t("Solution")}</Labels>
                       <TextAreas
                         value={solution}
                         onChange={(e) => setSolution(e.target.value)}
@@ -367,10 +368,10 @@ export default function Project({ params }: { params: { id: string } }) {
                       </Texts>
                     </Holds>
                     <Holds className="py-1">
-                      <Labels size="p3">Total Labor Hours</Labels>
+                      <Labels size="p3">{t("TotalLaborHours")}</Labels>
                       <Inputs
                         type="text"
-                        placeholder="Enter labor hours"
+                        placeholder={t("TotalLaborHoursPlaceholder")}
                         value={formattedLaborTime}
                         disabled
                         className="py-2"
@@ -385,7 +386,7 @@ export default function Project({ params }: { params: { id: string } }) {
                       background="green"
                       className="py-3"
                     >
-                      <Titles>Submit Project</Titles>
+                      <Titles>{t("SubmitProject")}</Titles>
                     </Buttons>
                   </Contents>
                 </Holds>
