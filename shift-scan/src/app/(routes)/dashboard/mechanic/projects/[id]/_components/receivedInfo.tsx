@@ -9,7 +9,7 @@ import { Selects } from "@/components/(reusable)/selects";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import { comment } from "postcss";
+import { useTranslations } from "next-intl";
 
 export default function ReceivedInfo({
   loading,
@@ -34,6 +34,7 @@ export default function ReceivedInfo({
   myComment: string;
   hasBeenDelayed: boolean;
 }) {
+  const t = useTranslations("MechanicWidget");
   const isButtonDisabled =
     (myComment.length > 3 && delayReasoning === "") ||
     (delayReasoning === "Delay" &&
@@ -54,7 +55,7 @@ export default function ReceivedInfo({
           <Holds className="row-start-1 row-end-8 h-full flex flex-col">
             <Holds>
               <Labels size={"p4"} htmlFor="problemReceived">
-                Problem Received
+                {t("ProblemReceived")}
               </Labels>
               <TextAreas
                 disabled
@@ -65,7 +66,7 @@ export default function ReceivedInfo({
             </Holds>
             <Holds>
               <Labels size={"p4"} htmlFor="additionalNotes">
-                Additional Notes
+                {t("AdditionalNotes")}
               </Labels>
               <TextAreas
                 disabled
@@ -76,21 +77,21 @@ export default function ReceivedInfo({
             </Holds>
             <Holds>
               <Labels size={"p4"} htmlFor="delayReasoning">
-                Delay Status
+                {t("DelayStatus")}
               </Labels>
               <Selects
                 name="delayReasoning"
                 value={delayReasoning}
                 onChange={(e) => setDelayReasoning(e.target.value)}
               >
-                <option value="">No Delay</option>
-                <option value="Delay">Delay</option>
+                <option value="">{t("NoDelay")}</option>
+                <option value="Delay">{t("Delay")}</option>
               </Selects>
             </Holds>
             {delayReasoning === "Delay" && (
               <Holds>
                 <Labels size={"p4"} htmlFor="delayDate">
-                  Expected Arrival
+                  {t("ExpectArrival")}
                 </Labels>
                 <Inputs
                   type="date"
@@ -99,13 +100,13 @@ export default function ReceivedInfo({
                   onChange={(e) => setExpectedArrival(e.target.value)}
                 />
                 <span className="text-red-500">
-                  {hasBeenDelayed ? "Project has already been delayed" : ""}
+                  {hasBeenDelayed ? t("ProjectHasAlreadyBeenDelayed") : ""}
                 </span>
               </Holds>
             )}
             {myComment.length < 3 && (
               <Texts size="p6" className="text-red-500 px-5 pt-10 ">
-                * Record a comment to leave the project
+                {`* ${t("RecordToLeaveProject")}`}
               </Texts>
             )}
           </Holds>
@@ -116,7 +117,7 @@ export default function ReceivedInfo({
               className="h-full"
               onClick={leaveProject}
             >
-              <Titles size={"h2"}>Leave Project</Titles>
+              <Titles size={"h2"}>{t("LeaveProject")}</Titles>
             </Buttons>
           </Holds>
         </Grids>

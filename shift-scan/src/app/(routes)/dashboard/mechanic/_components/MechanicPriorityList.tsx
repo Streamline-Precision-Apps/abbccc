@@ -26,6 +26,7 @@ import { Priority } from "@/lib/types";
 import { useSession } from "next-auth/react";
 import { set } from "date-fns";
 import { setMechanicProjectID } from "@/actions/cookieActions";
+import { useTranslations } from "next-intl";
 
 type Equipment = {
   id: string;
@@ -78,13 +79,13 @@ export default function MechanicPriority() {
   const [previewedProjectData, setPreviewedProjectData] = useState<
     Projects | undefined
   >(undefined);
-
+  const t = useTranslations("MechanicWidget");
   const { data: session } = useSession();
   const userId = session?.user.id;
   const [isOpenProjectPreview, setIsOpenProjectPreview] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const workersPerPage = 1;
-  const [endTime, setEndTime] = useState<string>(
+  const [endTime] = useState<string>(
     new Date(
       Date.now() - new Date().getTimezoneOffset() * 60 * 1000
     ).toISOString()
@@ -102,7 +103,7 @@ export default function MechanicPriority() {
         );
         setProjects(filteredData);
       } catch (error) {
-        console.error("Error fetching projects:", error);
+        console.error(t("ErrorFetchingProjects"), error);
       }
       setLoading(false);
     };
@@ -118,7 +119,7 @@ export default function MechanicPriority() {
         const data = await response.json();
         setTimeSheetId(data.id);
       } catch (error) {
-        console.error("Error fetching projects:", error);
+        console.error(t("ErrorFetchingTimeSheet"), error);
       }
       setLoading(false);
     };
@@ -174,10 +175,10 @@ export default function MechanicPriority() {
       if (res) {
         router.push(`/dashboard/mechanic/projects/${previewedProjectData?.id}`);
       } else {
-        console.error("Error starting project:", res);
+        console.error(t("ErrorStartingProject"), res);
       }
     } catch (error) {
-      console.error("Exception in StartLogAndSaveProject:", error);
+      console.error(t("ErrorSavingProject"), error);
     }
   };
 
@@ -217,15 +218,26 @@ export default function MechanicPriority() {
             const isActive = project.maintenanceLogs.some(
               (log) => log.startTime && !log.endTime
             );
+
             return (
               <Holds key={project.id} className="h-full relative py-3">
-                {isActive && (
+                {isActive && !project.delay && (
                   <Holds
                     background="green"
                     className="absolute top-2 left-4 w-1/4 h-5 rounded-[10px] border-[3px] border-black flex items-center justify-center"
                   >
                     <Texts size="p7" className="text-center">
-                      Active
+                      {t("Active")}
+                    </Texts>
+                  </Holds>
+                )}
+                {project.delay && isActive && (
+                  <Holds
+                    background="orange"
+                    className="absolute top-2 left-4 w-1/4 h-5 rounded-[10px] border-[3px] border-black flex items-center justify-center"
+                  >
+                    <Texts size="p7" className="text-center">
+                      {t("Delayed")}
                     </Texts>
                   </Holds>
                 )}
@@ -264,10 +276,10 @@ export default function MechanicPriority() {
                           0,
                           20
                         )}...`
-                      : "Project Preview"
+                      : t("ProjectPreview")
                   }
                   titleImg="/mechanic.svg"
-                  titleImgAlt="Mechanic"
+                  titleImgAlt={t("Mechanic")}
                   onClick={() => {
                     setIsOpenProjectPreview(false);
                   }}
@@ -306,7 +318,7 @@ export default function MechanicPriority() {
                     </Buttons>
 
                     <Labels position="left" size="p6">
-                      Active Workers
+                      {t("ActiveWorkers")}
                     </Labels>
 
                     {currentWorker.length > 0 ? (
@@ -333,7 +345,7 @@ export default function MechanicPriority() {
                                 size="p6"
                                 htmlFor="totalTime"
                               >
-                                Project total time
+                                {t("ProjectTotalTime")}
                               </Labels>
                               <Inputs
                                 name="totalTime"
@@ -374,7 +386,7 @@ export default function MechanicPriority() {
                     ) : (
                       <Holds>
                         <Holds background="lightGray" className="p-10">
-                          <Texts size="p6">No active workers</Texts>
+                          <Texts size="p6">{t("NoActiveWorkers")} </Texts>
                         </Holds>
                       </Holds>
                     )}
@@ -383,7 +395,7 @@ export default function MechanicPriority() {
                   {/* Problem Received */}
                   <Holds>
                     <Labels htmlFor="equipmentIssue" size="p6">
-                      Problem Received
+                      {t("ProblemReceived")}
                     </Labels>
                     <TextAreas
                       disabled
@@ -397,7 +409,7 @@ export default function MechanicPriority() {
                   {/* Additional Info */}
                   <Holds>
                     <Labels htmlFor="additionalInfo" size="p6">
-                      Additional Info
+                      {t("AdditionalInfo")}
                     </Labels>
                     <TextAreas
                       disabled
@@ -417,7 +429,7 @@ export default function MechanicPriority() {
                     className="py-3"
                     onClick={StartLogAndSaveProject}
                   >
-                    <Titles size="h2">Start Project</Titles>
+                    <Titles size="h2">{t("StartProject")}</Titles>
                   </Buttons>
                 </Contents>
               </Holds>

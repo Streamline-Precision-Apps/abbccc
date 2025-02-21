@@ -9,6 +9,7 @@ import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { Priority } from "@/lib/types";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useRef, useState, useEffect } from "react";
 
@@ -42,6 +43,7 @@ export const SearchAndCheck = ({
   AllProjects: Projects[];
   loading: boolean;
 }) => {
+  const t = useTranslations("MechanicWidget");
   const [searchTerm, setSearchTerm] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
@@ -139,10 +141,7 @@ export const SearchAndCheck = ({
                 <EmptyViews
                   TopChild={
                     <Holds className="px-2">
-                      <Titles size={"h5"}>
-                        No projects found. Start a new project or check back
-                        later!
-                      </Titles>
+                      <Titles size={"h5"}>{t("NoProjectsFound")}</Titles>
                     </Holds>
                   }
                   topChildPosition={"default"}

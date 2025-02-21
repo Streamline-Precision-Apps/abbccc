@@ -21,6 +21,7 @@ import { NModals } from "@/components/(reusable)/newmodals";
 import { Texts } from "@/components/(reusable)/texts";
 import Spinner from "@/components/(animations)/spinner";
 import { Inputs } from "@/components/(reusable)/inputs";
+import { useTranslations } from "next-intl";
 
 type Equipment = {
   id: string;
@@ -59,15 +60,15 @@ export default function MechanicEditPage({
 }: MechanicEditPageProps) {
   // Use local state if needed for additional UI aspects (e.g. image selection)
   const router = useRouter();
-
+  const t = useTranslations("MechanicWidget");
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
 
   const PriorityOptions = [
-    { label: "Select Priority", value: "" },
-    { label: "High Priority", value: "HIGH" },
-    { label: "Medium Priority", value: "MEDIUM" },
-    { label: "Low Priority", value: "LOW" },
-    { label: "TODAY", value: "TODAY" },
+    { label: t("SelectPriority"), value: "" },
+    { label: t("HighPriority"), value: "HIGH" },
+    { label: t("MediumPriority"), value: "MEDIUM" },
+    { label: t("LowPriority"), value: "LOW" },
+    { label: t("Today"), value: "TODAY" },
   ];
 
   // Helper function to update a field in repairDetails
@@ -124,13 +125,13 @@ export default function MechanicEditPage({
           <Holds className="row-start-1 row-end-8 h-full">
             <Holds>
               <Labels size="p6" htmlFor="equipmentIssue">
-                Equipment Issue
+                {t("EquipmentIssue")}
               </Labels>
               <TextAreas
                 name="equipmentIssue"
                 value={repairDetails?.equipmentIssue || ""}
                 onChange={(e) => updateField("equipmentIssue", e.target.value)}
-                placeholder="Enter a problem description..."
+                placeholder={t("EnterAProblemDescription")}
                 rows={2}
                 className="text-sm"
                 style={{ resize: "none" }}
@@ -139,13 +140,13 @@ export default function MechanicEditPage({
             </Holds>
             <Holds>
               <Labels size="p6" htmlFor="additionalInfo">
-                Additional Info
+                {t("AdditionalInfo")}
               </Labels>
               <TextAreas
                 name="additionalInfo"
                 value={repairDetails.additionalInfo}
                 onChange={(e) => updateField("additionalInfo", e.target.value)}
-                placeholder="Enter additional info..."
+                placeholder={t("AdditionalInfoPlaceholder")}
                 rows={2}
                 style={{ resize: "none" }}
                 className="text-sm"
@@ -155,13 +156,13 @@ export default function MechanicEditPage({
             {/* Location */}
             <Holds>
               <Labels size="p6" htmlFor="location">
-                Location
+                {t("Location")}
               </Labels>
               <Inputs
                 name="location"
                 value={repairDetails.location}
                 onChange={(e) => updateField("location", e.target.value)}
-                placeholder="Enter a location if applicable..."
+                placeholder={t("LocationPlaceholder")}
                 className="text-sm pl-4"
                 disabled={repairDetails?.repaired}
               />
@@ -169,7 +170,7 @@ export default function MechanicEditPage({
             {/* Priority Status */}
             <Holds className="relative">
               <Labels size="p6" htmlFor="priority">
-                Status
+                {t("Status")}
               </Labels>
 
               <div className="relative w-full">
@@ -218,7 +219,7 @@ export default function MechanicEditPage({
                       : "/pending.svg"
                   }
                   className="absolute left-2 top-1/4 transform -translate-y-1/4 w-6 h-6"
-                  titleImgAlt="status"
+                  titleImgAlt={t("Status")}
                 />
               </div>
             </Holds>
@@ -227,7 +228,7 @@ export default function MechanicEditPage({
               <>
                 <Holds>
                   <Labels size="p6" htmlFor="delayReasoning">
-                    Delay Reasoning
+                    {t("DelayReasoning")}
                   </Labels>
                   <Inputs
                     name="delayReasoning"
@@ -240,7 +241,7 @@ export default function MechanicEditPage({
                 </Holds>
                 <Holds>
                   <Labels size="p6" htmlFor="delay">
-                    Expect Arrival
+                    {t("ExpectedArrival")}
                   </Labels>
                   <Inputs
                     type="date"
@@ -263,7 +264,7 @@ export default function MechanicEditPage({
                 onClick={() => setOpenDeleteModal(true)}
                 className="py-3 mb-4"
               >
-                <Titles size={"h4"}>Delete</Titles>
+                <Titles size={"h4"}>{t("Delete")}</Titles>
               </Buttons>
             </Holds>
           )}
@@ -278,13 +279,11 @@ export default function MechanicEditPage({
         <Holds className="h-full w-full">
           <Grids rows={"3"} cols={"2"} gap={"5"}>
             <Holds className="row-span-2 col-span-2">
-              <Texts size={"p2"}>
-                Are you sure you want to delete this project?
-              </Texts>
+              <Texts size={"p2"}>{t("AreYouSureYouWantToDelete")}</Texts>
             </Holds>
             <Holds className="row-span-1 col-span-1 ">
               <Buttons background={"green"} onClick={deleteProject}>
-                <Titles size={"h4"}>Yes</Titles>
+                <Titles size={"h4"}>{t("Yes")}</Titles>
               </Buttons>
             </Holds>
             <Holds className="row-span-1 col-span-1  ">
@@ -292,7 +291,7 @@ export default function MechanicEditPage({
                 background={"red"}
                 onClick={() => setOpenDeleteModal(false)}
               >
-                <Titles size={"h4"}>Cancel</Titles>
+                <Titles size={"h4"}>{t("Cancel")}</Titles>
               </Buttons>
             </Holds>
           </Grids>
