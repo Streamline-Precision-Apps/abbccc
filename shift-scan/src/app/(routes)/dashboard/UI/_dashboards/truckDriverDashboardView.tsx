@@ -91,8 +91,12 @@ export default function TruckDriverDashboardView({
               />
               <FormsBtn permission={permission} view={"truck"} />
 
-              <SwitchJobsBtn permission={permission} />
-
+              <SwitchJobsBtn
+                {...modalState}
+                handleShowManagerButtons={handleShowManagerButtons}
+                permission={permission}
+                logs={logs}
+              />
               <ClockOutBtn
                 handleShowAdditionalButtons={handleShowAdditionalButtons}
                 permission={permission}

@@ -45,7 +45,7 @@ export default function QR({
     HTMLCanvasElement.prototype.getContext = function (
       this: HTMLCanvasElement,
       type: string,
-      options?: any
+      options?: CanvasRenderingContext2DSettings
     ) {
       if (type === "2d") {
         options = { ...options, willReadFrequently: true };

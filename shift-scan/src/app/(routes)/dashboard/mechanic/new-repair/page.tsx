@@ -32,8 +32,8 @@ type Equipment = {
 
 export default function CreateMechanicProjectProcess() {
   const t = useTranslations("MechanicWidget");
+  const router = useRouter(); // ALWAYS call hooks at the top
   const [scannedId, setScannedId] = useState<string | null>(null);
-
   const [step, setStep] = useState(1);
   const [scanned, setScanned] = useState(false);
   const [equipment, setEquipment] = useState<Equipment | null>(null);
@@ -46,10 +46,32 @@ export default function CreateMechanicProjectProcess() {
   >("");
 
   const { data: session } = useSession();
-  if (!session) {
-    return null;
-  }
-  const router = useRouter();
+
+  // Fetch equipment data when scannedId is available
+  useEffect(() => {
+    const fetchEquipment = async () => {
+      if (!scannedId) return; // Check inside the async function
+      setLoading(true);
+      try {
+        const response = await fetch(`/api/getEquipmentbyQrId/${scannedId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setEquipment(data);
+          if (scanned) {
+            setStep(4); // Proceed to step 4 only after successfully fetching data.
+          }
+        } else {
+          console.error(t("ErrorFetchingEquipment"), response.statusText);
+        }
+      } catch (error) {
+        console.error(t("Error:"), error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEquipment();
+  }, [scanned, scannedId, t]);
 
   const PriorityOptions = [
     { label: t("SelectPriority"), value: "" },
@@ -66,34 +88,6 @@ export default function CreateMechanicProjectProcess() {
   const prevStep = () => {
     setStep((prevStep) => prevStep - 1);
   };
-
-  // This effect will fetch the equipment data when a scannedId is available,
-  // and only then will it move the process to step 4.
-  useEffect(() => {
-    if (scannedId) {
-      const fetchEquipment = async () => {
-        setLoading(true);
-        try {
-          const response = await fetch(`/api/getEquipmentbyQrId/${scannedId}`);
-          if (response.ok) {
-            const data = await response.json();
-            setEquipment(data);
-            if (scanned) {
-              setStep(4); // Proceed to step 4 only after successfully fetching data.
-            }
-          } else {
-            console.error(t("ErrorFetchingEquipment"), response.statusText);
-          }
-        } catch (error) {
-          console.error(t("Error:"), error);
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      fetchEquipment();
-    }
-  }, [scanned, scannedId]);
 
   const handleSubmit = async () => {
     try {
@@ -202,7 +196,7 @@ export default function CreateMechanicProjectProcess() {
             <Holds background="white" className="w-full h-full py-4">
               <Contents>
                 <CodeStep
-                  datatype="equipment" // using this to set the title of equipment
+                  datatype="equipment"
                   handlePrevStep={prevStep}
                   handleNextStep={() => setStep(4)}
                   handleScannedPrevStep={() => setStep(1)}
@@ -219,14 +213,14 @@ export default function CreateMechanicProjectProcess() {
               {loading ? (
                 <Holds
                   background="white"
-                  className="w-full h-full py-4 animate-pulse "
+                  className="w-full h-full py-4 animate-pulse"
                 >
                   <Holds className="flex items-center justify-center h-full animate-pulse">
                     <Spinner />
                   </Holds>
                 </Holds>
               ) : (
-                <Holds background="white" className="w-full h-full py-4 ">
+                <Holds background="white" className="w-full h-full py-4">
                   <Grids rows="7" gap="5" className="w-full h-full">
                     <Holds className="row-start-1 row-end-2">
                       <TitleBoxes
@@ -239,7 +233,7 @@ export default function CreateMechanicProjectProcess() {
                         type="noIcon-NoHref"
                       />
                     </Holds>
-                    <Holds className="row-start-2 row-end-6 h-full ">
+                    <Holds className="row-start-2 row-end-6 h-full">
                       <Contents width={"section"} className="h-full">
                         <Holds className="h-full">
                           <Labels size="p4" htmlFor="equipmentIssue">
@@ -254,7 +248,7 @@ export default function CreateMechanicProjectProcess() {
                             style={{ resize: "none" }}
                           />
                         </Holds>
-                        <Holds className="h-full ">
+                        <Holds className="h-full">
                           <Labels size="p4" htmlFor="additionalInfo">
                             {t("AdditionalInfo")}
                           </Labels>
@@ -285,8 +279,6 @@ export default function CreateMechanicProjectProcess() {
                             {t("Status")}
                           </Labels>
                           <Holds className="relative w-full">
-                            {/* Image positioned inside the Select at the top-left */}
-
                             <Images
                               titleImg={
                                 status === "TODAY"
@@ -302,8 +294,6 @@ export default function CreateMechanicProjectProcess() {
                               className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2"
                               titleImgAlt="status"
                             />
-
-                            {/* Select dropdown with padding-left to prevent overlap */}
                             <Selects
                               name="additionalInfo"
                               value={status}
@@ -317,7 +307,7 @@ export default function CreateMechanicProjectProcess() {
                                     | "LOW"
                                 )
                               }
-                              className="pl-8" // Adjust padding to move text away from the image
+                              className="pl-8"
                             >
                               {PriorityOptions.map((option) => (
                                 <option
@@ -333,7 +323,7 @@ export default function CreateMechanicProjectProcess() {
                         </Holds>
                       </Contents>
                     </Holds>
-                    <Holds className="row-start-7 row-end-8 ">
+                    <Holds className="row-start-7 row-end-8">
                       <Contents width={"section"}>
                         <Buttons
                           background={"green"}
