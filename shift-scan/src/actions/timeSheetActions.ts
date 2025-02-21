@@ -1,4 +1,5 @@
 "use server";
+
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
 import { TimeSheet } from "@/lib/types";
@@ -12,7 +13,7 @@ const parseUTC = (timestamp: string): Date => {
   if (isNaN(date.getTime())) {
     throw new RangeError(`Invalid time value: ${timestamp}`);
   }
-  date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+  // date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
   console.log("Parse UTC date:", date);
   return date;
 };
@@ -21,7 +22,7 @@ const parseUTCNoTz = (timestamp: string): Date => {
   if (isNaN(date.getTime())) {
     throw new RangeError(`Invalid time value: ${timestamp}`);
   }
-  date.setMinutes(date.getMinutes());
+  // date.setMinutes(date.getMinutes());
   console.log("Parse UTC date:", date);
   return date;
 };
@@ -106,7 +107,6 @@ export async function fetchTimesheets(employeeId: string, date: string) {
 //-----------------------------------------------  GENERAL CRUD  ---------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------------------------------------
 // Create TimeSheet
-// used at each login and will retain that timesheetId until the user logs out with switch jobsite
 export async function CreateTimeSheet(formData: FormData) {
   try {
     console.log("entered CreateTimeSheet:");
@@ -162,10 +162,7 @@ export async function CreateTimeSheet(formData: FormData) {
     throw error;
   }
 }
-
-//-------------------------------------------------------------------------------------------------------------------------------
 //--------- Update Time Sheet
-
 export async function updateTimeSheetBySwitch(formData: FormData) {
   try {
     console.log("formData:", formData);
@@ -210,9 +207,7 @@ export async function updateTimeSheetBySwitch(formData: FormData) {
     console.log(error);
   }
 }
-//------------------------------------------------------------------------
 //--------- Update Time Sheet
-
 export async function breakOutTimeSheet(formData: FormData) {
   try {
     console.log("formData:", formData);
@@ -244,7 +239,10 @@ export async function breakOutTimeSheet(formData: FormData) {
     console.log(error);
   }
 }
-
+//-------------------------------------------------------------------------------------------------------------------------------
+//
+//
+//-------------------------------------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------------------------------------
 //-----------------------------------------------  TRUCKING CRUD  ---------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------------------------------------
@@ -342,7 +340,6 @@ export async function CreateTruckDriverTimeSheet(formData: FormData) {
     throw error;
   }
 }
-//-------------------------------------------------------------------------------------------------------------------------------
 //--------- Update Truck Driver sheet By switch Jobs
 export async function updateTruckDriverTSBySwitch(formData: FormData) {
   try {
@@ -377,9 +374,9 @@ export async function updateTruckDriverTSBySwitch(formData: FormData) {
   }
 }
 //-------------------------------------------------------------------------------------------------------------------------------
+//
+//
 //-------------------------------------------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------------------------------------------------------
-
 //-------------------------------------------------------------------------------------------------------------------------------
 //-----------------------------------------------  TRUCKING CRUD  ---------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------------------------------------
@@ -486,9 +483,9 @@ export async function updateTascoTSBySwitch(formData: FormData) {
   }
 }
 //-------------------------------------------------------------------------------------------------------------------------------
+//
+//
 //-------------------------------------------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------------------------------------------------------
-
 //-------------------------------------------------------------------------------------------------------------------------------
 //-----------------------------------------------  TRUCKING CRUD  ---------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------------------------------------
@@ -535,7 +532,6 @@ export async function CreateMechanicTimeSheet(formData: FormData) {
     throw error;
   }
 }
-//-------------------------------------------------------------------------------------------------------------------------------
 //--------- Update Truck Driver sheet By switch Jobs
 export async function updateMechanicTSBySwitch(formData: FormData) {
   try {
@@ -570,12 +566,14 @@ export async function updateMechanicTSBySwitch(formData: FormData) {
     console.log(error);
   }
 }
+//
+//
+//-------------------------------------------------------------------------------------------------------------------------------
+//
 //-------------------------------------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------------------------------------
-
-// Create TimeSheet
-// used at each login and will retain that timesheetId until the user logs out with switch jobsite
+// Create TimeSheet - used at each login and will retain that timesheetId until the user logs out with switch jobsite
 export async function AddWholeTimeSheet(formData: FormData) {
   try {
     console.log("Creating Timesheet...");
@@ -610,7 +608,7 @@ export async function AddWholeTimeSheet(formData: FormData) {
     throw error;
   }
 }
-
+//-- update TimeSheets
 export async function updateTimeSheets(updatedSheets: TimeSheet[]) {
   try {
     console.log("Updating Timesheets...");
@@ -639,7 +637,7 @@ export async function updateTimeSheets(updatedSheets: TimeSheet[]) {
     throw new Error("Failed to update timesheets. Please try again.");
   }
 }
-
+//--Edit TimeSheets
 export async function editTimeSheet(formData: FormData) {
   console.log("Editing Timesheet...");
   console.log(formData);
@@ -667,7 +665,7 @@ export async function editTimeSheet(formData: FormData) {
     console.error("Error editing timesheet:", error);
   }
 }
-
+//--------- Update Time Sheet
 // provides a way to update a timesheet and will give supervisor access to all timesheets
 // and provide a way to alter them as needed by employee accuracy.
 export async function updateTimeSheet(formData: FormData) {
@@ -720,7 +718,7 @@ export async function updateTimeSheet(formData: FormData) {
     console.error("Error updating timesheet:", error);
   }
 }
-
+//--------- return to prev work
 export async function returnToPrevWork(formData: FormData) {
   const id = formData.get("id") as string;
   const PrevTimeSheet = await prisma.timeSheet.findUnique({
@@ -736,7 +734,7 @@ export async function returnToPrevWork(formData: FormData) {
 
   return PrevTimeSheet;
 }
-
+// get all timesheets
 export async function GetAllTimeSheets(date: string) {
   date = new Date(date).toISOString();
   const timeSheet = await prisma.timeSheet.findMany({
@@ -744,15 +742,13 @@ export async function GetAllTimeSheets(date: string) {
   });
   return timeSheet;
 }
-
-// Delete TimeSheet by id
-// will be used by Admin only
+// Delete TimeSheet by id - will be used by Admin only
 export async function deleteTimeSheet(id: string) {
   await prisma.timeSheet.delete({
     where: { id },
   });
 }
-
+// find TimeSheets for day
 export async function findTimesheetsforDay(formData: FormData) {
   console.log("formData:", formData);
 
