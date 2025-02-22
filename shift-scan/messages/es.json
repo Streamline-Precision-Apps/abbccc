@@ -263,7 +263,10 @@
     "Form3Submit": "Enviar forma"
   },
   "MyTeam": {
+    "ContactInfo": "Información de Contacto",
+    "TimeCards": "Hojas de Tiempo",
     "NoTimesheetsFound": "No se Encontraron Hojas de Tiempo",
+    "ForThisDate": "para esta fecha",
     "Teams-Title": "Mis Equipos",
     "Teams-Logo-Title": "Icono del Equipo",
     "MyTeams-Title": "",

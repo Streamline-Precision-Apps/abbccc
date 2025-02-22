@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
@@ -23,6 +23,7 @@ import { useCommentData } from "@/app/context/CommentContext";
 import { useRouter } from "next/navigation";
 import { setCurrentPageView, setWorkRole } from "@/actions/cookieActions";
 import Spinner from "../(animations)/spinner";
+import { useSavedCostCode } from "@/app/context/CostCodeContext";
 
 type VerifyProcessProps = {
   handleNextStep?: () => void;
@@ -45,8 +46,12 @@ export default function MechanicVerificationStep({
   const [loading, setLoading] = useState<boolean>(false);
   const { data: session } = useSession();
   const { savedCommentData, setCommentData } = useCommentData();
-
+  const { setCostCode } = useSavedCostCode();
   const costCode = "#00.50";
+
+  useEffect(() => {
+    setCostCode(costCode);
+  }, [costCode]);
 
   if (!session) return null; // Conditional rendering for session
   const { id } = session.user;
@@ -202,6 +207,15 @@ export default function MechanicVerificationStep({
                         variant={"white"}
                         data={scanResult?.data || ""}
                       />
+                      <Labels text={"white"} size={"p4"} position={"left"}>
+                        {t("CostCode-label")}
+                      </Labels>
+                      <Inputs
+                        state="disabled"
+                        name="costcode"
+                        variant={"white"}
+                        data={costCode}
+                      />
                     </Contents>
                   </Holds>
                 </Holds>
@@ -223,18 +237,18 @@ export default function MechanicVerificationStep({
                 <Inputs
                   type="hidden"
                   name="submitDate"
-                  value={new Date().toISOString()}
+                  value={new Date().toString()}
                 />
                 <Inputs type="hidden" name="userId" value={id} />
                 <Inputs
                   type="hidden"
                   name="date"
-                  value={new Date().toISOString()}
+                  value={new Date().toString()}
                 />
                 <Inputs
                   type="hidden"
                   name="startTime"
-                  value={new Date().toISOString()}
+                  value={new Date().toString()}
                 />
               </Grids>
             </Holds>

@@ -7,9 +7,22 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import { TimeSheet } from "@/lib/types";
+import { format, parseISO } from "date-fns";
+import { formatInTimeZone } from "date-fns-tz";
+
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+
+export type TimeSheet = {
+  submitDate: string;
+  date: Date | string;
+  id: string;
+  userId: string;
+  jobsiteId: string;
+  costcode: string;
+  startTime: string;
+  endTime: string | null;
+};
 
 export default function ReviewYourDay({
   handleClick,
@@ -102,8 +115,17 @@ export default function ReviewYourDay({
                             size={"h6"}
                             className="col-start-1 col-end-2 "
                           >
-                            {timesheet.startTime.toString().slice(11, 16)}
+                            {timesheet.startTime
+                              ? new Date(
+                                  timesheet.startTime
+                                ).toLocaleTimeString([], {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                  hour12: true, // Change to false for 24-hour format
+                                })
+                              : " - "}
                           </Titles>
+
                           {timesheets.length - 1 === index ? (
                             <Titles
                               size={"h6"}
@@ -117,7 +139,13 @@ export default function ReviewYourDay({
                               className="col-start-2 col-end-3 "
                             >
                               {timesheet.endTime
-                                ? timesheet.endTime.toString().slice(11, 16)
+                                ? new Date(
+                                    timesheet.endTime
+                                  ).toLocaleTimeString([], {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    hour12: true,
+                                  })
                                 : " - "}
                             </Titles>
                           )}
