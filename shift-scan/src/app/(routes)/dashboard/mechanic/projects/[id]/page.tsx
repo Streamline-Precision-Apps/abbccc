@@ -187,7 +187,6 @@ export default function Project({ params }: { params: { id: string } }) {
       formData.append("comment", myComment);
       formData.append("maintenanceId", uniqueUserCount?.id || "");
       formData.append("userId", session.data.user?.id || "");
-      formData.append("endTime", new Date().toISOString());
 
       const clock = await LeaveEngineerProject(formData);
       if (clock) {
@@ -227,7 +226,6 @@ export default function Project({ params }: { params: { id: string } }) {
       formData.append("comment", myComment);
       formData.append("maintenanceId", id);
       formData.append("userId", userId);
-      formData.append("endTime", new Date().toISOString());
 
       const submitMechanicLog = await LeaveEngineerProject(formData);
 

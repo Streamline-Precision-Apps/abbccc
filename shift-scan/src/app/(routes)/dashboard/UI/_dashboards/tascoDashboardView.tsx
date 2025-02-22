@@ -52,19 +52,35 @@ export default function TascoDashboardView({
         <Grids cols={"2"} rows={permission !== "USER" ? "4" : "3"} gap={"5"}>
           {/* Render buttons based on state */}
           {additionalButtonsType === "equipment" ? (
-            <EquipmentWidget
-              handleShowManagerButtons={handleShowManagerButtons}
-            />
+            <Holds
+              className={
+                permission !== "USER"
+                  ? "col-span-2 row-span-4 gap-5 h-full"
+                  : "col-span-2 row-span-3 gap-5 h-full"
+              }
+            >
+              <EquipmentWidget
+                handleShowManagerButtons={handleShowManagerButtons}
+              />
+            </Holds>
           ) : additionalButtonsType === "clockOut" ? (
-            <ClockOutWidget
-              handleShowManagerButtons={handleShowManagerButtons}
-              {...modalState}
-              comment={comment}
-              setComment={setComment}
-              handleCOButton2={handleCOButton2}
-              handleCOButton3={handleCOButton3}
-              logs={logs}
-            />
+            <Holds
+              className={
+                permission !== "USER"
+                  ? "col-span-2 row-span-4 gap-5 h-full"
+                  : "col-span-2 row-span-3 gap-5 h-full"
+              }
+            >
+              <ClockOutWidget
+                handleShowManagerButtons={handleShowManagerButtons}
+                {...modalState}
+                comment={comment}
+                setComment={setComment}
+                handleCOButton2={handleCOButton2}
+                handleCOButton3={handleCOButton3}
+                logs={logs}
+              />
+            </Holds>
           ) : (
             <>
               <TascoBtn permission={permission} view={"tasco"} />
