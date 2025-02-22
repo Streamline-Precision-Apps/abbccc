@@ -185,7 +185,7 @@ export async function LeaveEngineerProject(formData: FormData) {
     const comment = formData.get("comment") as string;
     const id = formData.get("maintenanceId") as string;
     const userId = formData.get("userId") as string;
-    const endTime = formData.get("endTime") as string;
+    const endTime = new Date().toISOString();
 
     await prisma.maintenanceLog.update({
       where: {
