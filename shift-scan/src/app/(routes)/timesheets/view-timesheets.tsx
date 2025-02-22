@@ -8,13 +8,13 @@ import { Texts } from "@/components/(reusable)/texts";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Labels } from "@/components/(reusable)/labels";
 import Spinner from "@/components/(animations)/spinner";
-import { formatTime } from "@/utils/formatDateAMPMS";
 import { useTranslations } from "next-intl";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { TimeSheet } from "@/lib/types";
 import EmptyView from "@/components/(reusable)/emptyView";
 import { Images } from "@/components/(reusable)/images";
+import { formatTimeHHMM } from "@/utils/formatDateAmPm";
 
 type Props = {
   user: string;
@@ -186,7 +186,7 @@ export default function ViewTimesheets({ user }: Props) {
                       <Inputs
                         value={
                           timesheet.startTime
-                            ? formatTime(timesheet.startTime.toString())
+                            ? formatTimeHHMM(timesheet.startTime.toString())
                             : "N/A"
                         }
                         readOnly
@@ -198,7 +198,7 @@ export default function ViewTimesheets({ user }: Props) {
                       <Inputs
                         value={
                           timesheet.endTime
-                            ? formatTime(timesheet.endTime.toString())
+                            ? formatTimeHHMM(timesheet.endTime.toString())
                             : "N/A"
                         }
                         readOnly
