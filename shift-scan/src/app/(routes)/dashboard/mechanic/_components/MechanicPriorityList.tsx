@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 // Components
@@ -85,11 +85,7 @@ export default function MechanicPriority() {
   const [isOpenProjectPreview, setIsOpenProjectPreview] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const workersPerPage = 1;
-  const [endTime] = useState<string>(
-    new Date(
-      Date.now() - new Date().getTimezoneOffset() * 60 * 1000
-    ).toISOString()
-  );
+  const [endTime] = useState<string>(new Date().toISOString());
 
   // Fetch projects from API on mount
   useEffect(() => {
@@ -109,7 +105,7 @@ export default function MechanicPriority() {
     };
 
     fetchProjects();
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     const fetchTimeSheet = async () => {
@@ -190,7 +186,7 @@ export default function MechanicPriority() {
           <Contents width="section" className="py-5">
             {projects.map((_, index) => (
               <Holds
-                key={index}
+                key={`placeholder-${index}`}
                 background="lightGray"
                 className="h-1/6 my-2 py-7"
               />
@@ -209,7 +205,7 @@ export default function MechanicPriority() {
             if (project.id === "") {
               return (
                 <Holds
-                  key={index}
+                  key={`placeholder-${index}`}
                   background="lightGray"
                   className="h-1/6 my-2 py-7"
                 />
@@ -220,7 +216,10 @@ export default function MechanicPriority() {
             );
 
             return (
-              <Holds key={project.id} className="h-full relative py-3">
+              <Holds
+                key={`placeholder-${index}`}
+                className="h-full relative py-3"
+              >
                 {isActive && !project.delay && (
                   <Holds
                     background="green"
@@ -322,8 +321,8 @@ export default function MechanicPriority() {
                     </Labels>
 
                     {currentWorker.length > 0 ? (
-                      currentWorker.map((user) => (
-                        <Holds key={user.id}>
+                      currentWorker.map((user, index) => (
+                        <Holds key={user.id || index}>
                           <Holds
                             background="lightGray"
                             className="p-4 flex items-center gap-2"
@@ -357,6 +356,7 @@ export default function MechanicPriority() {
                                   endTime
                                 )}
                               />
+
                               <Holds
                                 position="row"
                                 className={`flex items-center justify-center ${

@@ -22,7 +22,7 @@ const LabelVariants = cva(
         p2: "text-2xl sm:text-2xl md:text-3xl",
         p3: "text-xl",
         p4: "text-lg",
-        p5: "text-md",
+        p5: "text-base",
         p6: "text-sm",
       },
     },

@@ -4,7 +4,7 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 import { Contents } from "@/components/(reusable)/contents";
-import { formatTime } from "@/utils/formatDateAmPm";
+import { formatTimeHHMM } from "@/utils/formatDateAmPm";
 import { Titles } from "@/components/(reusable)/titles";
 import { Labels } from "@/components/(reusable)/labels";
 import { TextAreas } from "@/components/(reusable)/textareas";
@@ -110,9 +110,11 @@ export default function MechanicEmployeeLogs({
                         </Titles>
 
                         <Texts size={"p6"}>
-                          {formatTime(mLog.startTime)}
+                          {formatTimeHHMM(mLog.startTime)}
                           {" - "}
-                          {mLog.endTime ? formatTime(mLog.endTime) : "Active"}
+                          {mLog.endTime
+                            ? formatTimeHHMM(mLog.endTime)
+                            : "Active"}
                         </Texts>
                       </Holds>
                       <Holds className="row-start-2 row-end-4 h-full w-full pb-2 ">

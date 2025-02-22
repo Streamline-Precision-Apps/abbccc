@@ -1,14 +1,6 @@
-export const formatTime = (timestamp: string | Date): string => {
-  const date = new Date(timestamp);
-
-  // Check for invalid date
-  if (isNaN(date.getTime())) {
-    console.error("Invalid timestamp:", timestamp);
-    return "Invalid Time";
-  }
-
+export const formatTimeHHMMSS = (timestamp: string | Date): string => {
   // Convert the UTC time to local time
-  const localDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+  const localDate = new Date(timestamp);
 
   // Format the local time
   return localDate.toLocaleTimeString("en-US", {

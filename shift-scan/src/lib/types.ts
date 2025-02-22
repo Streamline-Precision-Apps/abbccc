@@ -320,16 +320,16 @@ export type EquipmentCodes = {
 };
 
 export type TimeSheet = {
-  submitDate: Date;
-  date: Date;
+  submitDate: string;
+  date: Date | string;
   id: string;
   userId: string;
   jobsiteId: string;
   costcode: string;
   nu: string;
   Fp: string;
-  startTime: Date;
-  endTime: Date | null;
+  startTime: Date | string;
+  endTime: Date | string | null;
   comment: string | null;
   statusComment: string | null;
   location: string | null;
