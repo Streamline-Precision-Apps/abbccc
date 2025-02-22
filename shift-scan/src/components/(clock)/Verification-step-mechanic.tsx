@@ -223,18 +223,18 @@ export default function MechanicVerificationStep({
                 <Inputs
                   type="hidden"
                   name="submitDate"
-                  value={new Date().toISOString()}
+                  value={new Date().toString()}
                 />
                 <Inputs type="hidden" name="userId" value={id} />
                 <Inputs
                   type="hidden"
                   name="date"
-                  value={new Date().toISOString()}
+                  value={new Date().toString()}
                 />
                 <Inputs
                   type="hidden"
                   name="startTime"
-                  value={new Date().toISOString()}
+                  value={new Date().toString()}
                 />
               </Grids>
             </Holds>
