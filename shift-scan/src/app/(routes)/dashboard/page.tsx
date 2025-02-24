@@ -30,6 +30,7 @@ export default async function Dashboard() {
 
   // const user = session.user;
   const view = cookies().get("workRole")?.value || "general"; // Default to general view if not set
+  const laborType = cookies().get("laborType")?.value || "";
 
   return (
     <Bases>
@@ -57,6 +58,7 @@ export default async function Dashboard() {
               session={session}
               view={view}
               mechanicProjectID={mechanicProjectID}
+              laborType={laborType}
             />
           </Holds>
         </Grids>

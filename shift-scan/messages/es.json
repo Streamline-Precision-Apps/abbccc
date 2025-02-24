@@ -124,6 +124,10 @@
   "Widgets": {
     "Mechanic": "Mecánico",
     "TascoAssistant": "Asistente de Tasco",
+    "Tasco": "TASCO",
+    "TruckDriver": "Camionero",
+    "Operator": "Operador",
+    "ManualLabor": "Trabajo Manual",
     "QR": "Generador",
     "MyTeam": "Personal",
     "Equipment": "Herramientas ",
