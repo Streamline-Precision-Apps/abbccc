@@ -14,34 +14,36 @@ export default function EquipmentBtn({
 }) {
   const t = useTranslations("Widgets");
   return (
-    <Holds
-      position={"row"}
-      className={
-        permission === "ADMIN" ||
-        permission === "SUPERADMIN" ||
-        permission === "MANAGER"
-          ? "row-span-1 col-span-1 gap-5"
-          : "row-span-1 col-span-1 gap-5"
-      }
-    >
-      <Buttons //----------------------This is the Equipment Widget
-        background={"green"}
-        href="/dashboard/equipment"
-        onClick={() => handleShowAdditionalButtons("equipment")}
+    <>
+      <Holds
+        position={"row"}
+        className={
+          permission === "ADMIN" ||
+          permission === "SUPERADMIN" ||
+          permission === "MANAGER"
+            ? "row-span-1 col-span-1 gap-5"
+            : "row-span-1 col-span-1 gap-5"
+        }
       >
-        <Holds>
+        <Buttons //----------------------This is the Equipment Widget
+          background={"green"}
+          href="/dashboard/equipment"
+          onClick={() => handleShowAdditionalButtons("equipment")}
+        >
           <Holds>
-            <Images
-              titleImg="/equipment.svg"
-              titleImgAlt="Equipment Icon"
-              size={"30"}
-            />
+            <Holds>
+              <Images
+                titleImg="/equipment.svg"
+                titleImgAlt="Equipment Icon"
+                size={"30"}
+              />
+            </Holds>
+            <Holds>
+              <Texts size={"p3"}>{t("Equipment")}</Texts>
+            </Holds>
           </Holds>
-          <Holds>
-            <Texts size={"p3"}>{t("Equipment")}</Texts>
-          </Holds>
-        </Holds>
-      </Buttons>
-    </Holds>
+        </Buttons>
+      </Holds>
+    </>
   );
 }
