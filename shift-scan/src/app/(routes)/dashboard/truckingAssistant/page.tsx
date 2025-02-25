@@ -16,12 +16,11 @@ export default async function Inbox() {
   if (!session) return null;
   const t = await getTranslations("Widgets");
   const laborType = cookies().get("laborType")?.value;
-  const timeSheetId = cookies().get("timeSheetId")?.value;
 
   return (
-    <Bases>
+    <Bases className="fixed">
       <Contents>
-        <Grids rows={"6"} gap={"5"}>
+        <Grids rows={"6"} gap={"5"} className="h-full">
           <Holds background={"white"} className="row-span-1 h-full ">
             <TitleBoxes
               title={
@@ -39,11 +38,11 @@ export default async function Inbox() {
           </Holds>
           <Holds className="row-span-5 h-full">
             {laborType === "truckDriver" ? (
-              <TruckDriver timeSheetId={timeSheetId} />
+              <TruckDriver />
             ) : laborType === "manualLabor" ? (
-              <TruckManualLabor timeSheetId={timeSheetId} />
+              <TruckManualLabor />
             ) : laborType === "operator" ? (
-              <TruckOperator timeSheetId={timeSheetId} />
+              <TruckOperator />
             ) : null}
           </Holds>
         </Grids>

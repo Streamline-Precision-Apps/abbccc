@@ -42,35 +42,33 @@ type Refueled = {
   tascoLogId: string | null;
 };
 
-export default function TruckDriver({
-  timeSheetId,
-}: {
-  timeSheetId: string | undefined;
-}) {
+export default function TruckDriver() {
   const t = useTranslations("TruckingAssistant");
   const [activeTab, setActiveTab] = useState(1);
   const [StateMileage, setStateMileage] = useState<StateMileage>();
   const [material, setMaterial] = useState<Material[]>();
   const [equipmentHauled, setEquipmentHauled] = useState<EquipmentHauled[]>();
   const [refuelLogs, setRefuelLogs] = useState<Refueled[]>();
-  const [truckingLog, setTruckingLog] = useState<string>();
+  const [timeSheetId, setTimeSheetId] = useState<string>();
+
+  useEffect(() => {
+    // Trucking Log
+    const fetchTruckingLog = async () => {
+      try {
+        const res = await fetch(`/api/getTruckingLogs/truckingId`);
+        if (!res.ok) throw new Error("Failed to fetch Trucking Log");
+        const data = await res.json();
+        setTimeSheetId(data);
+      } catch (error) {
+        console.error("Error fetching Trucking Log:", error);
+      }
+    };
+
+    fetchTruckingLog();
+  }, []);
 
   useEffect(() => {
     if (timeSheetId) {
-      // Trucking Log
-      const fetchTruckingLog = async () => {
-        try {
-          const res = await fetch(
-            `/api/getTruckingLogs/truckingId/${timeSheetId}`
-          );
-          if (!res.ok) throw new Error("Failed to fetch Trucking Log");
-          const data = await res.json();
-          setTruckingLog(data);
-        } catch (error) {
-          console.error("Error fetching Trucking Log:", error);
-        }
-      };
-
       // State Mileage
       const fetchStateMileage = async () => {
         try {
@@ -122,7 +120,7 @@ export default function TruckDriver({
       const fetchRefuelLogs = async () => {
         try {
           const res = await fetch(
-            `/api/getTruckingLogs/refuelLogs/${timeSheetId}`
+            `/api/getTruckingLogs/refueledLogs/${timeSheetId}`
           );
           if (!res.ok) throw new Error("Failed to fetch Refuel Logs");
           const data = await res.json();
@@ -132,7 +130,6 @@ export default function TruckDriver({
         }
       };
 
-      fetchTruckingLog();
       fetchStateMileage();
       fetchMaterial();
       fetchEquipmentHauled();
@@ -141,8 +138,8 @@ export default function TruckDriver({
   }, [timeSheetId]);
 
   return (
-    <Holds className="h-full">
-      <Grids rows={"10"}>
+    <Holds className="h-full w-full ">
+      <Grids rows={"10"} className="h-full w-full">
         <Holds position={"row"} className="row-span-1 w-full gap-1">
           <NewTab
             titleImage="/Hauling-logs.svg"
@@ -183,7 +180,7 @@ export default function TruckDriver({
             setEquipmentHauled={setEquipmentHauled}
             material={material}
             setMaterial={setMaterial}
-            truckingLog={truckingLog}
+            truckingLog={timeSheetId}
           />
         )}
         {activeTab !== 1 && (

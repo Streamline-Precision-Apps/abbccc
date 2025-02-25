@@ -8,7 +8,7 @@ const BaseVariants = cva("", {
   variants: {
     background: {
       //only background attributes
-      default: "bg-gradient-to-b from-app-dark-blue to-app-blue",
+      default: "bg-gradient-to-b from-app-dark-blue to-app-blue ",
       modal: "bg-neutral-800 bg-opacity-80", //will create the gray background for modals
     },
     position: {

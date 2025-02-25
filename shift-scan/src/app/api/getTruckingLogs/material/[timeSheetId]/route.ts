@@ -10,12 +10,9 @@ export async function GET(
 ) {
   const { timeSheetId } = params;
 
-  const stateMileage = await prisma.truckingLog.findMany({
+  const stateMileage = await prisma.material.findMany({
     where: {
-      timeSheetId: timeSheetId,
-    },
-    select: {
-      Material: true,
+      truckingLogId: timeSheetId,
     },
   });
 

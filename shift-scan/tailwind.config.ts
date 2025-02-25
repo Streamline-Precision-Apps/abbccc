@@ -15,6 +15,7 @@ const config: Config = {
         wave: "wave 1s linear",
         slideLeft: "slideLeft 0.3s ease-out forwards",
         slideRight: "slideRight 0.3s ease-out forwards",
+        touchSlide: "slide 5s linear infinite",
       },
       keyframes: {
         wave: {
@@ -34,6 +35,11 @@ const config: Config = {
         slideRight: {
           "0%": { transform: "translateX(-100%)" },
           "100%": { transform: "translateX(0)" },
+        },
+        touchSlide: {
+          "0%": { transform: "translateX(-100%)" },
+          "50%": { transform: "translateX(100%)" },
+          "100%": { transform: "translateX(-100%)" },
         },
       },
       colors: {
