@@ -6,7 +6,6 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { getTranslations } from "next-intl/server";
-import TruckingAssistant from "./TruckingDriver";
 import { cookies } from "next/headers";
 import TruckDriver from "./TruckingDriver";
 import TruckManualLabor from "./TruckManualLabor";

@@ -22,12 +22,8 @@ type Material = {
   LocationOfMaterial: string | null;
   truckingLogId: string;
   quantity: number | null;
-  loadType: LoadType | null;
-  LoadWeight: number | null;
   createdAt: Date;
 };
-
-type LoadType = "UNSCREENED" | "SCREENED";
 
 type EquipmentHauled = {
   id: string;
@@ -57,19 +53,93 @@ export default function TruckDriver({
   const [material, setMaterial] = useState<Material[]>();
   const [equipmentHauled, setEquipmentHauled] = useState<EquipmentHauled[]>();
   const [refuelLogs, setRefuelLogs] = useState<Refueled[]>();
+  const [truckingLog, setTruckingLog] = useState<string>();
 
   useEffect(() => {
-    const truckingData = async () => {
-      //Todo: make the api route and set data to state allowing for dynamic data and offline adding of logs
-      const res = await fetch(`/api/getTruckingLogs/${timeSheetId}`);
-      const data = await res.json();
-      setStateMileage(data.stateMileage);
-      setMaterial(data.material);
-      setEquipmentHauled(data.equipmentHauled);
-      setRefuelLogs(data.refuelLogs);
-    };
-    truckingData();
-  });
+    if (timeSheetId) {
+      // Trucking Log
+      const fetchTruckingLog = async () => {
+        try {
+          const res = await fetch(
+            `/api/getTruckingLogs/truckingId/${timeSheetId}`
+          );
+          if (!res.ok) throw new Error("Failed to fetch Trucking Log");
+          const data = await res.json();
+          setTruckingLog(data);
+        } catch (error) {
+          console.error("Error fetching Trucking Log:", error);
+        }
+      };
+
+      // State Mileage
+      const fetchStateMileage = async () => {
+        try {
+          const res = await fetch(
+            `/api/getTruckingLogs/stateMileage/${timeSheetId}`
+          );
+          if (!res.ok) throw new Error("Failed to fetch State Mileage");
+          const data = await res.json();
+          setStateMileage(data);
+        } catch (error) {
+          console.error("Error fetching State Mileage:", error);
+        }
+      };
+
+      // Material
+      const fetchMaterial = async () => {
+        try {
+          const res = await fetch(
+            `/api/getTruckingLogs/material/${timeSheetId}`,
+            {
+              next: {
+                tags: ["material"],
+              },
+            }
+          );
+          if (!res.ok) throw new Error("Failed to fetch Material");
+          const data = await res.json();
+          setMaterial(data);
+        } catch (error) {
+          console.error("Error fetching Material:", error);
+        }
+      };
+
+      // Equipment Hauled
+      const fetchEquipmentHauled = async () => {
+        try {
+          const res = await fetch(
+            `/api/getTruckingLogs/equipmentHauled/${timeSheetId}`
+          );
+          if (!res.ok) throw new Error("Failed to fetch Equipment Hauled");
+          const data = await res.json();
+          setEquipmentHauled(data);
+        } catch (error) {
+          console.error("Error fetching Equipment Hauled:", error);
+        }
+      };
+
+      // Refuel Logs
+      const fetchRefuelLogs = async () => {
+        try {
+          const res = await fetch(
+            `/api/getTruckingLogs/refuelLogs/${timeSheetId}`
+          );
+          if (!res.ok) throw new Error("Failed to fetch Refuel Logs");
+          const data = await res.json();
+          setRefuelLogs(data);
+        } catch (error) {
+          console.error("Error fetching Refuel Logs:", error);
+        }
+      };
+
+      fetchTruckingLog();
+      fetchStateMileage();
+      fetchMaterial();
+      fetchEquipmentHauled();
+      fetchRefuelLogs();
+    }
+  }, [timeSheetId]);
+
   return (
     <Holds className="h-full">
       <Grids rows={"10"}>
@@ -107,7 +177,15 @@ export default function TruckDriver({
             <Titles size={"h4"}>{t("RefuelLogs")}</Titles>
           </NewTab>
         </Holds>
-        {activeTab === 1 && <HaulingLogs />}
+        {activeTab === 1 && (
+          <HaulingLogs
+            equipmentHauled={equipmentHauled}
+            setEquipmentHauled={setEquipmentHauled}
+            material={material}
+            setMaterial={setMaterial}
+            truckingLog={truckingLog}
+          />
+        )}
         {activeTab !== 1 && (
           <Holds
             background={"white"}
