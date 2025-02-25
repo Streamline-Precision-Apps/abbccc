@@ -847,7 +847,12 @@
     "LabelJobsite": "Jobsite",
     "LabelCostCode": "Cost Code"
   },
+
   "TruckingAssistant": {
+    "StateMileage": "State Logs",
+    "HaulingLogs": "Hauling Logs",
+    "MyComments": "Notes",
+    "RefuelLogs": "Refuel Logs",
     "TruckingAssistant": "Trucking Assistant",
     "FailedToRetrieve": "Failed to fetch received content",
     "ValidationError": "Validation error:",
@@ -858,6 +863,7 @@
     "NoDrives": "There Are No Drives Currently",
     "FetchingError": "An error occurred while fetching received content"
   },
+
   "MechanicWidget": {
     "Projects": "Projects",
     "Mechanic": "Mechanic",
