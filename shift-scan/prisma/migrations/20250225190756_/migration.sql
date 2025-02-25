@@ -307,7 +307,7 @@ CREATE TABLE "Material" (
     "id" TEXT NOT NULL,
     "LocationOfMaterial" TEXT,
     "truckingLogId" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
+    "name" TEXT,
     "quantity" INTEGER,
     "loadType" "LoadType",
     "LoadWeight" DOUBLE PRECISION,

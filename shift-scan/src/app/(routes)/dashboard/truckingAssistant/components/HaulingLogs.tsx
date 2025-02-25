@@ -6,7 +6,6 @@ import Sliders from "@/components/(reusable)/sliders";
 import { useState } from "react";
 import MaterialList from "./MaterialList";
 import { createHaulingLogs } from "@/actions/truckingActions";
-import { form } from "@nextui-org/theme";
 type EquipmentHauled = {
   id: string;
   truckingLogId: string;
@@ -99,22 +98,20 @@ export default function HaulingLogs({
       </Holds>
       <Holds className="w-full h-full row-start-3 row-end-11 pt-5">
         <Holds background={"white"} className="w-full h-full">
-          <Grids rows={"9"} className="h-full py-2 px-4 ">
+          <Grids rows={"10"} className="h-full py-2 px-4 ">
             {activeTab === 1 && (
-              <>
-                <Holds className="h-full w-full row-start-1 row-end-10">
-                  <MaterialList
-                    material={material}
-                    setMaterial={setMaterial}
-                    materialOptions={materialOptions}
-                    locationOptions={locationOptions}
-                  />
-                </Holds>
-              </>
+              <Holds className="h-full w-full row-start-1 row-end-11 p-2 overflow-y-auto no-scrollbar">
+                <MaterialList
+                  material={material}
+                  setMaterial={setMaterial}
+                  materialOptions={materialOptions}
+                  locationOptions={locationOptions}
+                />
+              </Holds>
             )}
             {activeTab === 2 && (
               <>
-                <Holds className="h-full w-full row-start-3 row-end-9">
+                <Holds className="h-full w-full row-start-1 row-end-11">
                   {/* equipmentHauled={equipmentHauled}
                 setEquipmentHauled={setEquipmentHauled} */}
                 </Holds>

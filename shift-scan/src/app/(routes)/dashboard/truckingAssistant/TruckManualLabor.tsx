@@ -7,11 +7,7 @@ import { useTranslations } from "next-intl";
 import { NewTab } from "@/components/(reusable)/newTabs";
 import { Titles } from "@/components/(reusable)/titles";
 
-export default function TruckManualLabor({
-  timeSheetId,
-}: {
-  timeSheetId: string | undefined;
-}) {
+export default function TruckManualLabor() {
   const t = useTranslations("TruckingAssistant");
   const [activeTab, setActiveTab] = useState(1);
   return (
