@@ -63,11 +63,7 @@ export default function HaulingLogs({
     { value: "Material 2", label: "Material 2" },
     { value: "Material 3", label: "Material 3" },
   ];
-  const locationOptions = [
-    { value: "Location 1", label: "Location 1" },
-    { value: "Location 2", label: "Location 2" },
-    { value: "Location 3", label: "Location 3" },
-  ];
+
   return (
     <>
       <Holds
@@ -105,7 +101,6 @@ export default function HaulingLogs({
                   material={material}
                   setMaterial={setMaterial}
                   materialOptions={materialOptions}
-                  locationOptions={locationOptions}
                 />
               </Holds>
             )}
