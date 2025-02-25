@@ -13,6 +13,8 @@ const config: Config = {
       animation: {
         "spin-custom": "spin 1.1s linear infinite", // Adjust '2s' to make it slower or faster
         wave: "wave 1s linear",
+        slideLeft: "slideLeft 0.3s ease-out forwards",
+        slideRight: "slideRight 0.3s ease-out forwards",
       },
       keyframes: {
         wave: {
@@ -24,6 +26,14 @@ const config: Config = {
           "50%": { transform: "rotate(10.0deg)" },
           "60%": { transform: "rotate(0.0deg)" },
           "100%": { transform: "rotate(0.0deg)" },
+        },
+        slideLeft: {
+          "0%": { transform: "translateX(100%)" },
+          "100%": { transform: "translateX(0)" },
+        },
+        slideRight: {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(0)" },
         },
       },
       colors: {
