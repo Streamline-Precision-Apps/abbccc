@@ -142,7 +142,7 @@ model Material {
     id                 String    @id @default(uuid())
     LocationOfMaterial String? //company name or location of material
     truckingLogId      String // connection to log
-    name               String //type of material
+    name               String? //type of material
     quantity           Int? //number of loads
     loadType           LoadType? //covered, screened, or none
     LoadWeight         Float? // weight of material
