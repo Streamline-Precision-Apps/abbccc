@@ -22,9 +22,17 @@ export async function GET(
     select: {
       id: true,
       equipmentId: true,
-      selected: true,
+      equipmentIssue: true,
+      additionalInfo: true,
+      location: true,
       priority: true,
+      createdBy: true,
+      createdAt: true,
+      hasBeenDelayed: true,
       delay: true,
+      delayReasoning: true,
+      totalHoursLaboured: true,
+      repaired: true,
       equipment: {
         select: {
           id: true,

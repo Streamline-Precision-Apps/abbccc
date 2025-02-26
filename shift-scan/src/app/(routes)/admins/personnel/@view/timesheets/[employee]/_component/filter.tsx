@@ -21,7 +21,7 @@ type TimeSheet = {
   endTime?: Date | string | null;
   comment?: string | null;
   statusComment?: string | null;
-  status?: string; 
+  status?: string;
   workType?: string;
 };
 
@@ -96,7 +96,7 @@ export const Filter = ({ params }: { params: { employee: string } }) => {
           </Holds>
           <Holds className="h-full w-full row-span-5 overflow-y-auto no-scrollbar border-[3px] border-black rounded-[10px] ">
             {loading ? (
-              <Holds className=" bg-[#CACACA] h-full w-full justify-center">
+              <Holds className=" bg-app-gray h-full w-full justify-center">
                 <Spinner />
               </Holds>
             ) : (
@@ -106,7 +106,7 @@ export const Filter = ({ params }: { params: { employee: string } }) => {
                   userTimeSheets.map((timesheet) => (
                     <Holds
                       key={timesheet.id}
-                      className="h-full w-full even:bg-gray-200 odd:bg-gray-100 rounded-[10px] px-2 py-4"
+                      className="h-full w-full even:bg-app-gray odd:bg-gray-100 rounded-[10px] px-2 py-4"
                       onClick={() =>
                         handleDateClick(
                           timesheet.submitDate
@@ -146,7 +146,7 @@ export const Filter = ({ params }: { params: { employee: string } }) => {
                     </Holds>
                   ))
                 ) : (
-                  <Holds className=" bg-[#CACACA] h-full w-full justify-center">
+                  <Holds className=" bg-app-gray h-full w-full justify-center">
                     <Texts size="p5">{t("NoTimeSheetsFound")}</Texts>
                   </Holds>
                 )}

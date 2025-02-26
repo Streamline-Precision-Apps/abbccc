@@ -102,7 +102,7 @@ export default function QRMultiRoles({
                 {numberOfViews > 1 && option !== "switchJobs" ? (
                   <Holds className="p-1 justify-center border-[3px] border-black rounded-[10px] shadow-[6px_6px_0px_grey]">
                     <Selects
-                      className="disabled:gray-400 bg-app-blue text-center p-3"
+                      className="disabled:bg-app-dark-gray bg-app-blue text-center p-3"
                       value={clockInRole}
                       disabled={startCamera}
                       onChange={(e) => selectView(e.target.value)}

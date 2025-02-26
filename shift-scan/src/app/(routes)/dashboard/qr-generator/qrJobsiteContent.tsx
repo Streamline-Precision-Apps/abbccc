@@ -174,7 +174,7 @@ export default function QrJobsiteContent() {
           </Holds>
           <Holds className="row-start-6 row-end-7 col-start-1 col-end-3 h-full">
             <Buttons
-              background={selectedJobSite === "" ? "grey" : "orange"}
+              background={selectedJobSite === "" ? "darkGray" : "orange"}
               disabled={!selectedJobSite}
               onClick={handleGenerate}
             >

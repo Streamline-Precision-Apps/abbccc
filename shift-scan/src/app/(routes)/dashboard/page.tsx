@@ -26,6 +26,8 @@ export default async function Dashboard() {
     redirect("/");
   }
 
+  const mechanicProjectID = cookies().get("mechanicProjectID")?.value || "";
+
   // const user = session.user;
   const view = cookies().get("workRole")?.value || "general"; // Default to general view if not set
 
@@ -51,7 +53,11 @@ export default async function Dashboard() {
             <BannerRotating />
           </Holds>
           <Holds background={"white"} className="row-span-5 h-full">
-            <DbWidgetSection session={session} view={view} />
+            <DbWidgetSection
+              session={session}
+              view={view}
+              mechanicProjectID={mechanicProjectID}
+            />
           </Holds>
         </Grids>
       </Contents>
