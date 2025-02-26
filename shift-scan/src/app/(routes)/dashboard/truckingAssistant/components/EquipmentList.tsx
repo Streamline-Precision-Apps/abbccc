@@ -23,18 +23,10 @@ import SearchBar from "@/components/(search)/searchbar";
 import { Grids } from "@/components/(reusable)/grids";
 import { Titles } from "@/components/(reusable)/titles";
 
-type Material = {
-  name: string;
-  id: string;
-  LocationOfMaterial: string | null;
-  truckingLogId: string;
-  quantity: number | null;
-  createdAt: Date;
-};
 type EquipmentHauled = {
   id: string;
   truckingLogId: string;
-  equipmentId: string;
+  equipmentId: string | null;
   createdAt: Date;
 };
 
@@ -42,15 +34,18 @@ export default function EquipmentList({
   equipmentHauled,
   setEquipmentHauled,
 }: {
-  equipmentHauled: EquipmentHauled[] | undefined;
+  equipmentHauled: EquipmentHauled[];
   setEquipmentHauled: Dispatch<SetStateAction<EquipmentHauled[] | undefined>>;
 }) {
   const { equipmentResults } = useDBEquipment();
 
   // Local state to track changes
-  const [editedEquipmentOptions, setEditedEquipmentOptions] = useState<
-    EquipmentHauled[]
-  >(equipmentHauled || []);
+  const [editedEquipmentOptions, setEditedEquipmentOptions] =
+    useState<EquipmentHauled[]>(equipmentHauled);
+
+  useEffect(() => {
+    setEditedEquipmentOptions(equipmentHauled);
+  }, [equipmentHauled]);
 
   const [isLocationOpen, setIsLocationOpen] = useState<boolean>(false);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -66,11 +61,6 @@ export default function EquipmentList({
       equipment.qrId.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Update local state when prop changes
-  useEffect(() => {
-    setEquipmentHauled(equipmentHauled || []);
-  }, [equipmentHauled]);
-
   // Debounced server update function
   const updateHaulingLog = debounce(
     async (updatedEquipmentHauled: EquipmentHauled) => {
@@ -85,7 +75,7 @@ export default function EquipmentList({
   // Handle Input Change
   const handleChange = (
     index: number,
-    field: keyof Material,
+    field: keyof EquipmentHauled,
     value: string | number
   ) => {
     const updatedEquipmentHauled = [...editedEquipmentOptions];
@@ -101,7 +91,6 @@ export default function EquipmentList({
       updateHaulingLog(updatedEquipmentHauled[index]);
     }
   };
-
   // Handle Delete
   const handleDelete = async (equipmentHauledId: string) => {
     const updatedEquipmentHauled = editedEquipmentOptions.filter(
@@ -118,7 +107,6 @@ export default function EquipmentList({
       setEquipmentHauled(equipmentHauled);
     }
   };
-
   // Handle Location Selection
   const handleLocationSelect = (option: JobCode) => {
     setTempLocation(option.name); // Set temporary location
@@ -128,20 +116,17 @@ export default function EquipmentList({
     setTempLocation(""); // Clear temporary location
     setTempLocationSelected(false);
   };
-
   // Handle Search Input Change
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
-
   // Handle Submit
   const handleSubmit = () => {
     if (selectedIndex !== null) {
-      handleChange(selectedIndex, "LocationOfMaterial", tempLocation);
+      handleChange(selectedIndex, "equipmentId", tempLocation);
       setIsLocationOpen(false);
     }
   };
-
   // Handle Cancel
   const handleCancel = () => {
     setIsLocationOpen(false);
@@ -152,48 +137,49 @@ export default function EquipmentList({
 
   return (
     <>
-      <Contents className="overflow-y-auto no-scrollbar">
-        {editedEquipmentOptions.map((mat, index) => (
-          <SlidingDiv key={mat.id} onSwipeLeft={() => handleDelete(mat.id)}>
+      {editedEquipmentOptions.map((mat: EquipmentHauled, index) => (
+        <SlidingDiv key={mat.id} onSwipeLeft={() => handleDelete(mat.id)}>
+          <Holds
+            key={mat.id}
+            position={"row"}
+            background={"white"}
+            className="w-full h-full border-black border-[3px] rounded-[10px] mb-3  "
+          >
             <Holds
-              position={"row"}
               background={"white"}
-              className="w-full h-full border-black border-[3px] rounded-[10px] mb-3 "
+              className="w-1/2  h-full justify-center  px-2 border-black rounded-r-none"
             >
-              <Holds
-                background={"white"}
-                className="w-1/2 px-2 border-black border-r-[1.5px]"
-              >
-                <Inputs
-                  type="text"
-                  placeholder="Equipment"
-                  value={mat.equipmentId || ""}
-                  onChange={(e) => handleChange(index, "name", e.target.value)}
-                  className={"border-none text-xs py-2 focus:outline-none"}
-                />
-              </Holds>
-
-              <Holds
-                background={"white"}
-                className="w-1/2 h-full justify-center px-2 rounded-none border-black border-l-[1.5px]"
-              >
-                <Inputs
-                  type="text"
-                  placeholder="Location"
-                  value={""}
-                  onClick={() => {
-                    setSelectedIndex(index);
-                    setTempLocation(""); // Initialize temp state
-                    setIsLocationOpen(true);
-                  }}
-                  className="border-none text-xs focus:outline-none cursor-pointer"
-                  readOnly
-                />
-              </Holds>
+              <Inputs
+                type="text"
+                placeholder="Equipment"
+                value={mat.equipmentId || ""}
+                onChange={(e) =>
+                  handleChange(index, "equipmentId", e.target.value)
+                }
+                className={"border-none text-xs py-2 focus:outline-none "}
+              />
             </Holds>
-          </SlidingDiv>
-        ))}
-      </Contents>
+
+            <Holds
+              background={"white"}
+              className="w-1/2 h-full justify-center px-2 rounded-l-none border-black border-l-[3px]"
+            >
+              <Inputs
+                type="text"
+                placeholder="Location"
+                value={""}
+                onClick={() => {
+                  setSelectedIndex(index);
+                  setTempLocation(""); // Initialize temp state
+                  setIsLocationOpen(true);
+                }}
+                className="border-none text-xs focus:outline-none cursor-pointer"
+                readOnly
+              />
+            </Holds>
+          </Holds>
+        </SlidingDiv>
+      ))}
 
       {/* Location Modal */}
       <NModals size={"xlW"} isOpen={isLocationOpen} handleClose={handleCancel}>

@@ -21,7 +21,6 @@ import { useDBJobsite } from "@/app/context/dbCodeContext";
 import { JobCode } from "@/lib/types";
 import { Buttons } from "@/components/(reusable)/buttons";
 import SearchBar from "@/components/(search)/searchbar";
-import { Texts } from "@/components/(reusable)/texts";
 import { Grids } from "@/components/(reusable)/grids";
 import { Titles } from "@/components/(reusable)/titles";
 
