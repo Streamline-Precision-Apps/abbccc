@@ -18,7 +18,7 @@ export function RequestFooter({
       <Grids cols={"5"} gap={"5"} className="w-full h-full p-3">
         <Buttons
           disabled={!SubmitButton}
-          background={`${SubmitButton ? "green" : "grey"}`}
+          background={`${SubmitButton ? "green" : "darkGray"}`}
           className="col-start-5 col-end-6"
           onClick={() => handlePendingEdit()}
         >

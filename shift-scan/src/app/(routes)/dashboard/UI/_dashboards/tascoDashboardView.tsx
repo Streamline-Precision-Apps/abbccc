@@ -12,6 +12,8 @@ import MyTeamWidget from "../_buttons/myTeamBtn";
 import SwitchJobsBtn from "../_buttons/switchJobsBtn";
 import { Dispatch, SetStateAction } from "react";
 import TascoBtn from "../_buttons/TascoBtn";
+import { LogItem } from "@/lib/types";
+import { useModalState } from "@/hooks/(dashboard)/useModalState";
 
 export default function TascoDashboardView({
   additionalButtonsType,
@@ -26,6 +28,7 @@ export default function TascoDashboardView({
   handleShowManagerButtons,
   permission,
   handleShowAdditionalButtons,
+  logs,
 }: {
   additionalButtonsType: string | null;
   isModalOpen: boolean;
@@ -40,28 +43,44 @@ export default function TascoDashboardView({
   permission: string;
   currentView: string | null;
   handleShowAdditionalButtons: (button: string) => void;
+  logs: LogItem[];
 }) {
+  const modalState = useModalState();
   return (
     <>
       <Contents width={"section"} className="py-5">
         <Grids cols={"2"} rows={permission !== "USER" ? "4" : "3"} gap={"5"}>
           {/* Render buttons based on state */}
           {additionalButtonsType === "equipment" ? (
-            <EquipmentWidget
-              handleShowManagerButtons={handleShowManagerButtons}
-            />
+            <Holds
+              className={
+                permission !== "USER"
+                  ? "col-span-2 row-span-4 gap-5 h-full"
+                  : "col-span-2 row-span-3 gap-5 h-full"
+              }
+            >
+              <EquipmentWidget
+                handleShowManagerButtons={handleShowManagerButtons}
+              />
+            </Holds>
           ) : additionalButtonsType === "clockOut" ? (
-            <ClockOutWidget
-              handleShowManagerButtons={handleShowManagerButtons}
-              setIsModal2Open={setIsModal2Open}
-              isModal2Open={isModal2Open}
-              isModalOpen={isModalOpen}
-              comment={comment}
-              setComment={setComment}
-              handleCOButton2={handleCOButton2}
-              handleCOButton3={handleCOButton3}
-              handleCloseModal={handleCloseModal}
-            />
+            <Holds
+              className={
+                permission !== "USER"
+                  ? "col-span-2 row-span-4 gap-5 h-full"
+                  : "col-span-2 row-span-3 gap-5 h-full"
+              }
+            >
+              <ClockOutWidget
+                handleShowManagerButtons={handleShowManagerButtons}
+                {...modalState}
+                comment={comment}
+                setComment={setComment}
+                handleCOButton2={handleCOButton2}
+                handleCOButton3={handleCOButton3}
+                logs={logs}
+              />
+            </Holds>
           ) : (
             <>
               <TascoBtn permission={permission} view={"tasco"} />
@@ -74,7 +93,12 @@ export default function TascoDashboardView({
 
               <FormsBtn permission={permission} view={"tasco"} />
 
-              <SwitchJobsBtn permission={permission} />
+              <SwitchJobsBtn
+                {...modalState}
+                handleShowManagerButtons={handleShowManagerButtons}
+                permission={permission}
+                logs={logs}
+              />
 
               <ClockOutBtn
                 handleShowAdditionalButtons={handleShowAdditionalButtons}

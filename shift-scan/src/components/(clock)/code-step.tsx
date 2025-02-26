@@ -3,11 +3,8 @@ import React, { Dispatch, SetStateAction, useState } from "react";
 import CodeFinder from "@/components/(search)/codeFinder";
 import StepButtons from "./step-buttons";
 import { useTranslations } from "next-intl";
-import { Titles } from "../(reusable)/titles";
 import { Grids } from "../(reusable)/grids";
 import { Holds } from "../(reusable)/holds";
-import { Images } from "../(reusable)/images";
-import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { TitleBoxes } from "../(reusable)/titleBoxes";
 
 type CodeStepProps = {
