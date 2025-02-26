@@ -6,28 +6,60 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
 import { Holds } from "@/components/(reusable)/holds";
 import { TextAreas } from "@/components/(reusable)/textareas";
-import { ReceivedContent } from "@/lib/types";
 import { Session } from "next-auth";
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { FormEvent, use, useEffect, useState } from "react";
 import { ManagerLeaveRequest } from "@/actions/inboxSentActions";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { formatDate } from "@/utils/formatDateYMD";
 import { Grids } from "@/components/(reusable)/grids";
 import { z } from "zod";
 import Spinner from "@/components/(animations)/spinner";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Bases } from "@/components/(reusable)/bases";
+import TextInputWithRevert from "@/components/(reusable)/textInputWithRevert";
+import { useSession } from "next-auth/react";
 
 const managerLeaveRequestSchema = z.object({
-  id: z.string(),
+  id: z.string().min(1, { message: "Needs ID" }),
   status: z.enum(["APPROVED", "DENIED", "PENDING"], {
     errorMap: () => ({ message: "Invalid status" }),
   }),
+  createdAt: z.string().min(1, { message: "Needs date of request" }),
+  employee: z.object({
+    firstName: z.string(),
+    lastName: z.string(),
+  }),
+  name: z.string().optional(),
+  requestedStartDate: z.string().min(1, { message: "Needs start date" }),
+  requestedEndDate: z.string().min(1, { message: "Needs end date" }),
+  requestType: z.enum([
+    "FAMILY_MEDICAL",
+    "MILITARY",
+    "PAID_VACATION",
+    "NON_PAID_PERSONAL",
+    "SICK",
+  ]),
+  comment: z
+    .string()
+    .min(4, { message: "Description is required" })
+    .max(40, { message: "Max 40 characters" }),
   decidedBy: z.string(),
-  managerComments: z.string().max(40, {
+  managerComment: z.string().max(40, {
     message: "Manager comments must be at most 40 characters",
   }),
-  signature: z.string().min(1, { message: "Signature is required" }),
+  signature: z.string().nullable(),
+});
+
+type leaveRequest = z.infer<typeof managerLeaveRequestSchema>;
+
+const formSubmitSchema = z.object({
+  id: z.string().min(1, { message: "ID is required" }),
+  decidedBy: z.string().min(1, { message: "Decided by is required" }),
+  managerComment: z
+    .string()
+    .min(4, { message: "Description is required" })
+    .max(40, { message: "Max 40 characters" }),
+  signature: z.string().nullable(),
 });
 
 type Props = {
@@ -36,20 +68,60 @@ type Props = {
 };
 
 export default function Content({ params }: Props) {
+  const { data: session } = useSession();
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-
-  const [managerComment, setManagerComment] = useState<string>("");
+  const { id } = useParams();
+  // const [attachedSignature, setAttachedSignature] = useState(true);
   const [managerSignature, setManagerSignature] = useState<string>("");
-  const [receivedContent, setReceivedContent] = useState<ReceivedContent[]>([]);
+  const [formState, setFormState] = useState<leaveRequest[]>([
+    {
+      id: "",
+      status: "PENDING",
+      createdAt: "",
+      employee: {
+        firstName: "",
+        lastName: "",
+      },
+      name: "",
+      requestedStartDate: "",
+      requestedEndDate: "",
+      requestType: "SICK",
+      comment: "",
+      decidedBy: "",
+      managerComment: "",
+      signature: "",
+    },
+  ]);
+  const [originalState, setOriginalState] = useState<leaveRequest[]>([
+    {
+      id: "",
+      status: "PENDING",
+      createdAt: "",
+      employee: {
+        firstName: "",
+        lastName: "",
+      },
+      name: "",
+      requestedStartDate: "",
+      requestedEndDate: "",
+      requestType: "SICK",
+      comment: "",
+      decidedBy: "",
+      managerComment: "",
+      signature: "",
+    },
+  ]);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const result = await fetch(`/api/getTimeoffRequests/?type=received`);
-        const data = await result.json();
-        setReceivedContent(data);
+        const response = await fetch(`/api/getTimeOffRequestById/${id}`);
+        const data = await response.json();
+        console.log("Data:", data);
+        setFormState([data]);
+        setOriginalState([data]);
       } catch (error) {
         console.log(error);
       } finally {
@@ -64,6 +136,7 @@ export default function Content({ params }: Props) {
       try {
         const result = await fetch(`/api/getUserSignature`);
         const data = await result.json();
+        console.log("Signature Data:", data);
         setManagerSignature(data.signature);
       } catch (error) {
         console.log(error);
@@ -72,24 +145,28 @@ export default function Content({ params }: Props) {
     fetchSignatureData();
   }, [params.id]);
 
-  const handleManagerCommentChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    setManagerComment(e.target.value);
-  };
-
   const handleApproval = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!managerComment.trim()) return;
     const formData = new FormData(event.currentTarget);
+    formData.append("id", formState[0].id);
+    formData.append("status", "APPROVED");
+    formData.append("decidedBy", session?.user?.id as string);
+    formData.append("managerComment", formState[0].managerComment);
+    formData.append("signature", managerSignature);
+
+    console.log("Form Data:", formData);
+
     const formValues = {
       id: formData.get("id") as string,
-      decision: formData.get("decision") as string,
+      status: "APPROVED",
       decidedBy: formData.get("decidedBy") as string,
-      managerComments: managerComment,
-      signature: managerSignature,
+      managerComment: formData.get("managerComment") as string,
+      signature: formData.get("signature") as string,
     };
+    console.log("Form Values:", formValues);
 
     try {
-      managerLeaveRequestSchema.parse(formValues);
+      formSubmitSchema.parse(formValues);
       await ManagerLeaveRequest(formData);
       router.replace("/hamburger/inbox");
     } catch (error) {
@@ -97,44 +174,82 @@ export default function Content({ params }: Props) {
     }
   };
 
-  if (loading) {
-    return <Spinner />;
-  }
+  const handleDenial = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    formData.append("id", formState[0].id);
+    formData.append("status", "DENIED");
+    formData.append("decidedBy", session?.user?.id as string);
+    formData.append("managerComment", formState[0].managerComment);
+    formData.append("signature", managerSignature);
+    const formValues = {
+      id: formData.get("id") as string,
+      status: formData.get("DENIED") as string,
+      decidedBy: formData.get("decidedBy") as string,
+      managerComment: formData.get("managerComment") as string,
+      signature: managerSignature,
+    };
 
-  if (!receivedContent.length) {
+    try {
+      formSubmitSchema.parse(formValues);
+      await ManagerLeaveRequest(formData);
+      router.replace("/hamburger/inbox");
+    } catch (error) {
+      console.error("Validation error:", error);
+    }
+  };
+
+  const handleFieldChange = (field: keyof leaveRequest, value: string) => {
+    setFormState((prev) => [
+      {
+        ...prev[0],
+        [field]: value,
+      },
+    ]);
+  };
+
+  if (loading) {
     return (
-      <Bases>
-        <Contents>
-          <Grids rows={"10"} gap={"5"} className="my-5">
-            <Holds background={"orange"} className="row-span-2">
-              <TitleBoxes
-                title="Leave Request"
-                subtitle="No data available"
-                header="No data available"
-                titleImg="/Inbox.svg"
-                titleImgAlt="Inbox"
-                type="titleAndSubtitleAndHeader"
-              />
-            </Holds>
-          </Grids>
-        </Contents>
-      </Bases>
+      <div>
+        <Holds background={"orange"} className="row-span-2">
+          <TitleBoxes
+            title="Leave Request"
+            subtitle="No data available"
+            header="No data available"
+            titleImg="/Inbox.svg"
+            titleImgAlt="Inbox"
+            type="titleAndSubtitleAndHeader"
+          />
+        </Holds>
+        <Spinner />;
+      </div>
     );
   }
 
   return (
-    <Grids rows={"10"} gap={"5"} className="my-5">
-      <Holds background={"orange"} className="row-span-2">
+    <Grids rows={"9"} gap={"4"} className="my-5">
+      <Holds
+        background={
+          formState[0].status === "PENDING"
+            ? "orange"
+            : formState[0].status === "APPROVED"
+            ? "green"
+            : "red"
+        }
+        className="row-span-2"
+      >
         <TitleBoxes
           title="Leave Request"
           subtitle={
-            receivedContent[0] && receivedContent[0].employee
-              ? `${receivedContent[0].employee.firstName} ${receivedContent[0].employee.lastName}`
+            formState[0]?.employee
+              ? `${formState[0].employee.firstName} ${formState[0].employee.lastName} - ${formState[0].name}`
               : "No employee data"
           }
           header={
-            receivedContent[0]
-              ? `Requested: ${new Date(receivedContent[0].createdAt).toLocaleDateString()}`
+            formState[0]
+              ? `Requested: ${new Date(
+                  formState[0].createdAt
+                ).toLocaleDateString()}`
               : "No request date"
           }
           titleImg="/Inbox.svg"
@@ -142,59 +257,68 @@ export default function Content({ params }: Props) {
           type="titleAndSubtitleAndHeader"
         />
       </Holds>
-      {receivedContent.map((item) => (
-        <Holds background={"white"} className="row-span-9 h-full" key={item.id}>
-          <Contents width={"section"}>
-            <Labels>
-              Requested Date Range
-              <Inputs
-                type="text"
-                value={`${formatDate(item.requestedStartDate)} - ${formatDate(item.requestedEndDate)}`}
-                disabled
-              />
-            </Labels>
-            <Labels>
-              Request Type
-              <Inputs type="text" value={item.requestType} disabled />
-            </Labels>
-            <Labels>
-              Employee Comment
-              <TextAreas
-                name="description"
-                defaultValue={item.comment}
-                disabled
-                rows={2}
-              />
-            </Labels>
-            <Labels>
-              Manager Comment
-              <TextAreas
-                name="managerComments"
-                value={managerComment}
-                rows={2}
-                onChange={handleManagerCommentChange}
-                maxLength={40}
-              />
-            </Labels>
-            <Forms onSubmit={handleApproval}>
-              <Buttons
-                background={managerComment ? "red" : "grey"}
-                type="submit"
-                disabled={!managerComment}
-              >
-                Deny
-              </Buttons>
-              <Buttons
-                background={managerComment ? "green" : "grey"}
-                type="submit"
-                disabled={!managerComment}
-              >
-                Approve
-              </Buttons>
-            </Forms>
-          </Contents>
-        </Holds>
-      ))}
+      <Holds background={"white"} className="row-span-4 p-4">
+        <Labels>
+          Requested Date Range
+          <Inputs
+            type="text"
+            value={`${new Date(formState[0].requestedStartDate).toLocaleDateString("en-US")} to ${new Date(formState[0].requestedEndDate).toLocaleDateString("en-US")}`}
+            disabled
+          />
+        </Labels>
+        <Labels>
+          Request Type
+          <Inputs type="text" value={formState[0].requestType} disabled />
+        </Labels>
+        <Labels>
+          Employee Comment
+          <TextAreas
+            name="description"
+            defaultValue={formState[0].comment}
+            disabled
+          />
+        </Labels>
+      </Holds>
+      <Holds
+        background={"white"}
+        className="row-span-2 p-4"
+        key={formState[0].id}
+      >
+        <TextInputWithRevert
+          label="Manager Comment"
+          size="large"
+          type="full"
+          value={formState[0].managerComment || ""}
+          onChange={(newValue: string) =>
+            handleFieldChange("managerComment", newValue)
+          }
+          showAsterisk={false}
+          defaultValue={originalState[0].managerComment}
+        />
+
+        <Forms onSubmit={handleDenial}>
+          <Buttons
+            background={
+              formState[0]?.managerComment?.length >= 4 ? "red" : "grey"
+            }
+            type="submit"
+            disabled={!(formState[0]?.managerComment?.length >= 4)}
+          >
+            Deny
+          </Buttons>
+        </Forms>
+        <Forms onSubmit={handleApproval}>
+          <Buttons
+            background={
+              formState[0]?.managerComment?.length >= 4 ? "green" : "grey"
+            }
+            type="submit"
+            disabled={!(formState[0]?.managerComment?.length >= 4)}
+          >
+            Approve
+          </Buttons>
+        </Forms>
+      </Holds>
     </Grids>
   );
 }

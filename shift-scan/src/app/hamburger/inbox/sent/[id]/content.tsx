@@ -10,7 +10,6 @@ import { Selects } from "@/components/(reusable)/selects";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
-import { sentContent } from "@/lib/types";
 import { Session } from "next-auth";
 import { FormEvent, useEffect, useState } from "react";
 import {
@@ -23,16 +22,47 @@ import { formatDate } from "@/utils/formatDateYMD";
 import { Grids } from "@/components/(reusable)/grids";
 import { z } from "zod";
 import Spinner from "@/components/(animations)/spinner";
+import TextInputWithRevert from "@/components/(reusable)/textInputWithRevert";
 
-// Define Zod schema for form validation
-const editLeaveRequestSchema = z.object({
+const managerLeaveRequestSchema = z.object({
+  id: z.string().min(1, { message: "Needs ID" }),
+  status: z.enum(["APPROVED", "DENIED", "PENDING"], {
+    errorMap: () => ({ message: "Invalid status" }),
+  }),
+  createdAt: z.string().min(1, { message: "Needs date of request" }),
+  employee: z.object({
+    firstName: z.string(),
+    lastName: z.string(),
+  }),
   name: z.string().optional(),
-  startDate: z.string().min(1, { message: "Start date is required" }),
-  endDate: z.string().min(1, { message: "End date is required" }),
-  requestType: z.enum(["FAMILY_MEDICAL", "MILITARY", "MILITARY", "PAID_VACATION", "NON_PAID_PERSONAL", "SICK"]),
-  description: z.string().min(4, { message: "Description is required" }).max(40, { message: "Max 40 characters" }),
-  status: z.literal("PENDING"),
+  requestedStartDate: z.string().min(1, { message: "Needs start date" }),
+  requestedEndDate: z.string().min(1, { message: "Needs end date" }),
+  requestType: z.enum([
+    "FAMILY_MEDICAL",
+    "MILITARY",
+    "PAID_VACATION",
+    "NON_PAID_PERSONAL",
+    "SICK",
+  ]),
+  comment: z
+    .string()
+    .min(4, { message: "Description is required" })
+    .max(40, { message: "Max 40 characters" }),
+  decidedBy: z.string(),
+  managerComment: z.string().max(40, {
+    message: "Manager comments must be at most 40 characters",
+  }),
+  signature: z.string().nullable(),
 });
+
+type leaveRequest = z.infer<typeof managerLeaveRequestSchema>;
+
+const formSubmitSchema = z.object({
+  id: z.string().min(1, { message: "ID is required" }),
+  decidedBy: z.string().min(1, { message: "Decided by is required" }),
+  managerComment: z.string().min(4, { message: "Description is required" }).max(40, { message: "Max 40 characters" }),
+  signature: z.string().nullable(),
+})
 
 type Props = {
   session: Session | null;
@@ -44,7 +74,44 @@ export default function Content({ session }: Props) {
   const [loading, setLoading] = useState(true);
   const [edit, setEdit] = useState(false);
   const [cardDate, setCardDate] = useState<string>("");
-  const [sentContent, setSentContent] = useState<sentContent[]>([]);
+    const [formState, setFormState] = useState<leaveRequest[]>([
+      {
+        id: "",
+        status: "PENDING",
+        createdAt: "",
+        employee: {
+          firstName: "",
+          lastName: "",
+        },
+        name: "",
+        requestedStartDate: "",
+        requestedEndDate: "",
+        requestType: "SICK",
+        comment: "",
+        decidedBy: "",
+        managerComment: "",
+        signature: "",
+      },
+    ]);
+    const [originalState, setOriginalState] = useState<leaveRequest[]>([
+      {
+        id: "",
+        status: "PENDING",
+        createdAt: "",
+        employee: {
+          firstName: "",
+          lastName: "",
+        },
+        name: "",
+        requestedStartDate: "",
+        requestedEndDate: "",
+        requestType: "SICK",
+        comment: "",
+        decidedBy: "",
+        managerComment: "",
+        signature: "",
+      },
+    ]);
   const router = useRouter();
   const userId = session?.user.id;
 
@@ -52,18 +119,19 @@ export default function Content({ session }: Props) {
     const fetchSentContent = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/getTimeoffPendingRequests/${id}`);
+        const response = await fetch(`/api/getTimeOffRequestById/${id}`);
         if (!response.ok) {
           throw new Error("Failed to fetch sent content");
         }
         const data = await response.json();
         if (data) {
-          setCardDate(
-            `${new Date(data.date).getMonth() + 1}/${new Date(
-              data.date
-            ).getDate()}/${new Date(data.date).getFullYear()}`
-          );
-          setSentContent([data]); // Wrap `data` in an array to match the component’s expectations
+          // Format the createdAt date
+          const formattedDate = `${new Date(data.createdAt).getMonth() + 1}/${new Date(data.createdAt).getDate()}/${new Date(data.createdAt).getFullYear()}`;
+          
+          setCardDate(formattedDate);
+          setOriginalState([data]);
+          setFormState([data]);
+          console.log("Data:", data);
         }
       } catch (err) {
         console.error("Error fetching sent content:", err);
@@ -71,9 +139,9 @@ export default function Content({ session }: Props) {
         setLoading(false);
       }
     };
-
     fetchSentContent();
   }, [id]);
+  
 
   const handleEdit = () => {
     setEdit(!edit);
@@ -83,20 +151,23 @@ export default function Content({ session }: Props) {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
+    // formData.append("signature", signature)
+    console.log("Form Data:", formData);
     const formValues = {
       id: formData.get("id") as string,
       startDate: formData.get("startDate") as string,
       endDate: formData.get("endDate") as string,
       requestType: formData.get("requestType") as string,
-      description: formData.get("description") as string,
+      comment: formData.get("comment") as string,
+      // signature: formData.get("signature") as string,
     };
 
     // Validate using Zod
     try {
-      editLeaveRequestSchema.parse(formValues);
-      await EditLeaveRequest(formData);
+      // editLeaveRequestSchema.parse(formValues);
+      // await EditLeaveRequest(formData);
       setEdit(false);
-      router.push("/hamburger/inbox");
+      // router.push("/hamburger/inbox");
     } catch (error) {
       if (error instanceof z.ZodError) {
         console.error("Validation error:", error.errors[0].message);
@@ -111,6 +182,15 @@ export default function Content({ session }: Props) {
     if (isDeleted) {
       router.push("/hamburger/inbox");
     }
+  };
+
+  const handleFieldChange = (field: keyof leaveRequest, value: string) => {
+    setFormState((prev) => [
+      {
+        ...prev[0],
+        [field]: value,
+      },
+    ]);
   };
 
   if (loading) {
@@ -142,15 +222,22 @@ export default function Content({ session }: Props) {
   return (
     <Holds>
       <Grids className="grid-rows-10 gap-5">
-        <Holds background={"orange"} className="row-span-2">
+        <Holds background={
+          formState[0].status === "PENDING"
+            ? "orange"
+            : formState[0].status === "APPROVED"
+            ? "green"
+            : "red"
+        } 
+        className="row-span-2">
           <TitleBoxes
             title="Leave Request"
             titleImg="/Inbox.svg"
             titleImgAlt="Inbox"
-            type="noIcon"
+            type="titleAndSubtitleAndHeader"
           />
           <Holds className="py-2">
-            <Titles size={"h3"}>Created on {cardDate}</Titles>
+          <Titles size={"h3"}>Created on {cardDate}</Titles>
           </Holds>
         </Holds>
 
@@ -199,12 +286,12 @@ export default function Content({ session }: Props) {
                 )}
               </Holds>
 
-              {sentContent.length > 0 && (
-                <Holds key={sentContent[0].id}>
+              {originalState.length > 0 && (
+                <Holds key={originalState[0].id}>
                   <Inputs
                     type="hidden"
                     name="id"
-                    value={sentContent[0].id}
+                    value={originalState[0].id}
                     disabled
                   />
 
@@ -214,7 +301,7 @@ export default function Content({ session }: Props) {
                       type="date"
                       name="startDate"
                       defaultValue={formatDate(
-                        sentContent[0].requestedStartDate
+                        new Date(originalState[0].requestedStartDate)
                       )}
                       disabled={!edit}
                     />
@@ -225,7 +312,7 @@ export default function Content({ session }: Props) {
                     <Inputs
                       type="date"
                       name="endDate"
-                      defaultValue={formatDate(sentContent[0].requestedEndDate)}
+                      defaultValue={formatDate(new Date(originalState[0].requestedEndDate))}
                       disabled={!edit}
                     />
                   </Labels>
@@ -238,16 +325,16 @@ export default function Content({ session }: Props) {
                       <Inputs
                         type="text"
                         name="requestType"
-                        defaultValue={sentContent[0].requestType}
+                        defaultValue={originalState[0].requestType}
                         disabled={!edit}
                       />
                     ) : (
                       // Show a dropdown when in edit mode
                       <Selects
                         name="requestType"
-                        defaultValue={sentContent[0].requestType}
+                        defaultValue={originalState[0].requestType}
                         disabled={!edit}
-                        key={sentContent[0].requestType}
+                        key={originalState[0].requestType}
                       >
                         <option value="">Choose a request</option>
                         <option value="PAID_VACATION">Vacation</option>
@@ -262,23 +349,35 @@ export default function Content({ session }: Props) {
                       </Selects>
                     )}
                   </Labels>
-
+                  {!edit ? (
                   <Labels>
                     Comments
                     <TextAreas
-                      name="description"
-                      defaultValue={sentContent[0].comment}
+                      name="comment"
+                      defaultValue={originalState[0].comment}
                       disabled={!edit}
                       rows={5}
                     />
-                  </Labels>
-                  {(sentContent[0].status === "APPROVED" ||
-                    sentContent[0].status === "DENIED") && (
+                  </Labels>) : (
+                    <TextInputWithRevert
+                    label="Manager Comment"
+                    size="large"
+                    type="full"
+                    value={formState[0].comment || ""}
+                    onChange={(newValue: string) =>
+                      handleFieldChange("comment", newValue)
+                    }
+                    showAsterisk={false}
+                    defaultValue={originalState[0].comment}
+                  />
+                  )}
+                  {(originalState[0].status === "APPROVED" ||
+                    originalState[0].status === "DENIED") && (
                     <Labels>
                       {`Manager's Comments`}
                       <TextAreas
-                        name="managerComments"
-                        defaultValue={sentContent[0].managerComment ?? ""}
+                        name="comment"
+                        defaultValue={originalState[0].managerComment ?? ""}
                         disabled
                       />
                     </Labels>

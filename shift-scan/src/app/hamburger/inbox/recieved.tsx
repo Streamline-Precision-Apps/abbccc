@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
-import { receivedContent } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { Holds } from "@/components/(reusable)/holds";
@@ -20,6 +19,7 @@ import { z } from "zod";
 // Define Zod schema for received content
 const receivedContentSchema = z.object({
   id: z.string(), // Adjusted to expect a number
+  status: z.enum(["APPROVED", "PENDING", "DENIED"]),
   requestType: z.string(),
   requestedStartDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
     message: "Invalid date format for requestedStartDate",
@@ -38,12 +38,12 @@ const receivedContentSchema = z.object({
   }),
 });
 
-
+type recievedContent = z.infer<typeof receivedContentSchema>;
 
 export default function RTab() {
   const { data: session } = useSession();
   const router = useRouter();
-  const [receivedContent, setReceivedContent] = useState<receivedContent[]>([]);
+  const [receivedContent, setReceivedContent] = useState<recievedContent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -110,7 +110,7 @@ export default function RTab() {
 
   // Filter out requests made by the current user
   const user_Id = session?.user?.id;
-  const pending = receivedContent.filter((item) => item.employeeId !== user_Id);
+  const pending = receivedContent.filter((item) => item.employee.crews.filter((crew) => crew.leadId !== user_Id));
 
   // If loading, show a loading message
   if (loading) {
@@ -148,13 +148,25 @@ export default function RTab() {
           {pending.map((item) => (
             <Holds key={item.id}>
               <Buttons
-                background={"orange"}
+                background={
+                  item.status.toString() === "PENDING"
+                  ? "orange"
+                  : item.status.toString() === "APPROVED"
+                  ? "green"
+                  : "red"}
                 key={item.id}
                 href={`/hamburger/inbox/received/${item.id}`}
                 size={"90"}
               >
                 <Titles>{item.requestType}</Titles>
-                {new Date(item.date).toLocaleString("en-US", {
+                <div>
+                {item.employee.firstName} {item.employee.lastName}
+                </div>
+                {new Date(item.requestedStartDate).toLocaleString("en-US", {
+                  day: "numeric",
+                  month: "numeric",
+                  year: "numeric",
+                })} - {new Date(item.requestedEndDate).toLocaleString("en-US", {
                   day: "numeric",
                   month: "numeric",
                   year: "numeric",
