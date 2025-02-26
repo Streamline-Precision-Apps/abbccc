@@ -10,7 +10,7 @@ export default async function Page(props: { params: Promise<Params> }) {
   if (!session) return null;
 
   return (
-    <Bases size={"scroll"}>
+    <Bases>
       <Contents height="page">
         <Content session={session} params={await params} />
       </Contents>

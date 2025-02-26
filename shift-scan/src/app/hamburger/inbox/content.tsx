@@ -2,8 +2,8 @@
 import React from "react";
 import { useState } from "react";
 import { Tab } from "@/components/(reusable)/tab";
-import STab from "@/app/hamburger/inbox/sTab";
-import RTab from "@/app/hamburger/inbox/rTab";
+import STab from "@/app/hamburger/inbox/sent";
+import RTab from "@/app/hamburger/inbox/recieved";
 import { Holds } from "@/components/(reusable)/holds";
 import { Grids } from "@/components/(reusable)/grids";
 

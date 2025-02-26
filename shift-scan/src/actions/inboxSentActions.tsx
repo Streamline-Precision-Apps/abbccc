@@ -78,12 +78,13 @@ export async function EditLeaveRequest(formData: FormData) {
 export async function ManagerLeaveRequest(formData: FormData) {
   try {
     // Correct the form field names
-    const managerComment = formData.get("mangerComments") as string;
-    const status = formData.get("decision") as string;
-    const name = formData.get("decidedBy") as string;
+    const managerComment = formData.get("managerComments") as string;
+    const status = formData.get("status") as string;
+    const decidedBy = formData.get("decidedBy") as string;
     const id = formData.get("id") as string;
+    const signature = formData.get("signature") as string;
 
-    console.log("Form Data:", { managerComment, status, name, id });
+    console.log("Form Data:", { managerComments: managerComment, status, decidedBy, id, signature });
 
     if (id && status && managerComment) {
       // Perform the Prisma update
@@ -92,7 +93,8 @@ export async function ManagerLeaveRequest(formData: FormData) {
         data: {
           managerComment: managerComment,
           status: status as FormStatus,
-          decidedBy: name,
+          decidedBy: decidedBy,
+          signature: formData.get("signature") as string,
         },
       });
 
@@ -104,7 +106,7 @@ export async function ManagerLeaveRequest(formData: FormData) {
       console.error("Missing form data fields:", {
         id,
         status,
-        managerComment,
+        managerComments: managerComment,
       });
     }
   } catch (error) {
