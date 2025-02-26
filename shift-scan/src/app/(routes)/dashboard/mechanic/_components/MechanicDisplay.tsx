@@ -4,15 +4,16 @@ import { useState } from "react";
 import MechanicPriority from "./MechanicPriorityList";
 import { Grids } from "@/components/(reusable)/grids";
 import { Tab } from "@/components/(reusable)/tab";
-import { useTranslations } from "next-intl";
+// import { useTranslations } from "next-intl";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import MechanicSelectList from "./MechanicSelectList";
+import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
-export default function MechanicDisplay() {
-  const [isManager, setIsManager] = useState(true);
+export default function MechanicDisplay({ isManager }: { isManager: boolean }) {
   const [activeTab, setActiveTab] = useState(1);
-  const t = useTranslations("Mechanic");
-
+  const router = useRouter();
+  const t = useTranslations("MechanicWidget");
   return (
     <>
       {!isManager && (
@@ -22,15 +23,14 @@ export default function MechanicDisplay() {
             className="row-span-1 h-full justify-center"
           >
             <TitleBoxes
-              title="Projects"
+              title={t("Projects")}
               titleImg="/mechanic.svg"
-              titleImgAlt="Mechanic"
+              titleImgAlt={t("Mechanic")}
               type="row"
             />
           </Holds>
-          <Holds background={"white"} className="row-span-7 h-full">
-            <MechanicPriority />
-          </Holds>
+
+          <MechanicPriority />
         </Grids>
       )}
       {isManager && (
@@ -40,10 +40,11 @@ export default function MechanicDisplay() {
             className="row-span-1 h-full justify-center"
           >
             <TitleBoxes
-              title={activeTab === 1 ? "Priority List" : "Projects"}
+              title={activeTab === 1 ? t("PriorityList") : t("Projects")}
               titleImg="/mechanic.svg"
-              titleImgAlt="Mechanic"
-              type="row"
+              titleImgAlt={t("Mechanic")}
+              onClick={() => router.push("/dashboard")}
+              type="noIcon-NoHref"
             />
           </Holds>
           <Holds className="row-span-7 h-full">
@@ -54,14 +55,14 @@ export default function MechanicDisplay() {
                   isActive={activeTab === 1}
                   size={"md"}
                 >
-                  Todays
+                  {t("Todays")}
                 </Tab>
                 <Tab
                   onClick={() => setActiveTab(2)}
                   isActive={activeTab === 2}
                   size={"md"}
                 >
-                  All
+                  {t("All")}
                 </Tab>
               </Holds>
               <Holds

@@ -19,8 +19,9 @@ const HoldVariants = cva(
         darkBlue:
           "bg-app-dark-blue rounded-xl border border-app-dark-blue border-8",
         lightBlue: "bg-app-blue rounded-xl border border-app-blue border-8",
-        grey: "bg-slate-400 rounded-xl border border-slate-400 border-8",
-        lightGray: "bg-slate-200 rounded-xl border border-slate-200 border-8",
+        darkGray:
+          "bg-app-dark-gray rounded-xl border border-app-dark-gray border-8",
+        lightGray: "bg-app-gray rounded-xl border border-app-gray border-8",
       },
       position: {
         //only position attributes

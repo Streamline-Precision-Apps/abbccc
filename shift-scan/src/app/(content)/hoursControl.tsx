@@ -187,7 +187,7 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
                 <Holds
                   className={`h-full rounded-[10px] bg-white p-1 justify-end ${
                     prevData.date === Today.date
-                      ? "border-[5px] border-[#09814a]"
+                      ? "border-[5px] border-app-dark-green"
                       : "border-[3px] border-black"
                   } ${
                     prevData.hours === 0 &&
@@ -240,7 +240,7 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
               <Holds
                 className={`h-full rounded-[10px] bg-white p-1 flex justify-end ${
                   currentData.date === Today.date
-                    ? "border-[5px] border-[#09814a]"
+                    ? "border-[5px] border-app-dark-green"
                     : "border-[3px] border-black"
                 } ${
                   currentData.hours === 0 &&
@@ -294,7 +294,7 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
                   background="darkBlue"
                   className={`h-full rounded-[10px] bg-white p-1 flex justify-end ${
                     nextData.date === Today.date
-                      ? "border-[5px] border-[#09814a]"
+                      ? "border-[5px] app-dark-green"
                       : "border-[3px] border-black"
                   } ${
                     nextData.hours === 0 &&

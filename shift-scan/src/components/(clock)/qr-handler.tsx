@@ -107,7 +107,7 @@ export default function QRStep({
               <Holds className={"h-full w-full row-start-2 row-end-7 "}>
                 <Grids rows={"6"} gap={"2"} className="h-full w-full">
                   <Holds className="h-full w-full row-start-2 row-end-6 justify-center border-[3px] border-black rounded-[10px] p-3">
-                    <Holds className="h-full w-full justify-center bg-slate-300 border-[3px] border-black rounded-[10px]">
+                    <Holds className="h-full w-full justify-center bg-app-dark-gray border-[3px] border-black rounded-[10px]">
                       <Images
                         titleImg="/camera.svg"
                         titleImgAlt="clockIn"

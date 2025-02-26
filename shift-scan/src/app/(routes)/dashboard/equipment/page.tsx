@@ -48,9 +48,7 @@ export default function EquipmentLogContent() {
   const t = useTranslations("Equipment");
   const b = useTranslations("Widgets");
   const total = logs.length;
-  const completed = logs.filter(
-    (log) => log.endTime !== null
-  ).length;
+  const completed = logs.filter((log) => log.endTime !== null).length;
   const green = total - completed;
 
   useEffect(() => {
@@ -173,9 +171,7 @@ export default function EquipmentLogContent() {
                   <Holds key={log.id} className="pb-5">
                     <Buttons
                       size={"80"}
-                      background={
-                        log.endTime !== null ? "green" : "orange"
-                      }
+                      background={log.endTime !== null ? "green" : "orange"}
                       href={`/dashboard/equipment/${log.id}`}
                       key={log.id}
                       className="py-2"
@@ -205,7 +201,7 @@ export default function EquipmentLogContent() {
                 </Holds>
               </Forms>
             ) : (
-              <Buttons size={"30"} disabled className="bg-gray-400 py-2">
+              <Buttons size={"30"} disabled className="bg-app-gray py-2">
                 {b("SubmitAll")}
               </Buttons>
             )}

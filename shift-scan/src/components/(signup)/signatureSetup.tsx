@@ -99,7 +99,7 @@ const SignatureSetup: React.FC<SignatureSetupProps> = ({
         <Holds className="row-span-1 h-full">
           <Buttons
             onClick={handleSubmitImage}
-            background={base64String ? "orange" : "darkGrey"}
+            background={base64String ? "orange" : "darkGray"}
             disabled={isSubmitting}
           >
             <Titles>{isSubmitting ? "Submitting..." : "Next"}</Titles>

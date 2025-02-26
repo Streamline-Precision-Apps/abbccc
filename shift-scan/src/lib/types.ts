@@ -43,12 +43,26 @@ export enum Priority {
   HIGH = "HIGH",
   PENDING = "PENDING",
   TODAY = "TODAY",
+  repaired = "REPAIRED",
 }
 
 export type EquipmentStatus =
   | "OPERATIONAL"
   | "NEEDS_REPAIR"
   | "NEEDS_MAINTENANCE";
+
+export type LogItem = {
+  id: string;
+  userId: string;
+  equipment?: {
+    id: string;
+    qrId: string;
+    name: string;
+  } | null;
+  maintenanceId?: string;
+  submitted: boolean;
+  type: "equipment" | "mechanic";
+};
 
 export type User = {
   id: string;
@@ -308,16 +322,16 @@ export type EquipmentCodes = {
 };
 
 export type TimeSheet = {
-  submitDate: Date;
-  date: Date;
+  submitDate: string;
+  date: Date | string;
   id: string;
   userId: string;
   jobsiteId: string;
   costcode: string;
   nu: string;
   Fp: string;
-  startTime: Date;
-  endTime: Date | null;
+  startTime: Date | string;
+  endTime: Date | string | null;
   comment: string | null;
   statusComment: string | null;
   location: string | null;

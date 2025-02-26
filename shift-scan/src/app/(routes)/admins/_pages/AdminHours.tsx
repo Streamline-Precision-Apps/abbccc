@@ -157,7 +157,7 @@ export default function AdminHours() {
               ${
                 data.date === new Date().toISOString().split("T")[0]
                   ? "bg-app-dark-blue border-[4px] border-white"
-                  : "bg-slate-400 border-black"
+                  : "bg-app-gray border-black"
               }
                  ${
                    data.date === dailyHours[currentIndex]?.date

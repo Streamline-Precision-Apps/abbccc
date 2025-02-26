@@ -12,7 +12,10 @@ import GeneratorBtn from "../_buttons/generatorBtn";
 import MyTeamWidget from "../_buttons/myTeamBtn";
 import SwitchJobsBtn from "../_buttons/switchJobsBtn";
 import { Dispatch, SetStateAction } from "react";
-import EngineerBtn from "../_buttons/EnginneerBtns";
+import EngineerBtn from "../_buttons/MechanicBtns";
+import MechanicBtn from "../_buttons/MechanicBtns";
+import { LogItem } from "@/lib/types";
+import useModalState from "@/hooks/(dashboard)/useModalState";
 
 export default function MechanicDashboardView({
   additionalButtonsType,
@@ -27,6 +30,9 @@ export default function MechanicDashboardView({
   handleShowManagerButtons,
   permission,
   handleShowAdditionalButtons,
+  logs,
+  mechanicProjectID,
+  laborType,
 }: {
   additionalButtonsType: string | null;
   isModalOpen: boolean;
@@ -40,31 +46,57 @@ export default function MechanicDashboardView({
   handleShowManagerButtons: () => void;
   permission: string;
   handleShowAdditionalButtons: (button: string) => void;
+  logs: LogItem[];
+  mechanicProjectID: string;
+  laborType: string;
 }) {
+  const modalState = useModalState();
   return (
     <>
       <Contents width={"section"} className="py-5">
-        <Grids cols={"2"} rows={permission !== "USER" ? "4" : "3"} gap={"5"}>
+        <Grids cols={"2"} rows={"3"} gap={"5"}>
           {/* Render buttons based on state */}
           {additionalButtonsType === "equipment" ? (
-            <EquipmentWidget
-              handleShowManagerButtons={handleShowManagerButtons}
-            />
+            <Holds
+              className={
+                permission !== "USER"
+                  ? "col-span-2 row-span-4 gap-5 h-full"
+                  : "col-span-2 row-span-3 gap-5 h-full"
+              }
+            >
+              <EquipmentWidget
+                handleShowManagerButtons={handleShowManagerButtons}
+              />
+            </Holds>
           ) : additionalButtonsType === "clockOut" ? (
-            <ClockOutWidget
-              handleShowManagerButtons={handleShowManagerButtons}
-              setIsModal2Open={setIsModal2Open}
-              isModal2Open={isModal2Open}
-              isModalOpen={isModalOpen}
-              comment={comment}
-              setComment={setComment}
-              handleCOButton2={handleCOButton2}
-              handleCOButton3={handleCOButton3}
-              handleCloseModal={handleCloseModal}
-            />
+            <Holds
+              className={
+                permission !== "USER"
+                  ? "col-span-2 row-span-4 gap-5 h-full"
+                  : "col-span-2 row-span-3 gap-5 h-full"
+              }
+            >
+              <ClockOutWidget
+                {...modalState}
+                handleShowManagerButtons={handleShowManagerButtons}
+                comment={comment}
+                setComment={setComment}
+                handleCOButton2={handleCOButton2}
+                handleCOButton3={handleCOButton3}
+                logs={logs}
+              />
+            </Holds>
           ) : (
             <>
-              <EngineerBtn permission={permission} view={"mechanic"} />
+              <MechanicBtn permission={permission} view={"mechanic"} />
+              <SwitchJobsBtn
+                {...modalState}
+                handleShowManagerButtons={handleShowManagerButtons}
+                permission={permission}
+                mechanicProjectID={mechanicProjectID}
+                logs={logs}
+                laborType={laborType}
+              />
               {permission !== "USER" && !additionalButtonsType && (
                 <GeneratorBtn />
               )}
@@ -72,14 +104,11 @@ export default function MechanicDashboardView({
                 <MyTeamWidget />
               )}
 
-              <FormsBtn permission={permission} view={"mechanic"} />
-
-              <SwitchJobsBtn permission={permission} />
-
               <ClockOutBtn
                 handleShowAdditionalButtons={handleShowAdditionalButtons}
                 permission={permission}
                 View={"mechanic"}
+                laborType={laborType}
               />
             </>
           )}

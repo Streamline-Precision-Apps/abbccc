@@ -165,7 +165,7 @@ const VerificationEQStep: React.FC<VerifyProcessProps> = ({
                   <Inputs
                     type="hidden"
                     name="startTime"
-                    value={new Date().toISOString()}
+                    value={new Date().toString()}
                   />
                   <Inputs type="hidden" name="employeeId" value={id || ""} />
                 </Grids>

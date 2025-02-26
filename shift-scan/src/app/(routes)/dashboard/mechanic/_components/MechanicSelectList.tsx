@@ -6,6 +6,8 @@ import { Selects } from "@/components/(reusable)/selects";
 import { SearchAndCheck } from "./SearchAndCheck";
 import { useEffect, useState } from "react";
 import { Priority } from "@/lib/types";
+import Spinner from "@/components/(animations)/spinner";
+import { useTranslations } from "next-intl";
 
 type Equipment = {
   id: string;
@@ -23,6 +25,7 @@ type Projects = {
   id: string;
   equipmentId: string;
   selected: boolean;
+  repaired: boolean;
   priority: Priority;
   delay: Date | null;
   maintenanceLogs: MaintenanceLog[];
@@ -33,26 +36,31 @@ export default function MechanicSelectList() {
   const [allProjects, setAllProjects] = useState<Projects[]>([]);
   const [filteredProjects, setFilteredProjects] = useState<Projects[]>([]);
   const [selectedFilter, setSelectedFilter] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+  const t = useTranslations("MechanicWidget");
 
   const PriorityOptions = [
-    { label: "Select Filter", value: "" },
-    { label: "Pending", value: "PENDING" },
-    { label: "Delayed", value: "DELAYED" },
-    { label: "High Priority", value: "HIGH" },
-    { label: "Medium Priority", value: "MEDIUM" },
-    { label: "Low Priority", value: "LOW" },
-    { label: "TODAY", value: "TODAY" },
+    { label: t("SelectFilter"), value: "" },
+    { label: t("Pending"), value: "PENDING" },
+    { label: t("Delayed"), value: "DELAYED" },
+    { label: t("HighPriority"), value: "HIGH" },
+    { label: t("MediumPriority"), value: "MEDIUM" },
+    { label: t("LowPriority"), value: "LOW" },
+    { label: t("Today"), value: "TODAY" },
+    { label: t("Repaired"), value: "REPAIRED" },
   ];
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
+        setLoading(true);
         const response = await fetch("/api/getMaintenanceProjects");
         const data = await response.json();
         setAllProjects(data);
       } catch (error) {
-        console.error("Error fetching projects:", error);
+        console.error(t("ErrorFetchingProjects"), error);
       }
+      setLoading(false);
     };
 
     fetchProjects();
@@ -61,19 +69,29 @@ export default function MechanicSelectList() {
   // Filter logic
   useEffect(() => {
     if (!selectedFilter) {
-      setFilteredProjects(allProjects);
+      setFilteredProjects(
+        allProjects.filter((project) => project.repaired === false)
+      );
       return;
     }
 
     if (selectedFilter === "DELAYED") {
       setFilteredProjects(
-        allProjects.filter((project) => project.delay !== null)
+        allProjects.filter(
+          (project) => project.delay !== null && project.repaired === false
+        )
+      );
+    } else if (selectedFilter === "REPAIRED") {
+      setFilteredProjects(
+        allProjects.filter((project) => project.repaired === true)
       );
     } else {
       setFilteredProjects(
         allProjects.filter(
           (project) =>
-            project.priority === selectedFilter && project.delay === null
+            project.priority === selectedFilter &&
+            project.delay === null &&
+            project.repaired === false
         )
       );
     }
@@ -89,7 +107,7 @@ export default function MechanicSelectList() {
         >
           <Images
             titleImg="/plus.svg"
-            titleImgAlt="Add New Repair"
+            titleImgAlt={t("AddNewRepair")}
             className="mx-auto"
           />
         </Buttons>
@@ -110,8 +128,14 @@ export default function MechanicSelectList() {
           ))}
         </Selects>
       </Holds>
-      <Holds className="col-start-1 col-end-6 row-start-2 row-end-9 h-full w-full border-[3px] border-black rounded-[10px]">
-        <SearchAndCheck AllProjects={filteredProjects} />
+      <Holds
+        className={
+          loading
+            ? "col-start-1 col-end-6 row-start-2 row-end-9 h-full w-full border-[3px] border-black rounded-[10px] "
+            : "col-start-1 col-end-6 row-start-2 row-end-9 h-full w-full border-[3px] border-black rounded-[10px]"
+        }
+      >
+        <SearchAndCheck AllProjects={filteredProjects} loading={loading} />
       </Holds>
     </Grids>
   );

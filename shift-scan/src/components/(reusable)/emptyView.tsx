@@ -5,19 +5,19 @@ export default function EmptyView({
   Children,
   TopChild,
   color = "bg-app-gray",
+  size = "w-1/2",
 }: {
   Children?: React.ReactNode;
   TopChild?: React.ReactNode;
   color?: string;
+  size?: string;
 }) {
   return (
-    <Holds
-      className={`${color} rounded-[10px] w-full h-full justify-center items-center`}
-    >
-      <Holds className="w-full h-1/3 justify-end rounded-[10px]  ">
-        {TopChild}
-      </Holds>
-      <Holds className="w-1/2 h-1/3 justify-center rounded-[10px]  ">
+    <Holds className={`${color} rounded-[10px] w-full h-full  relative`}>
+      {TopChild}
+      <Holds
+        className={`${size} absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2`}
+      >
         <Images
           titleImg={"/shiftScanLogoHorizontal.svg"}
           titleImgAlt="personnel"
@@ -25,9 +25,7 @@ export default function EmptyView({
         />
       </Holds>
 
-      <Holds className="w-full h-1/3 justify-start rounded-[10px]  ">
-        {Children}
-      </Holds>
+      {Children}
     </Holds>
   );
 }
