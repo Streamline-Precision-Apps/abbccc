@@ -15,6 +15,7 @@ export async function GET(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  
   try {
     // Fetch sent requests based on `id` and `userId`
     const sentContent = await prisma.timeOffRequestForm.findUnique({
@@ -22,15 +23,9 @@ export async function GET(
         id,
       },
       select: {
-        name: true,
-        requestedStartDate: true,
-        requestedEndDate: true,
-        requestType: true,
-        comment: true,
+        id: true,
         status: true,
-        managerComment: true,
         createdAt: true,
-        decidedBy: true,
         employee: {
           select: {
             id: true,
@@ -38,6 +33,14 @@ export async function GET(
             lastName: true,
           },
         },
+        name: true,
+        requestedStartDate: true,
+        requestedEndDate: true,
+        requestType: true,
+        comment: true,
+        decidedBy: true,
+        managerComment: true,
+        signature: true,
       },
     });
 

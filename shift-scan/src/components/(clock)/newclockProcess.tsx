@@ -223,6 +223,7 @@ export default function NewClockProcess({
         {step === 2 && (
           <CodeStep
             datatype="equipment"
+            handleNextStep={handleNextStep}
             handlePrevStep={handlePrevStep}
             handleScannedPrevStep={handleScannedPrevStep}
             scanned={scanned}

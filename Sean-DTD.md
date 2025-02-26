@@ -46,3 +46,13 @@
 # Februrary 5, 2025 - Wednesday
 ### built/created
 - Worked on inbox section. ( hours)
+
+# Februrary 19, 2025 - Wednesday
+### built/created
+- morning meeting with Devun. (1 hours)
+- Worked on inbox section. I adapted the recieved section to color corrdinate to only show what requests have been approved or denied. I also fixed a bug that makes it so that the manager comments are not shown. (5.5 hours)
+- Made the same changes shown above for the recieved section. (3.5)
+
+# Februrary 26, 2025 - Wednesday
+### built/created
+- Made conceptual design for the timesheet edit section in admins. And started mild construction of it. ( hours)
