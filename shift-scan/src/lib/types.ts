@@ -175,20 +175,22 @@ export type inboxContent = {
   session: Session | null;
 };
 
-export type receivedContent = {
-  employeeName: string | number | readonly string[] | undefined;
+export type ReceivedContent = {
   id: string;
-  date: Date;
+  name: string;
   requestedStartDate: Date;
   requestedEndDate: Date;
   requestType: string;
   comment: string;
   managerComment: string | null;
   status: string;
-  employeeId: string;
   createdAt: Date;
-  updatedAt: Date;
   decidedBy: string | null;
+  employee: {
+    id: string;
+    firstName: string;
+    lastName: string;
+  };
 };
 
 export type sentContent = {
