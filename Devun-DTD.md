@@ -529,4 +529,26 @@ cookies().set({
 
 - Mechanic section - Priority List all page
 - iternatiolization for page
-  `
+
+# February 21-22, Friday & Saturday
+
+- reworked bugs on home dashboard
+- reworked time inputs
+- adopted use of date-fns
+
+# February 24, Monday
+
+### Built and Created
+
+- updated ui structure for dash board based on Zach build
+- started trucking section
+
+# February 25, Tuesday
+
+### Goals
+
+- Get api data for truck area worked out
+- setting data and passing it
+- submitting data to the DB
+
+### Built and Created

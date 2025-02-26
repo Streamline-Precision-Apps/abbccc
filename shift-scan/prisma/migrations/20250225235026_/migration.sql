@@ -307,7 +307,7 @@ CREATE TABLE "Material" (
     "id" TEXT NOT NULL,
     "LocationOfMaterial" TEXT,
     "truckingLogId" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
+    "name" TEXT,
     "quantity" INTEGER,
     "loadType" "LoadType",
     "LoadWeight" DOUBLE PRECISION,
@@ -320,7 +320,7 @@ CREATE TABLE "Material" (
 CREATE TABLE "EquipmentHauled" (
     "id" TEXT NOT NULL,
     "truckingLogId" TEXT NOT NULL,
-    "equipmentId" TEXT NOT NULL,
+    "equipmentId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "EquipmentHauled_pkey" PRIMARY KEY ("id")
@@ -549,7 +549,7 @@ ALTER TABLE "Material" ADD CONSTRAINT "Material_truckingLogId_fkey" FOREIGN KEY 
 ALTER TABLE "EquipmentHauled" ADD CONSTRAINT "EquipmentHauled_truckingLogId_fkey" FOREIGN KEY ("truckingLogId") REFERENCES "TruckingLog"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "EquipmentHauled" ADD CONSTRAINT "EquipmentHauled_equipmentId_fkey" FOREIGN KEY ("equipmentId") REFERENCES "Equipment"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "EquipmentHauled" ADD CONSTRAINT "EquipmentHauled_equipmentId_fkey" FOREIGN KEY ("equipmentId") REFERENCES "Equipment"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UserSettings" ADD CONSTRAINT "UserSettings_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
