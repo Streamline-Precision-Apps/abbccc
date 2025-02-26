@@ -9,7 +9,6 @@ import VerificationStep from "./verification-step";
 import TruckClockInForm from "./truckClockInForm";
 import VerificationEQStep from "./verification-eq-step";
 import { Titles } from "../(reusable)/titles";
-
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { setJobSite, setWorkRole } from "@/actions/cookieActions";
@@ -49,25 +48,22 @@ export default function NewClockProcess({
 }: NewClockProcessProps) {
   // State management
   const { data: session } = useSession();
-
   const [step, setStep] = useState<number>(0);
   const [clockInRole, setClockInRole] = useState<string | undefined>(undefined);
-
   const [numberOfRoles, setNumberOfRoles] = useState(0);
   const [scanned, setScanned] = useState(false);
-
   const t = useTranslations("Clock");
   const router = useRouter();
+  const [laborType, setLaborType] = useState<string>("");
+  // Truck states
+  const [truck, setTruck] = useState<string>("");
+  const [startingMileage, setStartingMileage] = useState<number>(0);
+  // Tasco states
+  const [materialType, setMaterialType] = useState<string>("");
+  const [shiftType, setShiftType] = useState<string>("");
   // Contexts
   const { setScanResult } = useScanData();
   const { setCostCode } = useSavedCostCode();
-
-  const [laborType, setLaborType] = useState<string>("");
-  const [truck, setTruck] = useState<string>("");
-  const [startingMileage, setStartingMileage] = useState<number>(0);
-
-  const [materialType, setMaterialType] = useState<string>("");
-  const [shiftType, setShiftType] = useState<string>("");
 
   // useEffect to reset step and role on mount/unmount
   useEffect(() => {
@@ -132,7 +128,7 @@ export default function NewClockProcess({
     setStep(2);
   };
 
-  // Lets the user return to the prev jobsite
+  // Lets the user return to the previous work after break
   const handleReturn = async () => {
     try {
       // setting the cookies below to fetch the prev TimeSheet
@@ -172,6 +168,7 @@ export default function NewClockProcess({
     }
   };
 
+  // Sets the page to step 4 on a successful scan
   const handleScanJobsite = (type: string) => {
     switch (type) {
       case "general":
@@ -190,17 +187,14 @@ export default function NewClockProcess({
         break;
     }
   };
-
+  // lets the user route back to previous page that calls the Clock Process
   const handleReturnPath = () => {
     return router.push(returnpath);
   };
-  //------------------------------------------------------------------
-  //------------------------------------------------------------------
-  // UseEffect  functions
-  //------------------------------------------------------------------
-  //------------------------------------------------------------------
 
-  // Conditional render for equipment path
+  //Clock out equipment process
+  //-----------------------------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------------------------
   if (type === "equipment") {
     return (
       <>
@@ -244,33 +238,8 @@ export default function NewClockProcess({
       </>
     );
   }
-  /* 
-Clock In Process method 
------------------------------------------------------------------------------------------------
-STEP 0:
-  a: If you switch roles you will be prompted to write a comment in the Multiple role section
-    1: Comment will be saved to local storage and in a context
-  b: You will then will select a role if you have multiple roles
-
-General Role, Mechanic Role, Truck Driver Role, T.A.S.C.O Role: (scanner will be different for each)
-STEP 1:
-  a: Scan a QR code to select a jobsite
-  b: Optional selection of jobsite
-STEP 2: Select a Cost Code for the jobsite selected
-Step 3: Verify page for all Information capture and then submit it to the backend
-step 4: Confirmation page and redirect to dashboard with authorization
-
-
-trucker role:
------------------------------------------------------------------------------------------------
-STEP 1:
-a: scan a QR code to select your truck
-b: optional selection of truck code
-Step 2: scan a QR code to select for driver
-Step 3: Verify page for all Information capture, enter starting mileage, etc and then submit it to the backend
-step 4 : confirmation page and redirect to dashboard with authorization
-*/
-
+  //Clock In Process method
+  //-----------------------------------------------------------------------------------------------
   return (
     <>
       {step === 0 && (

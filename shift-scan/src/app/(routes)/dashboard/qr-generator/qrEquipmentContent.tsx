@@ -171,7 +171,7 @@ export default function QrEquipmentContent() {
           </Holds>
           <Holds className="row-start-6 row-end-7 col-start-1 col-end-3 h-full">
             <Buttons
-              background={selectedEquipment === "" ? "grey" : "orange"}
+              background={selectedEquipment === "" ? "darkGray" : "orange"}
               disabled={!selectedEquipment}
               onClick={handleGenerate}
             >

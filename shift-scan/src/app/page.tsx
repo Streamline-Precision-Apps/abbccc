@@ -23,7 +23,7 @@ export default async function Home() {
   const locale = lang ? lang.value : "en";
 
   return (
-    <Bases>
+    <Bases className="fixed w-full h-full">
       <Contents>
         <Grids rows={"8"} gap={"2"}>
           <Holds position={"row"} background={"white"} className="row-span-1">

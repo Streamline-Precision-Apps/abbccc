@@ -66,7 +66,8 @@ export const JobSiteProvider = ({ children }: { children: ReactNode }) => {
           url === "/clock" ||
           url === "/dashboard/log-new" ||
           url === "/dashboard/switch-jobs" ||
-          url === "/break"
+          url === "/break" ||
+          url === "/dashboard/truckingAssistant"
         ) {
           const response = await fetch("/api/getJobsites");
           const jobSites = await response.json();

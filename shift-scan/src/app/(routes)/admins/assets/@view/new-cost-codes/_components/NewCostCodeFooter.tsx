@@ -24,7 +24,7 @@ export function NewCostCodeFooter({
               console.log("Submitted");
             }}
             disabled={!canSubmit}
-            className={!canSubmit ? "bg-gray-400" : ""}
+            className={!canSubmit ? "bg-app-gray" : ""}
           >
             <Titles size={"h4"}>{t("CreateCostCode")}</Titles>
           </Buttons>

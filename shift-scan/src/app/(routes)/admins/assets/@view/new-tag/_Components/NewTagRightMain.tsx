@@ -14,7 +14,7 @@ export function NewTagMainRight({
   return (
     <Holds background={"white"} className="w-full h-full">
       <Grids rows={"2"} gap={"2"} className="w-full h-full p-2">
-        <Holds className="row-start-1 row-end-2 h-full bg-slate-200 rounded-[10px] overflow-y-auto no-scrollbar">
+        <Holds className="row-start-1 row-end-2 h-full bg-app-gray rounded-[10px] overflow-y-auto no-scrollbar">
           {/* Flex container with flex-wrap */}
           <Holds className="flex flex-row flex-wrap gap-2 w-full p-2 ">
             {selectedJobs.map((item, index) => (
@@ -27,7 +27,7 @@ export function NewTagMainRight({
             ))}
           </Holds>
         </Holds>
-        <Holds className="row-start-2 row-end-3 h-full bg-slate-200 rounded-[10px] overflow-y-auto no-scrollbar">
+        <Holds className="row-start-2 row-end-3 h-full bg-app-gray rounded-[10px] overflow-y-auto no-scrollbar">
           {/* Flex container with flex-wrap */}
           <Holds className="flex flex-row flex-wrap gap-2 w-full p-2  ">
             {selectedCostCodes.map((item, index) => (
