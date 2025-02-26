@@ -3,19 +3,19 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import Sliders from "@/components/(reusable)/sliders";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import MaterialList from "./MaterialList";
 import {
   createEquipmentHauled,
   createHaulingLogs,
 } from "@/actions/truckingActions";
 import EquipmentList from "./EquipmentList";
-import { add } from "date-fns";
-import { createEquipment } from "@/actions/equipmentActions";
+import { m } from "framer-motion";
+
 type EquipmentHauled = {
   id: string;
   truckingLogId: string;
-  equipmentId: string;
+  equipmentId: string | null;
   createdAt: Date;
 };
 
@@ -29,61 +29,97 @@ type Material = {
 };
 
 export default function HaulingLogs({
-  equipmentHauled,
-  setEquipmentHauled,
-  material,
-  setMaterial,
   truckingLog,
-  triggerMaterial,
-  triggerEquipment,
 }: {
-  equipmentHauled: EquipmentHauled[] | undefined;
-  setEquipmentHauled: Dispatch<SetStateAction<EquipmentHauled[] | undefined>>;
-  material: Material[] | undefined;
-  setMaterial: Dispatch<SetStateAction<Material[] | undefined>>;
   truckingLog: string | undefined;
-  triggerMaterial: () => void;
-  triggerEquipment: () => void;
 }) {
   const [activeTab, setActiveTab] = useState<number>(1);
+  const [material, setMaterial] = useState<Material[]>();
+  const [equipmentHauled, setEquipmentHauled] = useState<EquipmentHauled[]>();
 
+  // Material - Only when timeSheetId is available
+  useEffect(() => {
+    const fetchMaterial = async () => {
+      try {
+        console.log("Fetching Material Hauled...");
+        const res = await fetch(`/api/getTruckingLogs/material/${truckingLog}`);
+        if (!res.ok) throw new Error("Failed to fetch Material");
+        const data = await res.json();
+        setMaterial(data);
+        console.log(material);
+      } catch (error) {
+        console.error("Error fetching Material:", error);
+      }
+    };
+
+    fetchMaterial();
+  }, [truckingLog]); // Run only when timeSheetId changes
+
+  // Equipment Hauled - Only when timeSheetId is available
+  useEffect(() => {
+    const fetchEquipmentHauled = async () => {
+      try {
+        console.log("Fetching Equipment Hauled...");
+        const res = await fetch(
+          `/api/getTruckingLogs/equipmentHauled/${truckingLog}`
+        );
+        if (!res.ok) throw new Error("Failed to fetch Equipment Hauled");
+        const data = await res.json();
+        setEquipmentHauled(data);
+        console.log(equipmentHauled);
+      } catch (error) {
+        console.error("Error fetching Equipment Hauled:", error);
+      }
+    };
+
+    fetchEquipmentHauled();
+  }, [truckingLog]); // Run only when timeSheetId changes
+
+  // Add Temporary Equipment
   const addTempEquipmentList = async () => {
     const formData = new FormData();
     formData.append("truckingLogId", truckingLog ?? "");
-    const tempEquipment = await createEquipmentHauled(formData);
-    setEquipmentHauled((prev) => [
-      ...(prev ?? []),
-      {
-        id: tempEquipment.id,
-        truckingLogId: tempEquipment.truckingLogId,
-        equipmentId: "",
-        createdAt: new Date(),
-      },
-    ]);
-    triggerEquipment();
+
+    try {
+      const tempEquipment = await createEquipmentHauled(formData);
+      setEquipmentHauled((prev) => [
+        ...(prev ?? []),
+        {
+          id: tempEquipment.id,
+          truckingLogId: tempEquipment.truckingLogId ?? null,
+          equipmentId: tempEquipment.equipmentId ?? null,
+          createdAt: new Date(),
+        },
+      ]);
+    } catch (error) {
+      console.error("Error adding Equipment:", error);
+    }
   };
 
+  // Add Temporary Material
   const addTempMaterial = async () => {
     const formData = new FormData();
     formData.append("truckingLogId", truckingLog ?? "");
 
-    const tempMaterial = await createHaulingLogs(formData);
-    setMaterial((prev) => [
-      ...(prev ?? []),
-      {
-        id: tempMaterial.id,
-        name: "",
-        LocationOfMaterial: "",
-        truckingLogId: tempMaterial.truckingLogId,
-        quantity: null,
-        loadType: null,
-        LoadWeight: null,
-        createdAt: new Date(),
-      },
-    ]);
-    triggerMaterial();
+    try {
+      const tempMaterial = await createHaulingLogs(formData);
+      setMaterial((prev) => [
+        ...(prev ?? []),
+        {
+          id: tempMaterial.id,
+          name: "",
+          LocationOfMaterial: "",
+          truckingLogId: tempMaterial.truckingLogId,
+          quantity: null,
+          createdAt: new Date(),
+        },
+      ]);
+    } catch (error) {
+      console.error("Error adding Material:", error);
+    }
   };
 
+  // Material Options for Dropdown
   const materialOptions = [
     { value: "Material 1", label: "Material 1" },
     { value: "Material 2", label: "Material 2" },
@@ -107,19 +143,23 @@ export default function HaulingLogs({
               />
             </Holds>
             <Holds size={"20"} className="my-auto">
-              <Buttons
-                background={"green"}
-                className="py-1.5"
-                onClick={
-                  activeTab === 1
-                    ? addTempMaterial
-                    : activeTab === 2
-                    ? addTempEquipmentList
-                    : () => {}
-                }
-              >
-                +
-              </Buttons>
+              {activeTab === 1 ? (
+                <Buttons
+                  background={"green"}
+                  className="py-1.5"
+                  onClick={() => addTempMaterial()}
+                >
+                  +
+                </Buttons>
+              ) : (
+                <Buttons
+                  background={"green"}
+                  className="py-1.5"
+                  onClick={() => addTempEquipmentList()}
+                >
+                  +
+                </Buttons>
+              )}
             </Holds>
           </Holds>
         </Contents>
@@ -137,14 +177,14 @@ export default function HaulingLogs({
               </Holds>
             )}
             {activeTab === 2 && (
-              <>
-                <Holds className="h-full w-full row-start-1 row-end-11">
+              <Holds className="h-full w-full row-start-1 row-end-11 relative">
+                <Contents className="overflow-y-auto no-scrollbar">
                   <EquipmentList
-                    equipmentHauled={equipmentHauled}
+                    equipmentHauled={equipmentHauled || []}
                     setEquipmentHauled={setEquipmentHauled}
                   />
-                </Holds>
-              </>
+                </Contents>
+              </Holds>
             )}
           </Grids>
         </Holds>

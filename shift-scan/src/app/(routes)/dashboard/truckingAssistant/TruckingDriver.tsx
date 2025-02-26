@@ -16,22 +16,6 @@ type StateMileage = {
   createdAt: Date;
 };
 
-type Material = {
-  name: string;
-  id: string;
-  LocationOfMaterial: string | null;
-  truckingLogId: string;
-  quantity: number | null;
-  createdAt: Date;
-};
-
-type EquipmentHauled = {
-  id: string;
-  truckingLogId: string;
-  equipmentId: string;
-  createdAt: Date;
-};
-
 type Refueled = {
   id: string;
   date: Date;
@@ -46,13 +30,8 @@ export default function TruckDriver() {
   const t = useTranslations("TruckingAssistant");
   const [activeTab, setActiveTab] = useState(1);
   const [StateMileage, setStateMileage] = useState<StateMileage>();
-  const [material, setMaterial] = useState<Material[]>();
-  const [equipmentHauled, setEquipmentHauled] = useState<EquipmentHauled[]>();
   const [refuelLogs, setRefuelLogs] = useState<Refueled[]>();
   const [timeSheetId, setTimeSheetId] = useState<string>();
-
-  const [materialTrigger, setMaterialTrigger] = useState(false);
-  const [equipmentTrigger, setEquipmentTrigger] = useState(false);
 
   // Trucking Log - Fetch Once
   useEffect(() => {
@@ -89,56 +68,6 @@ export default function TruckDriver() {
 
     fetchStateMileage();
   }, [timeSheetId]); // Run only when timeSheetId changes
-
-  // Material - Only when timeSheetId is available
-  useEffect(() => {
-    if (!timeSheetId) return; // Exit if timeSheetId is not set
-
-    const fetchMaterial = async () => {
-      try {
-        const res = await fetch(
-          `/api/getTruckingLogs/material/${timeSheetId}`,
-          {
-            next: {
-              tags: ["material"],
-            },
-          }
-        );
-        if (!res.ok) throw new Error("Failed to fetch Material");
-        const data = await res.json();
-        setMaterial(data);
-      } catch (error) {
-        console.error("Error fetching Material:", error);
-      }
-    };
-
-    fetchMaterial();
-  }, [timeSheetId, materialTrigger]); // Run only when timeSheetId changes
-
-  // Equipment Hauled - Only when timeSheetId is available
-  useEffect(() => {
-    if (!timeSheetId) return; // Exit if timeSheetId is not set
-
-    const fetchEquipmentHauled = async () => {
-      try {
-        const res = await fetch(
-          `/api/getTruckingLogs/equipmentHauled/${timeSheetId}`,
-          {
-            next: {
-              tags: ["equipmentHauled"],
-            },
-          }
-        );
-        if (!res.ok) throw new Error("Failed to fetch Equipment Hauled");
-        const data = await res.json();
-        setEquipmentHauled(data);
-      } catch (error) {
-        console.error("Error fetching Equipment Hauled:", error);
-      }
-    };
-
-    fetchEquipmentHauled();
-  }, [timeSheetId, equipmentTrigger]); // Run only when timeSheetId changes
 
   // Refuel Logs - Only when timeSheetId is available
   useEffect(() => {
@@ -197,17 +126,7 @@ export default function TruckDriver() {
             <Titles size={"h4"}>{t("RefuelLogs")}</Titles>
           </NewTab>
         </Holds>
-        {activeTab === 1 && (
-          <HaulingLogs
-            equipmentHauled={equipmentHauled}
-            setEquipmentHauled={setEquipmentHauled}
-            material={material}
-            setMaterial={setMaterial}
-            truckingLog={timeSheetId}
-            triggerMaterial={() => setMaterialTrigger(!materialTrigger)}
-            triggerEquipment={() => setEquipmentTrigger(!equipmentTrigger)}
-          />
-        )}
+        {activeTab === 1 && <HaulingLogs truckingLog={timeSheetId} />}
         {activeTab !== 1 && (
           <Holds
             background={"white"}

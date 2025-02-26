@@ -9,22 +9,22 @@ import { revalidatePath, revalidateTag } from "next/cache";
 export async function createEquipmentHauled(formData: FormData) {
   console.log("Creating hauling logs...");
   console.log(formData);
-  const truckingLogId = formData.get("truckingLogId");
+  const truckingLogId = formData.get("truckingLogId") as string;
 
-  const haulingLog = await prisma.equipmentHauled.create({
+  const equipmentHauled = await prisma.equipmentHauled.create({
     data: {
       truckingLog: {
         connect: {
-          id: truckingLogId as string, // Connect to the existing TruckingLog
+          id: truckingLogId, // Connect to the existing TruckingLog
         },
       },
     },
   });
 
-  console.log(haulingLog);
+  console.log(equipmentHauled);
   revalidatePath("/dashboard/truckingAssistant");
   revalidateTag("equipmentHauled");
-  return haulingLog;
+  return equipmentHauled;
 }
 
 export async function updateEquipmentLogs(formData: FormData) {
@@ -53,19 +53,19 @@ export async function updateEquipmentLogs(formData: FormData) {
       equipmentId: equipmentId,
     },
   });
-
+  revalidateTag("equipmentHauled");
   console.log("New Hauling Log:", haulingLog);
   return haulingLog;
 }
 
 export async function deleteEquipmentHauled(id: string) {
-  console.log("Deleting hauling logs...");
+  console.log("Deleting Equipment hauling logs...");
   console.log(id);
   await prisma.equipmentHauled.delete({
     where: { id },
   });
 
-  revalidateTag("material");
+  revalidateTag("equipmentHauled");
   return true;
 }
 /* MATERIALS Hauled */
@@ -120,7 +120,7 @@ export async function updateHaulingLogs(formData: FormData) {
       truckingLogId,
     },
   });
-
+  revalidateTag("material");
   console.log("New Hauling Log:", haulingLog);
   return haulingLog;
 }

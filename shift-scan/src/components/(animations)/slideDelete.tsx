@@ -41,7 +41,7 @@ export default function SlidingDiv({
       <Images
         titleImg={"/trash.svg"}
         titleImgAlt="trash-icon"
-        className="absolute top-0 right-2 h-full w-10 p-3 z-0"
+        className="absolute top-0 right-2 h-full w-10 p-3 "
       />
 
       {/* Swipable Motion Div */}
@@ -51,7 +51,7 @@ export default function SlidingDiv({
         dragElastic={0} // No bounce back effect
         animate={controls}
         onDragEnd={handleDragEnd}
-        className="relative z-10" // Ensure it stays above the background image
+        className="relative " // Ensure it stays above the background image
       >
         {children}
       </motion.div>
