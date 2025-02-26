@@ -1,5 +1,5 @@
 "use client";
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Holds } from "@/components/(reusable)/holds";
 import { Grids } from "@/components/(reusable)/grids";
 import { Contents } from "@/components/(reusable)/contents";
@@ -51,8 +51,11 @@ export default function TruckDriver() {
   const [refuelLogs, setRefuelLogs] = useState<Refueled[]>();
   const [timeSheetId, setTimeSheetId] = useState<string>();
 
+  const [materialTrigger, setMaterialTrigger] = useState(false);
+  const [equipmentTrigger, setEquipmentTrigger] = useState(false);
+
+  // Trucking Log - Fetch Once
   useEffect(() => {
-    // Trucking Log
     const fetchTruckingLog = async () => {
       try {
         const res = await fetch(`/api/getTruckingLogs/truckingId`);
@@ -65,77 +68,97 @@ export default function TruckDriver() {
     };
 
     fetchTruckingLog();
-  }, []);
+  }, []); // Only run once on mount
 
+  // State Mileage - Only when timeSheetId is available
   useEffect(() => {
-    if (timeSheetId) {
-      // State Mileage
-      const fetchStateMileage = async () => {
-        try {
-          const res = await fetch(
-            `/api/getTruckingLogs/stateMileage/${timeSheetId}`
-          );
-          if (!res.ok) throw new Error("Failed to fetch State Mileage");
-          const data = await res.json();
-          setStateMileage(data);
-        } catch (error) {
-          console.error("Error fetching State Mileage:", error);
-        }
-      };
+    if (!timeSheetId) return; // Exit if timeSheetId is not set
 
-      // Material
-      const fetchMaterial = async () => {
-        try {
-          const res = await fetch(
-            `/api/getTruckingLogs/material/${timeSheetId}`,
-            {
-              next: {
-                tags: ["material"],
-              },
-            }
-          );
-          if (!res.ok) throw new Error("Failed to fetch Material");
-          const data = await res.json();
-          setMaterial(data);
-        } catch (error) {
-          console.error("Error fetching Material:", error);
-        }
-      };
+    const fetchStateMileage = async () => {
+      try {
+        const res = await fetch(
+          `/api/getTruckingLogs/stateMileage/${timeSheetId}`
+        );
+        if (!res.ok) throw new Error("Failed to fetch State Mileage");
+        const data = await res.json();
+        setStateMileage(data);
+      } catch (error) {
+        console.error("Error fetching State Mileage:", error);
+      }
+    };
 
-      // Equipment Hauled
-      const fetchEquipmentHauled = async () => {
-        try {
-          const res = await fetch(
-            `/api/getTruckingLogs/equipmentHauled/${timeSheetId}`
-          );
-          if (!res.ok) throw new Error("Failed to fetch Equipment Hauled");
-          const data = await res.json();
-          setEquipmentHauled(data);
-        } catch (error) {
-          console.error("Error fetching Equipment Hauled:", error);
-        }
-      };
+    fetchStateMileage();
+  }, [timeSheetId]); // Run only when timeSheetId changes
 
-      // Refuel Logs
-      const fetchRefuelLogs = async () => {
-        try {
-          const res = await fetch(
-            `/api/getTruckingLogs/refueledLogs/${timeSheetId}`
-          );
-          if (!res.ok) throw new Error("Failed to fetch Refuel Logs");
-          const data = await res.json();
-          setRefuelLogs(data);
-        } catch (error) {
-          console.error("Error fetching Refuel Logs:", error);
-        }
-      };
+  // Material - Only when timeSheetId is available
+  useEffect(() => {
+    if (!timeSheetId) return; // Exit if timeSheetId is not set
 
-      fetchStateMileage();
-      fetchMaterial();
-      fetchEquipmentHauled();
-      fetchRefuelLogs();
-    }
-  }, [timeSheetId]);
+    const fetchMaterial = async () => {
+      try {
+        const res = await fetch(
+          `/api/getTruckingLogs/material/${timeSheetId}`,
+          {
+            next: {
+              tags: ["material"],
+            },
+          }
+        );
+        if (!res.ok) throw new Error("Failed to fetch Material");
+        const data = await res.json();
+        setMaterial(data);
+      } catch (error) {
+        console.error("Error fetching Material:", error);
+      }
+    };
+
+    fetchMaterial();
+  }, [timeSheetId, materialTrigger]); // Run only when timeSheetId changes
+
+  // Equipment Hauled - Only when timeSheetId is available
+  useEffect(() => {
+    if (!timeSheetId) return; // Exit if timeSheetId is not set
+
+    const fetchEquipmentHauled = async () => {
+      try {
+        const res = await fetch(
+          `/api/getTruckingLogs/equipmentHauled/${timeSheetId}`,
+          {
+            next: {
+              tags: ["equipmentHauled"],
+            },
+          }
+        );
+        if (!res.ok) throw new Error("Failed to fetch Equipment Hauled");
+        const data = await res.json();
+        setEquipmentHauled(data);
+      } catch (error) {
+        console.error("Error fetching Equipment Hauled:", error);
+      }
+    };
+
+    fetchEquipmentHauled();
+  }, [timeSheetId, equipmentTrigger]); // Run only when timeSheetId changes
+
+  // Refuel Logs - Only when timeSheetId is available
+  useEffect(() => {
+    if (!timeSheetId) return; // Exit if timeSheetId is not set
+
+    const fetchRefuelLogs = async () => {
+      try {
+        const res = await fetch(
+          `/api/getTruckingLogs/refueledLogs/${timeSheetId}`
+        );
+        if (!res.ok) throw new Error("Failed to fetch Refuel Logs");
+        const data = await res.json();
+        setRefuelLogs(data);
+      } catch (error) {
+        console.error("Error fetching Refuel Logs:", error);
+      }
+    };
+
+    fetchRefuelLogs();
+  }, [timeSheetId]); // Run only when timeSheetId changes
 
   return (
     <Holds className="h-full w-full ">
@@ -181,6 +204,8 @@ export default function TruckDriver() {
             material={material}
             setMaterial={setMaterial}
             truckingLog={timeSheetId}
+            triggerMaterial={() => setMaterialTrigger(!materialTrigger)}
+            triggerEquipment={() => setEquipmentTrigger(!equipmentTrigger)}
           />
         )}
         {activeTab !== 1 && (
