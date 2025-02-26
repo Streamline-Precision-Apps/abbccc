@@ -155,7 +155,7 @@ model Material {
 model EquipmentHauled {
     id            String   @id @default(uuid())
     truckingLogId String
-    equipmentId   String
+    equipmentId   String?
     createdAt     DateTime @default(now())
 
     truckingLog TruckingLog? @relation(fields: [truckingLogId], references: [id])

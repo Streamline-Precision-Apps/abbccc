@@ -3,15 +3,22 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import Sliders from "@/components/(reusable)/sliders";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import MaterialList from "./MaterialList";
-import { createHaulingLogs } from "@/actions/truckingActions";
+import {
+  createEquipmentHauled,
+  createHaulingLogs,
+} from "@/actions/truckingActions";
+import EquipmentList from "./EquipmentList";
+import { add } from "date-fns";
+import { createEquipment } from "@/actions/equipmentActions";
 type EquipmentHauled = {
   id: string;
   truckingLogId: string;
   equipmentId: string;
   createdAt: Date;
 };
+
 type Material = {
   name: string;
   id: string;
@@ -27,16 +34,34 @@ export default function HaulingLogs({
   material,
   setMaterial,
   truckingLog,
+  triggerMaterial,
+  triggerEquipment,
 }: {
   equipmentHauled: EquipmentHauled[] | undefined;
-  setEquipmentHauled: React.Dispatch<
-    React.SetStateAction<EquipmentHauled[] | undefined>
-  >;
+  setEquipmentHauled: Dispatch<SetStateAction<EquipmentHauled[] | undefined>>;
   material: Material[] | undefined;
-  setMaterial: React.Dispatch<React.SetStateAction<Material[] | undefined>>;
+  setMaterial: Dispatch<SetStateAction<Material[] | undefined>>;
   truckingLog: string | undefined;
+  triggerMaterial: () => void;
+  triggerEquipment: () => void;
 }) {
   const [activeTab, setActiveTab] = useState<number>(1);
+
+  const addTempEquipmentList = async () => {
+    const formData = new FormData();
+    formData.append("truckingLogId", truckingLog ?? "");
+    const tempEquipment = await createEquipmentHauled(formData);
+    setEquipmentHauled((prev) => [
+      ...(prev ?? []),
+      {
+        id: tempEquipment.id,
+        truckingLogId: tempEquipment.truckingLogId,
+        equipmentId: "",
+        createdAt: new Date(),
+      },
+    ]);
+    triggerEquipment();
+  };
 
   const addTempMaterial = async () => {
     const formData = new FormData();
@@ -56,6 +81,7 @@ export default function HaulingLogs({
         createdAt: new Date(),
       },
     ]);
+    triggerMaterial();
   };
 
   const materialOptions = [
@@ -84,7 +110,13 @@ export default function HaulingLogs({
               <Buttons
                 background={"green"}
                 className="py-1.5"
-                onClick={addTempMaterial}
+                onClick={
+                  activeTab === 1
+                    ? addTempMaterial
+                    : activeTab === 2
+                    ? addTempEquipmentList
+                    : () => {}
+                }
               >
                 +
               </Buttons>
@@ -107,8 +139,10 @@ export default function HaulingLogs({
             {activeTab === 2 && (
               <>
                 <Holds className="h-full w-full row-start-1 row-end-11">
-                  {/* equipmentHauled={equipmentHauled}
-                setEquipmentHauled={setEquipmentHauled} */}
+                  <EquipmentList
+                    equipmentHauled={equipmentHauled}
+                    setEquipmentHauled={setEquipmentHauled}
+                  />
                 </Holds>
               </>
             )}
