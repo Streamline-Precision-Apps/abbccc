@@ -29,6 +29,7 @@ export default function TascoDashboardView({
   permission,
   handleShowAdditionalButtons,
   logs,
+  laborType,
 }: {
   additionalButtonsType: string | null;
   isModalOpen: boolean;
@@ -44,12 +45,13 @@ export default function TascoDashboardView({
   currentView: string | null;
   handleShowAdditionalButtons: (button: string) => void;
   logs: LogItem[];
+  laborType: string;
 }) {
   const modalState = useModalState();
   return (
     <>
       <Contents width={"section"} className="py-5">
-        <Grids cols={"2"} rows={permission !== "USER" ? "4" : "3"} gap={"5"}>
+        <Grids cols={"2"} rows={permission !== "USER" ? "3" : "3"} gap={"5"}>
           {/* Render buttons based on state */}
           {additionalButtonsType === "equipment" ? (
             <Holds
@@ -83,7 +85,18 @@ export default function TascoDashboardView({
             </Holds>
           ) : (
             <>
-              <TascoBtn permission={permission} view={"tasco"} />
+              <TascoBtn
+                permission={permission}
+                view={"tasco"}
+                laborType={laborType}
+              />
+              <SwitchJobsBtn
+                {...modalState}
+                handleShowManagerButtons={handleShowManagerButtons}
+                permission={permission}
+                logs={logs}
+                laborType={laborType}
+              />
               {permission !== "USER" && !additionalButtonsType && (
                 <GeneratorBtn />
               )}
@@ -91,19 +104,11 @@ export default function TascoDashboardView({
                 <MyTeamWidget />
               )}
 
-              <FormsBtn permission={permission} view={"tasco"} />
-
-              <SwitchJobsBtn
-                {...modalState}
-                handleShowManagerButtons={handleShowManagerButtons}
-                permission={permission}
-                logs={logs}
-              />
-
               <ClockOutBtn
                 handleShowAdditionalButtons={handleShowAdditionalButtons}
                 permission={permission}
-                View={"mechanic"}
+                laborType={laborType}
+                View={"tasco"}
               />
             </>
           )}

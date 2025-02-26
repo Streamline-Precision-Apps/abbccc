@@ -47,6 +47,7 @@ type props = {
   session: Session;
   view: string;
   mechanicProjectID: string;
+  laborType: string;
 };
 
 // Extracted custom hook for fetching logs
@@ -89,6 +90,7 @@ export default function DbWidgetSection({
   session,
   view,
   mechanicProjectID,
+  laborType,
 }: props) {
   const permission = session.user.permission;
   const [logs, setLogs] = useState<LogItem[]>([]);
@@ -164,6 +166,7 @@ export default function DbWidgetSection({
           logs={logs}
           permission={permission}
           currentView={currentView}
+          laborType={laborType}
         />
       );
     case "truck":
@@ -179,6 +182,7 @@ export default function DbWidgetSection({
           additionalButtonsType={additionalButtonsType}
           logs={logs}
           permission={permission}
+          laborType={laborType}
         />
       );
     case "mechanic":
@@ -195,6 +199,7 @@ export default function DbWidgetSection({
           logs={logs}
           permission={permission}
           mechanicProjectID={mechanicProjectID}
+          laborType={laborType}
         />
       );
     case "general":
