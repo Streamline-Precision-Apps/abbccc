@@ -36,7 +36,7 @@ export default function SlidingDiv({
   };
 
   return (
-    <Holds className="w-full h-fit bg-app-red rounded-[10px] relative overflow-hidden">
+    <Holds className="w-full h-fit mb-4 bg-app-red rounded-[10px] relative overflow-hidden">
       {/* Image in Background */}
       <Images
         titleImg={"/trash.svg"}

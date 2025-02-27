@@ -7,6 +7,8 @@ import { useTranslations } from "next-intl";
 import { NewTab } from "@/components/(reusable)/newTabs";
 import { Titles } from "@/components/(reusable)/titles";
 import HaulingLogs from "./components/HaulingLogs";
+import TruckDriverNotes from "./components/TruckDriverNotes";
+import StateLog from "./components/StateLog";
 
 type StateMileage = {
   id: string;
@@ -32,7 +34,8 @@ export default function TruckDriver() {
   const [StateMileage, setStateMileage] = useState<StateMileage>();
   const [refuelLogs, setRefuelLogs] = useState<Refueled[]>();
   const [timeSheetId, setTimeSheetId] = useState<string>();
-
+  const [endMileage, setEndMileage] = useState<number | null>(null);
+  const [notes, setNotes] = useState<string>("");
   // Trucking Log - Fetch Once
   useEffect(() => {
     const fetchTruckingLog = async () => {
@@ -89,6 +92,33 @@ export default function TruckDriver() {
     fetchRefuelLogs();
   }, [timeSheetId]); // Run only when timeSheetId changes
 
+  // Fetch Ending Mileage and Notes
+  useEffect(() => {
+    if (!timeSheetId) return;
+
+    const fetchData = async () => {
+      try {
+        const [mileageRes, notesRes] = await Promise.all([
+          fetch(`/api/getTruckingLogs/endingMileage/${timeSheetId}`),
+          fetch(`/api/getTruckingLogs/notes/${timeSheetId}`),
+        ]);
+
+        if (!mileageRes.ok) throw new Error("Failed to fetch Mileage");
+        if (!notesRes.ok) throw new Error("Failed to fetch Notes");
+
+        const mileageData = await mileageRes.json();
+        const notesData = await notesRes.json();
+
+        setEndMileage(mileageData.endingMileage || null);
+        setNotes(notesData.comment || "");
+      } catch (error) {
+        console.error("Error fetching Data:", error);
+      }
+    };
+
+    fetchData();
+  }, [timeSheetId]);
+
   return (
     <Holds className="h-full w-full ">
       <Grids rows={"10"} className="h-full w-full">
@@ -133,8 +163,21 @@ export default function TruckDriver() {
             className="rounded-t-none row-span-9 h-full overflow-y-hidden no-scrollbar"
           >
             <Contents width={"section"} className="py-5">
-              {activeTab === 2 && <></>}
-              {activeTab === 3 && <></>}
+              {activeTab === 2 && (
+                <TruckDriverNotes
+                  truckingLog={timeSheetId}
+                  notes={notes}
+                  setNotes={setNotes}
+                  endMileage={endMileage}
+                  setEndMileage={setEndMileage}
+                />
+              )}
+              {activeTab === 3 && (
+                <StateLog
+                  StateMileage={StateMileage}
+                  setStateMileage={setStateMileage}
+                />
+              )}
               {activeTab === 4 && <></>}
             </Contents>
           </Holds>

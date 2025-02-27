@@ -1,143 +1,175 @@
 "use client";
 import {
   deleteEquipmentHauled,
-  updateHaulingLogs,
+  updateEquipmentLogsEquipment,
+  updateEquipmentLogsLocation,
 } from "@/actions/truckingActions";
-import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
-import {
-  ChangeEvent,
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useState,
-} from "react";
-import debounce from "lodash.debounce";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import SlidingDiv from "@/components/(animations)/slideDelete";
-import { NModals } from "@/components/(reusable)/newmodals";
-import { useDBEquipment } from "@/app/context/dbCodeContext";
-import { JobCode } from "@/lib/types";
-import { Buttons } from "@/components/(reusable)/buttons";
-import SearchBar from "@/components/(search)/searchbar";
-import { Grids } from "@/components/(reusable)/grids";
-import { Titles } from "@/components/(reusable)/titles";
+import { useDBEquipment, useDBJobsite } from "@/app/context/dbCodeContext";
+import SelectableModal from "@/components/(reusable)/selectableModal";
 
 type EquipmentHauled = {
   id: string;
   truckingLogId: string;
   equipmentId: string | null;
   createdAt: Date;
+  jobSiteId: string | null;
+  equipment: {
+    name: string | null;
+  };
+  jobSite: {
+    name: string | null;
+  };
+};
+
+type Option = {
+  id: string;
+  name: string;
+  qrId: string;
 };
 
 export default function EquipmentList({
   equipmentHauled,
   setEquipmentHauled,
+  truckingLog,
 }: {
   equipmentHauled: EquipmentHauled[];
   setEquipmentHauled: Dispatch<SetStateAction<EquipmentHauled[] | undefined>>;
+  truckingLog: string;
 }) {
   const { equipmentResults } = useDBEquipment();
-
-  // Local state to track changes
-  const [editedEquipmentOptions, setEditedEquipmentOptions] =
+  const { jobsiteResults } = useDBJobsite();
+  const [editedEquipmentHauled, setEditedEquipmentHauled] =
     useState<EquipmentHauled[]>(equipmentHauled);
-
-  useEffect(() => {
-    setEditedEquipmentOptions(equipmentHauled);
-  }, [equipmentHauled]);
-
-  const [isLocationOpen, setIsLocationOpen] = useState<boolean>(false);
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const [tempLocation, setTempLocation] = useState<string>(""); // Temporary state for modal
-  const [tempLocationSelected, setTempLocationSelected] =
-    useState<boolean>(false);
-  const [searchTerm, setSearchTerm] = useState("");
-
-  // Filtered options for job sites
-  const filteredEquipment = equipmentResults.filter(
-    (equipment) =>
-      equipment.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      equipment.qrId.toLowerCase().includes(searchTerm.toLowerCase())
+  // manageState and Modals
+  const [isEquipmentOpen, setIsEquipmentOpen] = useState(false);
+  const [isLocationOpen, setIsLocationOpen] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState<string | null>(null);
+  const [selectedEquipment, setSelectedEquipment] = useState<Option | null>(
+    null
   );
+  const [selectedLocation, setSelectedLocation] = useState<Option | null>(null);
 
-  // Debounced server update function
-  const updateHaulingLog = debounce(
-    async (updatedEquipmentHauled: EquipmentHauled) => {
-      const formData = new FormData();
-      formData.append("id", updatedEquipmentHauled.id);
+  // handle select and update
+  const handleSelectEquipment = (option: Option) => {
+    setSelectedEquipment(option);
 
-      await updateHaulingLogs(formData);
-    },
-    1000
-  );
+    if (selectedIndex) {
+      const index = editedEquipmentHauled.findIndex(
+        (item) => item.id === selectedIndex
+      );
 
-  // Handle Input Change
-  const handleChange = (
-    index: number,
-    field: keyof EquipmentHauled,
-    value: string | number
-  ) => {
-    const updatedEquipmentHauled = [...editedEquipmentOptions];
-    if (updatedEquipmentHauled[index]) {
-      updatedEquipmentHauled[index] = {
-        ...updatedEquipmentHauled[index],
-        [field]: value,
-      };
-      setEditedEquipmentOptions(updatedEquipmentHauled);
-      setEquipmentHauled(updatedEquipmentHauled); // Sync with parent state
+      if (index !== -1) {
+        const updatedHauled = [...editedEquipmentHauled];
+        updatedHauled[index] = {
+          ...updatedHauled[index],
+          equipmentId: option.id,
+          equipment: {
+            name: option.name, // Update the name here
+          },
+        };
 
-      // Trigger server action to update database
-      updateHaulingLog(updatedEquipmentHauled[index]);
+        setEditedEquipmentHauled(updatedHauled);
+        setEquipmentHauled(updatedHauled);
+      }
     }
   };
-  // Handle Delete
-  const handleDelete = async (equipmentHauledId: string) => {
-    const updatedEquipmentHauled = editedEquipmentOptions.filter(
-      (equipmentHauled) => equipmentHauled.id !== equipmentHauledId
-    );
-    setEditedEquipmentOptions(updatedEquipmentHauled);
-    setEquipmentHauled(updatedEquipmentHauled); // Sync with parent state
 
-    const isDeleted = await deleteEquipmentHauled(equipmentHauledId);
+  const handleSelectLocation = (option: Option) => {
+    setSelectedLocation(option);
+
+    if (selectedIndex) {
+      const index = editedEquipmentHauled.findIndex(
+        (item) => item.id === selectedIndex
+      );
+
+      if (index !== -1) {
+        const updatedHauled = [...editedEquipmentHauled];
+        updatedHauled[index] = {
+          ...updatedHauled[index],
+          jobSiteId: option.id,
+          jobSite: {
+            name: option.name, // Update the name here
+          },
+        };
+        setEditedEquipmentHauled(updatedHauled);
+        setEquipmentHauled(updatedHauled);
+      }
+    }
+  };
+
+  // handle delete, update, and create
+  //delete
+  const handleDelete = async (id: string) => {
+    const updatedMaterials = editedEquipmentHauled.filter(
+      (mat: EquipmentHauled) => mat.id !== id
+    );
+    setEditedEquipmentHauled(updatedMaterials);
+    setEquipmentHauled(updatedMaterials);
+
+    const isDeleted = await deleteEquipmentHauled(id);
 
     if (!isDeleted) {
       alert("Failed to delete. Please try again.");
-      setEditedEquipmentOptions(equipmentHauled || []);
+      setEditedEquipmentHauled(equipmentHauled || []);
       setEquipmentHauled(equipmentHauled);
     }
   };
-  // Handle Location Selection
-  const handleLocationSelect = (option: JobCode) => {
-    setTempLocation(option.name); // Set temporary location
-    setTempLocationSelected(true);
-  };
-  const handleLocationUnselect = () => {
-    setTempLocation(""); // Clear temporary location
-    setTempLocationSelected(false);
-  };
-  // Handle Search Input Change
-  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-  };
-  // Handle Submit
-  const handleSubmit = () => {
-    if (selectedIndex !== null) {
-      handleChange(selectedIndex, "equipmentId", tempLocation);
-      setIsLocationOpen(false);
+
+  const handleUpdateEquipment = async () => {
+    try {
+      // Create a FormData object
+      const formData = new FormData();
+      formData.append("id", selectedIndex?.toString() || "");
+      formData.append("truckingLogId", truckingLog);
+      formData.append(
+        "equipmentId",
+        selectedEquipment?.id || editedEquipmentHauled[0].equipmentId || ""
+      );
+      // Wait for the database update to complete
+      await updateEquipmentLogsEquipment(formData);
+      // Clear selections after successful submission
+      setSelectedEquipment(null);
+      setSelectedLocation(null);
+      setSelectedIndex(null);
+    } catch (error) {
+      console.error("Error submitting data:", error);
     }
   };
-  // Handle Cancel
-  const handleCancel = () => {
-    setIsLocationOpen(false);
-    setTempLocation(""); // Clear temporary state
-    setTempLocationSelected(false);
-    setSelectedIndex(null); // Clear selected index
+
+  const handleUpdateLocation = async () => {
+    try {
+      // Create a FormData object
+      const formData = new FormData();
+      formData.append("id", selectedIndex?.toString() || "");
+      formData.append("truckingLogId", truckingLog);
+      formData.append(
+        "jobSiteId",
+        selectedLocation?.id || editedEquipmentHauled[0].jobSiteId || ""
+      );
+
+      // Wait for the database update to complete
+      await updateEquipmentLogsLocation(formData);
+      // Clear selections after successful submission
+      setSelectedEquipment(null);
+      setSelectedLocation(null);
+      setSelectedIndex(null);
+    } catch (error) {
+      console.error("Error submitting data:", error);
+    }
   };
+
+  // reloads the sliding div
+  useEffect(() => {
+    setEditedEquipmentHauled(equipmentHauled || []);
+  }, [equipmentHauled]);
 
   return (
     <>
-      {editedEquipmentOptions.map((mat: EquipmentHauled, index) => (
+      {editedEquipmentHauled.map((mat: EquipmentHauled) => (
         <SlidingDiv key={mat.id} onSwipeLeft={() => handleDelete(mat.id)}>
           <Holds
             key={mat.id}
@@ -152,11 +184,17 @@ export default function EquipmentList({
               <Inputs
                 type="text"
                 placeholder="Equipment"
-                value={mat.equipmentId || ""}
-                onChange={(e) =>
-                  handleChange(index, "equipmentId", e.target.value)
+                value={
+                  selectedIndex === mat.id && selectedEquipment
+                    ? selectedEquipment.name
+                    : mat.equipment?.name || ""
                 }
+                onClick={() => {
+                  setIsEquipmentOpen(true);
+                  setSelectedIndex(mat.id);
+                }}
                 className={"border-none text-xs py-2 focus:outline-none "}
+                readOnly
               />
             </Holds>
 
@@ -167,11 +205,14 @@ export default function EquipmentList({
               <Inputs
                 type="text"
                 placeholder="Location"
-                value={""}
+                value={
+                  selectedIndex === mat.id && selectedLocation
+                    ? selectedLocation.name
+                    : mat.jobSite?.name || ""
+                }
                 onClick={() => {
-                  setSelectedIndex(index);
-                  setTempLocation(""); // Initialize temp state
                   setIsLocationOpen(true);
+                  setSelectedIndex(mat.id);
                 }}
                 className="border-none text-xs focus:outline-none cursor-pointer"
                 readOnly
@@ -180,53 +221,33 @@ export default function EquipmentList({
           </Holds>
         </SlidingDiv>
       ))}
+      <SelectableModal
+        isOpen={isEquipmentOpen}
+        handleSave={() => {
+          handleUpdateEquipment();
+          setIsEquipmentOpen(false);
+        }}
+        handleClose={() => setIsEquipmentOpen(false)}
+        handleCancel={() => setSelectedEquipment(null)}
+        selectedValue={selectedEquipment ? selectedEquipment.name : ""}
+        options={equipmentResults}
+        onSelect={handleSelectEquipment}
+        placeholder="Search Equipment"
+      />
 
-      {/* Location Modal */}
-      <NModals size={"xlW"} isOpen={isLocationOpen} handleClose={handleCancel}>
-        <Grids rows={"8"} gap={"3"} className="h-full">
-          <Holds className="row-start-1 row-end-2 h-full">
-            <SearchBar
-              searchTerm={searchTerm}
-              onSearchChange={handleSearchChange}
-              placeholder="Type here"
-              selected={!!tempLocation}
-              clearSelection={() => setTempLocation("")}
-              selectTerm={tempLocation}
-            />
-          </Holds>
-          <Holds className="row-start-2 row-end-8 border-black border-[3px] rounded-[10px] h-full">
-            <Holds className=" overflow-y-auto no-scrollbar p-4">
-              {filteredEquipment.map((option) => (
-                <Buttons
-                  background={
-                    tempLocation === option.name ? "green" : "lightBlue"
-                  }
-                  key={option.qrId}
-                  onClick={() =>
-                    tempLocation === option.name
-                      ? handleLocationUnselect()
-                      : handleLocationSelect(option)
-                  }
-                  className="w-full p-3 mb-4 text-left"
-                >
-                  <Titles size={"h6"}>
-                    {" "}
-                    {option.name} - ({option.qrId})
-                  </Titles>
-                </Buttons>
-              ))}
-            </Holds>
-          </Holds>
-          <Holds position={"row"} className="row-start-8 row-end-9 py-2 gap-4">
-            <Buttons background={"green"} onClick={handleSubmit}>
-              Submit
-            </Buttons>
-            <Buttons background={"red"} onClick={handleCancel}>
-              Cancel
-            </Buttons>
-          </Holds>
-        </Grids>
-      </NModals>
+      <SelectableModal
+        isOpen={isLocationOpen}
+        handleSave={() => {
+          handleUpdateLocation();
+          setIsLocationOpen(false);
+        }}
+        handleCancel={() => setSelectedLocation(null)}
+        handleClose={() => setIsLocationOpen(false)}
+        selectedValue={selectedLocation ? selectedLocation.name : ""}
+        options={jobsiteResults}
+        onSelect={handleSelectLocation}
+        placeholder="Search Equipment"
+      />
     </>
   );
 }

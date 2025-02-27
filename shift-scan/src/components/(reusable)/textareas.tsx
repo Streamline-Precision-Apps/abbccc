@@ -4,7 +4,7 @@ import { TextareaHTMLAttributes, FC, ChangeEventHandler } from "react";
 import { cn } from "@/components/(reusable)/utils";
 
 const TextAreaVariants = cva(
-  "items-center justify-center text-black text-lg rounded-xl", //this applies to all variants
+  "items-center justify-center text-black text-lg rounded-xl ", //this applies to all variants
   {
     variants: {
       variant: {
