@@ -3,20 +3,26 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import Sliders from "@/components/(reusable)/sliders";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import MaterialList from "./MaterialList";
 import {
   createEquipmentHauled,
   createHaulingLogs,
 } from "@/actions/truckingActions";
 import EquipmentList from "./EquipmentList";
-import { m } from "framer-motion";
 
 type EquipmentHauled = {
   id: string;
   truckingLogId: string;
   equipmentId: string | null;
   createdAt: Date;
+  jobSiteId: string | null;
+  equipment: {
+    name: string | null;
+  };
+  jobSite: {
+    name: string | null;
+  };
 };
 
 type Material = {
@@ -88,7 +94,14 @@ export default function HaulingLogs({
           id: tempEquipment.id,
           truckingLogId: tempEquipment.truckingLogId ?? null,
           equipmentId: tempEquipment.equipmentId ?? null,
+          jobSiteId: tempEquipment.jobSiteId ?? null,
           createdAt: new Date(),
+          equipment: {
+            name: "",
+          },
+          jobSite: {
+            name: "",
+          },
         },
       ]);
     } catch (error) {
@@ -182,6 +195,7 @@ export default function HaulingLogs({
                   <EquipmentList
                     equipmentHauled={equipmentHauled || []}
                     setEquipmentHauled={setEquipmentHauled}
+                    truckingLog={truckingLog ?? ""}
                   />
                 </Contents>
               </Holds>

@@ -14,9 +14,7 @@ export async function createEquipmentHauled(formData: FormData) {
   const equipmentHauled = await prisma.equipmentHauled.create({
     data: {
       truckingLog: {
-        connect: {
-          id: truckingLogId, // Connect to the existing TruckingLog
-        },
+        connect: { id: truckingLogId },
       },
     },
   });
@@ -27,35 +25,48 @@ export async function createEquipmentHauled(formData: FormData) {
   return equipmentHauled;
 }
 
-export async function updateEquipmentLogs(formData: FormData) {
+export async function updateEquipmentLogsLocation(formData: FormData) {
+  console.log("Updating hauling logs...");
+  console.log(formData);
   const id = formData.get("id") as string;
   const equipmentId = formData.get("equipmentId") as string;
   const truckingLogId = formData.get("truckingLogId") as string;
 
-  // If ID is provided, update the existing log
-  if (id) {
-    const updatedLog = await prisma.equipmentHauled.update({
-      where: { id },
-      data: {
-        truckingLogId,
-        equipmentId,
-      },
-    });
-
-    console.log("Updated Hauling Log:", updatedLog);
-    return updatedLog;
-  }
-
-  // If no ID, create a new log
-  const haulingLog = await prisma.equipmentHauled.create({
+  // Use a nested update to update the related Equipment's jobsiteId in one call.
+  const updatedLog = await prisma.equipmentHauled.update({
+    where: { id },
     data: {
       truckingLogId,
-      equipmentId: equipmentId,
+      jobSiteId: equipmentId,
     },
   });
+  // Create EquipmentLocationLog for the updated jobSiteId
+
+  console.log(updatedLog);
   revalidateTag("equipmentHauled");
-  console.log("New Hauling Log:", haulingLog);
-  return haulingLog;
+  revalidatePath("/dashboard/truckingAssistant");
+  return updatedLog;
+}
+
+export async function updateEquipmentLogsEquipment(formData: FormData) {
+  console.log("Updating hauling logs...");
+  console.log(formData);
+  const id = formData.get("id") as string;
+  const equipmentId = formData.get("equipmentId") as string;
+  const truckingLogId = formData.get("truckingLogId") as string;
+
+  // Use a nested update to update the related Equipment's jobsiteId in one call.
+  const updatedLog = await prisma.equipmentHauled.update({
+    where: { id },
+    data: {
+      truckingLogId,
+      equipmentId,
+    },
+  });
+  console.log(updatedLog);
+  revalidateTag("equipmentHauled");
+  revalidatePath("/dashboard/truckingAssistant");
+  return updatedLog;
 }
 
 export async function deleteEquipmentHauled(id: string) {
@@ -68,6 +79,7 @@ export async function deleteEquipmentHauled(id: string) {
   revalidateTag("equipmentHauled");
   return true;
 }
+
 /* MATERIALS Hauled */
 //------------------------------------------------------------------
 //------------------------------------------------------------------
@@ -135,3 +147,34 @@ export async function deleteHaulingLogs(id: string) {
   revalidateTag("material");
   return true;
 }
+/* Update */
+//------------------------------------------------------------------
+//------------------------------------------------------------------
+
+export const updateTruckingMileage = async (formData: FormData) => {
+  const id = formData.get("id") as string;
+  const endingMileage = parseInt(formData.get("endingMileage") as string);
+
+  const updatedLog = await prisma.truckingLog.update({
+    where: { id },
+    data: {
+      endingMileage,
+    },
+  });
+  return updatedLog;
+};
+
+export const updateTruckDrivingNotes = async (formData: FormData) => {
+  const id = formData.get("id") as string;
+  const comment = formData.get("comment") as string;
+
+  const updatedLog = await prisma.truckingLog.update({
+    where: { id },
+    data: {
+      comment,
+    },
+  });
+
+  revalidatePath("/dashboard/truckingAssistant");
+  return updatedLog;
+};
