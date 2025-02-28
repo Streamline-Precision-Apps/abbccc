@@ -3,7 +3,7 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import Sliders from "@/components/(reusable)/sliders";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, use, useEffect, useState } from "react";
 import MaterialList from "./MaterialList";
 import {
   createEquipmentHauled,
@@ -54,6 +54,10 @@ export default function OperatorHaulingLogs({
       console.error("Error adding Material:", error);
     }
   };
+
+  useEffect(() => {
+    setMaterial(material ?? []);
+  }, [material]);
 
   // Material Options for Dropdown
   const materialOptions = [
