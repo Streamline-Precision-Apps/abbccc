@@ -96,6 +96,7 @@ export default function MechanicDashboardView({
                 mechanicProjectID={mechanicProjectID}
                 logs={logs}
                 laborType={laborType}
+                view={"mechanic"}
               />
               {permission !== "USER" && !additionalButtonsType && (
                 <GeneratorBtn />

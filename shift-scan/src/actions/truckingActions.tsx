@@ -97,7 +97,6 @@ export async function createHaulingLogs(formData: FormData) {
 
   console.log(haulingLog);
   revalidatePath("/dashboard/truckingAssistant");
-  revalidateTag("material");
   return haulingLog;
 }
 
@@ -262,6 +261,7 @@ export async function updateRefuelLog(formData: FormData) {
 
 export async function deleteRefuelLog(id: string) {
   console.log("Deleting refuel logs:", id);
+  console.log("id", id);
   await prisma.refueled.delete({
     where: { id },
   });

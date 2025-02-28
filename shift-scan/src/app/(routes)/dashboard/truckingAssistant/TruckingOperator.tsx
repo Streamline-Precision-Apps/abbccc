@@ -8,6 +8,7 @@ import { NewTab } from "@/components/(reusable)/newTabs";
 import { Titles } from "@/components/(reusable)/titles";
 import RefuelLayout from "./components/RefuelLayout";
 import OperatorHaulingLogs from "./components/OperatorHaulingLogs";
+import TruckDriverNotes from "./components/TruckDriverNotes";
 
 type Refueled = {
   id: string;
@@ -60,16 +61,15 @@ export default function TruckOperator() {
         const endpoints = [
           `/api/getTruckingLogs/notes/${timeSheetId}`,
           `/api/getTruckingLogs/refueledLogs/${timeSheetId}`,
-
           `/api/getTruckingLogs/material/${timeSheetId}`,
         ];
 
         const responses = await Promise.all(endpoints.map((url) => fetch(url)));
         const data = await Promise.all(responses.map((res) => res.json()));
 
-        setNotes(data[1].comment || "");
-        setRefuelLogs(data[2]);
-        setMaterial(data[3]);
+        setNotes(data[0].comment || "");
+        setRefuelLogs(data[1]);
+        setMaterial(data[2]);
       } catch (error) {
         console.error("Error fetching Data:", error);
       } finally {
@@ -128,7 +128,15 @@ export default function TruckOperator() {
                 truckingLog={timeSheetId}
               />
             )}
-            {activeTab === 2 && <></>}
+            {activeTab === 2 && (
+              <Holds className="h-full w-full relative pt-2">
+                <TruckDriverNotes
+                  truckingLog={timeSheetId}
+                  notes={notes}
+                  setNotes={setNotes}
+                />
+              </Holds>
+            )}
             {activeTab === 3 && (
               <RefuelLayout
                 truckingLog={timeSheetId}
