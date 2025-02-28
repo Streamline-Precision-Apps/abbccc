@@ -55,4 +55,18 @@
 
 # Februrary 26, 2025 - Wednesday
 ### built/created
-- Made conceptual design for the timesheet edit section in admins. And started mild construction of it. ( hours)
+- Made conceptual design for the timesheet edit section in admins. And started mild construction of it. (2.5 hours)
+- Morning meeting with Devun. (1 hours)
+- Worked on Tasco dashboard section. (3 hours)
+- Worked on constructing some components for Tasco. (3.5)
+
+# Februrary 27, 2025 - Thursday
+### built/created
+- Meeting with Devun. (1 hours)
+- Worked on Tasco dashboard section. (1.5 hours)
+- Implemented tabs for Tasco (2 hours)
+
+# Februrary 28, 2025 - Friday
+### built/created
+- Fixing tabs section spacing and general looks for Tasco. Also tweaked the layouts to try to make it look right. (1.5 hours)
+- Meeting with Devun. (1 hours)

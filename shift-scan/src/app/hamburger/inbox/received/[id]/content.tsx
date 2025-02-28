@@ -299,7 +299,7 @@ export default function Content({ params }: Props) {
         <Forms onSubmit={handleDenial}>
           <Buttons
             background={
-              formState[0]?.managerComment?.length >= 4 ? "red" : "grey"
+              formState[0]?.managerComment?.length >= 4 ? "red" : "lightGray"
             }
             type="submit"
             disabled={!(formState[0]?.managerComment?.length >= 4)}
@@ -310,7 +310,7 @@ export default function Content({ params }: Props) {
         <Forms onSubmit={handleApproval}>
           <Buttons
             background={
-              formState[0]?.managerComment?.length >= 4 ? "green" : "grey"
+              formState[0]?.managerComment?.length >= 4 ? "green" : "lightGray"
             }
             type="submit"
             disabled={!(formState[0]?.managerComment?.length >= 4)}

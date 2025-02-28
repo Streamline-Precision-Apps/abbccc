@@ -36,7 +36,7 @@ export default function SwitchJobsBtn({
         <>
           {laborType === "manualLabor" ? (
             <VerticalLayout
-              text={"ClockOut"}
+              text={"Switch"}
               titleImg={"/jobsite.svg"}
               titleImgAlt={"Job site Icon"}
               color={"orange"}
@@ -50,7 +50,7 @@ export default function SwitchJobsBtn({
             />
           ) : (
             <HorizontalLayout
-              text={"ClockOut"}
+              text={"Switch"}
               titleImg={"/jobsite.svg"}
               titleImgAlt={"Job site Icon"}
               color={"orange"}
@@ -67,7 +67,7 @@ export default function SwitchJobsBtn({
       )}
       {permission !== "USER" && (
         <VerticalLayout
-          text={"ClockOut"}
+          text={"Switch"}
           titleImg={"/jobsite.svg"}
           titleImgAlt={"Job site Icon"}
           color={"orange"}
