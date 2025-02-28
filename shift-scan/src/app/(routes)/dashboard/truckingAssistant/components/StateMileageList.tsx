@@ -37,9 +37,6 @@ export default function StateMileageList({
     StateMileage || []
   );
 
-  // Track which index is being edited for mileage
-  const [debounceIndex, setDebounceIndex] = useState<number | null>(null);
-
   // Handle Delete
   const handleDelete = async (id: string) => {
     const newStateMileage = editedStateMileage.filter((sm) => sm.id !== id);
@@ -77,31 +74,7 @@ export default function StateMileageList({
     newStateMileage[index].stateLineMileage = Number(value);
     setEditedStateMileage(newStateMileage);
     setStateMileage(newStateMileage);
-
-    // Set the debounce index
-    setDebounceIndex(index);
   };
-
-  // Debounce the mileage change using useEffect
-  useEffect(() => {
-    if (debounceIndex === null) return;
-
-    const timeoutId = setTimeout(() => {
-      const formData = new FormData();
-      formData.append("id", editedStateMileage[debounceIndex].id);
-      formData.append("state", editedStateMileage[debounceIndex].state || "");
-      formData.append(
-        "stateLineMileage",
-        editedStateMileage[debounceIndex].stateLineMileage?.toString() || "0"
-      );
-      updateStateMileage(formData);
-
-      // Clear the debounce index
-      setDebounceIndex(null);
-    }, 700);
-
-    return () => clearTimeout(timeoutId);
-  }, [debounceIndex, editedStateMileage]);
 
   useEffect(() => {
     setEditedStateMileage(StateMileage || []);
@@ -148,6 +121,16 @@ export default function StateMileageList({
                   value={sm.stateLineMileage || ""}
                   placeholder="Mileage"
                   onChange={(e) => handleMileageChange(index, e.target.value)}
+                  onBlur={() => {
+                    const formData = new FormData();
+                    formData.append("id", sm.id);
+                    formData.append("state", sm.state || "");
+                    formData.append(
+                      "stateLineMileage",
+                      sm.stateLineMileage?.toString() || "0"
+                    );
+                    updateStateMileage(formData);
+                  }}
                   className={
                     "border-none text-xs py-2 focus:outline-none focus:ring-0"
                   }

@@ -223,3 +223,48 @@ export async function deleteStateMileage(id: string) {
 
   return true;
 }
+
+export async function createRefuelLog(formData: FormData) {
+  console.log("Creating refuel logs...");
+  console.log(formData);
+  const truckingLogId = formData.get("truckingLogId") as string;
+
+  const refueledLogs = await prisma.refueled.create({
+    data: {
+      truckingLogId,
+    },
+  });
+
+  console.log(refueledLogs);
+  revalidatePath("/dashboard/truckingAssistant");
+  return refueledLogs;
+}
+
+export async function updateRefuelLog(formData: FormData) {
+  const id = formData.get("id") as string;
+  const gallonsRefueled =
+    Number(formData.get("gallonsRefueled") as string) || 0;
+  const milesAtfueling = Number(formData.get("milesAtfueling")) || 0;
+
+  // Update the state mileage in the database
+  const updatedStateMileage = await prisma.refueled.update({
+    where: { id },
+    data: {
+      gallonsRefueled,
+      milesAtfueling,
+    },
+  });
+  revalidatePath("/dashboard/truckingAssistant");
+  console.log("Updated State Mileage:", updatedStateMileage);
+
+  return updatedStateMileage;
+}
+
+export async function deleteRefuelLog(id: string) {
+  console.log("Deleting refuel logs:", id);
+  await prisma.refueled.delete({
+    where: { id },
+  });
+
+  return true;
+}
