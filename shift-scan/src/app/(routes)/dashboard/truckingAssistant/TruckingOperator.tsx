@@ -37,6 +37,35 @@ export default function TruckOperator() {
   const [notes, setNotes] = useState<string>("");
   const [material, setMaterial] = useState<Material[]>();
 
+  const [isComplete, setIsComplete] = useState({
+    haulingLogsTab: true,
+    refuelLogsTab: true,
+  });
+
+  const validateCompletion = () => {
+    setIsComplete({
+      haulingLogsTab: Boolean(
+        material &&
+          material.length >= 0 &&
+          material.every(
+            (item) => item.LocationOfMaterial && item.quantity && item.name
+          )
+      ),
+
+      refuelLogsTab: Boolean(
+        refuelLogs &&
+          refuelLogs.length >= 0 &&
+          refuelLogs.every(
+            (item) => item.gallonsRefueled && item.milesAtfueling
+          )
+      ),
+    });
+  };
+
+  useEffect(() => {
+    validateCompletion();
+  }, [material, refuelLogs]);
+
   useEffect(() => {
     const fetchTruckingLog = async () => {
       try {
@@ -92,6 +121,8 @@ export default function TruckOperator() {
             titleImageAlt="Truck"
             onClick={() => setActiveTab(1)}
             isActive={activeTab === 1}
+            isComplete={isComplete.haulingLogsTab}
+            isLoading={isLoading}
           >
             <Titles size={"h4"}>{t("HaulingLogs")}</Titles>
           </NewTab>
@@ -100,6 +131,8 @@ export default function TruckOperator() {
             titleImageAlt="Comment"
             onClick={() => setActiveTab(2)}
             isActive={activeTab === 2}
+            isComplete={true}
+            isLoading={isLoading}
           >
             <Titles size={"h4"}>{t("MyComments")}</Titles>
           </NewTab>
@@ -108,6 +141,8 @@ export default function TruckOperator() {
             titleImageAlt="Refuel"
             onClick={() => setActiveTab(3)}
             isActive={activeTab === 3}
+            isComplete={isComplete.refuelLogsTab}
+            isLoading={isLoading}
           >
             <Titles size={"h4"}>{t("RefuelLogs")}</Titles>
           </NewTab>

@@ -59,7 +59,6 @@ export default function HaulingLogs({
     try {
       const tempEquipment = await createEquipmentHauled(formData);
       setEquipmentHauled((prev) => [
-        ...(prev ?? []),
         {
           id: tempEquipment.id,
           truckingLogId: tempEquipment.truckingLogId ?? null,
@@ -73,6 +72,7 @@ export default function HaulingLogs({
             name: "",
           },
         },
+        ...(prev ?? []),
       ]);
     } catch (error) {
       console.error("Error adding Equipment:", error);
@@ -87,7 +87,6 @@ export default function HaulingLogs({
     try {
       const tempMaterial = await createHaulingLogs(formData);
       setMaterial((prev) => [
-        ...(prev ?? []),
         {
           id: tempMaterial.id,
           name: "",
@@ -96,6 +95,7 @@ export default function HaulingLogs({
           quantity: null,
           createdAt: new Date(),
         },
+        ...(prev ?? []),
       ]);
     } catch (error) {
       console.error("Error adding Material:", error);

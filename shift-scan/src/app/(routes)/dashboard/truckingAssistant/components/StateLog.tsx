@@ -30,7 +30,6 @@ export default function StateLog({
     try {
       const tempStateMileage = await createStateMileage(formData);
       setStateMileage((prev) => [
-        ...(prev ?? []),
         {
           id: tempStateMileage.id,
           truckingLogId: tempStateMileage.truckingLogId ?? "",
@@ -38,6 +37,7 @@ export default function StateLog({
           stateLineMileage: tempStateMileage.stateLineMileage ?? 0,
           createdAt: new Date(),
         },
+        ...(prev ?? []),
       ]);
     } catch (error) {
       console.log("error adding state Mileage", error);
