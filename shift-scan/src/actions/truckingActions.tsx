@@ -9,65 +9,77 @@ import { revalidatePath, revalidateTag } from "next/cache";
 export async function createEquipmentHauled(formData: FormData) {
   console.log("Creating hauling logs...");
   console.log(formData);
-  const truckingLogId = formData.get("truckingLogId");
+  const truckingLogId = formData.get("truckingLogId") as string;
 
-  const haulingLog = await prisma.equipmentHauled.create({
+  const equipmentHauled = await prisma.equipmentHauled.create({
     data: {
       truckingLog: {
-        connect: {
-          id: truckingLogId as string, // Connect to the existing TruckingLog
-        },
+        connect: { id: truckingLogId },
       },
     },
   });
 
-  console.log(haulingLog);
+  console.log(equipmentHauled);
   revalidatePath("/dashboard/truckingAssistant");
   revalidateTag("equipmentHauled");
-  return haulingLog;
+  return equipmentHauled;
 }
 
-export async function updateEquipmentLogs(formData: FormData) {
+export async function updateEquipmentLogsLocation(formData: FormData) {
+  console.log("Updating hauling logs...");
+  console.log(formData);
   const id = formData.get("id") as string;
   const equipmentId = formData.get("equipmentId") as string;
   const truckingLogId = formData.get("truckingLogId") as string;
 
-  // If ID is provided, update the existing log
-  if (id) {
-    const updatedLog = await prisma.equipmentHauled.update({
-      where: { id },
-      data: {
-        truckingLogId,
-        equipmentId,
-      },
-    });
-
-    console.log("Updated Hauling Log:", updatedLog);
-    return updatedLog;
-  }
-
-  // If no ID, create a new log
-  const haulingLog = await prisma.equipmentHauled.create({
+  // Use a nested update to update the related Equipment's jobsiteId in one call.
+  const updatedLog = await prisma.equipmentHauled.update({
+    where: { id },
     data: {
       truckingLogId,
-      equipmentId: equipmentId,
+      jobSiteId: equipmentId,
     },
   });
+  // Create EquipmentLocationLog for the updated jobSiteId
 
-  console.log("New Hauling Log:", haulingLog);
-  return haulingLog;
+  console.log(updatedLog);
+  revalidateTag("equipmentHauled");
+  revalidatePath("/dashboard/truckingAssistant");
+  return updatedLog;
+}
+
+export async function updateEquipmentLogsEquipment(formData: FormData) {
+  console.log("Updating hauling logs...");
+  console.log(formData);
+  const id = formData.get("id") as string;
+  const equipmentId = formData.get("equipmentId") as string;
+  const truckingLogId = formData.get("truckingLogId") as string;
+
+  // Use a nested update to update the related Equipment's jobsiteId in one call.
+  const updatedLog = await prisma.equipmentHauled.update({
+    where: { id },
+    data: {
+      truckingLogId,
+      equipmentId,
+    },
+  });
+  console.log(updatedLog);
+  revalidateTag("equipmentHauled");
+  revalidatePath("/dashboard/truckingAssistant");
+  return updatedLog;
 }
 
 export async function deleteEquipmentHauled(id: string) {
-  console.log("Deleting hauling logs...");
+  console.log("Deleting Equipment hauling logs...");
   console.log(id);
   await prisma.equipmentHauled.delete({
     where: { id },
   });
 
-  revalidateTag("material");
+  revalidateTag("equipmentHauled");
   return true;
 }
+
 /* MATERIALS Hauled */
 //------------------------------------------------------------------
 //------------------------------------------------------------------
@@ -120,7 +132,7 @@ export async function updateHaulingLogs(formData: FormData) {
       truckingLogId,
     },
   });
-
+  revalidateTag("material");
   console.log("New Hauling Log:", haulingLog);
   return haulingLog;
 }
@@ -133,5 +145,126 @@ export async function deleteHaulingLogs(id: string) {
   });
 
   revalidateTag("material");
+  return true;
+}
+/* Update */
+//------------------------------------------------------------------
+//------------------------------------------------------------------
+
+export const updateTruckingMileage = async (formData: FormData) => {
+  const id = formData.get("id") as string;
+  const endingMileage = parseInt(formData.get("endingMileage") as string);
+
+  const updatedLog = await prisma.truckingLog.update({
+    where: { id },
+    data: {
+      endingMileage,
+    },
+  });
+  return updatedLog;
+};
+
+export const updateTruckDrivingNotes = async (formData: FormData) => {
+  const id = formData.get("id") as string;
+  const comment = formData.get("comment") as string;
+
+  const updatedLog = await prisma.truckingLog.update({
+    where: { id },
+    data: {
+      comment,
+    },
+  });
+
+  revalidatePath("/dashboard/truckingAssistant");
+  return updatedLog;
+};
+
+export async function createStateMileage(formData: FormData) {
+  console.log("Creating hauling logs...");
+  console.log(formData);
+  const truckingLogId = formData.get("truckingLogId") as string;
+
+  const equipmentHauled = await prisma.stateMileage.create({
+    data: {
+      truckingLogId,
+    },
+  });
+
+  console.log(equipmentHauled);
+  revalidatePath("/dashboard/truckingAssistant");
+  revalidateTag("equipmentHauled");
+  return equipmentHauled;
+}
+
+export async function updateStateMileage(formData: FormData) {
+  const id = formData.get("id") as string;
+  const state = formData.get("state") as string;
+  const stateLineMileage = Number(formData.get("stateLineMileage")) || 0;
+
+  // Update the state mileage in the database
+  const updatedStateMileage = await prisma.stateMileage.update({
+    where: { id },
+    data: {
+      state,
+      stateLineMileage,
+    },
+  });
+
+  console.log("Updated State Mileage:", updatedStateMileage);
+
+  return updatedStateMileage;
+}
+
+export async function deleteStateMileage(id: string) {
+  console.log("Deleting State Mileage:", id);
+  await prisma.stateMileage.delete({
+    where: { id },
+  });
+
+  return true;
+}
+
+export async function createRefuelLog(formData: FormData) {
+  console.log("Creating refuel logs...");
+  console.log(formData);
+  const truckingLogId = formData.get("truckingLogId") as string;
+
+  const refueledLogs = await prisma.refueled.create({
+    data: {
+      truckingLogId,
+    },
+  });
+
+  console.log(refueledLogs);
+  revalidatePath("/dashboard/truckingAssistant");
+  return refueledLogs;
+}
+
+export async function updateRefuelLog(formData: FormData) {
+  const id = formData.get("id") as string;
+  const gallonsRefueled =
+    Number(formData.get("gallonsRefueled") as string) || 0;
+  const milesAtfueling = Number(formData.get("milesAtfueling")) || 0;
+
+  // Update the state mileage in the database
+  const updatedStateMileage = await prisma.refueled.update({
+    where: { id },
+    data: {
+      gallonsRefueled,
+      milesAtfueling,
+    },
+  });
+  revalidatePath("/dashboard/truckingAssistant");
+  console.log("Updated State Mileage:", updatedStateMileage);
+
+  return updatedStateMileage;
+}
+
+export async function deleteRefuelLog(id: string) {
+  console.log("Deleting refuel logs:", id);
+  await prisma.refueled.delete({
+    where: { id },
+  });
+
   return true;
 }
