@@ -26,9 +26,9 @@ export default async function Inbox() {
               title={
                 laborType === "truckDriver"
                   ? t("TruckDriver")
-                  : laborType === "manualLabor"
-                  ? t("Operator")
                   : laborType === "operator"
+                  ? t("Operator")
+                  : laborType === "manualLabor"
                   ? t("ManualLabor")
                   : t("TruckingAssistant")
               }
