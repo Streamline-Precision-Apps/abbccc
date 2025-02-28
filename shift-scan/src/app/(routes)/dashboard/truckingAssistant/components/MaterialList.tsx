@@ -23,6 +23,7 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import SearchBar from "@/components/(search)/searchbar";
 import { Grids } from "@/components/(reusable)/grids";
 import { Titles } from "@/components/(reusable)/titles";
+import SelectableModal from "@/components/(reusable)/selectableModal";
 
 type Material = {
   name: string;
@@ -31,6 +32,12 @@ type Material = {
   truckingLogId: string;
   quantity: number | null;
   createdAt: Date;
+};
+
+type Option = {
+  id: string;
+  name: string;
+  qrId: string;
 };
 
 export default function MaterialList({
@@ -124,21 +131,6 @@ export default function MaterialList({
     }
   };
 
-  // Handle Location Selection
-  const handleLocationSelect = (option: JobCode) => {
-    setTempLocation(option.name); // Set temporary location
-    setTempLocationSelected(true);
-  };
-  const handleLocationUnselect = () => {
-    setTempLocation(""); // Clear temporary location
-    setTempLocationSelected(false);
-  };
-
-  // Handle Search Input Change
-  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-  };
-
   // Handle Submit
   const handleSubmit = () => {
     if (selectedIndex !== null) {
@@ -228,51 +220,23 @@ export default function MaterialList({
       </Contents>
 
       {/* Location Modal */}
-      <NModals size={"xlW"} isOpen={isLocationOpen} handleClose={handleCancel}>
-        <Grids rows={"8"} gap={"3"} className="h-full">
-          <Holds className="row-start-1 row-end-2 h-full">
-            <SearchBar
-              searchTerm={searchTerm}
-              onSearchChange={handleSearchChange}
-              placeholder="Type here"
-              selected={!!tempLocation}
-              clearSelection={() => setTempLocation("")}
-              selectTerm={tempLocation}
-            />
-          </Holds>
-          <Holds className="row-start-2 row-end-8 border-black border-[3px] rounded-[10px] h-full">
-            <Holds className=" overflow-y-auto no-scrollbar p-4">
-              {filteredJobSites.map((option) => (
-                <Buttons
-                  background={
-                    tempLocation === option.name ? "green" : "lightBlue"
-                  }
-                  key={option.qrId}
-                  onClick={() =>
-                    tempLocation === option.name
-                      ? handleLocationUnselect()
-                      : handleLocationSelect(option)
-                  }
-                  className="w-full p-3 mb-4 text-left"
-                >
-                  <Titles size={"h6"}>
-                    {" "}
-                    {option.name} - ({option.qrId})
-                  </Titles>
-                </Buttons>
-              ))}
-            </Holds>
-          </Holds>
-          <Holds position={"row"} className="row-start-8 row-end-9 py-2 gap-4">
-            <Buttons background={"green"} onClick={handleSubmit}>
-              Submit
-            </Buttons>
-            <Buttons background={"red"} onClick={handleCancel}>
-              Cancel
-            </Buttons>
-          </Holds>
-        </Grids>
-      </NModals>
+      <SelectableModal
+        isOpen={isLocationOpen}
+        handleClose={handleCancel}
+        handleCancel={handleCancel}
+        options={jobsiteResults.map((jobsite) => ({
+          id: jobsite.id,
+          name: jobsite.name,
+          qrId: jobsite.qrId,
+        }))}
+        onSelect={(option) => {
+          setTempLocation(option.name);
+          setTempLocationSelected(true);
+        }}
+        selectedValue={tempLocation}
+        placeholder="Type here"
+        handleSave={handleSubmit}
+      />
     </>
   );
 }

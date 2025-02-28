@@ -3,7 +3,7 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import Sliders from "@/components/(reusable)/sliders";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import MaterialList from "./MaterialList";
 import {
   createEquipmentHauled,
@@ -36,50 +36,20 @@ type Material = {
 
 export default function HaulingLogs({
   truckingLog,
+  material,
+  setMaterial,
+  equipmentHauled,
+  setEquipmentHauled,
+  isLoading,
 }: {
+  setMaterial: React.Dispatch<React.SetStateAction<Material[] | undefined>>;
+  setEquipmentHauled: Dispatch<SetStateAction<EquipmentHauled[] | undefined>>;
   truckingLog: string | undefined;
+  material: Material[] | undefined;
+  equipmentHauled: EquipmentHauled[] | undefined;
+  isLoading: boolean;
 }) {
   const [activeTab, setActiveTab] = useState<number>(1);
-  const [material, setMaterial] = useState<Material[]>();
-  const [equipmentHauled, setEquipmentHauled] = useState<EquipmentHauled[]>();
-
-  // Material - Only when timeSheetId is available
-  useEffect(() => {
-    const fetchMaterial = async () => {
-      try {
-        console.log("Fetching Material Hauled...");
-        const res = await fetch(`/api/getTruckingLogs/material/${truckingLog}`);
-        if (!res.ok) throw new Error("Failed to fetch Material");
-        const data = await res.json();
-        setMaterial(data);
-        console.log(material);
-      } catch (error) {
-        console.error("Error fetching Material:", error);
-      }
-    };
-
-    fetchMaterial();
-  }, [truckingLog]); // Run only when timeSheetId changes
-
-  // Equipment Hauled - Only when timeSheetId is available
-  useEffect(() => {
-    const fetchEquipmentHauled = async () => {
-      try {
-        console.log("Fetching Equipment Hauled...");
-        const res = await fetch(
-          `/api/getTruckingLogs/equipmentHauled/${truckingLog}`
-        );
-        if (!res.ok) throw new Error("Failed to fetch Equipment Hauled");
-        const data = await res.json();
-        setEquipmentHauled(data);
-        console.log(equipmentHauled);
-      } catch (error) {
-        console.error("Error fetching Equipment Hauled:", error);
-      }
-    };
-
-    fetchEquipmentHauled();
-  }, [truckingLog]); // Run only when timeSheetId changes
 
   // Add Temporary Equipment
   const addTempEquipmentList = async () => {
@@ -143,7 +113,7 @@ export default function HaulingLogs({
     <>
       <Holds
         background={"white"}
-        className="w-full h-full rounded-t-none row-start-2 row-end-3 "
+        className={"w-full h-full rounded-t-none row-start-2 row-end-3 "}
       >
         <Contents width={"section"} className="h-full">
           <Holds position={"row"} className="h-full gap-2">
@@ -177,11 +147,17 @@ export default function HaulingLogs({
           </Holds>
         </Contents>
       </Holds>
-      <Holds className="w-full h-full row-start-3 row-end-11 pt-5">
+      <Holds
+        className={`${
+          isLoading
+            ? "w-full h-full row-start-3 row-end-11 pt-5 animate-pulse"
+            : "w-full h-full row-start-3 row-end-11 pt-5"
+        }`}
+      >
         <Holds background={"white"} className="w-full h-full">
           <Grids rows={"10"} className="h-full py-2 px-4 ">
             {activeTab === 1 && (
-              <Holds className="h-full w-full row-start-1 row-end-11 p-2 overflow-y-auto no-scrollbar">
+              <Holds className="h-full w-full row-start-1 row-end-11 overflow-y-auto no-scrollbar">
                 <MaterialList
                   material={material}
                   setMaterial={setMaterial}
@@ -191,13 +167,11 @@ export default function HaulingLogs({
             )}
             {activeTab === 2 && (
               <Holds className="h-full w-full row-start-1 row-end-11 relative">
-                <Contents className="overflow-y-auto no-scrollbar">
-                  <EquipmentList
-                    equipmentHauled={equipmentHauled || []}
-                    setEquipmentHauled={setEquipmentHauled}
-                    truckingLog={truckingLog ?? ""}
-                  />
-                </Contents>
+                <EquipmentList
+                  equipmentHauled={equipmentHauled || []}
+                  setEquipmentHauled={setEquipmentHauled}
+                  truckingLog={truckingLog ?? ""}
+                />
               </Holds>
             )}
           </Grids>
