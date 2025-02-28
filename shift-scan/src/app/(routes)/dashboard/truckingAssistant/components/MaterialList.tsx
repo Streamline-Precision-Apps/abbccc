@@ -144,7 +144,9 @@ export default function MaterialList({
                 <Selects
                   value={mat.name || ""}
                   onChange={(e) => handleChange(index, "name", e.target.value)}
-                  className={"border-none text-xs py-2 focus:outline-none"}
+                  className={`border-none text-xs py-2 focus:outline-none ${
+                    mat.name ? "text-black" : "text-app-red"
+                  }`}
                 >
                   <option
                     className="text-xs text-center text-app-light-gray"
@@ -177,7 +179,10 @@ export default function MaterialList({
                     setTempLocation(mat.LocationOfMaterial || ""); // Initialize temp state
                     setIsLocationOpen(true);
                   }}
-                  className="border-none text-xs focus:outline-none cursor-pointer"
+                  className={`border-none text-center text-xs focus:outline-none cursor-pointer ${
+                    mat.LocationOfMaterial === null &&
+                    "placeholder:text-app-red"
+                  } `}
                   readOnly
                 />
               </Holds>
@@ -194,7 +199,9 @@ export default function MaterialList({
                       parseInt(e.target.value, 10) || 0
                     )
                   }
-                  className="border-none text-xs text-center h-full focus:outline-none "
+                  className={`border-none text-xs text-center h-full focus:outline-none ${
+                    mat.quantity === null && "placeholder:text-app-red"
+                  }`}
                 />
               </Holds>
             </Holds>

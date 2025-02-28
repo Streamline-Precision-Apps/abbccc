@@ -27,7 +27,7 @@ type MaintenanceLog = {
 type TruckingLog = {
   id: string;
   laborType: string;
-  endingMileage: boolean;
+  endingMileage: number | null;
   comment: string | null;
   stateMileage: boolean;
   refueled: boolean;
@@ -156,30 +156,38 @@ export async function GET() {
     );
 
     // Mapping Trucking Logs and Checking for Incomplete Fields
+    // Mapping Trucking Logs and Checking for Incomplete Fields
     const mappedTruckingLogs: TruckingLog[] = truckingLogs
-      .map((log) => ({
-        id: log.id,
-        type: "Trucking Assistant",
-        laborType: log.laborType,
-        endingMileage:
-          log.laborType === "Trucking" && log.endingMileage ? true : false,
-        comment: log.comment,
-        stateMileage: log.stateMileage.some((item) =>
-          isFieldIncomplete(item, ["state", "stateLineMileage"])
-        ),
-        refueled: log.Refueled.some((item) =>
-          isFieldIncomplete(item, ["gallonsRefueled", "milesAtfueling"])
-        ),
-        material: log.Material.some((item) =>
-          isFieldIncomplete(item, ["LocationOfMaterial", "quantity", "name"])
-        ),
-        equipmentHauled: log.EquipmentHauled.some((item) =>
-          isFieldIncomplete(item, ["equipmentId", "jobSiteId"])
-        ),
-      }))
+      .map((log) => {
+        // Check if endingMileage is required
+        const isEndingMileageRequired =
+          log.laborType === "truckDriver" && log.endingMileage === null;
+
+        return {
+          id: log.id,
+          type: "Trucking Assistant",
+          laborType: log.laborType,
+          endingMileage: log.endingMileage,
+          comment: log.comment,
+          stateMileage: log.stateMileage.some((item) =>
+            isFieldIncomplete(item, ["state", "stateLineMileage"])
+          ),
+          refueled: log.Refueled.some((item) =>
+            isFieldIncomplete(item, ["gallonsRefueled", "milesAtfueling"])
+          ),
+          material: log.Material.some((item) =>
+            isFieldIncomplete(item, ["LocationOfMaterial", "quantity", "name"])
+          ),
+          equipmentHauled: log.EquipmentHauled.some((item) =>
+            isFieldIncomplete(item, ["equipmentId", "jobSiteId"])
+          ),
+          incomplete: isEndingMileageRequired, // Track incomplete status
+        };
+      })
       .filter((log) => {
+        // Filter logs with incomplete fields
         return (
-          log.endingMileage ||
+          log.incomplete ||
           log.stateMileage ||
           log.refueled ||
           log.material ||

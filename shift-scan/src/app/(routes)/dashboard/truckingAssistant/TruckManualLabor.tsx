@@ -31,10 +31,29 @@ export default function TruckManualLabor() {
   const t = useTranslations("TruckingAssistant");
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(1);
-  const [refuelLogs, setRefuelLogs] = useState<Refueled[]>();
   const [timeSheetId, setTimeSheetId] = useState<string>();
   const [notes, setNotes] = useState<string>("");
   const [material, setMaterial] = useState<Material[]>();
+
+  const [isComplete, setIsComplete] = useState({
+    haulingLogsTab: true,
+  });
+
+  const validateCompletion = () => {
+    setIsComplete({
+      haulingLogsTab: Boolean(
+        material &&
+          material.length >= 0 &&
+          material.every(
+            (item) => item.LocationOfMaterial && item.quantity && item.name
+          )
+      ),
+    });
+  };
+
+  useEffect(() => {
+    validateCompletion();
+  }, [material]);
 
   useEffect(() => {
     const fetchTruckingLog = async () => {
@@ -59,7 +78,6 @@ export default function TruckManualLabor() {
       try {
         const endpoints = [
           `/api/getTruckingLogs/notes/${timeSheetId}`,
-          `/api/getTruckingLogs/refueledLogs/${timeSheetId}`,
           `/api/getTruckingLogs/material/${timeSheetId}`,
         ];
 
@@ -67,8 +85,7 @@ export default function TruckManualLabor() {
         const data = await Promise.all(responses.map((res) => res.json()));
 
         setNotes(data[0].comment || "");
-        setRefuelLogs(data[1]);
-        setMaterial(data[2]);
+        setMaterial(data[1]);
       } catch (error) {
         console.error("Error fetching Data:", error);
       } finally {
@@ -91,6 +108,8 @@ export default function TruckManualLabor() {
             titleImageAlt="Truck"
             onClick={() => setActiveTab(1)}
             isActive={activeTab === 1}
+            isComplete={isComplete.haulingLogsTab}
+            isLoading={isLoading}
           >
             <Titles size={"h4"}>{t("HaulingLogs")}</Titles>
           </NewTab>
@@ -99,6 +118,8 @@ export default function TruckManualLabor() {
             titleImageAlt="Comment"
             onClick={() => setActiveTab(2)}
             isActive={activeTab === 2}
+            isComplete={true}
+            isLoading={isLoading}
           >
             <Titles size={"h4"}>{t("MyComments")}</Titles>
           </NewTab>
