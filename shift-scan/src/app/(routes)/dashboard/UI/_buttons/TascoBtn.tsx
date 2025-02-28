@@ -25,9 +25,9 @@ export default function TascoBtn({
           <VerticalLayout
             color={"green"}
             text={"Tasco"}
-            titleImg={"/person.svg"}
+            titleImg={"/tasco.svg"}
             titleImgAlt={"Tasco Assistant Icon"}
-            handleEvent={() => router.push("/dashboard/clock-out")}
+            handleEvent={() => router.push("/dashboard/tasco")}
           />
         </>
       ) : (
@@ -35,9 +35,9 @@ export default function TascoBtn({
           <HorizontalLayout
             color={"green"}
             text={"Tasco"}
-            titleImg={"/person.svg"}
+            titleImg={"/tasco.svg"}
             titleImgAlt={"Tasco Assistant Icon"}
-            handleEvent={() => router.push("/dashboard/clock-out")}
+            handleEvent={() => router.push("/dashboard/tasco")}
           />
         </>
       )}
