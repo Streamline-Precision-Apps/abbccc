@@ -37,7 +37,7 @@ export const NewTab: FC<TabProps> = ({
 }) => {
   return (
     <button onClick={onClick} className={classNames(tabStyles({ isActive }))}>
-      <div className="flex  justify-center items-center">
+      <div className="flex justify-center items-center">
         {isActive && children}
         <img
           src={titleImage}

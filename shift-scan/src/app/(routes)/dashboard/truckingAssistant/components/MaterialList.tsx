@@ -34,12 +34,6 @@ type Material = {
   createdAt: Date;
 };
 
-type Option = {
-  id: string;
-  name: string;
-  qrId: string;
-};
-
 export default function MaterialList({
   material,
   setMaterial,
@@ -63,16 +57,6 @@ export default function MaterialList({
   const [isLocationOpen, setIsLocationOpen] = useState<boolean>(false);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [tempLocation, setTempLocation] = useState<string>(""); // Temporary state for modal
-  const [tempLocationSelected, setTempLocationSelected] =
-    useState<boolean>(false);
-  const [searchTerm, setSearchTerm] = useState("");
-
-  // Filtered options for job sites
-  const filteredJobSites = jobsiteResults.filter(
-    (jobsite) =>
-      jobsite.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      jobsite.qrId.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   // Update local state when prop changes
   useEffect(() => {
@@ -143,7 +127,6 @@ export default function MaterialList({
   const handleCancel = () => {
     setIsLocationOpen(false);
     setTempLocation(""); // Clear temporary state
-    setTempLocationSelected(false);
     setSelectedIndex(null); // Clear selected index
   };
 
@@ -231,7 +214,6 @@ export default function MaterialList({
         }))}
         onSelect={(option) => {
           setTempLocation(option.name);
-          setTempLocationSelected(true);
         }}
         selectedValue={tempLocation}
         placeholder="Type here"

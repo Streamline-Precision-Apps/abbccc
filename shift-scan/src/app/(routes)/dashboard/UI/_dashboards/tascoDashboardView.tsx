@@ -50,96 +50,96 @@ export default function TascoDashboardView({
 }) {
   useEffect(() => {
     console.log("laborType: ", laborType);
-    }, []);
+  }, []);
   const modalState = useModalState();
 
-
   if (laborType === "manualLabor") {
-  return (
-    <GeneralDashboardView
-    additionalButtonsType= {additionalButtonsType}
-    isModalOpen={isModalOpen}
-    isModal2Open={isModal2Open}
-    setIsModal2Open={setIsModal2Open}
-    comment={comment}
-    setComment={setComment}
-    handleCOButton2={handleCOButton2}
-    handleCOButton3={handleCOButton3}
-    handleCloseModal={handleCloseModal}
-    handleShowManagerButtons={handleShowManagerButtons}
-    permission={permission}
-    handleShowAdditionalButtons={handleShowAdditionalButtons}
-    logs={logs}
-    />
-  );
-} else {
-  return (
-    <>
-      <Contents width={"section"} className="py-5">
-        <Grids cols={"2"} rows={permission !== "USER" ? "3" : "3"} gap={"5"}>
-          {/* Render buttons based on state */}
-          {additionalButtonsType === "equipment" ? (
-            <Holds
-              className={
-                permission !== "USER"
-                  ? "col-span-2 row-span-4 gap-5 h-full"
-                  : "col-span-2 row-span-3 gap-5 h-full"
-              }
-            >
-              <EquipmentWidget
-                handleShowManagerButtons={handleShowManagerButtons}
-              />
-            </Holds>
-          ) : additionalButtonsType === "clockOut" ? (
-            <Holds
-              className={
-                permission !== "USER"
-                  ? "col-span-2 row-span-4 gap-5 h-full"
-                  : "col-span-2 row-span-3 gap-5 h-full"
-              }
-            >
-              <ClockOutWidget
-                handleShowManagerButtons={handleShowManagerButtons}
-                {...modalState}
-                comment={comment}
-                setComment={setComment}
-                handleCOButton2={handleCOButton2}
-                handleCOButton3={handleCOButton3}
-                logs={logs}
-              />
-            </Holds>
-          ) : (
-            <>
-              <TascoBtn
-                permission={permission}
-                view={"tasco"}
-                laborType={laborType}
-              />
-              <SwitchJobsBtn
-                {...modalState}
-                handleShowManagerButtons={handleShowManagerButtons}
-                permission={permission}
-                logs={logs}
-                laborType={laborType}
-              />
-              {permission !== "USER" && !additionalButtonsType && (
-                <GeneratorBtn />
-              )}
-              {permission !== "USER" && !additionalButtonsType && (
-                <MyTeamWidget />
-              )}
+    return (
+      <GeneralDashboardView
+        additionalButtonsType={additionalButtonsType}
+        isModalOpen={isModalOpen}
+        isModal2Open={isModal2Open}
+        setIsModal2Open={setIsModal2Open}
+        comment={comment}
+        setComment={setComment}
+        handleCOButton2={handleCOButton2}
+        handleCOButton3={handleCOButton3}
+        handleCloseModal={handleCloseModal}
+        handleShowManagerButtons={handleShowManagerButtons}
+        permission={permission}
+        handleShowAdditionalButtons={handleShowAdditionalButtons}
+        logs={logs}
+      />
+    );
+  } else {
+    return (
+      <>
+        <Contents width={"section"} className="py-5">
+          <Grids cols={"2"} rows={permission !== "USER" ? "3" : "3"} gap={"5"}>
+            {/* Render buttons based on state */}
+            {additionalButtonsType === "equipment" ? (
+              <Holds
+                className={
+                  permission !== "USER"
+                    ? "col-span-2 row-span-4 gap-5 h-full"
+                    : "col-span-2 row-span-3 gap-5 h-full"
+                }
+              >
+                <EquipmentWidget
+                  handleShowManagerButtons={handleShowManagerButtons}
+                />
+              </Holds>
+            ) : additionalButtonsType === "clockOut" ? (
+              <Holds
+                className={
+                  permission !== "USER"
+                    ? "col-span-2 row-span-4 gap-5 h-full"
+                    : "col-span-2 row-span-3 gap-5 h-full"
+                }
+              >
+                <ClockOutWidget
+                  handleShowManagerButtons={handleShowManagerButtons}
+                  {...modalState}
+                  comment={comment}
+                  setComment={setComment}
+                  handleCOButton2={handleCOButton2}
+                  handleCOButton3={handleCOButton3}
+                  logs={logs}
+                />
+              </Holds>
+            ) : (
+              <>
+                <TascoBtn
+                  permission={permission}
+                  view={"tasco"}
+                  laborType={laborType}
+                />
+                <SwitchJobsBtn
+                  {...modalState}
+                  handleShowManagerButtons={handleShowManagerButtons}
+                  permission={permission}
+                  logs={logs}
+                  laborType={laborType}
+                  view={"tasco"}
+                />
+                {permission !== "USER" && !additionalButtonsType && (
+                  <GeneratorBtn />
+                )}
+                {permission !== "USER" && !additionalButtonsType && (
+                  <MyTeamWidget />
+                )}
 
-              <ClockOutBtn
-                handleShowAdditionalButtons={handleShowAdditionalButtons}
-                permission={permission}
-                laborType={laborType}
-                View={"tasco"}
-              />
-            </>
-          )}
-        </Grids>
-      </Contents>
-    </>
-  );
-}
+                <ClockOutBtn
+                  handleShowAdditionalButtons={handleShowAdditionalButtons}
+                  permission={permission}
+                  laborType={laborType}
+                  View={"tasco"}
+                />
+              </>
+            )}
+          </Grids>
+        </Contents>
+      </>
+    );
+  }
 }

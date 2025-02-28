@@ -8,9 +8,9 @@ import { NewTab } from "@/components/(reusable)/newTabs";
 import { Titles } from "@/components/(reusable)/titles";
 import HaulingLogs from "./components/HaulingLogs";
 import StateLog from "./components/StateLog";
-import NoteLayout from "./components/NoteLayout";
 import RefuelLayout from "./components/RefuelLayout";
-import { set } from "date-fns";
+import { EndingMileage } from "./components/EndingMileage";
+import TruckDriverNotes from "./components/TruckDriverNotes";
 
 type StateMileage = {
   id: string;
@@ -172,13 +172,24 @@ export default function TruckDriver() {
           >
             <Contents width={"section"} className="py-5">
               {activeTab === 2 && (
-                <NoteLayout
-                  truckingLog={timeSheetId}
-                  notes={notes}
-                  setNotes={setNotes}
-                  endMileage={endMileage}
-                  setEndMileage={setEndMileage}
-                />
+                <Holds className="h-full w-full">
+                  <Grids rows={"8"} gap={"5"} className="h-full">
+                    <Holds className="h-full w-full row-start-1 row-end-2 ">
+                      <EndingMileage
+                        truckingLog={timeSheetId}
+                        endMileage={endMileage ?? null}
+                        setEndMileage={setEndMileage}
+                      />
+                    </Holds>
+                    <Holds className="h-full w-full row-start-2 row-end-9 relative">
+                      <TruckDriverNotes
+                        truckingLog={timeSheetId}
+                        notes={notes}
+                        setNotes={setNotes}
+                      />
+                    </Holds>
+                  </Grids>
+                </Holds>
               )}
               {activeTab === 3 && (
                 <StateLog

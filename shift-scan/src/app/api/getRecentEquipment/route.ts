@@ -16,7 +16,7 @@ export async function GET() {
       employeeId: userId,
     },
     select: {
-      Equipment: {
+      equipment: {
         select: {
           id: true,
           qrId: true,
@@ -31,5 +31,5 @@ export async function GET() {
     distinct: ["equipmentId"],
   });
 
-  return NextResponse.json(recentEquipment.map((log) => log.Equipment));
+  return NextResponse.json(recentEquipment.map((log) => log.equipment));
 }
