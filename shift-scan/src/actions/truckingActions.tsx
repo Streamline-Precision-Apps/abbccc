@@ -178,3 +178,48 @@ export const updateTruckDrivingNotes = async (formData: FormData) => {
   revalidatePath("/dashboard/truckingAssistant");
   return updatedLog;
 };
+
+export async function createStateMileage(formData: FormData) {
+  console.log("Creating hauling logs...");
+  console.log(formData);
+  const truckingLogId = formData.get("truckingLogId") as string;
+
+  const equipmentHauled = await prisma.stateMileage.create({
+    data: {
+      truckingLogId,
+    },
+  });
+
+  console.log(equipmentHauled);
+  revalidatePath("/dashboard/truckingAssistant");
+  revalidateTag("equipmentHauled");
+  return equipmentHauled;
+}
+
+export async function updateStateMileage(formData: FormData) {
+  const id = formData.get("id") as string;
+  const state = formData.get("state") as string;
+  const stateLineMileage = Number(formData.get("stateLineMileage")) || 0;
+
+  // Update the state mileage in the database
+  const updatedStateMileage = await prisma.stateMileage.update({
+    where: { id },
+    data: {
+      state,
+      stateLineMileage,
+    },
+  });
+
+  console.log("Updated State Mileage:", updatedStateMileage);
+
+  return updatedStateMileage;
+}
+
+export async function deleteStateMileage(id: string) {
+  console.log("Deleting State Mileage:", id);
+  await prisma.stateMileage.delete({
+    where: { id },
+  });
+
+  return true;
+}
