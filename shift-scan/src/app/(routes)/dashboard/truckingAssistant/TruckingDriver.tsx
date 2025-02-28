@@ -13,9 +13,9 @@ import StateLog from "./components/StateLog";
 type StateMileage = {
   id: string;
   truckingLogId: string;
-  state: string;
-  stateLineMileage: number;
-  createdAt: Date;
+  state?: string;
+  stateLineMileage?: number;
+  createdAt?: Date;
 };
 
 type Refueled = {
@@ -31,7 +31,7 @@ type Refueled = {
 export default function TruckDriver() {
   const t = useTranslations("TruckingAssistant");
   const [activeTab, setActiveTab] = useState(1);
-  const [StateMileage, setStateMileage] = useState<StateMileage>();
+  const [StateMileage, setStateMileage] = useState<StateMileage[]>();
   const [refuelLogs, setRefuelLogs] = useState<Refueled[]>();
   const [timeSheetId, setTimeSheetId] = useState<string>();
   const [endMileage, setEndMileage] = useState<number | null>(null);
@@ -176,6 +176,7 @@ export default function TruckDriver() {
                 <StateLog
                   StateMileage={StateMileage}
                   setStateMileage={setStateMileage}
+                  truckingLog={timeSheetId}
                 />
               )}
               {activeTab === 4 && <></>}
