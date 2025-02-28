@@ -6,44 +6,41 @@ import ReactPortal from "./ReactPortal";
 import React, { useEffect } from "react";
 import { Bases } from "./bases";
 
-const NModalVariants = cva(
-  "", //this applies to all variants
-  {
-    variants: {
-      background: {
-        default: "bg-white opacity-90 rounded-2xl p-1",
-        takeABreak:
-          "bg-gradient-to-b from-app-dark-blue to-app-blue pb-3 pt-7 px-2",
-        white: "bg-white rounded-2xl p-1",
-      },
-      position: {
-        center: "relative",
-      },
-      size: {
-        sm: "fixed rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-1/4 h-1/4",
-        med: "fixed rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-1/3 h-1/3",
-        medW: "fixed rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-1/2 h-1/3",
-        medWW:
-          "fixed rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-[90%] h-1/3",
-        medM: " fixed rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-1/3 h-1/2",
-        medH: " fixed rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-1/3 h-3/4",
-        lg: " fixed rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-1/2 h-1/2",
-        lgH: " fixed rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-1/2 h-3/4",
-        xl: "fixed rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-3/4 h-3/4",
-        xlW: "fixed rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-[90%] h-[80%]",
-        xlWS: "fixed rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-3/4 h-1/3 max-w-lg ",
-        page: "fixed rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-5/6 h-5/6",
-        screen:
-          "fixed bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-screen h-dvh",
-      },
+const NModalVariants = cva("", {
+  variants: {
+    background: {
+      default: "bg-white opacity-90 rounded-2xl p-1",
+      takeABreak:
+        "bg-gradient-to-b from-app-dark-blue to-app-blue pb-3 pt-7 px-2",
+      white: "bg-white rounded-2xl p-1",
     },
-    defaultVariants: {
-      background: "default",
-      position: "center",
-      size: "med",
+    position: {
+      center: "relative",
     },
-  }
-);
+    size: {
+      sm: "fixed z-[9999] rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-1/4 h-1/4",
+      med: "fixed z-[9999] rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-1/3 h-1/3",
+      medW: "fixed z-[9999] rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-1/2 h-1/3",
+      medWW:
+        "fixed z-[9999] rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-[90%] h-1/3",
+      medM: " fixed z-[9999] rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-1/3 h-1/2",
+      medH: " fixed z-[9999] rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-1/3 h-3/4",
+      lg: " fixed z-[9999] rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-1/2 h-1/2",
+      lgH: " fixed z-[9999] rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-1/2 h-3/4",
+      xl: "fixed z-[9999] rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-3/4 h-3/4",
+      xlW: "fixed z-[9999] rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-[90%] h-[80%]",
+      xlWS: "fixed z-[9999] rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-3/4 h-1/3 max-w-lg ",
+      page: "fixed z-[9999] rounded-[10px] p-4 bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-5/6 h-5/6",
+      screen:
+        "fixed z-[9999] bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col w-screen h-dvh",
+    },
+  },
+  defaultVariants: {
+    background: "default",
+    position: "center",
+    size: "med",
+  },
+});
 
 interface NModalProps
   extends HTMLAttributes<HTMLElement>,
@@ -81,6 +78,7 @@ const NModals: FC<NModalProps> = ({
         background={"modal"}
         position={"start"}
         size={"screen"}
+        className="z-[9998]" // Ensure it's just below the modal content
         onClick={handleClose}
       >
         <div

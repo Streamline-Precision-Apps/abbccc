@@ -22,7 +22,7 @@ export async function GET() {
       isSubmitted: false,
     },
     include: {
-      Equipment: {
+      equipment: {
         select: {
           id: true,
           qrId: true,
@@ -49,11 +49,11 @@ export async function GET() {
     id: log.id.toString(),
     type: "equipment",
     userId: log.employeeId,
-    equipment: log.Equipment
+    equipment: log.equipment
       ? {
-          id: log.Equipment.id,
-          qrId: log.Equipment.qrId,
-          name: log.Equipment.name,
+          id: log.equipment.id,
+          qrId: log.equipment.qrId,
+          name: log.equipment.name,
         }
       : null,
     submitted: log.isSubmitted,

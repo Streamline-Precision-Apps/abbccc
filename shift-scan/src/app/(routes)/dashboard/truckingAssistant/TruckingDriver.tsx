@@ -7,13 +7,40 @@ import { useTranslations } from "next-intl";
 import { NewTab } from "@/components/(reusable)/newTabs";
 import { Titles } from "@/components/(reusable)/titles";
 import HaulingLogs from "./components/HaulingLogs";
+import StateLog from "./components/StateLog";
+import NoteLayout from "./components/NoteLayout";
+import RefuelLayout from "./components/RefuelLayout";
+import { set } from "date-fns";
 
 type StateMileage = {
   id: string;
   truckingLogId: string;
-  state: string;
-  stateLineMileage: number;
+  state?: string;
+  stateLineMileage?: number;
+  createdAt?: Date;
+};
+
+type Refueled = {
+  id: string;
+  employeeEquipmentLogId: string | null;
+  truckingLogId: string | null;
+  gallonsRefueled: number | null;
+  milesAtfueling: number | null;
+  tascoLogId: string | null;
+};
+
+type EquipmentHauled = {
+  id: string;
+  truckingLogId: string;
+  equipmentId: string | null;
   createdAt: Date;
+  jobSiteId: string | null;
+  equipment: {
+    name: string | null;
+  };
+  jobSite: {
+    name: string | null;
+  };
 };
 
 type Material = {
@@ -25,36 +52,18 @@ type Material = {
   createdAt: Date;
 };
 
-type EquipmentHauled = {
-  id: string;
-  truckingLogId: string;
-  equipmentId: string;
-  createdAt: Date;
-};
-
-type Refueled = {
-  id: string;
-  date: Date;
-  employeeEquipmentLogId: string | null;
-  truckingLogId: string | null;
-  gallonsRefueled: number | null;
-  milesAtfueling: number | null;
-  tascoLogId: string | null;
-};
-
 export default function TruckDriver() {
   const t = useTranslations("TruckingAssistant");
+  const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(1);
-  const [StateMileage, setStateMileage] = useState<StateMileage>();
-  const [material, setMaterial] = useState<Material[]>();
-  const [equipmentHauled, setEquipmentHauled] = useState<EquipmentHauled[]>();
+  const [StateMileage, setStateMileage] = useState<StateMileage[]>();
   const [refuelLogs, setRefuelLogs] = useState<Refueled[]>();
   const [timeSheetId, setTimeSheetId] = useState<string>();
+  const [endMileage, setEndMileage] = useState<number | null>(null);
+  const [notes, setNotes] = useState<string>("");
+  const [equipmentHauled, setEquipmentHauled] = useState<EquipmentHauled[]>();
+  const [material, setMaterial] = useState<Material[]>();
 
-  const [materialTrigger, setMaterialTrigger] = useState(false);
-  const [equipmentTrigger, setEquipmentTrigger] = useState(false);
-
-  // Trucking Log - Fetch Once
   useEffect(() => {
     const fetchTruckingLog = async () => {
       try {
@@ -68,101 +77,48 @@ export default function TruckDriver() {
     };
 
     fetchTruckingLog();
-  }, []); // Only run once on mount
+  }, []);
 
-  // State Mileage - Only when timeSheetId is available
   useEffect(() => {
-    if (!timeSheetId) return; // Exit if timeSheetId is not set
+    if (!timeSheetId) return;
 
-    const fetchStateMileage = async () => {
+    const fetchData = async () => {
+      setIsLoading(true);
       try {
-        const res = await fetch(
-          `/api/getTruckingLogs/stateMileage/${timeSheetId}`
-        );
-        if (!res.ok) throw new Error("Failed to fetch State Mileage");
-        const data = await res.json();
-        setStateMileage(data);
-      } catch (error) {
-        console.error("Error fetching State Mileage:", error);
-      }
-    };
-
-    fetchStateMileage();
-  }, [timeSheetId]); // Run only when timeSheetId changes
-
-  // Material - Only when timeSheetId is available
-  useEffect(() => {
-    if (!timeSheetId) return; // Exit if timeSheetId is not set
-
-    const fetchMaterial = async () => {
-      try {
-        const res = await fetch(
+        const endpoints = [
+          `/api/getTruckingLogs/endingMileage/${timeSheetId}`,
+          `/api/getTruckingLogs/notes/${timeSheetId}`,
+          `/api/getTruckingLogs/refueledLogs/${timeSheetId}`,
+          `/api/getTruckingLogs/stateMileage/${timeSheetId}`,
           `/api/getTruckingLogs/material/${timeSheetId}`,
-          {
-            next: {
-              tags: ["material"],
-            },
-          }
-        );
-        if (!res.ok) throw new Error("Failed to fetch Material");
-        const data = await res.json();
-        setMaterial(data);
-      } catch (error) {
-        console.error("Error fetching Material:", error);
-      }
-    };
-
-    fetchMaterial();
-  }, [timeSheetId, materialTrigger]); // Run only when timeSheetId changes
-
-  // Equipment Hauled - Only when timeSheetId is available
-  useEffect(() => {
-    if (!timeSheetId) return; // Exit if timeSheetId is not set
-
-    const fetchEquipmentHauled = async () => {
-      try {
-        const res = await fetch(
           `/api/getTruckingLogs/equipmentHauled/${timeSheetId}`,
-          {
-            next: {
-              tags: ["equipmentHauled"],
-            },
-          }
-        );
-        if (!res.ok) throw new Error("Failed to fetch Equipment Hauled");
-        const data = await res.json();
-        setEquipmentHauled(data);
+        ];
+
+        const responses = await Promise.all(endpoints.map((url) => fetch(url)));
+        const data = await Promise.all(responses.map((res) => res.json()));
+
+        setEndMileage(data[0].endingMileage || null);
+        setNotes(data[1].comment || "");
+        setRefuelLogs(data[2]);
+        setStateMileage(data[3]);
+        setMaterial(data[4]);
+        setEquipmentHauled(data[5]);
       } catch (error) {
-        console.error("Error fetching Equipment Hauled:", error);
+        console.error("Error fetching Data:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    fetchEquipmentHauled();
-  }, [timeSheetId, equipmentTrigger]); // Run only when timeSheetId changes
-
-  // Refuel Logs - Only when timeSheetId is available
-  useEffect(() => {
-    if (!timeSheetId) return; // Exit if timeSheetId is not set
-
-    const fetchRefuelLogs = async () => {
-      try {
-        const res = await fetch(
-          `/api/getTruckingLogs/refueledLogs/${timeSheetId}`
-        );
-        if (!res.ok) throw new Error("Failed to fetch Refuel Logs");
-        const data = await res.json();
-        setRefuelLogs(data);
-      } catch (error) {
-        console.error("Error fetching Refuel Logs:", error);
-      }
-    };
-
-    fetchRefuelLogs();
-  }, [timeSheetId]); // Run only when timeSheetId changes
+    fetchData();
+  }, [timeSheetId]);
 
   return (
     <Holds className="h-full w-full ">
-      <Grids rows={"10"} className="h-full w-full">
+      <Grids
+        rows={"10"}
+        className={isLoading ? "animate-pulse h-full w-full" : "h-full w-full"}
+      >
         <Holds position={"row"} className="row-span-1 w-full gap-1">
           <NewTab
             titleImage="/Hauling-logs.svg"
@@ -199,24 +155,45 @@ export default function TruckDriver() {
         </Holds>
         {activeTab === 1 && (
           <HaulingLogs
+            truckingLog={timeSheetId}
+            material={material}
             equipmentHauled={equipmentHauled}
             setEquipmentHauled={setEquipmentHauled}
-            material={material}
             setMaterial={setMaterial}
-            truckingLog={timeSheetId}
-            triggerMaterial={() => setMaterialTrigger(!materialTrigger)}
-            triggerEquipment={() => setEquipmentTrigger(!equipmentTrigger)}
+            isLoading={isLoading}
           />
         )}
         {activeTab !== 1 && (
           <Holds
             background={"white"}
-            className="rounded-t-none row-span-9 h-full overflow-y-hidden no-scrollbar"
+            className={
+              "rounded-t-none row-span-9 h-full overflow-y-hidden no-scrollbar"
+            }
           >
             <Contents width={"section"} className="py-5">
-              {activeTab === 2 && <></>}
-              {activeTab === 3 && <></>}
-              {activeTab === 4 && <></>}
+              {activeTab === 2 && (
+                <NoteLayout
+                  truckingLog={timeSheetId}
+                  notes={notes}
+                  setNotes={setNotes}
+                  endMileage={endMileage}
+                  setEndMileage={setEndMileage}
+                />
+              )}
+              {activeTab === 3 && (
+                <StateLog
+                  StateMileage={StateMileage}
+                  setStateMileage={setStateMileage}
+                  truckingLog={timeSheetId}
+                />
+              )}
+              {activeTab === 4 && (
+                <RefuelLayout
+                  truckingLog={timeSheetId}
+                  refuelLogs={refuelLogs}
+                  setRefuelLogs={setRefuelLogs}
+                />
+              )}
             </Contents>
           </Holds>
         )}

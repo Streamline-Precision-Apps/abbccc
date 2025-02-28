@@ -34,14 +34,14 @@ export default function Sliders({
         />
 
         <Holds
-          className={`h-full w-full col-span-1 py-2 z-10 flex justify-center items-center cursor-pointer`}
+          className={`h-full w-full col-span-1 py-2 z-[1]  flex justify-center items-center cursor-pointer`}
           onClick={() => setActiveTab(1)}
         >
           <Texts size={"p6"}>{leftTitle}</Texts>
         </Holds>
 
         <Holds
-          className={`h-full w-full col-span-1 py-2 z-10 flex justify-center items-center cursor-pointer`}
+          className={`h-full w-full col-span-1 py-2 z-[1] flex justify-center items-center cursor-pointer`}
           onClick={() => setActiveTab(2)}
         >
           <Texts size={"p6"}>{rightTitle}</Texts>
