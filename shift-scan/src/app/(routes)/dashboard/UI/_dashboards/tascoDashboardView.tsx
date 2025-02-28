@@ -10,10 +10,11 @@ import FormsBtn from "../_buttons/formsBtn";
 import GeneratorBtn from "../_buttons/generatorBtn";
 import MyTeamWidget from "../_buttons/myTeamBtn";
 import SwitchJobsBtn from "../_buttons/switchJobsBtn";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, use, useEffect } from "react";
 import TascoBtn from "../_buttons/TascoBtn";
 import { LogItem } from "@/lib/types";
 import { useModalState } from "@/hooks/(dashboard)/useModalState";
+import GeneralDashboardView from "./generalDashboardView";
 
 export default function TascoDashboardView({
   additionalButtonsType,
@@ -47,7 +48,31 @@ export default function TascoDashboardView({
   logs: LogItem[];
   laborType: string;
 }) {
+  useEffect(() => {
+    console.log("laborType: ", laborType);
+    }, []);
   const modalState = useModalState();
+
+
+  if (laborType === "manualLabor") {
+  return (
+    <GeneralDashboardView
+    additionalButtonsType= {additionalButtonsType}
+    isModalOpen={isModalOpen}
+    isModal2Open={isModal2Open}
+    setIsModal2Open={setIsModal2Open}
+    comment={comment}
+    setComment={setComment}
+    handleCOButton2={handleCOButton2}
+    handleCOButton3={handleCOButton3}
+    handleCloseModal={handleCloseModal}
+    handleShowManagerButtons={handleShowManagerButtons}
+    permission={permission}
+    handleShowAdditionalButtons={handleShowAdditionalButtons}
+    logs={logs}
+    />
+  );
+} else {
   return (
     <>
       <Contents width={"section"} className="py-5">
@@ -116,4 +141,5 @@ export default function TascoDashboardView({
       </Contents>
     </>
   );
+}
 }

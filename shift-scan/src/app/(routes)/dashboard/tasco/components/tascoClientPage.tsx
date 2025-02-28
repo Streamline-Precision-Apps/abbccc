@@ -2,10 +2,10 @@
 
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
-import LoadCounter from "./components/loadCounter";
-import DidYouRefuel from "./components/didYouRefuel";
-import Loads from "./components/loads";
-import Notes from "./components/notes";
+import Counter from "./counter";
+import DidYouRefuel from "./didYouRefuel";
+import Loads from "./loads";
+import Notes from "./notes";
 import { useEffect, useState } from "react";
 type Loads = {
   id: string;
@@ -35,6 +35,7 @@ type TascoLog = {
 };
 export default function TascoClientPage() {
   const [tascoData, setTascoData] = useState<TascoLog[]>([]);
+
   useEffect(() => {
     const fetchTimesheet = async () => {
       // get recent timecard then fetch and call api: /api/getRecentTimecard
@@ -46,7 +47,6 @@ export default function TascoClientPage() {
   });
   return (
     <Holds className="w-full h-full overflow-y-hidden no-scrollbar">
-      <LoadCounter />
       <DidYouRefuel />
       <Loads />
       <Notes />
