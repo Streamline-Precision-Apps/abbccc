@@ -82,7 +82,6 @@ CREATE TABLE "Equipment" (
     "mileage" INTEGER,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "inUse" BOOLEAN NOT NULL DEFAULT false,
-    "jobsiteId" TEXT,
     "overWeight" BOOLEAN DEFAULT false,
     "currentWeight" DOUBLE PRECISION DEFAULT 0,
 
@@ -112,16 +111,15 @@ CREATE TABLE "EmployeeEquipmentLog" (
 );
 
 -- CreateTable
-CREATE TABLE "Refueled" (
+CREATE TABLE "EquipmentHauled" (
     "id" TEXT NOT NULL,
-    "date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "employeeEquipmentLogId" TEXT,
-    "truckingLogId" TEXT,
-    "gallonsRefueled" DOUBLE PRECISION,
-    "milesAtfueling" INTEGER,
-    "tascoLogId" TEXT,
+    "truckingLogId" TEXT NOT NULL,
+    "equipmentId" TEXT,
+    "recordedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "jobSiteId" TEXT,
 
-    CONSTRAINT "Refueled_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "EquipmentHauled_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -295,8 +293,8 @@ CREATE TABLE "TruckingLog" (
 CREATE TABLE "StateMileage" (
     "id" TEXT NOT NULL,
     "truckingLogId" TEXT NOT NULL,
-    "state" TEXT NOT NULL,
-    "stateLineMileage" INTEGER NOT NULL,
+    "state" TEXT,
+    "stateLineMileage" INTEGER,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "StateMileage_pkey" PRIMARY KEY ("id")
@@ -317,13 +315,16 @@ CREATE TABLE "Material" (
 );
 
 -- CreateTable
-CREATE TABLE "EquipmentHauled" (
+CREATE TABLE "Refueled" (
     "id" TEXT NOT NULL,
-    "truckingLogId" TEXT NOT NULL,
-    "equipmentId" TEXT,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "employeeEquipmentLogId" TEXT,
+    "truckingLogId" TEXT,
+    "gallonsRefueled" DOUBLE PRECISION,
+    "milesAtfueling" INTEGER,
+    "tascoLogId" TEXT,
 
-    CONSTRAINT "EquipmentHauled_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Refueled_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -474,9 +475,6 @@ CREATE INDEX "_CCTagToCostCode_B_index" ON "_CCTagToCostCode"("B");
 CREATE INDEX "_CrewToUser_B_index" ON "_CrewToUser"("B");
 
 -- AddForeignKey
-ALTER TABLE "Equipment" ADD CONSTRAINT "Equipment_jobsiteId_fkey" FOREIGN KEY ("jobsiteId") REFERENCES "Jobsite"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "EmployeeEquipmentLog" ADD CONSTRAINT "EmployeeEquipmentLog_employeeId_fkey" FOREIGN KEY ("employeeId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -489,13 +487,13 @@ ALTER TABLE "EmployeeEquipmentLog" ADD CONSTRAINT "EmployeeEquipmentLog_equipmen
 ALTER TABLE "EmployeeEquipmentLog" ADD CONSTRAINT "EmployeeEquipmentLog_timeSheetId_fkey" FOREIGN KEY ("timeSheetId") REFERENCES "TimeSheet"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Refueled" ADD CONSTRAINT "Refueled_employeeEquipmentLogId_fkey" FOREIGN KEY ("employeeEquipmentLogId") REFERENCES "EmployeeEquipmentLog"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "EquipmentHauled" ADD CONSTRAINT "EquipmentHauled_truckingLogId_fkey" FOREIGN KEY ("truckingLogId") REFERENCES "TruckingLog"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Refueled" ADD CONSTRAINT "Refueled_truckingLogId_fkey" FOREIGN KEY ("truckingLogId") REFERENCES "TruckingLog"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "EquipmentHauled" ADD CONSTRAINT "EquipmentHauled_equipmentId_fkey" FOREIGN KEY ("equipmentId") REFERENCES "Equipment"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Refueled" ADD CONSTRAINT "Refueled_tascoLogId_fkey" FOREIGN KEY ("tascoLogId") REFERENCES "TascoLog"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "EquipmentHauled" ADD CONSTRAINT "EquipmentHauled_jobSiteId_fkey" FOREIGN KEY ("jobSiteId") REFERENCES "Jobsite"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "InjuryForm" ADD CONSTRAINT "InjuryForm_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -546,10 +544,13 @@ ALTER TABLE "StateMileage" ADD CONSTRAINT "StateMileage_truckingLogId_fkey" FORE
 ALTER TABLE "Material" ADD CONSTRAINT "Material_truckingLogId_fkey" FOREIGN KEY ("truckingLogId") REFERENCES "TruckingLog"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "EquipmentHauled" ADD CONSTRAINT "EquipmentHauled_truckingLogId_fkey" FOREIGN KEY ("truckingLogId") REFERENCES "TruckingLog"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Refueled" ADD CONSTRAINT "Refueled_employeeEquipmentLogId_fkey" FOREIGN KEY ("employeeEquipmentLogId") REFERENCES "EmployeeEquipmentLog"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "EquipmentHauled" ADD CONSTRAINT "EquipmentHauled_equipmentId_fkey" FOREIGN KEY ("equipmentId") REFERENCES "Equipment"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Refueled" ADD CONSTRAINT "Refueled_truckingLogId_fkey" FOREIGN KEY ("truckingLogId") REFERENCES "TruckingLog"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Refueled" ADD CONSTRAINT "Refueled_tascoLogId_fkey" FOREIGN KEY ("tascoLogId") REFERENCES "TascoLog"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UserSettings" ADD CONSTRAINT "UserSettings_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

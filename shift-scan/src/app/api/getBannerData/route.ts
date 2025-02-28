@@ -78,7 +78,7 @@ export async function GET(req: Request) {
         id: true,
         startTime: true,
         endTime: true,
-        Equipment: { select: { id: true, name: true } },
+        equipment: { select: { id: true, name: true } },
       },
     });
 
@@ -86,7 +86,7 @@ export async function GET(req: Request) {
       id: log.id,
       startTime: log.startTime,
       endTime: log.endTime,
-      equipment: log.Equipment || { id: null, name: "Unknown" },
+      equipment: log.equipment || { id: null, name: "Unknown" },
     }));
 
     // ------------------------- Structure the response -------------------------

@@ -18,7 +18,7 @@ export default async function Inbox() {
   const laborType = cookies().get("laborType")?.value;
 
   return (
-    <Bases className="fixed">
+    <Bases>
       <Contents>
         <Grids rows={"6"} gap={"5"} className="h-full">
           <Holds background={"white"} className="row-span-1 h-full ">
@@ -26,9 +26,9 @@ export default async function Inbox() {
               title={
                 laborType === "truckDriver"
                   ? t("TruckDriver")
-                  : laborType === "manualLabor"
-                  ? t("Operator")
                   : laborType === "operator"
+                  ? t("Operator")
+                  : laborType === "manualLabor"
                   ? t("ManualLabor")
                   : t("TruckingAssistant")
               }
