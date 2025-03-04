@@ -86,7 +86,7 @@ export default function TruckDriver() {
       notesTab: endMileage !== null,
       stateMileageTab: Boolean(
         StateMileage &&
-          StateMileage.length > 0 &&
+          StateMileage.length >= 0 &&
           StateMileage.every((item) => item.state && item.stateLineMileage)
       ),
       refuelLogsTab: Boolean(

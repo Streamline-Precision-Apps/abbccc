@@ -5,6 +5,7 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
+import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { sentContent } from "@/lib/types";
@@ -89,11 +90,23 @@ export default function STab() {
   if (sentContent.length === 0) {
     return (
       <Contents width={"section"}>
-        <Grids rows={"5"} cols={"3"} gap={"5"} className="py-5">
-          <Holds className="row-start-1 row-end-5 col-span-3 h-full mt-5">
+        <Grids rows={"7"} cols={"3"} gap={"5"} className="py-5">
+          <Holds className="row-start-1 row-end-2 col-span-3 h-full">
+            <Selects
+              value={""}
+              onChange={() => {}}
+              className="text-center h-full"
+            >
+              <option value="">Select A Filter</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="denied">Denied</option>
+            </Selects>
+          </Holds>
+          <Holds className="row-start-2 row-end-7 col-span-3 h-full">
             <Titles>No Requests Available</Titles>
           </Holds>
-          <Holds className="row-start-5 col-start-3 col-end-4 h-full">
+          <Holds className="row-start-7 row-end-8 col-start-3 col-end-4 h-full">
             <Buttons background={"green"} href="/hamburger/inbox/form">
               <Holds>
                 <Images
