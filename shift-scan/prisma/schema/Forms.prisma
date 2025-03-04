@@ -102,6 +102,7 @@ model FormApproval {
     approvedBy       String
     approvedAt       DateTime @default(now())
     signature        String?
+    comment          String?
 
     formSubmission FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
     approver       User           @relation(fields: [approvedBy], references: [id])
