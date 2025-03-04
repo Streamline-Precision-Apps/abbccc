@@ -12,6 +12,7 @@ export default async function Inbox() {
   const session = await auth();
   if (!session) return null;
   const t = await getTranslations("Hamburger");
+  const isManager = session.user.permission !== "USER";
 
   return (
     <Bases>
@@ -27,7 +28,7 @@ export default async function Inbox() {
             </Contents>
           </Holds>
           <Holds className="row-span-8 h-full">
-            <Content />
+            <Content isManager={isManager} />
           </Holds>
         </Grids>
       </Contents>

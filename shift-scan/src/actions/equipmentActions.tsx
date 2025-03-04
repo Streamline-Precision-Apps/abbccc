@@ -33,12 +33,12 @@ export async function fetchEq(employeeId: string, date: string) {
       },
     },
     include: {
-      Equipment: true,
+      equipment: true,
     },
   });
 
   // Ensure no null values are present
-  const filteredEqLogs = eqlogs.filter((log) => log.Equipment !== null);
+  const filteredEqLogs = eqlogs.filter((log) => log.equipment !== null);
 
   console.log("\n\n\nEquipment Logs:", filteredEqLogs);
   revalidatePath("/dashboard/myTeam/" + employeeId);
@@ -178,11 +178,6 @@ export async function createEquipment(formData: FormData) {
         licensePlate: licensePlate || null,
         registrationExpiration: registrationExpiration || null,
         mileage: mileage || null,
-        jobsite: {
-          connect: {
-            qrId: jobsiteLocation,
-          },
-        },
       },
     });
     revalidatePath("/dashboard/qr-generator");
@@ -292,7 +287,7 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
       data: {
         endTime: new Date().toISOString(),
         comment: formData.get("comment") as string,
-        Equipment: {
+        equipment: {
           update: {
             status: formData.get("Equipment.status") as EquipmentStatus,
           },

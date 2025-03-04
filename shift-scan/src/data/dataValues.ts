@@ -2,6 +2,21 @@ import { Prisma } from "@prisma/client";
 
 export const now = new Date();
 
+// Company
+export const initialCompany: Prisma.CompanyCreateInput[] = [
+  {
+    id: "1",
+    name: "Streamline Precision LLC",
+    address: "120 S 100 W",
+    city: "Burley",
+    state: "ID",
+    zipCode: "83318",
+    users: {
+      connect: [], // No users are linked initially
+    },
+  },
+];
+
 // jobsites
 export const initialJobsites: Prisma.JobsiteCreateInput[] = [
   {
@@ -251,6 +266,7 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     mechanicView: false,
     permission: "ADMIN",
     image: "",
+    company: { connect: { id: "1" } },
   },
   {
     id: "2",
@@ -266,6 +282,7 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     mechanicView: false,
     permission: "USER",
     image: "",
+    company: { connect: { id: "1" } },
   },
   {
     id: "3",
@@ -281,6 +298,7 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     mechanicView: true,
     permission: "USER",
     image: "",
+    company: { connect: { id: "1" } },
   },
   {
     id: "4",
@@ -296,6 +314,7 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     mechanicView: false,
     permission: "USER",
     image: "",
+    company: { connect: { id: "1" } },
   },
   {
     id: "5",
@@ -311,6 +330,7 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     mechanicView: false,
     permission: "USER",
     image: "",
+    company: { connect: { id: "1" } },
   },
   {
     id: "6",
@@ -326,6 +346,7 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     mechanicView: false,
     permission: "ADMIN",
     image: "",
+    company: { connect: { id: "1" } },
   },
   {
     id: "7",
@@ -341,6 +362,7 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     mechanicView: true,
     permission: "SUPERADMIN",
     image: "",
+    company: { connect: { id: "1" } },
   },
   {
     id: "8",
@@ -356,6 +378,7 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     mechanicView: true,
     permission: "SUPERADMIN",
     image: "",
+    company: { connect: { id: "1" } },
   },
   {
     id: "9",
@@ -371,6 +394,7 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     mechanicView: true,
     permission: "SUPERADMIN",
     image: "",
+    company: { connect: { id: "1" } },
   },
   {
     id: "10",
@@ -386,6 +410,7 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     mechanicView: false,
     permission: "ADMIN",
     image: "",
+    company: { connect: { id: "1" } },
   },
   {
     id: "11",
@@ -401,6 +426,7 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     mechanicView: true,
     permission: "ADMIN",
     image: "",
+    company: { connect: { id: "1" } },
   },
   {
     id: "12",
@@ -416,6 +442,7 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     mechanicView: true,
     permission: "SUPERADMIN",
     image: "",
+    company: { connect: { id: "1" } },
   },
 ];
 

@@ -18,7 +18,7 @@ enum TimeOffRequestType {
 }
 
 model InjuryForm {
-    id                  String      @id @default(cuid())
+    id                  String   @id @default(cuid())
     userId              String
     submitDate          DateTime @default(now())
     date                DateTime @db.Date
@@ -30,7 +30,7 @@ model InjuryForm {
 }
 
 model timeOffRequestForm {
-    id                 String                @id @default(cuid())
+    id                 String             @id @default(cuid())
     name               String? // a nickname for the request
     requestedStartDate DateTime // start date
     requestedEndDate   DateTime // end date
@@ -45,4 +45,57 @@ model timeOffRequestForm {
     signature          String? // ment to hold the individual who approved/rejected the timesheet
 
     employee User @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+}
+
+// FormTemplate	Stores each form's metadata (e.g., "Leave Request", "Bug Report")
+model FormTemplate {
+    id          String      @id @default(cuid())
+    companyId   String
+    name        String
+    slug        String      @unique // For dynamic routing (e.g., "leave-request")
+    description String?
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+    fields      FormField[] // Link to dynamic fields
+
+    company        Company          @relation(fields: [companyId], references: [id])
+    formSubmission FormSubmission[]
+}
+
+// FormField	Stores individual fields for each form (e.g., text input, dropdowns).
+model FormField {
+    id             String    @id @default(cuid())
+    formTemplateId String
+    label          String // Field Name (e.g., "Reason for Leave")
+    type           FieldType // Field Type (text, number, date, file, etc.)
+    required       Boolean   @default(false)
+    options        String? // JSON string for dropdown options
+    order          Int
+
+    formTemplate FormTemplate @relation(fields: [formTemplateId], references: [id], onDelete: Cascade)
+}
+
+// FormSubmission	Stores submitted form responses as JSON.
+model FormSubmission {
+    id             String       @id @default(cuid())
+    formTemplateId String
+    userId         String
+    data           Json // Stores responses in JSON format
+    createdAt      DateTime     @default(now())
+    submittedAt    DateTime? // Null means it's a draft
+    verifiedBy     String
+    managerComment String?
+    status         FormStatus   @default(PENDING)
+    formTemplate   FormTemplate @relation(fields: [formTemplateId], references: [id], onDelete: Cascade)
+    user           User         @relation(fields: [userId], references: [id])
+}
+
+// Enum for field types (supports text, number, date, file, dropdown, etc.)
+enum FieldType {
+    TEXT
+    NUMBER
+    DATE
+    FILE
+    DROPDOWN
+    CHECKBOX
 }

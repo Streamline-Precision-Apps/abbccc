@@ -41,12 +41,12 @@ export const NewTab: FC<TabProps> = ({
 }) => {
   return (
     <button onClick={onClick} className={classNames(tabStyles({ isActive }))}>
-      <div className="flex justify-center items-center">
+      <div className="flex justify-center items-center ">
         {isActive && children}
         <img
           src={titleImage}
           alt={titleImageAlt}
-          className={isActive ? " w-1/3 h-full " : "w-full h-full"}
+          className={isActive ? " w-16 h-full p-4" : "w-12 h-full p-1 "}
         />
         {!isComplete && !isLoading && (
           <div className="rounded-full w-4 h-4 bg-app-red absolute top-[-0.3rem] right-[-0.1rem] border-[3px] border-black"></div>
