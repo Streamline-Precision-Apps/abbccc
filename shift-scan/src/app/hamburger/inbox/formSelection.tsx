@@ -71,10 +71,7 @@ export default function FormSelection() {
             <Titles position={"left"} size={"h3"}>
               Drafts
             </Titles>
-            <Holds
-              background={"lightGray"}
-              className="h-full my-2 overflow-y-scroll no-scrollbar "
-            >
+            <Holds className="h-full my-2 overflow-y-scroll no-scrollbar ">
               {}
             </Holds>
           </Contents>
