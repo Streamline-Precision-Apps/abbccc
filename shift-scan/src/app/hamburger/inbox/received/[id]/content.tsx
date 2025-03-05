@@ -6,31 +6,60 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
 import { Holds } from "@/components/(reusable)/holds";
 import { TextAreas } from "@/components/(reusable)/textareas";
-import { Texts } from "@/components/(reusable)/texts";
-import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
-import { Titles } from "@/components/(reusable)/titles";
-import { receivedContent } from "@/lib/types";
 import { Session } from "next-auth";
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { FormEvent, use, useEffect, useState } from "react";
 import { ManagerLeaveRequest } from "@/actions/inboxSentActions";
-import { Images } from "@/components/(reusable)/images";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { formatDate } from "@/utils/formatDateYMD";
 import { Grids } from "@/components/(reusable)/grids";
 import { z } from "zod";
 import Spinner from "@/components/(animations)/spinner";
+import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
+import { Bases } from "@/components/(reusable)/bases";
+import TextInputWithRevert from "@/components/(reusable)/textInputWithRevert";
+import { useSession } from "next-auth/react";
 
-// Define Zod schema for validation
 const managerLeaveRequestSchema = z.object({
-  id: z.string().nonempty({ message: "Request ID is required" }),
-  decision: z.enum(["APPROVED", "DENIED"], {
-    errorMap: () => ({ message: "Invalid decision" }),
+  id: z.string().min(1, { message: "Needs ID" }),
+  status: z.enum(["APPROVED", "DENIED", "PENDING"], {
+    errorMap: () => ({ message: "Invalid status" }),
   }),
-  decidedBy: z.string().nonempty({ message: "Manager ID is required" }),
-  managerComments: z.string().max(40, {
+  createdAt: z.string().min(1, { message: "Needs date of request" }),
+  employee: z.object({
+    firstName: z.string(),
+    lastName: z.string(),
+  }),
+  name: z.string().optional(),
+  requestedStartDate: z.string().min(1, { message: "Needs start date" }),
+  requestedEndDate: z.string().min(1, { message: "Needs end date" }),
+  requestType: z.enum([
+    "FAMILY_MEDICAL",
+    "MILITARY",
+    "PAID_VACATION",
+    "NON_PAID_PERSONAL",
+    "SICK",
+  ]),
+  comment: z
+    .string()
+    .min(4, { message: "Description is required" })
+    .max(40, { message: "Max 40 characters" }),
+  decidedBy: z.string(),
+  managerComment: z.string().max(40, {
     message: "Manager comments must be at most 40 characters",
   }),
-  signature: z.string().nonempty({ message: "Manager signature is required" }),
+  signature: z.string().nullable(),
+});
+
+type leaveRequest = z.infer<typeof managerLeaveRequestSchema>;
+
+const formSubmitSchema = z.object({
+  id: z.string().min(1, { message: "ID is required" }),
+  decidedBy: z.string().min(1, { message: "Decided by is required" }),
+  managerComment: z
+    .string()
+    .min(4, { message: "Description is required" })
+    .max(40, { message: "Max 40 characters" }),
+  signature: z.string().nullable(),
 });
 
 type Props = {
@@ -39,38 +68,60 @@ type Props = {
 };
 
 export default function Content({ params }: Props) {
+  const { data: session } = useSession();
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-
-  const [decision, setDecision] = useState<string | null>(null);
-  const [cardDate, setCardDate] = useState<string>("");
-  const [manager, setManager] = useState<string>("");
-  const [managerComment, setManagerComment] = useState<string>("");
-  const [employeeName, setEmployeeName] = useState<string>("");
-  const [signature, setSignature] = useState<string>("");
+  const { id } = useParams();
+  // const [attachedSignature, setAttachedSignature] = useState(true);
   const [managerSignature, setManagerSignature] = useState<string>("");
-
-  const [receivedContent, setReceivedContent] = useState<receivedContent[]>([]);
+  const [formState, setFormState] = useState<leaveRequest[]>([
+    {
+      id: "",
+      status: "PENDING",
+      createdAt: "",
+      employee: {
+        firstName: "",
+        lastName: "",
+      },
+      name: "",
+      requestedStartDate: "",
+      requestedEndDate: "",
+      requestType: "SICK",
+      comment: "",
+      decidedBy: "",
+      managerComment: "",
+      signature: "",
+    },
+  ]);
+  const [originalState, setOriginalState] = useState<leaveRequest[]>([
+    {
+      id: "",
+      status: "PENDING",
+      createdAt: "",
+      employee: {
+        firstName: "",
+        lastName: "",
+      },
+      name: "",
+      requestedStartDate: "",
+      requestedEndDate: "",
+      requestType: "SICK",
+      comment: "",
+      decidedBy: "",
+      managerComment: "",
+      signature: "",
+    },
+  ]);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const result = await fetch(`/api/getTimeoffRequests/?type=received`);
-        const data = await result.json();
-
-        setCardDate(
-          `${new Date(data[0].date).getMonth() + 1}/${new Date(
-            data[0].date
-          ).getDate()}/${new Date(data[0].date).getFullYear()}`
-        );
-
-        const employee = data[0].employee;
-        setEmployeeName(employee?.firstName + " " + employee?.lastName || "");
-        setSignature(employee?.signature || "");
-        setManager(data[0]?.manager || "");
-        setManagerComment(data[0]?.managerComment || "");
-        setReceivedContent(data);
+        const response = await fetch(`/api/getTimeOffRequestById/${id}`);
+        const data = await response.json();
+        console.log("Data:", data);
+        setFormState([data]);
+        setOriginalState([data]);
       } catch (error) {
         console.log(error);
       } finally {
@@ -85,6 +136,7 @@ export default function Content({ params }: Props) {
       try {
         const result = await fetch(`/api/getUserSignature`);
         const data = await result.json();
+        console.log("Signature Data:", data);
         setManagerSignature(data.signature);
       } catch (error) {
         console.log(error);
@@ -93,208 +145,180 @@ export default function Content({ params }: Props) {
     fetchSignatureData();
   }, [params.id]);
 
-  const handleManagerCommentChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    setManagerComment(e.target.value);
-  };
-
-  useEffect(() => {
-    if (decision !== null) {
-      setDecision(null);
-      router.push("/hamburger/inbox");
-    }
-  }, [router, decision]);
-
   const handleApproval = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
     const formData = new FormData(event.currentTarget);
+    formData.append("id", formState[0].id);
+    formData.append("status", "APPROVED");
+    formData.append("decidedBy", session?.user?.id as string);
+    formData.append("managerComment", formState[0].managerComment);
+    formData.append("signature", managerSignature);
+
+    console.log("Form Data:", formData);
+
     const formValues = {
       id: formData.get("id") as string,
-      decision: formData.get("decision") as string,
+      status: "APPROVED",
       decidedBy: formData.get("decidedBy") as string,
-      managerComments: managerComment,
-      signature: managerSignature,
+      managerComment: formData.get("managerComment") as string,
+      signature: formData.get("signature") as string,
     };
+    console.log("Form Values:", formValues);
 
-    // Validate using Zod
     try {
-      managerLeaveRequestSchema.parse(formValues);
+      formSubmitSchema.parse(formValues);
       await ManagerLeaveRequest(formData);
       router.replace("/hamburger/inbox");
     } catch (error) {
-      if (error instanceof z.ZodError) {
-        console.error("Validation error:", error.errors[0].message);
-      } else {
-        console.error("Failed to submit form:", error);
-      }
+      console.error("Validation error:", error);
     }
+  };
+
+  const handleDenial = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    formData.append("id", formState[0].id);
+    formData.append("status", "DENIED");
+    formData.append("decidedBy", session?.user?.id as string);
+    formData.append("managerComment", formState[0].managerComment);
+    formData.append("signature", managerSignature);
+    const formValues = {
+      id: formData.get("id") as string,
+      status: formData.get("DENIED") as string,
+      decidedBy: formData.get("decidedBy") as string,
+      managerComment: formData.get("managerComment") as string,
+      signature: managerSignature,
+    };
+
+    try {
+      formSubmitSchema.parse(formValues);
+      await ManagerLeaveRequest(formData);
+      router.replace("/hamburger/inbox");
+    } catch (error) {
+      console.error("Validation error:", error);
+    }
+  };
+
+  const handleFieldChange = (field: keyof leaveRequest, value: string) => {
+    setFormState((prev) => [
+      {
+        ...prev[0],
+        [field]: value,
+      },
+    ]);
   };
 
   if (loading) {
     return (
-      <Grids className="grid-rows-10 gap-5 my-5">
-        <Holds background={"orange"} className="row-span-1 h-full">
+      <div>
+        <Holds background={"orange"} className="row-span-2">
           <TitleBoxes
             title="Leave Request"
+            subtitle="No data available"
+            header="No data available"
             titleImg="/Inbox.svg"
             titleImgAlt="Inbox"
-            type="noIcon"
+            type="titleAndSubtitleAndHeader"
           />
-          <Titles size={"h3"}>Loading date...</Titles>
         </Holds>
-        <Holds background={"white"} className="row-span-9 h-full">
-          <Holds size={"full"} className="mt-5">
-            <Spinner />
-          </Holds>
-        </Holds>
-      </Grids>
+        <Spinner />;
+      </div>
     );
   }
 
   return (
-    <Grids rows={"10"} gap={"5"} className="my-5">
-      <Holds background={"orange"} className="row-span-1 h-full">
+    <Grids rows={"9"} gap={"4"} className="my-5">
+      <Holds
+        background={
+          formState[0].status === "PENDING"
+            ? "orange"
+            : formState[0].status === "APPROVED"
+            ? "green"
+            : "red"
+        }
+        className="row-span-2"
+      >
         <TitleBoxes
           title="Leave Request"
+          subtitle={
+            formState[0]?.employee
+              ? `${formState[0].employee.firstName} ${formState[0].employee.lastName} - ${formState[0].name}`
+              : "No employee data"
+          }
+          header={
+            formState[0]
+              ? `Requested: ${new Date(
+                  formState[0].createdAt
+                ).toLocaleDateString()}`
+              : "No request date"
+          }
           titleImg="/Inbox.svg"
           titleImgAlt="Inbox"
-          type="noIcon"
+          type="titleAndSubtitleAndHeader"
         />
-        <Titles size={"h3"}>{cardDate}</Titles>
       </Holds>
+      <Holds background={"white"} className="row-span-4 p-4">
+        <Labels>
+          Requested Date Range
+          <Inputs
+            type="text"
+            value={`${new Date(formState[0].requestedStartDate).toLocaleDateString("en-US")} to ${new Date(formState[0].requestedEndDate).toLocaleDateString("en-US")}`}
+            disabled
+          />
+        </Labels>
+        <Labels>
+          Request Type
+          <Inputs type="text" value={formState[0].requestType} disabled />
+        </Labels>
+        <Labels>
+          Employee Comment
+          <TextAreas
+            name="description"
+            defaultValue={formState[0].comment}
+            disabled
+          />
+        </Labels>
+      </Holds>
+      <Holds
+        background={"white"}
+        className="row-span-2 p-4"
+        key={formState[0].id}
+      >
+        <TextInputWithRevert
+          label="Manager Comment"
+          size="large"
+          type="full"
+          value={formState[0].managerComment || ""}
+          onChange={(newValue: string) =>
+            handleFieldChange("managerComment", newValue)
+          }
+          showAsterisk={false}
+          defaultValue={originalState[0].managerComment}
+        />
 
-      {receivedContent.map((item) => (
-        <Holds background={"white"} className="row-span-9 h-full" key={item.id}>
-          <Contents width={"section"}>
-            <Grids className="grid-rows-1 py-5">
-              <Inputs type="hidden" name="date" value={item.date.toString()} />
-              <Inputs type="hidden" name="employeeId" value={item.employeeId} />
-
-              <Holds className="row-span-1">
-                <Labels>
-                  Employee
-                  <Inputs type="text" defaultValue={employeeName} disabled />
-                </Labels>
-              </Holds>
-
-              <Holds className="row-span-1">
-                <Labels>
-                  Start Date
-                  <Inputs
-                    type="date"
-                    name="startDate"
-                    defaultValue={formatDate(item.requestedStartDate)}
-                    disabled
-                  />
-                </Labels>
-              </Holds>
-
-              <Holds className="row-span-1">
-                <Labels>
-                  End Date
-                  <Inputs
-                    type="date"
-                    name="endDate"
-                    defaultValue={formatDate(item.requestedEndDate)}
-                    disabled
-                  />
-                </Labels>
-              </Holds>
-
-              <Holds className="row-span-1">
-                <Labels>
-                  Request Type
-                  <Inputs
-                    type="text"
-                    name="requestType"
-                    defaultValue={item?.requestType}
-                    disabled
-                  />
-                </Labels>
-              </Holds>
-
-              <Holds className="row-span-1">
-                <Labels>
-                  Comments
-                  <TextAreas
-                    name="description"
-                    defaultValue={item.comment}
-                    disabled
-                    rows={2}
-                  />
-                </Labels>
-              </Holds>
-
-              <Holds className="row-span-1">
-                <Labels>
-                  Manager Comments
-                  <TextAreas
-                    name="managerComments"
-                    value={managerComment}
-                    rows={2}
-                    onChange={handleManagerCommentChange}
-                    maxLength={40}
-                  />
-                </Labels>
-              </Holds>
-
-              <Holds className="row-span-1 pb-5">
-                <Texts position={"left"} size={"p5"}>
-                  Employee signature
-                </Texts>
-                <Holds className="border-2 border-black rounded-xl">
-                  {signature ? (
-                    <Holds size={"20"} position={"center"}>
-                      <img src={signature} alt="Employee signature" />
-                    </Holds>
-                  ) : (
-                    <Holds position={"center"} className="py-2">
-                      <Texts size={"p5"}>Signature is not set up</Texts>
-                    </Holds>
-                  )}
-                </Holds>
-              </Holds>
-
-              <Holds position={"row"} className="row-span-1">
-                <Forms onSubmit={handleApproval}>
-                  <Inputs type="hidden" name="id" value={item.id} />
-                  <Inputs type="hidden" name="decidedBy" value={manager} />
-
-                  <Buttons
-                    background={"red"}
-                    type="submit"
-                    onClick={() => setDecision("DENIED")}
-                    size={"80"}
-                  >
-                    <Holds position={"row"}>
-                      <Titles>Deny</Titles>
-                      <Images
-                        titleImg="/undo-edit.svg"
-                        titleImgAlt="Deny request"
-                      />
-                    </Holds>
-                  </Buttons>
-
-                  <Buttons
-                    background={"green"}
-                    type="submit"
-                    onClick={() => setDecision("APPROVED")}
-                    size={"80"}
-                  >
-                    <Holds position={"row"}>
-                      <Titles>Approve</Titles>
-                      <Images
-                        titleImg="/save-edit.svg"
-                        titleImgAlt="Approve request"
-                      />
-                    </Holds>
-                  </Buttons>
-                </Forms>
-              </Holds>
-            </Grids>
-          </Contents>
-        </Holds>
-      ))}
+        <Forms onSubmit={handleDenial}>
+          <Buttons
+            background={
+              formState[0]?.managerComment?.length >= 4 ? "red" : "lightGray"
+            }
+            type="submit"
+            disabled={!(formState[0]?.managerComment?.length >= 4)}
+          >
+            Deny
+          </Buttons>
+        </Forms>
+        <Forms onSubmit={handleApproval}>
+          <Buttons
+            background={
+              formState[0]?.managerComment?.length >= 4 ? "green" : "lightGray"
+            }
+            type="submit"
+            disabled={!(formState[0]?.managerComment?.length >= 4)}
+          >
+            Approve
+          </Buttons>
+        </Forms>
+      </Holds>
     </Grids>
   );
 }

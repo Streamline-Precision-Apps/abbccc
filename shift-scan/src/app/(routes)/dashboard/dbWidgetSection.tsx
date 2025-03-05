@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import React from "react";
 import { Session } from "next-auth";
 import { breakOutTimeSheet } from "@/actions/timeSheetActions";
-import { z } from "zod";
 import { useCurrentView } from "@/app/context/CurrentViewContext";
 import TascoDashboardView from "./UI/_dashboards/tascoDashboardView";
 import TruckDriverDashboardView from "./UI/_dashboards/truckDriverDashboardView";
@@ -14,39 +13,13 @@ import GeneralDashboardView from "./UI/_dashboards/generalDashboardView";
 import { setCurrentPageView } from "@/actions/cookieActions";
 import DashboardLoadingView from "./UI/_dashboards/dashboardLoadingView";
 import { LogItem } from "@/lib/types";
-import { set } from "date-fns";
 import { useModalState } from "@/hooks/(dashboard)/useModalState";
-
-// Zod schema for state validation
-const DbWidgetSectionSchema = z.object({
-  session: z.object({
-    user: z.object({
-      permission: z.string(),
-    }),
-  }),
-  logs: z.array(
-    z.object({
-      id: z.string(),
-      userId: z.string(),
-      equipment: z
-        .object({
-          id: z.string(),
-          qrId: z.string(),
-          name: z.string(),
-        })
-        .nullable(),
-      submitted: z.boolean(),
-    })
-  ),
-  isModalOpen: z.boolean(),
-  loading: z.boolean(),
-  additionalButtonsType: z.string().nullable(),
-});
 
 type props = {
   session: Session;
   view: string;
   mechanicProjectID: string;
+  laborType: string;
 };
 
 // Extracted custom hook for fetching logs
@@ -89,6 +62,7 @@ export default function DbWidgetSection({
   session,
   view,
   mechanicProjectID,
+  laborType,
 }: props) {
   const permission = session.user.permission;
   const [logs, setLogs] = useState<LogItem[]>([]);
@@ -164,6 +138,7 @@ export default function DbWidgetSection({
           logs={logs}
           permission={permission}
           currentView={currentView}
+          laborType={laborType}
         />
       );
     case "truck":
@@ -179,6 +154,7 @@ export default function DbWidgetSection({
           additionalButtonsType={additionalButtonsType}
           logs={logs}
           permission={permission}
+          laborType={laborType}
         />
       );
     case "mechanic":
@@ -195,6 +171,7 @@ export default function DbWidgetSection({
           logs={logs}
           permission={permission}
           mechanicProjectID={mechanicProjectID}
+          laborType={laborType}
         />
       );
     case "general":

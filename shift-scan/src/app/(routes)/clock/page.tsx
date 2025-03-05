@@ -19,7 +19,7 @@ export default async function Clock() {
   const lang = cookies().get("locale");
   const locale = lang?.value || "en";
   return (
-    <Bases>
+    <Bases className="fixed w-full h-full">
       <Contents>
         <Holds className="h-full">
           <NewClockProcess

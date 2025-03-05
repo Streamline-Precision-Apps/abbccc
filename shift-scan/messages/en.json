@@ -128,6 +128,10 @@
   "Widgets": {
     "Mechanic": "Mechanic",
     "TascoAssistant": "Tasco Assistant",
+    "Tasco": "TASCO",
+    "TruckDriver": "Truck Driver",
+    "Operator": "Operator",
+    "ManualLabor": "Manual Labor",
     "QR": "Generator",
     "MyTeam": "Teams",
     "Equipment": "Equipment",
@@ -497,6 +501,10 @@
   },
 
   "Admins": {
+    "CreateNewForm": "Create New Form",
+    "NoFormsFound": "No forms found",
+    "FormsSearchPlaceholder": "Search for a form",
+
     "Description": "Description",
     "SelectRequestType": "Select Request Type",
     "SelectEmployee": "Select Employee",
@@ -843,7 +851,12 @@
     "LabelJobsite": "Jobsite",
     "LabelCostCode": "Cost Code"
   },
+
   "TruckingAssistant": {
+    "StateMileage": "State Logs",
+    "HaulingLogs": "Hauling Logs",
+    "MyComments": "Notes",
+    "RefuelLogs": "Refuel Logs",
     "TruckingAssistant": "Trucking Assistant",
     "FailedToRetrieve": "Failed to fetch received content",
     "ValidationError": "Validation error:",
@@ -854,6 +867,7 @@
     "NoDrives": "There Are No Drives Currently",
     "FetchingError": "An error occurred while fetching received content"
   },
+
   "MechanicWidget": {
     "Projects": "Projects",
     "Mechanic": "Mechanic",

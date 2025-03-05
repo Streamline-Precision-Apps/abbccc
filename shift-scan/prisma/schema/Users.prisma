@@ -19,17 +19,19 @@ model User {
     terminationDate DateTime?
     accountSetup    Boolean    @default(false)
     clockedIn       Boolean    @default(false) // indicates if employee is clocked in
+    companyId       String
 
     passwordResetTokens  PasswordResetToken[]
     timeSheets           TimeSheet[]
     equipmentLogs        EmployeeEquipmentLog[]
     contact              Contacts?
     userSettings         UserSettings? // one to one relationship
-    injuryForms          InjuryForm[] // one to many relationship 
-    timeOffRequestForms  timeOffRequestForm[] // one to many relationship
     maintenanceLogs      MaintenanceLog[]
     passwordResetTokenId String?
     crews                Crew[]
+    formSubmission       FormSubmission[]
+    company              Company                @relation(fields: [companyId], references: [id])
+    FormApproval         FormApproval[]
 
     @@unique([firstName, lastName, DOB]) // prevent duplicate users
     @@index([email])

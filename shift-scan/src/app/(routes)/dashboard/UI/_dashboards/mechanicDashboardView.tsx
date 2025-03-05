@@ -32,6 +32,7 @@ export default function MechanicDashboardView({
   handleShowAdditionalButtons,
   logs,
   mechanicProjectID,
+  laborType,
 }: {
   additionalButtonsType: string | null;
   isModalOpen: boolean;
@@ -47,6 +48,7 @@ export default function MechanicDashboardView({
   handleShowAdditionalButtons: (button: string) => void;
   logs: LogItem[];
   mechanicProjectID: string;
+  laborType: string;
 }) {
   const modalState = useModalState();
   return (
@@ -93,6 +95,8 @@ export default function MechanicDashboardView({
                 permission={permission}
                 mechanicProjectID={mechanicProjectID}
                 logs={logs}
+                laborType={laborType}
+                view={"mechanic"}
               />
               {permission !== "USER" && !additionalButtonsType && (
                 <GeneratorBtn />
@@ -101,12 +105,11 @@ export default function MechanicDashboardView({
                 <MyTeamWidget />
               )}
 
-              <FormsBtn permission={permission} view={"mechanic"} />
-
               <ClockOutBtn
                 handleShowAdditionalButtons={handleShowAdditionalButtons}
                 permission={permission}
                 View={"mechanic"}
+                laborType={laborType}
               />
             </>
           )}

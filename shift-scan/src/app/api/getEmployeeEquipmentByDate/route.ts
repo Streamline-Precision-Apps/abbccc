@@ -32,7 +32,7 @@ export async function GET(req: Request) {
       },
     },
     include: {
-      Equipment: {
+      equipment: {
         select: {
           id: true,
           qrId: true,
