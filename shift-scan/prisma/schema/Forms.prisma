@@ -47,9 +47,18 @@ model FormTemplate {
     updatedAt DateTime @updatedAt
     isActive  Boolean  @default(false)
 
-    company     Company          @relation(fields: [companyId], references: [id])
-    fields      FormField[]
+    company Company @relation(fields: [companyId], references: [id])
+
     submissions FormSubmission[]
+    FormGouping FormGrouping[]
+}
+
+model FormGrouping {
+    id           String         @id @default(cuid())
+    title        String
+    order        Int
+    fields       FormField[]
+    FormTemplate FormTemplate[]
 }
 
 // Defines individual form fields with metadata
@@ -63,7 +72,8 @@ model FormField {
     defaultValue   String? // Stores default input values
     options        FormFieldOption[] // Stores dropdown options
 
-    formTemplate FormTemplate @relation(fields: [formTemplateId], references: [id], onDelete: Cascade)
+    FormGrouping   FormGrouping? @relation(fields: [formGroupingId], references: [id], onDelete: Cascade)
+    formGroupingId String?
 }
 
 // Stores dropdown options for FormField
