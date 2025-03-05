@@ -2,12 +2,10 @@
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
-import { Spinner } from "@nextui-org/react";
 import ClockOutWidget from "../_buttons/AdditonalclockOutBtns";
 import EquipmentWidget from "../_buttons/AdditonalEquipmentBtns";
 import ClockOutBtn from "../_buttons/clockOutBtn";
 import EquipmentBtn from "../_buttons/equipmentBtn";
-import FormsBtn from "../_buttons/formsBtn";
 import GeneratorBtn from "../_buttons/generatorBtn";
 import MyTeamWidget from "../_buttons/myTeamBtn";
 import SwitchJobsBtn from "../_buttons/switchJobsBtn";
@@ -103,6 +101,7 @@ export default function TruckDriverDashboardView({
                 permission={permission}
                 logs={logs}
                 laborType={laborType}
+                view={"truck"}
               />
               {permission !== "USER" && !additionalButtonsType && (
                 <GeneratorBtn />

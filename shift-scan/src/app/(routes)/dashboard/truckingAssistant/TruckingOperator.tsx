@@ -8,6 +8,7 @@ import { NewTab } from "@/components/(reusable)/newTabs";
 import { Titles } from "@/components/(reusable)/titles";
 import RefuelLayout from "./components/RefuelLayout";
 import OperatorHaulingLogs from "./components/OperatorHaulingLogs";
+import TruckDriverNotes from "./components/TruckDriverNotes";
 
 type Refueled = {
   id: string;
@@ -36,6 +37,35 @@ export default function TruckOperator() {
   const [notes, setNotes] = useState<string>("");
   const [material, setMaterial] = useState<Material[]>();
 
+  const [isComplete, setIsComplete] = useState({
+    haulingLogsTab: true,
+    refuelLogsTab: true,
+  });
+
+  const validateCompletion = () => {
+    setIsComplete({
+      haulingLogsTab: Boolean(
+        material &&
+          material.length >= 0 &&
+          material.every(
+            (item) => item.LocationOfMaterial && item.quantity && item.name
+          )
+      ),
+
+      refuelLogsTab: Boolean(
+        refuelLogs &&
+          refuelLogs.length >= 0 &&
+          refuelLogs.every(
+            (item) => item.gallonsRefueled && item.milesAtfueling
+          )
+      ),
+    });
+  };
+
+  useEffect(() => {
+    validateCompletion();
+  }, [material, refuelLogs]);
+
   useEffect(() => {
     const fetchTruckingLog = async () => {
       try {
@@ -60,16 +90,15 @@ export default function TruckOperator() {
         const endpoints = [
           `/api/getTruckingLogs/notes/${timeSheetId}`,
           `/api/getTruckingLogs/refueledLogs/${timeSheetId}`,
-
           `/api/getTruckingLogs/material/${timeSheetId}`,
         ];
 
         const responses = await Promise.all(endpoints.map((url) => fetch(url)));
         const data = await Promise.all(responses.map((res) => res.json()));
 
-        setNotes(data[1].comment || "");
-        setRefuelLogs(data[2]);
-        setMaterial(data[3]);
+        setNotes(data[0].comment || "");
+        setRefuelLogs(data[1]);
+        setMaterial(data[2]);
       } catch (error) {
         console.error("Error fetching Data:", error);
       } finally {
@@ -92,6 +121,8 @@ export default function TruckOperator() {
             titleImageAlt="Truck"
             onClick={() => setActiveTab(1)}
             isActive={activeTab === 1}
+            isComplete={isComplete.haulingLogsTab}
+            isLoading={isLoading}
           >
             <Titles size={"h4"}>{t("HaulingLogs")}</Titles>
           </NewTab>
@@ -100,6 +131,8 @@ export default function TruckOperator() {
             titleImageAlt="Comment"
             onClick={() => setActiveTab(2)}
             isActive={activeTab === 2}
+            isComplete={true}
+            isLoading={isLoading}
           >
             <Titles size={"h4"}>{t("MyComments")}</Titles>
           </NewTab>
@@ -108,6 +141,8 @@ export default function TruckOperator() {
             titleImageAlt="Refuel"
             onClick={() => setActiveTab(3)}
             isActive={activeTab === 3}
+            isComplete={isComplete.refuelLogsTab}
+            isLoading={isLoading}
           >
             <Titles size={"h4"}>{t("RefuelLogs")}</Titles>
           </NewTab>
@@ -128,7 +163,15 @@ export default function TruckOperator() {
                 truckingLog={timeSheetId}
               />
             )}
-            {activeTab === 2 && <></>}
+            {activeTab === 2 && (
+              <Holds className="h-full w-full relative pt-2">
+                <TruckDriverNotes
+                  truckingLog={timeSheetId}
+                  notes={notes}
+                  setNotes={setNotes}
+                />
+              </Holds>
+            )}
             {activeTab === 3 && (
               <RefuelLayout
                 truckingLog={timeSheetId}

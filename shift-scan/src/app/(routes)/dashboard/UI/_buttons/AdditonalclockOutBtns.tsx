@@ -1,7 +1,6 @@
 "use client";
-import { Bases } from "@/components/(reusable)/bases";
+
 import { Buttons } from "@/components/(reusable)/buttons";
-import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
@@ -176,11 +175,13 @@ export default function ClockOutWidget({
                                   logs.find((log) => log.type === type)
                                     ?.maintenanceId
                                 }`
+                              : type === "Trucking Assistant"
+                              ? "/dashboard/truckingAssistant"
                               : undefined
                           }
-                          className="w-full py-4"
+                          className="w-full py-3"
                         >
-                          <Texts size="p1">{type}</Texts>
+                          <Texts size="p3">{type} </Texts>
                         </Buttons>
                       )
                     )}

@@ -30,7 +30,6 @@ export default function RefuelLayout({
     try {
       const tempRefuelLog = await createRefuelLog(formData);
       setRefuelLogs((prev) => [
-        ...(prev ?? []),
         {
           id: tempRefuelLog.id,
           employeeEquipmentLogId: tempRefuelLog.employeeEquipmentLogId ?? "",
@@ -39,6 +38,7 @@ export default function RefuelLayout({
           milesAtfueling: tempRefuelLog.milesAtfueling ?? 0,
           tascoLogId: tempRefuelLog.tascoLogId ?? "",
         },
+        ...(prev ?? []),
       ]);
     } catch (error) {
       console.log("error adding state Mileage", error);

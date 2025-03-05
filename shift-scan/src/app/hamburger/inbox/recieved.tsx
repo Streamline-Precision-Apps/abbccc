@@ -13,6 +13,7 @@ import Spinner from "@/components/(animations)/spinner";
 import { Images } from "@/components/(reusable)/images";
 import { Grids } from "@/components/(reusable)/grids";
 import { z } from "zod";
+import { Selects } from "@/components/(reusable)/selects";
 
 // Define Zod schema for received content
 // Define Zod schema for received content
@@ -40,13 +41,21 @@ const receivedContentSchema = z.object({
 
 type recievedContent = z.infer<typeof receivedContentSchema>;
 
+type FormatOptions = {
+  label: string;
+  value: string;
+};
+
 export default function RTab() {
   const { data: session } = useSession();
   const router = useRouter();
   const [receivedContent, setReceivedContent] = useState<recievedContent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  const [selectedFilter, setSelectedFilter] = useState<string>("");
+  const [pendingFormOptions, setPendingFormOptions] = useState<FormatOptions[]>(
+    []
+  );
   // Fetch receivedContent when session exists
   useEffect(() => {
     const fetchReceivedContent = async () => {
@@ -70,7 +79,6 @@ export default function RTab() {
             throw new Error("Invalid data format");
           }
         });
-        
 
         setReceivedContent(validatedData);
         setLoading(false);
@@ -93,31 +101,22 @@ export default function RTab() {
     }
   }, [session, router]);
 
-  // Check if the user has appropriate permissions
-  if (
-    session &&
-    !["SUPERADMIN", "MANAGER", "ADMIN"].includes(session?.user?.permission)
-  ) {
-    return (
-      <Holds className="h-full justify-center">
-        <Titles>Coming Soon</Titles>
-        <Holds>
-          <Images size={"30"} titleImg="/logo.svg" titleImgAlt="coming soon" />
-        </Holds>
-      </Holds>
-    );
-  }
-
   // Filter out requests made by the current user
   const user_Id = session?.user?.id;
-  const pending = receivedContent.filter((item) => item.employee.crews.filter((crew) => crew.leadId !== user_Id));
+  const pending = receivedContent.filter((item) =>
+    item.employee.crews.filter((crew) => crew.leadId !== user_Id)
+  );
 
   // If loading, show a loading message
   if (loading) {
     return (
-      <Holds className="py-5">
-        <Texts>Loading...</Texts>
-        <Spinner />
+      <Holds background={"white"} className="rounded-t-none row-span-9 h-full ">
+        <Holds
+          background={"lightGray"}
+          className="py-5 rounded-t-none h-full justify-center animate-pulse"
+        >
+          <Spinner />
+        </Holds>
       </Holds>
     );
   }
@@ -125,8 +124,10 @@ export default function RTab() {
   // If there's an error, show an error message
   if (error) {
     return (
-      <Holds>
-        <Texts>{error}</Texts>
+      <Holds background={"white"} className="rounded-t-none row-span-9 h-full">
+        <Holds>
+          <Texts>{error}</Texts>
+        </Holds>
       </Holds>
     );
   }
@@ -134,48 +135,92 @@ export default function RTab() {
   // If there are no pending requests, show a message
   if (!pending || pending.length === 0) {
     return (
-      <Holds className="mt-10">
-        <Titles>There Are No Requests Currently</Titles>
+      <Holds background={"white"} className="rounded-t-none row-span-9 h-full">
+        <Contents width={"section"}>
+          <Holds className="pt-5 h-full  ">
+            <Grids rows={"9"}>
+              <Selects
+                value={selectedFilter}
+                onChange={(e) => {
+                  setSelectedFilter(e.target.value);
+                }}
+                className="text-center h-full"
+              >
+                <option value="">Select A Filter</option>
+                {pendingFormOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </Selects>
+
+              <Holds className="pt-10 row-span-8 h-full ">
+                <Titles size={"h4"}>There Are No Requests Currently</Titles>
+              </Holds>
+            </Grids>
+          </Holds>
+        </Contents>
       </Holds>
     );
   }
 
   // Render received requests
   return (
-    <Contents width={"section"} className="mb-5">
-      <Grids rows={"1"} gap={"5"} className="py-5">
-        <Holds className="row-span-1  h-full gap-5 overflow-auto no-scrollbar">
-          {pending.map((item) => (
-            <Holds key={item.id}>
-              <Buttons
-                background={
-                  item.status.toString() === "PENDING"
-                  ? "orange"
-                  : item.status.toString() === "APPROVED"
-                  ? "green"
-                  : "red"}
-                key={item.id}
-                href={`/hamburger/inbox/received/${item.id}`}
-                size={"90"}
-              >
-                <Titles>{item.requestType}</Titles>
-                <div>
-                {item.employee.firstName} {item.employee.lastName}
-                </div>
-                {new Date(item.requestedStartDate).toLocaleString("en-US", {
-                  day: "numeric",
-                  month: "numeric",
-                  year: "numeric",
-                })} - {new Date(item.requestedEndDate).toLocaleString("en-US", {
-                  day: "numeric",
-                  month: "numeric",
-                  year: "numeric",
-                })}
-              </Buttons>
+    <Holds background={"white"} className="rounded-t-none row-span-9 h-full">
+      <Contents width={"section"}>
+        <Holds className="pt-5 h-full  ">
+          <Grids rows={"9"} gap={"5"} className="py-5">
+            <Selects
+              value={selectedFilter}
+              onChange={(e) => {
+                setSelectedFilter(e.target.value);
+              }}
+              className="text-center h-full"
+            >
+              <option value="">Select A Filter</option>
+              {pendingFormOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </Selects>
+            <Holds className="row-span-8  h-full gap-5 overflow-auto no-scrollbar">
+              {pending.map((item) => (
+                <Holds key={item.id}>
+                  <Buttons
+                    background={
+                      item.status.toString() === "PENDING"
+                        ? "orange"
+                        : item.status.toString() === "APPROVED"
+                        ? "green"
+                        : "red"
+                    }
+                    key={item.id}
+                    href={`/hamburger/inbox/received/${item.id}`}
+                    size={"90"}
+                  >
+                    <Titles>{item.requestType}</Titles>
+                    <div>
+                      {item.employee.firstName} {item.employee.lastName}
+                    </div>
+                    {new Date(item.requestedStartDate).toLocaleString("en-US", {
+                      day: "numeric",
+                      month: "numeric",
+                      year: "numeric",
+                    })}{" "}
+                    -{" "}
+                    {new Date(item.requestedEndDate).toLocaleString("en-US", {
+                      day: "numeric",
+                      month: "numeric",
+                      year: "numeric",
+                    })}
+                  </Buttons>
+                </Holds>
+              ))}
             </Holds>
-          ))}
+          </Grids>
         </Holds>
-      </Grids>
-    </Contents>
+      </Contents>
+    </Holds>
   );
 }

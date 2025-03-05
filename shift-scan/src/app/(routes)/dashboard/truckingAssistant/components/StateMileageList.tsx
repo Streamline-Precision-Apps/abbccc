@@ -88,22 +88,21 @@ export default function StateMileageList({
             <Holds
               position={"row"}
               background={"white"}
-              className="w-full h-full border-black border-[3px] rounded-[10px] mb-3 "
+              className={`w-full h-full  border-[3px] rounded-[10px] mb-3 border-black
+            `}
             >
               <Holds background={"white"} className="w-1/2 px-2">
                 <Selects
                   name="state"
                   value={sm.state || ""}
                   onChange={(e) => handleStateChange(index, e.target.value)}
-                  className={`${
-                    sm.state === ""
-                      ? "text-gray-400 border-none text-xs py-2 focus:outline-none"
-                      : "border-none text-xs py-2 focus:outline-none"
-                  }`}
+                  className={`
+                      border-none text-xs py-2 focus:outline-none ${
+                        sm.state ? "text-app-black" : "text-app-red"
+                      }
+                  `}
                 >
-                  <option value={""} className="">
-                    State
-                  </option>
+                  <option value={""}>State</option>
                   {StateOptions.map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.label}
@@ -113,7 +112,8 @@ export default function StateMileageList({
               </Holds>
               <Holds
                 background={"white"}
-                className="w-1/2 px-2 h-full justify-center  border-black border-l-[3px] rounded-l-none"
+                className={`w-1/2 px-2 h-full justify-center border-l-[3px] rounded-l-none border-black
+                } `}
               >
                 <Inputs
                   type="number"
@@ -132,7 +132,7 @@ export default function StateMileageList({
                     updateStateMileage(formData);
                   }}
                   className={
-                    "border-none text-xs py-2 focus:outline-none focus:ring-0"
+                    "border-none text-xs py-2 focus:outline-none focus:ring-0 empty: placeholder:text-app-red"
                   }
                 />
               </Holds>

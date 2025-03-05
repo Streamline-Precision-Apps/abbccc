@@ -112,12 +112,15 @@ export default function GeneralDashboardView({
                 handleShowManagerButtons={handleShowManagerButtons}
                 permission={permission}
                 logs={logs}
+                laborType={"general"}
+                view={"general"}
               />
 
               <ClockOutBtn
                 handleShowAdditionalButtons={handleShowAdditionalButtons}
                 permission={permission}
                 View={"general"}
+                laborType="general"
               />
             </>
           )}
