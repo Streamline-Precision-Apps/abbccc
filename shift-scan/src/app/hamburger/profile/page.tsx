@@ -1,8 +1,8 @@
 "use server";
 import { Bases } from "@/components/(reusable)/bases";
-import EmployeeInfo from "./employeeInfo";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import ProfilePage from "./accountSettings";
 
 export default async function EmployeeProfile() {
   const session = await auth();
@@ -10,10 +10,10 @@ export default async function EmployeeProfile() {
   if (!session) {
     redirect("/signin");
   }
-
+  const userId = session.user.id;
   return (
     <Bases>
-      <EmployeeInfo />
+      <ProfilePage userId={userId} />
     </Bases>
   );
 }

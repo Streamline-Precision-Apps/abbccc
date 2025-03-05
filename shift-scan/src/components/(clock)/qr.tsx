@@ -92,6 +92,8 @@ export default function QR({
         if (type === "equipment") {
           processEquipmentScan(data);
           setScanned(true);
+          handleNextStep();
+          handleNextStep();
         } else {
           processGeneralScan(data);
           setScanned(true);

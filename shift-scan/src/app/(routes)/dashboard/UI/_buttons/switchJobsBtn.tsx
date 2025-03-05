@@ -7,48 +7,87 @@ import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import useModalState from "@/hooks/(dashboard)/useModalState";
 import { LogItem } from "@/lib/types";
-import { modal } from "@nextui-org/theme";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
+import HorizontalLayout from "./horizontalLayout";
+import VerticalLayout from "./verticalLayout";
 
 export default function SwitchJobsBtn({
   permission,
   mechanicProjectID,
   handleShowManagerButtons,
   logs,
+  laborType,
+  view,
 }: {
   permission: string;
   mechanicProjectID?: string;
   handleShowManagerButtons: () => void;
   logs: LogItem[];
+  laborType: string;
+  view: string;
 }) {
   const t = useTranslations("Widgets");
   const modalState = useModalState();
   const router = useRouter();
 
   return (
-    <Holds position={"row"} className={"row-span-1 col-span-1 gap-5"}>
-      <Buttons //----------------------This is the Switch Jobs Widget
-        background={"orange"}
-        onClick={() => {
-          if (mechanicProjectID === "") {
-            router.push("/dashboard/switch-jobs");
-          } else {
-            modalState.handleOpenModal();
-          }
-        }}
-      >
-        <Holds>
-          <Images
-            titleImg="/jobsite.svg"
-            titleImgAlt="Jobsite Icon"
-            size={"40"}
-          />
-        </Holds>
-        <Holds>
-          <Texts size={"p3"}>{t("Switch")}</Texts>
-        </Holds>
-      </Buttons>
+    <>
+      {permission === "USER" && (
+        <>
+          {laborType === "manualLabor" ? (
+            <VerticalLayout
+              text={"Switch"}
+              titleImg={"/jobsite.svg"}
+              titleImgAlt={"Job site Icon"}
+              color={"orange"}
+              handleEvent={() => {
+                if (mechanicProjectID === "") {
+                  router.push("/dashboard/switch-jobs");
+                } else if (view === "truck") {
+                  router.push("/dashboard/switch-jobs");
+                } else {
+                  modalState.handleOpenModal();
+                }
+              }}
+            />
+          ) : (
+            <HorizontalLayout
+              text={"Switch"}
+              titleImg={"/jobsite.svg"}
+              titleImgAlt={"Job site Icon"}
+              color={"orange"}
+              handleEvent={() => {
+                if (mechanicProjectID === "") {
+                  router.push("/dashboard/switch-jobs");
+                } else if (view === "truck") {
+                  router.push("/dashboard/switch-jobs");
+                } else {
+                  modalState.handleOpenModal();
+                }
+              }}
+            />
+          )}
+        </>
+      )}
+      {permission !== "USER" && (
+        <VerticalLayout
+          text={"Switch"}
+          titleImg={"/jobsite.svg"}
+          titleImgAlt={"Job site Icon"}
+          color={"orange"}
+          handleEvent={() => {
+            if (mechanicProjectID === "") {
+              router.push("/dashboard/switch-jobs");
+            } else if (view === "truck" && logs.length === 0) {
+              router.push("/dashboard/switch-jobs");
+            } else {
+              modalState.handleOpenModal();
+            }
+          }}
+        />
+      )}
+
       <NModals
         isOpen={modalState.isModalOpen}
         handleClose={modalState.handleCloseModal}
@@ -96,11 +135,13 @@ export default function SwitchJobsBtn({
                                 logs.find((log) => log.type === type)
                                   ?.maintenanceId
                               }`
+                            : type === "Trucking Assistant"
+                            ? "/dashboard/truckingAssistant"
                             : undefined
                         }
-                        className="w-full py-4"
+                        className="w-full py-3"
                       >
-                        <Texts size="p1">{type}</Texts>
+                        <Texts size="p3">{type} </Texts>
                       </Buttons>
                     )
                   )}
@@ -110,6 +151,6 @@ export default function SwitchJobsBtn({
           </Holds>
         </Holds>
       </NModals>
-    </Holds>
+    </>
   );
 }

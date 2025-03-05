@@ -25,6 +25,9 @@ export async function GET() {
       return NextResponse.json([]);
     }
 
+    // Get the current date in UTC
+    const currentDate = new Date();
+
     // Fetch timeOffRequestForms for employees in managed crews
     const timeOffRequests = await prisma.timeOffRequestForm.findMany({
       where: {
@@ -35,10 +38,13 @@ export async function GET() {
             },
           },
         },
-        status: "PENDING",
+        requestedEndDate: {
+          gte: currentDate, // Filter out past requests
+        },
       },
       select: {
         id: true,
+        status: true,
         employee: {
           select: {
             firstName: true,

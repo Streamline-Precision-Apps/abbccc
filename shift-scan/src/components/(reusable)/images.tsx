@@ -20,6 +20,7 @@ const ImageVariants = cva(
       },
       size: {
         //only width and height
+        fill: "w-full h-full",
         full: "w-full sm:w-full md:w-[90%] lg:w-[80%] xl:w-[70%] 2xl:w-[60%]",
         "90": "w-[90%] sm:w-[85%] md:w-[75%] lg:w-[65%]",
         "80": "w-[80%]  sm:w-[75%] md:w-[70%] lg:w-[60%]",

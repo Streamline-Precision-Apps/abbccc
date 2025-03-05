@@ -12,7 +12,6 @@ import { updateTimeSheets } from "@/actions/timeSheetActions";
 import { Texts } from "@/components/(reusable)/texts";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { formatTimeHHMM } from "@/utils/formatDateAmPm";
-import { formatInTimeZone } from "date-fns-tz";
 import { format, formatISO, parseISO } from "date-fns";
 import { Contents } from "@/components/(reusable)/contents";
 
@@ -205,16 +204,16 @@ export default function EditWorkNew({
                         ? formatTimeHHMM(new Date(sheet.startTime))
                         : ""}
                     </Texts>
-                    <Texts size={"p4"}> - </Texts>
-                    <Texts size={"p4"}>
+                    <Texts className="text-xs"> - </Texts>
+                    <Texts size={"p5"}>
                       {sheet.endTime
                         ? formatTimeHHMM(new Date(sheet.endTime))
                         : ""}
                     </Texts>
-                    <Texts size={"p4"}>({sheet.workType})</Texts>
+                    <Texts size={"p5"}>({sheet.workType})</Texts>
                   </Holds>
                 ) : (
-                  <Texts> Incomplete Sheet </Texts>
+                  <Texts size={"p5"}> Incomplete Sheet </Texts>
                 )}
                 {/* Title */}
               </Buttons>
