@@ -48,6 +48,13 @@ async function main() {
       }
     }
 
+    /*
+    #Todo: Add Templates to the seed for initial forms
+    - Injury Form
+    - Time Off Request
+    - Report App Bug
+     */
+
     // Insert contacts
     for (const contact of initialContacts) {
       try {
