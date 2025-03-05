@@ -12,9 +12,10 @@ export default async function Inbox() {
   const session = await auth();
   if (!session) return null;
   const t = await getTranslations("Hamburger");
+  const isManager = session.user.permission !== "USER";
 
   return (
-    <Bases>
+    <Bases className="fixed w-full h-full">
       <Contents height={"page"}>
         <Grids rows={"10"} gap={"5"}>
           <Holds background={"white"} className="row-span-2 h-full">
@@ -26,9 +27,8 @@ export default async function Inbox() {
               />
             </Contents>
           </Holds>
-          <Holds className="row-span-8 h-full">
-            <Content />
-          </Holds>
+
+          <Content isManager={isManager} />
         </Grids>
       </Contents>
     </Bases>

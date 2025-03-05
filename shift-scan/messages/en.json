@@ -501,6 +501,10 @@
   },
 
   "Admins": {
+    "CreateNewForm": "Create New Form",
+    "NoFormsFound": "No forms found",
+    "FormsSearchPlaceholder": "Search for a form",
+
     "Description": "Description",
     "SelectRequestType": "Select Request Type",
     "SelectEmployee": "Select Employee",

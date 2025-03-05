@@ -7,7 +7,6 @@ import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import useModalState from "@/hooks/(dashboard)/useModalState";
 import { LogItem } from "@/lib/types";
-import { modal } from "@nextui-org/theme";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import HorizontalLayout from "./horizontalLayout";
@@ -19,12 +18,14 @@ export default function SwitchJobsBtn({
   handleShowManagerButtons,
   logs,
   laborType,
+  view,
 }: {
   permission: string;
   mechanicProjectID?: string;
   handleShowManagerButtons: () => void;
   logs: LogItem[];
   laborType: string;
+  view: string;
 }) {
   const t = useTranslations("Widgets");
   const modalState = useModalState();
@@ -43,6 +44,8 @@ export default function SwitchJobsBtn({
               handleEvent={() => {
                 if (mechanicProjectID === "") {
                   router.push("/dashboard/switch-jobs");
+                } else if (view === "truck") {
+                  router.push("/dashboard/switch-jobs");
                 } else {
                   modalState.handleOpenModal();
                 }
@@ -56,6 +59,8 @@ export default function SwitchJobsBtn({
               color={"orange"}
               handleEvent={() => {
                 if (mechanicProjectID === "") {
+                  router.push("/dashboard/switch-jobs");
+                } else if (view === "truck") {
                   router.push("/dashboard/switch-jobs");
                 } else {
                   modalState.handleOpenModal();
@@ -73,6 +78,8 @@ export default function SwitchJobsBtn({
           color={"orange"}
           handleEvent={() => {
             if (mechanicProjectID === "") {
+              router.push("/dashboard/switch-jobs");
+            } else if (view === "truck" && logs.length === 0) {
               router.push("/dashboard/switch-jobs");
             } else {
               modalState.handleOpenModal();
@@ -128,11 +135,13 @@ export default function SwitchJobsBtn({
                                 logs.find((log) => log.type === type)
                                   ?.maintenanceId
                               }`
+                            : type === "Trucking Assistant"
+                            ? "/dashboard/truckingAssistant"
                             : undefined
                         }
-                        className="w-full py-4"
+                        className="w-full py-3"
                       >
-                        <Texts size="p1">{type}</Texts>
+                        <Texts size="p3">{type} </Texts>
                       </Buttons>
                     )
                   )}
