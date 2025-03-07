@@ -162,7 +162,6 @@ export async function GET() {
         // Check if endingMileage is required
         const isEndingMileageRequired =
           log.laborType === "truckDriver" && log.endingMileage === null;
-
         return {
           id: log.id,
           type: "Trucking Assistant",

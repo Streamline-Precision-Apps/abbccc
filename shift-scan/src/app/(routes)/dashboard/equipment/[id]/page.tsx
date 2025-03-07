@@ -14,15 +14,14 @@ import { Texts } from "@/components/(reusable)/texts";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { z } from "zod";
 import { EquipmentStatus, FormStatus } from "@prisma/client";
 import { Titles } from "@/components/(reusable)/titles";
 import { Labels } from "@/components/(reusable)/labels";
 import { Inputs } from "@/components/(reusable)/inputs";
-import { differenceInSeconds, format, parseISO } from "date-fns";
-import SelectWithRevert from "@/components/(reusable)/selectWithRevert";
+import { differenceInSeconds, format, parseISO, set } from "date-fns";
 import { Selects } from "@/components/(reusable)/selects";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import {
@@ -30,6 +29,7 @@ import {
   deleteEmployeeEquipmentLog,
 } from "@/actions/truckingActions";
 import RefuelEquipmentLogsList from "./RefuelEquipmentLogsList";
+import Spinner from "@/components/(animations)/spinner";
 
 type Refueled = {
   id: string;
@@ -48,10 +48,14 @@ const EquipmentLogSchema = z.object({
   endTime: z.string(),
   comment: z.string().optional(),
   isFinished: z.boolean(),
-  refueled: z.object({
-    gallonsRefueled: z.number().optional(),
-    milesAtfueling: z.number().optional(),
-  }),
+  refueled: z.array(
+    z
+      .object({
+        gallonsRefueled: z.number().optional(),
+        milesAtfueling: z.number().optional(),
+      })
+      .optional()
+  ),
   equipment: z.object({
     name: z.string(),
     status: z.string().optional(),
@@ -66,7 +70,6 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
   const { setNotification } = useNotification();
   const t = useTranslations("Equipment");
   const [isLoading, setIsLoading] = useState(true);
-  const [isEditingTime, setIsEditingTime] = useState(false);
   const [refuelLogs, setRefuelLogs] = useState<Refueled[]>();
   const [formState, setFormState] = useState({
     id: "",
@@ -76,20 +79,16 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
     endTime: "",
     comment: "",
     isFinished: false,
-    refueled: {
-      gallonsRefueled: 0,
-      milesAtfueling: 0,
-    },
+    refueled: [],
     equipment: {
       name: "",
       status: EquipmentStatus.OPERATIONAL,
     },
   } as EquipmentLog);
-  const [originalState, setOriginalState] = useState(formState);
 
-  const isRefueled = refuelLogs?.some(
-    (item) => item.gallonsRefueled && item.gallonsRefueled > 0
-  );
+  const [originalState, setOriginalState] = useState(formState);
+  const [hasChanged, setHasChanged] = useState<boolean>();
+  const [refueledLogs, setRefueledLogs] = useState<boolean>();
 
   useEffect(() => {
     const fetchEqLog = async () => {
@@ -108,10 +107,12 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
             : new Date().toISOString(),
           comment: data.comment || "",
           isFinished: data.isFinished || false,
-          refueled: {
-            gallonsRefueled: data.refueled?.gallonsRefueled || 0,
-            milesAtfueling: data.refueled?.milesAtfueling || 0,
-          },
+          refueled: [
+            {
+              gallonsRefueled: data.gallonsRefueled || 0,
+              milesAtfueling: data.milesAtfueling || 0,
+            },
+          ],
           equipment: {
             name: data.equipment?.name || "",
             status: data.equipment?.status || EquipmentStatus.OPERATIONAL,
@@ -128,6 +129,12 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
 
         setFormState(processedData);
         setOriginalState(processedData);
+
+        const isRefueled = data.refueled.length > 0;
+
+        console.log("isRefueled: ", isRefueled);
+
+        setRefueledLogs(isRefueled);
       } catch (error) {
         console.error("Error fetching equipment log:", error);
       } finally {
@@ -195,32 +202,12 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
     }
   };
 
-  const saveTimeChanges = () => {
-    setOriginalState((prev) => ({
-      ...prev,
-      startTime: formState.startTime,
-      endTime: formState.endTime,
-    }));
-    setIsEditingTime(false);
-  };
-
-  const revertTimeChanges = () => {
-    setFormState((prev) => ({
-      ...prev,
-      startTime: originalState.startTime,
-      endTime: originalState.endTime,
-    }));
-    setIsEditingTime(false);
-  };
-
   const handleChangeRefueled = () => {
-    if (isRefueled) {
-      console.log("Already refueled can not be changed to false");
-      return;
+    if (refueledLogs) {
+      setRefueledLogs(false);
+    } else {
+      setRefueledLogs(true);
     }
-    setFormState((prev) => ({
-      ...prev,
-    }));
   };
 
   const deleteLog = async () => {
@@ -266,19 +253,34 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
   const formattedTime = `${hours.toString().padStart(2, "0")}:${minutes
     .toString()
     .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+
+  useEffect(() => {
+    if (formState !== originalState) {
+      setHasChanged(true);
+    }
+  }, [formState, originalState]);
   return (
     <Bases className="fixed h-full w-full">
       <Contents>
         <Grids rows={"7"} gap={"5"} className="h-full w-full ">
           <Holds
             background="white"
-            className="row-span-1 h-full justify-center"
+            className={
+              isLoading
+                ? "row-span-1 h-full justify-center animate-pulse"
+                : "row-span-1 h-full justify-center"
+            }
           >
             <TitleBoxes
-              title={`${formState.equipment.name.slice(0, 16)}...`}
+              title={
+                isLoading
+                  ? "Loading..."
+                  : `${formState.equipment.name.slice(0, 16)}...`
+              }
               type="row"
               titleImg=""
               titleImgAlt="No equipment image"
+              className="w-full h-full"
             />
           </Holds>
 
@@ -290,7 +292,13 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                 : "row-start-2 row-end-8 h-full "
             }
           >
-            {isLoading ? null : (
+            {isLoading ? (
+              <>
+                <Holds className="h-full w-full justify-center">
+                  <Spinner />
+                </Holds>
+              </>
+            ) : (
               <>
                 <Contents width={"section"}>
                   <Grids rows={"8"} gap={"5"} className="h-full w-full py-3">
@@ -399,8 +407,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                             formState.comment.length >= 40
                               ? "text-red-500 absolute bottom-4 right-4"
                               : "absolute bottom-4 right-4"
-                          }
-  `}
+                          }`}
                         >
                           {`${
                             typeof formState.comment === "string"
@@ -423,11 +430,11 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                             id="refueled"
                             name="refueled"
                             size={2}
-                            checked={!!isRefueled}
+                            checked={refueledLogs}
                             onChange={() => handleChangeRefueled()}
                           />
                         </Holds>
-                        {!!isRefueled && (
+                        {refueledLogs && (
                           <Holds size={"30"} className="h-full justify-center">
                             <Holds position={"left"} className="p-2">
                               <Buttons
@@ -444,7 +451,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                         )}
                       </Holds>
 
-                      {isRefueled && refuelLogs && refuelLogs.length > 0 && (
+                      {refueledLogs && refuelLogs && refuelLogs.length > 0 && (
                         <Holds>
                           <RefuelEquipmentLogsList
                             refuelLogs={refuelLogs}
@@ -468,17 +475,17 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                       >
                         <Titles size="h5">Delete Log</Titles>
                       </Buttons>
-                      {formState.isFinished === false && (
-                        <Buttons
-                          onClick={() => {
-                            saveEdits();
-                          }}
-                          background="lightBlue"
-                          className="w-full "
-                        >
-                          <Titles size="h5">Finish Logs</Titles>
-                        </Buttons>
-                      )}
+                      {/* {hasChanged && ( */}
+                      <Buttons
+                        onClick={() => {
+                          saveEdits();
+                        }}
+                        background="lightBlue"
+                        className="w-full "
+                      >
+                        <Titles size="h5">Finish Logs</Titles>
+                      </Buttons>
+                      {/* )} */}
                     </Holds>
                   </Grids>
                 </Contents>

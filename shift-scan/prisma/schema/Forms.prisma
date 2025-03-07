@@ -6,7 +6,6 @@ enum FormType {
     LEAVE
     SAFETY
     INJURY
-    TIME_OFF
 }
 
 // Defines time-off request subtypes
@@ -38,14 +37,15 @@ enum FieldType {
 
 // Holds company-specific form templates
 model FormTemplate {
-    id        String   @id @default(cuid())
-    companyId String
-    name      String
-    slug      String   @unique @default(cuid())
-    formType  FormType
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    isActive  Boolean  @default(false)
+    id                  String   @id @default(cuid())
+    companyId           String
+    name                String
+    slug                String   @unique @default(cuid())
+    formType            FormType
+    createdAt           DateTime @default(now())
+    updatedAt           DateTime @updatedAt
+    isActive            Boolean  @default(false)
+    isSignatureRequired Boolean  @default(false)
 
     company Company @relation(fields: [companyId], references: [id])
 
