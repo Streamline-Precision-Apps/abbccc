@@ -32,9 +32,9 @@ export default function TruckOperator() {
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(1);
   const [refuelLogs, setRefuelLogs] = useState<Refueled[]>();
-  const [timeSheetId, setTimeSheetId] = useState<string>();
   const [notes, setNotes] = useState<string>("");
   const [material, setMaterial] = useState<Material[]>();
+  const [timeSheetId, setTimeSheetId] = useState<string>();
 
   useEffect(() => {
     const fetchTruckingLog = async () => {

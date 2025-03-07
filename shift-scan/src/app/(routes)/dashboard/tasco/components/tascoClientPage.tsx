@@ -5,7 +5,6 @@ import { Holds } from "@/components/(reusable)/holds";
 import Counter from "./counter";
 import DidYouRefuel from "./didYouRefuel";
 import Loads from "./loads";
-import Notes from "./notes";
 import { useEffect, useState } from "react";
 type Loads = {
   id: string;
@@ -49,7 +48,6 @@ export default function TascoClientPage() {
     <Holds className="w-full h-full overflow-y-hidden no-scrollbar">
       <DidYouRefuel />
       <Loads />
-      <Notes />
     </Holds>
   );
 }

@@ -157,11 +157,11 @@ model Refueled {
     date                   DateTime @default(now())
     employeeEquipmentLogId String?
     truckingLogId          String?
+    tascoLogId             String?
     gallonsRefueled        Float?
     milesAtfueling         Int? // miles at fueling for trucks
 
     EmployeeEquipmentLog EmployeeEquipmentLog? @relation(fields: [employeeEquipmentLogId], references: [id])
     TruckingLog          TruckingLog?          @relation(fields: [truckingLogId], references: [id])
     TascoLog             TascoLog?             @relation(fields: [tascoLogId], references: [id])
-    tascoLogId           String?
 }
