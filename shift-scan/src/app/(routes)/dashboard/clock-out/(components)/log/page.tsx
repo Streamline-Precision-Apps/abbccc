@@ -30,10 +30,10 @@ export default function Log() {
         where: {
           employeeId: userId,
           createdAt: { lte: currentDate, gte: past24Hours },
-          isSubmitted: false,
+          isFinished: false,
         },
         include: {
-          Equipment: true,
+          equipment: true,
         },
       });
 

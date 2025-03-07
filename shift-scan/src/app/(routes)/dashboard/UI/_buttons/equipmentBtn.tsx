@@ -5,13 +5,7 @@ import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
 import { useTranslations } from "next-intl";
 
-export default function EquipmentBtn({
-  handleShowAdditionalButtons,
-  permission,
-}: {
-  handleShowAdditionalButtons: (button: string) => void;
-  permission: string;
-}) {
+export default function EquipmentBtn({ permission }: { permission: string }) {
   const t = useTranslations("Widgets");
   return (
     <>
@@ -28,7 +22,6 @@ export default function EquipmentBtn({
         <Buttons //----------------------This is the Equipment Widget
           background={"green"}
           href="/dashboard/equipment"
-          onClick={() => handleShowAdditionalButtons("equipment")}
         >
           <Holds>
             <Holds>

@@ -11,9 +11,8 @@ const EmptyViewsVariants = cva(
       size: {
         default: "h-full w-full",
       },
-      topChildPosition:{
+      topChildPosition: {
         default: "",
-        
       },
       logoPosition: {
         default: "row-start-2 row-end-3 justify-center items-center",
@@ -22,12 +21,12 @@ const EmptyViewsVariants = cva(
         bottom: "row-start-3 row-end-4 justify-center items-center",
       },
       logoSize: {
-        default: "mx-auto p-3",
-        xs: "mx-auto px-5",
-        sm: "mx-auto px-4",
-        med: "mx-auto px-3",
-        lg: "mx-auto p-2",
-        full: "mx-auto p-1",
+        default: "mx-auto px-4",
+        xs: "mx-auto px-[30%]",
+        sm: "mx-auto px-[25%]",
+        med: "mx-auto px-[20%]",
+        lg: "mx-auto px-[15%]",
+        full: "mx-auto px-[10%]",
       },
 
       background: {
@@ -70,11 +69,11 @@ const EmptyViews: FC<EmptyViewsProps> = ({
     >
       <Grids rows={"3"} className="h-full w-full">
         {TopChild}
-        <div className={cn(EmptyViewsVariants({ logoPosition }))}>
-          <Images
-            titleImg={"/shiftScanLogoHorizontal.svg"}
-            titleImgAlt="personnel"
-            className={cn(EmptyViewsVariants({ logoSize }))}
+        <div className={cn(EmptyViewsVariants({ logoPosition, background }))}>
+          <img
+            src={"/shiftScanLogoHorizontal.svg"}
+            alt="personnel"
+            className={cn(EmptyViewsVariants({ logoSize, background }))}
           />
         </div>
         <div className="row-span-1 h-full w-full">{BottomChild}</div>
