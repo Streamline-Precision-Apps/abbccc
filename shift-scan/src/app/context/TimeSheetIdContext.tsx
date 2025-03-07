@@ -35,7 +35,7 @@ export const TimeSheetDataProvider: React.FC<{ children: ReactNode }> = ({
       try {
         if (
           url === "/clock" ||
-          url === "/dashboard/log-new" ||
+          url === "/dashboard/equipment/log-new" ||
           url === "/dashboard/switch-jobs" ||
           url === "/break"
         ) {

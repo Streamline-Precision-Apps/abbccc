@@ -29,7 +29,7 @@ export default async function SwitchJobs() {
               truckView={false}
               laborView={false}
               type={"equipment"}
-              returnpath="/dashboard"
+              returnpath="/dashboard/equipment"
               scannerType={"equipment"}
               option={"equipment"}
               locale={locale}
