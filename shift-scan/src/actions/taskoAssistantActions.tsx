@@ -1,117 +1,120 @@
 "use server";
 import prisma from "@/lib/prisma";
 import {
-  FormStatus,
   TimeOffRequestType,
   Permission,
   WorkType,
+  FormStatus,
 } from "@/lib/types";
 
 import { revalidatePath, revalidateTag } from "next/cache";
 
-export async function CreateLeaveRequest(formData: FormData) {
-  try {
-    console.log("Updating leave request...");
-    console.log(formData);
-    const requestType = formData.get("requestType") as string;
-    const status = formData.get("status") as string;
+// export async function CreateLeaveRequest(formData: FormData) {
+//   try {
+//     console.log("Updating leave request...");
+//     console.log(formData);
+//     const requestType = formData.get("requestType") as string;
+//     const status = formData.get("status") as string;
 
-    let enumStatus = FormStatus.PENDING;
-    switch (status) {
-      case "APPROVED":
-        enumStatus = FormStatus.APPROVED;
-        break;
-      case "DENIED":
-        enumStatus = FormStatus.DENIED;
-        break;
-      case "PENDING":
-        enumStatus = FormStatus.PENDING;
-        break;
-    }
-    let enumRequestType = TimeOffRequestType.FAMILY_MEDICAL;
-    switch (requestType) {
-      case "FAMILY_MEDICAL":
-        enumRequestType = TimeOffRequestType.FAMILY_MEDICAL;
-        break;
-      case "MILITARY":
-        enumRequestType = TimeOffRequestType.MILITARY;
-        break;
-      case "PAID_VACATION":
-        enumRequestType = TimeOffRequestType.PAID_VACATION;
-        break;
-      case "UNPAID_VACATION":
-        enumRequestType = TimeOffRequestType.NON_PAID_PERSONAL;
-        break;
-      case "SICK":
-        enumRequestType = TimeOffRequestType.SICK;
-        break;
-    }
+//     let enumStatus = FormStatus.PENDING;
+//     switch (status) {
+//       case "APPROVED":
+//         enumStatus = FormStatus.APPROVED;
+//         break;
+//       case "DENIED":
+//         enumStatus = FormStatus.DENIED;
+//         break;
+//       case "PENDING":
+//         enumStatus = FormStatus.PENDING;
+//         break;
+//     }
+//     let enumRequestType = TimeOffRequestType.FAMILY_MEDICAL;
+//     switch (requestType) {
+//       case "FAMILY_MEDICAL":
+//         enumRequestType = TimeOffRequestType.FAMILY_MEDICAL;
+//         break;
+//       case "MILITARY":
+//         enumRequestType = TimeOffRequestType.MILITARY;
+//         break;
+//       case "PAID_VACATION":
+//         enumRequestType = TimeOffRequestType.PAID_VACATION;
+//         break;
+//       case "UNPAID_VACATION":
+//         enumRequestType = TimeOffRequestType.NON_PAID_PERSONAL;
+//         break;
+//       case "SICK":
+//         enumRequestType = TimeOffRequestType.SICK;
+//         break;
+//     }
 
-    const leaveRequest = await prisma.timeOffRequestForm.create({
-      data: {
-        name: (formData.get("name") as string) || null,
+//     const leaveRequest = await prisma.timeOffRequestForm.create({
+//       data: {
+//         name: (formData.get("name") as string) || null,
 
-        requestedStartDate: new Date(
-          formData.get("requestedStartDate") as string
-        ).toISOString(),
+//         requestedStartDate: new Date(
+//           formData.get("requestedStartDate") as string
+//         ).toISOString(),
 
-        requestedEndDate: new Date(
-          formData.get("requestedEndDate") as string
-        ).toISOString(),
+//         requestedEndDate: new Date(
+//           formData.get("requestedEndDate") as string
+//         ).toISOString(),
 
-        requestType: enumRequestType,
-        comment: formData.get("comment") as string,
-        managerComment: formData.get("managerComment") as string,
-        employeeId: formData.get("employeeId") as string,
-        status: enumStatus,
-      },
-    });
-    console.log(leaveRequest);
-    revalidatePath("/admins/leave-requests");
-    return leaveRequest;
-  } catch (error) {
-    console.error("Error updating leave request:", error);
-    throw error;
-  }
-}
+//         requestType: enumRequestType,
+//         comment: formData.get("comment") as string,
+//         managerComment: formData.get("managerComment") as string,
+//         employeeId: formData.get("employeeId") as string,
+//         status: enumStatus,
+//       },
+//     });
+//     console.log(leaveRequest);
+//     revalidatePath("/admins/leave-requests");
+//     return leaveRequest;
+//   } catch (error) {
+//     console.error("Error updating leave request:", error);
+//     throw error;
+//   }
+// }
 
-export async function UpdateLeaveRequest(formData: FormData) {
-  try {
-    console.log("Updating leave request...");
-    console.log(formData);
-    const id = formData.get("id") as string;
-    const status = formData.get("status") as string;
-    const decidedBy = formData.get("decidedBy") as string;
-    let enumStatus = FormStatus.PENDING;
-    switch (status) {
-      case "APPROVED":
-        enumStatus = FormStatus.APPROVED;
-        break;
-      case "DENIED":
-        enumStatus = FormStatus.DENIED;
-        break;
-      case "PENDING":
-        enumStatus = FormStatus.PENDING;
-        break;
-    }
-    const managerComment = formData.get("managerComment") as string;
-    const leaveRequest = await prisma.timeOffRequestForm.update({
-      where: { id },
-      data: {
-        status: enumStatus,
-        managerComment: managerComment,
-        decidedBy: decidedBy,
-        signature: formData.get("signature") as string,
-      },
-    });
-    console.log(leaveRequest);
-    revalidatePath("/admins/leave-requests");
-    return leaveRequest;
-  } catch (error) {
-    console.error("Error updating leave request:", error);
-    throw error;
-  }
-}
+// export async function UpdateLeaveRequest(formData: FormData) {
+//   try {
+//     console.log("Updating leave request...");
+//     console.log(formData);
+//     const id = formData.get("id") as string;
+//     const status = formData.get("status") as string;
+//     const decidedBy = formData.get("decidedBy") as string;
+//     let enumStatus = FormStatus.PENDING;
+//     switch (status) {
+//       case "APPROVED":
+//         enumStatus = FormStatus.APPROVED;
+//         break;
+//       case "DENIED":
+//         enumStatus = FormStatus.DENIED;
+//         break;
+//       case "PENDING":
+//         enumStatus = FormStatus.PENDING;
+//         break;
+//       case "DRAFT":
+//         enumStatus = FormStatus.DRAFT;
+//         break;
+//     }
+//     const managerComment = formData.get("managerComment") as string;
+//     const leaveRequest = await prisma.timeOffRequestForm.update({
+//       where: { id },
+//       data: {
+//         status: enumStatus,
+//         managerComment: managerComment,
+//         decidedBy: decidedBy,
+//         signature: formData.get("signature") as string,
+//       },
+//     });
+//     console.log(leaveRequest);
+//     revalidatePath("/admins/leave-requests");
+//     return leaveRequest;
+//   } catch (error) {
+//     console.error("Error updating leave request:", error);
+//     throw error;
+//   }
+// }
 
 export async function deleteAdminJobsite(id: string) {
   try {
@@ -497,69 +500,6 @@ export async function deleteLog(id: string) {
   }
 }
 
-// Todo: Test Server Action
-export async function saveTimesheet(formData: FormData) {
-  try {
-    console.log("Saving timesheet...");
-    const id = formData.get("id" as string)
-      ? (formData.get("id") as string)
-      : undefined;
-    const userId = formData.get("userId") as string;
-    const date = formData.get("date") as string;
-    const dateIsoString = new Date(date).toISOString();
-    const workType = formData.get("workType") as WorkType;
-    const status = formData.get("status") as string;
-    let enumStatus = FormStatus.PENDING;
-    switch (status) {
-      case "Approved":
-        enumStatus = FormStatus.APPROVED;
-        break;
-      case "Denied":
-        enumStatus = FormStatus.DENIED;
-        break;
-      case "Pending":
-        enumStatus = FormStatus.PENDING;
-        break;
-    }
-
-    const timesheet = await prisma.timeSheet.upsert({
-      where: { id }, // Use an invalid ID for new entries
-      create: {
-        date: dateIsoString,
-        userId: userId,
-        jobsiteId: formData.get("jobsiteId") as string,
-        costcode: formData.get("costcode") as string,
-        startTime: formData.get("startTime") as string,
-        endTime: formData.get("endTime") as string,
-        comment: formData.get("comment") as string,
-        status: enumStatus,
-        statusComment: formData.get("statusComment") as string,
-        workType: workType,
-      },
-      update: {
-        date: dateIsoString,
-        userId,
-        jobsiteId: formData.get("jobsiteId") as string,
-        costcode: formData.get("costcode") as string,
-        startTime: formData.get("startTime") as string,
-        endTime: formData.get("endTime") as string,
-        comment: formData.get("comment") as string,
-        status: enumStatus,
-        statusComment: formData.get("statusComment") as string,
-        workType: workType,
-      },
-    });
-
-    console.log(timesheet);
-    revalidatePath(`/admins/personnel/${id}`);
-    revalidateTag("timesheets");
-    return true;
-  } catch (error) {
-    console.error("Error saving timesheet:", error);
-    throw error;
-  }
-}
-
 // Todo: update this to make a new timesheet
 export async function CreateTimesheet(userId: string, date: string) {
   try {
@@ -600,7 +540,7 @@ export async function CreateEquipmentLogs(userId: string, date: string) {
         startTime: new Date(date).toISOString(),
         endTime: new Date(date).toISOString(),
         comment: null,
-        isSubmitted: true,
+        isFinished: true,
         status: FormStatus.APPROVED,
       },
     });

@@ -239,6 +239,37 @@ export async function createRefuelLog(formData: FormData) {
   return refueledLogs;
 }
 
+export async function createRefuelEquipmentLog(formData: FormData) {
+  console.log("Creating refuel logs...");
+  console.log(formData);
+  const employeeEquipmentLogId = formData.get(
+    "employeeEquipmentLogId"
+  ) as string;
+
+  const refueledLogs = await prisma.refueled.create({
+    data: {
+      employeeEquipmentLogId,
+    },
+  });
+
+  console.log(refueledLogs);
+  revalidatePath("/dashboard/truckingAssistant");
+  return refueledLogs;
+}
+
+export async function deleteEmployeeEquipmentLog(id: string) {
+  try {
+    console.log("Deleting employee equipment log:", id);
+    await prisma.employeeEquipmentLog.delete({
+      where: { id },
+    });
+    return true;
+  } catch (error) {
+    console.error("Error deleting employee equipment log:", error);
+    throw error;
+  }
+}
+
 export async function updateRefuelLog(formData: FormData) {
   const id = formData.get("id") as string;
   const gallonsRefueled =
