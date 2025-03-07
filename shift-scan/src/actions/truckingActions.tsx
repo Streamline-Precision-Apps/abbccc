@@ -29,7 +29,7 @@ export async function updateEquipmentLogsLocation(formData: FormData) {
   console.log("Updating hauling logs...");
   console.log(formData);
   const id = formData.get("id") as string;
-  const equipmentId = formData.get("equipmentId") as string;
+  const jobSiteId = formData.get("jobSiteId") as string;
   const truckingLogId = formData.get("truckingLogId") as string;
 
   // Use a nested update to update the related Equipment's jobsiteId in one call.
@@ -37,7 +37,7 @@ export async function updateEquipmentLogsLocation(formData: FormData) {
     where: { id },
     data: {
       truckingLogId,
-      jobSiteId: equipmentId,
+      jobSiteId,
     },
   });
   // Create EquipmentLocationLog for the updated jobSiteId
@@ -97,7 +97,6 @@ export async function createHaulingLogs(formData: FormData) {
 
   console.log(haulingLog);
   revalidatePath("/dashboard/truckingAssistant");
-  revalidateTag("material");
   return haulingLog;
 }
 
@@ -262,6 +261,7 @@ export async function updateRefuelLog(formData: FormData) {
 
 export async function deleteRefuelLog(id: string) {
   console.log("Deleting refuel logs:", id);
+  console.log("id", id);
   await prisma.refueled.delete({
     where: { id },
   });

@@ -40,7 +40,6 @@ export default function OperatorHaulingLogs({
     try {
       const tempMaterial = await createHaulingLogs(formData);
       setMaterial((prev) => [
-        ...(prev ?? []),
         {
           id: tempMaterial.id,
           name: "",
@@ -49,6 +48,7 @@ export default function OperatorHaulingLogs({
           quantity: null,
           createdAt: new Date(),
         },
+        ...(prev ?? []),
       ]);
     } catch (error) {
       console.error("Error adding Material:", error);

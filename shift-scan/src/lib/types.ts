@@ -54,15 +54,46 @@ export type EquipmentStatus =
 export type LogItem = {
   id: string;
   userId: string;
-  equipment?: {
-    id: string;
-    qrId: string;
-    name: string;
-  } | null;
-  maintenanceId?: string;
   submitted: boolean;
-  type: "equipment" | "mechanic";
-};
+  type: "equipment" | "mechanic" | "Trucking Assistant";
+} & (
+  | {
+      type: "equipment";
+      equipment: {
+        id: string;
+        qrId: string;
+        name: string;
+      };
+      maintenanceId?: never;
+      laborType?: never;
+      stateMileage?: never;
+      refueled?: never;
+      material?: never;
+      equipmentHauled?: never;
+    }
+  | {
+      type: "mechanic";
+      maintenanceId: string;
+      equipment?: never;
+      laborType?: never;
+      stateMileage?: never;
+      refueled?: never;
+      material?: never;
+      equipmentHauled?: never;
+    }
+  | {
+      type: "trucking";
+      laborType: string;
+      comment: string | null;
+      endingMileage: number | null;
+      stateMileage: boolean;
+      refueled: boolean;
+      material: boolean;
+      equipmentHauled: boolean;
+      equipment?: never;
+      maintenanceId?: never;
+    }
+);
 
 export type User = {
   id: string;

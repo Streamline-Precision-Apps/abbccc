@@ -1,0 +1,14 @@
+model Company {
+    id               String         @id @default(cuid())
+    name             String
+    address          String
+    city             String
+    state            String
+    zipCode          String
+    createAt         DateTime       @default(now())
+    UpdatedAt        DateTime       @updatedAt()
+    SubscriptionDate DateTime       @default(now())
+    FormTemplate     FormTemplate[]
+    jobSite          Jobsite[]
+    users            User[]
+}

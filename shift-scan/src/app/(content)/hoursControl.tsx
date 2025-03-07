@@ -294,7 +294,7 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
                   background="darkBlue"
                   className={`h-full rounded-[10px] bg-white p-1 flex justify-end ${
                     nextData.date === Today.date
-                      ? "border-[5px] app-dark-green"
+                      ? "border-[5px] border-app-dark-green"
                       : "border-[3px] border-black"
                   } ${
                     nextData.hours === 0 &&

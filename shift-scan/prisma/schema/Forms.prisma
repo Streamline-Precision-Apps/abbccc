@@ -1,4 +1,4 @@
-// holds all possible form types
+// Holds all possible form types
 enum FormType {
     MEDICAL
     INSPECTION
@@ -6,9 +6,10 @@ enum FormType {
     LEAVE
     SAFETY
     INJURY
+    TIME_OFF
 }
 
-// holds all possible timeoff request types
+// Defines time-off request subtypes
 enum TimeOffRequestType {
     FAMILY_MEDICAL
     MILITARY
@@ -17,32 +18,102 @@ enum TimeOffRequestType {
     SICK
 }
 
-model InjuryForm {
-    id                  String      @id @default(cuid())
-    userId              String
-    submitDate          DateTime @default(now())
-    date                DateTime @db.Date
-    contactedSupervisor Boolean  @default(false)
-    incidentDescription String
-    signature           String?  @db.Text
-    verifyFormSignature Boolean  @default(false)
-    user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+// Defines the possible statuses for forms
+enum FormStatus {
+    PENDING
+    APPROVED
+    REJECTED
+    DRAFT
 }
 
-model timeOffRequestForm {
-    id                 String                @id @default(cuid())
-    name               String? // a nickname for the request
-    requestedStartDate DateTime // start date
-    requestedEndDate   DateTime // end date
-    requestType        TimeOffRequestType //make enum later
-    comment            String
-    managerComment     String?
-    status             FormStatus         @default(PENDING)
-    employeeId         String
-    createdAt          DateTime           @default(now())
-    updatedAt          DateTime           @updatedAt
-    decidedBy          String? // ment to hold the individual who approved/rejected the timesheet
-    signature          String? // ment to hold the individual who approved/rejected the timesheet
+// Defines field types for dynamic forms
+enum FieldType {
+    TEXT
+    NUMBER
+    DATE
+    FILE
+    DROPDOWN
+    CHECKBOX
+}
 
-    employee User @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+// Holds company-specific form templates
+model FormTemplate {
+    id        String   @id @default(cuid())
+    companyId String
+    name      String
+    slug      String   @unique @default(cuid())
+    formType  FormType
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    isActive  Boolean  @default(false)
+
+    company Company @relation(fields: [companyId], references: [id])
+
+    submissions FormSubmission[]
+    FormGouping FormGrouping[]
+}
+
+model FormGrouping {
+    id           String         @id @default(cuid())
+    title        String
+    order        Int
+    fields       FormField[]
+    FormTemplate FormTemplate[]
+}
+
+// Defines individual form fields with metadata
+model FormField {
+    id             String            @id @default(cuid())
+    formTemplateId String
+    label          String
+    type           FieldType
+    required       Boolean           @default(false)
+    order          Int
+    defaultValue   String? // Stores default input values
+    options        FormFieldOption[] // Stores dropdown options
+
+    FormGrouping   FormGrouping? @relation(fields: [formGroupingId], references: [id], onDelete: Cascade)
+    formGroupingId String?
+}
+
+// Stores dropdown options for FormField
+model FormFieldOption {
+    id      String @id @default(cuid())
+    fieldId String
+    value   String
+
+    field FormField @relation(fields: [fieldId], references: [id], onDelete: Cascade)
+}
+
+// Stores submitted forms (can be drafts, pending, or approved)
+model FormSubmission {
+    id             String              @id @default(cuid())
+    formTemplateId String
+    userId         String
+    formType       FormType
+    requestType    TimeOffRequestType? // Only used for TIME_OFF forms
+    name           String? // Nickname for submission
+    startDate      DateTime? // Only used for time-off requests
+    endDate        DateTime? // Only used for time-off requests
+    data           Json // Stores responses in JSON format
+    createdAt      DateTime            @default(now())
+    submittedAt    DateTime? // Null means it's a draft
+    status         FormStatus          @default(PENDING)
+
+    user         User           @relation(fields: [userId], references: [id])
+    formTemplate FormTemplate   @relation(fields: [formTemplateId], references: [id], onDelete: Cascade)
+    approvals    FormApproval[]
+}
+
+// Stores approval data for submissions
+model FormApproval {
+    id               String   @id @default(cuid())
+    formSubmissionId String
+    approvedBy       String
+    approvedAt       DateTime @default(now())
+    signature        String?
+    comment          String?
+
+    formSubmission FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
+    approver       User           @relation(fields: [approvedBy], references: [id])
 }
