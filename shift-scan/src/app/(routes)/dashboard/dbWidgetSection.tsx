@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import React from "react";
 import { Session } from "next-auth";
 import { breakOutTimeSheet } from "@/actions/timeSheetActions";
-import { z } from "zod";
 import { useCurrentView } from "@/app/context/CurrentViewContext";
 import TascoDashboardView from "./UI/_dashboards/tascoDashboardView";
 import TruckDriverDashboardView from "./UI/_dashboards/truckDriverDashboardView";
@@ -15,32 +14,6 @@ import { setCurrentPageView } from "@/actions/cookieActions";
 import DashboardLoadingView from "./UI/_dashboards/dashboardLoadingView";
 import { LogItem } from "@/lib/types";
 import { useModalState } from "@/hooks/(dashboard)/useModalState";
-
-// Zod schema for state validation
-const DbWidgetSectionSchema = z.object({
-  session: z.object({
-    user: z.object({
-      permission: z.string(),
-    }),
-  }),
-  logs: z.array(
-    z.object({
-      id: z.string(),
-      userId: z.string(),
-      equipment: z
-        .object({
-          id: z.string(),
-          qrId: z.string(),
-          name: z.string(),
-        })
-        .nullable(),
-      submitted: z.boolean(),
-    })
-  ),
-  isModalOpen: z.boolean(),
-  loading: z.boolean(),
-  additionalButtonsType: z.string().nullable(),
-});
 
 type props = {
   session: Session;

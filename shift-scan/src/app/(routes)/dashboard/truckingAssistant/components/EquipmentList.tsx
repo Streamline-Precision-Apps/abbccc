@@ -11,6 +11,7 @@ import SlidingDiv from "@/components/(animations)/slideDelete";
 import { useDBEquipment, useDBJobsite } from "@/app/context/dbCodeContext";
 import SelectableModal from "@/components/(reusable)/selectableModal";
 import { Contents } from "@/components/(reusable)/contents";
+import { Texts } from "@/components/(reusable)/texts";
 
 type EquipmentHauled = {
   id: string;
@@ -177,7 +178,7 @@ export default function EquipmentList({
               key={mat.id}
               position={"row"}
               background={"white"}
-              className="w-full h-full border-black border-[3px] rounded-[10px] mb-3  "
+              className={`w-full h-full  border-[3px] rounded-[10px] mb-3 border-black`}
             >
               <Holds
                 background={"white"}
@@ -195,14 +196,17 @@ export default function EquipmentList({
                     setIsEquipmentOpen(true);
                     setSelectedIndex(mat.id);
                   }}
-                  className={"border-none text-xs py-2 focus:outline-none "}
+                  className={`border-none text-xs focus:outline-none cursor-pointer ${
+                    mat.equipmentId === null && "placeholder:text-app-red"
+                  } `}
                   readOnly
                 />
               </Holds>
 
               <Holds
                 background={"white"}
-                className="w-1/2 h-full justify-center px-2 rounded-l-none border-black border-l-[3px]"
+                className={`w-1/2 h-full justify-center px-2 rounded-l-none  border-l-[3px] border-black
+                `}
               >
                 <Inputs
                   type="text"
@@ -216,7 +220,9 @@ export default function EquipmentList({
                     setIsLocationOpen(true);
                     setSelectedIndex(mat.id);
                   }}
-                  className="border-none text-xs focus:outline-none cursor-pointer"
+                  className={`border-none text-xs focus:outline-none cursor-pointer ${
+                    mat.jobSiteId === null && "placeholder:text-app-red"
+                  } `}
                   readOnly
                 />
               </Holds>

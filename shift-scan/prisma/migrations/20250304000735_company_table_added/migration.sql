@@ -5,6 +5,9 @@ CREATE TYPE "FormType" AS ENUM ('MEDICAL', 'INSPECTION', 'MANAGER', 'LEAVE', 'SA
 CREATE TYPE "TimeOffRequestType" AS ENUM ('FAMILY_MEDICAL', 'MILITARY', 'PAID_VACATION', 'NON_PAID_PERSONAL', 'SICK');
 
 -- CreateEnum
+CREATE TYPE "FieldType" AS ENUM ('TEXT', 'NUMBER', 'DATE', 'FILE', 'DROPDOWN', 'CHECKBOX');
+
+-- CreateEnum
 CREATE TYPE "Permission" AS ENUM ('USER', 'MANAGER', 'ADMIN', 'SUPERADMIN');
 
 -- CreateEnum
@@ -27,6 +30,21 @@ CREATE TYPE "Priority" AS ENUM ('PENDING', 'LOW', 'MEDIUM', 'HIGH', 'TODAY');
 
 -- CreateEnum
 CREATE TYPE "LoadType" AS ENUM ('UNSCREENED', 'SCREENED');
+
+-- CreateTable
+CREATE TABLE "Company" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "address" TEXT NOT NULL,
+    "city" TEXT NOT NULL,
+    "state" TEXT NOT NULL,
+    "zipCode" TEXT NOT NULL,
+    "createAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "UpdatedAt" TIMESTAMP(3) NOT NULL,
+    "SubscriptionDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Company_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "CostCode" (
@@ -168,6 +186,47 @@ CREATE TABLE "timeOffRequestForm" (
 );
 
 -- CreateTable
+CREATE TABLE "FormTemplate" (
+    "id" TEXT NOT NULL,
+    "companyId" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
+    "description" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "FormTemplate_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "FormField" (
+    "id" TEXT NOT NULL,
+    "formTemplateId" TEXT NOT NULL,
+    "label" TEXT NOT NULL,
+    "type" "FieldType" NOT NULL,
+    "required" BOOLEAN NOT NULL DEFAULT false,
+    "options" TEXT,
+    "order" INTEGER NOT NULL,
+
+    CONSTRAINT "FormField_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "FormSubmission" (
+    "id" TEXT NOT NULL,
+    "formTemplateId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "data" JSONB NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "submittedAt" TIMESTAMP(3),
+    "verifiedBy" TEXT NOT NULL,
+    "managerComment" TEXT,
+    "status" "FormStatus" NOT NULL DEFAULT 'PENDING',
+
+    CONSTRAINT "FormSubmission_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Jobsite" (
     "id" TEXT NOT NULL,
     "qrId" TEXT NOT NULL,
@@ -184,6 +243,7 @@ CREATE TABLE "Jobsite" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "archiveDate" TIMESTAMP(3),
+    "companyId" TEXT,
 
     CONSTRAINT "Jobsite_pkey" PRIMARY KEY ("id")
 );
@@ -348,6 +408,7 @@ CREATE TABLE "User" (
     "terminationDate" TIMESTAMP(3),
     "accountSetup" BOOLEAN NOT NULL DEFAULT false,
     "clockedIn" BOOLEAN NOT NULL DEFAULT false,
+    "companyId" TEXT NOT NULL,
     "passwordResetTokenId" TEXT,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
@@ -433,6 +494,9 @@ CREATE UNIQUE INDEX "Equipment_qrId_key" ON "Equipment"("qrId");
 CREATE INDEX "Equipment_qrId_idx" ON "Equipment"("qrId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "FormTemplate_slug_key" ON "FormTemplate"("slug");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Jobsite_qrId_key" ON "Jobsite"("qrId");
 
 -- CreateIndex
@@ -502,6 +566,21 @@ ALTER TABLE "InjuryForm" ADD CONSTRAINT "InjuryForm_userId_fkey" FOREIGN KEY ("u
 ALTER TABLE "timeOffRequestForm" ADD CONSTRAINT "timeOffRequestForm_employeeId_fkey" FOREIGN KEY ("employeeId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "FormTemplate" ADD CONSTRAINT "FormTemplate_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "Company"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "FormField" ADD CONSTRAINT "FormField_formTemplateId_fkey" FOREIGN KEY ("formTemplateId") REFERENCES "FormTemplate"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "FormSubmission" ADD CONSTRAINT "FormSubmission_formTemplateId_fkey" FOREIGN KEY ("formTemplateId") REFERENCES "FormTemplate"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "FormSubmission" ADD CONSTRAINT "FormSubmission_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Jobsite" ADD CONSTRAINT "Jobsite_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "Company"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "TimeSheet" ADD CONSTRAINT "TimeSheet_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -551,6 +630,9 @@ ALTER TABLE "Refueled" ADD CONSTRAINT "Refueled_truckingLogId_fkey" FOREIGN KEY 
 
 -- AddForeignKey
 ALTER TABLE "Refueled" ADD CONSTRAINT "Refueled_tascoLogId_fkey" FOREIGN KEY ("tascoLogId") REFERENCES "TascoLog"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "User" ADD CONSTRAINT "User_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "Company"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UserSettings" ADD CONSTRAINT "UserSettings_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
