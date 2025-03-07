@@ -34,6 +34,8 @@ export const NewTab: FC<TabProps> = ({
   children,
   titleImage,
   titleImageAlt,
+
+  
 }) => {
   return (
     <button onClick={onClick} className={classNames(tabStyles({ isActive }))}>
