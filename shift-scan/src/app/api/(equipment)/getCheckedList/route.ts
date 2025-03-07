@@ -19,10 +19,9 @@ export async function GET() {
       where: {
         employeeId: userId,
         createdAt: { lte: currentDate, gte: past24Hours },
-        isSubmitted: false,
       },
       include: {
-        Equipment: true,
+        equipment: true,
       },
     });
 

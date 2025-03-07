@@ -21,10 +21,10 @@ export async function GET() {
           lte: currentDate,
           gte: past24Hours,
         },
-        isSubmitted: false,
+        isFinished: false,
       },
       include: {
-        Equipment: {
+        equipment: {
           select: {
             name: true,
           },

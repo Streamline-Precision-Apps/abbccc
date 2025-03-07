@@ -4,7 +4,6 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Spinner } from "@nextui-org/react";
 import ClockOutWidget from "../_buttons/AdditonalclockOutBtns";
-import EquipmentWidget from "../_buttons/AdditonalEquipmentBtns";
 import ClockOutBtn from "../_buttons/clockOutBtn";
 import EquipmentBtn from "../_buttons/equipmentBtn";
 import FormsBtn from "../_buttons/formsBtn";
@@ -60,19 +59,7 @@ export default function GeneralDashboardView({
           gap={"5"}
         >
           {/* Render buttons based on state */}
-          {additionalButtonsType === "equipment" ? (
-            <Holds
-              className={
-                permission !== "USER"
-                  ? "col-span-2 row-span-4 gap-5 h-full"
-                  : "col-span-2 row-span-3 gap-5 h-full"
-              }
-            >
-              <EquipmentWidget
-                handleShowManagerButtons={handleShowManagerButtons}
-              />
-            </Holds>
-          ) : additionalButtonsType === "clockOut" ? (
+          {additionalButtonsType === "clockOut" ? (
             <Holds
               className={
                 permission !== "USER"
@@ -100,10 +87,7 @@ export default function GeneralDashboardView({
                 <MyTeamWidget />
               )}
 
-              <EquipmentBtn
-                handleShowAdditionalButtons={handleShowAdditionalButtons}
-                permission={permission}
-              />
+              <EquipmentBtn permission={permission} />
 
               <FormsBtn permission={permission} view={"general"} />
 

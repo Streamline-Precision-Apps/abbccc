@@ -88,7 +88,7 @@ export default function QRStep({
                 >
                   <Holds
                     className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center"
-                    onClick={handlePrevStep}
+                    onClick={handleReturnPath}
                   >
                     <Images
                       titleImg="/turnBack.svg"

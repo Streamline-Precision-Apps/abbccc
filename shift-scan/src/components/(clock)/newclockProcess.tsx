@@ -206,7 +206,7 @@ export default function NewClockProcess({
               handleAlternativePath={handleAlternativePathEQ}
               handleNextStep={handleNextStep}
               handlePrevStep={handlePrevStep}
-              url="/dashboard"
+              url="/dashboard/equipment"
               handleReturnPath={handleReturnPath}
               clockInRole={""}
               setClockInRole={() => {}}
@@ -214,17 +214,16 @@ export default function NewClockProcess({
             />
           </>
         )}
+
         {step === 2 && (
-          <CodeStep
-            datatype="equipment"
+          <VerificationEQStep
             handleNextStep={handleNextStep}
             handlePrevStep={handlePrevStep}
             handleScannedPrevStep={handleScannedPrevStep}
             scanned={scanned}
           />
         )}
-        {step === 3 && <VerificationEQStep handleNextStep={handleNextStep} />}
-        {step === 4 && (
+        {step === 3 && (
           <>
             <Titles size={"h1"} className="bg-red-500">
               {t("Confirmation-eq-message-1")}

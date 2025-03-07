@@ -43,7 +43,7 @@ model EmployeeEquipmentLog {
     comment     String?
     createdAt   DateTime   @default(now())
     updatedAt   DateTime   @updatedAt
-    isSubmitted Boolean    @default(false) // marks true when form is submitted at end of day
+    isFinished  Boolean    @default(false) // marks true when form is submitted at end of day
     status      FormStatus @default(PENDING) // approving of the form from manager
 
     // Optional connections to other tables

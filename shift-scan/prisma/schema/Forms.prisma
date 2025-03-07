@@ -22,7 +22,7 @@ enum TimeOffRequestType {
 enum FormStatus {
     PENDING
     APPROVED
-    REJECTED
+    DENIED
     DRAFT
 }
 
@@ -49,13 +49,13 @@ model FormTemplate {
 
     company Company @relation(fields: [companyId], references: [id])
 
-    submissions FormSubmission[]
-    FormGouping FormGrouping[]
+    submissions  FormSubmission[]
+    FormGrouping FormGrouping[]
 }
 
 model FormGrouping {
     id           String         @id @default(cuid())
-    title        String
+    title        String?
     order        Int
     fields       FormField[]
     FormTemplate FormTemplate[]
@@ -64,7 +64,7 @@ model FormGrouping {
 // Defines individual form fields with metadata
 model FormField {
     id             String            @id @default(cuid())
-    formTemplateId String
+    formGroupingId String
     label          String
     type           FieldType
     required       Boolean           @default(false)
@@ -72,8 +72,7 @@ model FormField {
     defaultValue   String? // Stores default input values
     options        FormFieldOption[] // Stores dropdown options
 
-    FormGrouping   FormGrouping? @relation(fields: [formGroupingId], references: [id], onDelete: Cascade)
-    formGroupingId String?
+    FormGrouping FormGrouping @relation(fields: [formGroupingId], references: [id], onDelete: Cascade)
 }
 
 // Stores dropdown options for FormField

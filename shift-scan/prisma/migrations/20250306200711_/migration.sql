@@ -1,8 +1,11 @@
 -- CreateEnum
-CREATE TYPE "FormType" AS ENUM ('MEDICAL', 'INSPECTION', 'MANAGER', 'LEAVE', 'SAFETY', 'INJURY');
+CREATE TYPE "FormType" AS ENUM ('MEDICAL', 'INSPECTION', 'MANAGER', 'LEAVE', 'SAFETY', 'INJURY', 'TIME_OFF');
 
 -- CreateEnum
 CREATE TYPE "TimeOffRequestType" AS ENUM ('FAMILY_MEDICAL', 'MILITARY', 'PAID_VACATION', 'NON_PAID_PERSONAL', 'SICK');
+
+-- CreateEnum
+CREATE TYPE "FormStatus" AS ENUM ('PENDING', 'APPROVED', 'DENIED', 'DRAFT');
 
 -- CreateEnum
 CREATE TYPE "FieldType" AS ENUM ('TEXT', 'NUMBER', 'DATE', 'FILE', 'DROPDOWN', 'CHECKBOX');
@@ -15,9 +18,6 @@ CREATE TYPE "EquipmentTags" AS ENUM ('TRUCK', 'TRAILER', 'EQUIPMENT', 'VEHICLE')
 
 -- CreateEnum
 CREATE TYPE "EquipmentStatus" AS ENUM ('OPERATIONAL', 'NEEDS_REPAIR', 'NEEDS_MAINTENANCE');
-
--- CreateEnum
-CREATE TYPE "FormStatus" AS ENUM ('PENDING', 'APPROVED', 'DENIED', 'TEMPORARY');
 
 -- CreateEnum
 CREATE TYPE "IsActive" AS ENUM ('ACTIVE', 'INACTIVE');
@@ -117,7 +117,7 @@ CREATE TABLE "EmployeeEquipmentLog" (
     "comment" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "isSubmitted" BOOLEAN NOT NULL DEFAULT false,
+    "isFinished" BOOLEAN NOT NULL DEFAULT false,
     "status" "FormStatus" NOT NULL DEFAULT 'PENDING',
     "timeSheetId" TEXT,
     "tascoLogId" TEXT,
@@ -153,62 +153,48 @@ CREATE TABLE "Error" (
 );
 
 -- CreateTable
-CREATE TABLE "InjuryForm" (
-    "id" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
-    "submitDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "date" DATE NOT NULL,
-    "contactedSupervisor" BOOLEAN NOT NULL DEFAULT false,
-    "incidentDescription" TEXT NOT NULL,
-    "signature" TEXT,
-    "verifyFormSignature" BOOLEAN NOT NULL DEFAULT false,
-
-    CONSTRAINT "InjuryForm_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "timeOffRequestForm" (
-    "id" TEXT NOT NULL,
-    "name" TEXT,
-    "requestedStartDate" TIMESTAMP(3) NOT NULL,
-    "requestedEndDate" TIMESTAMP(3) NOT NULL,
-    "requestType" "TimeOffRequestType" NOT NULL,
-    "comment" TEXT NOT NULL,
-    "managerComment" TEXT,
-    "status" "FormStatus" NOT NULL DEFAULT 'PENDING',
-    "employeeId" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-    "decidedBy" TEXT,
-    "signature" TEXT,
-
-    CONSTRAINT "timeOffRequestForm_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "FormTemplate" (
     "id" TEXT NOT NULL,
     "companyId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "slug" TEXT NOT NULL,
-    "description" TEXT,
+    "formType" "FormType" NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "FormTemplate_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
+CREATE TABLE "FormGrouping" (
+    "id" TEXT NOT NULL,
+    "title" TEXT,
+    "order" INTEGER NOT NULL,
+
+    CONSTRAINT "FormGrouping_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "FormField" (
     "id" TEXT NOT NULL,
-    "formTemplateId" TEXT NOT NULL,
+    "formGroupingId" TEXT NOT NULL,
     "label" TEXT NOT NULL,
     "type" "FieldType" NOT NULL,
     "required" BOOLEAN NOT NULL DEFAULT false,
-    "options" TEXT,
     "order" INTEGER NOT NULL,
+    "defaultValue" TEXT,
 
     CONSTRAINT "FormField_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "FormFieldOption" (
+    "id" TEXT NOT NULL,
+    "fieldId" TEXT NOT NULL,
+    "value" TEXT NOT NULL,
+
+    CONSTRAINT "FormFieldOption_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -216,14 +202,29 @@ CREATE TABLE "FormSubmission" (
     "id" TEXT NOT NULL,
     "formTemplateId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
+    "formType" "FormType" NOT NULL,
+    "requestType" "TimeOffRequestType",
+    "name" TEXT,
+    "startDate" TIMESTAMP(3),
+    "endDate" TIMESTAMP(3),
     "data" JSONB NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "submittedAt" TIMESTAMP(3),
-    "verifiedBy" TEXT NOT NULL,
-    "managerComment" TEXT,
     "status" "FormStatus" NOT NULL DEFAULT 'PENDING',
 
     CONSTRAINT "FormSubmission_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "FormApproval" (
+    "id" TEXT NOT NULL,
+    "formSubmissionId" TEXT NOT NULL,
+    "approvedBy" TEXT NOT NULL,
+    "approvedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "signature" TEXT,
+    "comment" TEXT,
+
+    CONSTRAINT "FormApproval_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -475,6 +476,14 @@ CREATE TABLE "_CrewToUser" (
     CONSTRAINT "_CrewToUser_AB_pkey" PRIMARY KEY ("A","B")
 );
 
+-- CreateTable
+CREATE TABLE "_FormGroupingToFormTemplate" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL,
+
+    CONSTRAINT "_FormGroupingToFormTemplate_AB_pkey" PRIMARY KEY ("A","B")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "CostCode_name_key" ON "CostCode"("name");
 
@@ -538,6 +547,9 @@ CREATE INDEX "_CCTagToCostCode_B_index" ON "_CCTagToCostCode"("B");
 -- CreateIndex
 CREATE INDEX "_CrewToUser_B_index" ON "_CrewToUser"("B");
 
+-- CreateIndex
+CREATE INDEX "_FormGroupingToFormTemplate_B_index" ON "_FormGroupingToFormTemplate"("B");
+
 -- AddForeignKey
 ALTER TABLE "EmployeeEquipmentLog" ADD CONSTRAINT "EmployeeEquipmentLog_employeeId_fkey" FOREIGN KEY ("employeeId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -560,22 +572,25 @@ ALTER TABLE "EquipmentHauled" ADD CONSTRAINT "EquipmentHauled_equipmentId_fkey" 
 ALTER TABLE "EquipmentHauled" ADD CONSTRAINT "EquipmentHauled_jobSiteId_fkey" FOREIGN KEY ("jobSiteId") REFERENCES "Jobsite"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "InjuryForm" ADD CONSTRAINT "InjuryForm_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "timeOffRequestForm" ADD CONSTRAINT "timeOffRequestForm_employeeId_fkey" FOREIGN KEY ("employeeId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "FormTemplate" ADD CONSTRAINT "FormTemplate_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "Company"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "FormField" ADD CONSTRAINT "FormField_formTemplateId_fkey" FOREIGN KEY ("formTemplateId") REFERENCES "FormTemplate"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "FormField" ADD CONSTRAINT "FormField_formGroupingId_fkey" FOREIGN KEY ("formGroupingId") REFERENCES "FormGrouping"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "FormFieldOption" ADD CONSTRAINT "FormFieldOption_fieldId_fkey" FOREIGN KEY ("fieldId") REFERENCES "FormField"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "FormSubmission" ADD CONSTRAINT "FormSubmission_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "FormSubmission" ADD CONSTRAINT "FormSubmission_formTemplateId_fkey" FOREIGN KEY ("formTemplateId") REFERENCES "FormTemplate"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "FormSubmission" ADD CONSTRAINT "FormSubmission_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "FormApproval" ADD CONSTRAINT "FormApproval_formSubmissionId_fkey" FOREIGN KEY ("formSubmissionId") REFERENCES "FormSubmission"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "FormApproval" ADD CONSTRAINT "FormApproval_approvedBy_fkey" FOREIGN KEY ("approvedBy") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Jobsite" ADD CONSTRAINT "Jobsite_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "Company"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -660,3 +675,9 @@ ALTER TABLE "_CrewToUser" ADD CONSTRAINT "_CrewToUser_A_fkey" FOREIGN KEY ("A") 
 
 -- AddForeignKey
 ALTER TABLE "_CrewToUser" ADD CONSTRAINT "_CrewToUser_B_fkey" FOREIGN KEY ("B") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_FormGroupingToFormTemplate" ADD CONSTRAINT "_FormGroupingToFormTemplate_A_fkey" FOREIGN KEY ("A") REFERENCES "FormGrouping"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_FormGroupingToFormTemplate" ADD CONSTRAINT "_FormGroupingToFormTemplate_B_fkey" FOREIGN KEY ("B") REFERENCES "FormTemplate"("id") ON DELETE CASCADE ON UPDATE CASCADE;
