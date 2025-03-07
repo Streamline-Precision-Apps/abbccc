@@ -46,7 +46,7 @@ export default function SwitchJobsBtn({
               handleEvent={() => {
                 if (mechanicProjectID === "") {
                   router.push("/dashboard/switch-jobs");
-                } else if (view === "truck") {
+                } else if (logs.length === 0) {
                   router.push("/dashboard/switch-jobs");
                 } else {
                   modalState.handleOpenModal();
@@ -62,7 +62,7 @@ export default function SwitchJobsBtn({
               handleEvent={() => {
                 if (mechanicProjectID === "") {
                   router.push("/dashboard/switch-jobs");
-                } else if (view === "truck") {
+                } else if (logs.length === 0) {
                   router.push("/dashboard/switch-jobs");
                 } else {
                   modalState.handleOpenModal();
@@ -81,7 +81,7 @@ export default function SwitchJobsBtn({
           handleEvent={() => {
             if (mechanicProjectID === "") {
               router.push("/dashboard/switch-jobs");
-            } else if (view === "truck" && logs.length === 0) {
+            } else if (logs.length === 0) {
               router.push("/dashboard/switch-jobs");
             } else {
               modalState.handleOpenModal();
@@ -139,6 +139,7 @@ export default function SwitchJobsBtn({
                               }`
                             : type === "Trucking Assistant"
                             ? "/dashboard/truckingAssistant"
+                            : type === "tasco" ? "/dashboard/tasco"
                             : undefined
                         }
                         className="w-full py-3"

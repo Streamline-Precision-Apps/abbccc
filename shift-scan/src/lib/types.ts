@@ -386,7 +386,6 @@ export type TascoLog = {
   loads: Loads[];
   refueled: Refueled[];
   comment: string;
-  completed: boolean;
 };
 
 export type Loads = {

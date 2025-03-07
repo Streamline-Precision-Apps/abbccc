@@ -8,10 +8,11 @@ type LoadCounterProps = {
   setCount: (count: number) => void;
   addAction?: () => void;
   removeAction?: () => void;
+  allowRemove?: boolean;
 };
 
 
-export default function Counter({ count, setCount, addAction, removeAction }: LoadCounterProps) {
+export default function Counter({ count, setCount, addAction, removeAction, allowRemove }: LoadCounterProps) {
 
   const add = () => {
     setCount(count + 1);
@@ -32,7 +33,7 @@ export default function Counter({ count, setCount, addAction, removeAction }: Lo
       <div className="flex items-center justify-center  p-4 rounded-lg shadow-lg w-full">
         <Buttons
           onClick={remove}
-          disabled={count === 0}
+          disabled={count === 0 && !allowRemove}
           className={`text-black font-bold text-4xl w-16 h-16 rounded-lg shadow-lg border-2 border-black transition flex items-center justify-center ${
             count === 0
               ? "bg-gray-300 cursor-not-allowed"

@@ -11,9 +11,12 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Refueled, Loads as LoadsType } from "@/lib/types";
 import RefuelLayout from "./RefuelLayout";
 import TascoComments from "./tascoComments";
+import LoadsLayout from "./loads";
+import { createLoad } from "@/actions/tascoActions";
 
 export default function TascoClientPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [loads, setLoads] = useState<LoadsType[] | undefined>([] as LoadsType[]);
   const [loadCount, setLoadCount] = useState(0);
   const [activeTab, setActiveTab] = useState(1);
   const [timeSheetId, setTimeSheetId] = useState<string>();
@@ -43,6 +46,7 @@ export default function TascoClientPage() {
         const endpoints = [
           `/api/getTascoLog/comment/${timeSheetId}`,
           `/api/getTascoLog/refueledLogs/${timeSheetId}`,
+          `/api/getTascoLog/loads/${timeSheetId}`,
         ];
 
         const responses = await Promise.all(endpoints.map((url) => fetch(url)));
@@ -50,6 +54,8 @@ export default function TascoClientPage() {
         console.log("Data:", data);
         setComment(data[0].comment || "");
         setRefuelLogs(data[1]);
+        setLoads(data[2]);
+        setLoadCount(data[2].length);
       } catch (error) {
         console.error("Error fetching Data:", error);
       } finally {
@@ -60,14 +66,23 @@ export default function TascoClientPage() {
     fetchData();
   }, [timeSheetId]);
 
+    const AddLoad = async () => {
+      const formData = new FormData();
+      formData.append("tascoLogId", timeSheetId ?? "");
+      try {
+        const temp = await createLoad(formData);
+      } catch (error) {
+        console.log("error adding Load", error);
+      }
+    };
+
   return (
     // <Holds className="h-full overflow-y-hidden no-scrollbar">
     <Holds className="h-full">
-      <Grids rows={"10"} className={isLoading ? "animate-pulse h-full w-full" : "h-full w-full"}>
-        <Holds className="w-full items-center row-span-3" background={"white"}>
-          <Labels>Load Counter</Labels>
-          <Counter count={loadCount} setCount={setLoadCount} />
-        </Holds>
+      <Grids
+        rows={"10"}
+        className={isLoading ? "animate-pulse h-full w-full" : "h-full w-full"}
+      >
         <Holds className="row-span-1 h-full gap-1 w-full" position={"row"}>
           <NewTab
             titleImage="/comment.svg"
@@ -78,10 +93,18 @@ export default function TascoClientPage() {
             <Titles size={"h4"}>Comments</Titles>
           </NewTab>
           <NewTab
-            titleImage="/refuel-Icon.svg"
-            titleImageAlt="refuel-Icon"
+            titleImage="/Hauling-logs.svg"
+            titleImageAlt="Load Counter"
             onClick={() => setActiveTab(2)}
             isActive={activeTab === 2}
+          >
+            <Titles size={"h4"}>Load Counter</Titles>
+          </NewTab>
+          <NewTab
+            titleImage="/refuel-Icon.svg"
+            titleImageAlt="refuel-Icon"
+            onClick={() => setActiveTab(3)}
+            isActive={activeTab === 3}
           >
             <Titles size={"h4"}>Refuel Logs</Titles>
           </NewTab>
@@ -101,6 +124,22 @@ export default function TascoClientPage() {
               </Holds>
             )}
             {activeTab === 2 && (
+              <Holds className="h-full w-full relative pt-2">
+                <Holds
+                  className="w-full items-center row-span-3"
+                  background={"white"}
+                >
+                  <Labels>Load Counter</Labels>
+                  <Counter count={loadCount} setCount={setLoadCount} addAction={AddLoad} allowRemove={false} />
+                </Holds>
+                <LoadsLayout
+                  tascoLog={timeSheetId}
+                  loads={loads}
+                  setLoads={setLoads}
+                />
+              </Holds>
+            )}
+            {activeTab === 3 && (
               <RefuelLayout
                 tascoLog={timeSheetId}
                 refuelLogs={refuelLogs}
