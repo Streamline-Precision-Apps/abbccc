@@ -163,7 +163,7 @@
     "TruckingAssistant": "Asistente de camiones"
   },
   "Equipment": {
-    "NoCurrent": " No hay equipo en uso actualmente",
+    "NoCurrent": "¡No se encontraron registros de equipos!",
     "Current": "Equipo actual",
     "Loading": "Cargando...",
     "Refueled": " ¿Repostaste? ",
@@ -299,6 +299,7 @@
     "ID": "Id: #"
   },
   "Clock": {
+    "SubmitSelection": "Enviar selección",
     "ChangeIfNecessary": "Cambiar si es necesario",
     "Next": "Siguiente",
     "PreviousJobComment": "Comentarios del Trabajo Anterior",

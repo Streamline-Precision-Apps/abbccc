@@ -6,7 +6,6 @@ enum FormType {
     LEAVE
     SAFETY
     INJURY
-    TIME_OFF
 }
 
 // Defines time-off request subtypes
@@ -22,7 +21,7 @@ enum TimeOffRequestType {
 enum FormStatus {
     PENDING
     APPROVED
-    REJECTED
+    DENIED
     DRAFT
 }
 
@@ -38,24 +37,25 @@ enum FieldType {
 
 // Holds company-specific form templates
 model FormTemplate {
-    id        String   @id @default(cuid())
-    companyId String
-    name      String
-    slug      String   @unique @default(cuid())
-    formType  FormType
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    isActive  Boolean  @default(false)
+    id                  String   @id @default(cuid())
+    companyId           String
+    name                String
+    slug                String   @unique @default(cuid())
+    formType            FormType
+    createdAt           DateTime @default(now())
+    updatedAt           DateTime @updatedAt
+    isActive            Boolean  @default(false)
+    isSignatureRequired Boolean  @default(false)
 
     company Company @relation(fields: [companyId], references: [id])
 
-    submissions FormSubmission[]
-    FormGouping FormGrouping[]
+    submissions  FormSubmission[]
+    FormGrouping FormGrouping[]
 }
 
 model FormGrouping {
     id           String         @id @default(cuid())
-    title        String
+    title        String?
     order        Int
     fields       FormField[]
     FormTemplate FormTemplate[]
@@ -64,7 +64,7 @@ model FormGrouping {
 // Defines individual form fields with metadata
 model FormField {
     id             String            @id @default(cuid())
-    formTemplateId String
+    formGroupingId String
     label          String
     type           FieldType
     required       Boolean           @default(false)
@@ -72,8 +72,7 @@ model FormField {
     defaultValue   String? // Stores default input values
     options        FormFieldOption[] // Stores dropdown options
 
-    FormGrouping   FormGrouping? @relation(fields: [formGroupingId], references: [id], onDelete: Cascade)
-    formGroupingId String?
+    FormGrouping FormGrouping @relation(fields: [formGroupingId], references: [id], onDelete: Cascade)
 }
 
 // Stores dropdown options for FormField

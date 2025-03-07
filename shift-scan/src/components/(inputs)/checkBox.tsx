@@ -23,7 +23,7 @@ export const CheckBox = ({
   size = 4,
   onChange,
 }: CheckboxProps) => (
-  <div className="w-full flex justify-end">
+  <div className="w-full flex ">
     <input
       className={`
       peer relative appearance-none shrink-0 border-[3px] border-black mt-1 shadow-[8px_8px_0px_grey]

@@ -27,7 +27,7 @@ export enum FormStatus {
   PENDING = "PENDING",
   APPROVED = "APPROVED",
   DENIED = "DENIED",
-  REJECTED = "REJECTED",
+  DRAFT = "DRAFT",
 }
 
 export enum WorkType {
@@ -176,9 +176,9 @@ export type EmployeeEquipmentLogs = {
   createdAt: Date;
   updatedAt: Date;
   isCompleted: boolean;
-  isSubmitted: boolean;
+  isFinished: boolean;
   status: FormStatus;
-  Equipment?: Equipment | null;
+  equipment?: Equipment | null;
 };
 export type TimeSheetView = {
   submitDate?: string; // Changed to string since API returns string dates
@@ -405,7 +405,7 @@ export type EmployeeEquipmentLog = {
   comment?: string | null;
   createdAt: Date;
   updatedAt: Date;
-  isSubmitted: boolean;
+  isFinished: boolean;
   status: FormStatus; // Enum: PENDING, APPROVED, etc.
 
   // Relations

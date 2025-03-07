@@ -81,7 +81,7 @@ export async function GET() {
         where: {
           employeeId: userId,
           createdAt: { lte: currentDate, gte: past24Hours },
-          isSubmitted: false,
+          isFinished: false,
         },
         include: {
           equipment: {
@@ -195,7 +195,7 @@ export async function GET() {
             name: log.equipment.name,
           }
         : null,
-      submitted: log.isSubmitted,
+      submitted: log.isFinished,
     }));
 
     // Mapping Maintenance Logs
@@ -216,7 +216,6 @@ export async function GET() {
         // Check if endingMileage is required
         const isEndingMileageRequired =
           log.laborType === "truckDriver" && log.endingMileage === null;
-
         return {
           id: log.id,
           type: "Trucking Assistant",

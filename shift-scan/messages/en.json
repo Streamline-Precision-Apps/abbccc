@@ -167,8 +167,9 @@
     "SaveCropImage": "Save Image"
   },
   "Equipment": {
-    "NoCurrent": "No Equipment Currently In Use",
-    "Current": "Current Equipment",
+    "LogNew": "Log New",
+    "NoCurrent": "No Equipment logs found!",
+    "Current": "Today's Equipment",
     "Loading": "Loading...",
     "Refueled": " Did you refuel?",
     "Gallons": "Total gallons refueled",
@@ -320,6 +321,7 @@
     "ID": "Id: #"
   },
   "Clock": {
+    "SubmitSelection": "Submit Selection",
     "ViewSelected": "View Selected Options",
     "ScanJobsite": "Scan Job Site",
     "StartCamera": "Start Camera",
