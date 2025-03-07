@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
+import { TascoLog } from "@/lib/types";
 
 // TypeScript Types for Safety and Consistency
 type EquipmentLog = {
@@ -49,7 +50,7 @@ export async function GET() {
 
   try {
     // Fetch all data concurrently using Promise.all
-    const [employeeLogs, maintenanceLogs, truckingLogs] = await Promise.all([
+    const [employeeLogs, maintenanceLogs, truckingLogs, tascoLogs] = await Promise.all([
       prisma.employeeEquipmentLog.findMany({
         where: {
           employeeId: userId,
@@ -117,6 +118,33 @@ export async function GET() {
               id: true,
               equipmentId: true,
               jobSiteId: true,
+            },
+          },
+        },
+      }),
+
+      prisma.tascoLog.findMany({
+        where: {
+          timeSheet: {
+            userId: userId,
+            endTime: null,
+          },
+        },
+        select: {
+          id: true,
+          comment: true,
+          loads: {
+            select: {
+              id: true,
+              loadType: true,
+              loadWeight: true,
+            },
+          },
+          refueled: {
+            select: {
+              id: true,
+              gallonsRefueled: true,
+              milesAtfueling: true,
             },
           },
         },

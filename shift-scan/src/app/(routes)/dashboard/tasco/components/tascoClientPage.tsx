@@ -1,53 +1,115 @@
 "use client";
 
-import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
-import Counter from "./counter";
-import DidYouRefuel from "./didYouRefuel";
-import Loads from "./loads";
 import { useEffect, useState } from "react";
-type Loads = {
-  id: string;
-  tascoLogId: string;
-  loadType: string;
-  loadWeight: number;
-};
+import Counter from "./counter";
+import { Labels } from "@/components/(reusable)/labels";
+import { NewTab } from "@/components/(reusable)/newTabs";
+import { Titles } from "@/components/(reusable)/titles";
+import { Grids } from "@/components/(reusable)/grids";
+import { Contents } from "@/components/(reusable)/contents";
+import { Refueled, Loads as LoadsType } from "@/lib/types";
+import RefuelLayout from "./RefuelLayout";
+import TascoComments from "./tascoComments";
 
-type Refueled = {
-  id: string;
-  tascoLogId: string;
-  gallonsRefueled: number;
-  milesAtfueling: number;
-};
-
-type TascoLog = {
-  id: string;
-  shiftType: string;
-  equipmentId: string;
-  laborType: string;
-  materialType: string;
-  loadsHauled: number;
-  loads: Loads[];
-  refueled: Refueled[];
-  comment: string;
-  completed: boolean;
-};
 export default function TascoClientPage() {
-  const [tascoData, setTascoData] = useState<TascoLog[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadCount, setLoadCount] = useState(0);
+  const [activeTab, setActiveTab] = useState(1);
+  const [timeSheetId, setTimeSheetId] = useState<string>();
+  const [refuelLogs, setRefuelLogs] = useState<Refueled[]>();
+  const [comment, setComment] = useState<string>("");
 
   useEffect(() => {
-    const fetchTimesheet = async () => {
-      // get recent timecard then fetch and call api: /api/getRecentTimecard
-      const tascoLog = await fetch(`/api/getRecentTascoLog`);
-      const logData = await tascoLog.json();
-      setTascoData(logData);
+    const fetchTascoLog = async () => {
+      try {
+        const res = await fetch(`/api/getTascoLog/tascoId`);
+        if (!res.ok) throw new Error("Failed to fetch Tasco Log");
+        const data = await res.json();
+        console.log("id: " + data);
+        setTimeSheetId(data);
+      } catch (error) {
+        console.error("Error fetching Tasco Log:", error);
+      }
     };
-    fetchTimesheet();
-  });
+
+    fetchTascoLog();
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const endpoints = [
+          `/api/getTascoLog/comment/${timeSheetId}`,
+          `/api/getTascoLog/refueledLogs/${timeSheetId}`,
+        ];
+
+        const responses = await Promise.all(endpoints.map((url) => fetch(url)));
+        const data = await Promise.all(responses.map((res) => res.json()));
+        console.log("Data:", data);
+        setComment(data[0].comment || "");
+        setRefuelLogs(data[1]);
+      } catch (error) {
+        console.error("Error fetching Data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [timeSheetId]);
+
   return (
-    <Holds className="w-full h-full overflow-y-hidden no-scrollbar">
-      <DidYouRefuel />
-      <Loads />
+    // <Holds className="h-full overflow-y-hidden no-scrollbar">
+    <Holds className="h-full">
+      <Grids rows={"10"} className={isLoading ? "animate-pulse h-full w-full" : "h-full w-full"}>
+        <Holds className="w-full items-center row-span-3" background={"white"}>
+          <Labels>Load Counter</Labels>
+          <Counter count={loadCount} setCount={setLoadCount} />
+        </Holds>
+        <Holds className="row-span-1 h-full gap-1 w-full" position={"row"}>
+          <NewTab
+            titleImage="/comment.svg"
+            titleImageAlt="Comment"
+            onClick={() => setActiveTab(1)}
+            isActive={activeTab === 1}
+          >
+            <Titles size={"h4"}>Comments</Titles>
+          </NewTab>
+          <NewTab
+            titleImage="/refuel-Icon.svg"
+            titleImageAlt="refuel-Icon"
+            onClick={() => setActiveTab(2)}
+            isActive={activeTab === 2}
+          >
+            <Titles size={"h4"}>Refuel Logs</Titles>
+          </NewTab>
+        </Holds>
+        <Holds
+          background={"white"}
+          className="rounded-t-none row-span-9 h-full overflow-y-hidden no-scrollbar"
+        >
+          <Contents width={"section"} className="py-5">
+            {activeTab === 1 && (
+              <Holds className="h-full w-full relative pt-2">
+                <TascoComments
+                  tascoLog={timeSheetId}
+                  comments={comment}
+                  setComments={setComment}
+                />
+              </Holds>
+            )}
+            {activeTab === 2 && (
+              <RefuelLayout
+                tascoLog={timeSheetId}
+                refuelLogs={refuelLogs}
+                setRefuelLogs={setRefuelLogs}
+              />
+            )}
+          </Contents>
+        </Holds>
+      </Grids>
     </Holds>
   );
 }
