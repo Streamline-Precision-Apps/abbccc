@@ -2,169 +2,120 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath, revalidateTag } from "next/cache";
 
-/* EQUIPMENT Hauled */
+
+/* LOADS Hauled */
 //------------------------------------------------------------------
 //------------------------------------------------------------------
 
-// export async function createEquipmentHauled(formData: FormData) {
-//   console.log("Creating hauling logs...");
-//   console.log(formData);
-//   const tascoLogId = formData.get("tascoLogId") as string;
+export async function createLoad(formData: FormData) {
+  console.log("Creating Load...");
+  console.log(formData);
+  const tascoLogId = formData.get("tascoLogId") as string;
 
-//   const equipmentHauled = await prisma.equipmentHauled.create({
-//     data: {
-//       tascoLog: {
-//         connect: { id: tascoLogId },
-//       },
-//     },
-//   });
+  const load = await prisma.loads.create({
+    data: {
+      tascoLogId,
+    },
+  });
 
-//   console.log(equipmentHauled);
-//   revalidatePath("/dashboard/tascoAssistant");
-//   revalidateTag("equipmentHauled");
-//   return equipmentHauled;
-// }
+  console.log("New Load:", load);
+  revalidatePath("/dashboard/tasco");
+  revalidateTag("load");
+  return load;
+}
 
-// export async function updateEquipmentLogsLocation(formData: FormData) {
-//   console.log("Updating hauling logs...");
-//   console.log(formData);
-//   const id = formData.get("id") as string;
-//   const equipmentId = formData.get("equipmentId") as string;
-//   const tascoLogId = formData.get("tascoLogId") as string;
 
-//   // Use a nested update to update the related Equipment's jobsiteId in one call.
-//   const updatedLog = await prisma.equipmentHauled.update({
-//     where: { id },
-//     data: {
-//       tascoLogId,
-//       jobSiteId: equipmentId,
-//     },
-//   });
-//   // Create EquipmentLocationLog for the updated jobSiteId
+export async function updateLoads(formData: FormData) {
+  const id = formData.get("id") as string;
+  const loadType = formData.get("LoadType") as string;
+  const loadWeight = parseInt(formData.get("loadweight") as string);
+  const tascoLogId = formData.get("tascoLogId") as string;
 
-//   console.log(updatedLog);
-//   revalidateTag("equipmentHauled");
-//   revalidatePath("/dashboard/tascoAssistant");
-//   return updatedLog;
-// }
+  // If ID is provided, update the existing log
+  if (id) {
+    const updatedLog = await prisma.loads.update({
+      where: { id },
+      data: {
+        loadType,
+        loadWeight,
+      },
+    });
 
-// export async function updateEquipmentLogsEquipment(formData: FormData) {
-//   console.log("Updating hauling logs...");
-//   console.log(formData);
-//   const id = formData.get("id") as string;
-//   const equipmentId = formData.get("equipmentId") as string;
-//   const tascoLogId = formData.get("tascoLogId") as string;
+    console.log("Updated Hauling Log:", updatedLog);
+    return updatedLog;
+  }
 
-//   // Use a nested update to update the related Equipment's jobsiteId in one call.
-//   const updatedLog = await prisma.equipmentHauled.update({
-//     where: { id },
-//     data: {
-//       tascoLogId,
-//       equipmentId,
-//     },
-//   });
-//   console.log(updatedLog);
-//   revalidateTag("equipmentHauled");
-//   revalidatePath("/dashboard/tascoAssistant");
-//   return updatedLog;
-// }
+  // If no ID, create a new log
+  const load = await prisma.loads.create({
+    data: {
+      loadType,
+      loadWeight,
+      tascoLogId,
+    },
+  });
 
-// export async function deleteEquipmentHauled(id: string) {
-//   console.log("Deleting Equipment hauling logs...");
-//   console.log(id);
-//   await prisma.equipmentHauled.delete({
-//     where: { id },
-//   });
+  console.log("Created Hauling Log:", load);
+  revalidateTag("load");
+  return load;
+}
 
-//   revalidateTag("equipmentHauled");
-//   return true;
-// }
 
-/* MATERIALS Hauled */
-//------------------------------------------------------------------
-//------------------------------------------------------------------
+export async function deleteLoad(id: string) {
+  console.log("Deleting load...");
+  console.log(id);
+  await prisma.loads.delete({
+    where: { id },
+  });
 
-// export async function createHaulingLogs(formData: FormData) {
-//   console.log("Creating hauling logs...");
-//   console.log(formData);
-//   const tascoLogId = formData.get("tascoLogId") as string;
+  revalidateTag("load");
+  return true;
+}
 
-//   const haulingLog = await prisma.material.create({
-//     data: {
-//       tascoLogId,
-//     },
-//   });
 
-//   console.log(haulingLog);
-//   revalidatePath("/dashboard/tascoAssistant");
-//   revalidateTag("material");
-//   return haulingLog;
-// }
+export async function deleteOneLoad(tascoId: string) {
+  console.log("Deleting first load associated with Tasco Log...");
+  console.log(tascoId);
 
-// export async function updateHaulingLogs(formData: FormData) {
-//   const id = formData.get("id") as string;
-//   const name = formData.get("name") as string;
-//   const LocationOfMaterial = formData.get("LocationOfMaterial") as string;
-//   const quantity = parseInt(formData.get("quantity") as string);
-//   const tascoLogId = formData.get("tascoLogId") as string;
+  try {
+    // Find the first Load attached to the TascoLog
+    const firstLoad = await prisma.loads.findFirst({
+      where: {
+        tascoLogId: tascoId, // Find loads linked to this Tasco Log
+      },
+    });
 
-//   // If ID is provided, update the existing log
-//   if (id) {
-//     const updatedLog = await prisma.material.update({
-//       where: { id },
-//       data: {
-//         name,
-//         LocationOfMaterial,
-//         quantity,
-//       },
-//     });
+    if (!firstLoad) {
+      console.log("No loads found for this Tasco Log.");
+      return false;
+    }
 
-//     console.log("Updated Hauling Log:", updatedLog);
-//     return updatedLog;
-//   }
+    // Delete the first found Load
+    await prisma.loads.delete({
+      where: {
+        id: firstLoad.id,
+      },
+    });
 
-//   // If no ID, create a new log
-//   const haulingLog = await prisma.material.create({
-//     data: {
-//       name,
-//       LocationOfMaterial,
-//       quantity,
-//       tascoLogId,
-//     },
-//   });
-//   revalidateTag("material");
-//   console.log("New Hauling Log:", haulingLog);
-//   return haulingLog;
-// }
+    console.log(`Deleted Load ID: ${firstLoad.id}`);
 
-// export async function deleteHaulingLogs(id: string) {
-//   console.log("Deleting hauling logs...");
-//   console.log(id);
-//   await prisma.material.delete({
-//     where: { id },
-//   });
+    // Revalidate the tag to update UI
+    revalidateTag("load");
 
-//   revalidateTag("material");
-//   return true;
-// }
-/* Update */
-//------------------------------------------------------------------
-//------------------------------------------------------------------
+    return true;
+  } catch (error) {
+    console.error("Error deleting load:", error);
+    return { success: false, message: "An error occurred while deleting the load." };
+  }
+}
 
-// export const updateTascoMileage = async (formData: FormData) => {
-//   const id = formData.get("id") as string;
-//   const endingMileage = parseInt(formData.get("endingMileage") as string);
 
-//   const updatedLog = await prisma.tascoLog.update({
-//     where: { id },
-//     data: {
-//       endingMileage,
-//     },
-//   });
-//   return updatedLog;
-// };
 
-export const updateTruckDrivingNotes = async (formData: FormData) => {
+// /* Tasco Comments */
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+
+
+export const updateTascoComments = async (formData: FormData) => {
   const id = formData.get("id") as string;
   const comment = formData.get("comment") as string;
 
@@ -179,51 +130,9 @@ export const updateTruckDrivingNotes = async (formData: FormData) => {
   return updatedLog;
 };
 
-// export async function createStateMileage(formData: FormData) {
-//   console.log("Creating hauling logs...");
-//   console.log(formData);
-//   const tascoLogId = formData.get("tascoLogId") as string;
-
-//   const equipmentHauled = await prisma.stateMileage.create({
-//     data: {
-//       tascoLogId,
-//     },
-//   });
-
-//   console.log(equipmentHauled);
-//   revalidatePath("/dashboard/tascoAssistant");
-//   revalidateTag("equipmentHauled");
-//   return equipmentHauled;
-// }
-
-export async function updateStateMileage(formData: FormData) {
-  const id = formData.get("id") as string;
-  const state = formData.get("state") as string;
-  const stateLineMileage = Number(formData.get("stateLineMileage")) || 0;
-
-  // Update the state mileage in the database
-  const updatedStateMileage = await prisma.stateMileage.update({
-    where: { id },
-    data: {
-      state,
-      stateLineMileage,
-    },
-  });
-
-  console.log("Updated State Mileage:", updatedStateMileage);
-
-  return updatedStateMileage;
-}
-
-export async function deleteStateMileage(id: string) {
-  console.log("Deleting State Mileage:", id);
-  await prisma.stateMileage.delete({
-    where: { id },
-  });
-
-  return true;
-}
-
+// /* Refuel */
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 export async function createRefuelLog(formData: FormData) {
   console.log("Creating refuel logs...");
   console.log(formData);
@@ -246,8 +155,7 @@ export async function updateRefuelLog(formData: FormData) {
     Number(formData.get("gallonsRefueled") as string) || 0;
   const milesAtfueling = Number(formData.get("milesAtfueling")) || 0;
 
-  // Update the state mileage in the database
-  const updatedStateMileage = await prisma.refueled.update({
+  const updatedRefuelLog = await prisma.refueled.update({
     where: { id },
     data: {
       gallonsRefueled,
@@ -255,9 +163,9 @@ export async function updateRefuelLog(formData: FormData) {
     },
   });
   revalidatePath("/dashboard/tascoAssistant");
-  console.log("Updated State Mileage:", updatedStateMileage);
+  console.log("Updated State Mileage:", updatedRefuelLog);
 
-  return updatedStateMileage;
+  return updatedRefuelLog;
 }
 
 export async function deleteRefuelLog(id: string) {

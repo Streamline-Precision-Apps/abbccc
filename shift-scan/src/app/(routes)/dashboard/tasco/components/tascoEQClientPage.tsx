@@ -3,18 +3,17 @@
 import { Holds } from "@/components/(reusable)/holds";
 import { useEffect, useState } from "react";
 import Counter from "./counter";
-import DidYouRefuel from "./didYouRefuel";
 import { Labels } from "@/components/(reusable)/labels";
 import { NewTab } from "@/components/(reusable)/newTabs";
 import { Titles } from "@/components/(reusable)/titles";
 import { Grids } from "@/components/(reusable)/grids";
 import { Contents } from "@/components/(reusable)/contents";
-import { TascoLog, Refueled, Loads as LoadsType } from "@/lib/types";
-import TextInputWithRevert from "@/components/(reusable)/textInputWithRevert";
+import { Refueled } from "@/lib/types";
 import RefuelLayout from "./RefuelLayout";
-import { set } from "date-fns";
+import TascoComments from "./tascoComments";
+import { createLoad, deleteOneLoad } from "@/actions/tascoActions";
 
-export default function TascoClientPage() {
+export default function TascoEQClientPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [loadCount, setLoadCount] = useState(0);
   const [activeTab, setActiveTab] = useState(1);
@@ -25,10 +24,10 @@ export default function TascoClientPage() {
   useEffect(() => {
     const fetchTascoLog = async () => {
       try {
-        const res = await fetch(`/api/getTascoLogs/tascoId`);
+        const res = await fetch(`/api/getTascoLog/tascoId`);
         if (!res.ok) throw new Error("Failed to fetch Tasco Log");
         const data = await res.json();
-        console.log("id: " + data)
+        console.log("id: " + data);
         setTimeSheetId(data);
       } catch (error) {
         console.error("Error fetching Tasco Log:", error);
@@ -62,14 +61,32 @@ export default function TascoClientPage() {
     fetchData();
   }, [timeSheetId]);
 
+  const AddLoad = async () => {
+    const formData = new FormData();
+    formData.append("tascoLogId", timeSheetId ?? "");
+    try {
+      const temp = await createLoad(formData);
+    } catch (error) {
+      console.log("error adding Load", error);
+    }
+  };
+
+  const ReduceLoad = async () => {
+    try {
+      const temp = await deleteOneLoad(timeSheetId ?? "");
+      console.log("deleted: ", temp);
+    } catch (error) {
+      console.log("error adding Load", error);
+    }
+  };
 
   return (
     // <Holds className="h-full overflow-y-hidden no-scrollbar">
     <Holds className="h-full">
-      <Grids rows={"10"} className="h-full w-full">
+      <Grids rows={"10"} className={isLoading ? "animate-pulse h-full w-full" : "h-full w-full"}>
         <Holds className="w-full items-center row-span-3" background={"white"}>
           <Labels>Load Counter</Labels>
-          <Counter count={loadCount} setCount={setLoadCount} />
+          <Counter count={loadCount} setCount={setLoadCount} addAction={AddLoad} removeAction={ReduceLoad}/>
         </Holds>
         <Holds className="row-span-1 h-full gap-1 w-full" position={"row"}>
           <NewTab
@@ -77,6 +94,7 @@ export default function TascoClientPage() {
             titleImageAlt="Comment"
             onClick={() => setActiveTab(1)}
             isActive={activeTab === 1}
+            isComplete={comment.trim().length > 0}
           >
             <Titles size={"h4"}>Comments</Titles>
           </NewTab>
@@ -85,7 +103,8 @@ export default function TascoClientPage() {
             titleImageAlt="refuel-Icon"
             onClick={() => setActiveTab(2)}
             isActive={activeTab === 2}
-          >
+            isComplete={refuelLogs === undefined || refuelLogs.length === 0 || refuelLogs.every(log => log.gallonsRefueled > 0)}
+            >
             <Titles size={"h4"}>Refuel Logs</Titles>
           </NewTab>
         </Holds>
@@ -95,20 +114,19 @@ export default function TascoClientPage() {
         >
           <Contents width={"section"} className="py-5">
             {activeTab === 1 && (
-              <Grids rows={"1"} className="h-full">
-                <Holds
-                  className="row-span-1 h-full gap-1 w-full"
-                  position={"row"}
-                >
-                  
-                </Holds>
-              </Grids>
+              <Holds className="h-full w-full relative pt-2">
+                <TascoComments
+                  tascoLog={timeSheetId}
+                  comments={comment}
+                  setComments={setComment}
+                />
+              </Holds>
             )}
             {activeTab === 2 && (
               <RefuelLayout
-              tascoLog={timeSheetId}
-              refuelLogs={refuelLogs}
-              setRefuelLogs={setRefuelLogs}
+                tascoLog={timeSheetId}
+                refuelLogs={refuelLogs}
+                setRefuelLogs={setRefuelLogs}
               />
             )}
           </Contents>
