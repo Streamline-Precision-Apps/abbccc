@@ -1,9 +1,10 @@
 // The crew model here pair users to a group that can be used to make a team or a group of people.
 model Crew {
-    id          String      @id @default(cuid())
+    id          String   @id @default(cuid())
     name        String
     leadId      String
     description String
+    crewType    WorkType
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
     users       User[]
