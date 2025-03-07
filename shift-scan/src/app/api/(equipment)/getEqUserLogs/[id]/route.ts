@@ -3,7 +3,10 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 type Params = Promise<{ id: string }>;
-export async function GET(request: Request, { params: id }: { params: Params }) {
+export async function GET(
+  request: Request,
+  { params: id }: { params: Params }
+) {
   const session = await auth();
   const userId = session?.user?.id;
 
@@ -28,16 +31,20 @@ export async function GET(request: Request, { params: id }: { params: Params }) 
           lte: currentDate,
           gte: past24Hours,
         },
-        isSubmitted: false,
       },
       include: {
-        Equipment: {
+        equipment: {
           select: {
             name: true,
             status: true,
           },
         },
-        refueled: true,
+        refueled: {
+          select: {
+            milesAtfueling: true,
+            gallonsRefueled: true,
+          },
+        },
       },
     });
     console.log("usersLog: ", usersLog);
