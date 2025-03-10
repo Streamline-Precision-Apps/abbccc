@@ -871,6 +871,7 @@
   },
 
   "MechanicWidget": {
+    "JoinProject": "Join Project",
     "Projects": "Projects",
     "Mechanic": "Mechanic",
     "PriorityList": "Priority List",

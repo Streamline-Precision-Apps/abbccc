@@ -20,6 +20,8 @@ import { useRouter } from "next/navigation";
 import Spinner from "@/components/(animations)/spinner";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
+import CodeFinder from "@/components/(search)/codeFinder";
+import StepButtons from "@/components/(clock)/step-buttons";
 
 type Equipment = {
   id: string;
@@ -41,6 +43,7 @@ export default function CreateMechanicProjectProcess() {
   const [equipmentIssue, setEquipmentIssue] = useState<string>("");
   const [additionalInfo, setAdditionalInfo] = useState<string>("");
   const [location, setLocation] = useState<string>("");
+  const [selectedOpt, setSelectedOpt] = useState<boolean>(false);
   const [status, setStatus] = useState<
     "TODAY" | "HIGH" | "MEDIUM" | "LOW" | "PENDING" | ""
   >("");
@@ -116,40 +119,47 @@ export default function CreateMechanicProjectProcess() {
         <Contents>
           {/* Step 1: Select Scanning Option */}
           {step === 1 && (
-            <Holds background="white" className="w-full h-full py-4">
-              <Grids rows="7" gap="5" className="w-full h-full">
+            <Holds background="white" className="w-full h-full ">
+              <Grids rows="10" className="w-full h-full">
                 <Holds className="row-start-1 row-end-2 h-full">
                   <TitleBoxes
                     title={t("SelectEquipment")}
                     titleImg="/mechanic.svg"
                     titleImgAlt={t("Mechanic")}
-                    type="noIcon"
+                    onClick={() => router.push("/dashboard/mechanic")}
+                    type="noIcon-NoHref"
                   />
                 </Holds>
-                <Holds className="row-start-3 row-end-5">
+
+                <Holds className="row-start-3 row-end-8 h-full justify-center">
                   <Images
                     titleImg="/camera.svg"
                     titleImgAlt={t("Camera")}
                     size="40"
                   />
                 </Holds>
-                <Holds className="row-start-6 row-end-7 h-full">
-                  <Contents>
-                    <Buttons background="lightBlue" onClick={nextStep}>
-                      <Titles size="h4">{t("ScanEquipment")}</Titles>
+                <Holds className="row-start-8 row-end-11 h-full py-4 ">
+                  <Contents
+                    width={"section"}
+                    className="flex flex-col h-full gap-5 py-3"
+                  >
+                    <Buttons
+                      background="lightBlue"
+                      onClick={nextStep}
+                      className="w-full h-1/2 "
+                    >
+                      <Titles size="h3">{t("ScanEquipment")}</Titles>
                     </Buttons>
-                  </Contents>
-                </Holds>
-                <Holds className="row-start-7 row-end-8 h-full">
-                  <Contents>
+
                     <Buttons
                       background="lightBlue"
                       onClick={() => {
                         nextStep();
                         nextStep();
                       }}
+                      className="w-full h-1/2 "
                     >
-                      <Titles size="h4">{t("SelectManually")}</Titles>
+                      <Titles size="h3">{t("SelectManually")}</Titles>
                     </Buttons>
                   </Contents>
                 </Holds>
@@ -159,51 +169,72 @@ export default function CreateMechanicProjectProcess() {
 
           {/* Step 2: QR Scan Equipment Option */}
           {step === 2 && (
-            <Holds>
-              <Holds background="white" className="w-full h-full py-4">
-                <Grids rows="7" gap="5" className="w-full h-full">
-                  <Holds className="row-start-1 row-end-2 h-full">
-                    <TitleBoxes
-                      title={t("SelectEquipment")}
-                      titleImg="/mechanic.svg"
-                      titleImgAlt={t("Mechanic")}
-                      onClick={prevStep}
-                      type="noIcon-NoHref"
-                    />
-                  </Holds>
-                  <Holds className="row-start-2 row-end-5 h-full">
-                    <Contents>
-                      <Holds className="h-full w-full row-start-2 row-end-6 justify-center border-[3px] p-3 border-black rounded-[10px]">
-                        <SimpleQr
-                          setScannedId={setScannedId}
-                          setScanned={setScanned}
-                        />
-                      </Holds>
-                    </Contents>
-                  </Holds>
-                  <Holds>
-                    <Buttons background="none" onClick={() => setStep(3)}>
-                      <Texts size="p4">{t("TroubleScanning")}</Texts>
-                    </Buttons>
-                  </Holds>
-                </Grids>
-              </Holds>
+            <Holds background="white" className="w-full h-full py-4">
+              <Grids rows="10" gap="5" className="w-full h-full">
+                <Holds className="row-start-1 row-end-2 h-full">
+                  <TitleBoxes
+                    title={t("SelectEquipment")}
+                    titleImg="/mechanic.svg"
+                    titleImgAlt={t("Mechanic")}
+                    onClick={prevStep}
+                    type="noIcon-NoHref"
+                  />
+                </Holds>
+                <Holds className="row-start-3 row-end-9 h-full">
+                  <Contents width={"section"} className="h-full py-5">
+                    <Holds className="h-full w-full row-start-2 row-end-6 justify-center border-[3px] p-3 border-black rounded-[10px]">
+                      <SimpleQr
+                        setScannedId={setScannedId}
+                        setScanned={setScanned}
+                      />
+                    </Holds>
+                  </Contents>
+                </Holds>
+                <Holds className="row-start-9 row-end-10 h-full">
+                  <Buttons background="none" onClick={() => setStep(3)}>
+                    <Texts size="p4" className="underline opacity-60">
+                      {t("TroubleScanning")}
+                    </Texts>
+                  </Buttons>
+                </Holds>
+              </Grids>
             </Holds>
           )}
 
           {/* Step 3: Manual Entry of Equipment */}
           {step === 3 && (
-            <Holds background="white" className="w-full h-full py-4">
-              <Contents>
-                <CodeStep
-                  datatype="equipment"
-                  handlePrevStep={prevStep}
-                  handleNextStep={() => setStep(4)}
-                  handleScannedPrevStep={() => setStep(1)}
-                  scanned={scanned}
-                  setScannedId={setScannedId}
-                />
-              </Contents>
+            <Holds background="white" className="w-full h-full">
+              <Grids rows={"7"} gap={"5"} className="w-full h-full">
+                <Holds className="h-full row-start-1 row-end-2">
+                  <TitleBoxes
+                    title={"Select Equipment"}
+                    titleImg="/mechanic.svg"
+                    titleImgAlt="Mechanic"
+                    onClick={prevStep}
+                    type="noIcon-NoHref"
+                  />
+                </Holds>
+                <Contents
+                  width={"section"}
+                  className="h-full row-start-2 row-end-8 py-5"
+                >
+                  <Grids rows="7" gap="5" className="w-full h-full">
+                    <Holds className="h-full row-start-1 row-end-7">
+                      <CodeFinder
+                        setScannedId={setScannedId}
+                        datatype="equipment"
+                        setSelectedOpt={setSelectedOpt}
+                      />
+                    </Holds>
+                    <Holds className="row-start-7 row-end-8 h-full ">
+                      <StepButtons
+                        handleNextStep={() => setStep(4)}
+                        disabled={!selectedOpt}
+                      />
+                    </Holds>
+                  </Grids>
+                </Contents>
+              </Grids>
             </Holds>
           )}
 
