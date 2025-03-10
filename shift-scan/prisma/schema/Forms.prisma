@@ -1,13 +1,3 @@
-// Holds all possible form types
-enum FormType {
-    MEDICAL
-    INSPECTION
-    MANAGER
-    LEAVE
-    SAFETY
-    INJURY
-}
-
 // Defines time-off request subtypes
 enum TimeOffRequestType {
     FAMILY_MEDICAL
@@ -40,8 +30,7 @@ model FormTemplate {
     id                  String   @id @default(cuid())
     companyId           String
     name                String
-    slug                String   @unique @default(cuid())
-    formType            FormType
+    formType            String?
     createdAt           DateTime @default(now())
     updatedAt           DateTime @updatedAt
     isActive            Boolean  @default(false)
@@ -70,6 +59,8 @@ model FormField {
     required       Boolean           @default(false)
     order          Int
     defaultValue   String? // Stores default input values
+    placeholder    String?
+    helperText     String?
     options        FormFieldOption[] // Stores dropdown options
 
     FormGrouping FormGrouping @relation(fields: [formGroupingId], references: [id], onDelete: Cascade)
@@ -89,7 +80,7 @@ model FormSubmission {
     id             String              @id @default(cuid())
     formTemplateId String
     userId         String
-    formType       FormType
+    formType       String?
     requestType    TimeOffRequestType? // Only used for TIME_OFF forms
     name           String? // Nickname for submission
     startDate      DateTime? // Only used for time-off requests
