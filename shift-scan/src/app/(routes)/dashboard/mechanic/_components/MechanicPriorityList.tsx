@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
@@ -82,8 +82,8 @@ export default function MechanicPriority() {
   const workersPerPage = 1;
   const [endTime] = useState<string>(new Date().toISOString());
 
-  // Fetch projects from API on mount
   useEffect(() => {
+    // Fetch projects when the component mounts
     const fetchProjects = async () => {
       setLoading(true);
       try {
@@ -98,9 +98,9 @@ export default function MechanicPriority() {
       }
       setLoading(false);
     };
-
+    // Initial fetch when component mounts
     fetchProjects();
-  }, [t]);
+  }, []); // Empty dependency array ensures the effect runs only on mount
 
   useEffect(() => {
     const fetchTimeSheet = async () => {
@@ -214,7 +214,7 @@ export default function MechanicPriority() {
     return (
       <Holds background="white" className="row-span-7 h-full animate-pulse">
         <Holds className="h-full no-scrollbar overflow-y-auto">
-          <Contents width="section" className="my-5">
+          <Contents width="section" className="mb-5">
             {projects.map((_, index) => (
               <Holds
                 key={`placeholder-${index}`}
@@ -231,7 +231,7 @@ export default function MechanicPriority() {
   return (
     <Holds background="white" className="row-span-7 h-full ">
       <Holds className="h-full w-full no-scrollbar overflow-y-auto ">
-        <Contents width="section" className="my-5">
+        <Contents width="section" className="mb-5">
           {projects.map((project: Projects, index) => {
             if (project.id === "") {
               return (
@@ -279,7 +279,11 @@ export default function MechanicPriority() {
                   }}
                   className="w-full h-full py-3 rounded-[10px]"
                 >
-                  <Titles size="h2">{project?.equipment?.name}</Titles>
+                  <Titles size="h5">
+                    {project.equipment?.name.length > 45
+                      ? project?.equipment?.name.slice(0, 45) + "..."
+                      : project?.equipment?.name}
+                  </Titles>
                 </Buttons>
               </Holds>
             );
@@ -296,7 +300,7 @@ export default function MechanicPriority() {
           }}
         >
           <Holds background="white" className="h-full py-5">
-            <Grids rows="7" gap="5">
+            <Grids rows="7" gap="3">
               {/* Modal Header */}
               <Holds className="row-span-1 h-full w-full justify-center">
                 <TitleBoxes
@@ -335,7 +339,7 @@ export default function MechanicPriority() {
                     {currentWorker.length > 0 ? (
                       currentWorker.map((user, index) => (
                         <Holds key={user.id || index} className="w-full h-full">
-                          <Holds className="p-4 flex items-center gap-2 ">
+                          <Holds className="py-3 flex items-center gap-2 ">
                             <img
                               src={user.image || "/person.svg"}
                               alt={user.name}
@@ -400,7 +404,7 @@ export default function MechanicPriority() {
                   </Holds>
 
                   {/* Problem Received */}
-                  <Holds className="pb-3 relative">
+                  <Holds className="relative">
                     <Labels htmlFor="equipmentIssue" size="p5">
                       {t("ProblemReceived")}
                     </Labels>
@@ -412,8 +416,9 @@ export default function MechanicPriority() {
                       rows={4}
                       className="text-sm"
                     />
-                    <span className="absolute top-4 right-2 text-[8px]">
-                      {`
+                    {previewedProjectData?.createdBy && (
+                      <span className="absolute top-4 right-2 text-[8px]">
+                        {`
                       Created by ${previewedProjectData?.createdBy}
                      
                     
@@ -423,11 +428,12 @@ export default function MechanicPriority() {
                         "MM/dd/yy"
                       )}  
                       `}
-                    </span>
+                      </span>
+                    )}
                   </Holds>
 
                   {/* Additional Info */}
-                  <Holds className="pb-3 ">
+                  <Holds>
                     <Labels htmlFor="additionalInfo" size="p5">
                       {t("AdditionalNotes")}
                     </Labels>
@@ -436,7 +442,7 @@ export default function MechanicPriority() {
                       id="additionalInfo"
                       name="additionalInfo"
                       value={previewedProjectData?.additionalInfo}
-                      rows={2}
+                      rows={3}
                       className="text-sm"
                     />
                   </Holds>
