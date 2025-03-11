@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { FieldType, Prisma } from "@prisma/client";
 
 export const now = new Date();
 
@@ -13,6 +13,117 @@ export const initialCompany: Prisma.CompanyCreateInput[] = [
     zipCode: "83318",
     users: {
       connect: [], // No users are linked initially
+    },
+  },
+];
+
+export const initialFormTemplates: Prisma.FormTemplateCreateInput[] = [
+  {
+    name: "Leave Request Form",
+    formType: "Leave Request",
+    isActive: true,
+    isSignatureRequired: true,
+    company: { connect: { id: "1" } },
+    FormGrouping: {
+      create: [
+        {
+          title: "",
+          order: 1,
+          fields: {
+            create: [
+              {
+                label: "Title (Optional)",
+                type: FieldType.TEXT,
+                required: false,
+                order: 1,
+                placeholder: "Enter Title here",
+              },
+              {
+                label: "Request Start Date",
+                type: FieldType.DATE,
+                required: true,
+                order: 2,
+              },
+              {
+                label: "Request End Date",
+                type: FieldType.DATE,
+                required: true,
+                order: 3,
+              },
+              {
+                label: "Request Type",
+                type: FieldType.DROPDOWN,
+                required: true,
+                order: 3,
+                options: {
+                  create: [
+                    {
+                      value: "Paid Vacation",
+                    },
+                    {
+                      value: "Sick Leave",
+                    },
+                    {
+                      value: "Military Leave",
+                    },
+                    {
+                      value: "Family Medical Leave",
+                    },
+                    {
+                      value: "Non-Paid Personal Leave",
+                    },
+                  ],
+                },
+              },
+              {
+                label: "Comments",
+                type: FieldType.TEXTAREA,
+                required: false,
+                order: 4,
+                placeholder: "Enter comments here...",
+              },
+            ],
+          },
+        },
+      ],
+    },
+  },
+  {
+    name: "Injury Report Form",
+    formType: "Injury Report",
+    isActive: true,
+    isSignatureRequired: true,
+    company: { connect: { id: "1" } },
+    FormGrouping: {
+      create: [
+        {
+          title: "",
+          order: 1,
+          fields: {
+            create: [
+              {
+                label: "Describe the Injury",
+                type: FieldType.TEXTAREA,
+                required: true,
+                order: 1,
+                placeholder: "Enter Name here",
+              },
+              {
+                label: "I contacted My Supervisor",
+                type: FieldType.CHECKBOX,
+                required: true,
+                order: 2,
+              },
+              {
+                label: "This is my signature",
+                type: FieldType.CHECKBOX,
+                required: true,
+                order: 3,
+              },
+            ],
+          },
+        },
+      ],
     },
   },
 ];

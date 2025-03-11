@@ -18,6 +18,7 @@ enum FormStatus {
 // Defines field types for dynamic forms
 enum FieldType {
     TEXT
+    TEXTAREA
     NUMBER
     DATE
     FILE
