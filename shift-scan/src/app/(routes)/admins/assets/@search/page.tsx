@@ -5,7 +5,7 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Tab } from "@/components/(reusable)/tab";
 
 import { useEffect, useState } from "react";
-import { Equipment,  Jobsite, costCodes, CCTags } from "@/lib/types";
+import { Equipment, Jobsite, costCodes, CCTags } from "@/lib/types";
 import { z } from "zod";
 import { EquipmentComponent } from "./_components/EquipmentComponent";
 import { JobsiteComponent } from "./_components/JobsiteComponent";
@@ -15,6 +15,7 @@ import { TagsComponent } from "./_components/TagsComponent";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { NotificationComponent } from "@/components/(inputs)/NotificationComponent";
+import { NewTab } from "@/components/(reusable)/newTabs";
 
 export default function Search() {
   const [activeTab, setActiveTab] = useState(1);
@@ -133,15 +134,33 @@ export default function Search() {
       <NotificationComponent />
       <Grids rows={"10"}>
         <Holds position={"row"} className="row-span-1 h-full gap-1">
-          <Tab onClick={() => setActiveTab(1)} isActive={activeTab === 1}>
+          <NewTab
+            onClick={() => setActiveTab(1)}
+            isActive={activeTab === 1}
+            isComplete={true}
+            titleImage="/equipment.svg"
+            titleImageAlt=""
+          >
             {t("Equipment")}
-          </Tab>
-          <Tab onClick={() => setActiveTab(2)} isActive={activeTab === 2}>
+          </NewTab>
+          <NewTab
+            onClick={() => setActiveTab(2)}
+            isActive={activeTab === 2}
+            isComplete={true}
+            titleImage="/jobsite.svg"
+            titleImageAlt=""
+          >
             {t("JobSite")}
-          </Tab>
-          <Tab onClick={() => setActiveTab(3)} isActive={activeTab === 3}>
-            {t("CostCode")}
-          </Tab>
+          </NewTab>
+          <NewTab
+            onClick={() => setActiveTab(3)}
+            isActive={activeTab === 3}
+            isComplete={true}
+            titleImage="/form.svg"
+            titleImageAlt=""
+          >
+            {t("CostCodes")}
+          </NewTab>
         </Holds>
 
         <Holds

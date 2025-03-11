@@ -32,6 +32,8 @@ export async function GET(
       delay: true,
       delayReasoning: true,
       totalHoursLaboured: true,
+      problemDiagnosis: true,
+      solution: true,
       repaired: true,
       equipment: {
         select: {

@@ -183,7 +183,7 @@ export default function EditWorkNew({
         </Holds>
 
         {/* Timesheet Editing Section */}
-        <Holds className="row-start-1 row-end-7 overflow-y-scroll no-scrollbar h-full w-full mt-5">
+        <Holds className="row-start-1 row-end-7 overflow-y-scroll no-scrollbar h-full w-full p-3">
           {editedTimesheet.map((sheet) => (
             <Holds
               key={sheet.id}

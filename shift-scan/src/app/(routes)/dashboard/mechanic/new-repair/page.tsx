@@ -309,48 +309,78 @@ export default function CreateMechanicProjectProcess() {
                           <Labels size="p4" htmlFor="additionalInfo">
                             {t("Status")}
                           </Labels>
-                          <Holds className="relative w-full">
-                            <Images
-                              titleImg={
-                                status === "TODAY"
-                                  ? "/todayPriority.svg"
-                                  : status === "HIGH"
-                                  ? "/highPriority.svg"
-                                  : status === "MEDIUM"
-                                  ? "/mediumPriority.svg"
-                                  : status === "LOW"
-                                  ? "/lowPriority.svg"
-                                  : "/pending.svg"
-                              }
-                              className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2"
-                              titleImgAlt="status"
-                            />
-                            <Selects
-                              name="additionalInfo"
-                              value={status}
-                              onChange={(e) =>
-                                setStatus(
-                                  e.target.value as
-                                    | ""
-                                    | "TODAY"
-                                    | "HIGH"
-                                    | "MEDIUM"
-                                    | "LOW"
-                                )
-                              }
-                              className="pl-8"
-                            >
-                              {PriorityOptions.map((option) => (
-                                <option
-                                  key={option.value}
-                                  value={option.value}
-                                  className="text-center"
-                                >
-                                  {option.label}
-                                </option>
-                              ))}
-                            </Selects>
-                          </Holds>
+                          {status === "" ? (
+                            <Holds className="relative w-full">
+                              <Selects
+                                name="additionalInfo"
+                                value={status}
+                                onChange={(e) =>
+                                  setStatus(
+                                    e.target.value as
+                                      | ""
+                                      | "TODAY"
+                                      | "HIGH"
+                                      | "MEDIUM"
+                                      | "LOW"
+                                  )
+                                }
+                                className="pl-8"
+                              >
+                                {PriorityOptions.map((option) => (
+                                  <option
+                                    key={option.value}
+                                    value={option.value}
+                                    className="text-center"
+                                  >
+                                    {option.label}
+                                  </option>
+                                ))}
+                              </Selects>
+                            </Holds>
+                          ) : (
+                            <Holds className="relative w-full">
+                              <Images
+                                titleImg={
+                                  status === "TODAY"
+                                    ? "/todayPriority.svg"
+                                    : status === "HIGH"
+                                    ? "/highPriority.svg"
+                                    : status === "MEDIUM"
+                                    ? "/mediumPriority.svg"
+                                    : status === "LOW"
+                                    ? "/lowPriority.svg"
+                                    : "/pending.svg"
+                                }
+                                className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2"
+                                titleImgAlt="status"
+                              />
+                              <Selects
+                                name="additionalInfo"
+                                value={status}
+                                onChange={(e) =>
+                                  setStatus(
+                                    e.target.value as
+                                      | ""
+                                      | "TODAY"
+                                      | "HIGH"
+                                      | "MEDIUM"
+                                      | "LOW"
+                                  )
+                                }
+                                className="pl-8"
+                              >
+                                {PriorityOptions.map((option) => (
+                                  <option
+                                    key={option.value}
+                                    value={option.value}
+                                    className="text-center"
+                                  >
+                                    {option.label}
+                                  </option>
+                                ))}
+                              </Selects>
+                            </Holds>
+                          )}
                         </Holds>
                       </Contents>
                     </Holds>

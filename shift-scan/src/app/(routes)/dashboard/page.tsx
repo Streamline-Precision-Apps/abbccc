@@ -33,7 +33,7 @@ export default async function Dashboard() {
   const laborType = cookies().get("laborType")?.value || "";
 
   return (
-    <Bases className="fixed w-full h-full">
+    <Bases>
       <Contents>
         <Grids rows={"7"} gap={"2"}>
           <Holds position={"row"} background={"white"} className="row-span-1">

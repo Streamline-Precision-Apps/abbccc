@@ -1,10 +1,8 @@
 "use client";
-
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
-import { Tab } from "@/components/(reusable)/tab";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -26,13 +24,17 @@ import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { setMechanicProjectID } from "@/actions/cookieActions";
 import { useTranslations } from "next-intl";
+import { NewTab } from "@/components/(reusable)/newTabs";
+import { set } from "date-fns";
 
 // ✅ Define a full type for each maintenance log returned by the API
 interface MaintenanceLog {
   id: string;
   userId: string;
+  maintenanceId: string;
   startTime?: string;
   endTime?: string | null;
+  comment?: string;
 }
 
 // ✅ Define the expected shape of the data from /api/getReceivedInfo/:id
@@ -49,15 +51,16 @@ interface ReceivedInfoData {
 }
 
 // ✅ Define a type for the minimal maintenance log used in state
-type MaintenanceLogSchema = Pick<MaintenanceLog, "id" | "userId">;
+type MaintenanceLogSchema = Pick<
+  MaintenanceLog,
+  "id" | "userId" | "maintenanceId" | "comment"
+>;
 
 export default function Project({ params }: { params: { id: string } }) {
   const t = useTranslations("MechanicWidget");
   const router = useRouter();
   const session = useSession();
   const userId = session.data?.user?.id;
-
-  // ✅ State definitions
   const [activeTab, setActiveTab] = useState(1);
   const [problemReceived, setProblemReceived] = useState("");
   const [additionalNotes, setAdditionalNotes] = useState("");
@@ -77,12 +80,10 @@ export default function Project({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     if (!userId) return;
-
     setLoading(true);
     fetch(`/api/getReceivedInfo/${params.id}`)
       .then((res) => res.json())
       .then((data: ReceivedInfoData) => {
-        // ✅ Set project information
         setTitles(data.equipment.name);
         setProblemReceived(data.equipmentIssue);
         setAdditionalNotes(data.additionalInfo);
@@ -90,7 +91,6 @@ export default function Project({ params }: { params: { id: string } }) {
         setExpectedArrival(data.delay);
         setHasBeenDelayed(data.hasBeenDelayed);
 
-        // ✅ Find the log associated with the current logged-in user
         const userMaintenanceLog = data.maintenanceLogs.find(
           (log) => log.userId === userId && log.endTime === null
         );
@@ -99,15 +99,16 @@ export default function Project({ params }: { params: { id: string } }) {
           setMyMaintenanceLogs({
             id: userMaintenanceLog.id,
             userId: userMaintenanceLog.userId,
+            maintenanceId: userMaintenanceLog.maintenanceId,
           });
+          setMyComment(userMaintenanceLog.comment || "");
         }
 
-        // ✅ Calculate and set total labor hours
+        // Calculate and set total labor hours
         const totalMilliseconds = data.maintenanceLogs
-          .filter((log) => log.startTime) // only require a start time
+          .filter((log) => log.startTime)
           .reduce((sum, log) => {
             const start = new Date(log.startTime!).getTime();
-            // Use new Date() if endTime is null (or falsy), otherwise use log.endTime.
             const end = log.endTime
               ? new Date(log.endTime).getTime()
               : new Date().getTime();
@@ -119,10 +120,17 @@ export default function Project({ params }: { params: { id: string } }) {
         );
         setTotalLaborHours(totalHours);
 
-        // ✅ Unique user count calculation
-        const uniqueUserCount = new Set(
-          data.maintenanceLogs.map((log) => log.userId)
-        ).size;
+        const uniqueUserCount = data.maintenanceLogs.filter(
+          (log) => log.userId && log.endTime === null
+        ).length; // ✅ Only keep logs where endTime is null
+
+        console.log(
+          "Unique user count:",
+          uniqueUserCount,
+          data.maintenanceLogs.map((log) => log.endTime === null) // Debugging output
+        );
+
+        // ✅ Set the updated count
         setActiveUsers(uniqueUserCount || 0);
       })
       .catch((error) => {
@@ -131,40 +139,9 @@ export default function Project({ params }: { params: { id: string } }) {
       .finally(() => {
         setLoading(false);
       });
-  }, [params.id, userId]);
-
-  // Function to reload total labor hours
-  const reloadTotalLaborHours = () => {
-    setLoading(true);
-    fetch(`/api/getReceivedInfo/${params.id}`)
-      .then((res) => res.json())
-      .then((data: ReceivedInfoData) => {
-        const totalMilliseconds = data.maintenanceLogs
-          .filter((log) => log.startTime) // only require a start time
-          .reduce((sum, log) => {
-            const start = new Date(log.startTime!).getTime();
-            // Use new Date() if endTime is null (or falsy), otherwise use log.endTime.
-            const end = log.endTime
-              ? new Date(log.endTime).getTime()
-              : new Date().getTime();
-            return sum + (end - start);
-          }, 0);
-
-        const totalHours = parseFloat(
-          (totalMilliseconds / 1000 / 60 / 60).toFixed(2)
-        );
-        setTotalLaborHours(totalHours);
-      })
-      .catch((error) => {
-        console.log(t("ErrorReloadingTotalLaborHours"), error);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
+  }, [params.id, userId, activeUsers]);
 
   const openFinishProject = () => {
-    reloadTotalLaborHours();
     setModalOpen(true);
   };
 
@@ -254,8 +231,8 @@ export default function Project({ params }: { params: { id: string } }) {
   return (
     <Bases>
       <Contents>
-        <Grids rows="8" gap="5">
-          <Holds background="white">
+        <Grids rows="7" gap={"5"} className="h-full">
+          <Holds background="white" className="row-span-1 h-full ">
             <TitleBoxes
               title={loading ? "" : titles}
               titleImg=""
@@ -264,7 +241,7 @@ export default function Project({ params }: { params: { id: string } }) {
               type="noIcon-NoHref"
             />
           </Holds>
-          <Holds className="h-full row-span-7">
+          <Holds className="h-full row-span-6 ">
             <Holds
               className={
                 loading
@@ -272,22 +249,26 @@ export default function Project({ params }: { params: { id: string } }) {
                   : "h-full row-span-7"
               }
             >
-              <Grids rows="10" className="h-full">
-                <Holds position="row" className="row-span-1 gap-2">
-                  <Tab
+              <Grids rows="10" className="">
+                <Holds position="row" className="row-span-1 gap-1">
+                  <NewTab
                     onClick={() => setActiveTab(1)}
                     isActive={activeTab === 1}
-                    size="md"
+                    titleImage="/information.svg"
+                    titleImageAlt={""}
+                    isComplete={true}
                   >
                     {t("ReceivedInfo")}
-                  </Tab>
-                  <Tab
+                  </NewTab>
+                  <NewTab
                     onClick={() => setActiveTab(2)}
                     isActive={activeTab === 2}
-                    size="md"
+                    titleImage="/comment.svg"
+                    titleImageAlt={""}
+                    isComplete={true}
                   >
                     {t("MyComments")}
-                  </Tab>
+                  </NewTab>
                 </Holds>
                 <Holds
                   background="white"
@@ -314,6 +295,8 @@ export default function Project({ params }: { params: { id: string } }) {
                       setMyComment={setMyComment}
                       loading={loading}
                       openFinishProject={openFinishProject}
+                      id={params.id}
+                      myMaintenanceLogs={myMaintenanceLogs}
                     />
                   )}
                 </Holds>

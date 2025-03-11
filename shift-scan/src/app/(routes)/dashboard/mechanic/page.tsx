@@ -15,7 +15,7 @@ export default async function Mechanic() {
   const isManager = ["ADMIN", "SUPERADMIN", "MANAGER"].includes(permission);
 
   return (
-    <Bases className="fixed w-full h-full">
+    <Bases>
       <Contents>
         <MechanicDisplay isManager={isManager} />
       </Contents>

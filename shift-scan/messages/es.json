@@ -803,6 +803,9 @@
     "LabelCostCode": "Código de Costo"
   },
   "MechanicWidget": {
+    "SolutionPlaceholder": "Solución",
+    "ProblemDiagnosisPlaceholder": "Diagnóstico del Problema",
+    "ProblemDiagnosis": "Diagnóstico del Problema",
     "Projects": "Proyectos",
     "Mechanic": "Mecánico",
     "PriorityList": "Lista de prioridades",
