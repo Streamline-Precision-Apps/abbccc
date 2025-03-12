@@ -4,19 +4,18 @@ import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 
 export async function GET() {
-  const session = await auth();
-  const userId = session?.user?.id;
-
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   try {
+    // Authenticate the user
+    const session = await auth();
+    const userId = session?.user?.id;
+
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     // Fetch employee details
     const employee = await prisma.user.findUnique({
-      where: {
-        id: userId.toString(),
-      },
+      where: { id: userId.toString() },
       select: {
         id: true,
         firstName: true,
@@ -30,16 +29,28 @@ export async function GET() {
             emergencyContact: true,
             emergencyContactNumber: true,
           },
-        }
+        },
       },
     });
 
-    // Return the fetched data as a response
+    if (!employee) {
+      return NextResponse.json(
+        { error: "Employee profile not found." },
+        { status: 404 }
+      );
+    }
+
     return NextResponse.json(employee);
   } catch (error) {
     console.error("Error fetching profile data:", error);
+
+    let errorMessage = "Failed to fetch profile data";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
     return NextResponse.json(
-      { error: "Failed to fetch profile data" },
+      { error: errorMessage },
       { status: 500 }
     );
   }

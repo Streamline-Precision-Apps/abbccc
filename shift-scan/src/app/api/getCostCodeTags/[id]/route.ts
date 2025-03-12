@@ -7,10 +7,14 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const tags = await prisma.costCode.findMany({
-      where: {
-        id: String(params.id),
-      },
+    // Validate the ID parameter
+    if (!params.id) {
+      return NextResponse.json({ error: "Missing cost code ID" }, { status: 400 });
+    }
+
+    // Fetch cost code tags
+    const tags = await prisma.costCode.findUnique({
+      where: { id: params.id },
       select: {
         CCTags: {
           select: {
@@ -20,11 +24,25 @@ export async function GET(
         },
       },
     });
-    return NextResponse.json(tags);
+
+    if (!tags || !tags.CCTags || tags.CCTags.length === 0) {
+      return NextResponse.json(
+        { message: "No tags found for the given cost code ID." },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(tags.CCTags);
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching tags:", error);
+
+    let errorMessage = "Failed to fetch tags";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
     return NextResponse.json(
-      { error: "Failed to fetch tags" },
+      { error: errorMessage },
       { status: 500 }
     );
   }
