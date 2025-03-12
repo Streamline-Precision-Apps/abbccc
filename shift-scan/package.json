@@ -50,6 +50,7 @@
     "react-image-crop": "^11.0.6",
     "react-modal": "^3.16.1",
     "react-slick": "^0.30.3",
+    "react-swipeable": "^7.0.2",
     "react-useportal": "^1.0.19",
     "resend": "^4.0.0",
     "slick-carousel": "^1.8.1",

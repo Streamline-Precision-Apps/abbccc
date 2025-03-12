@@ -10,6 +10,7 @@ import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 
 export default function ReceivedInfo({
   loading,
@@ -35,11 +36,33 @@ export default function ReceivedInfo({
   hasBeenDelayed: boolean;
 }) {
   const t = useTranslations("MechanicWidget");
-  const isButtonDisabled =
-    (myComment.length > 3 && delayReasoning === "") ||
-    (delayReasoning === "Delay" &&
-      expectedArrival === "" &&
-      myComment.length > 3);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true); // ✅ Default to disabled
+  const [buttonColor, setButtonColor] = useState(true); // ✅ Default color
+
+  useEffect(() => {
+    console.log("Updating button state...");
+    if (
+      delayReasoning === "" &&
+      myComment.length > 3 &&
+      expectedArrival === null
+    ) {
+      console.log("Enabling button...");
+      setIsButtonDisabled(false); // ✅ Enable button
+      setButtonColor(true); // ✅ Set to active color
+    } else if (
+      delayReasoning === "Delay" &&
+      myComment.length > 3 &&
+      expectedArrival !== null
+    ) {
+      console.log("Enabling Delay button...");
+      setIsButtonDisabled(false); // ✅ Enable button
+      setButtonColor(true); // ✅ Set to active color
+    } else {
+      console.log("Disabling button...");
+      setIsButtonDisabled(true); // ✅ Disable button
+      setButtonColor(false); // ✅ Set to disabled color
+    }
+  }, [myComment, delayReasoning, expectedArrival]);
 
   if (loading)
     return (
@@ -96,7 +119,7 @@ export default function ReceivedInfo({
                 <Inputs
                   type="date"
                   name="delayDate"
-                  value={expectedArrival}
+                  defaultValue={expectedArrival || ""}
                   onChange={(e) => setExpectedArrival(e.target.value)}
                 />
                 <span className="text-red-500">
@@ -112,8 +135,8 @@ export default function ReceivedInfo({
           </Holds>
           <Holds className="row-start-8 row-end-9 h-full">
             <Buttons
-              disabled={!isButtonDisabled}
-              background={isButtonDisabled ? "red" : "darkGray"}
+              disabled={isButtonDisabled}
+              background={buttonColor ? "red" : "darkGray"} // ✅ Dynamically set background color
               className="h-full"
               onClick={leaveProject}
             >

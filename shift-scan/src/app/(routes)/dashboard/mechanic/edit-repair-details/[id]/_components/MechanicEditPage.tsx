@@ -33,12 +33,14 @@ type RepairDetails = {
   equipmentId: string;
   equipmentIssue: string;
   additionalInfo: string;
+  problemDiagnosis: string;
+  solution: string;
   location: string;
-  repaired: boolean;
   priority: string;
   createdBy: string;
   createdAt: Date;
   hasBeenDelayed: boolean;
+  repaired: boolean;
   delay: Date | null;
   delayReasoning?: string;
   totalHoursLaboured: number;
@@ -125,7 +127,7 @@ export default function MechanicEditPage({
           <Holds className="row-start-1 row-end-8 h-full">
             <Holds>
               <Labels size="p6" htmlFor="equipmentIssue">
-                {t("EquipmentIssue")}
+                {t("EquipmentIssue")} <span className="text-red-500">*</span>
               </Labels>
               <TextAreas
                 name="equipmentIssue"
@@ -153,6 +155,46 @@ export default function MechanicEditPage({
                 disabled={repairDetails?.repaired}
               />
             </Holds>
+            {/* Only show these fields if the repair has been completed */}
+            {repairDetails?.repaired && (
+              <>
+                {/* Problem Diagnosis */}
+                <Holds>
+                  <Labels size="p6" htmlFor="problemDiagnosis">
+                    {t("ProblemDiagnosis")}
+                  </Labels>
+                  <TextAreas
+                    name="problemDiagnosis"
+                    value={repairDetails.problemDiagnosis || ""}
+                    onChange={(e) =>
+                      updateField("problemDiagnosis", e.target.value)
+                    }
+                    placeholder={t("ProblemDiagnosisPlaceholder")}
+                    rows={2}
+                    style={{ resize: "none" }}
+                    className="text-sm"
+                    disabled={repairDetails?.repaired}
+                  />
+                </Holds>
+
+                {/* solution */}
+                <Holds>
+                  <Labels size="p6" htmlFor="solution">
+                    {t("Solution")}
+                  </Labels>
+                  <TextAreas
+                    name="solution"
+                    value={repairDetails.solution || ""}
+                    onChange={(e) => updateField("solution", e.target.value)}
+                    placeholder={t("SolutionPlaceholder")}
+                    rows={2}
+                    style={{ resize: "none" }}
+                    className="text-sm"
+                    disabled={repairDetails?.repaired}
+                  />
+                </Holds>
+              </>
+            )}
             {/* Location */}
             <Holds>
               <Labels size="p6" htmlFor="location">
@@ -170,7 +212,7 @@ export default function MechanicEditPage({
             {/* Priority Status */}
             <Holds className="relative">
               <Labels size="p6" htmlFor="priority">
-                {t("Status")}
+                {t("Status")} <span className="text-red-500">*</span>
               </Labels>
 
               <div className="relative w-full">
@@ -189,13 +231,16 @@ export default function MechanicEditPage({
                       const newPriority = e.target.value as Priority;
                       updateField("priority", newPriority);
                     }}
-                    className="w-full "
+                    className={`text-center ${
+                      repairDetails.priority === "" ? "text-app-gray" : ""
+                    }`}
+                    disabled={repairDetails?.repaired}
                   >
                     {PriorityOptions.map((option) => (
                       <option
                         key={option.value}
                         value={option.value}
-                        className="text-center"
+                        className={`text-center `}
                       >
                         {option.label}
                       </option>
@@ -204,23 +249,27 @@ export default function MechanicEditPage({
                 )}
 
                 {/* Adjust Image to Overlay Select Box */}
-                <Images
-                  titleImg={
-                    repairDetails.delay
-                      ? "/delayPriority.svg"
-                      : repairDetails.priority === "TODAY"
-                      ? "/todayPriority.svg"
-                      : repairDetails.priority === "HIGH"
-                      ? "/highPriority.svg"
-                      : repairDetails.priority === "MEDIUM"
-                      ? "/mediumPriority.svg"
-                      : repairDetails.priority === "LOW"
-                      ? "/lowPriority.svg"
-                      : "/pending.svg"
-                  }
-                  className="absolute left-2 top-1/4 transform -translate-y-1/4 w-6 h-6"
-                  titleImgAlt={t("Status")}
-                />
+                {repairDetails?.priority !== "" && (
+                  <Images
+                    titleImg={
+                      repairDetails.delay
+                        ? "/delayPriority.svg"
+                        : repairDetails.priority === "TODAY"
+                        ? "/todayPriority.svg"
+                        : repairDetails.priority === "HIGH"
+                        ? "/highPriority.svg"
+                        : repairDetails.priority === "MEDIUM"
+                        ? "/mediumPriority.svg"
+                        : repairDetails.priority === "LOW"
+                        ? "/lowPriority.svg"
+                        : repairDetails.priority === "PENDING"
+                        ? "/pending.svg"
+                        : ""
+                    }
+                    className="absolute left-2 top-1/4 transform -translate-y-1/4 w-6 h-6"
+                    titleImgAlt={t("Status")}
+                  />
+                )}
               </div>
             </Holds>
 
@@ -257,6 +306,7 @@ export default function MechanicEditPage({
               </>
             )}
           </Holds>
+          {/* Only Show this button if there are no logs */}
           {totalLogs === 0 && (
             <Holds className="mt-5 justify-end row-start-8 row-end-9">
               <Buttons

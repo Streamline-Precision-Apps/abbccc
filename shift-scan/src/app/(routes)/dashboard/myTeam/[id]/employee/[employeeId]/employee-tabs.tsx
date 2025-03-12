@@ -13,6 +13,7 @@ import EmployeeInfo from "./employeeInfo";
 import { format } from "date-fns";
 import { TimeSheet } from "@/lib/types";
 import { useSession } from "next-auth/react";
+import { NewTab } from "@/components/(reusable)/newTabs";
 
 // Zod schema for employee data
 const EmployeeSchema = z.object({
@@ -139,13 +140,25 @@ export default function EmployeeTabs() {
           }
         >
           <Grids rows={"10"}>
-            <Holds position={"row"} className={"row-span-1 h-full gap-2"}>
-              <Tab onClick={() => setActiveTab(1)} isActive={activeTab === 1}>
+            <Holds position={"row"} className={"row-span-1 h-full gap-1"}>
+              <NewTab
+                onClick={() => setActiveTab(1)}
+                isActive={activeTab === 1}
+                isComplete={true}
+                titleImage="/information.svg"
+                titleImageAlt={""}
+              >
                 {t("ContactInfo")}
-              </Tab>
-              <Tab onClick={() => setActiveTab(2)} isActive={activeTab === 2}>
+              </NewTab>
+              <NewTab
+                onClick={() => setActiveTab(2)}
+                isActive={activeTab === 2}
+                isComplete={true}
+                titleImage="/form.svg"
+                titleImageAlt={""}
+              >
                 {t("TimeCards")}
-              </Tab>
+              </NewTab>
             </Holds>
             <Holds
               background={"white"}

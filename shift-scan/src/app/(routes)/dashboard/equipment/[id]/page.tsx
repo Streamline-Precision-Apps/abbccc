@@ -260,7 +260,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
     }
   }, [formState, originalState]);
   return (
-    <Bases className="fixed h-full w-full">
+    <Bases>
       <Contents>
         <Grids rows={"7"} gap={"5"} className="h-full w-full ">
           <Holds
