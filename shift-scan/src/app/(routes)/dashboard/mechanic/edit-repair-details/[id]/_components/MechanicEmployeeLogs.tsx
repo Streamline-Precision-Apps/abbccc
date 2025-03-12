@@ -6,11 +6,12 @@ import { Texts } from "@/components/(reusable)/texts";
 import { Contents } from "@/components/(reusable)/contents";
 import { formatTimeHHMM } from "@/utils/formatDateAmPm";
 import { Titles } from "@/components/(reusable)/titles";
-import { Labels } from "@/components/(reusable)/labels";
 import { TextAreas } from "@/components/(reusable)/textareas";
-import EmptyView from "@/components/(reusable)/emptyView";
 import { EmptyViews } from "@/components/(reusable)/emptyViews";
 import { useTranslations } from "next-intl";
+import { Images } from "@/components/(reusable)/images";
+import { formatDuration, intervalToDuration } from "date-fns";
+import Spinner from "@/components/(animations)/spinner";
 
 type User = {
   firstName: string;
@@ -40,7 +41,8 @@ export default function MechanicEmployeeLogs({
   totalHours: number;
 }) {
   const [logs, setLogs] = useState<LogItem[] | undefined>(initialLogs);
-
+  const t = useTranslations("MechanicWidget");
+  const [selectedLogIsOpen, setSelectedLogIsOpen] = useState("");
   // Update local logs state when initialLogs changes.
   // If initialLogs is null or undefined, set logs to an empty array.
   useEffect(() => {
@@ -50,17 +52,35 @@ export default function MechanicEmployeeLogs({
       setLogs([]);
     }
   }, [initialLogs]);
+  function convertHoursToHoursAndMinutes(hoursFloat: number) {
+    // Convert the decimal hours into total minutes
+    const totalMinutes = Math.round(hoursFloat * 60);
 
-  const hours = Math.floor(totalHours / 60);
-  const minutes = totalHours * 60 - hours * 60;
-  const t = useTranslations("MechanicWidget");
-  const formattedTotalHours = `${hours} hrs ${minutes.toFixed(0)} mins`;
+    // Calculate the hours and remaining minutes
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
 
-  // If still loading, show the loading skeleton UI.
+    // Return the formatted string in the desired format
+    return `${hours} hrs ${minutes} mins`;
+  }
+
+  const formattedTotalHours = convertHoursToHoursAndMinutes(totalHours);
+
   if (loading) {
     return (
       <Holds className="no-scrollbar overflow-y-auto">
-        <Contents width={"section"} className="py-5">
+        <Contents width={"section"} className="h-full">
+          <Holds position={"row"} className="w-full justify-between py-2 ">
+            <Titles size={"h4"} position={"left"}>
+              {t("TotalLaborHours")}
+            </Titles>
+            <Holds
+              background={"lightBlue"}
+              className="w-1/2 h-full justify-center py-1 border-[3px] border-black rounded-[10px]"
+            >
+              <Spinner size={20} />
+            </Holds>
+          </Holds>
           {Array.from({ length: 6 }).map((_, index) => (
             <Holds
               key={index}
@@ -76,18 +96,20 @@ export default function MechanicEmployeeLogs({
   // Otherwise, display the logs and add placeholder skeletons
   // to ensure each log has up to 6 boxes (maintenance logs).
   return (
-    <Holds className=" h-full py-3 ">
+    <Holds className=" h-full ">
       <Contents width={"section"} className=" h-full">
-        <Holds
-          position={"row"}
-          className="w-full justify-between  py-2 border-y-[3px] border-black"
-        >
+        <Holds position={"row"} className="w-full justify-between py-2">
           <Titles size={"h4"} position={"left"}>
             {t("TotalLaborHours")}
           </Titles>
-          <Texts size={"p3"}>{formattedTotalHours}</Texts>
+          <Holds
+            background={"lightBlue"}
+            className="w-1/2 py-1 border-[3px] border-black rounded-[10px]"
+          >
+            <Texts size={"p6"}>{formattedTotalHours}</Texts>
+          </Holds>
         </Holds>
-        <Holds className="no-scrollbar overflow-y-auto h-full py-3 ">
+        <Holds className="no-scrollbar overflow-y-auto h-full pt-2 ">
           {logs &&
             logs.map((log) => {
               const actualCount = log.maintenanceLogs.length;
@@ -98,14 +120,23 @@ export default function MechanicEmployeeLogs({
                   {log.maintenanceLogs.map((mLog) => (
                     <Grids
                       key={mLog.id}
+                      onClick={
+                        selectedLogIsOpen === mLog.id
+                          ? () => setSelectedLogIsOpen("")
+                          : () => setSelectedLogIsOpen(mLog.id)
+                      }
                       rows={"3"}
-                      className="mb-4 bg-app-gray rounded-[10px] px-3 "
+                      className="mb-3 bg-app-gray rounded-[10px] p-1 px-3 "
                     >
                       <Holds
                         position={"row"}
-                        className="row-start-1 row-end-2 w-full justify-between "
+                        className={`w-full h-full justify-between ${
+                          selectedLogIsOpen === mLog.id
+                            ? "row-start-1 row-end-2"
+                            : "row-start-1 row-end-2"
+                        }`}
                       >
-                        <Titles size={"h4"} position={"left"}>
+                        <Titles size={"h5"} position={"left"}>
                           {`${mLog.user.firstName} ${mLog.user.lastName}`}
                         </Titles>
 
@@ -117,16 +148,42 @@ export default function MechanicEmployeeLogs({
                             : "Active"}
                         </Texts>
                       </Holds>
-                      <Holds className="row-start-2 row-end-4 h-full w-full pb-2 ">
-                        <Labels size={"p6"}>{t("Comment")}</Labels>
-                        <TextAreas
-                          className={`${mLog.comment} ? 'text-xs' : text-xs font-bold `}
-                          disabled
-                          defaultValue={
-                            mLog.comment === "" ? t("NoComment") : mLog.comment
-                          }
-                        ></TextAreas>
-                      </Holds>
+                      {selectedLogIsOpen === mLog.id ? (
+                        <Holds className={`row-start-2 row-end-4 pb-3`}>
+                          <Holds className="flex flex-row items-center pb-3 gap-3">
+                            <Texts size={"p6"}>{t("Comment")}</Texts>
+                            <Images
+                              titleImg="/comment.svg"
+                              titleImgAlt="comment icon"
+                              className="w-5 h-5 justify-center items-center"
+                            />
+                          </Holds>
+
+                          <TextAreas
+                            className={`${mLog.comment} ? 'text-xs' : text-xs font-bold `}
+                            disabled
+                            defaultValue={
+                              mLog.comment === ""
+                                ? t("NoComment")
+                                : mLog.comment
+                            }
+                          />
+                        </Holds>
+                      ) : (
+                        <Holds className={`row-start-2 row-end-4`}>
+                          <Holds
+                            position={"row"}
+                            className={"row-span-1 w-full gap-3"}
+                          >
+                            <Texts size={"p6"}>{t("Comment")}</Texts>
+                            <Images
+                              titleImg="/comment.svg"
+                              titleImgAlt="comment icon"
+                              className="w-5 h-5"
+                            />
+                          </Holds>
+                        </Holds>
+                      )}
                     </Grids>
                   ))}
 

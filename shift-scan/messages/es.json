@@ -803,10 +803,13 @@
     "LabelCostCode": "Código de Costo"
   },
   "MechanicWidget": {
+    "SolutionPlaceholder": "Solución",
+    "ProblemDiagnosisPlaceholder": "Diagnóstico del Problema",
+    "ProblemDiagnosis": "Diagnóstico del Problema",
     "Projects": "Proyectos",
     "Mechanic": "Mecánico",
     "PriorityList": "Lista de prioridades",
-    "Todays": "De hoy",
+    "Todays": "Hoy",
     "All": "Todo",
     "ErrorFetchingProjects": "Error de obteniendo proyectos:",
     "ErrorFetchingTimeSheet": "Error al obtener la hoja de tiempo:",

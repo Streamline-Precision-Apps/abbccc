@@ -10,7 +10,6 @@ import { useEffect, useState } from "react";
 type Form = {
   id: string;
   name: string;
-  slug: string;
 };
 export default function FormSelection() {
   const [forms, setForms] = useState<Form[]>([]);
@@ -47,7 +46,7 @@ export default function FormSelection() {
               >
                 <option value={""}>Select A Form</option>
                 {forms.map((form) => (
-                  <option key={form.id} value={form.slug}>
+                  <option key={form.id} value={form.id}>
                     {form.name}
                   </option>
                 ))}
@@ -55,7 +54,10 @@ export default function FormSelection() {
               <Holds className="flex justify-center items-center">
                 <Buttons
                   onClick={() =>
-                    router.push(`/hamburger/inbox/[${selectedForm}]`)
+                    router.push(
+                      `/hamburger/inbox/formSubmission/${selectedForm}
+                      `
+                    )
                   }
                   background={"green"}
                   className="p-3"

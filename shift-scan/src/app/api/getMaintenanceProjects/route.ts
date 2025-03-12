@@ -21,6 +21,8 @@ export async function GET() {
       equipmentIssue: true,
       additionalInfo: true,
       repaired: true,
+      createdAt: true,
+      createdBy: true,
       maintenanceLogs: {
         select: {
           id: true,

@@ -4,10 +4,12 @@ import "@/app/globals.css";
 import { useState } from "react";
 import { Holds } from "@/components/(reusable)/holds";
 import { Grids } from "@/components/(reusable)/grids";
-import { Tab } from "@/components/(reusable)/tab";
+
 import { Contents } from "@/components/(reusable)/contents";
 import QrJobsiteContent from "./qrJobsiteContent";
 import QrEquipmentContent from "./qrEquipmentContent";
+import { NewTab } from "@/components/(reusable)/newTabs";
+import { Titles } from "@/components/(reusable)/titles";
 
 export default function QRGeneratorContent() {
   const [activeTab, setActiveTab] = useState(1);
@@ -16,13 +18,25 @@ export default function QRGeneratorContent() {
   return (
     <>
       <Grids rows={"10"}>
-        <Holds position={"row"} className="row-span-1 h-full gap-2">
-          <Tab onClick={() => setActiveTab(1)} isActive={activeTab === 1}>
-            {t("Jobsite")}
-          </Tab>
-          <Tab onClick={() => setActiveTab(2)} isActive={activeTab === 2}>
-            {t("EquipmentTitle")}
-          </Tab>
+        <Holds position={"row"} className="row-span-1 h-full gap-1">
+          <NewTab
+            onClick={() => setActiveTab(1)}
+            isActive={activeTab === 1}
+            isComplete={true}
+            titleImage="/jobsite.svg "
+            titleImageAlt=""
+          >
+            <Titles size={"h3"}>{t("Jobsite")}</Titles>
+          </NewTab>
+          <NewTab
+            onClick={() => setActiveTab(2)}
+            isActive={activeTab === 2}
+            isComplete={true}
+            titleImage="/equipment.svg "
+            titleImageAlt=""
+          >
+            <Titles size={"h3"}>{t("EquipmentTitle")}</Titles>
+          </NewTab>
         </Holds>
         <Holds
           background={"white"}
