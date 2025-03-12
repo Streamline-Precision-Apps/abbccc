@@ -8,8 +8,15 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Validate form ID
+    const formId = params.id;
+    if (!formId) {
+      return NextResponse.json({ error: "Invalid or missing form ID" }, { status: 400 });
+    }
+
+    // Fetch the form template with related groupings and fields
     const formTemplate = await prisma.formTemplate.findUnique({
-      where: { id: params.id },
+      where: { id: formId },
       include: {
         FormGrouping: {
           include: {
@@ -19,11 +26,23 @@ export async function GET(
       },
     });
 
-    if (!formTemplate)
+    // Check if formTemplate exists
+    if (!formTemplate) {
       return NextResponse.json({ error: "Form not found" }, { status: 404 });
+    }
 
     return NextResponse.json(formTemplate);
   } catch (error) {
-    return NextResponse.json({ error: "Error fetching form" }, { status: 500 });
+    console.error("Error fetching form:", error);
+
+    let errorMessage = "Failed to fetch form data";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
+    return NextResponse.json(
+      { error: errorMessage },
+      { status: 500 }
+    );
   }
 }

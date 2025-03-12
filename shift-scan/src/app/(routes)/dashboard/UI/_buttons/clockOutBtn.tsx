@@ -80,7 +80,7 @@ export default function ClockOutBtn({
                 />
               )}
               {laborType === "equipmentOperator" && (
-                <HorizontalLayout
+                <VerticalLayout
                   color={"red"}
                   text={"ClockOut"}
                   titleImg={"/clock-out.svg"}

@@ -1,4 +1,3 @@
-// src/app/api/getTruckingLogs/StateMileage/[timeSheetId]/route.ts
 "use server";
 
 import { NextResponse } from "next/server";
@@ -10,11 +9,30 @@ export async function GET(
 ) {
   const { timeSheetId } = params;
 
-  const stateMileage = await prisma.refueled.findMany({
-    where: {
-      tascoLogId: timeSheetId,
-    },
-  });
+  // Ensure timeSheetId is provided and is a valid string
+  if (!timeSheetId || typeof timeSheetId !== "string") {
+    return NextResponse.json({ error: "Invalid or missing timeSheetId" }, { status: 400 });
+  }
 
-  return NextResponse.json(stateMileage);
+  try {
+    const stateMileage = await prisma.refueled.findMany({
+      where: {
+        tascoLogId: timeSheetId,
+      },
+    });
+
+    // If no state mileage records are found, return an empty array
+    if (stateMileage.length === 0) {
+      return NextResponse.json([], { status: 200 });
+    }
+
+    return NextResponse.json(stateMileage);
+  } catch (error) {
+    // Log the error for debugging purposes
+    console.error("Error fetching state mileage:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch state mileage data" },
+      { status: 500 }
+    );
+  }
 }

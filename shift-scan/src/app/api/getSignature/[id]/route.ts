@@ -2,33 +2,60 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
+
 type Params = Promise<{ id: string }>;
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Params }
 ) {
-  const session = await auth();
+  // Authentication handling with error handling
+  let session;
+  try {
+    session = await auth();
+  } catch (error) {
+    console.error("Authentication error:", error);
+    return NextResponse.json({ error: "Authentication failed" }, { status: 500 });
+  }
+
   const manager = session?.user.permission;
-  if (manager === "USER") {
+  // Permission check with early return
+  if (manager !== "ADMIN") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // Ensure params is available and the id is valid
+  let userId;
   try {
-    const Signature = await prisma.user.findUnique({
+    userId = (await params).id;
+    if (!userId) {
+      return NextResponse.json({ error: "Invalid or missing user ID" }, { status: 400 });
+    }
+  } catch (error) {
+    console.error("Error processing params:", error);
+    return NextResponse.json({ error: "Invalid parameters" }, { status: 400 });
+  }
+
+  try {
+    // Fetch the signature for the user
+    const signature = await prisma.user.findUnique({
       where: {
-        id: (await params).id,
+        id: userId,
       },
       select: {
         signature: true,
       },
     });
 
-    return NextResponse.json(Signature);
+    if (!signature) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(signature);
   } catch (error) {
-    console.error("Error fetching pay period sheets:", error);
+    console.error("Error fetching user signature:", error);
     return NextResponse.json(
-      { error: "Failed to fetch pay period sheets" },
+      { error: "Failed to fetch user signature" },
       { status: 500 }
     );
   }

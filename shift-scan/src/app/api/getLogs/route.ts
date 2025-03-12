@@ -2,7 +2,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
-import { it } from "node:test";
 
 // TypeScript Types for Safety and Consistency
 type EquipmentLog = {
@@ -44,22 +43,6 @@ type TascoLog = {
   refueled: boolean;
 };
 
-type Loads = {
-  id: string;
-  tascoLogId: string | null;
-  loadType: string | null;
-  loadWeight: number | null;
-};
-
-type Refueled = {
-  id: string;
-  date: Date;
-  employeeEquipmentLogId: string | null;
-  truckingLogId: string | null;
-  tascoLogId: string | null;
-  gallonsRefueled: number | null;
-  milesAtfueling: number | null;
-};
 
 
 export async function GET() {
@@ -263,10 +246,11 @@ export async function GET() {
 
     // Combine All Logs
     const combinedLogs = [
-      ...mappedEquipmentLogs,
-      ...mappedMaintenanceLogs,
-      ...mappedTruckingLogs,
-      ...mappedTascoLog,
+      // ...mappedEquipmentLogs,
+      // ...mappedMaintenanceLogs,
+      // ...mappedTruckingLogs,
+      // ...mappedTascoLog,
+      tascoLogs,
     ];
 
     return NextResponse.json(combinedLogs);
