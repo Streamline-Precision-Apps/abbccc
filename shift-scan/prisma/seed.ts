@@ -10,6 +10,7 @@ import {
   initialCostCodes,
   initialCCTags,
   initialCompany,
+  initialFormTemplates,
 } from "@/data/dataValues";
 // import { hash } from "bcryptjs";
 const prisma = new PrismaClient();
@@ -28,6 +29,19 @@ async function main() {
         console.log("Created company with id: ", newUser.id);
       } catch (error) {
         console.log("Error creating company:", error);
+        continue; // Skip to the next user
+      }
+    }
+
+    for (const formTemplate of initialFormTemplates) {
+      try {
+        // const hashed = await hash(user.password, 10);
+        const newTemplate = await prisma.formTemplate.create({
+          data: formTemplate,
+        });
+        console.log("Created template with id: ", newTemplate.id);
+      } catch (error) {
+        console.log("Error creating Form Template:", error);
         continue; // Skip to the next user
       }
     }

@@ -15,7 +15,7 @@ export default async function Inbox() {
   const isManager = session.user.permission !== "USER";
 
   return (
-    <Bases className="fixed w-full h-full">
+    <Bases>
       <Contents height={"page"}>
         <Grids rows={"10"} gap={"5"}>
           <Holds background={"white"} className="row-span-2 h-full">

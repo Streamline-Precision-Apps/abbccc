@@ -13,6 +13,7 @@ import { usePathname } from "next/navigation";
 import { NotificationComponent } from "@/components/(inputs)/NotificationComponent";
 import { useNotification } from "@/app/context/NotificationContext";
 import { useTranslations } from "next-intl";
+import { NewTab } from "@/components/(reusable)/newTabs";
 
 export default function Search() {
   const [activeTab, setActiveTab] = useState(1);
@@ -82,15 +83,33 @@ export default function Search() {
       <NotificationComponent />
       <Grids rows={"10"}>
         <Holds position={"row"} className="row-span-1 h-full gap-2">
-          <Tab onClick={() => setActiveTab(1)} isActive={activeTab === 1}>
+          <NewTab
+            onClick={() => setActiveTab(1)}
+            isActive={activeTab === 1}
+            isComplete={true}
+            titleImage="/person.svg"
+            titleImageAlt=""
+          >
             {t("Personnel")}
-          </Tab>
-          <Tab onClick={() => setActiveTab(2)} isActive={activeTab === 2}>
+          </NewTab>
+          <NewTab
+            onClick={() => setActiveTab(2)}
+            isActive={activeTab === 2}
+            isComplete={true}
+            titleImage="/form.svg"
+            titleImageAlt=""
+          >
             {t("TimeSheets")}
-          </Tab>
-          <Tab onClick={() => setActiveTab(3)} isActive={activeTab === 3}>
+          </NewTab>
+          <NewTab
+            onClick={() => setActiveTab(3)}
+            isActive={activeTab === 3}
+            isComplete={true}
+            titleImage="/team.svg"
+            titleImageAlt=""
+          >
             {t("Crews")}
-          </Tab>
+          </NewTab>
         </Holds>
 
         <Holds
