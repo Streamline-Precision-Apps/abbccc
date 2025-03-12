@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect } from "react";
 import { useState } from "react";
-import { Tab } from "@/components/(reusable)/tab";
 import STab from "@/app/hamburger/inbox/sent";
 import RTab from "@/app/hamburger/inbox/recieved";
 import { Holds } from "@/components/(reusable)/holds";
@@ -9,8 +8,6 @@ import { Grids } from "@/components/(reusable)/grids";
 import { NewTab } from "@/components/(reusable)/newTabs";
 import { Titles } from "@/components/(reusable)/titles";
 import FormSelection from "./formSelection";
-import { z } from "zod";
-import { sentContent } from "@/lib/types";
 
 export default function Content({ isManager }: { isManager: boolean }) {
   const [activeTab, setActiveTab] = useState(1);

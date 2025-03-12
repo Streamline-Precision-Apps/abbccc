@@ -273,3 +273,19 @@ export async function SubmitEngineerProject(formData: FormData) {
     return true;
   } catch (error) {}
 }
+export async function setEngineerComment(comment: string, id: string) {
+  try {
+    await prisma.maintenanceLog.update({
+      where: {
+        id,
+      },
+      data: {
+        comment,
+      },
+    });
+    return true;
+  } catch (error) {
+    console.error("Error updating project:", error);
+    return false;
+  }
+}

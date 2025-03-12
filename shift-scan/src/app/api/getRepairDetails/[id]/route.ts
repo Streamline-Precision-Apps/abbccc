@@ -12,41 +12,39 @@ export async function GET(
     const session = await auth();
     const userId = session?.user?.id;
 
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  const { id } = params;
 
-    // Validate the ID parameter
-    const { id } = params;
-    if (!id) {
-      return NextResponse.json({ error: "Invalid or missing maintenance ID" }, { status: 400 });
-    }
-
-    // Fetch maintenance project details
-    const project = await prisma.maintenance.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        equipmentId: true,
-        equipmentIssue: true,
-        additionalInfo: true,
-        location: true,
-        priority: true,
-        createdBy: true,
-        createdAt: true,
-        hasBeenDelayed: true,
-        delay: true,
-        delayReasoning: true,
-        totalHoursLaboured: true,
-        repaired: true,
-        equipment: {
-          select: {
-            id: true,
-            name: true,
-          },
+  const projects = await prisma.maintenance.findUnique({
+    where: {
+      id: id,
+    },
+    select: {
+      id: true,
+      equipmentId: true,
+      equipmentIssue: true,
+      additionalInfo: true,
+      location: true,
+      priority: true,
+      createdBy: true,
+      createdAt: true,
+      hasBeenDelayed: true,
+      delay: true,
+      delayReasoning: true,
+      totalHoursLaboured: true,
+      problemDiagnosis: true,
+      solution: true,
+      repaired: true,
+      equipment: {
+        select: {
+          id: true,
+          name: true,
         },
       },
-    });
+    },
+  });
 
     // Check if the maintenance project exists
     if (!project) {

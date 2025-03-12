@@ -98,23 +98,23 @@ export default function MechanicSelectList() {
   }, [selectedFilter, allProjects]);
 
   return (
-    <Grids rows={"8"} cols={"4"} gap={"5"} className="h-full p-4">
-      <Holds className="col-start-1 col-end-2 row-start-1 row-end-2 h-full w-full">
+    <Grids rows={"9"} cols={"5"} gap={"4"} className="h-full p-3">
+      <Holds className="col-start-1 col-end-2 row-start-1 row-end-2 h-full  ">
         <Buttons
           href="/dashboard/mechanic/new-repair"
           background={"green"}
-          className="h-full justify-center items-center"
+          className="h-full justify-center items-center "
         >
           <Images
             titleImg="/plus.svg"
             titleImgAlt={t("AddNewRepair")}
-            className="mx-auto"
+            className="mx-auto p-1"
           />
         </Buttons>
       </Holds>
-      <Holds className="col-start-2 col-end-6 row-start-1 row-end-2 h-full w-full">
+      <Holds className="col-start-2 col-end-6 row-start-1 row-end-2 h-full">
         <Selects
-          className="w-full h-full"
+          className="w-full h-full justify-center items-center"
           onChange={(e) => setSelectedFilter(e.target.value)}
         >
           {PriorityOptions.map((option) => (
@@ -131,8 +131,8 @@ export default function MechanicSelectList() {
       <Holds
         className={
           loading
-            ? "col-start-1 col-end-6 row-start-2 row-end-9 h-full w-full border-[3px] border-black rounded-[10px] "
-            : "col-start-1 col-end-6 row-start-2 row-end-9 h-full w-full border-[3px] border-black rounded-[10px]"
+            ? "col-start-1 col-end-6 row-start-2 row-end-10 h-full w-full border-[3px] border-black rounded-[10px] "
+            : "col-start-1 col-end-6 row-start-2 row-end-10 h-full w-full border-[3px] border-black rounded-[10px]"
         }
       >
         <SearchAndCheck AllProjects={filteredProjects} loading={loading} />
