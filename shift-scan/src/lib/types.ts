@@ -378,24 +378,21 @@ export type TimeSheet = {
 
 export type TascoLog = {
   id: string;
-  timeSheetId: string;
-  shiftType: string; // Task name for Tasco work
-  startTime: Date;
-  endTime: Date | null;
-  equipmentId: string | null; // Linked equipment ID
-  laborType: string | null; // E.g., manual labor or equipment work
-  materialType: string | null; // Material being handled
-  loadsHauled: number | null;
-  loadType: string | null; // E.g., uncovered, screened
-  loadWeight: number | null; // Weight of loads
-  comment: string | null;
-  createdAt: Date;
-  completed: boolean; // Status of task completion
+  shiftType: string;
+  equipmentId: string;
+  laborType: string;
+  materialType: string;
+  loadsHauled: number;
+  loads: Loads[];
+  refueled: Refueled[];
+  comment: string;
+};
 
-  // Relations
-  refueled: Refueled[]; // Refueling logs
-  equipment: Equipment | null; // Related equipment
-  timeSheet: TimeSheet | null; // Related timesheet
+export type Loads = {
+  id: string;
+  tascoLogId: string;
+  loadType: string;
+  loadWeight: number;
 };
 
 export type EmployeeEquipmentLog = {
@@ -504,9 +501,9 @@ export type Maintenance = {
 
 export type Refueled = {
   id: string;
-  date: Date;
-  gallonsRefueled: number | null;
-  tascoLogID: string | null;
+  tascoLogId: string;
+  gallonsRefueled: number;
+  milesAtfueling: number;
 };
 //--------------------------------------------
 

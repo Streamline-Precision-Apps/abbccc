@@ -70,3 +70,27 @@
 ### built/created
 - Fixing tabs section spacing and general looks for Tasco. Also tweaked the layouts to try to make it look right. (1.5 hours)
 - Meeting with Devun. (1 hours)
+- Worked on Tasco dashboard section (implement new tabs and combine/fix other components for the tabs. Fixed tasco server actions as well.). (9 hours)
+
+# March 5, 2025 - Wednesday
+### built/created
+- Standup Meeting. (.5 hours)
+- debugging parts of tasco errors made from merge. (4 hours)
+- Worked on Tasco section. (3 hours)
+
+# March 6, 2025 - Thursday
+### built/created
+- Worked on tasco section construction.. (5.5 hours)
+
+# March 7, 2025 - Friday
+### built/created
+- Standup Meeting. (1 hours)
+- Worked on Tasco section. (5.5 hours)
+- Meeting with devun (2 hours)
+- Finish Tasco section. (1.5 hours)
+- worked on error handling for api. (2.5 hours)
+
+# March 12, 2025 - Wednesday
+### built/created
+- Standup Meeting. (1 hours)
+- worked on error handling for api. (1.5 hours)

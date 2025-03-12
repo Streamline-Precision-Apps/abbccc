@@ -2,20 +2,23 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
-type Params = Promise<{ id: string }>;
+
+type Params = { id: string };
+
 export async function GET(
   request: Request,
-  { params: id }: { params: Params }
+  { params }: { params: Params }
 ) {
-  const session = await auth();
-  const userId = session?.user?.id;
-
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   try {
-    const formId = String((await id).id);
+    const session = await auth();
+    const userId = session?.user?.id;
+
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const formId = params.id;
+
     if (!formId) {
       return NextResponse.json({ error: "Invalid form ID" }, { status: 400 });
     }
@@ -25,8 +28,8 @@ export async function GET(
 
     const usersLog = await prisma.employeeEquipmentLog.findUnique({
       where: {
-        employeeId: userId,
         id: formId,
+        employeeId: userId,
         createdAt: {
           lte: currentDate,
           gte: past24Hours,
@@ -47,12 +50,26 @@ export async function GET(
         },
       },
     });
+
+    if (!usersLog) {
+      return NextResponse.json(
+        { error: "No log found for the given ID and timeframe" },
+        { status: 404 }
+      );
+    }
+
     console.log("usersLog: ", usersLog);
     return NextResponse.json(usersLog);
   } catch (error) {
-    console.error("Error fetching users log:", error);
+    console.error("Error fetching user's log:", error);
+
+    let errorMessage = "Failed to fetch user's log";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
     return NextResponse.json(
-      { error: "Failed to fetch users log" },
+      { error: errorMessage },
       { status: 500 }
     );
   }
