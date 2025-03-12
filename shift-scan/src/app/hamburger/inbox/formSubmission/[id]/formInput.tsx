@@ -1,4 +1,11 @@
 "use client";
+
+import { Holds } from "@/components/(reusable)/holds";
+import { Inputs } from "@/components/(reusable)/inputs";
+import { Labels } from "@/components/(reusable)/labels";
+import { Selects } from "@/components/(reusable)/selects";
+import { TextAreas } from "@/components/(reusable)/textareas";
+
 interface FormField {
   id: string;
   label: string;
@@ -30,15 +37,17 @@ export const FormInput: React.FC<FormInputProps> = ({
   };
 
   return (
-    <div>
-      <label htmlFor={field.id}>
-        {field.label} {field.required && "*"}
-      </label>
+    <Holds>
+      <Labels htmlFor={field.id}>
+        {field.label}{" "}
+        {field.required && <span className="text-red-500">*</span>}
+      </Labels>
 
       {field.type === "TEXT" && (
-        <input
+        <Inputs
           type="text"
           id={field.id}
+          name={field.label}
           placeholder={field.placeholder}
           required={field.required}
           value={formValues[field.id] || ""}
@@ -47,8 +56,9 @@ export const FormInput: React.FC<FormInputProps> = ({
       )}
 
       {field.type === "TEXTAREA" && (
-        <textarea
+        <TextAreas
           id={field.id}
+          name={field.label}
           placeholder={field.placeholder}
           required={field.required}
           value={formValues[field.id] || ""}
@@ -57,9 +67,10 @@ export const FormInput: React.FC<FormInputProps> = ({
       )}
 
       {field.type === "DATE" && (
-        <input
+        <Inputs
           type="date"
           id={field.id}
+          name={field.label}
           required={field.required}
           value={formValues[field.id] || ""}
           onChange={handleChange}
@@ -67,8 +78,9 @@ export const FormInput: React.FC<FormInputProps> = ({
       )}
 
       {field.type === "DROPDOWN" && field.options && (
-        <select
+        <Selects
           id={field.id}
+          name={field.label}
           required={field.required}
           value={formValues[field.id] || ""}
           onChange={handleChange}
@@ -79,13 +91,14 @@ export const FormInput: React.FC<FormInputProps> = ({
               {option}
             </option>
           ))}
-        </select>
+        </Selects>
       )}
 
       {field.type === "CHECKBOX" && (
-        <input
+        <Inputs
           type="checkbox"
           id={field.id}
+          name={field.label}
           checked={formValues[field.id] === "true"}
           onChange={(e) =>
             setFormValues({
@@ -97,6 +110,6 @@ export const FormInput: React.FC<FormInputProps> = ({
       )}
 
       {field.helperText && <p>{field.helperText}</p>}
-    </div>
+    </Holds>
   );
 };

@@ -51,7 +51,7 @@ export async function GET(
     isSignatureRequired: formTemplate.isSignatureRequired,
     groupings: formTemplate.FormGrouping.map((group) => ({
       id: group.id,
-      title: group.title || "Untitled Group",
+      title: group.title || "",
       order: group.order,
       fields: group.fields.map((field) => ({
         id: field.id,
