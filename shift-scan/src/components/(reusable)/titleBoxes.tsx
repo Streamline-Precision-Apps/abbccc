@@ -231,7 +231,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
             />
           </Buttons>
         </Holds>
-        <Titles size={"h1"}>{title}</Titles>
+        <Titles size={"h2"}>{title}</Titles>
       </div>
     );
   }
