@@ -46,6 +46,7 @@ model FormField {
     id             String            @id @default(cuid())
     formGroupingId String
     label          String
+    name           String
     type           FieldType
     required       Boolean           @default(false)
     order          Int
@@ -68,18 +69,17 @@ model FormFieldOption {
 
 // Stores submitted forms (can be drafts, pending, or approved)
 model FormSubmission {
-    id             String     @id @default(cuid())
+    id             String         @id @default(cuid())
     formTemplateId String
     userId         String
     formType       String?
-    data           Json // Stores responses in JSON format
-    createdAt      DateTime   @default(now())
+    data           Json? // Stores after creation
+    createdAt      DateTime       @default(now())
     submittedAt    DateTime? // Null means it's a draft
-    status         FormStatus @default(PENDING)
-
-    user         User           @relation(fields: [userId], references: [id])
-    formTemplate FormTemplate   @relation(fields: [formTemplateId], references: [id], onDelete: Cascade)
-    approvals    FormApproval[]
+    status         FormStatus     @default(DRAFT)
+    user           User           @relation(fields: [userId], references: [id])
+    formTemplate   FormTemplate   @relation(fields: [formTemplateId], references: [id], onDelete: Cascade)
+    approvals      FormApproval[]
 }
 
 // Stores approval data for submissions

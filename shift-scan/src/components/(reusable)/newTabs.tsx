@@ -12,9 +12,14 @@ const tabStyles = cva(
         true: "bg-white w-full px-1.5",
         false: "bg-app-gray border-transparent border-b-4 px-1.5",
       },
+      animatePulse: {
+        true: "animate-pulse",
+        false: "",
+      },
     },
     defaultVariants: {
       isActive: false,
+      animatePulse: false,
     },
   }
 );
@@ -27,6 +32,7 @@ interface TabProps extends VariantProps<typeof tabStyles> {
   titleImageAlt: string;
   isComplete?: boolean;
   isLoading?: boolean;
+  animatePulse?: boolean;
 }
 
 // Functional Tab component with children rendering
@@ -38,9 +44,13 @@ export const NewTab: FC<TabProps> = ({
   titleImageAlt,
   isComplete,
   isLoading,
+  animatePulse,
 }) => {
   return (
-    <button onClick={onClick} className={classNames(tabStyles({ isActive }))}>
+    <button
+      onClick={onClick}
+      className={classNames(tabStyles({ isActive, animatePulse }))}
+    >
       <div className="flex justify-center items-center ">
         {isActive && children}
         <img

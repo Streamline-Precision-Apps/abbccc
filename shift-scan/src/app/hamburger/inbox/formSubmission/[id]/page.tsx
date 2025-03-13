@@ -5,16 +5,17 @@ import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";
 import { Buttons } from "@/components/(reusable)/buttons";
-import { Titles } from "@/components/(reusable)/titles";
 import { Grids } from "@/components/(reusable)/grids";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import Spinner from "@/components/(animations)/spinner";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { saveDraft, submitForm } from "@/actions/hamburgerActions";
 
 interface FormField {
   id: string;
   label: string;
+  name: string;
   type: string;
   required: boolean;
   order: number;
@@ -41,47 +42,98 @@ interface FormTemplate {
 }
 
 export default function DynamicForm({ params }: { params: { id: string } }) {
+  const formSubmissions = useSearchParams();
+  const submissionId = formSubmissions.get("submissionId");
   const [formData, setFormData] = useState<FormTemplate | null>(null);
-  const [formValues, setFormValues] = useState<Record<string, string>>({});
-  const router = useRouter();
+  const [formValues, setFormValues] = useState<Record<string, any>>({});
+  const [loading, setLoading] = useState<boolean>(false);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
   const { data: session } = useSession();
-  if (!session) {
-    return router.push("/");
-  }
-  const userId = session.user.id;
+  const userId = session?.user.id;
+  const router = useRouter();
 
+  // Fetch form template and draft data on page load
   useEffect(() => {
+    setLoading(true);
+
     async function fetchForm() {
-      const res = await fetch(`/api/form/` + params.id);
-      const data = await res.json();
-      setFormData(data);
-      console.log(data);
+      try {
+        const res = await fetch(`/api/form/` + params.id);
+        const data = await res.json();
+        setFormData(data);
+
+        // Fetch draft data if submissionId exists
+        if (submissionId) {
+          const draftRes = await fetch(`/api/formDraft/` + submissionId);
+          const draftData = await draftRes.json();
+          setFormValues(draftData.data || {});
+        }
+      } catch (error) {
+        console.error("error", error);
+      } finally {
+        setLoading(false);
+      }
     }
 
     fetchForm();
-  }, [params.id]);
+  }, [params.id, submissionId]);
 
-  const SubmitForm = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); // Prevents default form submission behavior
-
-    const form = new FormData(e.currentTarget); // Collects form data
-    formData && form.append("formTemplateId", formData.id);
-    form.append("userId", userId);
-    formData && form.append("formType", formData.formType);
-
-    const formObject: Record<string, any> = {};
-    console.log("form Data not object:", formData);
-
-    // Convert FormData to an object (optional, for easier handling)
-    form.forEach((value, key) => {
-      formObject[key] = value;
-    });
-
-    console.log("Form Data:", formObject);
-    // take form object and submit it to a form submission
+  // Debounce function to limit the frequency of auto-saves
+  const debounce = (func: Function, delay: number) => {
+    let timeoutId: NodeJS.Timeout;
+    return (...args: any[]) => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => func(...args), delay);
+    };
   };
 
-  if (!formData)
+  // Auto-save function
+  const autoSave = debounce(async () => {
+    if (Object.keys(formValues).length > 0) {
+      setIsSaving(true);
+      try {
+        await saveDraft(
+          formValues,
+          formData?.id || "",
+          userId || "",
+          formData?.formType,
+          submissionId || undefined
+        );
+        console.log("Draft saved successfully");
+      } catch (error) {
+        console.error("Error saving draft:", error);
+      } finally {
+        setIsSaving(false);
+      }
+    }
+  }, 2000); // Save every 2 seconds after the user stops typing
+
+  // Trigger auto-save whenever formValues changes
+  useEffect(() => {
+    autoSave();
+  }, [formValues]);
+
+  // Handle form submission
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    try {
+      const result = await submitForm(
+        formValues,
+        formData?.id || "",
+        userId || "",
+        formData?.formType,
+        submissionId || undefined
+      );
+      if (result) {
+        router.push("/hamburger/inbox"); // Redirect to a success page
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    }
+  };
+
+  if (loading || !formData) {
     return (
       <Bases>
         <Contents>
@@ -122,14 +174,15 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
         </Contents>
       </Bases>
     );
+  }
 
   return (
     <Bases>
       <Contents>
         <Grids className="grid-rows-8 gap-5">
           <Holds
-            background={"green"}
-            className="row-span-1 h-full justify-center "
+            background={"white"}
+            className="row-span-1 h-full justify-center px-3 "
           >
             <TitleBoxes
               title={formData.name}
@@ -141,7 +194,7 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
 
           <Holds background={"white"} className="w-full h-full row-span-7 ">
             <Contents width={"section"}>
-              <form onSubmit={SubmitForm} className="h-full">
+              <form onSubmit={handleSubmit} className="h-full">
                 <Grids rows={"6"} gap={"3"} className="h-full w-full my-5">
                   <Holds className="row-start-1 row-end-6 h-full w-full">
                     {formData?.groupings?.map((group) => (

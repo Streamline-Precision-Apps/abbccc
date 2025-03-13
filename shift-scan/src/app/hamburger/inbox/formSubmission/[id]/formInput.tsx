@@ -9,6 +9,7 @@ import { TextAreas } from "@/components/(reusable)/textareas";
 interface FormField {
   id: string;
   label: string;
+  name: string;
   type: string;
   required: boolean;
   order: number;
@@ -33,7 +34,8 @@ export const FormInput: React.FC<FormInputProps> = ({
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
-    setFormValues({ ...formValues, [field.id]: e.target.value });
+    const key = field.name;
+    setFormValues({ ...formValues, [key]: e.target.value });
   };
 
   return (
@@ -47,7 +49,7 @@ export const FormInput: React.FC<FormInputProps> = ({
         <Inputs
           type="text"
           id={field.id}
-          name={field.label}
+          name={field.name}
           placeholder={field.placeholder}
           required={field.required}
           value={formValues[field.id] || ""}
@@ -58,7 +60,7 @@ export const FormInput: React.FC<FormInputProps> = ({
       {field.type === "TEXTAREA" && (
         <TextAreas
           id={field.id}
-          name={field.label}
+          name={field.name}
           placeholder={field.placeholder}
           required={field.required}
           value={formValues[field.id] || ""}
@@ -70,7 +72,7 @@ export const FormInput: React.FC<FormInputProps> = ({
         <Inputs
           type="date"
           id={field.id}
-          name={field.label}
+          name={field.name}
           required={field.required}
           value={formValues[field.id] || ""}
           onChange={handleChange}
@@ -80,7 +82,7 @@ export const FormInput: React.FC<FormInputProps> = ({
       {field.type === "DROPDOWN" && field.options && (
         <Selects
           id={field.id}
-          name={field.label}
+          name={field.name}
           required={field.required}
           value={formValues[field.id] || ""}
           onChange={handleChange}
@@ -98,7 +100,7 @@ export const FormInput: React.FC<FormInputProps> = ({
         <Inputs
           type="checkbox"
           id={field.id}
-          name={field.label}
+          name={field.name}
           checked={formValues[field.id] === "true"}
           onChange={(e) =>
             setFormValues({
