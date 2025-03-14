@@ -11,6 +11,8 @@ import { Images } from "../(reusable)/images";
 import { Texts } from "../(reusable)/texts";
 import { Labels } from "../(reusable)/labels";
 import CodeStep from "./code-step";
+import CodeFinder from "../(search)/codeFinder";
+import StepButtons from "./step-buttons";
 
 type TruckClockInFormProps = {
   handleNextStep: () => void;
@@ -38,6 +40,7 @@ export default function TruckClockInForm({
 }: TruckClockInFormProps) {
   const t = useTranslations("Clock");
   const [truckList, setTruckList] = useState<TruckListSchema[]>([]);
+  const [selectedOpt, setSelectedOpt] = useState<boolean>(false);
   useEffect(() => {
     const truckList = async () => {
       const fetchTruckList = await fetch("/api/getTruckData").then((res) =>
@@ -51,8 +54,16 @@ export default function TruckClockInForm({
     <Holds background={"white"} className="w-full h-full py-4">
       <Contents width="section">
         <Grids rows={"10"} cols={"1"} className="h-full w-full">
-          <Grids rows={"3"} cols={"5"} gap={"3"} className="row-span-2">
-            <Holds className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center">
+          <Grids
+            rows={"2"}
+            cols={"5"}
+            gap={"3"}
+            className="row-start-1 row-end-3 h-full"
+          >
+            <Holds
+              className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center "
+              onClick={handlePrevStep}
+            >
               <Images
                 titleImg="/turnBack.svg"
                 titleImgAlt="back"
@@ -61,7 +72,7 @@ export default function TruckClockInForm({
             </Holds>
             <Holds
               background={"white"}
-              className="row-start-2 row-end-4 col-start-1 col-end-6 justify-center p-1 py-2 border-[3px] border-black rounded-[10px]"
+              className="row-start-2 row-end-3 col-start-1 col-end-6 justify-center p-1 py-2 border-[3px] border-black rounded-[10px]"
             >
               <Selects
                 value={laborType}
@@ -137,12 +148,23 @@ export default function TruckClockInForm({
               </Grids>
             )}
             {laborType === "operator" && (
-              <CodeStep
-                datatype="equipment-operator" // using this to set the title of equipment
-                handleNextStep={handleNextStep}
-                backArrow={false}
-                handlePrevStep={handlePrevStep}
-              />
+              <Grids rows={"7"} gap={"5"} className="h-full w-full">
+                <Holds className="row-start-1 row-end-7 h-full w-full pt-5">
+                  <CodeFinder
+                    setScannedId={undefined}
+                    datatype={"equipment-operator"}
+                    setSelectedOpt={setSelectedOpt}
+                  />
+                </Holds>
+                {handleNextStep && (
+                  <Holds className="row-start-7 row-end-8 h-full w-full justify-center">
+                    <StepButtons
+                      handleNextStep={handleNextStep}
+                      disabled={!selectedOpt}
+                    />
+                  </Holds>
+                )}
+              </Grids>
             )}
             {laborType === "manualLabor" && (
               <Grids rows={"8"} cols={"1"} gap={"5"}>

@@ -1,10 +1,10 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
 import {
-  CreateTimeSheet,
+  CreateMechanicTimeSheet,
   updateMechanicTSBySwitch,
 } from "@/actions/timeSheetActions";
 import { Clock } from "../clock";
@@ -17,13 +17,13 @@ import { Forms } from "../(reusable)/forms";
 import { Images } from "../(reusable)/images";
 import { Texts } from "../(reusable)/texts";
 import { useSession } from "next-auth/react";
-import { useTruckScanData } from "@/app/context/TruckScanDataContext";
-import { useStartingMileage } from "@/app/context/StartingMileageContext";
 import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
 import { useCommentData } from "@/app/context/CommentContext";
 import { useRouter } from "next/navigation";
 import { setCurrentPageView, setWorkRole } from "@/actions/cookieActions";
+import Spinner from "../(animations)/spinner";
+import { useSavedCostCode } from "@/app/context/CostCodeContext";
 
 type VerifyProcessProps = {
   handleNextStep?: () => void;
@@ -42,104 +42,109 @@ export default function MechanicVerificationStep({
   const { scanResult } = useScanData();
   const { setTimeSheetData } = useTimeSheetData();
   const router = useRouter();
-  const date = new Date();
+  const [date] = useState(new Date());
+  const [loading, setLoading] = useState<boolean>(false);
   const { data: session } = useSession();
-  const { truckScanData } = useTruckScanData(); // Move this hook call to the top level.
-  const { startingMileage } = useStartingMileage();
   const { savedCommentData, setCommentData } = useCommentData();
-
+  const { setCostCode } = useSavedCostCode();
   const costCode = "#00.50";
+
+  useEffect(() => {
+    setCostCode(costCode);
+  }, [costCode]);
 
   if (!session) return null; // Conditional rendering for session
   const { id } = session.user;
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const fetchRecentTimeSheetId = async (): Promise<string | null> => {
     try {
-      e.preventDefault();
+      const res = await fetch("/api/getRecentTimecard");
+      const data = await res.json();
+      return data?.id || null;
+    } catch (error) {
+      console.error("Error fetching recent timesheet ID:", error);
+      return null;
+    }
+  };
 
-      if (!id) {
-        throw new Error("User id does not exist");
-      }
-      await setWorkRole(role);
+  const updatePreviousTimeSheet = async (): Promise<boolean> => {
+    try {
+      const timeSheetId = await fetchRecentTimeSheetId();
+      if (!timeSheetId) throw new Error("No valid TimeSheet ID found.");
 
-      if (type === "switchJobs") {
-        try {
-          const tId = await fetch(
-            "/api/cookies?method=get&name=timeSheetId"
-          ).then((res) => res.json());
-          const formData2 = new FormData();
-          formData2.append("id", tId?.toString() || "");
-          formData2.append("endTime", new Date().toISOString());
-          formData2.append(
-            "timesheetComments",
-            savedCommentData?.id.toString() || ""
-          );
+      const formData = new FormData();
+      formData.append("id", timeSheetId);
+      formData.append("endTime", new Date().toISOString());
+      formData.append(
+        "timeSheetComments",
+        savedCommentData?.id.toString() || ""
+      );
+      await updateMechanicTSBySwitch(formData);
+      setCommentData(null);
+      localStorage.removeItem("savedCommentData");
+      return true;
+    } catch (error) {
+      console.error("Failed to update previous timesheet:", error);
+      return false;
+    }
+  };
 
-          const responseOldSheet = await updateMechanicTSBySwitch(formData2);
-          if (responseOldSheet) {
-            // removing the old sheet comment so it doesn't show up on the new sheet
-            setCommentData(null);
-            localStorage.removeItem("savedCommentData");
-          }
-
-          const formData = new FormData();
-          if (truckScanData) {
-            formData.append("vehicleId", truckScanData);
-          }
-          formData.append("submitDate", new Date().toISOString());
-          formData.append("userId", id?.toString() || "");
-          formData.append("date", new Date().toISOString());
-          formData.append("jobsiteId", scanResult?.data || "");
-          formData.append("costcode", costCode);
-          formData.append("startTime", new Date().toISOString());
-          formData.append("workType", role);
-
-          const response = await CreateTimeSheet(formData);
-          const result = { id: response.id.toString() };
-          setTimeSheetData(result);
-
-          setTimeout(() => {
-            router.push("/dashboard");
-          }, 100);
-        } catch (error) {
-          console.error(error);
-        }
-      } else {
-        const formData = new FormData();
-        if (truckScanData) {
-          formData.append("vehicleId", truckScanData);
-        }
-        if (startingMileage !== undefined) {
-          formData.append(
-            "startingMileage",
-            startingMileage?.toString() || "0"
-          );
-        }
-        formData.append("submitDate", new Date().toISOString());
-        formData.append("userId", id.toString());
-        formData.append("date", new Date().toISOString());
-        formData.append("jobsiteId", scanResult?.data || "");
-        formData.append("costcode", costCode);
-        formData.append("startTime", new Date().toISOString());
-        formData.append("workType", role);
-
-        const response = await CreateTimeSheet(formData);
-        const result = { id: response.id.toString() };
-        setTimeSheetData(result);
-        setCurrentPageView("dashboard");
-
-        setTimeout(() => {
-          router.push("/dashboard");
-        }, 100);
-      }
+  const createNewTimeSheet = async (): Promise<void> => {
+    const formData = new FormData();
+    formData.append("submitDate", new Date().toISOString());
+    formData.append("userId", id?.toString() || "");
+    formData.append("date", new Date().toISOString());
+    formData.append("jobsiteId", scanResult?.data || "");
+    formData.append("costcode", costCode);
+    formData.append("startTime", new Date().toISOString());
+    formData.append("workType", role);
+    try {
+      const response = await CreateMechanicTimeSheet(formData);
+      const result = { id: response.id.toString() };
+      await Promise.all([
+        setTimeSheetData(result),
+        setCurrentPageView("dashboard"),
+        setWorkRole(role),
+      ]).then(() => router.push("/dashboard"));
     } catch (error) {
       console.error(error);
     }
   };
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!id) {
+      console.error("User ID does not exist");
+      return;
+    }
+    setLoading(true);
+    try {
+      if (type === "switchJobs") {
+        const isUpdated = await updatePreviousTimeSheet();
+        if (isUpdated) {
+          await createNewTimeSheet();
+        }
+      } else {
+        await createNewTimeSheet();
+      }
+    } catch (error) {
+      console.error("Error in handleSubmit:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
-      <Holds background={"white"} className="h-full w-full">
+      {loading && (
+        <Holds className="h-full absolute justify-center items-center">
+          <Spinner size={40} />
+        </Holds>
+      )}
+      <Holds
+        background={"white"}
+        className={loading ? `h-full w-full opacity-[0.50]` : `h-full w-full`}
+      >
         <Grids rows={"10"} gap={"2"} className="h-full w-full">
           <Contents width={"section"} className="h-full row-span-1 ">
             <TitleBoxes
@@ -180,31 +185,37 @@ export default function MechanicVerificationStep({
                     className="h-full w-[95%] sm:w-[85%] md:w-[75%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%]  border-[3px] rounded-b-none  border-black "
                   >
                     <Contents width={"section"} className="h-full">
-                      <Labels>
-                        <Texts text={"white"} size={"p4"} position={"left"}>
-                          {t("Date-label")}
-                        </Texts>
-                        <Inputs
-                          state="disabled"
-                          variant={"white"}
-                          data={date.toLocaleDateString("en-US", {
-                            year: "numeric",
-                            month: "numeric",
-                            day: "numeric",
-                          })}
-                        />
+                      <Labels text={"white"} size={"p4"} position={"left"}>
+                        {t("Date-label")}
                       </Labels>
-                      <Labels>
-                        <Texts text={"white"} size={"p4"} position={"left"}>
-                          {t("JobSite-label")}
-                        </Texts>
-                        <Inputs
-                          state="disabled"
-                          name="jobsiteId"
-                          variant={"white"}
-                          data={scanResult?.data || ""}
-                        />
+                      <Inputs
+                        state="disabled"
+                        variant={"white"}
+                        data={date.toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "numeric",
+                          day: "numeric",
+                        })}
+                      />
+
+                      <Labels text={"white"} size={"p4"} position={"left"}>
+                        {t("JobSite-label")}
                       </Labels>
+                      <Inputs
+                        state="disabled"
+                        name="jobsiteId"
+                        variant={"white"}
+                        data={scanResult?.data || ""}
+                      />
+                      <Labels text={"white"} size={"p4"} position={"left"}>
+                        {t("CostCode-label")}
+                      </Labels>
+                      <Inputs
+                        state="disabled"
+                        name="costcode"
+                        variant={"white"}
+                        data={costCode}
+                      />
                     </Contents>
                   </Holds>
                 </Holds>
@@ -226,18 +237,18 @@ export default function MechanicVerificationStep({
                 <Inputs
                   type="hidden"
                   name="submitDate"
-                  value={new Date().toISOString()}
+                  value={new Date().toString()}
                 />
                 <Inputs type="hidden" name="userId" value={id} />
                 <Inputs
                   type="hidden"
                   name="date"
-                  value={new Date().toISOString()}
+                  value={new Date().toString()}
                 />
                 <Inputs
                   type="hidden"
                   name="startTime"
-                  value={new Date().toISOString()}
+                  value={new Date().toString()}
                 />
               </Grids>
             </Holds>

@@ -11,6 +11,7 @@ import SearchSelect from "@/components/(search)/searchSelect";
 import { Grids } from "@/components/(reusable)/grids";
 import { z } from "zod";
 import { NModals } from "@/components/(reusable)/newmodals";
+import { Titles } from "@/components/(reusable)/titles";
 
 // Zod schema for JobCodes
 const JobCodesSchema = z.object({
@@ -130,8 +131,8 @@ export default function QrJobsiteContent() {
   return (
     <>
       {loading ? (
-        <Grids rows={"5"} gap={"5"} cols={"3"}>
-          <Holds className="row-span-4 col-span-3 h-full">
+        <Grids rows={"6"} gap={"5"} cols={"3"}>
+          <Holds className="row-span-5 col-span-3 h-full ">
             <SearchSelect
               loading={true}
               datatype={`${t("Loading")}`}
@@ -139,27 +140,28 @@ export default function QrJobsiteContent() {
               handleGenerate={handleGenerate}
               recentOptions={generatedRecentList}
               onSelect={handleSearchSelectChange}
+              setSelectedJobSite={setSelectedJobSite}
             />
           </Holds>
 
           <Holds
             size={"full"}
-            className="row-span-1 col-start-3 col-end-4 h-full"
+            className="row-span-1 col-start-3 col-end-4 h-full "
           >
             <Buttons background={"green"} onClick={handleNew}>
               <Holds>
                 <Images
                   titleImg={"/plus.svg"}
                   titleImgAlt={"plus"}
-                  size={"50"}
+                  size={"40"}
                 />
               </Holds>
             </Buttons>
           </Holds>
         </Grids>
       ) : (
-        <Grids rows={"5"} gap={"5"} cols={"3"}>
-          <Holds className="row-span-4 col-span-3 h-full">
+        <Grids rows={"6"} gap={"5"} cols={"3"}>
+          <Holds className="row-span-5 col-span-3 h-full">
             <SearchSelect
               loading={false}
               datatype={`${t("SearchForAJobSite")}`}
@@ -167,12 +169,21 @@ export default function QrJobsiteContent() {
               handleGenerate={handleGenerate}
               recentOptions={generatedRecentList}
               onSelect={handleSearchSelectChange}
+              setSelectedJobSite={setSelectedJobSite}
             />
           </Holds>
-
+          <Holds className="row-start-6 row-end-7 col-start-1 col-end-3 h-full">
+            <Buttons
+              background={selectedJobSite === "" ? "darkGray" : "orange"}
+              disabled={!selectedJobSite}
+              onClick={handleGenerate}
+            >
+              <Titles size={"h3"}>{t("GenerateCode")}</Titles>
+            </Buttons>
+          </Holds>
           <Holds
             size={"full"}
-            className="row-span-1 col-start-3 col-end-4 h-full"
+            className="row-start-6 row-end-7 col-start-3 col-end-4 h-full"
           >
             <Buttons background={"green"} onClick={handleNew}>
               <Holds>

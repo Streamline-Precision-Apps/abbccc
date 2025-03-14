@@ -68,15 +68,15 @@ export default function AdminClock({
         <Holds>
           <CodeFinder
             datatype="jobsite"
-            savedJS={""}
             setSelectedOpt={() => {}}
+            setScannedId={undefined}
           />
         </Holds>
         <Holds>
           <CodeFinder
             datatype="costcode"
-            savedJS={""}
             setSelectedOpt={() => {}}
+            setScannedId={undefined}
           />
         </Holds>
       </Holds>

@@ -26,24 +26,16 @@ export default async function Dashboard() {
     redirect("/");
   }
 
+  const mechanicProjectID = cookies().get("mechanicProjectID")?.value || "";
+
   // const user = session.user;
   const view = cookies().get("workRole")?.value || "general"; // Default to general view if not set
-  // Get the current language from cookies
-  // Get the current language from cookies
-  // const lang = cookies().get("locale");
-  // const locale = lang ? lang.value : "en";
-
-  // const date = new Date().toLocaleDateString(locale, {
-  //   year: "numeric",
-  //   month: "short",
-  //   day: "numeric",
-  //   weekday: "long",
-  // });
+  const laborType = cookies().get("laborType")?.value || "";
 
   return (
     <Bases>
       <Contents>
-        <Grids rows={"7"}>
+        <Grids rows={"7"} gap={"2"}>
           <Holds position={"row"} background={"white"} className="row-span-1">
             <Holds size={"30"}>
               <Images
@@ -62,7 +54,12 @@ export default async function Dashboard() {
             <BannerRotating />
           </Holds>
           <Holds background={"white"} className="row-span-5 h-full">
-            <DbWidgetSection session={session} view={view} />
+            <DbWidgetSection
+              session={session}
+              view={view}
+              mechanicProjectID={mechanicProjectID}
+              laborType={laborType}
+            />
           </Holds>
         </Grids>
       </Contents>

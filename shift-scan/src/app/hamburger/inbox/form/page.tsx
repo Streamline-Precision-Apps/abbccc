@@ -15,7 +15,7 @@ export default async function Form() {
     <Bases size={"scroll"}>
       <Contents className="my-5">
         <Grids className="grid-rows-10 gap-5">
-          <Holds background={"green"} className="row-span-2 h-full">
+          <Holds background={"green"} className="row-span-1 h-full">
             <TitleBoxes
               title="Leave Request Form"
               titleImg="/Inbox.svg"
@@ -23,7 +23,7 @@ export default async function Form() {
               type="noIcon"
             />
           </Holds>
-          <Holds className="row-span-8 h-full">
+          <Holds className="row-span-9 h-full">
             <Content session={session} />
           </Holds>
         </Grids>

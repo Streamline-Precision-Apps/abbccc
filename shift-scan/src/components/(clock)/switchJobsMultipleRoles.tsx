@@ -6,7 +6,7 @@ import { Grids } from "../(reusable)/grids";
 import { Titles } from "../(reusable)/titles";
 import { useTranslations } from "next-intl";
 import { useCommentData } from "@/app/context/CommentContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Images } from "../(reusable)/images";
 import { Selects } from "../(reusable)/selects";
 import { TextAreas } from "../(reusable)/textareas";
@@ -15,8 +15,8 @@ import { Labels } from "../(reusable)/labels";
 
 type Props = {
   handleNextStep: () => void;
-  setClockInRole: React.Dispatch<React.SetStateAction<string>>;
-  clockInRole: string;
+  setClockInRole: React.Dispatch<React.SetStateAction<string | undefined>>;
+  clockInRole: string | undefined;
   option?: string;
   handleReturn?: () => void;
   handleReturnPath: () => void;
@@ -39,6 +39,7 @@ export default function SwitchJobsMultiRoles({
   const laborView = session?.user.laborView;
   const { setCommentData } = useCommentData();
   const [commentsValue, setCommentsValue] = useState<string>("");
+  const [submittable, setSubmittable] = useState<boolean>(false);
 
   const selectView = (selectedRole: string) => {
     setClockInRole(selectedRole); // Updates state
@@ -47,6 +48,11 @@ export default function SwitchJobsMultiRoles({
   const saveCurrentData = () => {
     setCommentData({ id: commentsValue }); // Ensure correct data structure
   };
+
+  useEffect(() => {
+    setSubmittable(commentsValue.length >= 3);
+  }, [commentsValue]);
+
   if (numberOfRoles === 1) {
     return (
       <Holds background={"white"} className="h-full w-full">
@@ -70,6 +76,7 @@ export default function SwitchJobsMultiRoles({
                     {t("PreviousJobComment")}
                   </Labels>
                   <TextAreas
+                    name="comments"
                     onChange={(e) => {
                       setCommentsValue(e.target.value);
                     }}
@@ -96,13 +103,14 @@ export default function SwitchJobsMultiRoles({
           <Holds className="row-start-4 row-end-6 h-full w-full justify-center"></Holds>
           <Holds className="row-start-7 row-end-8 h-full w-full justify-center">
             <Buttons
+              disabled={!submittable}
               onClick={() => {
                 saveCurrentData();
                 handleNextStep();
               }}
-              background={"orange"}
+              background={submittable === false ? "darkGray" : "orange"}
             >
-              <Titles size={"h3"}>{t("Next")}</Titles>
+              <Titles size={"h2"}>{t("Continue")}</Titles>
             </Buttons>
           </Holds>
         </Grids>
@@ -156,12 +164,12 @@ export default function SwitchJobsMultiRoles({
           </Grids>
         </Holds>
         <Holds className="row-start-4 row-end-6 h-full w-full justify-center">
-          <Grids rows={"3"} gap={"2"}>
-            <Titles size={"h1"} className="row-start-1 row-end-2 h-full">
-              {t("ChangeIfNecessary")}
-            </Titles>
-            <Holds className="row-start-2 row-end-3 h-full w-full justify-center">
-              <Holds className=" h-full w-full justify-center border-[3px] border-black rounded-[10px] shadow-[6px_6px_0px_grey]">
+          <Grids rows={"3"}>
+            <Holds className="row-start-2 row-end-4 h-full w-full justify-center">
+              <Titles size={"h1"} className=" ">
+                {t("ChangeIfNecessary")}
+              </Titles>
+              <Holds className=" w-full py-3 justify-center border-[3px] border-black rounded-[10px] shadow-[6px_6px_0px_grey]">
                 <Holds className="h-full w-11/12 justify-center">
                   <Selects
                     className="bg-app-blue text-center"
@@ -189,13 +197,14 @@ export default function SwitchJobsMultiRoles({
         </Holds>
         <Holds className="row-start-7 row-end-8 h-full w-full justify-center">
           <Buttons
+            disabled={!submittable}
             onClick={() => {
               saveCurrentData();
               handleNextStep();
             }}
-            background={"orange"}
+            background={submittable === false ? "darkGray" : "orange"}
           >
-            <Titles size={"h3"}>{t("Next")}</Titles>
+            <Titles size={"h2"}>{t("Continue")}</Titles>
           </Buttons>
         </Holds>
       </Grids>

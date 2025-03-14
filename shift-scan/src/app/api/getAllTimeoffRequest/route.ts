@@ -5,158 +5,68 @@ import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 
 export async function GET(req: Request) {
-  const session = await auth();
-
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  const url = new URL(req.url);
-  const filter = url.searchParams.get("filter");
-  const today = new Date();
-
   try {
-    // Fetch sent requests based on `id` and `userId`
-    if (filter === "all") {
-      const sentContent = await prisma.timeOffRequestForm.findMany({
-        orderBy: {
-          requestedStartDate: "desc",
-        },
-        include: {
-          employee: {
-            select: {
-              firstName: true,
-              lastName: true,
-              image: true,
-            },
-          },
-        },
-      });
-      return NextResponse.json(sentContent);
-    } else if (filter === "pending") {
-      const sentContent = await prisma.timeOffRequestForm.findMany({
-        where: {
-          status: "PENDING",
-        },
-        orderBy: {
-          requestedStartDate: "desc",
-        },
-        include: {
-          employee: {
-            select: {
-              firstName: true,
-              lastName: true,
-            },
-          },
-        },
-      });
-      return NextResponse.json(sentContent);
-    } else if (filter === "approved") {
-      const sentContent = await prisma.timeOffRequestForm.findMany({
-        where: {
-          status: "APPROVED",
-          requestedEndDate: {
-            gte: today,
-          },
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-        include: {
-          employee: {
-            select: {
-              firstName: true,
-              lastName: true,
-            },
-          },
-        },
-      });
-      return NextResponse.json(sentContent);
-    } else if (filter === "denied") {
-      const sentContent = await prisma.timeOffRequestForm.findMany({
-        where: {
-          status: "DENIED",
-          requestedEndDate: {
-            gte: today,
-          },
-        },
-        orderBy: {
-          requestedStartDate: "desc",
-        },
-        include: {
-          employee: {
-            select: {
-              firstName: true,
-              lastName: true,
-            },
-          },
-        },
-      });
-      return NextResponse.json(sentContent);
-    } else if (filter === "archived-denied") {
-      const sentContent = await prisma.timeOffRequestForm.findMany({
-        where: {
-          status: "DENIED",
-          requestedEndDate: {
-            lte: today,
-          },
-        },
-        orderBy: {
-          requestedStartDate: "desc",
-        },
-        include: {
-          employee: {
-            select: {
-              firstName: true,
-              lastName: true,
-            },
-          },
-        },
-      });
-      return NextResponse.json(sentContent);
-    } else if (filter === "archived-approved") {
-      const sentContent = await prisma.timeOffRequestForm.findMany({
-        where: {
-          status: "APPROVED",
-          requestedEndDate: {
-            lte: today,
-          },
-        },
-        orderBy: {
-          requestedStartDate: "desc",
-        },
-        include: {
-          employee: {
-            select: {
-              firstName: true,
-              lastName: true,
-            },
-          },
-        },
-      });
-      return NextResponse.json(sentContent);
-    } else if (filter === "all-archived") {
-      const sentContent = await prisma.timeOffRequestForm.findMany({
-        where: {
-          requestedEndDate: {
-            lte: today,
-          },
-        },
-        orderBy: {
-          requestedStartDate: "desc",
-        },
-        include: {
-          employee: {
-            select: {
-              firstName: true,
-              lastName: true,
-            },
-          },
-        },
-      });
-      return NextResponse.json(sentContent);
-    } else {
-      return NextResponse.json({ error: "Invalid filter" }, { status: 400 });
+    const session = await auth();
+
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    const url = new URL(req.url);
+    const filter = url.searchParams.get("filter");
+    const today = new Date();
+
+    let whereClause = {};
+    let orderByClause = { requestedStartDate: "desc" as const };
+
+    switch (filter) {
+      case "all":
+        break; // No `where` clause, fetch all records.
+      case "pending":
+        whereClause = { status: "PENDING" };
+        break;
+      case "approved":
+        whereClause = { status: "APPROVED", requestedEndDate: { gte: today } };
+        orderByClause = { createdAt: "desc" };
+        break;
+      case "denied":
+        whereClause = { status: "DENIED", requestedEndDate: { gte: today } };
+        break;
+      case "archived-denied":
+        whereClause = { status: "DENIED", requestedEndDate: { lte: today } };
+        break;
+      case "archived-approved":
+        whereClause = { status: "APPROVED", requestedEndDate: { lte: today } };
+        break;
+      case "all-archived":
+        whereClause = { requestedEndDate: { lte: today } };
+        break;
+      default:
+        return NextResponse.json({ error: "Invalid filter" }, { status: 400 });
+    }
+
+    const sentContent = await prisma.timeOffRequestForm.findMany({
+      where: whereClause,
+      orderBy: orderByClause,
+      include: {
+        employee: {
+          select: {
+            firstName: true,
+            lastName: true,
+            image: true,
+          },
+        },
+      },
+    });
+
+    if (!sentContent || sentContent.length === 0) {
+      return NextResponse.json(
+        { message: "No time off requests found for the given filter." },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(sentContent);
   } catch (error) {
     console.error("Error fetching Time Off Requests:", error);
     return NextResponse.json(

@@ -1,7 +1,6 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { ImgHTMLAttributes, FC } from "react";
 import { cn } from "@/components/(reusable)/utils";
-import Image from "next/image";
 
 //this determines styles of all images
 const ImageVariants = cva(
@@ -21,6 +20,7 @@ const ImageVariants = cva(
       },
       size: {
         //only width and height
+        fill: "w-full h-full",
         full: "w-full sm:w-full md:w-[90%] lg:w-[80%] xl:w-[70%] 2xl:w-[60%]",
         "90": "w-[90%] sm:w-[85%] md:w-[75%] lg:w-[65%]",
         "80": "w-[80%]  sm:w-[75%] md:w-[70%] lg:w-[60%]",
@@ -42,11 +42,12 @@ const ImageVariants = cva(
 );
 
 interface ImageProps
-  extends Omit<React.ComponentProps<typeof Image>, "src" | "alt">,
+  extends ImgHTMLAttributes<HTMLImageElement>,
     VariantProps<typeof ImageVariants> {
   titleImg: string;
   titleImgAlt: string;
 }
+
 const Images: FC<ImageProps> = ({
   className,
   background,
@@ -57,14 +58,11 @@ const Images: FC<ImageProps> = ({
   ...props
 }) => {
   return (
-    <Image
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
       src={titleImg}
       alt={titleImgAlt}
       className={cn(ImageVariants({ background, position, size, className }))}
-      width={500} // ✅ Adjust width as needed
-      height={300} // ✅ Adjust height as needed
-      layout="intrinsic" // ✅ Uses intrinsic layout
-      priority // ✅ Optimize for faster loading (use for important images)
       {...props}
     />
   );

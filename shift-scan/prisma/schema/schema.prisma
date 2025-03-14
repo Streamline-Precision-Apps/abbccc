@@ -31,16 +31,6 @@ enum EquipmentStatus {
   NEEDS_MAINTENANCE
 }
 
-// Provides options for form status column
-enum FormStatus {
-  PENDING
-  APPROVED
-  DENIED
-  // FLAGGED
-  // I "TEMPORARY" this for the search filter api call for admins.
-  TEMPORARY
-}
-
 enum IsActive {
   ACTIVE
   INACTIVE
@@ -54,8 +44,14 @@ enum WorkType {
 }
 
 enum Priority {
+  PENDING
   LOW
   MEDIUM
   HIGH
-  URGENT
+  TODAY
+}
+
+enum LoadType {
+  UNSCREENED
+  SCREENED
 }

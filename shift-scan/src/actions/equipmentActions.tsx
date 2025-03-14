@@ -2,6 +2,8 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { EquipmentTags, EquipmentStatus } from "@/lib/types";
+import { form } from "@nextui-org/theme";
+import { start } from "repl";
 
 export async function equipmentTagExists(id: string) {
   try {
@@ -33,12 +35,12 @@ export async function fetchEq(employeeId: string, date: string) {
       },
     },
     include: {
-      Equipment: true,
+      equipment: true,
     },
   });
 
   // Ensure no null values are present
-  const filteredEqLogs = eqlogs.filter((log) => log.Equipment !== null);
+  const filteredEqLogs = eqlogs.filter((log) => log.equipment !== null);
 
   console.log("\n\n\nEquipment Logs:", filteredEqLogs);
   revalidatePath("/dashboard/myTeam/" + employeeId);
@@ -178,11 +180,6 @@ export async function createEquipment(formData: FormData) {
         licensePlate: licensePlate || null,
         registrationExpiration: registrationExpiration || null,
         mileage: mileage || null,
-        jobsite: {
-          connect: {
-            qrId: jobsiteLocation,
-          },
-        },
       },
     });
     revalidatePath("/dashboard/qr-generator");
@@ -247,7 +244,7 @@ export async function CreateEmployeeEquipmentLog(formData: FormData) {
     }
 
     // Create the EmployeeEquipmentLog entry
-    const log = await prisma.employeeEquipmentLog.create({
+    await prisma.employeeEquipmentLog.create({
       data: {
         employeeId,
         equipmentId: equipment.id,
@@ -260,13 +257,15 @@ export async function CreateEmployeeEquipmentLog(formData: FormData) {
           ? new Date(formData.get("endTime") as string)
           : null,
         comment: formData.get("comment") as string,
-        isSubmitted: false, // default to false as per schema
+        isFinished: false, // default to false as per schema
         status: "PENDING", // default status
       },
     });
 
     // Revalidate the path to update any dependent front-end views
     revalidatePath("/");
+
+    return true;
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.error("Error creating employee equipment log:", error);
@@ -284,23 +283,21 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
   try {
     console.log(formData);
     const id = formData.get("id") as string;
-    const fuel = parseFloat(formData.get("fuel") as string);
+    const startTime = formData.get("startTime") as string;
+    const endTime = formData.get("endTime") as string;
+    const comment = formData.get("comment") as string;
 
     // Update the employee equipment log
     const log = await prisma.employeeEquipmentLog.update({
       where: { id },
       data: {
-        endTime: new Date().toISOString(),
-        comment: formData.get("comment") as string,
-        Equipment: {
+        startTime,
+        endTime: endTime ? endTime : new Date().toISOString(),
+        comment,
+        isFinished: true,
+        equipment: {
           update: {
             status: formData.get("Equipment.status") as EquipmentStatus,
-          },
-        },
-        // Create a new Refueled record
-        refueled: {
-          create: {
-            gallonsRefueled: fuel,
           },
         },
       },
@@ -376,10 +373,10 @@ export async function UpdateSubmit(formData: FormData) {
     const logs = await prisma.employeeEquipmentLog.updateMany({
       where: {
         employeeId: id,
-        isSubmitted: false,
+        isFinished: false,
       },
       data: {
-        isSubmitted: true,
+        isFinished: true,
       },
     });
 

@@ -7,23 +7,27 @@ import { TextAreas } from "@/components/(reusable)/textareas";
 import { Images } from "@/components/(reusable)/images";
 import { Grids } from "@/components/(reusable)/grids";
 import { TimeSheet } from "@/lib/types";
-import { Dispatch, SetStateAction, useState } from "react";
+import { useState } from "react";
 import { updateTimeSheets } from "@/actions/timeSheetActions";
 import { Texts } from "@/components/(reusable)/texts";
 import { Buttons } from "@/components/(reusable)/buttons";
-import { formatTime } from "@/utils/formatDateAmPm";
+import { formatTimeHHMM } from "@/utils/formatDateAmPm";
+import { format, formatISO, parseISO } from "date-fns";
+import { Contents } from "@/components/(reusable)/contents";
 
 export default function EditWorkNew({
-  timesheet,
+  timeSheet,
   edit,
   setEdit,
+  manager,
 }: {
-  timesheet: TimeSheet[];
+  timeSheet: TimeSheet[];
   edit: boolean;
-  setEdit: Dispatch<SetStateAction<boolean>>;
+  setEdit: (edit: boolean) => void;
+  manager: string;
 }) {
   const [editedTimesheet, setEditedTimesheet] =
-    useState<TimeSheet[]>(timesheet);
+    useState<TimeSheet[]>(timeSheet);
 
   const [visibleSheetId, setVisibleSheetId] = useState<string | null>(null);
 
@@ -38,17 +42,32 @@ export default function EditWorkNew({
   ) => {
     const updatedTimesheet = editedTimesheet.map((sheet) => {
       if (sheet.id === id) {
-        if (field === "startTime" || field === "endTime") {
-          // Preserve the date part and update only the time part
-          const originalDate = new Date(sheet[field] || Date.now()); // Use current date if no value exists
-          const [hours, minutes] = value.split(":").map(Number); // Extract hours and minutes from the input value
-          originalDate.setUTCHours(hours, minutes, 0, 0); // Update hours and minutes in UTC
-          return { ...sheet, [field]: originalDate.toISOString() }; // Convert back to ISO string
+        if (field === "date") {
+          return {
+            ...sheet,
+            [field]: value,
+          };
         }
-        return { ...sheet, [field]: value }; // For other fields, update as usual
+        if (field === "startTime" || field === "endTime") {
+          // Parse the time as UTC and store as ISO string
+          const datePart = new Date(sheet.submitDate);
+          const [hours, minutes] = value.split(":").map(Number);
+          // #Todo Fix this
+          const date = format(
+            new Date(new Date(datePart).setHours(hours, minutes, 0, 0)),
+            "yyyy-MM-dd' 'HH:mm:ss"
+          );
+          console.log(date);
+          return {
+            ...sheet,
+            [field]: date,
+          };
+        }
+        return { ...sheet, [field]: value };
       }
       return sheet;
     });
+
     setEditedTimesheet(updatedTimesheet);
   };
 
@@ -77,13 +96,34 @@ export default function EditWorkNew({
 
   // Save changes
   const onSaveChanges = async () => {
-    const updatedSheets = getUpdatedSheets(timesheet, editedTimesheet);
+    const updatedSheets = getUpdatedSheets(timeSheet, editedTimesheet);
 
     if (updatedSheets.length > 0) {
-      console.log("Updated Timesheets:", updatedSheets);
-      // Add logic to persist changes to the backend
-      await updateTimeSheets(updatedSheets);
-      console.log("Timesheets updated successfully.");
+      // Convert date and time to ISO format
+      const isoFormattedSheets = updatedSheets.map((sheet) => {
+        const startTime = sheet.startTime;
+        const endTime = sheet.endTime;
+
+        // Convert startTime to ISO
+        if (startTime) {
+          sheet.startTime = parseISO(formatISO(startTime)).toISOString();
+        }
+
+        // Convert endTime to ISO
+        if (endTime) {
+          sheet.endTime = parseISO(formatISO(endTime)).toISOString();
+        }
+
+        console.log(
+          "Updated Timesheets (ISO):",
+          sheet.startTime,
+          sheet.endTime
+        );
+        return sheet;
+      });
+
+      // Persist changes to the backend
+      await updateTimeSheets(isoFormattedSheets, manager);
     } else {
       console.log("No changes were made.");
     }
@@ -93,146 +133,139 @@ export default function EditWorkNew({
 
   // Cancel edits and reset state
   const onCancelEdits = () => {
-    setEditedTimesheet([...timesheet]); // Reset editedTimesheet to the original timesheet
+    setEditedTimesheet([...timeSheet]); // Reset editedTimesheet to the original timesheet
     setEdit(false);
   };
 
   return (
-    <Holds>
-      {/* Header for save/cancel/edit actions */}
-      <Holds>
-        {edit ? (
-          <Holds position={"row"} className="justify-between">
-            <Holds
-              background={"green"}
-              className="my-5 w-1/4 p-3"
-              onClick={onSaveChanges}
-            >
-              <Images titleImg={"/save-edit.svg"} titleImgAlt={"Save"} />
+    <Holds className="w-full h-full">
+      <Grids rows={"7"}>
+        {/* Header for save/cancel/edit actions */}
+        <Holds className="row-start-7 row-end-8 h-full  border-t-[1px] border-gray-100">
+          {edit ? (
+            <Holds position={"row"} className="justify-between my-auto ">
+              <Holds
+                background={"green"}
+                className="w-1/4 ml-4 "
+                onClick={onSaveChanges}
+              >
+                <Images
+                  titleImg={"/save-edit.svg"}
+                  titleImgAlt={"Save"}
+                  size={"30"}
+                />
+              </Holds>
+              <Holds
+                background={"red"}
+                className="w-1/4  mr-4"
+                onClick={onCancelEdits}
+              >
+                <Images
+                  titleImg={"/undo-edit.svg"}
+                  titleImgAlt={"Cancel"}
+                  size={"30"}
+                />
+              </Holds>
             </Holds>
+          ) : (
             <Holds
-              background={"red"}
-              className="my-5 w-1/4 p-3"
-              onClick={onCancelEdits}
+              background={"orange"}
+              className=" w-1/4 my-auto"
+              onClick={() => setEdit(true)}
             >
-              <Images titleImg={"/undo-edit.svg"} titleImgAlt={"Cancel"} />
+              <Images
+                titleImg={"/edit-form.svg"}
+                titleImgAlt={"Edit"}
+                size={"30"}
+              />
             </Holds>
-          </Holds>
-        ) : (
-          <Holds
-            background={"orange"}
-            className="my-5 w-1/4 p-3"
-            onClick={() => setEdit(true)}
-          >
-            <Images titleImg={"/edit-form.svg"} titleImgAlt={"Edit"} />
-          </Holds>
-        )}
-      </Holds>
+          )}
+        </Holds>
 
-      {/* Timesheet Editing Section */}
-      <Holds>
-        {editedTimesheet.map((sheet) => (
-          <div
-            key={sheet.id}
-            className="border mb-2 py-2 rounded-lg bg-white shadow-md"
-          >
-            <Buttons
-              background={"none"}
-              className="w-full h-full text-left font-semibold p-2  rounded"
-              onClick={() => toggleVisibility(sheet.id)}
+        {/* Timesheet Editing Section */}
+        <Holds className="row-start-1 row-end-7 overflow-y-scroll no-scrollbar h-full w-full p-3">
+          {editedTimesheet.map((sheet) => (
+            <Holds
+              key={sheet.id}
+              className="border mb-2 py-2 rounded-lg bg-white shadow-md"
             >
-              {sheet.startTime && sheet.endTime ? (
-                <Holds
-                  position={"row"}
-                  className="justify-center items-center gap-3"
-                >
-                  <Texts size={"p4"}>
-                    {sheet.startTime
-                      ? formatTime(new Date(sheet.startTime))
-                      : ""}
-                  </Texts>
-                  <Texts size={"p4"}> - </Texts>
-                  <Texts size={"p4"}>
-                    {sheet.endTime ? formatTime(new Date(sheet.endTime)) : ""}
-                  </Texts>
-                  <Texts size={"p4"}>({sheet.workType})</Texts>
-                </Holds>
-              ) : (
-                <Texts> Incomplete Sheet </Texts>
-              )}
-              {/* Title */}
-            </Buttons>
-            {visibleSheetId === sheet.id && (
-              <div>
-                <Holds>
-                  <Labels size={"p6"} htmlFor="date">
-                    Date of Shift
-                  </Labels>
-                  <Inputs
-                    name="date"
-                    type="date"
-                    value={
-                      sheet.date
-                        ? new Date(sheet.date).toISOString().slice(0, 10)
-                        : ""
-                    }
-                    onChange={(e) =>
-                      handleInputChange(sheet.id, "date", e.target.value)
-                    }
-                    disabled={!edit}
-                  />
-                </Holds>
-
-                <Grids rows={"5"} className="w-full h-full">
-                  <Holds position={"row"} className="gap-2">
-                    <Holds>
-                      <Labels size={"p6"} htmlFor="startTime">
-                        Start Time
-                      </Labels>
-                      <Inputs
-                        name="startTime"
-                        type="time"
-                        value={
-                          sheet.startTime
-                            ? new Date(sheet.startTime)
-                                .toISOString()
-                                .slice(11, 16)
-                            : ""
-                        }
-                        onChange={(e) =>
-                          handleInputChange(
-                            sheet.id,
-                            "startTime",
-                            e.target.value
-                          )
-                        }
-                        disabled={!edit}
-                      />
-                    </Holds>
-
-                    <Holds>
-                      <Labels size={"p6"} htmlFor="endTime">
-                        End Time
-                      </Labels>
-                      <Inputs
-                        name="endTime"
-                        type="time"
-                        value={
-                          sheet.endTime
-                            ? new Date(sheet.endTime)
-                                .toISOString()
-                                .slice(11, 16)
-                            : ""
-                        }
-                        onChange={(e) =>
-                          handleInputChange(sheet.id, "endTime", e.target.value)
-                        }
-                        disabled={!edit}
-                      />
-                    </Holds>
+              <Buttons
+                background={"none"}
+                className="w-full h-full text-left font-semibold p-2  rounded"
+                onClick={() => toggleVisibility(sheet.id)}
+              >
+                {sheet.startTime && sheet.endTime ? (
+                  <Holds
+                    position={"row"}
+                    className="justify-center items-center gap-3"
+                  >
+                    <Texts size={"p4"}>
+                      {sheet.startTime
+                        ? formatTimeHHMM(new Date(sheet.startTime))
+                        : ""}
+                    </Texts>
+                    <Texts className="text-xs"> - </Texts>
+                    <Texts size={"p5"}>
+                      {sheet.endTime
+                        ? formatTimeHHMM(new Date(sheet.endTime))
+                        : ""}
+                    </Texts>
+                    <Texts size={"p5"}>({sheet.workType})</Texts>
                   </Holds>
+                ) : (
+                  <Texts size={"p5"}> Incomplete Sheet </Texts>
+                )}
+                {/* Title */}
+              </Buttons>
+              {visibleSheetId === sheet.id && (
+                <Holds>
+                  <Contents width={"section"}>
+                    <Holds position={"row"} className="gap-2">
+                      <Holds>
+                        <Labels size={"p6"} htmlFor="startTime">
+                          Start Time
+                        </Labels>
+                        <Inputs
+                          name="startTime"
+                          type="time"
+                          value={
+                            sheet.startTime
+                              ? format(sheet.startTime, "HH:mm")
+                              : ""
+                          }
+                          onChange={(e) =>
+                            handleInputChange(
+                              sheet.id,
+                              "startTime",
+                              e.target.value
+                            )
+                          }
+                          disabled={!edit}
+                        />
+                      </Holds>
 
-                  <Holds>
+                      <Holds>
+                        <Labels size={"p6"} htmlFor="endTime">
+                          End Time
+                        </Labels>
+                        <Inputs
+                          name="endTime"
+                          type="time"
+                          value={
+                            sheet.endTime ? format(sheet.endTime, "HH:mm") : ""
+                          }
+                          onChange={(e) =>
+                            handleInputChange(
+                              sheet.id,
+                              "endTime",
+                              e.target.value
+                            )
+                          }
+                          disabled={!edit}
+                        />
+                      </Holds>
+                    </Holds>
+
                     <Labels size={"p6"} htmlFor="workType">
                       Type of Labor
                     </Labels>
@@ -245,9 +278,7 @@ export default function EditWorkNew({
                       }
                       disabled={!edit}
                     />
-                  </Holds>
 
-                  <Holds>
                     <Labels size={"p6"}>Comment</Labels>
                     <TextAreas
                       name="comment"
@@ -257,9 +288,7 @@ export default function EditWorkNew({
                       }
                       disabled={!edit}
                     />
-                  </Holds>
 
-                  <Holds>
                     <Labels size={"p6"}>Location of Shift</Labels>
                     <Inputs
                       name="location"
@@ -270,13 +299,13 @@ export default function EditWorkNew({
                       }
                       disabled={!edit}
                     />
-                  </Holds>
-                </Grids>
-              </div>
-            )}
-          </div>
-        ))}
-      </Holds>
+                  </Contents>
+                </Holds>
+              )}
+            </Holds>
+          ))}
+        </Holds>
+      </Grids>
     </Holds>
   );
 }

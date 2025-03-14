@@ -27,7 +27,7 @@ export enum FormStatus {
   PENDING = "PENDING",
   APPROVED = "APPROVED",
   DENIED = "DENIED",
-  REJECTED = "REJECTED",
+  DRAFT = "DRAFT",
 }
 
 export enum WorkType {
@@ -41,12 +41,59 @@ export enum Priority {
   LOW = "LOW",
   MEDIUM = "MEDIUM",
   HIGH = "HIGH",
+  PENDING = "PENDING",
+  TODAY = "TODAY",
+  repaired = "REPAIRED",
 }
 
 export type EquipmentStatus =
   | "OPERATIONAL"
   | "NEEDS_REPAIR"
   | "NEEDS_MAINTENANCE";
+
+export type LogItem = {
+  id: string;
+  userId: string;
+  submitted: boolean;
+  type: "equipment" | "mechanic" | "Trucking Assistant";
+} & (
+  | {
+      type: "equipment";
+      equipment: {
+        id: string;
+        qrId: string;
+        name: string;
+      };
+      maintenanceId?: never;
+      laborType?: never;
+      stateMileage?: never;
+      refueled?: never;
+      material?: never;
+      equipmentHauled?: never;
+    }
+  | {
+      type: "mechanic";
+      maintenanceId: string;
+      equipment?: never;
+      laborType?: never;
+      stateMileage?: never;
+      refueled?: never;
+      material?: never;
+      equipmentHauled?: never;
+    }
+  | {
+      type: "trucking";
+      laborType: string;
+      comment: string | null;
+      endingMileage: number | null;
+      stateMileage: boolean;
+      refueled: boolean;
+      material: boolean;
+      equipmentHauled: boolean;
+      equipment?: never;
+      maintenanceId?: never;
+    }
+);
 
 export type User = {
   id: string;
@@ -129,9 +176,9 @@ export type EmployeeEquipmentLogs = {
   createdAt: Date;
   updatedAt: Date;
   isCompleted: boolean;
-  isSubmitted: boolean;
+  isFinished: boolean;
   status: FormStatus;
-  Equipment?: Equipment | null;
+  equipment?: Equipment | null;
 };
 export type TimeSheetView = {
   submitDate?: string; // Changed to string since API returns string dates
@@ -159,35 +206,22 @@ export type inboxContent = {
   session: Session | null;
 };
 
-export type receivedContent = {
-  employeeName: string | number | readonly string[] | undefined;
+export type ReceivedContent = {
   id: string;
-  date: Date;
+  name: string;
   requestedStartDate: Date;
   requestedEndDate: Date;
   requestType: string;
   comment: string;
   managerComment: string | null;
   status: string;
-  employeeId: string;
   createdAt: Date;
-  updatedAt: Date;
   decidedBy: string | null;
-};
-
-export type sentContent = {
-  id: string;
-  date: Date;
-  requestedStartDate: Date;
-  requestedEndDate: Date;
-  requestType: string;
-  comment: string;
-  managerComment: string | null;
-  status: FormStatus;
-  employeeId: string;
-  createdAt: Date;
-  updatedAt: Date;
-  decidedBy: string | null;
+  employee: {
+    id: string;
+    firstName: string;
+    lastName: string;
+  };
 };
 
 export type LeaveRequest = {
@@ -249,13 +283,10 @@ export type RequestForm = {
 export type UserSettings = {
   userId: string;
   language?: string;
-  approvedRequests?: boolean;
-  timeOffRequests?: boolean;
+  personalReminders?: boolean;
   generalReminders?: boolean;
-  biometric?: boolean;
   cameraAccess?: boolean;
   locationAccess?: boolean;
-  photoAlbumAccess?: boolean;
   cookiesAccess?: boolean;
 };
 
@@ -307,16 +338,16 @@ export type EquipmentCodes = {
 };
 
 export type TimeSheet = {
-  submitDate: Date;
-  date: Date;
+  submitDate: string;
+  date: Date | string;
   id: string;
   userId: string;
   jobsiteId: string;
   costcode: string;
   nu: string;
   Fp: string;
-  startTime: Date;
-  endTime: Date | null;
+  startTime: Date | string;
+  endTime: Date | string | null;
   comment: string | null;
   statusComment: string | null;
   location: string | null;
@@ -332,24 +363,21 @@ export type TimeSheet = {
 
 export type TascoLog = {
   id: string;
-  timeSheetId: string;
-  shiftType: string; // Task name for Tasco work
-  startTime: Date;
-  endTime: Date | null;
-  equipmentId: string | null; // Linked equipment ID
-  laborType: string | null; // E.g., manual labor or equipment work
-  materialType: string | null; // Material being handled
-  loadsHauled: number | null;
-  loadType: string | null; // E.g., uncovered, screened
-  loadWeight: number | null; // Weight of loads
-  comment: string | null;
-  createdAt: Date;
-  completed: boolean; // Status of task completion
+  shiftType: string;
+  equipmentId: string;
+  laborType: string;
+  materialType: string;
+  loadsHauled: number;
+  loads: Loads[];
+  refueled: Refueled[];
+  comment: string;
+};
 
-  // Relations
-  refueled: Refueled[]; // Refueling logs
-  equipment: Equipment | null; // Related equipment
-  timeSheet: TimeSheet | null; // Related timesheet
+export type Loads = {
+  id: string;
+  tascoLogId: string;
+  loadType: string;
+  loadWeight: number;
 };
 
 export type EmployeeEquipmentLog = {
@@ -362,7 +390,7 @@ export type EmployeeEquipmentLog = {
   comment?: string | null;
   createdAt: Date;
   updatedAt: Date;
-  isSubmitted: boolean;
+  isFinished: boolean;
   status: FormStatus; // Enum: PENDING, APPROVED, etc.
 
   // Relations
@@ -458,9 +486,9 @@ export type Maintenance = {
 
 export type Refueled = {
   id: string;
-  date: Date;
-  gallonsRefueled: number | null;
-  tascoLogID: string | null;
+  tascoLogId: string;
+  gallonsRefueled: number;
+  milesAtfueling: number;
 };
 //--------------------------------------------
 

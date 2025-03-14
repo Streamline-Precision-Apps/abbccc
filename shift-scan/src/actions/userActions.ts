@@ -135,10 +135,8 @@ export async function adminCreateUser(formData: FormData) {
       data: {
         userId: employeeId,
         language: "en",
-        approvedRequests: formData.get("approvedRequests") === "true",
-        timeOffRequests: formData.get("timeoffRequests") === "true",
+        personalReminders: formData.get("personalReminders") === "true",
         generalReminders: formData.get("GeneralReminders") === "true",
-        biometric: formData.get("biometric") === "false",
         cameraAccess: formData.get("cameraAccess") === "false",
         locationAccess: formData.get("locationAccess") === "false",
       },
@@ -169,23 +167,23 @@ export async function updateUser(formData: FormData) {
   });
 }
 export async function updateUserProfile(formData: FormData) {
-  try{
+  try {
     await prisma.user.update({
-    where: { id: formData.get("id") as string },
-    data: {
-      email: formData.get("email") as string,
-      contact: {
-        update: {
-          phoneNumber: formData.get("phoneNumber") as string,
-          emergencyContact: formData.get("emergencyContact") as string,
-          emergencyContactNumber: formData.get(
-            "emergencyContactNumber"
-          ) as string,
+      where: { id: formData.get("id") as string },
+      data: {
+        email: formData.get("email") as string,
+        contact: {
+          update: {
+            phoneNumber: formData.get("phoneNumber") as string,
+            emergencyContact: formData.get("emergencyContact") as string,
+            emergencyContactNumber: formData.get(
+              "emergencyContactNumber"
+            ) as string,
+          },
         },
-      }
-    },
-  });
-  revalidatePath("/hamburger/profile");
+      },
+    });
+    revalidatePath("/hamburger/profile");
   } catch (error) {
     console.error("Error updating user:", error);
   }
@@ -225,6 +223,7 @@ export async function uploadFirstImage(formdata: FormData) {
 
 export async function uploadFirstSignature(formdata: FormData) {
   console.log(formdata);
+
   const result = await prisma.user.update({
     where: { id: formdata.get("id") as string },
     data: {
@@ -250,9 +249,8 @@ export async function setUserSettings(formdata: FormData) {
   await prisma.userSettings.update({
     where: { userId: formdata.get("id") as string },
     data: {
-      approvedRequests: formdata.get("approvedRequests") === "true",
-      timeOffRequests: formdata.get("timeoffRequests") === "true",
-      generalReminders: formdata.get("GeneralReminders") === "true",
+      personalReminders: formdata.get("personalReminders") === "true",
+      generalReminders: formdata.get("generalReminders") === "true",
     },
   });
 }
@@ -262,13 +260,10 @@ export async function setUserPermissions(formdata: FormData) {
   await prisma.userSettings.update({
     where: { userId: formdata.get("id") as string },
     data: {
-      biometric: Boolean(formdata.get("biometrics") as string),
       cameraAccess: Boolean(formdata.get("cameraAccess") as string),
       locationAccess: Boolean(formdata.get("locationAccess") as string),
-      approvedRequests: Boolean(formdata.get("approvedRequests") as string),
-      timeOffRequests: Boolean(formdata.get("timeOffRequests") as string),
-      generalReminders: Boolean(formdata.get("generalReminders") as string),     
-      photoAlbumAccess: Boolean(formdata.get("photoAlbumAccess") as string),
+      personalReminders: Boolean(formdata.get("personalReminders") as string),
+      generalReminders: Boolean(formdata.get("generalReminders") as string),
       cookiesAccess: Boolean(formdata.get("cookiesAccess") as string),
     },
   });

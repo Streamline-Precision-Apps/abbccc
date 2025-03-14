@@ -81,11 +81,14 @@ export async function setWorkRole(workRole: string) {
 }
 
 export async function setLaborType(laborType: string) {
-  if (
-    laborType !== "operator" &&
-    laborType !== "truckDriver" &&
-    laborType !== "manualLabor"
-  ) {
+  const VALID_LABOR_TYPES = [
+    "operator",
+    "equipmentOperator",
+    "truckDriver",
+    "manualLabor",
+  ];
+
+  if (!VALID_LABOR_TYPES.includes(laborType)) {
     console.log(laborType);
     throw new Error("Not Authorized - Invalid labor type");
   }
@@ -196,6 +199,21 @@ export async function setTruck(truck: string) {
   }
 }
 
+export async function setMechanicProjectID(mechanicProjectID: string) {
+  try {
+    cookies().set({
+      name: "mechanicProjectID",
+      value: mechanicProjectID,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days - made this to not have errors occur is logging out is forgotten
+    });
+  } catch (error) {
+    console.error("Failed to set locale cookie:", error);
+  }
+}
+
 export async function setStartingMileage(startingMileage: string) {
   try {
     cookies().set({
@@ -228,24 +246,6 @@ export async function setPrevTimeSheet(timeSheetId: string) {
     });
   } catch (error) {
     console.error("Failed to set locale cookie:", error);
-  }
-}
-
-// removes all the cookies at clock out
-export async function RemoveCookiesAtClockOut() {
-  try {
-    cookies().delete("timeSheetId");
-    cookies().delete("costCode");
-    cookies().delete("jobSite");
-    cookies().delete("adminAccess");
-    cookies().delete("laborType");
-    cookies().delete("truckId");
-    cookies().delete("equipment");
-    cookies().delete("startingMileage");
-    cookies().delete("currentPageView");
-    cookies().set("workRole", "");
-  } catch (error) {
-    console.error("Failed to delete locale cookie:", error);
   }
 }
 

@@ -1,66 +1,152 @@
-import { Buttons } from "@/components/(reusable)/buttons";
-import { Holds } from "@/components/(reusable)/holds";
-import { Images } from "@/components/(reusable)/images";
-import { Texts } from "@/components/(reusable)/texts";
 import { useTranslations } from "next-intl";
+
+import ClockOutLayout from "./verticalLayout";
+import { Holds } from "@/components/(reusable)/holds";
+import HorizontalLayout from "./horizontalLayout";
+import VerticalLayout from "./verticalLayout";
 
 export default function ClockOutBtn({
   permission,
   handleShowAdditionalButtons,
   View,
+  laborType,
 }: {
   permission: string;
   View: string | null;
   handleShowAdditionalButtons: (button: string) => void;
+  laborType: string;
 }) {
   const t = useTranslations("Widgets");
   return (
-    <Holds
-      position={"row"}
-      className={
-        permission !== "USER" && View === "general"
-          ? "row-span-1 col-span-1 gap-5"
-          : permission !== "USER" && View === "mechanic"
-          ? "row-span-1 col-span-2 gap-5"
-          : permission !== "USER" && View === "truck"
-          ? "row-span-1 col-span-1 gap-5"
-          : permission !== "USER" && View === "equipment"
-          ? "row-span-1 col-span-1 gap-5"
-          : permission === "USER" && View === "truck"
-          ? "row-span-1 col-span-1 gap-5"
-          : "row-span-1 col-span-2 gap-5"
-      }
-    >
-      <Buttons //----------------------This is the Clock Out Widget
-        href="/dashboard/clock-out"
-        background={"red"}
-        onClick={() => handleShowAdditionalButtons("clockOut")}
-      >
-        <Holds
-          position={
-            permission !== "USER" && View === "general"
-              ? undefined
-              : permission !== "USER" && View === "truck"
-              ? undefined
-              : permission === "USER" && View === "truck"
-              ? undefined
-              : "row"
-          }
-        >
-          <Holds
-          // size={View === "mechanic" && permission !== "USER" ? "50" : null}
-          >
-            <Images
-              titleImg="/clock-out.svg"
-              titleImgAlt="Clock Out Icon"
-              size={"40"}
+    <>
+      {/*Truck Driver Clock Out Button layout */}
+      {permission !== "USER" ? (
+        <>
+          {/* Manager Clock Out for Trucking */}
+          {View === "truck" && (
+            <>
+              {laborType === "truckDriver" && (
+                <HorizontalLayout
+                  text={"ClockOut"}
+                  titleImg={"/clock-out.svg"}
+                  titleImgAlt={"clock Out Icon"}
+                  color={"red"}
+                  handleEvent={() => handleShowAdditionalButtons("clockOut")}
+                />
+              )}
+              {laborType === "operator" && (
+                <HorizontalLayout
+                  text={"ClockOut"}
+                  titleImg={"/clock-out.svg"}
+                  titleImgAlt={"clock Out Icon"}
+                  color={"red"}
+                  handleEvent={() => handleShowAdditionalButtons("clockOut")}
+                />
+              )}
+
+              {laborType === "manualLabor" && (
+                <VerticalLayout
+                  color={"red"}
+                  text={"ClockOut"}
+                  titleImg={"/clock-out.svg"}
+                  titleImgAlt={"clock Out Icon"}
+                  handleEvent={() => handleShowAdditionalButtons("clockOut")}
+                />
+              )}
+            </>
+          )}
+
+          {/* Manager Clock Out for Mechanic */}
+          {View === "mechanic" && (
+            <>
+              <HorizontalLayout
+                color={"red"}
+                text={"ClockOut"}
+                titleImg={"/clock-out.svg"}
+                titleImgAlt={"clock Out Icon"}
+                handleEvent={() => handleShowAdditionalButtons("clockOut")}
+              />
+            </>
+          )}
+          {View === "tasco" && (
+            <>
+              {laborType === "manualLabor" && (
+                <HorizontalLayout
+                  color={"red"}
+                  text={"ClockOut"}
+                  titleImg={"/clock-out.svg"}
+                  titleImgAlt={"clock Out Icon"}
+                  handleEvent={() => handleShowAdditionalButtons("clockOut")}
+                />
+              )}
+              {laborType === "equipmentOperator" && (
+                <VerticalLayout
+                  color={"red"}
+                  text={"ClockOut"}
+                  titleImg={"/clock-out.svg"}
+                  titleImgAlt={"clock Out Icon"}
+                  handleEvent={() => handleShowAdditionalButtons("clockOut")}
+                />
+              )}
+            </>
+          )}
+          {View === "general" && (
+            <>
+              <VerticalLayout
+                color={"red"}
+                text={"ClockOut"}
+                titleImg={"/clock-out.svg"}
+                titleImgAlt={"clock Out Icon"}
+                handleEvent={() => handleShowAdditionalButtons("clockOut")}
+              />
+            </>
+          )}
+        </>
+      ) : (
+        <>
+          {/* User Clock Out */}
+          {View === "truck" && (
+            <HorizontalLayout
+              text={"ClockOut"}
+              titleImg={"/clock-out.svg"}
+              titleImgAlt={"clock Out Icon"}
+              color={"red"}
+              handleEvent={() => handleShowAdditionalButtons("clockOut")}
             />
-          </Holds>
-          <Holds>
-            <Texts size={"p3"}>{t("ClockOut")}</Texts>
-          </Holds>
-        </Holds>
-      </Buttons>
-    </Holds>
+          )}
+          {View === "mechanic" && (
+            <HorizontalLayout
+              text={"ClockOut"}
+              titleImg={"/clock-out.svg"}
+              titleImgAlt={"clock Out Icon"}
+              color={"red"}
+              handleEvent={() => handleShowAdditionalButtons("clockOut")}
+            />
+          )}
+          {View === "tasco" && (
+            <>
+              <HorizontalLayout
+                color={"red"}
+                text={"ClockOut"}
+                titleImg={"/clock-out.svg"}
+                titleImgAlt={"clock Out Icon"}
+                handleEvent={() => handleShowAdditionalButtons("clockOut")}
+              />
+            </>
+          )}
+          {View === "general" && (
+            <>
+              <VerticalLayout
+                color={"red"}
+                text={"ClockOut"}
+                titleImg={"/clock-out.svg"}
+                titleImgAlt={"clock Out Icon"}
+                handleEvent={() => handleShowAdditionalButtons("clockOut")}
+              />
+            </>
+          )}
+        </>
+      )}
+    </>
   );
 }

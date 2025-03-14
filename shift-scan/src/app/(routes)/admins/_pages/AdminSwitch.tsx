@@ -83,15 +83,15 @@ export default function AdminSwitch({
           <Holds className="col-span-1 overflow-y-hidden h-[300px]">
             <CodeFinder
               datatype={"jobsite"}
-              savedJS={""}
               setSelectedOpt={() => {}}
+              setScannedId={undefined}
             />
           </Holds>
           <Holds className=" col-span-1 overflow-y-hidden h-[300px] ">
             <CodeFinder
               datatype="costcode"
-              savedJS={""}
               setSelectedOpt={() => {}}
+              setScannedId={undefined}
             />
           </Holds>
 

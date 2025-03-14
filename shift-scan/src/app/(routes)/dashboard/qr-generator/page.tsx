@@ -14,7 +14,7 @@ export default async function QrGeneratorDashboard() {
   return (
     <Bases>
       <Contents>
-        <Grids rows={"5"} gap={"5"}>
+        <Grids rows={"6"} gap={"5"}>
           <Holds background={"white"} className="row-span-1 h-full">
             <Contents width={"section"}>
               <TitleBoxes
@@ -25,7 +25,7 @@ export default async function QrGeneratorDashboard() {
               />
             </Contents>
           </Holds>
-          <Holds className="row-span-4 h-full">
+          <Holds className="row-span-5 h-full">
             <QRGeneratorContent />
           </Holds>
         </Grids>

@@ -64,9 +64,10 @@ export const JobSiteProvider = ({ children }: { children: ReactNode }) => {
       try {
         if (
           url === "/clock" ||
-          url === "/dashboard/log-new" ||
+          url === "/dashboard/equipment/log-new" ||
           url === "/dashboard/switch-jobs" ||
-          url === "/break"
+          url === "/break" ||
+          url === "/dashboard/truckingAssistant"
         ) {
           const response = await fetch("/api/getJobsites");
           const jobSites = await response.json();
@@ -116,7 +117,7 @@ export const CostCodeProvider = ({ children }: { children: ReactNode }) => {
       try {
         if (
           url === "/clock" ||
-          url === "/dashboard/log-new" ||
+          url === "/dashboard/equipment/log-new" ||
           url === "/dashboard/switch-jobs" ||
           url === "/break"
         ) {
@@ -164,9 +165,11 @@ export const EquipmentProvider = ({ children }: { children: ReactNode }) => {
       try {
         if (
           url === "/clock" ||
-          url === "/dashboard/log-new" ||
+          url === "/dashboard/equipment/log-new" ||
           url === "/dashboard/switch-jobs" ||
-          url === "/break"
+          url === "/break" ||
+          url === "/dashboard/mechanic/new-repair" ||
+          url === "/dashboard/truckingAssistant"
         ) {
           const response = await fetch("/api/getEquipment");
           const equipment = await response.json();

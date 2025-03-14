@@ -7,15 +7,23 @@ export async function GET(
   request: Request,
   { params }: { params: { employee: string } }
 ) {
-  const session = await auth();
-  const userId = session?.user?.id;
-
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  const { employee } = params;
-
   try {
+    const session = await auth();
+    const userId = session?.user?.id;
+
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { employee } = params;
+
+    if (!employee) {
+      return NextResponse.json(
+        { error: "Missing or invalid employee ID" },
+        { status: 400 }
+      );
+    }
+
     // Fetch employee details
     const EmployeeData = await prisma.contacts.findUnique({
       where: {
@@ -30,12 +38,29 @@ export async function GET(
       },
     });
 
+    if (!EmployeeData) {
+      return NextResponse.json(
+        { error: "Employee contact details not found" },
+        { status: 404 }
+      );
+    }
+
     // Return the fetched data as a response
-    return NextResponse.json(EmployeeData);
+    return NextResponse.json(EmployeeData, {
+      headers: {
+        "Cache-Control": "public, max-age=60, s-maxage=60, stale-while-revalidate=30",
+      },
+    });
   } catch (error) {
     console.error("Error fetching profile data:", error);
+
+    let errorMessage = "Failed to fetch profile data";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
     return NextResponse.json(
-      { error: "Failed to fetch profile data" },
+      { error: errorMessage },
       { status: 500 }
     );
   }

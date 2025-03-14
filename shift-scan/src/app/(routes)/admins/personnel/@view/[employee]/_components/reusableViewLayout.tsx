@@ -29,6 +29,7 @@ type ReusableViewLayoutProps = {
   editCommentFunction?: Dispatch<SetStateAction<string>>;
   editFunction?: Dispatch<SetStateAction<string>>;
   custom?: boolean;
+  gap?: "0" | "1" | "2" | "3" | "4" | "5" | "6" | null | undefined;
 };
 
 export const ReusableViewLayout = ({
@@ -43,6 +44,7 @@ export const ReusableViewLayout = ({
   editedItem,
   custom,
   mainHolds,
+  gap = "2",
 }: ReusableViewLayoutProps) => {
   const [isCommentSectionOpen, setIsCommentSectionOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -71,7 +73,7 @@ export const ReusableViewLayout = ({
         background={"darkBlue"}
         className="h-full w-full  border-[3px] border-black"
       >
-        <Grids rows={"8"} cols={"2"} gap={"2"} className="h-full w-full ">
+        <Grids rows={"8"} cols={"2"} gap={gap} className="h-full w-full ">
           {/* Header Section */}
 
           {header}
@@ -166,7 +168,7 @@ export const ReusableViewLayout = ({
                     <Inputs
                       type="text"
                       value={editedItem}
-                      placeholder={t("NewCrewName")}
+                      placeholder={""}
                       onChange={(e) => {
                         editFunction?.(e.target.value);
                       }}
