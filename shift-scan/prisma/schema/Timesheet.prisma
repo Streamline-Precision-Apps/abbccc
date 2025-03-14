@@ -80,11 +80,9 @@ model TascoLog {
     equipmentId  String? // link to equipment , truck, etc
     laborType    String? // Labor being done. (E.G. manual labor vs. equipment)
     materialType String? // depend on tasco type
-    loadsHauled  Int?
     loads        Loads[]
     comment      String?
     createdAt    DateTime   @default(now())
-    completed    Boolean    @default(false)
     refueled     Refueled[] // link to refueled
 
     // connections to other tables
@@ -156,11 +154,11 @@ model Refueled {
     date                   DateTime @default(now())
     employeeEquipmentLogId String?
     truckingLogId          String?
+    tascoLogId             String?
     gallonsRefueled        Float?
     milesAtfueling         Int? // miles at fueling for trucks
 
     EmployeeEquipmentLog EmployeeEquipmentLog? @relation(fields: [employeeEquipmentLogId], references: [id])
     TruckingLog          TruckingLog?          @relation(fields: [truckingLogId], references: [id])
     TascoLog             TascoLog?             @relation(fields: [tascoLogId], references: [id])
-    tascoLogId           String?
 }

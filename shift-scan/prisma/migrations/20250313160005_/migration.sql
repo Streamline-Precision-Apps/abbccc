@@ -1,5 +1,6 @@
 -- CreateEnum
 CREATE TYPE "FormStatus" AS ENUM ('PENDING', 'APPROVED', 'DENIED', 'DRAFT');
+>>>>>>>> f16ef3e51e7c5e81d6cb6ec2c7e7d474b8440abb:shift-scan/prisma/migrations/20250306200711_/migration.sql
 
 -- CreateEnum
 CREATE TYPE "FieldType" AS ENUM ('TEXT', 'TEXTAREA', 'NUMBER', 'DATE', 'FILE', 'DROPDOWN', 'CHECKBOX');
@@ -164,7 +165,11 @@ CREATE TABLE "FormTemplate" (
 -- CreateTable
 CREATE TABLE "FormGrouping" (
     "id" TEXT NOT NULL,
+<<<<<<<< HEAD:shift-scan/prisma/migrations/20250307204635_3_7_2025_pull_devun_s_changes/migration.sql
+    "title" TEXT NOT NULL,
+========
     "title" TEXT,
+>>>>>>>> f16ef3e51e7c5e81d6cb6ec2c7e7d474b8440abb:shift-scan/prisma/migrations/20250306200711_/migration.sql
     "order" INTEGER NOT NULL,
 
     CONSTRAINT "FormGrouping_pkey" PRIMARY KEY ("id")
@@ -180,8 +185,15 @@ CREATE TABLE "FormField" (
     "required" BOOLEAN NOT NULL DEFAULT false,
     "order" INTEGER NOT NULL,
     "defaultValue" TEXT,
+<<<<<<< HEAD:shift-scan/prisma/migrations/20250306200711_/migration.sql
+<<<<<<<< HEAD:shift-scan/prisma/migrations/20250307204635_3_7_2025_pull_devun_s_changes/migration.sql
+    "formGroupingId" TEXT,
+========
+>>>>>>>> f16ef3e51e7c5e81d6cb6ec2c7e7d474b8440abb:shift-scan/prisma/migrations/20250306200711_/migration.sql
+=======
     "placeholder" TEXT,
     "helperText" TEXT,
+>>>>>>> ab62a33d45e979299a574e7c9d8e2121b58e8a02:shift-scan/prisma/migrations/20250311231214_/migration.sql
 
     CONSTRAINT "FormField_pkey" PRIMARY KEY ("id")
 );
@@ -375,9 +387,9 @@ CREATE TABLE "Refueled" (
     "date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "employeeEquipmentLogId" TEXT,
     "truckingLogId" TEXT,
+    "tascoLogId" TEXT,
     "gallonsRefueled" DOUBLE PRECISION,
     "milesAtfueling" INTEGER,
-    "tascoLogId" TEXT,
 
     CONSTRAINT "Refueled_pkey" PRIMARY KEY ("id")
 );

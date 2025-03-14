@@ -4,12 +4,14 @@ import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 
 export async function GET() {
-  const session = await auth();
-  const userId = session?.user.id;
+  try {
+    // Authenticate the user
+    const session = await auth();
+    const userId = session?.user?.id;
 
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
   const projects = await prisma.maintenance.findMany({
     select: {
@@ -48,5 +50,18 @@ export async function GET() {
     },
   });
 
-  return NextResponse.json(projects);
+    return NextResponse.json(projects);
+  } catch (error) {
+    console.error("Error fetching maintenance projects:", error);
+
+    let errorMessage = "Failed to fetch maintenance project data";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
+    return NextResponse.json(
+      { error: errorMessage },
+      { status: 500 }
+    );
+  }
 }

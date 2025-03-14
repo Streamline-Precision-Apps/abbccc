@@ -10,24 +10,22 @@ const calculatePayPeriodStart = (): Date => {
   const diffWeeks = Math.floor(
     (now.getTime() - startDate.getTime()) / (2 * 7 * 24 * 60 * 60 * 1000)
   ); // Two-week intervals
-  return new Date(
-    startDate.getTime() + diffWeeks * 2 * 7 * 24 * 60 * 60 * 1000
-  );
+  return new Date(startDate.getTime() + diffWeeks * 2 * 7 * 24 * 60 * 60 * 1000);
 };
 
 export async function GET() {
-  const session = await auth();
-
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  const userId = session.user.id;
-
-  // Calculate the start date of the current pay period
-  const payPeriodStart = calculatePayPeriodStart();
-  const currentDate = new Date();
-
   try {
+    // Authenticate the user
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const userId = session.user.id;
+
+    // Calculate the start date of the current pay period
+    const payPeriodStart = calculatePayPeriodStart();
+    const currentDate = new Date();
+
     // Fetch timesheets for the current pay period
     const payPeriodSheets = await prisma.timeSheet.findMany({
       where: {
@@ -41,10 +39,18 @@ export async function GET() {
         },
       },
       select: {
+        id: true,
         startTime: true,
         endTime: true,
       },
     });
+
+    if (!payPeriodSheets || payPeriodSheets.length === 0) {
+      return NextResponse.json(
+        { message: "No timesheets found for the current pay period." },
+        { status: 404 }
+      );
+    }
 
     // Return the filtered timesheets with caching disabled
     return NextResponse.json(payPeriodSheets, {
@@ -54,8 +60,14 @@ export async function GET() {
     });
   } catch (error) {
     console.error("Error fetching pay period sheets:", error);
+
+    let errorMessage = "Failed to fetch pay period sheets";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
     return NextResponse.json(
-      { error: "Failed to fetch pay period sheets" },
+      { error: errorMessage },
       { status: 500 }
     );
   }

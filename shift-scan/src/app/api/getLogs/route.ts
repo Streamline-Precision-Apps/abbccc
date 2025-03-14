@@ -35,6 +35,16 @@ type TruckingLog = {
   equipmentHauled: boolean;
 };
 
+type TascoLog = {
+  id: string;
+  shiftType: string | null;
+  laborType: string | null;
+  loads: boolean;
+  refueled: boolean;
+};
+
+
+
 export async function GET() {
   // Authenticate User
   const session = await auth();
@@ -49,7 +59,7 @@ export async function GET() {
 
   try {
     // Fetch all data concurrently using Promise.all
-    const [employeeLogs, maintenanceLogs, truckingLogs] = await Promise.all([
+    const [employeeLogs, maintenanceLogs, truckingLogs, tascoLogs] = await Promise.all([
       prisma.employeeEquipmentLog.findMany({
         where: {
           employeeId: userId,
@@ -121,6 +131,33 @@ export async function GET() {
           },
         },
       }),
+
+      prisma.tascoLog.findMany({
+        where: {
+          timeSheet: {
+            userId: userId,
+            endTime: null,
+          },
+        },
+        select: {
+          id: true,
+          shiftType: true,
+          laborType: true,
+          loads: {
+            select: {
+              id: true,
+              loadType: true,
+              loadWeight: true,
+            },
+          },
+          refueled: {
+            select: {
+              id: true,
+              gallonsRefueled: true,
+            },
+          },
+          },
+      }),
     ]);
 
     // Reusable function to check incomplete fields
@@ -182,26 +219,42 @@ export async function GET() {
           ),
           incomplete: isEndingMileageRequired, // Track incomplete status
         };
-      })
-      .filter((log) => {
-        // Filter logs with incomplete fields
-        return (
-          log.incomplete ||
-          log.stateMileage ||
-          log.refueled ||
-          log.material ||
-          log.equipmentHauled
-        );
       });
+
+      const mappedTascoLog: TascoLog[] = tascoLogs
+  .map((log) => {
+    return {
+      id: log.id,
+      type: "tasco",
+      shiftType: log.shiftType,
+      laborType: log.laborType,
+      loads: log.laborType === "equipmentOperator"
+        ? log.loads.some((item) => isFieldIncomplete(item, ["loadType", "loadWeight"]))
+        : false,
+      refueled: log.refueled.some((item) =>
+        isFieldIncomplete(item, ["gallonsRefueled"])
+      ),
+    };
+  })
+  .filter((log) => {
+    // Filter logs with incomplete fields
+    return (
+      log.loads ||
+      log.refueled
+    );
+  });
 
     // Combine All Logs
     const combinedLogs = [
-      ...mappedEquipmentLogs,
-      ...mappedMaintenanceLogs,
-      ...mappedTruckingLogs,
+      // ...mappedEquipmentLogs,
+      // ...mappedMaintenanceLogs,
+      // ...mappedTruckingLogs,
+      // ...mappedTascoLog,
+      tascoLogs,
     ];
 
     return NextResponse.json(combinedLogs);
+
   } catch (error) {
     console.error("Error fetching logs:", error);
     return NextResponse.json(

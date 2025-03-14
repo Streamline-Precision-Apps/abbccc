@@ -31,6 +31,8 @@ export default function SwitchJobsBtn({
   const modalState = useModalState();
   const router = useRouter();
 
+  console.log("logs", logs);
+
   return (
     <>
       {permission === "USER" && (
@@ -137,6 +139,8 @@ export default function SwitchJobsBtn({
                               }`
                             : type === "Trucking Assistant"
                             ? "/dashboard/truckingAssistant"
+                            : type === "tasco"
+                            ? "/dashboard/tasco"
                             : undefined
                         }
                         className="w-full py-3"
