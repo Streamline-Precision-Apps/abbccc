@@ -219,6 +219,15 @@ export async function GET() {
           ),
           incomplete: isEndingMileageRequired, // Track incomplete status
         };
+      }).filter((log) => {
+        // Filter logs with incomplete fields
+        return (
+          log.incomplete ||
+          log.stateMileage ||
+          log.refueled ||
+          log.material ||
+          log.equipmentHauled
+        );
       });
 
       const mappedTascoLog: TascoLog[] = tascoLogs
