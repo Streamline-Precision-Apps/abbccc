@@ -246,11 +246,10 @@ export async function GET() {
 
     // Combine All Logs
     const combinedLogs = [
-      // ...mappedEquipmentLogs,
-      // ...mappedMaintenanceLogs,
-      // ...mappedTruckingLogs,
-      // ...mappedTascoLog,
-      tascoLogs,
+      ...mappedEquipmentLogs,
+      ...mappedMaintenanceLogs,
+      ...mappedTruckingLogs,
+      ...mappedTascoLog,
     ];
 
     return NextResponse.json(combinedLogs);
