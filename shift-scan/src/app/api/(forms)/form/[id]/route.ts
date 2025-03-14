@@ -56,6 +56,7 @@ export async function GET(
       fields: group.fields.map((field) => ({
         id: field.id,
         label: field.label,
+        name: field.name,
         type: field.type,
         required: field.required,
         order: field.order,

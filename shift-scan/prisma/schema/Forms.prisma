@@ -52,6 +52,7 @@ model FormField {
     order          Int
     defaultValue   String? // Stores default input values
     placeholder    String?
+    maxLength      Int? // max length for form builder
     helperText     String?
     options        FormFieldOption[] // Stores dropdown options
 
@@ -70,6 +71,7 @@ model FormFieldOption {
 // Stores submitted forms (can be drafts, pending, or approved)
 model FormSubmission {
     id             String         @id @default(cuid())
+    title          String? // give a submission nickname to label a form.
     formTemplateId String
     userId         String
     formType       String?

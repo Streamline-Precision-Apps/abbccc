@@ -23,6 +23,14 @@ export async function GET() {
       userId,
       status: { not: FormStatus.DRAFT },
     },
+    include: {
+      formTemplate: {
+        select: {
+          name: true,
+          formType: true,
+        },
+      },
+    },
   });
 
   return NextResponse.json(forms);

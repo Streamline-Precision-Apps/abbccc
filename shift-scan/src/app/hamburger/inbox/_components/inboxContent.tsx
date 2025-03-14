@@ -20,7 +20,7 @@ export default function InboxContent({ isManager }: { isManager: boolean }) {
     <>
       <Holds
         background={"white"}
-        className={`row-span-1 ${loading && "animate-pulse"} `}
+        className={`row-span-1 h-full ${loading && "animate-pulse"} `}
       >
         <Contents width={"section"}>
           <TitleBoxes

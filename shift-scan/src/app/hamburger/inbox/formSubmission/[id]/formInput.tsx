@@ -16,8 +16,10 @@ interface FormField {
   defaultValue?: string;
   placeholder?: string;
   helperText?: string;
+  maxLength?: number;
   options?: string[];
 }
+
 interface FormInputProps {
   field: FormField;
   formValues: Record<string, string>;
@@ -34,13 +36,13 @@ export const FormInput: React.FC<FormInputProps> = ({
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
-    const key = field.name;
+    const key = field.name; // Use field.name as the key
     setFormValues({ ...formValues, [key]: e.target.value });
   };
 
   return (
     <Holds>
-      <Labels htmlFor={field.id}>
+      <Labels size={"p4"} htmlFor={field.name}>
         {field.label}{" "}
         {field.required && <span className="text-red-500">*</span>}
       </Labels>
@@ -48,44 +50,49 @@ export const FormInput: React.FC<FormInputProps> = ({
       {field.type === "TEXT" && (
         <Inputs
           type="text"
-          id={field.id}
-          name={field.name}
+          id={field.name}
+          name={field.name} // Use field.name
           placeholder={field.placeholder}
           required={field.required}
-          value={formValues[field.id] || ""}
+          value={formValues[field.name] || ""}
           onChange={handleChange}
+          className="text-center text-sm"
         />
       )}
 
       {field.type === "TEXTAREA" && (
         <TextAreas
-          id={field.id}
-          name={field.name}
+          id={field.name}
+          name={field.name} // Use field.name
           placeholder={field.placeholder}
           required={field.required}
-          value={formValues[field.id] || ""}
+          value={formValues[field.name] || ""}
           onChange={handleChange}
+          className=" text-sm"
+          maxLength={field.maxLength || undefined}
         />
       )}
 
       {field.type === "DATE" && (
         <Inputs
           type="date"
-          id={field.id}
-          name={field.name}
+          id={field.name}
+          name={field.name} // Use field.name
           required={field.required}
-          value={formValues[field.id] || ""}
+          value={formValues[field.name] || ""}
           onChange={handleChange}
+          className="text-center text-sm"
         />
       )}
 
       {field.type === "DROPDOWN" && field.options && (
         <Selects
-          id={field.id}
-          name={field.name}
+          id={field.name}
+          name={field.name} // Use field.name
           required={field.required}
-          value={formValues[field.id] || ""}
+          value={formValues[field.name] || ""}
           onChange={handleChange}
+          className="text-center text-sm"
         >
           <option value="">Select an option</option>
           {field.options.map((option) => (
@@ -99,13 +106,13 @@ export const FormInput: React.FC<FormInputProps> = ({
       {field.type === "CHECKBOX" && (
         <Inputs
           type="checkbox"
-          id={field.id}
-          name={field.name}
-          checked={formValues[field.id] === "true"}
+          id={field.name}
+          name={field.name} // Use field.name
+          checked={formValues[field.name] === "true"} // Use field.name as the key
           onChange={(e) =>
             setFormValues({
               ...formValues,
-              [field.id]: e.target.checked.toString(),
+              [field.name]: e.target.checked.toString(), // Use field.name as the key
             })
           }
         />

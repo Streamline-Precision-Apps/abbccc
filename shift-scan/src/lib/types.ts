@@ -224,21 +224,6 @@ export type ReceivedContent = {
   };
 };
 
-export type sentContent = {
-  id: string;
-  date: Date;
-  requestedStartDate: Date;
-  requestedEndDate: Date;
-  requestType: string;
-  comment: string;
-  managerComment: string | null;
-  status: FormStatus;
-  employeeId: string;
-  createdAt: Date;
-  updatedAt: Date;
-  decidedBy: string | null;
-};
-
 export type LeaveRequest = {
   id: string;
   name: string;

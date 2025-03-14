@@ -24,19 +24,46 @@ export async function updateSettings(data: UserSettings) {
 
 export async function createFormSubmission(formData: FormData) {
   try {
-    console.log("logging", formData);
     const formTemplateId = formData.get("formTemplateId") as string;
     const userId = formData.get("userId") as string;
+
+    // Fetch the form template to get the field names
+    const formTemplate = await prisma.formTemplate.findUnique({
+      where: { id: formTemplateId },
+      include: {
+        FormGrouping: {
+          include: {
+            fields: true,
+          },
+        },
+      },
+    });
+
+    if (!formTemplate) {
+      throw new Error("Form template not found");
+    }
+
+    // Initialize the data object with field.name as keys
+    const initialData: Record<string, any> = {};
+    for (const group of formTemplate.FormGrouping) {
+      for (const field of group.fields) {
+        initialData[field.name] = field.defaultValue || ""; // Set default values if available
+      }
+    }
+
+    // Create the form submission with the initialized data
     const submission = await prisma.formSubmission.create({
       data: {
         formTemplateId,
         userId,
+        data: initialData, // Use the initialized data
       },
     });
-    console.log(submission);
+
     return submission.id;
-  } catch {
-    console.error("error creating formSubmission");
+  } catch (error) {
+    console.error("Error creating form submission:", error);
+    throw new Error("Failed to create form submission");
   }
 }
 
@@ -55,7 +82,7 @@ export async function deleteFormSubmission(id: string) {
 }
 
 export async function submitForm(
-  formData: Record<string, any>,
+  formData: Record<string, string>,
   formTemplateId: string,
   userId: string,
   formType?: string,
@@ -67,6 +94,7 @@ export async function submitForm(
       const updatedSubmission = await prisma.formSubmission.update({
         where: { id: submissionId },
         data: {
+          title: formData.title || "",
           data: formData,
           status: FormStatus.PENDING, // or keep as DRAFT if not submitted
         },
@@ -76,6 +104,7 @@ export async function submitForm(
       // Create new submission
       const newSubmission = await prisma.formSubmission.create({
         data: {
+          title: formData.title || "",
           formTemplateId,
           userId,
           formType,
@@ -111,11 +140,15 @@ export async function saveDraft(
   submissionId?: string
 ) {
   try {
+    console.log("formData", formData);
+    console.log("formTemplate", formTemplateId);
+    console.log("formSubmission", submissionId);
     if (submissionId) {
       // Update existing draft
       const updatedSubmission = await prisma.formSubmission.update({
         where: { id: submissionId },
         data: {
+          title: formData.title || "",
           data: formData,
           status: "DRAFT", // Ensure the status remains DRAFT
         },
@@ -125,6 +158,7 @@ export async function saveDraft(
       // Create new draft
       const newSubmission = await prisma.formSubmission.create({
         data: {
+          title: formData.title || "",
           formTemplateId,
           userId,
           formType,

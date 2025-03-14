@@ -1,5 +1,5 @@
 "use client";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useState, useCallback } from "react";
 import { FormInput } from "./formInput";
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
@@ -11,6 +11,8 @@ import Spinner from "@/components/(animations)/spinner";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { saveDraft, submitForm } from "@/actions/hamburgerActions";
+import { Inputs } from "@/components/(reusable)/inputs";
+import { Labels } from "@/components/(reusable)/labels";
 
 interface FormField {
   id: string;
@@ -21,6 +23,7 @@ interface FormField {
   order: number;
   defaultValue?: string;
   placeholder?: string;
+  maxLength?: number;
   helperText?: string;
   options?: string[];
 }
@@ -44,8 +47,13 @@ interface FormTemplate {
 export default function DynamicForm({ params }: { params: { id: string } }) {
   const formSubmissions = useSearchParams();
   const submissionId = formSubmissions.get("submissionId");
+
   const [formData, setFormData] = useState<FormTemplate | null>(null);
-  const [formValues, setFormValues] = useState<Record<string, any>>({});
+  const [initialDraftData, setInitialDraftData] = useState<
+    Record<string, string>
+  >({});
+  const [formTitle, setFormTitle] = useState<string>("");
+  const [formValues, setFormValues] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const { data: session } = useSession();
@@ -62,11 +70,13 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
         const data = await res.json();
         setFormData(data);
 
-        // Fetch draft data if submissionId exists
         if (submissionId) {
           const draftRes = await fetch(`/api/formDraft/` + submissionId);
           const draftData = await draftRes.json();
-          setFormValues(draftData.data || {});
+
+          setFormValues(draftData.data);
+          setFormTitle(draftData.title || ""); // Set the title from draft data
+          setInitialDraftData(draftData.data); // Store the initial draft data
         }
       } catch (error) {
         console.error("error", error);
@@ -78,53 +88,82 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
     fetchForm();
   }, [params.id, submissionId]);
 
-  // Debounce function to limit the frequency of auto-saves
+  const getChangedFields = (
+    currentValues: Record<string, string>,
+    initialValues: Record<string, string>
+  ) => {
+    const changedFields: Record<string, string> = {};
+
+    for (const key in currentValues) {
+      if (currentValues[key] !== initialValues[key]) {
+        changedFields[key] = currentValues[key];
+      }
+    }
+
+    return changedFields;
+  };
+
+  // Debounce function
   const debounce = (func: Function, delay: number) => {
     let timeoutId: NodeJS.Timeout;
     return (...args: any[]) => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => func(...args), delay);
+      clearTimeout(timeoutId); // Clear the previous timeout
+      timeoutId = setTimeout(() => func(...args), delay); // Set a new timeout
     };
   };
 
-  // Auto-save function
-  const autoSave = debounce(async () => {
-    if (Object.keys(formValues).length > 0) {
-      setIsSaving(true);
-      try {
-        await saveDraft(
-          formValues,
-          formData?.id || "",
-          userId || "",
-          formData?.formType,
-          submissionId || undefined
-        );
-        console.log("Draft saved successfully");
-      } catch (error) {
-        console.error("Error saving draft:", error);
-      } finally {
-        setIsSaving(false);
+  // Memoized auto-save function
+  const autoSave = useCallback(
+    debounce(async (values: Record<string, any>, title: string) => {
+      if ((Object.keys(values).length > 0 || title) && formData) {
+        setIsSaving(true);
+        try {
+          const changedFields = getChangedFields(values, initialDraftData); // Get only changed fields
+          await saveDraft(
+            { ...changedFields, title }, // Include the title in the draft data
+            formData.id,
+            userId || "",
+            formData.formType,
+            submissionId || undefined
+          );
+          console.log("Draft saved successfully");
+        } catch (error) {
+          console.error("Error saving draft:", error);
+        } finally {
+          setIsSaving(false);
+        }
       }
-    }
-  }, 2000); // Save every 2 seconds after the user stops typing
+    }, 2000), // Save every 2 seconds after the user stops typing
+    [formData, userId, submissionId, initialDraftData] // Dependencies
+  );
 
-  // Trigger auto-save whenever formValues changes
-  useEffect(() => {
-    autoSave();
-  }, [formValues]);
+  // Update formValues and title with debounce
+  const updateFormValues = useCallback(
+    (newValues: Record<string, any>) => {
+      setFormValues(newValues); // Update state immediately
+      autoSave(newValues, formTitle); // Debounce the auto-save
+    },
+    [autoSave, formTitle]
+  );
 
   // Handle form submission
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    if (!formData) {
+      console.error("Form data is not available");
+      return;
+    }
+
     try {
       const result = await submitForm(
-        formValues,
-        formData?.id || "",
+        { ...formValues, title: formTitle }, // Include the title in the submission
+        formData.id,
         userId || "",
-        formData?.formType,
+        formData.formType,
         submissionId || undefined
       );
+
       if (result) {
         router.push("/hamburger/inbox"); // Redirect to a success page
       }
@@ -197,19 +236,34 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
               <form onSubmit={handleSubmit} className="h-full">
                 <Grids rows={"6"} gap={"3"} className="h-full w-full my-5">
                   <Holds className="row-start-1 row-end-6 h-full w-full">
+                    <Holds className="px-2">
+                      <Labels size={"p4"} htmlFor="title">
+                        Title (Optional)
+                      </Labels>
+                      <Inputs
+                        type="text"
+                        placeholder="Enter a title here"
+                        name="title"
+                        value={formTitle}
+                        className="text-center"
+                        onChange={(e) => setFormTitle(e.target.value)}
+                      />
+                    </Holds>
                     {formData?.groupings?.map((group) => (
                       <Holds key={group.id} className="">
                         {group.title && <h3>{group.title || ""}</h3>}
-                        {group.fields.map((field) => (
-                          <Holds key={field.id} className="p-2">
-                            <FormInput
-                              key={field.label}
-                              field={field}
-                              formValues={formValues}
-                              setFormValues={setFormValues}
-                            />
-                          </Holds>
-                        ))}
+                        {group.fields.map((field) => {
+                          return (
+                            <Holds key={field.id} className="p-2">
+                              <FormInput
+                                key={field.name} // Use field.name as the key
+                                field={field}
+                                formValues={formValues}
+                                setFormValues={updateFormValues}
+                              />
+                            </Holds>
+                          );
+                        })}
                       </Holds>
                     ))}
                   </Holds>
