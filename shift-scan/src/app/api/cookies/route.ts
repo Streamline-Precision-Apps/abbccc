@@ -1,30 +1,29 @@
 "use server";
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
-// example of using cookies- only works in async
-// const tId = await fetch("/api/cookies?method=get&name=timeSheetId").then(
-//   (res) => res.json()
-// );
+
 export async function GET(request: NextRequest) {
-  const method = request.nextUrl.searchParams.get("method");
-
-  if (!method) {
-    return NextResponse.json({ error: "Method is required" });
-  }
-
   try {
+    const method = request.nextUrl.searchParams.get("method");
+
+    if (!method) {
+      return NextResponse.json({ error: "Method is required" }, { status: 400 });
+    }
+
     const name = request.nextUrl.searchParams.get("name");
 
     switch (method) {
       case "get":
         if (!name) {
-          return NextResponse.json({ error: "Cookie name is required" });
+          return NextResponse.json({ error: "Cookie name is required" }, { status: 400 });
         }
+
         const requestedCookie = cookies().get(name)?.value;
         if (!requestedCookie) {
-          return NextResponse.json("");
+          return NextResponse.json({ message: "Cookie not found" }, { status: 404 });
         }
-        return NextResponse.json(requestedCookie);
+
+        return NextResponse.json({ value: requestedCookie });
 
       case "deleteAll":
         const cookieNames = [
@@ -38,32 +37,38 @@ export async function GET(request: NextRequest) {
           "adminAccess",
           "laborType",
         ];
-        cookieNames.forEach((name) => {
-          return cookies().delete({
-            name: name,
+
+        try {
+          cookieNames.forEach((cookieName) => {
+            cookies().delete({
+              name: cookieName,
+              path: "/",
+              httpOnly: true,
+              secure: process.env.NODE_ENV === "production",
+              maxAge: 0,
+            });
+          });
+
+          // Reset `workRole` cookie
+          cookies().set({
+            name: "workRole",
+            value: "",
             path: "/",
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            maxAge: 0,
           });
-        });
 
-        // Reset `workRole` as well
-        cookies().set({
-          name: "workRole",
-          value: "",
-          path: "/",
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-        });
-
-        return NextResponse.json("");
+          return NextResponse.json({ message: "All cookies deleted successfully" });
+        } catch (error) {
+          console.error("Error deleting cookies:", error);
+          return NextResponse.json({ error: "Failed to delete cookies" }, { status: 500 });
+        }
 
       default:
-        return NextResponse.json({ error: "Invalid method" });
+        return NextResponse.json({ error: "Invalid method" }, { status: 400 });
     }
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "An error occurred" });
+    console.error("Error processing request:", error);
+    return NextResponse.json({ error: "An unexpected error occurred" }, { status: 500 });
   }
 }
