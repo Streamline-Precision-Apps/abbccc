@@ -12,28 +12,51 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
-import { Spinner } from "@nextui-org/react";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { z } from "zod";
-import SelectWtihRevert from "@/components/(reusable)/selectWithRevert";
-import TextInputWithRevert from "@/components/(reusable)/textInputWithRevert";
-import NumberInputWithRevert from "@/components/(reusable)/numberInputWithRevert";
 import { EquipmentStatus, FormStatus } from "@prisma/client";
 import { Titles } from "@/components/(reusable)/titles";
+import { Labels } from "@/components/(reusable)/labels";
+import { Inputs } from "@/components/(reusable)/inputs";
+import { differenceInSeconds, format, parseISO, set } from "date-fns";
+import { Selects } from "@/components/(reusable)/selects";
+import { TextAreas } from "@/components/(reusable)/textareas";
+import {
+  createRefuelEquipmentLog,
+  deleteEmployeeEquipmentLog,
+} from "@/actions/truckingActions";
+import RefuelEquipmentLogsList from "./RefuelEquipmentLogsList";
+import Spinner from "@/components/(animations)/spinner";
+
+type Refueled = {
+  id: string;
+  employeeEquipmentLogId: string | null;
+  truckingLogId: string | null;
+  gallonsRefueled: number | null;
+  milesAtfueling: number | null;
+  tascoLogId: string | null;
+};
 
 const EquipmentLogSchema = z.object({
   id: z.string(),
   equipmentId: z.string(),
   employeeId: z.string(),
   startTime: z.string(),
-  endTime: z.string().optional(),
+  endTime: z.string(),
   comment: z.string().optional(),
-  isSubmitted: z.boolean(),
-  fuel: z.number().optional(),
-  Equipment: z.object({
+  isFinished: z.boolean(),
+  refueled: z.array(
+    z
+      .object({
+        gallonsRefueled: z.number().optional(),
+        milesAtfueling: z.number().optional(),
+      })
+      .optional()
+  ),
+  equipment: z.object({
     name: z.string(),
     status: z.string().optional(),
   }),
@@ -47,22 +70,25 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
   const { setNotification } = useNotification();
   const t = useTranslations("Equipment");
   const [isLoading, setIsLoading] = useState(true);
-  const [isEditingTime, setIsEditingTime] = useState(false);
+  const [refuelLogs, setRefuelLogs] = useState<Refueled[]>();
   const [formState, setFormState] = useState({
     id: "",
     equipmentId: "",
     employeeId: "",
     startTime: "",
-    endTime: new Date().toISOString().slice(11, 16),
+    endTime: "",
     comment: "",
-    isSubmitted: false,
-    fuel: 0,
-    Equipment: {
+    isFinished: false,
+    refueled: [],
+    equipment: {
       name: "",
       status: EquipmentStatus.OPERATIONAL,
     },
   } as EquipmentLog);
+
   const [originalState, setOriginalState] = useState(formState);
+  const [hasChanged, setHasChanged] = useState<boolean>();
+  const [refueledLogs, setRefueledLogs] = useState<boolean>();
 
   useEffect(() => {
     const fetchEqLog = async () => {
@@ -70,20 +96,26 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
         setIsLoading(true);
         const response = await fetch(`/api/getEqUserLogs/${id}`);
         const data = await response.json();
-        const fuel = data.fuel === undefined ? 0 : data.fuel;
 
         const processedData = {
           id: data.id || "",
           equipmentId: data.equipmentId || "",
           employeeId: data.employeeId || "",
-          startTime: new Date(data.startTime).toISOString().slice(11, 16),
-          endTime: data.endTime ? new Date(data.endTime).toISOString().slice(11, 16) : new Date().toISOString().slice(11, 16),
+          startTime: data.startTime.toString(),
+          endTime: data.endTime
+            ? data.endTime.toString()
+            : new Date().toISOString(),
           comment: data.comment || "",
-          isSubmitted: data.isSubmitted || false,
-          fuel: fuel,
-          Equipment: {
-            name: data.Equipment?.name || "",
-            status: data.Equipment?.status || EquipmentStatus.OPERATIONAL,
+          isFinished: data.isFinished || false,
+          refueled: [
+            {
+              gallonsRefueled: data.gallonsRefueled || 0,
+              milesAtfueling: data.milesAtfueling || 0,
+            },
+          ],
+          equipment: {
+            name: data.equipment?.name || "",
+            status: data.equipment?.status || EquipmentStatus.OPERATIONAL,
           },
         } as EquipmentLog;
 
@@ -97,6 +129,12 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
 
         setFormState(processedData);
         setOriginalState(processedData);
+
+        const isRefueled = data.refueled.length > 0;
+
+        console.log("isRefueled: ", isRefueled);
+
+        setRefueledLogs(isRefueled);
       } catch (error) {
         console.error("Error fetching equipment log:", error);
       } finally {
@@ -107,6 +145,20 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
     fetchEqLog();
   }, [id]);
 
+  useEffect(() => {
+    const fetchRefuelLogs = async () => {
+      try {
+        const response = await fetch(`/api/getEquipmentRefueledLogs/${id}`);
+        const data = await response.json();
+        setRefuelLogs(data);
+      } catch (error) {
+        console.error("Error fetching refuel logs:", error);
+      }
+    };
+
+    fetchRefuelLogs();
+  }, [id]);
+
   const handleFieldChange = (
     field: string,
     value: string | number | boolean | FormStatus | EquipmentStatus
@@ -114,8 +166,8 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
     if (field === "Equipment.status") {
       setFormState((prev) => ({
         ...prev,
-        Equipment: {
-          ...prev.Equipment,
+        equipment: {
+          ...prev.equipment,
           status: value as EquipmentStatus,
         },
       }));
@@ -129,52 +181,58 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
     }
   };
 
-  const calculateTotalUsage = (startTime: string, endTime: string) => {
-    const start = new Date(startTime);
-    const end = new Date(endTime);
-    const duration = Math.abs(end.getTime() - start.getTime());
-    const hours = Math.floor(duration / 3600000);
-    const minutes = Math.floor((duration % 3600000) / 60000);
-    return `${hours} hours, ${minutes} minutes`;
-  };
-
-  const saveTimeChanges = () => {
-    setOriginalState((prev) => ({
-      ...prev,
-      startTime: formState.startTime,
-      endTime: formState.endTime,
-    }));
-    setIsEditingTime(false);
-  };
-
-  const revertTimeChanges = () => {
-    setFormState((prev) => ({
-      ...prev,
-      startTime: originalState.startTime,
-      endTime: originalState.endTime,
-    }));
-    setIsEditingTime(false);
+  const AddRefuelLog = async () => {
+    const formData = new FormData();
+    formData.append("employeeEquipmentLogId", formState.id ?? "");
+    try {
+      const tempRefuelLog = await createRefuelEquipmentLog(formData);
+      setRefuelLogs((prev) => [
+        {
+          id: tempRefuelLog.id,
+          employeeEquipmentLogId: tempRefuelLog.employeeEquipmentLogId ?? "",
+          truckingLogId: tempRefuelLog.truckingLogId ?? "",
+          gallonsRefueled: tempRefuelLog.gallonsRefueled ?? 0,
+          milesAtfueling: tempRefuelLog.milesAtfueling ?? 0,
+          tascoLogId: tempRefuelLog.tascoLogId ?? "",
+        },
+        ...(prev ?? []),
+      ]);
+    } catch (error) {
+      console.log("error adding state Mileage", error);
+    }
   };
 
   const handleChangeRefueled = () => {
-    setFormState((prev) => ({
-      ...prev,
-      fuel: (prev.fuel ?? 0) > 0 ? 0 : 1,
-    }));
+    if (refueledLogs) {
+      setRefueledLogs(false);
+    } else {
+      setRefueledLogs(true);
+    }
+  };
+
+  const deleteLog = async () => {
+    try {
+      await deleteEmployeeEquipmentLog(formState.id);
+      setNotification(t("Deleted"), "success");
+      router.replace("/dashboard/equipment");
+    } catch (error) {
+      console.error("Error deleting equipment log:", error);
+      setNotification(t("FailedToDelete"), "error");
+    }
   };
 
   const saveEdits = async () => {
     try {
       const formData = new FormData();
       Object.entries(formState).forEach(([key, value]) => {
-        if (key === "Equipment") {
+        if (key === "equipment") {
         } else {
           formData.append(key, String(value));
         }
       });
       formData.set(
         "Equipment.status",
-        formState.Equipment.status || EquipmentStatus.OPERATIONAL
+        formState.equipment.status || EquipmentStatus.OPERATIONAL
       );
       console.log("Form Data: ", formData);
       await updateEmployeeEquipmentLog(formData);
@@ -186,197 +244,253 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
     }
   };
 
-  const hasComment = () =>
-    formState.comment && formState.comment.trim().length > 0;
+  const start = parseISO(formState.startTime);
+  const end = formState.endTime ? parseISO(formState.endTime) : new Date();
+  const diffInSeconds = differenceInSeconds(end, start);
+  const hours = Math.floor(diffInSeconds / 3600);
+  const minutes = Math.floor((diffInSeconds % 3600) / 60);
+  const seconds = diffInSeconds % 60;
+  const formattedTime = `${hours.toString().padStart(2, "0")}:${minutes
+    .toString()
+    .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 
-  if (isLoading) {
-    return (
-      <Bases>
-        <Contents>
-          <Grids rows={"10"} gap={"5"}>
-            <Holds
-              background={"white"}
-              className="row-span-2 h-full my-auto animate-pulse "
-            >
-              <TitleBoxes
-                version="horizontal"
-                title="Loading..."
-                type="noIcon"
-                titleImg=""
-                titleImgAlt=""
-                variant="default"
-                size="default"
-                className="my-auto"
-              />
-            </Holds>
-            <Holds
-              background={"white"}
-              className=" row-span-2 h-full my-auto animate-pulse "
-            >
-              <Holds className="my-auto">
-                <Spinner />
-              </Holds>
-            </Holds>
-            <Holds
-              background={"white"}
-              className=" row-span-2 h-full my-auto animate-pulse  "
-            >
-              <Holds></Holds>
-            </Holds>
-            <Holds
-              background={"white"}
-              className=" row-span-3 h-full my-auto animate-pulse  "
-            >
-              <Holds></Holds>
-            </Holds>
-            <Holds className=" row-span-1 h-full my-auto  ">
-              <Holds position={"row"} className="gap-4">
-                <Buttons disabled className="h-full py-2">
-                  <Titles></Titles>
-                </Buttons>
-                <Buttons disabled className="h-full py-6">
-                  <Titles></Titles>
-                </Buttons>
-              </Holds>
-            </Holds>
-          </Grids>
-        </Contents>
-      </Bases>
-    );
-  }
-
+  useEffect(() => {
+    if (formState !== originalState) {
+      setHasChanged(true);
+    }
+  }, [formState, originalState]);
   return (
     <Bases>
       <Contents>
-        <Grids rows={isEditingTime ? "14" : "15"} cols="5" gap="6">
-          <Holds background="white" className="row-span-2 col-span-5 p-4">
+        <Grids rows={"7"} gap={"5"} className="h-full w-full ">
+          <Holds
+            background="white"
+            className={
+              isLoading
+                ? "row-span-1 h-full justify-center animate-pulse"
+                : "row-span-1 h-full justify-center"
+            }
+          >
             <TitleBoxes
-              version="horizontal"
-              title={formState.Equipment.name}
-              type="noIcon"
+              title={
+                isLoading
+                  ? "Loading..."
+                  : `${formState.equipment.name.slice(0, 16)}...`
+              }
+              type="row"
               titleImg=""
               titleImgAlt="No equipment image"
-              variant="default"
-              size="default"
+              className="w-full h-full"
             />
           </Holds>
 
           <Holds
             background="white"
             className={
-              isEditingTime
-                ? "row-span-3 col-span-5 p-1"
-                : "row-span-1 col-span-5 p-1"
+              isLoading
+                ? "row-start-2 row-end-8 h-full animate-pulse"
+                : "row-start-2 row-end-8 h-full "
             }
           >
-            <Texts size="p2">Total Usage</Texts>
-            {!isEditingTime ? (
-              <div className="flex items-center justify-between">
-                <input
-                  type="text"
-                  disabled
-                  value={calculateTotalUsage(
-                    formState.startTime,
-                    formState.endTime || new Date().toISOString()
-                  )}
-                  className="border p-2 w-full"
-                />
-                <button onClick={() => setIsEditingTime(true)} className="ml-2">
-                  Edit
-                </button>
-              </div>
+            {isLoading ? (
+              <>
+                <Holds className="h-full w-full justify-center">
+                  <Spinner />
+                </Holds>
+              </>
             ) : (
-              <div className="grid grid-cols-4 col-span-5 gap-4">
-                <button onClick={revertTimeChanges}>Revert Changes</button>
-                <input
-                  type="time"
-                  value={formState.startTime}
-                  defaultValue={originalState.startTime}
-                  onChange={(e) =>
-                    handleFieldChange("startTime", e.target.value)
-                  }
-                />
-                <input
-                  type="time"
-                  value={formState.endTime || ""}
-                  defaultValue={originalState.endTime}
-                  onChange={(e) => handleFieldChange("endTime", e.target.value)}
-                />
-                <button onClick={saveTimeChanges}>Save Changes</button>
-              </div>
+              <>
+                <Contents width={"section"}>
+                  <Grids rows={"8"} gap={"5"} className="h-full w-full py-3">
+                    <Holds className="row-start-1 row-end-8 w-full h-full overflow-y-auto no-scrollbar  ">
+                      <Labels size="p5">Total Usage</Labels>
+                      <Inputs
+                        type="text"
+                        disabled
+                        value={formattedTime}
+                        className="border-[3px] border-black p-1 w-full text-center"
+                      />
+                      <Holds position={"row"} className="w-full ">
+                        <Holds className="w-full">
+                          <Labels size="p5">Start Time</Labels>
+                          <Inputs
+                            type="time"
+                            value={
+                              formState.startTime
+                                ? format(new Date(formState.startTime), "HH:mm")
+                                : ""
+                            }
+                            className="w-full border-[3px] border-r-[1.5px] border-black p-1 rounded-[10px] rounded-r-none"
+                            onChange={(e) => {
+                              const newTime = e.target.value; // e.g., "14:30"
+                              // Use the existing startTime date or default to today's date if empty
+                              const currentDate = new Date(
+                                formState.startTime || new Date()
+                              );
+                              // Split the new time string into hours and minutes
+                              const [newHours, newMinutes] = newTime
+                                .split(":")
+                                .map(Number);
+                              // Update the date with the new hours and minutes (set seconds and ms to 0)
+                              currentDate.setHours(newHours, newMinutes, 0, 0);
+                              // Update the state with the new ISO string
+                              handleFieldChange(
+                                "startTime",
+                                currentDate.toISOString()
+                              );
+                            }}
+                          />
+                        </Holds>
+                        <Holds className="w-full">
+                          <Labels size="p5">End Time</Labels>
+                          <Inputs
+                            type="time"
+                            value={
+                              formState.endTime
+                                ? format(
+                                    new Date(parseISO(formState.endTime)),
+                                    "HH:mm"
+                                  )
+                                : ""
+                            }
+                            className="w-full border-[3px] border-l-[1.5px] border-black p-1 rounded-[10px] rounded-l-none"
+                            onChange={(e) => {
+                              const newTime = e.target.value; // e.g., "15:45"
+                              // Use the existing endTime date or default to today's date if empty
+                              const currentDate = new Date(
+                                formState.endTime || new Date()
+                              );
+                              const [newHours, newMinutes] = newTime
+                                .split(":")
+                                .map(Number);
+                              currentDate.setHours(newHours, newMinutes, 0, 0);
+                              handleFieldChange(
+                                "endTime",
+                                currentDate.toISOString()
+                              );
+                            }}
+                          />
+                        </Holds>
+                      </Holds>
+
+                      <Labels size="p6">Equipment Status</Labels>
+                      <Selects
+                        className="w-full text-center rounded-[10px] border-[3px] border-black focus:outline-none p-2"
+                        value={formState.equipment.status || ""}
+                        onChange={(e) =>
+                          handleFieldChange(
+                            "Equipment.status",
+                            e.currentTarget.value
+                          )
+                        }
+                      >
+                        <option value="OPERATIONAL">{t("Operational")}</option>
+                        <option value="NEEDS_REPAIR">{t("NeedsRepair")}</option>
+                        <option value="NEEDS_MAINTENANCE">
+                          {t("NeedsMaintenance")}
+                        </option>
+                      </Selects>
+                      <Holds background="white" className="w-full  relative">
+                        <Labels size="p5">{t("Comment")}</Labels>
+                        <TextAreas
+                          maxLength={40}
+                          placeholder="Enter comments here..."
+                          value={formState.comment || ""}
+                          onChange={(e) =>
+                            handleFieldChange("comment", e.target.value)
+                          }
+                        />
+                        <Texts
+                          size="p3"
+                          className={`${
+                            typeof formState.comment === "string" &&
+                            formState.comment.length >= 40
+                              ? "text-red-500 absolute bottom-4 right-4"
+                              : "absolute bottom-4 right-4"
+                          }`}
+                        >
+                          {`${
+                            typeof formState.comment === "string"
+                              ? formState.comment.length
+                              : 0
+                          }/40`}
+                        </Texts>
+                      </Holds>
+                      <Holds position={"row"} className="w-full pb-4">
+                        <Holds size={"40"} className="h-full justify-center">
+                          <Texts position={"left"} size="p5">
+                            Did you refuel?
+                          </Texts>
+                        </Holds>
+                        <Holds
+                          size={"30"}
+                          className="h-full justify-center relative"
+                        >
+                          <CheckBox
+                            id="refueled"
+                            name="refueled"
+                            size={2}
+                            checked={refueledLogs}
+                            onChange={() => handleChangeRefueled()}
+                          />
+                        </Holds>
+                        {refueledLogs && (
+                          <Holds size={"30"} className="h-full justify-center">
+                            <Holds position={"left"} className="p-2">
+                              <Buttons
+                                background={"green"}
+                                className="py-1.5"
+                                onClick={() => {
+                                  AddRefuelLog();
+                                }}
+                              >
+                                +
+                              </Buttons>
+                            </Holds>
+                          </Holds>
+                        )}
+                      </Holds>
+
+                      {refueledLogs && refuelLogs && refuelLogs.length > 0 && (
+                        <Holds>
+                          <RefuelEquipmentLogsList
+                            refuelLogs={refuelLogs}
+                            setRefuelLogs={setRefuelLogs}
+                          />
+                        </Holds>
+                      )}
+                    </Holds>
+
+                    <Holds
+                      position={"row"}
+                      background="white"
+                      className="w-full gap-4 row-start-8 row-end-9 py-2"
+                    >
+                      <Buttons
+                        onClick={() => {
+                          deleteLog();
+                        }}
+                        background="red"
+                        className="w-full "
+                      >
+                        <Titles size="h5">Delete Log</Titles>
+                      </Buttons>
+                      {/* {hasChanged && ( */}
+                      <Buttons
+                        onClick={() => {
+                          saveEdits();
+                        }}
+                        background="lightBlue"
+                        className="w-full "
+                      >
+                        <Titles size="h5">Finish Logs</Titles>
+                      </Buttons>
+                      {/* )} */}
+                    </Holds>
+                  </Grids>
+                </Contents>
+              </>
             )}
-          </Holds>
-
-          <Holds background="white" className="row-span-1 col-span-5 p-4">
-            <Texts size="p2">Equipment Status</Texts>
-            <SelectWtihRevert
-              label={t("Status")}
-              options={[
-                { value: "OPERATIONAL", label: t("Operational") },
-                { value: "NEEDS_REPAIR", label: t("NeedsRepair") },
-                {
-                  value: "NEEDS_MAINTENANCE",
-                  label: t("NeedsMaintenance"),
-                },
-              ]}
-              size="large"
-              value={formState.Equipment.status || ""}
-              onChange={(value) => handleFieldChange("Equipment.status", value)}
-              defaultValue={originalState.Equipment.status || ""}
-              showAsterisk
-            />
-          </Holds>
-
-          <Holds background="white" className="row-span-1 col-span-5 p-4">
-            <Texts size="p2">Did you refuel?</Texts>
-            <CheckBox
-              id="refueled"
-              name="refueled"
-              label=""
-              checked={(formState.fuel ?? 0) > 0}
-              onChange={() => handleChangeRefueled()}
-            />
-          </Holds>
-          {(formState.fuel ?? 0) > 0 && (
-            <Holds background="white" className="row-span-1 col-span-5 p-4">
-              <NumberInputWithRevert
-                label={t("Fuel")}
-                size="large"
-                value={formState.fuel || 0}
-                onChange={(newValue) => handleFieldChange("fuel", newValue)}
-                showAsterisk={false}
-                defaultValue={originalState.fuel || 0}
-              />
-            </Holds>
-          )}
-
-          <Holds
-            position="row"
-            background="white"
-            className="row-span-2 col-span-5 p-4"
-          >
-            <TextInputWithRevert
-              label={t("Comment")}
-              size="large"
-              value={formState.comment || ""}
-              onChange={(newValue) => handleFieldChange("comment", newValue)}
-              showAsterisk={false}
-              defaultValue={originalState.comment || ""}
-            />
-          </Holds>
-
-          <Holds
-            background="white"
-            position="row"
-            className="row-span-1 col-span-5 gap-4"
-          >
-            <Buttons
-              onClick={saveEdits}
-              background="green"
-              disabled={!hasComment()}
-            >
-              <Titles>{t("Save")}</Titles>
-            </Buttons>
           </Holds>
         </Grids>
       </Contents>

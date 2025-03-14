@@ -1,6 +1,137 @@
-import { Prisma } from "@prisma/client";
+import { FieldType, Prisma } from "@prisma/client";
 
 export const now = new Date();
+
+// Company
+export const initialCompany: Prisma.CompanyCreateInput[] = [
+  {
+    id: "1",
+    name: "Streamline Precision LLC",
+    address: "120 S 100 W",
+    city: "Burley",
+    state: "ID",
+    zipCode: "83318",
+    users: {
+      connect: [], // No users are linked initially
+    },
+  },
+];
+
+function formatName(label: string): string {
+  // Convert to lowercase and replace spaces with underscores (snake_case)
+  return label.toLowerCase().replace(/\s+/g, "_");
+}
+
+export const initialFormTemplates: Prisma.FormTemplateCreateInput[] = [
+  {
+    name: "Leave Request Form",
+    formType: "Leave Request",
+    isActive: true,
+    isSignatureRequired: true,
+    company: { connect: { id: "1" } },
+    FormGrouping: {
+      create: [
+        {
+          title: "",
+          order: 1,
+          fields: {
+            create: [
+              {
+                label: "Request Start Date",
+                name: formatName("Request Start Date"),
+                type: FieldType.DATE,
+                required: true,
+                order: 1,
+              },
+              {
+                label: "Request End Date",
+                name: formatName("Request End Date"),
+                type: FieldType.DATE,
+                required: true,
+                order: 2,
+              },
+              {
+                label: "Request Type",
+                name: formatName("Request Type"),
+                type: FieldType.DROPDOWN,
+                required: true,
+                order: 3,
+                options: {
+                  create: [
+                    {
+                      value: "Paid Vacation",
+                    },
+                    {
+                      value: "Sick Leave",
+                    },
+                    {
+                      value: "Military Leave",
+                    },
+                    {
+                      value: "Family Medical Leave",
+                    },
+                    {
+                      value: "Non-Paid Personal Leave",
+                    },
+                  ],
+                },
+              },
+              {
+                label: "Comments",
+                name: formatName("Comments"),
+                type: FieldType.TEXTAREA,
+                required: false,
+                order: 4,
+                placeholder: "Enter comments here...",
+              },
+            ],
+          },
+        },
+      ],
+    },
+  },
+  {
+    name: "Injury Report Form",
+    formType: "Injury Report",
+    isActive: true,
+    isSignatureRequired: true,
+    company: { connect: { id: "1" } },
+    FormGrouping: {
+      create: [
+        {
+          title: "",
+          order: 1,
+          fields: {
+            create: [
+              {
+                label: "Describe the Injury",
+                type: FieldType.TEXTAREA,
+                name: formatName("Describe the Injury"),
+                required: true,
+                order: 1,
+                placeholder: "Enter Name here",
+              },
+              {
+                label: "I contacted My Supervisor",
+                name: formatName("I contacted My Supervisor"),
+                type: FieldType.CHECKBOX,
+                required: true,
+                order: 2,
+              },
+              {
+                label: "This is my signature",
+                name: formatName("This is my signature"),
+                type: FieldType.CHECKBOX,
+                required: true,
+                order: 3,
+              },
+            ],
+          },
+        },
+      ],
+    },
+  },
+];
 
 // jobsites
 export const initialJobsites: Prisma.JobsiteCreateInput[] = [
@@ -27,7 +158,7 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
-    equipment: {
+    EquipmentHauled: {
       connect: [], // No equipment are linked initially
     },
   },
@@ -53,7 +184,7 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
-    equipment: {
+    EquipmentHauled: {
       connect: [], // No equipment are linked initially
     },
   },
@@ -79,7 +210,7 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
-    equipment: {
+    EquipmentHauled: {
       connect: [], // No equipment are linked initially
     },
   },
@@ -105,7 +236,7 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
-    equipment: {
+    EquipmentHauled: {
       connect: [], // No equipment are linked initially
     },
   },
@@ -131,7 +262,7 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
-    equipment: {
+    EquipmentHauled: {
       connect: [], // No equipment are linked initially
     },
   },
@@ -157,7 +288,7 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
-    equipment: {
+    EquipmentHauled: {
       connect: [], // No equipment are linked initially
     },
   },
@@ -183,7 +314,7 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
-    equipment: {
+    EquipmentHauled: {
       connect: [], // No equipment are linked initially
     },
   },
@@ -209,7 +340,7 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
-    equipment: {
+    EquipmentHauled: {
       connect: [], // No equipment are linked initially
     },
   },
@@ -221,6 +352,7 @@ export const initialCrews: Prisma.CrewCreateInput[] = [
     name: "Jessica's Crew",
     leadId: "1",
     description: "General Contrator Crew",
+    crewType: "LABOR",
     createdAt: new Date(),
     updatedAt: new Date(),
     users: { connect: [{ id: "1" }, { id: "2" }, { id: "3" }] },
@@ -229,6 +361,7 @@ export const initialCrews: Prisma.CrewCreateInput[] = [
     name: "Devun's Crew",
     leadId: "7",
     description: "A Computer Science and App development Crew",
+    crewType: "LABOR",
     createdAt: new Date(),
     updatedAt: new Date(),
     users: { connect: [{ id: "7" }, { id: "8" }, { id: "9" }] },
@@ -241,82 +374,87 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     id: "1",
     firstName: "Jessica",
     lastName: "Rabbit",
-    username: "jessicarabbit",
+    username: "adminLabor",
     email: "test01@gmail.com",
     password: "securepassword",
     DOB: "01-01-2000",
-    truckView: true,
+    truckView: false,
     tascoView: false,
     laborView: true,
     mechanicView: false,
     permission: "ADMIN",
     image: "",
+    company: { connect: { id: "1" } },
   },
   {
     id: "2",
     firstName: "John",
     lastName: "Doe",
-    username: "johndoe",
+    username: "userLabor",
     email: "test02@gmail.com",
     password: "securepassword",
     DOB: "01-01-2000",
-    truckView: true,
-    tascoView: true,
-    laborView: false,
+    truckView: false,
+    tascoView: false,
+    laborView: true,
     mechanicView: false,
     permission: "USER",
     image: "",
+    company: { connect: { id: "1" } },
   },
   {
     id: "3",
     firstName: "Jane",
     lastName: "Doe",
-    username: "janedoe",
+    username: "userMechanic",
     email: "test03@gmail.com",
     password: "securepassword",
     DOB: "01-01-2000",
-    truckView: true,
-    tascoView: true,
+    truckView: false,
+    tascoView: false,
     laborView: false,
-    mechanicView: false,
+    mechanicView: true,
     permission: "USER",
     image: "",
+    company: { connect: { id: "1" } },
   },
   {
     id: "4",
     firstName: "Buggs",
     lastName: "Bunny",
-    username: "buggsbunny",
+    username: "userTruck",
     email: "test04@gmail.com",
     password: "securepassword",
     DOB: "01-01-2000",
     truckView: true,
-    tascoView: true,
+    tascoView: false,
     laborView: false,
     mechanicView: false,
     permission: "USER",
     image: "",
+    company: { connect: { id: "1" } },
   },
   {
     id: "5",
     firstName: "Lola",
     lastName: "Bunny",
-    username: "lolabunny",
+    username: "userTasco",
     email: "test05@gmail.com",
     password: "securepassword",
     DOB: "01-01-2000",
-    truckView: true,
+    truckView: false,
     tascoView: true,
     laborView: false,
     mechanicView: false,
     permission: "USER",
     image: "",
+    company: { connect: { id: "1" } },
   },
   {
     id: "6",
     firstName: "Roger",
     lastName: "Rabbit",
-    username: "rogerrabbit",
+    username: "adminTruck",
     email: "test06@gmail.com",
     password: "securepassword",
     DOB: "01-01-2000",
@@ -326,6 +464,7 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     mechanicView: false,
     permission: "ADMIN",
     image: "",
+    company: { connect: { id: "1" } },
   },
   {
     id: "7",
@@ -341,6 +480,7 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     mechanicView: true,
     permission: "SUPERADMIN",
     image: "",
+    company: { connect: { id: "1" } },
   },
   {
     id: "8",
@@ -356,6 +496,7 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     mechanicView: true,
     permission: "SUPERADMIN",
     image: "",
+    company: { connect: { id: "1" } },
   },
   {
     id: "9",
@@ -371,6 +512,55 @@ export const initialUsers: Prisma.UserCreateInput[] = [
     mechanicView: true,
     permission: "SUPERADMIN",
     image: "",
+    company: { connect: { id: "1" } },
+  },
+  {
+    id: "10",
+    firstName: "Spongebob",
+    lastName: "Squarepants",
+    username: "adminTasco",
+    email: "test10@gmail.com",
+    password: "securepassword",
+    DOB: "01-01-2000",
+    truckView: false,
+    tascoView: true,
+    laborView: true,
+    mechanicView: false,
+    permission: "ADMIN",
+    image: "",
+    company: { connect: { id: "1" } },
+  },
+  {
+    id: "11",
+    firstName: "Patrick",
+    lastName: "Star",
+    username: "adminMechanic",
+    email: "test11@gmail.com",
+    password: "securepassword",
+    DOB: "01-01-2000",
+    truckView: false,
+    tascoView: false,
+    laborView: true,
+    mechanicView: true,
+    permission: "ADMIN",
+    image: "",
+    company: { connect: { id: "1" } },
+  },
+  {
+    id: "12",
+    firstName: "Zane",
+    lastName: "Gillette",
+    username: "zanegillette",
+    email: "zane@streamlineprecision.com",
+    password: "securepassword",
+    DOB: "01-01-2000",
+    truckView: true,
+    tascoView: true,
+    laborView: true,
+    mechanicView: true,
+    permission: "SUPERADMIN",
+    image: "",
+    company: { connect: { id: "1" } },
   },
 ];
 
@@ -442,6 +632,30 @@ export const initialContacts: Prisma.ContactsCreateInput[] = [
   },
   {
     user: { connect: { id: "9" } },
+    phoneNumber: "987-654-3210",
+    emergencyContact: "your wife",
+    emergencyContactNumber: "218-765-4311",
+    createdAt: "2021-06-01T00:00:00.000Z",
+    updatedAt: "2021-06-01T00:00:00.000Z",
+  },
+  {
+    user: { connect: { id: "10" } },
+    phoneNumber: "987-654-3210",
+    emergencyContact: "your wife",
+    emergencyContactNumber: "218-765-4311",
+    createdAt: "2021-06-01T00:00:00.000Z",
+    updatedAt: "2021-06-01T00:00:00.000Z",
+  },
+  {
+    user: { connect: { id: "11" } },
+    phoneNumber: "987-654-3210",
+    emergencyContact: "your wife",
+    emergencyContactNumber: "218-765-4311",
+    createdAt: "2021-06-01T00:00:00.000Z",
+    updatedAt: "2021-06-01T00:00:00.000Z",
+  },
+  {
+    user: { connect: { id: "12" } },
     phoneNumber: "987-654-3210",
     emergencyContact: "your wife",
     emergencyContactNumber: "218-765-4311",
@@ -589,30 +803,60 @@ export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
   },
   {
     id: "14",
-    name: "Truck Role", // Truck Driver cost code for clock in value not important
+    name: "#00.50",
     createdAt: new Date(),
     updatedAt: new Date(),
-    description: "Truck Driver",
+    description: "Mechanics",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
     id: "15",
-    name: "Mechanic Role", // Mechanic cost code for clock in value not important
+    name: "#99.99",
     createdAt: new Date(),
     updatedAt: new Date(),
-    description: "Mechanic",
+    description: "General Office",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
   },
   {
     id: "16",
-    name: "TASCO Role", // TASCO cost code for clock in value not important
+    name: "#80.20",
     createdAt: new Date(),
     updatedAt: new Date(),
-    description: "TASCO",
+    description: "Amalgamated Labor",
+    CCTags: {
+      connect: [], // No CCTags are linked initially
+    },
+  },
+  {
+    id: "17",
+    name: "#80.40",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    description: "Amalgamated Equipment",
+    CCTags: {
+      connect: [], // No CCTags are linked initially
+    },
+  },
+  {
+    id: "18",
+    name: "#1000",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    description: "Gillette Farms",
+    CCTags: {
+      connect: [], // No CCTags are linked initially
+    },
+  },
+  {
+    id: "19",
+    name: "#1001",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    description: "Chicken Barn",
     CCTags: {
       connect: [], // No CCTags are linked initially
     },
@@ -629,13 +873,10 @@ export const initialCCTags: Prisma.CCTagCreateInput[] = [
         { qrId: "j345" },
         { qrId: "j456" },
         { qrId: "j567" },
-        { qrId: "TRUCK" },
-        { qrId: "MECHANIC" },
-        { qrId: "TASCO" },
       ],
     },
     costCodes: {
-      connect: Array.from({ length: 13 }, (_, i) => ({
+      connect: Array.from({ length: 19 }, (_, i) => ({
         id: (i + 1).toString(),
       })),
     },
@@ -661,9 +902,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "TRK-9",
@@ -682,9 +920,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "TRK-015 International",
@@ -703,9 +938,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "TRK-16 Gray Truck",
@@ -724,9 +956,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "TRK-017 Kenworth T2000",
@@ -745,9 +974,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "TRK-019 International",
@@ -766,9 +992,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "TRK-20 Kenworth T880",
@@ -787,9 +1010,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "TRK-21 Kenworth T880",
@@ -808,9 +1028,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "TRK-22 Kenworth T880",
@@ -829,9 +1046,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "TRK-78 Kenworth T800",
@@ -850,9 +1064,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "TRK-3010",
@@ -871,9 +1082,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "Rented Truck",
@@ -892,9 +1100,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "TRK-18 Kenworth 2015",
@@ -913,9 +1118,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "CTRK-50",
@@ -934,9 +1136,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "CTRK-51",
@@ -955,9 +1154,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "CTRK-52",
@@ -976,9 +1172,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "CTRK-53",
@@ -997,9 +1190,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "CTRK-54",
@@ -1018,9 +1208,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "CTRK-55",
@@ -1039,9 +1226,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "CTRK-56",
@@ -1060,9 +1244,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "CTRK-57",
@@ -1081,9 +1262,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "CTRK-58",
@@ -1102,9 +1280,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "PTI(Pump TRK)",
@@ -1123,9 +1298,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "TRK-AT-1-ARMY TRK GREEN",
@@ -1144,9 +1316,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "TRK-AT-2-ARMY TRK TAN",
@@ -1165,9 +1334,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "TRK-AT-3-ARMY TRK CAMO",
@@ -1186,9 +1352,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "EQ-100001",
@@ -1207,9 +1370,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "EQ-100002",
@@ -1228,9 +1388,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "EQ-100003",
@@ -1249,9 +1406,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "EQ-100004",
@@ -1270,9 +1424,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "EQ-100005",
@@ -1291,9 +1442,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "EQ-100006",
@@ -1312,9 +1460,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "EQ-100007",
@@ -1333,9 +1478,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "EQ-100008",
@@ -1354,9 +1496,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "EQ-100009",
@@ -1375,9 +1514,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "EQ-100010",
@@ -1396,9 +1532,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "EQ-100011",
@@ -1417,9 +1550,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "EQ-100012",
@@ -1438,9 +1568,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
 
   {
@@ -1460,9 +1587,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "EQ-100014",
@@ -1481,9 +1605,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "EQ-100015",
@@ -1502,9 +1623,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "EQ-100016",
@@ -1523,9 +1641,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "EQ-100017",
@@ -1544,9 +1659,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "EQ-100018",
@@ -1565,9 +1677,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "EQ-100019",
@@ -1586,9 +1695,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "EQ-100020",
@@ -1607,9 +1713,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "EQ-100021",
@@ -1628,9 +1731,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "EQ-100022",
@@ -1649,9 +1749,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "EQ-100023",
@@ -1670,9 +1767,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "EQ-100024",
@@ -1691,9 +1785,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "EQ-100025",
@@ -1712,9 +1803,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "EQ-100026",
@@ -1733,9 +1821,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: null,
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   // start page 3 of equipment assignar
   // trailers
@@ -1756,9 +1841,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: new Date("2018-05-30T00:00:00.000Z"),
     mileage: null,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
 
   // vehicles
@@ -1779,9 +1861,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: new Date("2019-06-25T00:00:00.000Z"),
     mileage: 800,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
   {
     qrId: "EQ-123456",
@@ -1800,9 +1879,6 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     registrationExpiration: new Date("2021-01-20T00:00:00.000Z"),
     mileage: 1200,
     isActive: true,
-    jobsite: {
-      connect: { id: "1" },
-    },
   },
 ];
 
@@ -1816,4 +1892,7 @@ export const initialUserSettings: Prisma.UserSettingsCreateInput[] = [
   { user: { connect: { id: "7" } } },
   { user: { connect: { id: "8" } } },
   { user: { connect: { id: "9" } } },
+  { user: { connect: { id: "10" } } },
+  { user: { connect: { id: "11" } } },
+  { user: { connect: { id: "12" } } },
 ];

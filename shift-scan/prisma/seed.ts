@@ -9,19 +9,48 @@ import {
   initialCrews,
   initialCostCodes,
   initialCCTags,
+  initialCompany,
+  initialFormTemplates,
 } from "@/data/dataValues";
-import { hash } from "bcryptjs";
+// import { hash } from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function main() {
   console.log("Seeding...");
   try {
+    for (const company of initialCompany) {
+      try {
+        // const hashed = await hash(user.password, 10);
+        const newUser = await prisma.company.create({
+          // TODO Come back to add the hash back in.
+          // data: { ...user, password: hashed },
+          data: company,
+        });
+        console.log("Created company with id: ", newUser.id);
+      } catch (error) {
+        console.log("Error creating company:", error);
+        continue; // Skip to the next user
+      }
+    }
+
+    for (const formTemplate of initialFormTemplates) {
+      try {
+        // const hashed = await hash(user.password, 10);
+        const newTemplate = await prisma.formTemplate.create({
+          data: formTemplate,
+        });
+        console.log("Created template with id: ", newTemplate.id);
+      } catch (error) {
+        console.log("Error creating Form Template:", error);
+        continue; // Skip to the next user
+      }
+    }
+
     // Insert users
     for (const user of initialUsers) {
       try {
         // const hashed = await hash(user.password, 10);
-        const newUser = await prisma.user.create(
-          {
+        const newUser = await prisma.user.create({
           // TODO Come back to add the hash back in.
           // data: { ...user, password: hashed },
           data: user,
@@ -32,6 +61,13 @@ async function main() {
         continue; // Skip to the next user
       }
     }
+
+    /*
+    #Todo: Add Templates to the seed for initial forms
+    - Injury Form
+    - Time Off Request
+    - Report App Bug
+     */
 
     // Insert contacts
     for (const contact of initialContacts) {

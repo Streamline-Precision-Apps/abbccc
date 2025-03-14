@@ -51,7 +51,7 @@ const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps> = ({
       case 3:
         return "bg-app-green";
       default:
-        return "bg-gray-300";
+        return "bg-app-gray";
     }
   };
 

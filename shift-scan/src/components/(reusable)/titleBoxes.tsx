@@ -26,15 +26,10 @@ const TitleBoxVariants = cva(
         med: "p-10 w-40 h-40",
         lg: "p-10 w-50 h-50",
       },
-      version: {
-        default: "",
-        horizontal: "flex-row items-center justify-between px-4 py-2",
-      },
     },
     defaultVariants: {
       variant: "default",
       size: "default",
-      version: "default",
     },
   }
 );
@@ -45,6 +40,8 @@ interface TitleBoxProps
   type?: string;
   title: string;
   title2?: string;
+  subtitle?: string;
+  header?: string;
   titleImg: string;
   titleImgAlt: string;
   href?: string;
@@ -57,49 +54,23 @@ const TitleBoxes: FC<TitleBoxProps> = ({
   className,
   variant,
   size,
-  version,
   type,
   title,
   title2,
+  subtitle,
+  header,
   titleImg,
   titleImgAlt,
   href = "back",
   modal,
   modalTitle,
+  onClick = () => {},
   ...props
 }) => {
-  if (version === "horizontal") {
-    return (
-      <div
-        className={cn(TitleBoxVariants({ variant, size, version, className }))}
-        {...props}
-      >
-        <div className="flex items-center justify-between w-full">
-        <Buttons href={href} background={"none"} size={"50"}>
-          <Images titleImg="/turnBack.svg" titleImgAlt={titleImgAlt} size={"50"} />
-        </Buttons>
-        </div>
-        <div className="flex items-center justify-between w-full">
-          <Titles size={"h2"} className="mr-4">
-            {title}
-          </Titles>
-          {titleImg !== "" && (
-            <Images
-              titleImg={titleImg}
-              titleImgAlt={titleImgAlt}
-              size={"40"}
-              className="flex-shrink-0"
-            />
-          )}
-        </div>
-      </div>
-    );
-  }
-
   if (type === "profilePic") {
     return (
       <div
-        className={cn(TitleBoxVariants({ variant, size, version, className }))}
+        className={cn(TitleBoxVariants({ variant, size, className }))}
         {...props}
       >
         <Grids cols={"4"} rows={"3"} className="w-full">
@@ -161,21 +132,16 @@ const TitleBoxes: FC<TitleBoxProps> = ({
   if (type === "myTeamProfile") {
     return (
       <div
-        className={cn(TitleBoxVariants({ variant, size, version, className }))}
+        className={cn(TitleBoxVariants({ variant, size, className }))}
         {...props}
       >
-        <Grids cols={"4"} rows={"3"} className="w-full h-full p-4">
-          <Holds className="col-span-1 row-span-1">
-            <Buttons
-              href={href}
-              background={"none"}
-              position={"left"}
-              size={"50"}
-            >
+        <Grids cols={"6"} rows={"2"} className="w-full h-full">
+          <Holds className="col-start-1 col-end-2 row-span-1">
+            <Buttons href={href} background={"none"} position={"left"}>
               <Images titleImg="/turnBack.svg" titleImgAlt={titleImgAlt} />
             </Buttons>
           </Holds>
-          <Holds className="col-span-2 row-span-3 ">
+          <Holds className="col-start-3 col-end-5 row-start-1 row-end-2 ">
             {props.children}
             <Holds size={"full"} position={"center"}>
               <Holds className="rounded-full relative ">
@@ -189,10 +155,10 @@ const TitleBoxes: FC<TitleBoxProps> = ({
             </Holds>
           </Holds>
 
-          <Holds className="col-span-4 row-span-1">
+          <Holds className="col-start-1 col-end-7 row-start-2 row-end-3">
             <Titles size={"h2"}>{title}</Titles>
           </Holds>
-          <Holds className="col-start-4 col-span-1 row-start-1 row-span-1">
+          <Holds className="col-start-4 col-end-7 row-start-1 row-end-2">
             <Holds size={"90"} position={"center"}>
               <Titles position={"right"} size={"h6"}>
                 {title2}
@@ -207,7 +173,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
   if (type === "titleOnly") {
     return (
       <div
-        className={cn(TitleBoxVariants({ variant, size, version, className }))}
+        className={cn(TitleBoxVariants({ variant, size, className }))}
         {...props}
       >
         <Titles size={"h1"}>{title}</Titles>
@@ -215,10 +181,45 @@ const TitleBoxes: FC<TitleBoxProps> = ({
       </div>
     );
   }
+
+  if (type === "titleAndSubtitleAndHeader") {
+    return (
+      <div
+        className={cn(TitleBoxVariants({ variant, size, className }))}
+        {...props}
+      >
+        <Grids cols={"4"} rows={"3"} gap={"2"}>
+          {/* Back Button */}
+          <Holds className="col-span-1 row-span-3 flex items-center">
+            <Buttons
+              href={href}
+              background={"none"}
+              position={"left"}
+              size={"50"}
+            >
+              <Images titleImg="/turnBack.svg" titleImgAlt={titleImgAlt} />
+            </Buttons>
+          </Holds>
+
+          {/* Main Title and Subtitle */}
+          <Holds className="col-span-2 row-span-3 flex flex-col justify-center">
+            <Titles size={"h1"}>{title}</Titles>
+            <Titles size={"h4"}>{subtitle}</Titles>
+          </Holds>
+
+          {/* Header (Top Right) */}
+          <Holds className="col-span-1 row-span-1 flex justify-end items-end">
+            <Titles size={"h4"}>{header}</Titles>
+          </Holds>
+        </Grids>
+        {props.children}
+      </div>
+    );
+  }
   if (type === "noIcon") {
     return (
       <div
-        className={cn(TitleBoxVariants({ variant, size, version, className }))}
+        className={cn(TitleBoxVariants({ variant, size, className }))}
         {...props}
       >
         <Holds position={"absolute"}>
@@ -237,7 +238,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
   if (type === "withDate") {
     return (
       <div
-        className={cn(TitleBoxVariants({ variant, size, version, className }))}
+        className={cn(TitleBoxVariants({ variant, size, className }))}
         {...props}
       >
         <Buttons href={href}>
@@ -250,7 +251,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
   if (type === "titleForm") {
     return (
       <div
-        className={cn(TitleBoxVariants({ variant, size, version, className }))}
+        className={cn(TitleBoxVariants({ variant, size, className }))}
         {...props}
       >
         <Buttons href={href}>
@@ -260,64 +261,126 @@ const TitleBoxes: FC<TitleBoxProps> = ({
       </div>
     );
   }
-  if (type === "row") {
+
+  if (type === "noIcon") {
     return (
       <div
-        className={cn(TitleBoxVariants({ variant, size, version, className }))}
+        className={cn(TitleBoxVariants({ variant, size, className }))}
         {...props}
       >
-        <Holds position={"absolute"}>
-          <Buttons href={href} background={"none"} size={"30"}>
-            <Images
-              titleImg="/turnBack.svg"
-              titleImgAlt="back arrow"
-              size={"30"}
-            />
-          </Buttons>
-        </Holds>
-        <Holds position={"row"}>
-          <Holds size={"60"}>
-            <Titles size={"h1"} position={"right"} className="px-5">
-              {title}
-            </Titles>
-          </Holds>
-          <Holds size={"40"}>
-            <Images
-              titleImg={titleImg}
-              titleImgAlt={titleImgAlt}
-              position={"left"}
-              size={"30"}
-            />
-          </Holds>
-        </Holds>
-      </div>
-    );
-  } else
-    return (
-      <div
-        className={cn(TitleBoxVariants({ variant, size, version, className }))}
-        {...props}
-      >
-        <Grids cols={"4"} rows={"3"} className="w-full">
-          <Holds className="col-span-1 row-span-1">
+        <Grids cols={"3"} rows={"2"} className="w-full h-full p-3">
+          <Holds className="col-span-1 row-span-1 flex items-center justify-center">
             <Buttons
               href={href}
               background={"none"}
               position={"left"}
               size={"50"}
             >
-              <Images titleImg="/turnBack.svg" titleImgAlt={titleImgAlt} />
+              <Images
+                titleImg="/turnBack.svg"
+                titleImgAlt={titleImgAlt}
+                className="max-w-8 h-auto object-contain"
+              />
             </Buttons>
           </Holds>
-          <Holds className="col-span-2 row-span-2 ">
-            <Images titleImg={titleImg} titleImgAlt={titleImgAlt} size={"40"} />
+
+          <Holds className="col-start-1 col-end-5 row-start-2 row-end-3 flex items-center justify-center">
+            <Titles size={"h1"}>{title}</Titles>
           </Holds>
-          <Holds className="col-span-4 row-span-1">
+        </Grids>
+      </div>
+    );
+  }
+  if (type === "noIcon-NoHref") {
+    return (
+      <div
+        className={cn(TitleBoxVariants({ variant, size, className }))}
+        {...props}
+      >
+        <Grids cols={"3"} rows={"2"} className="w-full h-full p-3">
+          <Holds className="col-span-1 row-span-1 flex items-center justify-center">
+            <Buttons
+              onClick={onClick}
+              background={"none"}
+              position={"left"}
+              size={"50"}
+            >
+              <Images
+                titleImg="/turnBack.svg"
+                titleImgAlt={titleImgAlt}
+                className="max-w-8 h-auto object-contain"
+              />
+            </Buttons>
+          </Holds>
+
+          <Holds className="col-start-1 col-end-5 row-start-2 row-end-3 flex items-center justify-center">
+            <Titles size={"h1"}>{title}</Titles>
+          </Holds>
+        </Grids>
+      </div>
+    );
+  }
+  if (type === "row") {
+    return (
+      <div
+        className={cn(TitleBoxVariants({ variant, size, className }))}
+        {...props}
+      >
+        <Grids cols={"4"} rows={"1"} className="w-full h-full p-3 ">
+          <Buttons
+            href={href}
+            background={"none"}
+            position={"left"}
+            className="justify-center col-start-1 col-end-2 row-start-1 row-end-2"
+          >
+            <Images
+              titleImg="/turnBack.svg"
+              titleImgAlt={titleImgAlt}
+              className="max-w-8 h-auto object-contain"
+            />
+          </Buttons>
+
+          <Holds className="col-start-2 col-end-4 row-start-1 row-end-2 flex items-center justify-center">
             <Titles size={"h3"}>{title}</Titles>
           </Holds>
         </Grids>
       </div>
     );
+  } else {
+    return (
+      <div
+        className={cn(TitleBoxVariants({ variant, size, className }))}
+        {...props}
+      >
+        <Grids cols={"4"} rows={"3"} className="w-full h-full p-3">
+          <Holds className="col-span-1 row-span-1 flex items-center justify-center">
+            <Buttons
+              href={href}
+              background={"none"}
+              position={"left"}
+              size={"50"}
+            >
+              <Images
+                titleImg="/turnBack.svg"
+                titleImgAlt={titleImgAlt}
+                className="max-w-8 h-auto object-contain"
+              />
+            </Buttons>
+          </Holds>
+          <Holds className="col-start-2 col-end-4 row-span-2 flex items-center justify-center">
+            <Images
+              titleImg={titleImg}
+              titleImgAlt={titleImgAlt}
+              className="max-w-[33%] h-auto object-contain"
+            />
+          </Holds>
+          <Holds className="col-start-1 col-end-5 row-span-1 flex items-center justify-center ">
+            <Titles size={"h3"}>{title}</Titles>
+          </Holds>
+        </Grids>
+      </div>
+    );
+  }
 };
 
 export { TitleBoxes, TitleBoxVariants };

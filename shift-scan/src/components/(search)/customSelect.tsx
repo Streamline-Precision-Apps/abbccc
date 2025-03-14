@@ -28,35 +28,33 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   const t = useTranslations("Clock");
 
   return (
-    <>
+    <Holds className="h-full w-full">
       {options.length > 0 ? (
-        <Contents width={"section"}>
-            {/* <Texts>{t("SearchedCodes")}</Texts> */}
-            {options.map((option) => (
-              <Holds key={option.code} className="py-2">
-                <Buttons
-                  key={option.code}
-                  className={` p-2 cursor-pointer ${
+        <Contents width={"section"} className="h-full">
+          {/* <Texts>{t("SearchedCodes")}</Texts> */}
+          {options.map((option) => (
+            <Holds key={option.code} className="py-2">
+              <Buttons
+                key={option.code}
+                className={` p-2 cursor-pointer ${
+                  selectedOption?.code === option.code ? " bg-app-green" : ""
+                }`}
+                onClick={
+                  () =>
                     selectedOption?.code === option.code
-                      ? "border-[3px] border-app-green"
-                      : ""
-                  }`}
-                  onClick={
-                    () =>
-                      selectedOption?.code === option.code
-                        ? clearSelection() // Deselect if it's already selected
-                        : onOptionSelect(option) // Select the option
-                  }
-                >
-                  <Texts size={"p3"}>{option.label}</Texts>
-                </Buttons>
-              </Holds>
-            ))}
+                      ? clearSelection() // Deselect if it's already selected
+                      : onOptionSelect(option) // Select the option
+                }
+              >
+                <Texts size={"p3"}>{option.label}</Texts>
+              </Buttons>
+            </Holds>
+          ))}
         </Contents>
       ) : (
         <Texts>{t("noResults")}</Texts>
       )}
-    </>
+    </Holds>
   );
 };
 

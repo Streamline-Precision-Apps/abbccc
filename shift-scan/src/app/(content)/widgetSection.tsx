@@ -12,48 +12,13 @@ import { Holds } from "@/components/(reusable)/holds";
 import { usePayPeriodTimeSheet } from "../context/PayPeriodTimeSheetsContext";
 import { useRouter } from "next/navigation";
 import { Session } from "next-auth";
-import { PayPeriodTimesheets } from "@/lib/types";
-import { z } from "zod";
 import { Banners } from "@/components/(reusable)/banners";
 import { Titles } from "@/components/(reusable)/titles";
 import Capitalize from "@/utils/captitalize";
 import capitalizeAll from "@/utils/capitalizeAll";
 import Spinner from "@/components/(animations)/spinner";
 import { UseTotalPayPeriodHours } from "@/app/(content)/calculateTotal";
-
-const UserSchema = z.object({
-  id: z.string(),
-  username: z.string().optional(),
-  firstName: z.string().optional(),
-  lastName: z.string().optional(),
-  permission: z.enum(["USER", "ADMIN", "SUPERADMIN", "MANAGER"]).optional(),
-  accountSetup: z.boolean().optional(),
-  DOB: z.string().optional(),
-  email: z.string().optional(),
-  phone: z.string().optional(),
-});
-
-const SessionSchema = z.object({
-  user: UserSchema.nullable(),
-});
-
-// Zod schema for PayPeriodTimesheets type
-const PayPeriodTimesheetsSchema = z.object({
-  startTime: z.string().refine((date) => !isNaN(new Date(date).getTime()), {
-    message: "Invalid date format",
-  }),
-  endTime: z.string().refine((date) => !isNaN(new Date(date).getTime()), {
-    message: "Invalid date format",
-  }),
-});
-
-// Zod schema for props
-const WidgetSectionPropsSchema = z.object({
-  session: SessionSchema,
-});
-
-// Zod schema for API response for pay period timesheets
-const PayPeriodSheetsArraySchema = z.array(PayPeriodTimesheetsSchema);
+import { usePayPeriodData } from "@/hooks/(home)/usePayPeriod";
 
 type Props = {
   session: Session;
@@ -61,80 +26,26 @@ type Props = {
 };
 
 export default function WidgetSection({ session, locale }: Props) {
-  // Validate the session prop using Zod
-  try {
-    WidgetSectionPropsSchema.parse({ session });
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      console.error("Validation error in WidgetSection props:", error.errors);
-    }
-  }
   const date = new Date().toLocaleDateString(locale, {
     year: "numeric",
     month: "short",
     day: "numeric",
     weekday: "long",
   });
-
-  const [pageView, setPageView] = useState("");
-  const [loading, setLoading] = useState(true);
   const router = useRouter();
   const f = useTranslations("Home");
   const w = useTranslations("Widgets");
-  const e = useTranslations("Err-Msg");
   const [toggle, setToggle] = useState(true);
   const handleToggle = () => setToggle(!toggle);
   const permission = session.user?.permission;
   const accountSetup = session.user?.accountSetup;
   const t = useTranslations("Home");
   const { setPayPeriodTimeSheets } = usePayPeriodTimeSheet();
-  const [payPeriodSheets, setPayPeriodSheets] = useState<PayPeriodTimesheets[]>(
-    []
+  const { payPeriodSheets, pageView, setPageView, loading } = usePayPeriodData(
+    setPayPeriodTimeSheets
   );
   const user = session.user;
-  // all the data will be rendered at once
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Start loading state
-        setLoading(true);
-        // Fetch pay period timesheets
-        const payPeriodResponse = fetch("/api/getPayPeriodTimeSheets")
-          .then((res) => res.json())
-          .then((data) => {
-            const validatedData = PayPeriodSheetsArraySchema.parse(data);
-            const transformedData = validatedData.map((item) => ({
-              ...item,
-              startTime: new Date(item.startTime),
-              endTime: new Date(item.endTime),
-            }));
-            setPayPeriodSheets(transformedData);
-            setPayPeriodTimeSheets(transformedData);
-          });
 
-        // Fetch cookie value
-        const pageViewResponse = fetch(
-          "/api/cookies?method=get&name=currentPageView"
-        )
-          .then((res) => res.json())
-          .then((data) => {
-            setPageView(data || "");
-          });
-
-        // Wait for all API calls to complete
-        await Promise.all([payPeriodResponse, pageViewResponse]);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        // Stop loading when all data is loaded
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [setPayPeriodTimeSheets]);
-
-  // moved the calulate total hours here
   UseTotalPayPeriodHours(payPeriodSheets);
 
   // Handle page redirects in a separate useEffect
@@ -149,7 +60,7 @@ export default function WidgetSection({ session, locale }: Props) {
     // if (!accountSetup) {
     //   router.push("/signin/signup");
     // }
-  }, [pageView, router, accountSetup]);
+  }, [pageView, router, accountSetup, setPageView]);
 
   //-----------------------------------------------------------------------
 
@@ -174,10 +85,9 @@ export default function WidgetSection({ session, locale }: Props) {
       </>
     );
   }
-
   return (
     <>
-      <Holds className="row-span-2 bg-app-blue bg-opacity-20 w-full p-10 my-2 rounded-[10px]">
+      <Holds className="row-span-2 bg-app-blue bg-opacity-20 w-full p-4 my-2 rounded-[10px]">
         {pageView === "" && (
           <Banners>
             <Titles text={"white"} size={"h2"}>

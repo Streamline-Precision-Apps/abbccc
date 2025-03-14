@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, use, useEffect, useState } from "react";
 import { fetchTimesheets } from "@/actions/timeSheetActions";
 import { Holds } from "@/components/(reusable)/holds";
 import { Titles } from "@/components/(reusable)/titles";
@@ -9,70 +9,92 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import EditWorkNew from "./editWork-new";
+
+import { Grids } from "@/components/(reusable)/grids";
+import { Labels } from "@/components/(reusable)/labels";
+import { format } from "date-fns";
 import { TimeSheet } from "@/lib/types";
+import Spinner from "@/components/(animations)/spinner";
 
-export const EmployeeTimeSheets = () => {
-  const [date, setDate] = useState<string>(""); // State for selected date
-  const { employeeId } = useParams(); // Get employeeId from the URL
-  const [edit, setEdit] = useState(false);
+export const EmployeeTimeSheets = ({
+  date,
+  setDate,
+  timeSheets,
+  edit,
+  setEdit,
+  loading,
+  manager,
+}: {
+  date: string;
+  setDate: (date: string) => void;
+  timeSheets: TimeSheet[];
+  edit: boolean;
+  setEdit: (edit: boolean) => void;
+  loading: boolean;
+  manager: string;
+}) => {
   const t = useTranslations("MyTeam");
-  const [timeSheets, setTimeSheets] = useState<TimeSheet[]>([]); // State for storing timesheets
-
-  // Handle date selection and fetch timesheets
-  const handleDateChange = async (e: ChangeEvent<HTMLInputElement>) => {
-    const selectedDate = e.target.value; // This should be a valid 'YYYY-MM-DD' date
-    setDate(selectedDate); // Update the state with the selected date
-
-    if (selectedDate) {
-      try {
-        // Pass correct parameters: employeeId and selectedDate
-        const fetchedTimeSheets = await fetchTimesheets(
-          employeeId as string,
-          selectedDate
-        );
-        // TODO check to ensure this functions right. It was updated for build fixes.
-
-        setTimeSheets(fetchedTimeSheets as unknown as TimeSheet[]);
-      } catch (error) {
-        console.error("Error fetching timesheets:", error);
-      }
-    }
-  };
 
   return (
-    <Holds background={"darkBlue"}>
-      <Contents width={"section"}>
-        {/* Input for selecting a date */}
-        <Holds>
-          <Titles text={"white"} position={"left"}>
+    <Holds background={"white"} className="h-full w-full">
+      <Grids rows={"6"} className=" h-full w-full ">
+        {loading ? (
+          <Holds
+            background={"white"}
+            className="row-start-2 row-end-7 h-full justify-center items-center animate-pulse"
+          >
+            <Spinner size={70} />
+          </Holds>
+        ) : (
+          <Holds className="row-start-2 row-end-7 h-full w-full overflow-y-scroll no-scrollbar">
+            {timeSheets.length > 0 && (
+              <EditWorkNew
+                timeSheet={timeSheets}
+                edit={edit}
+                setEdit={setEdit}
+                manager={manager}
+              />
+            )}
+
+            {/* Display a message if no timesheets are found */}
+            {date && timeSheets.length === 0 && (
+              <Holds size={"full"} className="w-full h-full p-6">
+                <Titles size={"h4"} text={"black"}>
+                  {t("NoTimesheetsFound")}
+                </Titles>
+                <Titles size={"h5"} text={"black"}>
+                  {t("ForThisDate")}
+                </Titles>
+              </Holds>
+            )}
+          </Holds>
+        )}
+
+        <Holds
+          background={"darkBlue"}
+          className="row-start-1 row-end-2 rounded-none h-full  "
+        >
+          <Labels
+            size={"p5"}
+            text={"white"}
+            position={"left"}
+            htmlFor="date"
+            className="pl-1"
+          >
             {t("SelectDate")}
-          </Titles>
+          </Labels>
           <Inputs
             type="date"
             name="date"
             id="date"
             value={date} // Bind input value to state
-            className="flex justify-center m-auto text-black text-2xl bg-white p-2 border-2 border-black rounded-2xl"
-            onChange={handleDateChange} // Use onChange to handle input
+            className="flex  text-black bg-white  border-2 border-black "
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setDate(e.target.value)
+            }
           />
         </Holds>
-      </Contents>
-
-      {/* Render the timesheets using EditWorkNew */}
-      {timeSheets.length > 0 && (
-        <>
-          <Holds size={"full"} className="w-full h-full">
-            <EditWorkNew timesheet={timeSheets} edit={edit} setEdit={setEdit} />
-          </Holds>
-        </>
-      )}
-
-      {/* Display a message if no timesheets are found */}
-      {date && timeSheets.length === 0 && (
-        <Holds size={"full"} className="my-5">
-          <Titles text={"white"}>{t("NoTimesheetsFound")}</Titles>
-        </Holds>
-      )}
+      </Grids>
     </Holds>
   );
 };

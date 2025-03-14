@@ -19,34 +19,33 @@ model User {
     terminationDate DateTime?
     accountSetup    Boolean    @default(false)
     clockedIn       Boolean    @default(false) // indicates if employee is clocked in
+    companyId       String
 
     passwordResetTokens  PasswordResetToken[]
     timeSheets           TimeSheet[]
     equipmentLogs        EmployeeEquipmentLog[]
     contact              Contacts?
     userSettings         UserSettings? // one to one relationship
-    injuryForms          InjuryForm[] // one to many relationship 
-    timeOffRequestForms  timeOffRequestForm[] // one to many relationship
     maintenanceLogs      MaintenanceLog[]
     passwordResetTokenId String?
     crews                Crew[]
+    formSubmission       FormSubmission[]
+    company              Company                @relation(fields: [companyId], references: [id])
+    FormApproval         FormApproval[]
 
     @@unique([firstName, lastName, DOB]) // prevent duplicate users
     @@index([email])
 }
 
 model UserSettings {
-    id               String  @id @default(cuid())
-    userId           String  @unique
-    language         String  @default("en")
-    approvedRequests Boolean @default(false)
-    timeOffRequests  Boolean @default(false)
-    generalReminders Boolean @default(false)
-    biometric        Boolean @default(false)
-    cameraAccess     Boolean @default(false)
-    locationAccess   Boolean @default(false)
-    photoAlbumAccess Boolean @default(false)
-    cookiesAccess    Boolean @default(false)
+    id                String  @id @default(cuid())
+    userId            String  @unique
+    language          String  @default("en")
+    generalReminders  Boolean @default(false) // all general reminders set by employee
+    personalReminders Boolean @default(false) // all personal reminders set by employee
+    cameraAccess      Boolean @default(false)
+    locationAccess    Boolean @default(false)
+    cookiesAccess     Boolean @default(false)
 
     user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

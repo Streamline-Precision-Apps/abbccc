@@ -3,30 +3,31 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { HTMLAttributes, FC } from "react";
 import { cn } from "@/components/(reusable)/utils";
 
-//this component determines the background color and overall layout of the page. not for use other than whole page.
-const BaseVariants = cva("", {
+const BaseVariants = cva("fixed h-full w-full", {
   variants: {
     background: {
-      //only background attributes
-      default: "bg-gradient-to-b from-app-dark-blue to-app-blue",
-      modal: "bg-neutral-800 bg-opacity-80", //will create the gray background for modals
+      // Only background attributes
+      default: "bg-gradient-to-b from-app-dark-blue to-app-blue ",
+      modal: "bg-neutral-800 bg-opacity-80", // Will create the gray background for modals
     },
     position: {
-      //only position attributes
+      // Only position attributes
       center: "",
-      start: "fixed top-0 left-0", //use for modals
+      start: "fixed top-0 left-0", // Use for modals
+      fixed: "fixed top-0 left-0", // Fixed position for the whole page
     },
     size: {
-      //only width and height
-      default: "pb-3 pt-7 h-dvh", //use if data fits on screen
-      scroll: "pb-3 pt-7 h-full no-scrollbar overflow-y-auto", //use if data exceeds screen size
-      screen: "h-screen w-screen", //use for modals
+      // Only width and height
+      default: "pb-3 pt-7 h-dvh", // Use if data fits on screen
+      scroll: "pb-3 pt-7 h-full no-scrollbar overflow-y-auto", // Use if data exceeds screen size
+      screen: "h-screen w-screen", // Use for modals
+      noScroll: "pb-3 pt-7 h-full", // Ensure no scrolling behavior for fixed elements
     },
   },
   defaultVariants: {
     background: "default",
-    position: "center",
-    size: "default",
+    position: "center", // You can change this if you want fixed by default
+    size: "default", // Use default size unless you need full screen
   },
 });
 

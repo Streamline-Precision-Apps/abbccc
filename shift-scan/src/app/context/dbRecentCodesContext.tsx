@@ -82,7 +82,7 @@ export const RecentJobSiteProvider = ({
       try {
         if (
           url === "/clock" ||
-          url === "/dashboard/log-new" ||
+          url === "/dashboard/equipment/log-new" ||
           url === "/dashboard/switch-jobs" ||
           url === "/break"
         ) {
@@ -161,7 +161,7 @@ export const RecentCostCodeProvider = ({
       try {
         if (
           url === "/clock" ||
-          url === "/dashboard/log-new" ||
+          url === "/dashboard/equipment/log-new" ||
           url === "/dashboard/switch-jobs" ||
           url === "/break"
         ) {

@@ -4,32 +4,64 @@ import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 
 export async function GET() {
-  const session = await auth();
-  const userId = session?.user.id;
+  try {
+    // Authenticate the user
+    const session = await auth();
+    const userId = session?.user?.id;
 
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-  const recentEquipment = await prisma.employeeEquipmentLog.findMany({
-    where: {
-      employeeId: userId,
-    },
-    select: {
-      Equipment: {
-        select: {
-          id: true,
-          qrId: true,
-          name: true,
+    // Fetch the 5 most recent unique equipment used by the authenticated user
+    const recentEquipment = await prisma.employeeEquipmentLog.findMany({
+      where: {
+        employeeId: userId,
+      },
+      select: {
+        equipment: {
+          select: {
+            id: true,
+            qrId: true,
+            name: true,
+          },
         },
       },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-    take: 5,
-    distinct: ["equipmentId"],
-  });
+      orderBy: {
+        createdAt: "desc",
+      },
+      take: 5,
+    });
 
-  return NextResponse.json(recentEquipment.map((log) => log.Equipment));
+    // Extract unique equipment items (filter out duplicates)
+    const uniqueEquipment = new Map();
+    recentEquipment.forEach((log) => {
+      if (log.equipment) {
+        uniqueEquipment.set(log.equipment.id, log.equipment);
+      }
+    });
+
+    const equipmentList = Array.from(uniqueEquipment.values());
+
+    if (equipmentList.length === 0) {
+      return NextResponse.json(
+        { message: "No recent equipment found." },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(equipmentList);
+  } catch (error) {
+    console.error("Error fetching recent equipment:", error);
+
+    let errorMessage = "Failed to fetch recent equipment";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
+    return NextResponse.json(
+      { error: errorMessage },
+      { status: 500 }
+    );
+  }
 }

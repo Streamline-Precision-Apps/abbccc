@@ -18,7 +18,9 @@ model Jobsite {
     employeeEquipmentLogs EmployeeEquipmentLog[] //connects a job Site to an equipment log
     timeSheets            TimeSheet[] // connects a job Site to the timesheet
     CCTags                CCTag[] // a filter for the job Site by a tag this connects the cost code to the Job Site
-    equipment             Equipment[] // all equipment on the job Site 
+    EquipmentHauled       EquipmentHauled[]
+    Company               Company?               @relation(fields: [companyId], references: [id])
+    companyId             String?
 
     @@unique([name, address, city, state]) // unique job Site so only one is created
     @@index([qrId])

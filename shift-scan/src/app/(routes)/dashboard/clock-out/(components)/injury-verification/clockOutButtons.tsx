@@ -33,21 +33,21 @@ const ClockOutButtons = () => {
     <div className="grid grid-cols-1 grid-rows-2 gap-4">
       {error && <div className="text-red-500">{error}</div>}
       <button
-        className="bg-orange-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded"
+        className="bg-orange-300 hover:bg-app-gray text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded"
         onClick={() => handleNavigation("b")} // b = break
       >
         {t("Break")}
       </button>
 
       <button
-        className="bg-red-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded"
+        className="bg-red-300 hover:bg-app-gray text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded"
         onClick={() => handleNavigation("ewd")} // ewd = end work day
       >
         {t("End")}
       </button>
 
       <button
-        className="bg-blue-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded"
+        className="bg-blue-300 hover:bg-app-gray text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded"
         onClick={handleHomeNavigation}
       >
         {t("Home")}

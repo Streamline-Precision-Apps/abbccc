@@ -96,7 +96,7 @@ const Sidebar = () => {
                 <Buttons
                   className={`
                     ${
-                      isPersonnelPage ? "bg-slate-400 " : "bg-app-blue"
+                      isPersonnelPage ? "bg-app-gray " : "bg-app-blue"
                     } w-[90%] h-12 `}
                   href="/admins/personnel"
                 >
@@ -126,7 +126,7 @@ const Sidebar = () => {
                 <Buttons
                   className={`
                     ${
-                      isAssetsPage ? "bg-slate-400 " : "bg-app-blue"
+                      isAssetsPage ? "bg-app-gray " : "bg-app-blue"
                     } w-[90%] h-12 `}
                   href="/admins/assets"
                 >
@@ -156,7 +156,7 @@ const Sidebar = () => {
                 <Buttons
                   className={`
                     ${
-                      isReportsPage ? "bg-slate-400 " : "bg-app-blue"
+                      isReportsPage ? "bg-app-gray " : "bg-app-blue"
                     } w-[90%] h-12 `}
                   href="/admins/reports"
                 >
@@ -186,7 +186,7 @@ const Sidebar = () => {
                 <Buttons
                   className={`
                     ${
-                      inboxPage ? "bg-slate-400 " : "bg-app-blue"
+                      inboxPage ? "bg-app-gray " : "bg-app-blue"
                     } w-[90%] h-12 `}
                   href="/admins/inbox"
                 >
@@ -342,7 +342,7 @@ const Sidebar = () => {
                 <Buttons
                   className={`
                     ${
-                      isPersonnelPage ? "bg-slate-400 " : "bg-app-blue"
+                      isPersonnelPage ? "bg-app-gray " : "bg-app-blue"
                     } w-12 h-12 `}
                   href="/admins/personnel"
                 >
@@ -359,7 +359,7 @@ const Sidebar = () => {
                 <Buttons
                   className={`
                     ${
-                      isAssetsPage ? "bg-slate-400 " : "bg-app-blue"
+                      isAssetsPage ? "bg-app-gray " : "bg-app-blue"
                     } w-12 h-12 `}
                   href="/admins/assets"
                 >
@@ -377,7 +377,7 @@ const Sidebar = () => {
                 <Buttons
                   className={`
                     ${
-                      isReportsPage ? "bg-slate-400 " : "bg-app-blue"
+                      isReportsPage ? "bg-app-gray " : "bg-app-blue"
                     } w-12 h-12 `}
                   href="/admins/reports"
                 >
@@ -393,7 +393,7 @@ const Sidebar = () => {
               <Holds>
                 <Buttons
                   className={`
-                    ${inboxPage ? "bg-slate-400 " : "bg-app-blue"} w-12 h-12 `}
+                    ${inboxPage ? "bg-app-gray " : "bg-app-blue"} w-12 h-12 `}
                   href="/admins/inbox"
                 >
                   <Holds position={"row"}>

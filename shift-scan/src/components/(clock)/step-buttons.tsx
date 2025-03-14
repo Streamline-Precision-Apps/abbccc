@@ -20,10 +20,10 @@ export default function StepButtons({
   return (
     <Holds className="h-full w-full">
       <Buttons
-        background={disabled ? "grey" : "orange"}
+        background={disabled ? "darkGray" : "orange"}
         onClick={handleNextStep}
         disabled={disabled}
-        className="py-3"
+        className="py-2"
       >
         <Titles size={"h2"}>{isLastStep ? t("Submit") : t("Continue")}</Titles>
       </Buttons>

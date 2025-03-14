@@ -22,12 +22,12 @@ export async function GET() {
     const timesheets = await prisma.timeSheet.findMany({
       where: {
         userId: userId,
-        date: {
+        submitDate: {
           gte: startOfDay,
           lte: endOfDay,
         },
       },
-      orderBy: { date: "desc" },
+      orderBy: { submitDate: "asc" },
     });
 
     return NextResponse.json(timesheets);

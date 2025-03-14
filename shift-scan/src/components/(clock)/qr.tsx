@@ -1,22 +1,21 @@
 "use client";
-
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import QrScanner from "qr-scanner";
 import { useRouter } from "next/navigation";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useEQScanData } from "@/app/context/equipmentContext";
 import { useDBJobsite } from "@/app/context/dbCodeContext";
-import { start } from "repl";
 
 type QrReaderProps = {
   handleScanJobsite?: (type: string) => void;
   url: string;
-  clockInRole: string;
+  clockInRole: string | undefined;
   type: string;
   handleNextStep: () => void;
   startCamera: boolean;
   setStartCamera: React.Dispatch<React.SetStateAction<boolean>>;
   setFailedToScan: React.Dispatch<React.SetStateAction<boolean>>;
+  setScanned: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export default function QR({
@@ -28,6 +27,7 @@ export default function QR({
   startCamera,
   setStartCamera,
   setFailedToScan,
+  setScanned,
 }: QrReaderProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const qrScannerRef = useRef<QrScanner | null>(null);
@@ -38,45 +38,65 @@ export default function QR({
   const { jobsiteResults } = useDBJobsite();
   const { setScanResult } = useScanData();
   const { setscanEQResult } = useEQScanData();
+
+  // Performance patch: Override getContext to add willReadFrequently for 2d contexts
+  useEffect(() => {
+    const originalGetContext = HTMLCanvasElement.prototype.getContext;
+    HTMLCanvasElement.prototype.getContext = function (
+      this: HTMLCanvasElement,
+      type: string,
+      options?: CanvasRenderingContext2DSettings
+    ) {
+      if (type === "2d") {
+        options = { ...options, willReadFrequently: true };
+      }
+      return originalGetContext.call(this, type, options);
+    } as typeof originalGetContext;
+    return () => {
+      HTMLCanvasElement.prototype.getContext = originalGetContext;
+    };
+  }, []);
+
   // Constants
   const SCAN_THRESHOLD = 200;
 
-  // ------------------- Different scan processes below----------------------------
-  // equipment process
+  // ------------------- Different scan processes below ----------------------------
   const processEquipmentScan = useCallback(
     (data: string) => {
-      setscanEQResult({ data: data });
+      setscanEQResult({ data });
       qrScannerRef.current?.stop();
       handleNextStep();
     },
     [setscanEQResult, handleNextStep]
   );
-  // general process
+
   const processGeneralScan = useCallback(
     (data: string) => {
       setScanResult({ data });
       qrScannerRef.current?.stop();
       if (handleScanJobsite) {
-        handleScanJobsite(clockInRole);
+        handleScanJobsite(clockInRole || "");
       }
     },
     [setScanResult, handleScanJobsite, clockInRole]
   );
-  ///-----------------------End of scan processes-----------------------------------
+  // ----------------------- End of scan processes -------------------------------
 
-  // QR code scan success handler, memoized with useCallback
   const handleScanSuccess = useCallback(
     (result: QrScanner.ScanResult) => {
       try {
         const { data } = result;
-        // Check if the scanned data is a valid QR code
         if (!jobsiteResults?.some((j) => j.qrId === data)) {
           throw new Error("Invalid QR code Scanned!");
         }
         if (type === "equipment") {
           processEquipmentScan(data);
+          setScanned(true);
+          handleNextStep();
+          handleNextStep();
         } else {
           processGeneralScan(data);
+          setScanned(true);
         }
       } catch (error) {
         console.error("QR Code Processing Error:", error);
@@ -90,17 +110,16 @@ export default function QR({
       type,
       processEquipmentScan,
       processGeneralScan,
+      setScanned,
       setStartCamera,
       setFailedToScan,
     ]
   );
 
-  // QR code scan fail handler
   const handleScanFail = useCallback(() => {
     setScanCount((prev) => prev + 1);
   }, []);
 
-  // Initialize QR scanner
   useEffect(() => {
     if (!videoRef.current) return;
 
@@ -111,21 +130,38 @@ export default function QR({
         highlightCodeOutline: true,
         returnDetailedScanResult: true,
         preferredCamera: "environment",
+        calculateScanRegion: (video) => {
+          const videoWidth = video.videoWidth;
+          const videoHeight = video.videoHeight;
+          const regionWidth = videoWidth * 0.3;
+          const regionHeight = videoHeight * 0.5;
+          const x = (videoWidth - regionWidth) / 2;
+          const y = (videoHeight - regionHeight) / 2;
+          return {
+            x,
+            y,
+            width: regionWidth,
+            height: regionHeight,
+            downScaledWidth: 400,
+            downScaledHeight: 400,
+          };
+        },
       });
 
       qrScannerRef.current = scanner;
 
       QrScanner.hasCamera().then((hasCamera) => {
         if (hasCamera) {
-          scanner
-            .start()
-            .catch((err) => console.error("Scanner Start Error:", err));
+          scanner.start().catch((err) => {
+            // Ignore AbortError, which happens when play() is interrupted
+            if (err.name === "AbortError") return;
+            console.error("Scanner Start Error:", err);
+          });
         } else {
           console.error("No camera found");
         }
       });
     } else {
-      // Stop scanner when startCamera is false
       qrScannerRef.current?.stop();
     }
 
@@ -134,7 +170,6 @@ export default function QR({
     };
   }, [handleScanSuccess, handleScanFail, startCamera]);
 
-  // Handle excessive scan failures
   useEffect(() => {
     if (scanCount >= SCAN_THRESHOLD) {
       qrScannerRef.current?.stop();
@@ -145,7 +180,7 @@ export default function QR({
   return (
     <video
       ref={videoRef}
-      className="h-fit w-full rounded-2xl border-4 bg-black bg-opacity-85 border-black p-[2%]"
+      className="w-full h-full rounded-[10px] border-[3px] border-black bg-black bg-opacity-85 object-cover"
       aria-label="QR scanner video stream"
     >
       Video stream not available. Please enable your camera.

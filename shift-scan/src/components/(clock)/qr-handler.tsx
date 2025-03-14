@@ -8,22 +8,21 @@ import { Titles } from "../(reusable)/titles";
 import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
 import { Images } from "../(reusable)/images";
-import { Selects } from "../(reusable)/selects";
-import { useSession } from "next-auth/react";
-import { setWorkRole } from "@/actions/cookieActions";
 import { Contents } from "../(reusable)/contents";
 
 type QRStepProps = {
   handleAlternativePath: () => void;
   handleNextStep: () => void;
+  handlePrevStep: () => void;
   handleReturn?: () => void;
   handleReturnPath: () => void;
   handleScanJobsite?: (type: string) => void;
   type: string;
   url: string;
   option?: string;
-  clockInRole: string;
-  setClockInRole: React.Dispatch<React.SetStateAction<string>>;
+  clockInRole: string | undefined;
+  setClockInRole: React.Dispatch<React.SetStateAction<string | undefined>>;
+  setScanned: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export default function QRStep({
@@ -35,31 +34,13 @@ export default function QRStep({
   type,
   url,
   clockInRole,
-  setClockInRole,
+  handlePrevStep,
+
+  setScanned,
 }: QRStepProps) {
   const t = useTranslations("Clock");
   const [startCamera, setStartCamera] = useState<boolean>(false);
-  const { data: session } = useSession();
-  const tascoView = session?.user.tascoView;
-  const truckView = session?.user.truckView;
-  const mechanicView = session?.user.mechanicView;
-  const laborView = session?.user.laborView;
-  const [numberOfViews, setNumberOfViews] = useState(0);
   const [failedToScan, setFailedToScan] = useState(false);
-
-  const selectView = (clockInRole: string) => {
-    setClockInRole(clockInRole);
-  };
-
-  useEffect(() => {
-    let count = 0;
-    if (tascoView) count++;
-    if (truckView) count++;
-    if (mechanicView) count++;
-    if (laborView) count++;
-
-    setNumberOfViews(count);
-  }, [tascoView, truckView, mechanicView, laborView]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -70,8 +51,8 @@ export default function QRStep({
   return (
     <>
       <Holds background={"white"} className="h-full w-full">
-        <Contents width={"section"}>
-          <Grids rows={"7"} gap={"5"} className="h-full w-full my-5">
+        <Contents width={"section"} className="h-full py-5">
+          <Grids rows={"7"} gap={"5"} className="h-full w-full ">
             {type !== "equipment" ? (
               <>
                 <Holds className="row-start-1 row-end-2 h-full w-full justify-center ">
@@ -96,29 +77,6 @@ export default function QRStep({
                     </Holds>
                   </Grids>
                 </Holds>
-                {numberOfViews > 1 && option !== "switchJobs" ? (
-                  <Holds className="p-1 justify-center border-[3px] border-black rounded-[10px] shadow-[6px_6px_0px_grey]">
-                    <Selects
-                      className="disabled:gray-400 bg-app-blue text-center p-3"
-                      value={clockInRole}
-                      disabled={startCamera}
-                      onChange={(e) => selectView(e.target.value)}
-                    >
-                      {tascoView === true && (
-                        <option value="tasco">{t("TASCO")}</option>
-                      )}
-                      {truckView === true && (
-                        <option value="truck">{t("Truck")}</option>
-                      )}
-                      {mechanicView === true && (
-                        <option value="mechanic">{t("Mechanic")}</option>
-                      )}
-                      {laborView === true && (
-                        <option value="general">{t("General")}</option>
-                      )}
-                    </Selects>
-                  </Holds>
-                ) : null}
               </>
             ) : (
               <Holds className="row-start-1 row-end-2 h-full w-full justify-center ">
@@ -146,52 +104,45 @@ export default function QRStep({
             )}
 
             {!startCamera ? (
-              <Holds
-                className={
-                  numberOfViews > 1
-                    ? "h-full w-full row-start-4 row-end-6"
-                    : "h-full w-full row-start-2 row-end-7"
-                }
-              >
-                <Holds className="h-full m-auto">
-                  <Images
-                    titleImg="/camera.svg"
-                    titleImgAlt="clockIn"
-                    position={"center"}
-                    size={"40"}
-                  />
-                  {failedToScan === true && (
-                    <Holds className="pt-5">
-                      <Texts text={"red"} size={"p4"}>
-                        {t("FailedToScanJobSiteDoesNotExist")}
-                      </Texts>
+              <Holds className={"h-full w-full row-start-2 row-end-7 "}>
+                <Grids rows={"6"} gap={"2"} className="h-full w-full">
+                  <Holds className="h-full w-full row-start-2 row-end-6 justify-center border-[3px] border-black rounded-[10px] p-3">
+                    <Holds className="h-full w-full justify-center bg-app-dark-gray border-[3px] border-black rounded-[10px]">
+                      <Images
+                        titleImg="/camera.svg"
+                        titleImgAlt="clockIn"
+                        position={"center"}
+                        size={"40"}
+                      />
                     </Holds>
-                  )}
-                </Holds>
+                    {failedToScan === true && (
+                      <Holds className="h-full w-full row-start-6 row-end-7 justify-center">
+                        <Texts text={"red"} size={"p4"}>
+                          {t("FailedToScanJobSiteDoesNotExist")}
+                        </Texts>
+                      </Holds>
+                    )}
+                  </Holds>
+                </Grids>
               </Holds>
             ) : (
-              <Holds
-                className={
-                  numberOfViews > 1
-                    ? "h-full w-full row-start-3 row-end-7"
-                    : "h-full w-full row-start-3 row-end-7"
-                }
-              >
-                <Grids rows={"5"} gap={"2"}>
-                  <Holds className="h-full w-full row-start-1 row-end-5 justify-center">
+              <Holds className={"h-full w-full row-start-2 row-end-7"}>
+                <Grids rows={"6"} gap={"2"}>
+                  <Holds className="h-full w-full row-start-2 row-end-6 justify-center border-[3px] p-3 border-black rounded-[10px] ">
                     <QR
                       handleScanJobsite={handleScanJobsite}
                       url={url}
-                      clockInRole={clockInRole}
+                      clockInRole={clockInRole || ""}
                       type={type}
                       handleNextStep={handleNextStep}
                       startCamera={startCamera}
                       setStartCamera={setStartCamera}
                       setFailedToScan={setFailedToScan}
+                      setScanned={setScanned}
                     />
                   </Holds>
 
-                  <Holds className="h-full w-full row-start-5 row-end-6 justify-center">
+                  <Holds className="h-full w-full row-start-6 row-end-7 justify-center">
                     <Buttons
                       background={"none"}
                       onClick={handleAlternativePath}
@@ -208,7 +159,7 @@ export default function QRStep({
                   onClick={() => setStartCamera(!startCamera)}
                   background={"green"}
                 >
-                  <Titles size={"h2"}>Begin Scanning</Titles>
+                  <Titles size={"h2"}>{t("StartCamera")}</Titles>
                 </Buttons>
               </Holds>
             ) : null}

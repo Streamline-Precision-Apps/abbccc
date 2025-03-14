@@ -9,7 +9,6 @@ import WidgetSection from "@/app/(content)/widgetSection";
 import { Images } from "@/components/(reusable)/images";
 import { redirect } from "next/navigation";
 import { AnimatedHamburgerButton } from "@/components/(animations)/hamburgerMenu";
-import { setWorkRole } from "@/actions/cookieActions";
 
 export default async function Home() {
   //------------------------------------------------------------------------
@@ -26,7 +25,7 @@ export default async function Home() {
   return (
     <Bases>
       <Contents>
-        <Grids rows={"8"}>
+        <Grids rows={"8"} gap={"2"}>
           <Holds position={"row"} background={"white"} className="row-span-1">
             <Holds size={"30"}>
               <Images
