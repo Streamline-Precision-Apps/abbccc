@@ -20,6 +20,7 @@ type Form = {
 type DraftForm = {
   id: string;
   formTemplateId: string;
+  data: Record<string, any>;
   formTemplate: {
     name: string;
   };
@@ -139,34 +140,37 @@ export default function FormSelection({
             </Titles>
             <Holds className="h-full mt-5 overflow-y-scroll no-scrollbar ">
               {formDrafts &&
-                formDrafts.map((form) => (
-                  <Holds key={form.id} className="pb-2">
-                    <SlidingDiv
-                      onSwipeLeft={async () => {
-                        try {
-                          await deleteFormSubmission(form.id);
-                          // Remove the deleted form from the list
-                          setFormDrafts((prevDrafts) =>
-                            prevDrafts.filter((draft) => draft.id !== form.id)
-                          );
-                        } catch (error) {
-                          console.error("Error deleting form draft:", error);
-                        }
-                      }}
-                    >
-                      <Buttons
-                        className="py-2"
-                        onClick={() => {
-                          router.push(
-                            `/hamburger/inbox/formSubmission/${form.formTemplateId}?submissionId=${form.id}`
-                          );
+                formDrafts.map((form) => {
+                  const title = form.formTemplate.name;
+                  return (
+                    <Holds key={form.id} className="pb-2">
+                      <SlidingDiv
+                        onSwipeLeft={async () => {
+                          try {
+                            await deleteFormSubmission(form.id);
+                            // Remove the deleted form from the list
+                            setFormDrafts((prevDrafts) =>
+                              prevDrafts.filter((draft) => draft.id !== form.id)
+                            );
+                          } catch (error) {
+                            console.error("Error deleting form draft:", error);
+                          }
                         }}
                       >
-                        <Titles size={"h5"}>{form.formTemplate.name}</Titles>
-                      </Buttons>
-                    </SlidingDiv>
-                  </Holds>
-                ))}
+                        <Buttons
+                          className="py-2"
+                          onClick={() => {
+                            router.push(
+                              `/hamburger/inbox/formSubmission/${form.formTemplateId}?submissionId=${form.id}`
+                            );
+                          }}
+                        >
+                          <Titles size={"h5"}>{title}</Titles>
+                        </Buttons>
+                      </SlidingDiv>
+                    </Holds>
+                  );
+                })}
             </Holds>
           </Contents>
         </Holds>

@@ -1,7 +1,4 @@
 -- CreateEnum
-CREATE TYPE "TimeOffRequestType" AS ENUM ('FAMILY_MEDICAL', 'MILITARY', 'PAID_VACATION', 'NON_PAID_PERSONAL', 'SICK');
-
--- CreateEnum
 CREATE TYPE "FormStatus" AS ENUM ('PENDING', 'APPROVED', 'DENIED', 'DRAFT');
 
 -- CreateEnum
@@ -178,6 +175,7 @@ CREATE TABLE "FormField" (
     "id" TEXT NOT NULL,
     "formGroupingId" TEXT NOT NULL,
     "label" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
     "type" "FieldType" NOT NULL,
     "required" BOOLEAN NOT NULL DEFAULT false,
     "order" INTEGER NOT NULL,
@@ -203,14 +201,10 @@ CREATE TABLE "FormSubmission" (
     "formTemplateId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "formType" TEXT,
-    "requestType" "TimeOffRequestType",
-    "name" TEXT,
-    "startDate" TIMESTAMP(3),
-    "endDate" TIMESTAMP(3),
-    "data" JSONB NOT NULL,
+    "data" JSONB,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "submittedAt" TIMESTAMP(3),
-    "status" "FormStatus" NOT NULL DEFAULT 'PENDING',
+    "status" "FormStatus" NOT NULL DEFAULT 'DRAFT',
 
     CONSTRAINT "FormSubmission_pkey" PRIMARY KEY ("id")
 );

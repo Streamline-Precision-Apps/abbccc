@@ -30,6 +30,7 @@ export async function GET(
 
     select: {
       data: true,
+      title: true,
       formTemplate: {
         select: {
           name: true,

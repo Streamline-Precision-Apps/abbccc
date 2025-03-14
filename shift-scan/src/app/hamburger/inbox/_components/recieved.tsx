@@ -1,222 +1,158 @@
 "use client";
-
-import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import Employee from "@/app/(routes)/admins/personnel/@view/[employee]/page";
+import SlidingDiv from "@/components/(animations)/slideDelete";
+import Spinner from "@/components/(animations)/spinner";
 import { Buttons } from "@/components/(reusable)/buttons";
+import { Contents } from "@/components/(reusable)/contents";
+import { Grids } from "@/components/(reusable)/grids";
+import { Holds } from "@/components/(reusable)/holds";
+import { Images } from "@/components/(reusable)/images";
+import { Selects } from "@/components/(reusable)/selects";
+import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { useRouter } from "next/navigation";
-import React from "react";
-import { Holds } from "@/components/(reusable)/holds";
-import { Texts } from "@/components/(reusable)/texts";
-import { Contents } from "@/components/(reusable)/contents";
-import Spinner from "@/components/(animations)/spinner";
-import { Images } from "@/components/(reusable)/images";
-import { Grids } from "@/components/(reusable)/grids";
-import { z } from "zod";
-import { Selects } from "@/components/(reusable)/selects";
+import React, { useEffect, useState } from "react";
 
-// Define Zod schema for received content
-// Define Zod schema for received content
-// Define Zod schema for received content
-const receivedContentSchema = z.object({
-  id: z.string(), // Adjusted to expect a number
-  status: z.enum(["APPROVED", "PENDING", "DENIED"]),
-  requestType: z.string(),
-  requestedStartDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
-    message: "Invalid date format for requestedStartDate",
-  }),
-  requestedEndDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
-    message: "Invalid date format for requestedEndDate",
-  }),
-  employee: z.object({
-    firstName: z.string(),
-    lastName: z.string(),
-    crews: z.array(
-      z.object({
-        leadId: z.string(), // leadId remains a string as per the received data
-      })
-    ),
-  }),
-});
+enum FormStatus {
+  PENDING = "PENDING",
+  APPROVED = "APPROVED",
+  DENIED = "DENIED",
+  DRAFT = "DRAFT",
+}
 
-type recievedContent = z.infer<typeof receivedContentSchema>;
+type SentContent = {
+  id: string;
+  formTemplateId: string;
+  data: Record<string, any>;
+  formTemplate: {
+    name: string;
+    formType: string;
+  };
+  status: FormStatus;
+};
 
-type FormatOptions = {
-  label: string;
-  value: string;
+type EmployeeRequests = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  formTemplateId: string;
 };
 
 export default function RTab() {
-  const { data: session } = useSession();
-  const router = useRouter();
-  const [receivedContent, setReceivedContent] = useState<recievedContent[]>([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedFilter, setSelectedFilter] = useState<string>("");
-  const [pendingFormOptions, setPendingFormOptions] = useState<FormatOptions[]>(
+  const [loading, setLoading] = useState(false);
+  const [selectedFilter, setSelectedFilter] = useState<string>("all");
+  const [sentContent, setSentContent] = useState<SentContent[]>([]);
+  const [employeeRequests, setEmployeeRequests] = useState<EmployeeRequests[]>(
     []
   );
-  // Fetch receivedContent when session exists
+  const router = useRouter();
+
   useEffect(() => {
-    const fetchReceivedContent = async () => {
+    const fetchSentContent = async () => {
       try {
         setLoading(true);
-        console.log("Getting team request");
-        const response = await fetch("/api/getTeamRequest");
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch received content");
-        }
-
+        const response = await fetch(`/api/teamSubmissions`);
         const data = await response.json();
-        console.log("team request data:", data);
-        // Validate the fetched data with Zod
-        const validatedData = data.map((item: typeof receivedContentSchema) => {
-          try {
-            return receivedContentSchema.parse(item);
-          } catch (e) {
-            console.error("Validation error:", e);
-            throw new Error("Invalid data format");
-          }
-        });
-
-        setReceivedContent(validatedData);
-        setLoading(false);
+        setSentContent(data);
       } catch (err) {
-        console.error("Error fetching received content:", err);
-        setError("An error occurred while fetching received content");
+        console.error("Error fetching sent content:", err);
+        setError("An error occurred while fetching sent content");
+      } finally {
         setLoading(false);
       }
     };
 
-    if (session) {
-      fetchReceivedContent();
-    }
-  }, [session]);
+    fetchSentContent();
+  }, []);
 
-  // Use useEffect to handle the redirect
   useEffect(() => {
-    if (!session) {
-      router.push("/signin");
-    }
-  }, [session, router]);
+    const fetchEmployeeRequests = async () => {
+      try {
+        const response = await fetch(`/api/employeeRequests`);
+        const data = await response.json();
+        setEmployeeRequests(data);
+      } catch (err) {
+        console.error("Error fetching employee requests:", err);
+      }
+    };
 
-  // Filter out requests made by the current user
-  const user_Id = session?.user?.id;
-  const pending = receivedContent.filter((item) =>
-    item.employee.crews.filter((crew) => crew.leadId !== user_Id)
-  );
+    fetchEmployeeRequests();
+  }, []);
 
-  // If loading, show a loading message
   if (loading) {
     return (
-      <Holds background={"white"} className="rounded-t-none row-span-9 h-full ">
-        <Holds
-          background={"lightGray"}
-          className="py-5 rounded-t-none h-full justify-center animate-pulse"
-        >
-          <Spinner />
+      <Holds
+        background={"white"}
+        className="rounded-t-none row-span-9 h-full w-full "
+      >
+        <Holds className="flex justify-center items-center h-3/4">
+          <Spinner size={50} />
         </Holds>
       </Holds>
     );
   }
 
-  // If there's an error, show an error message
   if (error) {
+    return <p>{error}</p>;
+  }
+
+  if (!sentContent || sentContent.length === 0) {
     return (
-      <Holds background={"white"} className="rounded-t-none row-span-9 h-full">
-        <Holds>
-          <Texts>{error}</Texts>
-        </Holds>
+      <Holds
+        background={"white"}
+        className="rounded-t-none row-span-9 h-full w-full pt-10"
+      >
+        <Titles size={"h4"}>No forms found or submitted.</Titles>
       </Holds>
     );
   }
 
-  // If there are no pending requests, show a message
-  if (!pending || pending.length === 0) {
-    return (
-      <Holds background={"white"} className="rounded-t-none row-span-9 h-full">
-        <Contents width={"section"}>
-          <Holds className="pt-5 h-full  ">
-            <Grids rows={"9"}>
+  return (
+    <Holds
+      background={"white"}
+      className="rounded-t-none row-span-9 h-full w-full pt-5"
+    >
+      <Contents>
+        <Holds className="h-full">
+          <Grids rows={"9"} className="h-full w-full">
+            <Holds className="row-start-1 row-end-2 h-full px-2">
               <Selects
                 value={selectedFilter}
-                onChange={(e) => {
-                  setSelectedFilter(e.target.value);
-                }}
-                className="text-center h-full"
+                onChange={(e) => setSelectedFilter(e.target.value)}
+                className="text-center justify-center"
               >
-                <option value="">Select A Filter</option>
-                {pendingFormOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
+                <option value="all">All</option>
+                {employeeRequests.map((employee) => (
+                  <option key={employee.id} value={employee.id}>
+                    {employee.firstName} {employee.lastName}
                   </option>
                 ))}
               </Selects>
+            </Holds>
 
-              <Holds className="pt-10 row-span-8 h-full ">
-                <Titles size={"h4"}>There Are No Requests Currently</Titles>
-              </Holds>
-            </Grids>
-          </Holds>
-        </Contents>
-      </Holds>
-    );
-  }
+            <Holds className="row-start-2 row-end-10 h-full w-full overflow-y-scroll no-scrollbar">
+              {sentContent.map((form) => {
+                const title =
+                  form.data["title_(optional)"] || form.formTemplate?.name; // Fallback if formTemplate is undefined
 
-  // Render received requests
-  return (
-    <Holds background={"white"} className="rounded-t-none row-span-9 h-full">
-      <Contents width={"section"}>
-        <Holds className="pt-5 h-full  ">
-          <Grids rows={"9"} gap={"5"} className="py-5">
-            <Selects
-              value={selectedFilter}
-              onChange={(e) => {
-                setSelectedFilter(e.target.value);
-              }}
-              className="text-center h-full"
-            >
-              <option value="">Select A Filter</option>
-              {pendingFormOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </Selects>
-            <Holds className="row-span-8  h-full gap-5 overflow-auto no-scrollbar">
-              {pending.map((item) => (
-                <Holds key={item.id}>
-                  <Buttons
-                    background={
-                      item.status.toString() === "PENDING"
-                        ? "orange"
-                        : item.status.toString() === "APPROVED"
-                        ? "green"
-                        : "red"
-                    }
-                    key={item.id}
-                    href={`/hamburger/inbox/received/${item.id}`}
-                    size={"90"}
-                  >
-                    <Titles>{item.requestType}</Titles>
-                    <div>
-                      {item.employee.firstName} {item.employee.lastName}
-                    </div>
-                    {new Date(item.requestedStartDate).toLocaleString("en-US", {
-                      day: "numeric",
-                      month: "numeric",
-                      year: "numeric",
-                    })}{" "}
-                    -{" "}
-                    {new Date(item.requestedEndDate).toLocaleString("en-US", {
-                      day: "numeric",
-                      month: "numeric",
-                      year: "numeric",
-                    })}
-                  </Buttons>
-                </Holds>
-              ))}
+                return (
+                  <Holds key={form.id} className="px-2">
+                    <Buttons
+                      className="py-2 relative"
+                      background={"lightBlue"}
+                      onClick={() => {
+                        router.push(
+                          `/hamburger/inbox/formSubmission/${form.formTemplateId}?submissionId=${form.id}&status=${form.status}&manger={managerId}`
+                        );
+                      }}
+                    >
+                      {title && <Titles size={"h3"}>{title}</Titles>}
+                      <Titles size={"h5"}>{form.formTemplate?.formType}</Titles>
+                    </Buttons>
+                  </Holds>
+                );
+              })}
             </Holds>
           </Grids>
         </Holds>
