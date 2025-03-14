@@ -20,7 +20,7 @@ export default function SlidingDiv({
   // Detect swipe direction on drag end
   const handleDragEnd = (event: DragEvent, info: { offset: { x: number } }) => {
     // Swipe Left Event
-    if (info.offset.x < -50) {
+    if (info.offset.x < -300) {
       console.log("Swiped Left");
       onSwipeLeft && onSwipeLeft(); // Trigger custom event if provided
     }
@@ -47,7 +47,7 @@ export default function SlidingDiv({
       {/* Swipable Motion Div */}
       <motion.div
         drag="x"
-        dragConstraints={{ left: -100, right: 100 }} // Drag limits
+        dragConstraints={{ left: -350, right: 0 }} // Drag limits
         dragElastic={0} // No bounce back effect
         animate={controls}
         onDragEnd={handleDragEnd}

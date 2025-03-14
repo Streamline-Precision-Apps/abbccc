@@ -1,10 +1,4 @@
 -- CreateEnum
-CREATE TYPE "TimeOffRequestType" AS ENUM ('FAMILY_MEDICAL', 'MILITARY', 'PAID_VACATION', 'NON_PAID_PERSONAL', 'SICK');
-
--- CreateEnum
-<<<<<<<< HEAD:shift-scan/prisma/migrations/20250307204635_3_7_2025_pull_devun_s_changes/migration.sql
-CREATE TYPE "FormStatus" AS ENUM ('PENDING', 'APPROVED', 'REJECTED', 'DRAFT');
-========
 CREATE TYPE "FormStatus" AS ENUM ('PENDING', 'APPROVED', 'DENIED', 'DRAFT');
 >>>>>>>> f16ef3e51e7c5e81d6cb6ec2c7e7d474b8440abb:shift-scan/prisma/migrations/20250306200711_/migration.sql
 
@@ -186,6 +180,7 @@ CREATE TABLE "FormField" (
     "id" TEXT NOT NULL,
     "formGroupingId" TEXT NOT NULL,
     "label" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
     "type" "FieldType" NOT NULL,
     "required" BOOLEAN NOT NULL DEFAULT false,
     "order" INTEGER NOT NULL,
@@ -218,14 +213,10 @@ CREATE TABLE "FormSubmission" (
     "formTemplateId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "formType" TEXT,
-    "requestType" "TimeOffRequestType",
-    "name" TEXT,
-    "startDate" TIMESTAMP(3),
-    "endDate" TIMESTAMP(3),
-    "data" JSONB NOT NULL,
+    "data" JSONB,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "submittedAt" TIMESTAMP(3),
-    "status" "FormStatus" NOT NULL DEFAULT 'PENDING',
+    "status" "FormStatus" NOT NULL DEFAULT 'DRAFT',
 
     CONSTRAINT "FormSubmission_pkey" PRIMARY KEY ("id")
 );
