@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { UserSettings } from "@/lib/types";
 import { error } from "console";
+import { title } from "process";
 
 enum FormStatus {
   PENDING = "PENDING",
@@ -86,6 +87,7 @@ export async function submitForm(
   formTemplateId: string,
   userId: string,
   formType?: string,
+  formTitle?: string,
   submissionId?: string
 ) {
   try {
@@ -97,6 +99,7 @@ export async function submitForm(
           title: formData.title || "",
           data: formData,
           status: FormStatus.PENDING, // or keep as DRAFT if not submitted
+          submittedAt: new Date().toISOString(),
         },
       });
       return updatedSubmission;
@@ -110,6 +113,7 @@ export async function submitForm(
           formType,
           data: formData,
           status: FormStatus.DRAFT, // or PENDING if submitted immediately
+          submittedAt: new Date().toISOString(),
         },
       });
       return newSubmission;
@@ -137,28 +141,94 @@ export async function saveDraft(
   formTemplateId: string,
   userId: string,
   formType?: string,
-  submissionId?: string
+  submissionId?: string,
+  title?: string
 ) {
   try {
-    console.log("formData", formData);
-    console.log("formTemplate", formTemplateId);
-    console.log("formSubmission", submissionId);
     if (submissionId) {
-      // Update existing draft
-      const updatedSubmission = await prisma.formSubmission.update({
+      // Fetch the existing submission to compare with the new data
+      const existingSubmission = await prisma.formSubmission.findUnique({
         where: { id: submissionId },
-        data: {
-          title: formData.title || "",
-          data: formData,
-          status: "DRAFT", // Ensure the status remains DRAFT
-        },
       });
-      return updatedSubmission;
+
+      if (!existingSubmission) {
+        throw new Error("Submission not found");
+      }
+
+      if (existingSubmission.data === null) {
+        throw new Error("Submission data is null");
+      }
+
+      // Type-cast data to a Record<string, any>
+      const existingData = existingSubmission.data as Record<string, any>;
+
+      // Compare the new data with the existing data to find changed fields
+      const changedFields: Record<string, any> = {};
+      for (const key in formData) {
+        if (formData[key] !== existingData[key]) {
+          changedFields[key] = formData[key]; // Only include changed fields
+        }
+      }
+
+      // If the form is in "PENDING" status, preserve certain fields
+      if (existingSubmission.status === "PENDING") {
+        if (title) {
+          const updatedSubmission = await prisma.formSubmission.update({
+            where: { id: submissionId },
+            data: {
+              title: title, // Preserve existing title if not provided
+              data: {
+                ...existingData, // Preserve existing data
+                ...changedFields, // Overwrite with changed fields
+              },
+            },
+          });
+          return updatedSubmission;
+        } else {
+          const updatedSubmission = await prisma.formSubmission.update({
+            where: { id: submissionId },
+            data: {
+              data: {
+                ...existingData, // Preserve existing data
+                ...changedFields, // Overwrite with changed fields
+              },
+            },
+          });
+          return updatedSubmission;
+        }
+      } else {
+        // For drafts or other statuses, update as usual
+        if (title) {
+          const updatedSubmission = await prisma.formSubmission.update({
+            where: { id: submissionId },
+            data: {
+              data: {
+                title: title,
+                ...existingData, // Preserve existing data
+                ...changedFields, // Overwrite with changed fields
+              },
+              status: "DRAFT", // Ensure the status remains DRAFT
+            },
+          });
+          return updatedSubmission;
+        } else {
+          const updatedSubmission = await prisma.formSubmission.update({
+            where: { id: submissionId },
+            data: {
+              data: {
+                ...existingData, // Preserve existing data
+                ...changedFields, // Overwrite with changed fields
+              },
+            },
+          });
+          return updatedSubmission;
+        }
+      }
     } else {
       // Create new draft
       const newSubmission = await prisma.formSubmission.create({
         data: {
-          title: formData.title || "",
+          title: title || "",
           formTemplateId,
           userId,
           formType,

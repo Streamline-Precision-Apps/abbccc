@@ -1,18 +1,8 @@
 -- CreateEnum
-CREATE TYPE "FormType" AS ENUM ('MEDICAL', 'INSPECTION', 'MANAGER', 'LEAVE', 'SAFETY', 'INJURY', 'TIME_OFF');
-
--- CreateEnum
-CREATE TYPE "TimeOffRequestType" AS ENUM ('FAMILY_MEDICAL', 'MILITARY', 'PAID_VACATION', 'NON_PAID_PERSONAL', 'SICK');
-
--- CreateEnum
-<<<<<<<< HEAD:shift-scan/prisma/migrations/20250307204635_3_7_2025_pull_devun_s_changes/migration.sql
-CREATE TYPE "FormStatus" AS ENUM ('PENDING', 'APPROVED', 'REJECTED', 'DRAFT');
-========
 CREATE TYPE "FormStatus" AS ENUM ('PENDING', 'APPROVED', 'DENIED', 'DRAFT');
->>>>>>>> f16ef3e51e7c5e81d6cb6ec2c7e7d474b8440abb:shift-scan/prisma/migrations/20250306200711_/migration.sql
 
 -- CreateEnum
-CREATE TYPE "FieldType" AS ENUM ('TEXT', 'NUMBER', 'DATE', 'FILE', 'DROPDOWN', 'CHECKBOX');
+CREATE TYPE "FieldType" AS ENUM ('TEXT', 'TEXTAREA', 'NUMBER', 'DATE', 'FILE', 'DROPDOWN', 'CHECKBOX');
 
 -- CreateEnum
 CREATE TYPE "Permission" AS ENUM ('USER', 'MANAGER', 'ADMIN', 'SUPERADMIN');
@@ -76,6 +66,7 @@ CREATE TABLE "Crew" (
     "name" TEXT NOT NULL,
     "leadId" TEXT NOT NULL,
     "description" TEXT NOT NULL,
+    "crewType" "WorkType" NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -161,11 +152,11 @@ CREATE TABLE "FormTemplate" (
     "id" TEXT NOT NULL,
     "companyId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "slug" TEXT NOT NULL,
-    "formType" "FormType" NOT NULL,
+    "formType" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "isActive" BOOLEAN NOT NULL DEFAULT false,
+    "isSignatureRequired" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "FormTemplate_pkey" PRIMARY KEY ("id")
 );
@@ -173,11 +164,7 @@ CREATE TABLE "FormTemplate" (
 -- CreateTable
 CREATE TABLE "FormGrouping" (
     "id" TEXT NOT NULL,
-<<<<<<<< HEAD:shift-scan/prisma/migrations/20250307204635_3_7_2025_pull_devun_s_changes/migration.sql
-    "title" TEXT NOT NULL,
-========
     "title" TEXT,
->>>>>>>> f16ef3e51e7c5e81d6cb6ec2c7e7d474b8440abb:shift-scan/prisma/migrations/20250306200711_/migration.sql
     "order" INTEGER NOT NULL,
 
     CONSTRAINT "FormGrouping_pkey" PRIMARY KEY ("id")
@@ -188,14 +175,14 @@ CREATE TABLE "FormField" (
     "id" TEXT NOT NULL,
     "formGroupingId" TEXT NOT NULL,
     "label" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
     "type" "FieldType" NOT NULL,
     "required" BOOLEAN NOT NULL DEFAULT false,
     "order" INTEGER NOT NULL,
     "defaultValue" TEXT,
-<<<<<<<< HEAD:shift-scan/prisma/migrations/20250307204635_3_7_2025_pull_devun_s_changes/migration.sql
-    "formGroupingId" TEXT,
-========
->>>>>>>> f16ef3e51e7c5e81d6cb6ec2c7e7d474b8440abb:shift-scan/prisma/migrations/20250306200711_/migration.sql
+    "placeholder" TEXT,
+    "maxLength" INTEGER,
+    "helperText" TEXT,
 
     CONSTRAINT "FormField_pkey" PRIMARY KEY ("id")
 );
@@ -212,17 +199,14 @@ CREATE TABLE "FormFieldOption" (
 -- CreateTable
 CREATE TABLE "FormSubmission" (
     "id" TEXT NOT NULL,
+    "title" TEXT,
     "formTemplateId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
-    "formType" "FormType" NOT NULL,
-    "requestType" "TimeOffRequestType",
-    "name" TEXT,
-    "startDate" TIMESTAMP(3),
-    "endDate" TIMESTAMP(3),
-    "data" JSONB NOT NULL,
+    "formType" TEXT,
+    "data" JSONB,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "submittedAt" TIMESTAMP(3),
-    "status" "FormStatus" NOT NULL DEFAULT 'PENDING',
+    "status" "FormStatus" NOT NULL DEFAULT 'DRAFT',
 
     CONSTRAINT "FormSubmission_pkey" PRIMARY KEY ("id")
 );
@@ -328,10 +312,8 @@ CREATE TABLE "TascoLog" (
     "equipmentId" TEXT,
     "laborType" TEXT,
     "materialType" TEXT,
-    "loadsHauled" INTEGER,
     "comment" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "completed" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "TascoLog_pkey" PRIMARY KEY ("id")
 );
@@ -355,7 +337,6 @@ CREATE TABLE "TruckingLog" (
     "equipmentId" TEXT,
     "startingMileage" INTEGER,
     "endingMileage" INTEGER,
-    "netWeight" DOUBLE PRECISION,
     "comment" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -513,9 +494,6 @@ CREATE UNIQUE INDEX "Equipment_qrId_key" ON "Equipment"("qrId");
 
 -- CreateIndex
 CREATE INDEX "Equipment_qrId_idx" ON "Equipment"("qrId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "FormTemplate_slug_key" ON "FormTemplate"("slug");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Jobsite_qrId_key" ON "Jobsite"("qrId");

@@ -20,11 +20,19 @@ type Form = {
 type DraftForm = {
   id: string;
   formTemplateId: string;
+  status: FormStatus;
   data: Record<string, any>;
   formTemplate: {
     name: string;
   };
 };
+
+enum FormStatus {
+  PENDING = "PENDING",
+  APPROVED = "APPROVED",
+  DENIED = "DENIED",
+  DRAFT = "DRAFT",
+}
 export default function FormSelection({
   loading,
   setLoading,
@@ -79,7 +87,7 @@ export default function FormSelection({
       return;
     }
     router.push(
-      `/hamburger/inbox/formSubmission/${selectedForm}?submissionId=${submissionId}
+      `/hamburger/inbox/formSubmission/${selectedForm}?submissionId=${submissionId}&status=DRAFT
         `
     );
   };
@@ -123,6 +131,7 @@ export default function FormSelection({
                   }}
                   background={"green"}
                   className="p-3"
+                  disabled={!selectedForm}
                 >
                   <Titles size={"h4"}>Start Form</Titles>
                 </Buttons>
@@ -161,7 +170,7 @@ export default function FormSelection({
                           className="py-2"
                           onClick={() => {
                             router.push(
-                              `/hamburger/inbox/formSubmission/${form.formTemplateId}?submissionId=${form.id}`
+                              `/hamburger/inbox/formSubmission/${form.formTemplateId}?submissionId=${form.id}&status=${form.status}`
                             );
                           }}
                         >

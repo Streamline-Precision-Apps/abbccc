@@ -22,17 +22,9 @@ export async function GET(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   const { id } = params;
-  const forms = await prisma.formSubmission.findUnique({
+  const forms = await prisma.formApproval.findFirst({
     where: {
-      id,
-      status: { not: FormStatus.DRAFT },
-    },
-    include: {
-      user: {
-        select: {
-          signature: true,
-        },
-      },
+      formSubmissionId: id,
     },
   });
 

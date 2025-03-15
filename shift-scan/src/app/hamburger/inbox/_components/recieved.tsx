@@ -1,15 +1,13 @@
 "use client";
-import Employee from "@/app/(routes)/admins/personnel/@view/[employee]/page";
-import SlidingDiv from "@/components/(animations)/slideDelete";
 import Spinner from "@/components/(animations)/spinner";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
-import { Images } from "@/components/(reusable)/images";
 import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
@@ -28,17 +26,24 @@ type SentContent = {
     name: string;
     formType: string;
   };
+  user: {
+    firstName: string;
+    lastName: string;
+  };
+
   status: FormStatus;
 };
 
 type EmployeeRequests = {
   id: string;
-  firstName: string;
-  lastName: string;
   formTemplateId: string;
+  user: {
+    firstName: string;
+    lastName: string;
+  };
 };
 
-export default function RTab() {
+export default function RTab({ isManager }: { isManager: boolean }) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState<string>("all");
@@ -52,7 +57,7 @@ export default function RTab() {
     const fetchSentContent = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/teamSubmissions`);
+        const response = await fetch(`/api/employeeRequests/${selectedFilter}`);
         const data = await response.json();
         setSentContent(data);
       } catch (err) {
@@ -69,7 +74,7 @@ export default function RTab() {
   useEffect(() => {
     const fetchEmployeeRequests = async () => {
       try {
-        const response = await fetch(`/api/employeeRequests`);
+        const response = await fetch(`/api/getEmployees`);
         const data = await response.json();
         setEmployeeRequests(data);
       } catch (err) {
@@ -94,7 +99,14 @@ export default function RTab() {
   }
 
   if (error) {
-    return <p>{error}</p>;
+    return (
+      <Holds
+        background={"white"}
+        className="rounded-t-none row-span-9 h-full w-full pt-10"
+      >
+        <Texts size={"p4"}>{error}</Texts>
+      </Holds>
+    );
   }
 
   if (!sentContent || sentContent.length === 0) {
@@ -115,7 +127,7 @@ export default function RTab() {
     >
       <Contents>
         <Holds className="h-full">
-          <Grids rows={"9"} className="h-full w-full">
+          <Grids rows={"10"} className="h-full w-full">
             <Holds className="row-start-1 row-end-2 h-full px-2">
               <Selects
                 value={selectedFilter}
@@ -125,30 +137,32 @@ export default function RTab() {
                 <option value="all">All</option>
                 {employeeRequests.map((employee) => (
                   <option key={employee.id} value={employee.id}>
-                    {employee.firstName} {employee.lastName}
+                    {employee.user.firstName} {employee.user.lastName}
                   </option>
                 ))}
               </Selects>
             </Holds>
 
-            <Holds className="row-start-2 row-end-10 h-full w-full overflow-y-scroll no-scrollbar">
+            <Holds className="row-start-2 row-end-11 h-full w-full overflow-y-scroll no-scrollbar px-2">
               {sentContent.map((form) => {
                 const title =
-                  form.data["title_(optional)"] || form.formTemplate?.name; // Fallback if formTemplate is undefined
+                  form.formTemplate?.formType || form.formTemplate?.name; // Fallback if formTemplate is undefined
 
                 return (
-                  <Holds key={form.id} className="px-2">
+                  <Holds key={form.id} className="pb-3">
                     <Buttons
-                      className="py-2 relative"
+                      className="py-0.5 relative"
                       background={"lightBlue"}
                       onClick={() => {
                         router.push(
-                          `/hamburger/inbox/formSubmission/${form.formTemplateId}?submissionId=${form.id}&status=${form.status}&manger={managerId}`
+                          `/hamburger/inbox/formSubmission/${form.formTemplateId}?submissionId=${form.id}&status=${form.status}&approvingStatus=${isManager}`
                         );
                       }}
                     >
-                      {title && <Titles size={"h3"}>{title}</Titles>}
-                      <Titles size={"h5"}>{form.formTemplate?.formType}</Titles>
+                      <Titles size={"h4"}>{title}</Titles>
+                      <Titles size={"h6"}>
+                        {form.user.firstName + " " + form.user.lastName}
+                      </Titles>
                     </Buttons>
                   </Holds>
                 );
