@@ -77,6 +77,7 @@ model FormSubmission {
     formType       String?
     data           Json? // Stores after creation
     createdAt      DateTime       @default(now())
+    updatedAt      DateTime       @updatedAt
     submittedAt    DateTime? // Null means it's a draft
     status         FormStatus     @default(DRAFT)
     user           User           @relation(fields: [userId], references: [id])

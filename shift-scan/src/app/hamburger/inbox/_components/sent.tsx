@@ -21,6 +21,7 @@ enum FormStatus {
 
 type SentContent = {
   id: string;
+  title: string;
   formTemplateId: string;
   data: Record<string, any>;
   formTemplate: {
@@ -107,7 +108,7 @@ export default function STab() {
             <Holds className="row-start-2 row-end-10 h-full w-full overflow-y-scroll no-scrollbar">
               {sentContent.map((form) => {
                 const title =
-                  form.data["title_(optional)"] || form.formTemplate?.name; // Fallback if formTemplate is undefined
+                  form.title.slice(0, 24) || form.formTemplate?.name; // Fallback if formTemplate is undefined
 
                 return (
                   <Holds key={form.id} className="px-2">
@@ -126,7 +127,7 @@ export default function STab() {
                         );
                       }}
                     >
-                      {title && <Titles size={"h3"}>{title}</Titles>}
+                      <Titles size={"h3"}>{title}</Titles>
                       <Titles size={"h5"}>{form.formTemplate?.formType}</Titles>
                       <Images
                         titleImgAlt={"form Status"}
