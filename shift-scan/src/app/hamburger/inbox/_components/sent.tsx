@@ -107,8 +107,7 @@ export default function STab() {
 
             <Holds className="row-start-2 row-end-10 h-full w-full overflow-y-scroll no-scrollbar">
               {sentContent.map((form) => {
-                const title =
-                  form.title.slice(0, 24) || form.formTemplate?.name; // Fallback if formTemplate is undefined
+                const title = form.title || form.formTemplate?.name; // Fallback if formTemplate is undefined
 
                 return (
                   <Holds key={form.id} className="px-2">

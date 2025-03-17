@@ -14,6 +14,7 @@ import FormDraft from "./_components/formDraft";
 import ManagerFormApproval from "./_components/managerFormApproval";
 import SubmittedForms from "./_components/submittedForms";
 import { title } from "process";
+import ManagerFormEditApproval from "./_components/managerFormEdit";
 
 interface FormField {
   id: string;
@@ -49,12 +50,18 @@ type ManagerFormApprovalSchema = {
   id: string;
   formSubmissionId: string;
   approvedBy: string;
+  isApproved: boolean;
+  approver: {
+    firstName: string;
+    lastName: string;
+  };
   signature: string;
   comment: string;
 };
 
 export default function DynamicForm({ params }: { params: { id: string } }) {
   const formSubmissions = useSearchParams();
+  const signedBy = formSubmissions.get("signedBy");
   const submissionId = formSubmissions.get("submissionId");
   const submissionStatus = formSubmissions.get("status"); // url search params for form submission
   const submissionApprovingStatus = formSubmissions.get("approvingStatus"); // url for form submission
@@ -70,7 +77,6 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
   const [submittedForm, setSubmittedForm] = useState<string | null>(null);
   const [managerFormApproval, SetManagerFormApproval] =
     useState<ManagerFormApprovalSchema | null>(null);
-  const [managerSignature, setManagerSignature] = useState<string | null>(null);
   const { data: session } = useSession();
   const userId = session?.user.id;
   const router = useRouter();
@@ -115,7 +121,6 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
             `/api/teamSubmission/` + submissionId
           );
           const submissionData = await submissionRes.json();
-          console.log("the correct data", submissionData);
           setFormValues(submissionData.data);
           setFormTitle(
             submissionData.user.firstName +
@@ -125,12 +130,37 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
           setInitialDraftData(submissionData.data); // Store the initial draft data
           setSignature(submissionData.user.signature);
           setSubmittedForm(submissionData.submittedAt);
-
           const managerFormApprovalRes = await fetch(
             `/api/managerFormApproval/` + submissionId
           );
           const managerFormApprovalData = await managerFormApprovalRes.json();
           SetManagerFormApproval(managerFormApprovalData);
+          console.log("mangerFormApprovalData", managerFormApprovalData);
+        } else if (
+          submissionId &&
+          submissionStatus !== "PENDING" &&
+          submissionStatus !== "DRAFT" &&
+          submissionApprovingStatus === "true"
+        ) {
+          const submissionRes = await fetch(
+            `/api/teamSubmission/` + submissionId
+          );
+          const submissionData = await submissionRes.json();
+          setFormValues(submissionData.data);
+          setFormTitle(
+            submissionData.user.firstName +
+              " " +
+              submissionData.user.lastName || ""
+          ); // Set the title from draft data
+          setInitialDraftData(submissionData.data); // Store the initial draft data
+          setSignature(submissionData.user.signature);
+          setSubmittedForm(submissionData.submittedAt);
+          const managerFormApprovalRes = await fetch(
+            `/api/managerFormApproval/` + submissionId
+          );
+          const managerFormApprovalData = await managerFormApprovalRes.json();
+          SetManagerFormApproval(managerFormApprovalData);
+          console.log("mangerFormApprovalData", managerFormApprovalData);
         }
       } catch (error) {
         console.error("error", error);
@@ -360,6 +390,24 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
           {submissionApprovingStatus === "true" &&
             submissionStatus === "PENDING" && (
               <ManagerFormApproval
+                formData={formData}
+                handleSubmit={handleSubmit}
+                formTitle={formTitle}
+                setFormTitle={setFormTitle}
+                formValues={formValues}
+                updateFormValues={updateFormValues}
+                submissionStatus={submissionStatus}
+                signature={signature}
+                submittedForm={submittedForm}
+                submissionId={submissionId}
+                managerFormApproval={managerFormApproval}
+              />
+            )}
+
+          {submissionApprovingStatus === "true" &&
+            submissionStatus !== "PENDING" &&
+            submissionStatus !== "DRAFT" && (
+              <ManagerFormEditApproval
                 formData={formData}
                 handleSubmit={handleSubmit}
                 formTitle={formTitle}

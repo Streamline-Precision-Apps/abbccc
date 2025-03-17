@@ -24,6 +24,9 @@ export async function GET() {
     const requests = await prisma.formSubmission.findMany({
       where: {
         status: "PENDING",
+        approvals: {
+          none: {},
+        },
         user: {
           NOT: {
             // Exclude the current user from the query
@@ -43,6 +46,11 @@ export async function GET() {
           select: {
             firstName: true,
             lastName: true,
+          },
+        },
+        approvals: {
+          select: {
+            isApproved: true,
           },
         },
       },
