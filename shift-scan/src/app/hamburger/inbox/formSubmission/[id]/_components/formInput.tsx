@@ -46,7 +46,7 @@ export const FormInput: React.FC<FormInputProps> = ({
 
   return (
     <Holds>
-      <Labels size={"p4"} htmlFor={field.name}>
+      <Labels size={"p5"} htmlFor={field.name}>
         {field.label}{" "}
         {field.required && <span className="text-red-500">*</span>}
       </Labels>

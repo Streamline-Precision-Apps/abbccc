@@ -90,11 +90,11 @@ model FormApproval {
     id               String   @id @default(cuid())
     formSubmissionId String
     isApproved       Boolean?
-    signedBy         String
+    signedBy         String?
     submittedAt      DateTime @default(now())
     signature        String?
     comment          String?
 
     formSubmission FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
-    approver       User           @relation(fields: [signedBy], references: [id])
+    approver       User?          @relation(fields: [signedBy], references: [id])
 }

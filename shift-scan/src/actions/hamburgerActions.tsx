@@ -243,3 +243,76 @@ export async function saveDraft(
     throw new Error("Failed to save draft");
   }
 }
+
+export async function updateFormApproval(formData: FormData) {
+  try {
+    console.log("Updating form approval...");
+
+    // Extract data from FormData
+    const id = formData.get("id") as string;
+    const formSubmissionId = formData.get("formSubmissionId") as string;
+    const signedBy = formData.get("signedBy") as string;
+    const signature = formData.get("signature") as string;
+    const comment = formData.get("comment") as string;
+    const isApproved = formData.get("isApproved") === "true"; // Convert to boolean
+    const isFinalApproval = formData.get("isFinalApproval") === "true"; // Flag for final approval
+
+    // Validate required fields
+    if (!formSubmissionId || !signedBy) {
+      throw new Error("formSubmissionId and signedBy are required fields.");
+    }
+
+    // Signature is only required for final approval
+    if (isFinalApproval && !signature) {
+      throw new Error("Signature is required for final approval.");
+    }
+
+    // Prepare data for update/create
+    const data: any = {
+      formSubmissionId,
+      signedBy,
+    };
+
+    // Only include fields that are provided
+    if (signature) data.signature = signature;
+    if (comment !== null) data.comment = comment;
+    if (isApproved !== null) data.isApproved = isApproved;
+
+    // Check if the approval record already exists
+    const existingApproval = await prisma.formApproval.findUnique({
+      where: { id },
+    });
+
+    let approval;
+    if (existingApproval) {
+      // Update existing approval
+      approval = await prisma.formApproval.update({
+        where: { id },
+        data,
+      });
+    } else {
+      // Create new approval
+      approval = await prisma.formApproval.create({
+        data,
+      });
+    }
+
+    // Update the FormSubmission status if this is a final approval
+    if (isFinalApproval) {
+      const newStatus = isApproved ? "APPROVED" : "DENIED";
+      await prisma.formSubmission.update({
+        where: { id: formSubmissionId },
+        data: {
+          status: newStatus,
+        },
+      });
+      console.log(`FormSubmission status updated to: ${newStatus}`);
+    }
+
+    console.log("Form approval updated/created:", approval);
+    return approval; // Return the updated/created approval for client-side use
+  } catch (error) {
+    console.error("Error updating form approval:", error);
+    throw new Error("Failed to update form approval");
+  }
+}

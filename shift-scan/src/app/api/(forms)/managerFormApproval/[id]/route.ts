@@ -26,6 +26,14 @@ export async function GET(
     where: {
       formSubmissionId: id,
     },
+    include: {
+      approver: {
+        select: {
+          firstName: true,
+          lastName: true,
+        },
+      },
+    },
   });
 
   return NextResponse.json(forms);

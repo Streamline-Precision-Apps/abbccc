@@ -41,6 +41,9 @@ export async function GET(
               },
             },
           },
+          approvals: {
+            none: {}, // only include requests that have no approvals
+          },
         },
         include: {
           formTemplate: {
@@ -52,6 +55,56 @@ export async function GET(
             select: {
               firstName: true,
               lastName: true,
+            },
+          },
+          approvals: {
+            select: {
+              signedBy: true,
+            },
+          },
+        },
+      });
+      console.log(requests);
+
+      revalidateTag("requests");
+      return NextResponse.json(requests);
+    } else if (employeeId === "approved") {
+      const requests = await prisma.formSubmission.findMany({
+        where: {
+          status: { not: { in: ["PENDING", "DRAFT"] } },
+          user: {
+            NOT: {
+              // Exclude the current user from the query
+              id: userId,
+            },
+            crews: {
+              some: {
+                leadId: userId,
+              },
+            },
+          },
+        },
+        include: {
+          formTemplate: {
+            select: {
+              formType: true,
+            },
+          },
+          user: {
+            select: {
+              firstName: true,
+              lastName: true,
+            },
+          },
+          approvals: {
+            select: {
+              id: true,
+              approver: {
+                select: {
+                  firstName: true,
+                  lastName: true,
+                },
+              },
             },
           },
         },
@@ -76,6 +129,9 @@ export async function GET(
               },
             },
           },
+          approvals: {
+            none: {}, // only include requests that have no approvals
+          },
         },
         include: {
           formTemplate: {
@@ -87,6 +143,11 @@ export async function GET(
             select: {
               firstName: true,
               lastName: true,
+            },
+          },
+          approvals: {
+            select: {
+              signedBy: true,
             },
           },
         },

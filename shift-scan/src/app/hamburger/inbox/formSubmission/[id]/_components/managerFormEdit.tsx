@@ -58,7 +58,7 @@ type ManagerFormApprovalSchema = {
   comment: string;
 };
 
-export default function ManagerFormApproval({
+export default function ManagerFormEditApproval({
   formData,
   handleSubmit,
   formTitle,
@@ -86,9 +86,6 @@ export default function ManagerFormApproval({
   const router = useRouter();
   const { data: session } = useSession();
   const managerName = session?.user.id;
-  const formSubmissions = useSearchParams();
-  const signedBy = formSubmissions.get("signedBy");
-
   const [isSignatureShowing, setIsSignatureShowing] = useState<boolean>(false);
   const [managerSignature, setManagerSignature] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -235,9 +232,20 @@ export default function ManagerFormApproval({
         background={"white"}
         className="w-full h-full row-start-6 row-end-9 "
       >
-        <Grids rows={"5"} className="w-full h-full py-3 ">
-          <Holds className="row-start-1 row-end-3 py-1 px-4 relative">
-            <Labels size={"p4"} htmlFor="comment">
+        <Grids rows={"5"} className="w-full h-full py-3">
+          <Holds className="px-4 row-start-1 row-end-2">
+            <Labels size={"p5"}>Approval Signature</Labels>
+            <Selects
+              value={isApproved ? "true" : "false"}
+              onChange={(e) => handleApprovalChange(e.target.value === "true")}
+              className="text-center"
+            >
+              <option value="true">Approved</option>
+              <option value="false">Denied</option>
+            </Selects>
+          </Holds>
+          <Holds className="row-start-2 row-end-5 py-1 px-4 relative">
+            <Labels size={"p5"} htmlFor="comment">
               Manager Comments
             </Labels>
             <Holds position={"row"} className="w-full relative">
@@ -253,63 +261,6 @@ export default function ManagerFormApproval({
                 {comment.length} / 40
               </Texts>
             </Holds>
-          </Holds>
-
-          <Holds className="row-start-3 row-end-5 p-4 h-full justify-center items-center">
-            {!isSignatureShowing ? (
-              <Buttons
-                className="h-full py-3"
-                onClick={() => {
-                  setIsSignatureShowing(true);
-                }}
-              >
-                <Texts>Tap to Sign</Texts>
-              </Buttons>
-            ) : (
-              <Holds
-                onClick={() => setIsSignatureShowing(false)}
-                className="h-full border-[3px] border-black rounded-[10px] justify-center items-center "
-              >
-                <img
-                  className="w-full h-full object-contain"
-                  src={managerSignature || ""}
-                  alt="Signature"
-                />
-              </Holds>
-            )}
-          </Holds>
-
-          <Holds className="row-start-5 row-end-7">
-            <Holds position={"row"} className="gap-5 px-5">
-              <Buttons
-                background={
-                  isSignatureShowing && comment.length > 0 ? "red" : "darkGray"
-                }
-                disabled={!isSignatureShowing || comment.length === 0}
-                className="py-2"
-                onClick={() => handleApproveOrDeny(false)}
-              >
-                <Titles size={"h4"}>Deny</Titles>
-              </Buttons>
-              <Buttons
-                background={
-                  isSignatureShowing && comment.length > 0
-                    ? "green"
-                    : "darkGray"
-                }
-                disabled={!isSignatureShowing || comment.length === 0}
-                onClick={() => handleApproveOrDeny(true)}
-                className="py-2"
-              >
-                <Titles size={"h4"}>Approve</Titles>
-              </Buttons>
-            </Holds>
-            {/* Display error message */}
-            {errorMessage && (
-              <Texts className="text-red-500 text-sm mt-2">
-                {errorMessage}
-              </Texts>
-            )}
           </Holds>
         </Grids>
       </Holds>
