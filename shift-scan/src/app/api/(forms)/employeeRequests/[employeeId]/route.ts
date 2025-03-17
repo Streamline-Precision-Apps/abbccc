@@ -53,6 +53,7 @@ export async function GET(
           },
           user: {
             select: {
+              id: true,
               firstName: true,
               lastName: true,
             },
@@ -84,6 +85,7 @@ export async function GET(
             },
           },
         },
+
         include: {
           formTemplate: {
             select: {

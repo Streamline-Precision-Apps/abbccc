@@ -7,13 +7,14 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { FormInput } from "./formInput";
-import { FormEvent } from "react";
-import { deleteFormSubmission } from "@/actions/hamburgerActions";
+import { FormEvent, useEffect, useState } from "react";
+import { deleteFormSubmission, savePending } from "@/actions/hamburgerActions";
 import { Titles } from "@/components/(reusable)/titles";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
 import { format } from "date-fns";
+import { useAutoSave } from "@/hooks/(inbox)/useAutoSave";
 
 interface FormField {
   id: string;
@@ -50,22 +51,55 @@ export default function SubmittedForms({
   setFormTitle,
   formValues,
   updateFormValues,
-  submissionStatus,
+  userId,
   signature,
   submittedForm,
   submissionId,
+  submissionStatus,
 }: {
   formData: FormTemplate;
   formValues: Record<string, string>;
   formTitle: string;
   setFormTitle: (title: string) => void;
   updateFormValues: (values: Record<string, string>) => void;
-  submissionStatus: string | null;
+  userId: string;
   signature: string | null;
   submittedForm: string | null;
   submissionId: string | null;
+  submissionStatus: string | null;
 }) {
   const router = useRouter();
+
+  type FormValues = Record<string, string>;
+
+  const saveDraftData = async (values: FormValues, title: string) => {
+    if ((Object.keys(values).length > 0 || title) && formData) {
+      try {
+        await savePending(
+          values,
+          formData.id,
+          userId,
+          formData.formType,
+          submissionId ? submissionId : "",
+          title
+        );
+        console.log("Draft saved successfully");
+      } catch (error) {
+        console.error("Error saving draft:", error);
+      }
+    }
+  };
+
+  // Use the auto-save hook with the FormValues type
+  const autoSave = useAutoSave<{ values: FormValues; title: string }>(
+    (data) => saveDraftData(data.values, data.title),
+    2000
+  );
+
+  // Trigger auto-save when formValues or formTitle changes
+  useEffect(() => {
+    autoSave({ values: formValues, title: formTitle });
+  }, [formValues, formTitle, autoSave]);
 
   const handleDelete = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -104,7 +138,9 @@ export default function SubmittedForms({
           </Holds>
 
           <Holds className="col-start-2 col-end-5 row-start-1 row-end-3 flex items-center justify-center">
-            <Titles size={"h4"}>{formTitle}</Titles>
+            <Titles size={"h4"}>
+              {formTitle === "" ? formData.name : formTitle}
+            </Titles>
             <Titles size={"h6"}>{formData.name}</Titles>
           </Holds>
           <Holds className="col-start-5 col-end-6 row-start-1 row-end-3">

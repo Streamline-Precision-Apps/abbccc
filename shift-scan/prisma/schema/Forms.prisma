@@ -89,7 +89,6 @@ model FormSubmission {
 model FormApproval {
     id               String   @id @default(cuid())
     formSubmissionId String
-    isApproved       Boolean?
     signedBy         String?
     submittedAt      DateTime @default(now())
     signature        String?

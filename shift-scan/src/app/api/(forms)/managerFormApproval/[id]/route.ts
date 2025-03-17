@@ -15,26 +15,39 @@ export async function GET(
   req: Request,
   { params }: { params: { id: string } }
 ) {
-  const session = await auth();
-  const userId = session?.user.id;
+  try {
+    const session = await auth();
+    const userId = session?.user.id;
 
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  const { id } = params;
-  const forms = await prisma.formApproval.findFirst({
-    where: {
-      formSubmissionId: id,
-    },
-    include: {
-      approver: {
-        select: {
-          firstName: true,
-          lastName: true,
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id } = params;
+    const forms = await prisma.formSubmission.findFirst({
+      where: {
+        id,
+      },
+      include: {
+        approvals: {
+          include: {
+            approver: {
+              select: {
+                firstName: true,
+                lastName: true,
+              },
+            },
+          },
         },
       },
-    },
-  });
+    });
 
-  return NextResponse.json(forms);
+    return NextResponse.json(forms);
+  } catch (error) {
+    console.error("Error fetching form approval:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
 }
