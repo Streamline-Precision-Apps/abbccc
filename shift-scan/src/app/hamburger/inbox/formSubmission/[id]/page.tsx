@@ -1,20 +1,19 @@
 "use client";
-import { FormEvent, useEffect, useState, useCallback } from "react";
-import { Bases } from "@/components/(reusable)/bases";
-import { Contents } from "@/components/(reusable)/contents";
-import { Holds } from "@/components/(reusable)/holds";
-import { Buttons } from "@/components/(reusable)/buttons";
-import { Grids } from "@/components/(reusable)/grids";
-import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
+import { FormEvent, useEffect, useState } from "react";
 import Spinner from "@/components/(animations)/spinner";
-import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { saveDraft, submitForm } from "@/actions/hamburgerActions";
 import FormDraft from "./_components/formDraft";
 import ManagerFormApproval from "./_components/managerFormApproval";
 import SubmittedForms from "./_components/submittedForms";
-import { title } from "process";
 import ManagerFormEditApproval from "./_components/managerFormEdit";
+import { submitForm } from "@/actions/hamburgerActions";
+import { useSession } from "next-auth/react";
+import { Bases } from "@/components/(reusable)/bases";
+import { Buttons } from "@/components/(reusable)/buttons";
+import { Contents } from "@/components/(reusable)/contents";
+import { Grids } from "@/components/(reusable)/grids";
+import { Holds } from "@/components/(reusable)/holds";
+import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 
 interface FormField {
   id: string;
@@ -50,32 +49,34 @@ type ManagerFormApprovalSchema = {
   id: string;
   formSubmissionId: string;
   approvedBy: string;
-  isApproved: boolean;
   approver: {
     firstName: string;
     lastName: string;
   };
+  status: FormStatus;
   signature: string;
   comment: string;
 };
 
+enum FormStatus {
+  PENDING = "PENDING",
+  APPROVED = "APPROVED",
+  DENIED = "DENIED",
+  DRAFT = "DRAFT",
+}
+
 export default function DynamicForm({ params }: { params: { id: string } }) {
   const formSubmissions = useSearchParams();
-  const signedBy = formSubmissions.get("signedBy");
   const submissionId = formSubmissions.get("submissionId");
-  const submissionStatus = formSubmissions.get("status"); // url search params for form submission
-  const submissionApprovingStatus = formSubmissions.get("approvingStatus"); // url for form submission
+  const submissionStatus = formSubmissions.get("status");
+  const submissionApprovingStatus = formSubmissions.get("approvingStatus");
   const [formData, setFormData] = useState<FormTemplate | null>(null);
-  const [initialDraftData, setInitialDraftData] = useState<
-    Record<string, string>
-  >({});
   const [formTitle, setFormTitle] = useState<string>("");
   const [formValues, setFormValues] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState<boolean>(false);
-  const [isSaving, setIsSaving] = useState<boolean>(false);
   const [signature, setSignature] = useState<string | null>(null);
   const [submittedForm, setSubmittedForm] = useState<string | null>(null);
-  const [managerFormApproval, SetManagerFormApproval] =
+  const [managerFormApproval, setManagerFormApproval] =
     useState<ManagerFormApprovalSchema | null>(null);
   const { data: session } = useSession();
   const userId = session?.user.id;
@@ -87,57 +88,52 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
 
     async function fetchForm() {
       try {
-        const res = await fetch(`/api/form/` + params.id);
-        const data = await res.json();
-        setFormData(data);
+        // Fetch the form template
+        const formRes = await fetch(`/api/form/` + params.id);
+        if (!formRes.ok) throw new Error("Failed to fetch form template");
+        const formData = await formRes.json();
+        setFormData(formData);
 
-        if (submissionId && submissionStatus === "DRAFT") {
+        // If there's no submissionId, stop here
+        if (!submissionId) {
+          setLoading(false);
+          return;
+        }
+
+        // Fetch submission data based on submissionStatus and submissionApprovingStatus
+        let submissionData, managerFormApprovalData;
+
+        if (submissionStatus === "DRAFT") {
           const draftRes = await fetch(`/api/formDraft/` + submissionId);
-          const draftData = await draftRes.json();
+          if (!draftRes.ok) throw new Error("Failed to fetch draft data");
+          submissionData = await draftRes.json();
+        } else if (submissionStatus === "PENDING") {
+          if (submissionApprovingStatus === null) {
+            const submissionRes = await fetch(
+              `/api/formSubmission/` + submissionId
+            );
+            if (!submissionRes.ok)
+              throw new Error("Failed to fetch submission data");
+            submissionData = await submissionRes.json();
+            console.log("Pending - submission null", submissionApprovingStatus);
+          } else if (submissionApprovingStatus === "true") {
+            const submissionRes = await fetch(
+              `/api/teamSubmission/` + submissionId
+            );
+            if (!submissionRes.ok)
+              throw new Error("Failed to fetch team submission data");
+            submissionData = await submissionRes.json();
 
-          setFormValues(draftData.data);
-          setFormTitle(draftData.title || ""); // Set the title from draft data
-          setInitialDraftData(draftData.data); // Store the initial draft data
+            const managerFormApprovalRes = await fetch(
+              `/api/managerFormApproval/` + submissionId
+            );
+
+            if (!managerFormApprovalRes.ok)
+              throw new Error("Failed to fetch manager approval data");
+            managerFormApprovalData = await managerFormApprovalRes.json();
+          }
+          console.log("Pending - submission true", submissionApprovingStatus);
         } else if (
-          submissionId &&
-          submissionStatus === "PENDING" &&
-          submissionApprovingStatus === null
-        ) {
-          const submissionRes = await fetch(
-            `/api/formSubmission/` + submissionId
-          );
-          const submissionData = await submissionRes.json();
-          setFormValues(submissionData.data);
-          setFormTitle(submissionData.title || ""); // Set the title from draft data
-          setInitialDraftData(submissionData.data); // Store the initial draft data
-          setSignature(submissionData.user.signature);
-          setSubmittedForm(submissionData.submittedAt);
-        } else if (
-          submissionId &&
-          submissionStatus === "PENDING" &&
-          submissionApprovingStatus === "true"
-        ) {
-          const submissionRes = await fetch(
-            `/api/teamSubmission/` + submissionId
-          );
-          const submissionData = await submissionRes.json();
-          setFormValues(submissionData.data);
-          setFormTitle(
-            submissionData.user.firstName +
-              " " +
-              submissionData.user.lastName || ""
-          ); // Set the title from draft data
-          setInitialDraftData(submissionData.data); // Store the initial draft data
-          setSignature(submissionData.user.signature);
-          setSubmittedForm(submissionData.submittedAt);
-          const managerFormApprovalRes = await fetch(
-            `/api/managerFormApproval/` + submissionId
-          );
-          const managerFormApprovalData = await managerFormApprovalRes.json();
-          SetManagerFormApproval(managerFormApprovalData);
-          console.log("mangerFormApprovalData", managerFormApprovalData);
-        } else if (
-          submissionId &&
           submissionStatus !== "PENDING" &&
           submissionStatus !== "DRAFT" &&
           submissionApprovingStatus === "true"
@@ -145,148 +141,45 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
           const submissionRes = await fetch(
             `/api/teamSubmission/` + submissionId
           );
-          const submissionData = await submissionRes.json();
-          setFormValues(submissionData.data);
-          setFormTitle(
-            submissionData.user.firstName +
-              " " +
-              submissionData.user.lastName || ""
-          ); // Set the title from draft data
-          setInitialDraftData(submissionData.data); // Store the initial draft data
-          setSignature(submissionData.user.signature);
-          setSubmittedForm(submissionData.submittedAt);
+          if (!submissionRes.ok)
+            throw new Error("Failed to fetch team submission data");
+          submissionData = await submissionRes.json();
+
           const managerFormApprovalRes = await fetch(
             `/api/managerFormApproval/` + submissionId
           );
-          const managerFormApprovalData = await managerFormApprovalRes.json();
-          SetManagerFormApproval(managerFormApprovalData);
-          console.log("mangerFormApprovalData", managerFormApprovalData);
+          if (!managerFormApprovalRes.ok)
+            throw new Error("Failed to fetch manager approval data");
+          managerFormApprovalData = await managerFormApprovalRes.json();
+        }
+
+        // Set the fetched data
+        if (submissionData) {
+          setFormValues(submissionData.data);
+          setFormTitle(
+            submissionData.title ||
+              submissionData.user?.firstName +
+                " " +
+                submissionData.user?.lastName ||
+              ""
+          );
+          setSignature(submissionData.user?.signature || null);
+          setSubmittedForm(submissionData.submittedAt || null);
+        }
+
+        if (managerFormApprovalData) {
+          setManagerFormApproval(managerFormApprovalData);
         }
       } catch (error) {
-        console.error("error", error);
+        console.error("Error fetching form data:", error);
       } finally {
         setLoading(false);
       }
     }
 
     fetchForm();
-  }, [params.id, submissionId]);
+  }, [params.id, submissionId, submissionStatus, submissionApprovingStatus]);
 
-  const getChangedFields = (
-    currentValues: Record<string, string>,
-    initialValues: Record<string, string>
-  ) => {
-    const changedFields: Record<string, string> = {};
-
-    for (const key in currentValues) {
-      if (currentValues[key] !== initialValues[key]) {
-        changedFields[key] = currentValues[key];
-      }
-    }
-
-    return changedFields;
-  };
-
-  // Debounce function
-  const debounce = (func: Function, delay: number) => {
-    let timeoutId: NodeJS.Timeout;
-    return (...args: any[]) => {
-      clearTimeout(timeoutId); // Clear the previous timeout
-      timeoutId = setTimeout(() => func(...args), delay); // Set a new timeout
-    };
-  };
-
-  // Memoized auto-save function
-  const autoSave = useCallback(
-    debounce(async (values: Record<string, any>, title: string) => {
-      if ((Object.keys(values).length > 0 || title) && formData) {
-        setIsSaving(true);
-        try {
-          // Ensure initialDraftData is not null
-          if (!initialDraftData) {
-            throw new Error("Initial draft data is not available");
-          }
-
-          const changedFields = getChangedFields(values, initialDraftData); // Get only changed fields
-
-          // Check if the form is in "PENDING" status
-          if (submissionStatus === "PENDING") {
-            // For pending forms, exclude certain fields from being overwritten
-            const updatedValues = {
-              ...changedFields,
-            };
-
-            await saveDraft(
-              updatedValues,
-              formData.id,
-              title,
-              userId || "",
-              formData.formType,
-              submissionId || undefined
-            );
-          } else {
-            // For drafts or other statuses, save as usual
-            await saveDraft(
-              { ...changedFields },
-              formData.id,
-              title,
-              userId || "",
-              formData.formType,
-              submissionId || undefined
-            );
-          }
-
-          console.log("Draft saved successfully");
-        } catch (error) {
-          console.error("Error saving draft:", error);
-        } finally {
-          setIsSaving(false);
-        }
-      }
-    }, 2000), // Save every 2 seconds after the user stops typing
-    [
-      formData,
-      userId,
-      submissionId,
-      initialDraftData,
-      submissionStatus,
-      signature,
-      submittedForm,
-      title,
-    ] // Dependencies
-  );
-
-  const updateFormValues = useCallback(
-    (newValues: Record<string, any>) => {
-      if (submissionStatus === "PENDING") {
-        // For "PENDING" forms, preserve certain fields
-        const updatedValues = {
-          ...formValues, // Preserve existing values
-          ...newValues, // Overwrite with new values
-        };
-        setFormValues(updatedValues);
-        autoSave(updatedValues, formTitle);
-      } else {
-        // For drafts or other statuses, merge new values with existing formValues
-        const updatedValues = {
-          ...formValues,
-          ...newValues,
-        };
-        setFormValues(updatedValues);
-        autoSave(updatedValues, formTitle);
-      }
-    },
-    [
-      autoSave,
-      formTitle,
-      submissionStatus,
-      signature,
-      submittedForm,
-      formValues,
-    ]
-  );
-
-  // Handle form submission
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -313,6 +206,21 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
     }
   };
 
+  const updateFormValues = (newValues: Record<string, any>) => {
+    setFormValues((prevValues) => ({
+      ...prevValues,
+      ...newValues,
+    }));
+  };
+
+  useEffect(() => {
+    console.log("formValues:", formValues);
+  }, [formValues]);
+
+  useEffect(() => {
+    console.log("Manager Form Approval Data:", managerFormApproval);
+  }, [managerFormApproval]);
+
   if (loading || !formData) {
     return (
       <Bases>
@@ -320,7 +228,7 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
           <Grids className="grid-rows-8 gap-5">
             <Holds
               background={"white"}
-              className="row-span-1 h-full justify-center animate-pulse px-2 "
+              className="row-span-1 h-full justify-center animate-pulse px-2"
             >
               <TitleBoxes
                 title={"loading..."}
@@ -329,7 +237,6 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
                 titleImgAlt={""}
               />
             </Holds>
-
             <Holds
               background={"white"}
               className="w-full h-full row-span-7 animate-pulse"
@@ -340,7 +247,6 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
                     <Holds className="row-start-1 row-end-6 h-full w-full justify-center">
                       <Spinner />
                     </Holds>
-
                     <Holds className="row-start-6 row-end-7 h-full w-full">
                       <Buttons
                         background={"lightGray"}
@@ -370,6 +276,8 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
               setFormTitle={setFormTitle}
               formValues={formValues}
               updateFormValues={updateFormValues}
+              userId={userId || ""}
+              submissionId={submissionId || ""}
             />
           )}
           {submissionApprovingStatus === null &&
@@ -380,40 +288,35 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
                 setFormTitle={setFormTitle}
                 formValues={formValues}
                 updateFormValues={updateFormValues}
-                submissionStatus={submissionStatus}
+                userId={userId || ""}
+                submissionId={submissionId || ""}
                 signature={signature}
                 submittedForm={submittedForm}
-                submissionId={submissionId}
+                submissionStatus={submissionStatus}
               />
             )}
-
           {submissionApprovingStatus === "true" &&
             submissionStatus === "PENDING" && (
               <ManagerFormApproval
                 formData={formData}
-                handleSubmit={handleSubmit}
                 formTitle={formTitle}
                 setFormTitle={setFormTitle}
                 formValues={formValues}
                 updateFormValues={updateFormValues}
-                submissionStatus={submissionStatus}
+                submissionId={submissionId || ""}
                 signature={signature}
                 submittedForm={submittedForm}
-                submissionId={submissionId}
+                submissionStatus={submissionStatus}
                 managerFormApproval={managerFormApproval}
               />
             )}
-
           {submissionApprovingStatus === "true" &&
             submissionStatus !== "PENDING" &&
             submissionStatus !== "DRAFT" && (
               <ManagerFormEditApproval
                 formData={formData}
-                handleSubmit={handleSubmit}
                 formTitle={formTitle}
-                setFormTitle={setFormTitle}
                 formValues={formValues}
-                updateFormValues={updateFormValues}
                 submissionStatus={submissionStatus}
                 signature={signature}
                 submittedForm={submittedForm}

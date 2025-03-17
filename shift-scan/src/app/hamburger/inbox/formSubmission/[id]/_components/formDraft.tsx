@@ -1,3 +1,9 @@
+"use client";
+import { useEffect, useCallback } from "react";
+import { FormInput } from "./formInput";
+import { FormEvent } from "react";
+import { saveDraft } from "@/actions/hamburgerActions";
+import { debounce } from "lodash";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
@@ -5,8 +11,7 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
-import { FormInput } from "./formInput";
-import { FormEvent } from "react";
+import { useAutoSave } from "@/hooks/(inbox)/useAutoSave";
 
 interface FormField {
   id: string;
@@ -37,6 +42,7 @@ interface FormTemplate {
   isSignatureRequired: boolean;
   groupings: FormGrouping[];
 }
+
 export default function FormDraft({
   formData,
   handleSubmit,
@@ -44,6 +50,8 @@ export default function FormDraft({
   setFormTitle,
   formValues,
   updateFormValues,
+  userId,
+  submissionId,
 }: {
   formData: FormTemplate;
   handleSubmit: (e: FormEvent<HTMLFormElement>) => Promise<void>;
@@ -51,7 +59,40 @@ export default function FormDraft({
   formTitle: string;
   setFormTitle: (title: string) => void;
   updateFormValues: (values: Record<string, string>) => void;
+  userId: string;
+  submissionId: string;
 }) {
+  type FormValues = Record<string, string>;
+
+  const saveDraftData = async (values: FormValues, title: string) => {
+    if ((Object.keys(values).length > 0 || title) && formData) {
+      try {
+        await saveDraft(
+          values,
+          formData.id,
+          userId,
+          formData.formType,
+          submissionId,
+          title
+        );
+        console.log("Draft saved successfully");
+      } catch (error) {
+        console.error("Error saving draft:", error);
+      }
+    }
+  };
+
+  // Use the auto-save hook with the FormValues type
+  const autoSave = useAutoSave<{ values: FormValues; title: string }>(
+    (data) => saveDraftData(data.values, data.title),
+    2000
+  );
+
+  // Trigger auto-save when formValues or formTitle changes
+  useEffect(() => {
+    autoSave({ values: formValues, title: formTitle });
+  }, [formValues, formTitle, autoSave]);
+
   return (
     <>
       <Holds

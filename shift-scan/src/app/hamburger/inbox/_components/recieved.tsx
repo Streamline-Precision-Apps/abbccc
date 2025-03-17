@@ -7,7 +7,6 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Selects } from "@/components/(reusable)/selects";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
@@ -21,6 +20,7 @@ enum FormStatus {
 type SentContent = {
   id: string;
   formTemplateId: string;
+  status: FormStatus;
   data: Record<string, any>;
   formTemplate: {
     name: string;
@@ -36,14 +36,13 @@ type SentContent = {
       lastName: string;
     };
   }[];
-
-  status: FormStatus;
 };
 
 type EmployeeRequests = {
   id: string;
   formTemplateId: string;
   user: {
+    id: string;
     firstName: string;
     lastName: string;
   };
@@ -68,7 +67,7 @@ export default function RTab({ isManager }: { isManager: boolean }) {
         const data = await response.json();
         setSentContent(data);
 
-        const names = data.flatMap((item: SentContent) =>
+        const names = data.map((item: SentContent) =>
           item.approvals.map(
             (approval) =>
               approval.approver.firstName + "-" + approval.approver.lastName

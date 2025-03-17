@@ -49,7 +49,6 @@ type ManagerFormApprovalSchema = {
   id: string;
   formSubmissionId: string;
   approvedBy: string;
-  isApproved: boolean;
   approver: {
     firstName: string;
     lastName: string;
@@ -60,11 +59,8 @@ type ManagerFormApprovalSchema = {
 
 export default function ManagerFormEditApproval({
   formData,
-  handleSubmit,
   formTitle,
-  setFormTitle,
   formValues,
-  updateFormValues,
   submissionStatus,
   signature,
   submittedForm,
@@ -72,11 +68,8 @@ export default function ManagerFormEditApproval({
   managerFormApproval,
 }: {
   formData: FormTemplate;
-  handleSubmit: (e: FormEvent<HTMLFormElement>) => Promise<void>;
   formValues: Record<string, string>;
   formTitle: string;
-  setFormTitle: (title: string) => void;
-  updateFormValues: (values: Record<string, string>) => void;
   submissionStatus: string | null;
   signature: string | null;
   submittedForm: string | null;
@@ -92,12 +85,6 @@ export default function ManagerFormEditApproval({
   const [comment, setComment] = useState<string>(
     managerFormApproval?.comment || ""
   );
-  const [isApproved, setIsApproved] = useState<boolean>(
-    managerFormApproval?.isApproved || false
-  );
-  const [initialComment, setInitialComment] = useState<string>(comment);
-  const [initialIsApproved, setInitialIsApproved] =
-    useState<boolean>(isApproved);
 
   // Fetch manager's signature on component mount
   useEffect(() => {

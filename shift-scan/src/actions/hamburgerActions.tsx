@@ -161,6 +161,7 @@ export async function saveDraft(
 
       // Type-cast data to a Record<string, any>
       const existingData = existingSubmission.data as Record<string, any>;
+      const existingTitle = existingSubmission.title;
 
       // Compare the new data with the existing data to find changed fields
       const changedFields: Record<string, any> = {};
@@ -170,60 +171,20 @@ export async function saveDraft(
         }
       }
 
-      // If the form is in "PENDING" status, preserve certain fields
-      if (existingSubmission.status === "PENDING") {
-        if (title) {
-          const updatedSubmission = await prisma.formSubmission.update({
-            where: { id: submissionId },
-            data: {
-              title: title, // Preserve existing title if not provided
-              data: {
-                ...existingData, // Preserve existing data
-                ...changedFields, // Overwrite with changed fields
-              },
-            },
-          });
-          return updatedSubmission;
-        } else {
-          const updatedSubmission = await prisma.formSubmission.update({
-            where: { id: submissionId },
-            data: {
-              data: {
-                ...existingData, // Preserve existing data
-                ...changedFields, // Overwrite with changed fields
-              },
-            },
-          });
-          return updatedSubmission;
-        }
-      } else {
-        // For drafts or other statuses, update as usual
-        if (title) {
-          const updatedSubmission = await prisma.formSubmission.update({
-            where: { id: submissionId },
-            data: {
-              data: {
-                title: title,
-                ...existingData, // Preserve existing data
-                ...changedFields, // Overwrite with changed fields
-              },
-              status: "DRAFT", // Ensure the status remains DRAFT
-            },
-          });
-          return updatedSubmission;
-        } else {
-          const updatedSubmission = await prisma.formSubmission.update({
-            where: { id: submissionId },
-            data: {
-              data: {
-                ...existingData, // Preserve existing data
-                ...changedFields, // Overwrite with changed fields
-              },
-            },
-          });
-          return updatedSubmission;
-        }
-      }
+      // Update the submission with the changed fields
+      const updatedSubmission = await prisma.formSubmission.update({
+        where: { id: submissionId },
+        data: {
+          title: title || existingTitle, // Preserve existing title if not provided
+          data: {
+            ...existingData, // Preserve existing data
+            ...changedFields, // Overwrite with changed fields
+          },
+          status: "DRAFT", // Ensure the status remains DRAFT
+        },
+      });
+
+      return updatedSubmission;
     } else {
       // Create new draft
       const newSubmission = await prisma.formSubmission.create({
@@ -241,6 +202,109 @@ export async function saveDraft(
   } catch (error) {
     console.error("Error saving draft:", error);
     throw new Error("Failed to save draft");
+  }
+}
+
+export async function savePending(
+  formData: Record<string, any>,
+  formTemplateId: string,
+  userId: string,
+  formType?: string,
+  submissionId?: string,
+  title?: string
+) {
+  try {
+    if (submissionId) {
+      // Fetch the existing submission to compare with the new data
+      const existingSubmission = await prisma.formSubmission.findUnique({
+        where: { id: submissionId },
+      });
+
+      if (!existingSubmission) {
+        throw new Error("Submission not found");
+      }
+
+      if (existingSubmission.data === null) {
+        throw new Error("Submission data is null");
+      }
+
+      // Type-cast data to a Record<string, any>
+      const existingData = existingSubmission.data as Record<string, any>;
+      const existingTitle = existingSubmission.title;
+
+      // Compare the new data with the existing data to find changed fields
+      const changedFields: Record<string, any> = {};
+      for (const key in formData) {
+        if (formData[key] !== existingData[key]) {
+          changedFields[key] = formData[key]; // Only include changed fields
+        }
+      }
+
+      // Update the submission with the changed fields
+      const updatedSubmission = await prisma.formSubmission.update({
+        where: { id: submissionId },
+        data: {
+          title: title || existingTitle, // Preserve existing title if not provided
+          data: {
+            ...existingData, // Preserve existing data
+            ...changedFields, // Overwrite with changed fields
+          },
+          status: "PENDING", // Ensure the status remains PENDING
+        },
+      });
+
+      return updatedSubmission;
+    } else {
+      // Create new submission with PENDING status
+      const newSubmission = await prisma.formSubmission.create({
+        data: {
+          title: title || "",
+          formTemplateId,
+          userId,
+          formType,
+          data: formData,
+          status: "PENDING", // Ensure the status is PENDING
+        },
+      });
+      return newSubmission;
+    }
+  } catch (error) {
+    console.error("Error saving pending submission:", error);
+    throw new Error("Failed to save pending submission");
+  }
+}
+
+export async function createFormApproval(formData: FormData) {
+  try {
+    console.log("Creating form approval...");
+    const formSubmissionId = formData.get("formSubmissionId") as string;
+    const signedBy = formData.get("signedBy") as string;
+    const signature = formData.get("signature") as string;
+    const comment = formData.get("comment") as string;
+    const isApproved = formData.get("isApproved") === "true"; // Convert to boolean
+
+    const approval = await prisma.formApproval.create({
+      data: {
+        formSubmissionId,
+        signedBy,
+        signature,
+        comment,
+      },
+    });
+
+    if (approval) {
+      const newStatus = isApproved ? "APPROVED" : "DENIED";
+      await prisma.formSubmission.update({
+        where: { id: formSubmissionId },
+        data: {
+          status: newStatus,
+        },
+      });
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error creating form approval:", error);
   }
 }
 
@@ -288,11 +352,6 @@ export async function updateFormApproval(formData: FormData) {
       // Update existing approval
       approval = await prisma.formApproval.update({
         where: { id },
-        data,
-      });
-    } else {
-      // Create new approval
-      approval = await prisma.formApproval.create({
         data,
       });
     }

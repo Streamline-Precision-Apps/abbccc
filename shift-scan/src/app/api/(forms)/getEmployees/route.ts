@@ -50,7 +50,12 @@ export async function GET() {
         },
         approvals: {
           select: {
-            isApproved: true,
+            approver: {
+              select: {
+                firstName: true,
+                lastName: true,
+              },
+            },
           },
         },
       },
