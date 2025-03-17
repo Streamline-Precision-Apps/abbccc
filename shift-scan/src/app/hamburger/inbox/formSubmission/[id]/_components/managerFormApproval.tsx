@@ -98,7 +98,7 @@ export default function ManagerFormApproval({
     fetchSignature();
   }, [managerFormApproval]);
 
-  const handleApprove = () => {
+  const handleApproveOrDeny = async (approval: Boolean) => {
     if (!isSignatureShowing) {
       setErrorMessage("Please provide a signature before approving.");
       return;
@@ -108,13 +108,15 @@ export default function ManagerFormApproval({
       setErrorMessage("Please add a comment before approving.");
       return;
     }
-
-    // If all conditions are met, proceed with approval
-    setErrorMessage(""); // Clear any previous error message
-    console.log("Approved with comment:", comment);
-    // Add your approval logic here (e.g., submit the form)
+    const formData = new FormData();
+    formData.append("id", managerFormApproval?.id || "");
+    formData.append("approvedBy", managerFormApproval?.approvedBy || "");
+    formData.append("signature", managerSignature);
+    formData.append("comment", comment);
+    if (!approval) {
+    } else {
+    }
   };
-
   const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setComment(e.target.value);
   };
@@ -149,7 +151,7 @@ export default function ManagerFormApproval({
 
       <Holds
         background={"white"}
-        className="w-full h-full row-start-2 row-end-5 px-5 "
+        className="w-full h-full row-start-2 row-end-6 px-5 "
       >
         <Holds className="overflow-y-auto no-scrollbar ">
           {formData?.groupings?.map((group) => (
@@ -174,14 +176,14 @@ export default function ManagerFormApproval({
       </Holds>
       <Holds
         background={"white"}
-        className="w-full h-full row-start-5 row-end-9  "
+        className="w-full h-full row-start-6 row-end-9 "
       >
-        <Grids rows={"6"} gap={"5"} className="w-full h-full  ">
-          <Holds className="row-start-1 row-end-3 h-full py-1 px-4 relative">
+        <Grids rows={"5"} className="w-full h-full py-3 ">
+          <Holds className="row-start-1 row-end-3 py-1 px-4 relative">
             <Labels size={"p4"} htmlFor="comment">
               Manager Comments
             </Labels>
-            <Holds position={"row"} className="h-full w-full relative">
+            <Holds position={"row"} className="w-full relative">
               <TextAreas
                 name="comment"
                 id="comment"
@@ -196,10 +198,10 @@ export default function ManagerFormApproval({
             </Holds>
           </Holds>
 
-          <Holds className="row-start-3 row-end-5 h-full px-4">
+          <Holds className="row-start-3 row-end-5 p-4 h-full justify-center items-center">
             {!isSignatureShowing ? (
               <Buttons
-                className="h-full my-1"
+                className="h-full py-3"
                 onClick={() => {
                   setIsSignatureShowing(true);
                 }}
@@ -209,10 +211,10 @@ export default function ManagerFormApproval({
             ) : (
               <Holds
                 onClick={() => setIsSignatureShowing(false)}
-                className="border-[3px] border-black rounded-[10px] justify-center items-center h-full my-2"
+                className="h-full border-[3px] border-black rounded-[10px] justify-center items-center "
               >
                 <img
-                  className="w-full h-24 object-contain"
+                  className="w-full h-full object-contain"
                   src={managerSignature || ""}
                   alt="Signature"
                 />
@@ -228,6 +230,7 @@ export default function ManagerFormApproval({
                 }
                 disabled={!isSignatureShowing || comment.length === 0}
                 className="py-2"
+                onClick={() => handleApproveOrDeny(false)}
               >
                 <Titles size={"h4"}>Deny</Titles>
               </Buttons>
@@ -238,7 +241,7 @@ export default function ManagerFormApproval({
                     : "darkGray"
                 }
                 disabled={!isSignatureShowing || comment.length === 0}
-                onClick={handleApprove}
+                onClick={() => handleApproveOrDeny(true)}
                 className="py-2"
               >
                 <Titles size={"h4"}>Approve</Titles>

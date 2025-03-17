@@ -10,7 +10,9 @@ const calculatePayPeriodStart = (): Date => {
   const diffWeeks = Math.floor(
     (now.getTime() - startDate.getTime()) / (2 * 7 * 24 * 60 * 60 * 1000)
   ); // Two-week intervals
-  return new Date(startDate.getTime() + diffWeeks * 2 * 7 * 24 * 60 * 60 * 1000);
+  return new Date(
+    startDate.getTime() + diffWeeks * 2 * 7 * 24 * 60 * 60 * 1000
+  );
 };
 
 export async function GET() {
@@ -45,13 +47,6 @@ export async function GET() {
       },
     });
 
-    if (!payPeriodSheets || payPeriodSheets.length === 0) {
-      return NextResponse.json(
-        { message: "No timesheets found for the current pay period." },
-        { status: 404 }
-      );
-    }
-
     // Return the filtered timesheets with caching disabled
     return NextResponse.json(payPeriodSheets, {
       headers: {
@@ -66,9 +61,6 @@ export async function GET() {
       errorMessage = error.message;
     }
 
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
