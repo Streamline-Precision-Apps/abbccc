@@ -50,15 +50,33 @@ interface FormTemplate {
 
 type ManagerFormApprovalSchema = {
   id: string;
-  formSubmissionId: string;
-  approvedBy: string;
-  approver: {
-    firstName: string;
-    lastName: string;
+  title: string;
+  formTemplateId: string;
+  userId: string;
+  formType: string | null;
+  data: {
+    comments: string;
+    request_type: string;
+    request_end_date: string;
+    request_start_date: string;
   };
+  createdAt: string;
+  updatedAt: string;
+  submittedAt: string;
   status: FormStatus;
-  signature: string;
-  comment: string;
+  approvals: Array<{
+    id: string;
+    formSubmissionId: string;
+    signedBy: string;
+    submittedAt: string;
+    updatedAt: string;
+    signature: string;
+    comment: string;
+    approver: {
+      firstName: string;
+      lastName: string;
+    };
+  }>;
 };
 
 enum FormStatus {
@@ -98,18 +116,9 @@ export default function ManagerFormApproval({
   const [managerSignature, setManagerSignature] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [comment, setComment] = useState<string>(
-    managerFormApproval?.comment || ""
-  );
-  const [formStatus, setFormStatus] = useState<FormStatus>(
-    managerFormApproval?.status || FormStatus.PENDING
+    managerFormApproval?.approvals?.[0]?.comment || ""
   );
 
-  // Debug managerFormApproval prop
-  useEffect(() => {
-    console.log("Manager Form Approval Data:", managerFormApproval);
-  }, [managerFormApproval]);
-
-  // Fetch manager's signature on component mount
   useEffect(() => {
     const fetchSignature = async () => {
       try {
@@ -127,43 +136,6 @@ export default function ManagerFormApproval({
 
     fetchSignature();
   }, []);
-
-  // Define the auto-save function
-  const saveApprovalData = async (data: {
-    comment: string;
-    formStatus: FormStatus;
-  }) => {
-    const formData = new FormData();
-    formData.append("id", managerFormApproval?.id || "");
-    formData.append("formSubmissionId", submissionId || "");
-    formData.append("signedBy", managerName || "");
-    formData.append("comment", data.comment);
-    formData.append("status", data.formStatus); // Use FormStatus enum value
-    formData.append("isFinalApproval", "false"); // Indicates this is an autosave
-
-    try {
-      console.log("Auto-saving data:", data);
-      await updateFormApproval(formData);
-      console.log("Autosave successful");
-    } catch (error) {
-      console.error("Error during autosave:", error);
-      setErrorMessage("Failed to save changes. Please try again.");
-    }
-  };
-
-  // Use the auto-save hook
-  const autoSave = useAutoSave<{ comment: string; formStatus: FormStatus }>(
-    async (data) => {
-      console.log("Auto-saving data:", data);
-      saveApprovalData(data);
-    },
-    2000 // Debounce delay of 2 seconds
-  );
-
-  // Trigger auto-save when comment or formStatus changes
-  useEffect(() => {
-    autoSave({ comment, formStatus });
-  }, [comment, formStatus, autoSave]);
 
   // Handle comment change
   const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -194,13 +166,7 @@ export default function ManagerFormApproval({
     formData.append("isFinalApproval", "true"); // Indicates this is a final approval
 
     try {
-      console.log("Submitting final approval with data:", {
-        formSubmissionId: submissionId,
-        signedBy: managerName,
-        signature: managerSignature,
-        comment,
-        status: approval,
-      });
+      console.log("Submitting final approval with data:", formData);
       await createFormApproval(formData);
       router.push("/hamburger/inbox");
     } catch (error) {
@@ -239,7 +205,7 @@ export default function ManagerFormApproval({
 
       <Holds
         background={"white"}
-        className="w-full h-full row-start-2 row-end-6 px-5 "
+        className="w-full h-full row-start-2 row-end-5 px-5 "
       >
         <Holds className="overflow-y-auto no-scrollbar ">
           {formData?.groupings?.map((group) => (
@@ -264,10 +230,10 @@ export default function ManagerFormApproval({
       </Holds>
       <Holds
         background={"white"}
-        className="w-full h-full row-start-6 row-end-9 "
+        className="w-full h-full row-start-5 row-end-9 "
       >
         <Contents width={"section"}>
-          <Grids rows={"5"} gap={"3"} className="w-full h-full py-5 ">
+          <Grids rows={"5"} gap={"5"} className="w-full h-full py-5 ">
             <Holds className="row-start-1 row-end-3 relative">
               <Labels size={"p5"} htmlFor="comment">
                 Manager Comments
@@ -287,19 +253,19 @@ export default function ManagerFormApproval({
             </Holds>
 
             {!isSignatureShowing ? (
-              <Holds className="row-start-3 row-end-5 justify-center items-center">
+              <Holds className="row-start-3 row-end-5 h-full justify-center items-center">
                 <Buttons
-                  className="h-full py-3"
+                  className="h-full shadow-none"
                   onClick={() => setIsSignatureShowing(true)}
                 >
-                  <Texts size={"p6"}>Tap to Sign</Texts>
+                  <Texts size={"p4"}>Tap to Sign</Texts>
                 </Buttons>
               </Holds>
             ) : (
               <Holds className="h-full row-start-3 row-end-5 justify-center items-center">
                 <Holds
                   onClick={() => setIsSignatureShowing(false)}
-                  className="h-3/4 w-full border-[3px] border-black rounded-[10px] justify-center items-center "
+                  className="h-full w-full border-[3px] border-black rounded-[10px] justify-center items-center "
                 >
                   <img
                     className="w-full h-full object-contain"
@@ -322,7 +288,7 @@ export default function ManagerFormApproval({
                   className="py-2"
                   onClick={() => handleApproveOrDeny(FormStatus.DENIED)}
                 >
-                  <Titles size={"h6"}>Deny</Titles>
+                  <Titles size={"h4"}>Deny</Titles>
                 </Buttons>
                 <Buttons
                   background={
@@ -334,7 +300,7 @@ export default function ManagerFormApproval({
                   onClick={() => handleApproveOrDeny(FormStatus.APPROVED)}
                   className="py-2"
                 >
-                  <Titles size={"h6"}>Approve</Titles>
+                  <Titles size={"h4"}>Approve</Titles>
                 </Buttons>
               </Holds>
               {errorMessage && (

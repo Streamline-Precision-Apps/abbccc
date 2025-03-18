@@ -3,8 +3,8 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { UserSettings } from "@/lib/types";
-import { error } from "console";
-import { title } from "process";
+import Form from "@/app/hamburger/inbox/form/content";
+import { Prisma } from "@prisma/client";
 
 enum FormStatus {
   PENDING = "PENDING",
@@ -315,63 +315,51 @@ export async function updateFormApproval(formData: FormData) {
     // Extract data from FormData
     const id = formData.get("id") as string;
     const formSubmissionId = formData.get("formSubmissionId") as string;
-    const signedBy = formData.get("signedBy") as string;
-    const signature = formData.get("signature") as string;
     const comment = formData.get("comment") as string;
-    const isApproved = formData.get("isApproved") === "true"; // Convert to boolean
-    const isFinalApproval = formData.get("isFinalApproval") === "true"; // Flag for final approval
+    const isApp = formData.get("isApproved") === "true"; // Convert string to boolean
 
-    // Validate required fields
-    if (!formSubmissionId || !signedBy) {
-      throw new Error("formSubmissionId and signedBy are required fields.");
-    }
-
-    // Signature is only required for final approval
-    if (isFinalApproval && !signature) {
-      throw new Error("Signature is required for final approval.");
-    }
-
-    // Prepare data for update/create
-    const data: any = {
+    // Log input data for debugging
+    console.log("Input Data:", {
+      id,
       formSubmissionId,
-      signedBy,
-    };
-
-    // Only include fields that are provided
-    if (signature) data.signature = signature;
-    if (comment !== null) data.comment = comment;
-    if (isApproved !== null) data.isApproved = isApproved;
-
-    // Check if the approval record already exists
-    const existingApproval = await prisma.formApproval.findUnique({
-      where: { id },
+      comment,
+      isApp,
     });
 
-    let approval;
-    if (existingApproval) {
-      // Update existing approval
-      approval = await prisma.formApproval.update({
+    // Use a transaction to ensure atomicity
+    const [approval, updatedSubmission] = await prisma.$transaction([
+      // Update the formApproval record
+      prisma.formApproval.update({
         where: { id },
-        data,
-      });
-    }
-
-    // Update the FormSubmission status if this is a final approval
-    if (isFinalApproval) {
-      const newStatus = isApproved ? "APPROVED" : "DENIED";
-      await prisma.formSubmission.update({
+        data: {
+          comment, // Update the comment
+        },
+      }),
+      // Update the formSubmission status
+      prisma.formSubmission.update({
         where: { id: formSubmissionId },
         data: {
-          status: newStatus,
+          status: isApp ? "APPROVED" : "DENIED", // Set the new status
         },
-      });
-      console.log(`FormSubmission status updated to: ${newStatus}`);
-    }
+      }),
+    ]);
 
-    console.log("Form approval updated/created:", approval);
-    return approval; // Return the updated/created approval for client-side use
+    // Log updated records for debugging
+    console.log("Updated Approval:", approval);
+    console.log("Updated Submission:", updatedSubmission);
+
+    console.log("Form approval updated successfully.");
+    return { approval, updatedSubmission }; // Return both updated records
   } catch (error) {
     console.error("Error updating form approval:", error);
+
+    // Handle specific Prisma errors
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === "P2025") {
+        throw new Error("Record not found. Please check the provided IDs.");
+      }
+    }
+
     throw new Error("Failed to update form approval");
   }
 }

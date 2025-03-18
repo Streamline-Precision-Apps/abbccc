@@ -47,15 +47,33 @@ interface FormTemplate {
 
 type ManagerFormApprovalSchema = {
   id: string;
-  formSubmissionId: string;
-  approvedBy: string;
-  approver: {
-    firstName: string;
-    lastName: string;
+  title: string;
+  formTemplateId: string;
+  userId: string;
+  formType: string | null;
+  data: {
+    comments: string;
+    request_type: string;
+    request_end_date: string;
+    request_start_date: string;
   };
+  createdAt: string;
+  updatedAt: string;
+  submittedAt: string;
   status: FormStatus;
-  signature: string;
-  comment: string;
+  approvals: Array<{
+    id: string;
+    formSubmissionId: string;
+    signedBy: string;
+    submittedAt: string;
+    updatedAt: string;
+    signature: string;
+    comment: string;
+    approver: {
+      firstName: string;
+      lastName: string;
+    };
+  }>;
 };
 
 enum FormStatus {
@@ -115,7 +133,6 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
             if (!submissionRes.ok)
               throw new Error("Failed to fetch submission data");
             submissionData = await submissionRes.json();
-            console.log("Pending - submission null", submissionApprovingStatus);
           } else if (submissionApprovingStatus === "true") {
             const submissionRes = await fetch(
               `/api/teamSubmission/` + submissionId
@@ -132,7 +149,6 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
               throw new Error("Failed to fetch manager approval data");
             managerFormApprovalData = await managerFormApprovalRes.json();
           }
-          console.log("Pending - submission true", submissionApprovingStatus);
         } else if (
           submissionStatus !== "PENDING" &&
           submissionStatus !== "DRAFT" &&
@@ -169,7 +185,12 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
 
         if (managerFormApprovalData) {
           setManagerFormApproval(managerFormApprovalData);
+          console.log(
+            "Fetched manager approval data:",
+            managerFormApprovalData
+          );
         }
+        console.log("Fetched form data:", ManagerFormApproval);
       } catch (error) {
         console.error("Error fetching form data:", error);
       } finally {
@@ -212,14 +233,6 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
       ...newValues,
     }));
   };
-
-  useEffect(() => {
-    console.log("formValues:", formValues);
-  }, [formValues]);
-
-  useEffect(() => {
-    console.log("Manager Form Approval Data:", managerFormApproval);
-  }, [managerFormApproval]);
 
   if (loading || !formData) {
     return (
@@ -316,12 +329,14 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
               <ManagerFormEditApproval
                 formData={formData}
                 formTitle={formTitle}
+                setFormTitle={setFormTitle}
                 formValues={formValues}
-                submissionStatus={submissionStatus}
+                updateFormValues={updateFormValues}
+                submissionId={submissionId || ""}
                 signature={signature}
                 submittedForm={submittedForm}
-                submissionId={submissionId}
-                managerFormApproval={managerFormApproval}
+                submissionStatus={submissionStatus}
+                managerFormApproval={managerFormApproval} // Pass the data here
               />
             )}
         </Grids>
