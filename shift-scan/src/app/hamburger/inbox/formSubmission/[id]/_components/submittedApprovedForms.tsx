@@ -1,8 +1,13 @@
 "use client";
 import { FormInput } from "./formInput";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { updateFormApproval } from "@/actions/hamburgerActions";
+import {
+  createFormApproval,
+  updateFormApproval,
+} from "@/actions/hamburgerActions";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { useAutoSave } from "@/hooks/(inbox)/useAutoSave";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
@@ -12,8 +17,9 @@ import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { Contents } from "@/components/(reusable)/contents";
+import { Inputs } from "@/components/(reusable)/inputs";
+import { Select } from "@nextui-org/react";
 import { Selects } from "@/components/(reusable)/selects";
-import { useAutoSave } from "@/hooks/(inbox)/useAutoSave";
 import { format } from "date-fns";
 
 interface FormField {
@@ -84,7 +90,7 @@ enum FormStatus {
   DRAFT = "DRAFT",
 }
 
-export default function ManagerFormEditApproval({
+export default function SubmittedFormsApproval({
   formData,
   formTitle,
   formValues,
@@ -108,61 +114,19 @@ export default function ManagerFormEditApproval({
   updateFormValues: (newValues: Record<string, any>) => void;
 }) {
   const router = useRouter();
-  const [comment, setComment] = useState<string>(
-    managerFormApproval?.approvals?.[0]?.comment || ""
-  );
-  const [approvalStatus, setApprovalStatus] = useState<FormStatus>(
-    managerFormApproval?.status || FormStatus.PENDING
-  );
+  const managerName =
+    managerFormApproval?.approvals[0].approver.firstName +
+    " " +
+    managerFormApproval?.approvals[0].approver.lastName;
 
-  // Handle comment change
-  const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newComment = e.target.value;
-    setComment(newComment);
-  };
+  const status = managerFormApproval?.status;
 
-  // Handle approval status change
-  const handleApprovalStatusChange = (
-    e: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    const newStatus = e.target.value as FormStatus;
-    setApprovalStatus(newStatus);
-  };
-
-  // Handle updating approval
-  const handleAutoSave = async (data: {
-    comment: string;
-    approvalStatus: FormStatus;
-  }) => {
-    if (!submissionId || !managerFormApproval) return;
-
-    const updatedData = new FormData();
-    updatedData.append("id", managerFormApproval.approvals[0].id);
-    updatedData.append("formSubmissionId", submissionId);
-    updatedData.append("comment", data.comment);
-
-    // Map approvalStatus to isApproved (boolean)
-    const isApproved = data.approvalStatus === FormStatus.APPROVED;
-    updatedData.append("isApproved", isApproved.toString()); // Convert boolean to string
-
-    try {
-      await updateFormApproval(updatedData);
-    } catch (error) {
-      console.error("Error during auto-save:", error);
-    }
-  };
-
-  const debouncedAutoSave = useAutoSave(handleAutoSave, 1000);
-
-  useEffect(() => {
-    debouncedAutoSave({ comment, approvalStatus });
-  }, [comment, approvalStatus, debouncedAutoSave]);
-
+  const comment = managerFormApproval?.approvals[0].comment;
   return (
     <>
       <Holds
         background={"white"}
-        className="row-start-1 row-end-2 h-full justify-center px-3 "
+        className="row-span-1 h-full justify-center px-3 "
       >
         <Grids cols={"5"} rows={"2"} className="w-full h-full p-2">
           <Holds className="col-span-1 row-span-2 flex items-center justify-center">
@@ -180,8 +144,34 @@ export default function ManagerFormEditApproval({
           </Holds>
 
           <Holds className="col-start-2 col-end-5 row-start-1 row-end-3 flex items-center justify-center">
-            <Titles size={"h4"}>{formTitle}</Titles>
+            <Titles size={"h4"}>
+              {formTitle === "" ? formData.name : formTitle}
+            </Titles>
             <Titles size={"h6"}>{formData.name}</Titles>
+          </Holds>
+          <Holds className="col-start-5 col-end-6 row-start-1 row-end-3">
+            <Holds
+              background={
+                submissionStatus === "PENDING"
+                  ? "orange"
+                  : submissionStatus === "APPROVED"
+                  ? "green"
+                  : "red"
+              }
+              className="flex items-center justify-center w-10 h-auto rounded-full"
+            >
+              <Images
+                titleImgAlt={"form Status"}
+                titleImg={
+                  submissionStatus === "PENDING"
+                    ? "/OrangeOngoing.svg"
+                    : submissionStatus === "APPROVED"
+                    ? "/Checkmark.svg"
+                    : "/statusReject.svg"
+                }
+                className=" w-10 h-auto object-contain"
+              />
+            </Holds>
           </Holds>
         </Grids>
       </Holds>
@@ -196,7 +186,7 @@ export default function ManagerFormEditApproval({
               {group.title && <h3>{group.title || ""}</h3>}
               {group.fields.map((field) => {
                 return (
-                  <Holds key={field.id} className="pb-1">
+                  <Holds key={field.id} className="pb-3">
                     <FormInput
                       key={field.name}
                       field={field}
@@ -217,53 +207,37 @@ export default function ManagerFormEditApproval({
                 "M/dd/yy"
               )}`}
             </Texts>
-            <Texts size={"p7"}>
-              {`Last Edited: ${format(
-                managerFormApproval?.approvals?.[0]?.updatedAt?.toString() ||
-                  new Date().toISOString(),
-                "M/dd/yy"
-              )}`}
-            </Texts>
           </Holds>
         </Holds>
       </Holds>
-
       <Holds
         background={"white"}
         className="w-full h-full row-start-5 row-end-9 "
       >
         <Contents width={"section"}>
-          <Grids rows={"5"} gap={"5"} className="w-full h-full py-3 ">
-            <Holds className="row-start-1 row-end-2 h-full relative">
-              <Labels size={"p5"} htmlFor="approvalStatus">
-                Approval Status
-              </Labels>
-              <Selects
-                id="approvalStatus"
-                value={approvalStatus}
-                onChange={handleApprovalStatusChange}
-              >
+          <Grids rows={"5"} gap={"5"} className="w-full h-full py-5">
+            <Holds className="row-start-1 row-end-2 h-full">
+              <Labels size={"p5"}>Manager</Labels>
+              <Inputs
+                type="text"
+                value={managerName}
+                disabled
+                className="w-full text-center"
+              />
+            </Holds>
+            <Holds className="row-start-2 row-end-3 h-full">
+              <Labels size={"p5"}>Approval Status</Labels>
+              <Selects value={status} disabled className="w-full text-center">
                 <option value="APPROVED">Approved</option>
                 <option value="DENIED">Denied</option>
               </Selects>
             </Holds>
-            <Holds className="row-start-2 row-end-3 h-full relative">
-              <Labels size={"p5"} htmlFor="comment">
-                Manager Comments
-              </Labels>
-              <Holds className="w-full relative">
-                <TextAreas
-                  name="comment"
-                  id="comment"
-                  value={comment}
-                  onChange={handleCommentChange}
-                  maxLength={40}
-                />
-                <Texts className="absolute right-1 bottom-3 px-2 py-1 rounded text-sm text-gray-500">
-                  {comment.length} / 40
-                </Texts>
+            <Holds className="row-start-3 row-end-5 h-full">
+              <Holds>
+                <Labels size={"p5"}>Manager Comment</Labels>
+                <TextAreas value={comment} disabled className="w-full" />
               </Holds>
-              <Texts position={"right"} size={"p7"}>
+              <Texts size={"p7"} position={"right"}>
                 {`Approval Status Last Updated:  ${format(
                   managerFormApproval?.updatedAt?.toString() ||
                     new Date().toISOString(),

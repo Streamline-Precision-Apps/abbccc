@@ -168,7 +168,7 @@ export default function ManagerFormApproval({
     try {
       console.log("Submitting final approval with data:", formData);
       await createFormApproval(formData);
-      router.push("/hamburger/inbox");
+      router.back();
     } catch (error) {
       console.error("Error during final approval:", error);
       setErrorMessage("Failed to submit approval. Please try again.");
@@ -184,7 +184,7 @@ export default function ManagerFormApproval({
         <Grids cols={"5"} rows={"2"} className="w-full h-full p-2">
           <Holds className="col-span-1 row-span-2 flex items-center justify-center">
             <Buttons
-              onClick={() => router.push("/hamburger/inbox")}
+              onClick={() => router.back()}
               background={"none"}
               position={"left"}
             >
