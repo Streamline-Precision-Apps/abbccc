@@ -123,7 +123,7 @@ export default function STab() {
                 onChange={(e) => setSelectedFilter(e.target.value)}
                 className="text-center justify-center"
               >
-                <option value="all">All</option>
+                <option value="all">Select A Filter</option>
                 <option value="pending">Pending</option>
                 <option value="approved">Approved</option>
                 <option value="denied">Denied</option>
@@ -132,12 +132,11 @@ export default function STab() {
 
             <Holds className="row-start-2 row-end-10 h-full w-full overflow-y-scroll no-scrollbar">
               {sentContent.map((form) => {
-                const title = form.title || form.formTemplate?.name; // Fallback if formTemplate is undefined
-
+                const title = form.title || form.formTemplate?.name;
                 return (
-                  <Holds key={form.id} className="px-2">
+                  <Holds key={form.id} className="px-2 pb-5">
                     <Buttons
-                      className="py-2 relative"
+                      className="py-0.5 relative"
                       background={
                         form.status === "PENDING"
                           ? "orange"

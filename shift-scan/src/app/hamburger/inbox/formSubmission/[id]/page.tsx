@@ -15,6 +15,7 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import SubmittedFormsApproval from "./_components/submittedApprovedForms";
+import { Texts } from "@/components/(reusable)/texts";
 
 interface FormField {
   id: string;
@@ -81,31 +82,35 @@ enum FormStatus {
 }
 
 export default function DynamicForm({ params }: { params: { id: string } }) {
-  // search params from url
+  // Search params from URL
   const formSubmissions = useSearchParams();
   const submissionId = formSubmissions.get("submissionId");
   const submissionStatus = formSubmissions.get("status");
   const submissionApprovingStatus = formSubmissions.get("approvingStatus");
   const formApprover = formSubmissions.get("formApprover");
 
+  // State variables
   const [formData, setFormData] = useState<FormTemplate | null>(null);
   const [formTitle, setFormTitle] = useState<string>("");
   const [formValues, setFormValues] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   const [signature, setSignature] = useState<string | null>(null);
   const [submittedForm, setSubmittedForm] = useState<string | null>(null);
   const [managerFormApproval, setManagerFormApproval] =
     useState<ManagerFormApprovalSchema | null>(null);
-  // get user that is logged in
+
+  // Get user that is logged in
   const { data: session } = useSession();
   const userId = session?.user.id;
   const router = useRouter();
 
   // Fetch form template and draft data on page load
   useEffect(() => {
-    setLoading(true);
+    const fetchForm = async () => {
+      setLoading(true);
+      setError(null);
 
-    async function fetchForm() {
       try {
         // Fetch the form template
         const formRes = await fetch(`/api/form/` + params.id);
@@ -121,88 +126,42 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
 
         // Fetch submission data based on submissionStatus and submissionApprovingStatus
         let submissionData, managerFormApprovalData;
-        // Draft submission
+
         if (submissionStatus === "DRAFT") {
-          const draftRes = await fetch(`/api/formDraft/` + submissionId);
-          if (!draftRes.ok) throw new Error("Failed to fetch draft data");
-          submissionData = await draftRes.json();
-          console.log("Draft data:", submissionData);
-        }
-        // Pending submission
-        else if (submissionStatus === "PENDING") {
+          submissionData = await fetchDraftData(submissionId);
+        } else if (submissionStatus === "PENDING") {
           if (submissionApprovingStatus === null) {
-            const submissionRes = await fetch(
-              `/api/formSubmission/` + submissionId
-            );
-            if (!submissionRes.ok)
-              throw new Error("Failed to fetch submission data");
-            submissionData = await submissionRes.json();
+            submissionData = await fetchSubmissionData(submissionId);
           } else if (submissionApprovingStatus === "true") {
-            const submissionRes = await fetch(
-              `/api/teamSubmission/` + submissionId
+            submissionData = await fetchTeamSubmissionData(submissionId);
+            managerFormApprovalData = await fetchManagerApprovalData(
+              submissionId
             );
-            if (!submissionRes.ok)
-              throw new Error("Failed to fetch team submission data");
-            submissionData = await submissionRes.json();
-
-            const managerFormApprovalRes = await fetch(
-              `/api/managerFormApproval/` + submissionId
-            );
-
-            if (!managerFormApprovalRes.ok)
-              throw new Error("Failed to fetch manager approval data");
-            managerFormApprovalData = await managerFormApprovalRes.json();
           }
-        }
-        // Approved submission
-        else if (
+        } else if (
           submissionStatus === "APPROVED" ||
           submissionStatus === "DENIED"
         ) {
           if (submissionApprovingStatus === null) {
-            const submissionRes = await fetch(
-              `/api/formSubmission/` + submissionId
+            submissionData = await fetchSubmissionData(submissionId);
+            managerFormApprovalData = await fetchManagerApprovalData(
+              submissionId
             );
-            if (!submissionRes.ok)
-              throw new Error("Failed to fetch submission data");
-            submissionData = await submissionRes.json();
-
-            const managerFormApprovalRes = await fetch(
-              `/api/managerFormApproval/` + submissionId
-            );
-
-            if (!managerFormApprovalRes.ok)
-              throw new Error("Failed to fetch manager approval data");
-            managerFormApprovalData = await managerFormApprovalRes.json();
-            console.log("Manager data:", managerFormApprovalData);
           } else if (submissionApprovingStatus === "true") {
-            const submissionRes = await fetch(
-              `/api/teamSubmission/` + submissionId
+            submissionData = await fetchTeamSubmissionData(submissionId);
+            managerFormApprovalData = await fetchManagerApprovalData(
+              submissionId
             );
-            if (!submissionRes.ok)
-              throw new Error("Failed to fetch team submission data");
-            submissionData = await submissionRes.json();
           }
-        }
-        // submission for the manager to see
-        else if (
+        } else if (
           submissionStatus !== "PENDING" &&
           submissionStatus !== "DRAFT" &&
           submissionApprovingStatus === "true"
         ) {
-          const submissionRes = await fetch(
-            `/api/teamSubmission/` + submissionId
+          submissionData = await fetchTeamSubmissionData(submissionId);
+          managerFormApprovalData = await fetchManagerApprovalData(
+            submissionId
           );
-          if (!submissionRes.ok)
-            throw new Error("Failed to fetch team submission data");
-          submissionData = await submissionRes.json();
-
-          const managerFormApprovalRes = await fetch(
-            `/api/managerFormApproval/` + submissionId
-          );
-          if (!managerFormApprovalRes.ok)
-            throw new Error("Failed to fetch manager approval data");
-          managerFormApprovalData = await managerFormApprovalRes.json();
         }
 
         // Set the fetched data
@@ -216,27 +175,53 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
               ""
           );
           setSignature(submissionData.user?.signature || null);
-          setSubmittedForm(submissionData.submittedAt || null);
+          setSubmittedForm(submissionData.submittedAt || "");
         }
 
         if (managerFormApprovalData) {
           setManagerFormApproval(managerFormApprovalData);
-          console.log(
-            "Fetched manager approval data:",
-            managerFormApprovalData
-          );
         }
-        console.log("Fetched form data:", ManagerFormApproval);
       } catch (error) {
         console.error("Error fetching form data:", error);
+        setError("Failed to fetch form data. Please try again later.");
       } finally {
         setLoading(false);
       }
-    }
+    };
 
     fetchForm();
   }, [params.id, submissionId, submissionStatus, submissionApprovingStatus]);
 
+  // Helper functions for fetching data
+  const fetchDraftData = async (submissionId: string) => {
+    const draftRes = await fetch(`/api/formDraft/` + submissionId);
+    if (!draftRes.ok) throw new Error("Failed to fetch draft data");
+    return await draftRes.json();
+  };
+
+  const fetchSubmissionData = async (submissionId: string) => {
+    const submissionRes = await fetch(`/api/formSubmission/` + submissionId);
+    if (!submissionRes.ok) throw new Error("Failed to fetch submission data");
+    return await submissionRes.json();
+  };
+
+  const fetchTeamSubmissionData = async (submissionId: string) => {
+    const submissionRes = await fetch(`/api/teamSubmission/` + submissionId);
+    if (!submissionRes.ok)
+      throw new Error("Failed to fetch team submission data");
+    return await submissionRes.json();
+  };
+
+  const fetchManagerApprovalData = async (submissionId: string) => {
+    const managerFormApprovalRes = await fetch(
+      `/api/managerFormApproval/` + submissionId
+    );
+    if (!managerFormApprovalRes.ok)
+      throw new Error("Failed to fetch manager approval data");
+    return await managerFormApprovalRes.json();
+  };
+
+  // Handle form submission
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -268,6 +253,7 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
     }
   };
 
+  // Update form values
   const updateFormValues = (newValues: Record<string, any>) => {
     setFormValues((prevValues) => ({
       ...prevValues,
@@ -275,6 +261,11 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
     }));
   };
 
+  useEffect(() => {
+    console.log("Manager Form Approval Data:", managerFormApproval);
+  }, [managerFormApproval]);
+
+  // Loading state
   if (loading || !formData) {
     return (
       <Bases>
@@ -318,6 +309,36 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
     );
   }
 
+  // Error state
+  if (error) {
+    return (
+      <Bases>
+        <Contents>
+          <Grids className="grid-rows-8 gap-5">
+            <Holds
+              background={"white"}
+              className="row-span-1 h-full justify-center px-2"
+            >
+              <TitleBoxes
+                title={"Error"}
+                type="noIcon"
+                titleImg={""}
+                titleImgAlt={""}
+              />
+            </Holds>
+            <Holds
+              background={"white"}
+              className="w-full h-full row-span-7 flex items-center justify-center"
+            >
+              <Texts size={"p4"}>{error}</Texts>
+            </Holds>
+          </Grids>
+        </Contents>
+      </Bases>
+    );
+  }
+
+  // Render the form based on submission status
   return (
     <Bases>
       <Contents>
