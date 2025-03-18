@@ -1,13 +1,9 @@
 "use client";
 import { FormInput } from "./formInput";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import {
-  createFormApproval,
-  updateFormApproval,
-} from "@/actions/hamburgerActions";
+import { createFormApproval } from "@/actions/hamburgerActions";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useAutoSave } from "@/hooks/(inbox)/useAutoSave";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
@@ -162,12 +158,10 @@ export default function ManagerFormApproval({
     formData.append("signedBy", managerName || "");
     formData.append("signature", managerSignature || "");
     formData.append("comment", comment);
-    formData.append("status", approval); // Use FormStatus enum value
-    formData.append("isFinalApproval", "true"); // Indicates this is a final approval
 
     try {
       console.log("Submitting final approval with data:", formData);
-      await createFormApproval(formData);
+      await createFormApproval(formData, approval);
       router.back();
     } catch (error) {
       console.error("Error during final approval:", error);

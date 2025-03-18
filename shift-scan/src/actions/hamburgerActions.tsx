@@ -302,16 +302,18 @@ export async function savePending(
   }
 }
 
-export async function createFormApproval(formData: FormData) {
+export async function createFormApproval(
+  formData: FormData,
+  approval: FormStatus.APPROVED | FormStatus.DENIED
+) {
   try {
     console.log("Creating form approval...");
     const formSubmissionId = formData.get("formSubmissionId") as string;
     const signedBy = formData.get("signedBy") as string;
     const signature = formData.get("signature") as string;
     const comment = formData.get("comment") as string;
-    const isApproved = formData.get("isApproved") === "true"; // Convert to boolean
 
-    const approval = await prisma.formApproval.create({
+    const create = await prisma.formApproval.create({
       data: {
         formSubmissionId,
         signedBy,
@@ -320,12 +322,11 @@ export async function createFormApproval(formData: FormData) {
       },
     });
 
-    if (approval) {
-      const newStatus = isApproved ? "APPROVED" : "DENIED";
+    if (create) {
       await prisma.formSubmission.update({
         where: { id: formSubmissionId },
         data: {
-          status: newStatus,
+          status: approval,
         },
       });
     }

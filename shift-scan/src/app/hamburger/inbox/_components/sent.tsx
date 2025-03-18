@@ -32,7 +32,6 @@ type SentContent = {
 };
 
 export default function STab() {
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState<string>("all");
   const [sentContent, setSentContent] = useState<SentContent[]>([]);
@@ -42,44 +41,70 @@ export default function STab() {
     const fetchSentContent = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/formSubmissions`);
+        const response = await fetch(`/api/formSubmissions/${selectedFilter}`);
         const data = await response.json();
         setSentContent(data);
       } catch (err) {
         console.error("Error fetching sent content:", err);
-        setError("An error occurred while fetching sent content");
       } finally {
         setLoading(false);
       }
     };
 
     fetchSentContent();
-  }, []);
+  }, [selectedFilter]);
 
   if (loading) {
     return (
       <Holds
         background={"white"}
-        className="rounded-t-none row-span-9 h-full w-full "
+        className="rounded-t-none row-span-9 h-full w-full pt-5"
       >
-        <Holds className="flex justify-center items-center h-3/4">
-          <Spinner size={50} />
-        </Holds>
+        <Contents>
+          <Grids rows={"9"} className="h-full w-full">
+            <Holds className="row-start-1 row-end-2 h-full px-2">
+              <Selects
+                value={selectedFilter}
+                onChange={(e) => setSelectedFilter(e.target.value)}
+                className="text-center justify-center"
+              >
+                <option value="all">All</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="denied">Denied</option>
+              </Selects>
+            </Holds>
+
+            <Spinner size={50} />
+          </Grids>
+        </Contents>
       </Holds>
     );
-  }
-
-  if (error) {
-    return <p>{error}</p>;
   }
 
   if (!sentContent || sentContent.length === 0) {
     return (
       <Holds
         background={"white"}
-        className="rounded-t-none row-span-9 h-full w-full pt-10"
+        className="rounded-t-none row-span-9 h-full w-full pt-5"
       >
-        <Titles size={"h4"}>No forms found or submitted.</Titles>
+        <Contents>
+          <Grids rows={"9"} className="h-full w-full">
+            <Holds className="row-start-1 row-end-2 h-full px-2">
+              <Selects
+                value={selectedFilter}
+                onChange={(e) => setSelectedFilter(e.target.value)}
+                className="text-center justify-center"
+              >
+                <option value="all">All</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="denied">Denied</option>
+              </Selects>
+            </Holds>
+            <Titles size={"h4"}>No forms found or submitted.</Titles>
+          </Grids>
+        </Contents>
       </Holds>
     );
   }
