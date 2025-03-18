@@ -14,7 +14,6 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
-import { user } from "@nextui-org/theme";
 import SubmittedFormsApproval from "./_components/submittedApprovedForms";
 
 interface FormField {
@@ -211,9 +210,9 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
           setFormValues(submissionData.data);
           setFormTitle(
             submissionData.title ||
-              submissionData.user?.firstName +
-                " " +
-                submissionData.user?.lastName ||
+              (submissionData.user?.firstName && submissionData.user?.lastName
+                ? `${submissionData.user.firstName} ${submissionData.user.lastName}`
+                : "") ||
               ""
           );
           setSignature(submissionData.user?.signature || null);
@@ -327,7 +326,7 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
             <FormDraft
               formData={formData}
               handleSubmit={handleSubmit}
-              formTitle={formTitle}
+              formTitle={formTitle || ""}
               setFormTitle={setFormTitle}
               formValues={formValues}
               updateFormValues={updateFormValues}
