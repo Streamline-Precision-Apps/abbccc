@@ -33,6 +33,19 @@ export async function GET(
           signature: true,
         },
       },
+      approvals: {
+        select: {
+          id: true,
+          comment: true,
+          updatedAt: true,
+          approver: {
+            select: {
+              firstName: true,
+              lastName: true,
+            },
+          },
+        },
+      },
     },
   });
 

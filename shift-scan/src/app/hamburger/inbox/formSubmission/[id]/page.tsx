@@ -6,7 +6,7 @@ import FormDraft from "./_components/formDraft";
 import ManagerFormApproval from "./_components/managerFormApproval";
 import SubmittedForms from "./_components/submittedForms";
 import ManagerFormEditApproval from "./_components/managerFormEdit";
-import { submitForm } from "@/actions/hamburgerActions";
+import { saveDraftToPending } from "@/actions/hamburgerActions";
 import { useSession } from "next-auth/react";
 import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
@@ -14,6 +14,8 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
+import { user } from "@nextui-org/theme";
+import SubmittedFormsApproval from "./_components/submittedApprovedForms";
 
 interface FormField {
   id: string;
@@ -28,14 +30,12 @@ interface FormField {
   helperText?: string;
   options?: string[];
 }
-
 interface FormGrouping {
   id: string;
   title: string;
   order: number;
   fields: FormField[];
 }
-
 interface FormTemplate {
   id: string;
   name: string;
@@ -44,7 +44,6 @@ interface FormTemplate {
   isSignatureRequired: boolean;
   groupings: FormGrouping[];
 }
-
 type ManagerFormApprovalSchema = {
   id: string;
   title: string;
@@ -75,7 +74,6 @@ type ManagerFormApprovalSchema = {
     };
   }>;
 };
-
 enum FormStatus {
   PENDING = "PENDING",
   APPROVED = "APPROVED",
@@ -84,10 +82,13 @@ enum FormStatus {
 }
 
 export default function DynamicForm({ params }: { params: { id: string } }) {
+  // search params from url
   const formSubmissions = useSearchParams();
   const submissionId = formSubmissions.get("submissionId");
   const submissionStatus = formSubmissions.get("status");
   const submissionApprovingStatus = formSubmissions.get("approvingStatus");
+  const formApprover = formSubmissions.get("formApprover");
+
   const [formData, setFormData] = useState<FormTemplate | null>(null);
   const [formTitle, setFormTitle] = useState<string>("");
   const [formValues, setFormValues] = useState<Record<string, string>>({});
@@ -96,6 +97,7 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
   const [submittedForm, setSubmittedForm] = useState<string | null>(null);
   const [managerFormApproval, setManagerFormApproval] =
     useState<ManagerFormApprovalSchema | null>(null);
+  // get user that is logged in
   const { data: session } = useSession();
   const userId = session?.user.id;
   const router = useRouter();
@@ -112,7 +114,7 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
         const formData = await formRes.json();
         setFormData(formData);
 
-        // If there's no submissionId, stop here
+        // If there's no submissionId, stop here and just show template
         if (!submissionId) {
           setLoading(false);
           return;
@@ -120,12 +122,15 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
 
         // Fetch submission data based on submissionStatus and submissionApprovingStatus
         let submissionData, managerFormApprovalData;
-
+        // Draft submission
         if (submissionStatus === "DRAFT") {
           const draftRes = await fetch(`/api/formDraft/` + submissionId);
           if (!draftRes.ok) throw new Error("Failed to fetch draft data");
           submissionData = await draftRes.json();
-        } else if (submissionStatus === "PENDING") {
+          console.log("Draft data:", submissionData);
+        }
+        // Pending submission
+        else if (submissionStatus === "PENDING") {
           if (submissionApprovingStatus === null) {
             const submissionRes = await fetch(
               `/api/formSubmission/` + submissionId
@@ -149,7 +154,39 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
               throw new Error("Failed to fetch manager approval data");
             managerFormApprovalData = await managerFormApprovalRes.json();
           }
-        } else if (
+        }
+        // Approved submission
+        else if (
+          submissionStatus === "APPROVED" ||
+          submissionStatus === "DENIED"
+        ) {
+          if (submissionApprovingStatus === null) {
+            const submissionRes = await fetch(
+              `/api/formSubmission/` + submissionId
+            );
+            if (!submissionRes.ok)
+              throw new Error("Failed to fetch submission data");
+            submissionData = await submissionRes.json();
+
+            const managerFormApprovalRes = await fetch(
+              `/api/managerFormApproval/` + submissionId
+            );
+
+            if (!managerFormApprovalRes.ok)
+              throw new Error("Failed to fetch manager approval data");
+            managerFormApprovalData = await managerFormApprovalRes.json();
+            console.log("Manager data:", managerFormApprovalData);
+          } else if (submissionApprovingStatus === "true") {
+            const submissionRes = await fetch(
+              `/api/teamSubmission/` + submissionId
+            );
+            if (!submissionRes.ok)
+              throw new Error("Failed to fetch team submission data");
+            submissionData = await submissionRes.json();
+          }
+        }
+        // submission for the manager to see
+        else if (
           submissionStatus !== "PENDING" &&
           submissionStatus !== "DRAFT" &&
           submissionApprovingStatus === "true"
@@ -210,17 +247,22 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
     }
 
     try {
-      const result = await submitForm(
-        { ...formValues }, // Include the title in the submission
+      if (!userId || !submissionId) {
+        console.error("User ID is null");
+        return;
+      }
+      const dataToSave = { ...formValues };
+      const result = await saveDraftToPending(
+        dataToSave,
         formData.id,
-        userId || "",
+        userId,
         formData.formType,
-        formTitle,
-        submissionId || undefined
+        submissionId,
+        formTitle
       );
 
       if (result) {
-        router.push("/hamburger/inbox"); // Redirect to a success page
+        router.back(); // Redirect to a success page
       }
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -295,21 +337,40 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
           )}
           {submissionApprovingStatus === null &&
             submissionStatus !== "DRAFT" && (
-              <SubmittedForms
-                formData={formData}
-                formTitle={formTitle}
-                setFormTitle={setFormTitle}
-                formValues={formValues}
-                updateFormValues={updateFormValues}
-                userId={userId || ""}
-                submissionId={submissionId || ""}
-                signature={signature}
-                submittedForm={submittedForm}
-                submissionStatus={submissionStatus}
-              />
+              <>
+                {submissionStatus === "PENDING" ? (
+                  <SubmittedForms
+                    formData={formData}
+                    formTitle={formTitle}
+                    setFormTitle={setFormTitle}
+                    formValues={formValues}
+                    updateFormValues={updateFormValues}
+                    userId={userId || ""}
+                    submissionId={submissionId || ""}
+                    signature={signature}
+                    submittedForm={submittedForm}
+                    submissionStatus={submissionStatus}
+                  />
+                ) : (
+                  <SubmittedFormsApproval
+                    formData={formData}
+                    formTitle={formTitle}
+                    setFormTitle={setFormTitle}
+                    formValues={formValues}
+                    updateFormValues={updateFormValues}
+                    submissionId={submissionId || ""}
+                    signature={signature}
+                    submittedForm={submittedForm}
+                    submissionStatus={submissionStatus}
+                    managerFormApproval={managerFormApproval} // Pass managerFormApproval here
+                  />
+                )}
+              </>
             )}
+
           {submissionApprovingStatus === "true" &&
-            submissionStatus === "PENDING" && (
+            submissionStatus === "PENDING" &&
+            formApprover && (
               <ManagerFormApproval
                 formData={formData}
                 formTitle={formTitle}
@@ -323,9 +384,11 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
                 managerFormApproval={managerFormApproval}
               />
             )}
+
           {submissionApprovingStatus === "true" &&
             submissionStatus !== "PENDING" &&
-            submissionStatus !== "DRAFT" && (
+            submissionStatus !== "DRAFT" &&
+            formApprover && (
               <ManagerFormEditApproval
                 formData={formData}
                 formTitle={formTitle}

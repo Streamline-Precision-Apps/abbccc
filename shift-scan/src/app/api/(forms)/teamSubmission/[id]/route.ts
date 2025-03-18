@@ -35,6 +35,16 @@ export async function GET(
             lastName: true,
           },
         },
+        approvals: {
+          select: {
+            approver: {
+              select: {
+                firstName: true,
+                lastName: true,
+              },
+            },
+          },
+        },
       },
     });
 

@@ -3,9 +3,6 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
-import { Inputs } from "@/components/(reusable)/inputs";
-import { Labels } from "@/components/(reusable)/labels";
-import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { FormInput } from "./formInput";
 import { FormEvent, useEffect, useState } from "react";
 import { deleteFormSubmission, savePending } from "@/actions/hamburgerActions";
@@ -110,7 +107,7 @@ export default function SubmittedForms({
       }
       const isDeleted = await deleteFormSubmission(submissionId);
       if (isDeleted) {
-        return router.push("/hamburger/inbox");
+        return router.back();
       }
     } catch (error) {
       console.error("Error deleting form submission:", error);
@@ -125,7 +122,7 @@ export default function SubmittedForms({
         <Grids cols={"5"} rows={"2"} className="w-full h-full p-2">
           <Holds className="col-span-1 row-span-2 flex items-center justify-center">
             <Buttons
-              onClick={() => router.push("/hamburger/inbox")}
+              onClick={() => router.back()}
               background={"none"}
               position={"left"}
             >
@@ -191,6 +188,7 @@ export default function SubmittedForms({
                             field={field}
                             formValues={formValues}
                             setFormValues={updateFormValues}
+                            readOnly={submissionStatus !== "PENDING"}
                           />
                         </Holds>
                       );
@@ -199,19 +197,21 @@ export default function SubmittedForms({
                 ))}
 
                 <Holds className="h-full w-full py-2">
-                  <Holds className="border-[3px] rounded-[10px] border-black justify-center items-center">
-                    {signature ? (
-                      <Images
-                        titleImgAlt={"form Status"}
-                        titleImg={signature}
-                        className=" w-full h-24 object-contain"
-                      />
-                    ) : (
-                      <Holds className="w-full h-24 flex items-center justify-center">
-                        <Texts>No Signature</Texts>
-                      </Holds>
-                    )}
-                  </Holds>
+                  {submissionStatus === "PENDING" && (
+                    <Holds className="border-[3px] rounded-[10px] border-black justify-center items-center">
+                      {signature ? (
+                        <Images
+                          titleImgAlt={"form Status"}
+                          titleImg={signature}
+                          className=" w-full h-24 object-contain"
+                        />
+                      ) : (
+                        <Holds className="w-full h-24 flex items-center justify-center">
+                          <Texts>No Signature</Texts>
+                        </Holds>
+                      )}
+                    </Holds>
+                  )}
                   {submittedForm && (
                     <Texts
                       className="pt-1"
@@ -223,16 +223,17 @@ export default function SubmittedForms({
                   )}
                 </Holds>
               </Holds>
-
-              <Holds className="row-start-6 row-end-7 h-full w-full">
-                <Buttons
-                  background={"red"}
-                  type="submit"
-                  className="w-full h-[50px]"
-                >
-                  <Titles size={"h4"}>Delete Request</Titles>
-                </Buttons>
-              </Holds>
+              {submissionStatus === "PENDING" && (
+                <Holds className="row-start-6 row-end-7 h-full w-full">
+                  <Buttons
+                    background={"red"}
+                    type="submit"
+                    className="w-full h-[50px]"
+                  >
+                    <Titles size={"h4"}>Delete Request</Titles>
+                  </Buttons>
+                </Holds>
+              )}
             </Grids>
           </form>
         </Contents>

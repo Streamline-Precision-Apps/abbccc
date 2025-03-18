@@ -67,8 +67,10 @@ export default function FormDraft({
   const saveDraftData = async (values: FormValues, title: string) => {
     if ((Object.keys(values).length > 0 || title) && formData) {
       try {
+        // Include the title in the values object
+        const dataToSave = { ...values };
         await saveDraft(
-          values,
+          dataToSave,
           formData.id,
           userId,
           formData.formType,
