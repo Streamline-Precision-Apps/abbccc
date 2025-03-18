@@ -3,7 +3,6 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { UserSettings } from "@/lib/types";
-import Form from "@/app/hamburger/inbox/form/content";
 import { Prisma } from "@prisma/client";
 
 enum FormStatus {
@@ -207,6 +206,7 @@ export async function saveDraftToPending(
           data: {
             ...existingData, // Preserve existing data
             ...changedFields, // Overwrite with changed fields
+            submittedAt: new Date().toISOString(),
           },
           status: "PENDING", // Ensure the status remains DRAFT
         },
@@ -223,6 +223,7 @@ export async function saveDraftToPending(
           formType,
           data: formData,
           status: "PENDING",
+          submittedAt: new Date().toISOString(),
         },
       });
       return newSubmission;
@@ -333,7 +334,7 @@ export async function createFormApproval(
 
     return true;
   } catch (error) {
-    console.error("Error creating form approval:", error);
+    return error;
   }
 }
 

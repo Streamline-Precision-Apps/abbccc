@@ -37,6 +37,7 @@ export async function GET(
         },
         approvals: {
           select: {
+            comment: true,
             approver: {
               select: {
                 firstName: true,
