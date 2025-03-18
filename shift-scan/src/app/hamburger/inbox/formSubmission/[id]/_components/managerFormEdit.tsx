@@ -1,19 +1,20 @@
 "use client";
+import { FormInput } from "./formInput";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { updateFormApproval } from "@/actions/hamburgerActions";
+import { useRouter } from "next/navigation";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
-import { Labels } from "@/components/(reusable)/labels";
-import { FormInput } from "./formInput";
-import { FormEvent, useCallback, useEffect, useState } from "react";
-import { updateFormApproval } from "@/actions/hamburgerActions";
-import { Titles } from "@/components/(reusable)/titles";
-import { useRouter, useSearchParams } from "next/navigation";
 import { Images } from "@/components/(reusable)/images";
-import { Texts } from "@/components/(reusable)/texts";
+import { Labels } from "@/components/(reusable)/labels";
 import { TextAreas } from "@/components/(reusable)/textareas";
-import { useSession } from "next-auth/react";
+import { Texts } from "@/components/(reusable)/texts";
+import { Titles } from "@/components/(reusable)/titles";
+import { Contents } from "@/components/(reusable)/contents";
 import { Selects } from "@/components/(reusable)/selects";
-import { debounce } from "lodash";
+import { useAutoSave } from "@/hooks/(inbox)/useAutoSave";
+import { format } from "date-fns";
 
 interface FormField {
   id: string;
@@ -47,15 +48,41 @@ interface FormTemplate {
 
 type ManagerFormApprovalSchema = {
   id: string;
-  formSubmissionId: string;
-  approvedBy: string;
-  approver: {
-    firstName: string;
-    lastName: string;
+  title: string;
+  formTemplateId: string;
+  userId: string;
+  formType: string | null;
+  data: {
+    comments: string;
+    request_type: string;
+    request_end_date: string;
+    request_start_date: string;
   };
-  signature: string;
-  comment: string;
+  createdAt: string;
+  updatedAt: string;
+  submittedAt: string;
+  status: FormStatus;
+  approvals: Array<{
+    id: string;
+    formSubmissionId: string;
+    signedBy: string;
+    submittedAt: string;
+    updatedAt: string;
+    signature: string;
+    comment: string;
+    approver: {
+      firstName: string;
+      lastName: string;
+    };
+  }>;
 };
+
+enum FormStatus {
+  PENDING = "PENDING",
+  APPROVED = "APPROVED",
+  DENIED = "DENIED",
+  DRAFT = "DRAFT",
+}
 
 export default function ManagerFormEditApproval({
   formData,
@@ -66,6 +93,8 @@ export default function ManagerFormEditApproval({
   submittedForm,
   submissionId,
   managerFormApproval,
+  setFormTitle,
+  updateFormValues,
 }: {
   formData: FormTemplate;
   formValues: Record<string, string>;
@@ -75,92 +104,69 @@ export default function ManagerFormEditApproval({
   submittedForm: string | null;
   submissionId: string | null;
   managerFormApproval: ManagerFormApprovalSchema | null;
+  setFormTitle: Dispatch<SetStateAction<string>>;
+  updateFormValues: (newValues: Record<string, any>) => void;
 }) {
   const router = useRouter();
-  const { data: session } = useSession();
-  const managerName = session?.user.id;
-  const [isSignatureShowing, setIsSignatureShowing] = useState<boolean>(false);
-  const [managerSignature, setManagerSignature] = useState<string>("");
-  const [errorMessage, setErrorMessage] = useState<string>("");
   const [comment, setComment] = useState<string>(
-    managerFormApproval?.comment || ""
+    managerFormApproval?.approvals?.[0]?.comment || ""
+  );
+  const [approvalStatus, setApprovalStatus] = useState<FormStatus>(
+    managerFormApproval?.status || FormStatus.PENDING
   );
 
-  // Fetch manager's signature on component mount
+  // Debug: Log managerFormApproval data
   useEffect(() => {
-    const fetchSignature = async () => {
-      const response = await fetch("/api/getUserSignature");
-      const signature = await response.json();
-      setManagerSignature(signature.signature);
-    };
-
-    fetchSignature();
-  }, []);
-
-  // Autosave function with debounce
-  const autoSave = useCallback(
-    debounce(async (newComment: string, newIsApproved: boolean) => {
-      const formData = new FormData();
-      formData.append("id", managerFormApproval?.id || "");
-      formData.append("formSubmissionId", submissionId || "");
-      formData.append("signedBy", managerName || "");
-      formData.append("comment", newComment);
-      formData.append("isApproved", newIsApproved.toString());
-      formData.append("isFinalApproval", "false"); // Indicates this is an autosave
-
-      try {
-        await updateFormApproval(formData);
-        console.log("Autosave successful");
-      } catch (error) {
-        console.error("Error during autosave:", error);
-        setErrorMessage("Failed to save changes. Please try again.");
-      }
-    }, 2000), // 2-second debounce
-    [managerFormApproval?.id, submissionId, managerName]
-  );
+    console.log("Manager Form Approval Data:", managerFormApproval);
+  }, [managerFormApproval]);
 
   // Handle comment change
   const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newComment = e.target.value;
     setComment(newComment);
-    autoSave(newComment, isApproved);
   };
 
-  // Handle approval change
-  const handleApprovalChange = (newIsApproved: boolean) => {
-    setIsApproved(newIsApproved);
-    autoSave(comment, newIsApproved);
+  // Handle approval status change
+  const handleApprovalStatusChange = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const newStatus = e.target.value as FormStatus;
+    setApprovalStatus(newStatus);
   };
 
-  // Handle final approval or denial
-  const handleApproveOrDeny = async (approval: boolean) => {
-    if (!isSignatureShowing) {
-      setErrorMessage("Please provide a signature before approving.");
-      return;
-    }
+  // Handle updating approval
+  const handleAutoSave = async (data: {
+    comment: string;
+    approvalStatus: FormStatus;
+  }) => {
+    if (!submissionId || !managerFormApproval) return;
 
-    if (!comment || comment.length === 0) {
-      setErrorMessage("Please add a comment before approving.");
-      return;
-    }
+    const updatedData = new FormData();
+    updatedData.append("id", managerFormApproval.approvals[0].id);
+    updatedData.append("formSubmissionId", submissionId);
+    updatedData.append("comment", data.comment);
 
-    const formData = new FormData();
-    formData.append("id", managerFormApproval?.id || "");
-    formData.append("formSubmissionId", submissionId || "");
-    formData.append("signedBy", managerName || "");
-    formData.append("signature", managerSignature || "");
-    formData.append("comment", comment);
-    formData.append("isApproved", approval.toString());
-    formData.append("isFinalApproval", "true"); // Indicates this is a final approval
+    // Map approvalStatus to isApproved (boolean)
+    const isApproved = data.approvalStatus === FormStatus.APPROVED;
+    updatedData.append("isApproved", isApproved.toString()); // Convert boolean to string
 
     try {
-      await updateFormApproval(formData);
-      router.push("/hamburger/inbox");
+      const response = await updateFormApproval(updatedData);
+      if (response) {
+        console.log("Auto-save successful:", response);
+        console.log("Updated Approval:", response.approval);
+        console.log("Updated Submission:", response.updatedSubmission);
+      }
     } catch (error) {
-      console.error("Error during final approval:", error);
-      setErrorMessage("Failed to submit approval. Please try again.");
+      console.error("Error during auto-save:", error);
     }
   };
+
+  const debouncedAutoSave = useAutoSave(handleAutoSave, 1000);
+
+  useEffect(() => {
+    debouncedAutoSave({ comment, approvalStatus });
+  }, [comment, approvalStatus, debouncedAutoSave]);
 
   return (
     <>
@@ -192,7 +198,7 @@ export default function ManagerFormEditApproval({
 
       <Holds
         background={"white"}
-        className="w-full h-full row-start-2 row-end-6 px-5 "
+        className="w-full h-full row-start-2 row-end-5 px-5 "
       >
         <Holds className="overflow-y-auto no-scrollbar ">
           {formData?.groupings?.map((group) => (
@@ -200,12 +206,12 @@ export default function ManagerFormEditApproval({
               {group.title && <h3>{group.title || ""}</h3>}
               {group.fields.map((field) => {
                 return (
-                  <Holds key={field.id} className="pb-3">
+                  <Holds key={field.id} className="pb-1">
                     <FormInput
-                      key={field.name} // Use field.name as the key
+                      key={field.name}
                       field={field}
                       formValues={formValues}
-                      setFormValues={updateFormValues}
+                      setFormValues={() => {}}
                       readOnly={true}
                     />
                   </Holds>
@@ -213,43 +219,70 @@ export default function ManagerFormEditApproval({
               })}
             </Holds>
           ))}
+          <Holds position={"row"} className="pb-3 w-full justify-between">
+            <Texts size={"p7"}>
+              {`Originally Submitted: ${format(
+                managerFormApproval?.submittedAt?.toString() ||
+                  new Date().toISOString(),
+                "M/dd/yy"
+              )}`}
+            </Texts>
+            <Texts size={"p7"}>
+              {`Last Edited: ${format(
+                managerFormApproval?.approvals?.[0]?.updatedAt?.toString() ||
+                  new Date().toISOString(),
+                "M/dd/yy"
+              )}`}
+            </Texts>
+          </Holds>
         </Holds>
       </Holds>
+
       <Holds
         background={"white"}
-        className="w-full h-full row-start-6 row-end-9 "
+        className="w-full h-full row-start-5 row-end-9 "
       >
-        <Grids rows={"5"} className="w-full h-full py-3">
-          <Holds className="px-4 row-start-1 row-end-2">
-            <Labels size={"p5"}>Approval Signature</Labels>
-            <Selects
-              value={isApproved ? "true" : "false"}
-              onChange={(e) => handleApprovalChange(e.target.value === "true")}
-              className="text-center"
-            >
-              <option value="true">Approved</option>
-              <option value="false">Denied</option>
-            </Selects>
-          </Holds>
-          <Holds className="row-start-2 row-end-5 py-1 px-4 relative">
-            <Labels size={"p5"} htmlFor="comment">
-              Manager Comments
-            </Labels>
-            <Holds position={"row"} className="w-full relative">
-              <TextAreas
-                name="comment"
-                id="comment"
-                value={comment}
-                onChange={handleCommentChange}
-                maxLength={40} // Optional: Add a character limit
-              />
-              {/* Overlay the character count */}
-              <Texts className="absolute right-1 bottom-3 px-2 py-1 rounded text-sm text-gray-500">
-                {comment.length} / 40
+        <Contents width={"section"}>
+          <Grids rows={"5"} gap={"5"} className="w-full h-full py-3 ">
+            <Holds className="row-start-1 row-end-2 h-full relative">
+              <Labels size={"p5"} htmlFor="approvalStatus">
+                Approval Status
+              </Labels>
+              <Selects
+                id="approvalStatus"
+                value={approvalStatus}
+                onChange={handleApprovalStatusChange}
+              >
+                <option value="APPROVED">Approved</option>
+                <option value="DENIED">Denied</option>
+              </Selects>
+            </Holds>
+            <Holds className="row-start-2 row-end-3 h-full relative">
+              <Labels size={"p5"} htmlFor="comment">
+                Manager Comments
+              </Labels>
+              <Holds className="w-full relative">
+                <TextAreas
+                  name="comment"
+                  id="comment"
+                  value={comment}
+                  onChange={handleCommentChange}
+                  maxLength={40}
+                />
+                <Texts className="absolute right-1 bottom-3 px-2 py-1 rounded text-sm text-gray-500">
+                  {comment.length} / 40
+                </Texts>
+              </Holds>
+              <Texts position={"right"} size={"p7"}>
+                {`Approval Status Last Updated:  ${format(
+                  managerFormApproval?.updatedAt?.toString() ||
+                    new Date().toISOString(),
+                  "M/dd/yy"
+                )}`}
               </Texts>
             </Holds>
-          </Holds>
-        </Grids>
+          </Grids>
+        </Contents>
       </Holds>
     </>
   );
