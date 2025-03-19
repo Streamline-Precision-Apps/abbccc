@@ -35,24 +35,54 @@ export default function STab() {
   const [loading, setLoading] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState<string>("all");
   const [sentContent, setSentContent] = useState<SentContent[]>([]);
+  const [skip, setSkip] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchSentContent = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(`/api/formSubmissions/${selectedFilter}`);
-        const data = await response.json();
-        setSentContent(data);
-      } catch (err) {
-        console.error("Error fetching sent content:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchSentContent = async (skip: number, reset: boolean = false) => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `/api/formSubmissions/${selectedFilter}?skip=${skip}&take=10`
+      );
+      const data = await response.json();
+      if (data.length > 0) {
+        if (reset) {
+          // Reset the content if it's a new filter
+          setSentContent(data);
+        } else {
+          // Append new data to existing content
+          setSentContent((prev) => [...prev, ...data]);
+        }
+        setSkip((prev) => prev + 5);
 
-    fetchSentContent();
+        // Check if there are more items to fetch
+        if (data.length < 5) {
+          setHasMore(false); // No more items to fetch
+        }
+      } else {
+        setHasMore(false); // No more items to fetch
+      }
+    } catch (err) {
+      console.error("Error fetching sent content:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    // Reset states when the filter changes
+    setSentContent([]);
+    setSkip(0);
+    setHasMore(true); // Reset hasMore when the filter changes
+    fetchSentContent(0, true); // Fetch initial data for the new filter
   }, [selectedFilter]);
+
+  const handleLoadMore = () => {
+    if (!loading && hasMore) {
+      fetchSentContent(skip);
+    }
+  };
 
   if (loading) {
     return (
@@ -62,7 +92,7 @@ export default function STab() {
       >
         <Contents width={"section"}>
           <Grids rows={"9"} className="h-full w-full">
-            <Holds className="row-start-1 row-end-2 h-full">
+            <Holds className="row-start-1 row-end-2 h-full px-2">
               <Selects
                 value={selectedFilter}
                 onChange={(e) => setSelectedFilter(e.target.value)}
@@ -92,7 +122,7 @@ export default function STab() {
       >
         <Contents width={"section"}>
           <Grids rows={"10"} className="h-full w-full">
-            <Holds className="row-start-1 row-end-2 h-full ">
+            <Holds className="row-start-1 row-end-2 h-full px-2 ">
               <Selects
                 value={selectedFilter}
                 onChange={(e) => setSelectedFilter(e.target.value)}
@@ -117,9 +147,9 @@ export default function STab() {
       className="rounded-t-none row-span-9 h-full w-full pt-5"
     >
       <Contents width={"section"}>
-        <Holds className="h-full w-full">
+        <Holds className="h-full w-full pb-5">
           <Grids rows={"10"} className="h-full w-full">
-            <Holds className="row-start-1 row-end-2 h-full">
+            <Holds className="row-start-1 row-end-2 h-full px-2">
               <Selects
                 value={selectedFilter}
                 onChange={(e) => setSelectedFilter(e.target.value)}
@@ -132,11 +162,11 @@ export default function STab() {
               </Selects>
             </Holds>
 
-            <Holds className="row-start-2 row-end-11 h-full w-full overflow-y-scroll no-scrollbar">
+            <Holds className="row-start-2 row-end-10 pb-5 h-full w-full overflow-y-scroll no-scrollbar">
               {sentContent.map((form) => {
                 const title = form.title || form.formTemplate?.name;
                 return (
-                  <Holds key={form.id} className=" pb-5">
+                  <Holds key={form.id} className="px-2 ">
                     <Buttons
                       className="py-0.5 relative"
                       background={
@@ -163,13 +193,20 @@ export default function STab() {
                             ? "/Checkmark.svg"
                             : "/statusReject.svg"
                         }
-                        className="absolute w-8 h-8 top-4 right-5"
+                        className="absolute w-7 h-7 top-[50%] translate-y-[-50%] right-5"
                       />
                     </Buttons>
                   </Holds>
                 );
               })}
             </Holds>
+            {hasMore && (
+              <Holds className="row-start-10 row-end-11 h-full w-full flex justify-center items-center ">
+                <Buttons onClick={handleLoadMore} disabled={loading}>
+                  {loading ? "Loading..." : "Load More"}
+                </Buttons>
+              </Holds>
+            )}
           </Grids>
         </Holds>
       </Contents>

@@ -63,7 +63,7 @@ export default function RTab({ isManager }: { isManager: boolean }) {
     setLoading(true);
     try {
       const response = await fetch(
-        `/api/employeeRequests/${selectedFilter}?skip=${skip}&take=5`
+        `/api/employeeRequests/${selectedFilter}?skip=${skip}&take=10`
       );
       const data = await response.json();
       if (data.length > 0) {
@@ -120,7 +120,7 @@ export default function RTab({ isManager }: { isManager: boolean }) {
       >
         <Contents width={"section"}>
           <Grids rows={"10"} className="h-full w-full">
-            <Holds className="row-start-1 row-end-2 h-full">
+            <Holds className="row-start-1 row-end-2 h-full px-2">
               <Selects
                 value={selectedFilter}
                 onChange={(e) => setSelectedFilter(e.target.value)}
@@ -152,7 +152,7 @@ export default function RTab({ isManager }: { isManager: boolean }) {
       <Contents width={"section"}>
         <Holds className="h-full w-full">
           <Grids rows={"10"} className="h-full w-full">
-            <Holds className="row-start-1 row-end-2 h-full ">
+            <Holds className="row-start-1 row-end-2 h-full px-2 ">
               <Selects
                 value={selectedFilter}
                 onChange={(e) => setSelectedFilter(e.target.value)}
@@ -176,7 +176,7 @@ export default function RTab({ isManager }: { isManager: boolean }) {
                     form.formTemplate?.formType || form.formTemplate?.name; // Fallback if formTemplate is undefined
 
                   return (
-                    <Holds key={form.id} className="pb-5">
+                    <Holds key={form.id} className="px-2 pb-5">
                       <Buttons
                         className="py-0.5 relative"
                         background={"lightBlue"}
@@ -195,7 +195,7 @@ export default function RTab({ isManager }: { isManager: boolean }) {
                   );
                 })}
                 {hasMore && (
-                  <Holds className="h-full w-full flex justify-center items-center">
+                  <Holds className="h-full w-full flex justify-center items-center px-2">
                     <Buttons onClick={handleLoadMore} disabled={loading}>
                       {loading ? "Loading..." : "Load More"}
                     </Buttons>
