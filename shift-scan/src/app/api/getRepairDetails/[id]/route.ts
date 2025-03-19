@@ -46,15 +46,7 @@ export async function GET(
     },
   });
 
-    // Check if the maintenance project exists
-    if (!project) {
-      return NextResponse.json(
-        { error: "Maintenance project not found" },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json(project);
+    return NextResponse.json(projects);
   } catch (error) {
     console.error("Error fetching maintenance project details:", error);
 

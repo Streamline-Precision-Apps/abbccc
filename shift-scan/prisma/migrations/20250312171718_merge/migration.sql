@@ -181,7 +181,6 @@ CREATE TABLE "FormField" (
     "order" INTEGER NOT NULL,
     "defaultValue" TEXT,
     "placeholder" TEXT,
-    "maxLength" INTEGER,
     "helperText" TEXT,
 
     CONSTRAINT "FormField_pkey" PRIMARY KEY ("id")
@@ -199,7 +198,6 @@ CREATE TABLE "FormFieldOption" (
 -- CreateTable
 CREATE TABLE "FormSubmission" (
     "id" TEXT NOT NULL,
-    "title" TEXT,
     "formTemplateId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "formType" TEXT,
@@ -209,7 +207,6 @@ CREATE TABLE "FormSubmission" (
     "data" JSONB,
 >>>>>>>> c4df8b847eb7118f407229f64ece3b02c54a548c:shift-scan/prisma/migrations/20250313160005_/migration.sql
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
     "submittedAt" TIMESTAMP(3),
     "status" "FormStatus" NOT NULL DEFAULT 'DRAFT',
 
@@ -220,9 +217,8 @@ CREATE TABLE "FormSubmission" (
 CREATE TABLE "FormApproval" (
     "id" TEXT NOT NULL,
     "formSubmissionId" TEXT NOT NULL,
-    "signedBy" TEXT,
-    "submittedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "approvedBy" TEXT NOT NULL,
+    "approvedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "signature" TEXT,
     "comment" TEXT,
 
@@ -343,6 +339,7 @@ CREATE TABLE "TruckingLog" (
     "equipmentId" TEXT,
     "startingMileage" INTEGER,
     "endingMileage" INTEGER,
+    "netWeight" DOUBLE PRECISION,
     "comment" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -586,7 +583,7 @@ ALTER TABLE "FormSubmission" ADD CONSTRAINT "FormSubmission_formTemplateId_fkey"
 ALTER TABLE "FormApproval" ADD CONSTRAINT "FormApproval_formSubmissionId_fkey" FOREIGN KEY ("formSubmissionId") REFERENCES "FormSubmission"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "FormApproval" ADD CONSTRAINT "FormApproval_signedBy_fkey" FOREIGN KEY ("signedBy") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "FormApproval" ADD CONSTRAINT "FormApproval_approvedBy_fkey" FOREIGN KEY ("approvedBy") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Jobsite" ADD CONSTRAINT "Jobsite_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "Company"("id") ON DELETE SET NULL ON UPDATE CASCADE;
