@@ -13,6 +13,7 @@ import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { Contents } from "@/components/(reusable)/contents";
+import { format } from "date-fns";
 
 interface FormField {
   id: string;
@@ -220,6 +221,22 @@ export default function ManagerFormApproval({
               })}
             </Holds>
           ))}
+          <Holds position={"row"} className="pb-3 w-full justify-between">
+            <Texts size={"p7"}>
+              {`Originally Submitted: ${format(
+                managerFormApproval?.submittedAt?.toString() ||
+                  new Date().toISOString(),
+                "M/dd/yy"
+              )}`}
+            </Texts>
+            <Texts size={"p7"}>
+              {`Last Edited: ${format(
+                managerFormApproval?.approvals?.[0]?.updatedAt?.toString() ||
+                  new Date().toISOString(),
+                "M/dd/yy"
+              )}`}
+            </Texts>
+          </Holds>
         </Holds>
       </Holds>
       <Holds

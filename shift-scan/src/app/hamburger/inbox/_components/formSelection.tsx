@@ -9,6 +9,7 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Selects } from "@/components/(reusable)/selects";
 import { Titles } from "@/components/(reusable)/titles";
+import { format } from "date-fns";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -21,6 +22,7 @@ type DraftForm = {
   id: string;
   formTemplateId: string;
   status: FormStatus;
+  createdAt: string;
   data: Record<string, any>;
   formTemplate: {
     name: string;
@@ -147,12 +149,12 @@ export default function FormSelection({
             <Titles position={"left"} size={"h3"}>
               Drafts
             </Titles>
-            <Holds className="h-full mt-5 overflow-y-scroll no-scrollbar ">
+            <Holds className="h-full overflow-y-scroll no-scrollbar ">
               {formDrafts &&
                 formDrafts.map((form) => {
                   const title = form.formTemplate.name;
                   return (
-                    <Holds key={form.id} className="pb-2">
+                    <Holds key={form.id} className="pt-2">
                       <SlidingDiv
                         onSwipeLeft={async () => {
                           try {
@@ -167,14 +169,21 @@ export default function FormSelection({
                         }}
                       >
                         <Buttons
-                          className="py-2"
+                          className="py-1"
                           onClick={() => {
                             router.push(
                               `/hamburger/inbox/formSubmission/${form.formTemplateId}?submissionId=${form.id}&status=${form.status}`
                             );
                           }}
                         >
-                          <Titles size={"h5"}>{title}</Titles>
+                          <Titles size={"h4"}>{title}</Titles>
+                          <Titles size={"h6"}>
+                            {" "}
+                            {`Created  ${format(
+                              new Date(form.createdAt).toISOString(),
+                              "M/dd/yy"
+                            )}`}
+                          </Titles>
                         </Buttons>
                       </SlidingDiv>
                     </Holds>
