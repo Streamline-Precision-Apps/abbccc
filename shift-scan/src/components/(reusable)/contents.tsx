@@ -19,6 +19,7 @@ const ContentVariants = cva(
         section: "w-[90%]",
         "95": "w-[95%]",
         "60": "w-[50%]",
+        "100": "w-[100%]"
       },
       height: {
         //only height
