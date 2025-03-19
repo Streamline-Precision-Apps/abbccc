@@ -1,6 +1,5 @@
 -- CreateEnum
 CREATE TYPE "FormStatus" AS ENUM ('PENDING', 'APPROVED', 'DENIED', 'DRAFT');
->>>>>>>> f16ef3e51e7c5e81d6cb6ec2c7e7d474b8440abb:shift-scan/prisma/migrations/20250306200711_/migration.sql
 
 -- CreateEnum
 CREATE TYPE "FieldType" AS ENUM ('TEXT', 'TEXTAREA', 'NUMBER', 'DATE', 'FILE', 'DROPDOWN', 'CHECKBOX');
@@ -165,11 +164,7 @@ CREATE TABLE "FormTemplate" (
 -- CreateTable
 CREATE TABLE "FormGrouping" (
     "id" TEXT NOT NULL,
-<<<<<<<< HEAD:shift-scan/prisma/migrations/20250307204635_3_7_2025_pull_devun_s_changes/migration.sql
-    "title" TEXT NOT NULL,
-========
     "title" TEXT,
->>>>>>>> f16ef3e51e7c5e81d6cb6ec2c7e7d474b8440abb:shift-scan/prisma/migrations/20250306200711_/migration.sql
     "order" INTEGER NOT NULL,
 
     CONSTRAINT "FormGrouping_pkey" PRIMARY KEY ("id")
@@ -185,15 +180,9 @@ CREATE TABLE "FormField" (
     "required" BOOLEAN NOT NULL DEFAULT false,
     "order" INTEGER NOT NULL,
     "defaultValue" TEXT,
-<<<<<<< HEAD:shift-scan/prisma/migrations/20250306200711_/migration.sql
-<<<<<<<< HEAD:shift-scan/prisma/migrations/20250307204635_3_7_2025_pull_devun_s_changes/migration.sql
-    "formGroupingId" TEXT,
-========
->>>>>>>> f16ef3e51e7c5e81d6cb6ec2c7e7d474b8440abb:shift-scan/prisma/migrations/20250306200711_/migration.sql
-=======
     "placeholder" TEXT,
+    "maxLength" INTEGER,
     "helperText" TEXT,
->>>>>>> ab62a33d45e979299a574e7c9d8e2121b58e8a02:shift-scan/prisma/migrations/20250311231214_/migration.sql
 
     CONSTRAINT "FormField_pkey" PRIMARY KEY ("id")
 );
@@ -210,11 +199,17 @@ CREATE TABLE "FormFieldOption" (
 -- CreateTable
 CREATE TABLE "FormSubmission" (
     "id" TEXT NOT NULL,
+    "title" TEXT,
     "formTemplateId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "formType" TEXT,
+<<<<<<<< HEAD:shift-scan/prisma/migrations/20250312171718_merge/migration.sql
+    "data" JSONB NOT NULL,
+========
     "data" JSONB,
+>>>>>>>> c4df8b847eb7118f407229f64ece3b02c54a548c:shift-scan/prisma/migrations/20250313160005_/migration.sql
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
     "submittedAt" TIMESTAMP(3),
     "status" "FormStatus" NOT NULL DEFAULT 'DRAFT',
 
@@ -225,8 +220,9 @@ CREATE TABLE "FormSubmission" (
 CREATE TABLE "FormApproval" (
     "id" TEXT NOT NULL,
     "formSubmissionId" TEXT NOT NULL,
-    "approvedBy" TEXT NOT NULL,
-    "approvedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "signedBy" TEXT,
+    "submittedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
     "signature" TEXT,
     "comment" TEXT,
 
@@ -322,10 +318,8 @@ CREATE TABLE "TascoLog" (
     "equipmentId" TEXT,
     "laborType" TEXT,
     "materialType" TEXT,
-    "loadsHauled" INTEGER,
     "comment" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "completed" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "TascoLog_pkey" PRIMARY KEY ("id")
 );
@@ -349,7 +343,6 @@ CREATE TABLE "TruckingLog" (
     "equipmentId" TEXT,
     "startingMileage" INTEGER,
     "endingMileage" INTEGER,
-    "netWeight" DOUBLE PRECISION,
     "comment" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -593,7 +586,7 @@ ALTER TABLE "FormSubmission" ADD CONSTRAINT "FormSubmission_formTemplateId_fkey"
 ALTER TABLE "FormApproval" ADD CONSTRAINT "FormApproval_formSubmissionId_fkey" FOREIGN KEY ("formSubmissionId") REFERENCES "FormSubmission"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "FormApproval" ADD CONSTRAINT "FormApproval_approvedBy_fkey" FOREIGN KEY ("approvedBy") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "FormApproval" ADD CONSTRAINT "FormApproval_signedBy_fkey" FOREIGN KEY ("signedBy") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Jobsite" ADD CONSTRAINT "Jobsite_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "Company"("id") ON DELETE SET NULL ON UPDATE CASCADE;
