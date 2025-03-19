@@ -12,6 +12,7 @@ import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
 import { format } from "date-fns";
 import { useAutoSave } from "@/hooks/(inbox)/useAutoSave";
+import { NModals } from "@/components/(reusable)/newmodals";
 
 interface FormField {
   id: string;
@@ -66,6 +67,7 @@ export default function SubmittedForms({
   submissionStatus: string | null;
 }) {
   const router = useRouter();
+  const [deleteRequestModal, setDeleteRequestModal] = useState(false);
 
   type FormValues = Record<string, string>;
 
@@ -98,8 +100,7 @@ export default function SubmittedForms({
     autoSave({ values: formValues, title: formTitle });
   }, [formValues, formTitle, autoSave]);
 
-  const handleDelete = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleDelete = async () => {
     try {
       if (!submissionId) {
         console.error("No submission ID found");
@@ -119,7 +120,7 @@ export default function SubmittedForms({
         background={"white"}
         className="row-span-1 h-full justify-center px-3 "
       >
-        <Grids cols={"5"} rows={"2"} className="w-full h-full p-2">
+        <Grids cols={"5"} rows={"2"} className="w-full h-full py-2">
           <Holds className="col-span-1 row-span-2 flex items-center justify-center">
             <Buttons
               onClick={() => router.back()}
@@ -170,19 +171,19 @@ export default function SubmittedForms({
       <Holds background={"white"} className="w-full h-full row-span-7 px-2 ">
         <Contents width={"section"}>
           <form
-            onSubmit={(e) => {
-              handleDelete(e);
+            onSubmit={() => {
+              handleDelete();
             }}
             className="h-full"
           >
-            <Grids rows={"6"} gap={"3"} className="h-full w-full mt-5">
+            <Grids rows={"6"} gap={"3"} className="h-full w-full">
               <Holds className="row-start-1 row-end-6 h-full w-full overflow-y-hidden no-scrollbar">
                 {formData?.groupings?.map((group) => (
                   <Holds key={group.id} className="">
                     {group.title && <h3>{group.title || ""}</h3>}
                     {group.fields.map((field) => {
                       return (
-                        <Holds key={field.id} className="pb-3">
+                        <Holds key={field.id} className="pt-2">
                           <FormInput
                             key={field.name} // Use field.name as the key
                             field={field}
@@ -196,7 +197,7 @@ export default function SubmittedForms({
                   </Holds>
                 ))}
 
-                <Holds className="h-full w-full py-2">
+                <Holds className="h-full w-full pt-4">
                   {submissionStatus === "PENDING" && (
                     <Holds className="border-[3px] rounded-[10px] border-black justify-center items-center">
                       {signature ? (
@@ -224,16 +225,49 @@ export default function SubmittedForms({
                 </Holds>
               </Holds>
               {submissionStatus === "PENDING" && (
-                <Holds className="row-start-6 row-end-7 h-full w-full">
+                <Holds className="row-start-6 row-end-7 justify-center h-full w-full">
                   <Buttons
                     background={"red"}
-                    type="submit"
+                    type="button"
+                    onClick={() => setDeleteRequestModal(true)}
                     className="w-full h-[50px]"
                   >
                     <Titles size={"h4"}>Delete Request</Titles>
                   </Buttons>
                 </Holds>
               )}
+              <NModals
+                isOpen={deleteRequestModal}
+                handleClose={() => setDeleteRequestModal(false)}
+                size={"medWW"}
+              >
+                <Holds className="w-full h-full pb-5">
+                  <Holds className="w-full h-3/4 justify-center items-center">
+                    <Texts size={"p2"}>
+                      Are you sure you want to delete this request?
+                    </Texts>
+                  </Holds>
+                  <Holds position={"row"} className="gap-4 h-1/4">
+                    <Buttons
+                      background={"green"}
+                      type="button"
+                      onClick={() => handleDelete()}
+                      className="w-full py-2"
+                    >
+                      <Titles size={"h4"}>Yes</Titles>
+                    </Buttons>
+
+                    <Buttons
+                      background={"red"}
+                      type="button"
+                      onClick={() => setDeleteRequestModal(false)}
+                      className="w-full py-2"
+                    >
+                      <Titles size={"h4"}>cancel</Titles>
+                    </Buttons>
+                  </Holds>
+                </Holds>
+              </NModals>
             </Grids>
           </form>
         </Contents>

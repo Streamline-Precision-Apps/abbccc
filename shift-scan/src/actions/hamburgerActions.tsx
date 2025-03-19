@@ -153,6 +153,7 @@ export async function saveDraft(
           formType,
           data: formData,
           status: "DRAFT",
+          submittedAt: new Date().toISOString(),
         },
       });
       return newSubmission;
@@ -206,8 +207,8 @@ export async function saveDraftToPending(
           data: {
             ...existingData, // Preserve existing data
             ...changedFields, // Overwrite with changed fields
-            submittedAt: new Date().toISOString(),
           },
+          submittedAt: new Date().toISOString(),
           status: "PENDING", // Ensure the status remains DRAFT
         },
       });
