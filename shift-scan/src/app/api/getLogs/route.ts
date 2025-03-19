@@ -237,7 +237,7 @@ export async function GET() {
       type: "tasco",
       shiftType: log.shiftType,
       laborType: log.laborType,
-      loads: log.laborType === "equipmentOperator"
+      loads: log.laborType === "equipmentOperator" || log.laborType === "manualLabor"
         ? log.loads.some((item) => isFieldIncomplete(item, ["loadType", "loadWeight"]))
         : false,
       refueled: log.refueled.some((item) =>

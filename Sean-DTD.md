@@ -94,3 +94,10 @@
 ### built/created
 - Standup Meeting. (1 hours)
 - worked on error handling for api. (1.5 hours)
+- Worked on API calls and checked for errors. (7.5 hours)
+
+# March 14, 2025 - Friday
+### built/created
+- Standup Meeting. (1 hours)
+- Worked on API calls and checked for errors. ( hours)
+- Fixed bugs found in Tasco section. (2 hours)

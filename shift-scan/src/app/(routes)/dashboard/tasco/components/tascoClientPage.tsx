@@ -2,8 +2,6 @@
 
 import { Holds } from "@/components/(reusable)/holds";
 import { useEffect, useState } from "react";
-import Counter from "./counter";
-import { Labels } from "@/components/(reusable)/labels";
 import { NewTab } from "@/components/(reusable)/newTabs";
 import { Titles } from "@/components/(reusable)/titles";
 import { Grids } from "@/components/(reusable)/grids";
@@ -12,7 +10,6 @@ import { Refueled, Loads as LoadsType } from "@/lib/types";
 import RefuelLayout from "./RefuelLayout";
 import TascoComments from "./tascoComments";
 import LoadsLayout from "./loads";
-import { createLoad } from "@/actions/tascoActions";
 
 export default function TascoClientPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -66,15 +63,6 @@ export default function TascoClientPage() {
     fetchData();
   }, [timeSheetId]);
 
-    const AddLoad = async () => {
-      const formData = new FormData();
-      formData.append("tascoLogId", timeSheetId ?? "");
-      try {
-        const temp = await createLoad(formData);
-      } catch (error) {
-        console.log("error adding Load", error);
-      }
-    };
 
   return (
     // <Holds className="h-full overflow-y-hidden no-scrollbar">
@@ -89,6 +77,7 @@ export default function TascoClientPage() {
             titleImageAlt="Comment"
             onClick={() => setActiveTab(1)}
             isActive={activeTab === 1}
+            isComplete={true}
           >
             <Titles size={"h4"}>Comments</Titles>
           </NewTab>
@@ -97,6 +86,7 @@ export default function TascoClientPage() {
             titleImageAlt="Load Counter"
             onClick={() => setActiveTab(2)}
             isActive={activeTab === 2}
+            isComplete={loads === undefined || loads.length === 0 || loads.every(log => log.loadWeight > 0 && log.loadType.trim().length > 0)}
           >
             <Titles size={"h4"}>Load Counter</Titles>
           </NewTab>
@@ -105,6 +95,7 @@ export default function TascoClientPage() {
             titleImageAlt="refuel-Icon"
             onClick={() => setActiveTab(3)}
             isActive={activeTab === 3}
+            isComplete={refuelLogs === undefined || refuelLogs.length === 0 || refuelLogs.every(log => log.gallonsRefueled > 0)}
           >
             <Titles size={"h4"}>Refuel Logs</Titles>
           </NewTab>
@@ -125,17 +116,12 @@ export default function TascoClientPage() {
             )}
             {activeTab === 2 && (
               <Holds className="h-full w-full relative pt-2">
-                <Holds
-                  className="w-full items-center row-span-3"
-                  background={"white"}
-                >
-                  <Labels>Load Counter</Labels>
-                  <Counter count={loadCount} setCount={setLoadCount} addAction={AddLoad} allowRemove={false} />
-                </Holds>
                 <LoadsLayout
                   tascoLog={timeSheetId}
                   loads={loads}
                   setLoads={setLoads}
+                  loadCount={loadCount}
+                  setLoadCount={setLoadCount}
                 />
               </Holds>
             )}

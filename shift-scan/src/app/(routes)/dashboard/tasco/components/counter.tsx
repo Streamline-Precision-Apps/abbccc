@@ -20,6 +20,7 @@ export default function Counter({ count, setCount, addAction, removeAction, allo
   };
 
   const remove = () => {
+    if (allowRemove === false) return;
     setCount(Math.max(0, count - 1));
     if (removeAction) removeAction();
   };
