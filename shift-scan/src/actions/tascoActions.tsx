@@ -2,7 +2,6 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath, revalidateTag } from "next/cache";
 
-
 /* LOADS Hauled */
 //------------------------------------------------------------------
 //------------------------------------------------------------------
@@ -24,11 +23,10 @@ export async function createLoad(formData: FormData) {
   return load;
 }
 
-
 export async function updateLoads(formData: FormData) {
   const id = formData.get("id") as string;
-  const loadType = formData.get("LoadType") as string;
-  const loadWeight = parseInt(formData.get("loadweight") as string);
+  const loadType = formData.get("loadType") as string;
+  const loadWeight = parseInt(formData.get("loadWeight") as string);
   const tascoLogId = formData.get("tascoLogId") as string;
 
   // If ID is provided, update the existing log
@@ -59,7 +57,6 @@ export async function updateLoads(formData: FormData) {
   return load;
 }
 
-
 export async function deleteLoad(id: string) {
   console.log("Deleting load...");
   console.log(id);
@@ -70,7 +67,6 @@ export async function deleteLoad(id: string) {
   revalidateTag("load");
   return true;
 }
-
 
 export async function deleteOneLoad(tascoId: string) {
   console.log("Deleting first load associated with Tasco Log...");
@@ -104,16 +100,54 @@ export async function deleteOneLoad(tascoId: string) {
     return true;
   } catch (error) {
     console.error("Error deleting load:", error);
-    return { success: false, message: "An error occurred while deleting the load." };
+    return {
+      success: false,
+      message: "An error occurred while deleting the load.",
+    };
   }
 }
 
+export async function deleteLoadById(loadId: string) {
+  console.log("Deleting load associated with Load Id " + loadId);
 
+  try {
+    // Find the first Load attached to the TascoLog
+    const targetLoad = await prisma.loads.findFirst({
+      where: {
+        tascoLogId: loadId, // Find loads linked to this Tasco Log
+      },
+    });
+
+    if (!targetLoad) {
+      console.log("No loads found for this Load ID.");
+      return false;
+    }
+
+    // Delete the first found Load
+    await prisma.loads.delete({
+      where: {
+        id: targetLoad.id,
+      },
+    });
+
+    console.log(`Deleted Load ID: ${targetLoad.id}`);
+
+    // Revalidate the tag to update UI
+    revalidateTag("load");
+
+    return true;
+  } catch (error) {
+    console.error("Error deleting load:", error);
+    return {
+      success: false,
+      message: "An error occurred while deleting the load.",
+    };
+  }
+}
 
 // /* Tasco Comments */
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
 
 export const updateTascoComments = async (formData: FormData) => {
   const id = formData.get("id") as string;
@@ -130,7 +164,7 @@ export const updateTascoComments = async (formData: FormData) => {
   return updatedLog;
 };
 
-// /* Refuel */
+// /* Tasco Refuel Logs */
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 export async function createRefuelLog(formData: FormData) {
@@ -145,8 +179,39 @@ export async function createRefuelLog(formData: FormData) {
   });
 
   console.log(refueledLogs);
-  revalidatePath("/dashboard/tascoAssistant");
+  revalidatePath("/dashboard/tasco");
   return refueledLogs;
+}
+
+export async function createRefuelEquipmentLog(formData: FormData) {
+  console.log("Creating refuel logs...");
+  console.log(formData);
+  const employeeEquipmentLogId = formData.get(
+    "employeeEquipmentLogId"
+  ) as string;
+
+  const refueledLogs = await prisma.refueled.create({
+    data: {
+      employeeEquipmentLogId,
+    },
+  });
+
+  console.log(refueledLogs);
+  revalidatePath("/dashboard/tasco");
+  return refueledLogs;
+}
+
+export async function deleteEmployeeEquipmentLog(id: string) {
+  try {
+    console.log("Deleting employee equipment log:", id);
+    await prisma.employeeEquipmentLog.delete({
+      where: { id },
+    });
+    return true;
+  } catch (error) {
+    console.error("Error deleting employee equipment log:", error);
+    throw error;
+  }
 }
 
 export async function updateRefuelLog(formData: FormData) {
@@ -155,24 +220,28 @@ export async function updateRefuelLog(formData: FormData) {
     Number(formData.get("gallonsRefueled") as string) || 0;
   const milesAtfueling = Number(formData.get("milesAtfueling")) || 0;
 
-  const updatedRefuelLog = await prisma.refueled.update({
+  // Update the state mileage in the database
+  const updatedStateMileage = await prisma.refueled.update({
     where: { id },
     data: {
       gallonsRefueled,
       milesAtfueling,
     },
   });
-  revalidatePath("/dashboard/tascoAssistant");
-  console.log("Updated State Mileage:", updatedRefuelLog);
+  revalidatePath("/dashboard/tasco");
+  console.log("Updated State Mileage:", updatedStateMileage);
 
-  return updatedRefuelLog;
+  return updatedStateMileage;
 }
 
 export async function deleteRefuelLog(id: string) {
   console.log("Deleting refuel logs:", id);
+  console.log("id", id);
   await prisma.refueled.delete({
     where: { id },
   });
 
   return true;
 }
+
+

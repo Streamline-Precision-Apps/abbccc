@@ -5,15 +5,21 @@ import { Texts } from "@/components/(reusable)/texts";
 import { Loads } from "@/lib/types";
 import { createLoad } from "@/actions/tascoActions";
 import LoadsList from "./LoadsList";
+import { Labels } from "@/components/(reusable)/labels";
+import Counter from "./counter";
 
 export default function LoadsLayout({
   tascoLog,
   loads,
-  setLoads
+  setLoads,
+  loadCount,
+  setLoadCount,
 }: {
   tascoLog: string | undefined;
   loads: Loads[] | undefined;
   setLoads: React.Dispatch<React.SetStateAction<Loads[] | undefined>>;
+  loadCount: number;
+  setLoadCount: React.Dispatch<React.SetStateAction<number>>;
 }) {
   const AddLoad = async () => {
     const formData = new FormData();
@@ -37,29 +43,17 @@ export default function LoadsLayout({
   return (
     <Holds className="w-full h-full">
       <Grids rows={"8"}>
-        <Holds position={"row"} className="w-full h-full row-start-1 row-end-2">
-          <Holds size={"80"}>
-            <Texts size={"p3"} className="font-bold">
-              Did you Refuel?
-            </Texts>
-          </Holds>
-          <Holds size={"20"}>
-            <Buttons
-              background={"green"}
-              className="py-1.5"
-              onClick={() => {
-                AddLoad();
-              }}
-            >
-              +
-            </Buttons>
-          </Holds>
-        </Holds>
-        <Holds className="w-full h-full row-start-2 row-end-9">
-          <LoadsList
-            loads={loads}
-            setLoads={setLoads}
+        <Holds className="w-full items-center row-start-1 row-end-2" background={"white"}>
+          <Labels>Load Counter</Labels>
+          <Counter
+            count={loadCount}
+            setCount={setLoadCount}
+            addAction={AddLoad}
+            allowRemove={false}
           />
+        </Holds>
+        <Holds className="w-full h-full row-start-3 row-end-9">
+          <LoadsList loads={loads} setLoads={setLoads} loadCount={loadCount} setLoadCount={setLoadCount} />
         </Holds>
       </Grids>
     </Holds>
