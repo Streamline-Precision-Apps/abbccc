@@ -17,6 +17,11 @@ export const initialCompany: Prisma.CompanyCreateInput[] = [
   },
 ];
 
+function formatName(label: string): string {
+  // Convert to lowercase and replace spaces with underscores (snake_case)
+  return label.toLowerCase().replace(/\s+/g, "_");
+}
+
 export const initialFormTemplates: Prisma.FormTemplateCreateInput[] = [
   {
     name: "Leave Request Form",
@@ -32,26 +37,22 @@ export const initialFormTemplates: Prisma.FormTemplateCreateInput[] = [
           fields: {
             create: [
               {
-                label: "Title (Optional)",
-                type: FieldType.TEXT,
-                required: false,
+                label: "Request Start Date",
+                name: formatName("Request Start Date"),
+                type: FieldType.DATE,
+                required: true,
                 order: 1,
-                placeholder: "Enter Title here",
               },
               {
-                label: "Request Start Date",
+                label: "Request End Date",
+                name: formatName("Request End Date"),
                 type: FieldType.DATE,
                 required: true,
                 order: 2,
               },
               {
-                label: "Request End Date",
-                type: FieldType.DATE,
-                required: true,
-                order: 3,
-              },
-              {
                 label: "Request Type",
+                name: formatName("Request Type"),
                 type: FieldType.DROPDOWN,
                 required: true,
                 order: 3,
@@ -77,6 +78,7 @@ export const initialFormTemplates: Prisma.FormTemplateCreateInput[] = [
               },
               {
                 label: "Comments",
+                name: formatName("Comments"),
                 type: FieldType.TEXTAREA,
                 required: false,
                 order: 4,
@@ -104,18 +106,21 @@ export const initialFormTemplates: Prisma.FormTemplateCreateInput[] = [
               {
                 label: "Describe the Injury",
                 type: FieldType.TEXTAREA,
+                name: formatName("Describe the Injury"),
                 required: true,
                 order: 1,
                 placeholder: "Enter Name here",
               },
               {
                 label: "I contacted My Supervisor",
+                name: formatName("I contacted My Supervisor"),
                 type: FieldType.CHECKBOX,
                 required: true,
                 order: 2,
               },
               {
                 label: "This is my signature",
+                name: formatName("This is my signature"),
                 type: FieldType.CHECKBOX,
                 required: true,
                 order: 3,
