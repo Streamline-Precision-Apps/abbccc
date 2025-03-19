@@ -24,6 +24,9 @@ export async function GET(
   }
 
   const { employeeId } = params;
+  const { searchParams } = new URL(req.url);
+  const skip = parseInt(searchParams.get("skip") || "0");
+  const take = parseInt(searchParams.get("take") || "10");
 
   try {
     if (employeeId === "all") {
@@ -63,6 +66,11 @@ export async function GET(
               signedBy: true,
             },
           },
+        },
+        skip,
+        take,
+        orderBy: {
+          createdAt: "desc",
         },
       });
       console.log(requests);
@@ -109,6 +117,11 @@ export async function GET(
               },
             },
           },
+        },
+        skip,
+        take,
+        orderBy: {
+          createdAt: "desc",
         },
       });
       console.log(requests);
