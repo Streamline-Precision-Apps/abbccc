@@ -134,7 +134,7 @@ export default function STab() {
                 <option value="denied">Denied</option>
               </Selects>
             </Holds>
-            <Holds className="row-start-2 row-end-6 pb-5 h-full w-full flex justify-center items-center ">
+            <Holds className="row-start-2 row-end-3 pb-5 h-full w-full flex justify-center items-center ">
               <Titles size={"h4"}>No forms found or submitted.</Titles>
             </Holds>
           </Grids>
@@ -168,7 +168,7 @@ export default function STab() {
               {sentContent.map((form) => {
                 const title = form.title || form.formTemplate?.name;
                 return (
-                  <Holds key={form.id} className="px-2 ">
+                  <Holds key={form.id} className="px-2 pb-5">
                     <Buttons
                       className="py-1 relative"
                       background={

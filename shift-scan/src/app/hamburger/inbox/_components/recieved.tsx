@@ -168,7 +168,7 @@ export default function RTab({ isManager }: { isManager: boolean }) {
               </Selects>
             </Holds>
             {!sentContent || sentContent.length === 0 ? (
-              <Holds className="row-start-2 row-end-6 h-full w-full flex justify-center items-center ">
+              <Holds className="row-start-2 row-end-3 h-full w-full flex justify-center items-center ">
                 <Titles size={"h4"}>No forms found or submitted.</Titles>
               </Holds>
             ) : (
