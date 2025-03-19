@@ -77,6 +77,7 @@ model FormSubmission {
     formType       String?
     data           Json? // Stores after creation
     createdAt      DateTime       @default(now())
+    updatedAt      DateTime       @updatedAt
     submittedAt    DateTime? // Null means it's a draft
     status         FormStatus     @default(DRAFT)
     user           User           @relation(fields: [userId], references: [id])
@@ -88,11 +89,12 @@ model FormSubmission {
 model FormApproval {
     id               String   @id @default(cuid())
     formSubmissionId String
-    approvedBy       String
-    approvedAt       DateTime @default(now())
+    signedBy         String?
+    submittedAt      DateTime @default(now())
+    updatedAt        DateTime @updatedAt
     signature        String?
     comment          String?
 
     formSubmission FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
-    approver       User           @relation(fields: [approvedBy], references: [id])
+    approver       User?          @relation(fields: [signedBy], references: [id])
 }
