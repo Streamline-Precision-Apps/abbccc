@@ -219,6 +219,15 @@ export async function GET() {
           ),
           incomplete: isEndingMileageRequired, // Track incomplete status
         };
+      }).filter((log) => {
+        // Filter logs with incomplete fields
+        return (
+          log.incomplete ||
+          log.stateMileage ||
+          log.refueled ||
+          log.material ||
+          log.equipmentHauled
+        );
       });
 
       const mappedTascoLog: TascoLog[] = tascoLogs
@@ -228,7 +237,7 @@ export async function GET() {
       type: "tasco",
       shiftType: log.shiftType,
       laborType: log.laborType,
-      loads: log.laborType === "equipmentOperator"
+      loads: log.laborType === "equipmentOperator" || log.laborType === "manualLabor"
         ? log.loads.some((item) => isFieldIncomplete(item, ["loadType", "loadWeight"]))
         : false,
       refueled: log.refueled.some((item) =>
@@ -246,11 +255,10 @@ export async function GET() {
 
     // Combine All Logs
     const combinedLogs = [
-      // ...mappedEquipmentLogs,
-      // ...mappedMaintenanceLogs,
-      // ...mappedTruckingLogs,
-      // ...mappedTascoLog,
-      tascoLogs,
+      ...mappedEquipmentLogs,
+      ...mappedMaintenanceLogs,
+      ...mappedTruckingLogs,
+      ...mappedTascoLog,
     ];
 
     return NextResponse.json(combinedLogs);

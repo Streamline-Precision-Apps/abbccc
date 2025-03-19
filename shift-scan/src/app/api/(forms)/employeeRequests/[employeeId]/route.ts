@@ -24,37 +24,154 @@ export async function GET(
   }
 
   const { employeeId } = params;
+  const { searchParams } = new URL(req.url);
+  const skip = parseInt(searchParams.get("skip") || "0");
+  const take = parseInt(searchParams.get("take") || "10");
 
   try {
-    const requests = await prisma.formSubmission.findMany({
-      where: {
-        status: "PENDING",
-        userId: employeeId,
-        user: {
-          crews: {
-            some: {
-              leadId: userId,
+    if (employeeId === "all") {
+      const requests = await prisma.formSubmission.findMany({
+        where: {
+          status: "PENDING",
+          user: {
+            NOT: {
+              // Exclude the current user from the query
+              id: userId,
+            },
+            crews: {
+              some: {
+                leadId: userId,
+              },
+            },
+          },
+          approvals: {
+            none: {}, // only include requests that have no approvals
+          },
+        },
+        include: {
+          formTemplate: {
+            select: {
+              formType: true,
+            },
+          },
+          user: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+            },
+          },
+          approvals: {
+            select: {
+              signedBy: true,
             },
           },
         },
-      },
-      include: {
-        formTemplate: {
-          select: {
-            formType: true,
-          },
+        skip,
+        take,
+        orderBy: {
+          createdAt: "desc",
         },
-        user: {
-          select: {
-            firstName: true,
-            lastName: true,
-          },
-        },
-      },
-    });
+      });
+      console.log(requests);
 
-    revalidateTag("requests");
-    return NextResponse.json(requests);
+      revalidateTag("requests");
+      return NextResponse.json(requests);
+    } else if (employeeId === "approved") {
+      const requests = await prisma.formSubmission.findMany({
+        where: {
+          status: { not: { in: ["PENDING", "DRAFT"] } },
+          user: {
+            NOT: {
+              // Exclude the current user from the query
+              id: userId,
+            },
+            crews: {
+              some: {
+                leadId: userId,
+              },
+            },
+          },
+        },
+
+        include: {
+          formTemplate: {
+            select: {
+              formType: true,
+            },
+          },
+          user: {
+            select: {
+              firstName: true,
+              lastName: true,
+            },
+          },
+          approvals: {
+            select: {
+              id: true,
+              approver: {
+                select: {
+                  firstName: true,
+                  lastName: true,
+                },
+              },
+            },
+          },
+        },
+        skip,
+        take,
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+      console.log(requests);
+
+      revalidateTag("requests");
+      return NextResponse.json(requests);
+    } else {
+      const requests = await prisma.formSubmission.findMany({
+        where: {
+          status: "PENDING",
+          userId: employeeId,
+          user: {
+            NOT: {
+              // Exclude the current user from the query
+              id: userId,
+            },
+            crews: {
+              some: {
+                leadId: userId,
+              },
+            },
+          },
+          approvals: {
+            none: {}, // only include requests that have no approvals
+          },
+        },
+        include: {
+          formTemplate: {
+            select: {
+              formType: true,
+            },
+          },
+          user: {
+            select: {
+              firstName: true,
+              lastName: true,
+            },
+          },
+          approvals: {
+            select: {
+              signedBy: true,
+            },
+          },
+        },
+      });
+      console.log(requests);
+
+      revalidateTag("requests");
+      return NextResponse.json(requests);
+    }
   } catch (error) {
     console.error("Error fetching employee requests:", error);
     return NextResponse.json(
