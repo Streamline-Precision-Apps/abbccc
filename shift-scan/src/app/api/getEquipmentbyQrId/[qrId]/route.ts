@@ -5,7 +5,7 @@ import { auth } from "@/auth";
 
 export async function GET(
   request: Request,
-  { params }: { params: { equipment: string } }
+  { params }: { params: { qrId: string } }
 ) {
   try {
     // Authenticate the user
@@ -17,7 +17,7 @@ export async function GET(
     }
 
     // Validate equipment ID
-    const equipmentId = params.equipment;
+    const equipmentId = params.qrId;
     if (!equipmentId) {
       return NextResponse.json(
         { error: "Invalid or missing equipment ID" },
@@ -27,7 +27,7 @@ export async function GET(
 
     // Fetch equipment details
     const equipment = await prisma.equipment.findUnique({
-      where: { id: equipmentId },
+      where: { qrId: equipmentId },
       select: {
         id: true,
         qrId: true,

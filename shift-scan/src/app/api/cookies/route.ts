@@ -20,10 +20,10 @@ export async function GET(request: NextRequest) {
 
         const requestedCookie = cookies().get(name)?.value;
         if (!requestedCookie) {
-          return NextResponse.json({ message: "Cookie not found" }, { status: 404 });
+          return NextResponse.json("");
         }
 
-        return NextResponse.json({ value: requestedCookie });
+        return NextResponse.json(requestedCookie);
 
       case "deleteAll":
         const cookieNames = [
