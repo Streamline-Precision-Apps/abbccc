@@ -292,45 +292,9 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
                     <Holds className="row-start-1 row-end-6 h-full w-full justify-center">
                       <Spinner />
                     </Holds>
-                    <Holds className="row-start-6 row-end-7 h-full w-full">
-                      <Buttons
-                        background={"lightGray"}
-                        type="submit"
-                        className="w-full h-[50px]"
-                      ></Buttons>
-                    </Holds>
                   </Grids>
                 </form>
               </Contents>
-            </Holds>
-          </Grids>
-        </Contents>
-      </Bases>
-    );
-  }
-
-  // Error state
-  if (error) {
-    return (
-      <Bases>
-        <Contents>
-          <Grids className="grid-rows-8 gap-5">
-            <Holds
-              background={"white"}
-              className="row-span-1 h-full justify-center px-2"
-            >
-              <TitleBoxes
-                title={"Error"}
-                type="noIcon"
-                titleImg={""}
-                titleImgAlt={""}
-              />
-            </Holds>
-            <Holds
-              background={"white"}
-              className="w-full h-full row-span-7 flex items-center justify-center"
-            >
-              <Texts size={"p4"}>{error}</Texts>
             </Holds>
           </Grids>
         </Contents>
