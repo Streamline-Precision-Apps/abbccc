@@ -7,7 +7,7 @@ import { cn } from "@/components/(reusable)/utils";
 
 //This determines styles of all buttons
 const ButtonVariants = cva(
-  "border-[3px] border-black rounded-[10px] shadow-[8px_8px_0px_grey] ", //this applies to all variants
+  "border-[3px] border-black rounded-[10px]", //this applies to all variants
   {
     variants: {
       background: {
@@ -41,11 +41,16 @@ const ButtonVariants = cva(
         "20": "w-[20%]",
         "10": "w-[10%]",
       },
+      shadow: {
+        none: "shadow-none",
+        yes: "shadow-[8px_8px_0px_grey]",
+      }
     },
     defaultVariants: {
       background: "lightBlue",
       position: "center",
       size: "full",
+      shadow: "yes",
     },
   }
 );
@@ -61,6 +66,7 @@ const Buttons: FC<ButtonProps> = ({
   background,
   position,
   size,
+  shadow,
   href,
   ...props
 }) => {
@@ -77,7 +83,7 @@ const Buttons: FC<ButtonProps> = ({
       onClick={() => {
         pageAction();
       }}
-      className={cn(ButtonVariants({ background, size, position, className }))}
+      className={cn(ButtonVariants({ background, size, position, shadow, className }))}
       {...props}
     />
   );
