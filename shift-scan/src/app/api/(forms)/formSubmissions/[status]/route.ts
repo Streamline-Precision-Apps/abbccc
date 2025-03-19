@@ -2,7 +2,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
-import { revalidateTag } from "next/cache";
 
 enum FormStatus {
   PENDING = "PENDING",
@@ -23,63 +22,29 @@ export async function GET(
   }
 
   const { status } = params;
-  if (status === "all") {
-    const forms = await prisma.formSubmission.findMany({
-      where: {
-        userId,
-        status: { not: FormStatus.DRAFT },
-      },
-      include: {
-        formTemplate: {
-          select: {
-            name: true,
-            formType: true,
-          },
-        },
-      },
-    });
+  const { searchParams } = new URL(req.url);
+  const skip = parseInt(searchParams.get("skip") || "0"); // Number of records to skip
+  const take = parseInt(searchParams.get("take") || "10"); // Number of records to fetch
 
-    return NextResponse.json(forms);
-  } else if (status === "pending") {
-    const forms = await prisma.formSubmission.findMany({
-      where: {
-        userId,
-        status: FormStatus.PENDING,
-      },
-      include: {
-        formTemplate: {
-          select: {
-            name: true,
-            formType: true,
-          },
-        },
-      },
-    });
+  // Define the type for whereClause
+  let whereClause: {
+    userId: string;
+    status?: FormStatus | { not: FormStatus };
+  } = { userId };
 
-    return NextResponse.json(forms);
+  if (status === "pending") {
+    whereClause = { ...whereClause, status: FormStatus.PENDING };
   } else if (status === "approved") {
-    const forms = await prisma.formSubmission.findMany({
-      where: {
-        userId,
-        status: FormStatus.APPROVED,
-      },
-      include: {
-        formTemplate: {
-          select: {
-            name: true,
-            formType: true,
-          },
-        },
-      },
-    });
-
-    return NextResponse.json(forms);
+    whereClause = { ...whereClause, status: FormStatus.APPROVED };
   } else if (status === "denied") {
+    whereClause = { ...whereClause, status: FormStatus.DENIED };
+  } else if (status === "all") {
+    whereClause = { ...whereClause, status: { not: FormStatus.DRAFT } };
+  }
+
+  try {
     const forms = await prisma.formSubmission.findMany({
-      where: {
-        userId,
-        status: FormStatus.DENIED,
-      },
+      where: whereClause,
       include: {
         formTemplate: {
           select: {
@@ -88,8 +53,19 @@ export async function GET(
           },
         },
       },
+      skip, // Skip the first `skip` records
+      take, // Fetch `take` records
+      orderBy: {
+        createdAt: "desc", // Sort by submission date (newest first)
+      },
     });
 
     return NextResponse.json(forms);
+  } catch (error) {
+    console.error("Error fetching forms:", error);
+    return NextResponse.json(
+      { error: "Error fetching forms" },
+      { status: 500 }
+    );
   }
 }
