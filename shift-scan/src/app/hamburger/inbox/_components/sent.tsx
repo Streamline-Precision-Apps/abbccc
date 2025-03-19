@@ -60,9 +60,9 @@ export default function STab() {
         background={"white"}
         className="rounded-t-none row-span-9 h-full w-full pt-5"
       >
-        <Contents>
+        <Contents width={"section"}>
           <Grids rows={"9"} className="h-full w-full">
-            <Holds className="row-start-1 row-end-2 h-full px-2">
+            <Holds className="row-start-1 row-end-2 h-full">
               <Selects
                 value={selectedFilter}
                 onChange={(e) => setSelectedFilter(e.target.value)}
@@ -75,7 +75,9 @@ export default function STab() {
               </Selects>
             </Holds>
 
-            <Spinner size={50} />
+            <Holds className="row-start-2 row-end-6 h-full w-full flex justify-center items-center ">
+              <Spinner size={50} />
+            </Holds>
           </Grids>
         </Contents>
       </Holds>
@@ -88,9 +90,9 @@ export default function STab() {
         background={"white"}
         className="rounded-t-none row-span-9 h-full w-full pt-5"
       >
-        <Contents>
-          <Grids rows={"9"} className="h-full w-full">
-            <Holds className="row-start-1 row-end-2 h-full px-2">
+        <Contents width={"section"}>
+          <Grids rows={"10"} className="h-full w-full">
+            <Holds className="row-start-1 row-end-2 h-full ">
               <Selects
                 value={selectedFilter}
                 onChange={(e) => setSelectedFilter(e.target.value)}
@@ -114,10 +116,10 @@ export default function STab() {
       background={"white"}
       className="rounded-t-none row-span-9 h-full w-full pt-5"
     >
-      <Contents>
-        <Holds className="h-full">
-          <Grids rows={"9"} className="h-full w-full">
-            <Holds className="row-start-1 row-end-2 h-full px-2">
+      <Contents width={"section"}>
+        <Holds className="h-full w-full">
+          <Grids rows={"10"} className="h-full w-full">
+            <Holds className="row-start-1 row-end-2 h-full">
               <Selects
                 value={selectedFilter}
                 onChange={(e) => setSelectedFilter(e.target.value)}
@@ -130,11 +132,11 @@ export default function STab() {
               </Selects>
             </Holds>
 
-            <Holds className="row-start-2 row-end-10 h-full w-full overflow-y-scroll no-scrollbar">
+            <Holds className="row-start-2 row-end-11 h-full w-full overflow-y-scroll no-scrollbar">
               {sentContent.map((form) => {
                 const title = form.title || form.formTemplate?.name;
                 return (
-                  <Holds key={form.id} className="px-2 pb-5">
+                  <Holds key={form.id} className=" pb-5">
                     <Buttons
                       className="py-0.5 relative"
                       background={
