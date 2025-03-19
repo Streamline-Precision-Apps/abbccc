@@ -74,7 +74,7 @@ export default function InboxContent({ isManager }: { isManager: boolean }) {
               <>
                 {activeTab === 2 && <STab />}
 
-                {isManager && activeTab === 3 && <RTab />}
+                {isManager && activeTab === 3 && <RTab isManager={isManager} />}
               </>
             )}
           </Grids>

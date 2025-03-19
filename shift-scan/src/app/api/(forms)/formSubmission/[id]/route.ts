@@ -25,8 +25,27 @@ export async function GET(
   const forms = await prisma.formSubmission.findUnique({
     where: {
       id,
-      userId,
       status: { not: FormStatus.DRAFT },
+    },
+    include: {
+      user: {
+        select: {
+          signature: true,
+        },
+      },
+      approvals: {
+        select: {
+          id: true,
+          comment: true,
+          updatedAt: true,
+          approver: {
+            select: {
+              firstName: true,
+              lastName: true,
+            },
+          },
+        },
+      },
     },
   });
 

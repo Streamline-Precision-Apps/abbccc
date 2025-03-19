@@ -1,18 +1,21 @@
 "use client";
-import { FormEvent, useEffect, useState, useCallback } from "react";
-import { FormInput } from "./formInput";
-import { Bases } from "@/components/(reusable)/bases";
-import { Contents } from "@/components/(reusable)/contents";
-import { Holds } from "@/components/(reusable)/holds";
-import { Buttons } from "@/components/(reusable)/buttons";
-import { Grids } from "@/components/(reusable)/grids";
-import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
+import { FormEvent, useEffect, useState } from "react";
 import Spinner from "@/components/(animations)/spinner";
-import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { saveDraft, submitForm } from "@/actions/hamburgerActions";
-import { Inputs } from "@/components/(reusable)/inputs";
-import { Labels } from "@/components/(reusable)/labels";
+import FormDraft from "./_components/formDraft";
+import ManagerFormApproval from "./_components/managerFormApproval";
+import SubmittedForms from "./_components/submittedForms";
+import ManagerFormEditApproval from "./_components/managerFormEdit";
+import { saveDraftToPending } from "@/actions/hamburgerActions";
+import { useSession } from "next-auth/react";
+import { Bases } from "@/components/(reusable)/bases";
+import { Buttons } from "@/components/(reusable)/buttons";
+import { Contents } from "@/components/(reusable)/contents";
+import { Grids } from "@/components/(reusable)/grids";
+import { Holds } from "@/components/(reusable)/holds";
+import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
+import SubmittedFormsApproval from "./_components/submittedApprovedForms";
+import { Texts } from "@/components/(reusable)/texts";
 
 interface FormField {
   id: string;
@@ -27,14 +30,12 @@ interface FormField {
   helperText?: string;
   options?: string[];
 }
-
 interface FormGrouping {
   id: string;
   title: string;
   order: number;
   fields: FormField[];
 }
-
 interface FormTemplate {
   id: string;
   name: string;
@@ -43,108 +44,182 @@ interface FormTemplate {
   isSignatureRequired: boolean;
   groupings: FormGrouping[];
 }
+type ManagerFormApprovalSchema = {
+  id: string;
+  title: string;
+  formTemplateId: string;
+  userId: string;
+  formType: string | null;
+  data: {
+    comments: string;
+    request_type: string;
+    request_end_date: string;
+    request_start_date: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+  submittedAt: string;
+  status: FormStatus;
+  approvals: Array<{
+    id: string;
+    formSubmissionId: string;
+    signedBy: string;
+    submittedAt: string;
+    updatedAt: string;
+    signature: string;
+    comment: string;
+    approver: {
+      firstName: string;
+      lastName: string;
+    };
+  }>;
+};
+enum FormStatus {
+  PENDING = "PENDING",
+  APPROVED = "APPROVED",
+  DENIED = "DENIED",
+  DRAFT = "DRAFT",
+}
 
 export default function DynamicForm({ params }: { params: { id: string } }) {
+  // Search params from URL
   const formSubmissions = useSearchParams();
   const submissionId = formSubmissions.get("submissionId");
+  const submissionStatus = formSubmissions.get("status");
+  const submissionApprovingStatus = formSubmissions.get("approvingStatus");
+  const formApprover = formSubmissions.get("formApprover");
 
+  // State variables
   const [formData, setFormData] = useState<FormTemplate | null>(null);
-  const [initialDraftData, setInitialDraftData] = useState<
-    Record<string, string>
-  >({});
   const [formTitle, setFormTitle] = useState<string>("");
   const [formValues, setFormValues] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState<boolean>(false);
-  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [signature, setSignature] = useState<string | null>(null);
+  const [submittedForm, setSubmittedForm] = useState<string | null>(null);
+  const [managerFormApproval, setManagerFormApproval] =
+    useState<ManagerFormApprovalSchema | null>(null);
+
+  // Get user that is logged in
   const { data: session } = useSession();
   const userId = session?.user.id;
   const router = useRouter();
 
   // Fetch form template and draft data on page load
   useEffect(() => {
-    setLoading(true);
+    const fetchForm = async () => {
+      setLoading(true);
+      setError(null);
 
-    async function fetchForm() {
       try {
-        const res = await fetch(`/api/form/` + params.id);
-        const data = await res.json();
-        setFormData(data);
+        // Fetch the form template
+        const formRes = await fetch(`/api/form/` + params.id);
+        if (!formRes.ok) throw new Error("Failed to fetch form template");
+        const formData = await formRes.json();
+        setFormData(formData);
 
-        if (submissionId) {
-          const draftRes = await fetch(`/api/formDraft/` + submissionId);
-          const draftData = await draftRes.json();
+        // If there's no submissionId, stop here and just show template
+        if (!submissionId) {
+          setLoading(false);
+          return;
+        }
 
-          setFormValues(draftData.data);
-          setFormTitle(draftData.title || ""); // Set the title from draft data
-          setInitialDraftData(draftData.data); // Store the initial draft data
+        // Fetch submission data based on submissionStatus and submissionApprovingStatus
+        let submissionData, managerFormApprovalData;
+
+        if (submissionStatus === "DRAFT") {
+          submissionData = await fetchDraftData(submissionId);
+        } else if (submissionStatus === "PENDING") {
+          if (submissionApprovingStatus === null) {
+            submissionData = await fetchSubmissionData(submissionId);
+          } else if (submissionApprovingStatus === "true") {
+            submissionData = await fetchTeamSubmissionData(submissionId);
+            managerFormApprovalData = await fetchManagerApprovalData(
+              submissionId
+            );
+          }
+        } else if (
+          submissionStatus === "APPROVED" ||
+          submissionStatus === "DENIED"
+        ) {
+          if (submissionApprovingStatus === null) {
+            submissionData = await fetchSubmissionData(submissionId);
+            managerFormApprovalData = await fetchManagerApprovalData(
+              submissionId
+            );
+          } else if (submissionApprovingStatus === "true") {
+            submissionData = await fetchTeamSubmissionData(submissionId);
+            managerFormApprovalData = await fetchManagerApprovalData(
+              submissionId
+            );
+          }
+        } else if (
+          submissionStatus !== "PENDING" &&
+          submissionStatus !== "DRAFT" &&
+          submissionApprovingStatus === "true"
+        ) {
+          submissionData = await fetchTeamSubmissionData(submissionId);
+          managerFormApprovalData = await fetchManagerApprovalData(
+            submissionId
+          );
+        }
+
+        // Set the fetched data
+        if (submissionData) {
+          setFormValues(submissionData.data);
+          setFormTitle(
+            submissionData.title ||
+              (submissionData.user?.firstName && submissionData.user?.lastName
+                ? `${submissionData.user.firstName} ${submissionData.user.lastName}`
+                : "") ||
+              ""
+          );
+          setSignature(submissionData.user?.signature || null);
+          setSubmittedForm(submissionData.submittedAt || "");
+        }
+
+        if (managerFormApprovalData) {
+          setManagerFormApproval(managerFormApprovalData);
         }
       } catch (error) {
-        console.error("error", error);
+        console.error("Error fetching form data:", error);
+        setError("Failed to fetch form data. Please try again later.");
       } finally {
         setLoading(false);
       }
-    }
+    };
 
     fetchForm();
-  }, [params.id, submissionId]);
+  }, [params.id, submissionId, submissionStatus, submissionApprovingStatus]);
 
-  const getChangedFields = (
-    currentValues: Record<string, string>,
-    initialValues: Record<string, string>
-  ) => {
-    const changedFields: Record<string, string> = {};
-
-    for (const key in currentValues) {
-      if (currentValues[key] !== initialValues[key]) {
-        changedFields[key] = currentValues[key];
-      }
-    }
-
-    return changedFields;
+  // Helper functions for fetching data
+  const fetchDraftData = async (submissionId: string) => {
+    const draftRes = await fetch(`/api/formDraft/` + submissionId);
+    if (!draftRes.ok) throw new Error("Failed to fetch draft data");
+    return await draftRes.json();
   };
 
-  // Debounce function
-  const debounce = (func: Function, delay: number) => {
-    let timeoutId: NodeJS.Timeout;
-    return (...args: any[]) => {
-      clearTimeout(timeoutId); // Clear the previous timeout
-      timeoutId = setTimeout(() => func(...args), delay); // Set a new timeout
-    };
+  const fetchSubmissionData = async (submissionId: string) => {
+    const submissionRes = await fetch(`/api/formSubmission/` + submissionId);
+    if (!submissionRes.ok) throw new Error("Failed to fetch submission data");
+    return await submissionRes.json();
   };
 
-  // Memoized auto-save function
-  const autoSave = useCallback(
-    debounce(async (values: Record<string, any>, title: string) => {
-      if ((Object.keys(values).length > 0 || title) && formData) {
-        setIsSaving(true);
-        try {
-          const changedFields = getChangedFields(values, initialDraftData); // Get only changed fields
-          await saveDraft(
-            { ...changedFields, title }, // Include the title in the draft data
-            formData.id,
-            userId || "",
-            formData.formType,
-            submissionId || undefined
-          );
-          console.log("Draft saved successfully");
-        } catch (error) {
-          console.error("Error saving draft:", error);
-        } finally {
-          setIsSaving(false);
-        }
-      }
-    }, 2000), // Save every 2 seconds after the user stops typing
-    [formData, userId, submissionId, initialDraftData] // Dependencies
-  );
+  const fetchTeamSubmissionData = async (submissionId: string) => {
+    const submissionRes = await fetch(`/api/teamSubmission/` + submissionId);
+    if (!submissionRes.ok)
+      throw new Error("Failed to fetch team submission data");
+    return await submissionRes.json();
+  };
 
-  // Update formValues and title with debounce
-  const updateFormValues = useCallback(
-    (newValues: Record<string, any>) => {
-      setFormValues(newValues); // Update state immediately
-      autoSave(newValues, formTitle); // Debounce the auto-save
-    },
-    [autoSave, formTitle]
-  );
+  const fetchManagerApprovalData = async (submissionId: string) => {
+    const managerFormApprovalRes = await fetch(
+      `/api/managerFormApproval/` + submissionId
+    );
+    if (!managerFormApprovalRes.ok)
+      throw new Error("Failed to fetch manager approval data");
+    return await managerFormApprovalRes.json();
+  };
 
   // Handle form submission
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -156,22 +231,41 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
     }
 
     try {
-      const result = await submitForm(
-        { ...formValues, title: formTitle }, // Include the title in the submission
+      if (!userId || !submissionId) {
+        console.error("User ID is null");
+        return;
+      }
+      const dataToSave = { ...formValues };
+      const result = await saveDraftToPending(
+        dataToSave,
         formData.id,
-        userId || "",
+        userId,
         formData.formType,
-        submissionId || undefined
+        submissionId,
+        formTitle
       );
 
       if (result) {
-        router.push("/hamburger/inbox"); // Redirect to a success page
+        router.back(); // Redirect to a success page
       }
     } catch (error) {
       console.error("Error submitting form:", error);
     }
   };
 
+  // Update form values
+  const updateFormValues = (newValues: Record<string, any>) => {
+    setFormValues((prevValues) => ({
+      ...prevValues,
+      ...newValues,
+    }));
+  };
+
+  useEffect(() => {
+    console.log("Manager Form Approval Data:", managerFormApproval);
+  }, [managerFormApproval]);
+
+  // Loading state
   if (loading || !formData) {
     return (
       <Bases>
@@ -179,7 +273,7 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
           <Grids className="grid-rows-8 gap-5">
             <Holds
               background={"white"}
-              className="row-span-1 h-full justify-center animate-pulse px-2 "
+              className="row-span-1 h-full justify-center animate-pulse px-2"
             >
               <TitleBoxes
                 title={"loading..."}
@@ -188,7 +282,6 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
                 titleImgAlt={""}
               />
             </Holds>
-
             <Holds
               background={"white"}
               className="w-full h-full row-span-7 animate-pulse"
@@ -199,11 +292,12 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
                     <Holds className="row-start-1 row-end-6 h-full w-full justify-center">
                       <Spinner />
                     </Holds>
-
                     <Holds className="row-start-6 row-end-7 h-full w-full">
-                      <Buttons type="submit" className="w-full h-[50px]">
-                        Submit
-                      </Buttons>
+                      <Buttons
+                        background={"lightGray"}
+                        type="submit"
+                        className="w-full h-[50px]"
+                      ></Buttons>
                     </Holds>
                   </Grids>
                 </form>
@@ -215,68 +309,119 @@ export default function DynamicForm({ params }: { params: { id: string } }) {
     );
   }
 
+  // Error state
+  if (error) {
+    return (
+      <Bases>
+        <Contents>
+          <Grids className="grid-rows-8 gap-5">
+            <Holds
+              background={"white"}
+              className="row-span-1 h-full justify-center px-2"
+            >
+              <TitleBoxes
+                title={"Error"}
+                type="noIcon"
+                titleImg={""}
+                titleImgAlt={""}
+              />
+            </Holds>
+            <Holds
+              background={"white"}
+              className="w-full h-full row-span-7 flex items-center justify-center"
+            >
+              <Texts size={"p4"}>{error}</Texts>
+            </Holds>
+          </Grids>
+        </Contents>
+      </Bases>
+    );
+  }
+
+  // Render the form based on submission status
   return (
     <Bases>
       <Contents>
-        <Grids className="grid-rows-8 gap-5">
-          <Holds
-            background={"white"}
-            className="row-span-1 h-full justify-center px-3 "
-          >
-            <TitleBoxes
-              title={formData.name}
-              type="noIcon"
-              titleImg={""}
-              titleImgAlt={""}
+        <Grids rows={"8"} gap={"5"} className="w-full h-full">
+          {submissionStatus === "DRAFT" && (
+            <FormDraft
+              formData={formData}
+              handleSubmit={handleSubmit}
+              formTitle={formTitle || ""}
+              setFormTitle={setFormTitle}
+              formValues={formValues}
+              updateFormValues={updateFormValues}
+              userId={userId || ""}
+              submissionId={submissionId || ""}
             />
-          </Holds>
+          )}
+          {submissionApprovingStatus === null &&
+            submissionStatus !== "DRAFT" && (
+              <>
+                {submissionStatus === "PENDING" ? (
+                  <SubmittedForms
+                    formData={formData}
+                    formTitle={formTitle}
+                    setFormTitle={setFormTitle}
+                    formValues={formValues}
+                    updateFormValues={updateFormValues}
+                    userId={userId || ""}
+                    submissionId={submissionId || ""}
+                    signature={signature}
+                    submittedForm={submittedForm}
+                    submissionStatus={submissionStatus}
+                  />
+                ) : (
+                  <SubmittedFormsApproval
+                    formData={formData}
+                    formTitle={formTitle}
+                    setFormTitle={setFormTitle}
+                    formValues={formValues}
+                    updateFormValues={updateFormValues}
+                    submissionId={submissionId || ""}
+                    signature={signature}
+                    submittedForm={submittedForm}
+                    submissionStatus={submissionStatus}
+                    managerFormApproval={managerFormApproval} // Pass managerFormApproval here
+                  />
+                )}
+              </>
+            )}
 
-          <Holds background={"white"} className="w-full h-full row-span-7 ">
-            <Contents width={"section"}>
-              <form onSubmit={handleSubmit} className="h-full">
-                <Grids rows={"6"} gap={"3"} className="h-full w-full my-5">
-                  <Holds className="row-start-1 row-end-6 h-full w-full">
-                    <Holds className="px-2">
-                      <Labels size={"p4"} htmlFor="title">
-                        Title (Optional)
-                      </Labels>
-                      <Inputs
-                        type="text"
-                        placeholder="Enter a title here"
-                        name="title"
-                        value={formTitle}
-                        className="text-center"
-                        onChange={(e) => setFormTitle(e.target.value)}
-                      />
-                    </Holds>
-                    {formData?.groupings?.map((group) => (
-                      <Holds key={group.id} className="">
-                        {group.title && <h3>{group.title || ""}</h3>}
-                        {group.fields.map((field) => {
-                          return (
-                            <Holds key={field.id} className="p-2">
-                              <FormInput
-                                key={field.name} // Use field.name as the key
-                                field={field}
-                                formValues={formValues}
-                                setFormValues={updateFormValues}
-                              />
-                            </Holds>
-                          );
-                        })}
-                      </Holds>
-                    ))}
-                  </Holds>
+          {submissionApprovingStatus === "true" &&
+            submissionStatus === "PENDING" &&
+            formApprover && (
+              <ManagerFormApproval
+                formData={formData}
+                formTitle={formTitle}
+                setFormTitle={setFormTitle}
+                formValues={formValues}
+                updateFormValues={updateFormValues}
+                submissionId={submissionId || ""}
+                signature={signature}
+                submittedForm={submittedForm}
+                submissionStatus={submissionStatus}
+                managerFormApproval={managerFormApproval}
+              />
+            )}
 
-                  <Holds className="row-start-6 row-end-7 h-full w-full">
-                    <Buttons type="submit" className="w-full h-[50px]">
-                      Submit
-                    </Buttons>
-                  </Holds>
-                </Grids>
-              </form>
-            </Contents>
-          </Holds>
+          {submissionApprovingStatus === "true" &&
+            submissionStatus !== "PENDING" &&
+            submissionStatus !== "DRAFT" &&
+            formApprover && (
+              <ManagerFormEditApproval
+                formData={formData}
+                formTitle={formTitle}
+                setFormTitle={setFormTitle}
+                formValues={formValues}
+                updateFormValues={updateFormValues}
+                submissionId={submissionId || ""}
+                signature={signature}
+                submittedForm={submittedForm}
+                submissionStatus={submissionStatus}
+                managerFormApproval={managerFormApproval} // Pass the data here
+              />
+            )}
         </Grids>
       </Contents>
     </Bases>
