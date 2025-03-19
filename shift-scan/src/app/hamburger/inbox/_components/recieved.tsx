@@ -119,14 +119,14 @@ export default function RTab({ isManager }: { isManager: boolean }) {
         className="rounded-t-none row-span-9 h-full w-full pt-5 "
       >
         <Contents width={"section"}>
-          <Grids rows={"10"} className="h-full w-full">
+          <Grids rows={"10"} gap={"4"} className="h-full w-full">
             <Holds className="row-start-1 row-end-2 h-full px-2">
               <Selects
                 value={selectedFilter}
                 onChange={(e) => setSelectedFilter(e.target.value)}
-                className="text-center justify-center"
+                className="text-center justify-center h-full"
               >
-                <option value="all">All</option>
+                <option value="all">Select A Filter</option>
                 <option value="approved">Recently Approved</option>
                 {employeeRequests.map((employee) => (
                   <option key={employee.id} value={employee.id}>
@@ -135,7 +135,7 @@ export default function RTab({ isManager }: { isManager: boolean }) {
                 ))}
               </Selects>
             </Holds>
-            <Holds className="row-start-2 row-end-6 h-full w-full flex justify-center items-center ">
+            <Holds className="row-start-2 row-end-6 h-full w-full flex justify-center items-center  ">
               <Spinner size={50} />
             </Holds>
           </Grids>
@@ -151,14 +151,14 @@ export default function RTab({ isManager }: { isManager: boolean }) {
     >
       <Contents width={"section"}>
         <Holds className="h-full w-full">
-          <Grids rows={"10"} className="h-full w-full">
+          <Grids rows={"9"} gap={"4"} className="h-full w-full">
             <Holds className="row-start-1 row-end-2 h-full px-2 ">
               <Selects
                 value={selectedFilter}
                 onChange={(e) => setSelectedFilter(e.target.value)}
-                className="text-center justify-center"
+                className="text-center justify-center h-full"
               >
-                <option value="all">All</option>
+                <option value="all">Select A Filter</option>
                 <option value="approved">Approved</option>
                 {employeeRequests.map((employee) => (
                   <option key={employee.id} value={employee.id}>
@@ -168,9 +168,11 @@ export default function RTab({ isManager }: { isManager: boolean }) {
               </Selects>
             </Holds>
             {!sentContent || sentContent.length === 0 ? (
-              <Titles size={"h4"}>No forms found or submitted.</Titles>
+              <Holds className="row-start-2 row-end-6 h-full w-full flex justify-center items-center ">
+                <Titles size={"h4"}>No forms found or submitted.</Titles>
+              </Holds>
             ) : (
-              <Holds className="row-start-2 row-end-11 h-full w-full overflow-y-scroll no-scrollbar">
+              <Holds className="row-start-2 row-end-9 h-full w-full overflow-y-scroll no-scrollbar">
                 {sentContent.map((form) => {
                   const title =
                     form.formTemplate?.formType || form.formTemplate?.name; // Fallback if formTemplate is undefined
@@ -194,13 +196,13 @@ export default function RTab({ isManager }: { isManager: boolean }) {
                     </Holds>
                   );
                 })}
-                {hasMore && (
-                  <Holds className="h-full w-full flex justify-center items-center px-2">
-                    <Buttons onClick={handleLoadMore} disabled={loading}>
-                      {loading ? "Loading..." : "Load More"}
-                    </Buttons>
-                  </Holds>
-                )}
+              </Holds>
+            )}
+            {hasMore && (
+              <Holds className="row-start-9 row-end-10 h-full w-full flex justify-center items-center ">
+                <Buttons onClick={handleLoadMore} disabled={loading}>
+                  {loading ? "Loading..." : "Load More"}
+                </Buttons>
               </Holds>
             )}
           </Grids>

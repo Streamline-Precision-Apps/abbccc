@@ -91,14 +91,14 @@ export default function STab() {
         className="rounded-t-none row-span-9 h-full w-full pt-5"
       >
         <Contents width={"section"}>
-          <Grids rows={"9"} className="h-full w-full">
+          <Grids rows={"9"} gap={"4"} className="h-full w-full">
             <Holds className="row-start-1 row-end-2 h-full px-2">
               <Selects
                 value={selectedFilter}
                 onChange={(e) => setSelectedFilter(e.target.value)}
-                className="text-center justify-center"
+                className="text-center justify-center h-full"
               >
-                <option value="all">All</option>
+                <option value="all">Select A Filter</option>
                 <option value="pending">Pending</option>
                 <option value="approved">Approved</option>
                 <option value="denied">Denied</option>
@@ -106,7 +106,7 @@ export default function STab() {
             </Holds>
 
             <Holds className="row-start-2 row-end-6 h-full w-full flex justify-center items-center ">
-              <Spinner size={50} />
+              <Spinner />
             </Holds>
           </Grids>
         </Contents>
@@ -121,20 +121,22 @@ export default function STab() {
         className="rounded-t-none row-span-9 h-full w-full pt-5"
       >
         <Contents width={"section"}>
-          <Grids rows={"10"} className="h-full w-full">
+          <Grids rows={"9"} gap={"4"} className="h-full w-full">
             <Holds className="row-start-1 row-end-2 h-full px-2 ">
               <Selects
                 value={selectedFilter}
                 onChange={(e) => setSelectedFilter(e.target.value)}
-                className="text-center justify-center"
+                className="text-center justify-center h-full"
               >
-                <option value="all">All</option>
+                <option value="all">Select A Filter</option>
                 <option value="pending">Pending</option>
                 <option value="approved">Approved</option>
                 <option value="denied">Denied</option>
               </Selects>
             </Holds>
-            <Titles size={"h4"}>No forms found or submitted.</Titles>
+            <Holds className="row-start-2 row-end-6 pb-5 h-full w-full flex justify-center items-center ">
+              <Titles size={"h4"}>No forms found or submitted.</Titles>
+            </Holds>
           </Grids>
         </Contents>
       </Holds>
@@ -147,13 +149,13 @@ export default function STab() {
       className="rounded-t-none row-span-9 h-full w-full pt-5"
     >
       <Contents width={"section"}>
-        <Holds className="h-full w-full pb-5">
-          <Grids rows={"10"} className="h-full w-full">
+        <Holds className="h-full w-full ">
+          <Grids rows={"9"} gap={"4"} className="h-full w-full">
             <Holds className="row-start-1 row-end-2 h-full px-2">
               <Selects
                 value={selectedFilter}
                 onChange={(e) => setSelectedFilter(e.target.value)}
-                className="text-center justify-center"
+                className="text-center justify-center h-full"
               >
                 <option value="all">Select A Filter</option>
                 <option value="pending">Pending</option>
@@ -162,13 +164,13 @@ export default function STab() {
               </Selects>
             </Holds>
 
-            <Holds className="row-start-2 row-end-10 pb-5 h-full w-full overflow-y-scroll no-scrollbar">
+            <Holds className="row-start-2 row-end-9 h-full w-full pb-5 overflow-y-scroll no-scrollbar">
               {sentContent.map((form) => {
                 const title = form.title || form.formTemplate?.name;
                 return (
                   <Holds key={form.id} className="px-2 ">
                     <Buttons
-                      className="py-0.5 relative"
+                      className="py-1 relative"
                       background={
                         form.status === "PENDING"
                           ? "orange"
@@ -201,7 +203,7 @@ export default function STab() {
               })}
             </Holds>
             {hasMore && (
-              <Holds className="row-start-10 row-end-11 h-full w-full flex justify-center items-center ">
+              <Holds className="row-start-9 row-end-10 h-full w-full flex justify-center items-center ">
                 <Buttons onClick={handleLoadMore} disabled={loading}>
                   {loading ? "Loading..." : "Load More"}
                 </Buttons>
