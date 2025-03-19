@@ -1,6 +1,6 @@
 import { Contents } from "@/components/(reusable)/contents";
 import { useEffect, useState } from "react";
-import { deleteRefuelLog, updateRefuelLog } from "@/actions/truckingActions";
+import { deleteLoad, updateLoads } from "@/actions/tascoActions";
 import SlidingDiv from "@/components/(animations)/slideDelete";
 import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
@@ -9,27 +9,32 @@ import { Loads } from "@/lib/types";
 export default function LoadsList({
   loads,
   setLoads,
+  loadCount,
+  setLoadCount,
 }: {
   loads: Loads[] | undefined;
   setLoads: React.Dispatch<React.SetStateAction<Loads[] | undefined>>;
+  loadCount: number;
+  setLoadCount: React.Dispatch<React.SetStateAction<number>>;
 }) {
   const [editedLoad, setEditedLoad] = useState<Loads[]>(
     loads || []
   );
 
   const handleDelete = async (id: string) => {
-    const newLoads = editedLoad.filter((rL) => rL.id !== id);
+    const newLoads = editedLoad.filter((l) => l.id !== id);
     setEditedLoad(newLoads);
     setLoads(newLoads);
-    const isDeleted = await deleteRefuelLog(id);
+    const isDeleted = await deleteLoad(id);
     if (isDeleted) {
       console.log("Deleted");
       setEditedLoad(newLoads || []);
       setLoads(newLoads);
+      setLoadCount(loadCount - 1);
     }
   };
 
-  const handleLoadTypeChange = (index: number, value: string | number) => {
+  const handleLoadTypeChange = (index: number, value: string) => {
     const newLoad = [...editedLoad];
     newLoad[index].loadType = String(value);
     setEditedLoad(newLoad);
@@ -49,8 +54,8 @@ export default function LoadsList({
 
   return (
     <Contents className="overflow-y-auto no-scrollbar">
-      {editedLoad.map((rL, index) => (
-        <SlidingDiv key={rL.id} onSwipeLeft={() => handleDelete(rL.id)}>
+      {editedLoad.map((l, index) => (
+        <SlidingDiv key={l.id} onSwipeLeft={() => handleDelete(l.id)}>
           <Holds
             position={"row"}
             background={"white"}
@@ -61,23 +66,23 @@ export default function LoadsList({
               className="w-1/2 px-2 h-full justify-center"
             >
               <Inputs
-                type="number"
+                type="text"
                 name="loadType"
                 placeholder="Load Type"
-                value={rL.loadType || ""}
+                value={l.loadType || ""}
                 onChange={(e) => handleLoadTypeChange(index, e.target.value)}
                 onBlur={() => {
                   const formData = new FormData();
-                  formData.append("id", rL.id);
+                  formData.append("id", l.id);
                   formData.append(
                     "loadType",
-                    rL.loadType?.toString() || ""
+                    l.loadType?.toString() || ""
                   );
                   formData.append(
                     "loadWeight",
-                    rL.loadWeight?.toString() || ""
+                    l.loadWeight?.toString() || ""
                   );
-                  updateRefuelLog(formData);
+                  updateLoads(formData);
                 }}
                 className={
                   "border-none text-xs py-2 focus:outline-none focus:ring-0"
@@ -92,20 +97,20 @@ export default function LoadsList({
                 type="number"
                 name="currentMileage"
                 placeholder="Current Mileage"
-                value={rL.loadWeight || ""}
+                value={l.loadWeight || ""}
                 onChange={(e) => handleLoadWeightChange(index, e.target.value)}
                 onBlur={() => {
                   const formData = new FormData();
-                  formData.append("id", rL.id);
+                  formData.append("id", l.id);
                   formData.append(
                     "loadType",
-                    rL.loadType?.toString() || ""
+                    l.loadType?.toString() || ""
                   );
                   formData.append(
                     "loadWeight",
-                    rL.loadWeight?.toString() || ""
+                    l.loadWeight?.toString() || ""
                   );
-                  updateRefuelLog(formData);
+                  updateLoads(formData);
                 }}
                 className={
                   "border-none text-xs py-2 focus:outline-none focus:ring-0"
