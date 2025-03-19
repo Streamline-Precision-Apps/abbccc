@@ -3,9 +3,10 @@ import { getMessages } from "next-intl/server";
 import { Providers } from "../../providers";
 import { Bases } from "@/components/(reusable)/bases";
 import { Holds } from "@/components/(reusable)/holds";
-import Sidebar from "@/app/(routes)/admins/_pages/sidebar";
-import Topbar from "./_pages/topbar";
+import LeftSidebar from "@/app/(routes)/admins/_pages/leftSideBar";
+import TopTabBar from "./_pages/topTabBar";
 import { Grids } from "@/components/(reusable)/grids";
+import { Contents } from "@/components/(reusable)/contents";
 
 export default async function RootLayout({
   children,
@@ -16,22 +17,22 @@ export default async function RootLayout({
   // side is the easiest way to get started
   const messages = await getMessages();
   return (
-    <Bases size={"screen"} className="py-5">
+    <Bases size={"screen"}>
       <NextIntlClientProvider messages={messages}>
         <Providers>
-          <Holds position={"row"} className="w-full h-full">
-            <Sidebar />
-            <Holds className={"w-full h-full mt-2"}>
-              <Grids rows={"12"}>
-                <Holds className={"row-span-2 h-full "}>
-                  <Topbar />
-                </Holds>
-                <Holds className="h-full row-span-10 px-4 py-1">
-                  {children}
-                </Holds>
-              </Grids>
+          <Contents width={"100"} className="">
+          <Holds className="h-[60px]">
+            <TopTabBar />
+          </Holds>
+          <Holds position={"row"} className="h-full">
+            <Holds position={"test"} className="h-full w-[60px]">
+              <LeftSidebar/>
+            </Holds>
+            <Holds className="p-3 h-full no-scrollbar overflow-y-auto">
+              {children}
             </Holds>
           </Holds>
+          </Contents>
         </Providers>
       </NextIntlClientProvider>
     </Bases>
