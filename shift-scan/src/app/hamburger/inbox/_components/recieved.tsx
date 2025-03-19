@@ -5,7 +5,6 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Selects } from "@/components/(reusable)/selects";
-import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -49,43 +48,55 @@ type EmployeeRequests = {
 };
 
 export default function RTab({ isManager }: { isManager: boolean }) {
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState<string>("all");
   const [sentContent, setSentContent] = useState<SentContent[]>([]);
   const [employeeRequests, setEmployeeRequests] = useState<EmployeeRequests[]>(
     []
   );
-  const [approver, setApprover] = useState<string>("");
+  const [skip, setSkip] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchSentContent = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(`/api/employeeRequests/${selectedFilter}`);
-        const data = await response.json();
-        setSentContent(data);
-
-        const names = data.map((item: SentContent) =>
-          item.approvals.map(
-            (approval) =>
-              approval.approver.firstName + "-" + approval.approver.lastName
-          )
-        );
-        if (names.length > 0) {
-          setApprover(names);
+  const fetchRequests = async (skip: number, reset: boolean = false) => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `/api/employeeRequests/${selectedFilter}?skip=${skip}&take=10`
+      );
+      const data = await response.json();
+      if (data.length > 0) {
+        if (reset) {
+          // Reset the content if it's a new filter
+          setSentContent(data);
+        } else {
+          // Append new data to existing content
+          setSentContent((prev) => [...prev, ...data]);
         }
-      } catch (err) {
-        console.error("Error fetching sent content:", err);
-        setError("An error occurred while fetching sent content");
-      } finally {
-        setLoading(false);
+        setSkip((prev) => prev + 5);
+      } else {
+        setHasMore(false); // No more requests to load
       }
-    };
+    } catch (error) {
+      console.error("Error fetching requests:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchSentContent();
+  useEffect(() => {
+    // Reset states when the filter changes
+    setSentContent([]);
+    setSkip(0);
+    fetchRequests(0, true); // Fetch initial data for the new filter
   }, [selectedFilter]);
+
+  const handleLoadMore = () => {
+    if (!loading && hasMore) {
+      fetchRequests(skip);
+    }
+  };
 
   useEffect(() => {
     const fetchEmployeeRequests = async () => {
@@ -107,15 +118,15 @@ export default function RTab({ isManager }: { isManager: boolean }) {
         background={"white"}
         className="rounded-t-none row-span-9 h-full w-full pt-5 "
       >
-        <Contents>
-          <Grids rows={"10"} className="h-full w-full">
+        <Contents width={"section"}>
+          <Grids rows={"10"} gap={"4"} className="h-full w-full">
             <Holds className="row-start-1 row-end-2 h-full px-2">
               <Selects
                 value={selectedFilter}
                 onChange={(e) => setSelectedFilter(e.target.value)}
-                className="text-center justify-center"
+                className="text-center justify-center h-full"
               >
-                <option value="all">All</option>
+                <option value="all">Select A Filter</option>
                 <option value="approved">Recently Approved</option>
                 {employeeRequests.map((employee) => (
                   <option key={employee.id} value={employee.id}>
@@ -124,22 +135,11 @@ export default function RTab({ isManager }: { isManager: boolean }) {
                 ))}
               </Selects>
             </Holds>
-            <Holds className="row-start-2 row-end-10 h-full w-full flex justify-center items-center ">
+            <Holds className="row-start-2 row-end-6 h-full w-full flex justify-center items-center  ">
               <Spinner size={50} />
             </Holds>
           </Grids>
         </Contents>
-      </Holds>
-    );
-  }
-
-  if (error) {
-    return (
-      <Holds
-        background={"white"}
-        className="rounded-t-none row-span-9 h-full w-full pt-10"
-      >
-        <Texts size={"p4"}>{error}</Texts>
       </Holds>
     );
   }
@@ -149,16 +149,16 @@ export default function RTab({ isManager }: { isManager: boolean }) {
       background={"white"}
       className="rounded-t-none row-span-9 h-full w-full pt-5"
     >
-      <Contents>
-        <Holds className="h-full">
-          <Grids rows={"10"} className="h-full w-full">
-            <Holds className="row-start-1 row-end-2 h-full px-2">
+      <Contents width={"section"}>
+        <Holds className="h-full w-full">
+          <Grids rows={"9"} gap={"4"} className="h-full w-full">
+            <Holds className="row-start-1 row-end-2 h-full px-2 ">
               <Selects
                 value={selectedFilter}
                 onChange={(e) => setSelectedFilter(e.target.value)}
-                className="text-center justify-center"
+                className="text-center justify-center h-full"
               >
-                <option value="all">All</option>
+                <option value="all">Select A Filter</option>
                 <option value="approved">Approved</option>
                 {employeeRequests.map((employee) => (
                   <option key={employee.id} value={employee.id}>
@@ -168,15 +168,17 @@ export default function RTab({ isManager }: { isManager: boolean }) {
               </Selects>
             </Holds>
             {!sentContent || sentContent.length === 0 ? (
-              <Titles size={"h4"}>No forms found or submitted.</Titles>
+              <Holds className="row-start-2 row-end-3 h-full w-full flex justify-center items-center ">
+                <Titles size={"h4"}>No forms found or submitted.</Titles>
+              </Holds>
             ) : (
-              <Holds className="row-start-2 row-end-11 h-full w-full overflow-y-scroll no-scrollbar px-2">
+              <Holds className="row-start-2 row-end-9 h-full w-full overflow-y-scroll no-scrollbar">
                 {sentContent.map((form) => {
                   const title =
                     form.formTemplate?.formType || form.formTemplate?.name; // Fallback if formTemplate is undefined
 
                   return (
-                    <Holds key={form.id} className="pb-3">
+                    <Holds key={form.id} className="px-2 pb-5">
                       <Buttons
                         className="py-0.5 relative"
                         background={"lightBlue"}
@@ -194,6 +196,13 @@ export default function RTab({ isManager }: { isManager: boolean }) {
                     </Holds>
                   );
                 })}
+              </Holds>
+            )}
+            {hasMore && (
+              <Holds className="row-start-9 row-end-10 h-full w-full flex justify-center items-center ">
+                <Buttons onClick={handleLoadMore} disabled={loading}>
+                  {loading ? "Loading..." : "Load More"}
+                </Buttons>
               </Holds>
             )}
           </Grids>
