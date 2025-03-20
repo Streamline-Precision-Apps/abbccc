@@ -405,12 +405,17 @@ CREATE TABLE "User" (
     "clockedIn" BOOLEAN NOT NULL DEFAULT false,
     "companyId" TEXT NOT NULL,
     "passwordResetTokenId" TEXT,
+<<<<<<< HEAD:shift-scan/prisma/migrations/20250320020609_migrate_after_merge/migration.sql
     "userSessionId" TEXT,
+=======
+    "workTypeId" TEXT,
+>>>>>>> c8d91ec223332fa66cefd7fb1f36a4e3a2c17f27:shift-scan/prisma/migrations/20250320224838_1/migration.sql
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
+<<<<<<< HEAD:shift-scan/prisma/migrations/20250320020609_migrate_after_merge/migration.sql
 CREATE TABLE "UserSession" (
     "id" TEXT NOT NULL,
     "workTypesId" TEXT,
@@ -419,6 +424,8 @@ CREATE TABLE "UserSession" (
 );
 
 -- CreateTable
+=======
+>>>>>>> c8d91ec223332fa66cefd7fb1f36a4e3a2c17f27:shift-scan/prisma/migrations/20250320224838_1/migration.sql
 CREATE TABLE "WorkTypes" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
@@ -661,10 +668,14 @@ ALTER TABLE "Refueled" ADD CONSTRAINT "Refueled_tascoLogId_fkey" FOREIGN KEY ("t
 ALTER TABLE "User" ADD CONSTRAINT "User_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "Company"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+<<<<<<< HEAD:shift-scan/prisma/migrations/20250320020609_migrate_after_merge/migration.sql
 ALTER TABLE "User" ADD CONSTRAINT "User_userSessionId_fkey" FOREIGN KEY ("userSessionId") REFERENCES "UserSession"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UserSession" ADD CONSTRAINT "UserSession_workTypesId_fkey" FOREIGN KEY ("workTypesId") REFERENCES "WorkTypes"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+=======
+ALTER TABLE "User" ADD CONSTRAINT "User_workTypeId_fkey" FOREIGN KEY ("workTypeId") REFERENCES "WorkTypes"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+>>>>>>> c8d91ec223332fa66cefd7fb1f36a4e3a2c17f27:shift-scan/prisma/migrations/20250320224838_1/migration.sql
 
 -- AddForeignKey
 ALTER TABLE "UserSettings" ADD CONSTRAINT "UserSettings_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
