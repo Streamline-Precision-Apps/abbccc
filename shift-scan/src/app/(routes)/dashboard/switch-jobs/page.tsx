@@ -14,8 +14,9 @@ const getCookieData = async () => {
   const jobSiteId = cookieStore.get("jobSiteId")?.value;
   const costCode = cookieStore.get("costCode")?.value;
   const workRole = cookieStore.get("workRole")?.value;
+  const switchLaborType = cookieStore.get("laborType")?.value;
 
-  return { timeSheetId, jobSiteId, costCode, workRole };
+  return { timeSheetId, jobSiteId, costCode, workRole, switchLaborType };
 };
 
 export default async function SwitchJobs() {
@@ -33,7 +34,8 @@ export default async function SwitchJobs() {
   const lang = cookies().get("locale");
   const locale = lang?.value || "en";
   // Fetch cookie data
-  const { timeSheetId, jobSiteId, costCode, workRole } = await getCookieData();
+  const { timeSheetId, jobSiteId, costCode, workRole, switchLaborType } =
+    await getCookieData();
   return (
     <Bases>
       <Contents>
@@ -52,6 +54,7 @@ export default async function SwitchJobs() {
             jobSiteId={jobSiteId}
             costCode={costCode}
             workRole={workRole}
+            switchLaborType={switchLaborType}
           />
         </Holds>
       </Contents>

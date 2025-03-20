@@ -38,6 +38,7 @@ type NewClockProcessProps = {
   jobSiteId?: string | undefined;
   costCode?: string | undefined;
   workRole?: string | undefined;
+  switchLaborType?: string | undefined;
 };
 
 export default function NewClockProcess({
@@ -53,13 +54,14 @@ export default function NewClockProcess({
   jobSiteId,
   costCode,
   workRole,
+  switchLaborType,
 }: NewClockProcessProps) {
   // State management
   const { data: session } = useSession();
   const [step, setStep] = useState<number>(0);
   const [clockInRole, setClockInRole] = useState<string | undefined>(workRole);
   const [clockInRoleTypes, setClockInRoleTypes] = useState<string | undefined>(
-    workRole
+    switchLaborType
   ); // use to have more selections for clock processes
   const [numberOfRoles, setNumberOfRoles] = useState(0);
   const [scanned, setScanned] = useState(false);
