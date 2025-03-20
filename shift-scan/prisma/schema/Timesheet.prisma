@@ -74,29 +74,35 @@ model Maintenance {
 
 // keeps track of All tasco work in one management table 
 model TascoLog {
-    id           String     @id @default(uuid())
-    timeSheetId  String // link to timesheet
-    shiftType    String // Tasco task
-    equipmentId  String? // link to equipment , truck, etc
-    laborType    String? // Labor being done. (E.G. manual labor vs. equipment)
-    materialType String? // depend on tasco type
-    loads        Loads[]
-    comment      String?
-    createdAt    DateTime   @default(now())
-    refueled     Refueled[] // link to refueled
-
+    id                 String              @id @default(uuid())
+    timeSheetId        String // link to timesheet
+    shiftType          String // Tasco task
+    equipmentId        String? // link to equipment , truck, etc
+    laborType          String? // Labor being done. (E.G. manual labor vs. equipment)
+    materialType       String? // depend on tasco type
+    LoadQuantity       Int                 @default(0) //No Other Details for loads
+    comment            String?
+    createdAt          DateTime            @default(now())
+    refueled           Refueled[] // only pass the amount refueled in total gallons
     // connections to other tables
-    equipment Equipment? @relation(fields: [equipmentId], references: [qrId])
-    timeSheet TimeSheet? @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
+    equipment          Equipment?          @relation(fields: [equipmentId], references: [qrId])
+    timeSheet          TimeSheet?          @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
+    tascoMaterialTypes TascoMaterialTypes? @relation(fields: [materialType], references: [id], onDelete: Cascade)
 }
 
-model Loads {
-    id         String    @id @default(uuid())
-    tascoLogId String?
-    loadType   String? // uncovered, screened, etc
-    loadWeight Float?
-    TascoLog   TascoLog? @relation(fields: [tascoLogId], references: [id])
+// created so they can edit and poulate tasco method
+model TascoMaterialTypes {
+    id       String     @id @default(uuid())
+    name     String
+    TascoLog TascoLog[]
 }
+
+// for f shift that doesn't exist
+// model Loads {
+//     id String @id @default(uuid())
+//     loadType   String? // uncovered, screened, etc
+//     loadWeight Float?
+// }
 
 //--------------------------------------------------------------------------------------------------------------------------------
 // logs to keep track of what each truckDriver has done.
@@ -155,7 +161,7 @@ model Refueled {
     employeeEquipmentLogId String?
     truckingLogId          String?
     tascoLogId             String?
-    gallonsRefueled        Float?
+    gallonsRefueled        Float? // tasco equipment and trucks
     milesAtfueling         Int? // miles at fueling for trucks
 
     EmployeeEquipmentLog EmployeeEquipmentLog? @relation(fields: [employeeEquipmentLogId], references: [id])
