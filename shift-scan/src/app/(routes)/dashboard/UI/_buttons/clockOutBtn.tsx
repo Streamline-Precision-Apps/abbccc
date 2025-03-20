@@ -34,7 +34,7 @@ export default function ClockOutBtn({
                   handleEvent={() => handleShowAdditionalButtons("clockOut")}
                 />
               )}
-              {laborType === "operator" && (
+              {laborType === "truckEquipmentOperator" && (
                 <HorizontalLayout
                   text={"ClockOut"}
                   titleImg={"/clock-out.svg"}
