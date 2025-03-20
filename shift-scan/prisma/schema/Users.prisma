@@ -1,40 +1,55 @@
 // Holds the login and general app data of employee but not all the data
 model User {
-    id              String     @id @default(cuid())
-    firstName       String
-    lastName        String
-    username        String     @unique
-    email           String     @unique
-    password        String
-    signature       String?    @db.Text
-    DOB             String // used to check for duplicate users - manager can see this under profile
-    truckView       Boolean // view of truck info
-    tascoView       Boolean // view of tasco info
-    laborView       Boolean // view of labor info
-    mechanicView    Boolean // view of mechanic info
-    permission      Permission @default(USER) // sets default permission to user on creation
-    image           String?
-    activeEmployee  Boolean    @default(true)
-    startDate       DateTime?  @default(now())
-    terminationDate DateTime?
-    accountSetup    Boolean    @default(false)
-    clockedIn       Boolean    @default(false) // indicates if employee is clocked in
-    companyId       String
-
-    passwordResetTokens  PasswordResetToken[]
-    timeSheets           TimeSheet[]
-    equipmentLogs        EmployeeEquipmentLog[]
-    contact              Contacts?
-    userSettings         UserSettings? // one to one relationship
-    maintenanceLogs      MaintenanceLog[]
+    id                   String     @id @default(cuid())
+    firstName            String
+    lastName             String
+    username             String     @unique
+    email                String     @unique
+    password             String
+    signature            String?    @db.Text
+    DOB                  String // used to check for duplicate users - manager can see this under profile
+    truckView            Boolean // view of truck info
+    tascoView            Boolean // view of tasco info
+    laborView            Boolean // view of labor info
+    mechanicView         Boolean // view of mechanic info
+    permission           Permission @default(USER) // sets default permission to user on creation
+    image                String?
+    activeEmployee       Boolean    @default(true)
+    startDate            DateTime?  @default(now())
+    terminationDate      DateTime?
+    accountSetup         Boolean    @default(false)
+    clockedIn            Boolean    @default(false) // indicates if employee is clocked in
+    companyId            String
     passwordResetTokenId String?
-    crews                Crew[]
-    formSubmission       FormSubmission[]
-    company              Company                @relation(fields: [companyId], references: [id])
-    FormApproval         FormApproval[]
+    userSessionId        String?
+
+    company             Company                @relation(fields: [companyId], references: [id])
+    contact             Contacts?
+    userSettings        UserSettings? // one to one relationship
+    equipmentLogs       EmployeeEquipmentLog[]
+    timeSheets          TimeSheet[]
+    maintenanceLogs     MaintenanceLog[]
+    crews               Crew[]
+    formSubmission      FormSubmission[]
+    FormApproval        FormApproval[]
+    passwordResetTokens PasswordResetToken[]
+    UserSession         UserSession?           @relation(fields: [userSessionId], references: [id])
 
     @@unique([firstName, lastName, DOB]) // prevent duplicate users
     @@index([email])
+}
+
+model UserSession {
+    id          String     @id @default(cuid())
+    workTypesId String? // truck driver, equipment operator, tasco Shifts, etc
+    User        User[]
+    WorkTypes   WorkTypes? @relation(fields: [workTypesId], references: [id])
+}
+
+model WorkTypes {
+    id          String        @id @default(cuid())
+    name        String        @unique
+    UserSession UserSession[]
 }
 
 model UserSettings {
