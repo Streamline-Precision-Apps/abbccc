@@ -6,7 +6,7 @@ import { Grids } from "../(reusable)/grids";
 import { Titles } from "../(reusable)/titles";
 import { useTranslations } from "next-intl";
 import { useCommentData } from "@/app/context/CommentContext";
-import { use, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, use, useEffect, useState } from "react";
 import Comment from "@/components/(clock)/comment";
 import { Images } from "../(reusable)/images";
 import { Selects } from "../(reusable)/selects";
@@ -22,6 +22,8 @@ type Props = {
   handleReturnPath: () => void;
   type: string;
   numberOfRoles: number;
+  clockInRoleTypes: string | undefined;
+  setClockInRoleTypes: Dispatch<SetStateAction<string | undefined>>;
 };
 export default function MultipleRoles({
   handleNextStep,
@@ -32,6 +34,8 @@ export default function MultipleRoles({
   handleReturnPath,
   type,
   numberOfRoles,
+  clockInRoleTypes,
+  setClockInRoleTypes,
 }: Props) {
   const [page, setPage] = useState("");
   const t = useTranslations("Clock");
@@ -43,8 +47,31 @@ export default function MultipleRoles({
   const { setCommentData } = useCommentData();
   const [commentsValue, setCommentsValue] = useState("");
 
-  const selectView = (clockInRole: string) => {
-    setClockInRole(clockInRole);
+  const selectView = (selectedRoleType: string) => {
+    setClockInRoleTypes(selectedRoleType);
+
+    // Map the selected role type to the main clock-in role
+    if (
+      selectedRoleType === "tascoAbcdLabor" ||
+      selectedRoleType === "tascoAbcdEquipment" ||
+      selectedRoleType === "tascoFEquipment"
+    ) {
+      setClockInRole("tasco");
+    } else if (
+      selectedRoleType === "truckDriver" ||
+      selectedRoleType === "truckEquipmentOperator" ||
+      selectedRoleType === "truckLabor"
+    ) {
+      setClockInRole("truck");
+    } else if (selectedRoleType === "mechanic") {
+      setClockInRole("mechanic");
+    } else if (selectedRoleType === "general") {
+      setClockInRole("general");
+    } else {
+      setClockInRole(undefined); // Handle undefined or invalid cases
+    }
+
+    // Proceed to the next step
     handleNextStep();
   };
 
@@ -91,15 +118,31 @@ export default function MultipleRoles({
               <Holds className="p-1 justify-center border-[3px] border-black rounded-[10px] shadow-[6px_6px_0px_grey]">
                 <Selects
                   className="bg-app-blue text-center p-3"
-                  value={clockInRole}
+                  value={clockInRoleTypes}
                   onChange={(e) => selectView(e.target.value)}
                 >
                   <option value="">{t("SelectWorkType")}</option>
                   {tascoView === true && (
-                    <option value="tasco">{t("TASCO")}</option>
+                    <>
+                      <option value="tascoAbcdLabor">
+                        {t("TASCOABCDLabor")}
+                      </option>
+                      <option value="tascoAbcdEquipment">
+                        {t("TASCOABCDEquipmentOperator")}
+                      </option>
+                      <option value="tascoFEquipment">
+                        {t("TASCOFEquipmentOperator")}
+                      </option>
+                    </>
                   )}
                   {truckView === true && (
-                    <option value="truck">{t("Truck")}</option>
+                    <>
+                      <option value="truckDriver">{t("TruckDriver")}</option>
+                      <option value="truckEquipmentOperator">
+                        {t("TruckEquipmentOperator")}
+                      </option>
+                      <option value="truckLabor">{t("TruckLabor")}</option>
+                    </>
                   )}
                   {mechanicView === true && (
                     <option value="mechanic">{t("Mechanic")}</option>
