@@ -37,7 +37,7 @@ export default function SwitchJobsBtn({
     <>
       {permission === "USER" && (
         <>
-          {laborType === "manualLabor" ? (
+          {laborType === "truckLabor" ? (
             <VerticalLayout
               text={"Switch"}
               titleImg={"/jobsite.svg"}

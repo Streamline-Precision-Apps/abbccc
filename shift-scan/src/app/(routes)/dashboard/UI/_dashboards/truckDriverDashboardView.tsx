@@ -75,7 +75,7 @@ export default function TruckDriverDashboardView({
                 view={"truck"}
                 laborType={laborType}
               />
-              {permission === "USER" && laborType === "manualLabor" && (
+              {permission === "USER" && laborType === "truckLabor" && (
                 <EquipmentBtn permission={permission} />
               )}
 
@@ -94,7 +94,7 @@ export default function TruckDriverDashboardView({
               {permission !== "USER" && !additionalButtonsType && (
                 <MyTeamWidget />
               )}
-              {permission !== "USER" && laborType === "manualLabor" && (
+              {permission !== "USER" && laborType === "truckLabor" && (
                 <EquipmentBtn permission={permission} />
               )}
 
