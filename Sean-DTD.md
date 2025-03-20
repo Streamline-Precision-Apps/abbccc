@@ -99,5 +99,10 @@
 # March 14, 2025 - Friday
 ### built/created
 - Standup Meeting. (1 hours)
-- Worked on API calls and checked for errors. ( hours)
+- Worked on API calls and checked for errors. (5.5 hours)
 - Fixed bugs found in Tasco section. (2 hours)
+
+
+# March 19, 2025 - Wednesday
+### built/created
+- Standup Meeting. (1 hours)
