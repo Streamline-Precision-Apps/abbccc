@@ -13,6 +13,7 @@ import { Labels } from "../(reusable)/labels";
 import CodeStep from "./code-step";
 import CodeFinder from "../(search)/codeFinder";
 import StepButtons from "./step-buttons";
+import { Titles } from "../(reusable)/titles";
 
 type TruckClockInFormProps = {
   handleNextStep: () => void;
@@ -22,6 +23,7 @@ type TruckClockInFormProps = {
   setLaborType: React.Dispatch<React.SetStateAction<string>>;
   setTruck: React.Dispatch<React.SetStateAction<string>>;
   setStartingMileage: React.Dispatch<React.SetStateAction<number>>;
+  clockInRoleTypes: string | undefined;
 };
 type TruckListSchema = {
   id: string;
@@ -37,10 +39,16 @@ export default function TruckClockInForm({
   setTruck,
   setStartingMileage,
   handlePrevStep,
+  clockInRoleTypes,
 }: TruckClockInFormProps) {
   const t = useTranslations("Clock");
   const [truckList, setTruckList] = useState<TruckListSchema[]>([]);
   const [selectedOpt, setSelectedOpt] = useState<boolean>(false);
+  const [hasTriggered, setHasTriggered] = useState(false);
+  const [clockInTruckType, setClockInTruckType] = useState<
+    string | undefined
+  >();
+
   useEffect(() => {
     const truckList = async () => {
       const fetchTruckList = await fetch("/api/getTruckData").then((res) =>
@@ -50,6 +58,16 @@ export default function TruckClockInForm({
     };
     truckList();
   }, []);
+
+  useEffect(() => {
+    setClockInTruckType(clockInRoleTypes);
+    if (clockInTruckType === "truckLabor" && !hasTriggered) {
+      handleNextStep();
+      console.log("triggered truck labor");
+      setHasTriggered(true); // Set the flag to prevent future triggers
+    }
+  }, [clockInTruckType, hasTriggered]);
+
   return (
     <Holds background={"white"} className="w-full h-full py-4">
       <Contents width="section">
@@ -72,32 +90,19 @@ export default function TruckClockInForm({
             </Holds>
             <Holds
               background={"white"}
-              className="row-start-2 row-end-3 col-start-1 col-end-6 justify-center p-1 py-2 border-[3px] border-black rounded-[10px]"
+              className="row-start-2 row-end-3 col-start-1 col-end-6 justify-center p-1 py-2 "
             >
-              <Selects
-                value={laborType}
-                onChange={(e) => {
-                  setLaborType(e.target.value);
-                }}
-                className="bg-app-blue"
-              >
-                <option value="" className="text-center">
-                  {t("SelectLaborType")}
-                </option>
-                <option value="operator" className="text-center">
-                  {t("Operator")}
-                </option>
-                <option value="truckDriver" className="text-center">
-                  {t("TruckDriver")}
-                </option>
-                <option value="manualLabor" className="text-center">
-                  {t("ManualLabor")}
-                </option>
-              </Selects>
+              <Titles>
+                {clockInRoleTypes === "truckDriver"
+                  ? t("EnterTruckInfo")
+                  : clockInRoleTypes === "truckEquipmentOperator"
+                  ? t("EnterEquipmentInfo")
+                  : ""}
+              </Titles>
             </Holds>
           </Grids>
           <Holds className="row-start-3 row-end-11 h-full w-full justify-center">
-            {laborType === "truckDriver" && (
+            {clockInRoleTypes === "truckDriver" && (
               <Grids rows={"8"} cols={"1"} gap={"5"}>
                 <Holds
                   background={"white"}
@@ -147,7 +152,7 @@ export default function TruckClockInForm({
                 </Holds>
               </Grids>
             )}
-            {laborType === "operator" && (
+            {clockInRoleTypes === "truckEquipmentOperator" && (
               <Grids rows={"7"} gap={"5"} className="h-full w-full">
                 <Holds className="row-start-1 row-end-7 h-full w-full pt-5">
                   <CodeFinder
@@ -164,21 +169,6 @@ export default function TruckClockInForm({
                     />
                   </Holds>
                 )}
-              </Grids>
-            )}
-            {laborType === "manualLabor" && (
-              <Grids rows={"8"} cols={"1"} gap={"5"}>
-                <Holds className="row-start-8 row-end-9">
-                  <Buttons
-                    className="py-2"
-                    background={"orange"}
-                    onClick={() => {
-                      handleNextStep();
-                    }}
-                  >
-                    <Texts>{t("Continue")}</Texts>
-                  </Buttons>
-                </Holds>
               </Grids>
             )}
           </Holds>

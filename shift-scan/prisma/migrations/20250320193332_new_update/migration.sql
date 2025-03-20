@@ -181,6 +181,7 @@ CREATE TABLE "FormField" (
     "order" INTEGER NOT NULL,
     "defaultValue" TEXT,
     "placeholder" TEXT,
+    "maxLength" INTEGER,
     "helperText" TEXT,
 
     CONSTRAINT "FormField_pkey" PRIMARY KEY ("id")
@@ -198,15 +199,13 @@ CREATE TABLE "FormFieldOption" (
 -- CreateTable
 CREATE TABLE "FormSubmission" (
     "id" TEXT NOT NULL,
+    "title" TEXT,
     "formTemplateId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "formType" TEXT,
-<<<<<<<< HEAD:shift-scan/prisma/migrations/20250312171718_merge/migration.sql
-    "data" JSONB NOT NULL,
-========
     "data" JSONB,
->>>>>>>> c4df8b847eb7118f407229f64ece3b02c54a548c:shift-scan/prisma/migrations/20250313160005_/migration.sql
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
     "submittedAt" TIMESTAMP(3),
     "status" "FormStatus" NOT NULL DEFAULT 'DRAFT',
 
@@ -217,8 +216,9 @@ CREATE TABLE "FormSubmission" (
 CREATE TABLE "FormApproval" (
     "id" TEXT NOT NULL,
     "formSubmissionId" TEXT NOT NULL,
-    "approvedBy" TEXT NOT NULL,
-    "approvedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "signedBy" TEXT,
+    "submittedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
     "signature" TEXT,
     "comment" TEXT,
 
@@ -314,6 +314,7 @@ CREATE TABLE "TascoLog" (
     "equipmentId" TEXT,
     "laborType" TEXT,
     "materialType" TEXT,
+    "LoadQuantity" INTEGER NOT NULL DEFAULT 0,
     "comment" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -321,13 +322,11 @@ CREATE TABLE "TascoLog" (
 );
 
 -- CreateTable
-CREATE TABLE "Loads" (
+CREATE TABLE "TascoMaterialTypes" (
     "id" TEXT NOT NULL,
-    "tascoLogId" TEXT,
-    "loadType" TEXT,
-    "loadWeight" DOUBLE PRECISION,
+    "name" TEXT NOT NULL,
 
-    CONSTRAINT "Loads_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "TascoMaterialTypes_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -339,7 +338,6 @@ CREATE TABLE "TruckingLog" (
     "equipmentId" TEXT,
     "startingMileage" INTEGER,
     "endingMileage" INTEGER,
-    "netWeight" DOUBLE PRECISION,
     "comment" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -407,8 +405,25 @@ CREATE TABLE "User" (
     "clockedIn" BOOLEAN NOT NULL DEFAULT false,
     "companyId" TEXT NOT NULL,
     "passwordResetTokenId" TEXT,
+    "userSessionId" TEXT,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "UserSession" (
+    "id" TEXT NOT NULL,
+    "workTypesId" TEXT,
+
+    CONSTRAINT "UserSession_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "WorkTypes" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+
+    CONSTRAINT "WorkTypes_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -520,6 +535,9 @@ CREATE INDEX "User_email_idx" ON "User"("email");
 CREATE UNIQUE INDEX "User_firstName_lastName_DOB_key" ON "User"("firstName", "lastName", "DOB");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "WorkTypes_name_key" ON "WorkTypes"("name");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "UserSettings_userId_key" ON "UserSettings"("userId");
 
 -- CreateIndex
@@ -583,7 +601,7 @@ ALTER TABLE "FormSubmission" ADD CONSTRAINT "FormSubmission_formTemplateId_fkey"
 ALTER TABLE "FormApproval" ADD CONSTRAINT "FormApproval_formSubmissionId_fkey" FOREIGN KEY ("formSubmissionId") REFERENCES "FormSubmission"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "FormApproval" ADD CONSTRAINT "FormApproval_approvedBy_fkey" FOREIGN KEY ("approvedBy") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "FormApproval" ADD CONSTRAINT "FormApproval_signedBy_fkey" FOREIGN KEY ("signedBy") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Jobsite" ADD CONSTRAINT "Jobsite_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "Company"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -616,7 +634,7 @@ ALTER TABLE "TascoLog" ADD CONSTRAINT "TascoLog_equipmentId_fkey" FOREIGN KEY ("
 ALTER TABLE "TascoLog" ADD CONSTRAINT "TascoLog_timeSheetId_fkey" FOREIGN KEY ("timeSheetId") REFERENCES "TimeSheet"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Loads" ADD CONSTRAINT "Loads_tascoLogId_fkey" FOREIGN KEY ("tascoLogId") REFERENCES "TascoLog"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "TascoLog" ADD CONSTRAINT "TascoLog_materialType_fkey" FOREIGN KEY ("materialType") REFERENCES "TascoMaterialTypes"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "TruckingLog" ADD CONSTRAINT "TruckingLog_equipmentId_fkey" FOREIGN KEY ("equipmentId") REFERENCES "Equipment"("qrId") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -641,6 +659,12 @@ ALTER TABLE "Refueled" ADD CONSTRAINT "Refueled_tascoLogId_fkey" FOREIGN KEY ("t
 
 -- AddForeignKey
 ALTER TABLE "User" ADD CONSTRAINT "User_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "Company"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "User" ADD CONSTRAINT "User_userSessionId_fkey" FOREIGN KEY ("userSessionId") REFERENCES "UserSession"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "UserSession" ADD CONSTRAINT "UserSession_workTypesId_fkey" FOREIGN KEY ("workTypesId") REFERENCES "WorkTypes"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UserSettings" ADD CONSTRAINT "UserSettings_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

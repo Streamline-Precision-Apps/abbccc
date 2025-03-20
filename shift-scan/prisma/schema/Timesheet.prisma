@@ -87,13 +87,13 @@ model TascoLog {
     // connections to other tables
     equipment          Equipment?          @relation(fields: [equipmentId], references: [qrId])
     timeSheet          TimeSheet?          @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
-    tascoMaterialTypes TascoMaterialTypes? @relation(fields: [materialType], references: [id], onDelete: Cascade)
+    tascoMaterialTypes TascoMaterialTypes? @relation(fields: [materialType], references: [name], onDelete: Cascade)
 }
 
 // created so they can edit and poulate tasco method
 model TascoMaterialTypes {
     id       String     @id @default(uuid())
-    name     String
+    name     String     @unique
     TascoLog TascoLog[]
 }
 
