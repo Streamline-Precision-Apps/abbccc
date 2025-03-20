@@ -1,6 +1,24 @@
-import { FieldType, Prisma } from "@prisma/client";
+import {
+  FieldType,
+  Prisma,
+  FormStatus,
+  EquipmentStatus,
+  EquipmentTags,
+  Priority,
+  WorkType,
+  LoadType,
+  Permission,
+} from "@prisma/client";
 
 export const now = new Date();
+
+// Helper function to format field names
+function formatName(label: string): string {
+  // Convert to lowercase and replace spaces with underscores (snake_case)
+  return label.toLowerCase().replace(/\s+/g, "_");
+}
+
+
 
 // Company
 export const initialCompany: Prisma.CompanyCreateInput[] = [
@@ -17,13 +35,9 @@ export const initialCompany: Prisma.CompanyCreateInput[] = [
   },
 ];
 
-function formatName(label: string): string {
-  // Convert to lowercase and replace spaces with underscores (snake_case)
-  return label.toLowerCase().replace(/\s+/g, "_");
-}
-
 export const initialFormTemplates: Prisma.FormTemplateCreateInput[] = [
   {
+    id: "ft1",
     name: "Leave Request Form",
     formType: "Leave Request",
     isActive: true,
@@ -163,6 +177,7 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     },
   },
   {
+    id: "2",
     qrId: "j234",
     name: "Jobsite 2",
     description: "Description for Jobsite 2",
@@ -202,16 +217,16 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     createdAt: new Date(),
     updatedAt: new Date(),
     employeeEquipmentLogs: {
-      connect: [], // No employeeEquipmentLogs are linked initially
+      connect: [],
     },
     timeSheets: {
-      connect: [], // No timeSheets are linked initially
+      connect: [],
     },
     CCTags: {
-      connect: [], // No CCTags are linked initially
+      connect: [],
     },
     EquipmentHauled: {
-      connect: [], // No equipment are linked initially
+      connect: [],
     },
   },
   {
@@ -228,16 +243,16 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     createdAt: new Date(),
     updatedAt: new Date(),
     employeeEquipmentLogs: {
-      connect: [], // No employeeEquipmentLogs are linked initially
+      connect: [],
     },
     timeSheets: {
-      connect: [], // No timeSheets are linked initially
+      connect: [],
     },
     CCTags: {
-      connect: [], // No CCTags are linked initially
+      connect: [],
     },
     EquipmentHauled: {
-      connect: [], // No equipment are linked initially
+      connect: [],
     },
   },
   {
@@ -254,16 +269,16 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     createdAt: new Date(),
     updatedAt: new Date(),
     employeeEquipmentLogs: {
-      connect: [], // No employeeEquipmentLogs are linked initially
+      connect: [],
     },
     timeSheets: {
-      connect: [], // No timeSheets are linked initially
+      connect: [],
     },
     CCTags: {
-      connect: [], // No CCTags are linked initially
+      connect: [],
     },
     EquipmentHauled: {
-      connect: [], // No equipment are linked initially
+      connect: [],
     },
   },
   {
@@ -280,16 +295,16 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     createdAt: new Date(),
     updatedAt: new Date(),
     employeeEquipmentLogs: {
-      connect: [], // No employeeEquipmentLogs are linked initially
+      connect: [],
     },
     timeSheets: {
-      connect: [], // No timeSheets are linked initially
+      connect: [],
     },
     CCTags: {
-      connect: [], // No CCTags are linked initially
+      connect: [],
     },
     EquipmentHauled: {
-      connect: [], // No equipment are linked initially
+      connect: [],
     },
   },
   {
@@ -306,16 +321,16 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     createdAt: new Date(),
     updatedAt: new Date(),
     employeeEquipmentLogs: {
-      connect: [], // No employeeEquipmentLogs are linked initially
+      connect: [],
     },
     timeSheets: {
-      connect: [], // No timeSheets are linked initially
+      connect: [],
     },
     CCTags: {
-      connect: [], // No CCTags are linked initially
+      connect: [],
     },
     EquipmentHauled: {
-      connect: [], // No equipment are linked initially
+      connect: [],
     },
   },
   {
@@ -332,21 +347,21 @@ export const initialJobsites: Prisma.JobsiteCreateInput[] = [
     createdAt: new Date(),
     updatedAt: new Date(),
     employeeEquipmentLogs: {
-      connect: [], // No employeeEquipmentLogs are linked initially
+      connect: [],
     },
     timeSheets: {
-      connect: [], // No timeSheets are linked initially
+      connect: [],
     },
     CCTags: {
-      connect: [], // No CCTags are linked initially
+      connect: [],
     },
     EquipmentHauled: {
-      connect: [], // No equipment are linked initially
+      connect: [],
     },
   },
 ];
 
-// intaializing crew
+// initializing crew
 export const initialCrews: Prisma.CrewCreateInput[] = [
   {
     name: "Jessica's Crew",
@@ -663,6 +678,7 @@ export const initialContacts: Prisma.ContactsCreateInput[] = [
     updatedAt: "2021-06-01T00:00:00.000Z",
   },
 ];
+
 // initializing cost codes
 export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
   {
@@ -675,7 +691,6 @@ export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
       connect: [], // No CCTags are linked initially
     },
   },
-
   {
     id: "2",
     name: "#02.20",
@@ -683,10 +698,9 @@ export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
     updatedAt: new Date(),
     description: "Earth Labor",
     CCTags: {
-      connect: [], // No CCTags are linked initially
+      connect: [],
     },
   },
-
   {
     id: "3",
     name: "#03.20",
@@ -694,10 +708,9 @@ export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
     updatedAt: new Date(),
     description: "Concrete Labor",
     CCTags: {
-      connect: [], // No CCTags are linked initially
+      connect: [],
     },
   },
-
   {
     id: "4",
     name: "#04.20",
@@ -705,7 +718,7 @@ export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
     updatedAt: new Date(),
     description: "Finishes Labor",
     CCTags: {
-      connect: [], // No CCTags are linked initially
+      connect: [],
     },
   },
   {
@@ -715,7 +728,7 @@ export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
     updatedAt: new Date(),
     description: "Steel Labor",
     CCTags: {
-      connect: [], // No CCTags are linked initially
+      connect: [],
     },
   },
   {
@@ -725,7 +738,7 @@ export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
     updatedAt: new Date(),
     description: "Wood Labor",
     CCTags: {
-      connect: [], // No CCTags are linked initially
+      connect: [],
     },
   },
   {
@@ -735,10 +748,9 @@ export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
     updatedAt: new Date(),
     description: "Insulation Labor",
     CCTags: {
-      connect: [], // No CCTags are linked initially
+      connect: [],
     },
   },
-
   {
     id: "8",
     name: "#08.20",
@@ -746,10 +758,9 @@ export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
     updatedAt: new Date(),
     description: "Door and Window labor",
     CCTags: {
-      connect: [], // No CCTags are linked initially
+      connect: [],
     },
   },
-
   {
     id: "9",
     name: "#09.20",
@@ -757,10 +768,9 @@ export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
     updatedAt: new Date(),
     description: "Utilities Labor",
     CCTags: {
-      connect: [], // No CCTags are linked initially
+      connect: [],
     },
   },
-
   {
     id: "10",
     name: "#10.20",
@@ -768,7 +778,7 @@ export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
     updatedAt: new Date(),
     description: "Process Labor",
     CCTags: {
-      connect: [], // No CCTags are linked initially
+      connect: [],
     },
   },
   {
@@ -778,7 +788,7 @@ export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
     updatedAt: new Date(),
     description: "Shop Labor",
     CCTags: {
-      connect: [], // No CCTags are linked initially
+      connect: [],
     },
   },
   {
@@ -788,7 +798,7 @@ export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
     updatedAt: new Date(),
     description: "Pipe Labor",
     CCTags: {
-      connect: [], // No CCTags are linked initially
+      connect: [],
     },
   },
   {
@@ -798,7 +808,7 @@ export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
     updatedAt: new Date(),
     description: "Trucking Labor",
     CCTags: {
-      connect: [], // No CCTags are linked initially
+      connect: [],
     },
   },
   {
@@ -808,7 +818,7 @@ export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
     updatedAt: new Date(),
     description: "Mechanics",
     CCTags: {
-      connect: [], // No CCTags are linked initially
+      connect: [],
     },
   },
   {
@@ -818,7 +828,7 @@ export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
     updatedAt: new Date(),
     description: "General Office",
     CCTags: {
-      connect: [], // No CCTags are linked initially
+      connect: [],
     },
   },
   {
@@ -828,7 +838,7 @@ export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
     updatedAt: new Date(),
     description: "Amalgamated Labor",
     CCTags: {
-      connect: [], // No CCTags are linked initially
+      connect: [],
     },
   },
   {
@@ -838,7 +848,7 @@ export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
     updatedAt: new Date(),
     description: "Amalgamated Equipment",
     CCTags: {
-      connect: [], // No CCTags are linked initially
+      connect: [],
     },
   },
   {
@@ -848,7 +858,7 @@ export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
     updatedAt: new Date(),
     description: "Gillette Farms",
     CCTags: {
-      connect: [], // No CCTags are linked initially
+      connect: [],
     },
   },
   {
@@ -858,7 +868,7 @@ export const initialCostCodes: Prisma.CostCodeCreateInput[] = [
     updatedAt: new Date(),
     description: "Chicken Barn",
     CCTags: {
-      connect: [], // No CCTags are linked initially
+      connect: [],
     },
   },
 ];
@@ -886,6 +896,7 @@ export const initialCCTags: Prisma.CCTagCreateInput[] = [
 export const intialEquipment: Prisma.EquipmentCreateInput[] = [
   // equipment
   {
+    id: "eq1",
     qrId: "TRK-007 Kenworth W900",
     name: "TRK-007 Kenworth W900",
     description: "",
@@ -904,6 +915,7 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     isActive: true,
   },
   {
+    id: "eq2",
     qrId: "TRK-9",
     name: "TRK-9",
     description: "",
@@ -922,6 +934,7 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     isActive: true,
   },
   {
+    id: "eq3",
     qrId: "TRK-015 International",
     name: "TRK-015 International",
     description: "",
@@ -940,6 +953,7 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     isActive: true,
   },
   {
+    id: "eq4",
     qrId: "TRK-16 Gray Truck",
     name: "TRK-16 Gray Truck",
     description: "",
@@ -958,6 +972,7 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     isActive: true,
   },
   {
+    id: "eq5",
     qrId: "TRK-017 Kenworth T2000",
     name: "TRK-017 Kenworth T2000",
     description: "",
@@ -976,6 +991,7 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     isActive: true,
   },
   {
+    id: "eq6",
     qrId: "TRK-019 International",
     name: "TRK-019 International",
     description: "",
@@ -994,6 +1010,7 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     isActive: true,
   },
   {
+    id: "eq7",
     qrId: "TRK-20 Kenworth T880",
     name: "TRK-20 Kenworth T880",
     description: "",
@@ -1012,6 +1029,7 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     isActive: true,
   },
   {
+    id: "eq8",
     qrId: "TRK-21 Kenworth T880",
     name: "TRK-21 Kenworth T880",
     description: "",
@@ -1030,6 +1048,7 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     isActive: true,
   },
   {
+    id: "eq9",
     qrId: "TRK-22 Kenworth T880",
     name: "TRK-22 Kenworth T880",
     description: "",
@@ -1048,6 +1067,7 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     isActive: true,
   },
   {
+    id: "eq10",
     qrId: "TRK-78 Kenworth T800",
     name: "TRK-78 Kenworth T800",
     description: "",
@@ -1066,6 +1086,7 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     isActive: true,
   },
   {
+    id: "eq11",
     qrId: "TRK-3010",
     name: "TRK-3010",
     description: "",
@@ -1084,6 +1105,7 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     isActive: true,
   },
   {
+    id: "eq12",
     qrId: "Rented Truck",
     name: "Rented Truck",
     description: "",
@@ -1102,6 +1124,7 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     isActive: true,
   },
   {
+    id: "eq13",
     qrId: "TRK-18 Kenworth 2015",
     name: "TRK-18 Kenworth 2015",
     description: "",
@@ -1120,6 +1143,7 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     isActive: true,
   },
   {
+    id: "eq14",
     qrId: "CTRK-50",
     name: "CTRK-50",
     description: "",
@@ -1138,6 +1162,7 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     isActive: true,
   },
   {
+    id: "eq15",
     qrId: "CTRK-51",
     name: "CTRK-51",
     description: "",
@@ -1156,6 +1181,7 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     isActive: true,
   },
   {
+    id: "eq16",
     qrId: "CTRK-52",
     name: "CTRK-52",
     description: "",
@@ -1174,6 +1200,7 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     isActive: true,
   },
   {
+    id: "eq17",
     qrId: "CTRK-53",
     name: "CTRK-53",
     description: "",
@@ -1192,6 +1219,7 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     isActive: true,
   },
   {
+    id: "eq18",
     qrId: "CTRK-54",
     name: "CTRK-54",
     description: "",
@@ -1210,6 +1238,7 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     isActive: true,
   },
   {
+    id: "eq19",
     qrId: "CTRK-55",
     name: "CTRK-55",
     description: "",
@@ -1228,6 +1257,7 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     isActive: true,
   },
   {
+    id: "eq20",
     qrId: "CTRK-56",
     name: "CTRK-56",
     description: "",
@@ -1246,6 +1276,7 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     isActive: true,
   },
   {
+    id: "eq21",
     qrId: "CTRK-57",
     name: "CTRK-57",
     description: "",
@@ -1264,6 +1295,7 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     isActive: true,
   },
   {
+    id: "eq22",
     qrId: "CTRK-58",
     name: "CTRK-58",
     description: "",
@@ -1282,6 +1314,7 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     isActive: true,
   },
   {
+    id: "eq23",
     qrId: "PTI(Pump TRK)",
     name: "PTI(Pump TRK)",
     description: "",
@@ -1300,6 +1333,7 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     isActive: true,
   },
   {
+    id: "eq24",
     qrId: "TRK-AT-1-ARMY TRK GREEN",
     name: "TRK-AT-1-ARMY TRK GREEN",
     description: "",
@@ -1318,6 +1352,7 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     isActive: true,
   },
   {
+    id: "eq25",
     qrId: "TRK-AT-2-ARMY TRK TAN",
     name: "TRK-AT-2-ARMY TRK TAN",
     description: "",
@@ -1336,6 +1371,7 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     isActive: true,
   },
   {
+    id: "eq26",
     qrId: "TRK-AT-3-ARMY TRK CAMO",
     name: "TRK-AT-3-ARMY TRK CAMO",
     description: "",
@@ -1354,6 +1390,7 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     isActive: true,
   },
   {
+    id: "eq27",
     qrId: "EQ-100001",
     name: "CABLE PLOW",
     description: "",
@@ -1372,6 +1409,7 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     isActive: true,
   },
   {
+    id: "eq28",
     qrId: "EQ-100002",
     name: "CablePlo - Cable Plow Case",
     description: "",
@@ -1390,6 +1428,7 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     isActive: true,
   },
   {
+    id: "eq29",
     qrId: "EQ-100003",
     name: "Case International Chisel Dyker",
     description: "Case International Chisel Dyker",
@@ -1408,6 +1447,7 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     isActive: true,
   },
   {
+    id: "eq30",
     qrId: "EQ-100004",
     name: "CATTRACK",
     description: "CAT TRACK TRACTOR CH65",
@@ -1426,6 +1466,7 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     isActive: true,
   },
   {
+    id: "eq31",
     qrId: "EQ-100005",
     name: "CEMENT FORMS",
     description: "CEMENT FORMS",
@@ -1444,6 +1485,7 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     isActive: true,
   },
   {
+    id: "eq32",
     qrId: "EQ-100006",
     name: "CEMENT MIXER HYDRAULIC",
     description: "CEMENT MIXER HYDRAULIC",
@@ -1462,6 +1504,7 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     isActive: true,
   },
   {
+    id: "eq33",
     qrId: "EQ-100007",
     name: "CHAMP LIFT",
     description: "CHAMP LIFT",
@@ -1480,6 +1523,7 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     isActive: true,
   },
   {
+    id: "eq34",
     qrId: "EQ-100008",
     name: "CHISEL PLOW",
     description: "CHISEL PLOW",
@@ -1498,6 +1542,7 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     isActive: true,
   },
   {
+    id: "eq35",
     qrId: "EQ-100009",
     name: "CONCRETE FORMS",
     description: "CONCRETE FORMS",
@@ -1516,6 +1561,7 @@ export const intialEquipment: Prisma.EquipmentCreateInput[] = [
     isActive: true,
   },
   {
+    id: "eq36",
     qrId: "EQ-100010",
     name: "CONCRETE MIXER#1",
     description: "CONCRETE MIXER#1",
@@ -1895,4 +1941,259 @@ export const initialUserSettings: Prisma.UserSettingsCreateInput[] = [
   { user: { connect: { id: "10" } } },
   { user: { connect: { id: "11" } } },
   { user: { connect: { id: "12" } } },
+];
+
+// Employee Equipment Logs
+// Employee Equipment Logs
+export const initialEmployeeEquipmentLogs: Prisma.EmployeeEquipmentLogCreateInput[] = [
+  {
+    equipment: { connect: { id: "eq1" } },
+    jobsite: { connect: { qrId: "j123" } },
+    employee: { connect: { id: "1" } },
+    startTime: new Date(now.getTime() - 3600000), // 1 hour ago
+    endTime: new Date(),
+    comment: "Equipment log test entry",
+    isFinished: true,
+    status: FormStatus.APPROVED,
+  },
+];
+
+// Equipment Hauled
+export const initialEquipmentHauled: Prisma.EquipmentHauledCreateInput[] = [
+  {
+    truckingLog: { connect: { id: "tl1" } },
+    equipment: { connect: { id: "eq2" } },
+    recordedAt: new Date(),
+    // Use qrId instead of id for Jobsite
+    jobSite: { connect: { id: "2" } },
+  },
+];
+
+// Errors
+export const initialErrors: Prisma.ErrorCreateInput[] = [
+  {
+    errorMessage: "Test error message",
+    userId: "1",
+    fileLocation: "/path/to/file",
+  },
+];
+
+// Form Submissions
+export const initialFormSubmissions: Prisma.FormSubmissionCreateInput[] = [
+  {
+    id: "fs1",
+    title: "Test Submission",
+    formTemplate: { connect: { id: "ft1" } },
+    user: { connect: { id: "1" } },
+    formType: "Leave Request",
+    data: {},
+    submittedAt: new Date(),
+    status: FormStatus.APPROVED,
+  },
+];
+
+// Form Approvals
+export const initialFormApprovals: Prisma.FormApprovalCreateInput[] = [
+  {
+    formSubmission: { connect: { id: "fs1" } },
+    approver: { connect: { id: "2" } },
+    signature: "SampleSignatureString",
+    comment: "Approved after review",
+  },
+];
+
+// TimeSheets
+export const initialTimeSheets: Prisma.TimeSheetCreateInput[] = [
+  {
+    submitDate: new Date(),
+    date: new Date(),
+    id: "ts1",
+    user: { connect: { id: "1" } },
+    jobsite: { connect: { qrId: "j123" } },
+    costCode: { connect: { name: "#01.20" } },
+    nu: "nu",
+    Fp: "fp",
+    startTime: new Date(now.getTime() - 7200000), // 2 hours ago
+    endTime: new Date(),
+    comment: "Timesheet test entry",
+    statusComment: "Approved by manager",
+    location: "Site A",
+    status: FormStatus.APPROVED,
+    workType: WorkType.LABOR,
+    editedByUserId: undefined,
+    newTimeSheetId: undefined,
+    createdByAdmin: false,
+  },
+  {
+    submitDate: new Date(),
+    date: new Date(),
+    id: "ts2",
+    user: { connect: { id: "1" } },
+    jobsite: { connect: { qrId: "j123" } },
+    costCode: { connect: { name: "#01.20" } },
+    nu: "nu",
+    Fp: "fp",
+    startTime: new Date(now.getTime() - 7200000), // 2 hours ago
+    endTime: new Date(),
+    comment: "Timesheet test entry",
+    statusComment: "Approved by manager",
+    location: "Site A",
+    status: FormStatus.APPROVED,
+    workType: WorkType.LABOR,
+    editedByUserId: undefined,
+    newTimeSheetId: undefined,
+    createdByAdmin: false,
+  },
+];
+
+// Maintenance Logs
+export const initialMaintenanceLogs: Prisma.MaintenanceLogCreateInput[] = [
+  {
+    timeSheet: { connect: { id: "ts1" } },
+    user: { connect: { id: "1" } },
+    maintenance: { connect: { id: "m1" } },
+    startTime: new Date(now.getTime() - 5400000), // 90 minutes ago
+    endTime: new Date(),
+    comment: "Maintenance log test entry",
+  },
+];
+
+// Maintenances
+export const initialMaintenances: Prisma.MaintenanceCreateInput[] = [
+  {
+    id: "m1",
+    equipment: { connect: { id: "eq3" } },
+    equipmentIssue: "Oil leak detected",
+    additionalInfo: "Requires urgent repair",
+    location: "Main Garage",
+    problemDiagnosis: "Worn gasket",
+    solution: "Replace gasket",
+    totalHoursLaboured: 2,
+    priority: Priority.HIGH,
+    delay: new Date(now.getTime() + 3600000), // 1 hour from now
+    delayReasoning: "Awaiting parts",
+    repaired: false,
+    selected: false,
+    hasBeenDelayed: true,
+    createdBy: "1",
+  },
+];
+
+// Tasco Material Types
+export const initialTascoMaterialTypes: Prisma.TascoMaterialTypesCreateInput[] = [
+  { name: "Rock" },
+  { name: "Elimco" },
+  { name: "Coal" },
+  { name: "Lime Kiln" },
+  { name: "Ag Waste" },
+  { name: "Belt Mud" },
+  { name: "End Of Campaign Clean Up" },
+];
+
+// Trucking logs
+export const initialTruckingLogs: Prisma.TruckingLogCreateInput[] = [
+  {
+    // Set an explicit ID for connecting in later seeds.
+    id: "tl1",
+    // Connect to an existing timesheet record (ensure a timesheet with id "ts1" exists)
+    timeSheet: { connect: { id: "ts1" } },
+    laborType: "TRUCK_DRIVER",
+    taskName: "Deliver Material",
+    // Connect to an existing equipment record by its unique qrId.
+    equipment: { connect: { qrId: "TRK-007 Kenworth W900" } },
+    startingMileage: 1000,
+    endingMileage: 1200,
+    comment: "Test trucking log entry",
+    createdAt: new Date(),
+  },
+];
+
+
+// Materials – records showing material loads associated with a TruckingLog (using a fixed trucking log id "tl1")
+export const initialMaterials: Prisma.MaterialCreateInput[] = [
+  {
+    LocationOfMaterial: "Warehouse A",
+    truckingLog: { connect: { id: "tl1" } },
+    name: "Concrete",
+    quantity: 5,
+    loadType: LoadType.SCREENED,
+    LoadWeight: 15.5,
+  },
+  {
+    LocationOfMaterial: "Supplier B",
+    truckingLog: { connect: { id: "tl1" } },
+    name: "Gravel",
+    quantity: 3,
+    loadType: LoadType.UNSCREENED,
+    LoadWeight: 12.0,
+  },
+];
+
+// Refueled – records for refueling events associated with a TruckingLog, an EmployeeEquipmentLog, or a TascoLog
+export const initialRefueled: Prisma.RefueledCreateInput[] = [
+  {
+    // Associated with a TruckingLog (ensure trucking log with id "tl1" exists)
+    date: new Date(),
+    TruckingLog: { connect: { id: "tl1" } },
+    gallonsRefueled: 50,
+    milesAtfueling: 1200,
+  },
+  {
+    // Optionally, if you want to associate with a TascoLog (ensure a TascoLog with id "tlTasco1" exists)
+    date: new Date(),
+    TascoLog: { connect: { id: "tlTasco1" } },
+    gallonsRefueled: 20,
+  },
+];
+
+// StateMileage – records representing state crossing mileages for a TruckingLog (using trucking log id "tl1")
+export const initialStateMileage: Prisma.StateMileageCreateInput[] = [
+  {
+    truckingLog: { connect: { id: "tl1" } },
+    state: "ID",
+    stateLineMileage: 100,
+  },
+  {
+    truckingLog: { connect: { id: "tl1" } },
+    state: "UT",
+    stateLineMileage: 200,
+  },
+];
+
+// TascoLog – records for Tasco tasks; connects to an existing TimeSheet (e.g., id "ts1") and Equipment via its unique qrId.
+// If you wish to connect to a TascoMaterialTypes record, update the materialType field accordingly.
+export const initialTascoLogs: Prisma.TascoLogCreateInput[] = [
+  {
+    // Connect to a TimeSheet record (ensure a timesheet with id "ts1" exists)
+    id: "tlTasco1",
+    timeSheet: { connect: { id: "ts1" } },
+    shiftType: "Loading",
+    equipment: { connect: { qrId: "TRK-007 Kenworth W900" } },
+    laborType: "Manual Labor",
+    // If you have a TascoMaterialTypes record to connect, use: 
+    // tascoMaterialTypes: { connect: { id: "material1" } },
+    // Otherwise, leave materialType undefined (or omit it).
+    LoadQuantity: 10,
+    comment: "Loaded 10 tons of material",
+  },
+  {
+    timeSheet: { connect: { id: "ts2" } },
+    shiftType: "Unloading",
+    equipment: { connect: { qrId: "TRK-9" } },
+    laborType: "Truck Driver",
+    LoadQuantity: 5,
+    comment: "Unloaded 5 tons of material",
+  },
+];
+
+// WorkTypes – records for each work type option; these can be connected to users.
+export const initialWorkTypes: Prisma.WorkTypesCreateInput[] = [
+  { name: "General Labor" },
+  { name: "Truck Driver" },
+  { name: "Truck Equipment" },
+  { name: "Truck Labor" },
+  { name: "Mechanic" },
+  { name: "TASCO F" },
+  { name: "TASCO ABCD Labor" },
+  { name: "TASCO ABCD EQ" },
 ];
