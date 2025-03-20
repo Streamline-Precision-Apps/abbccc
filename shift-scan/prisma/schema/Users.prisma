@@ -21,7 +21,7 @@ model User {
     clockedIn            Boolean    @default(false) // indicates if employee is clocked in
     companyId            String
     passwordResetTokenId String?
-    userSessionId        String?
+    workTypeId           String?
 
     company             Company                @relation(fields: [companyId], references: [id])
     contact             Contacts?
@@ -33,23 +33,17 @@ model User {
     formSubmission      FormSubmission[]
     FormApproval        FormApproval[]
     passwordResetTokens PasswordResetToken[]
-    UserSession         UserSession?           @relation(fields: [userSessionId], references: [id])
+    WorkTypes         WorkTypes?           @relation(fields: [workTypeId], references: [id])
 
     @@unique([firstName, lastName, DOB]) // prevent duplicate users
     @@index([email])
 }
 
-model UserSession {
-    id          String     @id @default(cuid())
-    workTypesId String? // truck driver, equipment operator, tasco Shifts, etc
-    User        User[]
-    WorkTypes   WorkTypes? @relation(fields: [workTypesId], references: [id])
-}
 
 model WorkTypes {
     id          String        @id @default(cuid())
     name        String        @unique
-    UserSession UserSession[]
+    Users       User[]
 }
 
 model UserSettings {
