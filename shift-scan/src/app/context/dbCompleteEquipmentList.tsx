@@ -5,14 +5,14 @@ import React, {
   ReactNode,
   useEffect,
 } from "react";
-import { CompleteListEquipment } from "@/lib/types";
+import { ListEquipmentContext } from "@/lib/types";
 import { z } from "zod";
 import { usePathname } from "next/navigation";
 
 type EquipmentContextType = {
-  equipmentListResults: CompleteListEquipment[];
+  equipmentListResults: ListEquipmentContext[];
   setEquipmentListResults: React.Dispatch<
-    React.SetStateAction<CompleteListEquipment[]>
+    React.SetStateAction<ListEquipmentContext[]>
   >;
 };
 
@@ -20,6 +20,7 @@ const EquipmentContext = createContext<EquipmentContextType>({
   equipmentListResults: [],
   setEquipmentListResults: () => {},
 });
+// schema should not pull everything because it will be too large
 const EquipmentSchema = z.array(
   z.object({
     id: z.string(),
@@ -27,13 +28,7 @@ const EquipmentSchema = z.array(
     name: z.string(),
     description: z.string().optional(),
     equipmentTag: z.enum(["EQUIPMENT", "VEHICLE", "TRUCK", "TRAILER"]),
-    lastInspection: z.string().nullable().optional(),
-    nextInspection: z.string().nullable().optional(),
-    nextInspectionComment: z.string().nullable().optional(),
-    lastRepair: z.string().nullable().optional(),
     status: z.enum(["OPERATIONAL", "NEEDS_REPAIR", "NEEDS_MAINTENANCE"]),
-    createdAt: z.string(),
-    updatedAt: z.string(),
     make: z.string().nullable().optional(),
     model: z.string().nullable().optional(),
     year: z.string().nullable().optional(),
@@ -42,9 +37,6 @@ const EquipmentSchema = z.array(
     mileage: z.number().nullable().optional(),
     isActive: z.boolean(),
     inUse: z.boolean(),
-    jobsiteId: z.string().nullable().optional(),
-    overWeight: z.boolean().optional(),
-    currentWeight: z.number().nullable().optional(),
   })
 );
 
@@ -54,7 +46,7 @@ export const EquipmentListProvider = ({
   children: ReactNode;
 }) => {
   const [equipmentListResults, setEquipmentListResults] = useState<
-    CompleteListEquipment[]
+    ListEquipmentContext[]
   >([]);
 
   const url = usePathname();

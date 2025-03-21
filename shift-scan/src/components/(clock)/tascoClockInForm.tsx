@@ -100,10 +100,10 @@ export default function TascoClockInForm({
           </Holds>
 
           {/* Selection Section */}
-          <Holds className="row-start-2 row-end-9 col-start-1 col-end-6 h-full w-full border-[3px] border-black rounded-[10px] p-2 ">
+          <Holds className="row-start-2 row-end-9 col-start-1 col-end-6 h-full w-full p-2 ">
             <Grids rows={"6"}>
               {/* Only Show Material & Labor Type Selection for ABCDShift */}
-              {clockInRoleTypes === "tascoFEquipment" && canProceed && (
+              {clockInRoleTypes === "tascoEEquipment" && canProceed && (
                 <>
                   <Holds className="row-start-2 row-end-7 py-4 px-2 h-full w-full">
                     <CodeFinder
@@ -140,6 +140,17 @@ export default function TascoClockInForm({
                         </option>
                       ))}
                     </Selects>
+                  </Holds>
+
+                  <Holds className="row-start-8 row-end-9 col-span-2 justify-center">
+                    <Buttons
+                      background={materialType === "" ? "lightGray" : "orange"}
+                      className="py-2"
+                      onClick={handleNextStep}
+                      disabled={materialType === ""}
+                    >
+                      <Titles size={"h1"}>{t("Continue")}</Titles>
+                    </Buttons>
                   </Holds>
                 </>
               )}

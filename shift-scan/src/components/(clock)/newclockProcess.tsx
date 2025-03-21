@@ -473,6 +473,7 @@ export default function NewClockProcess({
           laborType={laborType}
           materialType={materialType}
           shiftType={shiftType}
+          clockInRoleTypes={clockInRoleTypes}
           comments={undefined}
         />
       )}
