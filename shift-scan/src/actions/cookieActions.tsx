@@ -89,7 +89,7 @@ export async function setLaborType(laborType: string) {
     "general",
     "tascoAbcdLabor",
     "tascoAbcdEquipment",
-    "tascoAbcdOperator",
+    "tascoEEquipment",
     "",
   ];
 
@@ -97,16 +97,27 @@ export async function setLaborType(laborType: string) {
     console.log(laborType);
     throw new Error("Not Authorized - Invalid labor type");
   }
-
+  console.log(laborType);
   try {
-    cookies().set({
-      name: "laborType",
-      value: laborType,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days - made this to not have errors occur is logging out is forgotten
-    });
+    if (laborType === "tascoEEquipment") {
+      cookies().set({
+        name: "laborType",
+        value: "",
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        path: "/",
+        expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days - made this to not have errors occur is logging out is forgotten
+      });
+    } else {
+      cookies().set({
+        name: "laborType",
+        value: laborType,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        path: "/",
+        expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days - made this to not have errors occur is logging out is forgotten
+      });
+    }
   } catch (error) {
     console.error("Failed to set locale cookie:", error);
   }

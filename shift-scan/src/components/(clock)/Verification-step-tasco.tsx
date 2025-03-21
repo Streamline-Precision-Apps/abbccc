@@ -3,10 +3,7 @@ import React, { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
-import {
-  CreateTascoTimeSheet,
-  updateTascoTSBySwitch,
-} from "@/actions/timeSheetActions";
+import { handleTascoTimeSheet } from "@/actions/timeSheetActions"; // Updated import
 import { Clock } from "../clock";
 import { TitleBoxes } from "../(reusable)/titleBoxes";
 import { Buttons } from "../(reusable)/buttons";
@@ -15,7 +12,6 @@ import { Labels } from "../(reusable)/labels";
 import { Inputs } from "../(reusable)/inputs";
 import { Forms } from "../(reusable)/forms";
 import { Images } from "../(reusable)/images";
-
 import { useSession } from "next-auth/react";
 import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
@@ -29,6 +25,7 @@ import { useRouter } from "next/navigation";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useOperator } from "@/app/context/operatorContext";
 import Spinner from "../(animations)/spinner";
+import { form } from "@nextui-org/theme";
 
 type VerifyProcessProps = {
   handleNextStep?: () => void;
@@ -77,66 +74,6 @@ export default function TascoVerificationStep({
     }
   };
 
-  const updatePreviousTimeSheet = async (): Promise<boolean> => {
-    try {
-      const timeSheetId = await fetchRecentTimeSheetId();
-      if (!timeSheetId) throw new Error("No valid TimeSheet ID found.");
-
-      const formData = new FormData();
-      formData.append("id", timeSheetId);
-      formData.append("endTime", new Date().toISOString());
-      formData.append(
-        "timeSheetComments",
-        savedCommentData?.id.toString() || ""
-      );
-
-      await updateTascoTSBySwitch(formData);
-      setCommentData(null);
-      localStorage.removeItem("savedCommentData");
-      return true;
-    } catch (error) {
-      console.error("Failed to update previous timesheet:", error);
-      return false;
-    }
-  };
-
-  const createNewTimeSheet = async (): Promise<void> => {
-    const formData = new FormData();
-    formData.append("submitDate", new Date().toISOString());
-    formData.append("userId", id);
-    formData.append("date", new Date().toISOString());
-    formData.append("jobsiteId", scanResult?.data || "");
-    formData.append("costcode", savedCostCode?.toString() || "");
-    formData.append("startTime", new Date().toISOString());
-    formData.append("laborType", clockInRoleTypes || "");
-    formData.append("materialType", materialType || "");
-
-    if (
-      clockInRoleTypes === "tascoAbcdEquipment" ||
-      clockInRoleTypes === "tascoAbcdLabor"
-    ) {
-      formData.append("shiftType", "ABCD Shift");
-    }
-    if (clockInRoleTypes === "tascoEEquipment") {
-      formData.append("shiftType", "E shift");
-    }
-    formData.append("workType", role);
-    formData.append("equipment", equipmentId || "");
-
-    try {
-      const response = await CreateTascoTimeSheet(formData);
-      setTimeSheetData({ id: response.id.toString() });
-
-      await Promise.all([
-        setCurrentPageView("dashboard"),
-        setWorkRole(role),
-        setLaborType(clockInRoleTypes || ""),
-      ]).then(() => router.push("/dashboard"));
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!id) {
@@ -144,15 +81,58 @@ export default function TascoVerificationStep({
       return;
     }
     setLoading(true);
+
     try {
-      if (type === "switchJobs") {
-        const isUpdated = await updatePreviousTimeSheet();
-        if (isUpdated) {
-          await createNewTimeSheet();
-        }
-      } else {
-        await createNewTimeSheet();
+      const formData = new FormData();
+      formData.append("submitDate", new Date().toISOString());
+      formData.append("userId", id);
+      formData.append("date", new Date().toISOString());
+      formData.append("jobsiteId", scanResult?.data || "");
+      formData.append("costcode", savedCostCode?.toString() || "");
+      formData.append("startTime", new Date().toISOString());
+      formData.append("laborType", clockInRoleTypes || "");
+      formData.append("materialType", materialType || "");
+
+      if (clockInRoleTypes === "tascoAbcdEquipment") {
+        formData.append("materialType", materialType || "");
+        formData.append("shiftType", "ABCD Shift");
       }
+      if (clockInRoleTypes === "tascoAbcdLabor") {
+        formData.append("materialType", materialType || "");
+        formData.append("shiftType", "ABCD Shift");
+      }
+      if (clockInRoleTypes === "tascoEEquipment") {
+        formData.append("shiftType", "E shift");
+      }
+      formData.append("workType", role);
+      formData.append("equipment", equipmentId || "");
+
+      // If switching jobs, include the previous timesheet ID
+      if (type === "switchJobs") {
+        const timeSheetId = await fetchRecentTimeSheetId();
+        if (!timeSheetId) throw new Error("No valid TimeSheet ID found.");
+        formData.append("id", timeSheetId);
+        formData.append("endTime", new Date().toISOString());
+        formData.append(
+          "timeSheetComments",
+          savedCommentData?.id.toString() || ""
+        );
+        formData.append("type", "switchJobs"); // added to switch jobs
+      }
+
+      // Use the new transaction-based function
+      const response = await handleTascoTimeSheet(formData);
+
+      // Update state and redirect
+      setTimeSheetData({ id: response || "" });
+      setCommentData(null);
+      localStorage.removeItem("savedCommentData");
+
+      await Promise.all([
+        setCurrentPageView("dashboard"),
+        setWorkRole(role),
+        setLaborType(clockInRoleTypes || ""),
+      ]).then(() => router.push("/dashboard"));
     } catch (error) {
       console.error("Error in handleSubmit:", error);
     } finally {

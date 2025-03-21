@@ -70,7 +70,7 @@ export default function ClockOutBtn({
           )}
           {View === "tasco" && (
             <>
-              {laborType === "tascoAbcdLabor" && (
+              {/* {laborType === "tascoAbcdLabor" && (
                 <HorizontalLayout
                   color={"red"}
                   text={"ClockOut"}
@@ -78,17 +78,15 @@ export default function ClockOutBtn({
                   titleImgAlt={"clock Out Icon"}
                   handleEvent={() => handleShowAdditionalButtons("clockOut")}
                 />
-              )}
-              {laborType === "equipmentOperator" ||
-                (laborType === "tascoAbcdOperator" && (
-                  <VerticalLayout
-                    color={"red"}
-                    text={"ClockOut"}
-                    titleImg={"/clock-out.svg"}
-                    titleImgAlt={"clock Out Icon"}
-                    handleEvent={() => handleShowAdditionalButtons("clockOut")}
-                  />
-                ))}
+              )} */}
+
+              <VerticalLayout
+                color={"red"}
+                text={"ClockOut"}
+                titleImg={"/clock-out.svg"}
+                titleImgAlt={"clock Out Icon"}
+                handleEvent={() => handleShowAdditionalButtons("clockOut")}
+              />
             </>
           )}
           {View === "general" && (

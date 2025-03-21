@@ -357,6 +357,7 @@ export default function NewClockProcess({
           handleNextStep={handleNextStep}
           option={option}
           comments={undefined}
+          clockInRoleTypes={clockInRoleTypes}
         />
       )}
 
@@ -517,6 +518,7 @@ export default function NewClockProcess({
           option={option}
           comments={undefined}
           handlePreviousStep={handlePrevStep}
+          clockInRoleTypes={clockInRoleTypes}
         />
       )}
     </>

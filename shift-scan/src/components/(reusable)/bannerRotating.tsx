@@ -27,7 +27,7 @@ interface EmployeeEquipmentLog {
 // Type for Tasco Logs
 interface TascoLog {
   laborType: string;
-  equipment: Equipment;
+  equipment?: Equipment;
 }
 
 // Type for Trucking Logs
@@ -99,6 +99,7 @@ export default function BannerRotating() {
           `/api/getBannerData?id=${timeSheetData.id}`
         );
         const bannerData = await bannerResponse.json();
+        console.log(bannerData);
 
         if (!bannerResponse.ok) {
           throw new Error(bannerData.error || "Failed to fetch job site data.");
@@ -135,7 +136,7 @@ export default function BannerRotating() {
 
   return (
     <Holds className="w-[80%]">
-      <Slider {...settings} className="">
+      <Slider {...settings} className="h-full">
         {/* Jobsite Information */}
         {bannerData.jobsite && (
           <Holds position={"row"}>
@@ -176,17 +177,35 @@ export default function BannerRotating() {
         {/* Tasco Logs */}
         {bannerData.tascoLogs &&
           bannerData.tascoLogs.map((equipment, index) => (
-            <Holds key={index}>
-              <Titles text={"white"}>
-                {equipment.equipment?.name || "Unknown Equipment"}
-              </Titles>
-              <Texts className="text-white" size={"p5"}>
-                {equipment.laborType === "operator"
-                  ? "Operator"
-                  : equipment.laborType === "equipmentOperator"
-                  ? "Equipment Operator"
-                  : "Manual Labor"}
-              </Texts>
+            <Holds key={index} className=" h-full justify-center items-center">
+              {equipment.laborType === "tascoAbcdEquipment" ? (
+                <>
+                  <Holds className="h-full justify-center items-center">
+                    <Titles text={"white"}>ABCD Shift - Equipment</Titles>
+
+                    <Texts className="text-white" size={"p5"}>
+                      {equipment.equipment?.name}
+                    </Texts>
+                  </Holds>
+                </>
+              ) : equipment.laborType === "tascoEEquipment" ? (
+                <>
+                  <Titles text={"white"}>TASCO - E Shift</Titles>
+
+                  <Texts className="text-white" size={"p5"}>
+                    {`EQ - ${equipment.equipment?.name}`}
+                  </Texts>
+                </>
+              ) : equipment.laborType === "tascoAbcdLabor" ? (
+                <>
+                  <Holds className="h-full justify-center items-center">
+                    <Titles text={"white"}>ABCD Shift - Labor</Titles>
+                    <Texts className="text-white" size={"p5"}>
+                      Manual Labor
+                    </Texts>
+                  </Holds>
+                </>
+              ) : null}
             </Holds>
           ))}
 
@@ -198,8 +217,8 @@ export default function BannerRotating() {
                 {equipment.equipment?.name || "Unknown Equipment"}
               </Titles>
               <Texts className="text-white" size={"p5"}>
-                {equipment.laborType === "operator"
-                  ? "Operator"
+                {equipment.laborType === "truckEquipmentOperator"
+                  ? "Truck Equipment Operator"
                   : equipment.laborType === "truckDriver"
                   ? "Truck Driver"
                   : "Manual Labor"}
