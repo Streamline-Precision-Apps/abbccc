@@ -357,7 +357,7 @@
     "EnterEquipmentInfo": "Select Equipment",
     "TASCOABCDLabor": "TASCO ABCD Labor",
     "TASCOABCDEquipmentOperator": "TASCO ABCD Equipment Operator",
-    "TASCOFEquipmentOperator": "TASCO F Shift Equipment Operator",
+    "TASCOEEquipmentOperator": "TASCO F Shift Equipment Operator",
     "PleaseChooseYourRole": "Please choose your role:",
     "ChangeJobsite": "Change Job Site",
     "ChangeCostCode": "Change Cost Code",

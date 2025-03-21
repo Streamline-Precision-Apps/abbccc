@@ -336,7 +336,7 @@
     "TruckLabor": "Trabajo general de transporte por carretera",
     "TASCOABCDLabor": "TASCO ABCD Labor",
     "TASCOABCDEquipmentOperator": "TASCO ABCD Operador de Equipo",
-    "TASCOFEquipmentOperator": "TASCO F Shift Operador de Equipo",
+    "TASCOEEquipmentOperator": "TASCO F Shift Operador de Equipo",
     "PleaseChooseYourRole": "Por favor, elija su rol:",
     "ChangeCostCode": "Cambiar Código de Costo",
     "ScanJobSite": "Escanear Sitio de Trabajo",

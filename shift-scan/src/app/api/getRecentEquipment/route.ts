@@ -44,10 +44,7 @@ export async function GET() {
     const equipmentList = Array.from(uniqueEquipment.values());
 
     if (equipmentList.length === 0) {
-      return NextResponse.json(
-        { message: "No recent equipment found." },
-        { status: 404 }
-      );
+      return NextResponse.json([], { status: 200 }); // Return an empty array with 200 status
     }
 
     return NextResponse.json(equipmentList);
@@ -59,9 +56,6 @@ export async function GET() {
       errorMessage = error.message;
     }
 
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
