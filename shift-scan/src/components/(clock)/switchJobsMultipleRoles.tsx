@@ -6,7 +6,7 @@ import { Grids } from "../(reusable)/grids";
 import { Titles } from "../(reusable)/titles";
 import { useTranslations } from "next-intl";
 import { useCommentData } from "@/app/context/CommentContext";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Images } from "../(reusable)/images";
 import { Selects } from "../(reusable)/selects";
 import { TextAreas } from "../(reusable)/textareas";
@@ -22,6 +22,8 @@ type Props = {
   handleReturnPath: () => void;
   type: string;
   numberOfRoles: number;
+  clockInRoleTypes: string | undefined;
+  setClockInRoleTypes: Dispatch<SetStateAction<string | undefined>>;
 };
 
 export default function SwitchJobsMultiRoles({
@@ -30,6 +32,8 @@ export default function SwitchJobsMultiRoles({
   clockInRole,
   handleReturnPath,
   numberOfRoles,
+  clockInRoleTypes,
+  setClockInRoleTypes,
 }: Props) {
   const t = useTranslations("Clock");
   const { data: session } = useSession();
@@ -41,8 +45,29 @@ export default function SwitchJobsMultiRoles({
   const [commentsValue, setCommentsValue] = useState<string>("");
   const [submittable, setSubmittable] = useState<boolean>(false);
 
-  const selectView = (selectedRole: string) => {
-    setClockInRole(selectedRole); // Updates state
+  const selectView = (selectedRoleType: string) => {
+    setClockInRoleTypes(selectedRoleType);
+
+    // Map the selected role type to the main clock-in role
+    if (
+      selectedRoleType === "tascoAbcdLabor" ||
+      selectedRoleType === "tascoAbcdEquipment" ||
+      selectedRoleType === "tascoEEquipment"
+    ) {
+      setClockInRole("tasco");
+    } else if (
+      selectedRoleType === "truckDriver" ||
+      selectedRoleType === "truckEquipmentOperator" ||
+      selectedRoleType === "truckLabor"
+    ) {
+      setClockInRole("truck");
+    } else if (selectedRoleType === "mechanic") {
+      setClockInRole("mechanic");
+    } else if (selectedRoleType === "general") {
+      setClockInRole("general");
+    } else {
+      setClockInRole(undefined); // Handle undefined or invalid cases
+    }
   };
 
   const saveCurrentData = () => {
@@ -173,15 +198,31 @@ export default function SwitchJobsMultiRoles({
                 <Holds className="h-full w-11/12 justify-center">
                   <Selects
                     className="bg-app-blue text-center"
-                    value={clockInRole}
+                    value={clockInRoleTypes}
                     onChange={(e) => selectView(e.target.value)}
                   >
                     <option value="">{t("SelectWorkType")}</option>
                     {tascoView === true && (
-                      <option value="tasco">{t("TASCO")}</option>
+                      <>
+                        <option value="tascoAbcdLabor">
+                          {t("TASCOABCDLabor")}
+                        </option>
+                        <option value="tascoAbcdEquipment">
+                          {t("TASCOABCDEquipmentOperator")}
+                        </option>
+                        <option value="tascoEEquipment">
+                          {t("TASCOEEquipmentOperator")}
+                        </option>
+                      </>
                     )}
                     {truckView === true && (
-                      <option value="truck">{t("Truck")}</option>
+                      <>
+                        <option value="truckDriver">{t("TruckDriver")}</option>
+                        <option value="truckEquipmentOperator">
+                          {t("TruckEquipmentOperator")}
+                        </option>
+                        <option value="truckLabor">{t("TruckLabor")}</option>
+                      </>
                     )}
                     {mechanicView === true && (
                       <option value="mechanic">{t("Mechanic")}</option>

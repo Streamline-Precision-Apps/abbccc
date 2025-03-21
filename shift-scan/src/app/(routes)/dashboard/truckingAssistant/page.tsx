@@ -39,9 +39,9 @@ export default async function Inbox() {
           <Holds className="row-span-5 h-full">
             {laborType === "truckDriver" ? (
               <TruckDriver />
-            ) : laborType === "manualLabor" ? (
+            ) : laborType === "truckLabor" ? (
               <TruckManualLabor />
-            ) : laborType === "operator" ? (
+            ) : laborType === "truckEquipmentOperator" ? (
               <TruckOperator />
             ) : null}
           </Holds>

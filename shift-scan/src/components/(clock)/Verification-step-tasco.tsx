@@ -39,6 +39,7 @@ type VerifyProcessProps = {
   laborType: string;
   materialType: string;
   shiftType: string;
+  clockInRoleTypes: string | undefined;
 };
 
 export default function TascoVerificationStep({
@@ -49,6 +50,7 @@ export default function TascoVerificationStep({
   materialType,
   shiftType,
   comments,
+  clockInRoleTypes,
 }: VerifyProcessProps) {
   const t = useTranslations("Clock");
   const { scanResult } = useScanData();
@@ -106,9 +108,19 @@ export default function TascoVerificationStep({
     formData.append("jobsiteId", scanResult?.data || "");
     formData.append("costcode", savedCostCode?.toString() || "");
     formData.append("startTime", new Date().toISOString());
-    formData.append("laborType", laborType || "");
+    formData.append("laborType", clockInRoleTypes || "");
     formData.append("materialType", materialType || "");
-    formData.append("shiftType", shiftType || "");
+
+    if (
+      clockInRoleTypes === "tascoAbcdEquipment" ||
+      clockInRoleTypes === "tascoAbcdLabor"
+    ) {
+      formData.append("shiftType", "ABCD Shift");
+    }
+    if (clockInRoleTypes === "tascoEEquipment") {
+      formData.append("shiftType", "E shift");
+    }
+    formData.append("workType", role);
     formData.append("equipment", equipmentId || "");
 
     try {
@@ -118,7 +130,7 @@ export default function TascoVerificationStep({
       await Promise.all([
         setCurrentPageView("dashboard"),
         setWorkRole(role),
-        setLaborType(laborType || ""),
+        setLaborType(clockInRoleTypes || ""),
       ]).then(() => router.push("/dashboard"));
     } catch (error) {
       console.error(error);
