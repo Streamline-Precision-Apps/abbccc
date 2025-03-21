@@ -1,170 +1,135 @@
-//  Time sheet that integrates with the accounting software. Accounting Software Data: {|submitDate | Form Id | empl ID| Date| ProfitID(jobsite)| CostCode| NU | FP| Start Time| END Time| Job Description | Duration |}
 model TimeSheet {
-    submitDate            DateTime               @default(now())
-    date                  DateTime               @db.Date //two dates are in the accounting software, for easy conversion they are implemented here
-    id                    String                 @id @default(uuid())
-    userId                String
-    jobsiteId             String // this will need to store options for jobsites, truck driver jobsite,
-    costcode              String // this is for tracking cost amounts in company
-    nu                    String                 @default("nu") // non union {} default
-    Fp                    String                 @default("fp") // field personal, dwb, , 
-    startTime             DateTime
-    endTime               DateTime?
-    comment               String? // comment for reporting what they did for that time sheet
-    statusComment         String? // manager comment for reporting why they approved or rejected the timesheet
-    location              String? // location of clock in work
-    status                FormStatus             @default(PENDING) // approving of the form
-    workType              WorkType // this was created to help filter the timesheet by work type
-    editedByUserId        String?
-    newTimeSheetId        String?
-    createdByAdmin        Boolean                @default(false)
-    // links to other tables in schema
-    tascoLogs             TascoLog[]
-    maintenanceLogs       MaintenanceLog[]
-    truckingLogs          TruckingLog[]
-    employeeEquipmentLogs EmployeeEquipmentLog[]
-    user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
-    jobsite               Jobsite                @relation(fields: [jobsiteId], references: [qrId])
-    costCode              CostCode               @relation(fields: [costcode], references: [name])
+  submitDate            DateTime               @default(now())
+  date                  DateTime               @db.Date
+  id                    String                 @id @default(uuid())
+  userId                String
+  jobsiteId             String
+  costcode              String
+  nu                    String                 @default("nu")
+  Fp                    String                 @default("fp")
+  startTime             DateTime
+  endTime               DateTime?
+  comment               String?
+  statusComment         String?
+  location              String?
+  status                FormStatus             @default(PENDING)
+  workType              WorkType
+  editedByUserId        String?
+  newTimeSheetId        String?
+  createdByAdmin        Boolean                @default(false)
+  employeeEquipmentLogs EmployeeEquipmentLog[]
+  maintenanceLogs       MaintenanceLog[]
+  tascoLogs             TascoLog[]
+  costCode              CostCode               @relation(fields: [costcode], references: [name])
+  jobsite               Jobsite                @relation(fields: [jobsiteId], references: [qrId])
+  user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  truckingLogs          TruckingLog[]
 }
 
-//--------------------------------------------------------------------------------------------------------------------------------
-
-//This section collects data from each Engineer to create a timesheet for the day and demonstrate the work they have done
-
-// logs to keep track of what each engineer has done.
 model MaintenanceLog {
-    id            String    @id @default(uuid())
-    timeSheetId   String
-    userId        String
-    maintenanceId String
-    startTime     DateTime
-    endTime       DateTime?
-    comment       String?
-
-    user        User         @relation(fields: [userId], references: [id])
-    timeSheet   TimeSheet?   @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
-    maintenance Maintenance? @relation(fields: [maintenanceId], references: [id])
+  id            String      @id @default(uuid())
+  timeSheetId   String
+  userId        String
+  maintenanceId String
+  startTime     DateTime
+  endTime       DateTime?
+  comment       String?
+  maintenance   Maintenance @relation(fields: [maintenanceId], references: [id])
+  timeSheet     TimeSheet   @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
+  user          User        @relation(fields: [userId], references: [id])
 }
 
 model Maintenance {
-    id                 String           @id @default(uuid())
-    equipmentId        String
-    equipmentIssue     String?
-    additionalInfo     String? // any additional info on manager side
-    location           String?
-    problemDiagnosis   String?
-    solution           String?
-    totalHoursLaboured Float? // total hours of employee that worked on the job
-    createdAt          DateTime         @default(now())
-    priority           Priority // level of priority
-    delay              DateTime? // this shows priority as delay if the date has not passed
-    delayReasoning     String?
-    repaired           Boolean          @default(false) // finished request are marked as repaired
-    selected           Boolean          @default(false) // if they are selected they can be view by employees
-    hasBeenDelayed     Boolean          @default(false) // 
-    createdBy          String?
-    equipment          Equipment        @relation(fields: [equipmentId], references: [id])
-    maintenanceLogs    MaintenanceLog[]
+  id                 String           @id @default(uuid())
+  equipmentId        String
+  equipmentIssue     String?
+  additionalInfo     String?
+  location           String?
+  problemDiagnosis   String?
+  solution           String?
+  totalHoursLaboured Float?
+  createdAt          DateTime         @default(now())
+  priority           Priority
+  delay              DateTime?
+  delayReasoning     String?
+  repaired           Boolean          @default(false)
+  selected           Boolean          @default(false)
+  hasBeenDelayed     Boolean          @default(false)
+  createdBy          String?
+  equipment          Equipment        @relation(fields: [equipmentId], references: [id])
+  maintenanceLogs    MaintenanceLog[]
 }
 
-//--------------------------------------------------------------------------------------------------------------------------------
-
-// This section collects data from each Tasco Worker to create a timesheet for the day and demonstrate the work they have done
-
-// keeps track of All tasco work in one management table 
 model TascoLog {
-    id                 String              @id @default(uuid())
-    timeSheetId        String // link to timesheet
-    shiftType          String // Tasco task
-    equipmentId        String? // link to equipment , truck, etc
-    laborType          String? // Labor being done. (E.G. manual labor vs. equipment)
-    materialType       String? // depend on tasco type
-    LoadQuantity       Int                 @default(0) //No Other Details for loads
-    comment            String?
-    createdAt          DateTime            @default(now())
-    refueled           Refueled[] // only pass the amount refueled in total gallons
-    // connections to other tables
-    equipment          Equipment?          @relation(fields: [equipmentId], references: [qrId])
-    timeSheet          TimeSheet?          @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
-    tascoMaterialTypes TascoMaterialTypes? @relation(fields: [materialType], references: [id], onDelete: Cascade)
+  id                 String              @id @default(uuid())
+  timeSheetId        String
+  shiftType          String
+  equipmentId        String?
+  laborType          String?
+  materialType       String?
+  LoadQuantity       Int                 @default(0)
+  comment            String?
+  createdAt          DateTime            @default(now())
+  refueled           Refueled[]
+  equipment          Equipment?          @relation(fields: [equipmentId], references: [qrId])
+  tascoMaterialTypes TascoMaterialTypes? @relation(fields: [materialType], references: [id], onDelete: Cascade)
+  timeSheet          TimeSheet           @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
 }
 
-// created so they can edit and poulate tasco method
 model TascoMaterialTypes {
-    id       String     @id @default(uuid())
-    name     String
-    TascoLog TascoLog[]
+  id       String     @id @default(uuid())
+  name     String
+  TascoLog TascoLog[]
 }
 
-// for f shift that doesn't exist
-// model Loads {
-//     id String @id @default(uuid())
-//     loadType   String? // uncovered, screened, etc
-//     loadWeight Float?
-// }
-
-//--------------------------------------------------------------------------------------------------------------------------------
-// logs to keep track of what each truckDriver has done.
 model TruckingLog {
-    id              String   @id @default(uuid())
-    timeSheetId     String
-    laborType       String // shows whether truckDriver, operator, or manual Labor was chosen
-    taskName        String? // auto default to labor type but can be changed
-    equipmentId     String? // this is the equipment id vehicle id
-    startingMileage Int? // needed if truckDriver else not needed
-    endingMileage   Int?
-    comment         String?
-    createdAt       DateTime @default(now())
-
-    stateMileage    StateMileage[]
-    Refueled        Refueled[]
-    Material        Material[]
-    EquipmentHauled EquipmentHauled[]
-
-    equipment Equipment? @relation(fields: [equipmentId], references: [qrId])
-    timeSheet TimeSheet? @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
+  id              String            @id @default(uuid())
+  timeSheetId     String
+  laborType       String
+  taskName        String?
+  equipmentId     String?
+  startingMileage Int?
+  endingMileage   Int?
+  comment         String?
+  createdAt       DateTime          @default(now())
+  EquipmentHauled EquipmentHauled[]
+  Material        Material[]
+  Refueled        Refueled[]
+  stateMileage    StateMileage[]
+  equipment       Equipment?        @relation(fields: [equipmentId], references: [qrId])
+  timeSheet       TimeSheet         @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
 }
-
-//--------------------------------------------------------------------------------------------------------------------------------
-
-// This section collects data from each Tasco Worker to create a timesheet for the day and demonstrate the work they have done
 
 model StateMileage {
-    id               String   @id @default(uuid())
-    truckingLogId    String
-    state            String? // what state is being crossed
-    stateLineMileage Int? // mileage at crossing
-    createdAt        DateTime @default(now())
-
-    truckingLog TruckingLog? @relation(fields: [truckingLogId], references: [id])
+  id               String      @id @default(uuid())
+  truckingLogId    String
+  state            String?
+  stateLineMileage Int?
+  createdAt        DateTime    @default(now())
+  truckingLog      TruckingLog @relation(fields: [truckingLogId], references: [id])
 }
 
-//--------------------------------------------------------------------------------------------------------------------------------
 model Material {
-    id                 String    @id @default(uuid())
-    LocationOfMaterial String? //company name or location of material
-    truckingLogId      String // connection to log
-    name               String? //type of material
-    quantity           Int? //number of loads
-    loadType           LoadType? //covered, screened, or none
-    LoadWeight         Float? // weight of material
-    createdAt          DateTime  @default(now())
-
-    truckingLog TruckingLog? @relation(fields: [truckingLogId], references: [id])
+  id                 String      @id @default(uuid())
+  LocationOfMaterial String?
+  truckingLogId      String
+  name               String?
+  quantity           Int?
+  loadType           LoadType?
+  LoadWeight         Float?
+  createdAt          DateTime    @default(now())
+  truckingLog        TruckingLog @relation(fields: [truckingLogId], references: [id])
 }
 
-//--------------------------------------------------------------------------------------------------------------------------------
 model Refueled {
-    id                     String   @id @default(cuid())
-    date                   DateTime @default(now())
-    employeeEquipmentLogId String?
-    truckingLogId          String?
-    tascoLogId             String?
-    gallonsRefueled        Float? // tasco equipment and trucks
-    milesAtfueling         Int? // miles at fueling for trucks
-
-    EmployeeEquipmentLog EmployeeEquipmentLog? @relation(fields: [employeeEquipmentLogId], references: [id])
-    TruckingLog          TruckingLog?          @relation(fields: [truckingLogId], references: [id])
-    TascoLog             TascoLog?             @relation(fields: [tascoLogId], references: [id])
+  id                     String                @id @default(cuid())
+  date                   DateTime              @default(now())
+  employeeEquipmentLogId String?
+  truckingLogId          String?
+  tascoLogId             String?
+  gallonsRefueled        Float?
+  milesAtfueling         Int?
+  EmployeeEquipmentLog   EmployeeEquipmentLog? @relation(fields: [employeeEquipmentLogId], references: [id])
+  TascoLog               TascoLog?             @relation(fields: [tascoLogId], references: [id])
+  TruckingLog            TruckingLog?          @relation(fields: [truckingLogId], references: [id])
 }

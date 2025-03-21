@@ -55,7 +55,7 @@ export default function TascoDashboardView({
     return (
       <>
         <Contents width={"section"} className="py-5">
-          <Grids cols={"2"} rows={permission !== "USER" ? "3" : "3"} gap={"5"}>
+          <Grids cols={"2"} rows={"3"} gap={"5"}>
             {/* Render buttons based on state */}
             {additionalButtonsType === "clockOut" ? (
               <Holds
@@ -113,7 +113,7 @@ export default function TascoDashboardView({
     return (
       <>
         <Contents width={"section"} className="py-5">
-          <Grids cols={"2"} rows={permission !== "USER" ? "3" : "3"} gap={"5"}>
+          <Grids cols={"2"} rows={"3"} gap={"5"}>
             {/* Render buttons based on state */}
             {additionalButtonsType === "clockOut" ? (
               <Holds
