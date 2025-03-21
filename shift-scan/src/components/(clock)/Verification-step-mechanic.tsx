@@ -3,10 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
-import {
-  CreateMechanicTimeSheet,
-  updateMechanicTSBySwitch,
-} from "@/actions/timeSheetActions";
+import { handleMechanicTimeSheet } from "@/actions/timeSheetActions";
 import { Clock } from "../clock";
 import { TitleBoxes } from "../(reusable)/titleBoxes";
 import { Buttons } from "../(reusable)/buttons";
@@ -15,13 +12,16 @@ import { Labels } from "../(reusable)/labels";
 import { Inputs } from "../(reusable)/inputs";
 import { Forms } from "../(reusable)/forms";
 import { Images } from "../(reusable)/images";
-import { Texts } from "../(reusable)/texts";
 import { useSession } from "next-auth/react";
 import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
 import { useCommentData } from "@/app/context/CommentContext";
 import { useRouter } from "next/navigation";
-import { setCurrentPageView, setWorkRole } from "@/actions/cookieActions";
+import {
+  setCurrentPageView,
+  setLaborType,
+  setWorkRole,
+} from "@/actions/cookieActions";
 import Spinner from "../(animations)/spinner";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 
@@ -31,12 +31,14 @@ type VerifyProcessProps = {
   role: string;
   option?: string;
   comments?: string;
+  clockInRoleTypes: string | undefined;
 };
 
 export default function MechanicVerificationStep({
   type,
   handleNextStep,
   role,
+  clockInRoleTypes,
 }: VerifyProcessProps) {
   const t = useTranslations("Clock");
   const { scanResult } = useScanData();
@@ -67,50 +69,6 @@ export default function MechanicVerificationStep({
     }
   };
 
-  const updatePreviousTimeSheet = async (): Promise<boolean> => {
-    try {
-      const timeSheetId = await fetchRecentTimeSheetId();
-      if (!timeSheetId) throw new Error("No valid TimeSheet ID found.");
-
-      const formData = new FormData();
-      formData.append("id", timeSheetId);
-      formData.append("endTime", new Date().toISOString());
-      formData.append(
-        "timeSheetComments",
-        savedCommentData?.id.toString() || ""
-      );
-      await updateMechanicTSBySwitch(formData);
-      setCommentData(null);
-      localStorage.removeItem("savedCommentData");
-      return true;
-    } catch (error) {
-      console.error("Failed to update previous timesheet:", error);
-      return false;
-    }
-  };
-
-  const createNewTimeSheet = async (): Promise<void> => {
-    const formData = new FormData();
-    formData.append("submitDate", new Date().toISOString());
-    formData.append("userId", id?.toString() || "");
-    formData.append("date", new Date().toISOString());
-    formData.append("jobsiteId", scanResult?.data || "");
-    formData.append("costcode", costCode);
-    formData.append("startTime", new Date().toISOString());
-    formData.append("workType", role);
-    try {
-      const response = await CreateMechanicTimeSheet(formData);
-      const result = { id: response.id.toString() };
-      await Promise.all([
-        setTimeSheetData(result),
-        setCurrentPageView("dashboard"),
-        setWorkRole(role),
-      ]).then(() => router.push("/dashboard"));
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!id) {
@@ -118,15 +76,43 @@ export default function MechanicVerificationStep({
       return;
     }
     setLoading(true);
+
     try {
+      const formData = new FormData();
+      formData.append("submitDate", new Date().toISOString());
+      formData.append("userId", id);
+      formData.append("date", new Date().toISOString());
+      formData.append("jobsiteId", scanResult?.data || "");
+      formData.append("costcode", costCode);
+      formData.append("startTime", new Date().toISOString());
+      formData.append("workType", role);
+
+      // If switching jobs, include the previous timesheet ID
       if (type === "switchJobs") {
-        const isUpdated = await updatePreviousTimeSheet();
-        if (isUpdated) {
-          await createNewTimeSheet();
-        }
-      } else {
-        await createNewTimeSheet();
+        const timeSheetId = await fetchRecentTimeSheetId();
+        if (!timeSheetId) throw new Error("No valid TimeSheet ID found.");
+        formData.append("id", timeSheetId);
+        formData.append("endTime", new Date().toISOString());
+        formData.append(
+          "timeSheetComments",
+          savedCommentData?.id.toString() || ""
+        );
+        formData.append("type", "switchJobs"); // added to switch jobs
       }
+
+      // Use the new transaction-based function
+      const response = await handleMechanicTimeSheet(formData);
+
+      // Update state and redirect
+      setTimeSheetData({ id: response || "" });
+      setCommentData(null);
+      localStorage.removeItem("savedCommentData");
+
+      await Promise.all([
+        setCurrentPageView("dashboard"),
+        setWorkRole(role),
+        setLaborType(clockInRoleTypes || ""),
+      ]).then(() => router.push("/dashboard"));
     } catch (error) {
       console.error("Error in handleSubmit:", error);
     } finally {

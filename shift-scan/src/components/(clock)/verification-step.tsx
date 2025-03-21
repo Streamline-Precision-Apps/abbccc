@@ -6,6 +6,7 @@ import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
 import {
   CreateTimeSheet,
+  handleGeneralTimeSheet,
   updateTimeSheetBySwitch,
 } from "@/actions/timeSheetActions";
 import { Clock } from "../clock";
@@ -19,7 +20,11 @@ import { useSession } from "next-auth/react";
 import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
 import { useCommentData } from "@/app/context/CommentContext";
-import { setCurrentPageView, setWorkRole } from "@/actions/cookieActions";
+import {
+  setCurrentPageView,
+  setLaborType,
+  setWorkRole,
+} from "@/actions/cookieActions";
 import { Titles } from "../(reusable)/titles";
 import { useRouter } from "next/navigation";
 import Spinner from "../(animations)/spinner";
@@ -31,6 +36,7 @@ type VerifyProcessProps = {
   comments?: string;
   handlePreviousStep?: () => void;
   laborType?: string;
+  clockInRoleTypes: string | undefined;
 };
 
 export default function VerificationStep({
@@ -39,6 +45,7 @@ export default function VerificationStep({
   role,
   handlePreviousStep,
   laborType,
+  clockInRoleTypes,
 }: VerifyProcessProps) {
   const t = useTranslations("Clock");
   const { scanResult } = useScanData();
@@ -64,69 +71,50 @@ export default function VerificationStep({
     }
   };
 
-  const updatePreviousTimeSheet = async (): Promise<boolean> => {
-    try {
-      const timeSheetId = await fetchRecentTimeSheetId();
-      if (!timeSheetId) throw new Error("No valid TimeSheet ID found.");
-
-      const formData = new FormData();
-      formData.append("id", timeSheetId);
-      formData.append("endTime", new Date().toISOString());
-      formData.append(
-        "timeSheetComments",
-        savedCommentData?.id.toString() || ""
-      );
-
-      await updateTimeSheetBySwitch(formData);
-      setCommentData(null);
-      localStorage.removeItem("savedCommentData");
-      return true;
-    } catch (error) {
-      console.error("Failed to update previous timesheet:", error);
-      return false;
-    }
-  };
-
-  const createNewTimeSheet = async (): Promise<void> => {
-    const formData = new FormData();
-    formData.append("submitDate", new Date().toISOString());
-    formData.append("userId", id?.toString() || "");
-    formData.append("date", new Date().toISOString());
-    formData.append("jobsiteId", scanResult?.data || "");
-    formData.append("costcode", savedCostCode?.toString() || "");
-    formData.append("startTime", new Date().toISOString());
-    formData.append("workType", role);
-    try {
-      const response = await CreateTimeSheet(formData);
-      const result = { id: response.id.toString() };
-
-      await Promise.all([
-        setWorkRole(role),
-        setTimeSheetData(result),
-        setCurrentPageView("dashboard"),
-      ]).then(() => router.push("/dashboard"));
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     if (!id) {
       console.error("User ID does not exist");
       return;
     }
     setLoading(true);
+
     try {
+      const formData = new FormData();
+      formData.append("submitDate", new Date().toISOString());
+      formData.append("userId", id?.toString() || "");
+      formData.append("date", new Date().toISOString());
+      formData.append("jobsiteId", scanResult?.data || "");
+      formData.append("costcode", savedCostCode?.toString() || "");
+      formData.append("startTime", new Date().toISOString());
+      formData.append("workType", role);
+
+      // If switching jobs, include the previous timesheet ID
       if (type === "switchJobs") {
-        const isUpdated = await updatePreviousTimeSheet();
-        if (isUpdated) {
-          await createNewTimeSheet();
-        }
-      } else {
-        await createNewTimeSheet();
+        const timeSheetId = await fetchRecentTimeSheetId();
+        if (!timeSheetId) throw new Error("No valid TimeSheet ID found.");
+        formData.append("id", timeSheetId);
+        formData.append("endTime", new Date().toISOString());
+        formData.append(
+          "timeSheetComments",
+          savedCommentData?.id.toString() || ""
+        );
+        formData.append("type", "switchJobs"); // added to switch jobs
       }
+
+      // Use the new transaction-based function
+      const response = await handleGeneralTimeSheet(formData);
+
+      // Update state and redirect
+      setTimeSheetData({ id: response || "" });
+      setCommentData(null);
+      localStorage.removeItem("savedCommentData");
+
+      await Promise.all([
+        setCurrentPageView("dashboard"),
+        setWorkRole(role),
+        setLaborType(clockInRoleTypes || ""),
+      ]).then(() => router.push("/dashboard"));
     } catch (error) {
       console.error("Error in handleSubmit:", error);
     } finally {
