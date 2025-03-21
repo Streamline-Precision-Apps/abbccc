@@ -1,10 +1,20 @@
 "use server";
+
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 
 export async function GET() {
-  const session = await auth();
+  let session;
+
+  // Handle authentication and ensure session exists
+  try {
+    session = await auth();
+  } catch (error) {
+    console.error("Authentication failed:", error);
+    return NextResponse.json({ error: "Authentication failed" }, { status: 500 });
+  }
+
   const userId = session?.user.id;
 
   if (!userId) {
@@ -12,7 +22,8 @@ export async function GET() {
   }
 
   try {
-    const Signature = await prisma.user.findUnique({
+    // Query the user for the signature
+    const signature = await prisma.user.findUnique({
       where: {
         id: userId,
       },
@@ -21,12 +32,14 @@ export async function GET() {
       },
     });
 
-    return NextResponse.json(Signature);
+    // If no signature is found, return 404
+    if (!signature) {
+      return NextResponse.json({ error: "No signature found for this user" }, { status: 404 });
+    }
+
+    return NextResponse.json(signature);
   } catch (error) {
-    console.error("Error fetching pay period sheets:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch pay period sheets" },
-      { status: 500 }
-    );
+    console.error("Error fetching signature:", error);
+    return NextResponse.json({ error: "Failed to fetch signature" }, { status: 500 });
   }
 }
