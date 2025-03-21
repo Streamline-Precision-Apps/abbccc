@@ -388,6 +388,15 @@ export async function CreateTascoTimeSheet(formData: FormData) {
     const costCode = formData.get("costcode") as string;
     const shiftType = formData.get("shiftType") as string;
 
+    let materialType;
+    let laborType = formData.get("laborType") as string;
+    if (shiftType === "abcdShift") {
+      materialType = formData.get("materialType") as string;
+    } else {
+      materialType = "";
+      laborType = "equipmentOperator";
+    }
+
     // Create TimeSheet and TruckingLog within a transaction
     const createdTimeSheet = await prisma.timeSheet.create({
       data: {
@@ -399,33 +408,20 @@ export async function CreateTascoTimeSheet(formData: FormData) {
         costCode: { connect: { name: costCode } },
         startTime: formatISO(formData.get("startTime") as string),
         workType: "TASCO",
-      },
-    });
-
-    let materialType;
-    let laborType = formData.get("laborType") as string;
-    if (shiftType === "abcdShift") {
-      materialType = formData.get("materialType") as string;
-    } else {
-      materialType = "";
-      laborType = "equipmentOperator";
-    }
-
-    // Create a tasco log to be edited in tasco manager
-    const tascoLog = await prisma.tascoLog.create({
-      data: {
-        timeSheetId: createdTimeSheet.id,
-        shiftType,
-        equipmentId: equipmentId || null,
-        laborType,
-        materialType,
+        tascoLogs: {
+          create: {
+            shiftType,
+            equipmentId: equipmentId || null,
+            laborType: formData.get("laborType") as string,
+            materialType: formData.get("materialType") as string,
+          },
+        },
       },
     });
 
     console.log("TimeSheet");
     console.log(createdTimeSheet);
     console.log("Tasco log");
-    console.log(tascoLog);
 
     revalidatePath("/admins/settings");
     revalidatePath("/admins/assets");
