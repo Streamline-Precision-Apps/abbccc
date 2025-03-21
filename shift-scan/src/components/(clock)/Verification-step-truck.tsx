@@ -38,6 +38,7 @@ type VerifyProcessProps = {
   laborType?: string;
   truck?: string;
   startingMileage?: number;
+  clockInRoleTypes: string | undefined;
 };
 
 export default function TruckVerificationStep({
@@ -48,6 +49,7 @@ export default function TruckVerificationStep({
   truck,
   startingMileage,
   laborType,
+  clockInRoleTypes,
 }: VerifyProcessProps) {
   const t = useTranslations("Clock");
   const { scanResult } = useScanData();
@@ -106,7 +108,8 @@ export default function TruckVerificationStep({
     formData.append("costcode", savedCostCode?.toString() || "");
     formData.append("startTime", new Date().toISOString());
     formData.append("workType", role);
-    formData.append("laborType", laborType || ""); // sets the title of task to the labor type worked on
+    formData.append("laborType", clockInRoleTypes || ""); // sets the title of task to the labor type worked on
+
     formData.append("startingMileage", startingMileage?.toString() || ""); // sets new starting mileage
     formData.append("truck", truck || ""); // sets truck ID if applicable
     formData.append("equipment", equipmentId || ""); // sets equipment Id if applicable
@@ -118,7 +121,7 @@ export default function TruckVerificationStep({
         setTimeSheetData(result),
         setCurrentPageView("dashboard"),
         setWorkRole(role),
-        setLaborType(laborType || ""),
+        setLaborType(clockInRoleTypes || ""),
       ]).then(() => router.push("/dashboard"));
     } catch (error) {
       console.error(error);

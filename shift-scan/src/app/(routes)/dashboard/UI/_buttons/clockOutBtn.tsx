@@ -34,7 +34,7 @@ export default function ClockOutBtn({
                   handleEvent={() => handleShowAdditionalButtons("clockOut")}
                 />
               )}
-              {laborType === "operator" && (
+              {laborType === "truckEquipmentOperator" && (
                 <HorizontalLayout
                   text={"ClockOut"}
                   titleImg={"/clock-out.svg"}
@@ -44,7 +44,7 @@ export default function ClockOutBtn({
                 />
               )}
 
-              {laborType === "manualLabor" && (
+              {laborType === "truckLabor" && (
                 <VerticalLayout
                   color={"red"}
                   text={"ClockOut"}
@@ -70,7 +70,7 @@ export default function ClockOutBtn({
           )}
           {View === "tasco" && (
             <>
-              {laborType === "manualLabor" && (
+              {laborType === "tascoAbcdLabor" && (
                 <HorizontalLayout
                   color={"red"}
                   text={"ClockOut"}
@@ -79,15 +79,16 @@ export default function ClockOutBtn({
                   handleEvent={() => handleShowAdditionalButtons("clockOut")}
                 />
               )}
-              {laborType === "equipmentOperator" && (
-                <VerticalLayout
-                  color={"red"}
-                  text={"ClockOut"}
-                  titleImg={"/clock-out.svg"}
-                  titleImgAlt={"clock Out Icon"}
-                  handleEvent={() => handleShowAdditionalButtons("clockOut")}
-                />
-              )}
+              {laborType === "equipmentOperator" ||
+                (laborType === "tascoAbcdOperator" && (
+                  <VerticalLayout
+                    color={"red"}
+                    text={"ClockOut"}
+                    titleImg={"/clock-out.svg"}
+                    titleImgAlt={"clock Out Icon"}
+                    handleEvent={() => handleShowAdditionalButtons("clockOut")}
+                  />
+                ))}
             </>
           )}
           {View === "general" && (

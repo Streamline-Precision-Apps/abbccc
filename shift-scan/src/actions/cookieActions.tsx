@@ -82,10 +82,15 @@ export async function setWorkRole(workRole: string) {
 
 export async function setLaborType(laborType: string) {
   const VALID_LABOR_TYPES = [
-    "operator",
-    "equipmentOperator",
     "truckDriver",
-    "manualLabor",
+    "truckEquipmentOperator",
+    "truckLabor",
+    "mechanic",
+    "general",
+    "tascoAbcdLabor",
+    "tascoAbcdEquipment",
+    "tascoAbcdOperator",
+    "",
   ];
 
   if (!VALID_LABOR_TYPES.includes(laborType)) {

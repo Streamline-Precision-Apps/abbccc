@@ -1,5 +1,5 @@
 "use client";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Holds } from "../(reusable)/holds";
 import MultipleRoles from "./multipleRoles";
 import QRStep from "./qr-handler";
@@ -34,6 +34,11 @@ type NewClockProcessProps = {
   type: string;
   scannerType: string;
   locale: string;
+  timeSheetId?: string | undefined;
+  jobSiteId?: string | undefined;
+  costCode?: string | undefined;
+  workRole?: string | undefined;
+  switchLaborType?: string | undefined;
 };
 
 export default function NewClockProcess({
@@ -45,11 +50,19 @@ export default function NewClockProcess({
   returnpath,
   option,
   locale,
+  timeSheetId,
+  jobSiteId,
+  costCode,
+  workRole,
+  switchLaborType,
 }: NewClockProcessProps) {
   // State management
   const { data: session } = useSession();
   const [step, setStep] = useState<number>(0);
-  const [clockInRole, setClockInRole] = useState<string | undefined>(undefined);
+  const [clockInRole, setClockInRole] = useState<string | undefined>(workRole);
+  const [clockInRoleTypes, setClockInRoleTypes] = useState<string | undefined>(
+    switchLaborType
+  ); // use to have more selections for clock processes
   const [numberOfRoles, setNumberOfRoles] = useState(0);
   const [scanned, setScanned] = useState(false);
   const t = useTranslations("Clock");
@@ -211,6 +224,8 @@ export default function NewClockProcess({
               clockInRole={""}
               setClockInRole={() => {}}
               setScanned={setScanned}
+              setClockInRoleTypes={setClockInRoleTypes}
+              clockInRoleTypes={clockInRoleTypes}
             />
           </>
         )}
@@ -253,6 +268,8 @@ export default function NewClockProcess({
             {type === "switchJobs" && (
               <SwitchJobsMultiRoles
                 handleNextStep={handleNextStep}
+                clockInRoleTypes={clockInRoleTypes}
+                setClockInRoleTypes={setClockInRoleTypes}
                 setClockInRole={setClockInRole}
                 clockInRole={clockInRole}
                 option={option}
@@ -266,6 +283,8 @@ export default function NewClockProcess({
               <MultipleRoles
                 numberOfRoles={numberOfRoles}
                 handleNextStep={handleNextStep}
+                setClockInRoleTypes={setClockInRoleTypes}
+                clockInRoleTypes={clockInRoleTypes}
                 setClockInRole={setClockInRole}
                 clockInRole={clockInRole}
                 option={option}
@@ -292,6 +311,8 @@ export default function NewClockProcess({
               option={type} // type is the method of clocking in ... general, switchJobs, or equipment
               clockInRole={clockInRole} // clock in role will make the qr know which role to use
               setClockInRole={setClockInRole}
+              setClockInRoleTypes={setClockInRoleTypes}
+              clockInRoleTypes={clockInRoleTypes}
               setScanned={setScanned}
             />
           )}
@@ -307,6 +328,8 @@ export default function NewClockProcess({
               option={type} // type is the method of clocking in ... general, switchJobs, or equipment
               clockInRole={clockInRole} // clock in role will make the qr know which role to use
               setClockInRole={setClockInRole}
+              setClockInRoleTypes={setClockInRoleTypes}
+              clockInRoleTypes={clockInRoleTypes}
               setScanned={setScanned}
             />
           )}
@@ -378,6 +401,7 @@ export default function NewClockProcess({
           setStartingMileage={setStartingMileage}
           laborType={laborType}
           truck={truck}
+          clockInRoleTypes={clockInRoleTypes}
         />
       )}
 
@@ -389,6 +413,7 @@ export default function NewClockProcess({
           startingMileage={startingMileage}
           type={type}
           role={clockInRole}
+          clockInRoleTypes={clockInRoleTypes}
           handleNextStep={handleNextStep}
           option={option}
           comments={undefined}
@@ -436,6 +461,7 @@ export default function NewClockProcess({
           setMaterialType={setMaterialType}
           shiftType={shiftType}
           setShiftType={setShiftType}
+          clockInRoleTypes={clockInRoleTypes}
         />
       )}
       {step === 6 && clockInRole === "tasco" && (
@@ -447,6 +473,7 @@ export default function NewClockProcess({
           laborType={laborType}
           materialType={materialType}
           shiftType={shiftType}
+          clockInRoleTypes={clockInRoleTypes}
           comments={undefined}
         />
       )}
