@@ -8,7 +8,7 @@ import { useTranslations } from "next-intl";
 import { Images } from "../(reusable)/images";
 import CodeStep from "./code-step";
 import { Titles } from "../(reusable)/titles";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { set } from "date-fns";
 import CodeFinder from "../(search)/codeFinder";
 
@@ -22,6 +22,10 @@ type TascoClockInFormProps = {
   materialType: string;
   setMaterialType: React.Dispatch<React.SetStateAction<string>>;
   clockInRoleTypes: string | undefined;
+};
+type MaterialType = {
+  id: number;
+  name: string;
 };
 
 export default function TascoClockInForm({
@@ -38,17 +42,21 @@ export default function TascoClockInForm({
   const t = useTranslations("Clock");
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [canProceed, setCanProceed] = useState(false);
+  const [materialTypes, setMaterialTypes] = useState<MaterialType[]>([]);
 
-  const materialsArray = [
-    { value: "", label: t("SelectMaterialType") },
-    { value: "rock", label: "Rock" },
-    { value: "elimco", label: "Elimco" },
-    { value: "coal", label: "Coal" },
-    { value: "limeKiln", label: "Lime Kiln" },
-    { value: "agWaste", label: "Ag Waste" },
-    { value: "beltMud", label: "Belt Mud" },
-    { value: "endOfCampaignCleanUp", label: "End Of Campaign Clean Up" },
-  ];
+  useEffect(() => {
+    const fetchMaterialTypes = async () => {
+      try {
+        const materialTypesResponse = await fetch("/api/getMaterialTypes");
+        const materialTypesData = await materialTypesResponse.json();
+        setMaterialTypes(materialTypesData);
+      } catch {
+        console.error("Error fetching material types");
+      }
+    };
+
+    fetchMaterialTypes();
+  }, []);
 
   // Handles selection changes and collapses accordingly
   const handleShiftTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -134,9 +142,9 @@ export default function TascoClockInForm({
                       value={materialType}
                       onChange={(e) => setMaterialType(e.target.value)}
                     >
-                      {materialsArray.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
+                      {materialTypes.map((option) => (
+                        <option key={option.id} value={option.name}>
+                          {option.name}
                         </option>
                       ))}
                     </Selects>
