@@ -1,100 +1,89 @@
-enum FormStatus {
-    PENDING
-    APPROVED
-    DENIED
-    DRAFT
-}
-
-// Defines field types for dynamic forms
-enum FieldType {
-    TEXT
-    TEXTAREA
-    NUMBER
-    DATE
-    FILE
-    DROPDOWN
-    CHECKBOX
-}
-
-// Holds company-specific form templates
 model FormTemplate {
-    id                  String   @id @default(cuid())
-    companyId           String
-    name                String
-    formType            String?
-    createdAt           DateTime @default(now())
-    updatedAt           DateTime @updatedAt
-    isActive            Boolean  @default(false)
-    isSignatureRequired Boolean  @default(false)
-
-    company Company @relation(fields: [companyId], references: [id])
-
-    submissions  FormSubmission[]
-    FormGrouping FormGrouping[]
+  id                  String           @id @default(cuid())
+  companyId           String
+  name                String
+  formType            String?
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  isActive            Boolean          @default(false)
+  isSignatureRequired Boolean          @default(false)
+  submissions         FormSubmission[]
+  company             Company          @relation(fields: [companyId], references: [id])
+  FormGrouping        FormGrouping[]   @relation("FormGroupingToFormTemplate")
 }
 
 model FormGrouping {
-    id           String         @id @default(cuid())
-    title        String?
-    order        Int
-    fields       FormField[]
-    FormTemplate FormTemplate[]
+  id           String         @id @default(cuid())
+  title        String?
+  order        Int
+  fields       FormField[]
+  FormTemplate FormTemplate[] @relation("FormGroupingToFormTemplate")
 }
 
-// Defines individual form fields with metadata
 model FormField {
-    id             String            @id @default(cuid())
-    formGroupingId String
-    label          String
-    name           String
-    type           FieldType
-    required       Boolean           @default(false)
-    order          Int
-    defaultValue   String? // Stores default input values
-    placeholder    String?
-    maxLength      Int? // max length for form builder
-    helperText     String?
-    options        FormFieldOption[] // Stores dropdown options
-
-    FormGrouping FormGrouping @relation(fields: [formGroupingId], references: [id], onDelete: Cascade)
+  id             String            @id @default(cuid())
+  formGroupingId String
+  label          String
+  name           String
+  type           FieldType
+  required       Boolean           @default(false)
+  order          Int
+  defaultValue   String?
+  placeholder    String?
+  maxLength      Int?
+  helperText     String?
+  FormGrouping   FormGrouping      @relation(fields: [formGroupingId], references: [id], onDelete: Cascade)
+  options        FormFieldOption[]
 }
 
-// Stores dropdown options for FormField
 model FormFieldOption {
-    id      String @id @default(cuid())
-    fieldId String
-    value   String
-
-    field FormField @relation(fields: [fieldId], references: [id], onDelete: Cascade)
+  id      String    @id @default(cuid())
+  fieldId String
+  value   String
+  field   FormField @relation(fields: [fieldId], references: [id], onDelete: Cascade)
 }
 
-// Stores submitted forms (can be drafts, pending, or approved)
 model FormSubmission {
-    id             String         @id @default(cuid())
-    title          String? // give a submission nickname to label a form.
-    formTemplateId String
-    userId         String
-    formType       String?
-    data           Json? // Stores after creation
-    createdAt      DateTime       @default(now())
-    updatedAt      DateTime       @updatedAt
-    submittedAt    DateTime? // Null means it's a draft
-    status         FormStatus     @default(DRAFT)
-    user           User           @relation(fields: [userId], references: [id])
-    formTemplate   FormTemplate   @relation(fields: [formTemplateId], references: [id], onDelete: Cascade)
-    approvals      FormApproval[]
+  id             String         @id @default(cuid())
+  title          String?
+  formTemplateId String
+  userId         String
+  formType       String?
+  data           Json?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  submittedAt    DateTime?
+  status         FormStatus     @default(DRAFT)
+  approvals      FormApproval[]
+  formTemplate   FormTemplate   @relation(fields: [formTemplateId], references: [id], onDelete: Cascade)
+  user           User           @relation(fields: [userId], references: [id])
 }
 
-// Stores approval data for submissions
 model FormApproval {
-    id               String   @id @default(cuid())
-    formSubmissionId String
-    signedBy         String?
-    submittedAt      DateTime @default(now())
-    updatedAt        DateTime @updatedAt
-    signature        String?
-    comment          String?
+  id               String         @id @default(cuid())
+  formSubmissionId String
+  signedBy         String?
+  submittedAt      DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  signature        String?
+  comment          String?
+  formSubmission   FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
+  approver         User?          @relation(fields: [signedBy], references: [id])
+}
 
-    formSubmission FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
-    approver       User?          @relation(fields: [signedBy], references: [id])
+enum FormStatus {
+  PENDING
+  APPROVED
+  DENIED
+  DRAFT
+}
+
+enum FieldType {
+  TEXT
+  TEXTAREA
+  NUMBER
+  DATE
+  FILE
+  DROPDOWN
+  CHECKBOX
 }

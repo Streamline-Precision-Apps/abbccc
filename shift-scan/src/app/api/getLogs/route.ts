@@ -39,11 +39,9 @@ type TascoLog = {
   id: string;
   shiftType: string | null;
   laborType: string | null;
-  loads: boolean;
+  loadQuantity: number | null;
   refueled: boolean;
 };
-
-
 
 export async function GET() {
   // Authenticate User
@@ -59,106 +57,101 @@ export async function GET() {
 
   try {
     // Fetch all data concurrently using Promise.all
-    const [employeeLogs, maintenanceLogs, truckingLogs, tascoLogs] = await Promise.all([
-      prisma.employeeEquipmentLog.findMany({
-        where: {
-          employeeId: userId,
-          createdAt: { lte: currentDate, gte: past24Hours },
-          isFinished: false,
-        },
-        include: {
-          equipment: {
-            select: {
-              id: true,
-              qrId: true,
-              name: true,
+    const [employeeLogs, maintenanceLogs, truckingLogs, tascoLogs] =
+      await Promise.all([
+        prisma.employeeEquipmentLog.findMany({
+          where: {
+            employeeId: userId,
+            createdAt: { lte: currentDate, gte: past24Hours },
+            isFinished: false,
+          },
+          include: {
+            equipment: {
+              select: {
+                id: true,
+                qrId: true,
+                name: true,
+              },
             },
           },
-        },
-      }),
+        }),
 
-      prisma.maintenanceLog.findMany({
-        where: {
-          userId: userId,
-          endTime: null,
-        },
-        select: {
-          id: true,
-          maintenanceId: true,
-        },
-      }),
-
-      prisma.truckingLog.findMany({
-        where: {
-          timeSheet: {
+        prisma.maintenanceLog.findMany({
+          where: {
             userId: userId,
             endTime: null,
           },
-        },
-        select: {
-          id: true,
-          endingMileage: true,
-          comment: true,
-          laborType: true,
-          stateMileage: {
-            select: {
-              id: true,
-              state: true,
-              stateLineMileage: true,
-            },
+          select: {
+            id: true,
+            maintenanceId: true,
           },
-          Refueled: {
-            select: {
-              id: true,
-              gallonsRefueled: true,
-              milesAtfueling: true,
-            },
-          },
-          Material: {
-            select: {
-              id: true,
-              LocationOfMaterial: true,
-              quantity: true,
-              name: true,
-            },
-          },
-          EquipmentHauled: {
-            select: {
-              id: true,
-              equipmentId: true,
-              jobSiteId: true,
-            },
-          },
-        },
-      }),
+        }),
 
-      prisma.tascoLog.findMany({
-        where: {
-          timeSheet: {
-            userId: userId,
-            endTime: null,
-          },
-        },
-        select: {
-          id: true,
-          shiftType: true,
-          laborType: true,
-          loads: {
-            select: {
-              id: true,
-              loadType: true,
-              loadWeight: true,
+        prisma.truckingLog.findMany({
+          where: {
+            timeSheet: {
+              userId: userId,
+              endTime: null,
             },
           },
-          refueled: {
-            select: {
-              id: true,
-              gallonsRefueled: true,
+          select: {
+            id: true,
+            endingMileage: true,
+            comment: true,
+            laborType: true,
+            stateMileage: {
+              select: {
+                id: true,
+                state: true,
+                stateLineMileage: true,
+              },
+            },
+            Refueled: {
+              select: {
+                id: true,
+                gallonsRefueled: true,
+                milesAtfueling: true,
+              },
+            },
+            Material: {
+              select: {
+                id: true,
+                LocationOfMaterial: true,
+                quantity: true,
+                name: true,
+              },
+            },
+            EquipmentHauled: {
+              select: {
+                id: true,
+                equipmentId: true,
+                jobSiteId: true,
+              },
             },
           },
+        }),
+
+        prisma.tascoLog.findMany({
+          where: {
+            timeSheet: {
+              userId: userId,
+              endTime: null,
+            },
           },
-      }),
-    ]);
+          select: {
+            id: true,
+            shiftType: true,
+            laborType: true,
+            LoadQuantity: true,
+            refueled: {
+              select: {
+                id: true,
+                gallonsRefueled: true,
+              },
+            },
+          },
+        }),
+      ]);
 
     // Reusable function to check incomplete fields
     const isFieldIncomplete = (
@@ -219,7 +212,8 @@ export async function GET() {
           ),
           incomplete: isEndingMileageRequired, // Track incomplete status
         };
-      }).filter((log) => {
+      })
+      .filter((log) => {
         // Filter logs with incomplete fields
         return (
           log.incomplete ||
@@ -230,28 +224,24 @@ export async function GET() {
         );
       });
 
-      const mappedTascoLog: TascoLog[] = tascoLogs
-  .map((log) => {
-    return {
-      id: log.id,
-      type: "tasco",
-      shiftType: log.shiftType,
-      laborType: log.laborType,
-      loads: log.laborType === "equipmentOperator" || log.laborType === "manualLabor"
-        ? log.loads.some((item) => isFieldIncomplete(item, ["loadType", "loadWeight"]))
-        : false,
-      refueled: log.refueled.some((item) =>
-        isFieldIncomplete(item, ["gallonsRefueled"])
-      ),
-    };
-  })
-  .filter((log) => {
-    // Filter logs with incomplete fields
-    return (
-      log.loads ||
-      log.refueled
-    );
-  });
+    const mappedTascoLog: TascoLog[] = tascoLogs
+      .map((log) => {
+        return {
+          id: log.id,
+          type: "tasco",
+          shiftType: log.shiftType,
+          laborType: log.laborType,
+          loadsHauled: log.LoadQuantity,
+          loadQuantity: log.LoadQuantity, // Convert to string
+          refueled: log.refueled.some((item) =>
+            isFieldIncomplete(item, ["gallonsRefueled"])
+          ),
+        };
+      })
+      .filter((log) => {
+        // Filter logs with incomplete fields
+        return log.refueled;
+      });
 
     // Combine All Logs
     const combinedLogs = [
@@ -262,7 +252,6 @@ export async function GET() {
     ];
 
     return NextResponse.json(combinedLogs);
-
   } catch (error) {
     console.error("Error fetching logs:", error);
     return NextResponse.json(

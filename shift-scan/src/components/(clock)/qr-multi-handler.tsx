@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import QR from "./qr";
 import { Buttons } from "../(reusable)/buttons";
@@ -25,6 +25,8 @@ type QRStepProps = {
   clockInRole: string | undefined;
   setClockInRole: React.Dispatch<React.SetStateAction<string | undefined>>;
   setScanned: React.Dispatch<React.SetStateAction<boolean>>;
+  clockInRoleTypes: string | undefined;
+  setClockInRoleTypes: Dispatch<SetStateAction<string | undefined>>;
 };
 
 export default function QRMultiRoles({
@@ -38,6 +40,8 @@ export default function QRMultiRoles({
   clockInRole,
   setClockInRole,
   setScanned,
+  clockInRoleTypes,
+  setClockInRoleTypes,
 }: QRStepProps) {
   const t = useTranslations("Clock");
   const [startCamera, setStartCamera] = useState<boolean>(false);
@@ -49,8 +53,28 @@ export default function QRMultiRoles({
   const [numberOfViews, setNumberOfViews] = useState(0);
   const [failedToScan, setFailedToScan] = useState(false);
 
-  const selectView = (clockInRole: string) => {
-    setClockInRole(clockInRole);
+  const selectView = (selectedRoleType: string) => {
+    setClockInRoleTypes(selectedRoleType);
+    // Map the selected role type to the main clock-in role
+    if (
+      selectedRoleType === "tascoAbcdLabor" ||
+      selectedRoleType === "tascoAbcdEquipment" ||
+      selectedRoleType === "tascoEEquipment"
+    ) {
+      setClockInRole("tasco");
+    } else if (
+      selectedRoleType === "truckDriver" ||
+      selectedRoleType === "truckEquipmentOperator" ||
+      selectedRoleType === "truckLabor"
+    ) {
+      setClockInRole("truck");
+    } else if (selectedRoleType === "mechanic") {
+      setClockInRole("mechanic");
+    } else if (selectedRoleType === "general") {
+      setClockInRole("general");
+    } else {
+      setClockInRole(undefined); // Handle undefined or invalid cases
+    }
   };
 
   useEffect(() => {
@@ -103,15 +127,34 @@ export default function QRMultiRoles({
                   <Holds className="p-1 justify-center border-[3px] border-black rounded-[10px] shadow-[6px_6px_0px_grey]">
                     <Selects
                       className="disabled:bg-app-dark-gray bg-app-blue text-center p-3"
-                      value={clockInRole}
+                      value={clockInRoleTypes}
                       disabled={startCamera}
                       onChange={(e) => selectView(e.target.value)}
                     >
+                      <option value="">{t("SelectWorkType")}</option>
                       {tascoView === true && (
-                        <option value="tasco">{t("TASCO")}</option>
+                        <>
+                          <option value="tascoAbcdLabor">
+                            {t("TASCOABCDLabor")}
+                          </option>
+                          <option value="tascoAbcdEquipment">
+                            {t("TASCOABCDEquipmentOperator")}
+                          </option>
+                          <option value="tascoEEquipment">
+                            {t("TASCOEEquipmentOperator")}
+                          </option>
+                        </>
                       )}
                       {truckView === true && (
-                        <option value="truck">{t("Truck")}</option>
+                        <>
+                          <option value="truckDriver">
+                            {t("TruckDriver")}
+                          </option>
+                          <option value="truckEquipmentOperator">
+                            {t("TruckEquipmentOperator")}
+                          </option>
+                          <option value="truckLabor">{t("TruckLabor")}</option>
+                        </>
                       )}
                       {mechanicView === true && (
                         <option value="mechanic">{t("Mechanic")}</option>

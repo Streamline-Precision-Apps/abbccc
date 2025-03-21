@@ -21,6 +21,7 @@ type TascoClockInFormProps = {
   setLaborType: React.Dispatch<React.SetStateAction<string>>;
   materialType: string;
   setMaterialType: React.Dispatch<React.SetStateAction<string>>;
+  clockInRoleTypes: string | undefined;
 };
 
 export default function TascoClockInForm({
@@ -32,24 +33,11 @@ export default function TascoClockInForm({
   shiftType,
   setShiftType,
   handlePrevStep,
+  clockInRoleTypes,
 }: TascoClockInFormProps) {
   const t = useTranslations("Clock");
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [canProceed, setCanProceed] = useState(false);
-
-  // Shift Type, Labor Type, and Material Type Options
-  const shiftTypeArray = [
-    { value: "", label: t("SelectShiftType") },
-    { value: "abcdShift", label: "A, B, C, D Shift" },
-    { value: "fShift", label: "F Shift Mud Conditioning" },
-    { value: "eShift", label: "E Shift Screen Lime Rock" },
-  ];
-
-  const laborTypeArray = [
-    { value: "", label: t("SelectLaborType") },
-    { value: "manualLabor", label: t("ManualLabor") },
-    { value: "equipmentOperator", label: t("EquipmentOperator") },
-  ];
 
   const materialsArray = [
     { value: "", label: t("SelectMaterialType") },
@@ -112,40 +100,35 @@ export default function TascoClockInForm({
           </Holds>
 
           {/* Selection Section */}
-          <Holds className="row-start-2 row-end-9 col-start-1 col-end-6 h-full w-full border-[3px] border-black rounded-[10px] p-2 ">
+          <Holds className="row-start-2 row-end-9 col-start-1 col-end-6 h-full w-full p-2 ">
             <Grids rows={"6"}>
-              {/* Shift Type Dropdown (Collapsible) */}
-              <Holds className="row-start-1 row-end-2 col-start-1 col-end-6 p-2">
-                <Titles size={"h3"} className="pb-3">
-                  Select Tasco Shift
-                </Titles>
-                {!isCollapsed ? (
-                  <Selects value={shiftType} onChange={handleShiftTypeChange}>
-                    {shiftTypeArray.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </Selects>
-                ) : (
-                  <Buttons
-                    onClick={() => {
-                      setIsCollapsed(false);
-                      setMaterialType("");
-                      setLaborType("");
-                    }}
-                    background="orange"
-                    className="w-full text-center py-2"
-                  >
-                    Change Selection
-                  </Buttons>
-                )}
-              </Holds>
-
               {/* Only Show Material & Labor Type Selection for ABCDShift */}
-              {shiftType === "abcdShift" && !isCollapsed && (
+              {clockInRoleTypes === "tascoEEquipment" && canProceed && (
                 <>
-                  {/* Material Type Selection */}
+                  <Holds className="row-start-2 row-end-7 py-4 px-2 h-full w-full">
+                    <CodeFinder
+                      datatype={"equipment-operator"}
+                      setSelectedOpt={setCanProceed}
+                      setScannedId={undefined}
+                    />
+                  </Holds>
+                </>
+              )}
+
+              {clockInRoleTypes === "tascoAbcdEquipment" && canProceed && (
+                <>
+                  <Holds className="row-start-2 row-end-7 py-4 px-2 h-full w-full">
+                    <CodeFinder
+                      datatype={"equipment-operator"}
+                      setSelectedOpt={setCanProceed}
+                      setScannedId={undefined}
+                    />
+                  </Holds>
+                </>
+              )}
+
+              {clockInRoleTypes === "tascoAbcdLabor" && (
+                <>
                   <Holds className="row-start-2 row-end-3 p-2">
                     <Selects
                       value={materialType}
@@ -159,32 +142,18 @@ export default function TascoClockInForm({
                     </Selects>
                   </Holds>
 
-                  {/* Labor Type Selection */}
-                  <Holds className="row-start-3 row-end-4 p-2">
-                    <Selects value={laborType} onChange={handleLaborTypeChange}>
-                      {laborTypeArray.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </Selects>
+                  <Holds className="row-start-8 row-end-9 col-span-2 justify-center">
+                    <Buttons
+                      background={materialType === "" ? "lightGray" : "orange"}
+                      className="py-2"
+                      onClick={handleNextStep}
+                      disabled={materialType === ""}
+                    >
+                      <Titles size={"h1"}>{t("Continue")}</Titles>
+                    </Buttons>
                   </Holds>
                 </>
               )}
-
-              {/* Show CodeStep if conditions match */}
-              {(shiftType === "fShift" ||
-                shiftType === "eShift" ||
-                laborType === "equipmentOperator") &&
-                canProceed && (
-                  <Holds className="row-start-2 row-end-7 py-4 px-2 h-full w-full">
-                    <CodeFinder
-                      datatype={"equipment-operator"}
-                      setSelectedOpt={setCanProceed}
-                      setScannedId={undefined}
-                    />
-                  </Holds>
-                )}
 
               {/* Continue Button for manual labor */}
               {canProceed && (

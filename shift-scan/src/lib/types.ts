@@ -511,6 +511,23 @@ export type Equipment = {
   inUse?: boolean;
 };
 
+export type ListEquipmentContext = {
+  id: string;
+  qrId: string;
+  name: string;
+  description?: string;
+  equipmentTag: "TRUCK" | "TRAILER" | "EQUIPMENT" | "VEHICLE";
+  status: "OPERATIONAL" | "NEEDS_REPAIR" | "NEEDS_MAINTENANCE";
+  make?: string | null;
+  model?: string | null;
+  year?: string | null;
+  licensePlate?: string | null;
+  registrationExpiration?: string | null;
+  mileage?: number | null;
+  isActive: boolean;
+  inUse: boolean;
+};
+
 export type CompleteListEquipment = {
   id: string;
   qrId: string;

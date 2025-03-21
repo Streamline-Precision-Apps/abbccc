@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import QR from "./qr";
 import { Buttons } from "../(reusable)/buttons";
@@ -23,6 +23,8 @@ type QRStepProps = {
   clockInRole: string | undefined;
   setClockInRole: React.Dispatch<React.SetStateAction<string | undefined>>;
   setScanned: React.Dispatch<React.SetStateAction<boolean>>;
+  clockInRoleTypes: string | undefined;
+  setClockInRoleTypes: Dispatch<SetStateAction<string | undefined>>;
 };
 
 export default function QRStep({
