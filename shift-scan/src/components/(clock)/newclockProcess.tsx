@@ -479,6 +479,7 @@ export default function NewClockProcess({
           materialType={materialType}
           shiftType={shiftType}
           clockInRoleTypes={clockInRoleTypes}
+          handlePreviousStep={handlePrevStep}
           comments={undefined}
         />
       )}

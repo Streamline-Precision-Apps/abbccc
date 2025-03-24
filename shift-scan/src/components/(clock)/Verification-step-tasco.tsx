@@ -26,6 +26,7 @@ import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useOperator } from "@/app/context/operatorContext";
 import Spinner from "../(animations)/spinner";
 import { form } from "@nextui-org/theme";
+import { Titles } from "../(reusable)/titles";
 
 type VerifyProcessProps = {
   handleNextStep?: () => void;
@@ -37,6 +38,7 @@ type VerifyProcessProps = {
   materialType: string;
   shiftType: string;
   clockInRoleTypes: string | undefined;
+  handlePreviousStep: () => void;
 };
 
 export default function TascoVerificationStep({
@@ -48,6 +50,7 @@ export default function TascoVerificationStep({
   shiftType,
   comments,
   clockInRoleTypes,
+  handlePreviousStep,
 }: VerifyProcessProps) {
   const t = useTranslations("Clock");
   const { scanResult } = useScanData();
@@ -148,20 +151,49 @@ export default function TascoVerificationStep({
       )}
       <Holds
         background={"white"}
-        className={loading ? `h-full w-full opacity-[0.50]` : `h-full w-full`}
+        className={
+          loading ? `h-full w-full p-5 opacity-[0.50]` : `h-full w-full p-5`
+        }
       >
-        <Grids rows={"10"} gap={"5"} className="h-full w-full">
-          <Contents width={"section"} className="h-full row-span-1 ">
-            <TitleBoxes
-              title={t("VerifyJobSite")}
-              titleImg="/clock-in.svg"
-              titleImgAlt="Verify"
-              variant="row"
-              size="default"
-              type="row"
-            />
+        <Grids rows={"7"} gap={"5"} className="h-full w-full">
+          <Contents width={"section"} className="h-full row-start-1 row-end-2 ">
+            <Holds className="h-full w-full row-start-1 row-end-2">
+              <Grids rows={"2"} cols={"5"} gap={"3"} className=" h-full w-full">
+                <Holds
+                  className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center"
+                  onClick={handlePreviousStep}
+                >
+                  <Images
+                    titleImg="/turnBack.svg"
+                    titleImgAlt="back"
+                    position={"left"}
+                  />
+                </Holds>
+                <Holds
+                  position={"row"}
+                  className="row-start-2 row-end-3 col-start-1 col-end-6 "
+                >
+                  <Holds size={"50"}>
+                    <Titles size={"h1"} position={"right"}>
+                      {t("VerifyJobSite")}
+                    </Titles>
+                  </Holds>
+
+                  <Holds size={"50"}>
+                    <Images
+                      titleImg="/clock-in.svg"
+                      titleImgAlt="Verify"
+                      size={"50"}
+                    />
+                  </Holds>
+                </Holds>
+              </Grids>
+            </Holds>
           </Contents>
-          <Forms onSubmit={handleSubmit} className="h-full w-full row-span-9">
+          <Forms
+            onSubmit={handleSubmit}
+            className="h-full w-full row-start-2 row-end-8"
+          >
             <Holds className="h-full w-full">
               <Grids rows={"10"} className="h-full w-full">
                 <Holds className="row-start-2 row-end-7 w-full h-full pt-1">
@@ -180,7 +212,7 @@ export default function TascoVerificationStep({
                             : "3"
                         }
                         gap={"3"}
-                        className="h-full w-full row-auto"
+                        className="h-full w-full"
                       >
                         <Holds className={"row-span-1 col-span-1"}>
                           <Labels
