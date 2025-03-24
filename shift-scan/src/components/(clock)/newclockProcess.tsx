@@ -150,16 +150,10 @@ export default function NewClockProcess({
     try {
       // setting the cookies below to fetch the prev TimeSheet
 
-      let tId = await fetch("/api/cookies?method=get&name=timeSheetId").then(
-        (res) => res.json()
-      );
-
-      if (!tId) {
-        const fetchRecentTimeSheetId = await fetch(
-          "/api/getRecentTimecardReturn"
-        ).then((res) => res.json());
-        tId = fetchRecentTimeSheetId.id;
-      }
+      const fetchRecentTimeSheetId = await fetch(
+        "/api/getRecentTimecardReturn"
+      ).then((res) => res.json());
+      const tId = fetchRecentTimeSheetId.id;
 
       const formData = new FormData();
       formData.append("id", tId?.toString() || "");
