@@ -4,7 +4,7 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Holds } from "@/components/(reusable)/holds";
 import { Selects } from "@/components/(reusable)/selects";
-import React, { useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Grids } from "@/components/(reusable)/grids";
 import { useTranslations } from "next-intl";
 import { Images } from "../(reusable)/images";
@@ -14,6 +14,7 @@ import CodeStep from "./code-step";
 import CodeFinder from "../(search)/codeFinder";
 import StepButtons from "./step-buttons";
 import { Titles } from "../(reusable)/titles";
+import { TitleBoxes } from "../(reusable)/titleBoxes";
 
 type TruckClockInFormProps = {
   handleNextStep: () => void;
@@ -24,6 +25,8 @@ type TruckClockInFormProps = {
   setTruck: React.Dispatch<React.SetStateAction<string>>;
   setStartingMileage: React.Dispatch<React.SetStateAction<number>>;
   clockInRoleTypes: string | undefined;
+  returnPathUsed: boolean;
+  setStep: Dispatch<SetStateAction<number>>;
 };
 type TruckListSchema = {
   id: string;
@@ -40,6 +43,8 @@ export default function TruckClockInForm({
   setStartingMileage,
   handlePrevStep,
   clockInRoleTypes,
+  returnPathUsed,
+  setStep,
 }: TruckClockInFormProps) {
   const t = useTranslations("Clock");
   const [truckList, setTruckList] = useState<TruckListSchema[]>([]);
@@ -71,37 +76,24 @@ export default function TruckClockInForm({
   return (
     <Holds background={"white"} className="w-full h-full py-4">
       <Contents width="section">
-        <Grids rows={"10"} cols={"1"} className="h-full w-full">
-          <Grids
-            rows={"2"}
-            cols={"5"}
-            gap={"3"}
-            className="row-start-1 row-end-3 h-full"
-          >
-            <Holds
-              className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center "
-              onClick={handlePrevStep}
-            >
-              <Images
-                titleImg="/turnBack.svg"
-                titleImgAlt="back"
-                position={"left"}
-              />
-            </Holds>
-            <Holds
-              background={"white"}
-              className="row-start-2 row-end-3 col-start-1 col-end-6 justify-center p-1 py-2 "
-            >
-              <Titles>
-                {clockInRoleTypes === "truckDriver"
+        <Grids rows={"8"} cols={"1"} className="h-full w-full">
+          <Holds className="row-start-1 row-end-2 h-full w-full">
+            <TitleBoxes
+              title={
+                clockInRoleTypes === "truckDriver"
                   ? t("EnterTruckInfo")
                   : clockInRoleTypes === "truckEquipmentOperator"
                   ? t("EnterEquipmentInfo")
-                  : ""}
-              </Titles>
-            </Holds>
-          </Grids>
-          <Holds className="row-start-3 row-end-11 h-full w-full justify-center">
+                  : ""
+              }
+              titleImg=""
+              titleImgAlt=""
+              onClick={returnPathUsed ? () => setStep(1) : handlePrevStep}
+              type="noIcon-NoHref"
+            />
+          </Holds>
+
+          <Holds className="row-start-2 row-end-9 h-full w-full justify-center">
             {clockInRoleTypes === "truckDriver" && (
               <Grids rows={"8"} cols={"1"} gap={"5"}>
                 <Holds

@@ -17,7 +17,6 @@ export async function GET() {
     const timesheet = await prisma.timeSheet.findFirst({
       where: {
         userId,
-        endTime: null, // Ensure timesheet is still active
       },
       orderBy: {
         submitDate: "desc", // Sort by most recent submission date

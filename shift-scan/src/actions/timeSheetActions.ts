@@ -813,6 +813,21 @@ export async function returnToPrevWork(formData: FormData) {
       jobsiteId: true,
       costcode: true,
       workType: true,
+      tascoLogs: {
+        select: {
+          shiftType: true,
+          equipmentId: true,
+          laborType: true,
+          materialType: true,
+        },
+      },
+      truckingLogs: {
+        select: {
+          laborType: true,
+          equipmentId: true,
+          startingMileage: true,
+        },
+      },
     },
   });
   console.log(PrevTimeSheet);
