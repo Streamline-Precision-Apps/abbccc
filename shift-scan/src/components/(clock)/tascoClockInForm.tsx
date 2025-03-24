@@ -68,6 +68,12 @@ export default function TascoClockInForm({
     fetchMaterialTypes();
   }, []);
 
+  useEffect(() => {
+    if (equipmentId) {
+      setCanProceed(true);
+    }
+  }, [equipmentId]);
+
   return (
     <Holds
       background={"white"}
@@ -80,7 +86,15 @@ export default function TascoClockInForm({
           {/* Back Button */}
           <Holds className="h-full w-full row-start-1 row-end-2">
             <TitleBoxes
-              title={""}
+              title={
+                clockInRoleTypes === "tascoAbcdLabor"
+                  ? "ABCD Manual Labor"
+                  : clockInRoleTypes === "tascoAbcdEquipment"
+                  ? "ABCD Equipment Operator"
+                  : clockInRoleTypes === "tascoEEquipment"
+                  ? "Mud Conditioning"
+                  : ""
+              }
               titleImg="/mechanic.svg"
               titleImgAlt="Mechanic"
               onClick={returnPathUsed ? () => setStep(1) : handlePrevStep}

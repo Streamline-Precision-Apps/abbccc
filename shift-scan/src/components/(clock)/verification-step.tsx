@@ -230,6 +230,7 @@ export default function VerificationStep({
                     <Buttons
                       type="submit"
                       background={"none"}
+                      shadow={"none"}
                       className="bg-app-green mx-auto flex justify-center items-center w-full h-full py-4 px-5 rounded-lg text-black font-bold border-[3px] border-black"
                     >
                       <Clock time={date.getTime()} />
