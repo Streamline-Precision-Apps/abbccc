@@ -16,6 +16,7 @@ import StepButtons from "./step-buttons";
 import { Titles } from "../(reusable)/titles";
 import { TitleBoxes } from "../(reusable)/titleBoxes";
 import Spinner from "../(animations)/spinner";
+import { useOperator } from "@/app/context/operatorContext";
 
 type TruckClockInFormProps = {
   handleNextStep: () => void;
@@ -50,6 +51,7 @@ export default function TruckClockInForm({
   startingMileage,
 }: TruckClockInFormProps) {
   const t = useTranslations("Clock");
+  const { equipmentId } = useOperator();
   const [truckList, setTruckList] = useState<TruckListSchema[]>([]);
   const [selectedOpt, setSelectedOpt] = useState<boolean>(false);
   const [hasTriggered, setHasTriggered] = useState(false);
@@ -78,6 +80,12 @@ export default function TruckClockInForm({
       setHasTriggered(true); // Set the flag to prevent future triggers
     }
   }, [clockInTruckType, hasTriggered]);
+
+  useEffect(() => {
+    if (equipmentId) {
+      setSelectedOpt(true);
+    }
+  }, [equipmentId]);
 
   return (
     <Holds
@@ -164,16 +172,22 @@ export default function TruckClockInForm({
                 <Grids rows={"7"} gap={"5"} className="h-full w-full">
                   <Holds className="row-start-1 row-end-7 h-full w-full pt-5">
                     <CodeFinder
-                      setScannedId={undefined}
                       datatype={"equipment-operator"}
                       setSelectedOpt={setSelectedOpt}
+                      setScannedId={undefined}
+                      initialValue={
+                        equipmentId
+                          ? { code: equipmentId, label: equipmentId }
+                          : null
+                      }
+                      initialSearchTerm={equipmentId || ""}
                     />
                   </Holds>
                   {handleNextStep && (
                     <Holds className="row-start-7 row-end-8 h-full w-full justify-center">
                       <StepButtons
                         handleNextStep={handleNextStep}
-                        disabled={!selectedOpt && !startingMileage}
+                        disabled={!selectedOpt}
                       />
                     </Holds>
                   )}

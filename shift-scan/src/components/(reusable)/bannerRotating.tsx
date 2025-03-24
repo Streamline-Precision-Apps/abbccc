@@ -213,16 +213,22 @@ export default function BannerRotating() {
         {bannerData.truckingLogs &&
           bannerData.truckingLogs.map((equipment, index) => (
             <Holds key={index}>
-              <Titles text={"white"}>
-                {equipment.equipment?.name || "Unknown Equipment"}
-              </Titles>
-              <Texts className="text-white" size={"p5"}>
-                {equipment.laborType === "truckEquipmentOperator"
-                  ? "Truck Equipment Operator"
-                  : equipment.laborType === "truckDriver"
-                  ? "Truck Driver"
-                  : "Manual Labor"}
-              </Texts>
+              {equipment.laborType !== "truckLabor" ? (
+                <Titles text={"white"}>{equipment.equipment?.name}</Titles>
+              ) : (
+                <Titles text={"white"}>
+                  {equipment.laborType === "truckLabor" && "Manual Labor"}
+                </Titles>
+              )}
+              {equipment.laborType !== "truckLabor" && (
+                <Texts className="text-white" size={"p5"}>
+                  {equipment.laborType === "truckEquipmentOperator"
+                    ? "Truck Equipment Operator"
+                    : equipment.laborType === "truckDriver"
+                    ? "Truck Driver"
+                    : ""}
+                </Texts>
+              )}
             </Holds>
           ))}
       </Slider>
