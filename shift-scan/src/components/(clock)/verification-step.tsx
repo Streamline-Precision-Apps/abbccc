@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
@@ -28,6 +28,7 @@ import {
 import { Titles } from "../(reusable)/titles";
 import { useRouter } from "next/navigation";
 import Spinner from "../(animations)/spinner";
+import { TitleBoxes } from "../(reusable)/titleBoxes";
 
 type VerifyProcessProps = {
   type: string;
@@ -37,6 +38,8 @@ type VerifyProcessProps = {
   handlePreviousStep?: () => void;
   laborType?: string;
   clockInRoleTypes: string | undefined;
+  returnPathUsed: boolean;
+  setStep: Dispatch<SetStateAction<number>>;
 };
 
 export default function VerificationStep({
@@ -46,6 +49,8 @@ export default function VerificationStep({
   handlePreviousStep,
   laborType,
   clockInRoleTypes,
+  returnPathUsed,
+  setStep,
 }: VerifyProcessProps) {
   const t = useTranslations("Clock");
   const { scanResult } = useScanData();
@@ -137,37 +142,24 @@ export default function VerificationStep({
       >
         <Contents width={"section"}>
           <Grids rows={"7"} gap={"5"} className="h-full w-full">
-            <Holds className="h-full w-full row-start-1 row-end-2">
-              <Grids rows={"2"} cols={"5"} gap={"3"} className=" h-full w-full">
-                <Holds
-                  className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center"
+            <Holds className="h-full w-full row-start-1 row-end-2 ">
+              <Holds className="h-full w-full px-3">
+                <TitleBoxes
+                  title={t("VerifyJobSite")}
+                  titleImg="/mechanic.svg"
+                  titleImgAlt="Mechanic"
                   onClick={handlePreviousStep}
-                >
+                  type="noIcon-NoHref"
+                />
+
+                <Holds>
                   <Images
-                    titleImg="/turnBack.svg"
-                    titleImgAlt="back"
-                    position={"left"}
+                    titleImg="/clock-in.svg"
+                    titleImgAlt="Verify"
+                    className="w-8 h-8"
                   />
                 </Holds>
-                <Holds
-                  position={"row"}
-                  className="row-start-2 row-end-3 col-start-1 col-end-6 "
-                >
-                  <Holds size={"50"}>
-                    <Titles size={"h1"} position={"right"}>
-                      {t("VerifyJobSite")}
-                    </Titles>
-                  </Holds>
-
-                  <Holds size={"50"}>
-                    <Images
-                      titleImg="/clock-in.svg"
-                      titleImgAlt="Verify"
-                      size={"50"}
-                    />
-                  </Holds>
-                </Holds>
-              </Grids>
+              </Holds>
             </Holds>
             <Forms
               onSubmit={handleSubmit}

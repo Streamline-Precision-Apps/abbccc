@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
@@ -39,6 +39,8 @@ type VerifyProcessProps = {
   shiftType: string;
   clockInRoleTypes: string | undefined;
   handlePreviousStep: () => void;
+  returnPathUsed: boolean;
+  setStep: Dispatch<SetStateAction<number>>;
 };
 
 export default function TascoVerificationStep({
@@ -51,6 +53,8 @@ export default function TascoVerificationStep({
   comments,
   clockInRoleTypes,
   handlePreviousStep,
+  returnPathUsed,
+  setStep,
 }: VerifyProcessProps) {
   const t = useTranslations("Clock");
   const { scanResult } = useScanData();
@@ -156,40 +160,26 @@ export default function TascoVerificationStep({
         }
       >
         <Grids rows={"7"} gap={"5"} className="h-full w-full">
-          <Contents width={"section"} className="h-full row-start-1 row-end-2 ">
-            <Holds className="h-full w-full row-start-1 row-end-2">
-              <Grids rows={"2"} cols={"5"} gap={"3"} className=" h-full w-full">
-                <Holds
-                  className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center"
-                  onClick={handlePreviousStep}
-                >
-                  <Images
-                    titleImg="/turnBack.svg"
-                    titleImgAlt="back"
-                    position={"left"}
-                  />
-                </Holds>
-                <Holds
-                  position={"row"}
-                  className="row-start-2 row-end-3 col-start-1 col-end-6 "
-                >
-                  <Holds size={"50"}>
-                    <Titles size={"h1"} position={"right"}>
-                      {t("VerifyJobSite")}
-                    </Titles>
-                  </Holds>
+          <Holds className="h-full w-full row-start-1 row-end-2 ">
+            <Holds className="h-full w-full px-3">
+              <TitleBoxes
+                title={t("VerifyJobSite")}
+                titleImg="/mechanic.svg"
+                titleImgAlt="Mechanic"
+                onClick={handlePreviousStep}
+                type="noIcon-NoHref"
+              />
 
-                  <Holds size={"50"}>
-                    <Images
-                      titleImg="/clock-in.svg"
-                      titleImgAlt="Verify"
-                      size={"50"}
-                    />
-                  </Holds>
-                </Holds>
-              </Grids>
+              <Holds>
+                <Images
+                  titleImg="/clock-in.svg"
+                  titleImgAlt="Verify"
+                  className="w-8 h-8"
+                />
+              </Holds>
             </Holds>
-          </Contents>
+          </Holds>
+
           <Forms
             onSubmit={handleSubmit}
             className="h-full w-full row-start-2 row-end-8"

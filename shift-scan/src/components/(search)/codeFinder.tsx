@@ -20,6 +20,7 @@ import {
 import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
 import { useOperator } from "@/app/context/operatorContext";
+import { intialEquipment } from "@/data/dataValues";
 
 type Option = {
   code: string;
@@ -29,18 +30,24 @@ type Option = {
 type Props = {
   datatype: string;
   setSelectedOpt: React.Dispatch<React.SetStateAction<boolean>>;
-  setScannedId: React.Dispatch<React.SetStateAction<string | null>> | undefined;
+  setScannedId?: React.Dispatch<React.SetStateAction<string | null>>;
+  initialValue?: Option | null; // Add this prop
+  initialSearchTerm?: string; // Add this prop
 };
 
 export default function CodeFinder({
   datatype,
   setSelectedOpt,
   setScannedId,
+  initialValue = null,
+  initialSearchTerm = "",
 }: Props) {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectTerm, setSelectTerm] = useState("");
-  const [selectedOption, setSelectedOption] = useState<Option | null>(null);
-  const [selectedTerm, setSelectedTerm] = useState(false);
+  const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
+  const [selectTerm, setSelectTerm] = useState(initialSearchTerm);
+  const [selectedOption, setSelectedOption] = useState<Option | null>(
+    initialValue
+  );
+  const [selectedTerm, setSelectedTerm] = useState(!!initialValue);
   const t = useTranslations("Clock");
 
   const { setScanResult } = useScanData();

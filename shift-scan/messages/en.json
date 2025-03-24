@@ -321,6 +321,7 @@
     "ID": "Id: #"
   },
   "Clock": {
+    "SelectedEquipment": "Selected Equipment",
     "MaterialType": "Material Type",
     "LaborType": "Labor Type",
     "SubmitSelection": "Submit Selection",

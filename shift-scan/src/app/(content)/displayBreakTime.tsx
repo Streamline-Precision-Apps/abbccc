@@ -20,7 +20,7 @@ export default function DisplayBreakTime({
 }: BreakTimeProps) {
   const t = useTranslations("Home");
   const e = useTranslations("Err-Msg");
-  const [breakTime, setBreakTime] = useState<string>();
+  const [breakTime, setBreakTime] = useState<Date>(); // Store Date object directly
   const [loading, setLoading] = useState<boolean>(true);
   const [hydrated, setHydrated] = useState<boolean>(false);
 
@@ -34,16 +34,12 @@ export default function DisplayBreakTime({
     if (!breakTime) {
       return 0;
     }
-    const timezoneOffset = new Date().getTimezoneOffset() * 60 * 1000;
-    // Parse the ISO string into a Date object
-    const breakTimeValue = new Date(breakTime);
 
     // Current time
     const now = new Date();
 
     // Calculate the duration in milliseconds
-    const breakDuration =
-      now.getTime() - breakTimeValue.getTime() - timezoneOffset;
+    const breakDuration = now.getTime() - breakTime.getTime();
 
     // Convert duration to seconds
     return Math.floor(breakDuration / 1000); // Convert to seconds
@@ -55,9 +51,10 @@ export default function DisplayBreakTime({
     const fetchBreakTime = async () => {
       try {
         setLoading(true);
-        const response = await fetch("/api/getRecentTimecard");
+        const response = await fetch("/api/getRecentTimecardReturn");
         const data = await response.json();
-        setBreakTime(data.endTime); // Set the ISO string for break time
+        const breakTime = new Date(data.endTime); // This will parse in local time
+        setBreakTime(breakTime); // Store the Date object directly
       } catch (error) {
         if (error instanceof z.ZodError) {
           console.error(
@@ -90,6 +87,7 @@ export default function DisplayBreakTime({
       return `${hours.toFixed(1)} hrs`;
     }
   };
+
   // Update elapsed time when breakTime changes
   useEffect(() => {
     setElapsedTime(getBreakTime);
