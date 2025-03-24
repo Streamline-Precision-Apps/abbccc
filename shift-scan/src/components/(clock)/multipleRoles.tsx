@@ -12,6 +12,7 @@ import { Images } from "../(reusable)/images";
 import { Selects } from "../(reusable)/selects";
 import { Contents } from "../(reusable)/contents";
 import { select } from "@nextui-org/theme";
+import { TitleBoxes } from "../(reusable)/titleBoxes";
 
 type Props = {
   handleNextStep: () => void;
@@ -97,22 +98,14 @@ export default function MultipleRoles({
       <Holds background={"white"} className="h-full w-full">
         <Contents width={"section"} className="h-full py-5">
           <Grids rows={"8"} gap={"5"} className="h-full w-full">
-            <Holds className="row-start-1 row-end-2 h-full w-full justify-center ">
-              <Grids rows={"2"} cols={"5"} gap={"3"} className=" h-full w-full">
-                <Holds
-                  className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center"
-                  onClick={handleReturnPath}
-                >
-                  <Images
-                    titleImg="/turnBack.svg"
-                    titleImgAlt="back"
-                    position={"left"}
-                  />
-                </Holds>
-                <Holds className="row-start-2 row-end-3 col-span-5 h-full w-full justify-center">
-                  <Titles size={"h1"}> {t("ScanJobSite")}</Titles>
-                </Holds>
-              </Grids>
+            <Holds className="h-full row-start-1 row-end-2">
+              <TitleBoxes
+                title={t("ScanJobSite")}
+                titleImg=""
+                titleImgAlt=""
+                onClick={handleReturnPath}
+                type="noIcon-NoHref"
+              />
             </Holds>
             {numberOfRoles > 1 && (
               <Holds className="p-1 justify-center border-[3px] border-black rounded-[10px] shadow-[6px_6px_0px_grey]">
