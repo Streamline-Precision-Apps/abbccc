@@ -91,7 +91,6 @@ export default function TascoVerificationStep({
       formData.append("costcode", savedCostCode?.toString() || "");
       formData.append("startTime", new Date().toISOString());
       formData.append("laborType", clockInRoleTypes || "");
-      formData.append("materialType", materialType || "");
 
       if (clockInRoleTypes === "tascoAbcdEquipment") {
         formData.append("materialType", materialType || "");
@@ -151,7 +150,7 @@ export default function TascoVerificationStep({
         background={"white"}
         className={loading ? `h-full w-full opacity-[0.50]` : `h-full w-full`}
       >
-        <Grids rows={"10"} gap={"2"} className="h-full w-full">
+        <Grids rows={"10"} gap={"5"} className="h-full w-full">
           <Contents width={"section"} className="h-full row-span-1 ">
             <TitleBoxes
               title={t("VerifyJobSite")}
@@ -164,102 +163,129 @@ export default function TascoVerificationStep({
           </Contents>
           <Forms onSubmit={handleSubmit} className="h-full w-full row-span-9">
             <Holds className="h-full w-full">
-              <Grids cols={"5"} rows={"10"} className="h-full w-full">
-                <Holds className="row-start-2 row-end-3 col-start-5 col-end-6 w-full h-full">
-                  <Holds className="h-full w-full pr-1">
-                    <Buttons
-                      type="submit"
-                      className="w-full h-full"
-                      background={"none"}
-                    >
-                      <Holds
-                        background={"lightBlue"}
-                        className="w-full h-full items-center justify-center "
-                      >
-                        <Images
-                          titleImg={"/downArrow.svg"}
-                          titleImgAlt={"downArrow"}
-                          className="p-1 w-10 h-10"
-                        />
-                      </Holds>
-                    </Buttons>
-                  </Holds>
-                </Holds>
-                <Holds className="row-start-3 row-end-7 col-start-1 col-end-6 h-full pt-1">
+              <Grids rows={"10"} className="h-full w-full">
+                <Holds className="row-start-2 row-end-7 w-full h-full pt-1">
                   <Holds
                     background={"lightBlue"}
                     className="h-full w-[95%] sm:w-[85%] md:w-[75%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%]  border-[3px] rounded-b-none  border-black "
                   >
-                    <Contents width={"section"} className="h-full">
-                      <Labels
-                        htmlFor="date"
-                        text={"white"}
-                        size={"p4"}
-                        position={"left"}
+                    <Contents width={"section"} className="h-full py-5">
+                      <Grids
+                        cols={"2"}
+                        rows={
+                          clockInRoleTypes === "tascoAbcdEquipment"
+                            ? "4"
+                            : clockInRoleTypes === "tascoAbcdLabor"
+                            ? "4"
+                            : "3"
+                        }
+                        gap={"3"}
+                        className="h-full w-full row-auto"
                       >
-                        {t("Date-label")}
-                      </Labels>
-                      <Inputs
-                        name="date"
-                        state="disabled"
-                        variant={"white"}
-                        data={date.toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "numeric",
-                          day: "numeric",
-                        })}
-                      />
-                      <Labels
-                        htmlFor="jobsiteId"
-                        text={"white"}
-                        size={"p4"}
-                        position={"left"}
-                      >
-                        {t("JobSite-label")}
-                      </Labels>
-                      <Inputs
-                        state="disabled"
-                        name="jobsiteId"
-                        variant={"white"}
-                        data={scanResult?.data || ""}
-                      />
-                      <Labels
-                        htmlFor="costcode"
-                        text={"white"}
-                        size={"p4"}
-                        position={"left"}
-                      >
-                        {t("CostCode-label")}
-                      </Labels>
-                      <Inputs
-                        state="disabled"
-                        name="costcode"
-                        variant={"white"}
-                        data={savedCostCode?.toString() || ""}
-                      />
-                      {comments !== undefined && (
-                        <>
+                        <Holds className={"row-span-1 col-span-1"}>
                           <Labels
-                            htmlFor="timeSheetComments"
+                            htmlFor="jobsiteId"
                             text={"white"}
-                            size={"p4"}
+                            size={"p6"}
                             position={"left"}
                           >
-                            {t("Comments")}
+                            {t("JobSite-label")}
                           </Labels>
                           <Inputs
                             state="disabled"
-                            name="timeSheetComments"
+                            name="jobsiteId"
                             variant={"white"}
-                            data={comments}
+                            data={scanResult?.data || ""}
+                            className="pl-2 text-base"
                           />
-                        </>
-                      )}
+                        </Holds>
+                        <Holds className={"row-span-1 col-span-1 "}>
+                          <Labels
+                            htmlFor="costcode"
+                            text={"white"}
+                            size={"p6"}
+                            position={"left"}
+                          >
+                            {t("CostCode-label")}
+                          </Labels>
+                          <Inputs
+                            state="disabled"
+                            name="costcode"
+                            variant={"white"}
+                            data={savedCostCode?.toString() || ""}
+                            className="pl-2 text-base"
+                          />
+                        </Holds>
+
+                        <Holds className="row-span-1 col-span-2 h-full">
+                          <Labels
+                            htmlFor="clockInRoleTypes"
+                            text={"white"}
+                            size={"p6"}
+                            position={"left"}
+                          >
+                            {t("LaborType")}
+                          </Labels>
+                          <Inputs
+                            state="disabled"
+                            name="jobsiteId"
+                            variant={"white"}
+                            data={
+                              clockInRoleTypes === "tascoAbcdLabor"
+                                ? "ABCD - Labor"
+                                : clockInRoleTypes === "tascoAbcdEquipment"
+                                ? "ABCD - EQ Operator"
+                                : clockInRoleTypes === "tascoEEquipment"
+                                ? "E - EQ Operator"
+                                : clockInRoleTypes
+                            }
+                            className="pl-2 text-base"
+                          />
+                        </Holds>
+                        {clockInRoleTypes !== "tascoEEquipment" && (
+                          <Holds className="row-span-1 col-span-2 h-full">
+                            <Labels
+                              htmlFor="materialType-label"
+                              text={"white"}
+                              size={"p6"}
+                              position={"left"}
+                            >
+                              {t("MaterialType")}
+                            </Labels>
+                            <Inputs
+                              state="disabled"
+                              name="materialType-label"
+                              variant={"white"}
+                              data={materialType || ""}
+                              className="pl-2 text-base"
+                            />
+                          </Holds>
+                        )}
+                        {equipmentId && (
+                          <Holds className="row-span-1 col-span-2 h-full">
+                            <Labels
+                              htmlFor="Equipment-label"
+                              text={"white"}
+                              size={"p6"}
+                              position={"left"}
+                            >
+                              {t("Equipment-label")}
+                            </Labels>
+                            <Inputs
+                              state="disabled"
+                              name="Equipment-label"
+                              variant={"white"}
+                              data={equipmentId || ""}
+                              className="pl-2 text-base"
+                            />
+                          </Holds>
+                        )}
+                      </Grids>
                     </Contents>
                   </Holds>
                 </Holds>
 
-                <Holds className="row-start-7 row-end-11 col-start-1 col-end-6 h-full  ">
+                <Holds className="row-start-7 row-end-11 w-full h-full  ">
                   <Holds
                     background={"darkBlue"}
                     className="h-full w-[100%] sm:w-[90%] md:w-[90%] lg:w-[80%] xl:w-[80%] 2xl:w-[80%]  border-[3px]   border-black p-8 "
@@ -267,6 +293,7 @@ export default function TascoVerificationStep({
                     <Buttons
                       type="submit"
                       background={"none"}
+                      shadow={"none"}
                       className="bg-app-green mx-auto flex justify-center items-center w-full h-full py-4 px-5 rounded-lg text-black font-bold border-[3px] border-black"
                     >
                       <Clock time={date.getTime()} />

@@ -321,6 +321,8 @@
     "ID": "Id: #"
   },
   "Clock": {
+    "MaterialType": "Material Type",
+    "LaborType": "Labor Type",
     "SubmitSelection": "Submit Selection",
     "ViewSelected": "View Selected Options",
     "ScanJobsite": "Scan Job Site",

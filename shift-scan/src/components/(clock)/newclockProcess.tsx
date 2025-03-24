@@ -20,7 +20,7 @@ import { returnToPrevWork } from "@/actions/timeSheetActions";
 import TruckVerificationStep from "./Verification-step-truck";
 import TascoClockInForm from "./tascoClockInForm";
 import { useSession } from "next-auth/react";
-import QRMultiRoles from "./qr-multi-handler";
+import QRMultiRoles from "./QRMultiRoles";
 import ClockLoadingPage from "./clock-loading-page";
 import { Contents } from "../(reusable)/contents";
 
@@ -453,17 +453,21 @@ export default function NewClockProcess({
         </Holds>
       )}
       {step === 5 && clockInRole === "tasco" && (
-        <TascoClockInForm
-          handleNextStep={handleNextStep}
-          handlePrevStep={handlePrevStep}
-          setLaborType={setLaborType}
-          laborType={laborType}
-          materialType={materialType}
-          setMaterialType={setMaterialType}
-          shiftType={shiftType}
-          setShiftType={setShiftType}
-          clockInRoleTypes={clockInRoleTypes}
-        />
+        <Holds background={"white"} className="h-full w-full py-5">
+          <Contents width="section">
+            <TascoClockInForm
+              handleNextStep={handleNextStep}
+              handlePrevStep={handlePrevStep}
+              setLaborType={setLaborType}
+              laborType={laborType}
+              materialType={materialType}
+              setMaterialType={setMaterialType}
+              shiftType={shiftType}
+              setShiftType={setShiftType}
+              clockInRoleTypes={clockInRoleTypes}
+            />
+          </Contents>
+        </Holds>
       )}
       {step === 6 && clockInRole === "tasco" && (
         <TascoVerificationStep
