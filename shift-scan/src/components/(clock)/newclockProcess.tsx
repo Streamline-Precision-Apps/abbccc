@@ -226,6 +226,7 @@ export default function NewClockProcess({
           // Set equipment (truck) if exists
           if (firstTruckLog.equipmentId) {
             setEquipmentId(firstTruckLog.equipmentId);
+            setTruck(firstTruckLog.equipmentId);
           }
 
           const workTypes = response.truckingLogs
@@ -485,6 +486,7 @@ export default function NewClockProcess({
           setLaborType={setLaborType}
           setTruck={setTruck}
           setStartingMileage={setStartingMileage}
+          startingMileage={startingMileage}
           laborType={laborType}
           truck={truck}
           clockInRoleTypes={clockInRoleTypes}
