@@ -335,16 +335,16 @@ export default function MechanicEditPage({
                     <Labels size="p6" htmlFor="delayReasoning">
                       {t("DelayReasoning")}
                     </Labels>
-                    <TextAreas
+                    <Selects
                       name="delayReasoning"
-                      value={repairDetails.delayReasoning || ""}
-                      onChange={(e) =>
-                        updateField("delayReasoning", e.target.value)
-                      }
-                      rows={2}
-                      className="text-sm"
-                      style={{ resize: "none" }}
-                    />
+                      value={repairDetails.delayReasoning}
+                      onChange={(e) => {
+                        updateField("delayReasoning", e.target.value);
+                      }}
+                    >
+                      <option value="">{t("NoDelay")}</option>
+                      <option value="Delay">{t("Delay")}</option>
+                    </Selects>
                   </Holds>
                   <Holds>
                     <Labels size="p6" htmlFor="delay">
