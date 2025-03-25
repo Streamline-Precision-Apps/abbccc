@@ -40,7 +40,6 @@ export default function ReceivedInfo({
   const [buttonColor, setButtonColor] = useState(true); // ✅ Default color
 
   useEffect(() => {
-    console.log("Updating button state...");
     if (
       delayReasoning === "" &&
       myComment.length > 3 &&
@@ -54,11 +53,9 @@ export default function ReceivedInfo({
       myComment.length > 3 &&
       expectedArrival !== null
     ) {
-      console.log("Enabling Delay button...");
       setIsButtonDisabled(false); // ✅ Enable button
       setButtonColor(true); // ✅ Set to active color
     } else {
-      console.log("Disabling button...");
       setIsButtonDisabled(true); // ✅ Disable button
       setButtonColor(false); // ✅ Set to disabled color
     }
