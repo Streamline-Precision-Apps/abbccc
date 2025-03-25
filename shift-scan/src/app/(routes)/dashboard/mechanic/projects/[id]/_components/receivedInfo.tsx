@@ -12,20 +12,20 @@ import { Titles } from "@/components/(reusable)/titles";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
-export default function ReceivedInfo({
+export default function ReceivedInfoTab({
   loading,
   problemReceived,
   additionalNotes,
-  leaveProject,
   myComment,
   hasBeenDelayed,
+  onLeaveProject,
 }: {
   loading: boolean;
   problemReceived: string;
   additionalNotes: string;
-  leaveProject: () => void;
   myComment: string;
   hasBeenDelayed: boolean;
+  onLeaveProject: () => void;
 }) {
   const t = useTranslations("MechanicWidget");
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
@@ -73,7 +73,7 @@ export default function ReceivedInfo({
     );
 
   return (
-    <Holds className="h-full py-2">
+    <Holds background={"white"} className="h-full rounded-t-none py-2">
       <Contents width={"section"}>
         <Grids rows={"8"} gap={"5"} className="h-full">
           <Holds className="row-start-1 row-end-8 h-full flex flex-col">
@@ -135,7 +135,11 @@ export default function ReceivedInfo({
             )}
 
             {myComment.length < 3 && (
-              <Texts size="p6" className="text-red-500 px-5 pt-10 ">
+              <Texts
+                position={"left"}
+                size="p7"
+                className="text-red-500  pt-5 "
+              >
                 {`* ${t("RecordToLeaveProject")}`}
               </Texts>
             )}
@@ -145,7 +149,7 @@ export default function ReceivedInfo({
               disabled={isButtonDisabled}
               background={buttonColor ? "red" : "darkGray"}
               className="h-full"
-              onClick={leaveProject}
+              onClick={onLeaveProject}
             >
               <Titles size={"h2"}>{t("LeaveProject")}</Titles>
             </Buttons>

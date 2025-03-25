@@ -293,6 +293,8 @@ export async function SubmitEngineerProject(formData: FormData) {
 
     revalidatePath("/dashboard/mechanic");
     revalidateTag("projects");
+    revalidateTag("maintenance-projects");
+
     return true;
   } catch (error) {}
 }
