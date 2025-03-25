@@ -845,6 +845,9 @@
     "FetchingError": "Se produjo un error mientras obtenía contenido recibido"
   },
   "MechanicWidget": {
+    "AddDelay": "Add Delay",
+    "RemoveDelay": "Remove Delay",
+    "ExpectedArrival": "Llegada Esperada",
     "On": "en",
     "CreatedBy": "Creado Por",
     "SolutionPlaceholder": "Solución",

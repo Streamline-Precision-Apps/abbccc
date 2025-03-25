@@ -897,6 +897,9 @@
   },
 
   "MechanicWidget": {
+    "AddDelay": "Add Delay",
+    "RemoveDelay": "Remove Delay",
+    "ExpectedArrival": "Expected Arrival",
     "On": "On",
     "CreatedBy": "Created by",
     "SolutionPlaceholder": "Solution",
