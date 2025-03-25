@@ -2,26 +2,23 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { Priority } from "@/lib/types";
-import { select, user } from "@nextui-org/theme";
 
 // This Updates the selected staus of the project in the database
 export async function setProjectSelected(id: string, selected: boolean) {
   try {
-    console.log("Updating project...");
-    console.log(id, "set to", selected);
     await prisma.maintenance.update({
-      where: {
-        id,
-      },
-      data: {
-        selected,
-      },
+      where: { id },
+      data: { selected },
     });
+
+    // Revalidate both the page and the data
     revalidatePath("/dashboard/mechanic");
-    revalidateTag("projects");
+    revalidateTag("maintenance-projects");
+
+    return { success: true };
   } catch (error) {
     console.error("Error updating project:", error);
-    throw error;
+    return { success: false, error: "Failed to update project" };
   }
 }
 
