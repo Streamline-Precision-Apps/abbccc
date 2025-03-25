@@ -13,10 +13,11 @@ import { useEffect, useMemo, useState } from "react";
 import { Priority } from "@/lib/types";
 import {
   deleteMaintenanceProject,
+  RemoveDelayRepair,
   setEditForProjectInfo,
 } from "@/actions/mechanicActions";
 import debounce from "lodash.debounce";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { NModals } from "@/components/(reusable)/newmodals";
 import { Texts } from "@/components/(reusable)/texts";
 import Spinner from "@/components/(animations)/spinner";
@@ -64,6 +65,7 @@ export default function MechanicEditPage({
   const router = useRouter();
   const t = useTranslations("MechanicWidget");
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const { id } = useParams();
 
   const PriorityOptions = [
     { label: t("SelectPriority"), value: "" },
@@ -119,6 +121,43 @@ export default function MechanicEditPage({
       </Grids>
     );
   }
+
+  const RemoveDelay = async () => {
+    try {
+      const formData = new FormData();
+      id && formData.append("id", id.toString());
+
+      // Optimistically update local state first
+      if (repairDetails) {
+        setRepairDetails({
+          ...repairDetails,
+          delay: null,
+          delayReasoning: undefined,
+          hasBeenDelayed: true,
+        });
+      }
+
+      // Then make the server request
+      const updatedRepair = await RemoveDelayRepair(formData);
+
+      // If server update fails, revert local state
+      if (!updatedRepair) {
+        if (repairDetails) {
+          setRepairDetails(repairDetails); // Revert to original
+        }
+        return;
+      }
+
+      // Optionally show success message
+      // alert("Delay removed successfully");
+    } catch (error) {
+      console.error("Failed to remove delay:", error);
+      // Revert local state on error
+      if (repairDetails) {
+        setRepairDetails(repairDetails);
+      }
+    }
+  };
 
   return (
     <>
@@ -271,40 +310,83 @@ export default function MechanicEditPage({
                   />
                 )}
               </div>
-            </Holds>
 
-            {repairDetails.delay && (
-              <>
+              {repairDetails?.delay ? (
+                <>
+                  <Holds>
+                    <Texts position={"right"} size={"p6"}>
+                      {t("RemoveDelay")}
+                    </Texts>
+                    <Buttons
+                      background={"red"}
+                      className="w-[15%]"
+                      position={"right"}
+                      shadow={"none"}
+                      onClick={RemoveDelay}
+                    >
+                      <Images
+                        titleImg={"/trash.svg"}
+                        titleImgAlt={"trash"}
+                        className="mx-auto w-9 h-9 p-1"
+                      />
+                    </Buttons>
+                  </Holds>
+                  <Holds>
+                    <Labels size="p6" htmlFor="delayReasoning">
+                      {t("DelayReasoning")}
+                    </Labels>
+                    <TextAreas
+                      name="delayReasoning"
+                      value={repairDetails.delayReasoning || ""}
+                      onChange={(e) =>
+                        updateField("delayReasoning", e.target.value)
+                      }
+                      rows={2}
+                      className="text-sm"
+                      style={{ resize: "none" }}
+                    />
+                  </Holds>
+                  <Holds>
+                    <Labels size="p6" htmlFor="delay">
+                      {t("ExpectedArrival")}
+                    </Labels>
+                    <Inputs
+                      type="date"
+                      name="delay"
+                      value={repairDetails.delay?.toString().split("T")[0]}
+                      onChange={(e) => {
+                        const newDelay = new Date(e.target.value).toISOString();
+                        updateField("delay", newDelay);
+                      }}
+                      className="text-center text-sm"
+                    />
+                  </Holds>
+                </>
+              ) : (
                 <Holds>
-                  <Labels size="p6" htmlFor="delayReasoning">
-                    {t("DelayReasoning")}
-                  </Labels>
-                  <Inputs
-                    name="delayReasoning"
-                    value={repairDetails.delayReasoning}
-                    onChange={(e) => {
-                      updateField("delayReasoning", e.target.value);
+                  <Texts position={"right"} size={"p6"}>
+                    {t("AddDelay")}
+                  </Texts>
+                  <Buttons
+                    background={"lightBlue"}
+                    className="w-[15%]"
+                    position={"right"}
+                    shadow={"none"}
+                    onClick={() => {
+                      const tomorrow = new Date();
+                      tomorrow.setDate(tomorrow.getDate() + 1);
+                      updateField("delay", tomorrow.toISOString());
                     }}
-                    className="text-sm pl-4"
-                  />
+                  >
+                    <Images
+                      titleImg={"/plus.svg"}
+                      titleImgAlt={"add"}
+                      className="mx-auto w-9 h-9 p-1"
+                    />
+                  </Buttons>
                 </Holds>
-                <Holds>
-                  <Labels size="p6" htmlFor="delay">
-                    {t("ExpectedArrival")}
-                  </Labels>
-                  <Inputs
-                    type="date"
-                    name="delay"
-                    value={repairDetails.delay?.toString().split("T")[0]}
-                    onChange={(e) => {
-                      const newDelay = new Date(e.target.value).toISOString();
-                      updateField("delay", newDelay);
-                    }}
-                    className="text-center text-sm"
-                  />
-                </Holds>
-              </>
-            )}
+              )}
+            </Holds>
           </Holds>
           {/* Only Show this button if there are no logs */}
           {totalLogs === 0 && (

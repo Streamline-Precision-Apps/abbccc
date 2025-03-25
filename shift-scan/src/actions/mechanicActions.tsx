@@ -75,11 +75,34 @@ export async function CreateMechanicProject(formData: FormData) {
   }
 }
 
+export async function RemoveDelayRepair(formData: FormData) {
+  try {
+    console.log("id", formData);
+    const id = formData.get("id") as string;
+
+    const updatedRepair = await prisma.maintenance.update({
+      where: { id },
+      data: {
+        delayReasoning: null,
+        delay: null,
+        hasBeenDelayed: true,
+      },
+    });
+    console.log("update", updatedRepair);
+    return updatedRepair;
+  } catch (error) {
+    console.error("Error removing delay:", error);
+    throw error;
+  }
+}
+
 export async function setEditForProjectInfo(formData: FormData) {
   try {
     console.log(formData);
     const location = formData.get("location") as string;
     const stringPriority = formData.get("priority") as string;
+    const delay = new Date(formData.get("delay") as string);
+    const delayReasoning = formData.get("delayReasoning") as string;
 
     let priority = Priority.PENDING;
 
@@ -110,6 +133,8 @@ export async function setEditForProjectInfo(formData: FormData) {
       data: {
         location,
         priority: priority,
+        delay: delay.toISOString(),
+        delayReasoning,
       },
     });
   } catch (error) {
