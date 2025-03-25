@@ -863,6 +863,24 @@
   },
 
   "TruckingAssistant": {
+    "WriteYourNotesHere": "Write your Notes here...",
+    "Mileage": "Mileage",
+    "State": "State",
+    "DidYouLeaveIdaho": "Did you leave Idaho?",
+    "CurrentMileage": "Current Mileage",
+    "TotalGallons": "Total Gallons",
+    "DidYouRefuel": "Did you Refuel?",
+    "TypeHere": "Type here",
+    "Material": "Material",
+    "ErrorAddingMaterial": "Error adding Material:",
+    "ErrorAddingEquipment": "Error adding Equipment:",
+    "ErrorAddingStateMileage": "Error adding State Mileage:",
+    "SearchEquipment": "Search Equipment",
+    "ErrorSubmittingData": "Error submitting data:",
+    "FailedToDeletePleaseTryAgain": "Failed to delete. Please try again.",
+    "EnterEndingMileageHere": "Enter Ending Mileage Here...",
+    "ErrorFetchingTruckingLogs": "Error fetching trucking logs:",
+    "FailedToFetchTruckingLogs": "Failed to fetching trucking logs",
     "StateMileage": "State Logs",
     "HaulingLogs": "Hauling Logs",
     "MyComments": "Notes",
@@ -879,6 +897,8 @@
   },
 
   "MechanicWidget": {
+    "On": "On",
+    "CreatedBy": "Created by",
     "SolutionPlaceholder": "Solution",
     "ProblemDiagnosisPlaceholder": "Problem Diagnosis",
     "ProblemDiagnosis": "Problem Diagnosis",

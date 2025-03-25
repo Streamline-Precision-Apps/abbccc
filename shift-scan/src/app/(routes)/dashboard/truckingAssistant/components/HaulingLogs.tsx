@@ -3,13 +3,14 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import Sliders from "@/components/(reusable)/sliders";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import MaterialList from "./MaterialList";
 import {
   createEquipmentHauled,
   createHaulingLogs,
 } from "@/actions/truckingActions";
 import EquipmentList from "./EquipmentList";
+import { useTranslations } from "next-intl";
 
 type EquipmentHauled = {
   id: string;
@@ -49,6 +50,7 @@ export default function HaulingLogs({
   equipmentHauled: EquipmentHauled[] | undefined;
   isLoading: boolean;
 }) {
+  const t = useTranslations("TruckingAssistant");
   const [activeTab, setActiveTab] = useState<number>(1);
 
   // Add Temporary Equipment
@@ -75,7 +77,7 @@ export default function HaulingLogs({
         ...(prev ?? []),
       ]);
     } catch (error) {
-      console.error("Error adding Equipment:", error);
+      console.error(t("ErrorAddingEquipment"), error);
     }
   };
 
@@ -98,7 +100,7 @@ export default function HaulingLogs({
         ...(prev ?? []),
       ]);
     } catch (error) {
-      console.error("Error adding Material:", error);
+      console.error(t("ErrorAddingMaterial"), error);
     }
   };
 

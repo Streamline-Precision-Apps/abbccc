@@ -419,10 +419,8 @@ export default function MechanicPriority() {
                     {previewedProjectData?.createdBy && (
                       <span className="absolute top-4 right-2 text-[8px]">
                         {`
-                      Created by ${previewedProjectData?.createdBy}
-                     
-                    
-                      on 
+                      ${t("CreatedBy")} ${previewedProjectData?.createdBy}
+                      ${t("On")}
                       ${format(
                         new Date(previewedProjectData?.createdAt ?? ""),
                         "MM/dd/yy"
