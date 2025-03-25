@@ -1,117 +1,129 @@
 "use client";
-import { Holds } from "@/components/(reusable)/holds";
-import { useState } from "react";
-import MechanicPriority from "./MechanicPriorityList";
-import { Grids } from "@/components/(reusable)/grids";
-import { Tab } from "@/components/(reusable)/tab";
-// import { useTranslations } from "next-intl";
-import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
-import MechanicSelectList from "./MechanicSelectList";
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { Titles } from "@/components/(reusable)/titles";
-import { Buttons } from "@/components/(reusable)/buttons";
-import { Images } from "@/components/(reusable)/images";
-import { title } from "process";
-import { NewTab } from "@/components/(reusable)/newTabs";
+import { useEffect, useState } from "react";
+import { setProjectSelected } from "@/actions/mechanicActions";
+import { NonManagerView } from "./NonManagerView";
+import { ManagerView } from "./ManagerView";
+// Import your UI components (Holds, Grids, etc.)
+
+type Equipment = {
+  id: string;
+  name: string;
+};
+
+type MaintenanceLog = {
+  id: string;
+  startTime: string;
+  endTime: string;
+  userId: string;
+  timeSheetId: string;
+  user: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    image: string;
+  };
+};
+
+type Project = {
+  id: string;
+  equipmentId: string;
+  equipmentIssue: string;
+  additionalInfo: string;
+  selected: boolean;
+  repaired: boolean;
+  createdBy: string;
+  createdAt: string | undefined;
+  priority: Priority;
+  delay: Date | null;
+  maintenanceLogs: MaintenanceLog[];
+  equipment: Equipment;
+};
+
+enum Priority {
+  LOW = "LOW",
+  MEDIUM = "MEDIUM",
+  HIGH = "HIGH",
+  DELAYED = "DELAYED",
+  PENDING = "PENDING",
+  TODAY = "TODAY",
+}
 
 export default function MechanicDisplay({ isManager }: { isManager: boolean }) {
   const [activeTab, setActiveTab] = useState(isManager ? 2 : 1);
-  const router = useRouter();
-  const t = useTranslations("MechanicWidget");
+  const [loading, setLoading] = useState(false);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [timeSheetId, setTimeSheetId] = useState<string | null>(null);
+
+  // Fetch all projects
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const [projectsRes, timecardRes] = await Promise.all([
+          fetch("/api/getMaintenanceProjects", {
+            next: { tags: ["maintenance-projects"] },
+          }),
+          fetch("/api/getRecentTimecard", {
+            next: { tags: ["timesheets"] },
+          }),
+        ]);
+
+        const projectsData = await projectsRes.json();
+        const timecardData = await timecardRes.json();
+
+        setProjects(projectsData);
+        setTimeSheetId(timecardData.id);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Handle project selection/deselection
+  const handleProjectSelect = async (projectId: string, selected: boolean) => {
+    // Optimistic update
+    const updatedProjects = projects.map((p) =>
+      p.id === projectId ? { ...p, selected } : p
+    );
+    setProjects(updatedProjects);
+
+    try {
+      await setProjectSelected(projectId, selected);
+    } catch (error) {
+      // Revert on error
+      setProjects(projects);
+      console.error("Failed to update project:", error);
+    }
+  };
+
+  // Filter projects based on current view
+  const priorityProjects = projects.filter((p) => !p.repaired);
+  const selectableProjects = isManager
+    ? projects
+    : projects.filter((p) => p.selected);
+
   return (
     <>
-      {!isManager && (
-        <Grids rows={"8"} gap={"5"}>
-          <Holds
-            background={"white"}
-            className="row-span-1 h-full justify-center"
-          >
-            <Grids cols={"3"} rows={"2"} className="w-full h-full p-3 ">
-              <Holds className="col-span-1 row-span-1 flex items-center justify-center fixed">
-                <Buttons
-                  onClick={() => router.push("/dashboard")}
-                  background={"none"}
-                  position={"left"}
-                  size={"50"}
-                >
-                  <Images
-                    titleImg="/turnBack.svg"
-                    titleImgAlt={t("Mechanic")}
-                    className="max-w-8 h-auto object-contain"
-                  />
-                </Buttons>
-              </Holds>
-
-              <Holds className="col-start-1 col-end-5 row-start-1 row-end-3 flex items-center justify-center">
-                <Titles size={"h1"}>{t("Projects")}</Titles>
-              </Holds>
-            </Grids>
-          </Holds>
-          <MechanicPriority />
-        </Grids>
-      )}
-      {isManager && (
-        <Grids rows={"8"} gap={"5"}>
-          <Holds
-            background={"white"}
-            className="row-span-1 h-full justify-center"
-          >
-            <Grids cols={"3"} rows={"2"} className="w-full h-full p-3 ">
-              <Holds className="col-span-1 row-span-1 flex items-center justify-center fixed">
-                <Buttons
-                  onClick={() => router.push("/dashboard")}
-                  background={"none"}
-                  position={"left"}
-                  size={"50"}
-                >
-                  <Images
-                    titleImg="/turnBack.svg"
-                    titleImgAlt={t("Mechanic")}
-                    className="max-w-8 h-auto object-contain"
-                  />
-                </Buttons>
-              </Holds>
-
-              <Holds className="col-start-1 col-end-5 row-start-1 row-end-3 flex items-center justify-center">
-                <Titles size={"h1"}>
-                  {activeTab === 1 ? t("PriorityList") : t("Projects")}
-                </Titles>
-              </Holds>
-            </Grids>
-          </Holds>
-          <Holds className="row-span-7 h-full">
-            <Grids rows={"10"} className="h-full">
-              <Holds position={"row"} className="row-span-1 gap-1">
-                <NewTab
-                  titleImage="/OrangeOngoing.svg"
-                  titleImageAlt={"Todays"}
-                  onClick={() => setActiveTab(1)}
-                  isActive={activeTab === 1}
-                  isComplete={true}
-                >
-                  {t("Todays")}
-                </NewTab>
-                <NewTab
-                  titleImage="/form.svg"
-                  titleImageAlt={"all widgets"}
-                  onClick={() => setActiveTab(2)}
-                  isActive={activeTab === 2}
-                  isComplete={true}
-                >
-                  {t("All")}
-                </NewTab>
-              </Holds>
-              <Holds
-                background={"white"}
-                className="rounded-t-none row-span-9 h-full"
-              >
-                {activeTab === 1 && <MechanicPriority />}
-                {activeTab === 2 && <MechanicSelectList />}
-              </Holds>
-            </Grids>
-          </Holds>
-        </Grids>
+      {!isManager ? (
+        <NonManagerView
+          projects={priorityProjects}
+          loading={loading}
+          timeSheetId={timeSheetId}
+        />
+      ) : (
+        <ManagerView
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          priorityProjects={priorityProjects}
+          selectableProjects={selectableProjects}
+          loading={loading}
+          timeSheetId={timeSheetId}
+          onProjectSelect={handleProjectSelect}
+        />
       )}
     </>
   );
