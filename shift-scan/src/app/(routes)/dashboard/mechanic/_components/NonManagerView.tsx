@@ -64,7 +64,9 @@ export function NonManagerView({
 
       <MechanicPriority
         loading={loading}
-        projects={projects.filter((project) => project.selected)}
+        projects={projects.filter(
+          (project) => project.selected && !project.repaired
+        )}
         timeSheetId={timeSheetId}
       />
     </Grids>

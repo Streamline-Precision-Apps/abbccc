@@ -107,7 +107,7 @@ export function ManagerView({
             {activeTab === 1 ? (
               <MechanicPriority
                 projects={selectableProjects.filter(
-                  (project) => project.selected
+                  (project) => project.selected && !project.repaired
                 )}
                 loading={loading}
                 timeSheetId={timeSheetId}
