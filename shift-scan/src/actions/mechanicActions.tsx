@@ -149,6 +149,7 @@ export async function deleteMaintenanceProject(id: string) {
         id,
       },
     });
+    revalidateTag("maintenance-projects");
     return true;
   } catch (error) {
     console.error("Error updating project:", error);

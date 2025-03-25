@@ -63,19 +63,18 @@ export default function Project({ params }: { params: { id: string } }) {
   const [activeTab, setActiveTab] = useState(1);
   const [problemReceived, setProblemReceived] = useState("");
   const [additionalNotes, setAdditionalNotes] = useState("");
-  const [delayReasoning, setDelayReasoning] = useState("none");
-  const [expectedArrival, setExpectedArrival] = useState("");
   const [titles, setTitles] = useState("");
   const [myComment, setMyComment] = useState("");
   const [loading, setLoading] = useState(false);
   const [activeUsers, setActiveUsers] = useState<number>(0);
   const [myMaintenanceLogs, setMyMaintenanceLogs] =
     useState<MaintenanceLogSchema | null>(null);
-  const [hasBeenDelayed, setHasBeenDelayed] = useState(false);
+
   const [modalOpen, setModalOpen] = useState(false);
   const [diagnosedProblem, setDiagnosedProblem] = useState("");
   const [solution, setSolution] = useState("");
   const [totalLaborHours, setTotalLaborHours] = useState<number>(0);
+  const [hasBeenDelayed, setHasBeenDelayed] = useState(false);
 
   useEffect(() => {
     if (!userId) return;
@@ -86,8 +85,6 @@ export default function Project({ params }: { params: { id: string } }) {
         setTitles(data.equipment.name);
         setProblemReceived(data.equipmentIssue);
         setAdditionalNotes(data.additionalInfo);
-        setDelayReasoning(data.delayReasoning || "");
-        setExpectedArrival(data.delay);
         setHasBeenDelayed(data.hasBeenDelayed);
 
         const userMaintenanceLog = data.maintenanceLogs.find(
@@ -205,14 +202,6 @@ export default function Project({ params }: { params: { id: string } }) {
 
       const submitMechanicLog = await LeaveEngineerProject(formData);
 
-      if (delayReasoning !== "") {
-        const delayForm = new FormData();
-        delayForm.append("maintenanceId", id);
-        delayForm.append("delayReasoning", delayReasoning);
-        delayForm.append("delay", expectedArrival);
-
-        await updateDelay(delayForm);
-      }
       await setMechanicProjectID("");
       if (submitMechanicLog) {
         router.push("/dashboard/mechanic");
@@ -279,10 +268,6 @@ export default function Project({ params }: { params: { id: string } }) {
                       leaveProject={LeaveProject}
                       problemReceived={problemReceived}
                       additionalNotes={additionalNotes}
-                      delayReasoning={delayReasoning}
-                      expectedArrival={expectedArrival}
-                      setDelayReasoning={setDelayReasoning}
-                      setExpectedArrival={setExpectedArrival}
                       myComment={myComment}
                       hasBeenDelayed={hasBeenDelayed}
                     />
