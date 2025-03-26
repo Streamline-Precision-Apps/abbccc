@@ -2,15 +2,11 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
-import Sliders from "@/components/(reusable)/sliders";
-import { Dispatch, SetStateAction, use, useEffect, useState } from "react";
+import { useEffect } from "react";
 import MaterialList from "./MaterialList";
-import {
-  createEquipmentHauled,
-  createHaulingLogs,
-} from "@/actions/truckingActions";
-import EquipmentList from "./EquipmentList";
+import { createHaulingLogs } from "@/actions/truckingActions";
 import { Texts } from "@/components/(reusable)/texts";
+import { useTranslations } from "next-intl";
 
 type Material = {
   name: string;
@@ -32,6 +28,7 @@ export default function OperatorHaulingLogs({
   material: Material[] | undefined;
   isLoading: boolean;
 }) {
+  const t = useTranslations("TruckingAssistant");
   // Add Temporary Material
   const addTempMaterial = async () => {
     const formData = new FormData();
@@ -51,20 +48,13 @@ export default function OperatorHaulingLogs({
         ...(prev ?? []),
       ]);
     } catch (error) {
-      console.error("Error adding Material:", error);
+      console.error(t("ErrorAddingMaterial"), error);
     }
   };
 
   useEffect(() => {
     setMaterial(material ?? []);
   }, [material]);
-
-  // Material Options for Dropdown
-  const materialOptions = [
-    { value: "Material 1", label: "Material 1" },
-    { value: "Material 2", label: "Material 2" },
-    { value: "Material 3", label: "Material 3" },
-  ];
 
   return (
     <Grids rows={"10"}>
@@ -102,11 +92,7 @@ export default function OperatorHaulingLogs({
           background={"white"}
           className="w-full h-full  overflow-y-auto no-scrollbar"
         >
-          <MaterialList
-            material={material}
-            setMaterial={setMaterial}
-            materialOptions={materialOptions}
-          />
+          <MaterialList material={material} setMaterial={setMaterial} />
         </Holds>
       </Holds>
     </Grids>

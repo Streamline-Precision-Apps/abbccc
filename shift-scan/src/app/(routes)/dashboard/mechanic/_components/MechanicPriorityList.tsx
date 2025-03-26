@@ -1,5 +1,5 @@
 "use client";
-import { use, useEffect, useState } from "react";
+import { use, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
@@ -15,8 +15,6 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { getFormattedDuration } from "@/utils/getFormattedDuration";
 import { startEngineerProject } from "@/actions/mechanicActions";
 
-// Types
-import { Priority } from "@/lib/types";
 import { useSession } from "next-auth/react";
 import { setMechanicProjectID } from "@/actions/cookieActions";
 import { useTranslations } from "next-intl";
@@ -56,12 +54,25 @@ type Projects = {
   equipment: Equipment;
 };
 
-export default function MechanicPriority() {
+enum Priority {
+  LOW = "LOW",
+  MEDIUM = "MEDIUM",
+  HIGH = "HIGH",
+  DELAYED = "DELAYED",
+  PENDING = "PENDING",
+  TODAY = "TODAY",
+}
+
+export default function MechanicPriority({
+  loading,
+  projects,
+  timeSheetId,
+}: {
+  loading: boolean;
+  projects: Projects[];
+  timeSheetId: string | null;
+}) {
   const router = useRouter();
-  // State declarations
-  const [loading, setLoading] = useState(false);
-  const [projects, setProjects] = useState<Projects[]>([]);
-  const [timeSheetId, setTimeSheetId] = useState<string | null>(null);
   const [activeUsers, setActiveUsers] = useState<
     {
       id: string;
@@ -81,42 +92,6 @@ export default function MechanicPriority() {
   const [currentPage, setCurrentPage] = useState(1);
   const workersPerPage = 1;
   const [endTime] = useState<string>(new Date().toISOString());
-
-  useEffect(() => {
-    // Fetch projects when the component mounts
-    const fetchProjects = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch("/api/getMaintenanceProjects");
-        const data = await response.json();
-        const filteredData = data.filter(
-          (project: Projects) => project.selected && project.repaired === false
-        );
-        setProjects(filteredData);
-      } catch (error) {
-        console.error(t("ErrorFetchingProjects"), error);
-      }
-      setLoading(false);
-    };
-    // Initial fetch when component mounts
-    fetchProjects();
-  }, []); // Empty dependency array ensures the effect runs only on mount
-
-  useEffect(() => {
-    const fetchTimeSheet = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch("/api/getRecentTimecard");
-        const data = await response.json();
-        setTimeSheetId(data.id);
-      } catch (error) {
-        console.error(t("ErrorFetchingTimeSheet"), error);
-      }
-      setLoading(false);
-    };
-
-    fetchTimeSheet();
-  }, []);
 
   // Update previewed project data when projectPreviewId changes
   useEffect(() => {
@@ -419,10 +394,8 @@ export default function MechanicPriority() {
                     {previewedProjectData?.createdBy && (
                       <span className="absolute top-4 right-2 text-[8px]">
                         {`
-                      Created by ${previewedProjectData?.createdBy}
-                     
-                    
-                      on 
+                      ${t("CreatedBy")} ${previewedProjectData?.createdBy}
+                      ${t("On")}
                       ${format(
                         new Date(previewedProjectData?.createdAt ?? ""),
                         "MM/dd/yy"

@@ -145,6 +145,7 @@ export default function EditRepairDetails({
                   background={"none"}
                   position={"left"}
                   size={"50"}
+                  shadow={"none"}
                 >
                   <Images
                     titleImg="/turnBack.svg"

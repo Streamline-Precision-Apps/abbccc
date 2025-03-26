@@ -2,26 +2,23 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { Priority } from "@/lib/types";
-import { select, user } from "@nextui-org/theme";
 
 // This Updates the selected staus of the project in the database
 export async function setProjectSelected(id: string, selected: boolean) {
   try {
-    console.log("Updating project...");
-    console.log(id, "set to", selected);
     await prisma.maintenance.update({
-      where: {
-        id,
-      },
-      data: {
-        selected,
-      },
+      where: { id },
+      data: { selected },
     });
+
+    // Revalidate both the page and the data
     revalidatePath("/dashboard/mechanic");
-    revalidateTag("projects");
+    revalidateTag("maintenance-projects");
+
+    return { success: true };
   } catch (error) {
     console.error("Error updating project:", error);
-    throw error;
+    return { success: false, error: "Failed to update project" };
   }
 }
 
@@ -78,11 +75,34 @@ export async function CreateMechanicProject(formData: FormData) {
   }
 }
 
+export async function RemoveDelayRepair(formData: FormData) {
+  try {
+    console.log("id", formData);
+    const id = formData.get("id") as string;
+
+    const updatedRepair = await prisma.maintenance.update({
+      where: { id },
+      data: {
+        delayReasoning: null,
+        delay: null,
+        hasBeenDelayed: true,
+      },
+    });
+    console.log("update", updatedRepair);
+    return updatedRepair;
+  } catch (error) {
+    console.error("Error removing delay:", error);
+    throw error;
+  }
+}
+
 export async function setEditForProjectInfo(formData: FormData) {
   try {
     console.log(formData);
     const location = formData.get("location") as string;
     const stringPriority = formData.get("priority") as string;
+    const delay = new Date(formData.get("delay") as string);
+    const delayReasoning = formData.get("delayReasoning") as string;
 
     let priority = Priority.PENDING;
 
@@ -113,6 +133,8 @@ export async function setEditForProjectInfo(formData: FormData) {
       data: {
         location,
         priority: priority,
+        delay: delay.toISOString(),
+        delayReasoning,
       },
     });
   } catch (error) {
@@ -127,6 +149,7 @@ export async function deleteMaintenanceProject(id: string) {
         id,
       },
     });
+    revalidateTag("maintenance-projects");
     return true;
   } catch (error) {
     console.error("Error updating project:", error);
@@ -270,6 +293,8 @@ export async function SubmitEngineerProject(formData: FormData) {
 
     revalidatePath("/dashboard/mechanic");
     revalidateTag("projects");
+    revalidateTag("maintenance-projects");
+
     return true;
   } catch (error) {}
 }

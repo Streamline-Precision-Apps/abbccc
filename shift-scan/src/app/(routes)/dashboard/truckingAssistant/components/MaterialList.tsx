@@ -7,23 +7,12 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Selects } from "@/components/(reusable)/selects";
-import {
-  ChangeEvent,
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useState,
-} from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import debounce from "lodash.debounce";
 import SlidingDiv from "@/components/(animations)/slideDelete";
-import { NModals } from "@/components/(reusable)/newmodals";
 import { useDBJobsite } from "@/app/context/dbCodeContext";
-import { JobCode } from "@/lib/types";
-import { Buttons } from "@/components/(reusable)/buttons";
-import SearchBar from "@/components/(search)/searchbar";
-import { Grids } from "@/components/(reusable)/grids";
-import { Titles } from "@/components/(reusable)/titles";
 import SelectableModal from "@/components/(reusable)/selectableModal";
+import { useTranslations } from "next-intl";
 
 type Material = {
   name: string;
@@ -37,23 +26,15 @@ type Material = {
 export default function MaterialList({
   material,
   setMaterial,
-  materialOptions,
 }: {
   material: Material[] | undefined;
   setMaterial: Dispatch<SetStateAction<Material[] | undefined>>;
-
-  materialOptions: {
-    value: string;
-    label: string;
-  }[];
 }) {
+  const t = useTranslations("TruckingAssistant");
   const { jobsiteResults } = useDBJobsite();
-
-  // Local state to track changes
   const [editedMaterials, setEditedMaterials] = useState<Material[]>(
     material || []
   );
-
   const [isLocationOpen, setIsLocationOpen] = useState<boolean>(false);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [tempLocation, setTempLocation] = useState<string>(""); // Temporary state for modal
@@ -109,7 +90,7 @@ export default function MaterialList({
     const isDeleted = await deleteHaulingLogs(materialId);
 
     if (!isDeleted) {
-      alert("Failed to delete. Please try again.");
+      console.error(t("FailedToDeletePleaseTryAgain"));
       setEditedMaterials(material || []);
       setMaterial(material);
     }
@@ -141,29 +122,17 @@ export default function MaterialList({
               className="w-full h-full border-black border-[3px] rounded-[10px] mb-3 "
             >
               <Holds background={"white"} className="w-2/5 px-2">
-                <Selects
+                <Inputs
+                  type="text"
                   value={mat.name || ""}
+                  placeholder={t("Material")}
                   onChange={(e) => handleChange(index, "name", e.target.value)}
                   className={`border-none text-xs py-2 focus:outline-none ${
-                    mat.name ? "text-black" : "text-app-red"
+                    mat.name
+                      ? "text-black"
+                      : "text-app-red placeholder:text-app-red"
                   }`}
-                >
-                  <option
-                    className="text-xs text-center text-app-light-gray"
-                    value=""
-                  >
-                    Material
-                  </option>
-                  {materialOptions.map((option) => (
-                    <option
-                      className="text-xs"
-                      key={option.value}
-                      value={option.value}
-                    >
-                      {option.label}
-                    </option>
-                  ))}
-                </Selects>
+                />
               </Holds>
 
               <Holds
@@ -180,8 +149,9 @@ export default function MaterialList({
                     setIsLocationOpen(true);
                   }}
                   className={`border-none text-center text-xs focus:outline-none cursor-pointer ${
-                    mat.LocationOfMaterial === null &&
-                    "placeholder:text-app-red"
+                    mat.LocationOfMaterial
+                      ? "text-black"
+                      : "text-app-red placeholder:text-app-red"
                   } `}
                   readOnly
                 />
@@ -223,7 +193,7 @@ export default function MaterialList({
           setTempLocation(option.name);
         }}
         selectedValue={tempLocation}
-        placeholder="Type here"
+        placeholder={t("TypeHere")}
         handleSave={handleSubmit}
       />
     </>
