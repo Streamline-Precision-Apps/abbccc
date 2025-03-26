@@ -26,15 +26,9 @@ type Material = {
 export default function MaterialList({
   material,
   setMaterial,
-  materialOptions,
 }: {
   material: Material[] | undefined;
   setMaterial: Dispatch<SetStateAction<Material[] | undefined>>;
-
-  materialOptions: {
-    value: string;
-    label: string;
-  }[];
 }) {
   const t = useTranslations("TruckingAssistant");
   const { jobsiteResults } = useDBJobsite();
@@ -128,29 +122,17 @@ export default function MaterialList({
               className="w-full h-full border-black border-[3px] rounded-[10px] mb-3 "
             >
               <Holds background={"white"} className="w-2/5 px-2">
-                <Selects
+                <Inputs
+                  type="text"
                   value={mat.name || ""}
+                  placeholder={t("Material")}
                   onChange={(e) => handleChange(index, "name", e.target.value)}
                   className={`border-none text-xs py-2 focus:outline-none ${
-                    mat.name ? "text-black" : "text-app-red"
+                    mat.name
+                      ? "text-black"
+                      : "text-app-red placeholder:text-app-red"
                   }`}
-                >
-                  <option
-                    className="text-xs text-center text-app-light-gray"
-                    value=""
-                  >
-                    {t("Material")}
-                  </option>
-                  {materialOptions.map((option) => (
-                    <option
-                      className="text-xs"
-                      key={option.value}
-                      value={option.value}
-                    >
-                      {option.label}
-                    </option>
-                  ))}
-                </Selects>
+                />
               </Holds>
 
               <Holds
@@ -167,8 +149,9 @@ export default function MaterialList({
                     setIsLocationOpen(true);
                   }}
                   className={`border-none text-center text-xs focus:outline-none cursor-pointer ${
-                    mat.LocationOfMaterial === null &&
-                    "placeholder:text-app-red"
+                    mat.LocationOfMaterial
+                      ? "text-black"
+                      : "text-app-red placeholder:text-app-red"
                   } `}
                   readOnly
                 />

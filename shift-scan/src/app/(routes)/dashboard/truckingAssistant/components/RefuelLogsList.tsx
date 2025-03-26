@@ -88,9 +88,11 @@ export default function RefuelLogsList({
                   );
                   updateRefuelLog(formData);
                 }}
-                className={
-                  "border-none text-xs py-2 focus:outline-none focus:ring-0"
-                }
+                className={`border-none text-xs py-2 focus:outline-none focus:ring-0 ${
+                  rL.gallonsRefueled
+                    ? "text-black"
+                    : "text-app-red placeholder:text-app-red"
+                } `}
               />
             </Holds>
             <Holds
@@ -116,9 +118,11 @@ export default function RefuelLogsList({
                   );
                   updateRefuelLog(formData);
                 }}
-                className={
-                  "border-none text-xs py-2 focus:outline-none focus:ring-0"
-                }
+                className={`border-none text-xs py-2 focus:outline-none focus:ring-0 ${
+                  rL.milesAtfueling
+                    ? "text-black"
+                    : "text-app-red placeholder:text-app-red"
+                } `}
               />
             </Holds>
           </Holds>

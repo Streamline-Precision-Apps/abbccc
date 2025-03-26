@@ -104,13 +104,6 @@ export default function HaulingLogs({
     }
   };
 
-  // Material Options for Dropdown
-  const materialOptions = [
-    { value: "Material 1", label: "Material 1" },
-    { value: "Material 2", label: "Material 2" },
-    { value: "Material 3", label: "Material 3" },
-  ];
-
   return (
     <>
       <Holds
@@ -160,11 +153,7 @@ export default function HaulingLogs({
           <Grids rows={"10"} className="h-full py-2 px-4 ">
             {activeTab === 1 && (
               <Holds className="h-full w-full row-start-1 row-end-11 overflow-y-auto no-scrollbar">
-                <MaterialList
-                  material={material}
-                  setMaterial={setMaterial}
-                  materialOptions={materialOptions}
-                />
+                <MaterialList material={material} setMaterial={setMaterial} />
               </Holds>
             )}
             {activeTab === 2 && (
