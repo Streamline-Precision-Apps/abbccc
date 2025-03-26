@@ -3,7 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { HTMLAttributes, FC } from "react";
 import { cn } from "@/components/(reusable)/utils";
 
-const BaseVariants = cva("fixed h-full w-full", {
+const BaseVariants = cva("h-full w-full", {
   variants: {
     background: {
       // Only background attributes
