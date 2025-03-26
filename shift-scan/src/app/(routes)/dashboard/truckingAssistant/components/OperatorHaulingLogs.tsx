@@ -56,13 +56,6 @@ export default function OperatorHaulingLogs({
     setMaterial(material ?? []);
   }, [material]);
 
-  // Material Options for Dropdown
-  const materialOptions = [
-    { value: "Material 1", label: "Material 1" },
-    { value: "Material 2", label: "Material 2" },
-    { value: "Material 3", label: "Material 3" },
-  ];
-
   return (
     <Grids rows={"10"}>
       <Holds
@@ -99,11 +92,7 @@ export default function OperatorHaulingLogs({
           background={"white"}
           className="w-full h-full  overflow-y-auto no-scrollbar"
         >
-          <MaterialList
-            material={material}
-            setMaterial={setMaterial}
-            materialOptions={materialOptions}
-          />
+          <MaterialList material={material} setMaterial={setMaterial} />
         </Holds>
       </Holds>
     </Grids>
