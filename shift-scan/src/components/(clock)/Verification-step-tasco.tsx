@@ -1,12 +1,9 @@
 "use client";
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
-import {
-  CreateTascoTimeSheet,
-  updateTascoTSBySwitch,
-} from "@/actions/timeSheetActions";
+import { handleTascoTimeSheet } from "@/actions/timeSheetActions"; // Updated import
 import { Clock } from "../clock";
 import { TitleBoxes } from "../(reusable)/titleBoxes";
 import { Buttons } from "../(reusable)/buttons";
@@ -15,7 +12,6 @@ import { Labels } from "../(reusable)/labels";
 import { Inputs } from "../(reusable)/inputs";
 import { Forms } from "../(reusable)/forms";
 import { Images } from "../(reusable)/images";
-
 import { useSession } from "next-auth/react";
 import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
@@ -29,6 +25,8 @@ import { useRouter } from "next/navigation";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useOperator } from "@/app/context/operatorContext";
 import Spinner from "../(animations)/spinner";
+import { form } from "@nextui-org/theme";
+import { Titles } from "../(reusable)/titles";
 
 type VerifyProcessProps = {
   handleNextStep?: () => void;
@@ -40,6 +38,9 @@ type VerifyProcessProps = {
   materialType: string;
   shiftType: string;
   clockInRoleTypes: string | undefined;
+  handlePreviousStep: () => void;
+  returnPathUsed: boolean;
+  setStep: Dispatch<SetStateAction<number>>;
 };
 
 export default function TascoVerificationStep({
@@ -51,6 +52,9 @@ export default function TascoVerificationStep({
   shiftType,
   comments,
   clockInRoleTypes,
+  handlePreviousStep,
+  returnPathUsed,
+  setStep,
 }: VerifyProcessProps) {
   const t = useTranslations("Clock");
   const { scanResult } = useScanData();
@@ -77,66 +81,6 @@ export default function TascoVerificationStep({
     }
   };
 
-  const updatePreviousTimeSheet = async (): Promise<boolean> => {
-    try {
-      const timeSheetId = await fetchRecentTimeSheetId();
-      if (!timeSheetId) throw new Error("No valid TimeSheet ID found.");
-
-      const formData = new FormData();
-      formData.append("id", timeSheetId);
-      formData.append("endTime", new Date().toISOString());
-      formData.append(
-        "timeSheetComments",
-        savedCommentData?.id.toString() || ""
-      );
-
-      await updateTascoTSBySwitch(formData);
-      setCommentData(null);
-      localStorage.removeItem("savedCommentData");
-      return true;
-    } catch (error) {
-      console.error("Failed to update previous timesheet:", error);
-      return false;
-    }
-  };
-
-  const createNewTimeSheet = async (): Promise<void> => {
-    const formData = new FormData();
-    formData.append("submitDate", new Date().toISOString());
-    formData.append("userId", id);
-    formData.append("date", new Date().toISOString());
-    formData.append("jobsiteId", scanResult?.data || "");
-    formData.append("costcode", savedCostCode?.toString() || "");
-    formData.append("startTime", new Date().toISOString());
-    formData.append("laborType", clockInRoleTypes || "");
-    formData.append("materialType", materialType || "");
-
-    if (
-      clockInRoleTypes === "tascoAbcdEquipment" ||
-      clockInRoleTypes === "tascoAbcdLabor"
-    ) {
-      formData.append("shiftType", "ABCD Shift");
-    }
-    if (clockInRoleTypes === "tascoEEquipment") {
-      formData.append("shiftType", "E shift");
-    }
-    formData.append("workType", role);
-    formData.append("equipment", equipmentId || "");
-
-    try {
-      const response = await CreateTascoTimeSheet(formData);
-      setTimeSheetData({ id: response.id.toString() });
-
-      await Promise.all([
-        setCurrentPageView("dashboard"),
-        setWorkRole(role),
-        setLaborType(clockInRoleTypes || ""),
-      ]).then(() => router.push("/dashboard"));
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!id) {
@@ -144,15 +88,57 @@ export default function TascoVerificationStep({
       return;
     }
     setLoading(true);
+
     try {
-      if (type === "switchJobs") {
-        const isUpdated = await updatePreviousTimeSheet();
-        if (isUpdated) {
-          await createNewTimeSheet();
-        }
-      } else {
-        await createNewTimeSheet();
+      const formData = new FormData();
+      formData.append("submitDate", new Date().toISOString());
+      formData.append("userId", id);
+      formData.append("date", new Date().toISOString());
+      formData.append("jobsiteId", scanResult?.data || "");
+      formData.append("costcode", savedCostCode?.toString() || "");
+      formData.append("startTime", new Date().toISOString());
+      formData.append("laborType", clockInRoleTypes || "");
+
+      if (clockInRoleTypes === "tascoAbcdEquipment") {
+        formData.append("materialType", materialType || "");
+        formData.append("shiftType", "ABCD Shift");
       }
+      if (clockInRoleTypes === "tascoAbcdLabor") {
+        formData.append("materialType", materialType || "");
+        formData.append("shiftType", "ABCD Shift");
+      }
+      if (clockInRoleTypes === "tascoEEquipment") {
+        formData.append("shiftType", "E shift");
+      }
+      formData.append("workType", role);
+      formData.append("equipment", equipmentId || "");
+
+      // If switching jobs, include the previous timesheet ID
+      if (type === "switchJobs") {
+        const timeSheetId = await fetchRecentTimeSheetId();
+        if (!timeSheetId) throw new Error("No valid TimeSheet ID found.");
+        formData.append("id", timeSheetId);
+        formData.append("endTime", new Date().toISOString());
+        formData.append(
+          "timeSheetComments",
+          savedCommentData?.id.toString() || ""
+        );
+        formData.append("type", "switchJobs"); // added to switch jobs
+      }
+
+      // Use the new transaction-based function
+      const response = await handleTascoTimeSheet(formData);
+
+      // Update state and redirect
+      setTimeSheetData({ id: response || "" });
+      setCommentData(null);
+      localStorage.removeItem("savedCommentData");
+
+      await Promise.all([
+        setCurrentPageView("dashboard"),
+        setWorkRole(role),
+        setLaborType(clockInRoleTypes || ""),
+      ]).then(() => router.push("/dashboard"));
     } catch (error) {
       console.error("Error in handleSubmit:", error);
     } finally {
@@ -169,117 +155,159 @@ export default function TascoVerificationStep({
       )}
       <Holds
         background={"white"}
-        className={loading ? `h-full w-full opacity-[0.50]` : `h-full w-full`}
+        className={
+          loading ? `h-full w-full p-5 opacity-[0.50]` : `h-full w-full p-5`
+        }
       >
-        <Grids rows={"10"} gap={"2"} className="h-full w-full">
-          <Contents width={"section"} className="h-full row-span-1 ">
-            <TitleBoxes
-              title={t("VerifyJobSite")}
-              titleImg="/clock-in.svg"
-              titleImgAlt="Verify"
-              variant="row"
-              size="default"
-              type="row"
-            />
-          </Contents>
-          <Forms onSubmit={handleSubmit} className="h-full w-full row-span-9">
+        <Grids rows={"7"} gap={"5"} className="h-full w-full">
+          <Holds className="h-full w-full row-start-1 row-end-2 ">
+            <Holds className="h-full w-full px-3">
+              <TitleBoxes
+                title={t("VerifyJobSite")}
+                titleImg="/mechanic.svg"
+                titleImgAlt="Mechanic"
+                onClick={handlePreviousStep}
+                type="noIcon-NoHref"
+              />
+
+              <Holds>
+                <Images
+                  titleImg="/clock-in.svg"
+                  titleImgAlt="Verify"
+                  className="w-8 h-8"
+                />
+              </Holds>
+            </Holds>
+          </Holds>
+
+          <Forms
+            onSubmit={handleSubmit}
+            className="h-full w-full row-start-2 row-end-8"
+          >
             <Holds className="h-full w-full">
-              <Grids cols={"5"} rows={"10"} className="h-full w-full">
-                <Holds className="row-start-2 row-end-3 col-start-5 col-end-6 w-full h-full">
-                  <Holds className="h-full w-full pr-1">
-                    <Buttons
-                      type="submit"
-                      className="w-full h-full"
-                      background={"none"}
-                    >
-                      <Holds
-                        background={"lightBlue"}
-                        className="w-full h-full items-center justify-center "
-                      >
-                        <Images
-                          titleImg={"/downArrow.svg"}
-                          titleImgAlt={"downArrow"}
-                          className="p-1 w-10 h-10"
-                        />
-                      </Holds>
-                    </Buttons>
-                  </Holds>
-                </Holds>
-                <Holds className="row-start-3 row-end-7 col-start-1 col-end-6 h-full pt-1">
+              <Grids rows={"10"} className="h-full w-full">
+                <Holds className="row-start-2 row-end-7 w-full h-full pt-1">
                   <Holds
                     background={"lightBlue"}
                     className="h-full w-[95%] sm:w-[85%] md:w-[75%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%]  border-[3px] rounded-b-none  border-black "
                   >
-                    <Contents width={"section"} className="h-full">
-                      <Labels
-                        htmlFor="date"
-                        text={"white"}
-                        size={"p4"}
-                        position={"left"}
+                    <Contents width={"section"} className="h-full py-5">
+                      <Grids
+                        cols={"2"}
+                        rows={
+                          clockInRoleTypes === "tascoAbcdEquipment"
+                            ? "4"
+                            : clockInRoleTypes === "tascoAbcdLabor"
+                            ? "4"
+                            : "3"
+                        }
+                        gap={"3"}
+                        className="h-full w-full"
                       >
-                        {t("Date-label")}
-                      </Labels>
-                      <Inputs
-                        name="date"
-                        state="disabled"
-                        variant={"white"}
-                        data={date.toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "numeric",
-                          day: "numeric",
-                        })}
-                      />
-                      <Labels
-                        htmlFor="jobsiteId"
-                        text={"white"}
-                        size={"p4"}
-                        position={"left"}
-                      >
-                        {t("JobSite-label")}
-                      </Labels>
-                      <Inputs
-                        state="disabled"
-                        name="jobsiteId"
-                        variant={"white"}
-                        data={scanResult?.data || ""}
-                      />
-                      <Labels
-                        htmlFor="costcode"
-                        text={"white"}
-                        size={"p4"}
-                        position={"left"}
-                      >
-                        {t("CostCode-label")}
-                      </Labels>
-                      <Inputs
-                        state="disabled"
-                        name="costcode"
-                        variant={"white"}
-                        data={savedCostCode?.toString() || ""}
-                      />
-                      {comments !== undefined && (
-                        <>
+                        <Holds className={"row-span-1 col-span-1"}>
                           <Labels
-                            htmlFor="timeSheetComments"
+                            htmlFor="jobsiteId"
                             text={"white"}
-                            size={"p4"}
+                            size={"p6"}
                             position={"left"}
                           >
-                            {t("Comments")}
+                            {t("JobSite-label")}
                           </Labels>
                           <Inputs
                             state="disabled"
-                            name="timeSheetComments"
+                            name="jobsiteId"
                             variant={"white"}
-                            data={comments}
+                            data={scanResult?.data || ""}
+                            className="pl-2 text-base"
                           />
-                        </>
-                      )}
+                        </Holds>
+                        <Holds className={"row-span-1 col-span-1 "}>
+                          <Labels
+                            htmlFor="costcode"
+                            text={"white"}
+                            size={"p6"}
+                            position={"left"}
+                          >
+                            {t("CostCode-label")}
+                          </Labels>
+                          <Inputs
+                            state="disabled"
+                            name="costcode"
+                            variant={"white"}
+                            data={savedCostCode?.toString() || ""}
+                            className="pl-2 text-base"
+                          />
+                        </Holds>
+
+                        <Holds className="row-span-1 col-span-2 h-full">
+                          <Labels
+                            htmlFor="clockInRoleTypes"
+                            text={"white"}
+                            size={"p6"}
+                            position={"left"}
+                          >
+                            {t("LaborType")}
+                          </Labels>
+                          <Inputs
+                            state="disabled"
+                            name="jobsiteId"
+                            variant={"white"}
+                            data={
+                              clockInRoleTypes === "tascoAbcdLabor"
+                                ? "ABCD - Labor"
+                                : clockInRoleTypes === "tascoAbcdEquipment"
+                                ? "ABCD - EQ Operator"
+                                : clockInRoleTypes === "tascoEEquipment"
+                                ? "E - EQ Operator"
+                                : clockInRoleTypes
+                            }
+                            className="pl-2 text-base"
+                          />
+                        </Holds>
+                        {clockInRoleTypes !== "tascoEEquipment" && (
+                          <Holds className="row-span-1 col-span-2 h-full">
+                            <Labels
+                              htmlFor="materialType-label"
+                              text={"white"}
+                              size={"p6"}
+                              position={"left"}
+                            >
+                              {t("MaterialType")}
+                            </Labels>
+                            <Inputs
+                              state="disabled"
+                              name="materialType-label"
+                              variant={"white"}
+                              data={materialType || ""}
+                              className="pl-2 text-base"
+                            />
+                          </Holds>
+                        )}
+                        {equipmentId && (
+                          <Holds className="row-span-1 col-span-2 h-full">
+                            <Labels
+                              htmlFor="Equipment-label"
+                              text={"white"}
+                              size={"p6"}
+                              position={"left"}
+                            >
+                              {t("Equipment-label")}
+                            </Labels>
+                            <Inputs
+                              state="disabled"
+                              name="Equipment-label"
+                              variant={"white"}
+                              data={equipmentId || ""}
+                              className="pl-2 text-base"
+                            />
+                          </Holds>
+                        )}
+                      </Grids>
                     </Contents>
                   </Holds>
                 </Holds>
 
-                <Holds className="row-start-7 row-end-11 col-start-1 col-end-6 h-full  ">
+                <Holds className="row-start-7 row-end-11 w-full h-full  ">
                   <Holds
                     background={"darkBlue"}
                     className="h-full w-[100%] sm:w-[90%] md:w-[90%] lg:w-[80%] xl:w-[80%] 2xl:w-[80%]  border-[3px]   border-black p-8 "
@@ -287,6 +315,7 @@ export default function TascoVerificationStep({
                     <Buttons
                       type="submit"
                       background={"none"}
+                      shadow={"none"}
                       className="bg-app-green mx-auto flex justify-center items-center w-full h-full py-4 px-5 rounded-lg text-black font-bold border-[3px] border-black"
                     >
                       <Clock time={date.getTime()} />

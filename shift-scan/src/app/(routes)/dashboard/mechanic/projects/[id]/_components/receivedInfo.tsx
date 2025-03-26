@@ -12,55 +12,56 @@ import { Titles } from "@/components/(reusable)/titles";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
-export default function ReceivedInfo({
+export default function ReceivedInfoTab({
   loading,
   problemReceived,
   additionalNotes,
-  delayReasoning,
-  expectedArrival,
-  setDelayReasoning,
-  setExpectedArrival,
-  leaveProject,
   myComment,
   hasBeenDelayed,
+  onLeaveProject,
 }: {
   loading: boolean;
   problemReceived: string;
   additionalNotes: string;
-  delayReasoning: string;
-  expectedArrival: string;
-  setDelayReasoning: React.Dispatch<React.SetStateAction<string>>;
-  setExpectedArrival: React.Dispatch<React.SetStateAction<string>>;
-  leaveProject: () => void;
   myComment: string;
   hasBeenDelayed: boolean;
+  onLeaveProject: () => void;
 }) {
   const t = useTranslations("MechanicWidget");
-  const [isButtonDisabled, setIsButtonDisabled] = useState(true); // ✅ Default to disabled
-  const [buttonColor, setButtonColor] = useState(true); // ✅ Default color
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+  const [buttonColor, setButtonColor] = useState(false);
+
+  const [delayReasoning, setDelayReasoning] = useState<string>("");
+  const [expectedArrival, setExpectedArrival] = useState("");
 
   useEffect(() => {
-    console.log("Updating button state...");
-    if (
-      delayReasoning === "" &&
-      myComment.length > 3 &&
-      expectedArrival === null
-    ) {
-      console.log("Enabling button...");
-      setIsButtonDisabled(false); // ✅ Enable button
-      setButtonColor(true); // ✅ Set to active color
-    } else if (
+    // Case 1: No delay selected (empty/null) and comment > 3 chars
+    console.log(
+      "myComment: ",
+      myComment,
+      ", delayReasoning: ",
+      delayReasoning,
+      ", expected Arrival: ",
+      expectedArrival
+    );
+    if (delayReasoning === "" && myComment.length > 3) {
+      setExpectedArrival("");
+      setIsButtonDisabled(false);
+      setButtonColor(true);
+    }
+    // Case 2: Delay selected, must have date and comment > 3 chars
+    else if (
       delayReasoning === "Delay" &&
-      myComment.length > 3 &&
-      expectedArrival !== null
+      expectedArrival &&
+      myComment.length > 3
     ) {
-      console.log("Enabling Delay button...");
-      setIsButtonDisabled(false); // ✅ Enable button
-      setButtonColor(true); // ✅ Set to active color
-    } else {
-      console.log("Disabling button...");
-      setIsButtonDisabled(true); // ✅ Disable button
-      setButtonColor(false); // ✅ Set to disabled color
+      setIsButtonDisabled(false);
+      setButtonColor(true);
+    }
+    // All other cases
+    else {
+      setIsButtonDisabled(true);
+      setButtonColor(false);
     }
   }, [myComment, delayReasoning, expectedArrival]);
 
@@ -72,7 +73,7 @@ export default function ReceivedInfo({
     );
 
   return (
-    <Holds className="h-full py-2">
+    <Holds background={"white"} className="h-full rounded-t-none py-2">
       <Contents width={"section"}>
         <Grids rows={"8"} gap={"5"} className="h-full">
           <Holds className="row-start-1 row-end-8 h-full flex flex-col">
@@ -98,6 +99,13 @@ export default function ReceivedInfo({
                 rows={2}
               />
             </Holds>
+            {hasBeenDelayed && (
+              <Holds className=" py-1">
+                <Texts position={"left"} size={"p7"} className="text-red-500">
+                  {`* ${t("ProjectHasAlreadyBeenDelayed")} *`}
+                </Texts>
+              </Holds>
+            )}
             <Holds>
               <Labels size={"p4"} htmlFor="delayReasoning">
                 {t("DelayStatus")}
@@ -111,6 +119,7 @@ export default function ReceivedInfo({
                 <option value="Delay">{t("Delay")}</option>
               </Selects>
             </Holds>
+
             {delayReasoning === "Delay" && (
               <Holds>
                 <Labels size={"p4"} htmlFor="delayDate">
@@ -122,13 +131,15 @@ export default function ReceivedInfo({
                   defaultValue={expectedArrival || ""}
                   onChange={(e) => setExpectedArrival(e.target.value)}
                 />
-                <span className="text-red-500">
-                  {hasBeenDelayed ? t("ProjectHasAlreadyBeenDelayed") : ""}
-                </span>
               </Holds>
             )}
+
             {myComment.length < 3 && (
-              <Texts size="p6" className="text-red-500 px-5 pt-10 ">
+              <Texts
+                position={"left"}
+                size="p7"
+                className="text-red-500  pt-5 "
+              >
                 {`* ${t("RecordToLeaveProject")}`}
               </Texts>
             )}
@@ -136,9 +147,9 @@ export default function ReceivedInfo({
           <Holds className="row-start-8 row-end-9 h-full">
             <Buttons
               disabled={isButtonDisabled}
-              background={buttonColor ? "red" : "darkGray"} // ✅ Dynamically set background color
+              background={buttonColor ? "red" : "darkGray"}
               className="h-full"
-              onClick={leaveProject}
+              onClick={onLeaveProject}
             >
               <Titles size={"h2"}>{t("LeaveProject")}</Titles>
             </Buttons>

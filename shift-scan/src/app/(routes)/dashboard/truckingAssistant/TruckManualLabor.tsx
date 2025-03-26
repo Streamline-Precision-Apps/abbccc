@@ -59,11 +59,11 @@ export default function TruckManualLabor() {
     const fetchTruckingLog = async () => {
       try {
         const res = await fetch(`/api/getTruckingLogs/truckingId`);
-        if (!res.ok) throw new Error("Failed to fetch Trucking Log");
+        if (!res.ok) throw new Error(t("FailedToFetchTruckingLogs"));
         const data = await res.json();
         setTimeSheetId(data);
       } catch (error) {
-        console.error("Error fetching Trucking Log:", error);
+        console.error(t("ErrorFetchingTruckingLogs"), error);
       }
     };
 
@@ -87,7 +87,7 @@ export default function TruckManualLabor() {
         setNotes(data[0].comment || "");
         setMaterial(data[1]);
       } catch (error) {
-        console.error("Error fetching Data:", error);
+        console.error(t("FetchingError"), error);
       } finally {
         setIsLoading(false);
       }

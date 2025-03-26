@@ -72,13 +72,13 @@ model TascoLog {
   createdAt          DateTime            @default(now())
   refueled           Refueled[]
   equipment          Equipment?          @relation(fields: [equipmentId], references: [qrId])
-  tascoMaterialTypes TascoMaterialTypes? @relation(fields: [materialType], references: [id], onDelete: Cascade)
+  tascoMaterialTypes TascoMaterialTypes? @relation(fields: [materialType], references: [name], onDelete: Cascade)
   timeSheet          TimeSheet           @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
 }
 
 model TascoMaterialTypes {
   id       String     @id @default(uuid())
-  name     String
+  name     String     @unique
   TascoLog TascoLog[]
 }
 

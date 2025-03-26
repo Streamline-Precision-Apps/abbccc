@@ -1,13 +1,10 @@
 "use client";
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
-import {
-  CreateTimeSheet,
-  updateTimeSheetBySwitch,
-} from "@/actions/timeSheetActions";
+import { handleGeneralTimeSheet } from "@/actions/timeSheetActions";
 import { Clock } from "../clock";
 import { Buttons } from "../(reusable)/buttons";
 import { Contents } from "../(reusable)/contents";
@@ -19,10 +16,15 @@ import { useSession } from "next-auth/react";
 import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
 import { useCommentData } from "@/app/context/CommentContext";
-import { setCurrentPageView, setWorkRole } from "@/actions/cookieActions";
+import {
+  setCurrentPageView,
+  setLaborType,
+  setWorkRole,
+} from "@/actions/cookieActions";
 import { Titles } from "../(reusable)/titles";
 import { useRouter } from "next/navigation";
 import Spinner from "../(animations)/spinner";
+import { TitleBoxes } from "../(reusable)/titleBoxes";
 
 type VerifyProcessProps = {
   type: string;
@@ -31,6 +33,9 @@ type VerifyProcessProps = {
   comments?: string;
   handlePreviousStep?: () => void;
   laborType?: string;
+  clockInRoleTypes: string | undefined;
+  returnPathUsed: boolean;
+  setStep: Dispatch<SetStateAction<number>>;
 };
 
 export default function VerificationStep({
@@ -39,6 +44,9 @@ export default function VerificationStep({
   role,
   handlePreviousStep,
   laborType,
+  clockInRoleTypes,
+  returnPathUsed,
+  setStep,
 }: VerifyProcessProps) {
   const t = useTranslations("Clock");
   const { scanResult } = useScanData();
@@ -64,69 +72,50 @@ export default function VerificationStep({
     }
   };
 
-  const updatePreviousTimeSheet = async (): Promise<boolean> => {
-    try {
-      const timeSheetId = await fetchRecentTimeSheetId();
-      if (!timeSheetId) throw new Error("No valid TimeSheet ID found.");
-
-      const formData = new FormData();
-      formData.append("id", timeSheetId);
-      formData.append("endTime", new Date().toISOString());
-      formData.append(
-        "timeSheetComments",
-        savedCommentData?.id.toString() || ""
-      );
-
-      await updateTimeSheetBySwitch(formData);
-      setCommentData(null);
-      localStorage.removeItem("savedCommentData");
-      return true;
-    } catch (error) {
-      console.error("Failed to update previous timesheet:", error);
-      return false;
-    }
-  };
-
-  const createNewTimeSheet = async (): Promise<void> => {
-    const formData = new FormData();
-    formData.append("submitDate", new Date().toISOString());
-    formData.append("userId", id?.toString() || "");
-    formData.append("date", new Date().toISOString());
-    formData.append("jobsiteId", scanResult?.data || "");
-    formData.append("costcode", savedCostCode?.toString() || "");
-    formData.append("startTime", new Date().toISOString());
-    formData.append("workType", role);
-    try {
-      const response = await CreateTimeSheet(formData);
-      const result = { id: response.id.toString() };
-
-      await Promise.all([
-        setWorkRole(role),
-        setTimeSheetData(result),
-        setCurrentPageView("dashboard"),
-      ]).then(() => router.push("/dashboard"));
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     if (!id) {
       console.error("User ID does not exist");
       return;
     }
     setLoading(true);
+
     try {
+      const formData = new FormData();
+      formData.append("submitDate", new Date().toISOString());
+      formData.append("userId", id?.toString() || "");
+      formData.append("date", new Date().toISOString());
+      formData.append("jobsiteId", scanResult?.data || "");
+      formData.append("costcode", savedCostCode?.toString() || "");
+      formData.append("startTime", new Date().toISOString());
+      formData.append("workType", role);
+
+      // If switching jobs, include the previous timesheet ID
       if (type === "switchJobs") {
-        const isUpdated = await updatePreviousTimeSheet();
-        if (isUpdated) {
-          await createNewTimeSheet();
-        }
-      } else {
-        await createNewTimeSheet();
+        const timeSheetId = await fetchRecentTimeSheetId();
+        if (!timeSheetId) throw new Error("No valid TimeSheet ID found.");
+        formData.append("id", timeSheetId);
+        formData.append("endTime", new Date().toISOString());
+        formData.append(
+          "timeSheetComments",
+          savedCommentData?.id.toString() || ""
+        );
+        formData.append("type", "switchJobs"); // added to switch jobs
       }
+
+      // Use the new transaction-based function
+      const response = await handleGeneralTimeSheet(formData);
+
+      // Update state and redirect
+      setTimeSheetData({ id: response || "" });
+      setCommentData(null);
+      localStorage.removeItem("savedCommentData");
+
+      await Promise.all([
+        setCurrentPageView("dashboard"),
+        setWorkRole(role),
+        setLaborType(clockInRoleTypes || ""),
+      ]).then(() => router.push("/dashboard"));
     } catch (error) {
       console.error("Error in handleSubmit:", error);
     } finally {
@@ -149,37 +138,24 @@ export default function VerificationStep({
       >
         <Contents width={"section"}>
           <Grids rows={"7"} gap={"5"} className="h-full w-full">
-            <Holds className="h-full w-full row-start-1 row-end-2">
-              <Grids rows={"2"} cols={"5"} gap={"3"} className=" h-full w-full">
-                <Holds
-                  className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center"
+            <Holds className="h-full w-full row-start-1 row-end-2 ">
+              <Holds className="h-full w-full px-3">
+                <TitleBoxes
+                  title={t("VerifyJobSite")}
+                  titleImg="/mechanic.svg"
+                  titleImgAlt="Mechanic"
                   onClick={handlePreviousStep}
-                >
+                  type="noIcon-NoHref"
+                />
+
+                <Holds>
                   <Images
-                    titleImg="/turnBack.svg"
-                    titleImgAlt="back"
-                    position={"left"}
+                    titleImg="/clock-in.svg"
+                    titleImgAlt="Verify"
+                    className="w-8 h-8"
                   />
                 </Holds>
-                <Holds
-                  position={"row"}
-                  className="row-start-2 row-end-3 col-start-1 col-end-6 "
-                >
-                  <Holds size={"50"}>
-                    <Titles size={"h1"} position={"right"}>
-                      {t("VerifyJobSite")}
-                    </Titles>
-                  </Holds>
-
-                  <Holds size={"50"}>
-                    <Images
-                      titleImg="/clock-in.svg"
-                      titleImgAlt="Verify"
-                      size={"50"}
-                    />
-                  </Holds>
-                </Holds>
-              </Grids>
+              </Holds>
             </Holds>
             <Forms
               onSubmit={handleSubmit}
@@ -250,6 +226,7 @@ export default function VerificationStep({
                     <Buttons
                       type="submit"
                       background={"none"}
+                      shadow={"none"}
                       className="bg-app-green mx-auto flex justify-center items-center w-full h-full py-4 px-5 rounded-lg text-black font-bold border-[3px] border-black"
                     >
                       <Clock time={date.getTime()} />

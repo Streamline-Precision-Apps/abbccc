@@ -1,5 +1,4 @@
 "use client";
-
 import {
   deleteStateMileage,
   updateStateMileage,
@@ -9,6 +8,7 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Selects } from "@/components/(reusable)/selects";
+import { useTranslations } from "next-intl";
 import { useEffect, useState, useRef } from "react";
 
 type StateMileage = {
@@ -33,6 +33,7 @@ export default function StateMileageList({
     label: string;
   }[];
 }) {
+  const t = useTranslations("TruckingAssistant");
   const [editedStateMileage, setEditedStateMileage] = useState<StateMileage[]>(
     StateMileage || []
   );
@@ -44,7 +45,6 @@ export default function StateMileageList({
     setStateMileage(newStateMileage);
     const isDeleted = await deleteStateMileage(id);
     if (isDeleted) {
-      console.log("Deleted");
       setEditedStateMileage(newStateMileage || []);
       setStateMileage(newStateMileage);
     }
@@ -102,7 +102,7 @@ export default function StateMileageList({
                       }
                   `}
                 >
-                  <option value={""}>State</option>
+                  <option value={""}>{t("State")}</option>
                   {StateOptions.map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.label}
@@ -119,7 +119,7 @@ export default function StateMileageList({
                   type="number"
                   name="stateLineMileage"
                   value={sm.stateLineMileage || ""}
-                  placeholder="Mileage"
+                  placeholder={t("Mileage")}
                   onChange={(e) => handleMileageChange(index, e.target.value)}
                   onBlur={() => {
                     const formData = new FormData();
