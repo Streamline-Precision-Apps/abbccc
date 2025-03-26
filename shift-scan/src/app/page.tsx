@@ -19,6 +19,7 @@ export default async function Home() {
     // Redirect or return an error if the user is not authenticated
     redirect("/signin");
   }
+
   // Get the current language from cookies
   const lang = cookies().get("locale");
   const locale = lang ? lang.value : "en";
