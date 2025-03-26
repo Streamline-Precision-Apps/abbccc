@@ -81,7 +81,7 @@ export default function InjuryVerification() {
           <Holds className="flex-row gap-2">
             <h1>{t("SignatureVerify")}</h1>
             <CheckBox
-              defaultChecked={checked}
+              checked={checked}
               onChange={handleCheckboxChange}
               id={"injury"}
               name={"injuryCheckbox"}

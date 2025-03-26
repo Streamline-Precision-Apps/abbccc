@@ -17,7 +17,9 @@ type Refueled = {
 export default function RefuelEquipmentLogsList({
   refuelLogs,
   setRefuelLogs,
+  mileage = true,
 }: {
+  mileage: boolean | undefined;
   refuelLogs: Refueled[] | undefined;
   setRefuelLogs: React.Dispatch<React.SetStateAction<Refueled[] | undefined>>;
 }) {
@@ -66,7 +68,7 @@ export default function RefuelEquipmentLogsList({
           >
             <Holds
               background={"white"}
-              className="w-1/2 px-2 h-full justify-center"
+              className="w-full px-2 h-full justify-center"
             >
               <Inputs
                 type="number"
@@ -92,34 +94,36 @@ export default function RefuelEquipmentLogsList({
                 }
               />
             </Holds>
-            <Holds
-              background={"white"}
-              className="w-1/2 px-2 h-full justify-center  border-black border-l-[3px] rounded-l-none"
-            >
-              <Inputs
-                type="number"
-                name="currentMileage"
-                placeholder="Current Mileage"
-                value={rL.milesAtfueling || ""}
-                onChange={(e) => handleMileageChange(index, e.target.value)}
-                onBlur={() => {
-                  const formData = new FormData();
-                  formData.append("id", rL.id);
-                  formData.append(
-                    "gallonsRefueled",
-                    rL.gallonsRefueled?.toString() || ""
-                  );
-                  formData.append(
-                    "milesAtfueling",
-                    rL.milesAtfueling?.toString() || ""
-                  );
-                  updateRefuelLog(formData);
-                }}
-                className={
-                  "border-none text-xs py-2 focus:outline-none focus:ring-0"
-                }
-              />
-            </Holds>
+            {mileage && (
+              <Holds
+                background={"white"}
+                className="w-full px-2 h-full justify-center  border-black border-l-[3px] rounded-l-none"
+              >
+                <Inputs
+                  type="number"
+                  name="currentMileage"
+                  placeholder="Current Mileage"
+                  value={rL.milesAtfueling || ""}
+                  onChange={(e) => handleMileageChange(index, e.target.value)}
+                  onBlur={() => {
+                    const formData = new FormData();
+                    formData.append("id", rL.id);
+                    formData.append(
+                      "gallonsRefueled",
+                      rL.gallonsRefueled?.toString() || ""
+                    );
+                    formData.append(
+                      "milesAtfueling",
+                      rL.milesAtfueling?.toString() || ""
+                    );
+                    updateRefuelLog(formData);
+                  }}
+                  className={
+                    "border-none text-xs py-2 focus:outline-none focus:ring-0"
+                  }
+                />
+              </Holds>
+            )}
           </Holds>
         </SlidingDiv>
       ))}
