@@ -3,12 +3,9 @@ import { cookies } from "next/headers";
 import { auth } from "@/auth";
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
-import { Holds } from "@/components/(reusable)/holds";
 import { Grids } from "@/components/(reusable)/grids";
 import WidgetSection from "@/app/(content)/widgetSection";
-import { Images } from "@/components/(reusable)/images";
 import { redirect } from "next/navigation";
-import { AnimatedHamburgerButton } from "@/components/(animations)/hamburgerMenu";
 import HamburgerMenuNew from "@/components/(animations)/hamburgerMenuNew";
 
 export default async function Home() {
@@ -19,7 +16,6 @@ export default async function Home() {
     // Redirect or return an error if the user is not authenticated
     redirect("/signin");
   }
-
   // Get the current language from cookies
   const lang = cookies().get("locale");
   const locale = lang ? lang.value : "en";

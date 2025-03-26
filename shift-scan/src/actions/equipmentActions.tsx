@@ -2,8 +2,7 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { EquipmentTags, EquipmentStatus } from "@/lib/types";
-import { form } from "@nextui-org/theme";
-import { start } from "repl";
+import { Priority } from "@prisma/client";
 
 export async function equipmentTagExists(id: string) {
   try {
@@ -276,6 +275,32 @@ export async function CreateEmployeeEquipmentLog(formData: FormData) {
       console.error("An unknown error occurred:", error);
       throw error;
     }
+  }
+}
+
+export async function createMaintenanceRequest(formData: FormData) {
+  try {
+    const equipmentId = formData.get("equipmentId") as string;
+    const equipmentIssue = formData.get("equipmentIssue") as string;
+    const additionalInfo = formData.get("additionalInfo") as string;
+    const priority = formData.get("priority") as Priority;
+    const createdBy = formData.get("createdBy") as string;
+
+    const maintenance = await prisma.maintenance.create({
+      data: {
+        equipmentId,
+        equipmentIssue,
+        additionalInfo,
+        priority,
+        createdBy,
+      },
+    });
+
+    revalidatePath(`/dashboard/equipment/${equipmentId}`);
+    return maintenance;
+  } catch (error) {
+    console.error("Error creating maintenance request:", error);
+    throw new Error(`Failed to create maintenance request: ${error}`);
   }
 }
 

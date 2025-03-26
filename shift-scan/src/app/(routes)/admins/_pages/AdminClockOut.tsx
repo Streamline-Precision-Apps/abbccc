@@ -190,7 +190,7 @@ export const AdminClockOut = ({ handleClose }: { handleClose: () => void }) => {
                     id="injury-checkbox"
                     name="injury-verify"
                     onChange={handleCheckboxChange}
-                    defaultChecked={checked}
+                    checked={checked}
                   />
                 </Holds>
               </Holds>
