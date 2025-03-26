@@ -4,6 +4,7 @@ import { deleteRefuelLog, updateRefuelLog } from "@/actions/truckingActions";
 import SlidingDiv from "@/components/(animations)/slideDelete";
 import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
+import { useTranslations } from "next-intl";
 
 type Refueled = {
   id: string;
@@ -21,6 +22,7 @@ export default function RefuelLogsList({
   refuelLogs: Refueled[] | undefined;
   setRefuelLogs: React.Dispatch<React.SetStateAction<Refueled[] | undefined>>;
 }) {
+  const t = useTranslations("TruckingAssistant");
   const [editedRefuel, setEditedRefuel] = useState<Refueled[]>(
     refuelLogs || []
   );
@@ -31,7 +33,6 @@ export default function RefuelLogsList({
     setRefuelLogs(newRefueledLogs);
     const isDeleted = await deleteRefuelLog(id);
     if (isDeleted) {
-      console.log("Deleted");
       setEditedRefuel(newRefueledLogs || []);
       setRefuelLogs(newRefueledLogs);
     }
@@ -71,7 +72,7 @@ export default function RefuelLogsList({
               <Inputs
                 type="number"
                 name="gallons"
-                placeholder="Total Gallons"
+                placeholder={t("TotalGallons")}
                 value={rL.gallonsRefueled || ""}
                 onChange={(e) => handleGallonsChange(index, e.target.value)}
                 onBlur={() => {
@@ -87,9 +88,11 @@ export default function RefuelLogsList({
                   );
                   updateRefuelLog(formData);
                 }}
-                className={
-                  "border-none text-xs py-2 focus:outline-none focus:ring-0"
-                }
+                className={`border-none text-xs py-2 focus:outline-none focus:ring-0 ${
+                  rL.gallonsRefueled
+                    ? "text-black"
+                    : "text-app-red placeholder:text-app-red"
+                } `}
               />
             </Holds>
             <Holds
@@ -99,7 +102,7 @@ export default function RefuelLogsList({
               <Inputs
                 type="number"
                 name="currentMileage"
-                placeholder="Current Mileage"
+                placeholder={t("CurrentMileage")}
                 value={rL.milesAtfueling || ""}
                 onChange={(e) => handleMileageChange(index, e.target.value)}
                 onBlur={() => {
@@ -115,9 +118,11 @@ export default function RefuelLogsList({
                   );
                   updateRefuelLog(formData);
                 }}
-                className={
-                  "border-none text-xs py-2 focus:outline-none focus:ring-0"
-                }
+                className={`border-none text-xs py-2 focus:outline-none focus:ring-0 ${
+                  rL.milesAtfueling
+                    ? "text-black"
+                    : "text-app-red placeholder:text-app-red"
+                } `}
               />
             </Holds>
           </Holds>

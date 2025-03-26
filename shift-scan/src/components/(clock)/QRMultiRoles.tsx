@@ -10,8 +10,8 @@ import { Grids } from "../(reusable)/grids";
 import { Images } from "../(reusable)/images";
 import { Selects } from "../(reusable)/selects";
 import { useSession } from "next-auth/react";
-import { setWorkRole } from "@/actions/cookieActions";
 import { Contents } from "../(reusable)/contents";
+import { TitleBoxes } from "../(reusable)/titleBoxes";
 
 type QRStepProps = {
   handleAlternativePath: () => void;
@@ -101,28 +101,16 @@ export default function QRMultiRoles({
           <Grids rows={"8"} gap={"5"} className="h-full w-full py-5">
             {type !== "equipment" ? (
               <>
-                <Holds className="row-start-1 row-end-2 h-full w-full justify-center ">
-                  <Grids
-                    rows={"2"}
-                    cols={"5"}
-                    gap={"3"}
-                    className="h-full w-full"
-                  >
-                    <Holds
-                      className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center"
-                      onClick={handleReturnPath}
-                    >
-                      <Images
-                        titleImg="/turnBack.svg"
-                        titleImgAlt="back"
-                        position={"left"}
-                      />
-                    </Holds>
-                    <Holds className="row-start-2 row-end-3 col-span-5 h-full w-full justify-center">
-                      <Titles size={"h1"}> {t("ScanJobSite")}</Titles>
-                    </Holds>
-                  </Grids>
+                <Holds className="h-full row-start-1 row-end-2">
+                  <TitleBoxes
+                    title={t("ScanJobSite")}
+                    titleImg=""
+                    titleImgAlt=""
+                    onClick={handleReturnPath}
+                    type="noIcon-NoHref"
+                  />
                 </Holds>
+
                 {numberOfViews > 1 && option !== "switchJobs" ? (
                   <Holds className="p-1 justify-center border-[3px] border-black rounded-[10px] shadow-[6px_6px_0px_grey]">
                     <Selects
@@ -167,27 +155,14 @@ export default function QRMultiRoles({
                 ) : null}
               </>
             ) : (
-              <Holds className="row-start-1 row-end-2 h-full w-full justify-center ">
-                <Grids
-                  rows={"2"}
-                  cols={"5"}
-                  gap={"3"}
-                  className="h-full w-full"
-                >
-                  <Holds
-                    className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center"
-                    onClick={handleReturnPath}
-                  >
-                    <Images
-                      titleImg="/turnBack.svg"
-                      titleImgAlt="back"
-                      position={"left"}
-                    />
-                  </Holds>
-                  <Holds className="row-start-2 row-end-3 col-span-5 h-full w-full justify-center">
-                    <Titles size={"h1"}> {t("ScanEquipment")}</Titles>
-                  </Holds>
-                </Grids>
+              <Holds className="h-full row-start-1 row-end-2">
+                <TitleBoxes
+                  title={t("ScanEquipment")}
+                  titleImg=""
+                  titleImgAlt=""
+                  onClick={handleReturnPath}
+                  type="noIcon-NoHref"
+                />
               </Holds>
             )}
 
@@ -233,6 +208,7 @@ export default function QRMultiRoles({
                   <Holds className="h-full w-full row-start-6 row-end-7 justify-center">
                     <Buttons
                       background={"none"}
+                      shadow={"none"}
                       onClick={handleAlternativePath}
                     >
                       <Texts size={"p4"}>{t("TroubleScanning")}</Texts>

@@ -23,11 +23,8 @@ export default async function TascoPage() {
     return (
       <Bases>
         <Contents>
-          <Grids rows={"6"} gap={"5"} className="h-full"> 
-            <Holds
-              background={"white"}
-              className="row-span-1 h-full"
-            >
+          <Grids rows={"6"} gap={"5"} className="h-full">
+            <Holds background={"white"} className="row-span-1 h-full">
               <TitleBoxes
                 title="Tasco"
                 titleImg="/Tasco.svg"
@@ -39,15 +36,13 @@ export default async function TascoPage() {
                 <TascoEQClientPage />
               ) : laborType === "" ? null : (
                 <TascoClientPage />
-              )
-              }
+              )}
             </Holds>
           </Grids>
         </Contents>
       </Bases>
     );
   } else {
-    // if (laborType === "") {
     return (
       <Bases>
         <Contents>

@@ -28,10 +28,6 @@ export async function GET() {
       },
     });
 
-    if (!timesheet) {
-      return NextResponse.json([], { status: 200 }); // Return an empty array with 200 status
-    }
-
     return NextResponse.json(timesheet, {
       headers: {
         "Cache-Control": "no-store", // Prevent caching of sensitive data

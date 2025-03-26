@@ -11,7 +11,7 @@ import SlidingDiv from "@/components/(animations)/slideDelete";
 import { useDBEquipment, useDBJobsite } from "@/app/context/dbCodeContext";
 import SelectableModal from "@/components/(reusable)/selectableModal";
 import { Contents } from "@/components/(reusable)/contents";
-import { Texts } from "@/components/(reusable)/texts";
+import { useTranslations } from "next-intl";
 
 type EquipmentHauled = {
   id: string;
@@ -42,6 +42,7 @@ export default function EquipmentList({
   setEquipmentHauled: Dispatch<SetStateAction<EquipmentHauled[] | undefined>>;
   truckingLog: string;
 }) {
+  const t = useTranslations("TruckingAssistant");
   const { equipmentResults } = useDBEquipment();
   const { jobsiteResults } = useDBJobsite();
   const [editedEquipmentHauled, setEditedEquipmentHauled] =
@@ -115,7 +116,7 @@ export default function EquipmentList({
     const isDeleted = await deleteEquipmentHauled(id);
 
     if (!isDeleted) {
-      alert("Failed to delete. Please try again.");
+      console.error(t("FailedToDeletePleaseTryAgain"));
       setEditedEquipmentHauled(equipmentHauled || []);
       setEquipmentHauled(equipmentHauled);
     }
@@ -138,7 +139,7 @@ export default function EquipmentList({
       setSelectedLocation(null);
       setSelectedIndex(null);
     } catch (error) {
-      console.error("Error submitting data:", error);
+      console.error(t("ErrorSubmittingData"), error);
     }
   };
 
@@ -160,7 +161,7 @@ export default function EquipmentList({
       setSelectedLocation(null);
       setSelectedIndex(null);
     } catch (error) {
-      console.error("Error submitting data:", error);
+      console.error(t("ErrorSubmittingData"), error);
     }
   };
 
@@ -240,7 +241,7 @@ export default function EquipmentList({
           selectedValue={selectedEquipment ? selectedEquipment.name : ""}
           options={equipmentResults}
           onSelect={handleSelectEquipment}
-          placeholder="Search Equipment"
+          placeholder={t("SearchEquipment")}
         />
 
         <SelectableModal
@@ -254,7 +255,7 @@ export default function EquipmentList({
           selectedValue={selectedLocation ? selectedLocation.name : ""}
           options={jobsiteResults}
           onSelect={handleSelectLocation}
-          placeholder="Search Equipment"
+          placeholder={t("SearchEquipment")}
         />
       </Contents>
     </>

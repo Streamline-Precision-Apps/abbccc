@@ -8,38 +8,22 @@ import { Labels } from "@/components/(reusable)/labels";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import { setEngine } from "crypto";
 import { useTranslations } from "next-intl";
 
-interface MaintenanceLog {
-  id: string;
-  userId: string;
-  maintenanceId: string;
-  startTime?: string;
-  endTime?: string | null;
-}
-
-type MaintenanceLogSchema = Pick<
-  MaintenanceLog,
-  "id" | "userId" | "maintenanceId"
->;
-
-export default function MyCommentFinishProject({
+export default function CommentsTab({
+  activeUsers,
   myComment,
   setMyComment,
-  activeUsers,
   loading,
-  openFinishProject,
-  id,
+  onFinishProject,
   myMaintenanceLogs,
 }: {
-  myComment: string;
-  setMyComment: React.Dispatch<React.SetStateAction<string>>;
   activeUsers: number;
+  myComment: string;
+  setMyComment: (comment: string) => void;
   loading: boolean;
-  openFinishProject: () => void;
-  id: string;
-  myMaintenanceLogs: MaintenanceLogSchema | null;
+  onFinishProject: () => void;
+  myMaintenanceLogs: any;
 }) {
   const t = useTranslations("MechanicWidget");
   if (loading)
@@ -59,7 +43,7 @@ export default function MyCommentFinishProject({
   };
 
   return (
-    <Holds className="h-full py-2">
+    <Holds background={"white"} className="h-full rounded-t-none py-2">
       <Contents width="section" className="h-full flex flex-col">
         <Grids rows="8" gap="5" className="h-full grid grid-rows-8">
           {/* Ensure TextArea Expands Fully */}
@@ -85,7 +69,7 @@ export default function MyCommentFinishProject({
               background={activeUsers > 1 ? "lightGray" : "orange"}
               disabled={activeUsers > 1}
               onClick={() => {
-                openFinishProject();
+                onFinishProject();
               }}
             >
               <Titles size="h2">{t("FinishProject")}</Titles>

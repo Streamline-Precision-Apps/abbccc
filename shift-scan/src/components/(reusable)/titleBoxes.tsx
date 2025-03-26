@@ -80,6 +80,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
               background={"none"}
               position={"left"}
               size={"50"}
+              shadow={"none"}
             >
               <Images titleImg="/turnBack.svg" titleImgAlt={titleImgAlt} />
             </Buttons>
@@ -137,7 +138,12 @@ const TitleBoxes: FC<TitleBoxProps> = ({
       >
         <Grids cols={"6"} rows={"2"} className="w-full h-full">
           <Holds className="col-start-1 col-end-2 row-span-1">
-            <Buttons href={href} background={"none"} position={"left"}>
+            <Buttons
+              href={href}
+              background={"none"}
+              position={"left"}
+              shadow={"none"}
+            >
               <Images titleImg="/turnBack.svg" titleImgAlt={titleImgAlt} />
             </Buttons>
           </Holds>
@@ -196,6 +202,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
               background={"none"}
               position={"left"}
               size={"50"}
+              shadow={"none"}
             >
               <Images titleImg="/turnBack.svg" titleImgAlt={titleImgAlt} />
             </Buttons>
@@ -223,7 +230,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         {...props}
       >
         <Holds position={"absolute"}>
-          <Buttons href={href} background={"none"} size={"30"}>
+          <Buttons href={href} background={"none"} size={"30"} shadow={"none"}>
             <Images
               titleImg="/turnBack.svg"
               titleImgAlt={titleImgAlt}
@@ -275,6 +282,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
               background={"none"}
               position={"left"}
               size={"50"}
+              shadow={"none"}
             >
               <Images
                 titleImg="/turnBack.svg"
@@ -304,6 +312,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
               background={"none"}
               position={"left"}
               size={"50"}
+              shadow={"none"}
             >
               <Images
                 titleImg="/turnBack.svg"
@@ -314,7 +323,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
           </Holds>
 
           <Holds className="col-start-1 col-end-5 row-start-2 row-end-3 flex items-center justify-center">
-            <Titles size={"h1"}>{title}</Titles>
+            <Titles size={"h2"}>{title}</Titles>
           </Holds>
         </Grids>
       </div>
@@ -331,6 +340,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
             href={href}
             background={"none"}
             position={"left"}
+            shadow={"none"}
             className="justify-center col-start-1 col-end-2 row-start-1 row-end-2"
           >
             <Images
@@ -359,6 +369,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
               background={"none"}
               position={"left"}
               size={"50"}
+              shadow={"none"}
             >
               <Images
                 titleImg="/turnBack.svg"

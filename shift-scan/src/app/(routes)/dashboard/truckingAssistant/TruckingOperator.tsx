@@ -70,11 +70,11 @@ export default function TruckOperator() {
     const fetchTruckingLog = async () => {
       try {
         const res = await fetch(`/api/getTruckingLogs/truckingId`);
-        if (!res.ok) throw new Error("Failed to fetch Trucking Log");
+        if (!res.ok) throw new Error(t("FailedToFetchTruckingLogs"));
         const data = await res.json();
         setTimeSheetId(data);
       } catch (error) {
-        console.error("Error fetching Trucking Log:", error);
+        console.error(t("ErrorFetchingTruckingLogs"), error);
       }
     };
 
@@ -100,7 +100,7 @@ export default function TruckOperator() {
         setRefuelLogs(data[1]);
         setMaterial(data[2]);
       } catch (error) {
-        console.error("Error fetching Data:", error);
+        console.error(t("FetchingError"), error);
       } finally {
         setIsLoading(false);
       }
