@@ -9,6 +9,7 @@ import WidgetSection from "@/app/(content)/widgetSection";
 import { Images } from "@/components/(reusable)/images";
 import { redirect } from "next/navigation";
 import { AnimatedHamburgerButton } from "@/components/(animations)/hamburgerMenu";
+import HamburgerMenuNew from "@/components/(animations)/hamburgerMenuNew";
 
 export default async function Home() {
   //------------------------------------------------------------------------
@@ -26,20 +27,7 @@ export default async function Home() {
     <Bases>
       <Contents>
         <Grids rows={"8"} gap={"2"}>
-          <Holds position={"row"} background={"white"} className="row-span-1">
-            <Holds size={"30"}>
-              <Images
-                titleImg="/logo.svg"
-                titleImgAlt="logo"
-                position={"left"}
-                size={"full"}
-                className="m-2"
-              />
-            </Holds>
-            <Holds size={"70"}>
-              <AnimatedHamburgerButton />
-            </Holds>
-          </Holds>
+          <HamburgerMenuNew />
           <WidgetSection locale={locale} session={session} />
         </Grids>
       </Contents>
