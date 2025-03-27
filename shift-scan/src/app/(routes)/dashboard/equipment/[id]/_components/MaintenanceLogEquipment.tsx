@@ -4,17 +4,16 @@
 import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";
 import { Labels } from "@/components/(reusable)/labels";
-import { Selects } from "@/components/(reusable)/selects";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
-import { Buttons } from "@/components/(reusable)/buttons";
-import { useState } from "react";
-import { useNotification } from "@/app/context/NotificationContext";
-import { EquipmentStatus, Priority } from "@prisma/client";
-import { useRouter } from "next/navigation";
+import { Dispatch, SetStateAction } from "react";
 import { Grids } from "@/components/(reusable)/grids";
+import { EquipmentStatus } from "@/lib/types";
 import { z } from "zod";
-import { createMaintenanceRequest } from "@/actions/equipmentActions";
+import { Selects } from "@/components/(reusable)/selects";
+import { form } from "@nextui-org/theme";
+import { Buttons } from "@/components/(reusable)/buttons";
+import { deleteMaintenanceInEquipment } from "@/actions/equipmentActions";
 
 const EquipmentLogSchema = z.object({
   id: z.string(),
@@ -36,6 +35,11 @@ const EquipmentLogSchema = z.object({
     name: z.string(),
     status: z.string().optional(),
   }),
+  maintenanceId: z.object({
+    id: z.string().nullable(),
+    equipmentIssue: z.string(),
+    additionalInfo: z.string(),
+  }),
 });
 
 type EquipmentLog = z.infer<typeof EquipmentLogSchema>;
@@ -50,71 +54,39 @@ interface MaintenanceLogEquipmentProps {
 }
 
 export default function MaintenanceLogEquipment({
-  formState,
-  handleFieldChange,
   t,
+  handleFieldChange,
+  formState,
 }: MaintenanceLogEquipmentProps) {
-  const { setNotification } = useNotification();
-  const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [maintenanceRequest, setMaintenanceRequest] = useState({
-    equipmentIssue: "",
-    additionalInfo: "",
-    priority: "MEDIUM" as Priority,
-  });
-
-  const handleMaintenanceFieldChange = (
-    field: keyof typeof maintenanceRequest,
-    value: string | Priority
-  ) => {
-    setMaintenanceRequest((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  const handleSubmitMaintenanceRequest = async () => {
-    setIsSubmitting(true);
-    try {
-      const formData = new FormData();
-      formData.append("equipmentId", formState.equipmentId);
-      formData.append("equipmentIssue", maintenanceRequest.equipmentIssue);
-      formData.append("additionalInfo", maintenanceRequest.additionalInfo);
-      formData.append("priority", maintenanceRequest.priority);
-      formData.append("createdBy", "currentUserId"); // Replace with actual user ID
-
-      await createMaintenanceRequest(formData);
-
-      setNotification("Maintenance request created successfully", "success");
-      setMaintenanceRequest({
-        equipmentIssue: "",
-        additionalInfo: "",
-        priority: "MEDIUM",
-      });
-      router.refresh();
-    } catch (error) {
-      console.error("Error creating maintenance request:", error);
-      setNotification("Failed to create maintenance request", "error");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   return (
     <Holds className="w-full h-full py-5">
       <Contents width={"section"}>
         <Grids rows={"8"} gap={"5"} className="h-full w-full">
           <Holds className="row-start-1 row-end-8 h-full">
-            <Texts size="p5">Create Maintenance Request</Texts>
-
+            <Holds className="relative">
+              <Labels size="p6">Equipment Status *</Labels>
+              <Selects
+                value={formState.equipment.status}
+                onChange={(e) =>
+                  handleFieldChange(
+                    "Equipment.status",
+                    e.target.value as EquipmentStatus
+                  )
+                }
+              >
+                <option value={"OPERATIONAL"}>Operational</option>
+                <option value={"NEEDS_REPAIR"}>Needs Repair</option>
+                <option value={"NEEDS_MAINTENANCE"}>Needs Maintenance</option>
+              </Selects>
+            </Holds>
             <Holds className="relative">
               <Labels size="p6">Equipment Issue *</Labels>
               <TextAreas
                 maxLength={40}
                 placeholder="Describe the equipment issue..."
-                value={maintenanceRequest.equipmentIssue}
+                value={formState.maintenanceId?.equipmentIssue}
                 onChange={(e) =>
-                  handleMaintenanceFieldChange("equipmentIssue", e.target.value)
+                  handleFieldChange("equipmentIssue", e.target.value)
                 }
                 required
               />
@@ -122,7 +94,7 @@ export default function MaintenanceLogEquipment({
                 size="p3"
                 className="text-gray-500 absolute bottom-4 right-2"
               >
-                {maintenanceRequest.equipmentIssue.length}/40
+                {formState.maintenanceId?.equipmentIssue?.length}/40
               </Texts>
             </Holds>
 
@@ -131,32 +103,29 @@ export default function MaintenanceLogEquipment({
               <TextAreas
                 maxLength={40}
                 placeholder="Provide any additional information..."
-                value={maintenanceRequest.additionalInfo}
+                value={formState.maintenanceId?.additionalInfo}
                 onChange={(e) =>
-                  handleMaintenanceFieldChange("additionalInfo", e.target.value)
+                  handleFieldChange("additionalInfo", e.target.value)
                 }
               />
               <Texts
                 size="p3"
                 className="text-gray-500 absolute bottom-4 right-2"
               >
-                {maintenanceRequest.additionalInfo.length}/40
+                {formState.maintenanceId?.additionalInfo?.length}/40
               </Texts>
             </Holds>
-          </Holds>
-          <Holds className="row-start-8 row-end-9 h-full">
-            <Buttons
-              onClick={handleSubmitMaintenanceRequest}
-              background="lightBlue"
-              className="w-full"
-              disabled={
-                !maintenanceRequest.equipmentIssue ||
-                maintenanceRequest.equipmentIssue.length < 10 ||
-                isSubmitting
-              }
-            >
-              {isSubmitting ? "Submitting..." : "Submit Maintenance Request"}
-            </Buttons>
+            {formState.isFinished && formState.maintenanceId?.id && (
+              <Buttons
+                onClick={() => {
+                  if (formState.maintenanceId?.id) {
+                    deleteMaintenanceInEquipment(formState.id);
+                  }
+                }}
+              >
+                Delete Maintenance Request
+              </Buttons>
+            )}
           </Holds>
         </Grids>
       </Contents>
