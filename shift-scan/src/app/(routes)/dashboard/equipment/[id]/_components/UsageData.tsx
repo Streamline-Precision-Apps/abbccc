@@ -10,9 +10,11 @@ import { Texts } from "@/components/(reusable)/texts";
 import RefuelEquipmentLogsList from "../RefuelEquipmentLogsList";
 import { Titles } from "@/components/(reusable)/titles";
 import { differenceInSeconds, format, parseISO } from "date-fns";
-import { EquipmentStatus } from "@prisma/client";
+
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { z } from "zod";
+import { useNotification } from "@/app/context/NotificationContext";
+import { EquipmentStatus } from "@/lib/types";
 
 type Refueled = {
   id: string;
@@ -43,6 +45,11 @@ const EquipmentLogSchema = z.object({
     name: z.string(),
     status: z.string().optional(),
   }),
+  maintenanceId: z.object({
+    id: z.string().nullable(),
+    equipmentIssue: z.string(),
+    additionalInfo: z.string(),
+  }),
 });
 
 type EquipmentLog = z.infer<typeof EquipmentLogSchema>;
@@ -64,9 +71,10 @@ interface UsageDataProps {
   handleFullOperational: () => void;
   fullyOperational: boolean | undefined;
   t: (key: string) => string;
+  isFormValid: () => boolean;
 }
 
-export const UsageData = ({
+export default function UsageData({
   formState,
   handleFieldChange,
   formattedTime,
@@ -80,170 +88,130 @@ export const UsageData = ({
   saveEdits,
   fullyOperational,
   t,
-}: UsageDataProps) => {
+  isFormValid,
+}: UsageDataProps) {
+  const { setNotification } = useNotification();
   return (
-    <>
-      <Contents width={"section"}>
-        <Grids rows={"8"} gap={"5"} className="h-full w-full pb-3">
-          <Holds className="row-start-1 row-end-8 w-full h-full overflow-y-auto no-scrollbar  ">
-            <Labels size="p5">Total Usage</Labels>
-            <Inputs
-              type="text"
-              disabled
-              value={formattedTime}
-              className="border-[3px] border-black p-1 w-full text-center"
-            />
-            <Holds position={"row"} className="w-full ">
-              <Holds className="w-full">
-                <Labels size="p5">Start Time</Labels>
-                <Inputs
-                  type="time"
-                  value={
-                    formState.startTime
-                      ? format(new Date(formState.startTime), "HH:mm")
-                      : ""
-                  }
-                  className="w-full border-[3px] border-r-[1.5px] border-black p-1 rounded-[10px] rounded-r-none"
-                  onChange={(e) => {
-                    const newTime = e.target.value;
-                    const currentDate = new Date(
-                      formState.startTime || new Date()
-                    );
-                    const [newHours, newMinutes] = newTime
-                      .split(":")
-                      .map(Number);
-                    currentDate.setHours(newHours, newMinutes, 0, 0);
-                    handleFieldChange("startTime", currentDate.toISOString());
-                  }}
-                />
-              </Holds>
-              <Holds className="w-full">
-                <Labels size="p5">End Time</Labels>
-                <Inputs
-                  type="time"
-                  value={
-                    formState.endTime
-                      ? format(new Date(parseISO(formState.endTime)), "HH:mm")
-                      : ""
-                  }
-                  className="w-full border-[3px] border-l-[1.5px] border-black p-1 rounded-[10px] rounded-l-none"
-                  onChange={(e) => {
-                    const newTime = e.target.value;
-                    const currentDate = new Date(
-                      formState.endTime || new Date()
-                    );
-                    const [newHours, newMinutes] = newTime
-                      .split(":")
-                      .map(Number);
-                    currentDate.setHours(newHours, newMinutes, 0, 0);
-                    handleFieldChange("endTime", currentDate.toISOString());
-                  }}
-                />
-              </Holds>
-            </Holds>
+    <Holds className="row-start-1 row-end-8 w-full h-full overflow-y-auto no-scrollbar  ">
+      <Labels size="p5">Total Usage</Labels>
+      <Inputs
+        type="text"
+        disabled
+        value={formattedTime}
+        className="border-[3px] border-black p-1 w-full text-center"
+      />
+      <Holds position={"row"} className="w-full ">
+        <Holds className="w-full">
+          <Labels size="p5">Start Time</Labels>
+          <Inputs
+            type="time"
+            value={
+              formState.startTime
+                ? format(new Date(formState.startTime), "HH:mm")
+                : ""
+            }
+            className="w-full border-[3px] border-r-[1.5px] border-black p-1 rounded-[10px] rounded-r-none"
+            onChange={(e) => {
+              const newTime = e.target.value;
+              const currentDate = new Date(formState.startTime || new Date());
+              const [newHours, newMinutes] = newTime.split(":").map(Number);
+              currentDate.setHours(newHours, newMinutes, 0, 0);
+              handleFieldChange("startTime", currentDate.toISOString());
+            }}
+          />
+        </Holds>
+        <Holds className="w-full">
+          <Labels size="p5">End Time</Labels>
+          <Inputs
+            type="time"
+            value={
+              formState.endTime
+                ? format(new Date(parseISO(formState.endTime)), "HH:mm")
+                : ""
+            }
+            className="w-full border-[3px] border-l-[1.5px] border-black p-1 rounded-[10px] rounded-l-none"
+            onChange={(e) => {
+              const newTime = e.target.value;
+              const currentDate = new Date(formState.endTime || new Date());
+              const [newHours, newMinutes] = newTime.split(":").map(Number);
+              currentDate.setHours(newHours, newMinutes, 0, 0);
+              handleFieldChange("endTime", currentDate.toISOString());
+            }}
+          />
+        </Holds>
+      </Holds>
 
-            <Holds background="white" className="w-full  relative">
-              <Labels size="p5">{t("Comment")}</Labels>
-              <TextAreas
-                maxLength={40}
-                placeholder="Enter comments here..."
-                value={formState.comment || ""}
-                onChange={(e) => handleFieldChange("comment", e.target.value)}
-              />
-              <Texts
-                size="p3"
-                className={`${
-                  typeof formState.comment === "string" &&
-                  formState.comment.length >= 40
-                    ? "text-red-500 absolute bottom-4 right-4"
-                    : "absolute bottom-4 right-4"
-                }`}
-              >
-                {`${
-                  typeof formState.comment === "string"
-                    ? formState.comment.length
-                    : 0
-                }/40`}
-              </Texts>
-            </Holds>
+      <Holds background="white" className="w-full  relative">
+        <Labels size="p5">{t("Comment")}</Labels>
+        <TextAreas
+          maxLength={40}
+          placeholder="Enter comments here..."
+          value={formState.comment || ""}
+          onChange={(e) => handleFieldChange("comment", e.target.value)}
+        />
+        <Texts
+          size="p3"
+          className={`${
+            typeof formState.comment === "string" &&
+            formState.comment.length >= 40
+              ? "text-red-500 absolute bottom-4 right-4"
+              : "absolute bottom-4 right-4"
+          }`}
+        >
+          {`${
+            typeof formState.comment === "string" ? formState.comment.length : 0
+          }/40`}
+        </Texts>
+      </Holds>
 
-            <Holds position={"row"} className="w-full pb-4">
-              <Holds size={"90"} className="h-full justify-center">
-                <Texts position={"left"} size="p5">
-                  Fully Operational?
-                </Texts>
-              </Holds>
-              <Holds size={"20"} className="h-full  justify-center relative">
-                <CheckBox
-                  id="fullyOperational"
-                  name="fullyOperational"
-                  size={2}
-                  checked={fullyOperational}
-                  onChange={() => handleFullOperational()}
-                />
-              </Holds>
-            </Holds>
+      <Holds position={"row"} className="w-full pb-4">
+        <Holds size={"90"} className="h-full justify-center">
+          <Texts position={"left"} size="p5">
+            Fully Operational?
+          </Texts>
+        </Holds>
+        <Holds size={"20"} className="h-full  justify-center relative">
+          <CheckBox
+            id="fullyOperational"
+            name="fullyOperational"
+            size={2}
+            checked={fullyOperational}
+            onChange={() => handleFullOperational()}
+          />
+        </Holds>
+      </Holds>
 
-            <Holds position={"row"} className="w-full pb-4">
-              <Holds size={"70"} className="h-full justify-center">
-                <Texts position={"left"} size="p5">
-                  Did you refuel?
-                </Texts>
-              </Holds>
+      <Holds position={"row"} className="w-full pb-4">
+        <Holds size={"70"} className="h-full justify-center">
+          <Texts position={"left"} size="p5">
+            Did you refuel?
+          </Texts>
+        </Holds>
 
-              <Holds size={"30"} className="h-full justify-center">
-                <Holds position={"left"} className="p-2">
-                  <Buttons
-                    background={"green"}
-                    className="py-1.5"
-                    onClick={() => {
-                      AddRefuelLog();
-                    }}
-                  >
-                    +
-                  </Buttons>
-                </Holds>
-              </Holds>
-            </Holds>
-
-            {refueledLogs && refuelLogs && refuelLogs.length > 0 && (
-              <Holds>
-                <RefuelEquipmentLogsList
-                  refuelLogs={refuelLogs}
-                  setRefuelLogs={setRefuelLogs}
-                  mileage={false}
-                />
-              </Holds>
-            )}
-          </Holds>
-
-          <Holds
-            position={"row"}
-            background="white"
-            className="w-full gap-4 row-start-8 row-end-9 py-2"
-          >
+        <Holds size={"30"} className="h-full justify-center">
+          <Holds position={"left"} className="p-2">
             <Buttons
+              background={"green"}
+              className="py-1.5"
               onClick={() => {
-                deleteLog();
+                AddRefuelLog();
               }}
-              background="red"
-              className="w-full "
             >
-              <Titles size="h5">Delete Log</Titles>
-            </Buttons>
-            <Buttons
-              onClick={() => {
-                saveEdits();
-              }}
-              background={fullyOperational === false ? "darkGray" : "lightBlue"}
-              className="w-full "
-              disabled={fullyOperational === false}
-            >
-              <Titles size="h5">Finish Logs</Titles>
+              +
             </Buttons>
           </Holds>
-        </Grids>
-      </Contents>
-    </>
+        </Holds>
+      </Holds>
+
+      {refueledLogs && refuelLogs && refuelLogs.length > 0 && (
+        <Holds>
+          <RefuelEquipmentLogsList
+            refuelLogs={refuelLogs}
+            setRefuelLogs={setRefuelLogs}
+            mileage={false}
+          />
+        </Holds>
+      )}
+    </Holds>
   );
-};
+}

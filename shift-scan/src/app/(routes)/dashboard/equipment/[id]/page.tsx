@@ -8,20 +8,21 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { z } from "zod";
-import { EquipmentStatus, FormStatus } from "@prisma/client";
 import { differenceInSeconds, parseISO } from "date-fns";
-
 import {
   createRefuelEquipmentLog,
   deleteEmployeeEquipmentLog,
 } from "@/actions/truckingActions";
 import Spinner from "@/components/(animations)/spinner";
 import { NewTab } from "@/components/(reusable)/newTabs";
-import { UsageData } from "./_components/UsageData";
+import UsageData from "./_components/UsageData";
 import MaintenanceLogEquipment from "./_components/MaintenanceLogEquipment";
+import { Buttons } from "@/components/(reusable)/buttons";
+import { Titles } from "@/components/(reusable)/titles";
+import { EquipmentStatus, FormStatus } from "@/lib/types";
 
 type Refueled = {
   id: string;
@@ -52,6 +53,11 @@ const EquipmentLogSchema = z.object({
     name: z.string(),
     status: z.string().optional(),
   }),
+  maintenanceId: z.object({
+    id: z.string().nullable(),
+    equipmentIssue: z.string(),
+    additionalInfo: z.string(),
+  }),
 });
 
 type EquipmentLog = z.infer<typeof EquipmentLogSchema>;
@@ -74,15 +80,21 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
     refueled: [],
     equipment: {
       name: "",
-      status: EquipmentStatus.OPERATIONAL,
+      status: "OPERATIONAL" as EquipmentStatus,
+    },
+    maintenanceId: {
+      id: null,
+      equipmentIssue: "",
+      additionalInfo: "",
     },
   } as EquipmentLog);
 
   const [originalState, setOriginalState] = useState(formState);
   const [hasChanged, setHasChanged] = useState<boolean>();
   const [refueledLogs, setRefueledLogs] = useState<boolean>();
-  const [fullyOperational, setFullyOperational] = useState<boolean>();
   const [tab, setTab] = useState(1);
+  // states for maintenance logs
+  const [fullyOperational, setFullyOperational] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchEqLog = async () => {
@@ -109,7 +121,12 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
           ],
           equipment: {
             name: data.equipment?.name || "",
-            status: data.equipment?.status || EquipmentStatus.OPERATIONAL,
+            status: data.equipment?.status || "OPERATIONAL",
+          },
+          maintenanceId: {
+            id: data.maintenanceId.id || null,
+            equipmentIssue: data.maintenanceId.equipmentIssue || "",
+            additionalInfo: data.maintenanceId.additionalInfo || "",
           },
         } as EquipmentLog;
 
@@ -157,6 +174,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
     field: string,
     value: string | number | boolean | FormStatus | EquipmentStatus
   ) => {
+    console.log("Field Changed: ", field);
     if (field === "Equipment.status") {
       setFormState((prev) => ({
         ...prev,
@@ -165,12 +183,13 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
           status: value as EquipmentStatus,
         },
       }));
+      console.log("Field changed:", field);
+      console.log("Value:", value);
     } else {
       setFormState((prev) => ({
         ...prev,
         [field]: value,
       }));
-      console.log("Field changed:", field);
       console.log("Value:", value);
     }
   };
@@ -227,15 +246,18 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
     try {
       const formData = new FormData();
       Object.entries(formState).forEach(([key, value]) => {
-        if (key === "equipment") {
+        if (key === "equipment" || key === "maintenanceId") {
         } else {
           formData.append(key, String(value));
         }
       });
       formData.set(
         "Equipment.status",
-        formState.equipment.status || EquipmentStatus.OPERATIONAL
+        formState.equipment.status || "OPERATIONAL"
       );
+      // formData.append("equipmentIssue", formState.maintenanceId.equipmentIssue);
+      // formData.append("additionalInfo", formState.maintenanceId.additionalInfo);
+
       console.log("Form Data: ", formData);
       await updateEmployeeEquipmentLog(formData);
       setNotification(t("Saved"), "success");
@@ -261,6 +283,24 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
       setHasChanged(true);
     }
   }, [formState, originalState]);
+
+  // validation function
+  const isFormValid = useCallback(() => {
+    return (
+      // Either equipment is fully operational
+      fullyOperational ||
+      // OR maintenance request is properly filled out
+      (formState.maintenanceId &&
+        formState.maintenanceId.equipmentIssue.length > 0 &&
+        formState.maintenanceId &&
+        formState.maintenanceId.additionalInfo.length > 0)
+    );
+  }, [
+    fullyOperational,
+    formState.maintenanceId?.equipmentIssue,
+    formState.maintenanceId?.additionalInfo,
+  ]);
+
   return (
     <Bases>
       <Contents>
@@ -325,32 +365,71 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                     </Holds>
                   </>
                 ) : (
-                  <>
-                    {tab === 1 && (
-                      <UsageData
-                        formState={formState}
-                        handleFieldChange={handleFieldChange}
-                        formattedTime={formattedTime}
-                        refueledLogs={refueledLogs}
-                        handleChangeRefueled={handleChangeRefueled}
-                        AddRefuelLog={AddRefuelLog}
-                        refuelLogs={refuelLogs}
-                        setRefuelLogs={setRefuelLogs}
-                        deleteLog={deleteLog}
-                        saveEdits={saveEdits}
-                        handleFullOperational={handleFullOperational}
-                        fullyOperational={fullyOperational}
-                        t={t}
-                      />
-                    )}
-                    {tab === 2 && (
-                      <MaintenanceLogEquipment
-                        formState={formState}
-                        handleFieldChange={handleFieldChange}
-                        t={t}
-                      />
-                    )}
-                  </>
+                  <Contents width={"section"}>
+                    <Grids rows={"8"} gap={"5"} className="h-full w-full pb-3">
+                      {tab === 1 && (
+                        <UsageData
+                          formState={formState}
+                          handleFieldChange={handleFieldChange}
+                          formattedTime={formattedTime}
+                          refueledLogs={refueledLogs}
+                          handleChangeRefueled={handleChangeRefueled}
+                          AddRefuelLog={AddRefuelLog}
+                          refuelLogs={refuelLogs}
+                          setRefuelLogs={setRefuelLogs}
+                          deleteLog={deleteLog}
+                          saveEdits={saveEdits}
+                          handleFullOperational={handleFullOperational}
+                          fullyOperational={fullyOperational}
+                          isFormValid={isFormValid}
+                          t={t}
+                        />
+                      )}
+                      {tab === 2 && (
+                        <MaintenanceLogEquipment
+                          formState={formState}
+                          handleFieldChange={handleFieldChange}
+                          t={t}
+                        />
+                      )}
+                      <Holds
+                        position={"row"}
+                        background="white"
+                        className="w-full gap-4 row-start-8 row-end-9 py-2"
+                      >
+                        <Buttons
+                          onClick={() => {
+                            deleteLog();
+                          }}
+                          background="red"
+                          className="w-full "
+                        >
+                          <Titles size="h5">Delete Log</Titles>
+                        </Buttons>
+                        {!formState.isFinished && (
+                          <Buttons
+                            onClick={() => {
+                              if (!isFormValid()) {
+                                setNotification(
+                                  "Please complete maintenance requirements",
+                                  "error"
+                                );
+                                return;
+                              }
+                              saveEdits();
+                            }}
+                            background={
+                              isFormValid() ? "lightBlue" : "darkGray"
+                            }
+                            className="w-full "
+                            disabled={!isFormValid()}
+                          >
+                            <Titles size="h5">Finish Logs</Titles>
+                          </Buttons>
+                        )}
+                      </Holds>
+                    </Grids>
+                  </Contents>
                 )}
               </Holds>
             </Grids>

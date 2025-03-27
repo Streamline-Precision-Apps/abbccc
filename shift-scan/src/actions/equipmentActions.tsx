@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { EquipmentTags, EquipmentStatus } from "@/lib/types";
 import { Priority } from "@prisma/client";
+import { auth } from "@/auth";
 
 export async function equipmentTagExists(id: string) {
   try {
@@ -304,33 +305,106 @@ export async function createMaintenanceRequest(formData: FormData) {
   }
 }
 
-export async function updateEmployeeEquipmentLog(formData: FormData) {
+export async function deleteMaintenanceInEquipment(id: string) {
   try {
-    console.log(formData);
-    const id = formData.get("id") as string;
-    const startTime = formData.get("startTime") as string;
-    const endTime = formData.get("endTime") as string;
-    const comment = formData.get("comment") as string;
-
-    // Update the employee equipment log
-    const log = await prisma.employeeEquipmentLog.update({
+    // First find the log to get the maintenanceId
+    const log = await prisma.employeeEquipmentLog.findUnique({
       where: { id },
-      data: {
-        startTime,
-        endTime: endTime ? endTime : new Date().toISOString(),
-        comment,
-        isFinished: true,
-        equipment: {
-          update: {
-            status: formData.get("Equipment.status") as EquipmentStatus,
-          },
-        },
-      },
+      include: { maintenanceId: true },
     });
 
-    console.log(log);
-    revalidatePath("dashboard/equipment/" + id);
-    revalidatePath("/dashboard/equipment");
+    if (!log) {
+      throw new Error("Equipment log not found");
+    }
+
+    // Use a transaction to ensure both operations succeed or fail together
+    await prisma.$transaction([
+      // Delete the maintenance record if it exists
+      ...(log.maintenanceId
+        ? [
+            prisma.maintenance.delete({
+              where: { id: log.maintenanceId.id },
+            }),
+          ]
+        : []),
+
+      // Update the equipment log to remove the maintenance reference
+      prisma.employeeEquipmentLog.update({
+        where: { id },
+        data: {
+          isFinished: true,
+          maintenanceId: { disconnect: true }, // Proper way to remove relation
+        },
+      }),
+
+      // Also update the equipment status to OPERATIONAL
+      prisma.equipment.update({
+        where: { id: log.equipmentId },
+        data: { status: "OPERATIONAL" },
+      }),
+    ]);
+
+    return true;
+  } catch (error) {
+    console.error("Error deleting maintenance:", error);
+    throw error; // Re-throw to handle in calling function
+  }
+}
+
+export async function updateEmployeeEquipmentLog(formData: FormData) {
+  try {
+    const session = await auth();
+    if (!session) {
+      throw new Error("Unauthorized user");
+    }
+    console.log("Update EmployeeEquipmentLog:", formData);
+
+    await prisma.$transaction(async (prisma) => {
+      const id = formData.get("id") as string;
+      const equipmentId = formData.get("equipmentId") as string;
+      const startTime = formData.get("startTime") as string;
+      const endTime = formData.get("endTime") as string;
+      const comment = formData.get("comment") as string;
+      const status = formData.get("Equipment.status") as EquipmentStatus;
+      const equipmentIssue = formData.get("equipmentIssue") as string;
+      const additionalInfo = formData.get("additionalInfo") as string;
+
+      // Update the employee equipment log
+      const log = await prisma.employeeEquipmentLog.update({
+        where: { id },
+        data: {
+          startTime,
+          endTime: endTime ? endTime : new Date().toISOString(),
+          comment,
+          isFinished: true,
+        },
+      });
+
+      // Update the status of the equipment using the correct equipmentId
+      await prisma.equipment.update({
+        where: { id: equipmentId },
+        data: {
+          status,
+        },
+      });
+
+      // Create a new maintenance request if the equipment is not operational
+      if (status !== "OPERATIONAL") {
+        await prisma.maintenance.create({
+          data: {
+            equipmentId: equipmentId, // Use equipmentId here, not the log ID
+            employeeEquipmentLogId: log.id,
+            equipmentIssue,
+            additionalInfo,
+            priority: "PENDING",
+            createdBy: `${session.user.firstName} ${session.user.lastName}`,
+          },
+        });
+      }
+
+      revalidatePath(`/dashboard/equipment/${id}`);
+      revalidatePath("/dashboard/equipment");
+    });
   } catch (error) {
     console.error("Error updating employee equipment log:", error);
     throw new Error(`Failed to update employee equipment log: ${error}`);
