@@ -156,6 +156,22 @@ export async function setCurrentPageView(currentPageView: string) {
 }
 
 // cookie for setting job site access
+export async function setProfilePicture(profilePicture: string) {
+  try {
+    cookies().set({
+      name: "profilePicture",
+      value: profilePicture,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days - made this to not have errors occur is logging out is forgotten
+    });
+  } catch (error) {
+    console.error("Failed to set locale cookie:", error);
+  }
+}
+
+// cookie for setting job site access
 export async function setJobSite(jobSite: string) {
   try {
     cookies().set({

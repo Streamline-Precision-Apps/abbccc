@@ -5,10 +5,7 @@ import { auth } from "@/auth";
 
 type Params = { id: string };
 
-export async function GET(
-  request: Request,
-  { params }: { params: Params }
-) {
+export async function GET(request: Request, { params }: { params: Params }) {
   try {
     const session = await auth();
     const userId = session?.user?.id;
@@ -48,6 +45,13 @@ export async function GET(
             gallonsRefueled: true,
           },
         },
+        maintenanceId: {
+          select: {
+            id: true,
+            equipmentIssue: true,
+            additionalInfo: true,
+          },
+        },
       },
     });
 
@@ -68,9 +72,6 @@ export async function GET(
       errorMessage = error.message;
     }
 
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
