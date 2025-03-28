@@ -48,7 +48,7 @@ export const SignUpOutro = ({
                   id={"1"}
                   label={" "}
                   disabled={true}
-                  defaultChecked
+                  checked
                   name="locale"
                 />
               </Holds>
@@ -65,7 +65,7 @@ export const SignUpOutro = ({
                   id={"1"}
                   label={" "}
                   disabled={true}
-                  defaultChecked
+                  checked
                   name="locale"
                 />
               </Holds>
@@ -82,7 +82,7 @@ export const SignUpOutro = ({
                   id={"1"}
                   label={" "}
                   disabled={true}
-                  defaultChecked
+                  checked
                   name="locale"
                 />
               </Holds>
@@ -99,7 +99,7 @@ export const SignUpOutro = ({
                   id={"1"}
                   label={""}
                   disabled={true}
-                  defaultChecked
+                  checked
                   name="locale"
                 />
               </Holds>

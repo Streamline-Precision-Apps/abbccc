@@ -56,7 +56,7 @@ export function CostCodeLeft({
                   <Holds position="row" className="relative flex w-1/3">
                     <CheckBox
                       id={tag.id.toString()}
-                      defaultChecked={selectedTags.some((t) => t.id === tag.id)}
+                      checked={selectedTags.some((t) => t.id === tag.id)}
                       onChange={() => toggleTagSelection(tag)}
                       size={2}
                       name={tag.name}

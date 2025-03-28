@@ -4,7 +4,6 @@ import { ChangeEvent } from "react";
 
 export interface CheckboxProps {
   disabled?: boolean;
-  defaultChecked?: boolean;
   checked?: boolean;
   id: string;
   name: string;
@@ -15,8 +14,7 @@ export interface CheckboxProps {
 
 export const CheckBox = ({
   disabled,
-  defaultChecked,
-  checked,
+  checked = false,
   id,
   name,
   label,
@@ -34,7 +32,6 @@ export const CheckBox = ({
       type="checkbox"
       id={id}
       name={name}
-      defaultChecked={defaultChecked}
       checked={checked}
       disabled={disabled}
       onChange={onChange}
