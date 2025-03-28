@@ -25,6 +25,12 @@ type Refueled = {
   tascoLogId: string | null;
 };
 
+const maintenanceSchema = z.object({
+  id: z.string().optional(),
+  equipmentIssue: z.string().nullable(),
+  additionalInfo: z.string().nullable(), // assuming this might be null
+});
+
 const EquipmentLogSchema = z.object({
   id: z.string(),
   equipmentId: z.string(),
@@ -45,11 +51,7 @@ const EquipmentLogSchema = z.object({
     name: z.string(),
     status: z.string().optional(),
   }),
-  maintenanceId: z.object({
-    id: z.string().nullable(),
-    equipmentIssue: z.string(),
-    additionalInfo: z.string(),
-  }),
+  maintenanceId: maintenanceSchema.nullable(),
 });
 
 type EquipmentLog = z.infer<typeof EquipmentLogSchema>;
@@ -71,7 +73,7 @@ interface UsageDataProps {
   handleFullOperational: () => void;
   fullyOperational: boolean | undefined;
   t: (key: string) => string;
-  isFormValid: () => boolean;
+  isFormValid: () => boolean | "" | null | undefined;
 }
 
 export default function UsageData({

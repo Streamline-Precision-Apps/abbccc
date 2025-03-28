@@ -33,6 +33,11 @@ type Refueled = {
   tascoLogId: string | null;
 };
 
+const maintenanceSchema = z.object({
+  id: z.string().optional(),
+  equipmentIssue: z.string().nullable(),
+  additionalInfo: z.string().nullable(), // assuming this might be null
+});
 const EquipmentLogSchema = z.object({
   id: z.string(),
   equipmentId: z.string(),
@@ -53,13 +58,8 @@ const EquipmentLogSchema = z.object({
     name: z.string(),
     status: z.string().optional(),
   }),
-  maintenanceId: z.object({
-    id: z.string().nullable(),
-    equipmentIssue: z.string(),
-    additionalInfo: z.string(),
-  }),
+  maintenanceId: maintenanceSchema.nullable(),
 });
-
 type EquipmentLog = z.infer<typeof EquipmentLogSchema>;
 
 export default function CombinedForm({ params }: { params: { id: string } }) {
@@ -82,19 +82,51 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
       name: "",
       status: "OPERATIONAL" as EquipmentStatus,
     },
-    maintenanceId: {
-      id: null,
-      equipmentIssue: "",
-      additionalInfo: "",
-    },
+    maintenanceId: null,
   } as EquipmentLog);
 
   const [originalState, setOriginalState] = useState(formState);
-  const [hasChanged, setHasChanged] = useState<boolean>();
+  const [hasChanged, setHasChanged] = useState<boolean>(false);
   const [refueledLogs, setRefueledLogs] = useState<boolean>();
   const [tab, setTab] = useState(1);
   // states for maintenance logs
   const [fullyOperational, setFullyOperational] = useState<boolean>(false);
+
+  const deepCompareObjects = useCallback(
+    <T extends Record<string, any>>(obj1: T, obj2: T): boolean => {
+      if (obj1 === obj2) return true;
+
+      const keys1 = Object.keys(obj1);
+      const keys2 = Object.keys(obj2);
+
+      if (keys1.length !== keys2.length) return false;
+
+      for (const key of keys1) {
+        const val1 = obj1[key];
+        const val2 = obj2[key];
+        const areObjects = isObject(val1) && isObject(val2);
+
+        if (
+          (areObjects && !deepCompareObjects(val1, val2)) ||
+          (!areObjects && val1 !== val2)
+        ) {
+          return false;
+        }
+      }
+
+      return true;
+    },
+    []
+  );
+
+  const isObject = (object: any) => {
+    return object != null && typeof object === "object";
+  };
+
+  useEffect(() => {
+    const changed = !deepCompareObjects(formState, originalState);
+    setHasChanged(changed);
+  }, [formState, originalState, deepCompareObjects]);
 
   useEffect(() => {
     const fetchEqLog = async () => {
@@ -123,14 +155,16 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
             name: data.equipment?.name || "",
             status: data.equipment?.status || "OPERATIONAL",
           },
-          maintenanceId: {
-            id: data.maintenanceId.id || null,
-            equipmentIssue: data.maintenanceId.equipmentIssue || "",
-            additionalInfo: data.maintenanceId.additionalInfo || "",
-          },
+          maintenanceId: data.maintenanceId
+            ? {
+                id: data.maintenanceId.id || "",
+                equipmentIssue: data.maintenanceId.equipmentIssue || "",
+                additionalInfo: data.maintenanceId.additionalInfo || "",
+              }
+            : null,
         } as EquipmentLog;
 
-        console.log("Processed Data: ", processedData);
+        // console.log("Processed Data: ", processedData);
 
         const result = EquipmentLogSchema.safeParse(processedData);
         if (!result.success) {
@@ -143,7 +177,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
 
         const isRefueled = data.refueled.length > 0;
 
-        console.log("isRefueled: ", isRefueled);
+        // console.log("isRefueled: ", isRefueled);
 
         setRefueledLogs(isRefueled);
       } catch (error) {
@@ -174,23 +208,35 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
     field: string,
     value: string | number | boolean | FormStatus | EquipmentStatus
   ) => {
-    console.log("Field Changed: ", field);
     if (field === "Equipment.status") {
+      setFormState((prev) => {
+        const newState = {
+          ...prev,
+          equipment: {
+            ...prev.equipment,
+            status: value as EquipmentStatus,
+          },
+        };
+        return newState;
+      });
+    } else if (field.startsWith("maintenanceId.")) {
+      const maintenanceField = field.split(".")[1];
       setFormState((prev) => ({
         ...prev,
-        equipment: {
-          ...prev.equipment,
-          status: value as EquipmentStatus,
+        maintenanceId: {
+          ...(prev.maintenanceId || {
+            id: "",
+            equipmentIssue: "",
+            additionalInfo: null,
+          }),
+          [maintenanceField]: value,
         },
       }));
-      console.log("Field changed:", field);
-      console.log("Value:", value);
     } else {
       setFormState((prev) => ({
         ...prev,
         [field]: value,
       }));
-      console.log("Value:", value);
     }
   };
 
@@ -234,6 +280,10 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
   const deleteLog = async () => {
     try {
       await deleteEmployeeEquipmentLog(formState.id);
+      setFormState({
+        ...formState,
+        maintenanceId: null,
+      });
       setNotification(t("Deleted"), "success");
       router.replace("/dashboard/equipment");
     } catch (error) {
@@ -246,7 +296,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
     try {
       const formData = new FormData();
       Object.entries(formState).forEach(([key, value]) => {
-        if (key === "equipment" || key === "maintenanceId") {
+        if (key === "equipment") {
         } else {
           formData.append(key, String(value));
         }
@@ -255,8 +305,14 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
         "Equipment.status",
         formState.equipment.status || "OPERATIONAL"
       );
-      // formData.append("equipmentIssue", formState.maintenanceId.equipmentIssue);
-      // formData.append("additionalInfo", formState.maintenanceId.additionalInfo);
+      formData.append(
+        "equipmentIssue",
+        formState.maintenanceId?.equipmentIssue || ""
+      );
+      formData.append(
+        "additionalInfo",
+        formState.maintenanceId?.additionalInfo || ""
+      );
 
       console.log("Form Data: ", formData);
       await updateEmployeeEquipmentLog(formData);
@@ -278,28 +334,35 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
     .toString()
     .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 
-  useEffect(() => {
-    if (formState !== originalState) {
-      setHasChanged(true);
-    }
-  }, [formState, originalState]);
-
   // validation function
   const isFormValid = useCallback(() => {
     return (
       // Either equipment is fully operational
       fullyOperational ||
       // OR maintenance request is properly filled out
-      (formState.maintenanceId &&
-        formState.maintenanceId.equipmentIssue.length > 0 &&
-        formState.maintenanceId &&
-        formState.maintenanceId.additionalInfo.length > 0)
+      (formState.maintenanceId?.equipmentIssue &&
+        formState.maintenanceId?.equipmentIssue.length > 0 &&
+        formState.maintenanceId?.additionalInfo &&
+        formState.maintenanceId?.additionalInfo.length > 0 &&
+        formState.equipment.status !== "OPERATIONAL")
     );
   }, [
     fullyOperational,
     formState.maintenanceId?.equipmentIssue,
     formState.maintenanceId?.additionalInfo,
+    formState.equipment.status,
   ]);
+
+  useEffect(() => {
+    console.log("Checking for changes...");
+    console.log("Current formState:", formState);
+    console.log("Current originalState:", originalState);
+
+    const changed = !deepCompareObjects(formState, originalState);
+    console.log("Change detected:", changed);
+
+    setHasChanged(changed);
+  }, [formState, originalState, deepCompareObjects]);
 
   return (
     <Bases>
@@ -389,6 +452,8 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                         <MaintenanceLogEquipment
                           formState={formState}
                           handleFieldChange={handleFieldChange}
+                          hasChanged={hasChanged}
+                          fullyOperational={fullyOperational}
                           t={t}
                         />
                       )}
@@ -406,7 +471,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                         >
                           <Titles size="h5">Delete Log</Titles>
                         </Buttons>
-                        {!formState.isFinished && (
+                        {hasChanged && (
                           <Buttons
                             onClick={() => {
                               if (!isFormValid()) {
