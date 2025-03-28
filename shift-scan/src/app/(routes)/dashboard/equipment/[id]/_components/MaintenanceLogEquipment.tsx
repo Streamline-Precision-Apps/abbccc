@@ -12,6 +12,7 @@ import { z } from "zod";
 import { Selects } from "@/components/(reusable)/selects";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { deleteMaintenanceInEquipment } from "@/actions/equipmentActions";
+import { Titles } from "@/components/(reusable)/titles";
 
 const maintenanceSchema = z.object({
   id: z.string().optional(),
@@ -40,6 +41,7 @@ const EquipmentLogSchema = z.object({
     status: z.string().optional(),
   }),
   maintenanceId: maintenanceSchema.nullable(),
+  fullyOperational: z.boolean(),
 });
 
 type EquipmentLog = z.infer<typeof EquipmentLogSchema>;
@@ -52,7 +54,6 @@ interface MaintenanceLogEquipmentProps {
   ) => void;
   t: (key: string) => string;
   hasChanged: boolean | undefined;
-  fullyOperational: boolean;
 }
 
 export default function MaintenanceLogEquipment({
@@ -60,16 +61,15 @@ export default function MaintenanceLogEquipment({
   handleFieldChange,
   formState,
   hasChanged,
-  fullyOperational,
 }: MaintenanceLogEquipmentProps) {
   return (
     <Holds className="w-full h-full py-5">
       <Contents width={"section"}>
         <Grids rows={"8"} gap={"5"} className="h-full w-full">
-          {fullyOperational ? (
+          {formState.fullyOperational ? (
             <Holds className="row-start-1 row-end-8 h-full">
               <Holds className="flex justify-center items-center h-full w-full">
-                <Texts size="p3">Equipment Marked as Fully Operational</Texts>
+                <Titles size="h3">Equipment Marked as Fully Operational</Titles>
               </Holds>
             </Holds>
           ) : (

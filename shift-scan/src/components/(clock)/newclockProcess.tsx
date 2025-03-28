@@ -288,6 +288,11 @@ export default function NewClockProcess({
   if (type === "equipment") {
     return (
       <>
+        {step === 0 && (
+          <>
+            <ClockLoadingPage handleReturnPath={handleReturnPath} />
+          </>
+        )}
         {step === 1 && (
           <>
             <QRStep

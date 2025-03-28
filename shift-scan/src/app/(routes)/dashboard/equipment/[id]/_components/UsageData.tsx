@@ -15,6 +15,7 @@ import { TextAreas } from "@/components/(reusable)/textareas";
 import { z } from "zod";
 import { useNotification } from "@/app/context/NotificationContext";
 import { EquipmentStatus } from "@/lib/types";
+import { useState } from "react";
 
 type Refueled = {
   id: string;
@@ -30,7 +31,6 @@ const maintenanceSchema = z.object({
   equipmentIssue: z.string().nullable(),
   additionalInfo: z.string().nullable(), // assuming this might be null
 });
-
 const EquipmentLogSchema = z.object({
   id: z.string(),
   equipmentId: z.string(),
@@ -42,8 +42,12 @@ const EquipmentLogSchema = z.object({
   refueled: z.array(
     z
       .object({
+        id: z.string().optional(),
+        employeeEquipmentLogId: z.string().optional(),
+        truckingLogId: z.string().optional(),
         gallonsRefueled: z.number().optional(),
         milesAtfueling: z.number().optional(),
+        tascoLogId: z.string().optional(),
       })
       .optional()
   ),
@@ -52,26 +56,23 @@ const EquipmentLogSchema = z.object({
     status: z.string().optional(),
   }),
   maintenanceId: maintenanceSchema.nullable(),
+  fullyOperational: z.boolean(),
 });
-
 type EquipmentLog = z.infer<typeof EquipmentLogSchema>;
 
 interface UsageDataProps {
   formState: EquipmentLog;
   handleFieldChange: (
     field: string,
-    value: string | number | boolean | EquipmentStatus
+    value: string | number | boolean | EquipmentStatus | Refueled
   ) => void;
   formattedTime: string;
   refueledLogs: boolean | undefined;
   handleChangeRefueled: () => void;
   AddRefuelLog: () => void;
-  refuelLogs: Refueled[] | undefined;
-  setRefuelLogs: React.Dispatch<React.SetStateAction<Refueled[] | undefined>>;
   deleteLog: () => void;
   saveEdits: () => void;
   handleFullOperational: () => void;
-  fullyOperational: boolean | undefined;
   t: (key: string) => string;
   isFormValid: () => boolean | "" | null | undefined;
 }
@@ -80,19 +81,11 @@ export default function UsageData({
   formState,
   handleFieldChange,
   formattedTime,
-  refueledLogs,
   handleChangeRefueled,
   handleFullOperational,
   AddRefuelLog,
-  refuelLogs,
-  setRefuelLogs,
-  deleteLog,
-  saveEdits,
-  fullyOperational,
   t,
-  isFormValid,
 }: UsageDataProps) {
-  const { setNotification } = useNotification();
   return (
     <Holds className="row-start-1 row-end-8 w-full h-full overflow-y-auto no-scrollbar  ">
       <Labels size="p5">Total Usage</Labels>
@@ -142,7 +135,6 @@ export default function UsageData({
           />
         </Holds>
       </Holds>
-
       <Holds background="white" className="w-full  relative">
         <Labels size="p5">{t("Comment")}</Labels>
         <TextAreas
@@ -165,7 +157,6 @@ export default function UsageData({
           }/40`}
         </Texts>
       </Holds>
-
       <Holds position={"row"} className="w-full pb-4">
         <Holds size={"90"} className="h-full justify-center">
           <Texts position={"left"} size="p5">
@@ -177,12 +168,11 @@ export default function UsageData({
             id="fullyOperational"
             name="fullyOperational"
             size={2}
-            checked={fullyOperational}
+            checked={formState.fullyOperational}
             onChange={() => handleFullOperational()}
           />
         </Holds>
       </Holds>
-
       <Holds position={"row"} className="w-full pb-4">
         <Holds size={"70"} className="h-full justify-center">
           <Texts position={"left"} size="p5">
@@ -204,12 +194,13 @@ export default function UsageData({
           </Holds>
         </Holds>
       </Holds>
-
-      {refueledLogs && refuelLogs && refuelLogs.length > 0 && (
+      {formState.refueled && formState.refueled.length > 0 && (
         <Holds>
           <RefuelEquipmentLogsList
-            refuelLogs={refuelLogs}
-            setRefuelLogs={setRefuelLogs}
+            refuelLogs={formState.refueled as Refueled[]}
+            setRefuelLogs={(updatedLogs) =>
+              handleFieldChange("refueled", updatedLogs)
+            }
             mileage={false}
           />
         </Holds>

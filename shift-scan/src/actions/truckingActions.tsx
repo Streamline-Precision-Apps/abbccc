@@ -254,7 +254,9 @@ export async function createRefuelEquipmentLog(formData: FormData) {
 
   console.log(refueledLogs);
   revalidatePath("/dashboard/truckingAssistant");
-  return refueledLogs;
+  const { id, gallonsRefueled } = refueledLogs;
+  const data = { id, gallonsRefueled, employeeEquipmentLogId };
+  return data;
 }
 
 export async function deleteEmployeeEquipmentLog(id: string) {
