@@ -152,7 +152,7 @@ export const InjuryReportContent = ({
                 </Holds>
                 <Holds size={"20"}>
                   <CheckBox
-                    defaultChecked={supervisorChecked}
+                    checked={supervisorChecked}
                     onChange={handleSupervisorCheckboxChange}
                     id={"1"}
                     name={""}
@@ -169,7 +169,7 @@ export const InjuryReportContent = ({
                 </Holds>
                 <Holds size={"20"}>
                   <CheckBox
-                    defaultChecked={signatureChecked}
+                    checked={signatureChecked}
                     onChange={handleSignatureCheckboxChange}
                     id={"2"}
                     name={""}

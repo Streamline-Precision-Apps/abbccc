@@ -75,7 +75,7 @@ export const PreInjuryReport = ({
                     id="injury-checkbox"
                     name="injury-verify"
                     onChange={handleCheckboxChange}
-                    defaultChecked={checked}
+                    checked={checked}
                     size={3}
                   />
                 </Holds>

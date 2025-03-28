@@ -194,6 +194,7 @@ export default function TascoClockInForm({
                         value={materialType}
                         onChange={(e) => setMaterialType(e.target.value)}
                       >
+                        <option value=""></option>
                         {materialTypes.map((option) => (
                           <option key={option.id} value={option.name}>
                             {option.name}

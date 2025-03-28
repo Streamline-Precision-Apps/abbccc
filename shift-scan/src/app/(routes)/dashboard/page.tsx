@@ -10,6 +10,7 @@ import DbWidgetSection from "./dbWidgetSection";
 import { Grids } from "@/components/(reusable)/grids";
 import BannerRotating from "@/components/(reusable)/bannerRotating";
 import { cookies } from "next/headers";
+import HamburgerMenuNew from "@/components/(animations)/hamburgerMenuNew";
 
 export default async function Dashboard() {
   //------------------------------------------------------------------------
@@ -36,20 +37,7 @@ export default async function Dashboard() {
     <Bases>
       <Contents>
         <Grids rows={"7"} gap={"2"}>
-          <Holds position={"row"} background={"white"} className="row-span-1">
-            <Holds size={"30"}>
-              <Images
-                titleImg="/logo.svg"
-                titleImgAlt="logo"
-                position={"left"}
-                size={"full"}
-                className="m-2"
-              />
-            </Holds>
-            <Holds size={"70"}>
-              <AnimatedHamburgerButton />
-            </Holds>
-          </Holds>
+          <HamburgerMenuNew />
           <Holds className="row-span-1 bg-app-blue bg-opacity-20 w-full pt-2 pb-6 my-2 rounded-[10px]">
             <BannerRotating />
           </Holds>
@@ -65,4 +53,20 @@ export default async function Dashboard() {
       </Contents>
     </Bases>
   );
+}
+{
+  /* <Holds position={"row"} background={"white"} className="row-span-1">
+            <Holds size={"30"}>
+              <Images
+                titleImg="/logo.svg"
+                titleImgAlt="logo"
+                position={"left"}
+                size={"full"}
+                className="m-2"
+              />
+            </Holds>
+            <Holds size={"70"}>
+              <AnimatedHamburgerButton />
+            </Holds>
+          </Holds> */
 }

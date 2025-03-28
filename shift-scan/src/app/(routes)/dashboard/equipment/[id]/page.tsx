@@ -1,35 +1,28 @@
 "use client";
 
-import {
-  DeleteLogs,
-  updateEmployeeEquipmentLog,
-} from "@/actions/equipmentActions";
+import { updateEmployeeEquipmentLog } from "@/actions/equipmentActions";
 import { useNotification } from "@/app/context/NotificationContext";
-import { CheckBox } from "@/components/(inputs)/checkBox";
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
-import { Texts } from "@/components/(reusable)/texts";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
-import { Buttons } from "@/components/(reusable)/buttons";
 import { useRouter } from "next/navigation";
-import { use, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { z } from "zod";
-import { EquipmentStatus, FormStatus } from "@prisma/client";
-import { Titles } from "@/components/(reusable)/titles";
-import { Labels } from "@/components/(reusable)/labels";
-import { Inputs } from "@/components/(reusable)/inputs";
-import { differenceInSeconds, format, parseISO, set } from "date-fns";
-import { Selects } from "@/components/(reusable)/selects";
-import { TextAreas } from "@/components/(reusable)/textareas";
+import { differenceInSeconds, parseISO } from "date-fns";
 import {
   createRefuelEquipmentLog,
   deleteEmployeeEquipmentLog,
 } from "@/actions/truckingActions";
-import RefuelEquipmentLogsList from "./RefuelEquipmentLogsList";
 import Spinner from "@/components/(animations)/spinner";
+import { NewTab } from "@/components/(reusable)/newTabs";
+import UsageData from "./_components/UsageData";
+import MaintenanceLogEquipment from "./_components/MaintenanceLogEquipment";
+import { Buttons } from "@/components/(reusable)/buttons";
+import { Titles } from "@/components/(reusable)/titles";
+import { EquipmentStatus, FormStatus } from "@/lib/types";
 
 type Refueled = {
   id: string;
@@ -40,6 +33,11 @@ type Refueled = {
   tascoLogId: string | null;
 };
 
+const maintenanceSchema = z.object({
+  id: z.string().optional(),
+  equipmentIssue: z.string().nullable(),
+  additionalInfo: z.string().nullable(), // assuming this might be null
+});
 const EquipmentLogSchema = z.object({
   id: z.string(),
   equipmentId: z.string(),
@@ -60,8 +58,8 @@ const EquipmentLogSchema = z.object({
     name: z.string(),
     status: z.string().optional(),
   }),
+  maintenanceId: maintenanceSchema.nullable(),
 });
-
 type EquipmentLog = z.infer<typeof EquipmentLogSchema>;
 
 export default function CombinedForm({ params }: { params: { id: string } }) {
@@ -82,13 +80,53 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
     refueled: [],
     equipment: {
       name: "",
-      status: EquipmentStatus.OPERATIONAL,
+      status: "OPERATIONAL" as EquipmentStatus,
     },
+    maintenanceId: null,
   } as EquipmentLog);
 
   const [originalState, setOriginalState] = useState(formState);
-  const [hasChanged, setHasChanged] = useState<boolean>();
+  const [hasChanged, setHasChanged] = useState<boolean>(false);
   const [refueledLogs, setRefueledLogs] = useState<boolean>();
+  const [tab, setTab] = useState(1);
+  // states for maintenance logs
+  const [fullyOperational, setFullyOperational] = useState<boolean>(false);
+
+  const deepCompareObjects = useCallback(
+    <T extends Record<string, any>>(obj1: T, obj2: T): boolean => {
+      if (obj1 === obj2) return true;
+
+      const keys1 = Object.keys(obj1);
+      const keys2 = Object.keys(obj2);
+
+      if (keys1.length !== keys2.length) return false;
+
+      for (const key of keys1) {
+        const val1 = obj1[key];
+        const val2 = obj2[key];
+        const areObjects = isObject(val1) && isObject(val2);
+
+        if (
+          (areObjects && !deepCompareObjects(val1, val2)) ||
+          (!areObjects && val1 !== val2)
+        ) {
+          return false;
+        }
+      }
+
+      return true;
+    },
+    []
+  );
+
+  const isObject = (object: any) => {
+    return object != null && typeof object === "object";
+  };
+
+  useEffect(() => {
+    const changed = !deepCompareObjects(formState, originalState);
+    setHasChanged(changed);
+  }, [formState, originalState, deepCompareObjects]);
 
   useEffect(() => {
     const fetchEqLog = async () => {
@@ -115,11 +153,18 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
           ],
           equipment: {
             name: data.equipment?.name || "",
-            status: data.equipment?.status || EquipmentStatus.OPERATIONAL,
+            status: data.equipment?.status || "OPERATIONAL",
           },
+          maintenanceId: data.maintenanceId
+            ? {
+                id: data.maintenanceId.id || "",
+                equipmentIssue: data.maintenanceId.equipmentIssue || "",
+                additionalInfo: data.maintenanceId.additionalInfo || "",
+              }
+            : null,
         } as EquipmentLog;
 
-        console.log("Processed Data: ", processedData);
+        // console.log("Processed Data: ", processedData);
 
         const result = EquipmentLogSchema.safeParse(processedData);
         if (!result.success) {
@@ -132,7 +177,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
 
         const isRefueled = data.refueled.length > 0;
 
-        console.log("isRefueled: ", isRefueled);
+        // console.log("isRefueled: ", isRefueled);
 
         setRefueledLogs(isRefueled);
       } catch (error) {
@@ -164,11 +209,27 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
     value: string | number | boolean | FormStatus | EquipmentStatus
   ) => {
     if (field === "Equipment.status") {
+      setFormState((prev) => {
+        const newState = {
+          ...prev,
+          equipment: {
+            ...prev.equipment,
+            status: value as EquipmentStatus,
+          },
+        };
+        return newState;
+      });
+    } else if (field.startsWith("maintenanceId.")) {
+      const maintenanceField = field.split(".")[1];
       setFormState((prev) => ({
         ...prev,
-        equipment: {
-          ...prev.equipment,
-          status: value as EquipmentStatus,
+        maintenanceId: {
+          ...(prev.maintenanceId || {
+            id: "",
+            equipmentIssue: "",
+            additionalInfo: null,
+          }),
+          [maintenanceField]: value,
         },
       }));
     } else {
@@ -176,8 +237,6 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
         ...prev,
         [field]: value,
       }));
-      console.log("Field changed:", field);
-      console.log("Value:", value);
     }
   };
 
@@ -210,9 +269,21 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
     }
   };
 
+  const handleFullOperational = () => {
+    if (fullyOperational) {
+      setFullyOperational(false);
+    } else {
+      setFullyOperational(true);
+    }
+  };
+
   const deleteLog = async () => {
     try {
       await deleteEmployeeEquipmentLog(formState.id);
+      setFormState({
+        ...formState,
+        maintenanceId: null,
+      });
       setNotification(t("Deleted"), "success");
       router.replace("/dashboard/equipment");
     } catch (error) {
@@ -232,8 +303,17 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
       });
       formData.set(
         "Equipment.status",
-        formState.equipment.status || EquipmentStatus.OPERATIONAL
+        formState.equipment.status || "OPERATIONAL"
       );
+      formData.append(
+        "equipmentIssue",
+        formState.maintenanceId?.equipmentIssue || ""
+      );
+      formData.append(
+        "additionalInfo",
+        formState.maintenanceId?.additionalInfo || ""
+      );
+
       console.log("Form Data: ", formData);
       await updateEmployeeEquipmentLog(formData);
       setNotification(t("Saved"), "success");
@@ -254,11 +334,36 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
     .toString()
     .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 
+  // validation function
+  const isFormValid = useCallback(() => {
+    return (
+      // Either equipment is fully operational
+      fullyOperational ||
+      // OR maintenance request is properly filled out
+      (formState.maintenanceId?.equipmentIssue &&
+        formState.maintenanceId?.equipmentIssue.length > 0 &&
+        formState.maintenanceId?.additionalInfo &&
+        formState.maintenanceId?.additionalInfo.length > 0 &&
+        formState.equipment.status !== "OPERATIONAL")
+    );
+  }, [
+    fullyOperational,
+    formState.maintenanceId?.equipmentIssue,
+    formState.maintenanceId?.additionalInfo,
+    formState.equipment.status,
+  ]);
+
   useEffect(() => {
-    if (formState !== originalState) {
-      setHasChanged(true);
-    }
-  }, [formState, originalState]);
+    console.log("Checking for changes...");
+    console.log("Current formState:", formState);
+    console.log("Current originalState:", originalState);
+
+    const changed = !deepCompareObjects(formState, originalState);
+    console.log("Change detected:", changed);
+
+    setHasChanged(changed);
+  }, [formState, originalState, deepCompareObjects]);
+
   return (
     <Bases>
       <Contents>
@@ -283,214 +388,116 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
               className="w-full h-full"
             />
           </Holds>
-
-          <Holds
-            background="white"
-            className={
-              isLoading
-                ? "row-start-2 row-end-8 h-full animate-pulse"
-                : "row-start-2 row-end-8 h-full "
-            }
-          >
-            {isLoading ? (
-              <>
-                <Holds className="h-full w-full justify-center">
-                  <Spinner />
-                </Holds>
-              </>
-            ) : (
-              <>
-                <Contents width={"section"}>
-                  <Grids rows={"8"} gap={"5"} className="h-full w-full py-3">
-                    <Holds className="row-start-1 row-end-8 w-full h-full overflow-y-auto no-scrollbar  ">
-                      <Labels size="p5">Total Usage</Labels>
-                      <Inputs
-                        type="text"
-                        disabled
-                        value={formattedTime}
-                        className="border-[3px] border-black p-1 w-full text-center"
-                      />
-                      <Holds position={"row"} className="w-full ">
-                        <Holds className="w-full">
-                          <Labels size="p5">Start Time</Labels>
-                          <Inputs
-                            type="time"
-                            value={
-                              formState.startTime
-                                ? format(new Date(formState.startTime), "HH:mm")
-                                : ""
-                            }
-                            className="w-full border-[3px] border-r-[1.5px] border-black p-1 rounded-[10px] rounded-r-none"
-                            onChange={(e) => {
-                              const newTime = e.target.value; // e.g., "14:30"
-                              // Use the existing startTime date or default to today's date if empty
-                              const currentDate = new Date(
-                                formState.startTime || new Date()
-                              );
-                              // Split the new time string into hours and minutes
-                              const [newHours, newMinutes] = newTime
-                                .split(":")
-                                .map(Number);
-                              // Update the date with the new hours and minutes (set seconds and ms to 0)
-                              currentDate.setHours(newHours, newMinutes, 0, 0);
-                              // Update the state with the new ISO string
-                              handleFieldChange(
-                                "startTime",
-                                currentDate.toISOString()
-                              );
-                            }}
-                          />
-                        </Holds>
-                        <Holds className="w-full">
-                          <Labels size="p5">End Time</Labels>
-                          <Inputs
-                            type="time"
-                            value={
-                              formState.endTime
-                                ? format(
-                                    new Date(parseISO(formState.endTime)),
-                                    "HH:mm"
-                                  )
-                                : ""
-                            }
-                            className="w-full border-[3px] border-l-[1.5px] border-black p-1 rounded-[10px] rounded-l-none"
-                            onChange={(e) => {
-                              const newTime = e.target.value; // e.g., "15:45"
-                              // Use the existing endTime date or default to today's date if empty
-                              const currentDate = new Date(
-                                formState.endTime || new Date()
-                              );
-                              const [newHours, newMinutes] = newTime
-                                .split(":")
-                                .map(Number);
-                              currentDate.setHours(newHours, newMinutes, 0, 0);
-                              handleFieldChange(
-                                "endTime",
-                                currentDate.toISOString()
-                              );
-                            }}
-                          />
-                        </Holds>
-                      </Holds>
-
-                      <Labels size="p6">Equipment Status</Labels>
-                      <Selects
-                        className="w-full text-center rounded-[10px] border-[3px] border-black focus:outline-none p-2"
-                        value={formState.equipment.status || ""}
-                        onChange={(e) =>
-                          handleFieldChange(
-                            "Equipment.status",
-                            e.currentTarget.value
-                          )
-                        }
-                      >
-                        <option value="OPERATIONAL">{t("Operational")}</option>
-                        <option value="NEEDS_REPAIR">{t("NeedsRepair")}</option>
-                        <option value="NEEDS_MAINTENANCE">
-                          {t("NeedsMaintenance")}
-                        </option>
-                      </Selects>
-                      <Holds background="white" className="w-full  relative">
-                        <Labels size="p5">{t("Comment")}</Labels>
-                        <TextAreas
-                          maxLength={40}
-                          placeholder="Enter comments here..."
-                          value={formState.comment || ""}
-                          onChange={(e) =>
-                            handleFieldChange("comment", e.target.value)
-                          }
+          <Holds className="row-start-2 row-end-8 h-full w-full">
+            <Grids rows={"10"} className="h-full w-full ">
+              <Holds
+                position={"row"}
+                className="row-start-1 row-end-2 h-full w-full gap-1"
+              >
+                <NewTab
+                  isActive={tab === 1}
+                  onClick={() => setTab(1)}
+                  titleImage="/form.svg"
+                  titleImageAlt=""
+                  isComplete={true}
+                >
+                  Usage Data
+                </NewTab>
+                <NewTab
+                  isActive={tab === 2}
+                  onClick={() => setTab(2)}
+                  titleImage="/equipment.svg"
+                  titleImageAlt=""
+                  isComplete={true}
+                >
+                  Maintenance Log
+                </NewTab>
+              </Holds>
+              <Holds
+                background="white"
+                className={
+                  isLoading
+                    ? "row-start-2 row-end-11 h-full rounded-t-none animate-pulse"
+                    : "row-start-2 row-end-11 h-full rounded-t-none "
+                }
+              >
+                {isLoading ? (
+                  <>
+                    <Holds className="h-full w-full justify-center">
+                      <Spinner />
+                    </Holds>
+                  </>
+                ) : (
+                  <Contents width={"section"}>
+                    <Grids rows={"8"} gap={"5"} className="h-full w-full pb-3">
+                      {tab === 1 && (
+                        <UsageData
+                          formState={formState}
+                          handleFieldChange={handleFieldChange}
+                          formattedTime={formattedTime}
+                          refueledLogs={refueledLogs}
+                          handleChangeRefueled={handleChangeRefueled}
+                          AddRefuelLog={AddRefuelLog}
+                          refuelLogs={refuelLogs}
+                          setRefuelLogs={setRefuelLogs}
+                          deleteLog={deleteLog}
+                          saveEdits={saveEdits}
+                          handleFullOperational={handleFullOperational}
+                          fullyOperational={fullyOperational}
+                          isFormValid={isFormValid}
+                          t={t}
                         />
-                        <Texts
-                          size="p3"
-                          className={`${
-                            typeof formState.comment === "string" &&
-                            formState.comment.length >= 40
-                              ? "text-red-500 absolute bottom-4 right-4"
-                              : "absolute bottom-4 right-4"
-                          }`}
+                      )}
+                      {tab === 2 && (
+                        <MaintenanceLogEquipment
+                          formState={formState}
+                          handleFieldChange={handleFieldChange}
+                          hasChanged={hasChanged}
+                          fullyOperational={fullyOperational}
+                          t={t}
+                        />
+                      )}
+                      <Holds
+                        position={"row"}
+                        background="white"
+                        className="w-full gap-4 row-start-8 row-end-9 py-2"
+                      >
+                        <Buttons
+                          onClick={() => {
+                            deleteLog();
+                          }}
+                          background="red"
+                          className="w-full "
                         >
-                          {`${
-                            typeof formState.comment === "string"
-                              ? formState.comment.length
-                              : 0
-                          }/40`}
-                        </Texts>
-                      </Holds>
-                      <Holds position={"row"} className="w-full pb-4">
-                        <Holds size={"40"} className="h-full justify-center">
-                          <Texts position={"left"} size="p5">
-                            Did you refuel?
-                          </Texts>
-                        </Holds>
-                        <Holds
-                          size={"30"}
-                          className="h-full justify-center relative"
-                        >
-                          <CheckBox
-                            id="refueled"
-                            name="refueled"
-                            size={2}
-                            checked={refueledLogs}
-                            onChange={() => handleChangeRefueled()}
-                          />
-                        </Holds>
-                        {refueledLogs && (
-                          <Holds size={"30"} className="h-full justify-center">
-                            <Holds position={"left"} className="p-2">
-                              <Buttons
-                                background={"green"}
-                                className="py-1.5"
-                                onClick={() => {
-                                  AddRefuelLog();
-                                }}
-                              >
-                                +
-                              </Buttons>
-                            </Holds>
-                          </Holds>
+                          <Titles size="h5">Delete Log</Titles>
+                        </Buttons>
+                        {hasChanged && (
+                          <Buttons
+                            onClick={() => {
+                              if (!isFormValid()) {
+                                setNotification(
+                                  "Please complete maintenance requirements",
+                                  "error"
+                                );
+                                return;
+                              }
+                              saveEdits();
+                            }}
+                            background={
+                              isFormValid() ? "lightBlue" : "darkGray"
+                            }
+                            className="w-full "
+                            disabled={!isFormValid()}
+                          >
+                            <Titles size="h5">Finish Logs</Titles>
+                          </Buttons>
                         )}
                       </Holds>
-
-                      {refueledLogs && refuelLogs && refuelLogs.length > 0 && (
-                        <Holds>
-                          <RefuelEquipmentLogsList
-                            refuelLogs={refuelLogs}
-                            setRefuelLogs={setRefuelLogs}
-                          />
-                        </Holds>
-                      )}
-                    </Holds>
-
-                    <Holds
-                      position={"row"}
-                      background="white"
-                      className="w-full gap-4 row-start-8 row-end-9 py-2"
-                    >
-                      <Buttons
-                        onClick={() => {
-                          deleteLog();
-                        }}
-                        background="red"
-                        className="w-full "
-                      >
-                        <Titles size="h5">Delete Log</Titles>
-                      </Buttons>
-                      {/* {hasChanged && ( */}
-                      <Buttons
-                        onClick={() => {
-                          saveEdits();
-                        }}
-                        background="lightBlue"
-                        className="w-full "
-                      >
-                        <Titles size="h5">Finish Logs</Titles>
-                      </Buttons>
-                      {/* )} */}
-                    </Holds>
-                  </Grids>
-                </Contents>
-              </>
-            )}
+                    </Grids>
+                  </Contents>
+                )}
+              </Holds>
+            </Grids>
           </Holds>
         </Grids>
       </Contents>
