@@ -31,26 +31,26 @@ model Equipment {
 }
 
 model EmployeeEquipmentLog {
-  id            String     @id @default(cuid())
+  id            String       @id @default(cuid())
   equipmentId   String
   jobsiteId     String
   employeeId    String
   startTime     DateTime?
   endTime       DateTime?
   comment       String?
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
-  isFinished    Boolean    @default(false)
-  status        FormStatus @default(PENDING)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  isFinished    Boolean      @default(false)
+  status        FormStatus   @default(PENDING)
   timeSheetId   String?
   tascoLogId    String?
   laborLogId    String?
   truckingLogId String?
-  maintenanceId String?
-  employee      User       @relation(fields: [employeeId], references: [id], onDelete: Cascade)
-  equipment     Equipment  @relation(fields: [equipmentId], references: [id])
-  jobsite       Jobsite    @relation(fields: [jobsiteId], references: [qrId])
-  timeSheets    TimeSheet? @relation(fields: [timeSheetId], references: [id])
+  maintenanceId Maintenance? //one to one relationship
+  employee      User         @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  equipment     Equipment    @relation(fields: [equipmentId], references: [id])
+  jobsite       Jobsite      @relation(fields: [jobsiteId], references: [qrId])
+  timeSheets    TimeSheet?   @relation(fields: [timeSheetId], references: [id])
   refueled      Refueled[]
 }
 
