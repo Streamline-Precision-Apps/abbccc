@@ -23,6 +23,7 @@ import MaintenanceLogEquipment from "./_components/MaintenanceLogEquipment";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
 import { EquipmentStatus, FormStatus } from "@/lib/types";
+import { form } from "@nextui-org/theme";
 
 type Refueled = {
   id: string;
@@ -49,8 +50,12 @@ const EquipmentLogSchema = z.object({
   refueled: z.array(
     z
       .object({
+        id: z.string().optional(),
+        employeeEquipmentLogId: z.string().optional(),
+        truckingLogId: z.string().optional(),
         gallonsRefueled: z.number().optional(),
         milesAtfueling: z.number().optional(),
+        tascoLogId: z.string().optional(),
       })
       .optional()
   ),
@@ -59,6 +64,7 @@ const EquipmentLogSchema = z.object({
     status: z.string().optional(),
   }),
   maintenanceId: maintenanceSchema.nullable(),
+  fullyOperational: z.boolean(),
 });
 type EquipmentLog = z.infer<typeof EquipmentLogSchema>;
 
@@ -68,7 +74,6 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
   const { setNotification } = useNotification();
   const t = useTranslations("Equipment");
   const [isLoading, setIsLoading] = useState(true);
-  const [refuelLogs, setRefuelLogs] = useState<Refueled[]>();
   const [formState, setFormState] = useState({
     id: "",
     equipmentId: "",
@@ -77,12 +82,13 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
     endTime: "",
     comment: "",
     isFinished: false,
-    refueled: [],
+    refueled: [] as Refueled[],
     equipment: {
       name: "",
       status: "OPERATIONAL" as EquipmentStatus,
     },
     maintenanceId: null,
+    fullyOperational: false,
   } as EquipmentLog);
 
   const [originalState, setOriginalState] = useState(formState);
@@ -90,7 +96,6 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
   const [refueledLogs, setRefueledLogs] = useState<boolean>();
   const [tab, setTab] = useState(1);
   // states for maintenance logs
-  const [fullyOperational, setFullyOperational] = useState<boolean>(false);
 
   const deepCompareObjects = useCallback(
     <T extends Record<string, any>>(obj1: T, obj2: T): boolean => {
@@ -145,12 +150,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
             : new Date().toISOString(),
           comment: data.comment || "",
           isFinished: data.isFinished || false,
-          refueled: [
-            {
-              gallonsRefueled: data.gallonsRefueled || 0,
-              milesAtfueling: data.milesAtfueling || 0,
-            },
-          ],
+          refueled: (data.refueled as Refueled[]) || [],
           equipment: {
             name: data.equipment?.name || "",
             status: data.equipment?.status || "OPERATIONAL",
@@ -162,9 +162,14 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                 additionalInfo: data.maintenanceId.additionalInfo || "",
               }
             : null,
+          fullyOperational:
+            data.isFinished && data.equipment.status === "OPERATIONAL"
+              ? true
+              : false,
         } as EquipmentLog;
 
-        // console.log("Processed Data: ", processedData);
+        if (data.isFinished && data.equipment.status === "OPERATIONAL") {
+        }
 
         const result = EquipmentLogSchema.safeParse(processedData);
         if (!result.success) {
@@ -177,7 +182,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
 
         const isRefueled = data.refueled.length > 0;
 
-        // console.log("isRefueled: ", isRefueled);
+        console.log("isRefueled: ", isRefueled);
 
         setRefueledLogs(isRefueled);
       } catch (error) {
@@ -190,23 +195,9 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
     fetchEqLog();
   }, [id]);
 
-  useEffect(() => {
-    const fetchRefuelLogs = async () => {
-      try {
-        const response = await fetch(`/api/getEquipmentRefueledLogs/${id}`);
-        const data = await response.json();
-        setRefuelLogs(data);
-      } catch (error) {
-        console.error("Error fetching refuel logs:", error);
-      }
-    };
-
-    fetchRefuelLogs();
-  }, [id]);
-
   const handleFieldChange = (
     field: string,
-    value: string | number | boolean | FormStatus | EquipmentStatus
+    value: string | number | boolean | FormStatus | EquipmentStatus | Refueled
   ) => {
     if (field === "Equipment.status") {
       setFormState((prev) => {
@@ -241,21 +232,27 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
   };
 
   const AddRefuelLog = async () => {
+    if (!formState.id) {
+      return;
+    }
     const formData = new FormData();
     formData.append("employeeEquipmentLogId", formState.id ?? "");
     try {
       const tempRefuelLog = await createRefuelEquipmentLog(formData);
-      setRefuelLogs((prev) => [
-        {
-          id: tempRefuelLog.id,
-          employeeEquipmentLogId: tempRefuelLog.employeeEquipmentLogId ?? "",
-          truckingLogId: tempRefuelLog.truckingLogId ?? "",
-          gallonsRefueled: tempRefuelLog.gallonsRefueled ?? 0,
-          milesAtfueling: tempRefuelLog.milesAtfueling ?? 0,
-          tascoLogId: tempRefuelLog.tascoLogId ?? "",
-        },
-        ...(prev ?? []),
-      ]);
+      setFormState((prev) => ({
+        ...prev,
+        refueled: [
+          ...prev.refueled,
+          {
+            id: tempRefuelLog.id,
+            employeeEquipmentLogId: formState.id,
+            truckingLogId: undefined,
+            gallonsRefueled: tempRefuelLog.gallonsRefueled ?? 0,
+            milesAtfueling: undefined,
+            tascoLogId: undefined,
+          },
+        ],
+      }));
     } catch (error) {
       console.log("error adding state Mileage", error);
     }
@@ -270,10 +267,10 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
   };
 
   const handleFullOperational = () => {
-    if (fullyOperational) {
-      setFullyOperational(false);
+    if (formState.fullyOperational === true) {
+      handleFieldChange("fullyOperational", false);
     } else {
-      setFullyOperational(true);
+      handleFieldChange("fullyOperational", true);
     }
   };
 
@@ -338,7 +335,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
   const isFormValid = useCallback(() => {
     return (
       // Either equipment is fully operational
-      fullyOperational ||
+      formState.fullyOperational ||
       // OR maintenance request is properly filled out
       (formState.maintenanceId?.equipmentIssue &&
         formState.maintenanceId?.equipmentIssue.length > 0 &&
@@ -347,7 +344,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
         formState.equipment.status !== "OPERATIONAL")
     );
   }, [
-    fullyOperational,
+    formState.fullyOperational,
     formState.maintenanceId?.equipmentIssue,
     formState.maintenanceId?.additionalInfo,
     formState.equipment.status,
@@ -438,12 +435,9 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                           refueledLogs={refueledLogs}
                           handleChangeRefueled={handleChangeRefueled}
                           AddRefuelLog={AddRefuelLog}
-                          refuelLogs={refuelLogs}
-                          setRefuelLogs={setRefuelLogs}
                           deleteLog={deleteLog}
                           saveEdits={saveEdits}
                           handleFullOperational={handleFullOperational}
-                          fullyOperational={fullyOperational}
                           isFormValid={isFormValid}
                           t={t}
                         />
@@ -453,7 +447,6 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                           formState={formState}
                           handleFieldChange={handleFieldChange}
                           hasChanged={hasChanged}
-                          fullyOperational={fullyOperational}
                           t={t}
                         />
                       )}
