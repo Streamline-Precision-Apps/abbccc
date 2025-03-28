@@ -25,8 +25,6 @@ import { useRouter } from "next/navigation";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useOperator } from "@/app/context/operatorContext";
 import Spinner from "../(animations)/spinner";
-import { form } from "@nextui-org/theme";
-import { Titles } from "../(reusable)/titles";
 
 type VerifyProcessProps = {
   handleNextStep?: () => void;
