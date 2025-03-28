@@ -15,23 +15,26 @@ export async function GET(
   }
 
   try {
-    const loads = await prisma.loads.findMany({
+    const notes = await prisma.tascoLog.findFirst({
       where: {
-        tascoLogId: timeSheetId,
+        id: timeSheetId,
+      },
+      select: {
+        LoadQuantity: true,
       },
     });
 
-    // If no state mileage records are found, return an empty array
-    if (loads.length === 0) {
-      return NextResponse.json([], { status: 200 });
+    // If no notes are found, return a 404
+    if (!notes) {
+      return NextResponse.json({ error: "No matching record found" }, { status: 404 });
     }
 
-    return NextResponse.json(loads);
+    return NextResponse.json(notes);
   } catch (error) {
     // Log the error for debugging purposes
-    console.error("Error fetching loads:", error);
+    console.error("Error fetching tascoLog:", error);
     return NextResponse.json(
-      { error: "Failed to fetch loads data" },
+      { error: "Failed to fetch logs" },
       { status: 500 }
     );
   }

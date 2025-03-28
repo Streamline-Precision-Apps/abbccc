@@ -231,8 +231,7 @@ export async function GET() {
           type: "tasco",
           shiftType: log.shiftType,
           laborType: log.laborType,
-          loadsHauled: log.LoadQuantity,
-          loadQuantity: log.LoadQuantity, // Convert to string
+          loadQuantity: log.LoadQuantity,
           refueled: log.refueled.some((item) =>
             isFieldIncomplete(item, ["gallonsRefueled"])
           ),
