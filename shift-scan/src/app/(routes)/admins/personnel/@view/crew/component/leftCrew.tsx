@@ -128,7 +128,7 @@ export default function CrewLeft({
                     )}
                     <CheckBox
                       id={employee.id}
-                      defaultChecked={!!toggledUsers[employee.id]}
+                      checked={!!toggledUsers[employee.id]}
                       onChange={() => toggleUser(employee.id)}
                       disabled={employee.id === teamLead}
                       size={2}
