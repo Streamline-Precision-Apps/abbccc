@@ -9,7 +9,6 @@ import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { redirect } from "next/navigation";
 import TascoClientPage from "./components/tascoClientPage";
 import { cookies } from "next/headers";
-import TascoEQClientPage from "./components/tascoEQClientPage";
 
 export default async function TascoPage() {
   const session = await auth();
@@ -32,11 +31,7 @@ export default async function TascoPage() {
               />
             </Holds>
             <Holds background={"none"} className="row-span-5 h-full">
-              {laborType === "equipmentOperator" ? (
-                <TascoEQClientPage />
-              ) : laborType === "" ? null : (
-                <TascoClientPage />
-              )}
+              <TascoClientPage />
             </Holds>
           </Grids>
         </Contents>
