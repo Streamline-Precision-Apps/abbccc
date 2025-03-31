@@ -119,28 +119,26 @@ export default function Content() {
               </Contents>
             </Holds>
           ) : (
-            <Holds background={"white"} className="row-span-6 h-full">
-              <Contents width={"section"}>
-                <Grids gap={"5"} rows={"4"} className="py-5">
-                  {myTeams.map((teams) => (
-                    <Holds className="row-span-1 h-full" key={teams.id}>
-                      <Buttons
-                        background="lightBlue"
-                        href={`/dashboard/myTeam/${teams.id}`}
+            <Holds background={"white"} className="row-span-6 h-full p-3">
+              <Holds className="h-full p-3 border-[3px] border-black rounded-[10px]">
+                {myTeams.map((teams) => (
+                  <Holds className="w-full" key={teams.id}>
+                    <Buttons
+                      background="lightBlue"
+                      href={`/dashboard/myTeam/${teams.id}`}
+                      className="py-2 w-full relative"
+                    >
+                      <Titles size="h2">{teams.name}</Titles>
+                      <Texts
+                        size="p4"
+                        className="absolute top-1/2 transform -translate-y-1/2 right-2"
                       >
-                        <Holds position={"row"}>
-                          <Holds className="w-5/6">
-                            <Titles size="h1">{teams.name}</Titles>
-                          </Holds>
-                          <Holds className="w-1/6">
-                            <Texts>({teams._count.users})</Texts>
-                          </Holds>
-                        </Holds>
-                      </Buttons>
-                    </Holds>
-                  ))}
-                </Grids>
-              </Contents>
+                        ({teams._count.users})
+                      </Texts>
+                    </Buttons>
+                  </Holds>
+                ))}
+              </Holds>
             </Holds>
           )}
         </Grids>
