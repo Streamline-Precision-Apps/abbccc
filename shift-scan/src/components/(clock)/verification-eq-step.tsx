@@ -12,6 +12,7 @@ import CodeStep from "./code-step";
 import { Buttons } from "../(reusable)/buttons";
 import { Titles } from "../(reusable)/titles";
 import { useRouter } from "next/navigation";
+import { form } from "@nextui-org/theme";
 
 type VerifyProcessProps = {
   handleNextStep: () => void;
@@ -48,6 +49,7 @@ const VerificationEQStep: React.FC<VerifyProcessProps> = ({
     formData.append("jobsiteId", scanResult?.data || "");
     formData.append("startTime", new Date().toString());
     formData.append("employeeId", id || "");
+
     const result = await CreateEmployeeEquipmentLog(formData);
     if (result) {
       router.push("/dashboard/equipment");
