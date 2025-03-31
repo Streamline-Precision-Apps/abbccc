@@ -13,6 +13,9 @@ import { Selects } from "@/components/(reusable)/selects";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { deleteMaintenanceInEquipment } from "@/actions/equipmentActions";
 import { Titles } from "@/components/(reusable)/titles";
+import { useState } from "react";
+import { NModals } from "@/components/(reusable)/newmodals";
+import { set } from "date-fns";
 
 const maintenanceSchema = z.object({
   id: z.string().optional(),
@@ -28,14 +31,6 @@ const EquipmentLogSchema = z.object({
   endTime: z.string(),
   comment: z.string().optional(),
   isFinished: z.boolean(),
-  refueled: z.array(
-    z
-      .object({
-        gallonsRefueled: z.number().optional(),
-        milesAtfueling: z.number().optional(),
-      })
-      .optional()
-  ),
   equipment: z.object({
     name: z.string(),
     status: z.string().optional(),
@@ -50,7 +45,7 @@ interface MaintenanceLogEquipmentProps {
   formState: EquipmentLog;
   handleFieldChange: (
     field: string,
-    value: string | number | boolean | EquipmentStatus
+    value: string | number | boolean | EquipmentStatus | null
   ) => void;
   t: (key: string) => string;
   hasChanged: boolean | undefined;
@@ -62,6 +57,8 @@ export default function MaintenanceLogEquipment({
   formState,
   hasChanged,
 }: MaintenanceLogEquipmentProps) {
+  const [isOpened, setIsOpened] = useState(false);
+
   return (
     <Holds className="w-full h-full py-5">
       <Contents width={"section"}>
@@ -137,13 +134,49 @@ export default function MaintenanceLogEquipment({
                 <Buttons
                   onClick={() => {
                     if (formState.maintenanceId?.id) {
-                      deleteMaintenanceInEquipment(formState.id);
+                      setIsOpened(true);
                     }
                   }}
                 >
                   Delete Maintenance Request
                 </Buttons>
               )}
+              <NModals
+                isOpen={isOpened}
+                handleClose={() => setIsOpened(false)}
+                size={"medWW"}
+              >
+                <Holds background={"white"} className="w-full h-full">
+                  <Grids rows={"4"} gap={"5"} className="h-full w-full">
+                    <Holds className="row-start-1 row-end-4">
+                      <Texts>
+                        Are you sure you want to delete this maintenance
+                        request?
+                      </Texts>
+                    </Holds>
+                    <Holds
+                      position={"row"}
+                      className="row-start-4 row-end-5 gap-5"
+                    >
+                      <Buttons onClick={() => setIsOpened(false)}>
+                        Cancel
+                      </Buttons>
+                      <Buttons
+                        background={"red"}
+                        onClick={() => {
+                          if (formState.maintenanceId?.id) {
+                            deleteMaintenanceInEquipment(formState.id);
+                            handleFieldChange("maintenanceId", null);
+                            setIsOpened(false);
+                          }
+                        }}
+                      >
+                        Delete
+                      </Buttons>
+                    </Holds>
+                  </Grids>
+                </Holds>
+              </NModals>
             </Holds>
           )}
         </Grids>

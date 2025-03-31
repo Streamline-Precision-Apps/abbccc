@@ -62,25 +62,7 @@ const VerificationEQStep: React.FC<VerifyProcessProps> = ({
     }
   }, [scanResult, setScanResult]);
 
-  // If no session, show a loading state instead of returning early
-  if (!session) {
-    return (
-      <Holds>
-        <Spinner />
-      </Holds>
-    );
-  }
-
-  const { id } = session.user;
-
-  if (loading) {
-    return (
-      <Holds>
-        <Spinner />
-      </Holds>
-    );
-  }
-
+  const id = session?.user.id;
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     const formData = new FormData();
