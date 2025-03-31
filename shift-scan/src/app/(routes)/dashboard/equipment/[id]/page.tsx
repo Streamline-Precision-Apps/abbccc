@@ -23,7 +23,6 @@ import MaintenanceLogEquipment from "./_components/MaintenanceLogEquipment";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
 import { EquipmentStatus, FormStatus } from "@/lib/types";
-import { form } from "@nextui-org/theme";
 
 type Refueled = {
   id: string;
@@ -47,18 +46,6 @@ const EquipmentLogSchema = z.object({
   endTime: z.string(),
   comment: z.string().optional(),
   isFinished: z.boolean(),
-  refueled: z.array(
-    z
-      .object({
-        id: z.string().optional(),
-        employeeEquipmentLogId: z.string().optional(),
-        truckingLogId: z.string().optional(),
-        gallonsRefueled: z.number().optional(),
-        milesAtfueling: z.number().optional(),
-        tascoLogId: z.string().optional(),
-      })
-      .optional()
-  ),
   equipment: z.object({
     name: z.string(),
     status: z.string().optional(),
@@ -74,6 +61,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
   const { setNotification } = useNotification();
   const t = useTranslations("Equipment");
   const [isLoading, setIsLoading] = useState(true);
+  const [refuelLog, setRefuelLog] = useState<Refueled[]>([]);
   const [formState, setFormState] = useState({
     id: "",
     equipmentId: "",
@@ -82,7 +70,6 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
     endTime: "",
     comment: "",
     isFinished: false,
-    refueled: [] as Refueled[],
     equipment: {
       name: "",
       status: "OPERATIONAL" as EquipmentStatus,
@@ -95,7 +82,6 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
   const [hasChanged, setHasChanged] = useState<boolean>(false);
   const [refueledLogs, setRefueledLogs] = useState<boolean>();
   const [tab, setTab] = useState(1);
-  // states for maintenance logs
 
   const deepCompareObjects = useCallback(
     <T extends Record<string, any>>(obj1: T, obj2: T): boolean => {
@@ -197,7 +183,14 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
 
   const handleFieldChange = (
     field: string,
-    value: string | number | boolean | FormStatus | EquipmentStatus | Refueled
+    value:
+      | string
+      | number
+      | boolean
+      | FormStatus
+      | EquipmentStatus
+      | Refueled
+      | null
   ) => {
     if (field === "Equipment.status") {
       setFormState((prev) => {
@@ -233,26 +226,27 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
 
   const AddRefuelLog = async () => {
     if (!formState.id) {
+      setNotification(t("NoEquipmentLog"), "error");
       return;
     }
-    const formData = new FormData();
-    formData.append("employeeEquipmentLogId", formState.id ?? "");
     try {
-      const tempRefuelLog = await createRefuelEquipmentLog(formData);
-      setFormState((prev) => ({
-        ...prev,
-        refueled: [
-          ...prev.refueled,
+      const formData = new FormData();
+      formData.append("employeeEquipmentLogId", formState.id);
+      const response = await createRefuelEquipmentLog(formData);
+
+      if (response) {
+        setRefuelLog((prev) => [
+          ...prev,
           {
-            id: tempRefuelLog.id,
-            employeeEquipmentLogId: formState.id,
-            truckingLogId: undefined,
-            gallonsRefueled: tempRefuelLog.gallonsRefueled ?? 0,
-            milesAtfueling: undefined,
-            tascoLogId: undefined,
+            id: response.id,
+            employeeEquipmentLogId: response.employeeEquipmentLogId,
+            gallonsRefueled: response.gallonsRefueled,
+            milesAtfueling: null,
+            truckingLogId: null, // add this property
+            tascoLogId: null, // add this property
           },
-        ],
-      }));
+        ]);
+      }
     } catch (error) {
       console.log("error adding state Mileage", error);
     }
@@ -430,6 +424,8 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                       {tab === 1 && (
                         <UsageData
                           formState={formState}
+                          refuelLog={refuelLog}
+                          setRefuelLog={setRefuelLog}
                           handleFieldChange={handleFieldChange}
                           formattedTime={formattedTime}
                           refueledLogs={refueledLogs}

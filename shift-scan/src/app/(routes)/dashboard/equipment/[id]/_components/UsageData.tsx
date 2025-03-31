@@ -15,7 +15,7 @@ import { TextAreas } from "@/components/(reusable)/textareas";
 import { z } from "zod";
 import { useNotification } from "@/app/context/NotificationContext";
 import { EquipmentStatus } from "@/lib/types";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 
 type Refueled = {
   id: string;
@@ -39,18 +39,6 @@ const EquipmentLogSchema = z.object({
   endTime: z.string(),
   comment: z.string().optional(),
   isFinished: z.boolean(),
-  refueled: z.array(
-    z
-      .object({
-        id: z.string().optional(),
-        employeeEquipmentLogId: z.string().optional(),
-        truckingLogId: z.string().optional(),
-        gallonsRefueled: z.number().optional(),
-        milesAtfueling: z.number().optional(),
-        tascoLogId: z.string().optional(),
-      })
-      .optional()
-  ),
   equipment: z.object({
     name: z.string(),
     status: z.string().optional(),
@@ -75,6 +63,8 @@ interface UsageDataProps {
   handleFullOperational: () => void;
   t: (key: string) => string;
   isFormValid: () => boolean | "" | null | undefined;
+  refuelLog: Refueled[];
+  setRefuelLog: Dispatch<SetStateAction<Refueled[]>>;
 }
 
 export default function UsageData({
@@ -84,6 +74,8 @@ export default function UsageData({
   handleChangeRefueled,
   handleFullOperational,
   AddRefuelLog,
+  refuelLog,
+  setRefuelLog,
   t,
 }: UsageDataProps) {
   return (
@@ -194,13 +186,11 @@ export default function UsageData({
           </Holds>
         </Holds>
       </Holds>
-      {formState.refueled && formState.refueled.length > 0 && (
+      {refuelLog && refuelLog.length > 0 && (
         <Holds>
           <RefuelEquipmentLogsList
-            refuelLogs={formState.refueled as Refueled[]}
-            setRefuelLogs={(updatedLogs) =>
-              handleFieldChange("refueled", updatedLogs)
-            }
+            refuelLogs={refuelLog as Refueled[]}
+            setRefuelLogs={setRefuelLog}
             mileage={false}
           />
         </Holds>
