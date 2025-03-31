@@ -3,7 +3,6 @@
 import { Buttons } from "@/components/(reusable)/buttons";
 import { useTranslations } from "next-intl";
 import { Holds } from "@/components/(reusable)/holds";
-import { Texts } from "@/components/(reusable)/texts";
 import { useEffect, useState } from "react";
 import Spinner from "@/components/(animations)/spinner";
 import { Contents } from "@/components/(reusable)/contents";
@@ -16,6 +15,8 @@ import { Titles } from "@/components/(reusable)/titles";
 import { differenceInSeconds, parseISO } from "date-fns";
 import { EmptyViews } from "@/components/(reusable)/emptyViews";
 import { NewTab } from "@/components/(reusable)/newTabs";
+import SlidingDiv from "@/components/(animations)/slideDelete";
+import { deleteEmployeeEquipmentLog } from "@/actions/equipmentActions";
 
 export default function EquipmentLogContent() {
   const [loading, setLoading] = useState(true);
@@ -61,6 +62,15 @@ export default function EquipmentLogContent() {
     active === 1
       ? logs.filter((log) => !log.isFinished)
       : logs.filter((log) => log.isFinished);
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteEmployeeEquipmentLog(id);
+      setLogs((prevLogs) => prevLogs.filter((log) => log.id !== id));
+    } catch (error) {
+      console.error("Error deleting equipment log:", error);
+    }
+  };
 
   return (
     <Bases>
@@ -121,13 +131,12 @@ export default function EquipmentLogContent() {
                           <Holds className="row-span-7">
                             <Spinner />
                           </Holds>
-                          <Holds className="row-span-1 w-full h-full">
-                            <Buttons
-                              background={"lightGray"}
-                              className="w-full"
-                            >
-                              <Titles size={"h4"}>{t("LogNew")}</Titles>
-                            </Buttons>
+                          <Holds className="row-span-1 h-full">
+                            <Contents width={"section"}>
+                              <Buttons background={"lightGray"}>
+                                <Titles size={"h4"}>{t("LogNew")}</Titles>
+                              </Buttons>
+                            </Contents>
                           </Holds>
                         </>
                       ) : (
@@ -219,22 +228,29 @@ export default function EquipmentLogContent() {
                                       className="pb-5 overflow-y-auto no-scrollbar"
                                     >
                                       <Contents width={"section"}>
-                                        <Buttons
-                                          background={
-                                            log.endTime !== null
-                                              ? "lightBlue"
-                                              : "orange"
+                                        <SlidingDiv
+                                          onSwipeLeft={() =>
+                                            handleDelete(log.id)
                                           }
-                                          href={`/dashboard/equipment/${log.id}`}
-                                          className="py-3"
                                         >
-                                          <Titles size={"h5"}>
-                                            {log.equipment?.name}
-                                          </Titles>
-                                          <Titles size={"h6"}>
-                                            {formattedTime}
-                                          </Titles>
-                                        </Buttons>
+                                          <Buttons
+                                            background={
+                                              log.endTime !== null
+                                                ? "lightBlue"
+                                                : "orange"
+                                            }
+                                            shadow={"none"}
+                                            href={`/dashboard/equipment/${log.id}`}
+                                            className="py-1"
+                                          >
+                                            <Titles size={"h4"}>
+                                              {log.equipment?.name}
+                                            </Titles>
+                                            <Titles className="text-xs">
+                                              {formattedTime}
+                                            </Titles>
+                                          </Buttons>
+                                        </SlidingDiv>
                                       </Contents>
                                     </Holds>
                                   );

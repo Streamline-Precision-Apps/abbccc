@@ -305,6 +305,19 @@ export async function createMaintenanceRequest(formData: FormData) {
   }
 }
 
+export async function deleteEmployeeEquipmentLog(id: string) {
+  try {
+    console.log("Deleting employee equipment log:", id);
+    await prisma.employeeEquipmentLog.delete({
+      where: { id },
+    });
+    return true;
+  } catch (error) {
+    console.error("Error deleting employee equipment log:", error);
+    throw error;
+  }
+}
+
 export async function deleteMaintenanceInEquipment(id: string) {
   try {
     // First find the log to get the maintenanceId
