@@ -152,7 +152,7 @@ export default function UsageData({
       <Holds position={"row"} className="w-full pb-4">
         <Holds size={"90"} className="h-full justify-center">
           <Texts position={"left"} size="p5">
-            Fully Operational?
+            Fully Operational? <span className="text-red-500">*</span>
           </Texts>
         </Holds>
         <Holds size={"20"} className="h-full  justify-center relative">

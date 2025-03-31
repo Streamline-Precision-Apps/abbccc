@@ -1,14 +1,12 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useEQScanData } from "@/app/context/equipmentContext";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { CreateEmployeeEquipmentLog } from "@/actions/equipmentActions";
 import { Contents } from "../(reusable)/contents";
-import { Equipment } from "@/lib/types";
 import { useSession } from "next-auth/react";
 import { Holds } from "../(reusable)/holds";
-import Spinner from "../(animations)/spinner";
 import { Grids } from "../(reusable)/grids";
 import CodeStep from "./code-step";
 import { Buttons } from "../(reusable)/buttons";
@@ -30,30 +28,10 @@ const VerificationEQStep: React.FC<VerifyProcessProps> = ({
 }) => {
   const t = useTranslations("Clock");
   const { scanEQResult } = useEQScanData();
-  const [loading, setLoading] = useState(true);
   const { scanResult, setScanResult } = useScanData();
-  const [equipment, setEquipmentList] = useState<Equipment[]>([]);
-  //   const [selectedEquipment, setEquipment] = useState<Equipment | null>(null);
   const { data: session } = useSession();
 
   const router = useRouter();
-
-  useEffect(() => {
-    const fetchEquipmentList = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch("/api/getEquipmentList");
-        const data = await response.json();
-        setEquipmentList(data);
-      } catch (error) {
-        console.error("Error fetching equipment list:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchEquipmentList();
-  }, []);
-
   // Handle local storage logic after hooks
   useEffect(() => {
     if (!scanResult?.data) {

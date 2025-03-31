@@ -23,6 +23,7 @@ import MaintenanceLogEquipment from "./_components/MaintenanceLogEquipment";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
 import { EquipmentStatus, FormStatus } from "@/lib/types";
+import { form } from "@nextui-org/theme";
 
 type Refueled = {
   id: string;
@@ -358,7 +359,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
   return (
     <Bases>
       <Contents>
-        <Grids rows={"7"} gap={"5"} className="h-full w-full ">
+        <Grids rows={"8"} gap={"5"} className="h-full w-full ">
           <Holds
             background="white"
             className={
@@ -371,7 +372,9 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
               title={
                 isLoading
                   ? "Loading..."
-                  : `${formState.equipment.name.slice(0, 16)}...`
+                  : `${formState.equipment.name.slice(0, 16)}${
+                      formState.equipment.name.length > 16 ? "..." : ""
+                    }`
               }
               type="row"
               titleImg=""
@@ -379,11 +382,13 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
               className="w-full h-full"
             />
           </Holds>
-          <Holds className="row-start-2 row-end-8 h-full w-full">
+          <Holds className="row-start-2 row-end-9 h-full w-full">
             <Grids rows={"10"} className="h-full w-full ">
               <Holds
                 position={"row"}
-                className="row-start-1 row-end-2 h-full w-full gap-1"
+                className={`row-start-1 row-end-2 h-full w-full gap-1 ${
+                  isLoading ? "animate-pulse" : ""
+                }`}
               >
                 <NewTab
                   isActive={tab === 1}
@@ -391,6 +396,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                   titleImage="/form.svg"
                   titleImageAlt=""
                   isComplete={true}
+                  isLoading={isLoading}
                 >
                   Usage Data
                 </NewTab>
@@ -400,6 +406,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                   titleImage="/equipment.svg"
                   titleImageAlt=""
                   isComplete={true}
+                  isLoading={isLoading}
                 >
                   Maintenance Log
                 </NewTab>
@@ -460,6 +467,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                         >
                           <Titles size="h5">Delete Log</Titles>
                         </Buttons>
+
                         {hasChanged && (
                           <Buttons
                             onClick={() => {
