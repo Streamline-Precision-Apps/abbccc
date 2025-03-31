@@ -15,10 +15,18 @@ export async function GET() {
     const currentDate = new Date();
     const past24Hours = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
 
+    const timeSheetId = await prisma.timeSheet.findFirst({
+      where: {
+        userId: userId,
+        endTime: null,
+      },
+    });
+
     const logs = await prisma.employeeEquipmentLog.findMany({
       where: {
         employeeId: userId,
         createdAt: { lte: currentDate, gte: past24Hours },
+        timeSheetId: timeSheetId?.id,
       },
       include: {
         equipment: true,
@@ -41,9 +49,6 @@ export async function GET() {
       errorMessage = error.message;
     }
 
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

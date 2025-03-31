@@ -226,40 +226,51 @@ export async function CreateEmployeeEquipmentLog(formData: FormData) {
     const equipmentQRId = formData.get("equipmentId") as string;
     const jobsiteId = formData.get("jobsiteId") as string;
 
-    // Check if the related records exist
-    const [employee, equipment, jobsite] = await Promise.all([
-      prisma.user.findUnique({ where: { id: employeeId } }),
-      prisma.equipment.findUnique({ where: { qrId: equipmentQRId } }),
-      prisma.jobsite.findUnique({ where: { qrId: jobsiteId } }),
-    ]);
+    // Execute all operations in a transaction
+    const result = await prisma.$transaction(async (tx) => {
+      // 1. Check if related records exist
+      const [employee, equipment, jobsite] = await Promise.all([
+        tx.user.findUnique({ where: { id: employeeId } }),
+        tx.equipment.findUnique({ where: { qrId: equipmentQRId } }),
+        tx.jobsite.findUnique({ where: { qrId: jobsiteId } }),
+      ]);
 
-    if (!employee) {
-      throw new Error(`Employee with id ${employeeId} does not exist`);
-    }
-    if (!equipment) {
-      throw new Error(`Equipment with id ${equipmentQRId} does not exist`);
-    }
-    if (!jobsite) {
-      throw new Error(`Jobsite with id ${jobsiteId} does not exist`);
-    }
+      if (!employee) {
+        throw new Error(`Employee with id ${employeeId} does not exist`);
+      }
+      if (!equipment) {
+        throw new Error(`Equipment with id ${equipmentQRId} does not exist`);
+      }
+      if (!jobsite) {
+        throw new Error(`Jobsite with id ${jobsiteId} does not exist`);
+      }
 
-    // Create the EmployeeEquipmentLog entry
-    await prisma.employeeEquipmentLog.create({
-      data: {
-        employeeId,
-        equipmentId: equipment.id,
+      // 2. Find the timesheet
+      const timeSheetId = await tx.timeSheet.findFirst({
+        where: { userId: employeeId, endTime: null },
+        select: { id: true },
+      });
 
-        jobsiteId,
-        startTime: formData.get("startTime")
-          ? new Date(formData.get("startTime") as string)
-          : null,
-        endTime: formData.get("endTime")
-          ? new Date(formData.get("endTime") as string)
-          : null,
-        comment: formData.get("comment") as string,
-        isFinished: false, // default to false as per schema
-        status: "PENDING", // default status
-      },
+      // 3. Create the EmployeeEquipmentLog entry
+      const newLog = await tx.employeeEquipmentLog.create({
+        data: {
+          employeeId,
+          equipmentId: equipment.id,
+          timeSheetId: timeSheetId?.id,
+          jobsiteId,
+          startTime: formData.get("startTime")
+            ? new Date(formData.get("startTime") as string)
+            : null,
+          endTime: formData.get("endTime")
+            ? new Date(formData.get("endTime") as string)
+            : null,
+          comment: formData.get("comment") as string,
+          isFinished: false,
+          status: "PENDING",
+        },
+      });
+
+      return newLog;
     });
 
     // Revalidate the path to update any dependent front-end views
