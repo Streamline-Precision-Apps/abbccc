@@ -6,144 +6,83 @@ import { revalidatePath, revalidateTag } from "next/cache";
 //------------------------------------------------------------------
 //------------------------------------------------------------------
 
-export async function createLoad(formData: FormData) {
+export async function addLoad(formData: FormData) {
   console.log("Creating Load...");
   console.log(formData);
   const tascoLogId = formData.get("tascoLogId") as string;
-
-  const load = await prisma.loads.create({
-    data: {
-      tascoLogId,
+  const currentCount = await prisma.tascoLog.findFirst({
+    where: {
+      id: tascoLogId,
+    },
+    select: {
+      LoadQuantity: true,
     },
   });
 
-  console.log("New Load:", load);
-  revalidatePath("/dashboard/tasco");
-  revalidateTag("load");
-  return load;
-}
-
-export async function updateLoads(formData: FormData) {
-  const id = formData.get("id") as string;
-  const loadType = formData.get("loadType") as string;
-  const loadWeight = parseInt(formData.get("loadWeight") as string);
-  const tascoLogId = formData.get("tascoLogId") as string;
-
-  // If ID is provided, update the existing log
-  if (id) {
-    const updatedLog = await prisma.loads.update({
-      where: { id },
-      data: {
-        loadType,
-        loadWeight,
-      },
-    });
-
-    console.log("Updated Hauling Log:", updatedLog);
-    return updatedLog;
+  if (!currentCount) {
+    // Handle the case where no record is found
+    console.error("No record found for Tasco Log ID:", tascoLogId);
+    // You can either return an error or throw an exception here
+    return { error: "No record found" };
   }
 
-  // If no ID, create a new log
-  const load = await prisma.loads.create({
+  const tascoLog = await prisma.tascoLog.update({
+    where: {
+      id: tascoLogId,
+    },
     data: {
-      loadType,
-      loadWeight,
-      tascoLogId,
+      LoadQuantity: currentCount?.LoadQuantity + 1,
     },
   });
-
-  console.log("Created Hauling Log:", load);
-  revalidateTag("load");
-  return load;
-}
-
-export async function deleteLoad(id: string) {
-  console.log("Deleting load...");
-  console.log(id);
-  await prisma.loads.delete({
-    where: { id },
-  });
-
+  console.log("Load Added");
+  console.log("Updated Tasco Log:", tascoLog);
+  revalidatePath("/dashboard/tasco");
   revalidateTag("load");
   return true;
 }
 
-export async function deleteOneLoad(tascoId: string) {
-  console.log("Deleting first load associated with Tasco Log...");
-  console.log(tascoId);
 
-  try {
-    // Find the first Load attached to the TascoLog
-    const firstLoad = await prisma.loads.findFirst({
-      where: {
-        tascoLogId: tascoId, // Find loads linked to this Tasco Log
-      },
-    });
+export async function deleteLoad(formData: FormData) {
+  console.log("Creating Load...");
+  console.log(formData);
+  const tascoLogId = formData.get("tascoLogId") as string;
+  const currentCount = await prisma.tascoLog.findFirst({
+    where: {
+      id: tascoLogId,
+    },
+    select: {
+      LoadQuantity: true,
+    },
+  });
 
-    if (!firstLoad) {
-      console.log("No loads found for this Tasco Log.");
-      return false;
-    }
-
-    // Delete the first found Load
-    await prisma.loads.delete({
-      where: {
-        id: firstLoad.id,
-      },
-    });
-
-    console.log(`Deleted Load ID: ${firstLoad.id}`);
-
-    // Revalidate the tag to update UI
-    revalidateTag("load");
-
-    return true;
-  } catch (error) {
-    console.error("Error deleting load:", error);
-    return {
-      success: false,
-      message: "An error occurred while deleting the load.",
-    };
+  if (!currentCount) {
+    // Handle the case where no record is found
+    console.error("No record found for Tasco Log ID:", tascoLogId);
+    // You can either return an error or throw an exception here
+    return { error: "No record found" };
   }
+
+  if (currentCount?.LoadQuantity > 0) {
+  const tascoLog = await prisma.tascoLog.update({
+    where: {
+      id: tascoLogId,
+    },
+    data: {
+      LoadQuantity: currentCount?.LoadQuantity + 1,
+    },
+  });
+  }
+  else {
+    console.log("No loads to delete.");
+    return false;
+  }
+  console.log("Load Deleted");
+  revalidatePath("/dashboard/tasco");
+  revalidateTag("load");
+  return true;
 }
 
-export async function deleteLoadById(loadId: string) {
-  console.log("Deleting load associated with Load Id " + loadId);
 
-  try {
-    // Find the first Load attached to the TascoLog
-    const targetLoad = await prisma.loads.findFirst({
-      where: {
-        tascoLogId: loadId, // Find loads linked to this Tasco Log
-      },
-    });
-
-    if (!targetLoad) {
-      console.log("No loads found for this Load ID.");
-      return false;
-    }
-
-    // Delete the first found Load
-    await prisma.loads.delete({
-      where: {
-        id: targetLoad.id,
-      },
-    });
-
-    console.log(`Deleted Load ID: ${targetLoad.id}`);
-
-    // Revalidate the tag to update UI
-    revalidateTag("load");
-
-    return true;
-  } catch (error) {
-    console.error("Error deleting load:", error);
-    return {
-      success: false,
-      message: "An error occurred while deleting the load.",
-    };
-  }
-}
 
 // /* Tasco Comments */
 // ------------------------------------------------------------------
