@@ -16,13 +16,6 @@ export async function GET() {
     // Fetch employee details
     const TascoMaterialData = await prisma.tascoMaterialTypes.findMany();
 
-    if (!TascoMaterialData) {
-      return NextResponse.json(
-        { error: "Employee not found" },
-        { status: 404 }
-      );
-    }
-
     return NextResponse.json(TascoMaterialData);
   } catch (error) {
     return NextResponse.json(

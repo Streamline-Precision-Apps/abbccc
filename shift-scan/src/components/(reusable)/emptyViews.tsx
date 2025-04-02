@@ -71,7 +71,7 @@ const EmptyViews: FC<EmptyViewsProps> = ({
         {TopChild}
         <div className={cn(EmptyViewsVariants({ logoPosition, background }))}>
           <img
-            src={"/shiftScanLogoHorizontal.svg"}
+            src={"/shiftscanlogoHorizontal.svg"}
             alt="personnel"
             className={cn(EmptyViewsVariants({ logoSize, background }))}
           />

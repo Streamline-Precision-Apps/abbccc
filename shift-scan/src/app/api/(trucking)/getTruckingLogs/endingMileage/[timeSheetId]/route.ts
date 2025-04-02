@@ -11,7 +11,10 @@ export async function GET(
 
   // Validate the timeSheetId parameter
   if (!timeSheetId || typeof timeSheetId !== "string") {
-    return NextResponse.json({ error: "Invalid or missing timeSheetId" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid or missing timeSheetId" },
+      { status: 400 }
+    );
   }
 
   try {
@@ -25,15 +28,13 @@ export async function GET(
       },
     });
 
-    // Handle case when no matching record is found
-    if (!endingMileage) {
-      return NextResponse.json({ error: "TimeSheet not found" }, { status: 404 });
-    }
-
     // Return the ending mileage
     return NextResponse.json(endingMileage);
   } catch (error) {
     console.error("Error fetching trucking log:", error);
-    return NextResponse.json({ error: "Failed to fetch trucking log" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch trucking log" },
+      { status: 500 }
+    );
   }
 }
