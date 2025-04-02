@@ -11,7 +11,6 @@ type TimeSheet = {
   };
   tascoLogs: TascoLogs[] | null;
   truckingLogs: TruckingLogs[] | null;
-  maintenanceLogs: maintenanceLogs[] | null;
   employeeEquipmentLogs: employeeEquipmentLogs[] | null;
 
   status: string;
@@ -30,21 +29,15 @@ type EquipmentRefueled = {
   gallonsRefueled: number;
 };
 
-type maintenanceLogs = {
-  id: string;
-  startTime: string;
-  endTime: string;
-};
-
 type TruckingLogs = {
   id: string;
   laborType: string;
-  equipmentId: string;
   startingMileage: number;
   endingMileage: number | null;
-  Materials: Materials[] | null;
+  Material: Materials[] | null; // Changed from Materials to Material
+  equipment: Equipment[] | null;
   EquipmentHauled: EquipmentHauled[] | null;
-  TruckingRefueled: TruckingRefueled[] | null;
+  Refueled: TruckingRefueled[] | null; // Changed from TruckingRefueled to Refueled
   stateMileage: stateMileage[] | null;
 };
 
@@ -102,9 +95,13 @@ type TeamMember = {
   id: string;
   firstName: string;
   lastName: string;
-  image: string;
   clockedIn: boolean;
   timeSheets: TimeSheet[];
+};
+
+type TinderSwipeRef = {
+  swipeLeft: () => void;
+  swipeRight: () => void;
 };
 
 import { Bases } from "@/components/(reusable)/bases";
@@ -114,7 +111,7 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import TinderSwipe from "@/components/(animations)/tinderSwipe";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
@@ -122,6 +119,11 @@ import { Labels } from "@/components/(reusable)/labels";
 import { Images } from "@/components/(reusable)/images";
 import Spinner from "@/components/(animations)/spinner";
 import { useSession } from "next-auth/react";
+import TascoReviewSection from "./_Components/TascoReviewSection";
+import TruckingReviewSection from "./_Components/TruckingReviewSection";
+import GeneralReviewSection from "./_Components/GeneralReviewSection";
+import TopOfCardSection from "./_Components/TopOfCardSection";
+import { CardControls } from "./_Components/CardControls";
 
 export default function TimeCards() {
   const { id: myTeamId } = useParams();
@@ -129,11 +131,24 @@ export default function TimeCards() {
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [decisions, setDecisions] = useState<Record<string, string>>({});
-  const [commentInput, setCommentInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [completed, setCompleted] = useState(false);
   const { data: session } = useSession();
   const manager = session?.user?.firstName + " " + session?.user?.lastName;
+  const [page, setPage] = useState(1);
+  const swipeRef = useRef<TinderSwipeRef>(null);
+
+  const handleEditClick = () => {
+    if (swipeRef.current) {
+      swipeRef.current.swipeLeft();
+    }
+  };
+
+  const handleApproveClick = () => {
+    if (swipeRef.current) {
+      swipeRef.current.swipeRight();
+    }
+  };
 
   useEffect(() => {
     const fetchCrewTimeCards = async () => {
@@ -186,6 +201,7 @@ export default function TimeCards() {
     }
   };
 
+  //todo : make this a server action
   const handleSubmitAll = async () => {
     try {
       console.log("Submitting all decisions:", decisions);
@@ -217,10 +233,10 @@ export default function TimeCards() {
   };
 
   return (
-    <Bases>
+    <Bases className="fixed w-full h-full">
       <Contents className="h-full">
         <Grids
-          rows={"8"}
+          rows={"9"}
           gap={"5"}
           className={`h-full pb-5 bg-white rounded-[10px] ${
             loading && "animate-pulse"
@@ -236,7 +252,7 @@ export default function TimeCards() {
             />
           </Holds>
 
-          <Holds className="row-span-6 h-full w-full ">
+          <Holds className="row-span-7 h-full w-full">
             <Contents width={"section"} className="h-full">
               <Holds
                 className={`w-full h-full rounded-[10px] border-[3px] border-black bg-[#EBC68E] ${
@@ -247,6 +263,7 @@ export default function TimeCards() {
                   <>
                     {currentMember ? (
                       <TinderSwipe
+                        ref={swipeRef}
                         key={currentMember.id}
                         onSwipeLeft={() => swiped("left", currentMember.id)}
                         onSwipeRight={() => swiped("right", currentMember.id)}
@@ -254,145 +271,54 @@ export default function TimeCards() {
                         <Grids
                           rows={"10"}
                           gap={"3"}
-                          className="h-full w-full p-4"
+                          className="h-full w-full p-4 bg-[#EBC68E]"
                         >
+                          <TopOfCardSection
+                            page={page}
+                            setPage={setPage}
+                            currentTimeSheets={currentTimeSheets}
+                            currentMember={currentMember}
+                            calculateTotalHours={calculateTotalHours}
+                          />
+
+                          {/* 
+                          Start of Review Section 
+                          pages are managed in the TopOfCardSection 
+                          */}
                           <Holds
-                            position={"row"}
-                            className="row-start-1 row-end-2 w-full h-full"
+                            className="h-full row-start-3 row-end-11 "
+                            style={{ touchAction: "pan-y" }}
                           >
-                            <Holds>
-                              <Titles position={"left"} size={"h3"}>
-                                {currentMember.firstName}{" "}
-                                {currentMember.lastName}
-                              </Titles>
-                            </Holds>
+                            <>
+                              {page === 1 && (
+                                <GeneralReviewSection
+                                  currentTimeSheets={currentTimeSheets}
+                                  formatTime={formatTime}
+                                />
+                              )}
 
-                            <Holds position={"right"} className="w-1/2">
-                              <Labels size={"p6"}>Total Hours</Labels>
-                              <Holds
-                                background={"white"}
-                                position={"right"}
-                                className="border-[3px] border-black "
-                              >
-                                <Texts size={"p5"}>
-                                  {calculateTotalHours(currentTimeSheets)}
-                                </Texts>
-                              </Holds>
-                            </Holds>
+                              {page === 2 && (
+                                <TruckingReviewSection
+                                  currentTimeSheets={currentTimeSheets}
+                                />
+                              )}
+                              {page === 3 && (
+                                <TascoReviewSection
+                                  currentTimeSheets={currentTimeSheets}
+                                />
+                              )}
+                            </>
                           </Holds>
-
-                          <Holds
-                            background={"white"}
-                            position={"row"}
-                            className="border-[3px] border-black px-2 gap-5 row-start-2 row-end-3 h-full"
-                          >
-                            <Images
-                              titleImg="/trucking.svg"
-                              titleImgAlt="truck"
-                              className={`w-8 h-8 ${
-                                currentTimeSheets.find(
-                                  (timesheet: TimeSheet) =>
-                                    timesheet.truckingLogs !== null
-                                )
-                                  ? "opacity-100"
-                                  : "opacity-55"
-                              }`}
-                            />
-
-                            <Images
-                              titleImg="/tasco.svg"
-                              titleImgAlt="tasco"
-                              className={`w-8 h-8 ${
-                                currentTimeSheets.find(
-                                  (timesheet: TimeSheet) =>
-                                    timesheet.tascoLogs !== null
-                                )
-                                  ? "opacity-100"
-                                  : "opacity-55"
-                              }`}
-                            />
-
-                            <Images
-                              titleImg="/mechanic-icon.svg"
-                              titleImgAlt="mechanic-icon"
-                              className={`w-8 h-8 ${
-                                currentTimeSheets.find(
-                                  (timesheet: TimeSheet) =>
-                                    timesheet.maintenanceLogs !== null
-                                )
-                                  ? "opacity-100"
-                                  : "opacity-55"
-                              }`}
-                            />
-                            <Images
-                              titleImg="/equipment.svg"
-                              titleImgAlt="equipment"
-                              className={`w-8 h-8 ${
-                                currentTimeSheets.find(
-                                  (timesheet: TimeSheet) =>
-                                    timesheet.employeeEquipmentLogs !== null
-                                )
-                                  ? "opacity-100"
-                                  : "opacity-55"
-                              }`}
-                            />
-                          </Holds>
-
-                          <Holds className="h-full row-start-3 row-end-11 ">
-                            <Holds className="p-1">
-                              <Holds className="grid grid-cols-4 gap-2">
-                                <Titles size={"h6"}>Start Time</Titles>
-                                <Titles size={"h6"}>End Time</Titles>
-                                <Titles size={"h6"}>Jobsite #</Titles>
-                                <Titles size={"h6"}>Cost Code</Titles>
-                              </Holds>
-                            </Holds>
-                            <Holds
-                              background={"white"}
-                              className="h-full border-[3px] border-black "
-                            >
-                              {currentTimeSheets.map((timesheet: TimeSheet) => (
-                                <Holds
-                                  key={timesheet.id}
-                                  className="h-fit grid grid-cols-4 gap-2 border-b-[2px] py-2 border-black"
-                                >
-                                  <Holds>
-                                    <Texts size={"p7"}>
-                                      {formatTime(timesheet.startTime)}
-                                    </Texts>
-                                  </Holds>
-                                  <Holds>
-                                    <Texts size={"p7"}>
-                                      {formatTime(timesheet.endTime)}
-                                    </Texts>
-                                  </Holds>
-                                  <Holds>
-                                    <Texts size={"p7"}>
-                                      {`${timesheet.jobsiteId.slice(0, 9)}${
-                                        timesheet.jobsiteId.length > 9
-                                          ? "..."
-                                          : ""
-                                      }` || "-"}
-                                    </Texts>
-                                  </Holds>
-                                  <Holds>
-                                    <Texts size={"p7"}>
-                                      {`${timesheet.costCode.name.slice(0, 9)}${
-                                        timesheet.costCode.name.length > 9
-                                          ? "..."
-                                          : ""
-                                      }` || "-"}
-                                    </Texts>
-                                  </Holds>
-                                </Holds>
-                              ))}
-                            </Holds>
-                          </Holds>
+                          {/* End of Review Section */}
                         </Grids>
                       </TinderSwipe>
                     ) : (
                       <Holds className="h-full flex items-center justify-center">
-                        <Spinner />
+                        {loading ? (
+                          <Spinner size={70} />
+                        ) : (
+                          <Titles size={"h5"}>No Time Sheets to Approve</Titles>
+                        )}
                       </Holds>
                     )}
                   </>
@@ -412,21 +338,10 @@ export default function TimeCards() {
               </Holds>
             </Contents>
           </Holds>
-          <Holds
-            background="white"
-            className="row-span-1 h-full flex items-center justify-center "
-          >
-            <Contents width={"section"} className="py-2">
-              <Buttons
-                background={"orange"}
-                onClick={handleSubmitAll}
-                disabled={Object.keys(decisions).length === 0}
-                className=" w-full"
-              >
-                <Titles size={"h4"}>Submit All Decisions</Titles>
-              </Buttons>
-            </Contents>
-          </Holds>
+          <CardControls
+            handleEditClick={handleEditClick}
+            handleApproveClick={handleApproveClick}
+          />
         </Grids>
       </Contents>
     </Bases>

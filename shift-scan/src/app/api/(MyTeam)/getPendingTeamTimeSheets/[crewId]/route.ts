@@ -36,7 +36,6 @@ export async function GET(
         id: true,
         firstName: true,
         lastName: true,
-        image: true,
         clockedIn: true,
         timeSheets: {
           where: {
@@ -80,7 +79,12 @@ export async function GET(
               select: {
                 id: true,
                 laborType: true,
-                equipmentId: true,
+                equipment: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
                 startingMileage: true,
                 endingMileage: true,
                 Material: {
@@ -121,13 +125,6 @@ export async function GET(
                     stateLineMileage: true,
                   },
                 },
-              },
-            },
-            maintenanceLogs: {
-              select: {
-                id: true,
-                startTime: true,
-                endTime: true,
               },
             },
             employeeEquipmentLogs: {
