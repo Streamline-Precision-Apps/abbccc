@@ -18,6 +18,6 @@ model PdfDocument {
 model DocumentTag {
   id        String        @id @default(cuid())
   tagName   String
-  equipment Equipment[]   @relation("DocumentTagToEquipment")
-  documents PdfDocument[] @relation("DocumentTagToPdfDocument")
+  Documents PdfDocument[] @relation("DocumentTagToPdfDocument")
+  Equipment Equipment[]   @relation("DocumentTagToEquipment")
 }
