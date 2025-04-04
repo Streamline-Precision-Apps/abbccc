@@ -11,104 +11,119 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Refueled } from "@/lib/types";
 import RefuelLayout from "./RefuelLayout";
 import TascoComments from "./tascoComments";
-import { addLoad, deleteLoad } from "@/actions/tascoActions";
+import { SetLoad } from "@/actions/tascoActions";
+import { useAutoSave } from "@/hooks/(inbox)/useAutoSave";
+import { useTranslations } from "next-intl";
+
 
 export default function TascoEQClientPage() {
+    const t = useTranslations("Tasco");
   const [isLoading, setIsLoading] = useState(false);
-  const [loadCount, setLoadCount] = useState(0);
+  const [loadCount, setLoadCount] = useState<number>(0);
   const [activeTab, setActiveTab] = useState(1);
   const [tascoLogId, setTascoLogId] = useState<string>();
   const [refuelLogs, setRefuelLogs] = useState<Refueled[]>();
   const [comment, setComment] = useState<string>("");
 
-  useEffect(() => {
-    const fetchTascoLog = async () => {
-      try {
-        const res = await fetch(`/api/getTascoLog/tascoId`);
-        if (!res.ok) throw new Error("Failed to fetch Tasco Log");
-        const data = await res.json();
-        console.log("id: " + data);
-        setTascoLogId(data);
-      } catch (error) {
-        console.error("Error fetching Tasco Log:", error);
-      }
-    };
-
-    fetchTascoLog();
-  }, []);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const endpoints = [
-          `/api/getTascoLog/comment/${tascoLogId}`,
-          `/api/getTascoLog/loadCount/${tascoLogId}`,
-          `/api/getTascoLog/refueledLogs/${tascoLogId}`,
-        ];
-
-        const responses = await Promise.all(endpoints.map((url) => fetch(url)));
-        const data = await Promise.all(responses.map((res) => res.json()));
-        console.log("Data:", data);
-        setComment(data[0].comment || "");
-        setLoadCount(data[1].loadCount || 0);
-        setRefuelLogs(data[2]);
-      } catch (error) {
-        console.error("Error fetching Data:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [tascoLogId]);
-
-  const AddLoad = async () => {
-    const formData = new FormData();
-    formData.append("tascoLogId", tascoLogId ?? "");
+  // Combine the initial data fetching into a single useEffect
+useEffect(() => {
+  const fetchInitialData = async () => {
+    setIsLoading(true);
     try {
-      const temp = await addLoad(formData);
+      // Fetch tascoLogId first
+      const idRes = await fetch(`/api/getTascoLog/tascoId`);
+      if (!idRes.ok) throw new Error("Failed to fetch Tasco Log");
+      const tascoLogId = await idRes.json();
+      setTascoLogId(tascoLogId);
+
+      // Then fetch all related data in parallel
+      const [commentRes, loadRes, refuelRes] = await Promise.all([
+        fetch(`/api/getTascoLog/comment/${tascoLogId}`),
+        fetch(`/api/getTascoLog/loadCount/${tascoLogId}`),
+        fetch(`/api/getTascoLog/refueledLogs/${tascoLogId}`),
+      ]);
+
+      const [commentData, loadData, refuelData] = await Promise.all([
+        commentRes.json(),
+        loadRes.json(),
+        refuelRes.json(),
+      ]);
+
+      setComment(commentData.comment || "");
+      setLoadCount(Number(loadData.LoadQuantity));
+      setRefuelLogs(refuelData);
     } catch (error) {
-      console.log("error adding Load", error);
+      console.error("Error fetching data:", error);
+      // Consider adding error state handling here
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const ReduceLoad = async () => {
-    try {
-      const formData = new FormData();
-      formData.append("tascoLogId", tascoLogId ?? "");
-      const temp = await deleteLoad(formData);
-    } catch (error) {
-      console.log("error adding Load", error);
-    }
+  fetchInitialData();
+}, []);
+
+
+  const saveDraftData = async (values: { tascoLogId: string, loadCount: number }) => {
+      try {
+        // Include the title in the values object
+        const dataToSave = { ...values };
+        const formData = new FormData();
+        formData.append("tascoLogId", dataToSave.tascoLogId);
+        formData.append("loadCount", dataToSave.loadCount.toString());
+        await SetLoad(formData);
+        console.log("Draft saved successfully");
+      } catch (error) {
+        console.error("Error saving draft:", error);
+      }
   };
+
+  // Use the auto-save hook with the FormValues type
+  const autoSave = useAutoSave<{ values: { tascoLogId: string, loadCount: number }; }>(
+    (data) => saveDraftData(data.values),
+    400
+  );
+
+  // Trigger auto-save when formValues or formTitle changes
+  useEffect(() => {
+    if (!tascoLogId) return;
+    autoSave({ values: { tascoLogId, loadCount } });
+  }, [loadCount]);
+
 
   return (
     // <Holds className="h-full overflow-y-hidden no-scrollbar">
     <Holds className="h-full">
-      <Grids rows={"10"} className={isLoading ? "animate-pulse h-full w-full" : "h-full w-full"}>
+      <Grids
+        rows={"10"}
+        className={isLoading ? "animate-pulse h-full w-full" : "h-full w-full"}
+      >
         <Holds className="w-full items-center row-span-3" background={"white"}>
-          <Labels>Load Counter</Labels>
-          <Counter count={loadCount} setCount={setLoadCount} addAction={AddLoad} removeAction={ReduceLoad}/>
+          <Labels>{t("LoadCounter")}</Labels>
+          <Counter count={loadCount} setCount={setLoadCount} />
         </Holds>
         <Holds className="row-span-1 h-full gap-1 w-full" position={"row"}>
           <NewTab
             titleImage="/comment.svg"
-            titleImageAlt="Comment"
+            titleImageAlt={t("Comments")}
             onClick={() => setActiveTab(1)}
             isActive={activeTab === 1}
             isComplete={comment.trim().length > 0}
           >
-            <Titles size={"h4"}>Comments</Titles>
+            <Titles size={"h4"}>{t("Comments")}</Titles>
           </NewTab>
           <NewTab
             titleImage="/refuel-Icon.svg"
-            titleImageAlt="refuel-Icon"
+            titleImageAlt={t("refuel-Icon")}
             onClick={() => setActiveTab(2)}
             isActive={activeTab === 2}
-            isComplete={refuelLogs === undefined || refuelLogs.length === 0 || refuelLogs.every(log => log.gallonsRefueled > 0)}
-            >
-            <Titles size={"h4"}>Refuel Logs</Titles>
+            isComplete={
+              refuelLogs === undefined ||
+              refuelLogs.length === 0 ||
+              refuelLogs.every((log) => log.gallonsRefueled > 0)
+            }
+          >
+            <Titles size={"h4"}>{t("RefuelLogs")}</Titles>
           </NewTab>
         </Holds>
         <Holds

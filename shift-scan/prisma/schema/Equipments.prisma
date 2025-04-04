@@ -21,11 +21,13 @@ model Equipment {
   inUse                  Boolean                @default(false)
   overWeight             Boolean?               @default(false)
   currentWeight          Float?                 @default(0)
+  DocumentTags           DocumentTag[] @relation("DocumentTagToEquipment")
   employeeEquipmentLogs  EmployeeEquipmentLog[]
   EquipmentHauled        EquipmentHauled[]
   Maintenance            Maintenance[]
   TascoLogs              TascoLog[]
   TruckingLogs           TruckingLog[]
+
 
   @@index([qrId])
 }

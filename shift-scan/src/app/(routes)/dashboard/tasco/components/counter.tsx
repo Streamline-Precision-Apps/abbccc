@@ -1,6 +1,5 @@
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Holds } from "@/components/(reusable)/holds";
-import { set } from "date-fns";
 import React from "react";
 
 type LoadCounterProps = {
@@ -14,15 +13,14 @@ type LoadCounterProps = {
 
 export default function Counter({ count, setCount, addAction, removeAction, allowRemove }: LoadCounterProps) {
 
-  const add = () => {
-    setCount(count + 1);
-    if (addAction) addAction();
+  const AddLoad = () => {
+    const newCount = count + 1;
+    setCount(newCount);
   };
 
-  const remove = () => {
-    if (allowRemove === false) return;
-    setCount(Math.max(0, count - 1));
-    if (removeAction) removeAction();
+  const RemoveLoad = () => {
+    const newCount = count - 1;
+    setCount(newCount);
   };
 
   return (
@@ -33,10 +31,10 @@ export default function Counter({ count, setCount, addAction, removeAction, allo
     >
       <div className="flex items-center justify-center  p-4 rounded-lg shadow-lg w-full">
         <Buttons
-          onClick={remove}
+          onClick={RemoveLoad}
           disabled={count === 0 && !allowRemove}
           className={`text-black font-bold text-4xl w-16 h-16 rounded-lg shadow-lg border-2 border-black transition flex items-center justify-center ${
-            count === 0
+            count === 0 || count === undefined
               ? "bg-gray-300 cursor-not-allowed"
               : "bg-app-orange"
           }`}
@@ -47,7 +45,7 @@ export default function Counter({ count, setCount, addAction, removeAction, allo
           {count}
         </div>
         <Buttons
-          onClick={add}
+          onClick={AddLoad}
           className="bg-app-green text-black font-bold text-4xl w-16 h-16 rounded-lg shadow-lg border-2 border-black"
         >
           +

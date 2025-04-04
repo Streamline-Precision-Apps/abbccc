@@ -488,7 +488,6 @@ export type Refueled = {
   id: string;
   tascoLogId: string;
   gallonsRefueled: number;
-  milesAtfueling: number;
 };
 //--------------------------------------------
 
@@ -659,3 +658,28 @@ export type AssetJobsite = {
   country: string;
   comment: string;
 };
+
+
+export type RefuelLogType = 'tasco' | 'equipment';
+
+export interface RefuelLogBase {
+  id: string;
+  gallonsRefueled?: number;
+  milesAtfueling?: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface CreateRefuelLogParams {
+  type: RefuelLogType;
+  parentId: string; // tascoLogId or employeeEquipmentLogId
+}
+
+export interface UpdateRefuelLogParams extends RefuelLogBase {
+  type: RefuelLogType;
+}
+
+export interface DeleteRefuelLogParams {
+  type: RefuelLogType;
+  id: string;
+}
