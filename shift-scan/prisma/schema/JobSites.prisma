@@ -16,6 +16,7 @@ model Jobsite {
   archiveDate           DateTime?
   companyId             String?
   employeeEquipmentLogs EmployeeEquipmentLog[]
+  CreationLogs          CreationLogs[]
   EquipmentHauled       EquipmentHauled[]
   Company               Company?               @relation(fields: [companyId], references: [id])
   timeSheets            TimeSheet[]
