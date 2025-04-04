@@ -23,6 +23,7 @@ import MaintenanceLogEquipment from "./_components/MaintenanceLogEquipment";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
 import { EquipmentStatus, FormStatus } from "@/lib/types";
+import { form } from "@nextui-org/theme";
 
 type Refueled = {
   id: string;
@@ -46,19 +47,12 @@ const EquipmentLogSchema = z.object({
   endTime: z.string(),
   comment: z.string().optional(),
   isFinished: z.boolean(),
-  refueled: z.array(
-    z
-      .object({
-        gallonsRefueled: z.number().optional(),
-        milesAtfueling: z.number().optional(),
-      })
-      .optional()
-  ),
   equipment: z.object({
     name: z.string(),
     status: z.string().optional(),
   }),
   maintenanceId: maintenanceSchema.nullable(),
+  fullyOperational: z.boolean(),
 });
 type EquipmentLog = z.infer<typeof EquipmentLogSchema>;
 
@@ -68,7 +62,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
   const { setNotification } = useNotification();
   const t = useTranslations("Equipment");
   const [isLoading, setIsLoading] = useState(true);
-  const [refuelLogs, setRefuelLogs] = useState<Refueled[]>();
+  const [refuelLog, setRefuelLog] = useState<Refueled[]>([]);
   const [formState, setFormState] = useState({
     id: "",
     equipmentId: "",
@@ -77,20 +71,18 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
     endTime: "",
     comment: "",
     isFinished: false,
-    refueled: [],
     equipment: {
       name: "",
       status: "OPERATIONAL" as EquipmentStatus,
     },
     maintenanceId: null,
+    fullyOperational: false,
   } as EquipmentLog);
 
   const [originalState, setOriginalState] = useState(formState);
   const [hasChanged, setHasChanged] = useState<boolean>(false);
   const [refueledLogs, setRefueledLogs] = useState<boolean>();
   const [tab, setTab] = useState(1);
-  // states for maintenance logs
-  const [fullyOperational, setFullyOperational] = useState<boolean>(false);
 
   const deepCompareObjects = useCallback(
     <T extends Record<string, any>>(obj1: T, obj2: T): boolean => {
@@ -145,12 +137,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
             : new Date().toISOString(),
           comment: data.comment || "",
           isFinished: data.isFinished || false,
-          refueled: [
-            {
-              gallonsRefueled: data.gallonsRefueled || 0,
-              milesAtfueling: data.milesAtfueling || 0,
-            },
-          ],
+          refueled: (data.refueled as Refueled[]) || [],
           equipment: {
             name: data.equipment?.name || "",
             status: data.equipment?.status || "OPERATIONAL",
@@ -162,9 +149,14 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                 additionalInfo: data.maintenanceId.additionalInfo || "",
               }
             : null,
+          fullyOperational:
+            data.isFinished && data.equipment.status === "OPERATIONAL"
+              ? true
+              : false,
         } as EquipmentLog;
 
-        // console.log("Processed Data: ", processedData);
+        if (data.isFinished && data.equipment.status === "OPERATIONAL") {
+        }
 
         const result = EquipmentLogSchema.safeParse(processedData);
         if (!result.success) {
@@ -177,7 +169,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
 
         const isRefueled = data.refueled.length > 0;
 
-        // console.log("isRefueled: ", isRefueled);
+        console.log("isRefueled: ", isRefueled);
 
         setRefueledLogs(isRefueled);
       } catch (error) {
@@ -190,23 +182,16 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
     fetchEqLog();
   }, [id]);
 
-  useEffect(() => {
-    const fetchRefuelLogs = async () => {
-      try {
-        const response = await fetch(`/api/getEquipmentRefueledLogs/${id}`);
-        const data = await response.json();
-        setRefuelLogs(data);
-      } catch (error) {
-        console.error("Error fetching refuel logs:", error);
-      }
-    };
-
-    fetchRefuelLogs();
-  }, [id]);
-
   const handleFieldChange = (
     field: string,
-    value: string | number | boolean | FormStatus | EquipmentStatus
+    value:
+      | string
+      | number
+      | boolean
+      | FormStatus
+      | EquipmentStatus
+      | Refueled
+      | null
   ) => {
     if (field === "Equipment.status") {
       setFormState((prev) => {
@@ -241,21 +226,28 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
   };
 
   const AddRefuelLog = async () => {
-    const formData = new FormData();
-    formData.append("employeeEquipmentLogId", formState.id ?? "");
+    if (!formState.id) {
+      setNotification(t("NoEquipmentLog"), "error");
+      return;
+    }
     try {
-      const tempRefuelLog = await createRefuelEquipmentLog(formData);
-      setRefuelLogs((prev) => [
-        {
-          id: tempRefuelLog.id,
-          employeeEquipmentLogId: tempRefuelLog.employeeEquipmentLogId ?? "",
-          truckingLogId: tempRefuelLog.truckingLogId ?? "",
-          gallonsRefueled: tempRefuelLog.gallonsRefueled ?? 0,
-          milesAtfueling: tempRefuelLog.milesAtfueling ?? 0,
-          tascoLogId: tempRefuelLog.tascoLogId ?? "",
-        },
-        ...(prev ?? []),
-      ]);
+      const formData = new FormData();
+      formData.append("employeeEquipmentLogId", formState.id);
+      const response = await createRefuelEquipmentLog(formData);
+
+      if (response) {
+        setRefuelLog((prev) => [
+          ...prev,
+          {
+            id: response.id,
+            employeeEquipmentLogId: response.employeeEquipmentLogId,
+            gallonsRefueled: response.gallonsRefueled,
+            milesAtfueling: null,
+            truckingLogId: null, // add this property
+            tascoLogId: null, // add this property
+          },
+        ]);
+      }
     } catch (error) {
       console.log("error adding state Mileage", error);
     }
@@ -270,10 +262,10 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
   };
 
   const handleFullOperational = () => {
-    if (fullyOperational) {
-      setFullyOperational(false);
+    if (formState.fullyOperational === true) {
+      handleFieldChange("fullyOperational", false);
     } else {
-      setFullyOperational(true);
+      handleFieldChange("fullyOperational", true);
     }
   };
 
@@ -338,7 +330,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
   const isFormValid = useCallback(() => {
     return (
       // Either equipment is fully operational
-      fullyOperational ||
+      formState.fullyOperational ||
       // OR maintenance request is properly filled out
       (formState.maintenanceId?.equipmentIssue &&
         formState.maintenanceId?.equipmentIssue.length > 0 &&
@@ -347,7 +339,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
         formState.equipment.status !== "OPERATIONAL")
     );
   }, [
-    fullyOperational,
+    formState.fullyOperational,
     formState.maintenanceId?.equipmentIssue,
     formState.maintenanceId?.additionalInfo,
     formState.equipment.status,
@@ -367,7 +359,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
   return (
     <Bases>
       <Contents>
-        <Grids rows={"7"} gap={"5"} className="h-full w-full ">
+        <Grids rows={"8"} gap={"5"} className="h-full w-full ">
           <Holds
             background="white"
             className={
@@ -380,7 +372,9 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
               title={
                 isLoading
                   ? "Loading..."
-                  : `${formState.equipment.name.slice(0, 16)}...`
+                  : `${formState.equipment.name.slice(0, 16)}${
+                      formState.equipment.name.length > 16 ? "..." : ""
+                    }`
               }
               type="row"
               titleImg=""
@@ -388,11 +382,13 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
               className="w-full h-full"
             />
           </Holds>
-          <Holds className="row-start-2 row-end-8 h-full w-full">
+          <Holds className="row-start-2 row-end-9 h-full w-full">
             <Grids rows={"10"} className="h-full w-full ">
               <Holds
                 position={"row"}
-                className="row-start-1 row-end-2 h-full w-full gap-1"
+                className={`row-start-1 row-end-2 h-full w-full gap-1 ${
+                  isLoading ? "animate-pulse" : ""
+                }`}
               >
                 <NewTab
                   isActive={tab === 1}
@@ -400,6 +396,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                   titleImage="/form.svg"
                   titleImageAlt=""
                   isComplete={true}
+                  isLoading={isLoading}
                 >
                   Usage Data
                 </NewTab>
@@ -409,6 +406,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                   titleImage="/equipment.svg"
                   titleImageAlt=""
                   isComplete={true}
+                  isLoading={isLoading}
                 >
                   Maintenance Log
                 </NewTab>
@@ -433,17 +431,16 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                       {tab === 1 && (
                         <UsageData
                           formState={formState}
+                          refuelLog={refuelLog}
+                          setRefuelLog={setRefuelLog}
                           handleFieldChange={handleFieldChange}
                           formattedTime={formattedTime}
                           refueledLogs={refueledLogs}
                           handleChangeRefueled={handleChangeRefueled}
                           AddRefuelLog={AddRefuelLog}
-                          refuelLogs={refuelLogs}
-                          setRefuelLogs={setRefuelLogs}
                           deleteLog={deleteLog}
                           saveEdits={saveEdits}
                           handleFullOperational={handleFullOperational}
-                          fullyOperational={fullyOperational}
                           isFormValid={isFormValid}
                           t={t}
                         />
@@ -453,7 +450,6 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                           formState={formState}
                           handleFieldChange={handleFieldChange}
                           hasChanged={hasChanged}
-                          fullyOperational={fullyOperational}
                           t={t}
                         />
                       )}
@@ -471,6 +467,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
                         >
                           <Titles size="h5">Delete Log</Titles>
                         </Buttons>
+
                         {hasChanged && (
                           <Buttons
                             onClick={() => {

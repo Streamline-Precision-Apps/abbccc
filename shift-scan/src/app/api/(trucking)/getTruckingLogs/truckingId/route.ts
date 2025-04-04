@@ -12,7 +12,10 @@ export async function GET(request: Request) {
     session = await auth();
   } catch (error) {
     console.error("Authentication failed:", error);
-    return NextResponse.json({ error: "Authentication failed" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Authentication failed" },
+      { status: 500 }
+    );
   }
 
   if (!session) {
@@ -38,7 +41,11 @@ export async function GET(request: Request) {
     });
 
     // If no trucking log is found, return a 404 response
-    if (!truckingId || !truckingId.truckingLogs || truckingId.truckingLogs.length === 0) {
+    if (
+      !truckingId ||
+      !truckingId.truckingLogs ||
+      truckingId.truckingLogs.length === 0
+    ) {
       return NextResponse.json(
         { error: "No active trucking log found for the user" },
         { status: 404 }
@@ -51,6 +58,9 @@ export async function GET(request: Request) {
     return NextResponse.json(truckingLogs);
   } catch (error) {
     console.error("Error fetching trucking log:", error);
-    return NextResponse.json({ error: "Failed to fetch trucking log" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch trucking log" },
+      { status: 500 }
+    );
   }
 }

@@ -15,10 +15,12 @@ model Jobsite {
   updatedAt             DateTime               @updatedAt
   archiveDate           DateTime?
   companyId             String?
-  employeeEquipmentLogs EmployeeEquipmentLog[]
+  Client                String?                @default("Streamline Precision LLC") // chick barn can be set in the job site section
+  EmployeeEquipmentLogs EmployeeEquipmentLog[]
+  CreationLogs          CreationLogs[]
   EquipmentHauled       EquipmentHauled[]
   Company               Company?               @relation(fields: [companyId], references: [id])
-  timeSheets            TimeSheet[]
+  TimeSheets            TimeSheet[]
   CCTags                CCTag[]                @relation("CCTagToJobsite")
 
   @@unique([name, address, city, state])
