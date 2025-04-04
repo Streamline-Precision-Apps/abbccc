@@ -12,6 +12,10 @@ import { z } from "zod";
 import { Selects } from "@/components/(reusable)/selects";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { deleteMaintenanceInEquipment } from "@/actions/equipmentActions";
+import { Titles } from "@/components/(reusable)/titles";
+import { useState } from "react";
+import { NModals } from "@/components/(reusable)/newmodals";
+import { set } from "date-fns";
 
 const maintenanceSchema = z.object({
   id: z.string().optional(),
@@ -27,19 +31,12 @@ const EquipmentLogSchema = z.object({
   endTime: z.string(),
   comment: z.string().optional(),
   isFinished: z.boolean(),
-  refueled: z.array(
-    z
-      .object({
-        gallonsRefueled: z.number().optional(),
-        milesAtfueling: z.number().optional(),
-      })
-      .optional()
-  ),
   equipment: z.object({
     name: z.string(),
     status: z.string().optional(),
   }),
   maintenanceId: maintenanceSchema.nullable(),
+  fullyOperational: z.boolean(),
 });
 
 type EquipmentLog = z.infer<typeof EquipmentLogSchema>;
@@ -48,11 +45,10 @@ interface MaintenanceLogEquipmentProps {
   formState: EquipmentLog;
   handleFieldChange: (
     field: string,
-    value: string | number | boolean | EquipmentStatus
+    value: string | number | boolean | EquipmentStatus | null
   ) => void;
   t: (key: string) => string;
   hasChanged: boolean | undefined;
-  fullyOperational: boolean;
 }
 
 export default function MaintenanceLogEquipment({
@@ -60,16 +56,17 @@ export default function MaintenanceLogEquipment({
   handleFieldChange,
   formState,
   hasChanged,
-  fullyOperational,
 }: MaintenanceLogEquipmentProps) {
+  const [isOpened, setIsOpened] = useState(false);
+
   return (
     <Holds className="w-full h-full py-5">
       <Contents width={"section"}>
         <Grids rows={"8"} gap={"5"} className="h-full w-full">
-          {fullyOperational ? (
+          {formState.fullyOperational ? (
             <Holds className="row-start-1 row-end-8 h-full">
               <Holds className="flex justify-center items-center h-full w-full">
-                <Texts size="p3">Equipment Marked as Fully Operational</Texts>
+                <Titles size="h3">Equipment Marked as Fully Operational</Titles>
               </Holds>
             </Holds>
           ) : (
@@ -137,13 +134,49 @@ export default function MaintenanceLogEquipment({
                 <Buttons
                   onClick={() => {
                     if (formState.maintenanceId?.id) {
-                      deleteMaintenanceInEquipment(formState.id);
+                      setIsOpened(true);
                     }
                   }}
                 >
                   Delete Maintenance Request
                 </Buttons>
               )}
+              <NModals
+                isOpen={isOpened}
+                handleClose={() => setIsOpened(false)}
+                size={"medWW"}
+              >
+                <Holds background={"white"} className="w-full h-full">
+                  <Grids rows={"4"} gap={"5"} className="h-full w-full">
+                    <Holds className="row-start-1 row-end-4">
+                      <Texts>
+                        Are you sure you want to delete this maintenance
+                        request?
+                      </Texts>
+                    </Holds>
+                    <Holds
+                      position={"row"}
+                      className="row-start-4 row-end-5 gap-5"
+                    >
+                      <Buttons onClick={() => setIsOpened(false)}>
+                        Cancel
+                      </Buttons>
+                      <Buttons
+                        background={"red"}
+                        onClick={() => {
+                          if (formState.maintenanceId?.id) {
+                            deleteMaintenanceInEquipment(formState.id);
+                            handleFieldChange("maintenanceId", null);
+                            setIsOpened(false);
+                          }
+                        }}
+                      >
+                        Delete
+                      </Buttons>
+                    </Holds>
+                  </Grids>
+                </Holds>
+              </NModals>
             </Holds>
           )}
         </Grids>

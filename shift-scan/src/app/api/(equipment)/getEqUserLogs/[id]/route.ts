@@ -41,7 +41,7 @@ export async function GET(request: Request, { params }: { params: Params }) {
         },
         refueled: {
           select: {
-            milesAtfueling: true,
+            id: true,
             gallonsRefueled: true,
           },
         },

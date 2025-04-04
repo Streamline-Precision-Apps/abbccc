@@ -24,6 +24,7 @@ import QRMultiRoles from "./QRMultiRoles";
 import ClockLoadingPage from "./clock-loading-page";
 import { Contents } from "../(reusable)/contents";
 import { useOperator } from "@/app/context/operatorContext";
+import EquipmentQRStep from "./qr-equipment-handler";
 
 type NewClockProcessProps = {
   mechanicView: boolean;
@@ -288,9 +289,14 @@ export default function NewClockProcess({
   if (type === "equipment") {
     return (
       <>
+        {step === 0 && (
+          <>
+            <ClockLoadingPage handleReturnPath={handleReturnPath} />
+          </>
+        )}
         {step === 1 && (
           <>
-            <QRStep
+            <EquipmentQRStep
               option="equipment"
               type="equipment"
               handleAlternativePath={handleAlternativePathEQ}
