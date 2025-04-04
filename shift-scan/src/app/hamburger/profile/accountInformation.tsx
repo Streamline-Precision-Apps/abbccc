@@ -43,28 +43,28 @@ export default function AccountInformation({
   return (
     <Grids rows={"7"} className="w-full h-full">
       <Holds className="w-full h-full p-4 row-start-1 row-end-6">
-        <Labels size={"p6"}>Phone Number</Labels>
+        <Labels size={"p6"}>{t("PhoneNumber")}</Labels>
         <EditableFields
           value={employee?.contact?.phoneNumber || ""}
           isChanged={false}
           onChange={() => {}}
         />
 
-        <Labels size={"p6"}>Email</Labels>
+        <Labels size={"p6"}>{t("Email")}</Labels>
         <EditableFields
           value={employee?.email || ""}
           isChanged={false}
           onChange={() => {}}
         />
 
-        <Labels size={"p6"}>Emergency Contact</Labels>
+        <Labels size={"p6"}>{t("EmergencyContactName")}</Labels>
         <EditableFields
           value={employee?.contact?.emergencyContact || ""}
           isChanged={false}
           onChange={() => {}}
         />
 
-        <Labels size={"p6"}>Emergency Contact Number</Labels>
+        <Labels size={"p6"}>{t("EmergencyContact")}</Labels>
         <EditableFields
           value={employee?.contact?.emergencyContactNumber || ""}
           isChanged={false}
@@ -93,7 +93,7 @@ export default function AccountInformation({
           size={"full"}
           className="py-2"
         >
-          <Titles size={"h4"}>Sign Out</Titles>
+          <Titles size={"h4"}>{t("SignOut")}</Titles>
         </Buttons>
       </Holds>
 

@@ -228,7 +228,7 @@ export default function ProfilePage({ userId }: { userId: string }) {
                 isActive={activeTab === 1}
                 isComplete={true}
               >
-                <Titles size={"h4"}>Account Information</Titles>
+                <Titles size={"h4"}>{t("AccountInformation")}</Titles>
               </NewTab>
               <NewTab
                 titleImage={"/settings-sm.svg"}
@@ -237,7 +237,7 @@ export default function ProfilePage({ userId }: { userId: string }) {
                 isActive={activeTab === 2}
                 isComplete={true}
               >
-                <Titles size={"h4"}>Account Settings</Titles>
+                <Titles size={"h4"}>{t("AccountSettings")}</Titles>
               </NewTab>
             </Holds>
 

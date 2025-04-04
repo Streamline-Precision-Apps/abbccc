@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, ChangeEvent, SetStateAction, Dispatch } from "react";
+import React, { useState, ChangeEvent, SetStateAction, Dispatch, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import LocaleToggleSwitch from "@/components/(inputs)/toggleSwitch";
 import { Holds } from "@/components/(reusable)/holds";
@@ -66,6 +66,10 @@ export default function SettingSelections({
       </>
     );
   }
+
+  useEffect(() => {
+    setLanguage(data.language);
+  }, [data]);
 
   return (
     <Grids>

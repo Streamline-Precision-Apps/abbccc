@@ -1,88 +1,38 @@
 "use server";
 import prisma from "@/lib/prisma";
 import { revalidatePath, revalidateTag } from "next/cache";
+import {
+  RefuelLogType,
+  CreateRefuelLogParams,
+  UpdateRefuelLogParams,
+  DeleteRefuelLogParams
+} from "@/lib/types";
 
 /* LOADS Hauled */
 //------------------------------------------------------------------
 //------------------------------------------------------------------
 
-export async function addLoad(formData: FormData) {
-  console.log("Creating Load...");
+
+export async function SetLoad(formData: FormData) {
+  console.log("Setting Load...");
   console.log(formData);
   const tascoLogId = formData.get("tascoLogId") as string;
-  const currentCount = await prisma.tascoLog.findFirst({
-    where: {
-      id: tascoLogId,
-    },
-    select: {
-      LoadQuantity: true,
-    },
-  });
+  const loadCount = Number(formData.get("loadCount"));
 
-  if (!currentCount) {
-    // Handle the case where no record is found
-    console.error("No record found for Tasco Log ID:", tascoLogId);
-    // You can either return an error or throw an exception here
-    return { error: "No record found" };
-  }
-
-  const tascoLog = await prisma.tascoLog.update({
-    where: {
-      id: tascoLogId,
-    },
-    data: {
-      LoadQuantity: currentCount?.LoadQuantity + 1,
-    },
-  });
-  console.log("Load Added");
-  console.log("Updated Tasco Log:", tascoLog);
+  
+    const tascoLog = await prisma.tascoLog.update({
+      where: {
+        id: tascoLogId,
+      },
+      data: {
+        LoadQuantity: loadCount,
+      },
+    });
+  console.log("Load Quantity updated");
   revalidatePath("/dashboard/tasco");
   revalidateTag("load");
-  return true;
+  return tascoLog;
 }
-
-
-export async function deleteLoad(formData: FormData) {
-  console.log("Creating Load...");
-  console.log(formData);
-  const tascoLogId = formData.get("tascoLogId") as string;
-  const currentCount = await prisma.tascoLog.findFirst({
-    where: {
-      id: tascoLogId,
-    },
-    select: {
-      LoadQuantity: true,
-    },
-  });
-
-  if (!currentCount) {
-    // Handle the case where no record is found
-    console.error("No record found for Tasco Log ID:", tascoLogId);
-    // You can either return an error or throw an exception here
-    return { error: "No record found" };
-  }
-
-  if (currentCount?.LoadQuantity > 0) {
-  const tascoLog = await prisma.tascoLog.update({
-    where: {
-      id: tascoLogId,
-    },
-    data: {
-      LoadQuantity: currentCount?.LoadQuantity + 1,
-    },
-  });
-  }
-  else {
-    console.log("No loads to delete.");
-    return false;
-  }
-  console.log("Load Deleted");
-  revalidatePath("/dashboard/tasco");
-  revalidateTag("load");
-  return true;
-}
-
-
 
 // /* Tasco Comments */
 // ------------------------------------------------------------------
@@ -106,81 +56,84 @@ export const updateTascoComments = async (formData: FormData) => {
 // /* Tasco Refuel Logs */
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-export async function createRefuelLog(formData: FormData) {
-  console.log("Creating refuel logs...");
-  console.log(formData);
-  const tascoLogId = formData.get("tascoLogId") as string;
-
-  const refueledLogs = await prisma.refueled.create({
-    data: {
-      tascoLogId,
-    },
-  });
-
-  console.log(refueledLogs);
-  revalidatePath("/dashboard/tasco");
-  return refueledLogs;
-}
-
-export async function createRefuelEquipmentLog(formData: FormData) {
-  console.log("Creating refuel logs...");
-  console.log(formData);
-  const employeeEquipmentLogId = formData.get(
-    "employeeEquipmentLogId"
-  ) as string;
-
-  const refueledLogs = await prisma.refueled.create({
-    data: {
-      employeeEquipmentLogId,
-    },
-  });
-
-  console.log(refueledLogs);
-  revalidatePath("/dashboard/tasco");
-  return refueledLogs;
-}
-
-export async function deleteEmployeeEquipmentLog(id: string) {
+/**
+ * Creates a new refuel log
+ */
+export async function createRefuelLog(params: CreateRefuelLogParams) {
   try {
-    console.log("Deleting employee equipment log:", id);
-    await prisma.employeeEquipmentLog.delete({
-      where: { id },
+    return await prisma.$transaction(async (tx) => {
+      const data = {
+        ...(params.type === 'tasco' 
+          ? { tascoLogId: params.parentId }
+          : { employeeEquipmentLogId: params.parentId })
+      };
+
+      const result = await tx.refueled.create({ data });
+      revalidatePaths();
+      return result;
     });
-    return true;
   } catch (error) {
-    console.error("Error deleting employee equipment log:", error);
-    throw error;
+    console.error(`Failed to create ${params.type} refuel log:`, error);
+    throw new Error(`Failed to create ${params.type} refuel log`);
   }
 }
 
-export async function updateRefuelLog(formData: FormData) {
-  const id = formData.get("id") as string;
-  const gallonsRefueled =
-    Number(formData.get("gallonsRefueled") as string) || 0;
-  const milesAtfueling = Number(formData.get("milesAtfueling")) || 0;
+/**
+ * Updates an existing refuel log
+ */
+export async function updateRefuelLog(params: UpdateRefuelLogParams) {
+  try {
+    return await prisma.$transaction(async (tx) => {
+      console.log("Updating refuel log...");
+      const data = {
+        gallonsRefueled: params.gallonsRefueled,
+      };
 
-  // Update the state mileage in the database
-  const updatedStateMileage = await prisma.refueled.update({
-    where: { id },
-    data: {
-      gallonsRefueled,
-      milesAtfueling,
-    },
-  });
-  revalidatePath("/dashboard/tasco");
-  console.log("Updated State Mileage:", updatedStateMileage);
+      const result = await tx.refueled.update({
+        where: { id: params.id },
+        data
+      });
 
-  return updatedStateMileage;
+      revalidatePaths();
+      console.log("Refuel Gallons updated: ", params.gallonsRefueled);
+      return result;
+    });
+  } catch (error) {
+    console.error(`Failed to update ${params.type} refuel log:`, error);
+    throw new Error(`Failed to update ${params.type} refuel log`);
+  }
 }
 
-export async function deleteRefuelLog(id: string) {
-  console.log("Deleting refuel logs:", id);
-  console.log("id", id);
-  await prisma.refueled.delete({
-    where: { id },
-  });
+/**
+ * Deletes a refuel log
+ */
+export async function deleteRefuelLog(params: DeleteRefuelLogParams) {
+  try {
+    return await prisma.$transaction(async (tx) => {
+      console.log("Deleting refuel log...");
+      const result = await tx.refueled.delete({
+        where: { id: params.id }
+      });
 
-  return true;
+      revalidatePaths();
+      console.log("Refuel log deleted: ", params.id);
+      return result;
+    });
+  } catch (error) {
+    console.error(`Failed to delete ${params.type} refuel log:`, error);
+    throw new Error(`Failed to delete ${params.type} refuel log`);
+  }
 }
 
-
+/**
+ * Helper function to revalidate paths and tags
+ */
+function revalidatePaths() {
+  try {
+    revalidatePath("/dashboard/tasco");
+    revalidatePath("/dashboard/tascoAssistant");
+    revalidateTag("load");
+  } catch (error) {
+    console.error("Failed to revalidate paths:", error);
+  }
+}
