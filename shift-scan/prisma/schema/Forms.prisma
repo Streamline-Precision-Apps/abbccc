@@ -7,8 +7,8 @@ model FormTemplate {
   updatedAt           DateTime         @updatedAt
   isActive            Boolean          @default(false)
   isSignatureRequired Boolean          @default(false)
-  submissions         FormSubmission[]
-  company             Company          @relation(fields: [companyId], references: [id])
+  Submissions         FormSubmission[]
+  Company             Company          @relation(fields: [companyId], references: [id])
   FormGrouping        FormGrouping[]   @relation("FormGroupingToFormTemplate")
 }
 
@@ -16,7 +16,7 @@ model FormGrouping {
   id           String         @id @default(cuid())
   title        String?
   order        Int
-  fields       FormField[]
+  Fields       FormField[]
   FormTemplate FormTemplate[] @relation("FormGroupingToFormTemplate")
 }
 
@@ -33,14 +33,14 @@ model FormField {
   maxLength      Int?
   helperText     String?
   FormGrouping   FormGrouping      @relation(fields: [formGroupingId], references: [id], onDelete: Cascade)
-  options        FormFieldOption[]
+  Options        FormFieldOption[]
 }
 
 model FormFieldOption {
   id      String    @id @default(cuid())
   fieldId String
   value   String
-  field   FormField @relation(fields: [fieldId], references: [id], onDelete: Cascade)
+  Field   FormField @relation(fields: [fieldId], references: [id], onDelete: Cascade)
 }
 
 model FormSubmission {
@@ -54,9 +54,9 @@ model FormSubmission {
   updatedAt      DateTime       @updatedAt
   submittedAt    DateTime?
   status         FormStatus     @default(DRAFT)
-  approvals      FormApproval[]
-  formTemplate   FormTemplate   @relation(fields: [formTemplateId], references: [id], onDelete: Cascade)
-  user           User           @relation(fields: [userId], references: [id])
+  Approvals      FormApproval[]
+  FormTemplate   FormTemplate   @relation(fields: [formTemplateId], references: [id], onDelete: Cascade)
+  User           User           @relation(fields: [userId], references: [id])
 }
 
 model FormApproval {
@@ -67,8 +67,8 @@ model FormApproval {
   updatedAt        DateTime       @updatedAt
   signature        String?
   comment          String?
-  formSubmission   FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
-  approver         User?          @relation(fields: [signedBy], references: [id])
+  FormSubmission   FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
+  Approver         User?          @relation(fields: [signedBy], references: [id])
 }
 
 enum FormStatus {

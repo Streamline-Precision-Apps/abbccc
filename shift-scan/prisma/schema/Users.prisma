@@ -21,27 +21,20 @@ model User {
   companyId            String
   passwordResetTokenId String?
   workTypeId           String?
-  contact              Contacts?
-  equipmentLogs        EmployeeEquipmentLog[]
-  FormApproval         FormApproval[]
-  formSubmission       FormSubmission[]
-  maintenanceLogs      MaintenanceLog[]
-  passwordResetTokens  PasswordResetToken[]
-  timeSheets           TimeSheet[]
-  company              Company                @relation(fields: [companyId], references: [id])
-  WorkTypes            WorkTypes?             @relation(fields: [workTypeId], references: [id])
-  userSettings         UserSettings?
-  crews                Crew[]                 @relation("CrewToUser")
-  creationLog          CreationLogs[]
+  Contact              Contacts?
+  EquipmentLogs        EmployeeEquipmentLog[]
+  FormApprovals        FormApproval[]
+  FormSubmissions      FormSubmission[]
+  MaintenanceLogs      MaintenanceLog[]
+  PasswordResetTokens  PasswordResetToken[]
+  TimeSheets           TimeSheet[]
+  Company              Company                @relation(fields: [companyId], references: [id])
+  UserSettings         UserSettings?
+  Crews                Crew[]                 @relation("CrewToUser")
+  CreationLogs         CreationLogs[]
 
   @@unique([firstName, lastName, DOB])
   @@index([email])
-}
-
-model WorkTypes {
-  id    String @id @default(cuid())
-  name  String @unique
-  Users User[]
 }
 
 model UserSettings {
@@ -53,7 +46,7 @@ model UserSettings {
   cameraAccess      Boolean @default(false)
   locationAccess    Boolean @default(false)
   cookiesAccess     Boolean @default(false)
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  User              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Contacts {
@@ -64,7 +57,7 @@ model Contacts {
   emergencyContactNumber String?
   createdAt              DateTime @default(now())
   updatedAt              DateTime @updatedAt
-  user                   User     @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  User                   User     @relation(fields: [employeeId], references: [id], onDelete: Cascade)
 }
 
 model PasswordResetToken {
@@ -72,7 +65,7 @@ model PasswordResetToken {
   email      String
   token      String   @unique
   expiration DateTime
-  Users      User     @relation(fields: [email], references: [email])
+  User       User     @relation(fields: [email], references: [email])
 
   @@unique([email, token])
 }

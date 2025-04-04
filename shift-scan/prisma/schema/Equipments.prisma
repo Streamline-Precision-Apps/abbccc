@@ -1,24 +1,23 @@
 model Equipment {
-  id                      String                    @id @default(cuid())
-  qrId                    String                    @unique
-  name                    String
-  description             String
-  equipmentVehicleInfo    EquipmentVehicleInfo? // one to one connection
-  equipmentTag            EquipmentTags             @default(EQUIPMENT)
-  status                  EquipmentStatus           @default(OPERATIONAL)
-  createdAt               DateTime                  @default(now())
-  updatedAt               DateTime                  @updatedAt
-  isActive                Boolean                   @default(true)
-  inUse                   Boolean                   @default(false)
-  overWeight              Boolean?                  @default(false)
-  currentWeight           Float?                    @default(0)
-  CreationLogs            CreationLogs?
-  EquipmentInspectionLogs EquipmentInspectionLogs[] // records all the inspections
-  employeeEquipmentLogs   EmployeeEquipmentLog[]
-  EquipmentHauled         EquipmentHauled[]
-  Maintenance             Maintenance[]
-  TascoLogs               TascoLog[]
-  TruckingLogs            TruckingLog[]
+  id                    String                 @id @default(cuid())
+  qrId                  String                 @unique
+  name                  String
+  description           String
+  equipmentVehicleInfo  EquipmentVehicleInfo? // one to one connection
+  equipmentTag          EquipmentTags          @default(EQUIPMENT)
+  status                EquipmentStatus        @default(OPERATIONAL)
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  isActive              Boolean                @default(true)
+  inUse                 Boolean                @default(false)
+  overWeight            Boolean?               @default(false)
+  currentWeight         Float?                 @default(0)
+  CreationLogs          CreationLogs?
+  EmployeeEquipmentLogs EmployeeEquipmentLog[]
+  EquipmentHauled       EquipmentHauled[]
+  Maintenances          Maintenance[]
+  TascoLogs             TascoLog[]
+  TruckingLogs          TruckingLog[]
 
   @@index([qrId])
 }
@@ -27,9 +26,9 @@ model Equipment {
 model CreationLogs {
   id              String     @id @default(cuid())
   createdById     String? // User ID (employee or admin)
-  equipmentId     String     @unique
-  jobsiteId       String? // Nullable (office-created equipment won't have a jobsite)
-  comment         String?
+  equipmentId     String?    @unique
+  jobsiteId       String?    @unique
+  comment         String? // creating section
   createdByOffice Boolean    @default(false) // True if created by admin/office
   Equipment       Equipment? @relation(fields: [equipmentId], references: [id])
   Jobsite         Jobsite?   @relation(fields: [jobsiteId], references: [id])
@@ -45,14 +44,6 @@ model EquipmentVehicleInfo {
   registrationExpiration DateTime?
   mileage                Int?
   Equipment              Equipment @relation(fields: [id], references: [id])
-}
-
-model EquipmentInspectionLogs {
-  id          String    @id @default(cuid())
-  equipmentId String
-  Comment     String?
-  lastRepair  DateTime?
-  Equipment   Equipment @relation(fields: [equipmentId], references: [id])
 }
 
 model EmployeeEquipmentLog {
@@ -71,22 +62,21 @@ model EmployeeEquipmentLog {
   tascoLogId    String?
   laborLogId    String?
   truckingLogId String?
-  maintenanceId Maintenance? //one to one relationship
-  employee      User         @relation(fields: [employeeId], references: [id], onDelete: Cascade)
-  equipment     Equipment    @relation(fields: [equipmentId], references: [id])
-  jobsite       Jobsite      @relation(fields: [jobsiteId], references: [qrId])
-  timeSheets    TimeSheet?   @relation(fields: [timeSheetId], references: [id])
-  refueled      Refueled[]
+  MaintenanceId Maintenance? //one to one relationship
+  User          User         @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  Equipment     Equipment    @relation(fields: [equipmentId], references: [id])
+  Jobsite       Jobsite      @relation(fields: [jobsiteId], references: [qrId])
+  TimeSheet     TimeSheet?   @relation(fields: [timeSheetId], references: [id])
+  RefuelLogs    RefuelLog[]
 }
 
 model EquipmentHauled {
   id            String      @id @default(uuid())
   truckingLogId String
   equipmentId   String?
-  recordedAt    DateTime    @default(now())
   createdAt     DateTime    @default(now())
   jobSiteId     String?
-  equipment     Equipment?  @relation(fields: [equipmentId], references: [id])
-  jobSite       Jobsite?    @relation(fields: [jobSiteId], references: [id], onDelete: Cascade)
-  truckingLog   TruckingLog @relation(fields: [truckingLogId], references: [id])
+  Equipment     Equipment?  @relation(fields: [equipmentId], references: [id])
+  JobSite       Jobsite?    @relation(fields: [jobSiteId], references: [id], onDelete: Cascade)
+  TruckingLog   TruckingLog @relation(fields: [truckingLogId], references: [id])
 }
