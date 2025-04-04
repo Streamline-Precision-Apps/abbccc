@@ -3,6 +3,7 @@ model Equipment {
   qrId                  String                 @unique
   name                  String
   description           String
+  documentTagId         String?
   equipmentVehicleInfo  EquipmentVehicleInfo? // one to one connection
   equipmentTag          EquipmentTags          @default(EQUIPMENT)
   status                EquipmentStatus        @default(OPERATIONAL)
@@ -18,6 +19,7 @@ model Equipment {
   Maintenances          Maintenance[]
   TascoLogs             TascoLog[]
   TruckingLogs          TruckingLog[]
+  DocumentTags          DocumentTag[]          @relation("DocumentTagToEquipment")
 
   @@index([qrId])
 }
