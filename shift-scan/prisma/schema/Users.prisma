@@ -32,6 +32,7 @@ model User {
   WorkTypes            WorkTypes?             @relation(fields: [workTypeId], references: [id])
   userSettings         UserSettings?
   crews                Crew[]                 @relation("CrewToUser")
+  creationLog          CreationLogs[]
 
   @@unique([firstName, lastName, DOB])
   @@index([email])
