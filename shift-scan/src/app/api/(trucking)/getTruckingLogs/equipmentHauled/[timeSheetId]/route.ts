@@ -24,12 +24,12 @@ export async function GET(
         truckingLogId: timeSheetId,
       },
       include: {
-        equipment: {
+        Equipment: {
           select: {
             name: true,
           },
         },
-        jobSite: {
+        JobSite: {
           select: {
             name: true,
           },

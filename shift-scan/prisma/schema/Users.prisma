@@ -51,13 +51,13 @@ model UserSettings {
 
 model Contacts {
   id                     String   @id @default(cuid())
-  employeeId             String   @unique
+  userId             String   @unique @map("employeeId")
   phoneNumber            String
   emergencyContact       String?
   emergencyContactNumber String?
   createdAt              DateTime @default(now())
   updatedAt              DateTime @updatedAt
-  User                   User     @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  User                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model PasswordResetToken {

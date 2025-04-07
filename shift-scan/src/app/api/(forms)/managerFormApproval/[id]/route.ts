@@ -29,9 +29,9 @@ export async function GET(
         id,
       },
       include: {
-        approvals: {
+        Approvals: {
           include: {
-            approver: {
+            Approver: {
               select: {
                 firstName: true,
                 lastName: true,

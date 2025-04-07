@@ -32,7 +32,7 @@ export async function GET(req: NextRequest, { params }: { params: Params }) {
         email: true,
         DOB: true,
         image: true,
-        contact: {
+        Contact: {
           select: {
             phoneNumber: true,
             emergencyContact: true,
@@ -46,7 +46,7 @@ export async function GET(req: NextRequest, { params }: { params: Params }) {
       return NextResponse.json({ error: "Employee not found" }, { status: 404 });
     }
 
-    const contact = employee.contact;
+    const contact = employee.Contact;
     const employeeData = {
       id: employee.id,
       firstName: employee.firstName,

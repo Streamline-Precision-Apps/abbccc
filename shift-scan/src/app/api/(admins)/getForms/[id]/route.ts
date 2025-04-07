@@ -20,7 +20,7 @@ export async function GET(
       include: {
         FormGrouping: {
           include: {
-            fields: { orderBy: { order: "asc" } }, // Load fields sorted by `order`
+            Fields: { orderBy: { order: "asc" } }, // Load fields sorted by `order`
           },
         },
       },

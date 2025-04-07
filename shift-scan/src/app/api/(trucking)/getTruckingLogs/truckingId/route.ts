@@ -32,7 +32,7 @@ export async function GET(request: Request) {
         endTime: null, // Looking for active timesheets
       },
       select: {
-        truckingLogs: {
+        TruckingLogs: {
           select: {
             id: true, // Select the truckingLog ID
           },
@@ -43,8 +43,8 @@ export async function GET(request: Request) {
     // If no trucking log is found, return a 404 response
     if (
       !truckingId ||
-      !truckingId.truckingLogs ||
-      truckingId.truckingLogs.length === 0
+      !truckingId.TruckingLogs ||
+      truckingId.TruckingLogs.length === 0
     ) {
       return NextResponse.json(
         { error: "No active trucking log found for the user" },
@@ -52,7 +52,7 @@ export async function GET(request: Request) {
       );
     }
 
-    const truckingLogs = truckingId.truckingLogs[0].id;
+    const truckingLogs = truckingId.TruckingLogs[0].id;
 
     // Return the trucking log ID
     return NextResponse.json(truckingLogs);

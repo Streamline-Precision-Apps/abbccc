@@ -26,7 +26,7 @@ export async function GET(
 
     const crew = await prisma.user.findMany({
       where: {
-        crews: {
+        Crews: {
           some: {
             id: crewId,
           },
@@ -37,7 +37,7 @@ export async function GET(
         firstName: true,
         lastName: true,
         clockedIn: true,
-        timeSheets: {
+        TimeSheets: {
           where: {
             status: "PENDING",
             endTime: { not: null },
@@ -48,26 +48,24 @@ export async function GET(
             startTime: true,
             endTime: true,
             jobsiteId: true,
-            costCode: {
+            CostCode: {
               select: {
                 name: true,
-                description: true,
               },
             },
-            tascoLogs: {
+            TascoLogs: {
               select: {
                 id: true,
                 shiftType: true,
                 materialType: true,
                 LoadQuantity: true,
-                comment: true,
-                equipment: {
+                Equipment: {
                   select: {
                     id: true,
                     name: true,
                   },
                 },
-                refueled: {
+                RefuelLogs: {
                   select: {
                     id: true,
                     gallonsRefueled: true,
@@ -75,11 +73,11 @@ export async function GET(
                 },
               },
             },
-            truckingLogs: {
+            TruckingLogs: {
               select: {
                 id: true,
                 laborType: true,
-                equipment: {
+                Equipment: {
                   select: {
                     id: true,
                     name: true,
@@ -87,7 +85,7 @@ export async function GET(
                 },
                 startingMileage: true,
                 endingMileage: true,
-                Material: {
+                Materials: {
                   select: {
                     id: true,
                     name: true,
@@ -99,26 +97,26 @@ export async function GET(
                 EquipmentHauled: {
                   select: {
                     id: true,
-                    equipment: {
+                    Equipment: {
                       select: {
                         name: true,
                       },
                     },
-                    jobSite: {
+                    JobSite: {
                       select: {
                         name: true,
                       },
                     },
                   },
                 },
-                Refueled: {
+                RefuelLogs: {
                   select: {
                     id: true,
                     gallonsRefueled: true,
-                    milesAtfueling: true,
+                    milesAtFueling: true,
                   },
                 },
-                stateMileage: {
+                StateMileages: {
                   select: {
                     id: true,
                     state: true,
@@ -127,18 +125,18 @@ export async function GET(
                 },
               },
             },
-            employeeEquipmentLogs: {
+            EmployeeEquipmentLogs: {
               select: {
                 id: true,
                 startTime: true,
                 endTime: true,
-                equipment: {
+                Equipment: {
                   select: {
                     id: true,
                     name: true,
                   },
                 },
-                refueled: {
+                RefuelLogs: {
                   select: {
                     id: true,
                     gallonsRefueled: true,

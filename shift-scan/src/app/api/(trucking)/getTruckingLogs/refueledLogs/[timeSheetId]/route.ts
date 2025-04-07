@@ -19,7 +19,7 @@ export async function GET(
 
   try {
     // Fetch state mileage (refueled) records for the given truckingLogId (timeSheetId)
-    const stateMileage = await prisma.refueled.findMany({
+    const stateMileage = await prisma.refuelLog.findMany({
       where: {
         truckingLogId: timeSheetId,
       },

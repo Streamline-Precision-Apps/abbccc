@@ -194,7 +194,6 @@ export async function createTag(data: {
     const newTag = await prisma.cCTag.create({
       data: {
         name: data.name,
-        description: data.description,
         jobsites: {
           connect: data.jobs.map((job) => ({ id: job })), // Connect jobs
         },
@@ -227,7 +226,6 @@ export async function changeTags(data: {
       },
       data: {
         name: data.name,
-        description: data.description,
         jobsites: {
           connect: data.jobs.map((id) => ({ id })), // Add new connections
           disconnect: data.removeJobs.map((id) => ({ id })), // Remove connections

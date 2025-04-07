@@ -30,7 +30,7 @@ export async function GET(
       },
       select: {
         crewType: true,
-        users: {
+        Users: {
           select: {
             id: true,
             firstName: true,
@@ -47,7 +47,7 @@ export async function GET(
     }
 
     // Sort crew members alphabetically by first name
-    const crewMembers = crew.users
+    const crewMembers = crew.Users
       .map((member) => member)
       .sort((a, b) => a.firstName.localeCompare(b.firstName));
 

@@ -32,12 +32,12 @@ export async function GET(
         delay: true,
         hasBeenDelayed: true,
         delayReasoning: true,
-        equipment: {
+        Equipment: {
           select: {
             name: true,
           },
         },
-        maintenanceLogs: {
+        MaintenanceLogs: {
           select: {
             id: true,
             startTime: true,

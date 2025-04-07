@@ -33,19 +33,19 @@ export async function GET(request: Request, { params }: { params: Params }) {
         },
       },
       include: {
-        equipment: {
+        Equipment: {
           select: {
             name: true,
             status: true,
           },
         },
-        refueled: {
+        RefuelLogs: {
           select: {
             id: true,
             gallonsRefueled: true,
           },
         },
-        maintenanceId: {
+        MaintenanceId: {
           select: {
             id: true,
             equipmentIssue: true,

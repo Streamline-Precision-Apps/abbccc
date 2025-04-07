@@ -29,16 +29,16 @@ export async function GET(
         id,
       },
       include: {
-        user: {
+        User: {
           select: {
             firstName: true,
             lastName: true,
           },
         },
-        approvals: {
+        Approvals: {
           select: {
             comment: true,
-            approver: {
+            Approver: {
               select: {
                 firstName: true,
                 lastName: true,

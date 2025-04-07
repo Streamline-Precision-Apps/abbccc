@@ -15,7 +15,18 @@ export async function GET() {
       select: {
         id: true,
         name: true,
-        fields: true,
+        FormGrouping: {
+          include: {
+            Fields: {
+              include: {
+                Options: true,
+              },
+              orderBy: {
+                order: "asc",
+              },
+            },
+          },
+        },
       },
     });
 

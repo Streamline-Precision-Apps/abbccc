@@ -25,14 +25,14 @@ export async function GET() {
         repaired: true,
         createdAt: true,
         createdBy: true,
-        maintenanceLogs: {
+        MaintenanceLogs: {
           select: {
             id: true,
             startTime: true,
             endTime: true,
             userId: true,
             timeSheetId: true,
-            user: {
+            User: {
               select: {
                 firstName: true,
                 lastName: true,
@@ -41,7 +41,7 @@ export async function GET() {
             },
           },
         },
-        equipment: {
+        Equipment: {
           select: {
             id: true,
             name: true,

@@ -29,7 +29,7 @@ export async function GET() {
         timeSheetId: timeSheetId?.id,
       },
       include: {
-        equipment: true,
+        Equipment: true,
       },
     });
 

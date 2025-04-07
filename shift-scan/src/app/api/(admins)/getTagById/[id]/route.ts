@@ -20,18 +20,17 @@ export async function GET(
         id: String(id), // Ensure that the id is a string
       },
       include: {
-        jobsites: {
+        Jobsites: {
           select: {
             id: true,
             qrId: true,
             name: true,
           },
         },
-        costCodes: {
+        CostCodes: {
           select: {
             id: true,
             name: true,
-            description: true,
           },
         },
       },

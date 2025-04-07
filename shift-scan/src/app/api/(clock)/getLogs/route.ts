@@ -28,7 +28,6 @@ type TruckingLog = {
   id: string;
   laborType: string;
   endingMileage: number | null;
-  comment: string | null;
   stateMileage: boolean;
   refueled: boolean;
   material: boolean;
@@ -66,7 +65,7 @@ export async function GET() {
             isFinished: false,
           },
           include: {
-            equipment: {
+            Equipment: {
               select: {
                 id: true,
                 qrId: true,
@@ -89,7 +88,7 @@ export async function GET() {
 
         prisma.truckingLog.findMany({
           where: {
-            timeSheet: {
+            TimeSheet: {
               userId: userId,
               endTime: null,
             },
@@ -97,23 +96,22 @@ export async function GET() {
           select: {
             id: true,
             endingMileage: true,
-            comment: true,
             laborType: true,
-            stateMileage: {
+            StateMileages: {
               select: {
                 id: true,
                 state: true,
                 stateLineMileage: true,
               },
             },
-            Refueled: {
+            RefuelLogs: {
               select: {
                 id: true,
                 gallonsRefueled: true,
-                milesAtfueling: true,
+                milesAtFueling: true,
               },
             },
-            Material: {
+            Materials: {
               select: {
                 id: true,
                 LocationOfMaterial: true,
@@ -133,7 +131,7 @@ export async function GET() {
 
         prisma.tascoLog.findMany({
           where: {
-            timeSheet: {
+            TimeSheet: {
               userId: userId,
               endTime: null,
             },
@@ -143,7 +141,7 @@ export async function GET() {
             shiftType: true,
             laborType: true,
             LoadQuantity: true,
-            refueled: {
+            RefuelLogs: {
               select: {
                 id: true,
                 gallonsRefueled: true,
@@ -164,11 +162,11 @@ export async function GET() {
       id: log.id.toString(),
       type: "equipment",
       userId: log.employeeId,
-      equipment: log.equipment
+      equipment: log.Equipment
         ? {
-            id: log.equipment.id,
-            qrId: log.equipment.qrId,
-            name: log.equipment.name,
+            id: log.Equipment.id,
+            qrId: log.Equipment.qrId,
+            name: log.Equipment.name,
           }
         : null,
       submitted: log.isFinished,
@@ -197,14 +195,13 @@ export async function GET() {
           type: "Trucking Assistant",
           laborType: log.laborType,
           endingMileage: log.endingMileage,
-          comment: log.comment,
-          stateMileage: log.stateMileage.some((item) =>
+          stateMileage: log.StateMileages.some((item) =>
             isFieldIncomplete(item, ["state", "stateLineMileage"])
           ),
-          refueled: log.Refueled.some((item) =>
+          refueled: log.RefuelLogs.some((item) =>
             isFieldIncomplete(item, ["gallonsRefueled", "milesAtfueling"])
           ),
-          material: log.Material.some((item) =>
+          material: log.Materials.some((item) =>
             isFieldIncomplete(item, ["LocationOfMaterial", "quantity", "name"])
           ),
           equipmentHauled: log.EquipmentHauled.some((item) =>
@@ -232,7 +229,7 @@ export async function GET() {
           shiftType: log.shiftType,
           laborType: log.laborType,
           loadQuantity: log.LoadQuantity,
-          refueled: log.refueled.some((item) =>
+          refueled: log.RefuelLogs.some((item) =>
             isFieldIncomplete(item, ["gallonsRefueled"])
           ),
         };

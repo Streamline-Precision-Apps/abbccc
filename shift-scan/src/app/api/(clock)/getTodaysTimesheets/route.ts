@@ -33,12 +33,12 @@ export async function GET() {
     const timesheets = await prisma.timeSheet.findMany({
       where: {
         userId: userId,
-        submitDate: {
+        createdAt: {
           gte: startOfDay,
           lte: endOfDay,
         },
       },
-      orderBy: { submitDate: "asc" },
+      orderBy: { createdAt: "asc" },
     });
 
     // Check if timesheets were found and return appropriate response
