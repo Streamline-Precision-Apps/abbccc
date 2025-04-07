@@ -32,8 +32,6 @@ const CostCodesSchema = z.array(
   z.object({
     id: z.string(),
     name: z.string(),
-    description: z.string(),
-    type: z.string().default("DEFAULT_TYPE"),
   })
 );
 

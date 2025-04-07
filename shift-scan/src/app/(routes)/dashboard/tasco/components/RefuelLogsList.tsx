@@ -14,11 +14,13 @@ export default function RefuelLogsList({
   refuelLogs: Refueled[] | undefined;
   setRefuelLogs: React.Dispatch<React.SetStateAction<Refueled[] | undefined>>;
 }) {
-  const [editedRefuel, setEditedRefuel] = useState<Refueled[]>(refuelLogs || []);
+  const [editedRefuel, setEditedRefuel] = useState<Refueled[]>(
+    refuelLogs || []
+  );
   const t = useTranslations("Tasco");
   const handleDelete = async (id: string) => {
     try {
-      await deleteRefuelLog({ type: 'tasco', id });
+      await deleteRefuelLog({ type: "tasco", id });
       const newRefueledLogs = editedRefuel.filter((rL) => rL.id !== id);
       setEditedRefuel(newRefueledLogs);
       setRefuelLogs(newRefueledLogs);
@@ -34,11 +36,10 @@ export default function RefuelLogsList({
     setRefuelLogs(newRefuel);
   };
 
-
   const handleUpdateRefuelLog = async (log: Refueled) => {
     try {
       await updateRefuelLog({
-        type: 'tasco',
+        type: "tasco",
         id: log.id,
         gallonsRefueled: log.gallonsRefueled,
       });
@@ -61,10 +62,7 @@ export default function RefuelLogsList({
             background={"white"}
             className="w-full h-full border-black border-[3px] rounded-[10px] mb-3"
           >
-            <Holds
-              background={"white"}
-              className="w-1/2 px-2 h-full justify-center"
-            >
+            <Holds background={"white"} className="px-2 h-full justify-center">
               <Inputs
                 type="number"
                 name="gallons"
@@ -72,7 +70,9 @@ export default function RefuelLogsList({
                 value={rL.gallonsRefueled || ""}
                 onChange={(e) => handleGallonsChange(index, e.target.value)}
                 onBlur={() => handleUpdateRefuelLog(rL)}
-                className="border-none text-xs py-2 focus:outline-none focus:ring-0"
+                className={`border-none text-center text-sm focus:outline-none focus:ring-0 ${
+                  rL.gallonsRefueled === 0 ? "placeholder:text-app-red " : ""
+                }`}
               />
             </Holds>
           </Holds>

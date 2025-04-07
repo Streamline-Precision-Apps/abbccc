@@ -72,10 +72,10 @@ export async function fetchTimesheets(employeeId: string, date: string) {
         startTime: "asc",
       },
       include: {
-        tascoLogs: true,
-        truckingLogs: true,
-        maintenanceLogs: true,
-        employeeEquipmentLogs: true,
+        TascoLogs: true,
+        TruckingLogs: true,
+        MaintenanceLogs: true,
+        EmployeeEquipmentLogs: true,
       },
     });
 
@@ -132,12 +132,11 @@ export async function CreateTimeSheet(formData: FormData) {
 
     const newTimeSheet = await prisma.timeSheet.create({
       data: {
-        submitDate: formatISO(formData.get("submitDate") as string),
         date: formatISO(formData.get("date") as string),
-        jobsite: { connect: { qrId: formData.get("jobsiteId") as string } },
+        Jobsite: { connect: { qrId: formData.get("jobsiteId") as string } },
         comment: (formData.get("timeSheetComments") as string) || null,
-        user: { connect: { id: formData.get("userId") as string } },
-        costCode: { connect: { name: costCode } },
+        User: { connect: { id: formData.get("userId") as string } },
+        CostCode: { connect: { name: costCode } },
         startTime: formatISO(formData.get("startTime") as string),
         workType: workType,
       },
@@ -289,12 +288,11 @@ export async function CreateTruckDriverTimeSheet(formData: FormData) {
 
     const createdTimeSheet = await prisma.timeSheet.create({
       data: {
-        submitDate: formatISO(formData.get("submitDate") as string),
         date: formatISO(formData.get("date") as string),
-        jobsite: { connect: { qrId: jobsiteId } },
+        Jobsite: { connect: { qrId: jobsiteId } },
         comment: timeSheetComments || null,
-        user: { connect: { id: userId } },
-        costCode: { connect: { name: costCode } },
+        User: { connect: { id: userId } },
+        CostCode: { connect: { name: costCode } },
         startTime: formatISO(formData.get("startTime") as string),
         workType,
       },
@@ -393,11 +391,10 @@ export async function handleGeneralTimeSheet(formData: FormData) {
       // Create a new TimeSheet
       const createdTimeSheet = await prisma.timeSheet.create({
         data: {
-          submitDate: formatISO(formData.get("submitDate") as string),
           date: formatISO(formData.get("date") as string),
-          jobsite: { connect: { qrId: jobsiteId } },
-          user: { connect: { id: userId } },
-          costCode: { connect: { name: costCode } },
+          Jobsite: { connect: { qrId: jobsiteId } },
+          User: { connect: { id: userId } },
+          CostCode: { connect: { name: costCode } },
           startTime: formatISO(formData.get("startTime") as string),
           workType: "LABOR",
         },
@@ -469,11 +466,10 @@ export async function handleMechanicTimeSheet(formData: FormData) {
       // Create a new TimeSheet
       const createdTimeSheet = await prisma.timeSheet.create({
         data: {
-          submitDate: formatISO(formData.get("submitDate") as string),
           date: formatISO(formData.get("date") as string),
-          jobsite: { connect: { qrId: jobsiteId } },
-          user: { connect: { id: userId } },
-          costCode: { connect: { name: costCode } },
+          Jobsite: { connect: { qrId: jobsiteId } },
+          User: { connect: { id: userId } },
+          CostCode: { connect: { name: costCode } },
           startTime: formatISO(formData.get("startTime") as string),
           workType: "MECHANIC",
         },
@@ -554,14 +550,13 @@ export async function handleTascoTimeSheet(formData: FormData) {
       // Create a new TimeSheet
       const createdTimeSheet = await prisma.timeSheet.create({
         data: {
-          submitDate: formatISO(formData.get("submitDate") as string),
           date: formatISO(formData.get("date") as string),
-          jobsite: { connect: { qrId: jobsiteId } },
-          user: { connect: { id: userId } },
-          costCode: { connect: { name: costCode } },
+          Jobsite: { connect: { qrId: jobsiteId } },
+          User: { connect: { id: userId } },
+          CostCode: { connect: { name: costCode } },
           startTime: formatISO(formData.get("startTime") as string),
           workType: "TASCO",
-          tascoLogs: {
+          TascoLogs: {
             create: {
               shiftType,
               equipmentId: equipmentId || null,
@@ -644,14 +639,13 @@ export async function handleTruckTimeSheet(formData: FormData) {
       // Create a new TimeSheet
       const createdTimeSheet = await prisma.timeSheet.create({
         data: {
-          submitDate: formatISO(formData.get("submitDate") as string),
           date: formatISO(formData.get("date") as string),
-          jobsite: { connect: { qrId: jobsiteId } },
-          user: { connect: { id: userId } },
-          costCode: { connect: { name: costCode } },
+          Jobsite: { connect: { qrId: jobsiteId } },
+          User: { connect: { id: userId } },
+          CostCode: { connect: { name: costCode } },
           startTime: formatISO(formData.get("startTime") as string),
           workType: "TRUCK_DRIVER",
-          truckingLogs: {
+          TruckingLogs: {
             create: {
               laborType,
 
@@ -813,7 +807,7 @@ export async function returnToPrevWork(formData: FormData) {
       jobsiteId: true,
       costcode: true,
       workType: true,
-      tascoLogs: {
+      TascoLogs: {
         select: {
           shiftType: true,
           equipmentId: true,
@@ -821,7 +815,7 @@ export async function returnToPrevWork(formData: FormData) {
           materialType: true,
         },
       },
-      truckingLogs: {
+      TruckingLogs: {
         select: {
           laborType: true,
           equipmentId: true,

@@ -321,6 +321,7 @@
     "ID": "Id: #"
   },
   "Clock": {
+    "SearchBarPlaceholder": "Type here...",
     "SelectedEquipment": "Selected Equipment",
     "MaterialType": "Material Type",
     "LaborType": "Labor Type",

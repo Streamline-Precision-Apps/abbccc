@@ -1,5 +1,8 @@
 import { Buttons } from "@/components/(reusable)/buttons";
+import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
+import { Images } from "@/components/(reusable)/images";
+import { Titles } from "@/components/(reusable)/titles";
 import React from "react";
 
 type LoadCounterProps = {
@@ -10,9 +13,13 @@ type LoadCounterProps = {
   allowRemove?: boolean;
 };
 
-
-export default function Counter({ count, setCount, addAction, removeAction, allowRemove }: LoadCounterProps) {
-
+export default function Counter({
+  count,
+  setCount,
+  addAction,
+  removeAction,
+  allowRemove,
+}: LoadCounterProps) {
   const AddLoad = () => {
     const newCount = count + 1;
     setCount(newCount);
@@ -25,32 +32,47 @@ export default function Counter({ count, setCount, addAction, removeAction, allo
 
   return (
     <Holds
-      className="w-[90%] items-center my-4"
+      className="w-[90%] justify-center h-full"
       background={"darkBlue"}
       position={"center"}
     >
-      <div className="flex items-center justify-center  p-4 rounded-lg shadow-lg w-full">
-        <Buttons
-          onClick={RemoveLoad}
-          disabled={count === 0 && !allowRemove}
-          className={`text-black font-bold text-4xl w-16 h-16 rounded-lg shadow-lg border-2 border-black transition flex items-center justify-center ${
-            count === 0 || count === undefined
-              ? "bg-gray-300 cursor-not-allowed"
-              : "bg-app-orange"
-          }`}
+      <Grids cols={"3"} gap={"5"} className="h-full w-full">
+        <Holds>
+          <Buttons
+            background={`${
+              count === 0 || count === undefined ? "darkGray" : "orange"
+            }`}
+            onClick={RemoveLoad}
+            disabled={count === 0 && !allowRemove}
+            className={`p-2  border-[3px] border-black justify-center items-center rounded-[10px]`}
+            size={"60"}
+            shadow={"none"}
+          >
+            -
+          </Buttons>
+        </Holds>
+        <Holds
+          background={"white"}
+          className="items-center justify-center border-2 border-black rounded-[10px] py-2"
         >
-          -
-        </Buttons>
-        <div className="mx-6 flex items-center justify-center text-black text-3xl font-bold bg-white w-20 h-16 rounded-lg border-2 border-black shadow-lg">
-          {count}
-        </div>
-        <Buttons
-          onClick={AddLoad}
-          className="bg-app-green text-black font-bold text-4xl w-16 h-16 rounded-lg shadow-lg border-2 border-black"
-        >
-          +
-        </Buttons>
-      </div>
+          <Titles>{count}</Titles>
+        </Holds>
+        <Holds>
+          <Buttons
+            onClick={AddLoad}
+            background={"green"}
+            size={"60"}
+            shadow={"none"}
+            className="p-2  border-[3px] border-black justify-center items-center rounded-[10px]"
+          >
+            <Images
+              titleImg="/plus.svg"
+              titleImgAlt="Add Icon"
+              className="mx-auto"
+            />
+          </Buttons>
+        </Holds>
+      </Grids>
     </Holds>
   );
 }

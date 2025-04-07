@@ -384,6 +384,7 @@
     "Mileage": "Mileage"
   },
   "ClockOut": {
+    "SearchBarPlaceholder": "Busca aquí...",
     "ClockOut": "Fichar al Salir",
     "Date-label": "Fecha",
     "JobSite-label": "Sitio de Trabajo",

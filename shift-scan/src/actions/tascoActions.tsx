@@ -5,13 +5,13 @@ import {
   RefuelLogType,
   CreateRefuelLogParams,
   UpdateRefuelLogParams,
-  DeleteRefuelLogParams
+  DeleteRefuelLogParams,
 } from "@/lib/types";
+import TascoBtn from "@/app/(routes)/dashboard/UI/_buttons/TascoBtn";
 
 /* LOADS Hauled */
 //------------------------------------------------------------------
 //------------------------------------------------------------------
-
 
 export async function SetLoad(formData: FormData) {
   console.log("Setting Load...");
@@ -19,15 +19,14 @@ export async function SetLoad(formData: FormData) {
   const tascoLogId = formData.get("tascoLogId") as string;
   const loadCount = Number(formData.get("loadCount"));
 
-  
-    const tascoLog = await prisma.tascoLog.update({
-      where: {
-        id: tascoLogId,
-      },
-      data: {
-        LoadQuantity: loadCount,
-      },
-    });
+  const tascoLog = await prisma.tascoLog.update({
+    where: {
+      id: tascoLogId,
+    },
+    data: {
+      LoadQuantity: loadCount,
+    },
+  });
   console.log("Load Quantity updated");
   revalidatePath("/dashboard/tasco");
   revalidateTag("load");
@@ -45,7 +44,11 @@ export const updateTascoComments = async (formData: FormData) => {
   const updatedLog = await prisma.tascoLog.update({
     where: { id },
     data: {
-      comment,
+      TimeSheet: {
+        update: {
+          comment,
+        },
+      },
     },
   });
 
@@ -63,12 +66,12 @@ export async function createRefuelLog(params: CreateRefuelLogParams) {
   try {
     return await prisma.$transaction(async (tx) => {
       const data = {
-        ...(params.type === 'tasco' 
+        ...(params.type === "tasco"
           ? { tascoLogId: params.parentId }
-          : { employeeEquipmentLogId: params.parentId })
+          : { employeeEquipmentLogId: params.parentId }),
       };
 
-      const result = await tx.refueled.create({ data });
+      const result = await tx.refuelLog.create({ data });
       revalidatePaths();
       return result;
     });
@@ -89,9 +92,9 @@ export async function updateRefuelLog(params: UpdateRefuelLogParams) {
         gallonsRefueled: params.gallonsRefueled,
       };
 
-      const result = await tx.refueled.update({
+      const result = await tx.refuelLog.update({
         where: { id: params.id },
-        data
+        data,
       });
 
       revalidatePaths();
@@ -111,8 +114,8 @@ export async function deleteRefuelLog(params: DeleteRefuelLogParams) {
   try {
     return await prisma.$transaction(async (tx) => {
       console.log("Deleting refuel log...");
-      const result = await tx.refueled.delete({
-        where: { id: params.id }
+      const result = await tx.refuelLog.delete({
+        where: { id: params.id },
       });
 
       revalidatePaths();

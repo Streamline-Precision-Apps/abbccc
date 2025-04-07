@@ -33,7 +33,7 @@ export async function createFormSubmission(formData: FormData) {
       include: {
         FormGrouping: {
           include: {
-            fields: true,
+            Fields: true,
           },
         },
       },
@@ -46,7 +46,7 @@ export async function createFormSubmission(formData: FormData) {
     // Initialize the data object with field.name as keys
     const initialData: Record<string, any> = {};
     for (const group of formTemplate.FormGrouping) {
-      for (const field of group.fields) {
+      for (const field of group.Fields) {
         initialData[field.name] = field.defaultValue || ""; // Set default values if available
       }
     }
