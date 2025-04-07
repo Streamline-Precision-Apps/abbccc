@@ -20,16 +20,25 @@ export async function GET(
         id: timeSheetId,
       },
       select: {
-        comment: true,
+        TimeSheet: {
+          select: {
+            comment: true,
+          },
+        },
       },
     });
 
+    
     // If no notes are found, return a 404
     if (!notes) {
       return NextResponse.json({ error: "No matching record found" }, { status: 404 });
     }
+    const { comment } = notes?.TimeSheet || {};
+    if (comment === null || comment === undefined) {
+      return "";
+    }
 
-    return NextResponse.json(notes);
+    return NextResponse.json(comment);
   } catch (error) {
     // Log the error for debugging purposes
     console.error("Error fetching tascoLog:", error);

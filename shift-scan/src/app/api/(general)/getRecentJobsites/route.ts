@@ -17,7 +17,7 @@ export async function GET() {
     const jobsiteDetails = await prisma.timeSheet.findMany({
       where: { userId },
       select: {
-        jobsite: {
+        Jobsite: {
           select: {
             id: true,
             qrId: true,
@@ -26,7 +26,7 @@ export async function GET() {
         },
       },
       orderBy: {
-        submitDate: "desc",
+        createdAt: "desc",
       },
       take: 5,
     });
@@ -34,8 +34,8 @@ export async function GET() {
     // Extract unique jobsites (filter out duplicates)
     const uniqueJobsites = new Map();
     jobsiteDetails.forEach((log) => {
-      if (log.jobsite) {
-        uniqueJobsites.set(log.jobsite.id, log.jobsite);
+      if (log.Jobsite) {
+        uniqueJobsites.set(log.Jobsite.id, log.Jobsite);
       }
     });
 

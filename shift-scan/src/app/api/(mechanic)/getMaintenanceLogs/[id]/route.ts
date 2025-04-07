@@ -18,13 +18,13 @@ export async function GET(
     },
     select: {
       id: true,
-      maintenanceLogs: {
+      MaintenanceLogs: {
         select: {
           id: true,
           startTime: true,
           endTime: true,
           comment: true,
-          user: {
+          User: {
             select: {
               firstName: true,
               lastName: true,

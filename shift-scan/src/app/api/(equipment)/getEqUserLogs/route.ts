@@ -25,12 +25,12 @@ export async function GET() {
         isFinished: false,
       },
       include: {
-        equipment: {
+        Equipment: {
           select: {
             name: true,
           },
         },
-        refueled: true,
+        RefuelLogs: true,
       },
     });
 

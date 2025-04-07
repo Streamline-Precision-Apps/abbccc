@@ -37,7 +37,7 @@ export async function GET(
       problemDiagnosis: true,
       solution: true,
       repaired: true,
-      equipment: {
+      Equipment: {
         select: {
           id: true,
           name: true,

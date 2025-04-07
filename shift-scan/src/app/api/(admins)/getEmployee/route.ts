@@ -23,7 +23,7 @@ export async function GET() {
         email: true,
         image: true,
         signature: true,
-        contact: {
+        Contact: {
           select: {
             phoneNumber: true,
             emergencyContact: true,

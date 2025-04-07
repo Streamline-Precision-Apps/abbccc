@@ -23,7 +23,7 @@ export async function GET() {
         // Use _count to count the total crew members
         _count: {
           select: {
-            users: true, // Count the number of crew members
+            Users: true, // Count the number of crew members
           },
         },
       },

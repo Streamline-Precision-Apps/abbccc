@@ -19,7 +19,7 @@ export async function GET() {
         userId,
       },
       orderBy: {
-        submitDate: "desc", // Sort by most recent submission date
+        createdAt: "desc", // Sort by most recent submission date
       },
       select: {
         id: true,

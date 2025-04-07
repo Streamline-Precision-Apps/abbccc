@@ -28,17 +28,17 @@ export async function GET(
       status: { not: FormStatus.DRAFT },
     },
     include: {
-      user: {
+      User: {
         select: {
           signature: true,
         },
       },
-      approvals: {
+      Approvals: {
         select: {
           id: true,
           comment: true,
           updatedAt: true,
-          approver: {
+          Approver: {
             select: {
               firstName: true,
               lastName: true,

@@ -27,7 +27,7 @@ export async function GET(request: Request) {
         endTime: null,
       },
       select: {
-        tascoLogs: {
+        TascoLogs: {
           select: {
             id: true,
           },
@@ -36,11 +36,11 @@ export async function GET(request: Request) {
     });
 
     // Handle case where no tascoId is found
-    if (!tascoId || !tascoId.tascoLogs || tascoId.tascoLogs.length === 0) {
+    if (!tascoId || !tascoId.TascoLogs || tascoId.TascoLogs.length === 0) {
       return NextResponse.json({ error: "No active tasco logs found for the user" }, { status: 404 });
     }
 
-    const tascoLogs = tascoId.tascoLogs[0].id;
+    const tascoLogs = tascoId.TascoLogs[0].id;
 
     return NextResponse.json(tascoLogs);
   } catch (error) {

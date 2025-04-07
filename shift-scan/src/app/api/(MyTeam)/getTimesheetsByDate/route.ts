@@ -49,10 +49,10 @@ export async function GET(request: Request) {
         startTime: "asc",
       },
       include: {
-        tascoLogs: true,
-        truckingLogs: true,
-        maintenanceLogs: true,
-        employeeEquipmentLogs: true,
+        TascoLogs: true,
+        TruckingLogs: true,
+        MaintenanceLogs: true,
+        EmployeeEquipmentLogs: true,
       },
     });
 
@@ -69,8 +69,8 @@ export async function GET(request: Request) {
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const adjustedTimeSheets = timeSheets.map((sheet) => ({
       ...sheet,
-      submitDate: sheet.submitDate
-        ? formatInTimeZone(sheet.submitDate, timeZone, "yyyy-MM-dd HH:mm:ss")
+      submitDate: sheet.createdAt
+        ? formatInTimeZone(sheet.createdAt, timeZone, "yyyy-MM-dd HH:mm:ss")
         : "",
       date: formatInTimeZone(sheet.date, timeZone, "yyyy-MM-dd"),
       startTime: sheet.startTime

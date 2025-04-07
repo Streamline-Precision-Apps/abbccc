@@ -16,7 +16,7 @@ export async function GET() {
     // Fetch contact details
     const contacts = await prisma.contacts.findUnique({
       where: {
-        employeeId: userId.toString(),
+        userId: userId.toString(),
       },
       select: {
         phoneNumber: true,

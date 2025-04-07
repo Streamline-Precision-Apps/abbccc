@@ -20,7 +20,7 @@ export async function GET() {
         endTime: null, // Ensure timesheet is still active
       },
       orderBy: {
-        submitDate: "desc", // Sort by most recent submission date
+        createdAt: "desc", // Sort by most recent submission date
       },
       select: {
         id: true,

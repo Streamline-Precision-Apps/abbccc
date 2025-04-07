@@ -24,12 +24,21 @@ export async function GET(
         id: timeSheetId,
       },
       select: {
-        comment: true,
+        TimeSheet: {
+          select: {
+            comment: true,
+          },
+        },
       },
     });
 
+    const { comment } = notes?.TimeSheet || {};
+    if (comment === null || comment === undefined) {
+      return "";
+    }
+
     // Return the fetched notes (comment)
-    return NextResponse.json(notes);
+    return NextResponse.json(comment);
   } catch (error) {
     console.error("Error fetching trucking log:", error);
     return NextResponse.json(

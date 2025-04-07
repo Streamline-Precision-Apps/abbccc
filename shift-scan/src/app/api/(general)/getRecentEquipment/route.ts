@@ -19,7 +19,7 @@ export async function GET() {
         employeeId: userId,
       },
       select: {
-        equipment: {
+        Equipment: {
           select: {
             id: true,
             qrId: true,
@@ -36,8 +36,8 @@ export async function GET() {
     // Extract unique equipment items (filter out duplicates)
     const uniqueEquipment = new Map();
     recentEquipment.forEach((log) => {
-      if (log.equipment) {
-        uniqueEquipment.set(log.equipment.id, log.equipment);
+      if (log.Equipment) {
+        uniqueEquipment.set(log.Equipment.id, log.Equipment);
       }
     });
 

@@ -15,10 +15,10 @@ export async function GET() {
     const userCrewData = await prisma.user.findUnique({
       where: { id: userId },
       select: {
-        crews: {
+        Crews: {
           select: {
             id: true,
-            users: {
+            Users: {
               select: {
                 id: true,
                 firstName: true,
@@ -38,7 +38,7 @@ export async function GET() {
       );
     }
 
-    const crew = userCrewData?.crews?.[0]?.users || [];
+    const crew = userCrewData?.Crews?.[0]?.Users || [];
 
     return NextResponse.json(crew, {
       headers: {

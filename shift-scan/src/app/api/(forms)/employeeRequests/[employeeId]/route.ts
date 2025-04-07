@@ -33,35 +33,35 @@ export async function GET(
       const requests = await prisma.formSubmission.findMany({
         where: {
           status: "PENDING",
-          user: {
+          User: {
             NOT: {
               // Exclude the current user from the query
               id: userId,
             },
-            crews: {
+            Crews: {
               some: {
                 leadId: userId,
               },
             },
           },
-          approvals: {
+          Approvals: {
             none: {}, // only include requests that have no approvals
           },
         },
         include: {
-          formTemplate: {
+          FormTemplate: {
             select: {
               formType: true,
             },
           },
-          user: {
+          User: {
             select: {
               id: true,
               firstName: true,
               lastName: true,
             },
           },
-          approvals: {
+          Approvals: {
             select: {
               signedBy: true,
             },
@@ -81,12 +81,12 @@ export async function GET(
       const requests = await prisma.formSubmission.findMany({
         where: {
           status: { not: { in: ["PENDING", "DRAFT"] } },
-          user: {
+          User: {
             NOT: {
               // Exclude the current user from the query
               id: userId,
             },
-            crews: {
+            Crews: {
               some: {
                 leadId: userId,
               },
@@ -95,21 +95,21 @@ export async function GET(
         },
 
         include: {
-          formTemplate: {
+          FormTemplate: {
             select: {
               formType: true,
             },
           },
-          user: {
+          User: {
             select: {
               firstName: true,
               lastName: true,
             },
           },
-          approvals: {
+          Approvals: {
             select: {
               id: true,
-              approver: {
+              Approver: {
                 select: {
                   firstName: true,
                   lastName: true,
@@ -133,34 +133,34 @@ export async function GET(
         where: {
           status: "PENDING",
           userId: employeeId,
-          user: {
+          User: {
             NOT: {
               // Exclude the current user from the query
               id: userId,
             },
-            crews: {
+            Crews: {
               some: {
                 leadId: userId,
               },
             },
           },
-          approvals: {
+          Approvals: {
             none: {}, // only include requests that have no approvals
           },
         },
         include: {
-          formTemplate: {
+          FormTemplate: {
             select: {
               formType: true,
             },
           },
-          user: {
+          User: {
             select: {
               firstName: true,
               lastName: true,
             },
           },
-          approvals: {
+          Approvals: {
             select: {
               signedBy: true,
             },
