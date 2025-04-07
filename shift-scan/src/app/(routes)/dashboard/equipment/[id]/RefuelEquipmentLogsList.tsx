@@ -12,7 +12,7 @@ type Refueled = {
   employeeEquipmentLogId: string | null;
   truckingLogId: string | null;
   gallonsRefueled: number | null;
-  milesAtfueling: number | null;
+  milesAtFueling: number | null;
   tascoLogId: string | null;
 };
 
@@ -50,7 +50,7 @@ export default function RefuelEquipmentLogsList({
     const formData = new FormData();
     formData.append("id", rL.id);
     formData.append("gallonsRefueled", rL.gallonsRefueled?.toString() || "");
-    formData.append("milesAtfueling", rL.milesAtfueling?.toString() || "");
+    formData.append("milesAtfueling", rL.milesAtFueling?.toString() || "");
     await updateRefuelLog(formData);
   };
 
@@ -88,9 +88,9 @@ export default function RefuelEquipmentLogsList({
                   type="number"
                   name="currentMileage"
                   placeholder="Current Mileage"
-                  value={rL.milesAtfueling || ""}
+                  value={rL.milesAtFueling || ""}
                   onChange={(e) =>
-                    handleFieldChange(index, "milesAtfueling", e.target.value)
+                    handleFieldChange(index, "milesAtFueling", e.target.value)
                   }
                   onBlur={() => handleSave(rL)}
                   className="border-none text-xs py-2 focus:outline-none focus:ring-0"

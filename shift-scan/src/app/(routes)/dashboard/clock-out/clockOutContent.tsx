@@ -36,7 +36,7 @@ export default function ClockOutContent() {
       try {
         const response = await fetch("/api/getComment");
         const data = await response.json();
-        setCommentsValue(data.comment);
+        setCommentsValue(data.comment || "");
       } catch (error) {
         console.error("Error fetching comments:", error);
       }

@@ -163,8 +163,10 @@ export default function CodeFinder({
             className="h-full w-full border-[3px] border-b-none border-black rounded-b-none justify-center items-center"
             onClick={clearSelection}
           >
-            <Titles size={"h3"} className="text-center text-black">
-              {selectTerm.split("-")[1] || selectTerm}
+            <Titles size={"h4"} className="text-center text-black">
+              {selectTerm.length > 21
+                ? selectTerm.slice(0, 21) + "..."
+                : selectTerm}
             </Titles>
           </Holds>
         ) : (
