@@ -35,12 +35,12 @@ export async function fetchEq(employeeId: string, date: string) {
       },
     },
     include: {
-      equipment: true,
+      Equipment: true,
     },
   });
 
   // Ensure no null values are present
-  const filteredEqLogs = eqlogs.filter((log) => log.equipment !== null);
+  const filteredEqLogs = eqlogs.filter((log) => log.Equipment !== null);
 
   console.log("\n\n\nEquipment Logs:", filteredEqLogs);
   revalidatePath("/dashboard/myTeam/" + employeeId);
@@ -174,12 +174,16 @@ export async function createEquipment(formData: FormData) {
         qrId,
         equipmentTag: equipmentTag,
         status: EQstatus,
-        make: make || null,
-        model: model || null,
-        year: year || null,
-        licensePlate: licensePlate || null,
-        registrationExpiration: registrationExpiration || null,
-        mileage: mileage || null,
+        equipmentVehicleInfo: {
+          create: {
+            make: make || null,
+            model: model || null,
+            year: year || null,
+            licensePlate: licensePlate || null,
+            registrationExpiration: registrationExpiration || null,
+            mileage: mileage || null,
+          },
+        },
       },
     });
     revalidatePath("/dashboard/qr-generator");
@@ -334,7 +338,7 @@ export async function deleteMaintenanceInEquipment(id: string) {
     // First find the log to get the maintenanceId
     const log = await prisma.employeeEquipmentLog.findUnique({
       where: { id },
-      include: { maintenanceId: true },
+      include: { MaintenanceId: true },
     });
 
     if (!log) {
@@ -344,10 +348,10 @@ export async function deleteMaintenanceInEquipment(id: string) {
     // Use a transaction to ensure both operations succeed or fail together
     await prisma.$transaction([
       // Delete the maintenance record if it exists
-      ...(log.maintenanceId
+      ...(log.MaintenanceId
         ? [
             prisma.maintenance.delete({
-              where: { id: log.maintenanceId.id },
+              where: { id: log.MaintenanceId.id },
             }),
           ]
         : []),
@@ -357,7 +361,7 @@ export async function deleteMaintenanceInEquipment(id: string) {
         where: { id },
         data: {
           isFinished: true,
-          maintenanceId: { disconnect: true }, // Proper way to remove relation
+          MaintenanceId: { disconnect: true }, // Proper way to remove relation
         },
       }),
 
@@ -453,15 +457,17 @@ export async function updateEquipment(formData: FormData) {
         name: formData.get("name") as string,
         description: formData.get("description") as string,
         equipmentTag: equipmentTag || undefined,
-        lastInspection: formData.get("lastInspection") as string,
-        lastRepair: formData.get("lastRepair") as string,
         status: equipmentStatus || undefined,
-        make: formData.get("make") as string,
-        model: formData.get("model") as string,
-        year: formData.get("year") as string,
-        licensePlate: formData.get("licensePlate") as string,
-        registrationExpiration: converted || null,
-        mileage: Number(formData.get("mileage") as string),
+        equipmentVehicleInfo: {
+          update: {
+            make: formData.get("make") as string,
+            model: formData.get("model") as string,
+            year: formData.get("year") as string,
+            licensePlate: formData.get("licensePlate") as string,
+            registrationExpiration: converted || null,
+            mileage: Number(formData.get("mileage") as string),
+          },
+        },
       },
     });
     revalidatePath("/admin/assets");

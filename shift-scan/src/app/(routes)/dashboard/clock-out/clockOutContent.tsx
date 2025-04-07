@@ -32,6 +32,19 @@ export default function ClockOutContent() {
   };
 
   useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const response = await fetch("/api/getComment");
+        const data = await response.json();
+        setCommentsValue(data.comment);
+      } catch (error) {
+        console.error("Error fetching comments:", error);
+      }
+    };
+    fetchComments();
+  }, []);
+
+  useEffect(() => {
     // Fetching the signature only once
     const fetchSignature = async () => {
       setLoading(true);
@@ -76,6 +89,7 @@ export default function ClockOutContent() {
   const handleSubmitInjury = async () => {
     setPath("clockOut");
   };
+
   // step 0  is the comment step for clocking out
   if (step === 0) {
     return (

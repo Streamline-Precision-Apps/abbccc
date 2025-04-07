@@ -1,7 +1,6 @@
 "use client";
 import "@/app/globals.css";
 import { useState, ChangeEvent, Dispatch, SetStateAction } from "react";
-import { CreateInjuryForm } from "@/actions/injuryReportActions";
 import { useTranslations } from "next-intl";
 import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";
@@ -72,7 +71,7 @@ export const InjuryReportContent = ({
     formData.append("userId", id);
 
     try {
-      await CreateInjuryForm(formData);
+      // add a way to report injury
       setError(undefined);
       handleNextStep();
     } catch (error) {

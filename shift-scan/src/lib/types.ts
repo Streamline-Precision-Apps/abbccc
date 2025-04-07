@@ -308,7 +308,6 @@ export type JobCode = {
 export type CostCodes = {
   id: string;
   name: string;
-  description: string;
 };
 
 export type EquipmentCode = {
@@ -659,8 +658,7 @@ export type AssetJobsite = {
   comment: string;
 };
 
-
-export type RefuelLogType = 'tasco' | 'equipment';
+export type RefuelLogType = "tasco" | "equipment";
 
 export interface RefuelLogBase {
   id: string;

@@ -182,8 +182,8 @@ export default function NewClockProcess({
         setClockInRole(prevWorkRole);
 
         // Handle Tasco-specific data
-        if (response.tascoLogs && response.tascoLogs.length > 0) {
-          const firstTascoLog = response.tascoLogs[0];
+        if (response.TascoLogs && response.TascoLogs.length > 0) {
+          const firstTascoLog = response.TascoLogs[0];
 
           // Set labor type if exists
           if (firstTascoLog.laborType) {
@@ -204,14 +204,14 @@ export default function NewClockProcess({
           }
 
           // Combine all relevant types for role types
-          const workTypes = response.tascoLogs.map((log) => log.laborType);
+          const workTypes = response.TascoLogs.map((log) => log.laborType);
 
           setClockInRoleTypes(workTypes.toString());
         }
 
         // Handle Truck-specific data
-        if (response.truckingLogs && response.truckingLogs.length > 0) {
-          const firstTruckLog = response.truckingLogs[0];
+        if (response.TruckingLogs && response.TruckingLogs.length > 0) {
+          const firstTruckLog = response.TruckingLogs[0];
 
           // Set labor type if exists
           if (firstTruckLog.laborType) {
@@ -224,9 +224,9 @@ export default function NewClockProcess({
             setTruck(firstTruckLog.equipmentId);
           }
 
-          const workTypes = response.truckingLogs
-            .map((log) => log.laborType)
-            .filter(Boolean);
+          const workTypes = response.TruckingLogs.map(
+            (log) => log.laborType
+          ).filter(Boolean);
           setClockInRoleTypes(workTypes.toString());
         }
 

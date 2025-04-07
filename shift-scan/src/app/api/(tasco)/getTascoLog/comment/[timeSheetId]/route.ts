@@ -11,7 +11,10 @@ export async function GET(
 
   // Ensure timeSheetId is provided and is a valid string
   if (!timeSheetId || typeof timeSheetId !== "string") {
-    return NextResponse.json({ error: "Invalid or missing timeSheetId" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid or missing timeSheetId" },
+      { status: 400 }
+    );
   }
 
   try {
@@ -28,14 +31,18 @@ export async function GET(
       },
     });
 
-    
     // If no notes are found, return a 404
     if (!notes) {
-      return NextResponse.json({ error: "No matching record found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "No matching record found" },
+        { status: 404 }
+      );
     }
-    const { comment } = notes?.TimeSheet || {};
-    if (comment === null || comment === undefined) {
-      return "";
+
+    const comment = notes?.TimeSheet.comment;
+
+    if (comment === null) {
+      return NextResponse.json("");
     }
 
     return NextResponse.json(comment);

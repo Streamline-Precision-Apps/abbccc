@@ -6,6 +6,7 @@ import RefuelLogsList from "./RefuelLogsList";
 import { Refueled } from "@/lib/types";
 import { createRefuelLog } from "@/actions/tascoActions";
 import { useTranslations } from "next-intl";
+import { Images } from "@/components/(reusable)/images";
 
 export default function RefuelLayout({
   tascoLog,
@@ -22,8 +23,8 @@ export default function RefuelLayout({
 
     try {
       const newRefuelLog = await createRefuelLog({
-        type: 'tasco',
-        parentId: tascoLog
+        type: "tasco",
+        parentId: tascoLog,
       });
 
       setRefuelLogs((prev) => [
@@ -33,7 +34,7 @@ export default function RefuelLayout({
           employeeEquipmentLogId: newRefuelLog.employeeEquipmentLogId ?? "",
           tascoLogId: newRefuelLog.tascoLogId ?? "",
           gallonsRefueled: newRefuelLog.gallonsRefueled ?? 0,
-          milesAtfueling: newRefuelLog.milesAtfueling ?? 0,
+          milesAtFueling: newRefuelLog.milesAtFueling ?? 0,
         },
       ]);
     } catch (error) {
@@ -43,7 +44,7 @@ export default function RefuelLayout({
 
   return (
     <Holds className="w-full h-full">
-      <Grids rows={"8"}>
+      <Grids rows={"8"} gap={"5"}>
         <Holds position={"row"} className="w-full h-full row-start-1 row-end-2">
           <Holds size={"80"}>
             <Texts size={"p3"} className="font-bold">
@@ -51,12 +52,13 @@ export default function RefuelLayout({
             </Texts>
           </Holds>
           <Holds size={"20"}>
-            <Buttons
-              background={"green"}
-              className="py-1.5"
-              onClick={AddRefuelLog}
-            >
-              +
+            <Buttons background={"green"} onClick={AddRefuelLog}>
+              <Images
+                titleImg="/plus.svg"
+                titleImgAlt="Add Icon"
+                className="mx-auto"
+                size={"50"}
+              />
             </Buttons>
           </Holds>
         </Holds>
