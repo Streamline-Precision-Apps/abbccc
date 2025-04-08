@@ -12,6 +12,7 @@ import ReactCrop, {
 import SetCanvasPreview from "./setCanvasPreview"; // Import your canvas preview function
 import { Texts } from "../(reusable)/texts";
 import { Holds } from "../(reusable)/holds";
+import { Titles } from "../(reusable)/titles";
 
 interface CameraComponentProps {
   setBase64String: Dispatch<SetStateAction<string>>;
@@ -146,12 +147,15 @@ const CameraComponent: React.FC<CameraComponentProps> = ({
         ></canvas>
       </Holds>
       {imageSrc === null && (
-        <Holds size={"50"} position={"row"} className="mb-5 mx-auto">
+        <Holds position={"row"} className="mb-5 mx-auto">
           <Buttons
             background={cameraActive ? "red" : "green"}
             onClick={toggleCamera}
+            className="py-2"
           >
-            {cameraActive ? `${t("HideCamera")}` : `${t("ShowCamera")}`}
+            <Titles size={"h4"}>
+              {cameraActive ? `${t("HideCamera")}` : `${t("ShowCamera")}`}
+            </Titles>
           </Buttons>
           {cameraActive && (
             <Buttons background="green" onClick={takePicture}>

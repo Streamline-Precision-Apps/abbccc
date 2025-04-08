@@ -1,23 +1,15 @@
-// This Table stores a collection of company Estimating codes. The purpose is to help in billing process. Very import for our project.
 model CostCode {
-    id          String      @id @default(cuid())
-    name        String      @unique // e.g. the code #01.20 
-    description String // the description of the code - e.g. "Process Material"
-    createdAt   DateTime    @default(now())
-    updatedAt   DateTime    @default(now()) @updatedAt
-    CCTags      CCTag[]
-    Timesheet   TimeSheet[]
-
-    @@unique([name, description])
+  id         String      @id @default(cuid())
+  name       String      @unique
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @default(now()) @updatedAt
+  Timesheets TimeSheet[]
+  CCTags     CCTag[]     @relation("CCTagToCostCode")
 }
 
-// cost code tags
 model CCTag {
-    id          String     @id @default(cuid())
-    name        String     @unique
-    description String?
-    jobsites    Jobsite[]
-    costCodes   CostCode[]
-
-    @@unique([name, description])
+  id        String     @id @default(cuid())
+  name      String     @unique
+  CostCodes CostCode[] @relation("CCTagToCostCode")
+  Jobsites  Jobsite[]  @relation("CCTagToJobsite")
 }

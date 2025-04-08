@@ -1,9 +1,6 @@
 "use client";
-
-import { useEffect, useState } from "react";
+import { use, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-
-// Components
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
@@ -15,18 +12,13 @@ import { Texts } from "@/components/(reusable)/texts";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { Inputs } from "@/components/(reusable)/inputs";
-import { Images } from "@/components/(reusable)/images";
-
-// Utils & Actions
 import { getFormattedDuration } from "@/utils/getFormattedDuration";
 import { startEngineerProject } from "@/actions/mechanicActions";
 
-// Types
-import { Priority } from "@/lib/types";
 import { useSession } from "next-auth/react";
-import { set } from "date-fns";
 import { setMechanicProjectID } from "@/actions/cookieActions";
 import { useTranslations } from "next-intl";
+import { format } from "date-fns";
 
 type Equipment = {
   id: string;
@@ -54,19 +46,33 @@ type Projects = {
   additionalInfo: string;
   selected: boolean;
   repaired: boolean;
+  createdBy: string;
+  createdAt: string | undefined;
   priority: Priority;
   delay: Date | null;
   maintenanceLogs: MaintenanceLog[];
   equipment: Equipment;
 };
 
-export default function MechanicPriority() {
-  const router = useRouter();
+enum Priority {
+  LOW = "LOW",
+  MEDIUM = "MEDIUM",
+  HIGH = "HIGH",
+  DELAYED = "DELAYED",
+  PENDING = "PENDING",
+  TODAY = "TODAY",
+}
 
-  // State declarations
-  const [loading, setLoading] = useState(false);
-  const [projects, setProjects] = useState<Projects[]>([]);
-  const [timeSheetId, setTimeSheetId] = useState<string | null>(null);
+export default function MechanicPriority({
+  loading,
+  projects,
+  timeSheetId,
+}: {
+  loading: boolean;
+  projects: Projects[];
+  timeSheetId: string | null;
+}) {
+  const router = useRouter();
   const [activeUsers, setActiveUsers] = useState<
     {
       id: string;
@@ -86,42 +92,6 @@ export default function MechanicPriority() {
   const [currentPage, setCurrentPage] = useState(1);
   const workersPerPage = 1;
   const [endTime] = useState<string>(new Date().toISOString());
-
-  // Fetch projects from API on mount
-  useEffect(() => {
-    const fetchProjects = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch("/api/getMaintenanceProjects");
-        const data = await response.json();
-        const filteredData = data.filter(
-          (project: Projects) => project.selected && project.repaired === false
-        );
-        setProjects(filteredData);
-      } catch (error) {
-        console.error(t("ErrorFetchingProjects"), error);
-      }
-      setLoading(false);
-    };
-
-    fetchProjects();
-  }, [t]);
-
-  useEffect(() => {
-    const fetchTimeSheet = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch("/api/getRecentTimecard");
-        const data = await response.json();
-        setTimeSheetId(data.id);
-      } catch (error) {
-        console.error(t("ErrorFetchingTimeSheet"), error);
-      }
-      setLoading(false);
-    };
-
-    fetchTimeSheet();
-  }, []);
 
   // Update previewed project data when projectPreviewId changes
   useEffect(() => {
@@ -148,12 +118,37 @@ export default function MechanicPriority() {
     projects.push({ id: "" } as Projects);
   }
 
-  const totalPages = activeUsers.length / workersPerPage;
+  // Pagination constants
   const startIndex = (currentPage - 1) * workersPerPage;
   const currentWorker = activeUsers.slice(
     startIndex,
     startIndex + workersPerPage
   );
+
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const minSwipeDistance = 50;
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    if (distance > minSwipeDistance && currentPage < activeUsers.length) {
+      setCurrentPage(currentPage + 1); // Swipe left
+    }
+    if (distance < -minSwipeDistance && currentPage > 1) {
+      setCurrentPage(currentPage - 1); // Swipe right
+    }
+    setTouchStart(null);
+    setTouchEnd(null);
+  };
 
   // Start project action
   const StartLogAndSaveProject = async (
@@ -178,17 +173,28 @@ export default function MechanicPriority() {
     }
   };
 
+  useEffect(() => {
+    // Clear any existing interval
+    const interval = setInterval(() => {
+      setCurrentPage((prevPage) =>
+        prevPage < activeUsers.length ? prevPage + 1 : 1
+      );
+    }, 5000); // Rotate every 5 seconds
+
+    return () => clearInterval(interval); // Cleanup interval on unmount or page change
+  }, [activeUsers.length, currentPage]); // Dependency includes currentPage to reset on change
+
   // Render loading state if still fetching projects
   if (loading) {
     return (
       <Holds background="white" className="row-span-7 h-full animate-pulse">
-        <Holds className="no-scrollbar overflow-y-auto">
-          <Contents width="section" className="py-5">
+        <Holds className="h-full no-scrollbar overflow-y-auto">
+          <Contents width="section" className="mb-5">
             {projects.map((_, index) => (
               <Holds
                 key={`placeholder-${index}`}
                 background="lightGray"
-                className="h-1/6 my-2 py-7"
+                className="h-1/6 my-2 py-2"
               />
             ))}
           </Contents>
@@ -198,16 +204,16 @@ export default function MechanicPriority() {
   }
 
   return (
-    <Holds background="white" className="row-span-7 h-full">
-      <Holds className="no-scrollbar overflow-y-auto">
-        <Contents width="section" className="py-5">
+    <Holds background="white" className="row-span-7 h-full ">
+      <Holds className="h-full w-full no-scrollbar overflow-y-auto ">
+        <Contents width="section" className="mb-5">
           {projects.map((project: Projects, index) => {
             if (project.id === "") {
               return (
                 <Holds
                   key={`placeholder-${index}`}
                   background="lightGray"
-                  className="h-1/6 my-2 py-7"
+                  className="h-1/6 my-2 py-2"
                 />
               );
             }
@@ -218,7 +224,7 @@ export default function MechanicPriority() {
             return (
               <Holds
                 key={`placeholder-${index}`}
-                className="h-full relative py-3"
+                className="h-1/6 relative py-3"
               >
                 {isActive && !project.delay && (
                   <Holds
@@ -246,9 +252,13 @@ export default function MechanicPriority() {
                     setProjectPreviewId(project.id);
                     setIsOpenProjectPreview(true);
                   }}
-                  className="w-full h-full py-4 rounded-[10px]"
+                  className="w-full h-full py-3 rounded-[10px]"
                 >
-                  <Titles size="h2">{project?.equipment?.name}</Titles>
+                  <Titles size="h5">
+                    {project.equipment?.name.length > 45
+                      ? project?.equipment?.name.slice(0, 45) + "..."
+                      : project?.equipment?.name}
+                  </Titles>
                 </Buttons>
               </Holds>
             );
@@ -264,10 +274,10 @@ export default function MechanicPriority() {
             setIsOpenProjectPreview(false);
           }}
         >
-          <Holds background="white" className="h-full">
-            <Grids rows="8" gap="5">
+          <Holds background="white" className="h-full py-5">
+            <Grids rows="7" gap="3">
               {/* Modal Header */}
-              <Holds className="row-span-1 h-full justify-center">
+              <Holds className="row-span-1 h-full w-full justify-center">
                 <TitleBoxes
                   title={
                     previewedProjectData?.equipment?.name
@@ -287,46 +297,24 @@ export default function MechanicPriority() {
               </Holds>
 
               {/* Modal Content */}
-              <Holds className="flex justify-center items-center h-full w-full row-start-2 row-end-8">
+              <Holds className="flex justify-center items-center h-full w-full row-start-2 row-end-7">
                 <Contents width="section">
-                  <Holds className="w-full relative">
-                    {/* Left Pagination Button */}
-                    <Buttons
-                      className={`absolute top-[30%] left-0 w-9 h-9 flex items-center justify-center ${
-                        currentPage <= 1 ? "hidden" : ""
-                      }`}
-                      onClick={() => {
-                        setCurrentPage(currentPage - 1);
-                      }}
-                      disabled={currentPage <= 1}
-                    >
-                      <Images titleImg="/backArrow.svg" titleImgAlt="Back" />
-                    </Buttons>
-
-                    {/* Right Pagination Button */}
-                    <Buttons
-                      className={`absolute top-[30%] right-0 w-9 h-9 flex items-center justify-center ${
-                        currentPage <= 1 ? "hidden" : ""
-                      }`}
-                      onClick={() => {
-                        setCurrentPage(currentPage + 1);
-                      }}
-                      disabled={currentPage === activeUsers.length}
-                    >
-                      <Images titleImg="/forwardArrow.svg" titleImgAlt="Next" />
-                    </Buttons>
-
-                    <Labels position="left" size="p6">
-                      {t("ActiveWorkers")}
-                    </Labels>
-
+                  <Labels position="left" size="p6">
+                    {t("ActiveWorkers")}
+                  </Labels>
+                  <Holds
+                    onTouchStart={handleTouchStart}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={handleTouchEnd}
+                    background={
+                      currentWorker.length > 0 ? `white` : `lightGray`
+                    }
+                    className={`w-full relative rounded-[10px] border-[3px] border-black `}
+                  >
                     {currentWorker.length > 0 ? (
                       currentWorker.map((user, index) => (
-                        <Holds key={user.id || index}>
-                          <Holds
-                            background="lightGray"
-                            className="p-4 flex items-center gap-2"
-                          >
+                        <Holds key={user.id || index} className="w-full h-full">
+                          <Holds className="py-3 flex items-center gap-2 ">
                             <img
                               src={user.image || "/person.svg"}
                               alt={user.name}
@@ -357,28 +345,26 @@ export default function MechanicPriority() {
                                 )}
                               />
 
-                              <Holds
-                                position="row"
-                                className={`flex items-center justify-center ${
-                                  currentPage <= 1 ? "hidden" : ""
-                                }`}
-                              >
-                                {Array.from({ length: totalPages }).map(
-                                  (_, index) => (
-                                    <Texts
+                              {activeUsers.length > 1 && (
+                                <Holds
+                                  position="row"
+                                  className={`flex items-center justify-center gap-2 `}
+                                >
+                                  {Array.from({
+                                    length: activeUsers.length,
+                                  }).map((_, index) => (
+                                    <Holds
                                       key={index}
-                                      className={`text-xxl ${
+                                      className={`w-2 h-2 rounded-full border-[2px] border-black  ${
                                         index + 1 === currentPage
-                                          ? "text-app-blue"
-                                          : "text-app-gray"
-                                      }`}
-                                      size="p1"
-                                    >
-                                      .
-                                    </Texts>
-                                  )
-                                )}
-                              </Holds>
+                                          ? "bg-app-blue"
+                                          : "bg-white"
+                                      }
+                                        `}
+                                    />
+                                  ))}
+                                </Holds>
+                              )}
                             </Holds>
                           </Holds>
                         </Holds>
@@ -393,8 +379,8 @@ export default function MechanicPriority() {
                   </Holds>
 
                   {/* Problem Received */}
-                  <Holds>
-                    <Labels htmlFor="equipmentIssue" size="p6">
+                  <Holds className="relative">
+                    <Labels htmlFor="equipmentIssue" size="p5">
                       {t("ProblemReceived")}
                     </Labels>
                     <TextAreas
@@ -402,35 +388,59 @@ export default function MechanicPriority() {
                       id="equipmentIssue"
                       name="equipmentIssue"
                       value={previewedProjectData?.equipmentIssue}
-                      rows={2}
+                      rows={4}
+                      className="text-sm"
                     />
+                    {previewedProjectData?.createdBy && (
+                      <span className="absolute top-4 right-2 text-[8px]">
+                        {`
+                      ${t("CreatedBy")} ${previewedProjectData?.createdBy}
+                      ${t("On")}
+                      ${format(
+                        new Date(previewedProjectData?.createdAt ?? ""),
+                        "MM/dd/yy"
+                      )}  
+                      `}
+                      </span>
+                    )}
                   </Holds>
 
                   {/* Additional Info */}
                   <Holds>
-                    <Labels htmlFor="additionalInfo" size="p6">
-                      {t("AdditionalInfo")}
+                    <Labels htmlFor="additionalInfo" size="p5">
+                      {t("AdditionalNotes")}
                     </Labels>
                     <TextAreas
                       disabled
                       id="additionalInfo"
                       name="additionalInfo"
                       value={previewedProjectData?.additionalInfo}
-                      rows={2}
+                      rows={3}
+                      className="text-sm"
                     />
                   </Holds>
                 </Contents>
               </Holds>
               {/* Modal Footer with Start Project Button */}
-              <Holds className="flex justify-center items-center row-start-8 row-end-9 mb-5">
+              <Holds className="flex justify-center items-center row-start-7 row-end-8 h-full w-full">
                 <Contents width="section">
-                  <Buttons
-                    background="green"
-                    className="py-3"
-                    onClick={StartLogAndSaveProject}
-                  >
-                    <Titles size="h2">{t("StartProject")}</Titles>
-                  </Buttons>
+                  {activeUsers.length === 0 ? (
+                    <Buttons
+                      background="green"
+                      className="py-3"
+                      onClick={StartLogAndSaveProject}
+                    >
+                      <Titles size="h2">{t("StartProject")}</Titles>
+                    </Buttons>
+                  ) : (
+                    <Buttons
+                      background="orange"
+                      className="py-3"
+                      onClick={StartLogAndSaveProject}
+                    >
+                      <Titles size="h2">{t("JoinProject")}</Titles>
+                    </Buttons>
+                  )}
                 </Contents>
               </Holds>
             </Grids>

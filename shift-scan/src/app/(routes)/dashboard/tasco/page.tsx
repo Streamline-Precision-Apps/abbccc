@@ -9,7 +9,6 @@ import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { redirect } from "next/navigation";
 import TascoClientPage from "./components/tascoClientPage";
 import { cookies } from "next/headers";
-import TascoEQClientPage from "./components/tascoEQClientPage";
 
 export default async function TascoPage() {
   const session = await auth();
@@ -23,31 +22,22 @@ export default async function TascoPage() {
     return (
       <Bases>
         <Contents>
-          <Grids rows={"6"} gap={"5"} className="h-full"> 
-            <Holds
-              background={"white"}
-              className="row-span-1 h-full"
-            >
+          <Grids rows={"6"} gap={"5"} className="h-full">
+            <Holds background={"white"} className="row-span-1 h-full">
               <TitleBoxes
                 title="Tasco"
-                titleImg="/Tasco.svg"
+                titleImg="/tasco.svg"
                 titleImgAlt="Tasco"
               />
             </Holds>
             <Holds background={"none"} className="row-span-5 h-full">
-              {laborType === "equipmentOperator" ? (
-                <TascoEQClientPage />
-              ) : laborType === "" ? null : (
-                <TascoClientPage />
-              )
-              }
+              <TascoClientPage />
             </Holds>
           </Grids>
         </Contents>
       </Bases>
     );
   } else {
-    // if (laborType === "") {
     return (
       <Bases>
         <Contents>
@@ -58,14 +48,12 @@ export default async function TascoPage() {
             >
               <TitleBoxes
                 title="Tasco"
-                titleImg="/Tasco.svg"
+                titleImg="/tasco.svg"
                 titleImgAlt="Tasco"
               />
             </Holds>
-            <Holds background={"white"} className="row-span-5 h-full">
-              <Contents width={"section"}>
-                <TascoClientPage />
-              </Contents>
+            <Holds className="row-span-5 h-full">
+              <TascoClientPage />
             </Holds>
           </Grids>
         </Contents>

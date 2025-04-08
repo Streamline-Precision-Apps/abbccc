@@ -20,6 +20,13 @@ import {
 import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
 import { useOperator } from "@/app/context/operatorContext";
+import { Titles } from "../(reusable)/titles";
+import {
+  setJobSite,
+  setCostCode as setCostCodeCookie,
+  setEquipment,
+  setTruck,
+} from "@/actions/cookieActions";
 
 type Option = {
   code: string;
@@ -29,18 +36,24 @@ type Option = {
 type Props = {
   datatype: string;
   setSelectedOpt: React.Dispatch<React.SetStateAction<boolean>>;
-  setScannedId: React.Dispatch<React.SetStateAction<string | null>> | undefined;
+  setScannedId?: React.Dispatch<React.SetStateAction<string | null>>;
+  initialValue?: Option | null; // Add this prop
+  initialSearchTerm?: string; // Add this prop
 };
 
 export default function CodeFinder({
   datatype,
   setSelectedOpt,
   setScannedId,
+  initialValue = null,
+  initialSearchTerm = "",
 }: Props) {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectTerm, setSelectTerm] = useState("");
-  const [selectedOption, setSelectedOption] = useState<Option | null>(null);
-  const [selectedTerm, setSelectedTerm] = useState(false);
+  const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
+  const [selectTerm, setSelectTerm] = useState(initialSearchTerm);
+  const [selectedOption, setSelectedOption] = useState<Option | null>(
+    initialValue
+  );
+  const [selectedTerm, setSelectedTerm] = useState(!!initialValue);
   const t = useTranslations("Clock");
 
   const { setScanResult } = useScanData();
@@ -116,28 +129,63 @@ export default function CodeFinder({
     setSearchTerm(e.target.value);
   };
 
-  const clearSelection = () => {
+  const clearSelection = async () => {
     setSelectedOption(null);
     setSearchTerm("");
     setSelectTerm("");
     setSelectedTerm(false);
+    setSelectedOpt(false);
+    if (datatype === "equipment") {
+      await setEquipment("");
+    }
+    if (datatype === "jobsite") {
+      await setJobSite("");
+    }
+    if (datatype === "costcode") {
+      await setCostCodeCookie("");
+    }
+    if (
+      datatype === "jobsite-mechanic" ||
+      datatype === "jobsite-tasco" ||
+      datatype === "jobsite-truck"
+    ) {
+      await setTruck("");
+      await setEquipment("");
+    }
   };
 
   return (
-    <Grids rows={"5"} gap={"5"} className="h-full w-full">
+    <Grids rows={"8"} className="h-full w-full">
       <Holds className="row-span-1 h-full">
-        <SearchBar
-          selected={selectedTerm}
-          placeholder={t(`search-${datatype}`)}
-          searchTerm={searchTerm}
-          selectTerm={selectTerm}
-          onSearchChange={handleSearchChange}
-          setSearchTerm={setSearchTerm}
-          setSelectedTerm={setSelectedTerm}
-          clearSelection={clearSelection}
-        />
+        {selectedOption ? (
+          <Holds
+            background={"green"}
+            className="h-full w-full border-[3px] border-b-none border-black rounded-b-none justify-center items-center"
+            onClick={clearSelection}
+          >
+            <Titles size={"h4"} className="text-center text-black">
+              {selectTerm.length > 21
+                ? selectTerm.slice(0, 21) + "..."
+                : selectTerm}
+            </Titles>
+          </Holds>
+        ) : (
+          <SearchBar
+            selected={selectedTerm}
+            placeholder={t(`search-${datatype}`)}
+            searchTerm={searchTerm}
+            selectTerm={selectTerm}
+            onSearchChange={handleSearchChange}
+            setSearchTerm={setSearchTerm}
+            setSelectedTerm={setSelectedTerm}
+            clearSelection={clearSelection}
+          />
+        )}
       </Holds>
-      <Holds className="row-span-4 h-full border-[3px] border-black rounded-[10px] overflow-y-auto no-scrollbar">
+      <Holds
+        background={"darkBlue"}
+        className="row-span-7 h-full border-[3px]  border-black rounded-[10px] rounded-t-none overflow-y-auto no-scrollbar"
+      >
         <CustomSelect
           options={options}
           onOptionSelect={handleOptionSelect}

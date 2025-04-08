@@ -36,9 +36,9 @@ export default function CodeStep({
   };
 
   return (
-    <Grids rows={"7"} gap={"5"} className="h-full w-full">
+    <Grids rows={"8"} gap={"5"} className="h-full w-full">
       {backArrow && (
-        <Holds className="h-full  row-start-1 row-end-2">
+        <Holds className="h-full row-start-1 row-end-2">
           <TitleBoxes
             title={t(`Title-${datatype}`)}
             titleImg="/mechanic.svg"
@@ -48,7 +48,13 @@ export default function CodeStep({
           />
         </Holds>
       )}
-      <Holds className="row-start-2 row-end-7 h-full w-full pt-5">
+      <Holds
+        className={
+          handleNextStep
+            ? "row-start-2 row-end-8 h-full w-full pt-5"
+            : "row-start-2 row-end-9 h-full w-full pt-5"
+        }
+      >
         <CodeFinder
           setScannedId={setScannedId}
           datatype={datatype}
@@ -56,7 +62,7 @@ export default function CodeStep({
         />
       </Holds>
       {handleNextStep && (
-        <Holds className="row-start-7 row-end-8 h-full w-full justify-center">
+        <Holds className="row-start-8 row-end-9 h-full w-full justify-center">
           <StepButtons
             handleNextStep={handleNextStep}
             disabled={!selectedOpt}

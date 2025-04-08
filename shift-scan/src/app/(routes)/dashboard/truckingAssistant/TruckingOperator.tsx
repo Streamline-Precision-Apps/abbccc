@@ -15,7 +15,7 @@ type Refueled = {
   employeeEquipmentLogId: string | null;
   truckingLogId: string | null;
   gallonsRefueled: number | null;
-  milesAtfueling: number | null;
+  milesAtFueling: number | null;
   tascoLogId: string | null;
 };
 
@@ -33,9 +33,9 @@ export default function TruckOperator() {
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(1);
   const [refuelLogs, setRefuelLogs] = useState<Refueled[]>();
-  const [timeSheetId, setTimeSheetId] = useState<string>();
   const [notes, setNotes] = useState<string>("");
   const [material, setMaterial] = useState<Material[]>();
+  const [timeSheetId, setTimeSheetId] = useState<string>();
 
   const [isComplete, setIsComplete] = useState({
     haulingLogsTab: true,
@@ -56,7 +56,7 @@ export default function TruckOperator() {
         refuelLogs &&
           refuelLogs.length >= 0 &&
           refuelLogs.every(
-            (item) => item.gallonsRefueled && item.milesAtfueling
+            (item) => item.gallonsRefueled && item.milesAtFueling
           )
       ),
     });
@@ -70,11 +70,11 @@ export default function TruckOperator() {
     const fetchTruckingLog = async () => {
       try {
         const res = await fetch(`/api/getTruckingLogs/truckingId`);
-        if (!res.ok) throw new Error("Failed to fetch Trucking Log");
+        if (!res.ok) throw new Error(t("FailedToFetchTruckingLogs"));
         const data = await res.json();
         setTimeSheetId(data);
       } catch (error) {
-        console.error("Error fetching Trucking Log:", error);
+        console.error(t("ErrorFetchingTruckingLogs"), error);
       }
     };
 
@@ -100,7 +100,7 @@ export default function TruckOperator() {
         setRefuelLogs(data[1]);
         setMaterial(data[2]);
       } catch (error) {
-        console.error("Error fetching Data:", error);
+        console.error(t("FetchingError"), error);
       } finally {
         setIsLoading(false);
       }

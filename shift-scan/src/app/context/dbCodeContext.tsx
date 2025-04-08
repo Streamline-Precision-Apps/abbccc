@@ -32,8 +32,6 @@ const CostCodesSchema = z.array(
   z.object({
     id: z.string(),
     name: z.string(),
-    description: z.string(),
-    type: z.string().default("DEFAULT_TYPE"),
   })
 );
 
@@ -64,7 +62,7 @@ export const JobSiteProvider = ({ children }: { children: ReactNode }) => {
       try {
         if (
           url === "/clock" ||
-          url === "/dashboard/log-new" ||
+          url === "/dashboard/equipment/log-new" ||
           url === "/dashboard/switch-jobs" ||
           url === "/break" ||
           url === "/dashboard/truckingAssistant"
@@ -117,7 +115,7 @@ export const CostCodeProvider = ({ children }: { children: ReactNode }) => {
       try {
         if (
           url === "/clock" ||
-          url === "/dashboard/log-new" ||
+          url === "/dashboard/equipment/log-new" ||
           url === "/dashboard/switch-jobs" ||
           url === "/break"
         ) {
@@ -165,7 +163,7 @@ export const EquipmentProvider = ({ children }: { children: ReactNode }) => {
       try {
         if (
           url === "/clock" ||
-          url === "/dashboard/log-new" ||
+          url === "/dashboard/equipment/log-new" ||
           url === "/dashboard/switch-jobs" ||
           url === "/break" ||
           url === "/dashboard/mechanic/new-repair" ||

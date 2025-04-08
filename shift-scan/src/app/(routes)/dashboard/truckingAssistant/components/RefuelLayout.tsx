@@ -3,15 +3,15 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
-import { set } from "date-fns";
 import RefuelLogsList from "./RefuelLogsList";
+import { useTranslations } from "next-intl";
 
 type Refueled = {
   id: string;
   employeeEquipmentLogId: string | null;
   truckingLogId: string | null;
   gallonsRefueled: number | null;
-  milesAtfueling: number | null;
+  milesAtFueling: number | null;
   tascoLogId: string | null;
 };
 
@@ -24,6 +24,7 @@ export default function RefuelLayout({
   refuelLogs: Refueled[] | undefined;
   setRefuelLogs: React.Dispatch<React.SetStateAction<Refueled[] | undefined>>;
 }) {
+  const t = useTranslations("TruckingAssistant");
   const AddRefuelLog = async () => {
     const formData = new FormData();
     formData.append("truckingLogId", truckingLog ?? "");
@@ -35,13 +36,13 @@ export default function RefuelLayout({
           employeeEquipmentLogId: tempRefuelLog.employeeEquipmentLogId ?? "",
           truckingLogId: tempRefuelLog.truckingLogId ?? "",
           gallonsRefueled: tempRefuelLog.gallonsRefueled ?? 0,
-          milesAtfueling: tempRefuelLog.milesAtfueling ?? 0,
+          milesAtFueling: tempRefuelLog.milesAtFueling ?? 0,
           tascoLogId: tempRefuelLog.tascoLogId ?? "",
         },
         ...(prev ?? []),
       ]);
     } catch (error) {
-      console.log("error adding state Mileage", error);
+      console.log(t("ErrorAddingStateMileage"), error);
     }
   };
 
@@ -51,7 +52,7 @@ export default function RefuelLayout({
         <Holds position={"row"} className="w-full h-full row-start-1 row-end-2">
           <Holds size={"80"}>
             <Texts size={"p3"} className="font-bold">
-              Did you Refuel?
+              {t("DidYouRefuel")}
             </Texts>
           </Holds>
           <Holds size={"20"}>

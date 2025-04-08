@@ -27,7 +27,7 @@ export enum FormStatus {
   PENDING = "PENDING",
   APPROVED = "APPROVED",
   DENIED = "DENIED",
-  REJECTED = "REJECTED",
+  DRAFT = "DRAFT",
 }
 
 export enum WorkType {
@@ -176,9 +176,9 @@ export type EmployeeEquipmentLogs = {
   createdAt: Date;
   updatedAt: Date;
   isCompleted: boolean;
-  isSubmitted: boolean;
+  isFinished: boolean;
   status: FormStatus;
-  Equipment?: Equipment | null;
+  equipment?: Equipment | null;
 };
 export type TimeSheetView = {
   submitDate?: string; // Changed to string since API returns string dates
@@ -222,21 +222,6 @@ export type ReceivedContent = {
     firstName: string;
     lastName: string;
   };
-};
-
-export type sentContent = {
-  id: string;
-  date: Date;
-  requestedStartDate: Date;
-  requestedEndDate: Date;
-  requestType: string;
-  comment: string;
-  managerComment: string | null;
-  status: FormStatus;
-  employeeId: string;
-  createdAt: Date;
-  updatedAt: Date;
-  decidedBy: string | null;
 };
 
 export type LeaveRequest = {
@@ -323,7 +308,6 @@ export type JobCode = {
 export type CostCodes = {
   id: string;
   name: string;
-  description: string;
 };
 
 export type EquipmentCode = {
@@ -378,24 +362,21 @@ export type TimeSheet = {
 
 export type TascoLog = {
   id: string;
-  timeSheetId: string;
-  shiftType: string; // Task name for Tasco work
-  startTime: Date;
-  endTime: Date | null;
-  equipmentId: string | null; // Linked equipment ID
-  laborType: string | null; // E.g., manual labor or equipment work
-  materialType: string | null; // Material being handled
-  loadsHauled: number | null;
-  loadType: string | null; // E.g., uncovered, screened
-  loadWeight: number | null; // Weight of loads
-  comment: string | null;
-  createdAt: Date;
-  completed: boolean; // Status of task completion
+  shiftType: string;
+  equipmentId: string;
+  laborType: string;
+  materialType: string;
+  loadsHauled: number;
+  loads: Loads[];
+  refueled: Refueled[];
+  comment: string;
+};
 
-  // Relations
-  refueled: Refueled[]; // Refueling logs
-  equipment: Equipment | null; // Related equipment
-  timeSheet: TimeSheet | null; // Related timesheet
+export type Loads = {
+  id: string;
+  tascoLogId: string;
+  loadType: string;
+  loadWeight: number;
 };
 
 export type EmployeeEquipmentLog = {
@@ -408,7 +389,7 @@ export type EmployeeEquipmentLog = {
   comment?: string | null;
   createdAt: Date;
   updatedAt: Date;
-  isSubmitted: boolean;
+  isFinished: boolean;
   status: FormStatus; // Enum: PENDING, APPROVED, etc.
 
   // Relations
@@ -504,9 +485,8 @@ export type Maintenance = {
 
 export type Refueled = {
   id: string;
-  date: Date;
-  gallonsRefueled: number | null;
-  tascoLogID: string | null;
+  tascoLogId: string;
+  gallonsRefueled: number;
 };
 //--------------------------------------------
 
@@ -527,6 +507,23 @@ export type Equipment = {
   mileage?: number | null | undefined;
   isActive?: boolean;
   inUse?: boolean;
+};
+
+export type ListEquipmentContext = {
+  id: string;
+  qrId: string;
+  name: string;
+  description?: string;
+  equipmentTag: "TRUCK" | "TRAILER" | "EQUIPMENT" | "VEHICLE";
+  status: "OPERATIONAL" | "NEEDS_REPAIR" | "NEEDS_MAINTENANCE";
+  make?: string | null;
+  model?: string | null;
+  year?: string | null;
+  licensePlate?: string | null;
+  registrationExpiration?: string | null;
+  mileage?: number | null;
+  isActive: boolean;
+  inUse: boolean;
 };
 
 export type CompleteListEquipment = {
@@ -660,3 +657,27 @@ export type AssetJobsite = {
   country: string;
   comment: string;
 };
+
+export type RefuelLogType = "tasco" | "equipment";
+
+export interface RefuelLogBase {
+  id: string;
+  gallonsRefueled?: number;
+  milesAtfueling?: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface CreateRefuelLogParams {
+  type: RefuelLogType;
+  parentId: string; // tascoLogId or employeeEquipmentLogId
+}
+
+export interface UpdateRefuelLogParams extends RefuelLogBase {
+  type: RefuelLogType;
+}
+
+export interface DeleteRefuelLogParams {
+  type: RefuelLogType;
+  id: string;
+}

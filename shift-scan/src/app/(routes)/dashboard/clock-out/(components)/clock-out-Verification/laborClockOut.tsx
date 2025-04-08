@@ -84,117 +84,126 @@ export const LaborClockOut = ({
         )}
         <Holds
           background={"white"}
-          className={loading ? `h-full w-full opacity-[0.50]` : `h-full w-full`}
+          className={
+            loading ? `h-full w-full py-5 opacity-[0.50]` : `h-full w-full py-5`
+          }
         >
-          <Grids rows={"8"} gap={"5"} className="h-full w-full">
-            <Holds className="h-full w-full row-start-1 row-end-2 p-3">
-              <Grids rows={"2"} cols={"5"} gap={"3"} className=" h-full w-full">
-                <Holds className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center">
-                  <Images
-                    titleImg="/turnBack.svg"
-                    titleImgAlt="back"
-                    position={"left"}
-                    onClick={prevStep}
-                  />
-                </Holds>
-
-                <Holds
-                  position={"row"}
-                  className="row-start-2 row-end-3 col-start-1 col-end-6 "
+          <Contents width={"section"}>
+            <Grids rows={"7"} gap={"5"} className="h-full w-full">
+              <Holds className="h-full w-full row-start-1 row-end-2 ">
+                <Grids
+                  rows={"2"}
+                  cols={"5"}
+                  gap={"3"}
+                  className=" h-full w-full"
                 >
-                  <Holds size={"50"}>
-                    <Titles size={"h1"} position={"right"}>
-                      {t("ClockOut")}
-                    </Titles>
-                  </Holds>
-
-                  <Holds size={"50"}>
+                  <Holds className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center">
                     <Images
-                      titleImg="/clock-out.svg"
-                      titleImgAlt="Verify"
-                      size={"50"}
+                      titleImg="/turnBack.svg"
+                      titleImgAlt="back"
+                      position={"left"}
+                      onClick={prevStep}
                     />
                   </Holds>
-                </Holds>
-              </Grids>
-            </Holds>
 
-            {/* form Grid */}
-            <Holds className="row-start-2 row-end-9 h-full w-full ">
-              <Grids rows={"10"} cols={"5"}>
-                <Holds className="row-start-2 row-end-7 col-start-1 col-end-6 h-full pt-1">
                   <Holds
-                    background={"lightBlue"}
-                    className="h-full w-[95%] sm:w-[85%] md:w-[75%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%]  border-[3px] rounded-b-none  border-black "
+                    position={"row"}
+                    className="row-start-2 row-end-3 col-start-1 col-end-6 "
                   >
-                    <Contents width={"section"} className="h-full">
-                      <Labels
-                        htmlFor="date"
-                        text={"white"}
-                        size={"p4"}
-                        position={"left"}
-                      >
-                        {t("Date-label")}
-                      </Labels>
-                      <Inputs
-                        name="date"
-                        state="disabled"
-                        variant={"white"}
-                        data={date.toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "numeric",
-                          day: "numeric",
-                        })}
+                    <Holds size={"50"}>
+                      <Titles size={"h1"} position={"right"}>
+                        {t("ClockOut")}
+                      </Titles>
+                    </Holds>
+
+                    <Holds size={"50"}>
+                      <Images
+                        titleImg="/clock-out.svg"
+                        titleImgAlt="Verify"
+                        size={"50"}
                       />
-                      <Labels
-                        htmlFor="jobsiteId"
-                        text={"white"}
-                        size={"p4"}
-                        position={"left"}
-                      >
-                        {t("JobSite-label")}
-                      </Labels>
-                      <Inputs
-                        state="disabled"
-                        name="jobsiteId"
-                        variant={"white"}
-                        data={scanResult || ""}
-                      />
-                      <Labels
-                        htmlFor="costcode"
-                        text={"white"}
-                        size={"p4"}
-                        position={"left"}
-                      >
-                        {t("CostCode-label")}
-                      </Labels>
-                      <Inputs
-                        state="disabled"
-                        name="costcode"
-                        variant={"white"}
-                        data={savedCostCode?.toString() || ""}
-                      />
-                    </Contents>
+                    </Holds>
                   </Holds>
-                </Holds>
+                </Grids>
+              </Holds>
 
-                <Holds className="row-start-7 row-end-11 col-start-1 col-end-6 h-full">
-                  <Holds
-                    background={"darkBlue"}
-                    className="h-full w-[100%] sm:w-[90%] md:w-[90%] lg:w-[80%] xl:w-[80%] 2xl:w-[80%]  border-[3px]   border-black p-8 "
-                  >
-                    {/* Cancel out the button shadow with none background  and then add a class name */}
-                    <Buttons
-                      onClick={awaitAllProcesses}
-                      className="bg-app-green flex justify-center items-center p-4 rounded-[10px] text-black font-bold"
+              {/* form Grid */}
+              <Holds className="row-start-2 row-end-8 h-full w-full ">
+                <Grids rows={"10"} cols={"5"}>
+                  <Holds className="row-start-2 row-end-7 col-start-1 col-end-6 h-full pt-1">
+                    <Holds
+                      background={"lightBlue"}
+                      className="h-full w-[95%] sm:w-[85%] md:w-[75%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%]  border-[3px] rounded-b-none  border-black "
                     >
-                      <Clock time={date.getTime()} />
-                    </Buttons>
+                      <Contents width={"section"} className="h-full">
+                        <Labels
+                          htmlFor="date"
+                          text={"white"}
+                          size={"p4"}
+                          position={"left"}
+                        >
+                          {t("Date-label")}
+                        </Labels>
+                        <Inputs
+                          name="date"
+                          state="disabled"
+                          variant={"white"}
+                          data={date.toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "numeric",
+                            day: "numeric",
+                          })}
+                        />
+                        <Labels
+                          htmlFor="jobsiteId"
+                          text={"white"}
+                          size={"p4"}
+                          position={"left"}
+                        >
+                          {t("JobSite-label")}
+                        </Labels>
+                        <Inputs
+                          state="disabled"
+                          name="jobsiteId"
+                          variant={"white"}
+                          data={scanResult || ""}
+                        />
+                        <Labels
+                          htmlFor="costcode"
+                          text={"white"}
+                          size={"p4"}
+                          position={"left"}
+                        >
+                          {t("CostCode-label")}
+                        </Labels>
+                        <Inputs
+                          state="disabled"
+                          name="costcode"
+                          variant={"white"}
+                          data={savedCostCode?.toString() || ""}
+                        />
+                      </Contents>
+                    </Holds>
                   </Holds>
-                </Holds>
-              </Grids>
-            </Holds>
-          </Grids>
+
+                  <Holds className="row-start-7 row-end-11 col-start-1 col-end-6 h-full">
+                    <Holds
+                      background={"darkBlue"}
+                      className="h-full w-[100%] sm:w-[90%] md:w-[90%] lg:w-[80%] xl:w-[80%] 2xl:w-[80%]  border-[3px]   border-black p-8 "
+                    >
+                      {/* Cancel out the button shadow with none background  and then add a class name */}
+                      <Buttons
+                        onClick={awaitAllProcesses}
+                        className="bg-app-green flex justify-center items-center p-4 rounded-[10px] text-black font-bold"
+                      >
+                        <Clock time={date.getTime()} />
+                      </Buttons>
+                    </Holds>
+                  </Holds>
+                </Grids>
+              </Holds>
+            </Grids>
+          </Contents>
         </Holds>
       </Contents>
     </Bases>

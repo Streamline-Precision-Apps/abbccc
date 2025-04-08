@@ -37,29 +37,24 @@ type TruckClockOutFormProps = {
 };
 
 // Zod schema for validation
-const formSchema = z
-  .object({
-    startingMileage: z
-      .number()
-      .nonnegative("Starting mileage must be non-negative")
-      .optional(),
-    endingMileage: z
-      .number()
-      .nonnegative("Ending mileage must be non-negative"),
-    materialHauled: z
-      .string()
-      .optional(),
-    hauledLoadsQuantity: z
-      .number()
-      .int("Loads quantity must be an integer")
-      .nonnegative("Loads quantity must not be negative")
-      .optional(),
-    refuelingGallons: z
-      .number()
-      .nonnegative("Refueling gallons must be non-negative")
-      .optional(),
-    leftIdaho: z.boolean(),
-  });
+const formSchema = z.object({
+  startingMileage: z
+    .number()
+    .nonnegative("Starting mileage must be non-negative")
+    .optional(),
+  endingMileage: z.number().nonnegative("Ending mileage must be non-negative"),
+  materialHauled: z.string().optional(),
+  hauledLoadsQuantity: z
+    .number()
+    .int("Loads quantity must be an integer")
+    .nonnegative("Loads quantity must not be negative")
+    .optional(),
+  refuelingGallons: z
+    .number()
+    .nonnegative("Refueling gallons must be non-negative")
+    .optional(),
+  leftIdaho: z.boolean(),
+});
 
 export default function TruckClockOutForm({
   handleNextStep,
@@ -218,7 +213,7 @@ export default function TruckClockOutForm({
                   id="refuelCheck"
                   name="refuelCheck"
                   onChange={handleCheckboxRefuelChange}
-                  defaultChecked={checkedRefuel}
+                  checked={checkedRefuel}
                 />
               </Holds>
               {checkedRefuel && (
@@ -244,7 +239,7 @@ export default function TruckClockOutForm({
                   id="leftIdaho"
                   name="leftIdaho"
                   onChange={handleCheckboxLeftIdahoChange}
-                  defaultChecked={leftIdaho}
+                  checked={leftIdaho}
                 />
               </Holds>
 

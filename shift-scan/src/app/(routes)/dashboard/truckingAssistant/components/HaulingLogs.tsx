@@ -3,13 +3,14 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import Sliders from "@/components/(reusable)/sliders";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import MaterialList from "./MaterialList";
 import {
   createEquipmentHauled,
   createHaulingLogs,
 } from "@/actions/truckingActions";
 import EquipmentList from "./EquipmentList";
+import { useTranslations } from "next-intl";
 
 type EquipmentHauled = {
   id: string;
@@ -49,6 +50,7 @@ export default function HaulingLogs({
   equipmentHauled: EquipmentHauled[] | undefined;
   isLoading: boolean;
 }) {
+  const t = useTranslations("TruckingAssistant");
   const [activeTab, setActiveTab] = useState<number>(1);
 
   // Add Temporary Equipment
@@ -75,7 +77,7 @@ export default function HaulingLogs({
         ...(prev ?? []),
       ]);
     } catch (error) {
-      console.error("Error adding Equipment:", error);
+      console.error(t("ErrorAddingEquipment"), error);
     }
   };
 
@@ -98,16 +100,9 @@ export default function HaulingLogs({
         ...(prev ?? []),
       ]);
     } catch (error) {
-      console.error("Error adding Material:", error);
+      console.error(t("ErrorAddingMaterial"), error);
     }
   };
-
-  // Material Options for Dropdown
-  const materialOptions = [
-    { value: "Material 1", label: "Material 1" },
-    { value: "Material 2", label: "Material 2" },
-    { value: "Material 3", label: "Material 3" },
-  ];
 
   return (
     <>
@@ -158,11 +153,7 @@ export default function HaulingLogs({
           <Grids rows={"10"} className="h-full py-2 px-4 ">
             {activeTab === 1 && (
               <Holds className="h-full w-full row-start-1 row-end-11 overflow-y-auto no-scrollbar">
-                <MaterialList
-                  material={material}
-                  setMaterial={setMaterial}
-                  materialOptions={materialOptions}
-                />
+                <MaterialList material={material} setMaterial={setMaterial} />
               </Holds>
             )}
             {activeTab === 2 && (

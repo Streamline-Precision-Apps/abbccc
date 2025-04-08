@@ -36,17 +36,17 @@ export const EmployeeTimeSheets = ({
   const t = useTranslations("MyTeam");
 
   return (
-    <Holds className="h-full w-full">
-      <Grids rows={"8"} gap={"5"} className=" h-full w-full pt-2">
+    <Holds background={"white"} className="h-full w-full">
+      <Grids rows={"6"} className=" h-full w-full ">
         {loading ? (
           <Holds
             background={"white"}
-            className="row-start-2 row-end-9 h-full justify-center items-center animate-pulse"
+            className="row-start-2 row-end-7 h-full justify-center items-center animate-pulse"
           >
             <Spinner size={70} />
           </Holds>
         ) : (
-          <Holds className="row-start-2 row-end-9 h-full w-full overflow-y-scroll no-scrollbar">
+          <Holds className="row-start-2 row-end-7 h-full w-full overflow-y-scroll no-scrollbar">
             {timeSheets.length > 0 && (
               <EditWorkNew
                 timeSheet={timeSheets}
@@ -72,7 +72,7 @@ export const EmployeeTimeSheets = ({
 
         <Holds
           background={"darkBlue"}
-          className="row-start-1 row-end-2 rounded-t-none "
+          className="row-start-1 row-end-2 rounded-none h-full  "
         >
           <Labels
             size={"p5"}
@@ -88,7 +88,7 @@ export const EmployeeTimeSheets = ({
             name="date"
             id="date"
             value={date} // Bind input value to state
-            className="flex text-black bg-white  border-2 border-black "
+            className="flex  text-black bg-white  border-2 border-black "
             onChange={(e: ChangeEvent<HTMLInputElement>) =>
               setDate(e.target.value)
             }

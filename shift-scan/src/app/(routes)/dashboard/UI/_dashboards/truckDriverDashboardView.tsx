@@ -3,7 +3,6 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import ClockOutWidget from "../_buttons/AdditonalclockOutBtns";
-import EquipmentWidget from "../_buttons/AdditonalEquipmentBtns";
 import ClockOutBtn from "../_buttons/clockOutBtn";
 import EquipmentBtn from "../_buttons/equipmentBtn";
 import GeneratorBtn from "../_buttons/generatorBtn";
@@ -51,19 +50,7 @@ export default function TruckDriverDashboardView({
       <Contents width={"section"} className="py-5">
         <Grids cols={"2"} rows={"3"} gap={"5"}>
           {/* Render buttons based on state */}
-          {additionalButtonsType === "equipment" ? (
-            <Holds
-              className={
-                permission !== "USER"
-                  ? "col-span-2 row-span-4 gap-5 h-full"
-                  : "col-span-2 row-span-3 gap-5 h-full"
-              }
-            >
-              <EquipmentWidget
-                handleShowManagerButtons={handleShowManagerButtons}
-              />
-            </Holds>
-          ) : additionalButtonsType === "clockOut" ? (
+          {additionalButtonsType === "clockOut" ? (
             <Holds
               className={
                 permission !== "USER"
@@ -88,11 +75,8 @@ export default function TruckDriverDashboardView({
                 view={"truck"}
                 laborType={laborType}
               />
-              {permission === "USER" && laborType === "manualLabor" && (
-                <EquipmentBtn
-                  handleShowAdditionalButtons={handleShowAdditionalButtons}
-                  permission={permission}
-                />
+              {permission === "USER" && laborType === "truckLabor" && (
+                <EquipmentBtn permission={permission} />
               )}
 
               <SwitchJobsBtn
@@ -110,11 +94,8 @@ export default function TruckDriverDashboardView({
               {permission !== "USER" && !additionalButtonsType && (
                 <MyTeamWidget />
               )}
-              {permission !== "USER" && laborType === "manualLabor" && (
-                <EquipmentBtn
-                  handleShowAdditionalButtons={handleShowAdditionalButtons}
-                  permission={permission}
-                />
+              {permission !== "USER" && laborType === "truckLabor" && (
+                <EquipmentBtn permission={permission} />
               )}
 
               <ClockOutBtn

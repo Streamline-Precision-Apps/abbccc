@@ -13,6 +13,7 @@ import { Texts } from "../(reusable)/texts";
 import { Buttons } from "../(reusable)/buttons";
 import SetCanvasPreview from "./setCanvasPreview";
 import React from "react";
+import { Titles } from "../(reusable)/titles";
 type Props = {
   setBase64String: Dispatch<SetStateAction<string>>;
   handleFileChange: (event: ChangeEvent<HTMLInputElement>) => void;
@@ -25,6 +26,7 @@ export default function ImageCropper({
   setBase64String,
   handleFileChange,
 }: Props) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [imageSource, setImageSource] = useState<string>("");
   const imgRef = useRef<HTMLImageElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -71,17 +73,24 @@ export default function ImageCropper({
     setCrop(CenteredCrop);
   };
 
+  const handleButtonClick = () => {
+    fileInputRef.current?.click(); // Trigger file input click
+  };
+
   return (
     <>
-      <Labels>
-        <span>Choose Profile Picture</span>
-        <Inputs
-          variant="default"
-          type="file"
-          accept="image/*"
-          onChange={onSelectFile}
-        />
-      </Labels>
+      <Buttons background={"lightBlue"} onClick={handleButtonClick}>
+        <Titles>Upload Image</Titles>
+      </Buttons>
+      <input
+        id="fileInput"
+        type="file"
+        accept="image/*"
+        ref={fileInputRef}
+        style={{ display: "none" }}
+        onChange={onSelectFile}
+      />
+
       {error && <Texts color="red">{error}</Texts>}
       {imageSource && (
         <Contents>

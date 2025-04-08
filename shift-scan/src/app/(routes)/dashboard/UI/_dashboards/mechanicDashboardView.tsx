@@ -4,7 +4,6 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Spinner } from "@nextui-org/react";
 import ClockOutWidget from "../_buttons/AdditonalclockOutBtns";
-import EquipmentWidget from "../_buttons/AdditonalEquipmentBtns";
 import ClockOutBtn from "../_buttons/clockOutBtn";
 
 import FormsBtn from "../_buttons/formsBtn";
@@ -56,19 +55,7 @@ export default function MechanicDashboardView({
       <Contents width={"section"} className="py-5">
         <Grids cols={"2"} rows={"3"} gap={"5"}>
           {/* Render buttons based on state */}
-          {additionalButtonsType === "equipment" ? (
-            <Holds
-              className={
-                permission !== "USER"
-                  ? "col-span-2 row-span-4 gap-5 h-full"
-                  : "col-span-2 row-span-3 gap-5 h-full"
-              }
-            >
-              <EquipmentWidget
-                handleShowManagerButtons={handleShowManagerButtons}
-              />
-            </Holds>
-          ) : additionalButtonsType === "clockOut" ? (
+          {additionalButtonsType === "clockOut" ? (
             <Holds
               className={
                 permission !== "USER"
