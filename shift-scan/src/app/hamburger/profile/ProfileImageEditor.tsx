@@ -196,20 +196,20 @@ export default function ProfileImageEditor({
               </Holds>
 
               {/* Content Area */}
-              <Holds className="row-start-2 row-end-7 h-full w-full justify-center items-center">
+              <Holds className="row-start-2 row-end-6 h-full w-full justify-center items-center">
                 {mode === "camera" ? (
                   <video
                     ref={videoRef}
                     autoPlay
                     playsInline
                     muted
-                    className="w-[300px] h-[300px] object-cover rounded-full border-[3px] border-black"
+                    className="w-[250px] h-[250px] object-cover rounded-full border-[3px] border-black"
                   />
                 ) : mode === "preview" ? (
                   <img
                     src={canvasRef.current?.toDataURL() || imageSrc}
                     alt="Preview"
-                    className="w-[300px] h-[300px] object-cover rounded-full border-[3px] border-black"
+                    className="w-[250px] h-[250px] object-cover rounded-full border-[3px] border-black"
                   />
                 ) : mode === "crop" ? (
                   <div className="flex flex-col items-center">
@@ -259,56 +259,68 @@ export default function ProfileImageEditor({
                   <img
                     src={employee?.image || "/person.svg"}
                     alt="Current Profile"
-                    className="w-[300px] h-[300px] object-cover rounded-full border-[3px] border-black"
+                    className="w-[250px] h-[250px] object-cover rounded-full border-[3px] border-black"
                   />
                 )}
               </Holds>
 
               {/* Action Buttons */}
-              <Holds className="row-start-9 row-end-11 w-full space-y-3">
-                {mode === "select" ? (
+
+              {mode === "select" ? (
+                <Holds className="row-start-10 row-end-11 w-full space-y-3">
                   <Buttons
                     background="lightBlue"
-                    className="w-full py-3"
+                    className="w-full py-2"
                     onClick={() => setMode("camera")}
                   >
-                    <Titles size={"h4"}>Take Photo</Titles>
+                    <Titles size={"h4"}>Change Profile Picture</Titles>
                   </Buttons>
-                ) : mode === "camera" ? (
+                </Holds>
+              ) : mode === "camera" ? (
+                <Holds className="row-start-9 row-end-11 w-full space-y-5">
                   <Buttons
                     background="green"
-                    className="w-full py-3"
+                    className="w-full py-2"
                     onClick={takePicture}
                   >
-                    <Titles size={"h4"}>Capture</Titles>
+                    <Titles size={"h4"}>Capture Image</Titles>
                   </Buttons>
-                ) : mode === "preview" ? (
-                  <>
-                    <Buttons
-                      background="green"
-                      className="w-full py-3"
-                      onClick={saveImage}
-                    >
-                      <Titles size={"h4"}>Save Photo</Titles>
-                    </Buttons>
-                    <Buttons
-                      background="red"
-                      className="w-full py-3"
-                      onClick={() => setMode("select")}
-                    >
-                      <Titles size={"h4"}>Cancel</Titles>
-                    </Buttons>
-                  </>
-                ) : mode === "crop" ? (
+                  <Buttons
+                    background="red"
+                    className="w-full py-2"
+                    onClick={() => setMode("select")}
+                  >
+                    <Titles size={"h4"}>Cancel</Titles>
+                  </Buttons>
+                </Holds>
+              ) : mode === "preview" ? (
+                <Holds className="row-start-9 row-end-11 w-full space-y-5">
                   <Buttons
                     background="green"
-                    className="w-full py-3"
+                    className="w-full py-2"
+                    onClick={saveImage}
+                  >
+                    <Titles size={"h4"}>Save Photo</Titles>
+                  </Buttons>
+                  <Buttons
+                    background="red"
+                    className="w-full py-2"
+                    onClick={() => setMode("select")}
+                  >
+                    <Titles size={"h4"}>Cancel</Titles>
+                  </Buttons>
+                </Holds>
+              ) : mode === "crop" ? (
+                <Holds className="row-start-9 row-end-11 w-full">
+                  <Buttons
+                    background="green"
+                    className="w-full py-2"
                     onClick={() => setMode("preview")}
                   >
                     <Titles size={"h4"}>Preview</Titles>
                   </Buttons>
-                ) : null}
-              </Holds>
+                </Holds>
+              ) : null}
             </Grids>
           </Contents>
         </Holds>
