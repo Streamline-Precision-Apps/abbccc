@@ -1,11 +1,10 @@
 {
   "extends": [
     "next/core-web-vitals",
-    "plugin:@typescript-eslint/recommended"
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react-hooks/recommended"
   ],
-  "plugins": [
-    "@typescript-eslint"
-  ],
+  "plugins": ["@typescript-eslint", "react-hooks"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "sourceType": "module",
@@ -13,24 +12,26 @@
   },
   "overrides": [
     {
-      "files": ["**/*.ts", "**/*.tsx"],  // Add this override for TS/TSX files
+      "files": ["**/*.ts", "**/*.tsx"], // Add this override for TS/TSX files
       "parserOptions": {
         "project": ["**/tsconfig.json"]
       },
       "rules": {
-        "@typescript-eslint/no-unused-vars": "off",  // Turn off TypeScript-specific rules
-        "@typescript-eslint/no-var-requires": "off"
+        "@typescript-eslint/no-unused-vars": "off", // Turn off TypeScript-specific rules
+        "@typescript-eslint/no-var-requires": "off", // Turn off TypeScript-specific rules
+        "react-hooks/exhaustive-deps": "off", // Turns off the react-hooks/exhaustive-deps rule
+        "@next/next/no-img-element": "off" // Turn off the @next/next/no-img-element rule
       }
     },
     {
-      "files": ["**/*.js", "**/*.jsx", "**/*.mjs"],  // Add this override for JS/JSX files
+      "files": ["**/*.js", "**/*.jsx", "**/*.mjs"], // Add this override for JS/JSX files
       "parser": "espree", // Default ESLint parser for JavaScript
       "parserOptions": {
         "sourceType": "module",
         "ecmaVersion": "latest"
       },
       "rules": {
-        "@typescript-eslint/no-unused-vars": "off",  // Turn off TypeScript-specific rules
+        "@typescript-eslint/no-unused-vars": "off", // Turn off TypeScript-specific rules
         "@typescript-eslint/no-var-requires": "off"
       }
     }

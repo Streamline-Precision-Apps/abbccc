@@ -11,7 +11,7 @@ type Refueled = {
   employeeEquipmentLogId: string | null;
   truckingLogId: string | null;
   gallonsRefueled: number | null;
-  milesAtfueling: number | null;
+  milesAtFueling: number | null;
   tascoLogId: string | null;
 };
 
@@ -36,7 +36,7 @@ export default function RefuelLayout({
           employeeEquipmentLogId: tempRefuelLog.employeeEquipmentLogId ?? "",
           truckingLogId: tempRefuelLog.truckingLogId ?? "",
           gallonsRefueled: tempRefuelLog.gallonsRefueled ?? 0,
-          milesAtfueling: tempRefuelLog.milesAtfueling ?? 0,
+          milesAtFueling: tempRefuelLog.milesAtFueling ?? 0,
           tascoLogId: tempRefuelLog.tascoLogId ?? "",
         },
         ...(prev ?? []),

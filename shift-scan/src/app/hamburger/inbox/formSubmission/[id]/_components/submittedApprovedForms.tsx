@@ -1,13 +1,7 @@
 "use client";
 import { FormInput } from "./formInput";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import {
-  createFormApproval,
-  updateFormApproval,
-} from "@/actions/hamburgerActions";
+import { Dispatch, SetStateAction } from "react";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
-import { useAutoSave } from "@/hooks/(inbox)/useAutoSave";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
@@ -18,7 +12,6 @@ import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { Contents } from "@/components/(reusable)/contents";
 import { Inputs } from "@/components/(reusable)/inputs";
-import { Select } from "@nextui-org/react";
 import { Selects } from "@/components/(reusable)/selects";
 import { format } from "date-fns";
 
@@ -111,7 +104,7 @@ export default function SubmittedFormsApproval({
   submissionId: string | null;
   managerFormApproval: ManagerFormApprovalSchema | null;
   setFormTitle: Dispatch<SetStateAction<string>>;
-  updateFormValues: (newValues: Record<string, any>) => void;
+  updateFormValues: (newValues: Record<string, string>) => void;
 }) {
   const router = useRouter();
   const managerName =

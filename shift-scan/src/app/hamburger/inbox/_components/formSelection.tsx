@@ -23,7 +23,7 @@ type DraftForm = {
   formTemplateId: string;
   status: FormStatus;
   createdAt: string;
-  data: Record<string, any>;
+  data: Record<string, string>;
   formTemplate: {
     name: string;
   };

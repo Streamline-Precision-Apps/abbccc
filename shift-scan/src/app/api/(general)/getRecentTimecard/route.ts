@@ -1,7 +1,8 @@
-"use server";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
+
+export const dynamic = "force-dynamic"; // ✅ Ensures this API is dynamic and never pre-rendered
 
 export async function GET() {
   try {
@@ -20,7 +21,7 @@ export async function GET() {
         endTime: null, // Ensure timesheet is still active
       },
       orderBy: {
-        submitDate: "desc", // Sort by most recent submission date
+        createdAt: "desc", // Sort by most recent submission date
       },
       select: {
         id: true,

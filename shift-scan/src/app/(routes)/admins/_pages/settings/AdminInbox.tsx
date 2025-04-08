@@ -1,8 +1,6 @@
 "use client";
 import { Holds } from "@/components/(reusable)/holds";
 import { useState } from "react";
-import AdminSTab from "./AdminSTab";
-import AdminRTab from "./AdminRTab";
 import { useTranslations } from "next-intl";
 import { NewTab } from "@/components/(reusable)/newTabs";
 

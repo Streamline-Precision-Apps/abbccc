@@ -1,8 +1,9 @@
-"use server";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 import { formatInTimeZone } from "date-fns-tz";
+
+export const dynamic = "force-dynamic"; // ✅ Ensures this API is dynamic and never pre-rendered
 
 export async function GET(request: Request) {
   try {
@@ -18,7 +19,10 @@ export async function GET(request: Request) {
     }
 
     if (!employeeId) {
-      return NextResponse.json({ error: "Missing employeeId" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing employeeId" },
+        { status: 400 }
+      );
     }
 
     if (!date) {
@@ -27,9 +31,12 @@ export async function GET(request: Request) {
 
     const startOfDay = new Date(date);
     if (isNaN(startOfDay.getTime())) {
-      return NextResponse.json({ error: "Invalid date format" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid date format" },
+        { status: 400 }
+      );
     }
-    
+
     startOfDay.setUTCHours(0, 0, 0, 0);
 
     const endOfDay = new Date(startOfDay);
@@ -49,10 +56,10 @@ export async function GET(request: Request) {
         startTime: "asc",
       },
       include: {
-        tascoLogs: true,
-        truckingLogs: true,
-        maintenanceLogs: true,
-        employeeEquipmentLogs: true,
+        TascoLogs: true,
+        TruckingLogs: true,
+        MaintenanceLogs: true,
+        EmployeeEquipmentLogs: true,
       },
     });
 
@@ -69,8 +76,8 @@ export async function GET(request: Request) {
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const adjustedTimeSheets = timeSheets.map((sheet) => ({
       ...sheet,
-      submitDate: sheet.submitDate
-        ? formatInTimeZone(sheet.submitDate, timeZone, "yyyy-MM-dd HH:mm:ss")
+      submitDate: sheet.createdAt
+        ? formatInTimeZone(sheet.createdAt, timeZone, "yyyy-MM-dd HH:mm:ss")
         : "",
       date: formatInTimeZone(sheet.date, timeZone, "yyyy-MM-dd"),
       startTime: sheet.startTime
@@ -83,7 +90,8 @@ export async function GET(request: Request) {
 
     return NextResponse.json(adjustedTimeSheets, {
       headers: {
-        "Cache-Control": "public, max-age=60, s-maxage=60, stale-while-revalidate=30",
+        "Cache-Control":
+          "public, max-age=60, s-maxage=60, stale-while-revalidate=30",
       },
     });
   } catch (error) {

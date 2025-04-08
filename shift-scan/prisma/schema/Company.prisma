@@ -8,7 +8,7 @@ model Company {
   createAt         DateTime       @default(now())
   UpdatedAt        DateTime       @updatedAt
   SubscriptionDate DateTime       @default(now())
-  FormTemplate     FormTemplate[]
-  jobSite          Jobsite[]
-  users            User[]
+  FormTemplates    FormTemplate[]
+  Jobsites         Jobsite[]
+  Users            User[]
 }

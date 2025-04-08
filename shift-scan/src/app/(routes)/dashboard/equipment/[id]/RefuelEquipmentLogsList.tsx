@@ -1,3 +1,5 @@
+"use client";
+
 import { Contents } from "@/components/(reusable)/contents";
 import { useEffect, useState } from "react";
 import { deleteRefuelLog, updateRefuelLog } from "@/actions/truckingActions";
@@ -10,61 +12,56 @@ type Refueled = {
   employeeEquipmentLogId: string | null;
   truckingLogId: string | null;
   gallonsRefueled: number | null;
-  milesAtfueling: number | null;
+  milesAtFueling: number | null;
   tascoLogId: string | null;
 };
 
+interface RefuelEquipmentLogsListProps {
+  mileage?: boolean;
+  refuelLogs: Refueled[];
+  setRefuelLogs: (logs: Refueled[]) => void;
+}
+
 export default function RefuelEquipmentLogsList({
-  refuelLogs,
+  refuelLogs = [],
   setRefuelLogs,
   mileage = true,
-}: {
-  mileage: boolean | undefined;
-  refuelLogs: Refueled[] | undefined;
-  setRefuelLogs: React.Dispatch<React.SetStateAction<Refueled[] | undefined>>;
-}) {
-  const [editedRefuel, setEditedRefuel] = useState<Refueled[]>(
-    refuelLogs || []
-  );
-
+}: RefuelEquipmentLogsListProps) {
   const handleDelete = async (id: string) => {
-    const newRefueledLogs = editedRefuel.filter((rL) => rL.id !== id);
-    setEditedRefuel(newRefueledLogs);
+    const newRefueledLogs = refuelLogs.filter((rL) => rL.id !== id);
     setRefuelLogs(newRefueledLogs);
-    const isDeleted = await deleteRefuelLog(id);
-    if (isDeleted) {
-      console.log("Deleted");
-      setEditedRefuel(newRefueledLogs || []);
-      setRefuelLogs(newRefueledLogs);
-    }
+    await deleteRefuelLog(id);
   };
 
-  const handleGallonsChange = (index: number, value: string | number) => {
-    const newRefuel = [...editedRefuel];
-    newRefuel[index].gallonsRefueled = Number(value);
-    setEditedRefuel(newRefuel);
+  const handleFieldChange = (
+    index: number,
+    field: keyof Refueled,
+    value: string | number
+  ) => {
+    const newRefuel = [...refuelLogs];
+    newRefuel[index] = {
+      ...newRefuel[index],
+      [field]: Number(value),
+    };
     setRefuelLogs(newRefuel);
   };
 
-  const handleMileageChange = (index: number, value: string | number) => {
-    const newRefuel = [...editedRefuel];
-    newRefuel[index].milesAtfueling = Number(value);
-    setEditedRefuel(newRefuel);
-    setRefuelLogs(newRefuel);
+  const handleSave = async (rL: Refueled) => {
+    const formData = new FormData();
+    formData.append("id", rL.id);
+    formData.append("gallonsRefueled", rL.gallonsRefueled?.toString() || "");
+    formData.append("milesAtfueling", rL.milesAtFueling?.toString() || "");
+    await updateRefuelLog(formData);
   };
-
-  useEffect(() => {
-    setEditedRefuel(refuelLogs || []);
-  }, [refuelLogs]);
 
   return (
     <Contents className="overflow-y-auto no-scrollbar">
-      {editedRefuel.map((rL, index) => (
+      {refuelLogs.map((rL, index) => (
         <SlidingDiv key={rL.id} onSwipeLeft={() => handleDelete(rL.id)}>
           <Holds
             position={"row"}
             background={"white"}
-            className="w-full h-full border-black border-[3px] rounded-[10px] mb-3 "
+            className="w-full h-full border-black border-[3px] rounded-[10px] mb-3"
           >
             <Holds
               background={"white"}
@@ -75,52 +72,28 @@ export default function RefuelEquipmentLogsList({
                 name="gallons"
                 placeholder="Total Gallons"
                 value={rL.gallonsRefueled || ""}
-                onChange={(e) => handleGallonsChange(index, e.target.value)}
-                onBlur={() => {
-                  const formData = new FormData();
-                  formData.append("id", rL.id);
-                  formData.append(
-                    "gallonsRefueled",
-                    rL.gallonsRefueled?.toString() || ""
-                  );
-                  formData.append(
-                    "milesAtfueling",
-                    rL.milesAtfueling?.toString() || ""
-                  );
-                  updateRefuelLog(formData);
-                }}
-                className={
-                  "border-none text-xs py-2 focus:outline-none focus:ring-0"
+                onChange={(e) =>
+                  handleFieldChange(index, "gallonsRefueled", e.target.value)
                 }
+                onBlur={() => handleSave(rL)}
+                className="border-none text-xs py-2 focus:outline-none focus:ring-0"
               />
             </Holds>
             {mileage && (
               <Holds
                 background={"white"}
-                className="w-full px-2 h-full justify-center  border-black border-l-[3px] rounded-l-none"
+                className="w-full px-2 h-full justify-center border-black border-l-[3px] rounded-l-none"
               >
                 <Inputs
                   type="number"
                   name="currentMileage"
                   placeholder="Current Mileage"
-                  value={rL.milesAtfueling || ""}
-                  onChange={(e) => handleMileageChange(index, e.target.value)}
-                  onBlur={() => {
-                    const formData = new FormData();
-                    formData.append("id", rL.id);
-                    formData.append(
-                      "gallonsRefueled",
-                      rL.gallonsRefueled?.toString() || ""
-                    );
-                    formData.append(
-                      "milesAtfueling",
-                      rL.milesAtfueling?.toString() || ""
-                    );
-                    updateRefuelLog(formData);
-                  }}
-                  className={
-                    "border-none text-xs py-2 focus:outline-none focus:ring-0"
+                  value={rL.milesAtFueling || ""}
+                  onChange={(e) =>
+                    handleFieldChange(index, "milesAtFueling", e.target.value)
                   }
+                  onBlur={() => handleSave(rL)}
+                  className="border-none text-xs py-2 focus:outline-none focus:ring-0"
                 />
               </Holds>
             )}

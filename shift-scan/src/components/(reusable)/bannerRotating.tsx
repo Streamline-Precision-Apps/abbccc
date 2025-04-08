@@ -61,10 +61,8 @@ interface BannerData {
 }
 
 export default function BannerRotating() {
-  const [timeSheetId, setTimeSheetId] = useState("");
   const [bannerData, setBannerData] = useState<BannerData | null>(null);
   const [loading, setLoading] = useState(true); // Track loading state
-  const [error, setError] = useState(null); // Track error state
 
   const settings = {
     dots: true,
@@ -91,8 +89,6 @@ export default function BannerRotating() {
         if (!timeSheetData?.id) {
           throw new Error("No valid timesheet ID found.");
         }
-
-        setTimeSheetId(timeSheetData.id);
 
         // Step 2: Fetch banner data using the obtained timeSheetId
         const bannerResponse = await fetch(
@@ -152,9 +148,11 @@ export default function BannerRotating() {
         {/* Cost Code Information */}
         {bannerData.costCode && (
           <Holds>
-            <Titles text={"white"}>{bannerData.costCode.description}</Titles>
+            <Titles text={"white"}>
+              {bannerData.costCode.name.split(" ").slice(1).join(" ") || ""}
+            </Titles>
             <Texts className="text-white" size={"p5"}>
-              {bannerData.costCode.name}
+              {bannerData.costCode.name.split(" ")[0] || ""}
             </Texts>
           </Holds>
         )}
@@ -177,7 +175,7 @@ export default function BannerRotating() {
         {/* Tasco Logs */}
         {bannerData.tascoLogs &&
           bannerData.tascoLogs.map((equipment, index) => (
-            <Holds key={index} className=" h-full justify-center items-center">
+            <Holds key={index} className="h-full justify-center items-center">
               {equipment.laborType === "tascoAbcdEquipment" ? (
                 <>
                   <Holds className="h-full justify-center items-center">
