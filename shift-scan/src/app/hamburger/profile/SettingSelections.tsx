@@ -48,6 +48,10 @@ export default function SettingSelections({
   const t = useTranslations("Hamburger");
   const [language, setLanguage] = useState<string>();
   const [isLangModalOpen, setIsLangModalOpen] = useState(false);
+  useEffect(() => {
+    if (!data?.language) return;
+    setLanguage(data.language);
+  }, [data]);
 
   if (!data) {
     return (
@@ -70,11 +74,6 @@ export default function SettingSelections({
       </>
     );
   }
-
-  useEffect(() => {
-    setLanguage(data.language);
-  }, [data]);
-
   return (
     <Grids>
       <Holds className="row-span-7 h-full p-4">

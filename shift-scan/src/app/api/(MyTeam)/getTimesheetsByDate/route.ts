@@ -1,8 +1,9 @@
-"use server";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 import { formatInTimeZone } from "date-fns-tz";
+
+export const dynamic = "force-dynamic"; // ✅ Ensures this API is dynamic and never pre-rendered
 
 export async function GET(request: Request) {
   try {
@@ -18,7 +19,10 @@ export async function GET(request: Request) {
     }
 
     if (!employeeId) {
-      return NextResponse.json({ error: "Missing employeeId" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing employeeId" },
+        { status: 400 }
+      );
     }
 
     if (!date) {
@@ -27,9 +31,12 @@ export async function GET(request: Request) {
 
     const startOfDay = new Date(date);
     if (isNaN(startOfDay.getTime())) {
-      return NextResponse.json({ error: "Invalid date format" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid date format" },
+        { status: 400 }
+      );
     }
-    
+
     startOfDay.setUTCHours(0, 0, 0, 0);
 
     const endOfDay = new Date(startOfDay);
@@ -83,7 +90,8 @@ export async function GET(request: Request) {
 
     return NextResponse.json(adjustedTimeSheets, {
       headers: {
-        "Cache-Control": "public, max-age=60, s-maxage=60, stale-while-revalidate=30",
+        "Cache-Control":
+          "public, max-age=60, s-maxage=60, stale-while-revalidate=30",
       },
     });
   } catch (error) {

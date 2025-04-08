@@ -1,8 +1,7 @@
-"use server";
-
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
+export const dynamic = "force-dynamic"; // ✅ Ensures this API is dynamic and never pre-rendered
 export async function GET(
   request: Request,
   { params }: { params: { timeSheetId: string } }

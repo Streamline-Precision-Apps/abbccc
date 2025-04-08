@@ -44,7 +44,7 @@ export async function createFormSubmission(formData: FormData) {
     }
 
     // Initialize the data object with field.name as keys
-    const initialData: Record<string, any> = {};
+    const initialData: Record<string, string> = {};
     for (const group of formTemplate.FormGrouping) {
       for (const field of group.Fields) {
         initialData[field.name] = field.defaultValue || ""; // Set default values if available
@@ -95,7 +95,7 @@ export async function fetchDraft(submissionId: string) {
 }
 
 export async function saveDraft(
-  formData: Record<string, any>,
+  formData: Record<string, string>,
   formTemplateId: string,
   userId: string,
   formType?: string,
@@ -117,12 +117,12 @@ export async function saveDraft(
         throw new Error("Submission data is null");
       }
 
-      // Type-cast data to a Record<string, any>
-      const existingData = existingSubmission.data as Record<string, any>;
+      // Type-cast data to a Record<string, string>
+      const existingData = existingSubmission.data as Record<string, string>;
       const existingTitle = existingSubmission.title;
 
       // Compare the new data with the existing data to find changed fields
-      const changedFields: Record<string, any> = {};
+      const changedFields: Record<string, string> = {};
       for (const key in formData) {
         if (formData[key] !== existingData[key]) {
           changedFields[key] = formData[key]; // Only include changed fields
@@ -165,7 +165,7 @@ export async function saveDraft(
 }
 
 export async function saveDraftToPending(
-  formData: Record<string, any>,
+  formData: Record<string, string>,
   formTemplateId: string,
   userId: string,
   formType?: string,
@@ -187,12 +187,12 @@ export async function saveDraftToPending(
         throw new Error("Submission data is null");
       }
 
-      // Type-cast data to a Record<string, any>
-      const existingData = existingSubmission.data as Record<string, any>;
+      // Type-cast data to a Record<string, string>
+      const existingData = existingSubmission.data as Record<string, string>;
       const existingTitle = existingSubmission.title;
 
       // Compare the new data with the existing data to find changed fields
-      const changedFields: Record<string, any> = {};
+      const changedFields: Record<string, string> = {};
       for (const key in formData) {
         if (formData[key] !== existingData[key]) {
           changedFields[key] = formData[key]; // Only include changed fields
@@ -236,7 +236,7 @@ export async function saveDraftToPending(
 }
 
 export async function savePending(
-  formData: Record<string, any>,
+  formData: Record<string, string>,
   formTemplateId: string,
   userId: string,
   formType?: string,
@@ -258,12 +258,12 @@ export async function savePending(
         throw new Error("Submission data is null");
       }
 
-      // Type-cast data to a Record<string, any>
-      const existingData = existingSubmission.data as Record<string, any>;
+      // Type-cast data to a Record<string, string>
+      const existingData = existingSubmission.data as Record<string, string>;
       const existingTitle = existingSubmission.title;
 
       // Compare the new data with the existing data to find changed fields
-      const changedFields: Record<string, any> = {};
+      const changedFields: Record<string, string> = {};
       for (const key in formData) {
         if (formData[key] !== existingData[key]) {
           changedFields[key] = formData[key]; // Only include changed fields

@@ -1,8 +1,9 @@
-"use server";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 import { SearchUser } from "@/lib/types";
+
+export const dynamic = "force-dynamic"; // ✅ Ensures this API is dynamic and never pre-rendered
 
 export async function GET(req: Request) {
   try {
@@ -161,7 +162,9 @@ export async function GET(req: Request) {
           terminationDate: true,
         },
       });
-      employees = employees.filter((employee) => employee.permission !== "USER");
+      employees = employees.filter(
+        (employee) => employee.permission !== "USER"
+      );
     } else if (filter === "admins") {
       employees = await prisma.user.findMany({
         where: { permission: "ADMIN" },
@@ -254,8 +257,6 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
-
-
 
 // "use server";
 // import { NextResponse } from "next/server";
@@ -358,5 +359,3 @@ export async function GET(req: Request) {
 //     return NextResponse.json({ error: errorMessage }, { status: 500 });
 //   }
 // }
-
-
