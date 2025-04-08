@@ -8,7 +8,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import AccountInformation from "./accountInformation";
-import ProfileImageEditor from "./ProfileImageEditor";
+import ProfileImageEditor from "@/app/hamburger/profile/ProfileImageEditor";
 import { NewTab } from "@/components/(reusable)/newTabs";
 import SettingSelections from "./SettingSelections";
 import { UserSettings } from "@/lib/types";
