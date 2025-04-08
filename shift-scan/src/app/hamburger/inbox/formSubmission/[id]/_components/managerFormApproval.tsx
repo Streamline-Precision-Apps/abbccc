@@ -104,7 +104,7 @@ export default function ManagerFormApproval({
   submissionId: string | null;
   managerFormApproval: ManagerFormApprovalSchema | null;
   setFormTitle: Dispatch<SetStateAction<string>>;
-  updateFormValues: (newValues: Record<string, any>) => void;
+  updateFormValues: (newValues: Record<string, string>) => void;
 }) {
   const router = useRouter();
   const { data: session } = useSession();

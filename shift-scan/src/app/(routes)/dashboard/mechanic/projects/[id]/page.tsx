@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import { useTranslations } from "next-intl";
 import useProjectData from "./_components/useProjectData";
 import ProjectLayout from "./_components/ProjectLayout";
 import ProjectTabs from "./_components/ProjectTabs";
@@ -9,7 +8,6 @@ import CommentsTab from "./_components/myComment";
 import FinishProjectModal from "./_components/FinishProjectModal";
 
 export default function ProjectPage({ params }: { params: { id: string } }) {
-  const t = useTranslations("MechanicWidget");
   const [activeTab, setActiveTab] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -35,7 +33,6 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         loading={loading}
-        t={t}
       />
 
       {activeTab === 1 && (

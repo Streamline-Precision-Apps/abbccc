@@ -153,7 +153,7 @@ export async function GET() {
 
     // Reusable function to check incomplete fields
     const isFieldIncomplete = (
-      item: Record<string, any>,
+      item: Record<string, unknown>,
       requiredFields: string[]
     ): boolean => requiredFields.some((field) => !item[field]);
 

@@ -1,8 +1,9 @@
-"use server";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 import { EquipmentTags } from "@prisma/client"; // Importing EquipmentTags from Prisma
+
+export const dynamic = "force-dynamic"; // ✅ Ensures this API is dynamic and never pre-rendered
 
 export async function GET(req: Request) {
   try {
@@ -46,7 +47,12 @@ export async function GET(req: Request) {
           inUse: true,
         },
       });
-    } else if (filter && ["TRUCK", "TRAILER", "EQUIPMENT", "VEHICLE"].includes(filter.toUpperCase())) {
+    } else if (
+      filter &&
+      ["TRUCK", "TRAILER", "EQUIPMENT", "VEHICLE"].includes(
+        filter.toUpperCase()
+      )
+    ) {
       equipment = await prisma.equipment.findMany({
         where: { equipmentTag: filter.toUpperCase() as EquipmentTags }, // Explicit type assertion
         select: {

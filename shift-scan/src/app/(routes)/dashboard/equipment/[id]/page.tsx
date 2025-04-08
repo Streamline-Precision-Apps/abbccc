@@ -84,7 +84,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
   const [tab, setTab] = useState(1);
 
   const deepCompareObjects = useCallback(
-    <T extends Record<string, any>>(obj1: T, obj2: T): boolean => {
+    <T extends Record<string, unknown>>(obj1: T, obj2: T): boolean => {
       if (obj1 === obj2) return true;
 
       const keys1 = Object.keys(obj1);
@@ -93,8 +93,8 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
       if (keys1.length !== keys2.length) return false;
 
       for (const key of keys1) {
-        const val1 = obj1[key];
-        const val2 = obj2[key];
+        const val1 = obj1[key] as string;
+        const val2 = obj2[key] as string;
         const areObjects = isObject(val1) && isObject(val2);
 
         if (
@@ -110,7 +110,7 @@ export default function CombinedForm({ params }: { params: { id: string } }) {
     []
   );
 
-  const isObject = (object: any) => {
+  const isObject = (object: string) => {
     return object != null && typeof object === "object";
   };
 

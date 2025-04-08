@@ -9,24 +9,24 @@ import {
 } from "@/actions/mechanicActions";
 import { setMechanicProjectID } from "@/actions/cookieActions";
 
-interface MaintenanceLog {
+type MaintenanceLog = {
   id: string;
-  userId: string;
-  maintenanceId: string;
   startTime?: string;
   endTime?: string | null;
+  userId: string;
   comment?: string;
-}
+  maintenanceId: string;
+};
 
-interface ProjectData {
+type ProjectData = {
   title: string;
   problemReceived: string;
   additionalNotes: string;
   hasBeenDelayed: boolean;
   maintenanceLogs: MaintenanceLog[];
-}
+};
 
-interface ApiResponse {
+type ApiResponse = {
   equipment: {
     name: string;
   };
@@ -34,7 +34,7 @@ interface ApiResponse {
   additionalInfo: string;
   hasBeenDelayed: boolean;
   maintenanceLogs: MaintenanceLog[];
-}
+};
 
 export default function useProjectData(projectId: string) {
   const router = useRouter();

@@ -1,25 +1,12 @@
 "use client";
-import {
-  useState,
-  useMemo,
-  useRef,
-  Dispatch,
-  SetStateAction,
-  RefObject,
-} from "react";
+import { useState, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import Spinner from "@/components/(animations)/spinner";
-import EmptyView from "@/components/(reusable)/emptyView";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
-import { Images } from "@/components/(reusable)/images";
-import { Texts } from "@/components/(reusable)/texts";
-import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { SearchBar } from "./SearchBar";
 import { ProjectList } from "./ProjectList";
-
-// Import your UI components
 
 enum Priority {
   LOW = "LOW",
@@ -30,6 +17,20 @@ enum Priority {
   TODAY = "TODAY",
 }
 
+type MaintenanceLog = {
+  id: string;
+  startTime: string;
+  endTime: string;
+  userId: string;
+  timeSheetId: string;
+  user: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    image: string;
+  };
+};
+
 type Project = {
   id: string;
   equipmentId: string;
@@ -38,7 +39,7 @@ type Project = {
   repaired: boolean;
   priority: Priority;
   delay: Date | null;
-  maintenanceLogs: any[];
+  maintenanceLogs: MaintenanceLog[];
 };
 
 export const SearchAndCheck = ({

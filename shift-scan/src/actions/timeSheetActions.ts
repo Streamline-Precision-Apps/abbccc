@@ -6,7 +6,7 @@ import { TimeSheet } from "@/lib/types";
 import { WorkType } from "@prisma/client";
 import { error } from "console";
 import { revalidatePath } from "next/cache";
-import { formatInTimeZone, toZonedTime } from "date-fns-tz";
+import { formatInTimeZone } from "date-fns-tz";
 const { formatISO } = require("date-fns");
 // Get all TimeSheets
 export async function getTimeSheetsbyId() {
@@ -540,7 +540,7 @@ export async function handleTascoTimeSheet(formData: FormData) {
       const type = formData.get("type") as string; // Add type to formData
 
       let materialType;
-      let laborType = formData.get("laborType") as string;
+      const laborType = formData.get("laborType") as string;
       if (shiftType === "ABCD Shift") {
         materialType = formData.get("materialType") as string;
       } else {

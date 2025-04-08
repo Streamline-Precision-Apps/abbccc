@@ -1,13 +1,17 @@
-"use server";
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
+
+export const dynamic = "force-dynamic"; // ✅ Ensures this API is dynamic and never pre-rendered
 
 export async function GET(request: NextRequest) {
   try {
     const method = request.nextUrl.searchParams.get("method");
 
     if (!method) {
-      return NextResponse.json({ error: "Method is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Method is required" },
+        { status: 400 }
+      );
     }
 
     const name = request.nextUrl.searchParams.get("name");
@@ -15,7 +19,10 @@ export async function GET(request: NextRequest) {
     switch (method) {
       case "get":
         if (!name) {
-          return NextResponse.json({ error: "Cookie name is required" }, { status: 400 });
+          return NextResponse.json(
+            { error: "Cookie name is required" },
+            { status: 400 }
+          );
         }
 
         const requestedCookie = cookies().get(name)?.value;
@@ -58,10 +65,15 @@ export async function GET(request: NextRequest) {
             secure: process.env.NODE_ENV === "production",
           });
 
-          return NextResponse.json({ message: "All cookies deleted successfully" });
+          return NextResponse.json({
+            message: "All cookies deleted successfully",
+          });
         } catch (error) {
           console.error("Error deleting cookies:", error);
-          return NextResponse.json({ error: "Failed to delete cookies" }, { status: 500 });
+          return NextResponse.json(
+            { error: "Failed to delete cookies" },
+            { status: 500 }
+          );
         }
 
       default:
@@ -69,6 +81,9 @@ export async function GET(request: NextRequest) {
     }
   } catch (error) {
     console.error("Error processing request:", error);
-    return NextResponse.json({ error: "An unexpected error occurred" }, { status: 500 });
+    return NextResponse.json(
+      { error: "An unexpected error occurred" },
+      { status: 500 }
+    );
   }
 }
