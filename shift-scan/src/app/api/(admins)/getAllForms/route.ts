@@ -1,7 +1,8 @@
-"use server";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
+
+export const dynamic = "force-dynamic"; // ✅ Ensures this API is dynamic and never pre-rendered
 
 export async function GET() {
   try {
@@ -15,15 +16,23 @@ export async function GET() {
       select: {
         id: true,
         name: true,
-        fields: true,
+        FormGrouping: {
+          include: {
+            Fields: {
+              include: {
+                Options: true,
+              },
+              orderBy: {
+                order: "asc",
+              },
+            },
+          },
+        },
       },
     });
 
     if (!forms || forms.length === 0) {
-      return NextResponse.json(
-        { message: "No forms found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ message: "No forms found" }, { status: 404 });
     }
 
     return NextResponse.json(forms);
@@ -35,9 +44,6 @@ export async function GET() {
       errorMessage = error.message;
     }
 
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

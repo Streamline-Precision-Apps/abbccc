@@ -4,6 +4,20 @@ import { Texts } from "@/components/(reusable)/texts";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { SelectionToggle } from "./SelectionToggle";
 
+type MaintenanceLog = {
+  id: string;
+  startTime: string;
+  endTime: string;
+  userId: string;
+  timeSheetId: string;
+  user: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    image: string;
+  };
+};
+
 enum Priority {
   LOW = "LOW",
   MEDIUM = "MEDIUM",
@@ -21,7 +35,7 @@ type Project = {
   repaired: boolean;
   priority: Priority;
   delay: Date | null;
-  maintenanceLogs: any[];
+  maintenanceLogs: MaintenanceLog[];
 };
 
 export function ProjectItem({

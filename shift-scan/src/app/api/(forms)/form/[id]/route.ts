@@ -22,9 +22,9 @@ export async function GET(
     include: {
       FormGrouping: {
         include: {
-          fields: {
+          Fields: {
             include: {
-              options: true, // Include dropdown options if any
+              Options: true, // Include dropdown options if any
             },
             orderBy: {
               order: "asc",
@@ -53,7 +53,7 @@ export async function GET(
       id: group.id,
       title: group.title || "",
       order: group.order,
-      fields: group.fields.map((field) => ({
+      fields: group.Fields.map((field) => ({
         id: field.id,
         label: field.label,
         name: field.name,
@@ -63,7 +63,7 @@ export async function GET(
         defaultValue: field.defaultValue,
         placeholder: field.placeholder,
         helperText: field.helperText,
-        options: field.options.map((option) => option.value), // Extract dropdown options
+        options: field.Options.map((option) => option.value), // Extract dropdown options
       })),
     })),
   };

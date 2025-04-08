@@ -1,7 +1,8 @@
-"use server";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
+
+export const dynamic = "force-dynamic"; // ✅ Ensures this API is dynamic and never pre-rendered
 
 export async function GET() {
   try {
@@ -19,7 +20,7 @@ export async function GET() {
         employeeId: userId,
       },
       select: {
-        equipment: {
+        Equipment: {
           select: {
             id: true,
             qrId: true,
@@ -36,8 +37,8 @@ export async function GET() {
     // Extract unique equipment items (filter out duplicates)
     const uniqueEquipment = new Map();
     recentEquipment.forEach((log) => {
-      if (log.equipment) {
-        uniqueEquipment.set(log.equipment.id, log.equipment);
+      if (log.Equipment) {
+        uniqueEquipment.set(log.Equipment.id, log.Equipment);
       }
     });
 

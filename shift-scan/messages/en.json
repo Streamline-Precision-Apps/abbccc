@@ -321,6 +321,7 @@
     "ID": "Id: #"
   },
   "Clock": {
+    "SearchBarPlaceholder": "Type here...",
     "SelectedEquipment": "Selected Equipment",
     "MaterialType": "Material Type",
     "LaborType": "Labor Type",
@@ -468,6 +469,8 @@
   },
   "Hamburger": {
     "PersonalReminders": "Personal Reminders",
+    "AccountInformation": "Account Information",
+    "AccountSettings": "Account Settings",
     "ContactDetails": "Edit Contact Details",
     "Saving": "Savings changes",
     "Save": "Save Changes",
@@ -894,6 +897,16 @@
     "Loading": "Loading...",
     "NoDrives": "There Are No Drives Currently",
     "FetchingError": "An error occurred while fetching received content"
+  },
+
+  "Tasco": {
+    "LoadCounter": "Load Counter",
+    "Comments": "Comments",
+    "RefuelIcon": "refuel-Icon",
+    "RefuelLogs": "Refuel Logs",
+    "CommentPlaceholder": "Write your Comments here...",
+    "DidYouRefuel?": "Did you Refuel?",
+    "TotalGallons": "Total Gallons"
   },
 
   "MechanicWidget": {

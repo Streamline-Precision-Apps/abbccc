@@ -1,7 +1,7 @@
-"use server";
-
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+
+export const dynamic = "force-dynamic"; // ✅ Ensures this API is dynamic and never pre-rendered
 
 export async function GET(
   request: Request,
@@ -11,7 +11,10 @@ export async function GET(
 
   // Validate timeSheetId parameter
   if (!timeSheetId || typeof timeSheetId !== "string") {
-    return NextResponse.json({ error: "Invalid or missing timeSheetId" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid or missing timeSheetId" },
+      { status: 400 }
+    );
   }
 
   try {
@@ -21,14 +24,6 @@ export async function GET(
         truckingLogId: timeSheetId,
       },
     });
-
-    // If no records found, return a 404 response
-    if (stateMileage.length === 0) {
-      return NextResponse.json(
-        { message: "No state mileage found for the provided timeSheetId" },
-        { status: 404 }
-      );
-    }
 
     // Return the found materials (state mileage)
     return NextResponse.json(stateMileage);

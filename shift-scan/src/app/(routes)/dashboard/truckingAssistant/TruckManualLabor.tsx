@@ -9,15 +9,6 @@ import { Titles } from "@/components/(reusable)/titles";
 import OperatorHaulingLogs from "./components/OperatorHaulingLogs";
 import TruckDriverNotes from "./components/TruckDriverNotes";
 
-type Refueled = {
-  id: string;
-  employeeEquipmentLogId: string | null;
-  truckingLogId: string | null;
-  gallonsRefueled: number | null;
-  milesAtfueling: number | null;
-  tascoLogId: string | null;
-};
-
 type Material = {
   name: string;
   id: string;

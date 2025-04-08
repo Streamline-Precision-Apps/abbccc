@@ -7,7 +7,7 @@ import {
   initialJobsites,
   initialCostCodes,
   initialCCTags,
-  intialEquipment,
+  updatedEquipment, // updated equipment seed values from dataValues.ts
   initialCrews,
   initialUserSettings,
   initialTimeSheets,
@@ -24,7 +24,10 @@ import {
   initialMaterials,
   initialRefueled,
   initialStateMileage,
-  initialWorkTypes,
+  // New seed arrays for the new models:
+  initialDocumentTags,
+  initialPdfDocuments,
+  initialCreationLogs
 } from "@/data/dataValues";
 
 const prisma = new PrismaClient();
@@ -44,7 +47,7 @@ async function main() {
       }
     }
 
-    // 2. Insert Form Templates (make sure one has id "ft1")
+    // 2. Insert Form Templates
     for (const formTemplate of initialFormTemplates) {
       try {
         const newTemplate = await prisma.formTemplate.create({ data: formTemplate });
@@ -66,7 +69,7 @@ async function main() {
       }
     }
 
-    // 4. Insert Contacts
+    // 3.5. Insert Contacts
     for (const contact of initialContacts) {
       try {
         const newContact = await prisma.contacts.create({ data: contact });
@@ -77,7 +80,18 @@ async function main() {
       }
     }
 
-    // 5. Insert Jobsites
+
+    for (const user of initialUsers) {
+      try {
+        const newUser = await prisma.user.create({ data: user });
+        console.log("Created user with id:", newUser.id);
+      } catch (error) {
+        console.log("Error creating user:", error);
+        continue;
+      }
+    }
+
+    // 4. Insert Jobsites
     for (const jobsite of initialJobsites) {
       try {
         const newJobsite = await prisma.jobsite.create({ data: jobsite });
@@ -88,7 +102,7 @@ async function main() {
       }
     }
 
-    // 6. Insert Cost Codes
+    // 5. Insert Cost Codes
     for (const costCode of initialCostCodes) {
       try {
         const newCostCode = await prisma.costCode.create({ data: costCode });
@@ -99,7 +113,7 @@ async function main() {
       }
     }
 
-    // 7. Insert CCTags
+    // 6. Insert CCTags
     for (const cctag of initialCCTags) {
       try {
         const newCCTag = await prisma.cCTag.create({ data: cctag });
@@ -110,8 +124,30 @@ async function main() {
       }
     }
 
-    // 8. Insert Equipment (ensure equipment with ids "eq1", "eq2", "eq3" exist)
-    for (const equip of intialEquipment) {
+    // 7. Insert Document Tags (new model)
+    for (const documentTag of initialDocumentTags) {
+      try {
+        const newDocTag = await prisma.documentTag.create({ data: documentTag });
+        console.log("Created document tag with id:", newDocTag.id);
+      } catch (error) {
+        console.log("Error creating document tag:", error);
+        continue;
+      }
+    }
+
+    // 8. Insert PDF Documents (new model)
+    for (const pdfDocument of initialPdfDocuments) {
+      try {
+        const newPdfDoc = await prisma.pdfDocument.create({ data: pdfDocument });
+        console.log("Created PDF document with id:", newPdfDoc.id);
+      } catch (error) {
+        console.log("Error creating PDF document:", error);
+        continue;
+      }
+    }
+
+    // 9. Insert Equipment (using updatedEquipment seed values)
+    for (const equip of updatedEquipment) {
       try {
         const newEquipment = await prisma.equipment.create({ data: equip });
         console.log("Created equipment with id:", newEquipment.id);
@@ -121,7 +157,18 @@ async function main() {
       }
     }
 
-    // 9. Insert Crews
+    // 10. Insert Creation Logs (new model)
+    for (const creationLog of initialCreationLogs) {
+      try {
+        const newCreationLog = await prisma.creationLogs.create({ data: creationLog });
+        console.log("Created creation log with id:", newCreationLog.id);
+      } catch (error) {
+        console.log("Error creating creation log:", error);
+        continue;
+      }
+    }
+
+    // 11. Insert Crews
     for (const crew of initialCrews) {
       try {
         const newCrew = await prisma.crew.create({ data: crew });
@@ -132,7 +179,7 @@ async function main() {
       }
     }
 
-    // 10. Insert User Settings
+    // 12. Insert User Settings
     for (const settings of initialUserSettings) {
       try {
         const newSettings = await prisma.userSettings.create({ data: settings });
@@ -143,7 +190,7 @@ async function main() {
       }
     }
 
-    // 11. Insert TimeSheets (ensure one has id "ts1")
+    // 13. Insert TimeSheets
     for (const timesheet of initialTimeSheets) {
       try {
         const newTimeSheet = await prisma.timeSheet.create({ data: timesheet });
@@ -154,7 +201,7 @@ async function main() {
       }
     }
 
-    // 12. Insert Trucking Logs (ensure one has id "tl1" and connects to timesheet "ts1")
+    // 14. Insert Trucking Logs
     for (const truckingLog of initialTruckingLogs) {
       try {
         const newTruckingLog = await prisma.truckingLog.create({ data: truckingLog });
@@ -165,7 +212,7 @@ async function main() {
       }
     }
 
-    // 13. Insert Employee Equipment Logs
+    // 15. Insert Employee Equipment Logs
     for (const log of initialEmployeeEquipmentLogs) {
       try {
         const newLog = await prisma.employeeEquipmentLog.create({ data: log });
@@ -176,7 +223,7 @@ async function main() {
       }
     }
 
-    // 14. Insert Equipment Hauled (ensure the connected Equipment record exists)
+    // 16. Insert Equipment Hauled
     for (const equipmentHauled of initialEquipmentHauled) {
       try {
         const newEquipmentHauled = await prisma.equipmentHauled.create({ data: equipmentHauled });
@@ -187,7 +234,7 @@ async function main() {
       }
     }
 
-    // 15. Insert Errors
+    // 17. Insert Errors
     for (const errorRecord of initialErrors) {
       try {
         const newError = await prisma.error.create({ data: errorRecord });
@@ -198,7 +245,7 @@ async function main() {
       }
     }
 
-    // 16. Insert Form Submissions (ensure one has id "fs1" and connects to Form Template "ft1")
+    // 18. Insert Form Submissions
     for (const submission of initialFormSubmissions) {
       try {
         const newSubmission = await prisma.formSubmission.create({ data: submission });
@@ -209,7 +256,7 @@ async function main() {
       }
     }
 
-    // 17. Insert Form Approvals (connects to Form Submission "fs1")
+    // 19. Insert Form Approvals
     for (const approval of initialFormApprovals) {
       try {
         const newApproval = await prisma.formApproval.create({ data: approval });
@@ -220,7 +267,7 @@ async function main() {
       }
     }
 
-    // 18. Insert Maintenances (ensure one has id "m1" and connects to Equipment "eq3")
+    // 20. Insert Maintenances
     for (const maintenance of initialMaintenances) {
       try {
         const newMaintenance = await prisma.maintenance.create({ data: maintenance });
@@ -231,7 +278,7 @@ async function main() {
       }
     }
 
-    // 19. Insert Maintenance Logs (connects to Maintenance "m1")
+    // 21. Insert Maintenance Logs
     for (const maintenanceLog of initialMaintenanceLogs) {
       try {
         const newMaintenanceLog = await prisma.maintenanceLog.create({ data: maintenanceLog });
@@ -242,7 +289,7 @@ async function main() {
       }
     }
 
-    // 20. Insert Tasco Material Types
+    // 22. Insert Tasco Material Types
     for (const tascoType of initialTascoMaterialTypes) {
       try {
         const newTascoType = await prisma.tascoMaterialTypes.create({ data: tascoType });
@@ -253,7 +300,7 @@ async function main() {
       }
     }
 
-    // 21. Insert Tasco Logs (connects to an existing TimeSheet and Equipment)
+    // 23. Insert Tasco Logs
     for (const tascoLog of initialTascoLogs) {
       try {
         const newTascoLog = await prisma.tascoLog.create({ data: tascoLog });
@@ -264,7 +311,7 @@ async function main() {
       }
     }
 
-    // 22. Insert Materials (associated with a TruckingLog)
+    // 24. Insert Materials
     for (const material of initialMaterials) {
       try {
         const newMaterial = await prisma.material.create({ data: material });
@@ -275,35 +322,24 @@ async function main() {
       }
     }
 
-    // 23. Insert Refueled records (associated with a TruckingLog or TascoLog)
+    // 25. Insert Refuel Logs
     for (const refuel of initialRefueled) {
       try {
-        const newRefuel = await prisma.refueled.create({ data: refuel });
-        console.log("Created refueled record with id:", newRefuel.id);
+        const newRefuel = await prisma.refuelLog.create({ data: refuel });
+        console.log("Created refuel log with id:", newRefuel.id);
       } catch (error) {
-        console.log("Error creating refueled record:", error);
+        console.log("Error creating refuel log:", error);
         continue;
       }
     }
 
-    // 24. Insert State Mileage (associated with a TruckingLog)
+    // 26. Insert State Mileage
     for (const stateMileage of initialStateMileage) {
       try {
         const newStateMileage = await prisma.stateMileage.create({ data: stateMileage });
         console.log("Created state mileage with id:", newStateMileage.id);
       } catch (error) {
         console.log("Error creating state mileage:", error);
-        continue;
-      }
-    }
-
-    // 25. Insert Work Types
-    for (const workType of initialWorkTypes) {
-      try {
-        const newWorkType = await prisma.workTypes.create({ data: workType });
-        console.log("Created work type with id:", newWorkType.id);
-      } catch (error) {
-        console.log("Error creating work type:", error);
         continue;
       }
     }

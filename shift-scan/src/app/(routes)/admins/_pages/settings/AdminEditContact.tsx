@@ -89,18 +89,18 @@ export const AdminEditContact = ({
     }
   };
 
-  const fetchAllData = async () => {
-    setLoading(true);
-    try {
-      await Promise.all([fetchProfile(), fetchEmployee()]);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchAllData = async () => {
+      setLoading(true);
+      try {
+        await Promise.all([fetchProfile(), fetchEmployee()]);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchAllData();
   }, []);
 

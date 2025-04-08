@@ -62,7 +62,7 @@ export default function Comment({
             <Texts
               size={"p2"}
               className={`${
-                commentsValue.length === 40
+                commentsValue.length >= 40
                   ? "text-red-500 absolute bottom-5 right-2"
                   : "absolute bottom-5 right-2"
               }`}

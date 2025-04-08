@@ -28,7 +28,7 @@ export async function GET(
     const crew = await prisma.crew.findUnique({
       where: { id: crewId },
       include: {
-        users: {
+        Users: {
           select: {
             id: true,
             firstName: true,
@@ -49,9 +49,8 @@ export async function GET(
     const responseData = {
       crewId: crew.id,
       crewName: crew.name || "Unnamed Crew",
-      crewDescription: crew.description || "No description available",
       leadId: crew.leadId,
-      users: crew.users.length > 0 ? crew.users.map((user) => ({
+      users: crew.Users.length > 0 ? crew.Users.map((user) => ({
         id: user.id,
         firstName: user.firstName,
         lastName: user.lastName,

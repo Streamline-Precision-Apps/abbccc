@@ -26,7 +26,7 @@ export default async function TascoPage() {
             <Holds background={"white"} className="row-span-1 h-full">
               <TitleBoxes
                 title="Tasco"
-                titleImg="/Tasco.svg"
+                titleImg="/tasco.svg"
                 titleImgAlt="Tasco"
               />
             </Holds>
@@ -48,14 +48,12 @@ export default async function TascoPage() {
             >
               <TitleBoxes
                 title="Tasco"
-                titleImg="/Tasco.svg"
+                titleImg="/tasco.svg"
                 titleImgAlt="Tasco"
               />
             </Holds>
-            <Holds background={"white"} className="row-span-5 h-full">
-              <Contents width={"section"}>
-                <TascoClientPage />
-              </Contents>
+            <Holds className="row-span-5 h-full">
+              <TascoClientPage />
             </Holds>
           </Grids>
         </Contents>

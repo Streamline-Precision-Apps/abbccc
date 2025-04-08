@@ -33,7 +33,7 @@ export default function Log() {
           isFinished: false,
         },
         include: {
-          equipment: true,
+          Equipment: true,
         },
       });
 

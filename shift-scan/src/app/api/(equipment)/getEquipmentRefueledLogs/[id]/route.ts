@@ -18,7 +18,7 @@ export async function GET(
       );
     }
 
-    const stateMileage = await prisma.refueled.findMany({
+    const stateMileage = await prisma.refuelLog.findMany({
       where: {
         employeeEquipmentLogId: id,
       },

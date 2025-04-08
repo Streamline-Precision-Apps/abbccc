@@ -15,7 +15,7 @@ export async function GET(
   }
 
   try {
-    const stateMileage = await prisma.refueled.findMany({
+    const stateMileage = await prisma.refuelLog.findMany({
       where: {
         tascoLogId: timeSheetId,
       },

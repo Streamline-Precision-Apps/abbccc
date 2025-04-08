@@ -19,7 +19,7 @@ export default function EmptyView({
         className={`${size} absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2`}
       >
         <Images
-          titleImg={"/shiftScanLogoHorizontal.svg"}
+          titleImg={"/shiftscanlogoHorizontal.svg"}
           titleImgAlt="personnel"
           className="bg-clip-padding"
         />

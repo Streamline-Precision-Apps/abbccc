@@ -24,7 +24,7 @@ export async function GET() {
       status: FormStatus.DRAFT,
     },
     include: {
-      formTemplate: {
+      FormTemplate: {
         select: {
           name: true,
         },

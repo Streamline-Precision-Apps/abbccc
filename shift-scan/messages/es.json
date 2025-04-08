@@ -384,6 +384,7 @@
     "Mileage": "Mileage"
   },
   "ClockOut": {
+    "SearchBarPlaceholder": "Busca aquí...",
     "ClockOut": "Fichar al Salir",
     "Date-label": "Fecha",
     "JobSite-label": "Sitio de Trabajo",
@@ -434,6 +435,8 @@
   },
   "Hamburger": {
     "PersonalReminders": "Recordatorios Personales",
+    "AccountInformation": "Información de Cuenta",
+    "AccountSettings": "Configuración de Cuenta",
     "Saving": "Guardando Cambios",
     "loading": "Cargando...",
     "NewPassword": "Nueva Contraseña",
@@ -451,6 +454,7 @@
     "Inbox": "Bandeja de Entrada",
     "EmployeeID": "ID de Empleado",
     "PersonalEmail": "Correo Personal",
+    "EmergencyContactName": "Contacto de Emergencia",
     "EmergencyContact": "Contacto de Emergencia",
     "SafetyTraining": "Entrenamiento de Seguridad",
     "SignOut": "Cerrar Sesión",
@@ -844,6 +848,17 @@
     "NoDrives": "No hay unidades actualmente",
     "FetchingError": "Se produjo un error mientras obtenía contenido recibido"
   },
+
+  "Tasco": {
+    "LoadCounter": "Contador de carga",
+    "Comments": "Comentario",
+    "RefuelIcon": "reabastecimiento de reabastecimiento",
+    "RefuelLogs": "Galones adicionales",
+    "CommentPlaceholder": "Escribe tus comentarios aquí ...",
+    "DidYouRefuel?": "¿Reabasteciste?",
+    "TotalGallons": "Total de galones"
+  },
+
   "MechanicWidget": {
     "AddDelay": "Add Delay",
     "RemoveDelay": "Remove Delay",
