@@ -1,74 +1,71 @@
-// Holds the login and general app data of employee but not all the data
 model User {
-    id              String     @id @default(cuid())
-    firstName       String
-    lastName        String
-    username        String     @unique
-    email           String     @unique
-    password        String
-    signature       String?    @db.Text
-    DOB             String // used to check for duplicate users - manager can see this under profile
-    truckView       Boolean // view of truck info
-    tascoView       Boolean // view of tasco info
-    laborView       Boolean // view of labor info
-    mechanicView    Boolean // view of mechanic info
-    permission      Permission @default(USER) // sets default permission to user on creation
-    image           String?
-    activeEmployee  Boolean    @default(true)
-    startDate       DateTime?  @default(now())
-    terminationDate DateTime?
-    accountSetup    Boolean    @default(false)
-    clockedIn       Boolean    @default(false) // indicates if employee is clocked in
-    companyId       String
+  id                   String                 @id @default(cuid())
+  firstName            String
+  lastName             String
+  username             String                 @unique
+  email                String                 @unique
+  password             String
+  signature            String?
+  DOB                  String
+  truckView            Boolean
+  tascoView            Boolean
+  laborView            Boolean
+  mechanicView         Boolean
+  permission           Permission             @default(USER)
+  image                String?
+  activeEmployee       Boolean                @default(true)
+  startDate            DateTime?              @default(now())
+  terminationDate      DateTime?
+  accountSetup         Boolean                @default(false)
+  clockedIn            Boolean                @default(false)
+  companyId            String
+  passwordResetTokenId String?
+  workTypeId           String?
+  Contact              Contacts?
+  EquipmentLogs        EmployeeEquipmentLog[]
+  FormApprovals        FormApproval[]
+  FormSubmissions      FormSubmission[]
+  MaintenanceLogs      MaintenanceLog[]
+  PasswordResetTokens  PasswordResetToken[]
+  TimeSheets           TimeSheet[]
+  Company              Company                @relation(fields: [companyId], references: [id])
+  UserSettings         UserSettings?
+  Crews                Crew[]                 @relation("CrewToUser")
+  CreationLogs         CreationLogs[]
 
-    passwordResetTokens  PasswordResetToken[]
-    timeSheets           TimeSheet[]
-    equipmentLogs        EmployeeEquipmentLog[]
-    contact              Contacts?
-    userSettings         UserSettings? // one to one relationship
-    maintenanceLogs      MaintenanceLog[]
-    passwordResetTokenId String?
-    crews                Crew[]
-    formSubmission       FormSubmission[]
-    company              Company                @relation(fields: [companyId], references: [id])
-    FormApproval         FormApproval[]
-
-    @@unique([firstName, lastName, DOB]) // prevent duplicate users
-    @@index([email])
+  @@unique([firstName, lastName, DOB])
+  @@index([email])
 }
 
 model UserSettings {
-    id                String  @id @default(cuid())
-    userId            String  @unique
-    language          String  @default("en")
-    generalReminders  Boolean @default(false) // all general reminders set by employee
-    personalReminders Boolean @default(false) // all personal reminders set by employee
-    cameraAccess      Boolean @default(false)
-    locationAccess    Boolean @default(false)
-    cookiesAccess     Boolean @default(false)
-
-    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String  @id @default(cuid())
+  userId            String  @unique
+  language          String  @default("en")
+  generalReminders  Boolean @default(false)
+  personalReminders Boolean @default(false)
+  cameraAccess      Boolean @default(false)
+  locationAccess    Boolean @default(false)
+  cookiesAccess     Boolean @default(false)
+  User              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-//Employee contact information section. Purpose get ahold of them or their emergency contact. 
 model Contacts {
-    id                     String   @id @default(cuid())
-    employeeId             String   @unique
-    phoneNumber            String
-    emergencyContact       String?
-    emergencyContactNumber String?
-    createdAt              DateTime @default(now())
-    updatedAt              DateTime @updatedAt
-    user                   User?    @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  id                     String   @id @default(cuid())
+  userId             String   @unique @map("employeeId")
+  phoneNumber            String
+  emergencyContact       String?
+  emergencyContactNumber String?
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  User                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-// password reset token
 model PasswordResetToken {
-    id         String   @id @default(cuid())
-    email      String
-    token      String   @unique
-    expiration DateTime
-    Users      User?    @relation(fields: [email], references: [email])
+  id         String   @id @default(cuid())
+  email      String
+  token      String   @unique
+  expiration DateTime
+  User       User     @relation(fields: [email], references: [email])
 
-    @@unique([email, token])
+  @@unique([email, token])
 }

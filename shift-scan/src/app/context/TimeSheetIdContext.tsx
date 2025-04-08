@@ -35,27 +35,34 @@ export const TimeSheetDataProvider: React.FC<{ children: ReactNode }> = ({
       try {
         if (
           url === "/clock" ||
-          url === "/dashboard/log-new" ||
+          url === "/dashboard/equipment/log-new" ||
           url === "/dashboard/switch-jobs" ||
           url === "/break"
         ) {
           const prevTimeSheet = await fetch("/api/getRecentTimecard");
+
+          // Check if the response is OK (status code 200-299)
+          if (!prevTimeSheet.ok) {
+            throw new Error(
+              `Failed to fetch recent timecard: ${prevTimeSheet.statusText}`
+            );
+          }
+
+          // Parse the response as JSON
           const data = await prevTimeSheet.json();
 
-          if (data) {
+          // Check if the data is valid
+          if (data && data.id) {
             setTimeSheetData(data);
-            // Only attempt to setPrevTimeSheet if data.id exists
-            if (data.id) {
-              setPrevTimeSheet(data.id as string);
-            } else {
-              console.warn("TimeSheet data received without an id.");
-            }
+            setPrevTimeSheet(data.id as string);
           } else {
             console.warn("No TimeSheet data received from the API.");
+            setTimeSheetData(null); // Clear any previous data
           }
         }
       } catch (error) {
-        console.error(error);
+        console.error("Error fetching recent timecard:", error);
+        setTimeSheetData(null); // Clear any previous data
       }
     };
     savedTimeSheet();

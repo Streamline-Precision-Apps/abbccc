@@ -6,7 +6,6 @@ import {
   Permission,
   WorkType,
 } from "@/lib/types";
-
 import { revalidatePath, revalidateTag } from "next/cache";
 
 export async function CreateLeaveRequest(formData: FormData) {
@@ -47,71 +46,52 @@ export async function CreateLeaveRequest(formData: FormData) {
         break;
     }
 
-    const leaveRequest = await prisma.timeOffRequestForm.create({
-      data: {
-        name: (formData.get("name") as string) || null,
-
-        requestedStartDate: new Date(
-          formData.get("requestedStartDate") as string
-        ).toISOString(),
-
-        requestedEndDate: new Date(
-          formData.get("requestedEndDate") as string
-        ).toISOString(),
-
-        requestType: enumRequestType,
-        comment: formData.get("comment") as string,
-        managerComment: formData.get("managerComment") as string,
-        employeeId: formData.get("employeeId") as string,
-        status: enumStatus,
-      },
-    });
-    console.log(leaveRequest);
-    revalidatePath("/admins/leave-requests");
-    return leaveRequest;
-  } catch (error) {
-    console.error("Error updating leave request:", error);
-    throw error;
-  }
-}
-
-export async function UpdateLeaveRequest(formData: FormData) {
-  try {
     console.log("Updating leave request...");
     console.log(formData);
-    const id = formData.get("id") as string;
-    const status = formData.get("status") as string;
-    const decidedBy = formData.get("decidedBy") as string;
-    let enumStatus = FormStatus.PENDING;
-    switch (status) {
-      case "APPROVED":
-        enumStatus = FormStatus.APPROVED;
-        break;
-      case "DENIED":
-        enumStatus = FormStatus.DENIED;
-        break;
-      case "PENDING":
-        enumStatus = FormStatus.PENDING;
-        break;
-    }
-    const managerComment = formData.get("managerComment") as string;
-    const leaveRequest = await prisma.timeOffRequestForm.update({
-      where: { id },
-      data: {
-        status: enumStatus,
-        managerComment: managerComment,
-        decidedBy: decidedBy,
-        signature: formData.get("signature") as string,
-      },
-    });
-    console.log(leaveRequest);
     revalidatePath("/admins/leave-requests");
-    return leaveRequest;
   } catch (error) {
     console.error("Error updating leave request:", error);
     throw error;
   }
 }
+
+// export async function UpdateLeaveRequest(formData: FormData) {
+//   try {
+//     console.log("Updating leave request...");
+//     console.log(formData);
+//     const id = formData.get("id") as string;
+//     const status = formData.get("status") as string;
+//     const decidedBy = formData.get("decidedBy") as string;
+//     let enumStatus = FormStatus.PENDING;
+//     switch (status) {
+//       case "APPROVED":
+//         enumStatus = FormStatus.APPROVED;
+//         break;
+//       case "DENIED":
+//         enumStatus = FormStatus.DENIED;
+//         break;
+//       case "PENDING":
+//         enumStatus = FormStatus.PENDING;
+//         break;
+//     }
+//     const managerComment = formData.get("managerComment") as string;
+//     const leaveRequest = await prisma.timeOffRequestForm.update({
+//       where: { id },
+//       data: {
+//         status: enumStatus,
+//         managerComment: managerComment,
+//         decidedBy: decidedBy,
+//         signature: formData.get("signature") as string,
+//       },
+//     });
+//     console.log(leaveRequest);
+//     revalidatePath("/admins/leave-requests");
+//     return leaveRequest;
+//   } catch (error) {
+//     console.error("Error updating leave request:", error);
+//     throw error;
+//   }
+// }
 
 export async function deleteAdminJobsite(id: string) {
   try {
@@ -214,11 +194,10 @@ export async function createTag(data: {
     const newTag = await prisma.cCTag.create({
       data: {
         name: data.name,
-        description: data.description,
-        jobsites: {
+        Jobsites: {
           connect: data.jobs.map((job) => ({ id: job })), // Connect jobs
         },
-        costCodes: {
+        CostCodes: {
           connect: data.costCodes.map((id) => ({ id })), // Connect cost codes
         },
       },
@@ -247,12 +226,11 @@ export async function changeTags(data: {
       },
       data: {
         name: data.name,
-        description: data.description,
-        jobsites: {
+        Jobsites: {
           connect: data.jobs.map((id) => ({ id })), // Add new connections
           disconnect: data.removeJobs.map((id) => ({ id })), // Remove connections
         },
-        costCodes: {
+        CostCodes: {
           connect: data.costCodes.map((id) => ({ id })), // Add new connections
           disconnect: data.removeCostCodes.map((id) => ({ id })), // Remove connections
         },
@@ -299,7 +277,6 @@ export async function changeCostCodeTags(formData: FormData) {
       },
       data: {
         name: formData.get("name") as string,
-        description: formData.get("description") as string,
         CCTags: {
           connect: newTags, // Add new connections
           disconnect: disconnectTags, // Remove connections
@@ -325,7 +302,6 @@ export async function createNewCostCode(formData: FormData) {
     const newCostCode = await prisma.costCode.create({
       data: {
         name: formData.get("name") as string,
-        description: formData.get("description") as string,
         CCTags: {
           connect: newTags, // Add new connections
         },
@@ -353,6 +329,7 @@ export async function createCrew(formData: FormData) {
     const crewDescription = formData.get("crewDescription") as string;
     const crewRaw = formData.get("crew") as string;
     const teamLead = formData.get("teamLead") as string;
+    const crewType = formData.get("crewType") as WorkType;
 
     if (!crewName || !crewName.trim()) {
       throw new Error("Crew name is required.");
@@ -373,8 +350,8 @@ export async function createCrew(formData: FormData) {
       data: {
         name: crewName.trim(),
         leadId: teamLead,
-        description: crewDescription?.trim() || "",
-        users: {
+        crewType: crewType,
+        Users: {
           connect: crew.map((user) => ({
             id: user.id,
           })),
@@ -446,9 +423,9 @@ export async function updateCrew(id: string, formData: FormData) {
       where: { id },
       data: {
         name: crewName,
-        description: crewDescription,
         leadId: teamLead,
-        users: {
+
+        Users: {
           connect: connectUsers,
           disconnect: disconnectUsers,
         },
@@ -509,6 +486,7 @@ export async function saveTimesheet(formData: FormData) {
     const dateIsoString = new Date(date).toISOString();
     const workType = formData.get("workType") as WorkType;
     const status = formData.get("status") as string;
+
     let enumStatus = FormStatus.PENDING;
     switch (status) {
       case "Approved":
@@ -518,6 +496,12 @@ export async function saveTimesheet(formData: FormData) {
         enumStatus = FormStatus.DENIED;
         break;
       case "Pending":
+        enumStatus = FormStatus.PENDING;
+        break;
+      case "Draft":
+        enumStatus = FormStatus.DRAFT;
+        break;
+      default:
         enumStatus = FormStatus.PENDING;
         break;
     }
@@ -532,7 +516,7 @@ export async function saveTimesheet(formData: FormData) {
         startTime: formData.get("startTime") as string,
         endTime: formData.get("endTime") as string,
         comment: formData.get("comment") as string,
-        status: enumStatus,
+        status: FormStatus.PENDING,
         statusComment: formData.get("statusComment") as string,
         workType: workType,
       },
@@ -544,7 +528,7 @@ export async function saveTimesheet(formData: FormData) {
         startTime: formData.get("startTime") as string,
         endTime: formData.get("endTime") as string,
         comment: formData.get("comment") as string,
-        status: enumStatus,
+        status: FormStatus.PENDING,
         statusComment: formData.get("statusComment") as string,
         workType: workType,
       },
@@ -565,7 +549,6 @@ export async function CreateTimesheet(userId: string, date: string) {
   try {
     const timesheet = await prisma.timeSheet.create({
       data: {
-        submitDate: new Date().toISOString(),
         userId: userId,
         startTime: new Date(date).toISOString(),
         endTime: new Date(date).toISOString(),
@@ -600,7 +583,7 @@ export async function CreateEquipmentLogs(userId: string, date: string) {
         startTime: new Date(date).toISOString(),
         endTime: new Date(date).toISOString(),
         comment: null,
-        isSubmitted: true,
+        isFinished: true,
         status: FormStatus.APPROVED,
       },
     });
@@ -633,7 +616,11 @@ export async function saveEquipmentLogs(formData: FormData) {
         timeSheetId: (formData.get("timeSheetId") as string) || null,
         tascoLogId: (formData.get("tascoLogId") as string) || null,
         laborLogId: (formData.get("laborLogId") as string) || null,
-        maintenanceId: (formData.get("maintenanceId") as string) || null,
+        MaintenanceId: {
+          connect: {
+            id: formData.get("maintenanceId") as string,
+          },
+        },
       },
     });
 
@@ -771,7 +758,7 @@ export async function editPersonnelInfo(formData: FormData) {
     ) as string;
 
     await prisma.contacts.update({
-      where: { employeeId: id },
+      where: { userId: id },
       data: {
         phoneNumber: phoneNumber,
         emergencyContact: emergencyContact,
@@ -913,7 +900,6 @@ export async function createCostCode(formData: FormData) {
     await prisma.costCode.create({
       data: {
         name: formData.get("name") as string,
-        description: formData.get("description") as string,
       },
     });
     revalidatePath(`/admin/assets`);
@@ -929,14 +915,12 @@ export async function EditCostCode(formData: FormData) {
     console.log(formData);
     const id = formData.get("id") as string;
     const name = formData.get("name") as string;
-    const costCodeDescription = formData.get("description") as string;
     await prisma.costCode.update({
       where: {
         id: id,
       },
       data: {
         name: name,
-        description: costCodeDescription,
       },
     });
 

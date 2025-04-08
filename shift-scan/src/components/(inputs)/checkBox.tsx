@@ -4,7 +4,6 @@ import { ChangeEvent } from "react";
 
 export interface CheckboxProps {
   disabled?: boolean;
-  defaultChecked?: boolean;
   checked?: boolean;
   id: string;
   name: string;
@@ -15,15 +14,14 @@ export interface CheckboxProps {
 
 export const CheckBox = ({
   disabled,
-  defaultChecked,
-  checked,
+  checked = false,
   id,
   name,
   label,
   size = 4,
   onChange,
 }: CheckboxProps) => (
-  <div className="w-full flex justify-end">
+  <div className="w-full flex ">
     <input
       className={`
       peer relative appearance-none shrink-0 border-[3px] border-black mt-1 shadow-[8px_8px_0px_grey]
@@ -34,7 +32,6 @@ export const CheckBox = ({
       type="checkbox"
       id={id}
       name={name}
-      defaultChecked={defaultChecked}
       checked={checked}
       disabled={disabled}
       onChange={onChange}

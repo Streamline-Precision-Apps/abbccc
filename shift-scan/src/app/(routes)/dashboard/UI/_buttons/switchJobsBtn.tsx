@@ -31,20 +31,22 @@ export default function SwitchJobsBtn({
   const modalState = useModalState();
   const router = useRouter();
 
+  console.log("logs", logs);
+
   return (
     <>
       {permission === "USER" && (
         <>
-          {laborType === "manualLabor" ? (
+          {laborType === "truckLabor" ? (
             <VerticalLayout
               text={"Switch"}
               titleImg={"/jobsite.svg"}
               titleImgAlt={"Job site Icon"}
               color={"orange"}
               handleEvent={() => {
-                if (mechanicProjectID === "") {
+                if (logs.length === 0) {
                   router.push("/dashboard/switch-jobs");
-                } else if (view === "truck") {
+                } else if (mechanicProjectID === "") {
                   router.push("/dashboard/switch-jobs");
                 } else {
                   modalState.handleOpenModal();
@@ -58,9 +60,9 @@ export default function SwitchJobsBtn({
               titleImgAlt={"Job site Icon"}
               color={"orange"}
               handleEvent={() => {
-                if (mechanicProjectID === "") {
+                if (logs.length === 0) {
                   router.push("/dashboard/switch-jobs");
-                } else if (view === "truck") {
+                } else if (mechanicProjectID === "") {
                   router.push("/dashboard/switch-jobs");
                 } else {
                   modalState.handleOpenModal();
@@ -77,9 +79,9 @@ export default function SwitchJobsBtn({
           titleImgAlt={"Job site Icon"}
           color={"orange"}
           handleEvent={() => {
-            if (mechanicProjectID === "") {
+            if (logs.length === 0) {
               router.push("/dashboard/switch-jobs");
-            } else if (view === "truck" && logs.length === 0) {
+            } else if (mechanicProjectID === "") {
               router.push("/dashboard/switch-jobs");
             } else {
               modalState.handleOpenModal();
@@ -137,6 +139,8 @@ export default function SwitchJobsBtn({
                               }`
                             : type === "Trucking Assistant"
                             ? "/dashboard/truckingAssistant"
+                            : type === "tasco"
+                            ? "/dashboard/tasco"
                             : undefined
                         }
                         className="w-full py-3"

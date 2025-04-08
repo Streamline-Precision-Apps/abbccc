@@ -1,3 +1,4 @@
+import { setEngineerComment } from "@/actions/mechanicActions";
 import Spinner from "@/components/(animations)/spinner";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
@@ -8,19 +9,29 @@ import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { useTranslations } from "next-intl";
+type MaintenanceLog = {
+  id: string;
+  userId: string;
+  maintenanceId: string;
+  startTime?: string;
+  endTime?: string | null;
+  comment?: string;
+};
 
-export default function MyCommentFinishProject({
+export default function CommentsTab({
+  activeUsers,
   myComment,
   setMyComment,
-  activeUsers,
   loading,
-  openFinishProject,
+  onFinishProject,
+  myMaintenanceLogs,
 }: {
-  myComment: string;
-  setMyComment: React.Dispatch<React.SetStateAction<string>>;
   activeUsers: number;
+  myComment: string;
+  setMyComment: (comment: string) => void;
   loading: boolean;
-  openFinishProject: () => void;
+  onFinishProject: () => void;
+  myMaintenanceLogs: MaintenanceLog | null;
 }) {
   const t = useTranslations("MechanicWidget");
   if (loading)
@@ -30,8 +41,17 @@ export default function MyCommentFinishProject({
       </Holds>
     );
 
+  const handleComment = async (comment: string) => {
+    if (!myMaintenanceLogs) return;
+    const { id } = myMaintenanceLogs;
+    const res = await setEngineerComment(comment, id);
+    if (res) {
+      setMyComment(comment);
+    }
+  };
+
   return (
-    <Holds className="h-full py-2">
+    <Holds background={"white"} className="h-full rounded-t-none py-2">
       <Contents width="section" className="h-full flex flex-col">
         <Grids rows="8" gap="5" className="h-full grid grid-rows-8">
           {/* Ensure TextArea Expands Fully */}
@@ -44,6 +64,7 @@ export default function MyCommentFinishProject({
               className="h-full w-full resize-none focus:outline-none"
               value={myComment}
               onChange={(e) => setMyComment(e.target.value)}
+              onBlur={(e) => handleComment(e.target.value)}
               maxLength={40}
             />
             <Texts size="p2" className="absolute bottom-5 right-3">
@@ -56,7 +77,7 @@ export default function MyCommentFinishProject({
               background={activeUsers > 1 ? "lightGray" : "orange"}
               disabled={activeUsers > 1}
               onClick={() => {
-                openFinishProject();
+                onFinishProject();
               }}
             >
               <Titles size="h2">{t("FinishProject")}</Titles>

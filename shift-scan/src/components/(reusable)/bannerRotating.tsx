@@ -27,7 +27,7 @@ interface EmployeeEquipmentLog {
 // Type for Tasco Logs
 interface TascoLog {
   laborType: string;
-  equipment: Equipment;
+  equipment?: Equipment;
 }
 
 // Type for Trucking Logs
@@ -61,10 +61,8 @@ interface BannerData {
 }
 
 export default function BannerRotating() {
-  const [timeSheetId, setTimeSheetId] = useState("");
   const [bannerData, setBannerData] = useState<BannerData | null>(null);
   const [loading, setLoading] = useState(true); // Track loading state
-  const [error, setError] = useState(null); // Track error state
 
   const settings = {
     dots: true,
@@ -92,13 +90,12 @@ export default function BannerRotating() {
           throw new Error("No valid timesheet ID found.");
         }
 
-        setTimeSheetId(timeSheetData.id);
-
         // Step 2: Fetch banner data using the obtained timeSheetId
         const bannerResponse = await fetch(
           `/api/getBannerData?id=${timeSheetData.id}`
         );
         const bannerData = await bannerResponse.json();
+        console.log(bannerData);
 
         if (!bannerResponse.ok) {
           throw new Error(bannerData.error || "Failed to fetch job site data.");
@@ -135,7 +132,7 @@ export default function BannerRotating() {
 
   return (
     <Holds className="w-[80%]">
-      <Slider {...settings} className="">
+      <Slider {...settings} className="h-full">
         {/* Jobsite Information */}
         {bannerData.jobsite && (
           <Holds position={"row"}>
@@ -151,9 +148,11 @@ export default function BannerRotating() {
         {/* Cost Code Information */}
         {bannerData.costCode && (
           <Holds>
-            <Titles text={"white"}>{bannerData.costCode.description}</Titles>
+            <Titles text={"white"}>
+              {bannerData.costCode.name.split(" ").slice(1).join(" ") || ""}
+            </Titles>
             <Texts className="text-white" size={"p5"}>
-              {bannerData.costCode.name}
+              {bannerData.costCode.name.split(" ")[0] || ""}
             </Texts>
           </Holds>
         )}
@@ -176,17 +175,35 @@ export default function BannerRotating() {
         {/* Tasco Logs */}
         {bannerData.tascoLogs &&
           bannerData.tascoLogs.map((equipment, index) => (
-            <Holds key={index}>
-              <Titles text={"white"}>
-                {equipment.equipment?.name || "Unknown Equipment"}
-              </Titles>
-              <Texts className="text-white" size={"p5"}>
-                {equipment.laborType === "operator"
-                  ? "Operator"
-                  : equipment.laborType === "equipmentOperator"
-                  ? "Equipment Operator"
-                  : "Manual Labor"}
-              </Texts>
+            <Holds key={index} className="h-full justify-center items-center">
+              {equipment.laborType === "tascoAbcdEquipment" ? (
+                <>
+                  <Holds className="h-full justify-center items-center">
+                    <Titles text={"white"}>ABCD Shift - Equipment</Titles>
+
+                    <Texts className="text-white" size={"p5"}>
+                      {equipment.equipment?.name}
+                    </Texts>
+                  </Holds>
+                </>
+              ) : equipment.laborType === "tascoEEquipment" ? (
+                <>
+                  <Titles text={"white"}>TASCO - E Shift</Titles>
+
+                  <Texts className="text-white" size={"p5"}>
+                    {`EQ - ${equipment.equipment?.name}`}
+                  </Texts>
+                </>
+              ) : equipment.laborType === "tascoAbcdLabor" ? (
+                <>
+                  <Holds className="h-full justify-center items-center">
+                    <Titles text={"white"}>ABCD Shift - Labor</Titles>
+                    <Texts className="text-white" size={"p5"}>
+                      Manual Labor
+                    </Texts>
+                  </Holds>
+                </>
+              ) : null}
             </Holds>
           ))}
 
@@ -194,16 +211,22 @@ export default function BannerRotating() {
         {bannerData.truckingLogs &&
           bannerData.truckingLogs.map((equipment, index) => (
             <Holds key={index}>
-              <Titles text={"white"}>
-                {equipment.equipment?.name || "Unknown Equipment"}
-              </Titles>
-              <Texts className="text-white" size={"p5"}>
-                {equipment.laborType === "operator"
-                  ? "Operator"
-                  : equipment.laborType === "truckDriver"
-                  ? "Truck Driver"
-                  : "Manual Labor"}
-              </Texts>
+              {equipment.laborType !== "truckLabor" ? (
+                <Titles text={"white"}>{equipment.equipment?.name}</Titles>
+              ) : (
+                <Titles text={"white"}>
+                  {equipment.laborType === "truckLabor" && "Manual Labor"}
+                </Titles>
+              )}
+              {equipment.laborType !== "truckLabor" && (
+                <Texts className="text-white" size={"p5"}>
+                  {equipment.laborType === "truckEquipmentOperator"
+                    ? "Truck Equipment Operator"
+                    : equipment.laborType === "truckDriver"
+                    ? "Truck Driver"
+                    : ""}
+                </Texts>
+              )}
             </Holds>
           ))}
       </Slider>

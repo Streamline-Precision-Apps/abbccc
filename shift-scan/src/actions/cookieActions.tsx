@@ -82,26 +82,42 @@ export async function setWorkRole(workRole: string) {
 
 export async function setLaborType(laborType: string) {
   const VALID_LABOR_TYPES = [
-    "operator",
-    "equipmentOperator",
     "truckDriver",
-    "manualLabor",
+    "truckEquipmentOperator",
+    "truckLabor",
+    "mechanic",
+    "general",
+    "tascoAbcdLabor",
+    "tascoAbcdEquipment",
+    "tascoEEquipment",
+    "",
   ];
 
   if (!VALID_LABOR_TYPES.includes(laborType)) {
     console.log(laborType);
     throw new Error("Not Authorized - Invalid labor type");
   }
-
+  console.log(laborType);
   try {
-    cookies().set({
-      name: "laborType",
-      value: laborType,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days - made this to not have errors occur is logging out is forgotten
-    });
+    if (laborType === "tascoEEquipment") {
+      cookies().set({
+        name: "laborType",
+        value: "",
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        path: "/",
+        expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days - made this to not have errors occur is logging out is forgotten
+      });
+    } else {
+      cookies().set({
+        name: "laborType",
+        value: laborType,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        path: "/",
+        expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days - made this to not have errors occur is logging out is forgotten
+      });
+    }
   } catch (error) {
     console.error("Failed to set locale cookie:", error);
   }
@@ -133,6 +149,22 @@ export async function setCurrentPageView(currentPageView: string) {
       secure: process.env.NODE_ENV === "production",
       path: "/",
       expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days  // Expires in 30 days - made this to not have errors occur is logging out is forgotten
+    });
+  } catch (error) {
+    console.error("Failed to set locale cookie:", error);
+  }
+}
+
+// cookie for setting job site access
+export async function setProfilePicture(profilePicture: string) {
+  try {
+    cookies().set({
+      name: "profilePicture",
+      value: profilePicture,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days - made this to not have errors occur is logging out is forgotten
     });
   } catch (error) {
     console.error("Failed to set locale cookie:", error);

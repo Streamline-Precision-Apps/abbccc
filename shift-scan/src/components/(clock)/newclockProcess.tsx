@@ -1,5 +1,5 @@
 "use client";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Holds } from "../(reusable)/holds";
 import MultipleRoles from "./multipleRoles";
 import QRStep from "./qr-handler";
@@ -11,7 +11,7 @@ import VerificationEQStep from "./verification-eq-step";
 import { Titles } from "../(reusable)/titles";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { setJobSite, setWorkRole } from "@/actions/cookieActions";
+import { setEquipment, setJobSite, setWorkRole } from "@/actions/cookieActions";
 import MechanicVerificationStep from "./Verification-step-mechanic";
 import TascoVerificationStep from "./Verification-step-tasco";
 import SwitchJobsMultiRoles from "./switchJobsMultipleRoles";
@@ -20,9 +20,11 @@ import { returnToPrevWork } from "@/actions/timeSheetActions";
 import TruckVerificationStep from "./Verification-step-truck";
 import TascoClockInForm from "./tascoClockInForm";
 import { useSession } from "next-auth/react";
-import QRMultiRoles from "./qr-multi-handler";
+import QRMultiRoles from "./QRMultiRoles";
 import ClockLoadingPage from "./clock-loading-page";
 import { Contents } from "../(reusable)/contents";
+import { useOperator } from "@/app/context/operatorContext";
+import EquipmentQRStep from "./qr-equipment-handler";
 
 type NewClockProcessProps = {
   mechanicView: boolean;
@@ -34,6 +36,11 @@ type NewClockProcessProps = {
   type: string;
   scannerType: string;
   locale: string;
+  timeSheetId?: string | undefined;
+  jobSiteId?: string | undefined;
+  costCode?: string | undefined;
+  workRole?: string | undefined;
+  switchLaborType?: string | undefined;
 };
 
 export default function NewClockProcess({
@@ -45,11 +52,20 @@ export default function NewClockProcess({
   returnpath,
   option,
   locale,
+  timeSheetId,
+  jobSiteId,
+  costCode,
+  workRole,
+  switchLaborType,
 }: NewClockProcessProps) {
   // State management
+  const { setEquipmentId } = useOperator();
   const { data: session } = useSession();
   const [step, setStep] = useState<number>(0);
-  const [clockInRole, setClockInRole] = useState<string | undefined>(undefined);
+  const [clockInRole, setClockInRole] = useState<string | undefined>(workRole);
+  const [clockInRoleTypes, setClockInRoleTypes] = useState<string | undefined>(
+    switchLaborType
+  ); // use to have more selections for clock processes
   const [numberOfRoles, setNumberOfRoles] = useState(0);
   const [scanned, setScanned] = useState(false);
   const t = useTranslations("Clock");
@@ -64,6 +80,8 @@ export default function NewClockProcess({
   // Contexts
   const { setScanResult } = useScanData();
   const { setCostCode } = useSavedCostCode();
+
+  const [returnPathUsed, setReturnPathUsed] = useState(false);
 
   // useEffect to reset step and role on mount/unmount
   useEffect(() => {
@@ -132,17 +150,24 @@ export default function NewClockProcess({
   const handleReturn = async () => {
     try {
       // setting the cookies below to fetch the prev TimeSheet
-      const tId = await fetch("/api/cookies?method=get&name=timeSheetId").then(
-        (res) => res.json()
-      );
+
+      const fetchRecentTimeSheetId = await fetch(
+        "/api/getRecentTimecardReturn"
+      ).then((res) => res.json());
+      const tId = fetchRecentTimeSheetId.id;
+
       const formData = new FormData();
       formData.append("id", tId?.toString() || "");
       const response = await returnToPrevWork(formData);
-      // filtering response to match data with current role
+      console.log("response:", response);
+
       if (response) {
+        // Set basic information from previous timesheet
         setJobSite(response.jobsiteId);
         setScanResult({ data: response.jobsiteId });
         setCostCode(response.costcode);
+
+        // Determine the role from previous work type
         const prevWorkRole =
           response.workType === "LABOR"
             ? "general"
@@ -155,16 +180,82 @@ export default function NewClockProcess({
             : "";
 
         setClockInRole(prevWorkRole);
-        if (prevWorkRole === "truck") {
-          setStep(5);
-        } else {
-          setStep(5);
+
+        // Handle Tasco-specific data
+        if (response.TascoLogs && response.TascoLogs.length > 0) {
+          const firstTascoLog = response.TascoLogs[0];
+
+          // Set labor type if exists
+          if (firstTascoLog.laborType) {
+            setClockInRoleTypes(firstTascoLog.laborType);
+          }
+          if (firstTascoLog.equipmentId) {
+            setEquipment(firstTascoLog.equipmentId);
+          }
+
+          // Set material type if exists
+          if (firstTascoLog.materialType) {
+            setMaterialType(firstTascoLog.materialType);
+          }
+
+          // Set shift type if exists
+          if (firstTascoLog.shiftType) {
+            setShiftType(firstTascoLog.shiftType);
+          }
+
+          // Combine all relevant types for role types
+          const workTypes = response.TascoLogs.map((log) => log.laborType);
+
+          setClockInRoleTypes(workTypes.toString());
         }
+
+        // Handle Truck-specific data
+        if (response.TruckingLogs && response.TruckingLogs.length > 0) {
+          const firstTruckLog = response.TruckingLogs[0];
+
+          // Set labor type if exists
+          if (firstTruckLog.laborType) {
+            setLaborType(firstTruckLog.laborType);
+          }
+
+          // Set equipment (truck) if exists
+          if (firstTruckLog.equipmentId) {
+            setEquipmentId(firstTruckLog.equipmentId);
+            setTruck(firstTruckLog.equipmentId);
+          }
+
+          const workTypes = response.TruckingLogs.map(
+            (log) => log.laborType
+          ).filter(Boolean);
+          setClockInRoleTypes(workTypes.toString());
+        }
+
+        // Navigate to the correct verification step based on role
+        switch (prevWorkRole) {
+          case "general":
+            setStep(5); // General verification step
+
+            break;
+          case "mechanic":
+            setStep(4); // Mechanic verification step
+
+            break;
+          case "tasco":
+            setStep(5); // Tasco verification step
+            break;
+          case "truck":
+            setStep(5); // Truck verification step
+            break;
+          default:
+            throw new Error("Unknown work type");
+        }
+        setReturnPathUsed(true);
       } else {
-        throw new Error("No response");
+        throw new Error("No response from previous timesheet");
       }
     } catch (error) {
-      console.log(error);
+      console.error("Error returning to previous work:", error);
+      // Handle error appropriately (show message to user, etc.)
     }
   };
 
@@ -198,33 +289,39 @@ export default function NewClockProcess({
   if (type === "equipment") {
     return (
       <>
+        {step === 0 && (
+          <>
+            <ClockLoadingPage handleReturnPath={handleReturnPath} />
+          </>
+        )}
         {step === 1 && (
           <>
-            <QRStep
+            <EquipmentQRStep
               option="equipment"
               type="equipment"
               handleAlternativePath={handleAlternativePathEQ}
               handleNextStep={handleNextStep}
               handlePrevStep={handlePrevStep}
-              url="/dashboard"
+              url="/dashboard/equipment"
               handleReturnPath={handleReturnPath}
               clockInRole={""}
               setClockInRole={() => {}}
               setScanned={setScanned}
+              setClockInRoleTypes={setClockInRoleTypes}
+              clockInRoleTypes={clockInRoleTypes}
             />
           </>
         )}
+
         {step === 2 && (
-          <CodeStep
-            datatype="equipment"
+          <VerificationEQStep
             handleNextStep={handleNextStep}
             handlePrevStep={handlePrevStep}
             handleScannedPrevStep={handleScannedPrevStep}
             scanned={scanned}
           />
         )}
-        {step === 3 && <VerificationEQStep handleNextStep={handleNextStep} />}
-        {step === 4 && (
+        {step === 3 && (
           <>
             <Titles size={"h1"} className="bg-red-500">
               {t("Confirmation-eq-message-1")}
@@ -254,6 +351,8 @@ export default function NewClockProcess({
             {type === "switchJobs" && (
               <SwitchJobsMultiRoles
                 handleNextStep={handleNextStep}
+                clockInRoleTypes={clockInRoleTypes}
+                setClockInRoleTypes={setClockInRoleTypes}
                 setClockInRole={setClockInRole}
                 clockInRole={clockInRole}
                 option={option}
@@ -267,6 +366,8 @@ export default function NewClockProcess({
               <MultipleRoles
                 numberOfRoles={numberOfRoles}
                 handleNextStep={handleNextStep}
+                setClockInRoleTypes={setClockInRoleTypes}
+                clockInRoleTypes={clockInRoleTypes}
                 setClockInRole={setClockInRole}
                 clockInRole={clockInRole}
                 option={option}
@@ -293,6 +394,8 @@ export default function NewClockProcess({
               option={type} // type is the method of clocking in ... general, switchJobs, or equipment
               clockInRole={clockInRole} // clock in role will make the qr know which role to use
               setClockInRole={setClockInRole}
+              setClockInRoleTypes={setClockInRoleTypes}
+              clockInRoleTypes={clockInRoleTypes}
               setScanned={setScanned}
             />
           )}
@@ -308,6 +411,8 @@ export default function NewClockProcess({
               option={type} // type is the method of clocking in ... general, switchJobs, or equipment
               clockInRole={clockInRole} // clock in role will make the qr know which role to use
               setClockInRole={setClockInRole}
+              setClockInRoleTypes={setClockInRoleTypes}
+              clockInRoleTypes={clockInRoleTypes}
               setScanned={setScanned}
             />
           )}
@@ -335,6 +440,10 @@ export default function NewClockProcess({
           handleNextStep={handleNextStep}
           option={option}
           comments={undefined}
+          clockInRoleTypes={clockInRoleTypes}
+          handlePrevStep={handlePrevStep}
+          returnPathUsed={returnPathUsed}
+          setStep={setStep}
         />
       )}
 
@@ -377,8 +486,12 @@ export default function NewClockProcess({
           setLaborType={setLaborType}
           setTruck={setTruck}
           setStartingMileage={setStartingMileage}
+          startingMileage={startingMileage}
           laborType={laborType}
           truck={truck}
+          clockInRoleTypes={clockInRoleTypes}
+          returnPathUsed={returnPathUsed}
+          setStep={setStep}
         />
       )}
 
@@ -387,9 +500,11 @@ export default function NewClockProcess({
         <TruckVerificationStep
           laborType={laborType}
           truck={truck}
+          handlePrevStep={handlePrevStep}
           startingMileage={startingMileage}
           type={type}
           role={clockInRole}
+          clockInRoleTypes={clockInRoleTypes}
           handleNextStep={handleNextStep}
           option={option}
           comments={undefined}
@@ -428,16 +543,21 @@ export default function NewClockProcess({
         </Holds>
       )}
       {step === 5 && clockInRole === "tasco" && (
-        <TascoClockInForm
-          handleNextStep={handleNextStep}
-          handlePrevStep={handlePrevStep}
-          setLaborType={setLaborType}
-          laborType={laborType}
-          materialType={materialType}
-          setMaterialType={setMaterialType}
-          shiftType={shiftType}
-          setShiftType={setShiftType}
-        />
+        <Holds className="h-full w-full">
+          <TascoClockInForm
+            handleNextStep={handleNextStep}
+            handlePrevStep={handlePrevStep}
+            setLaborType={setLaborType}
+            laborType={laborType}
+            materialType={materialType}
+            setMaterialType={setMaterialType}
+            shiftType={shiftType}
+            setShiftType={setShiftType}
+            clockInRoleTypes={clockInRoleTypes}
+            returnPathUsed={returnPathUsed}
+            setStep={setStep}
+          />
+        </Holds>
       )}
       {step === 6 && clockInRole === "tasco" && (
         <TascoVerificationStep
@@ -448,7 +568,11 @@ export default function NewClockProcess({
           laborType={laborType}
           materialType={materialType}
           shiftType={shiftType}
+          clockInRoleTypes={clockInRoleTypes}
+          handlePreviousStep={handlePrevStep}
           comments={undefined}
+          returnPathUsed={returnPathUsed}
+          setStep={setStep}
         />
       )}
       {/* ------------------------- Tasco Role End ---------------------*/}
@@ -491,6 +615,9 @@ export default function NewClockProcess({
           option={option}
           comments={undefined}
           handlePreviousStep={handlePrevStep}
+          clockInRoleTypes={clockInRoleTypes}
+          returnPathUsed={returnPathUsed}
+          setStep={setStep}
         />
       )}
     </>

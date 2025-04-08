@@ -6,13 +6,17 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { Grids } from "@/components/(reusable)/grids";
 import { z } from "zod";
-import { useParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Tab } from "@/components/(reusable)/tab";
 import { EmployeeTimeSheets } from "./employee-timesheet";
 import EmployeeInfo from "./employeeInfo";
 import { format } from "date-fns";
 import { TimeSheet } from "@/lib/types";
 import { useSession } from "next-auth/react";
+import { NewTab } from "@/components/(reusable)/newTabs";
+import { Titles } from "@/components/(reusable)/titles";
+import { Images } from "@/components/(reusable)/images";
+import { Buttons } from "@/components/(reusable)/buttons";
 
 // Zod schema for employee data
 const EmployeeSchema = z.object({
@@ -43,6 +47,9 @@ export default function EmployeeTabs() {
   // Changed to EmployeeInfo
   // Validate params using Zod
   const { employeeId } = useParams();
+  const urls = useSearchParams();
+  const rPath = urls.get("rPath");
+  const router = useRouter();
   const t = useTranslations("MyTeam");
   const [employee, setEmployee] = useState<Employee | null>(null);
   const [contacts, setContacts] = useState<Contact | null>(null);
@@ -118,17 +125,53 @@ export default function EmployeeTabs() {
           background={"white"}
           className="row-start-1 row-end-3 h-full p-3"
         >
-          <TitleBoxes
-            title={
-              loading
-                ? "loading..."
-                : `${employee?.firstName} ${employee?.lastName}`
-            }
-            titleImg={employee?.image ? employee.image : "/profile-default.svg"}
-            titleImgAlt="Team"
-            type="myTeamProfile"
-            title2={loading ? "" : `${t("ID")}${employee?.id}`}
-          />
+          <Grids cols={"6"} rows={"2"} className="w-full h-full">
+            <Holds className="col-start-1 col-end-2 row-span-1">
+              <Buttons
+                onClick={() => {
+                  if (rPath) {
+                    router.push(rPath);
+                  } else {
+                    router.back();
+                  }
+                }}
+                background={"none"}
+                position={"left"}
+                shadow={"none"}
+              >
+                <Images titleImg="/turnBack.svg" titleImgAlt={"back"} />
+              </Buttons>
+            </Holds>
+            <Holds className="col-start-3 col-end-5 row-start-1 row-end-2 ">
+              <Holds size={"full"} position={"center"}>
+                <Holds className="rounded-full relative ">
+                  <Images
+                    titleImg={
+                      employee?.image ? employee.image : "/profile-default.svg"
+                    }
+                    titleImgAlt="Team"
+                    className="rounded-full border-[3px] border-black"
+                    size={"50"}
+                  />
+                </Holds>
+              </Holds>
+            </Holds>
+
+            <Holds className="col-start-1 col-end-7 row-start-2 row-end-3">
+              <Titles size={"h2"}>
+                {loading
+                  ? "loading..."
+                  : `${employee?.firstName} ${employee?.lastName}`}
+              </Titles>
+            </Holds>
+            <Holds className="col-start-4 col-end-7 row-start-1 row-end-2">
+              <Holds size={"90"} position={"center"}>
+                <Titles position={"right"} size={"h6"}>
+                  {loading ? "" : `${t("ID")}${employee?.id}`}
+                </Titles>
+              </Holds>
+            </Holds>
+          </Grids>
         </Holds>
 
         <Holds
@@ -139,13 +182,25 @@ export default function EmployeeTabs() {
           }
         >
           <Grids rows={"10"}>
-            <Holds position={"row"} className={"row-span-1 h-full gap-2"}>
-              <Tab onClick={() => setActiveTab(1)} isActive={activeTab === 1}>
+            <Holds position={"row"} className={"row-span-1 h-full gap-1"}>
+              <NewTab
+                onClick={() => setActiveTab(1)}
+                isActive={activeTab === 1}
+                isComplete={true}
+                titleImage="/information.svg"
+                titleImageAlt={""}
+              >
                 {t("ContactInfo")}
-              </Tab>
-              <Tab onClick={() => setActiveTab(2)} isActive={activeTab === 2}>
+              </NewTab>
+              <NewTab
+                onClick={() => setActiveTab(2)}
+                isActive={activeTab === 2}
+                isComplete={true}
+                titleImage="/form.svg"
+                titleImageAlt={""}
+              >
                 {t("TimeCards")}
-              </Tab>
+              </NewTab>
             </Holds>
             <Holds
               background={"white"}

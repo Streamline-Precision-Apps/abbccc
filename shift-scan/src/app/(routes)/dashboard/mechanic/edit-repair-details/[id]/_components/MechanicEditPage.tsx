@@ -13,10 +13,11 @@ import { useEffect, useMemo, useState } from "react";
 import { Priority } from "@/lib/types";
 import {
   deleteMaintenanceProject,
+  RemoveDelayRepair,
   setEditForProjectInfo,
 } from "@/actions/mechanicActions";
 import debounce from "lodash.debounce";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { NModals } from "@/components/(reusable)/newmodals";
 import { Texts } from "@/components/(reusable)/texts";
 import Spinner from "@/components/(animations)/spinner";
@@ -33,12 +34,14 @@ type RepairDetails = {
   equipmentId: string;
   equipmentIssue: string;
   additionalInfo: string;
+  problemDiagnosis: string;
+  solution: string;
   location: string;
-  repaired: boolean;
   priority: string;
   createdBy: string;
   createdAt: Date;
   hasBeenDelayed: boolean;
+  repaired: boolean;
   delay: Date | null;
   delayReasoning?: string;
   totalHoursLaboured: number;
@@ -62,6 +65,7 @@ export default function MechanicEditPage({
   const router = useRouter();
   const t = useTranslations("MechanicWidget");
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const { id } = useParams();
 
   const PriorityOptions = [
     { label: t("SelectPriority"), value: "" },
@@ -118,6 +122,43 @@ export default function MechanicEditPage({
     );
   }
 
+  const RemoveDelay = async () => {
+    try {
+      const formData = new FormData();
+      id && formData.append("id", id.toString());
+
+      // Optimistically update local state first
+      if (repairDetails) {
+        setRepairDetails({
+          ...repairDetails,
+          delay: null,
+          delayReasoning: undefined,
+          hasBeenDelayed: true,
+        });
+      }
+
+      // Then make the server request
+      const updatedRepair = await RemoveDelayRepair(formData);
+
+      // If server update fails, revert local state
+      if (!updatedRepair) {
+        if (repairDetails) {
+          setRepairDetails(repairDetails); // Revert to original
+        }
+        return;
+      }
+
+      // Optionally show success message
+      // alert("Delay removed successfully");
+    } catch (error) {
+      console.error("Failed to remove delay:", error);
+      // Revert local state on error
+      if (repairDetails) {
+        setRepairDetails(repairDetails);
+      }
+    }
+  };
+
   return (
     <>
       <Holds className=" h-full overflow-y-auto no-scrollbar px-4  ">
@@ -125,7 +166,7 @@ export default function MechanicEditPage({
           <Holds className="row-start-1 row-end-8 h-full">
             <Holds>
               <Labels size="p6" htmlFor="equipmentIssue">
-                {t("EquipmentIssue")}
+                {t("EquipmentIssue")} <span className="text-red-500">*</span>
               </Labels>
               <TextAreas
                 name="equipmentIssue"
@@ -153,6 +194,46 @@ export default function MechanicEditPage({
                 disabled={repairDetails?.repaired}
               />
             </Holds>
+            {/* Only show these fields if the repair has been completed */}
+            {repairDetails?.repaired && (
+              <>
+                {/* Problem Diagnosis */}
+                <Holds>
+                  <Labels size="p6" htmlFor="problemDiagnosis">
+                    {t("ProblemDiagnosis")}
+                  </Labels>
+                  <TextAreas
+                    name="problemDiagnosis"
+                    value={repairDetails.problemDiagnosis || ""}
+                    onChange={(e) =>
+                      updateField("problemDiagnosis", e.target.value)
+                    }
+                    placeholder={t("ProblemDiagnosisPlaceholder")}
+                    rows={2}
+                    style={{ resize: "none" }}
+                    className="text-sm"
+                    disabled={repairDetails?.repaired}
+                  />
+                </Holds>
+
+                {/* solution */}
+                <Holds>
+                  <Labels size="p6" htmlFor="solution">
+                    {t("Solution")}
+                  </Labels>
+                  <TextAreas
+                    name="solution"
+                    value={repairDetails.solution || ""}
+                    onChange={(e) => updateField("solution", e.target.value)}
+                    placeholder={t("SolutionPlaceholder")}
+                    rows={2}
+                    style={{ resize: "none" }}
+                    className="text-sm"
+                    disabled={repairDetails?.repaired}
+                  />
+                </Holds>
+              </>
+            )}
             {/* Location */}
             <Holds>
               <Labels size="p6" htmlFor="location">
@@ -170,7 +251,7 @@ export default function MechanicEditPage({
             {/* Priority Status */}
             <Holds className="relative">
               <Labels size="p6" htmlFor="priority">
-                {t("Status")}
+                {t("Status")} <span className="text-red-500">*</span>
               </Labels>
 
               <div className="relative w-full">
@@ -189,13 +270,16 @@ export default function MechanicEditPage({
                       const newPriority = e.target.value as Priority;
                       updateField("priority", newPriority);
                     }}
-                    className="w-full "
+                    className={`text-center ${
+                      repairDetails.priority === "" ? "text-app-gray" : ""
+                    }`}
+                    disabled={repairDetails?.repaired}
                   >
                     {PriorityOptions.map((option) => (
                       <option
                         key={option.value}
                         value={option.value}
-                        className="text-center"
+                        className={`text-center `}
                       >
                         {option.label}
                       </option>
@@ -204,59 +288,107 @@ export default function MechanicEditPage({
                 )}
 
                 {/* Adjust Image to Overlay Select Box */}
-                <Images
-                  titleImg={
-                    repairDetails.delay
-                      ? "/delayPriority.svg"
-                      : repairDetails.priority === "TODAY"
-                      ? "/todayPriority.svg"
-                      : repairDetails.priority === "HIGH"
-                      ? "/highPriority.svg"
-                      : repairDetails.priority === "MEDIUM"
-                      ? "/mediumPriority.svg"
-                      : repairDetails.priority === "LOW"
-                      ? "/lowPriority.svg"
-                      : "/pending.svg"
-                  }
-                  className="absolute left-2 top-1/4 transform -translate-y-1/4 w-6 h-6"
-                  titleImgAlt={t("Status")}
-                />
+                {repairDetails?.priority !== "" && (
+                  <Images
+                    titleImg={
+                      repairDetails.delay
+                        ? "/delayPriority.svg"
+                        : repairDetails.priority === "TODAY"
+                        ? "/todayPriority.svg"
+                        : repairDetails.priority === "HIGH"
+                        ? "/highPriority.svg"
+                        : repairDetails.priority === "MEDIUM"
+                        ? "/mediumPriority.svg"
+                        : repairDetails.priority === "LOW"
+                        ? "/lowPriority.svg"
+                        : repairDetails.priority === "PENDING"
+                        ? "/pending.svg"
+                        : ""
+                    }
+                    className="absolute left-2 top-1/4 transform -translate-y-1/4 w-6 h-6"
+                    titleImgAlt={t("Status")}
+                  />
+                )}
               </div>
-            </Holds>
 
-            {repairDetails.delay && (
-              <>
+              {repairDetails?.delay ? (
+                <>
+                  <Holds>
+                    <Texts position={"right"} size={"p6"}>
+                      {t("RemoveDelay")}
+                    </Texts>
+                    <Buttons
+                      background={"red"}
+                      className="w-[15%]"
+                      position={"right"}
+                      shadow={"none"}
+                      onClick={RemoveDelay}
+                    >
+                      <Images
+                        titleImg={"/trash.svg"}
+                        titleImgAlt={"trash"}
+                        className="mx-auto w-9 h-9 p-1"
+                      />
+                    </Buttons>
+                  </Holds>
+                  <Holds>
+                    <Labels size="p6" htmlFor="delayReasoning">
+                      {t("DelayReasoning")}
+                    </Labels>
+                    <Selects
+                      name="delayReasoning"
+                      value={repairDetails.delayReasoning}
+                      onChange={(e) => {
+                        updateField("delayReasoning", e.target.value);
+                      }}
+                    >
+                      <option value="">{t("NoDelay")}</option>
+                      <option value="Delay">{t("Delay")}</option>
+                    </Selects>
+                  </Holds>
+                  <Holds>
+                    <Labels size="p6" htmlFor="delay">
+                      {t("ExpectedArrival")}
+                    </Labels>
+                    <Inputs
+                      type="date"
+                      name="delay"
+                      value={repairDetails.delay?.toString().split("T")[0]}
+                      onChange={(e) => {
+                        const newDelay = new Date(e.target.value).toISOString();
+                        updateField("delay", newDelay);
+                      }}
+                      className="text-center text-sm"
+                    />
+                  </Holds>
+                </>
+              ) : (
                 <Holds>
-                  <Labels size="p6" htmlFor="delayReasoning">
-                    {t("DelayReasoning")}
-                  </Labels>
-                  <Inputs
-                    name="delayReasoning"
-                    value={repairDetails.delayReasoning}
-                    onChange={(e) => {
-                      updateField("delayReasoning", e.target.value);
+                  <Texts position={"right"} size={"p6"}>
+                    {t("AddDelay")}
+                  </Texts>
+                  <Buttons
+                    background={"lightBlue"}
+                    className="w-[15%]"
+                    position={"right"}
+                    shadow={"none"}
+                    onClick={() => {
+                      const tomorrow = new Date();
+                      tomorrow.setDate(tomorrow.getDate() + 1);
+                      updateField("delay", tomorrow.toISOString());
                     }}
-                    className="text-sm pl-4"
-                  />
+                  >
+                    <Images
+                      titleImg={"/plus.svg"}
+                      titleImgAlt={"add"}
+                      className="mx-auto w-9 h-9 p-1"
+                    />
+                  </Buttons>
                 </Holds>
-                <Holds>
-                  <Labels size="p6" htmlFor="delay">
-                    {t("ExpectedArrival")}
-                  </Labels>
-                  <Inputs
-                    type="date"
-                    name="delay"
-                    value={repairDetails.delay?.toString().split("T")[0]}
-                    onChange={(e) => {
-                      const newDelay = new Date(e.target.value).toISOString();
-                      updateField("delay", newDelay);
-                    }}
-                    className="text-center text-sm"
-                  />
-                </Holds>
-              </>
-            )}
+              )}
+            </Holds>
           </Holds>
+          {/* Only Show this button if there are no logs */}
           {totalLogs === 0 && (
             <Holds className="mt-5 justify-end row-start-8 row-end-9">
               <Buttons

@@ -45,6 +45,7 @@ export async function createUser(formData: FormData) {
         ) as unknown as boolean,
         permission: formData.get("permission") as Permission,
         image: formData.get("image") as string,
+        Company: { connect: { id: "1" } },
       },
     });
     console.log("User created successfully.");
@@ -114,6 +115,7 @@ export async function adminCreateUser(formData: FormData) {
         mechanicView: formData.get("mechanicView") === "true",
         permission: formData.get("permission") as Permission,
         image: formData.get("image") as string,
+        Company: { connect: { id: "1" } },
       },
     });
     const employeeId = newUser.id;
@@ -121,7 +123,7 @@ export async function adminCreateUser(formData: FormData) {
     // Create contact details
     await prisma.contacts.create({
       data: {
-        employeeId,
+        userId: employeeId,
         phoneNumber: formData.get("phoneNumber") as string,
         emergencyContact: formData.get("emergencyContact") as string,
         emergencyContactNumber: formData.get(
@@ -172,7 +174,7 @@ export async function updateUserProfile(formData: FormData) {
       where: { id: formData.get("id") as string },
       data: {
         email: formData.get("email") as string,
-        contact: {
+        Contact: {
           update: {
             phoneNumber: formData.get("phoneNumber") as string,
             emergencyContact: formData.get("emergencyContact") as string,
@@ -316,7 +318,7 @@ export async function setUserPassword(formData: FormData) {
 export async function updateContactInfo(formData: FormData) {
   console.log(formData);
   await prisma.contacts.update({
-    where: { employeeId: formData.get("id") as string },
+    where: { id: formData.get("id") as string },
     data: {
       phoneNumber: formData.get("phoneNumber") as string,
       emergencyContact: formData.get("emergencyContact") as string,

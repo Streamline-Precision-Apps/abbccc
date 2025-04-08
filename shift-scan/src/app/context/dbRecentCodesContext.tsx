@@ -8,12 +8,7 @@ import React, {
   use,
   useEffect,
 } from "react";
-import {
-  JobCodes,
-  CostCodes,
-  EquipmentCodes,
-  EquipmentCode,
-} from "@/lib/types";
+import { JobCodes, CostCodes, EquipmentCode } from "@/lib/types";
 import { z } from "zod";
 import { usePathname } from "next/navigation";
 
@@ -22,8 +17,6 @@ const CostCodesRecentSchema = z
     z.object({
       id: z.string(),
       name: z.string(),
-      description: z.string(),
-      type: z.string().default("DEFAULT_TYPE"),
     })
   )
   .nullable();
@@ -82,7 +75,7 @@ export const RecentJobSiteProvider = ({
       try {
         if (
           url === "/clock" ||
-          url === "/dashboard/log-new" ||
+          url === "/dashboard/equipment/log-new" ||
           url === "/dashboard/switch-jobs" ||
           url === "/break"
         ) {
@@ -161,7 +154,7 @@ export const RecentCostCodeProvider = ({
       try {
         if (
           url === "/clock" ||
-          url === "/dashboard/log-new" ||
+          url === "/dashboard/equipment/log-new" ||
           url === "/dashboard/switch-jobs" ||
           url === "/break"
         ) {

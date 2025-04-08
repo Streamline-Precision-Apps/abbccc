@@ -50,12 +50,9 @@ export default function Search() {
     <Holds className="h-full ">
       <NotificationComponent />
       <Grids rows={"10"}>
-        <Holds
-          background={"white"}
-          className="rounded-t-none row-span-10 h-full"
-        >
+        <Holds background={"white"} className=" row-span-10 h-full">
           <Contents width={"section"} className=" pt-3 pb-5">
-            <InboxContent employees={employees} setFilter={setFilter} />
+            {/* <InboxContent employees={employees} setFilter={setFilter} /> */}
           </Contents>
         </Holds>
       </Grids>

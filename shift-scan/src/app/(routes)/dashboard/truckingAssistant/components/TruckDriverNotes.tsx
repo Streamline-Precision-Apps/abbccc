@@ -1,6 +1,8 @@
+"use client";
 import { updateTruckDrivingNotes } from "@/actions/truckingActions";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
+import { useTranslations } from "next-intl";
 
 export default function TruckDriverNotes({
   truckingLog,
@@ -11,6 +13,7 @@ export default function TruckDriverNotes({
   notes: string;
   setNotes: React.Dispatch<React.SetStateAction<string>>;
 }) {
+  const t = useTranslations("TruckingAssistant");
   const UpdateNotes = async () => {
     const formData = new FormData();
     formData.append("comment", notes ?? "");
@@ -23,7 +26,7 @@ export default function TruckDriverNotes({
         name="notes"
         maxLength={40}
         value={notes}
-        placeholder="Write your Notes here..."
+        placeholder={t("WriteYourNotesHere")}
         className="h-full w-full text-base focus:outline-none focus:ring-transparent focus:border-current "
         onChange={(e) => setNotes(e.target.value)}
         onBlur={(e) => UpdateNotes()}

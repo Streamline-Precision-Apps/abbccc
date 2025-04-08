@@ -7,47 +7,66 @@ export async function GET(
   request: Request,
   { params }: { params: { crewId: string } }
 ) {
-  const session = await auth();
-  const userId = session?.user?.id;
-
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const { crewId } = params;
-
   try {
+    const session = await auth();
+    const userId = session?.user?.id;
+
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { crewId } = params;
+
+    if (!crewId) {
+      return NextResponse.json(
+        { error: "Missing or invalid crew ID" },
+        { status: 400 }
+      );
+    }
+
     const crew = await prisma.crew.findUnique({
       where: {
         id: crewId,
       },
       select: {
-        users: {
+        crewType: true,
+        Users: {
           select: {
             id: true,
             firstName: true,
             lastName: true,
             image: true,
-            // clockedIn: true,
+            clockedIn: true,
           },
         },
       },
     });
 
-    // filtering crew members by first name and sorting them alphabetically
-    const crewMembers = crew?.users
-      .map((member) => member)
-      .sort((a, b) => {
-        return a.firstName.localeCompare(b.firstName);
-      });
+    if (!crew) {
+      return NextResponse.json({ error: "Crew not found" }, { status: 404 });
+    }
 
-    // Set Cache-Control header for caching if necessary
-    return NextResponse.json(crewMembers);
+    // Sort crew members alphabetically by first name
+    const crewMembers = crew.Users
+      .map((member) => member)
+      .sort((a, b) => a.firstName.localeCompare(b.firstName));
+
+    const crewType = crew.crewType;
+
+    return NextResponse.json([crewMembers, crewType], {
+      headers: {
+        "Cache-Control":
+          "public, max-age=60, s-maxage=60, stale-while-revalidate=30",
+      },
+    });
   } catch (error) {
     console.error("Error fetching crew data:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch crew data" },
-      { status: 500 }
-    );
+
+    let errorMessage = "Failed to fetch crew data";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

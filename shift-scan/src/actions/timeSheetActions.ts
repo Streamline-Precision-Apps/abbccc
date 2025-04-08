@@ -6,7 +6,7 @@ import { TimeSheet } from "@/lib/types";
 import { WorkType } from "@prisma/client";
 import { error } from "console";
 import { revalidatePath } from "next/cache";
-import { formatInTimeZone, toZonedTime } from "date-fns-tz";
+import { formatInTimeZone } from "date-fns-tz";
 const { formatISO } = require("date-fns");
 // Get all TimeSheets
 export async function getTimeSheetsbyId() {
@@ -72,10 +72,10 @@ export async function fetchTimesheets(employeeId: string, date: string) {
         startTime: "asc",
       },
       include: {
-        tascoLogs: true,
-        truckingLogs: true,
-        maintenanceLogs: true,
-        employeeEquipmentLogs: true,
+        TascoLogs: true,
+        TruckingLogs: true,
+        MaintenanceLogs: true,
+        EmployeeEquipmentLogs: true,
       },
     });
 
@@ -132,12 +132,11 @@ export async function CreateTimeSheet(formData: FormData) {
 
     const newTimeSheet = await prisma.timeSheet.create({
       data: {
-        submitDate: formatISO(formData.get("submitDate") as string),
         date: formatISO(formData.get("date") as string),
-        jobsite: { connect: { qrId: formData.get("jobsiteId") as string } },
+        Jobsite: { connect: { qrId: formData.get("jobsiteId") as string } },
         comment: (formData.get("timeSheetComments") as string) || null,
-        user: { connect: { id: formData.get("userId") as string } },
-        costCode: { connect: { name: costCode } },
+        User: { connect: { id: formData.get("userId") as string } },
+        CostCode: { connect: { name: costCode } },
         startTime: formatISO(formData.get("startTime") as string),
         workType: workType,
       },
@@ -289,12 +288,11 @@ export async function CreateTruckDriverTimeSheet(formData: FormData) {
 
     const createdTimeSheet = await prisma.timeSheet.create({
       data: {
-        submitDate: formatISO(formData.get("submitDate") as string),
         date: formatISO(formData.get("date") as string),
-        jobsite: { connect: { qrId: jobsiteId } },
+        Jobsite: { connect: { qrId: jobsiteId } },
         comment: timeSheetComments || null,
-        user: { connect: { id: userId } },
-        costCode: { connect: { name: costCode } },
+        User: { connect: { id: userId } },
+        CostCode: { connect: { name: costCode } },
         startTime: formatISO(formData.get("startTime") as string),
         workType,
       },
@@ -366,236 +364,347 @@ export async function updateTruckDriverTSBySwitch(formData: FormData) {
     console.log(error);
   }
 }
+
 //-------------------------------------------------------------------------------------------------------------------------------
-//
-//
+//-----------------------------------------------   General   CRUD  ---------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------  TRUCKING CRUD  ---------------------------------------------------------------
-//-------------------------------------------------------------------------------------------------------------------------------
-//--------- Create Truck driver Time Sheet
-export async function CreateTascoTimeSheet(formData: FormData) {
-  try {
-    console.log("entered CreateTimeSheet:");
-    console.log("formData:", formData);
-
-    // Jobsite and User IDs
-    const jobsiteId = formData.get("jobsiteId") as string;
-    const userId = formData.get("userId") as string;
-    const equipmentId = formData.get("equipment") as string;
-    const timeSheetComments = formData.get("timeSheetComments") as string;
-    const costCode = formData.get("costcode") as string;
-    const shiftType = formData.get("shiftType") as string;
-
-    // Create TimeSheet and TruckingLog within a transaction
-    const createdTimeSheet = await prisma.timeSheet.create({
-      data: {
-        submitDate: formatISO(formData.get("submitDate") as string),
-        date: formatISO(formData.get("date") as string),
-        jobsite: { connect: { qrId: jobsiteId } },
-        comment: timeSheetComments || null,
-        user: { connect: { id: userId } },
-        costCode: { connect: { name: costCode } },
-        startTime: formatISO(formData.get("startTime") as string),
-        workType: "TASCO",
-      },
-    });
-
-    let materialType;
-    let laborType = formData.get("laborType") as string;
-    if (shiftType === "abcdShift") {
-      materialType = formData.get("materialType") as string;
-    } else {
-      materialType = "";
-      laborType = "equipmentOperator";
-    }
-
-    // Create a tasco log to be edited in tasco manager
-    const tascoLog = await prisma.tascoLog.create({
-      data: {
-        timeSheetId: createdTimeSheet.id,
-        shiftType,
-        equipmentId: equipmentId || null,
-        laborType,
-        materialType,
-      },
-    });
-
-    console.log("TimeSheet");
-    console.log(createdTimeSheet);
-    console.log("Tasco log");
-    console.log(tascoLog);
-
-    revalidatePath("/admins/settings");
-    revalidatePath("/admins/assets");
-    revalidatePath("/admins/reports");
-    revalidatePath("/admins/personnel");
-    revalidatePath("/admins");
-    revalidatePath("/dashboard");
-
-    return createdTimeSheet;
-  } catch (error) {
-    console.error("Error creating timesheet:", error);
-    throw error;
-  }
-}
-//-------------------------------------------------------------------------------------------------------------------------------
-//--------- Update Truck Driver sheet By switch Jobs
-export async function updateTascoTSBySwitch(formData: FormData) {
+//---------- Transaction to create a new time sheet for General
+export async function handleGeneralTimeSheet(formData: FormData) {
   try {
     const session = await auth();
     if (!session) {
-      throw error("Unauthorized user");
+      throw new Error("Unauthorized user");
     }
-    // verify data is passed through
-    console.log("formData:", formData);
+    console.log("Handle General TimeSheet:", formData);
+    let newTimeSheet: string | null = null;
+    // Start a transaction
+    await prisma.$transaction(async (prisma) => {
+      // Step 1: Create a new TimeSheet
+      const jobsiteId = formData.get("jobsiteId") as string;
+      const userId = formData.get("userId") as string;
+      const previoustimeSheetComments = formData.get(
+        "timeSheetComments"
+      ) as string;
+      const costCode = formData.get("costcode") as string;
+      const type = formData.get("type") as string; // Add type to formData
 
-    const id = formData.get("id") as string;
+      // Create a new TimeSheet
+      const createdTimeSheet = await prisma.timeSheet.create({
+        data: {
+          date: formatISO(formData.get("date") as string),
+          Jobsite: { connect: { qrId: jobsiteId } },
+          User: { connect: { id: userId } },
+          CostCode: { connect: { name: costCode } },
+          startTime: formatISO(formData.get("startTime") as string),
+          workType: "LABOR",
+        },
+      });
 
-    // just updating because we do not need data
-    await prisma.timeSheet.update({
-      where: { id },
-      data: {
-        endTime: formatISO(formData.get("endTime") as string),
-        comment: formData.get("timeSheetComments") as string,
-      },
+      console.log("New TimeSheet created:", createdTimeSheet);
+
+      newTimeSheet = createdTimeSheet.id;
+
+      // Step 2: If type is "switchJobs", end the previous TimeSheet
+      if (type === "switchJobs") {
+        const previousTimeSheetId = formData.get("id") as string;
+        if (!previousTimeSheetId) {
+          throw new Error("No valid previous TimeSheet ID found.");
+        }
+
+        // Update the previous TimeSheet to set the end time
+        await prisma.timeSheet.update({
+          where: { id: previousTimeSheetId },
+          data: {
+            endTime: formatISO(formData.get("endTime") as string),
+            comment: previoustimeSheetComments,
+          },
+        });
+
+        console.log("Previous TimeSheet ended:", previousTimeSheetId);
+      }
+
+      // Revalidate paths
+      revalidatePath("/");
+      revalidatePath("/admins/settings");
+      revalidatePath("/admins/assets");
+      revalidatePath("/admins/reports");
+      revalidatePath("/admins/personnel");
+      revalidatePath("/admins");
+      revalidatePath("/dashboard");
     });
 
-    // Revalidate the path
-    revalidatePath(`/`);
-    revalidatePath("/admins/settings");
-    revalidatePath("/admins/assets");
-    revalidatePath("/admins/reports");
-    revalidatePath("/admins/personnel");
-    revalidatePath("/admins");
-    return { success: true };
-  } catch (error) {
-    console.log(error);
-  }
-}
-//-------------------------------------------------------------------------------------------------------------------------------
-//
-//
-//-------------------------------------------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------  TRUCKING CRUD  ---------------------------------------------------------------
-//-------------------------------------------------------------------------------------------------------------------------------
-//--------- Create Truck driver Time Sheet
-export async function CreateMechanicTimeSheet(formData: FormData) {
-  try {
-    console.log("entered CreateTimeSheet:");
-    console.log("formData:", formData);
-
-    // Jobsite and User IDs
-    const jobsiteId = formData.get("jobsiteId") as string;
-    const userId = formData.get("userId") as string;
-    const timeSheetComments = formData.get("timeSheetComments") as string;
-
-    // Create TimeSheet and TruckingLog within a transaction
-    const createdTimeSheet = await prisma.timeSheet.create({
-      data: {
-        submitDate: formatISO(formData.get("submitDate") as string),
-        date: formatISO(formData.get("date") as string),
-        jobsite: { connect: { qrId: jobsiteId } },
-        comment: timeSheetComments || null,
-        user: { connect: { id: userId } },
-        costCode: { connect: { name: "#00.50" } }, //connects to default cost code
-        startTime: formatISO(formData.get("startTime") as string),
-        workType: "TASCO",
-      },
-    });
-
-    console.log("TimeSheet");
-    console.log(createdTimeSheet);
-
-    revalidatePath("/admins/settings");
-    revalidatePath("/admins/assets");
-    revalidatePath("/admins/reports");
-    revalidatePath("/admins/personnel");
-    revalidatePath("/admins");
-    revalidatePath("/dashboard");
-
-    return createdTimeSheet;
-  } catch (error) {
-    console.error("Error creating timesheet:", error);
-    throw error;
-  }
-}
-//--------- Update Truck Driver sheet By switch Jobs
-export async function updateMechanicTSBySwitch(formData: FormData) {
-  try {
-    const session = await auth();
-    if (!session) {
-      throw error("Unauthorized user");
-    }
-    // verify data is passed through
-    console.log("formData:", formData);
-
-    const id = formData.get("id") as string;
-
-    // just updating because we do not need data
-    await prisma.timeSheet.update({
-      where: { id },
-      data: {
-        endTime: formatISO(formData.get("endTime") as string),
-        comment: formData.get("timeSheetComments") as string,
-      },
-    });
-
-    // Revalidate the path
-    revalidatePath(`/`);
-    revalidatePath("/admins/settings");
-    revalidatePath("/admins/assets");
-    revalidatePath("/admins/reports");
-    revalidatePath("/admins/personnel");
-    revalidatePath("/admins");
-    revalidatePath("/dashboard");
-    return { success: true };
-  } catch (error) {
-    console.log(error);
-  }
-}
-//
-//
-//-------------------------------------------------------------------------------------------------------------------------------
-//
-//-------------------------------------------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------------------------------------------------------
-// Create TimeSheet - used at each login and will retain that timesheetId until the user logs out with switch jobsite
-export async function AddWholeTimeSheet(formData: FormData) {
-  try {
-    console.log("Creating Timesheet...");
-    console.log(formData);
-    // this will set costcode to undefined if empty
-    const costCode = formData.get("costcode");
-    console.log("costcode:", costCode);
-
-    const newTimeSheet = await prisma.timeSheet.create({
-      data: {
-        submitDate: formatISO(formData.get("submitDate") as string),
-        date: formatISO(formData.get("date") as string),
-        jobsite: { connect: { qrId: formData.get("jobsiteId") as string } },
-        costCode: { connect: { name: costCode as string } },
-        startTime: formatISO(formData.get("startTime") as string),
-        endTime: formData.get("endTime")
-          ? formatISO(formData.get("endTime") as string)
-          : null,
-        comment: formData.get("timeSheetComments")
-          ? (formData.get("timeSheetComments") as string)
-          : null,
-        user: { connect: { id: formData.get("userId") as string } },
-        workType: formData.get("workType") as WorkType, // Add this line
-      },
-    });
-    console.log("Timesheet created successfully.");
     return newTimeSheet;
   } catch (error) {
-    console.error("Error creating timesheet:", error);
-    throw error;
+    console.error("Error in transaction:", error);
+    throw error; // Re-throw the error to handle it in the calling function
   }
 }
-//-- update TimeSheets
+
+//-------------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------   Mechanic   CRUD  ---------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------------------
+//---------- Transactions for clock in to roll back if error occurs
+export async function handleMechanicTimeSheet(formData: FormData) {
+  try {
+    const session = await auth();
+    if (!session) {
+      throw new Error("Unauthorized user");
+    }
+    console.log("Handle Mechanic TimeSheet:", formData);
+    let newTimeSheet: string | null = null;
+    // Start a transaction
+    await prisma.$transaction(async (prisma) => {
+      // Step 1: Create a new TimeSheet
+      const jobsiteId = formData.get("jobsiteId") as string;
+      const userId = formData.get("userId") as string;
+      const previoustimeSheetComments = formData.get(
+        "timeSheetComments"
+      ) as string;
+      const costCode = formData.get("costcode") as string;
+      const type = formData.get("type") as string; // Add type to formData
+
+      // Create a new TimeSheet
+      const createdTimeSheet = await prisma.timeSheet.create({
+        data: {
+          date: formatISO(formData.get("date") as string),
+          Jobsite: { connect: { qrId: jobsiteId } },
+          User: { connect: { id: userId } },
+          CostCode: { connect: { name: costCode } },
+          startTime: formatISO(formData.get("startTime") as string),
+          workType: "MECHANIC",
+        },
+      });
+
+      console.log("New TimeSheet created:", createdTimeSheet);
+
+      newTimeSheet = createdTimeSheet.id;
+
+      // Step 2: If type is "switchJobs", end the previous TimeSheet
+      if (type === "switchJobs") {
+        const previousTimeSheetId = formData.get("id") as string;
+        if (!previousTimeSheetId) {
+          throw new Error("No valid previous TimeSheet ID found.");
+        }
+
+        // Update the previous TimeSheet to set the end time
+        await prisma.timeSheet.update({
+          where: { id: previousTimeSheetId },
+          data: {
+            endTime: formatISO(formData.get("endTime") as string),
+            comment: previoustimeSheetComments,
+          },
+        });
+
+        console.log("Previous TimeSheet ended:", previousTimeSheetId);
+      }
+
+      // Revalidate paths
+      revalidatePath("/");
+      revalidatePath("/admins/settings");
+      revalidatePath("/admins/assets");
+      revalidatePath("/admins/reports");
+      revalidatePath("/admins/personnel");
+      revalidatePath("/admins");
+      revalidatePath("/dashboard");
+    });
+
+    return newTimeSheet;
+  } catch (error) {
+    console.error("Error in transaction:", error);
+    throw error; // Re-throw the error to handle it in the calling function
+  }
+}
+//-------------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------   TASCO   CRUD  ---------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------------------
+//---------- Transaction to create a new time sheet
+export async function handleTascoTimeSheet(formData: FormData) {
+  try {
+    const session = await auth();
+    if (!session) {
+      throw new Error("Unauthorized user");
+    }
+    console.log("Handle Tasco TimeSheet:", formData);
+    let newTimeSheet: string | null = null;
+    // Start a transaction
+    await prisma.$transaction(async (prisma) => {
+      // Step 1: Create a new TimeSheet
+      const jobsiteId = formData.get("jobsiteId") as string;
+      const userId = formData.get("userId") as string;
+      const equipmentId = formData.get("equipment") as string;
+      const previoustimeSheetComments = formData.get(
+        "timeSheetComments"
+      ) as string;
+      const costCode = formData.get("costcode") as string;
+      const shiftType = formData.get("shiftType") as string;
+      const type = formData.get("type") as string; // Add type to formData
+
+      let materialType;
+      const laborType = formData.get("laborType") as string;
+      if (shiftType === "ABCD Shift") {
+        materialType = formData.get("materialType") as string;
+      } else {
+        materialType = null;
+      }
+
+      // Create a new TimeSheet
+      const createdTimeSheet = await prisma.timeSheet.create({
+        data: {
+          date: formatISO(formData.get("date") as string),
+          Jobsite: { connect: { qrId: jobsiteId } },
+          User: { connect: { id: userId } },
+          CostCode: { connect: { name: costCode } },
+          startTime: formatISO(formData.get("startTime") as string),
+          workType: "TASCO",
+          TascoLogs: {
+            create: {
+              shiftType,
+              equipmentId: equipmentId || null,
+              laborType: laborType,
+              materialType: materialType,
+            },
+          },
+        },
+      });
+
+      console.log("New TimeSheet created:", createdTimeSheet);
+
+      newTimeSheet = createdTimeSheet.id;
+
+      // Step 2: If type is "switchJobs", end the previous TimeSheet
+      if (type === "switchJobs") {
+        const previousTimeSheetId = formData.get("id") as string;
+        if (!previousTimeSheetId) {
+          throw new Error("No valid previous TimeSheet ID found.");
+        }
+
+        // Update the previous TimeSheet to set the end time
+        await prisma.timeSheet.update({
+          where: { id: previousTimeSheetId },
+          data: {
+            endTime: formatISO(formData.get("endTime") as string),
+            comment: previoustimeSheetComments,
+          },
+        });
+
+        console.log("Previous TimeSheet ended:", previousTimeSheetId);
+      }
+
+      // Revalidate paths
+      revalidatePath("/");
+      revalidatePath("/admins/settings");
+      revalidatePath("/admins/assets");
+      revalidatePath("/admins/reports");
+      revalidatePath("/admins/personnel");
+      revalidatePath("/admins");
+      revalidatePath("/dashboard");
+    });
+
+    return newTimeSheet;
+  } catch (error) {
+    console.error("Error in transaction:", error);
+    throw error; // Re-throw the error to handle it in the calling function
+  }
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------  TRUCKING CRUD  ---------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------------------
+// --- Transaction to handle Truck Driver TimeSheet
+export async function handleTruckTimeSheet(formData: FormData) {
+  try {
+    const session = await auth();
+    if (!session) {
+      throw new Error("Unauthorized user");
+    }
+    console.log("Handle Truck TimeSheet:", formData);
+    let newTimeSheet: string | null = null;
+    // Start a transaction
+    await prisma.$transaction(async (prisma) => {
+      // Step 1: Create a new TimeSheet
+      const jobsiteId = formData.get("jobsiteId") as string;
+      const userId = formData.get("userId") as string;
+      const previoustimeSheetComments = formData.get(
+        "timeSheetComments"
+      ) as string;
+      const costCode = formData.get("costcode") as string;
+      const type = formData.get("type") as string; // Add type to formData
+      const startingMileage = parseInt(
+        formData.get("startingMileage") as string
+      );
+      const laborType = formData.get("laborType") as string;
+      const truck = formData.get("truck") as string;
+      const equipmentId = formData.get("equipment") as string;
+
+      // Create a new TimeSheet
+      const createdTimeSheet = await prisma.timeSheet.create({
+        data: {
+          date: formatISO(formData.get("date") as string),
+          Jobsite: { connect: { qrId: jobsiteId } },
+          User: { connect: { id: userId } },
+          CostCode: { connect: { name: costCode } },
+          startTime: formatISO(formData.get("startTime") as string),
+          workType: "TRUCK_DRIVER",
+          TruckingLogs: {
+            create: {
+              laborType,
+
+              equipmentId:
+                laborType === "truckDriver"
+                  ? truck
+                  : laborType === "truckEquipmentOperator"
+                  ? equipmentId
+                  : null,
+              startingMileage,
+            },
+          },
+        },
+      });
+
+      console.log("New TimeSheet created:", createdTimeSheet);
+
+      newTimeSheet = createdTimeSheet.id;
+
+      // Step 2: If type is "switchJobs", end the previous TimeSheet
+      if (type === "switchJobs") {
+        const previousTimeSheetId = formData.get("id") as string;
+        if (!previousTimeSheetId) {
+          throw new Error("No valid previous TimeSheet ID found.");
+        }
+
+        // Update the previous TimeSheet to set the end time
+        await prisma.timeSheet.update({
+          where: { id: previousTimeSheetId },
+          data: {
+            endTime: formatISO(formData.get("endTime") as string),
+            comment: previoustimeSheetComments,
+          },
+        });
+
+        console.log("Previous TimeSheet ended:", previousTimeSheetId);
+      }
+
+      // Revalidate paths
+      revalidatePath("/");
+      revalidatePath("/admins/settings");
+      revalidatePath("/admins/assets");
+      revalidatePath("/admins/reports");
+      revalidatePath("/admins/personnel");
+      revalidatePath("/admins");
+      revalidatePath("/dashboard");
+    });
+
+    return newTimeSheet;
+  } catch (error) {
+    console.error("Error in transaction:", error);
+    throw error; // Re-throw the error to handle it in the calling function
+  }
+}
+//-------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------------------
+//--------------------------
+//-- update TimeSheets - located in manager section
 export async function updateTimeSheets(
   updatedSheets: TimeSheet[],
   manager: string
@@ -626,37 +735,16 @@ export async function updateTimeSheets(
     throw new Error("Failed to update timesheets. Please try again.");
   }
 }
-//--Edit TimeSheets
-export async function editTimeSheet(formData: FormData) {
-  console.log("Editing Timesheet...");
-  console.log(formData);
-  try {
-    const id = formData.get("id") as string;
-    const costcode = formData.get("costcode");
-    const endTime = formatISO(formData.get("endTime") as string);
-    const startTime = formatISO(formData.get("startTime") as string);
 
-    if (!id) {
-      throw new Error("ID is required");
-    }
-
-    const timeSheet = await prisma.timeSheet.update({
-      where: { id: id },
-      data: {
-        costcode: costcode as string,
-        startTime: startTime,
-        endTime: endTime,
-      },
-    });
-
-    console.log(timeSheet);
-  } catch (error) {
-    console.error("Error editing timesheet:", error);
-  }
-}
+//---------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------
+//ADMINS SERVER ACTIONS
+//---------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------
+//---------
 //--------- Update Time Sheet
-// provides a way to update a timesheet and will give supervisor access to all timesheets
-// and provide a way to alter them as needed by employee accuracy.
+//---------
 export async function updateTimeSheet(formData: FormData) {
   try {
     console.log("formData:", formData);
@@ -707,7 +795,9 @@ export async function updateTimeSheet(formData: FormData) {
     console.error("Error updating timesheet:", error);
   }
 }
+//---------
 //--------- return to prev work
+//---------
 export async function returnToPrevWork(formData: FormData) {
   const id = formData.get("id") as string;
   const PrevTimeSheet = await prisma.timeSheet.findUnique({
@@ -717,49 +807,32 @@ export async function returnToPrevWork(formData: FormData) {
       jobsiteId: true,
       costcode: true,
       workType: true,
+      TascoLogs: {
+        select: {
+          shiftType: true,
+          equipmentId: true,
+          laborType: true,
+          materialType: true,
+        },
+      },
+      TruckingLogs: {
+        select: {
+          laborType: true,
+          equipmentId: true,
+          startingMileage: true,
+        },
+      },
     },
   });
   console.log(PrevTimeSheet);
 
   return PrevTimeSheet;
 }
-// get all timesheets
-export async function GetAllTimeSheets(date: string) {
-  const d = new Date(date).toISOString();
-  const timeSheet = await prisma.timeSheet.findMany({
-    where: { date: { equals: d } },
-  });
-  return timeSheet;
-}
-// Delete TimeSheet by id - will be used by Admin only
+//---------
+//---------  Delete TimeSheet by id - will be used by Admin only
+//---------
 export async function deleteTimeSheet(id: string) {
   await prisma.timeSheet.delete({
     where: { id },
   });
-}
-// find TimeSheets for day
-export async function findTimesheetsforDay(formData: FormData) {
-  console.log("formData:", formData);
-
-  const id = formData.get("id") as string;
-  const dateString = formData.get("date") as string;
-
-  // Create a full local ISO string (including time)
-  const localDateISO = new Date(dateString);
-
-  // Query for timesheets where the full ISO string matches
-  const timeSheet = await prisma.timeSheet.findMany({
-    where: {
-      userId: id,
-      date: {
-        equals: localDateISO, // Match the full ISO string
-      },
-    },
-  });
-
-  if (timeSheet.length === 0) {
-    return null;
-  } else {
-    return timeSheet;
-  }
 }

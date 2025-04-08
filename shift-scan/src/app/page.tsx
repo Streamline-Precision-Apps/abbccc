@@ -3,12 +3,10 @@ import { cookies } from "next/headers";
 import { auth } from "@/auth";
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
-import { Holds } from "@/components/(reusable)/holds";
 import { Grids } from "@/components/(reusable)/grids";
 import WidgetSection from "@/app/(content)/widgetSection";
-import { Images } from "@/components/(reusable)/images";
 import { redirect } from "next/navigation";
-import { AnimatedHamburgerButton } from "@/components/(animations)/hamburgerMenu";
+import HamburgerMenuNew from "@/components/(animations)/hamburgerMenuNew";
 
 export default async function Home() {
   //------------------------------------------------------------------------
@@ -23,23 +21,10 @@ export default async function Home() {
   const locale = lang ? lang.value : "en";
 
   return (
-    <Bases className="fixed w-full h-full">
+    <Bases>
       <Contents>
         <Grids rows={"8"} gap={"2"}>
-          <Holds position={"row"} background={"white"} className="row-span-1">
-            <Holds size={"30"}>
-              <Images
-                titleImg="/logo.svg"
-                titleImgAlt="logo"
-                position={"left"}
-                size={"full"}
-                className="m-2"
-              />
-            </Holds>
-            <Holds size={"70"}>
-              <AnimatedHamburgerButton />
-            </Holds>
-          </Holds>
+          <HamburgerMenuNew />
           <WidgetSection locale={locale} session={session} />
         </Grids>
       </Contents>

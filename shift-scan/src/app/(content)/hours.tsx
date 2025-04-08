@@ -33,8 +33,11 @@ export default function Hours({ setToggle, display, loading }: HoursProps) {
               {t("PayPeriodHours")}
             </Texts>
           </Holds>
-          <Holds background={"white"} className="col-start-7 col-end-10 row-start-1 row-end-4 p-3 border-[3px] border-black rounded-[10px]">
-            <Spinner size={30}/>
+          <Holds
+            background={"white"}
+            className="col-start-7 col-end-10 row-start-1 row-end-4 p-3 border-[3px] border-black rounded-[10px]"
+          >
+            <Spinner size={30} />
           </Holds>
         </Grids>
       </Buttons>
@@ -44,15 +47,18 @@ export default function Hours({ setToggle, display, loading }: HoursProps) {
     <Buttons onClick={handler} background={"darkBlue"}>
       <Grids cols={"10"} rows={"3"}>
         <Holds className="col-start-1 col-end-7 row-span-3">
-            <Texts text={"white"} size={"p2"}>
-              {t("PayPeriodHours")}
-            </Texts>
-          </Holds>
-          <Holds background={"white"} className="col-start-7 col-end-10 row-start-1 row-end-4 p-3 border-[3px] border-black rounded-[10px]">
-            <Texts text={"black"} size={"p4"}>
-              {payPeriodHours} {t("Unit")}
-            </Texts>
-          </Holds>
+          <Texts text={"white"} size={"p2"}>
+            {t("PayPeriodHours")}
+          </Texts>
+        </Holds>
+        <Holds
+          background={"white"}
+          className="col-start-7 col-end-10 row-start-1 row-end-4 p-3  border-[3px] border-black rounded-[10px]"
+        >
+          <Texts text={"black"} size={"p6"}>
+            {payPeriodHours} {t("Unit")}
+          </Texts>
+        </Holds>
       </Grids>
     </Buttons>
   ) : (

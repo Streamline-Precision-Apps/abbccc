@@ -1,78 +1,84 @@
-// This collection stores information about all company equipment. It includes a wide range of items such as company vehicles, trailers, handheld equipment, and heavy machinery. The purpose is to keep track of all assets the company owns and maintains.
 model Equipment {
-    id                     String          @id @default(cuid())
-    qrId                   String          @unique // temporary id, generating specific unique qr code
-    name                   String
-    description            String
-    equipmentTag           EquipmentTags   @default(EQUIPMENT)
-    lastInspection         DateTime?
-    nextInspection         DateTime?
-    nextInspectionComment  String?
-    lastRepair             DateTime?
-    status                 EquipmentStatus @default(OPERATIONAL)
-    createdAt              DateTime        @default(now())
-    updatedAt              DateTime        @updatedAt
-    make                   String?
-    model                  String?
-    year                   String?
-    licensePlate           String?
-    registrationExpiration DateTime?
-    mileage                Int?
-    isActive               Boolean         @default(true)
-    inUse                  Boolean         @default(false)
-    overWeight             Boolean?        @default(false) // Admin 
-    currentWeight          Float?          @default(0) // Admin 
+  id                    String                 @id @default(cuid())
+  qrId                  String                 @unique
+  name                  String
+  description           String
+  documentTagId         String?
+  equipmentVehicleInfo  EquipmentVehicleInfo? // one to one connection
+  equipmentTag          EquipmentTags          @default(EQUIPMENT)
+  status                EquipmentStatus        @default(OPERATIONAL)
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  isActive              Boolean                @default(true)
+  inUse                 Boolean                @default(false)
+  overWeight            Boolean?               @default(false)
+  currentWeight         Float?                 @default(0)
+  CreationLogs          CreationLogs?
+  EmployeeEquipmentLogs EmployeeEquipmentLog[]
+  EquipmentHauled       EquipmentHauled[]
+  Maintenances          Maintenance[]
+  TascoLogs             TascoLog[]
+  TruckingLogs          TruckingLog[]
+  DocumentTags          DocumentTag[]          @relation("DocumentTagToEquipment")
 
-    employeeEquipmentLogs EmployeeEquipmentLog[]
-    Maintenance           Maintenance[]
-    TascoLogs             TascoLog[]
-    TruckingLogs          TruckingLog[]
-    EquipmentHauled       EquipmentHauled[]
-
-    @@index([qrId]) // index for qr code
+  @@index([qrId])
 }
 
-//--------------------------------------------------------------------------------------------------------------------------------
+//We Use Creation Logs as a way to monitor Created 
+model CreationLogs {
+  id              String     @id @default(cuid())
+  createdById     String? // User ID (employee or admin)
+  equipmentId     String?    @unique
+  jobsiteId       String?    @unique
+  comment         String? // creating section
+  createdByOffice Boolean    @default(false) // True if created by admin/office
+  Equipment       Equipment? @relation(fields: [equipmentId], references: [id])
+  Jobsite         Jobsite?   @relation(fields: [jobsiteId], references: [id])
+  User            User?      @relation(fields: [createdById], references: [id])
+}
+
+model EquipmentVehicleInfo {
+  id                     String    @id @default(cuid())
+  make                   String?
+  model                  String?
+  year                   String?
+  licensePlate           String?
+  registrationExpiration DateTime?
+  mileage                Int?
+  Equipment              Equipment @relation(fields: [id], references: [id])
+}
+
 model EmployeeEquipmentLog {
-    id          String     @id @default(cuid())
-    equipmentId String
-    jobsiteId   String
-    employeeId  String
-    startTime   DateTime?
-    endTime     DateTime? // if end time is null it is not completed
-    comment     String?
-    createdAt   DateTime   @default(now())
-    updatedAt   DateTime   @updatedAt
-    isSubmitted Boolean    @default(false) // marks true when form is submitted at end of day
-    status      FormStatus @default(PENDING) // approving of the form from manager
-
-    // Optional connections to other tables
-    timeSheetId   String?
-    tascoLogId    String? // link to tasco logs IF USED
-    laborLogId    String?
-    truckingLogId String?
-    maintenanceId String?
-
-    // Relations
-    refueled   Refueled[]
-    employee   User       @relation(fields: [employeeId], references: [id], onDelete: Cascade)
-    jobsite    Jobsite    @relation(fields: [jobsiteId], references: [qrId])
-    equipment  Equipment? @relation(fields: [equipmentId], references: [id])
-    timeSheets TimeSheet? @relation(fields: [timeSheetId], references: [id])
+  id            String       @id @default(cuid())
+  equipmentId   String
+  jobsiteId     String
+  employeeId    String
+  startTime     DateTime?
+  endTime       DateTime?
+  comment       String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  isFinished    Boolean      @default(false)
+  status        FormStatus   @default(PENDING)
+  timeSheetId   String?
+  tascoLogId    String?
+  laborLogId    String?
+  truckingLogId String?
+  MaintenanceId Maintenance? //one to one relationship
+  User          User         @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  Equipment     Equipment    @relation(fields: [equipmentId], references: [id])
+  Jobsite       Jobsite      @relation(fields: [jobsiteId], references: [qrId])
+  TimeSheet     TimeSheet?   @relation(fields: [timeSheetId], references: [id])
+  RefuelLogs    RefuelLog[]
 }
 
-//--------------------------------------------------------------------------------------------------------------------------------
 model EquipmentHauled {
-    id            String   @id @default(uuid())
-    truckingLogId String
-    equipmentId   String?
-    recordedAt    DateTime @default(now())
-    createdAt     DateTime @default(now())
-    jobSiteId     String?
-
-    truckingLog TruckingLog? @relation(fields: [truckingLogId], references: [id])
-    equipment   Equipment?   @relation(fields: [equipmentId], references: [id])
-    jobSite     Jobsite?     @relation(fields: [jobSiteId], references: [id], onDelete: Cascade)
+  id            String      @id @default(uuid())
+  truckingLogId String
+  equipmentId   String?
+  createdAt     DateTime    @default(now())
+  jobSiteId     String?
+  Equipment     Equipment?  @relation(fields: [equipmentId], references: [id])
+  JobSite       Jobsite?    @relation(fields: [jobSiteId], references: [id], onDelete: Cascade)
+  TruckingLog   TruckingLog @relation(fields: [truckingLogId], references: [id])
 }
-
-//--------------------------------------------------------------------------------------------------------------------------------
