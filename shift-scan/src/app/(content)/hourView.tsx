@@ -11,6 +11,7 @@ import Capitalize from "@/utils/captitalize";
 import CapitalizeAll from "@/utils/capitalizeAll";
 import { Grids } from "@/components/(reusable)/grids";
 import { toZonedTime } from "date-fns-tz";
+import { Titles } from "@/components/(reusable)/titles";
 
 type ViewComponentProps = {
   scrollLeft: () => void;
@@ -41,15 +42,10 @@ export default function ViewComponent({
   const todayZoned = toZonedTime(new Date(), MST_TIMEZONE);
 
   // Get the weekday name in MST
-  let Weekday = zonedCurrentDate.toLocaleDateString(locale, {
+  const Weekday = zonedCurrentDate.toLocaleDateString(locale, {
     timeZone: MST_TIMEZONE,
     weekday: "long",
   });
-
-  // Check if the current date is today
-  if (zonedCurrentDate.toDateString() === todayZoned.toDateString()) {
-    Weekday = `${t("DA-Today")}`;
-  }
 
   // Format the date as "Mon, Aug 5, 2024"
   const dateToday = zonedCurrentDate.toLocaleDateString(locale, {
@@ -60,41 +56,35 @@ export default function ViewComponent({
   });
 
   return (
-    <>  
-      <Holds position={"row"} className="h-full">
-        <Holds size={"20"} className="h-full">
-          <Buttons
-          onClick={scrollLeft}
-          className="shadow-none"
-          >
-            <Images
-            titleImg={"/backArrow.svg"}
-            titleImgAlt="left"
-            className="mx-auto"
-            />
-          </Buttons>
-        </Holds>
-        <Holds background={"white"} size={"60"} className="h-full mx-2 justify-center border-black border-[3px] rounded-[10px]">
-            <Texts size={"p2"} className="">
-              {Capitalize(Weekday)}
-            </Texts>
-            <Texts size={"p4"}>
-              {CapitalizeAll(dateToday)}
-            </Texts>
-        </Holds>
-        <Holds size={"20"} className="h-full">
-          <Buttons
-          onClick={scrollRight}
-          className="shadow-none"
-          >
-            <Images
-            titleImg={"/forwardArrow.svg"}
-            titleImgAlt="right"
-            className="mx-auto"
-            />
-          </Buttons>
-        </Holds>
+    <Holds background={"white"} position={"row"} className="h-full w-full p-2">
+      <Buttons onClick={scrollLeft} className="shadow-none w-[60px]">
+        <Images
+          titleImg={"/less-than.svg"}
+          titleImgAlt="left"
+          className="mx-auto h-5 w-5"
+        />
+      </Buttons>
+
+      <Holds
+        background={"white"}
+        size={"80"}
+        className="h-full mx-2 justify-center rounded-[10px]"
+      >
+        <Titles size={"h3"} className="">
+          {zonedCurrentDate.toDateString() === todayZoned.toDateString()
+            ? `${t("DA-Today")}, ${Capitalize(Weekday)}`
+            : Capitalize(Weekday)}
+        </Titles>
+        <Texts size={"p5"}>{CapitalizeAll(dateToday)}</Texts>
       </Holds>
-    </>
+
+      <Buttons onClick={scrollRight} className="shadow-none w-[60px]">
+        <Images
+          titleImg={"/greater-than.svg"}
+          titleImgAlt="right"
+          className="mx-auto h-5 w-5"
+        />
+      </Buttons>
+    </Holds>
   );
 }
