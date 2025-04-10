@@ -157,7 +157,7 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
   };
 
   return (
-    <Grids rows="12" gap="5">
+    <Grids rows="12" gap="5" className="h-full w-full">
       <Holds position={"row"} className="row-span-2">
         <Holds size={"20"} className="h-full mr-5">
           <Buttons background={"red"} onClick={returnToMain}>
@@ -175,21 +175,14 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
         </Holds>
       </Holds>
 
-      <Holds
-        background={"darkBlue"}
-        className="row-span-10 h-full border-black border-[3px] rounded-[10px] shadow-[8px_8px_0px_grey]"
-      >
-        <Grids>
-          <Holds position="row" className="h-full p-2">
+      <Holds className="row-span-10 h-full w-full rounded-[10px]">
+        <Grids gap={"5"} className="h-full w-full">
+          <Holds position="row" className="h-full w-full pt-2">
             {/* Render prevData only if it exists */}
             {prevData.date !== "" ? (
-              <Holds className="mx-auto pl-2 pb-2 pt-6 h-full w-[25%]">
+              <Holds className="mx-auto pt-6 h-full w-[25%]">
                 <Holds
-                  className={`h-full rounded-[10px] bg-white p-1 justify-end ${
-                    prevData.date === Today.date
-                      ? "border-[5px] border-app-dark-green"
-                      : "border-[3px] border-black"
-                  } ${
+                  className={`h-full rounded-[10px] bg-white p-2 justify-end  ${
                     prevData.hours === 0 &&
                     prevData.date <=
                       toZonedTime(new Date(), MST_TIMEZONE)
@@ -207,42 +200,39 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
                       height: `${calculateBarHeight(prevData.hours)}%`,
                       border: prevData.hours ? "3px solid black" : "",
                     }}
-                  >
-                    <Texts size="p4">
-                      {prevData.hours !== 0 ? prevData.hours.toFixed(1) : ""}
-                    </Texts>
-                    <Texts size="p4">
-                      {prevData.hours === 0 &&
-                      prevData.date <=
-                        toZonedTime(new Date(), MST_TIMEZONE)
-                          .toISOString()
-                          .split("T")[0]
-                        ? prevData.hours
-                        : ""}
-                    </Texts>
-                    <Texts size="p4">
-                      {prevData.date <=
-                      toZonedTime(new Date(), MST_TIMEZONE)
-                        .toISOString()
-                        .split("T")[0]
-                        ? `${t("DA-Time-Label")}`
-                        : ""}
-                    </Texts>
-                  </Holds>
+                  ></Holds>
                 </Holds>
+                <Texts size="p6" text={"white"}>
+                  {prevData.hours !== 0
+                    ? `${prevData.hours.toFixed(1)} ${t("DA-Time-Label")}`
+                    : `0.0 ${t("DA-Time-Label")}`}
+                </Texts>
+                <Texts size="p6" text={"white"}>
+                  {prevData.hours === 0 &&
+                  prevData.date <=
+                    toZonedTime(new Date(), MST_TIMEZONE)
+                      .toISOString()
+                      .split("T")[0]
+                    ? `${prevData.hours} ${t("DA-Time-Label")}`
+                    : ""}
+                </Texts>
+                <Texts size="p6" text={"white"}>
+                  {prevData.date <=
+                  toZonedTime(new Date(), MST_TIMEZONE)
+                    .toISOString()
+                    .split("T")[0]
+                    ? `${t("DA-Time-Label")}`
+                    : ""}
+                </Texts>
               </Holds>
             ) : (
-              <Holds className="mx-auto px-2 py-4 h-full w-[25%]" />
+              <Holds className="mx-auto pt-4 h-full w-[25%]" />
             )}
 
             {/* Render currentData */}
             <Holds className="mx-auto h-full w-[30%]">
               <Holds
-                className={`h-full rounded-[10px] bg-white p-1 flex justify-end ${
-                  currentData.date === Today.date
-                    ? "border-[5px] border-app-dark-green"
-                    : "border-[3px] border-black"
-                } ${
+                className={`h-full rounded-[10px] bg-app-dark-green p-2 flex justify-end ${
                   currentData.hours === 0 &&
                   currentData.date <=
                     toZonedTime(new Date(), MST_TIMEZONE)
@@ -260,43 +250,38 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
                     height: `${calculateBarHeight(currentData.hours)}%`,
                     border: currentData.hours ? "3px solid black" : "none",
                   }}
-                >
-                  <Texts size="p4">
-                    {currentData.hours !== 0
-                      ? currentData.hours.toFixed(1)
-                      : ""}
-                  </Texts>
-                  <Texts size="p4">
-                    {currentData.hours === 0 &&
-                    currentData.date <=
-                      toZonedTime(new Date(), MST_TIMEZONE)
-                        .toISOString()
-                        .split("T")[0]
-                      ? currentData.hours
-                      : ""}
-                  </Texts>
-                  <Texts size="p4">
-                    {currentData.date <=
-                    toZonedTime(new Date(), MST_TIMEZONE)
-                      .toISOString()
-                      .split("T")[0]
-                      ? `${t("DA-Time-Label")}`
-                      : ""}
-                  </Texts>
-                </Holds>
+                ></Holds>
               </Holds>
+              <Texts size="p6" text={"white"}>
+                {currentData.hours !== 0
+                  ? `${currentData.hours.toFixed(1)} ${t("DA-Time-Label")}`
+                  : `0.0 ${t("DA-Time-Label")}`}
+              </Texts>
+              <Texts size="p6" text={"white"}>
+                {currentData.hours === 0 &&
+                currentData.date <=
+                  toZonedTime(new Date(), MST_TIMEZONE)
+                    .toISOString()
+                    .split("T")[0]
+                  ? `${currentData.hours} ${t("DA-Time-Label")}`
+                  : ""}
+              </Texts>
+              <Texts size="p6" text={"white"}>
+                {currentData.date <=
+                toZonedTime(new Date(), MST_TIMEZONE)
+                  .toISOString()
+                  .split("T")[0]
+                  ? `${t("DA-Time-Label")}`
+                  : ""}
+              </Texts>
             </Holds>
 
             {/* Render nextData */}
             {nextData.date !== "" ? (
-              <Holds className="mx-auto pr-2 pb-2 pt-6 h-full w-[25%]">
+              <Holds className="mx-auto pt-4 rounded-[10px] h-full w-[25%]">
                 <Holds
-                  background="darkBlue"
-                  className={`h-full rounded-[10px] bg-white p-1 flex justify-end ${
-                    nextData.date === Today.date
-                      ? "border-[5px] border-app-dark-green"
-                      : "border-[3px] border-black"
-                  } ${
+                  background="white"
+                  className={`h-full rounded-[10px] p-2 flex justify-end ${
                     nextData.hours === 0 &&
                     nextData.date <=
                       toZonedTime(new Date(), MST_TIMEZONE)
@@ -314,36 +299,37 @@ export default function ControlComponent({ toggle }: ControlComponentProps) {
                       height: `${calculateBarHeight(nextData.hours)}%`,
                       border: nextData.hours ? "3px solid black" : "none",
                     }}
-                  >
-                    <Texts size="p4">
-                      {nextData.hours !== 0 ? nextData.hours.toFixed(1) : ""}
-                    </Texts>
-                    <Texts size="p4">
-                      {nextData.hours === 0 &&
-                      nextData.date <=
-                        toZonedTime(new Date(), MST_TIMEZONE)
-                          .toISOString()
-                          .split("T")[0]
-                        ? nextData.hours
-                        : ""}
-                    </Texts>
-                    <Texts size="p4">
-                      {nextData.date <=
-                      toZonedTime(new Date(), MST_TIMEZONE)
-                        .toISOString()
-                        .split("T")[0]
-                        ? `${t("DA-Time-Label")}`
-                        : ""}
-                    </Texts>
-                  </Holds>
+                  ></Holds>
                 </Holds>
+                <Texts size="p6" text={"white"}>
+                  {nextData.hours !== 0
+                    ? ` ${nextData.hours.toFixed(1)} ${t("DA-Time-Label")}`
+                    : `0.0 ${t("DA-Time-Label")}`}
+                </Texts>
+                <Texts size="p6" text={"white"}>
+                  {nextData.hours === 0 &&
+                  nextData.date <=
+                    toZonedTime(new Date(), MST_TIMEZONE)
+                      .toISOString()
+                      .split("T")[0]
+                    ? `${nextData.hours} ${t("DA-Time-Label")}`
+                    : ""}
+                </Texts>
+                <Texts size="p6" text={"white"}>
+                  {nextData.date <=
+                  toZonedTime(new Date(), MST_TIMEZONE)
+                    .toISOString()
+                    .split("T")[0]
+                    ? `${t("DA-Time-Label")}`
+                    : ""}
+                </Texts>
               </Holds>
             ) : (
-              <Holds className="mx-auto px-2 py-4 h-full w-[25%]" />
+              <Holds className="mx-auto pt-6 h-full w-[25%]" />
             )}
           </Holds>
 
-          <Holds className=" p-2 h-full">
+          <Holds className="h-full w-full">
             <ViewComponent
               scrollLeft={scrollLeft}
               scrollRight={scrollRight}

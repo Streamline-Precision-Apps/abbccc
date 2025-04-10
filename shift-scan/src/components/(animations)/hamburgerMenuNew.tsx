@@ -9,9 +9,21 @@ export default function HamburgerMenuNew() {
 
   useEffect(() => {
     const fetchImage = async () => {
-      const fetched = await fetch("/api/getUserImage");
-      const data = await fetched.json();
-      setImage(data.image);
+      const CachedImage = localStorage.getItem("userProfileImage");
+      if (CachedImage) {
+        setImage(CachedImage);
+        return;
+      }
+      try {
+        const fetched = await fetch("/api/getUserImage");
+        const data = await fetched.json();
+        if (data.image) {
+          setImage(data.image);
+          localStorage.setItem("userProfileImage", data.image);
+        }
+      } catch (error) {
+        console.error("Error fetching image:", error);
+      }
     };
     fetchImage();
   }, []);
@@ -20,22 +32,22 @@ export default function HamburgerMenuNew() {
     <Holds
       position={"row"}
       background={"white"}
-      className="row-span-1 h-full px-1"
+      className="row-start-1 row-end-2 h-full p-2"
     >
-      <Holds size={"20"}>
+      <Holds size={"20"} className="h-full">
         <Buttons
           href="/hamburger/profile"
           background={"none"}
           shadow={"none"}
-          className="relative w-16 "
+          className="relative w-16 h-5/6"
         >
           <img
             src={image ? image : "/profile-sm.svg"}
             alt="profile"
             className={
               image
-                ? "mx-auto w-16 border-[3px] border-black rounded-full"
-                : "mx-auto w-16 "
+                ? "mx-auto w-16  border-[2px] border-black rounded-full"
+                : "mx-auto w-16 h-full"
             }
           />
 
@@ -52,21 +64,21 @@ export default function HamburgerMenuNew() {
           titleImg="/logo.svg"
           titleImgAlt="logo"
           position={"left"}
-          className="relative h-full w-full p-2 mx-auto"
+          className="relative h-full w-full mx-auto"
         />
       </Holds>
 
-      <Holds size={"20"}>
+      <Holds size={"20"} className="h-full">
         <Buttons
           href="/hamburger/inbox"
           background={"none"}
           shadow={"none"}
-          className="w-16 h-16"
+          className="w-16 h-5/6"
         >
           <img
-            src={"/inbox-sm.svg"}
+            src={"/List-icon.svg"}
             alt={"inbox"}
-            className="relative h-full w-full px-3 mx-auto"
+            className="relative  w-full mx-auto"
           />
         </Buttons>
       </Holds>
