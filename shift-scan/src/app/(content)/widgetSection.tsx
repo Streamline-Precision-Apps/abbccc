@@ -118,7 +118,7 @@ export default function WidgetSection({ session, locale }: Props) {
         background={toggle ? "white" : "darkBlue"}
         className="row-start-4 row-end-9 h-full"
       >
-        <Contents className="py-5">
+        <Contents width={"section"} className="py-5">
           <Grids rows={"11"} cols={"2"} gap={"5"}>
             {pageView === "break" ? (
               <>
