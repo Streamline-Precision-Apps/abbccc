@@ -25,6 +25,8 @@ import { useRouter } from "next/navigation";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useOperator } from "@/app/context/operatorContext";
 import Spinner from "../(animations)/spinner";
+import { Titles } from "../(reusable)/titles";
+import { Texts } from "../(reusable)/texts";
 
 type VerifyProcessProps = {
   handleNextStep?: () => void;
@@ -79,8 +81,7 @@ export default function TascoVerificationStep({
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     if (!id) {
       console.error("User ID does not exist");
       return;
@@ -157,188 +158,159 @@ export default function TascoVerificationStep({
           loading ? `h-full w-full p-5 opacity-[0.50]` : `h-full w-full p-5`
         }
       >
-        <Grids rows={"7"} gap={"5"} className="h-full w-full">
+        <Grids rows={"8"} gap={"5"} className="h-full w-full">
           <Holds className="h-full w-full row-start-1 row-end-2 ">
-            <Holds className="h-full w-full px-3">
-              <TitleBoxes
-                title={t("VerifyJobSite")}
-                titleImg="/mechanic.svg"
-                titleImgAlt="Mechanic"
-                onClick={handlePreviousStep}
-                type="noIcon-NoHref"
-              />
+            <Holds className="h-full w-full">
+              <Grids cols={"3"} rows={"2"} className="w-full h-full p-3">
+                <Holds className="col-span-1 row-span-1 flex items-center justify-center">
+                  <Buttons
+                    onClick={handlePreviousStep}
+                    background={"none"}
+                    position={"left"}
+                    size={"50"}
+                    shadow={"none"}
+                  >
+                    <Images
+                      titleImg="/turnBack.svg"
+                      titleImgAlt={"Back"}
+                      className="max-w-8 h-auto object-contain"
+                    />
+                  </Buttons>
+                </Holds>
 
-              <Holds>
-                <Images
-                  titleImg="/clock-in.svg"
-                  titleImgAlt="Verify"
-                  className="w-8 h-8"
-                />
-              </Holds>
+                <Holds className="col-start-1 col-end-5 row-start-2 row-end-3 flex flex-row gap-2 items-center justify-center">
+                  <Titles position={"right"} size={"h1"}>
+                    {t("VerifyJobSite")}
+                  </Titles>
+                  <Images
+                    titleImg="/clock-in.svg"
+                    titleImgAlt="Verify"
+                    className="w-8 h-8"
+                  />
+                </Holds>
+              </Grids>
             </Holds>
           </Holds>
 
-          <Forms
-            onSubmit={handleSubmit}
-            className="h-full w-full row-start-2 row-end-8"
+          <Holds
+            background={"timeCardYellow"}
+            className="row-start-2 row-end-8 w-full h-full border-[3px] border-black pt-1"
           >
-            <Holds className="h-full w-full">
-              <Grids rows={"10"} className="h-full w-full">
-                <Holds className="row-start-2 row-end-7 w-full h-full pt-1">
-                  <Holds
-                    background={"lightBlue"}
-                    className="h-full w-[95%] sm:w-[85%] md:w-[75%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%]  border-[3px] rounded-b-none  border-black "
-                  >
-                    <Contents width={"section"} className="h-full py-5">
-                      <Grids
-                        cols={"2"}
-                        rows={
-                          clockInRoleTypes === "tascoAbcdEquipment"
-                            ? "4"
-                            : clockInRoleTypes === "tascoAbcdLabor"
-                            ? "4"
-                            : "3"
-                        }
-                        gap={"3"}
-                        className="h-full w-full"
-                      >
-                        <Holds className={"row-span-1 col-span-1"}>
-                          <Labels
-                            htmlFor="jobsiteId"
-                            text={"white"}
-                            size={"p6"}
-                            position={"left"}
-                          >
-                            {t("JobSite-label")}
-                          </Labels>
-                          <Inputs
-                            state="disabled"
-                            name="jobsiteId"
-                            variant={"white"}
-                            data={scanResult?.data || ""}
-                            className="pl-2 text-base"
-                          />
-                        </Holds>
-                        <Holds className={"row-span-1 col-span-1 "}>
-                          <Labels
-                            htmlFor="costcode"
-                            text={"white"}
-                            size={"p6"}
-                            position={"left"}
-                          >
-                            {t("CostCode-label")}
-                          </Labels>
-                          <Inputs
-                            state="disabled"
-                            name="costcode"
-                            variant={"white"}
-                            data={savedCostCode?.toString() || ""}
-                            className="pl-2 text-base"
-                          />
-                        </Holds>
+            <Contents width={"section"} className="h-full ">
+              <Holds className="flex flex-row justify-between pb-3">
+                <Texts size={"p7"} position={"left"}>
+                  {date.toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "numeric",
+                    day: "numeric",
+                  })}
+                </Texts>
+                <Texts size={"p7"} position={"right"}>
+                  {date.toLocaleTimeString("en-US", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                    hour12: true,
+                  })}
+                </Texts>
+              </Holds>
+              <Holds>
+                <Labels
+                  htmlFor="clockInRoleTypes"
+                  size={"p6"}
+                  position={"left"}
+                >
+                  {t("LaborType")}
+                </Labels>
+                <Inputs
+                  state="disabled"
+                  name="jobsiteId"
+                  variant={"white"}
+                  data={
+                    clockInRoleTypes === "tascoAbcdLabor"
+                      ? "TASCO ABCD Labor"
+                      : clockInRoleTypes === "tascoAbcdEquipment"
+                      ? "TASCO ABCD EQ Operator"
+                      : clockInRoleTypes === "tascoEEquipment"
+                      ? "TASCO E EQ Operator"
+                      : clockInRoleTypes
+                  }
+                  className="text-center text-base"
+                />
+              </Holds>
+              <Holds>
+                <Labels htmlFor="jobsiteId" size={"p6"} position={"left"}>
+                  {t("JobSite-label")}
+                </Labels>
+                <Inputs
+                  state="disabled"
+                  name="jobsiteId"
+                  variant={"white"}
+                  data={scanResult?.data || ""}
+                  className="text-center text-base"
+                />
+              </Holds>
+              <Holds>
+                <Labels htmlFor="costcode" size={"p6"} position={"left"}>
+                  {t("CostCode-label")}
+                </Labels>
+                <Inputs
+                  state="disabled"
+                  name="costcode"
+                  variant={"white"}
+                  data={savedCostCode?.toString() || ""}
+                  className="text-center text-base"
+                />
+              </Holds>
 
-                        <Holds className="row-span-1 col-span-2 h-full">
-                          <Labels
-                            htmlFor="clockInRoleTypes"
-                            text={"white"}
-                            size={"p6"}
-                            position={"left"}
-                          >
-                            {t("LaborType")}
-                          </Labels>
-                          <Inputs
-                            state="disabled"
-                            name="jobsiteId"
-                            variant={"white"}
-                            data={
-                              clockInRoleTypes === "tascoAbcdLabor"
-                                ? "ABCD - Labor"
-                                : clockInRoleTypes === "tascoAbcdEquipment"
-                                ? "ABCD - EQ Operator"
-                                : clockInRoleTypes === "tascoEEquipment"
-                                ? "E - EQ Operator"
-                                : clockInRoleTypes
-                            }
-                            className="pl-2 text-base"
-                          />
-                        </Holds>
-                        {clockInRoleTypes !== "tascoEEquipment" && (
-                          <Holds className="row-span-1 col-span-2 h-full">
-                            <Labels
-                              htmlFor="materialType-label"
-                              text={"white"}
-                              size={"p6"}
-                              position={"left"}
-                            >
-                              {t("MaterialType")}
-                            </Labels>
-                            <Inputs
-                              state="disabled"
-                              name="materialType-label"
-                              variant={"white"}
-                              data={materialType || ""}
-                              className="pl-2 text-base"
-                            />
-                          </Holds>
-                        )}
-                        {equipmentId && (
-                          <Holds className="row-span-1 col-span-2 h-full">
-                            <Labels
-                              htmlFor="Equipment-label"
-                              text={"white"}
-                              size={"p6"}
-                              position={"left"}
-                            >
-                              {t("Equipment-label")}
-                            </Labels>
-                            <Inputs
-                              state="disabled"
-                              name="Equipment-label"
-                              variant={"white"}
-                              data={equipmentId || ""}
-                              className="pl-2 text-base"
-                            />
-                          </Holds>
-                        )}
-                      </Grids>
-                    </Contents>
-                  </Holds>
-                </Holds>
-
-                <Holds className="row-start-7 row-end-11 w-full h-full  ">
-                  <Holds
-                    background={"darkBlue"}
-                    className="h-full w-[100%] sm:w-[90%] md:w-[90%] lg:w-[80%] xl:w-[80%] 2xl:w-[80%]  border-[3px]   border-black p-8 "
+              {clockInRoleTypes !== "tascoEEquipment" && (
+                <Holds className="row-span-1 col-span-2 h-full">
+                  <Labels
+                    htmlFor="materialType-label"
+                    size={"p6"}
+                    position={"left"}
                   >
-                    <Buttons
-                      type="submit"
-                      background={"none"}
-                      shadow={"none"}
-                      className="bg-app-green mx-auto flex justify-center items-center w-full h-full py-4 px-5 rounded-lg text-black font-bold border-[3px] border-black"
-                    >
-                      <Clock time={date.getTime()} />
-                    </Buttons>
-                  </Holds>
+                    {t("MaterialType")}
+                  </Labels>
+                  <Inputs
+                    state="disabled"
+                    name="materialType-label"
+                    variant={"white"}
+                    data={materialType || ""}
+                    className="text-center text-base"
+                  />
                 </Holds>
-                <Inputs
-                  type="hidden"
-                  name="submitDate"
-                  value={new Date().toString()}
-                />
-                <Inputs type="hidden" name="userId" value={id} />
-                <Inputs
-                  type="hidden"
-                  name="date"
-                  value={new Date().toString()}
-                />
-                <Inputs
-                  type="hidden"
-                  name="startTime"
-                  value={new Date().toString()}
-                />
-              </Grids>
-            </Holds>
-          </Forms>
+              )}
+              {equipmentId && (
+                <Holds className="row-span-1 col-span-2 h-full">
+                  <Labels
+                    htmlFor="Equipment-label"
+                    size={"p6"}
+                    position={"left"}
+                  >
+                    {t("Equipment")}
+                  </Labels>
+                  <Inputs
+                    state="disabled"
+                    name="Equipment-label"
+                    variant={"white"}
+                    data={equipmentId || ""}
+                    className="text-center text-base"
+                  />
+                </Holds>
+              )}
+            </Contents>
+          </Holds>
+
+          <Holds className="row-start-8 row-end-9 w-full h-full  ">
+            <Buttons
+              onClick={() => handleSubmit()}
+              background={"green"}
+              className=" w-full h-full"
+            >
+              <Titles size={"h2"}>{t("StartDay")}</Titles>
+            </Buttons>
+          </Holds>
         </Grids>
       </Holds>
     </>

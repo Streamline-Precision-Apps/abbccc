@@ -321,6 +321,9 @@
     "ID": "Id: #"
   },
   "Clock": {
+    "Equipment": "Equipment",
+    "SelectMaterialTypeAndEquipment": "Select Material Type and Equipment",
+    "StartDay": "Start Day",
     "SearchBarPlaceholder": "Type here...",
     "SelectedEquipment": "Selected Equipment",
     "MaterialType": "Material Type",
@@ -379,7 +382,7 @@
     "Title-costcode": "Select Cost Code",
     "VerifyJobSite": "Clock In",
     "Date-label": "Date",
-    "JobSite-label": "Job Site #",
+    "JobSite-label": "Jobsite",
     "Truck-label": "Truck ID",
     "CostCode-label": "Cost Code",
     "Confirmation-job-message-1": "Process Completed",

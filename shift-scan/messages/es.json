@@ -299,6 +299,8 @@
     "ID": "Id: #"
   },
   "Clock": {
+    "SelectMaterialTypeAndEquipment": "Seleccione el tipo de material y equipo",
+    "StartDay": "Iniciar Día",
     "MaterialType": "Tipo de Material",
     "LaborType": "Tipo de Trabajo",
     "SubmitSelection": "Enviar selección",
