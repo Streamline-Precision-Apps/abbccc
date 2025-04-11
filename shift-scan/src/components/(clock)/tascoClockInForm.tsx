@@ -88,11 +88,11 @@ export default function TascoClockInForm({
             <TitleBoxes
               title={
                 clockInRoleTypes === "tascoAbcdLabor"
-                  ? "ABCD Manual Labor"
+                  ? t("SelectMaterialType")
                   : clockInRoleTypes === "tascoAbcdEquipment"
-                  ? "ABCD Equipment Operator"
+                  ? t("SelectMaterialTypeAndEquipment")
                   : clockInRoleTypes === "tascoEEquipment"
-                  ? "Mud Conditioning"
+                  ? t("Title-equipment-operator")
                   : ""
               }
               titleImg="/mechanic.svg"
@@ -145,12 +145,11 @@ export default function TascoClockInForm({
                 {clockInRoleTypes === "tascoAbcdEquipment" && (
                   <>
                     <Holds className="row-start-1 row-end-2 p-2">
-                      <Labels size={"p5"}>{t("SelectMaterialType")}</Labels>
                       <Selects
-                        value={materialType}
+                        value={materialType || ""}
                         onChange={(e) => setMaterialType(e.target.value)}
                       >
-                        <option value=""></option>
+                        <option value="">{t("SelectMaterialType")}</option>
                         {materialTypes.map((option) => (
                           <option key={option.id} value={option.name}>
                             {option.name}
@@ -189,12 +188,11 @@ export default function TascoClockInForm({
                 {clockInRoleTypes === "tascoAbcdLabor" && (
                   <>
                     <Holds className="row-start-1 row-end-2 p-2">
-                      <Labels size={"p5"}>{t("SelectMaterialType")}</Labels>
                       <Selects
-                        value={materialType}
+                        value={materialType || ""}
                         onChange={(e) => setMaterialType(e.target.value)}
                       >
-                        <option value=""></option>
+                        <option value="">{t("SelectMaterialType")}</option>
                         {materialTypes.map((option) => (
                           <option key={option.id} value={option.name}>
                             {option.name}

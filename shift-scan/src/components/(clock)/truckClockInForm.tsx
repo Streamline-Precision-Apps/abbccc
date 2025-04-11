@@ -7,13 +7,10 @@ import { Selects } from "@/components/(reusable)/selects";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Grids } from "@/components/(reusable)/grids";
 import { useTranslations } from "next-intl";
-import { Images } from "../(reusable)/images";
 import { Texts } from "../(reusable)/texts";
 import { Labels } from "../(reusable)/labels";
-import CodeStep from "./code-step";
 import CodeFinder from "../(search)/codeFinder";
 import StepButtons from "./step-buttons";
-import { Titles } from "../(reusable)/titles";
 import { TitleBoxes } from "../(reusable)/titleBoxes";
 import Spinner from "../(animations)/spinner";
 import { useOperator } from "@/app/context/operatorContext";
@@ -31,11 +28,6 @@ type TruckClockInFormProps = {
   setStep: Dispatch<SetStateAction<number>>;
   startingMileage: number;
 };
-type TruckListSchema = {
-  id: string;
-  qrId: string;
-  name: string;
-};
 
 export default function TruckClockInForm({
   handleNextStep,
@@ -52,7 +44,7 @@ export default function TruckClockInForm({
 }: TruckClockInFormProps) {
   const t = useTranslations("Clock");
   const { equipmentId } = useOperator();
-  const [truckList, setTruckList] = useState<TruckListSchema[]>([]);
+  const [displayValue, setDisplayValue] = useState("");
   const [selectedOpt, setSelectedOpt] = useState<boolean>(false);
   const [hasTriggered, setHasTriggered] = useState(false);
   const [clockInTruckType, setClockInTruckType] = useState<
@@ -63,10 +55,7 @@ export default function TruckClockInForm({
   useEffect(() => {
     const truckList = async () => {
       setLoading(true);
-      const fetchTruckList = await fetch("/api/getTruckData").then((res) =>
-        res.json()
-      );
-      setTruckList(fetchTruckList);
+
       setLoading(false);
     };
     truckList();
@@ -93,7 +82,7 @@ export default function TruckClockInForm({
       className={loading ? "animate-pulse w-full h-full" : "w-full h-full py-5"}
     >
       <Contents width="section">
-        <Grids rows={"7"} className="h-full w-full">
+        <Grids rows={"8"} className="h-full w-full">
           <Holds className="row-start-1 row-end-2 h-full w-full">
             <TitleBoxes
               title={
@@ -110,48 +99,53 @@ export default function TruckClockInForm({
             />
           </Holds>
           {loading ? (
-            <Holds className=" animate-pulse flex justify-center items-center h-full w-full row-start-2 row-end-7">
+            <Holds className=" animate-pulse flex justify-center items-center h-full w-full row-start-2 row-end-9">
               <Spinner size={50} />
             </Holds>
           ) : (
-            <Holds className="row-start-2 row-end-9 h-full w-full justify-center">
+            <Holds className="row-start-2 row-end-9 h-full w-full ">
               {clockInRoleTypes === "truckDriver" && (
-                <Grids rows={"7"} cols={"1"} gap={"5"}>
-                  <Holds
-                    background={"white"}
-                    className="row-start-1 row-end-3 justify-center p-1 py-2 border-[3px] border-black rounded-[10px]"
-                  >
-                    <Selects
-                      value={truck}
-                      onChange={(e) => {
-                        setTruck(e.target.value);
-                      }}
-                      className="bg-app-blue"
-                    >
-                      <option value="" className="text-center">
-                        {t("SelectTruck")}
-                      </option>
-                      {truckList.map((truck) => (
-                        <option
-                          key={truck.id}
-                          value={truck.qrId}
-                          className="text-center"
-                        >
-                          {truck.name}
-                        </option>
-                      ))}
-                    </Selects>
-                  </Holds>
-                  <Holds className="row-start-3 row-end-4">
-                    <Labels>{t("StartingMileage")}</Labels>
+                <Grids rows={"7"} className="h-full w-full">
+                  <Holds className="row-start-1 row-end-2 h-full">
                     <Inputs
-                      type="number"
+                      type="text"
                       name={"startingMileage"}
+                      value={displayValue}
+                      placeholder={t("StartingMileage")}
                       onChange={(e) => {
-                        setStartingMileage(Number(e.target.value));
+                        // Strip non-numeric characters
+                        const numericValue = e.target.value.replace(
+                          /[^0-9]/g,
+                          ""
+                        );
+                        setDisplayValue(numericValue);
+                        setStartingMileage(Number(numericValue));
                       }}
+                      onBlur={() => {
+                        if (startingMileage) {
+                          setDisplayValue(`${startingMileage} Miles`);
+                        }
+                      }}
+                      onFocus={() => {
+                        setDisplayValue(startingMileage?.toString() || "");
+                      }}
+                      className="text-center"
                     />
                   </Holds>
+                  <Holds className="row-start-2 row-end-7 h-full">
+                    <CodeFinder
+                      datatype={"equipment-operator"}
+                      setSelectedOpt={setSelectedOpt}
+                      setScannedId={undefined}
+                      initialValue={
+                        equipmentId
+                          ? { code: equipmentId, label: equipmentId }
+                          : null
+                      }
+                      initialSearchTerm={equipmentId || ""}
+                    />
+                  </Holds>
+
                   <Holds className="row-start-7 row-end-8">
                     <Buttons
                       className="py-2"

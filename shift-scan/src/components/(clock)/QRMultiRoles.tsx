@@ -112,7 +112,7 @@ export default function QRMultiRoles({
                 </Holds>
 
                 {numberOfViews > 1 && option !== "switchJobs" ? (
-                  <Holds className="p-1 justify-center border-[3px] border-black rounded-[10px] shadow-[6px_6px_0px_grey]">
+                  <Holds className="p-1 justify-center ">
                     <Selects
                       className="disabled:bg-app-dark-gray bg-app-blue text-center p-3"
                       value={clockInRoleTypes}
@@ -169,29 +169,27 @@ export default function QRMultiRoles({
             {!startCamera ? (
               <Holds
                 className={
-                  "h-full w-full row-start-3 row-end-7 border-[3px] border-black rounded-[10px] p-3 "
+                  "h-full w-full row-start-3 row-end-7 border-[3px] border-black rounded-[10px] p-3 justify-center "
                 }
               >
-                <Holds className="h-full w-full justify-center border-[3px] border-black rounded-[10px]">
-                  <Images
-                    titleImg="/camera.svg"
-                    titleImgAlt="clockIn"
-                    position={"center"}
-                    size={"40"}
-                  />
-                  {failedToScan === true && (
-                    <Holds className="pt-5">
-                      <Texts text={"red"} size={"p4"}>
-                        {t("FailedToScanJobSiteDoesNotExist")}
-                      </Texts>
-                    </Holds>
-                  )}
-                </Holds>
+                <Images
+                  titleImg="/camera.svg"
+                  titleImgAlt="clockIn"
+                  position={"center"}
+                  size={"20"}
+                />
+                {failedToScan === true && (
+                  <Holds className="pt-5">
+                    <Texts text={"red"} size={"p4"}>
+                      {t("FailedToScanJobSiteDoesNotExist")}
+                    </Texts>
+                  </Holds>
+                )}
               </Holds>
             ) : (
               <Holds className={"h-full w-full row-start-3 row-end-8"}>
                 <Grids rows={"6"} gap={"2"}>
-                  <Holds className="h-full w-full row-start-1 row-end-6 justify-center border-[3px] border-black rounded-[10px] p-3">
+                  <Holds className="h-full w-full row-start-1 row-end-6 justify-center ">
                     <QR
                       handleScanJobsite={handleScanJobsite}
                       url={url}

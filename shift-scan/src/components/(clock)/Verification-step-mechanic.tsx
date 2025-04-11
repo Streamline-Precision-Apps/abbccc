@@ -25,6 +25,8 @@ import {
 import Spinner from "../(animations)/spinner";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { Titles } from "../(reusable)/titles";
+import { Texts } from "../(reusable)/texts";
+import Capitalize from "@/utils/captitalize";
 
 type VerifyProcessProps = {
   handleNextStep?: () => void;
@@ -56,7 +58,7 @@ export default function MechanicVerificationStep({
   const { data: session } = useSession();
   const { savedCommentData, setCommentData } = useCommentData();
   const { setCostCode } = useSavedCostCode();
-  const costCode = "#00.50";
+  const costCode = "#00.50 Mechanics";
 
   useEffect(() => {
     setCostCode(costCode);
@@ -76,8 +78,7 @@ export default function MechanicVerificationStep({
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     if (!id) {
       console.error("User ID does not exist");
       return;
@@ -141,105 +142,100 @@ export default function MechanicVerificationStep({
         }
       >
         <Contents width={"section"}>
-          <Grids rows={"7"} gap={"5"} className="h-full w-full">
-            <Holds className="h-full w-full row-start-1 row-end-2 ">
-              <Holds className="h-full w-full px-3">
-                <TitleBoxes
-                  title={t("VerifyJobSite")}
-                  titleImg="/mechanic.svg"
-                  titleImgAlt="Mechanic"
-                  onClick={handlePrevStep}
-                  type="noIcon-NoHref"
-                />
+          <Grids rows={"8"} gap={"5"} className="h-full w-full">
+            <Holds className="h-full w-full">
+              <Grids cols={"3"} rows={"2"} className="w-full h-full p-3">
+                <Holds className="col-span-1 row-span-1 flex items-center justify-center">
+                  <Buttons
+                    onClick={handlePrevStep}
+                    background={"none"}
+                    position={"left"}
+                    size={"50"}
+                    shadow={"none"}
+                  >
+                    <Images
+                      titleImg="/turnBack.svg"
+                      titleImgAlt={"Back"}
+                      className="max-w-8 h-auto object-contain"
+                    />
+                  </Buttons>
+                </Holds>
 
-                <Holds>
+                <Holds className="col-start-1 col-end-5 row-start-2 row-end-3 flex flex-row gap-2 items-center justify-center">
+                  <Titles position={"right"} size={"h1"}>
+                    {t("VerifyJobSite")}
+                  </Titles>
                   <Images
                     titleImg="/clock-in.svg"
                     titleImgAlt="Verify"
                     className="w-8 h-8"
                   />
                 </Holds>
-              </Holds>
+              </Grids>
             </Holds>
 
-            <Forms onSubmit={handleSubmit} className="h-full w-full row-span-9">
-              <Holds className="h-full w-full">
-                <Grids cols={"5"} rows={"10"} className="h-full w-full">
-                  <Holds className="row-start-2 row-end-7 col-start-1 col-end-6 h-full pt-1">
-                    <Holds
-                      background={"lightBlue"}
-                      className="h-full w-[95%] sm:w-[85%] md:w-[75%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%]  border-[3px] rounded-b-none  border-black "
-                    >
-                      <Contents width={"section"} className="h-full">
-                        <Labels text={"white"} size={"p4"} position={"left"}>
-                          {t("Date-label")}
-                        </Labels>
-                        <Inputs
-                          state="disabled"
-                          variant={"white"}
-                          data={date.toLocaleDateString("en-US", {
-                            year: "numeric",
-                            month: "numeric",
-                            day: "numeric",
-                          })}
-                        />
+            <Holds
+              background={"timeCardYellow"}
+              className="row-start-2 row-end-8 border-[3px] border-black h-full pt-1"
+            >
+              <Contents width={"section"} className="h-full">
+                <Holds className="flex flex-row justify-between pb-3">
+                  <Texts size={"p7"} position={"left"}>
+                    {date.toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "numeric",
+                      day: "numeric",
+                    })}
+                  </Texts>
+                  <Texts size={"p7"} position={"right"}>
+                    {date.toLocaleTimeString("en-US", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      second: "2-digit",
+                      hour12: true,
+                    })}
+                  </Texts>
+                </Holds>
+                <Labels size={"p4"} position={"left"}>
+                  {t("LaborType")}
+                </Labels>
+                <Inputs
+                  state="disabled"
+                  name="jobsiteId"
+                  variant={"white"}
+                  data={Capitalize(role)}
+                />
 
-                        <Labels text={"white"} size={"p4"} position={"left"}>
-                          {t("JobSite-label")}
-                        </Labels>
-                        <Inputs
-                          state="disabled"
-                          name="jobsiteId"
-                          variant={"white"}
-                          data={scanResult?.data || ""}
-                        />
-                        <Labels text={"white"} size={"p4"} position={"left"}>
-                          {t("CostCode-label")}
-                        </Labels>
-                        <Inputs
-                          state="disabled"
-                          name="costcode"
-                          variant={"white"}
-                          data={costCode}
-                        />
-                      </Contents>
-                    </Holds>
-                  </Holds>
+                <Labels size={"p4"} position={"left"}>
+                  {t("JobSite-label")}
+                </Labels>
+                <Inputs
+                  state="disabled"
+                  name="jobsiteId"
+                  variant={"white"}
+                  data={scanResult?.data || ""}
+                />
+                <Labels size={"p4"} position={"left"}>
+                  {t("CostCode-label")}
+                </Labels>
+                <Inputs
+                  state="disabled"
+                  name="costcode"
+                  variant={"white"}
+                  data={costCode}
+                />
+              </Contents>
+            </Holds>
 
-                  <Holds className="row-start-7 row-end-11 col-start-1 col-end-6 h-full  ">
-                    <Holds
-                      background={"darkBlue"}
-                      className="h-full w-[100%] sm:w-[90%] md:w-[90%] lg:w-[80%] xl:w-[80%] 2xl:w-[80%]  border-[3px]   border-black p-8 "
-                    >
-                      <Buttons
-                        type="submit"
-                        background={"none"}
-                        shadow={"none"}
-                        className="bg-app-green mx-auto flex justify-center items-center w-full h-full py-4 px-5 rounded-lg text-black font-bold border-[3px] border-black"
-                      >
-                        <Clock time={date.getTime()} />
-                      </Buttons>
-                    </Holds>
-                  </Holds>
-                  <Inputs
-                    type="hidden"
-                    name="submitDate"
-                    value={new Date().toString()}
-                  />
-                  <Inputs type="hidden" name="userId" value={id} />
-                  <Inputs
-                    type="hidden"
-                    name="date"
-                    value={new Date().toString()}
-                  />
-                  <Inputs
-                    type="hidden"
-                    name="startTime"
-                    value={new Date().toString()}
-                  />
-                </Grids>
-              </Holds>
-            </Forms>
+            <Holds className="row-start-8 row-end-9 h-full  ">
+              <Buttons
+                onClick={() => handleSubmit()}
+                background={"green"}
+                className=" w-full h-full"
+              >
+                <Titles size={"h2"}>{t("StartDay")}</Titles>
+              </Buttons>
+            </Holds>
           </Grids>
         </Contents>
       </Holds>

@@ -26,6 +26,7 @@ import { useRouter } from "next/navigation";
 import { useOperator } from "@/app/context/operatorContext";
 import Spinner from "../(animations)/spinner";
 import { Titles } from "../(reusable)/titles";
+import { Texts } from "../(reusable)/texts";
 
 type VerifyProcessProps = {
   handleNextStep?: () => void;
@@ -76,8 +77,7 @@ export default function TruckVerificationStep({
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     if (!id) {
       console.error("User ID does not exist");
       return;
@@ -145,7 +145,7 @@ export default function TruckVerificationStep({
             loading ? `h-full py-5 w-full opacity-[0.50]` : `h-full w-full py-5`
           }
         >
-          <Grids rows={"7"} gap={"5"} className="h-full w-full">
+          <Grids rows={"8"} gap={"5"} className="h-full w-full">
             <Holds className="h-full w-full row-start-1 row-end-2 ">
               <Holds className="h-full w-full px-3">
                 <TitleBoxes
@@ -165,192 +165,159 @@ export default function TruckVerificationStep({
                 </Holds>
               </Holds>
             </Holds>
-            <Forms
-              onSubmit={handleSubmit}
-              className="h-full w-full row-start-2 row-end-8"
-            >
-              <Contents width={"section"}>
-                <Holds className="h-full w-full">
-                  <Grids rows={"10"} className="h-full w-full">
-                    <Holds className="row-start-2 row-end-7  h-full pt-1">
-                      <Holds
-                        background={"lightBlue"}
-                        className="h-full w-[95%] sm:w-[85%] md:w-[75%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%]  border-[3px] rounded-b-none  border-black "
-                      >
-                        <Contents width={"section"} className="h-full py-5">
-                          <Grids
-                            cols={"2"}
-                            rows={
-                              clockInRoleTypes === "truckDriver"
-                                ? "4"
-                                : clockInRoleTypes === "truckEquipmentOperator"
-                                ? "3"
-                                : "4"
-                            } //truckLabor
-                            gap={"3"}
-                            className="h-full w-full"
-                          >
-                            <Holds
-                              className={
-                                clockInRoleTypes === "truckDriver"
-                                  ? "row-span-1 col-span-1"
-                                  : "row-span-1 col-span-2"
-                              }
-                            >
-                              <Labels
-                                htmlFor="clockInRole"
-                                text={"white"}
-                                size={"p6"}
-                                position={"left"}
-                              >
-                                {t("LaborType")}
-                              </Labels>
-                              <Inputs
-                                state="disabled"
-                                name="clockInRole"
-                                variant={"white"}
-                                data={
-                                  clockInRoleTypes === "truckDriver"
-                                    ? t("TruckDriver")
-                                    : clockInRoleTypes ===
-                                      "truckEquipmentOperator"
-                                    ? t("TruckEquipmentOperator")
-                                    : t("TruckLabor")
-                                }
-                                className={"pl-2 text-base"}
-                              />
-                            </Holds>
-                            {clockInRoleTypes === "truckDriver" && (
-                              <Holds className={"row-span-1 col-span-1"}>
-                                <Labels
-                                  htmlFor="startingMileage"
-                                  text={"white"}
-                                  size={"p6"}
-                                  position={"left"}
-                                >
-                                  {t("StartingMileage")}
-                                </Labels>
-                                <Inputs
-                                  state="disabled"
-                                  name="startingMileage"
-                                  variant={"white"}
-                                  data={startingMileage?.toString() || ""}
-                                  className={"pl-2 text-base"}
-                                />
-                              </Holds>
-                            )}
-                            {clockInRoleTypes === "truckDriver" && (
-                              <Holds className={"row-span-1 col-span-2"}>
-                                <Labels
-                                  htmlFor="truckId"
-                                  text={"white"}
-                                  size={"p6"}
-                                  position={"left"}
-                                >
-                                  {t("Truck-label")}
-                                </Labels>
-                                <Inputs
-                                  state="disabled"
-                                  name="truckId"
-                                  variant={"white"}
-                                  data={truck || ""}
-                                  className={"pl-2 text-base"}
-                                />
-                              </Holds>
-                            )}
-                            <Holds className={"row-span-1 col-span-2"}>
-                              <Labels
-                                htmlFor="jobsiteId"
-                                text={"white"}
-                                size={"p6"}
-                                position={"left"}
-                              >
-                                {t("JobSite-label")}
-                              </Labels>
-                              <Inputs
-                                state="disabled"
-                                name="jobsiteId"
-                                variant={"white"}
-                                data={scanResult?.data || ""}
-                                className={"pl-2 text-base"}
-                              />
-                            </Holds>
-                            <Holds className={"row-span-1 col-span-2"}>
-                              <Labels
-                                htmlFor="costcode"
-                                text={"white"}
-                                size={"p6"}
-                                position={"left"}
-                              >
-                                {t("CostCode-label")}
-                              </Labels>
-                              <Inputs
-                                state="disabled"
-                                name="costcode"
-                                variant={"white"}
-                                data={savedCostCode?.toString() || ""}
-                                className={"pl-2 text-base"}
-                              />
-                            </Holds>
-                            {clockInRoleTypes === "truckEquipmentOperator" && (
-                              <Holds className={"row-span-1 col-span-2"}>
-                                <Labels
-                                  htmlFor="SelectedEquipment"
-                                  text={"white"}
-                                  size={"p6"}
-                                  position={"left"}
-                                >
-                                  {t("SelectedEquipment")}
-                                </Labels>
-                                <Inputs
-                                  state="disabled"
-                                  name="SelectedEquipment"
-                                  variant={"white"}
-                                  data={equipmentId || ""}
-                                  className={"pl-2 text-base"}
-                                />
-                              </Holds>
-                            )}
-                          </Grids>
-                        </Contents>
-                      </Holds>
-                    </Holds>
 
-                    <Holds className="row-start-7 row-end-11  h-full  ">
-                      <Holds
-                        background={"darkBlue"}
-                        className="h-full w-[100%] sm:w-[90%] md:w-[90%] lg:w-[80%] xl:w-[80%] 2xl:w-[80%]  border-[3px]   border-black p-8 "
-                      >
-                        <Buttons
-                          type="submit"
-                          background={"none"}
-                          shadow={"none"}
-                          className="bg-app-green mx-auto flex justify-center items-center w-full h-full py-4 px-5 rounded-lg text-black font-bold border-[3px] border-black"
-                        >
-                          <Clock time={date.getTime()} />
-                        </Buttons>
-                      </Holds>
-                    </Holds>
-                    <Inputs
-                      type="hidden"
-                      name="submitDate"
-                      value={new Date().toString()}
-                    />
-                    <Inputs type="hidden" name="userId" value={id} />
-                    <Inputs
-                      type="hidden"
-                      name="date"
-                      value={new Date().toString()}
-                    />
-                    <Inputs
-                      type="hidden"
-                      name="startTime"
-                      value={new Date().toString()}
-                    />
-                  </Grids>
+            <Holds className="row-start-2 row-end-8  h-full pt-1">
+              <Contents width={"section"} className="h-full py-5">
+                <Holds className="flex flex-row justify-between pb-3">
+                  <Texts size={"p7"} position={"left"}>
+                    {date.toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "numeric",
+                      day: "numeric",
+                    })}
+                  </Texts>
+                  <Texts size={"p7"} position={"right"}>
+                    {date.toLocaleTimeString("en-US", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      second: "2-digit",
+                      hour12: true,
+                    })}
+                  </Texts>
                 </Holds>
+
+                <Holds
+                  className={
+                    clockInRoleTypes === "truckDriver"
+                      ? "row-span-1 col-span-1"
+                      : "row-span-1 col-span-2"
+                  }
+                >
+                  <Labels
+                    htmlFor="clockInRole"
+                    text={"white"}
+                    size={"p6"}
+                    position={"left"}
+                  >
+                    {t("LaborType")}
+                  </Labels>
+                  <Inputs
+                    state="disabled"
+                    name="clockInRole"
+                    variant={"white"}
+                    data={
+                      clockInRoleTypes === "truckDriver"
+                        ? t("TruckDriver")
+                        : clockInRoleTypes === "truckEquipmentOperator"
+                        ? t("TruckEquipmentOperator")
+                        : t("TruckLabor")
+                    }
+                    className={"pl-2 text-base"}
+                  />
+                </Holds>
+                {clockInRoleTypes === "truckDriver" && (
+                  <Holds className={"row-span-1 col-span-1"}>
+                    <Labels
+                      htmlFor="startingMileage"
+                      text={"white"}
+                      size={"p6"}
+                      position={"left"}
+                    >
+                      {t("StartingMileage")}
+                    </Labels>
+                    <Inputs
+                      state="disabled"
+                      name="startingMileage"
+                      variant={"white"}
+                      data={startingMileage?.toString() || ""}
+                      className={"pl-2 text-base"}
+                    />
+                  </Holds>
+                )}
+                {clockInRoleTypes === "truckDriver" && (
+                  <Holds className={"row-span-1 col-span-2"}>
+                    <Labels
+                      htmlFor="truckId"
+                      text={"white"}
+                      size={"p6"}
+                      position={"left"}
+                    >
+                      {t("Truck-label")}
+                    </Labels>
+                    <Inputs
+                      state="disabled"
+                      name="truckId"
+                      variant={"white"}
+                      data={truck || ""}
+                      className={"pl-2 text-base"}
+                    />
+                  </Holds>
+                )}
+                <Holds className={"row-span-1 col-span-2"}>
+                  <Labels
+                    htmlFor="jobsiteId"
+                    text={"white"}
+                    size={"p6"}
+                    position={"left"}
+                  >
+                    {t("JobSite-label")}
+                  </Labels>
+                  <Inputs
+                    state="disabled"
+                    name="jobsiteId"
+                    variant={"white"}
+                    data={scanResult?.data || ""}
+                    className={"pl-2 text-base"}
+                  />
+                </Holds>
+                <Holds className={"row-span-1 col-span-2"}>
+                  <Labels
+                    htmlFor="costcode"
+                    text={"white"}
+                    size={"p6"}
+                    position={"left"}
+                  >
+                    {t("CostCode-label")}
+                  </Labels>
+                  <Inputs
+                    state="disabled"
+                    name="costcode"
+                    variant={"white"}
+                    data={savedCostCode?.toString() || ""}
+                    className={"pl-2 text-base"}
+                  />
+                </Holds>
+                {clockInRoleTypes === "truckEquipmentOperator" && (
+                  <Holds className={"row-span-1 col-span-2"}>
+                    <Labels
+                      htmlFor="SelectedEquipment"
+                      text={"white"}
+                      size={"p6"}
+                      position={"left"}
+                    >
+                      {t("SelectedEquipment")}
+                    </Labels>
+                    <Inputs
+                      state="disabled"
+                      name="SelectedEquipment"
+                      variant={"white"}
+                      data={equipmentId || ""}
+                      className={"pl-2 text-base"}
+                    />
+                  </Holds>
+                )}
               </Contents>
-            </Forms>
+            </Holds>
+
+            <Holds className="row-start-8 row-end-9 h-full  ">
+              <Buttons
+                onClick={() => handleSubmit()}
+                background={"green"}
+                className=" w-full h-full"
+              >
+                <Titles size={"h2"}>{t("StartDay")}</Titles>
+              </Buttons>
+            </Holds>
           </Grids>
         </Holds>
       </Holds>

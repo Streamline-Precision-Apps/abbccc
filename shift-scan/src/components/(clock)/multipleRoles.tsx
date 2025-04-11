@@ -108,7 +108,7 @@ export default function MultipleRoles({
               />
             </Holds>
             {numberOfRoles > 1 && (
-              <Holds className="p-1 justify-center border-[3px] border-black rounded-[10px] shadow-[6px_6px_0px_grey]">
+              <Holds className="p-1 justify-center ">
                 <Selects
                   className="bg-app-blue text-center p-3"
                   value={clockInRoleTypes}
@@ -148,17 +148,15 @@ export default function MultipleRoles({
             )}
             <Holds
               className={
-                "h-full w-full row-start-3 row-end-7 border-[3px] border-black rounded-[10px] p-3 "
+                "h-full w-full row-start-3 row-end-7 border-[3px] border-black rounded-[10px] p-3 justify-center "
               }
             >
-              <Holds className="h-full w-full justify-center border-[3px] border-black rounded-[10px]">
-                <Images
-                  titleImg="/camera.svg"
-                  titleImgAlt="clockIn"
-                  position={"center"}
-                  size={"40"}
-                />
-              </Holds>
+              <Images
+                titleImg="/camera.svg"
+                titleImgAlt="clockIn"
+                position={"center"}
+                size={"20"}
+              />
             </Holds>
             {numberOfRoles >= 1 && option !== "break" && (
               <Holds className="row-start-8 row-end-9 h-full w-full justify-center">

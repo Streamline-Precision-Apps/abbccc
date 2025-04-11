@@ -97,14 +97,13 @@ export default function QRStep({
               <Holds className={"h-full w-full row-start-2 row-end-7 "}>
                 <Grids rows={"6"} gap={"2"} className="h-full w-full">
                   <Holds className="h-full w-full row-start-2 row-end-6 justify-center border-[3px] border-black rounded-[10px] p-3">
-                    <Holds className="h-full w-full justify-center bg-app-dark-gray border-[3px] border-black rounded-[10px]">
-                      <Images
-                        titleImg="/camera.svg"
-                        titleImgAlt="clockIn"
-                        position={"center"}
-                        size={"40"}
-                      />
-                    </Holds>
+                    <Images
+                      titleImg="/camera.svg"
+                      titleImgAlt="clockIn"
+                      position={"center"}
+                      size={"40"}
+                    />
+
                     {failedToScan === true && (
                       <Holds className="h-full w-full row-start-6 row-end-7 justify-center">
                         <Texts text={"red"} size={"p4"}>
@@ -118,7 +117,7 @@ export default function QRStep({
             ) : (
               <Holds className={"h-full w-full row-start-2 row-end-7"}>
                 <Grids rows={"6"} gap={"2"}>
-                  <Holds className="h-full w-full row-start-2 row-end-6 justify-center border-[3px] p-3 border-black rounded-[10px] ">
+                  <Holds className="h-full w-full row-start-2 row-end-6 justify-center ">
                     <QR
                       handleScanJobsite={handleScanJobsite}
                       url={url}
