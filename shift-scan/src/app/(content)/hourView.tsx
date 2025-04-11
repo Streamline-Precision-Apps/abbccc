@@ -1,7 +1,6 @@
 "use client";
 import { getCookieValue } from "@/utils/getCookie";
 import { Buttons } from "@/components/(reusable)/buttons";
-import { Contents } from "@/components/(reusable)/contents";
 import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
 import { useTranslations } from "next-intl";
@@ -9,8 +8,6 @@ import { useEffect, useState } from "react";
 import { Holds } from "@/components/(reusable)/holds";
 import Capitalize from "@/utils/captitalize";
 import CapitalizeAll from "@/utils/capitalizeAll";
-import { Grids } from "@/components/(reusable)/grids";
-import { toZonedTime } from "date-fns-tz";
 import { Titles } from "@/components/(reusable)/titles";
 
 type ViewComponentProps = {
@@ -18,8 +15,10 @@ type ViewComponentProps = {
   scrollRight: () => void;
   currentDate: string;
 };
-const MST_TIMEZONE = "America/Denver";
 
+/**
+ * A control component for displaying the date and navigating time tracking data in a time tracking visualization.
+ */
 export default function ViewComponent({
   scrollLeft,
   scrollRight,
@@ -37,19 +36,17 @@ export default function ViewComponent({
   const t = useTranslations("Home");
 
   // Convert currentDate to MST
-  const zonedCurrentDate = toZonedTime(new Date(currentDate), MST_TIMEZONE); //new Date(currentDate);
+  const zonedCurrentDate = new Date(currentDate); //new Date(currentDate);
 
-  const todayZoned = toZonedTime(new Date(), MST_TIMEZONE);
+  const todayZoned = new Date();
 
   // Get the weekday name in MST
   const Weekday = zonedCurrentDate.toLocaleDateString(locale, {
-    timeZone: MST_TIMEZONE,
     weekday: "long",
   });
 
   // Format the date as "Mon, Aug 5, 2024"
   const dateToday = zonedCurrentDate.toLocaleDateString(locale, {
-    timeZone: MST_TIMEZONE,
     month: "short",
     day: "numeric",
     year: "numeric",
