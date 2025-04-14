@@ -68,6 +68,13 @@ export const useCostCodeOptions = (
           ),
         }));
         break;
+      case "truck":
+        if (!equipmentResults) throw new Error("equipmentResults is undefined");
+        opts = equipmentResults.map((equipment: EquipmentCode) => ({
+          code: equipment.qrId,
+          label: equipment.name,
+        }));
+        break;
 
       default:
         throw new Error("Invalid data type");

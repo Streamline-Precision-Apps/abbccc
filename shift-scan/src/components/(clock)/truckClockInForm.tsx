@@ -14,19 +14,28 @@ import StepButtons from "./step-buttons";
 import { TitleBoxes } from "../(reusable)/titleBoxes";
 import Spinner from "../(animations)/spinner";
 import { useOperator } from "@/app/context/operatorContext";
+import TruckSelector from "./(Truck)/truckSelector";
+import { EquipmentSelector } from "./(Tasco)/equipmentSelector";
+
+type Option = {
+  code: string;
+  label: string;
+};
 
 type TruckClockInFormProps = {
   handleNextStep: () => void;
   handlePrevStep: () => void;
   laborType: string;
-  truck: string;
+  truck: Option;
   setLaborType: React.Dispatch<React.SetStateAction<string>>;
-  setTruck: React.Dispatch<React.SetStateAction<string>>;
+  setTruck: Dispatch<SetStateAction<Option>>;
   setStartingMileage: React.Dispatch<React.SetStateAction<number>>;
   clockInRoleTypes: string | undefined;
   returnPathUsed: boolean;
   setStep: Dispatch<SetStateAction<number>>;
   startingMileage: number;
+  equipment: Option;
+  setEquipment: Dispatch<SetStateAction<Option>>;
 };
 
 export default function TruckClockInForm({
@@ -41,6 +50,8 @@ export default function TruckClockInForm({
   returnPathUsed,
   setStep,
   startingMileage,
+  equipment,
+  setEquipment,
 }: TruckClockInFormProps) {
   const t = useTranslations("Clock");
   const { equipmentId } = useOperator();
@@ -133,16 +144,16 @@ export default function TruckClockInForm({
                     />
                   </Holds>
                   <Holds className="row-start-2 row-end-7 h-full">
-                    <CodeFinder
-                      datatype={"equipment-operator"}
-                      setSelectedOpt={setSelectedOpt}
-                      setScannedId={undefined}
-                      initialValue={
-                        equipmentId
-                          ? { code: equipmentId, label: equipmentId }
-                          : null
-                      }
-                      initialSearchTerm={equipmentId || ""}
+                    <TruckSelector
+                      onTruckSelect={(selectedTruck) => {
+                        if (selectedTruck) {
+                          setTruck(selectedTruck); // Update the truck state with the full Option object
+                        } else {
+                          setTruck({ code: "", label: "" }); // Reset if null
+                        }
+                        setSelectedOpt(!!selectedTruck);
+                      }}
+                      initialValue={truck}
                     />
                   </Holds>
 
@@ -150,12 +161,14 @@ export default function TruckClockInForm({
                     <Buttons
                       className="py-2"
                       background={
-                        !startingMileage || !truck ? "lightGray" : "orange"
+                        !startingMileage || !selectedOpt
+                          ? "lightGray"
+                          : "orange"
                       }
                       onClick={() => {
                         handleNextStep();
                       }}
-                      disabled={!truck || !startingMileage}
+                      disabled={!selectedOpt || !startingMileage}
                     >
                       <Texts>{t("Continue")}</Texts>
                     </Buttons>
@@ -165,7 +178,7 @@ export default function TruckClockInForm({
               {clockInRoleTypes === "truckEquipmentOperator" && (
                 <Grids rows={"7"} gap={"5"} className="h-full w-full">
                   <Holds className="row-start-1 row-end-7 h-full w-full pt-5">
-                    <CodeFinder
+                    {/* <CodeFinder
                       datatype={"equipment-operator"}
                       setSelectedOpt={setSelectedOpt}
                       setScannedId={undefined}
@@ -175,6 +188,18 @@ export default function TruckClockInForm({
                           : null
                       }
                       initialSearchTerm={equipmentId || ""}
+                    /> */}
+
+                    <EquipmentSelector
+                      onEquipmentSelect={(equipment) => {
+                        if (equipment) {
+                          setEquipment(equipment); // Update the equipment state with the full Option object
+                        } else {
+                          setEquipment({ code: "", label: "" }); // Reset if null
+                        }
+                        setSelectedOpt(!!equipment);
+                      }}
+                      initialValue={equipment}
                     />
                   </Holds>
                   {handleNextStep && (

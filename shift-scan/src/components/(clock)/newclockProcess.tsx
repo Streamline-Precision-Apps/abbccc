@@ -11,7 +11,7 @@ import VerificationEQStep from "./verification-eq-step";
 import { Titles } from "../(reusable)/titles";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { setEquipment, setJobSite, setWorkRole } from "@/actions/cookieActions";
+import { setJobSite, setWorkRole } from "@/actions/cookieActions";
 import MechanicVerificationStep from "./Verification-step-mechanic";
 import TascoVerificationStep from "./Verification-step-tasco";
 import SwitchJobsMultiRoles from "./switchJobsMultipleRoles";
@@ -42,6 +42,10 @@ type NewClockProcessProps = {
   workRole?: string | undefined;
   switchLaborType?: string | undefined;
 };
+type Option = {
+  label: string;
+  code: string;
+};
 
 export default function NewClockProcess({
   mechanicView,
@@ -71,8 +75,28 @@ export default function NewClockProcess({
   const t = useTranslations("Clock");
   const router = useRouter();
   const [laborType, setLaborType] = useState<string>("");
-  // Truck states
-  const [truck, setTruck] = useState<string>("");
+
+  // Truck states - new implementation to not change cookies right away
+  const [truck, setTruck] = useState<Option>({
+    label: "",
+    code: "",
+  });
+  // new state for equipment selection to make it more dynamic
+  const [equipment, setEquipment] = useState<Option>({
+    label: "",
+    code: "",
+  });
+  // profit Id is Jobsites
+  const [profitId, setProfitId] = useState<Option>({
+    label: "",
+    code: "",
+  });
+
+  const [CC, setCC] = useState<Option>({
+    label: "",
+    code: "",
+  });
+
   const [startingMileage, setStartingMileage] = useState<number>(0);
   // Tasco states
   const [materialType, setMaterialType] = useState<string>("");
@@ -189,9 +213,9 @@ export default function NewClockProcess({
           if (firstTascoLog.laborType) {
             setClockInRoleTypes(firstTascoLog.laborType);
           }
-          if (firstTascoLog.equipmentId) {
-            setEquipment(firstTascoLog.equipmentId);
-          }
+          // if (firstTascoLog.equipmentId) {
+          //   setEquipment(firstTascoLog.equipmentId);
+          // }
 
           // Set material type if exists
           if (firstTascoLog.materialType) {
@@ -218,11 +242,14 @@ export default function NewClockProcess({
             setLaborType(firstTruckLog.laborType);
           }
 
-          // Set equipment (truck) if exists
-          if (firstTruckLog.equipmentId) {
-            setEquipmentId(firstTruckLog.equipmentId);
-            setTruck(firstTruckLog.equipmentId);
-          }
+          // // Set equipment (truck) if exists
+          // if (firstTruckLog.equipmentId) {
+          //   setEquipmentId(firstTruckLog.equipmentId);
+          //   setTruck({
+          //     label: firstTruckLog.equipmentId,
+          //     code: firstTruckLog.equipmentId,
+          //   });
+          // }
 
           const workTypes = response.TruckingLogs.map(
             (log) => log.laborType
@@ -484,11 +511,13 @@ export default function NewClockProcess({
           handleNextStep={handleNextStep}
           handlePrevStep={handlePrevStep}
           setLaborType={setLaborType}
+          truck={truck}
           setTruck={setTruck}
+          equipment={equipment}
+          setEquipment={setEquipment}
           setStartingMileage={setStartingMileage}
           startingMileage={startingMileage}
           laborType={laborType}
-          truck={truck}
           clockInRoleTypes={clockInRoleTypes}
           returnPathUsed={returnPathUsed}
           setStep={setStep}
@@ -504,6 +533,7 @@ export default function NewClockProcess({
           startingMileage={startingMileage}
           type={type}
           role={clockInRole}
+          equipment={equipment}
           clockInRoleTypes={clockInRoleTypes}
           handleNextStep={handleNextStep}
           option={option}
