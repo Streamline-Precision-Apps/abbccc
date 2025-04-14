@@ -42,6 +42,7 @@ type VerifyProcessProps = {
   clockInRoleTypes: string | undefined;
   handlePrevStep: () => void;
   equipment: Options | null;
+  jobsite: Options | null;
 };
 
 export default function TruckVerificationStep({
@@ -55,6 +56,7 @@ export default function TruckVerificationStep({
   clockInRoleTypes,
   handlePrevStep,
   equipment,
+  jobsite,
 }: VerifyProcessProps) {
   const t = useTranslations("Clock");
   const { scanResult } = useScanData();
@@ -92,7 +94,7 @@ export default function TruckVerificationStep({
       formData.append("submitDate", new Date().toISOString());
       formData.append("userId", id?.toString() || "");
       formData.append("date", new Date().toISOString());
-      formData.append("jobsiteId", scanResult?.data || "");
+      formData.append("jobsiteId", jobsite?.code || "");
       formData.append("costcode", savedCostCode?.toString() || "");
       formData.append("startTime", new Date().toISOString());
       formData.append("workType", role);
@@ -270,7 +272,7 @@ export default function TruckVerificationStep({
                       state="disabled"
                       name="jobsiteId"
                       variant={"white"}
-                      data={scanResult?.data || ""}
+                      data={jobsite?.label || ""}
                       className={"pl-2 text-base text-center"}
                     />
                   </Holds>

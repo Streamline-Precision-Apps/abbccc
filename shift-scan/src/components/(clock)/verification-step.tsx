@@ -27,6 +27,10 @@ import Spinner from "../(animations)/spinner";
 import { TitleBoxes } from "../(reusable)/titleBoxes";
 import { Texts } from "../(reusable)/texts";
 
+type Options = {
+  label: string;
+  code: string;
+};
 type VerifyProcessProps = {
   type: string;
   role: string;
@@ -37,6 +41,7 @@ type VerifyProcessProps = {
   clockInRoleTypes: string | undefined;
   returnPathUsed: boolean;
   setStep: Dispatch<SetStateAction<number>>;
+  jobsite: Options | null;
 };
 
 export default function VerificationStep({
@@ -48,6 +53,7 @@ export default function VerificationStep({
   clockInRoleTypes,
   returnPathUsed,
   setStep,
+  jobsite,
 }: VerifyProcessProps) {
   const t = useTranslations("Clock");
   const { scanResult } = useScanData();
@@ -173,7 +179,7 @@ export default function VerificationStep({
 
             <Holds
               background={"timeCardYellow"}
-              className="row-start-2 row-end-8 h-full"
+              className="row-start-2 row-end-8 h-full border-[3px] rounded-[10px] border-black"
             >
               <Contents width={"section"} className="h-full py-2">
                 <Holds className="flex flex-row justify-between pb-3">
@@ -202,6 +208,7 @@ export default function VerificationStep({
                   name="jobsiteId"
                   variant={"white"}
                   data={"General Labor"}
+                  className="text-center"
                 />
 
                 <Labels htmlFor="jobsiteId" size={"p4"} position={"left"}>
@@ -211,7 +218,8 @@ export default function VerificationStep({
                   state="disabled"
                   name="jobsiteId"
                   variant={"white"}
-                  data={scanResult?.data || ""}
+                  data={jobsite?.label || ""}
+                  className="text-center"
                 />
                 <Labels htmlFor="costcode" size={"p4"} position={"left"}>
                   {t("CostCode-label")}
@@ -221,6 +229,7 @@ export default function VerificationStep({
                   name="costcode"
                   variant={"white"}
                   data={savedCostCode?.toString() || ""}
+                  className="text-center"
                 />
               </Contents>
             </Holds>
