@@ -13,6 +13,10 @@ import { useSession } from "next-auth/react";
 import { Contents } from "../(reusable)/contents";
 import { TitleBoxes } from "../(reusable)/titleBoxes";
 
+type Option = {
+  label: string;
+  code: string;
+};
 type QRStepProps = {
   handleAlternativePath: () => void;
   handleNextStep: () => void;
@@ -27,6 +31,7 @@ type QRStepProps = {
   setScanned: React.Dispatch<React.SetStateAction<boolean>>;
   clockInRoleTypes: string | undefined;
   setClockInRoleTypes: Dispatch<SetStateAction<string | undefined>>;
+  setJobsite: Dispatch<SetStateAction<Option>>;
 };
 
 export default function QRMultiRoles({
@@ -42,6 +47,7 @@ export default function QRMultiRoles({
   setScanned,
   clockInRoleTypes,
   setClockInRoleTypes,
+  setJobsite,
 }: QRStepProps) {
   const t = useTranslations("Clock");
   const [startCamera, setStartCamera] = useState<boolean>(false);
@@ -200,6 +206,7 @@ export default function QRMultiRoles({
                       setStartCamera={setStartCamera}
                       setFailedToScan={setFailedToScan}
                       setScanned={setScanned}
+                      setJobsite={setJobsite}
                     />
                   </Holds>
 

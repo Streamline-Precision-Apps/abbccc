@@ -11,6 +11,10 @@ import { Images } from "../(reusable)/images";
 import { Contents } from "../(reusable)/contents";
 import { TitleBoxes } from "../(reusable)/titleBoxes";
 
+type Option = {
+  label: string;
+  code: string;
+};
 type QRStepProps = {
   handleAlternativePath: () => void;
   handleNextStep: () => void;
@@ -26,6 +30,7 @@ type QRStepProps = {
   setScanned: React.Dispatch<React.SetStateAction<boolean>>;
   clockInRoleTypes: string | undefined;
   setClockInRoleTypes: Dispatch<SetStateAction<string | undefined>>;
+  setJobsite: Dispatch<SetStateAction<Option>>;
 };
 
 export default function QRStep({
@@ -38,8 +43,8 @@ export default function QRStep({
   url,
   clockInRole,
   handlePrevStep,
-
   setScanned,
+  setJobsite,
 }: QRStepProps) {
   const t = useTranslations("Clock");
   const [startCamera, setStartCamera] = useState<boolean>(false);
@@ -128,6 +133,7 @@ export default function QRStep({
                       setStartCamera={setStartCamera}
                       setFailedToScan={setFailedToScan}
                       setScanned={setScanned}
+                      setJobsite={setJobsite}
                     />
                   </Holds>
 
