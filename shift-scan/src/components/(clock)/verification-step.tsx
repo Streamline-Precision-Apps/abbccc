@@ -173,7 +173,7 @@ export default function VerificationStep({
 
             <Holds
               background={"timeCardYellow"}
-              className="row-start-2 row-end-8  h-full"
+              className="row-start-2 row-end-8 h-full"
             >
               <Contents width={"section"} className="h-full py-2">
                 <Holds className="flex flex-row justify-between pb-3">
