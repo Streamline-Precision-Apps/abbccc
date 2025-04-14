@@ -15,7 +15,7 @@ import { TitleBoxes } from "../(reusable)/titleBoxes";
 import Spinner from "../(animations)/spinner";
 import { useOperator } from "@/app/context/operatorContext";
 import TruckSelector from "./(Truck)/truckSelector";
-import { EquipmentSelector } from "./(Tasco)/equipmentSelector";
+import { EquipmentSelector } from "./equipmentSelector";
 
 type Option = {
   code: string;
@@ -178,18 +178,6 @@ export default function TruckClockInForm({
               {clockInRoleTypes === "truckEquipmentOperator" && (
                 <Grids rows={"7"} gap={"5"} className="h-full w-full">
                   <Holds className="row-start-1 row-end-7 h-full w-full pt-5">
-                    {/* <CodeFinder
-                      datatype={"equipment-operator"}
-                      setSelectedOpt={setSelectedOpt}
-                      setScannedId={undefined}
-                      initialValue={
-                        equipmentId
-                          ? { code: equipmentId, label: equipmentId }
-                          : null
-                      }
-                      initialSearchTerm={equipmentId || ""}
-                    /> */}
-
                     <EquipmentSelector
                       onEquipmentSelect={(equipment) => {
                         if (equipment) {

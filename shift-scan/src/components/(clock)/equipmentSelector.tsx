@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import NewCodeFinder from "../../(search)/newCodeFinder";
+import NewCodeFinder from "../(search)/newCodeFinder";
+import { useDBEquipment } from "@/app/context/dbCodeContext";
 
 type Option = {
   code: string;
@@ -21,6 +22,16 @@ export const EquipmentSelector = ({
   );
   const [equipmentOptions, setEquipmentOptions] = useState<Option[]>([]);
 
+  const { equipmentResults } = useDBEquipment();
+
+  useEffect(() => {
+    const options = equipmentResults.map((costcode) => ({
+      code: costcode.name,
+      label: costcode.name,
+    }));
+    setEquipmentOptions(options);
+  }, [equipmentResults]);
+
   // Initialize with the passed initialValue
   useEffect(() => {
     if (initialValue && equipmentOptions.length > 0) {
@@ -32,27 +43,6 @@ export const EquipmentSelector = ({
       }
     }
   }, [initialValue, equipmentOptions]);
-
-  useEffect(() => {
-    const fetchTruckData = async () => {
-      try {
-        const res = await fetch("/api/getEquipmentList");
-        const data = await res.json();
-
-        if (Array.isArray(data)) {
-          const options = data.map((item) => ({
-            code: item.qrId,
-            label: item.name,
-          }));
-          setEquipmentOptions(options);
-        }
-      } catch (error) {
-        console.error("Error fetching truck data:", error);
-      }
-    };
-
-    fetchTruckData();
-  }, []);
 
   // Handle selection changes and notify parent
   const handleSelect = (option: Option | null) => {

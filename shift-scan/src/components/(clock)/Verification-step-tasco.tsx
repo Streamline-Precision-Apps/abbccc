@@ -4,13 +4,10 @@ import { useTranslations } from "next-intl";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
 import { handleTascoTimeSheet } from "@/actions/timeSheetActions"; // Updated import
-import { Clock } from "../clock";
-import { TitleBoxes } from "../(reusable)/titleBoxes";
 import { Buttons } from "../(reusable)/buttons";
 import { Contents } from "../(reusable)/contents";
 import { Labels } from "../(reusable)/labels";
 import { Inputs } from "../(reusable)/inputs";
-import { Forms } from "../(reusable)/forms";
 import { Images } from "../(reusable)/images";
 import { useSession } from "next-auth/react";
 import { Holds } from "../(reusable)/holds";
@@ -28,6 +25,10 @@ import Spinner from "../(animations)/spinner";
 import { Titles } from "../(reusable)/titles";
 import { Texts } from "../(reusable)/texts";
 
+type Option = {
+  label: string;
+  code: string;
+};
 type VerifyProcessProps = {
   handleNextStep?: () => void;
   type: string;
@@ -41,6 +42,9 @@ type VerifyProcessProps = {
   handlePreviousStep: () => void;
   returnPathUsed: boolean;
   setStep: Dispatch<SetStateAction<number>>;
+  jobsite: Option | null;
+  cc: Option | null;
+  equipment: Option | null;
 };
 
 export default function TascoVerificationStep({
@@ -55,12 +59,12 @@ export default function TascoVerificationStep({
   handlePreviousStep,
   returnPathUsed,
   setStep,
+  jobsite,
+  cc,
+  equipment,
 }: VerifyProcessProps) {
   const t = useTranslations("Clock");
-  const { scanResult } = useScanData();
-  const { savedCostCode } = useSavedCostCode();
   const { setTimeSheetData } = useTimeSheetData();
-  const { equipmentId } = useOperator();
   const [date] = useState(new Date());
   const [loading, setLoading] = useState<boolean>(false);
   const { data: session } = useSession();
@@ -93,8 +97,8 @@ export default function TascoVerificationStep({
       formData.append("submitDate", new Date().toISOString());
       formData.append("userId", id);
       formData.append("date", new Date().toISOString());
-      formData.append("jobsiteId", scanResult?.data || "");
-      formData.append("costcode", savedCostCode?.toString() || "");
+      formData.append("jobsiteId", jobsite?.code || "");
+      formData.append("costcode", cc?.code || "");
       formData.append("startTime", new Date().toISOString());
       formData.append("laborType", clockInRoleTypes || "");
 
@@ -110,7 +114,7 @@ export default function TascoVerificationStep({
         formData.append("shiftType", "E shift");
       }
       formData.append("workType", role);
-      formData.append("equipment", equipmentId || "");
+      formData.append("equipment", equipment?.code || "");
 
       // If switching jobs, include the previous timesheet ID
       if (type === "switchJobs") {
@@ -194,7 +198,7 @@ export default function TascoVerificationStep({
 
           <Holds
             background={"timeCardYellow"}
-            className="row-start-2 row-end-8 w-full h-full border-[3px] border-black pt-1"
+            className="row-start-2 row-end-8 w-full h-full rounded-[10px] border-[3px] border-black pt-1"
           >
             <Contents width={"section"} className="h-full ">
               <Holds className="flex flex-row justify-between pb-3">
@@ -246,7 +250,7 @@ export default function TascoVerificationStep({
                   state="disabled"
                   name="jobsiteId"
                   variant={"white"}
-                  data={scanResult?.data || ""}
+                  data={jobsite?.label || ""}
                   className="text-center text-base"
                 />
               </Holds>
@@ -258,13 +262,13 @@ export default function TascoVerificationStep({
                   state="disabled"
                   name="costcode"
                   variant={"white"}
-                  data={savedCostCode?.toString() || ""}
+                  data={cc?.label || ""}
                   className="text-center text-base"
                 />
               </Holds>
 
               {clockInRoleTypes !== "tascoEEquipment" && (
-                <Holds className="row-span-1 col-span-2 h-full">
+                <Holds>
                   <Labels
                     htmlFor="materialType-label"
                     size={"p6"}
@@ -281,8 +285,8 @@ export default function TascoVerificationStep({
                   />
                 </Holds>
               )}
-              {equipmentId && (
-                <Holds className="row-span-1 col-span-2 h-full">
+              {equipment?.label && (
+                <Holds>
                   <Labels
                     htmlFor="Equipment-label"
                     size={"p6"}
@@ -294,7 +298,7 @@ export default function TascoVerificationStep({
                     state="disabled"
                     name="Equipment-label"
                     variant={"white"}
-                    data={equipmentId || ""}
+                    data={equipment?.label || ""}
                     className="text-center text-base"
                   />
                 </Holds>

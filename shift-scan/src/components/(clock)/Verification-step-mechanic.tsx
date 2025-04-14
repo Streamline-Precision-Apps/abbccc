@@ -28,6 +28,10 @@ import { Titles } from "../(reusable)/titles";
 import { Texts } from "../(reusable)/texts";
 import Capitalize from "@/utils/captitalize";
 
+type Option = {
+  label: string;
+  code: string;
+};
 type VerifyProcessProps = {
   handleNextStep?: () => void;
   type: string;
@@ -38,6 +42,7 @@ type VerifyProcessProps = {
   handlePrevStep: () => void;
   returnPathUsed: boolean;
   setStep: Dispatch<SetStateAction<number>>;
+  jobsite: Option;
 };
 
 export default function MechanicVerificationStep({
@@ -48,9 +53,9 @@ export default function MechanicVerificationStep({
   clockInRoleTypes,
   returnPathUsed,
   setStep,
+  jobsite,
 }: VerifyProcessProps) {
   const t = useTranslations("Clock");
-  const { scanResult } = useScanData();
   const { setTimeSheetData } = useTimeSheetData();
   const router = useRouter();
   const [date] = useState(new Date());
@@ -90,7 +95,7 @@ export default function MechanicVerificationStep({
       formData.append("submitDate", new Date().toISOString());
       formData.append("userId", id);
       formData.append("date", new Date().toISOString());
-      formData.append("jobsiteId", scanResult?.data || "");
+      formData.append("jobsiteId", jobsite?.code || "");
       formData.append("costcode", costCode);
       formData.append("startTime", new Date().toISOString());
       formData.append("workType", role);
@@ -204,6 +209,7 @@ export default function MechanicVerificationStep({
                   name="jobsiteId"
                   variant={"white"}
                   data={Capitalize(role)}
+                  className="text-center"
                 />
 
                 <Labels size={"p4"} position={"left"}>
@@ -213,7 +219,8 @@ export default function MechanicVerificationStep({
                   state="disabled"
                   name="jobsiteId"
                   variant={"white"}
-                  data={scanResult?.data || ""}
+                  data={jobsite?.label || ""}
+                  className="text-center"
                 />
                 <Labels size={"p4"} position={"left"}>
                   {t("CostCode-label")}
@@ -223,6 +230,7 @@ export default function MechanicVerificationStep({
                   name="costcode"
                   variant={"white"}
                   data={costCode}
+                  className="text-center"
                 />
               </Contents>
             </Holds>

@@ -48,6 +48,7 @@ interface TitleBoxProps
   src?: string;
   modal?: boolean;
   modalTitle?: Dispatch<SetStateAction<boolean>> | undefined;
+  children?: React.ReactNode;
 }
 
 const TitleBoxes: FC<TitleBoxProps> = ({
@@ -61,12 +62,40 @@ const TitleBoxes: FC<TitleBoxProps> = ({
   header,
   titleImg,
   titleImgAlt,
+  children,
   href = "back",
   modal,
   modalTitle,
   onClick = () => {},
   ...props
 }) => {
+  if (type === "Custom") {
+    return (
+      <div
+        className={cn(TitleBoxVariants({ variant, size, className }))}
+        {...props}
+      >
+        <>
+          <Holds className=" pb-3 flex items-center justify-center">
+            <Buttons
+              onClick={onClick}
+              background={"none"}
+              position={"left"}
+              size={"50"}
+              shadow={"none"}
+            >
+              <Images
+                titleImg="/turnBack.svg"
+                titleImgAlt={"Turn Back"}
+                className="max-w-8 h-auto object-contain"
+              />
+            </Buttons>
+          </Holds>
+          <Holds className="flex items-center justify-center">{children}</Holds>
+        </>
+      </div>
+    );
+  }
   if (type === "profilePic") {
     return (
       <div
@@ -85,7 +114,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
               <Images titleImg="/turnBack.svg" titleImgAlt={titleImgAlt} />
             </Buttons>
           </Holds>
-          {props.children}
+
           <Holds className="col-span-2 row-span-2 cursor-pointer">
             <Holds
               size={"60"}
@@ -148,7 +177,6 @@ const TitleBoxes: FC<TitleBoxProps> = ({
             </Buttons>
           </Holds>
           <Holds className="col-start-3 col-end-5 row-start-1 row-end-2 ">
-            {props.children}
             <Holds size={"full"} position={"center"}>
               <Holds className="rounded-full relative ">
                 <Images
@@ -183,7 +211,6 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         {...props}
       >
         <Titles size={"h1"}>{title}</Titles>
-        {props.children}
       </div>
     );
   }
@@ -219,7 +246,6 @@ const TitleBoxes: FC<TitleBoxProps> = ({
             <Titles size={"h4"}>{header}</Titles>
           </Holds>
         </Grids>
-        {props.children}
       </div>
     );
   }

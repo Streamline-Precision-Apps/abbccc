@@ -25,6 +25,12 @@ import ClockLoadingPage from "./clock-loading-page";
 import { Contents } from "../(reusable)/contents";
 import { useOperator } from "@/app/context/operatorContext";
 import EquipmentQRStep from "./qr-equipment-handler";
+import { JobsiteSelector } from "./jobsiteSelector";
+import StepButtons from "./step-buttons";
+import { Grids } from "../(reusable)/grids";
+import { TitleBoxes } from "../(reusable)/titleBoxes";
+import { set } from "date-fns";
+import { CostCodeSelector } from "./costCodeSelector";
 
 type NewClockProcessProps = {
   mechanicView: boolean;
@@ -55,10 +61,6 @@ export default function NewClockProcess({
   type,
   returnpath,
   option,
-  locale,
-  timeSheetId,
-  jobSiteId,
-  costCode,
   workRole,
   switchLaborType,
 }: NewClockProcessProps) {
@@ -86,13 +88,12 @@ export default function NewClockProcess({
     label: "",
     code: "",
   });
-  // profit Id is Jobsites
-  const [profitId, setProfitId] = useState<Option>({
+
+  const [jobsite, setJobsite] = useState<Option>({
     label: "",
     code: "",
   });
-
-  const [CC, setCC] = useState<Option>({
+  const [cc, setCC] = useState<Option>({
     label: "",
     code: "",
   });
@@ -155,21 +156,18 @@ export default function NewClockProcess({
   }, [session, mechanicView, laborView, truckView, tascoView, type, option]);
 
   //------------------------------------------------------------------
-  //------------------------------------------------------------------
   // Helper functions
-  //------------------------------------------------------------------
-  //------------------------------------------------------------------
+
   const handleNextStep = () => setStep((prevStep) => prevStep + 1);
   const handlePrevStep = () => setStep((prevStep) => prevStep - 1);
   const handleScannedPrevStep = () => setStep(2);
+
   const handleAlternativePath = () => {
     setStep(3);
   };
-
   const handleAlternativePathEQ = () => {
     setStep(2);
   };
-
   // Lets the user return to the previous work after break
   const handleReturn = async () => {
     try {
@@ -285,7 +283,6 @@ export default function NewClockProcess({
       // Handle error appropriately (show message to user, etc.)
     }
   };
-
   // Sets the page to step 4 on a successful scan
   const handleScanJobsite = (type: string) => {
     switch (type) {
@@ -310,9 +307,7 @@ export default function NewClockProcess({
     return router.push(returnpath);
   };
 
-  //Clock out equipment process
-  //-----------------------------------------------------------------------------------------------
-  //-----------------------------------------------------------------------------------------------
+  /* ================  Equipment Clock process */
   if (type === "equipment") {
     return (
       <>
@@ -362,8 +357,8 @@ export default function NewClockProcess({
       </>
     );
   }
-  //Clock In Process method
-  //-----------------------------------------------------------------------------------------------
+
+  /* ================= Clock In Process method */
   return (
     <>
       {step === 0 && (
@@ -445,21 +440,46 @@ export default function NewClockProcess({
           )}
         </Holds>
       )}
-      {/* Mechanic Role */}
-      {/* ------------------------- Mechanic Role start ---------------------*/}
-      {step === 3 && clockInRole === "mechanic" && (
+
+      {step === 3 && (
         <Holds background={"white"} className="h-full w-full py-5">
           <Contents width="section">
-            <CodeStep
-              datatype="jobsite"
-              handleNextStep={handleNextStep}
-              handlePrevStep={handlePrevStep}
-              handleScannedPrevStep={handleScannedPrevStep}
-              scanned={scanned}
-            />
+            <Grids rows={"8"} gap={"5"} className="h-full w-full">
+              <Holds className="h-full row-start-1 row-end-2">
+                <TitleBoxes
+                  title={t(`Title-jobsite`)}
+                  titleImg="/mechanic.svg"
+                  titleImgAlt="Mechanic"
+                  onClick={handlePrevStep}
+                  type="noIcon-NoHref"
+                />
+              </Holds>
+
+              <Holds className={"row-start-2 row-end-8 h-full w-full pt-5"}>
+                <JobsiteSelector
+                  onJobsiteSelect={(jobsite) => {
+                    if (jobsite) {
+                      setJobsite(jobsite); // Update the equipment state with the full Option object
+                    } else {
+                      setJobsite({ code: "", label: "" }); // Reset if null
+                    }
+                  }}
+                  initialValue={jobsite}
+                />
+              </Holds>
+              {handleNextStep && (
+                <Holds className="row-start-8 row-end-9 h-full w-full justify-center">
+                  <StepButtons
+                    handleNextStep={handleNextStep}
+                    disabled={!jobsite}
+                  />
+                </Holds>
+              )}
+            </Grids>
           </Contents>
         </Holds>
       )}
+      {/* Mechanic Roles START ---------------------*/}
       {step === 4 && clockInRole === "mechanic" && (
         <MechanicVerificationStep
           type={type}
@@ -471,38 +491,48 @@ export default function NewClockProcess({
           handlePrevStep={handlePrevStep}
           returnPathUsed={returnPathUsed}
           setStep={setStep}
+          jobsite={jobsite}
         />
       )}
+      {/* ------------------------- Mechanic Role END */}
 
-      {/* ------------------------- Mechanic Role end ---------------------*/}
+      {/* Trucking Role start ---------------------*/}
 
-      {/* Truck Role */}
-      {/* ------------------------- Trucking Role start ---------------------*/}
-
-      {step === 3 && clockInRole === "truck" && (
-        <Holds background={"white"} className="h-full w-full py-5">
-          <Contents width="section">
-            <CodeStep
-              datatype="jobsite"
-              handleNextStep={handleNextStep}
-              handlePrevStep={handlePrevStep}
-              handleScannedPrevStep={handleScannedPrevStep}
-              scanned={scanned}
-            />
-          </Contents>
-        </Holds>
-      )}
-      {/* Special Forms Section */}
       {step === 4 && clockInRole === "truck" && (
         <Holds background={"white"} className="h-full w-full py-5">
           <Contents width="section">
-            <CodeStep
-              datatype="costcode"
-              handleNextStep={handleNextStep}
-              handlePrevStep={handlePrevStep}
-              handleScannedPrevStep={handleScannedPrevStep}
-              scanned={scanned}
-            />
+            <Grids rows={"8"} gap={"5"} className="h-full w-full">
+              <Holds className="h-full row-start-1 row-end-2">
+                <TitleBoxes
+                  title={t(`Title-jobsite`)}
+                  titleImg="/mechanic.svg"
+                  titleImgAlt="Mechanic"
+                  onClick={handlePrevStep}
+                  type="noIcon-NoHref"
+                />
+              </Holds>
+
+              <Holds className={"row-start-2 row-end-8 h-full w-full pt-5"}>
+                <CostCodeSelector
+                  onCostCodeSelect={(costCode) => {
+                    if (costCode) {
+                      setCC(costCode); // Update the equipment state with the full Option object
+                    } else {
+                      setCC({ code: "", label: "" }); // Reset if null
+                    }
+                  }}
+                  initialValue={cc}
+                />
+              </Holds>
+              {handleNextStep && (
+                <Holds className="row-start-8 row-end-9 h-full w-full justify-center">
+                  <StepButtons
+                    handleNextStep={handleNextStep}
+                    disabled={!jobsite}
+                  />
+                </Holds>
+              )}
+            </Grids>
           </Contents>
         </Holds>
       )}
@@ -523,10 +553,9 @@ export default function NewClockProcess({
           setStep={setStep}
         />
       )}
-
-      {/* Verification Page for truck drivers */}
       {step === 6 && clockInRole === "truck" && (
         <TruckVerificationStep
+          jobsite={jobsite}
           laborType={laborType}
           truck={truck}
           handlePrevStep={handlePrevStep}
@@ -540,35 +569,43 @@ export default function NewClockProcess({
           comments={undefined}
         />
       )}
+      {/* ------------ End of Trucking Role section */}
 
-      {/* ------------------------- End of Trucking Role section ---------------------*/}
-
-      {/* Tasco Role */}
-      {/* ------------------------- Tasco Role start ---------------------*/}
-      {/* Tasco Role */}
-      {step === 3 && clockInRole === "tasco" && (
-        <Holds background={"white"} className="h-full w-full py-5">
-          <Contents width="section">
-            <CodeStep
-              datatype="jobsite"
-              handleNextStep={handleNextStep}
-              handlePrevStep={handlePrevStep}
-              handleScannedPrevStep={handleScannedPrevStep}
-              scanned={scanned}
-            />
-          </Contents>
-        </Holds>
-      )}
       {step === 4 && clockInRole === "tasco" && (
         <Holds background={"white"} className="h-full w-full py-5">
           <Contents width="section">
-            <CodeStep
-              datatype="costcode"
-              handleNextStep={handleNextStep}
-              handlePrevStep={handlePrevStep}
-              handleScannedPrevStep={handleScannedPrevStep}
-              scanned={scanned}
-            />
+            <Grids rows={"8"} gap={"5"} className="h-full w-full">
+              <Holds className="h-full row-start-1 row-end-2">
+                <TitleBoxes
+                  title={t(`Title-jobsite`)}
+                  titleImg="/mechanic.svg"
+                  titleImgAlt="Mechanic"
+                  onClick={handlePrevStep}
+                  type="noIcon-NoHref"
+                />
+              </Holds>
+
+              <Holds className={"row-start-2 row-end-8 h-full w-full pt-5"}>
+                <CostCodeSelector
+                  onCostCodeSelect={(costCode) => {
+                    if (costCode) {
+                      setCC(costCode); // Update the equipment state with the full Option object
+                    } else {
+                      setCC({ code: "", label: "" }); // Reset if null
+                    }
+                  }}
+                  initialValue={cc}
+                />
+              </Holds>
+              {handleNextStep && (
+                <Holds className="row-start-8 row-end-9 h-full w-full justify-center">
+                  <StepButtons
+                    handleNextStep={handleNextStep}
+                    disabled={!jobsite}
+                  />
+                </Holds>
+              )}
+            </Grids>
           </Contents>
         </Holds>
       )}
@@ -586,11 +623,14 @@ export default function NewClockProcess({
             clockInRoleTypes={clockInRoleTypes}
             returnPathUsed={returnPathUsed}
             setStep={setStep}
+            equipment={equipment}
+            setEquipment={setEquipment}
           />
         </Holds>
       )}
       {step === 6 && clockInRole === "tasco" && (
         <TascoVerificationStep
+          jobsite={jobsite}
           type={type}
           role={clockInRole}
           handleNextStep={handleNextStep}
@@ -603,43 +643,55 @@ export default function NewClockProcess({
           comments={undefined}
           returnPathUsed={returnPathUsed}
           setStep={setStep}
+          cc={cc}
+          equipment={equipment}
         />
       )}
-      {/* ------------------------- Tasco Role End ---------------------*/}
+      {/* --------------------- Tasco Role End */}
 
-      {/* General Role */}
-      {/* ------------------------- General Role ---------------------*/}
-      {/* Select Jobsite Section */}
-      {step === 3 && clockInRole === "general" && (
-        <Holds background={"white"} className="h-full w-full py-5">
-          <Contents width="section">
-            <CodeStep
-              datatype="jobsite"
-              handleNextStep={handleNextStep}
-              handlePrevStep={handlePrevStep}
-              handleScannedPrevStep={handleScannedPrevStep}
-              scanned={scanned}
-            />
-          </Contents>
-        </Holds>
-      )}
-      {/* Select Cost Code Section */}
+      {/* General Role ---------------------*/}
+
       {step === 4 && clockInRole === "general" && (
         <Holds background={"white"} className="h-full w-full py-5">
           <Contents width="section">
-            <CodeStep
-              datatype="costcode"
-              handleNextStep={handleNextStep}
-              handlePrevStep={handlePrevStep}
-              handleScannedPrevStep={handleScannedPrevStep}
-              scanned={scanned}
-            />
+            <Grids rows={"8"} gap={"5"} className="h-full w-full">
+              <Holds className="h-full row-start-1 row-end-2">
+                <TitleBoxes
+                  title={t(`Title-jobsite`)}
+                  titleImg="/mechanic.svg"
+                  titleImgAlt="Mechanic"
+                  onClick={handlePrevStep}
+                  type="noIcon-NoHref"
+                />
+              </Holds>
+
+              <Holds className={"row-start-2 row-end-8 h-full w-full pt-5"}>
+                <CostCodeSelector
+                  onCostCodeSelect={(costCode) => {
+                    if (costCode) {
+                      setCC(costCode); // Update the equipment state with the full Option object
+                    } else {
+                      setCC({ code: "", label: "" }); // Reset if null
+                    }
+                  }}
+                  initialValue={cc}
+                />
+              </Holds>
+              {handleNextStep && (
+                <Holds className="row-start-8 row-end-9 h-full w-full justify-center">
+                  <StepButtons
+                    handleNextStep={handleNextStep}
+                    disabled={!jobsite}
+                  />
+                </Holds>
+              )}
+            </Grids>
           </Contents>
         </Holds>
       )}
-      {/* Verification Page */}
       {step === 5 && clockInRole === "general" && (
         <VerificationStep
+          jobsite={jobsite}
           type={type}
           role={clockInRole}
           option={option}
@@ -650,6 +702,7 @@ export default function NewClockProcess({
           setStep={setStep}
         />
       )}
+      {/* ------------------ General Role End */}
     </>
   );
 }
