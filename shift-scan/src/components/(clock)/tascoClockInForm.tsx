@@ -8,7 +8,6 @@ import { useTranslations } from "next-intl";
 import { Titles } from "../(reusable)/titles";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { TitleBoxes } from "../(reusable)/titleBoxes";
-import { useOperator } from "@/app/context/operatorContext";
 import { EquipmentSelector } from "./equipmentSelector";
 
 type TascoClockInFormProps = {

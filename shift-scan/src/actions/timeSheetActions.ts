@@ -799,34 +799,62 @@ export async function updateTimeSheet(formData: FormData) {
 //--------- return to prev work
 //---------
 export async function returnToPrevWork(formData: FormData) {
-  const id = formData.get("id") as string;
-  const PrevTimeSheet = await prisma.timeSheet.findUnique({
-    where: { id },
-    select: {
-      id: true,
-      jobsiteId: true,
-      costcode: true,
-      workType: true,
-      TascoLogs: {
-        select: {
-          shiftType: true,
-          equipmentId: true,
-          laborType: true,
-          materialType: true,
-        },
-      },
-      TruckingLogs: {
-        select: {
-          laborType: true,
-          equipmentId: true,
-          startingMileage: true,
-        },
-      },
-    },
-  });
-  console.log(PrevTimeSheet);
+  try {
+    console.log("formData:", formData);
 
-  return PrevTimeSheet;
+    const id = formData.get("id") as string;
+    const PrevTimeSheet = await prisma.timeSheet.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        Jobsite: {
+          select: {
+            id: true,
+            qrId: true,
+            name: true,
+          },
+        },
+        CostCode: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        workType: true,
+        TascoLogs: {
+          select: {
+            shiftType: true,
+
+            Equipment: {
+              select: {
+                qrId: true,
+                name: true,
+              },
+            },
+            laborType: true,
+            materialType: true,
+          },
+        },
+        TruckingLogs: {
+          select: {
+            laborType: true,
+            Equipment: {
+              select: {
+                qrId: true,
+                name: true,
+              },
+            },
+            startingMileage: true,
+          },
+        },
+      },
+    });
+    console.log(PrevTimeSheet);
+
+    return PrevTimeSheet;
+  } catch (error) {
+    console.error("Error updating timesheet:", error);
+  }
 }
 //---------
 //---------  Delete TimeSheet by id - will be used by Admin only

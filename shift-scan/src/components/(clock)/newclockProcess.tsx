@@ -4,7 +4,6 @@ import { Holds } from "../(reusable)/holds";
 import MultipleRoles from "./multipleRoles";
 import QRStep from "./qr-handler";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
-import CodeStep from "./code-step";
 import VerificationStep from "./verification-step";
 import TruckClockInForm from "./truckClockInForm";
 import VerificationEQStep from "./verification-eq-step";
@@ -29,7 +28,6 @@ import { JobsiteSelector } from "./jobsiteSelector";
 import StepButtons from "./step-buttons";
 import { Grids } from "../(reusable)/grids";
 import { TitleBoxes } from "../(reusable)/titleBoxes";
-import { set } from "date-fns";
 import { CostCodeSelector } from "./costCodeSelector";
 
 type NewClockProcessProps = {
@@ -68,6 +66,7 @@ export default function NewClockProcess({
   const { setEquipmentId } = useOperator();
   const { data: session } = useSession();
   const [step, setStep] = useState<number>(0);
+  const { scanResult } = useScanData();
   const [clockInRole, setClockInRole] = useState<string | undefined>(workRole);
   const [clockInRoleTypes, setClockInRoleTypes] = useState<string | undefined>(
     switchLaborType
@@ -88,7 +87,6 @@ export default function NewClockProcess({
     label: "",
     code: "",
   });
-
   const [jobsite, setJobsite] = useState<Option>({
     label: "",
     code: "",
@@ -97,14 +95,10 @@ export default function NewClockProcess({
     label: "",
     code: "",
   });
-
   const [startingMileage, setStartingMileage] = useState<number>(0);
   // Tasco states
   const [materialType, setMaterialType] = useState<string>("");
   const [shiftType, setShiftType] = useState<string>("");
-  // Contexts
-  const { setScanResult } = useScanData();
-  const { setCostCode } = useSavedCostCode();
 
   const [returnPathUsed, setReturnPathUsed] = useState(false);
 
@@ -177,7 +171,6 @@ export default function NewClockProcess({
         "/api/getRecentTimecardReturn"
       ).then((res) => res.json());
       const tId = fetchRecentTimeSheetId.id;
-
       const formData = new FormData();
       formData.append("id", tId?.toString() || "");
       const response = await returnToPrevWork(formData);
@@ -185,9 +178,8 @@ export default function NewClockProcess({
 
       if (response) {
         // Set basic information from previous timesheet
-        setJobSite(response.jobsiteId);
-        setScanResult({ data: response.jobsiteId });
-        setCostCode(response.costcode);
+        setJobsite({ label: response.Jobsite.name, code: response.Jobsite.id });
+        setCC({ label: response.CostCode.name, code: response.CostCode.name });
 
         // Determine the role from previous work type
         const prevWorkRole =
@@ -211,9 +203,12 @@ export default function NewClockProcess({
           if (firstTascoLog.laborType) {
             setClockInRoleTypes(firstTascoLog.laborType);
           }
-          // if (firstTascoLog.equipmentId) {
-          //   setEquipment(firstTascoLog.equipmentId);
-          // }
+          if (firstTascoLog.Equipment) {
+            setEquipment({
+              label: firstTascoLog.Equipment.name,
+              code: firstTascoLog.Equipment.qrId,
+            });
+          }
 
           // Set material type if exists
           if (firstTascoLog.materialType) {
@@ -240,14 +235,17 @@ export default function NewClockProcess({
             setLaborType(firstTruckLog.laborType);
           }
 
-          // // Set equipment (truck) if exists
-          // if (firstTruckLog.equipmentId) {
-          //   setEquipmentId(firstTruckLog.equipmentId);
-          //   setTruck({
-          //     label: firstTruckLog.equipmentId,
-          //     code: firstTruckLog.equipmentId,
-          //   });
-          // }
+          // Set equipment (truck) if exists
+          if (firstTruckLog.Equipment) {
+            setEquipment({
+              label: firstTruckLog.Equipment.name,
+              code: firstTruckLog.Equipment.qrId,
+            });
+            setTruck({
+              label: firstTruckLog.Equipment.name,
+              code: firstTruckLog.Equipment.qrId,
+            });
+          }
 
           const workTypes = response.TruckingLogs.map(
             (log) => log.laborType
@@ -419,6 +417,7 @@ export default function NewClockProcess({
               setClockInRoleTypes={setClockInRoleTypes}
               clockInRoleTypes={clockInRoleTypes}
               setScanned={setScanned}
+              setJobsite={setJobsite}
             />
           )}
           {numberOfRoles > 1 && (
@@ -436,6 +435,7 @@ export default function NewClockProcess({
               setClockInRoleTypes={setClockInRoleTypes}
               clockInRoleTypes={clockInRoleTypes}
               setScanned={setScanned}
+              setJobsite={setJobsite}
             />
           )}
         </Holds>
