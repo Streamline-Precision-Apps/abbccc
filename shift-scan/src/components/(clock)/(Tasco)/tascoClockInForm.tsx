@@ -73,141 +73,115 @@ export default function TascoClockInForm({
   return (
     <Holds
       background={"white"}
-      className={loading ? " h-full w-full py-5" : "w-full h-full py-5"}
+      className={loading ? " h-full w-full" : "w-full h-full"}
     >
-      <Contents width="section">
-        <Grids rows={"8"} gap={"5"} className="h-full w-full">
-          {/* Back Button */}
-          <Holds className="h-full w-full row-start-1 row-end-2">
-            <TitleBoxes
-              className="flex justify-center items-center h-full w-full"
-              onClick={returnPathUsed ? () => setStep(1) : handlePrevStep}
-              type="Custom"
-              title={""}
-              titleImg={""}
-              titleImgAlt={""}
-            >
-              <>
-                {clockInRoleTypes === "tascoAbcdLabor" && (
-                  <Titles>{t("SelectMaterialType")}</Titles>
-                )}
-                {clockInRoleTypes === "tascoAbcdEquipment" && (
-                  <Titles size={"h3"}>
-                    {t("SelectMaterialTypeAndEquipment")}
-                  </Titles>
-                )}
-                {clockInRoleTypes === "tascoEEquipment" && (
-                  <Titles>{t("Title-equipment-operator")}</Titles>
-                )}
-              </>
-            </TitleBoxes>
+      <TitleBoxes onClick={returnPathUsed ? () => setStep(1) : handlePrevStep}>
+        <>
+          {clockInRoleTypes === "tascoAbcdLabor" ? (
+            <Titles size={"h1"} className="pb-5">
+              {t("SelectMaterialType")}
+            </Titles>
+          ) : clockInRoleTypes === "tascoAbcdEquipment" ? (
+            <Titles size={"h3"} className="pb-5">
+              {t("SelectMaterialTypeAndEquipment")}
+            </Titles>
+          ) : clockInRoleTypes === "tascoEEquipment" ? (
+            <Titles size={"h1"} className="pb-5">
+              {t("Title-equipment-operator")}
+            </Titles>
+          ) : null}
+        </>
+      </TitleBoxes>
+
+      <Contents width={"section"}>
+        <Grids rows={"8"} gap={"5"} className="h-full w-full pb-5">
+          {/* Only Show Material & Labor Type Selection for ABCDShift */}
+          <Holds className="row-start-1 row-end-8 h-full pb-2">
+            {clockInRoleTypes === "tascoEEquipment" ? (
+              <EquipmentSelector
+                onEquipmentSelect={(equipment) => {
+                  if (equipment) {
+                    setEquipment(equipment); // Update the equipment state with the full Option object
+                  } else {
+                    setEquipment({ code: "", label: "" }); // Reset if null
+                  }
+                }}
+                initialValue={equipment}
+              />
+            ) : clockInRoleTypes === "tascoAbcdEquipment" ? (
+              <Holds className="h-full">
+                <Selects
+                  value={materialType || ""}
+                  onChange={(e) => setMaterialType(e.target.value)}
+                  className="text-center"
+                >
+                  <option value="">{t("SelectMaterialType")}</option>
+                  {materialTypes.map((option) => (
+                    <option key={option.id} value={option.name}>
+                      {option.name}
+                    </option>
+                  ))}
+                </Selects>
+                <Holds className="h-full">
+                  <EquipmentSelector
+                    onEquipmentSelect={(equipment) => {
+                      if (equipment) {
+                        setEquipment(equipment); // Update the equipment state with the full Option object
+                      } else {
+                        setEquipment({ code: "", label: "" }); // Reset if null
+                      }
+                    }}
+                    initialValue={equipment}
+                  />
+                </Holds>
+              </Holds>
+            ) : clockInRoleTypes === "tascoAbcdLabor" ? (
+              <Selects
+                value={materialType || ""}
+                onChange={(e) => setMaterialType(e.target.value)}
+                className={`text-center ${
+                  materialType === "" ? "text-app-dark-gray" : ""
+                }`}
+              >
+                <option value="">{t("SelectMaterialType")}</option>
+                {materialTypes.map((option) => (
+                  <option key={option.id} value={option.name}>
+                    {option.name}
+                  </option>
+                ))}
+              </Selects>
+            ) : null}
           </Holds>
 
-          {/* Selection Section */}
-
-          <Holds className="row-start-2 row-end-9  h-full w-full ">
-            <Grids rows={"6"}>
-              {/* Only Show Material & Labor Type Selection for ABCDShift */}
-              {clockInRoleTypes === "tascoEEquipment" && (
-                <>
-                  <Holds className="row-start-1 row-end-7 py-4  h-full w-full">
-                    <EquipmentSelector
-                      onEquipmentSelect={(equipment) => {
-                        if (equipment) {
-                          setEquipment(equipment); // Update the equipment state with the full Option object
-                        } else {
-                          setEquipment({ code: "", label: "" }); // Reset if null
-                        }
-                      }}
-                      initialValue={equipment}
-                    />
-                  </Holds>
-                  <Holds className="row-start-8 row-end-9 col-span-2 justify-center">
-                    <Buttons
-                      background={
-                        equipment.code === "" ? "lightGray" : "orange"
-                      }
-                      className="py-2"
-                      onClick={handleNextStep}
-                      disabled={equipment.code === ""}
-                    >
-                      <Titles size={"h1"}>{t("Continue")}</Titles>
-                    </Buttons>
-                  </Holds>
-                </>
-              )}
-
-              {clockInRoleTypes === "tascoAbcdEquipment" && (
-                <>
-                  <Holds className="row-start-1 row-end-2 p-2">
-                    <Selects
-                      value={materialType || ""}
-                      onChange={(e) => setMaterialType(e.target.value)}
-                      className="text-center"
-                    >
-                      <option value="">{t("SelectMaterialType")}</option>
-                      {materialTypes.map((option) => (
-                        <option key={option.id} value={option.name}>
-                          {option.name}
-                        </option>
-                      ))}
-                    </Selects>
-                  </Holds>
-                  <Holds className="row-start-2 row-end-7 py-4 h-full w-full">
-                    <EquipmentSelector
-                      onEquipmentSelect={(equipment) => {
-                        if (equipment) {
-                          setEquipment(equipment); // Update the equipment state with the full Option object
-                        } else {
-                          setEquipment({ code: "", label: "" }); // Reset if null
-                        }
-                      }}
-                      initialValue={equipment}
-                    />
-                  </Holds>
-
-                  <Holds className="row-start-8 row-end-9 col-span-2 justify-center">
-                    <Buttons
-                      background={materialType === "" ? "lightGray" : "orange"}
-                      className="py-2"
-                      onClick={handleNextStep}
-                      disabled={materialType === ""}
-                    >
-                      <Titles size={"h1"}>{t("Continue")}</Titles>
-                    </Buttons>
-                  </Holds>
-                </>
-              )}
-
-              {clockInRoleTypes === "tascoAbcdLabor" && (
-                <>
-                  <Holds className="row-start-1 row-end-2 p-2">
-                    <Selects
-                      value={materialType || ""}
-                      onChange={(e) => setMaterialType(e.target.value)}
-                    >
-                      <option value="">{t("SelectMaterialType")}</option>
-                      {materialTypes.map((option) => (
-                        <option key={option.id} value={option.name}>
-                          {option.name}
-                        </option>
-                      ))}
-                    </Selects>
-                  </Holds>
-
-                  <Holds className="row-start-8 row-end-9 col-span-2 justify-center">
-                    <Buttons
-                      background={materialType === "" ? "lightGray" : "orange"}
-                      className="py-2"
-                      onClick={handleNextStep}
-                      disabled={materialType === ""}
-                    >
-                      <Titles size={"h1"}>{t("Continue")}</Titles>
-                    </Buttons>
-                  </Holds>
-                </>
-              )}
-            </Grids>
+          <Holds className="row-span-1">
+            {clockInRoleTypes === "tascoEEquipment" ? (
+              <Buttons
+                background={equipment.code === "" ? "lightGray" : "orange"}
+                className="py-2"
+                onClick={handleNextStep}
+                disabled={equipment.code === ""}
+              >
+                <Titles size={"h2"}>{t("Continue")}</Titles>
+              </Buttons>
+            ) : clockInRoleTypes === "tascoAbcdEquipment" ? (
+              <Buttons
+                background={materialType === "" ? "darkGray" : "orange"}
+                className="py-2"
+                onClick={handleNextStep}
+                disabled={materialType === ""}
+              >
+                <Titles size={"h2"}>{t("Continue")}</Titles>
+              </Buttons>
+            ) : clockInRoleTypes === "tascoAbcdLabor" ? (
+              <Buttons
+                background={materialType === "" ? "darkGray" : "orange"}
+                className="py-2"
+                onClick={handleNextStep}
+                disabled={materialType === ""}
+              >
+                <Titles size={"h2"}>{t("Continue")}</Titles>
+              </Buttons>
+            ) : null}
           </Holds>
         </Grids>
       </Contents>

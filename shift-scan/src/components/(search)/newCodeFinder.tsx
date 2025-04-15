@@ -51,11 +51,11 @@ export default function CodeFinder({
   };
 
   return (
-    <Grids rows={"8"} className={`h-full w-full ${className}`}>
+    <Grids rows={"8"} className={`h-full w-full `}>
       <Holds className="row-span-1 h-full">
         {selectedOption ? (
           <Holds
-            background={"green"}
+            background={"lightBlue"}
             className="h-full w-full border-[3px] border-b-none border-black rounded-b-none justify-center items-center"
             onClick={clearSelection}
           >
@@ -76,7 +76,7 @@ export default function CodeFinder({
       </Holds>
       <Holds
         background={"darkBlue"}
-        className="row-span-7 h-full border-[3px] border-black rounded-[10px] rounded-t-none overflow-y-auto no-scrollbar"
+        className="row-start-2 row-end-9 h-full border-[3px] border-black rounded-[10px] rounded-t-none overflow-y-auto no-scrollbar"
       >
         {filteredOptions.length > 0 ? (
           filteredOptions.map((option) => (

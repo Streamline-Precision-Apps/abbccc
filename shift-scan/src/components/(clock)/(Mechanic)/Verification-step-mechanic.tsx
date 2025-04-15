@@ -27,6 +27,7 @@ import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { useSession } from "next-auth/react";
 import Spinner from "@/components/(animations)/spinner";
+import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 
 type Option = {
   label: string;
@@ -142,46 +143,23 @@ export default function MechanicVerificationStep({
       )}
       <Holds
         background={"white"}
-        className={
-          loading ? `h-full w-full py-5 opacity-[0.50]` : `h-full w-full py-5`
-        }
+        className={loading ? `h-full w-full opacity-[0.50]` : `h-full w-full `}
       >
         <Contents width={"section"}>
-          <Grids rows={"8"} gap={"5"} className="h-full w-full">
-            <Holds className="h-full w-full">
-              <Grids cols={"3"} rows={"2"} className="w-full h-full p-3">
-                <Holds className="col-span-1 row-span-1 flex items-center justify-center">
-                  <Buttons
-                    onClick={handlePrevStep}
-                    background={"none"}
-                    position={"left"}
-                    size={"50"}
-                    shadow={"none"}
-                  >
-                    <Images
-                      titleImg="/turnBack.svg"
-                      titleImgAlt={"Back"}
-                      className="max-w-8 h-auto object-contain"
-                    />
-                  </Buttons>
-                </Holds>
-
-                <Holds className="col-start-1 col-end-5 row-start-2 row-end-3 flex flex-row gap-2 items-center justify-center">
-                  <Titles position={"right"} size={"h1"}>
-                    {t("VerifyJobSite")}
-                  </Titles>
-                  <Images
-                    titleImg="/clock-in.svg"
-                    titleImgAlt="Verify"
-                    className="w-8 h-8"
-                  />
-                </Holds>
-              </Grids>
-            </Holds>
-
+          <TitleBoxes position={"row"} gap={3} onClick={handlePrevStep}>
+            <Titles position={"right"} size={"h1"}>
+              {t("VerifyJobSite")}
+            </Titles>
+            <Images
+              titleImg="/clock-in.svg"
+              titleImgAlt="Verify"
+              className="w-10 h-10"
+            />
+          </TitleBoxes>
+          <Grids rows={"8"} gap={"5"} className="h-full w-full pt-8 pb-5">
             <Holds
               background={"timeCardYellow"}
-              className="row-start-2 row-end-8 border-[3px] border-black h-full pt-1"
+              className="row-start-1 row-end-8 border-[3px] rounded-[10px] border-black h-full pt-1"
             >
               <Contents width={"section"} className="h-full">
                 <Holds className="flex flex-row justify-between pb-3">
@@ -197,7 +175,7 @@ export default function MechanicVerificationStep({
                       hour: "2-digit",
                       minute: "2-digit",
                       second: "2-digit",
-                      hour12: true,
+                      hour12: false,
                     })}
                   </Texts>
                 </Holds>
