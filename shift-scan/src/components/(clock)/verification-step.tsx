@@ -5,7 +5,6 @@ import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
 import { handleGeneralTimeSheet } from "@/actions/timeSheetActions";
-import { Clock } from "../clock";
 import { Buttons } from "../(reusable)/buttons";
 import { Contents } from "../(reusable)/contents";
 import { Labels } from "../(reusable)/labels";
@@ -42,6 +41,7 @@ type VerifyProcessProps = {
   returnPathUsed: boolean;
   setStep: Dispatch<SetStateAction<number>>;
   jobsite: Options | null;
+  cc: Options | null;
 };
 
 export default function VerificationStep({
@@ -54,6 +54,7 @@ export default function VerificationStep({
   returnPathUsed,
   setStep,
   jobsite,
+  cc,
 }: VerifyProcessProps) {
   const t = useTranslations("Clock");
   const { scanResult } = useScanData();
@@ -91,8 +92,8 @@ export default function VerificationStep({
       formData.append("submitDate", new Date().toISOString());
       formData.append("userId", id?.toString() || "");
       formData.append("date", new Date().toISOString());
-      formData.append("jobsiteId", scanResult?.data || "");
-      formData.append("costcode", savedCostCode?.toString() || "");
+      formData.append("jobsiteId", jobsite?.code || "");
+      formData.append("costcode", cc?.code || "");
       formData.append("startTime", new Date().toISOString());
       formData.append("workType", role);
 
@@ -195,7 +196,7 @@ export default function VerificationStep({
                       hour: "2-digit",
                       minute: "2-digit",
                       second: "2-digit",
-                      hour12: true,
+                      hour12: false,
                     })}
                   </Texts>
                 </Holds>
@@ -228,7 +229,7 @@ export default function VerificationStep({
                   state="disabled"
                   name="costcode"
                   variant={"white"}
-                  data={savedCostCode?.toString() || ""}
+                  data={cc?.label || ""}
                   className="text-center"
                 />
               </Contents>

@@ -12,6 +12,7 @@ import { Selects } from "../(reusable)/selects";
 import { useSession } from "next-auth/react";
 import { Contents } from "../(reusable)/contents";
 import { TitleBoxes } from "../(reusable)/titleBoxes";
+import { Title } from "@/app/(routes)/dashboard/mechanic/_components/Title";
 
 type Option = {
   label: string;
@@ -103,24 +104,19 @@ export default function QRMultiRoles({
   return (
     <>
       <Holds background={"white"} className="h-full w-full">
-        <Contents width={"section"}>
-          <Grids rows={"8"} gap={"5"} className="h-full w-full py-5">
+        <TitleBoxes onClick={handleReturnPath}>
+          <Titles size={"h1"}>
+            {startCamera ? t("ScanJobsite") : t("SelectLaborType")}
+          </Titles>
+        </TitleBoxes>
+        <Contents width={"section"} className="h-full pb-5">
+          <Grids rows={"7"} gap={"5"} className="h-full w-full pt-5">
             {type !== "equipment" ? (
               <>
-                <Holds className="h-full row-start-1 row-end-2">
-                  <TitleBoxes
-                    title={t("ScanJobSite")}
-                    titleImg=""
-                    titleImgAlt=""
-                    onClick={handleReturnPath}
-                    type="noIcon-NoHref"
-                  />
-                </Holds>
-
                 {numberOfViews > 1 && option !== "switchJobs" ? (
                   <Holds className="p-1 justify-center ">
                     <Selects
-                      className="disabled:bg-app-dark-gray bg-app-blue text-center p-3"
+                      className="bg-app-blue text-center p-3 disabled:bg-app-blue"
                       value={clockInRoleTypes}
                       disabled={startCamera}
                       onChange={(e) => selectView(e.target.value)}
@@ -160,22 +156,12 @@ export default function QRMultiRoles({
                   </Holds>
                 ) : null}
               </>
-            ) : (
-              <Holds className="h-full row-start-1 row-end-2">
-                <TitleBoxes
-                  title={t("ScanEquipment")}
-                  titleImg=""
-                  titleImgAlt=""
-                  onClick={handleReturnPath}
-                  type="noIcon-NoHref"
-                />
-              </Holds>
-            )}
+            ) : null}
 
             {!startCamera ? (
               <Holds
                 className={
-                  "h-full w-full row-start-3 row-end-7 border-[3px] border-black rounded-[10px] p-3 justify-center "
+                  "h-full w-full row-start-2 row-end-6 border-[3px] border-black rounded-[10px] p-3 justify-center "
                 }
               >
                 <Images
@@ -193,7 +179,7 @@ export default function QRMultiRoles({
                 )}
               </Holds>
             ) : (
-              <Holds className={"h-full w-full row-start-3 row-end-8"}>
+              <Holds className={"h-full w-full row-start-2 row-end-7"}>
                 <Grids rows={"6"} gap={"2"}>
                   <Holds className="h-full w-full row-start-1 row-end-6 justify-center ">
                     <QR
@@ -223,10 +209,11 @@ export default function QRMultiRoles({
               </Holds>
             )}
             {!startCamera ? (
-              <Holds className="row-start-8 row-end-9 h-full w-full justify-center">
+              <Holds className="row-start-7 row-end-8 w-full justify-center">
                 <Buttons
                   onClick={() => setStartCamera(!startCamera)}
                   background={"green"}
+                  className="py-2"
                 >
                   <Titles size={"h2"}>{t("StartCamera")}</Titles>
                 </Buttons>

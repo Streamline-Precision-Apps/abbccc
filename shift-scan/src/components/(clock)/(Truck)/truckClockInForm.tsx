@@ -77,27 +77,22 @@ export default function TruckClockInForm({
 
   return (
     <Holds background={"white"} className={"w-full h-full"}>
-      <Contents width="section">
-        <Grids rows={"8"} className="h-full w-full">
-          <Holds className="row-start-1 row-end-2 h-full w-full">
-            <TitleBoxes
-              onClick={returnPathUsed ? () => setStep(1) : handlePrevStep}
-              type="Custom"
-              title={""}
-              titleImg={""}
-              titleImgAlt={""}
-            >
-              {clockInRoleTypes === "truckDriver" ? (
-                <Titles size={"h2"}>{t("EnterTruckInfo")}</Titles>
-              ) : clockInRoleTypes === "truckEquipmentOperator" ? (
-                <Titles size={"h2"}>{t("EnterEquipmentInfo")}</Titles>
-              ) : (
-                ""
-              )}
-            </TitleBoxes>
-          </Holds>
-
-          <>
+      <Grids rows={"7"} gap={"5"} className="h-full w-full pb-5">
+        <Holds className="row-start-1 row-end-2 h-full w-full">
+          <TitleBoxes
+            onClick={returnPathUsed ? () => setStep(1) : handlePrevStep}
+          >
+            {clockInRoleTypes === "truckDriver" ? (
+              <Titles size={"h1"}>{t("EnterTruckInfo")}</Titles>
+            ) : clockInRoleTypes === "truckEquipmentOperator" ? (
+              <Titles size={"h1"}>{t("EnterEquipmentInfo")}</Titles>
+            ) : (
+              ""
+            )}
+          </TitleBoxes>
+        </Holds>
+        <Holds className="row-start-2 row-end-8 h-full w-full">
+          <Contents width="section">
             {clockInRoleTypes === "truckDriver" && (
               <TruckDriverForm
                 displayValue={displayValue}
@@ -120,39 +115,9 @@ export default function TruckClockInForm({
                 setSelectedOpt={setSelectedOpt}
               />
             )}
-          </>
-
-          <Holds className="row-start-8 row-end-9  w-full  justify-center">
-            {clockInRoleTypes === "truckDriver" ? (
-              <Buttons
-                className="py-2"
-                background={
-                  !startingMileage || !selectedOpt ? "lightGray" : "orange"
-                }
-                onClick={() => {
-                  handleNextStep();
-                }}
-                disabled={!selectedOpt || !startingMileage}
-              >
-                <Titles>{t("Continue")}</Titles>
-              </Buttons>
-            ) : clockInRoleTypes === "truckEquipmentOperator" ? (
-              <>
-                {handleNextStep && (
-                  <Holds className="row-start-7 row-end-8 h-full w-full justify-center">
-                    <StepButtons
-                      handleNextStep={handleNextStep}
-                      disabled={!selectedOpt}
-                    />
-                  </Holds>
-                )}
-              </>
-            ) : (
-              <></>
-            )}
-          </Holds>
-        </Grids>
-      </Contents>
+          </Contents>
+        </Holds>
+      </Grids>
     </Holds>
   );
 }
