@@ -5,14 +5,7 @@ import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
 import { handleTruckTimeSheet } from "@/actions/timeSheetActions";
-import { Buttons } from "../(reusable)/buttons";
-import { Contents } from "../(reusable)/contents";
-import { Labels } from "../(reusable)/labels";
-import { Inputs } from "../(reusable)/inputs";
-import { Images } from "../(reusable)/images";
-import { useSession } from "next-auth/react";
-import { Holds } from "../(reusable)/holds";
-import { Grids } from "../(reusable)/grids";
+
 import { useCommentData } from "@/app/context/CommentContext";
 import {
   setCurrentPageView,
@@ -21,9 +14,18 @@ import {
 } from "@/actions/cookieActions";
 import { useRouter } from "next/navigation";
 import { useOperator } from "@/app/context/operatorContext";
-import Spinner from "../(animations)/spinner";
-import { Titles } from "../(reusable)/titles";
-import { Texts } from "../(reusable)/texts";
+import { Buttons } from "@/components/(reusable)/buttons";
+import { Contents } from "@/components/(reusable)/contents";
+import { Grids } from "@/components/(reusable)/grids";
+import { Holds } from "@/components/(reusable)/holds";
+import { Images } from "@/components/(reusable)/images";
+import { Inputs } from "@/components/(reusable)/inputs";
+import { Labels } from "@/components/(reusable)/labels";
+import { Texts } from "@/components/(reusable)/texts";
+import { Titles } from "@/components/(reusable)/titles";
+
+import { useSession } from "next-auth/react";
+import Spinner from "@/components/(animations)/spinner";
 
 type Options = {
   label: string;
@@ -43,6 +45,7 @@ type VerifyProcessProps = {
   handlePrevStep: () => void;
   equipment: Options | null;
   jobsite: Options | null;
+  cc: Options | null;
 };
 
 export default function TruckVerificationStep({
@@ -57,6 +60,7 @@ export default function TruckVerificationStep({
   handlePrevStep,
   equipment,
   jobsite,
+  cc,
 }: VerifyProcessProps) {
   const t = useTranslations("Clock");
   const { scanResult } = useScanData();
@@ -95,7 +99,7 @@ export default function TruckVerificationStep({
       formData.append("userId", id?.toString() || "");
       formData.append("date", new Date().toISOString());
       formData.append("jobsiteId", jobsite?.code || "");
-      formData.append("costcode", savedCostCode?.toString() || "");
+      formData.append("costcode", cc?.code || "");
       formData.append("startTime", new Date().toISOString());
       formData.append("workType", role);
       formData.append("laborType", clockInRoleTypes || ""); // sets the title of task to the labor type worked on
@@ -187,7 +191,7 @@ export default function TruckVerificationStep({
 
               <Holds
                 background={"timeCardYellow"}
-                className="row-start-2 row-end-8 w-full h-full border-[3px] border-black"
+                className="row-start-2 row-end-8 w-full h-full rounded-[10px] border-[3px] border-black"
               >
                 <Contents width={"section"} className="h-full py-2">
                   <Holds className="flex flex-row justify-between pb-3">
@@ -203,7 +207,7 @@ export default function TruckVerificationStep({
                         hour: "2-digit",
                         minute: "2-digit",
                         second: "2-digit",
-                        hour12: true,
+                        hour12: false,
                       })}
                     </Texts>
                   </Holds>
@@ -232,38 +236,6 @@ export default function TruckVerificationStep({
                       className={"pl-2 text-base text-center"}
                     />
                   </Holds>
-                  {clockInRoleTypes === "truckDriver" && (
-                    <Holds className={"row-span-1 col-span-1"}>
-                      <Labels
-                        htmlFor="startingMileage"
-                        size={"p6"}
-                        position={"left"}
-                      >
-                        {t("StartingMileage")}
-                      </Labels>
-                      <Inputs
-                        state="disabled"
-                        name="startingMileage"
-                        variant={"white"}
-                        data={startingMileage?.toString() || ""}
-                        className={"pl-2 text-base text-center"}
-                      />
-                    </Holds>
-                  )}
-                  {clockInRoleTypes === "truckDriver" && (
-                    <Holds className={"row-span-1 col-span-2"}>
-                      <Labels htmlFor="truckId" size={"p6"} position={"left"}>
-                        {t("Truck-label")}
-                      </Labels>
-                      <Inputs
-                        state="disabled"
-                        name="truckId"
-                        variant={"white"}
-                        data={truck?.label || ""}
-                        className={"pl-2 text-base text-center"}
-                      />
-                    </Holds>
-                  )}
                   <Holds className={"row-span-1 col-span-2"}>
                     <Labels htmlFor="jobsiteId" size={"p6"} position={"left"}>
                       {t("JobSite-label")}
@@ -284,10 +256,24 @@ export default function TruckVerificationStep({
                       state="disabled"
                       name="costcode"
                       variant={"white"}
-                      data={savedCostCode?.toString() || ""}
+                      data={cc?.label || ""}
                       className={"pl-2 text-base text-center"}
                     />
                   </Holds>
+                  {clockInRoleTypes === "truckDriver" && (
+                    <Holds className={"row-span-1 col-span-2"}>
+                      <Labels htmlFor="truckId" size={"p6"} position={"left"}>
+                        {t("Truck-label")}
+                      </Labels>
+                      <Inputs
+                        state="disabled"
+                        name="truckId"
+                        variant={"white"}
+                        data={truck?.label || ""}
+                        className={"pl-2 text-base text-center"}
+                      />
+                    </Holds>
+                  )}
                   {clockInRoleTypes === "truckEquipmentOperator" && (
                     <Holds className={"row-span-1 col-span-2"}>
                       <Labels

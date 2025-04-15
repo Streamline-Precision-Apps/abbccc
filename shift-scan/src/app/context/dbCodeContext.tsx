@@ -10,6 +10,7 @@ import React, {
 import { CostCodes, JobCodes, EquipmentCode } from "@/lib/types";
 import { z } from "zod";
 import { usePathname } from "next/navigation";
+import { equipmentTagExists } from "@/actions/equipmentActions";
 
 const JobsitesSchema = z.array(
   z.object({
@@ -40,6 +41,7 @@ const EquipmentSchema = z.array(
     id: z.string(),
     qrId: z.string(),
     name: z.string(),
+    equipmentTag: z.enum(["EQUIPMENT", "VEHICLE", "TRUCK", "TRAILER"]),
   })
 );
 

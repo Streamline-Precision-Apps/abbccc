@@ -382,8 +382,8 @@
     "CostCode-Label": "Código de Costo:",
     "ScanJobSiteOrTruck": "Escanear Sitio de Trabajo o Camiones",
     "ChangeJobsite": "Cambiar Sitio de Trabajo",
-    "Truck-label": "Camiones Encontrados",
-    "Mileage": "Mileage"
+    "Truck-label": "Camión",
+    "Mileage": "Kilometraje"
   },
   "ClockOut": {
     "SearchBarPlaceholder": "Busca aquí...",
@@ -651,7 +651,7 @@
     "DeleteEquipmentLog": "Borrar Registro de Herramientas",
     "TimesheetComment": "Comentarios de Hojas de Tiempo",
     "VehicleID": "ID de Vehículo",
-    "StartingMileage": "Kilometraje inicial",
+    "StartingMileage": "Ingrese el kilometraje inicial aquí",
     "EndingMileage": "Kilometraje final",
     "LeftIdaho": "Fuera de Idaho",
     "RefuelingGallons": "Gallones de Gasolina",

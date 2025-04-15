@@ -5,30 +5,30 @@ import MultipleRoles from "./multipleRoles";
 import QRStep from "./qr-handler";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import VerificationStep from "./verification-step";
-import TruckClockInForm from "./truckClockInForm";
+import TruckClockInForm from "./(Truck)/truckClockInForm";
 import VerificationEQStep from "./verification-eq-step";
 import { Titles } from "../(reusable)/titles";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { setJobSite, setWorkRole } from "@/actions/cookieActions";
-import MechanicVerificationStep from "./Verification-step-mechanic";
-import TascoVerificationStep from "./Verification-step-tasco";
+import { setWorkRole } from "@/actions/cookieActions";
+
 import SwitchJobsMultiRoles from "./switchJobsMultipleRoles";
-import { useSavedCostCode } from "@/app/context/CostCodeContext";
 import { returnToPrevWork } from "@/actions/timeSheetActions";
-import TruckVerificationStep from "./Verification-step-truck";
-import TascoClockInForm from "./tascoClockInForm";
 import { useSession } from "next-auth/react";
 import QRMultiRoles from "./QRMultiRoles";
 import ClockLoadingPage from "./clock-loading-page";
 import { Contents } from "../(reusable)/contents";
 import { useOperator } from "@/app/context/operatorContext";
 import EquipmentQRStep from "./qr-equipment-handler";
-import { JobsiteSelector } from "./jobsiteSelector";
 import StepButtons from "./step-buttons";
 import { Grids } from "../(reusable)/grids";
 import { TitleBoxes } from "../(reusable)/titleBoxes";
-import { CostCodeSelector } from "./costCodeSelector";
+import { CostCodeSelector } from "./(General)/costCodeSelector";
+import { JobsiteSelector } from "./(General)/jobsiteSelector";
+import MechanicVerificationStep from "./(Mechanic)/Verification-step-mechanic";
+import TascoVerificationStep from "./(Tasco)/Verification-step-tasco";
+import TascoClockInForm from "./(Tasco)/tascoClockInForm";
+import TruckVerificationStep from "./(Truck)/Verification-step-truck";
 
 type NewClockProcessProps = {
   mechanicView: boolean;
@@ -63,10 +63,8 @@ export default function NewClockProcess({
   switchLaborType,
 }: NewClockProcessProps) {
   // State management
-  const { setEquipmentId } = useOperator();
   const { data: session } = useSession();
   const [step, setStep] = useState<number>(0);
-  const { scanResult } = useScanData();
   const [clockInRole, setClockInRole] = useState<string | undefined>(workRole);
   const [clockInRoleTypes, setClockInRoleTypes] = useState<string | undefined>(
     switchLaborType
@@ -77,24 +75,27 @@ export default function NewClockProcess({
   const router = useRouter();
   const [laborType, setLaborType] = useState<string>("");
 
-  // Truck states - new implementation to not change cookies right away
+  // Truck states
   const [truck, setTruck] = useState<Option>({
     label: "",
     code: "",
   });
-  // new state for equipment selection to make it more dynamic
+  // Equipment state
   const [equipment, setEquipment] = useState<Option>({
     label: "",
     code: "",
   });
+  // JobSite state
   const [jobsite, setJobsite] = useState<Option>({
     label: "",
     code: "",
   });
+  // CostCode state
   const [cc, setCC] = useState<Option>({
     label: "",
     code: "",
   });
+  // Truck states
   const [startingMileage, setStartingMileage] = useState<number>(0);
   // Tasco states
   const [materialType, setMaterialType] = useState<string>("");
@@ -567,6 +568,7 @@ export default function NewClockProcess({
           handleNextStep={handleNextStep}
           option={option}
           comments={undefined}
+          cc={cc}
         />
       )}
       {/* ------------ End of Trucking Role section */}

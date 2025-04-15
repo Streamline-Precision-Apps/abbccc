@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import NewCodeFinder from "../(search)/newCodeFinder";
+import NewCodeFinder from "@/components/(search)/newCodeFinder";
 import { useDBEquipment } from "@/app/context/dbCodeContext";
 
 type Option = {
@@ -25,10 +25,12 @@ export const EquipmentSelector = ({
   const { equipmentResults } = useDBEquipment();
 
   useEffect(() => {
-    const options = equipmentResults.map((costcode) => ({
-      code: costcode.name,
-      label: costcode.name,
-    }));
+    const options = equipmentResults
+      .filter((equipment) => equipment.equipmentTag !== "TRUCK")
+      .map((costcode) => ({
+        code: costcode.name,
+        label: costcode.name,
+      }));
     setEquipmentOptions(options);
   }, [equipmentResults]);
 

@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import NewCodeFinder from "../(search)/newCodeFinder";
+import NewCodeFinder from "@/components/(search)/newCodeFinder";
 import { useDBJobsite } from "@/app/context/dbCodeContext";
 
 type Option = {
