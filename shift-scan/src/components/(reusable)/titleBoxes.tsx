@@ -76,7 +76,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         {...props}
       >
         <>
-          <Holds className=" pb-3 flex items-center justify-center">
+          <Holds className=" py-3 flex items-center justify-center">
             <Buttons
               onClick={onClick}
               background={"none"}

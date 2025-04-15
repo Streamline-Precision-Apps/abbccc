@@ -4,14 +4,9 @@ import { useTranslations } from "next-intl";
 import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
 import { handleTascoTimeSheet } from "@/actions/timeSheetActions"; // Updated import
-import { Buttons } from "../(reusable)/buttons";
-import { Contents } from "../(reusable)/contents";
-import { Labels } from "../(reusable)/labels";
-import { Inputs } from "../(reusable)/inputs";
-import { Images } from "../(reusable)/images";
+
 import { useSession } from "next-auth/react";
-import { Holds } from "../(reusable)/holds";
-import { Grids } from "../(reusable)/grids";
+
 import { useCommentData } from "@/app/context/CommentContext";
 import {
   setCurrentPageView,
@@ -19,11 +14,16 @@ import {
   setWorkRole,
 } from "@/actions/cookieActions";
 import { useRouter } from "next/navigation";
-import { useSavedCostCode } from "@/app/context/CostCodeContext";
-import { useOperator } from "@/app/context/operatorContext";
-import Spinner from "../(animations)/spinner";
-import { Titles } from "../(reusable)/titles";
-import { Texts } from "../(reusable)/texts";
+import { Buttons } from "@/components/(reusable)/buttons";
+import { Contents } from "@/components/(reusable)/contents";
+import { Grids } from "@/components/(reusable)/grids";
+import { Holds } from "@/components/(reusable)/holds";
+import { Images } from "@/components/(reusable)/images";
+import { Inputs } from "@/components/(reusable)/inputs";
+import { Labels } from "@/components/(reusable)/labels";
+import { Texts } from "@/components/(reusable)/texts";
+import { Titles } from "@/components/(reusable)/titles";
+import Spinner from "@/components/(animations)/spinner";
 
 type Option = {
   label: string;

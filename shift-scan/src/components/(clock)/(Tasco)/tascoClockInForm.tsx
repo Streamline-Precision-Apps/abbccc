@@ -5,10 +5,10 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Selects } from "@/components/(reusable)/selects";
 import { Grids } from "@/components/(reusable)/grids";
 import { useTranslations } from "next-intl";
-import { Titles } from "../(reusable)/titles";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { TitleBoxes } from "../(reusable)/titleBoxes";
-import { EquipmentSelector } from "./equipmentSelector";
+import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
+import { Titles } from "@/components/(reusable)/titles";
+import { EquipmentSelector } from "../(General)/equipmentSelector";
 
 type TascoClockInFormProps = {
   handlePrevStep: () => void;

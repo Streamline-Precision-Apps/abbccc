@@ -314,6 +314,7 @@ export type EquipmentCode = {
   id: string;
   qrId: string;
   name: string;
+  equipmentTag: EquipmentTags;
 };
 
 export type EquipmentCodes = {
