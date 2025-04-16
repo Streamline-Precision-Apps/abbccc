@@ -20,7 +20,7 @@ export default function ClockLoadingPage({
         <Holds className="row-start-1 row-end-2 h-full w-full">
           <TitleBoxes onClick={handleReturnPath} />
         </Holds>
-        <Holds className="row-start-2 row-end-7 h-full w-full">
+        <Holds className="row-start-2 row-end-8 h-full w-full">
           <Contents width={"section"}>
             <Grids rows={"7"} gap={"5"} className="h-full w-full ">
               <Holds className="flex justify-center items-center h-full w-full row-start-1 row-end-7 ">

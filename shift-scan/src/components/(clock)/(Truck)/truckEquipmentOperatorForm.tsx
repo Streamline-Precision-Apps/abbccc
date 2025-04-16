@@ -25,8 +25,8 @@ export default function TruckEquipmentOperatorForm({
   handleNextStep,
 }: TruckEquipmentOperatorFormProps) {
   return (
-    <Grids rows={"7"} gap={"5"} className="h-full w-full">
-      <Holds className="row-start-1 row-end-6 h-full w-full">
+    <Grids rows={"7"} gap={"5"} className="h-full w-full pb-5">
+      <Holds className="row-start-1 row-end-7 h-full w-full">
         <EquipmentSelector
           onEquipmentSelect={(equipment) => {
             if (equipment) {
@@ -39,8 +39,11 @@ export default function TruckEquipmentOperatorForm({
           initialValue={equipment}
         />
       </Holds>
-      <Holds className="row-start-6 row-end-7 h-full w-full justify-center">
-        <StepButtons handleNextStep={handleNextStep} disabled={!selectedOpt} />
+      <Holds className="row-start-7 row-end-8 w-full justify-center">
+        <StepButtons
+          handleNextStep={handleNextStep}
+          disabled={!equipment.code}
+        />
       </Holds>
     </Grids>
   );
